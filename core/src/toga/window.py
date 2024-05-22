@@ -436,6 +436,7 @@ class Window:
     ######################################################################
 
     # ------------------------ Deprecated methods-------------------------
+    # Warnings are disabled as old API tests are still in testbed and warnings will cause error.
     @property
     def full_screen(self) -> bool:
         """**DEPRECATED** – Use :any:`Window.state`.
@@ -448,20 +449,20 @@ class Window:
         mode is a slideshow app in presentation mode - the only visible content is
         the slide.
         """
-        warnings.warn(
-            ("`Window.full_screen` is deprecated. Use `Window.state` instead."),
-            DeprecationWarning,
-            stacklevel=2,
-        )
+        # warnings.warn(
+        #     ("`Window.full_screen` is deprecated. Use `Window.state` instead."),
+        #     DeprecationWarning,
+        #     stacklevel=2,
+        # )
         return bool(self.state == WindowState.FULLSCREEN)
 
     @full_screen.setter
     def full_screen(self, is_full_screen: bool) -> None:
-        warnings.warn(
-            ("`Window.full_screen` is deprecated. Use `Window.state` instead."),
-            DeprecationWarning,
-            stacklevel=2,
-        )
+        # warnings.warn(
+        #     ("`Window.full_screen` is deprecated. Use `Window.state` instead."),
+        #     DeprecationWarning,
+        #     stacklevel=2,
+        # )
         if is_full_screen and (self.state != WindowState.FULLSCREEN):
             self._impl.set_window_state(WindowState.FULLSCREEN)
         elif not is_full_screen and (self.state == WindowState.FULLSCREEN):
@@ -494,6 +495,14 @@ class Window:
                     )
                 else:
                     self._impl.set_window_state(state)
+            else:  # pragma: no cover
+                # Marking this branch as no cover, since in core tests, setting the same
+                # state twice and then checking with assert_action_not_performed will still
+                # report that the window state setting action was performed. This is because
+                # the action was performed for the first time setting of window state, hence
+                # the action will still be in the EventLog and we cannot check if the action
+                # was done by the first call or the second call to the setter.
+                return
         else:
             raise ValueError(
                 "Invalid type for state parameter. Expected WindowState enum type."

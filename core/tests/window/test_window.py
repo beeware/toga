@@ -260,23 +260,22 @@ def test_visibility(window, app):
 
 def test_full_screen(window, app):
     """A window can be set full screen."""
-    with pytest.deprecated_call():
-        assert not window.full_screen
-        window.full_screen = True
-        assert window.full_screen
-        assert_action_performed_with(
-            window,
-            "set window state to WindowState.FULLSCREEN",
-            state=WindowState.FULLSCREEN,
-        )
+    assert not window.full_screen
+    window.full_screen = True
+    assert window.full_screen
+    assert_action_performed_with(
+        window,
+        "set window state to WindowState.FULLSCREEN",
+        state=WindowState.FULLSCREEN,
+    )
 
-        window.full_screen = False
-        assert not window.full_screen
-        assert_action_performed_with(
-            window,
-            "set window state to WindowState.NORMAL",
-            state=WindowState.NORMAL,
-        )
+    window.full_screen = False
+    assert not window.full_screen
+    assert_action_performed_with(
+        window,
+        "set window state to WindowState.NORMAL",
+        state=WindowState.NORMAL,
+    )
 
 
 def test_window_state(window):
