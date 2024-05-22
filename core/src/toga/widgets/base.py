@@ -144,7 +144,10 @@ class Widget(Node):
         """Get the index of a child widget.
 
         :param child: The child widget of interest.
-        :raises ValueError: If this widget is not a child widget.
+        :raises ValueError: If the specified child widget is not found in the
+            list of children.
+
+        :returns: Index of specified child widget in children list.
         """
         for _ind, _child in enumerate(self._children):
             if child == _child:
