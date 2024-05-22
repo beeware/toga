@@ -85,7 +85,7 @@ class DetailedListActionListener(dynamic_proxy(DialogInterface.OnClickListener))
         self.actions[which].handler(row=self.row)
 
 
-if SwipeRefreshLayout is not None:  # prama: no cover
+if SwipeRefreshLayout is not None:  # pragma: no cover
 
     class OnRefreshListener(dynamic_proxy(SwipeRefreshLayout.OnRefreshListener)):
         def __init__(self, interface):
