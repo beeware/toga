@@ -1,0 +1,1 @@
+App now warns / errors if camera permission is requested but required metadata is not added to pyproject.toml.
