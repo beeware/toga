@@ -85,8 +85,8 @@ After a successful installation of Toga you are ready to get coding.
 Write the app
 =============
 
-Create a new file called ``helloworld.py`` within your toga-tutorial
-directory and add the following code for the "Hello world" app:
+Create a new file called ``helloworld.py`` in your ``toga-tutorial``
+directory, and add the following code for the "Hello world" app:
 
 .. literalinclude:: /../examples/tutorial0/tutorial/app.py
    :language: python
