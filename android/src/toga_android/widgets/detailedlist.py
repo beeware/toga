@@ -85,13 +85,15 @@ class DetailedListActionListener(dynamic_proxy(DialogInterface.OnClickListener))
         self.actions[which].handler(row=self.row)
 
 
-class OnRefreshListener(dynamic_proxy(SwipeRefreshLayout.OnRefreshListener)):
-    def __init__(self, interface):
-        super().__init__()
-        self._interface = interface
+if SwipeRefreshLayout is not None:  # prama: no cover
 
-    def onRefresh(self):
-        self._interface.on_refresh()
+    class OnRefreshListener(dynamic_proxy(SwipeRefreshLayout.OnRefreshListener)):
+        def __init__(self, interface):
+            super().__init__()
+            self._interface = interface
+
+        def onRefresh(self):
+            self._interface.on_refresh()
 
 
 class DetailedList(Widget):
@@ -99,7 +101,7 @@ class DetailedList(Widget):
         if SwipeRefreshLayout is None:  # pragma: no cover
             raise RuntimeError(
                 "Unable to import SwipeRefreshLayout. Ensure that the AndroidX Swipe Refresh Layout "
-                "widget package (androidx.swiperefreshlayout:swiperefreshlayout:1.1.0)"
+                "widget package (androidx.swiperefreshlayout:swiperefreshlayout:1.1.0) "
                 "is listed in your app's dependencies."
             )
         # get the selection color from the current theme
