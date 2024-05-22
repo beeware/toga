@@ -140,6 +140,30 @@ class Widget(Node):
         # Whatever layout we're a part of needs to be refreshed
         self.refresh()
 
+    def index(self, child: Widget) -> int:
+        """Get the index of a widget in the list of children of this widget.
+
+        :param child: The child widget of interest.
+        :raises ValueError: If the specified child widget is not found in the
+            list of children.
+
+        :returns: Index of specified child widget in children list.
+        """
+        for _ind, _child in enumerate(self._children):
+            if child == _child:
+                return _ind
+        raise ValueError(f"{type(child).__name__} not found")
+
+    def replace(self, old_child: Widget, new_child: Widget) -> None:
+        """Replace an existing child widget with a new child widget.
+
+        :param old_child: The existing child widget to be replaced.
+        :param new_child: The new child widget to be included.
+        """
+        old_child_index = self.index(old_child)
+        self.remove(old_child)
+        self.insert(old_child_index, new_child)
+
     def remove(self, *children: Widget) -> None:
         """Remove the provided widgets as children of this node.
 
