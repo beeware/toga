@@ -8,7 +8,6 @@ from unittest.mock import Mock
 import pytest
 
 import toga
-from toga.constants import WindowState
 from toga_dummy.utils import (
     assert_action_not_performed,
     assert_action_performed,
@@ -472,9 +471,12 @@ def test_presentation_mode(event_loop):
     app.exit_presentation_mode()
     assert_action_not_performed(app, "exit presentation mode")
 
+    # Entering presentation mode without any window is a no-op
+    app.enter_presentation_mode(None)
+    assert_action_not_performed(app, "enter presentation mode")
+
     # Enter presentation mode with 1 window:
     app.enter_presentation_mode({app.screens[0]: window1})
-    window1.state = WindowState.PRESENTATION
     assert app.is_in_presentation_mode
     assert_action_performed_with(
         app,

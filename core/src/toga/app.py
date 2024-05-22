@@ -868,12 +868,16 @@ class App:
                 screen_window_dict[screen] = window
         elif isinstance(window_list_or_screen_window_dict, dict):
             screen_window_dict = window_list_or_screen_window_dict
+        else:
+            return
         self._impl.enter_presentation_mode(screen_window_dict)
 
     def exit_presentation_mode(self) -> None:
         """Exit presentation mode."""
         if self.is_in_presentation_mode:
             self._impl.exit_presentation_mode()
+        else:
+            return
 
     ######################################################################
     # App events

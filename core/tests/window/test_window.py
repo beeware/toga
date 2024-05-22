@@ -262,16 +262,19 @@ def test_full_screen(window, app):
     """A window can be set full screen."""
     assert not window.full_screen
 
-    window.full_screen = True
-    assert window.full_screen
+    with pytest.deprecated_call():
+        window.full_screen = True
+    with pytest.deprecated_call():
+        assert window.full_screen
     assert_action_performed_with(
         window,
         "set window state to WindowState.FULLSCREEN",
         state=WindowState.FULLSCREEN,
     )
-
-    window.full_screen = False
-    assert not window.full_screen
+    with pytest.deprecated_call():
+        window.full_screen = False
+    with pytest.deprecated_call():
+        assert not window.full_screen
     assert_action_performed_with(
         window,
         "set window state to WindowState.NORMAL",
@@ -300,6 +303,30 @@ def test_window_state(window):
                 "set window state to WindowState.NORMAL",
                 state=WindowState.NORMAL,
             )
+
+    window_resizable_original_value = window.resizable
+    window.resizable = False
+    # Setting window state to any of the following when window is not resizable, is a no-op
+    # and should give a UserWarning.
+    for state in {
+        WindowState.MAXIMIZED,
+        WindowState.FULLSCREEN,
+        WindowState.PRESENTATION,
+    }:
+        with pytest.warns(
+            UserWarning,
+            match=f"Cannot set window state to {state} of a non-resizable window.",
+        ):
+            window.state = state
+            assert assert_action_not_performed(window, f"set window state to {state}")
+    window.resizable = window_resizable_original_value
+
+    # Setting window state to any value other than a WindowState enum should raise a ValueError
+    with pytest.raises(
+        ValueError,
+        match="Invalid type for state parameter. Expected WindowState enum type.",
+    ):
+        window.state = None
 
 
 def test_close_direct(window, app):

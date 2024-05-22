@@ -435,8 +435,7 @@ class Window:
     # Window state
     ######################################################################
 
-    # ----------------------Future Deprecated methods----------------------
-    # Warnings are disabled as old API tests are still in testbed and warnings will cause error.
+    # ------------------------ Deprecated methods-------------------------
     @property
     def full_screen(self) -> bool:
         """**DEPRECATED** – Use :any:`Window.state`.
@@ -449,31 +448,33 @@ class Window:
         mode is a slideshow app in presentation mode - the only visible content is
         the slide.
         """
-        # warn(
-        #     ("`Window.full_screen` is deprecated. Use `Window.state` instead."),
-        #     DeprecationWarning,
-        #     stacklevel=2,
-        # )
+        warnings.warn(
+            ("`Window.full_screen` is deprecated. Use `Window.state` instead."),
+            DeprecationWarning,
+            stacklevel=2,
+        )
         return bool(self.state == WindowState.FULLSCREEN)
 
     @full_screen.setter
     def full_screen(self, is_full_screen: bool) -> None:
-        # warn(
-        #     ("`Window.full_screen` is deprecated. Use `Window.state` instead."),
-        #     DeprecationWarning,
-        #     stacklevel=2,
-        # )
+        warnings.warn(
+            ("`Window.full_screen` is deprecated. Use `Window.state` instead."),
+            DeprecationWarning,
+            stacklevel=2,
+        )
         if is_full_screen and (self.state != WindowState.FULLSCREEN):
             self._impl.set_window_state(WindowState.FULLSCREEN)
         elif not is_full_screen and (self.state == WindowState.FULLSCREEN):
             self._impl.set_window_state(WindowState.NORMAL)
+        else:  # pragma: no cover
+            return
 
     # ---------------------------------------------------------------------
 
     @property
     def state(self) -> WindowState:
         """The current state of the window."""
-        if getattr(self, "_impl", None) is None:
+        if getattr(self, "_impl", None) is None:  # pragma: no cover
             return WindowState.NORMAL
         else:
             return self._impl.get_window_state()
@@ -489,13 +490,13 @@ class Window:
                     WindowState.PRESENTATION,
                 }:
                     warnings.warn(
-                        f"Cannot set window state to {state} of a non-resizable window. "
+                        f"Cannot set window state to {state} of a non-resizable window."
                     )
                 else:
                     self._impl.set_window_state(state)
         else:
             raise ValueError(
-                "Invalid type for state parameter. Expected WindowState type."
+                "Invalid type for state parameter. Expected WindowState enum type."
             )
 
     ######################################################################
