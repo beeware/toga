@@ -260,26 +260,23 @@ def test_visibility(window, app):
 
 def test_full_screen(window, app):
     """A window can be set full screen."""
-    assert not window.full_screen
-
-    with pytest.deprecated_call():
-        window.full_screen = True
-    with pytest.deprecated_call():
-        assert window.full_screen
-    assert_action_performed_with(
-        window,
-        "set window state to WindowState.FULLSCREEN",
-        state=WindowState.FULLSCREEN,
-    )
-    with pytest.deprecated_call():
-        window.full_screen = False
     with pytest.deprecated_call():
         assert not window.full_screen
-    assert_action_performed_with(
-        window,
-        "set window state to WindowState.NORMAL",
-        state=WindowState.NORMAL,
-    )
+        window.full_screen = True
+        assert window.full_screen
+        assert_action_performed_with(
+            window,
+            "set window state to WindowState.FULLSCREEN",
+            state=WindowState.FULLSCREEN,
+        )
+
+        window.full_screen = False
+        assert not window.full_screen
+        assert_action_performed_with(
+            window,
+            "set window state to WindowState.NORMAL",
+            state=WindowState.NORMAL,
+        )
 
 
 def test_window_state(window):
@@ -304,8 +301,7 @@ def test_window_state(window):
                 state=WindowState.NORMAL,
             )
 
-    window_resizable_original_value = window.resizable
-    window.resizable = False
+    non_resizable_window = toga.Window(title="Non-Resizable Window", resizable=False)
     # Setting window state to any of the following when window is not resizable, is a no-op
     # and should give a UserWarning.
     for state in {
@@ -317,9 +313,11 @@ def test_window_state(window):
             UserWarning,
             match=f"Cannot set window state to {state} of a non-resizable window.",
         ):
-            window.state = state
-            assert assert_action_not_performed(window, f"set window state to {state}")
-    window.resizable = window_resizable_original_value
+            non_resizable_window.state = state
+            assert_action_not_performed(
+                non_resizable_window, f"set window state to {state}"
+            )
+    non_resizable_window.close()
 
     # Setting window state to any value other than a WindowState enum should raise a ValueError
     with pytest.raises(
