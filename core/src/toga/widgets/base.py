@@ -141,7 +141,7 @@ class Widget(Node):
         self.refresh()
 
     def index(self, child: Widget) -> int:
-        """Get the index of a child widget.
+        """Get the index of a widget in the list of children of this widget.
 
         :param child: The child widget of interest.
         :raises ValueError: If the specified child widget is not found in the
