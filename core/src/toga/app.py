@@ -16,6 +16,7 @@ from collections.abc import (
     ValuesView,
 )
 from email.message import Message
+from pathlib import Path
 from typing import TYPE_CHECKING, Any, Protocol
 from warnings import warn
 from weakref import WeakValueDictionary
@@ -569,6 +570,15 @@ class App:
     def version(self) -> str | None:
         """The version number of the app (read-only)."""
         return self._version
+
+    @property
+    def is_bundled(self) -> bool:
+        """Has the app been bundled as a standalone binary, or is it running as a Python script?"""
+        return Path(sys.executable).stem not in {
+            "python",
+            f"python{sys.version_info.major}",
+            f"python{sys.version_info.major}.{sys.version_info.minor}",
+        }
 
     ######################################################################
     # App lifecycle
