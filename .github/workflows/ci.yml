@@ -245,19 +245,7 @@ jobs:
           platform: "android"
           runs-on: "ubuntu-latest"
           briefcase-run-prefix: JAVA_HOME=${JAVA_HOME_17_X64}
-          briefcase-run-args: >
-            --device '{"avd":"beePhone","skin":"pixel_3a"}'
-            --Xemulator=-no-window
-            --Xemulator=-no-snapshot
-            --Xemulator=-no-audio
-            --Xemulator=-no-boot-anim
-            --shutdown-on-exit
-          pre-command: |
-            # allow access to KVM to run the emulator
-            echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' \
-              | sudo tee /etc/udev/rules.d/99-kvm4all.rules
-            sudo udevadm control --reload-rules
-            sudo udevadm trigger --name-match=kvm
+
     steps:
     - name: Checkout
       uses: actions/checkout@v4.1.6
@@ -281,12 +269,22 @@ jobs:
         python -m pip install -U pip
         python -m pip install git+https://github.com/beeware/briefcase.git
 
+    - name: Setup Android Emulator
+      id: emulator
+      if: matrix.backend == 'android'
+      uses: rmartin16/.github-beeware/.github/actions/setup-android@setup-android
+      with:
+        emulator-config: '{"avd":"beePhone","skin":"pixel_3a"}'
+
     - name: Test App
       working-directory: testbed
       timeout-minutes: 15
-      run: |
-        ${{ matrix.briefcase-run-prefix }} \
-          briefcase run ${{ matrix.platform }} --test ${{ matrix.briefcase-run-args }}
+      run: >
+        ${{ matrix.briefcase-run-prefix }}
+        briefcase run ${{ matrix.platform }}
+        --test
+        ${{ matrix.briefcase-run-args }}
+        ${{ steps.emulator.outputs.briefcase-run-args }}
 
     - name: Upload Logs
       uses: actions/upload-artifact@v4.3.3
