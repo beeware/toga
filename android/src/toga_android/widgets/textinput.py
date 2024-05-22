@@ -1,10 +1,10 @@
 from decimal import ROUND_UP
 
+from java import dynamic_proxy
+
 from android.text import InputType, TextWatcher
 from android.view import Gravity, View
 from android.widget import EditText
-from java import dynamic_proxy
-
 from toga_android.keys import toga_key
 
 from .label import TextViewWidget
@@ -111,8 +111,7 @@ class TextInput(TextViewWidget):
         return self.native.getError() is None
 
     def _on_change(self):
-        self.interface.on_change()
-        self.interface._validate()
+        self.interface._value_changed()
 
     def _on_confirm(self):
         self.interface.on_confirm()

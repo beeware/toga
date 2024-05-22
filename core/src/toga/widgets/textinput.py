@@ -181,6 +181,12 @@ class TextInput(Widget):
         else:
             self._impl.clear_error()
 
+    def _value_changed(self):
+        """Validate the current value of the widget and invoke the on_change handler."""
+        self._validate()
+        self.on_change()
+
+
     @property
     def on_confirm(self) -> callable:
         """The handler to invoke when the user accepts the value of the widget,

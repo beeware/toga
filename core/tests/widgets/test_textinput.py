@@ -1,8 +1,6 @@
 from unittest.mock import Mock
 
 import pytest
-
-import toga
 from toga_dummy.utils import (
     EventLog,
     assert_action_not_performed,
@@ -10,6 +8,8 @@ from toga_dummy.utils import (
     assert_action_performed_with,
     attribute_value,
 )
+
+import toga
 
 
 @pytest.fixture
@@ -111,6 +111,13 @@ def test_value(widget, value, expected, validator):
 
     # change handler was invoked
     on_change_handler.assert_called_once_with(widget)
+
+    # Change the widget value to confirm the on_change handler is invoked
+    widget.value.upper()
+    assert widget._value_changed
+
+    widget.value.lower()
+    assert widget._value_changed
 
 
 @pytest.mark.parametrize(
