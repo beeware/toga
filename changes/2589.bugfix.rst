@@ -1,1 +1,1 @@
-App now warns / errors if camera permission is requested but required metadata is not added to pyproject.toml.
+On macOS, apps will now raise a warning if camera permissions have been requested, but those permissions have not been declared as part of the application metadata.

@@ -573,7 +573,7 @@ class App:
 
     @property
     def is_bundled(self) -> bool:
-        """Has the app been bundled, or running in dev?"""
+        """Has the app been bundled as a standalone binary, or is it running as a Python script?"""
         return Path(sys.executable).stem not in {
             "python",
             f"python{sys.version_info.major}",
