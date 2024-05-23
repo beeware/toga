@@ -94,8 +94,14 @@ class Window(LoggedObject):
         return self._get_value("visible")
 
     def close(self):
+        if self.interface.content:
+            self.interface.content.window = None
+        self.interface.app.windows.discard(self.interface)
+
         self._action("close")
         self._set_value("visible", False)
+
+        self.interface._closed = True
 
     def get_image_data(self):
         self._action("get image data")
