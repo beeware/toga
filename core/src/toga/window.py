@@ -273,11 +273,15 @@ class Window:
         undefined, except for :attr:`closed` which can be used to check if the window
         was closed.
         """
-        if self.content:
-            self.content.window = None
-        self.app.windows.discard(self)
+        # Since on some platforms close() is a no-op, we need to let each backend decide
+        # whether window discarding from the window registry and other cleanup operations
+        # should be performed or not.
+        #
+        # if self.content:
+        #     self.content.window = None
+        # self.app.windows.discard(self)
         self._impl.close()
-        self._closed = True
+        # self._closed = True
 
     @property
     def closed(self) -> bool:
@@ -435,7 +439,7 @@ class Window:
     # Window state
     ######################################################################
 
-    # ------------------------ Deprecated methods-------------------------
+    # -------------------------Deprecated methods-------------------------
     # Warnings are disabled as old API tests are still in testbed and warnings will cause error.
     @property
     def full_screen(self) -> bool:

@@ -775,7 +775,7 @@ class App:
     # Presentation mode controls
     ######################################################################
 
-    # ----------------------Future Deprecated methods----------------------
+    # ------------------------Deprecated methods--------------------------
     # Warnings are disabled as old API tests are still in testbed and warnings will cause error.
     def exit_full_screen(self) -> None:
         """**DEPRECATED** – Use :any:`App.exit_presentation_mode()`.

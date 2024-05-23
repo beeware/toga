@@ -40,16 +40,6 @@ if toga.platform.current_platform in {"iOS", "android"}:
 
     async def test_presentation_mode(app, app_probe, main_window, main_window_probe):
         """The app can enter into presentation mode"""
-        # This test fails when run normally with:
-        # `briefcase run android -ur --test`
-        # But passes when run singly with:
-        # `briefcase run android -ur --test -- tests/app/test_app.py::test_full_screen`
-
-        # The test seems to fail when any method or property of app is invoked but doesn't fail
-        # when window methods are invoked. For example, `app.set_full_screen(app.main_window)`
-        # will make the test to fail but `main_window.state = WindowState.PRESENTATION` will
-        # not cause the test to fail. Even though both use the same API endpoint.
-
         assert not app.is_in_presentation_mode
         assert not main_window_probe.is_window_state(WindowState.PRESENTATION)
 

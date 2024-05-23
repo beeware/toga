@@ -1,0 +1,1 @@
+Calling `Window.close()` on platforms like Android and iOS now correctly performs a no-op and doesn't clear the window from the window registry.
