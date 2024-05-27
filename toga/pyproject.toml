@@ -81,3 +81,8 @@ dependencies = [
     # Web
     "toga-web == {version}; sys_platform=='emscripten'",
 ]
+
+[tool.check-wheel-contents]
+# WOO7: wheel library is empty
+# W008: wheel is empty
+ignore = "W007,W008"
