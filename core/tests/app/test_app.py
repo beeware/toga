@@ -289,6 +289,7 @@ def test_app_metadata(monkeypatch, event_loop):
     assert app.version == "1.2.3"
     assert app.home_page == "https://example.com/test-app"
     assert app.description == "A test app"
+    assert app.is_bundled is False
 
 
 def test_explicit_app_metadata(monkeypatch, event_loop):

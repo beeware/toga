@@ -111,8 +111,7 @@ class TextInput(TextViewWidget):
         return self.native.getError() is None
 
     def _on_change(self):
-        self.interface.on_change()
-        self.interface._validate()
+        self.interface._value_changed()
 
     def _on_confirm(self):
         self.interface.on_confirm()

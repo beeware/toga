@@ -163,6 +163,65 @@ def test_add_child(app, widget):
     assert app.widgets["child_id"] == child
 
 
+def test_child_square_bracket_access(widget):
+    """Assign and get individual children via square bracket notation."""
+    child1 = ExampleLeafWidget(id="child1_id")
+    child2 = ExampleLeafWidget(id="child2_id")
+
+    # Add child to widget
+    widget.add(child1)
+
+    # Verify child has been added
+    assert widget.children == [child1]
+
+    # Assign child via __setitem__
+    widget.children[0] = child2
+
+    # Verify new child is in children via __getitem__
+    assert widget.children[0] == child2
+
+
+def test_get_index_of_children(widget):
+    """Populate a widget with children and check the index method."""
+    child1 = ExampleLeafWidget(id="child1_id")
+    child2 = ExampleLeafWidget(id="child2_id")
+    child3 = ExampleLeafWidget(id="child3_id")
+
+    # Add only two children to widget
+    widget.add(child1)
+    widget.add(child2)
+
+    # Verify children have been added
+    assert widget.children == [child1, child2]
+
+    # Get indices of valid children
+    assert widget.index(child1) == 0
+    assert widget.index(child2) == 1
+
+    # Raise error when child not found in children
+    with pytest.raises(ValueError, match=r"ExampleLeafWidget not found"):
+        widget.index(child3)
+
+
+def test_replace_child_with_non_child(widget):
+    """Remove a child and add new widget in its place."""
+    child1 = ExampleLeafWidget(id="child1_id")
+    child2 = ExampleLeafWidget(id="child2_id")
+    child3 = ExampleLeafWidget(id="child3_id")
+
+    # Add only two children to widget
+    widget.add(child1)
+    widget.add(child2)
+
+    # Verify children have been added
+    assert widget.children == [child1, child2]
+
+    widget.replace(child1, child3)
+
+    # Verify child1 has been removed and child3 has been added
+    assert widget.children == [child3, child2]
+
+
 def test_add_multiple_children(app, widget):
     """Multiple children can be added in one call."""
     # Set the app and window for the widget.
