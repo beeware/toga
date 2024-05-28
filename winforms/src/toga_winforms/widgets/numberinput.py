@@ -2,7 +2,7 @@ import sys
 from decimal import ROUND_UP, Decimal, InvalidOperation
 
 import System.Windows.Forms as WinForms
-from System import Convert, String
+from System import Convert, String, Globalization
 
 from toga.widgets.numberinput import _clean_decimal
 from toga_winforms.libs.fonts import HorizontalTextAlignment
@@ -13,9 +13,9 @@ from .base import Widget
 
 def native_decimal(value):
     if isinstance(value, Decimal):
-        # The explicit type is needed to prevent single-character strings from calling
-        # the Char overload, which always throws an exception.
-        return Convert.ToDecimal.__overloads__[String](str(value))
+        # Convert Decimal to string using a fixed-point format that .NET can interpret correctly
+        value_str = format(value, 'f')
+        return Convert.ToDecimal(value_str, Globalization.CultureInfo.InvariantCulture)
     else:
         assert isinstance(value, int)
         return Convert.ToDecimal(value)
