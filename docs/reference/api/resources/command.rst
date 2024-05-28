@@ -44,7 +44,7 @@ For example:
 
     cmd1 = toga.Command(
         callback,
-        label='Example command',
+        text='Example command',
         tooltip='Tells you when it has been activated',
         shortcut=toga.Key.MOD_1 + 'k',
         icon='icons/pretty.png',

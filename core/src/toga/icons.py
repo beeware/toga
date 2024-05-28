@@ -91,11 +91,12 @@ class Icon:
             path, or a path relative to the module that defines your Toga application
             class. This base filename should *not* contain an extension. If an extension
             is specified, it will be ignored. If the icon cannot be found, the default
-            icon will be :attr:`~toga.Icon.DEFAULT_ICON`.
+            icon will be :attr:`~toga.Icon.DEFAULT_ICON`. If an icon file is found, but
+            it cannot be loaded (due to a file format or permission error), an exception
+            will be raised.
         :param system: **For internal use only**
         """
         self.factory = get_platform_factory()
-
         try:
             # Try to load the icon with the given path snippet. If the request is for the
             # app icon, use ``resources/<app name>`` as the path.
@@ -131,15 +132,11 @@ class Icon:
 
             self._impl = self.factory.Icon(interface=self, path=full_path)
         except FileNotFoundError:
-            # Icon path couldn't be loaded. If the path is the sentinel for the app
+            # Icon path couldn't be found. If the path is the sentinel for the app
             # icon, and this isn't running as a script, fall back to the application
             # binary
             if path is _APP_ICON:
-                if Path(sys.executable).stem not in {
-                    "python",
-                    f"python{sys.version_info.major}",
-                    f"python{sys.version_info.major}.{sys.version_info.minor}",
-                }:
+                if toga.App.app.is_bundled:
                     try:
                         # Use the application binary's icon
                         self._impl = self.factory.Icon(interface=self, path=None)

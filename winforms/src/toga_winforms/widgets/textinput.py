@@ -75,8 +75,7 @@ class TextInput(Widget):
         )
 
     def winforms_text_changed(self, sender, event):
-        self.interface.on_change()
-        self.interface._validate()
+        self.interface._value_changed()
 
     def winforms_key_press(self, sender, event):
         if ord(event.KeyChar) == int(WinForms.Keys.Enter):

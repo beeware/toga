@@ -1,6 +1,6 @@
 from unittest.mock import Mock
 
-from pytest import fixture
+from pytest import approx, fixture
 
 import toga
 from toga.colors import TRANSPARENT
@@ -44,7 +44,8 @@ async def test_text(widget, probe):
         expected = str(text).split("\n")[0]
         assert widget.text == expected
         assert probe.text == expected
-        assert probe.height == initial_height
+        # GTK rendering can result in a very minor change in button height
+        assert probe.height == approx(initial_height, abs=1)
 
 
 async def test_icon(widget, probe):

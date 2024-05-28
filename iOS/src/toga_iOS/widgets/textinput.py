@@ -29,8 +29,7 @@ class TogaTextField(UITextField):
 
     @objc_method
     def textFieldDidChange_(self, textField) -> None:
-        self.interface.on_change()
-        self.interface._validate()
+        self.interface._value_changed()
 
     @objc_method
     def textFieldDidEndEditing_(self, textField) -> None:
@@ -127,8 +126,7 @@ class TextInput(Widget):
 
     def set_value(self, value):
         self.native.text = value
-        self.interface.on_change()
-        self.interface._validate()
+        self.interface._value_changed()
 
     def set_alignment(self, value):
         self.native.textAlignment = NSTextAlignment(value)
