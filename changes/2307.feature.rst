@@ -1,1 +1,1 @@
-Allow setting content when instantiating MainWindow.
+The content of a window can now be set when the window is constructed.
