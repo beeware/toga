@@ -224,7 +224,7 @@ class MainWindow(Window):
             pixels <css-units>`.
         :param resizable: Can the window be resized by the user?
         :param minimizable: Can the window be minimized by the user?
-        :param content: Adds content to the window as it's initialized.
+        :param content: The initial content for the window.
         :param resizeable: **DEPRECATED** - Use ``resizable``.
         :param closeable: **DEPRECATED** - Use ``closable``.
         """

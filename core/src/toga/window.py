@@ -127,9 +127,9 @@ class Window:
         closable: bool = True,
         minimizable: bool = True,
         on_close: OnCloseHandler | None = None,
+        content: Widget | None = None,
         resizeable=None,  # DEPRECATED
         closeable=None,  # DEPRECATED
-        content: Widget | None = None,
     ) -> None:
         """Create a new Window.
 
@@ -144,7 +144,7 @@ class Window:
         :param closable: Can the window be closed by the user?
         :param minimizable: Can the window be minimized by the user?
         :param on_close: The initial :any:`on_close` handler.
-        :param content: Adds content to the window as it's initialized.
+        :param content: The initial content for the window.
         :param resizeable: **DEPRECATED** - Use ``resizable``.
         :param closeable: **DEPRECATED** - Use ``closable``.
         """
@@ -173,6 +173,7 @@ class Window:
 
         self._id = str(id if id else identifier(self))
         self._impl = None
+        self._content = None
         self._is_full_screen = False
         self._closed = False
 
@@ -194,12 +195,14 @@ class Window:
             raise RuntimeError("Cannot create a Window before creating an App")
         App.app.windows.add(self)
 
+        # If content has been provided, set it
+        if content:
+            self.content = content
+
         # Create a toolbar that is linked to the app
         self._toolbar = CommandSet(on_change=self._impl.create_toolbar, app=self._app)
 
         self.on_close = on_close
-
-        self._content = content
 
     def __lt__(self, other) -> bool:
         return self.id < other.id

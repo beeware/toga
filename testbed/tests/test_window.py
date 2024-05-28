@@ -226,27 +226,23 @@ else:
 
         assert second_window not in app.windows
 
-    async def test_instantiate_window_with_content(app):
-        """A window can be created with content"""
-        try:
-            window_no_content = toga.Window()
-            assert window_no_content.content is None
-        finally:
-            window_no_content.close()
-            window_no_content = None
-
+    async def test_secondary_window_with_content(app):
+        """A window can be created with initial content"""
         # Setup the box with something inside it:
         label1 = toga.Label("Hello World")
         content = toga.Box(children=[label1])
+
         try:
             window_with_content = toga.Window(content=content)
+            window_with_content_probe = window_probe(app, window_with_content)
+
+            window_with_content.show()
+            await window_with_content_probe.wait_for_window(
+                "Create a window with initial content"
+            )
             assert window_with_content.content == content
-            # Make sure it still has that internal content:
-            assert len(window_with_content.content.children) == 1
-            assert window_with_content.content.children[0] == label1
         finally:
             window_with_content.close()
-            window_with_content = None
 
     async def test_secondary_window_cleanup(app_probe):
         """Memory for windows is cleaned up when windows are deleted."""
