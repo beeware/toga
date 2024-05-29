@@ -1,6 +1,6 @@
 from travertino.size import at_least
 
-import toga
+import toga.widgets.slider
 
 from ..libs import Gtk
 from .base import Widget
