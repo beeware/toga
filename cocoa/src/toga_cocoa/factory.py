@@ -14,7 +14,7 @@ toga_factory_imports = {
     "Location": "toga.hardware.location",
     "Icon": "toga.icons",
     "Image": "toga.images",
-    "Path": "toga.paths",
+    "Paths": "toga.paths",
     "ActivityIndicator": "toga.widgets.activityindicator",
     "Box": "toga.widgets.box",
     "Button": "toga.widgets.button",
