@@ -62,8 +62,7 @@ jobs:
         - "textual"
         - "web"
         - "winforms"
-#    uses: beeware/.github/.github/workflows/python-package-create.yml@main
-    uses: rmartin16/.github-beeware/.github/workflows/python-package-create.yml@hynek-build
+    uses: beeware/.github/.github/workflows/python-package-create.yml@main
     with:
       build-subdirectory: ${{ matrix.subdir }}
       attest: ${{ inputs.attest-package }}
@@ -131,7 +130,6 @@ jobs:
         # the value of TOGA_INSTALL_COMMAND will be a literal string without any shell expansions to perform
         TOGA_INSTALL_COMMAND="python -m pip install ../$(ls dist/toga_core-*.whl)[dev] ../$(ls dist/toga_dummy-*.whl)" \
           tox -e py-cov
-
         tox -qe coverage$(tr -dc "0-9" <<< "${{ matrix.python-version }}")
         mv core/.coverage core/.coverage.${{ matrix.platform }}.${{ matrix.python-version }}
 
