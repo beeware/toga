@@ -5,7 +5,8 @@ from android.view import View
 from android.widget import SeekBar
 from java import dynamic_proxy
 
-import toga
+# import toga
+import toga.widgets.slider
 
 from .base import Widget
 
