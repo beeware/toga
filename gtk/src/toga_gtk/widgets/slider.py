@@ -1,6 +1,6 @@
 from travertino.size import at_least
 
-import toga.widgets.slider
+from toga.widgets.slider import SliderImpl
 
 from ..libs import Gtk
 from .base import Widget
@@ -16,7 +16,7 @@ from .base import Widget
 # to line up at the same values.
 
 
-class Slider(Widget, toga.widgets.slider.SliderImpl):
+class Slider(Widget, SliderImpl):
     def create(self):
         self.adj = Gtk.Adjustment()
         self.native = Gtk.Scale.new(Gtk.Orientation.HORIZONTAL, self.adj)
