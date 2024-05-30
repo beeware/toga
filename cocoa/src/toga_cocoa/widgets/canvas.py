@@ -5,7 +5,7 @@ from travertino.size import at_least
 
 from toga.colors import BLACK, TRANSPARENT, color
 from toga.widgets.canvas import Baseline, FillRule
-from toga_cocoa.colors import native_color_from_toga_color
+from toga_cocoa.colors import native_color
 from toga_cocoa.libs import (
     CGFloat,
     CGPathDrawingMode,
@@ -99,7 +99,7 @@ class Canvas(Widget):
         if color is TRANSPARENT or color is None:
             self.native.backgroundColor = None
         else:
-            self.native.backgroundColor = native_color_from_toga_color(color)
+            self.native.backgroundColor = native_color(color)
 
     # Context management
     def push_context(self, draw_context, **kwargs):
@@ -247,7 +247,7 @@ class Canvas(Widget):
         textAttributes[NSFontAttributeName] = font.native
 
         if "stroke_color" in kwargs:
-            textAttributes[NSStrokeColorAttributeName] = native_color_from_toga_color(
+            textAttributes[NSStrokeColorAttributeName] = native_color(
                 kwargs["stroke_color"]
             )
 
@@ -258,8 +258,8 @@ class Canvas(Widget):
                 stroke_width *= -1
             textAttributes[NSStrokeWidthAttributeName] = stroke_width
         if "fill_color" in kwargs:
-            textAttributes[NSForegroundColorAttributeName] = (
-                native_color_from_toga_color(kwargs["fill_color"])
+            textAttributes[NSForegroundColorAttributeName] = native_color(
+                kwargs["fill_color"]
             )
 
         text_string = NSAttributedString.alloc().initWithString(

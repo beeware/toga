@@ -5,7 +5,7 @@ from rubicon.objc import SEL, CGSize, NSRange, objc_method, objc_property, send_
 from travertino.size import at_least
 
 from toga.widgets.numberinput import _clean_decimal
-from toga_iOS.colors import native_color_from_toga_color
+from toga_iOS.colors import native_color
 from toga_iOS.libs import (
     NSTextAlignment,
     UIControlEventEditingChanged,
@@ -115,7 +115,7 @@ class NumberInput(Widget):
         self.native.font = font._impl.native
 
     def set_color(self, color):
-        self.native.textColor = native_color_from_toga_color(color)
+        self.native.textColor = native_color(color)
 
     def rehint(self):
         # Height of a text input is known.

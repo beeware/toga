@@ -4,7 +4,7 @@ from travertino.size import at_least
 from toga.colors import TRANSPARENT
 from toga.fonts import SYSTEM_DEFAULT_FONT_SIZE
 from toga.style.pack import NONE
-from toga_cocoa.colors import native_color_from_toga_color
+from toga_cocoa.colors import native_color
 from toga_cocoa.libs import (
     NSBezelStyle,
     NSButton,
@@ -90,7 +90,7 @@ class Button(Widget):
         if color == TRANSPARENT or color is None:
             self.native.bezelColor = None
         else:
-            self.native.bezelColor = native_color_from_toga_color(color)
+            self.native.bezelColor = native_color(color)
 
     def rehint(self):
         content_size = self.native.intrinsicContentSize()

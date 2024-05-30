@@ -1,6 +1,6 @@
 from abc import abstractmethod
 
-from toga_iOS.colors import native_color_from_toga_color
+from toga_iOS.colors import native_color
 from toga_iOS.constraints import Constraints
 from toga_iOS.libs import UIColor
 
@@ -91,7 +91,7 @@ class Widget:
 
     def set_background_color(self, color):
         if color:
-            self.native.backgroundColor = native_color_from_toga_color(color)
+            self.native.backgroundColor = native_color(color)
         else:
             try:
                 # systemBackgroundColor() was introduced in iOS 13

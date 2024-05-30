@@ -1,16 +1,16 @@
 COLOR_CACHE = {}
 
 
-def native_color_from_toga_color(toga_color):
+def native_color(c):
     try:
-        native_color = COLOR_CACHE[toga_color]
+        color = COLOR_CACHE[c]
     except KeyError:
-        native_color = (
-            toga_color.rgba.r / 255,
-            toga_color.rgba.g / 255,
-            toga_color.rgba.b / 255,
-            toga_color.rgba.a,
+        color = (
+            c.rgba.r / 255,
+            c.rgba.g / 255,
+            c.rgba.b / 255,
+            c.rgba.a,
         )
-        COLOR_CACHE[toga_color] = native_color
+        COLOR_CACHE[c] = color
 
-    return native_color
+    return color

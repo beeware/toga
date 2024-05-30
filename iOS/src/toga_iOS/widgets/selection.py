@@ -1,7 +1,7 @@
 from rubicon.objc import CGSize, objc_method, objc_property
 from travertino.size import at_least
 
-from toga_iOS.colors import native_color_from_toga_color
+from toga_iOS.colors import native_color
 from toga_iOS.libs import (
     NSTextAlignment,
     UIColor,
@@ -81,7 +81,7 @@ class Selection(Widget):
         self.native.textAlignment = NSTextAlignment(value)
 
     def set_color(self, color):
-        self.native.textColor = native_color_from_toga_color(color)
+        self.native.textColor = native_color(color)
 
     def set_font(self, font):
         self.native.font = font._impl.native

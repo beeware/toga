@@ -2,7 +2,7 @@ from travertino.size import at_least
 
 from toga.colors import TRANSPARENT
 from toga.constants import LEFT, RIGHT
-from toga_cocoa.colors import native_color_from_toga_color
+from toga_cocoa.colors import native_color
 from toga_cocoa.libs import (
     SEL,
     NSColor,
@@ -196,7 +196,7 @@ class TextInput(Widget):
         self.error_label.font = font._impl.native
 
     def set_color(self, color):
-        self.native.textColor = native_color_from_toga_color(color)
+        self.native.textColor = native_color(color)
 
     def set_background_color(self, color):
         if color is TRANSPARENT:
@@ -206,7 +206,7 @@ class TextInput(Widget):
         else:
             self.native.drawsBackground = True
             self.native.bezeled = True
-            self.native.backgroundColor = native_color_from_toga_color(color)
+            self.native.backgroundColor = native_color(color)
 
     def get_value(self):
         return str(self.native.stringValue)

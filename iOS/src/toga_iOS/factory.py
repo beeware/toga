@@ -2,7 +2,7 @@ from toga import NotImplementedWarning
 
 from . import dialogs
 from .app import App, MainWindow
-from .colors import native_color_from_toga_color
+from .colors import native_color
 from .command import Command
 from .fonts import Font
 from .hardware.camera import Camera
@@ -49,7 +49,7 @@ __all__ = [
     "MainWindow",
     "Command",
     # Resources
-    "native_color_from_toga_color",  # colors
+    "native_color",  # colors
     "Font",
     "Icon",
     "Image",

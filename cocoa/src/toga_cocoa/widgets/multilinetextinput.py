@@ -2,7 +2,7 @@ from rubicon.objc import objc_method, objc_property
 from travertino.size import at_least
 
 from toga.colors import TRANSPARENT
-from toga_cocoa.colors import native_color_from_toga_color
+from toga_cocoa.colors import native_color
 from toga_cocoa.libs import (
     NSBezelBorder,
     NSScrollView,
@@ -81,7 +81,7 @@ class MultilineTextInput(Widget):
         self.interface.on_change()
 
     def set_color(self, value):
-        self.native_text.textColor = native_color_from_toga_color(value)
+        self.native_text.textColor = native_color(value)
 
     def set_background_color(self, color):
         if color is TRANSPARENT:
@@ -93,7 +93,7 @@ class MultilineTextInput(Widget):
             # but only the text view needs a color.
             self.native.drawsBackground = True
             self.native_text.drawsBackground = True
-            self.native_text.backgroundColor = native_color_from_toga_color(color)
+            self.native_text.backgroundColor = native_color(color)
 
     def set_alignment(self, value):
         self.native_text.alignment = NSTextAlignment(value)
