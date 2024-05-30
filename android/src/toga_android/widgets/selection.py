@@ -6,7 +6,7 @@ from android.view import View
 from android.widget import AdapterView, ArrayAdapter, Spinner
 from java import dynamic_proxy
 
-from toga_android.colors import DEFAULT_BACKGROUND_COLOR, native_color_from_toga_color
+from toga_android.colors import DEFAULT_BACKGROUND_COLOR, native_color
 from toga_android.widgets.base import ContainedWidget
 
 
@@ -96,8 +96,6 @@ class Selection(ContainedWidget):
         # Also set the background color of the dropdown popup.
         self.native.setPopupBackgroundDrawable(
             ColorDrawable(
-                DEFAULT_BACKGROUND_COLOR
-                if value is None
-                else native_color_from_toga_color(value)
+                DEFAULT_BACKGROUND_COLOR if value is None else native_color(value)
             )
         )

@@ -17,24 +17,24 @@ COLOR_CACHE = {
 }
 
 
-def native_color_from_toga_color(toga_color):
+def native_color(c):
     try:
-        color = COLOR_CACHE[toga_color]
+        color = COLOR_CACHE[c]
     except KeyError:
         color = Color.argb(
-            int(toga_color.rgba.a * 255),
-            int(toga_color.rgba.r),
-            int(toga_color.rgba.g),
-            int(toga_color.rgba.b),
+            int(c.rgba.a * 255),
+            int(c.rgba.r),
+            int(c.rgba.g),
+            int(c.rgba.b),
         )
-        COLOR_CACHE[toga_color] = color
+        COLOR_CACHE[c] = color
 
     return color
 
 
-def toga_color_from_native_color(native_color):  # pragma: no cover
+def toga_color(c):  # pragma: no cover
     # Select the `int` overloads rather than the `long` ones.
-    color_int = jint(native_color)
+    color_int = jint(c)
     if color_int == 0:
         return TRANSPARENT
     else:

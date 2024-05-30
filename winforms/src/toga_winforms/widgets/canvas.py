@@ -26,7 +26,7 @@ from System.IO import MemoryStream
 from toga.colors import TRANSPARENT
 from toga.widgets.canvas import Baseline, FillRule, arc_to_bezier, sweepangle
 from toga_winforms.colors import (
-    native_color_from_toga_color,
+    native_color,
 )
 
 from ..libs.wrapper import WeakrefCallable
@@ -265,7 +265,7 @@ class Canvas(Box):
     # Drawing Paths
 
     def fill(self, color, fill_rule, draw_context, **kwargs):
-        brush = SolidBrush(native_color_from_toga_color(color))
+        brush = SolidBrush(native_color(color))
         for path in draw_context.paths:
             if fill_rule == FillRule.EVENODD:
                 path.FillMode = FillMode.Alternate
@@ -277,7 +277,7 @@ class Canvas(Box):
 
     def stroke(self, color, line_width, line_dash, draw_context, **kwargs):
         pen = Pen(
-            native_color_from_toga_color(color),
+            native_color(color),
             self.scale_in(line_width, rounding=None),
         )
         if line_dash is not None:

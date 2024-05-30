@@ -11,8 +11,8 @@ from travertino.size import at_least
 from toga.constants import CENTER, JUSTIFY, LEFT, RIGHT
 from toga_android.colors import (
     DEFAULT_BACKGROUND_COLOR,
-    native_color_from_toga_color,
-    toga_color_from_native_color,
+    native_color,
+    toga_color,
 )
 
 
@@ -139,20 +139,14 @@ class Widget(ABC, Scalable):
 
     def set_background_simple(self, value):
         self.native.setBackground(
-            ColorDrawable(
-                Color.TRANSPARENT
-                if value is None
-                else native_color_from_toga_color(value)
-            )
+            ColorDrawable(Color.TRANSPARENT if value is None else native_color(value))
         )
 
     def set_background_filter(self, value):
         self.native.getBackground().setColorFilter(
             None
             if value is None
-            else PorterDuffColorFilter(
-                native_color_from_toga_color(value), PorterDuff.Mode.SRC_IN
-            )
+            else PorterDuffColorFilter(native_color(value), PorterDuff.Mode.SRC_IN)
         )
 
     def set_alignment(self, alignment):
@@ -266,15 +260,11 @@ class ContainedWidget(Widget):
             self.native.setVisibility(View.VISIBLE)
 
     def set_background_simple(self, value):
-        self.native_widget_container.setBackground(
-            ColorDrawable(native_color_from_toga_color(value))
-        )
+        self.native_widget_container.setBackground(ColorDrawable(native_color(value)))
 
     # Widgets that need to set a different default background_color should
     # override this method and set a background color for the None case.
     def set_background_color(self, value):
         self.set_background_simple(
-            toga_color_from_native_color(DEFAULT_BACKGROUND_COLOR)
-            if value is None
-            else value
+            toga_color(DEFAULT_BACKGROUND_COLOR) if value is None else value
         )

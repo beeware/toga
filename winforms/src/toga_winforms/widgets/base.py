@@ -11,8 +11,8 @@ from travertino.size import at_least
 from toga.colors import TRANSPARENT, rgba
 from toga_winforms.colors import (
     alpha_blending_over_operation,
-    native_color_from_toga_color,
-    toga_color_from_native_color,
+    native_color,
+    toga_color,
 )
 
 
@@ -115,7 +115,7 @@ class Widget(ABC, Scalable):
         if color is None:
             self.native.ForeColor = SystemColors.WindowText
         else:
-            self.native.ForeColor = native_color_from_toga_color(color)
+            self.native.ForeColor = native_color(color)
 
     def set_background_color(self, color):
         # Widgets that need to set a different default background_color should
@@ -123,14 +123,14 @@ class Widget(ABC, Scalable):
         if color is None:
             self.native.BackColor = SystemColors.Control
         elif (color != TRANSPARENT) and (color.a == 1):
-            self.native.BackColor = native_color_from_toga_color(color)
+            self.native.BackColor = native_color(color)
         else:
             if self.interface.parent:
-                parent_color = toga_color_from_native_color(
+                parent_color = toga_color(
                     self.interface.parent._impl.native.BackColor
                 ).rgba
             else:
-                parent_color = toga_color_from_native_color(SystemColors.Control).rgba
+                parent_color = toga_color(SystemColors.Control).rgba
 
             if color is TRANSPARENT:
                 requested_color = rgba(0, 0, 0, 0)
@@ -138,7 +138,7 @@ class Widget(ABC, Scalable):
                 requested_color = color.rgba
 
             blended_color = alpha_blending_over_operation(requested_color, parent_color)
-            self.native.BackColor = native_color_from_toga_color(blended_color)
+            self.native.BackColor = native_color(blended_color)
 
         if getattr(self.interface, "children", None) is not None:  # pragma: no branch
             for child in self.interface.children:

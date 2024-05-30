@@ -4,7 +4,7 @@ import System.Windows.Forms as WinForms
 from System.Drawing import SystemColors
 from travertino.size import at_least
 
-from toga_winforms.colors import toga_color_from_native_color
+from toga_winforms.colors import toga_color
 
 from .base import Widget
 
@@ -31,9 +31,7 @@ class Divider(Widget):
     def set_background_color(self, color):
         if color is None:
             # Default Background color needs to be set or else divider will not be visible.
-            super().set_background_color(
-                toga_color_from_native_color(SystemColors.ControlDark)
-            )
+            super().set_background_color(toga_color(SystemColors.ControlDark))
         else:
             super().set_background_color(color)
 

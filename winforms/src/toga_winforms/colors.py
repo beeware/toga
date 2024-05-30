@@ -4,28 +4,26 @@ from travertino.colors import TRANSPARENT, rgb, rgba
 CACHE = {TRANSPARENT: Color.Transparent}
 
 
-def native_color_from_toga_color(toga_color):
+def native_color(c):
     try:
-        color = CACHE[toga_color]
+        color = CACHE[c]
     except KeyError:
         color = Color.FromArgb(
-            int(toga_color.rgba.a * 255),
-            int(toga_color.rgba.r),
-            int(toga_color.rgba.g),
-            int(toga_color.rgba.b),
+            int(c.rgba.a * 255),
+            int(c.rgba.r),
+            int(c.rgba.g),
+            int(c.rgba.b),
         )
-        CACHE[toga_color] = color
+        CACHE[c] = color
 
     return color
 
 
-def toga_color_from_native_color(native_color):
-    if native_color == Color.Transparent:
+def toga_color(c):
+    if c == Color.Transparent:
         return TRANSPARENT
     else:
-        return rgba(
-            native_color.R, native_color.G, native_color.B, native_color.A / 255
-        )
+        return rgba(c.R, c.G, c.B, c.A / 255)
 
 
 def alpha_blending_over_operation(front_color, back_color):

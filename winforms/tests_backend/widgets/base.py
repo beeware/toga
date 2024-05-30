@@ -6,10 +6,7 @@ from System.Windows.Forms import MouseButtons, MouseEventArgs
 
 from toga.colors import TRANSPARENT
 from toga.style.pack import JUSTIFY, LEFT
-from toga_winforms.colors import (
-    alpha_blending_over_operation,
-    toga_color_from_native_color,
-)
+from toga_winforms.colors import alpha_blending_over_operation
 
 from ..fonts import FontMixin
 from ..probe import BaseProbe
@@ -60,16 +57,16 @@ class SimpleProbe(BaseProbe, FontMixin):
 
     @property
     def background_color(self):
-        return toga_color_from_native_color(self.native.BackColor)
+        return toga_color(self.native.BackColor)
 
     def assert_background_color(self, color, assert_color_function):
         widget_back_color = self.background_color
         if self.widget.parent:
-            parent_back_color = toga_color_from_native_color(
+            parent_back_color = toga_color(
                 self.widget.parent._impl.native.BackColor
             ).rgba
         else:
-            parent_back_color = toga_color_from_native_color(SystemColors.Control).rgba
+            parent_back_color = toga_color(SystemColors.Control).rgba
 
         if (color is TRANSPARENT) and (self.native.BackColor != Color.Transparent):
             assert_color_function(widget_back_color, parent_back_color)

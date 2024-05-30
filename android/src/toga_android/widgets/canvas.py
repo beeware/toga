@@ -16,7 +16,7 @@ from org.beeware.android import DrawHandlerView, IDrawHandler
 
 from toga.widgets.canvas import Baseline, FillRule, arc_to_bezier, sweepangle
 
-from ..colors import native_color_from_toga_color
+from ..colors import native_color
 from .base import Widget
 
 
@@ -146,7 +146,7 @@ class Canvas(Widget):
         draw_paint = Paint()
         draw_paint.setAntiAlias(True)
         draw_paint.setStyle(Paint.Style.FILL)
-        draw_paint.setColor(jint(native_color_from_toga_color(color)))
+        draw_paint.setColor(jint(native_color(color)))
 
         path.setFillType(
             {
@@ -161,7 +161,7 @@ class Canvas(Widget):
         draw_paint = Paint()
         draw_paint.setAntiAlias(True)
         draw_paint.setStyle(Paint.Style.STROKE)
-        draw_paint.setColor(jint(native_color_from_toga_color(color)))
+        draw_paint.setColor(jint(native_color(color)))
 
         # The stroke respects the canvas transform, so we don't need to scale it here.
         draw_paint.setStrokeWidth(line_width)
@@ -220,12 +220,12 @@ class Canvas(Widget):
 
             if (color := kwargs.get("fill_color")) is not None:
                 paint.setStyle(Paint.Style.FILL)
-                paint.setColor(jint(native_color_from_toga_color(color)))
+                paint.setColor(jint(native_color(color)))
                 draw()
             if (color := kwargs.get("stroke_color")) is not None:
                 paint.setStyle(Paint.Style.STROKE)
                 paint.setStrokeWidth(kwargs["line_width"])
-                paint.setColor(jint(native_color_from_toga_color(color)))
+                paint.setColor(jint(native_color(color)))
                 draw()
 
     def _text_paint(self, font):

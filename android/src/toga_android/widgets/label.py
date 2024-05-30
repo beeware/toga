@@ -9,7 +9,7 @@ from travertino.size import at_least
 
 from toga.colors import TRANSPARENT
 from toga.constants import JUSTIFY
-from toga_android.colors import native_color_from_toga_color
+from toga_android.colors import native_color
 
 from .base import Widget, align
 
@@ -34,7 +34,7 @@ class TextViewWidget(Widget):
         if value is None:
             self.native.setTextColor(self._default_text_color)
         else:
-            self.native.setTextColor(native_color_from_toga_color(value))
+            self.native.setTextColor(native_color(value))
 
     def set_textview_alignment(self, value, vertical_gravity):
         # Justified text wasn't added until API level 26.
