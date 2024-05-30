@@ -4,6 +4,7 @@ from toga_cocoa.libs import (
     SEL,
     NSBezelStyle,
     NSButton,
+    NSColor,
     NSOffState,
     NSOnState,
     NSSwitchButton,
@@ -54,6 +55,13 @@ class Switch(Widget):
         self.native.state = NSOnState if value else NSOffState
         if self.interface.on_change and value != old_value:
             self.interface.on_change()
+
+    def set_background_color(self, color):
+        if color is None:
+            self.native.backgroundColor = NSColor.controlBackgroundColor
+            self.native.drawsBackground = True
+        else:
+            super().set_background_color(color)
 
     def rehint(self):
         content_size = self.native.intrinsicContentSize()

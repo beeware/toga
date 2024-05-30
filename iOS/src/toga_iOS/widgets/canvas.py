@@ -15,9 +15,9 @@ from rubicon.objc import (
 )
 from travertino.size import at_least
 
-from toga.colors import BLACK, TRANSPARENT, color
+from toga.colors import BLACK, TRANSPARENT, color as named_color
 from toga.constants import Baseline, FillRule
-from toga_iOS.colors import native_color
+from toga_iOS.colors import native_color_from_toga_color
 from toga_iOS.images import nsdata_to_bytes
 from toga_iOS.libs import (
     CGPathDrawingMode,
@@ -27,7 +27,6 @@ from toga_iOS.libs import (
     NSForegroundColorAttributeName,
     NSStrokeColorAttributeName,
     NSStrokeWidthAttributeName,
-    UIColor,
     UIGraphicsImageRenderer,
     UIView,
     core_graphics,
@@ -81,10 +80,7 @@ class Canvas(Widget):
         self.native.setNeedsDisplay()
 
     def set_background_color(self, color):
-        if color == TRANSPARENT or color is None:
-            self.native.backgroundColor = UIColor.clearColor
-        else:
-            self.native.backgroundColor = native_color(color)
+        super().set_background_color(TRANSPARENT if color is None else color)
 
     # Context management
     def push_context(self, draw_context, **kwargs):
@@ -231,7 +227,7 @@ class Canvas(Widget):
         textAttributes[NSFontAttributeName] = font.native
 
         if "stroke_color" in kwargs:
-            textAttributes[NSStrokeColorAttributeName] = native_color(
+            textAttributes[NSStrokeColorAttributeName] = native_color_from_toga_color(
                 kwargs["stroke_color"]
             )
 
@@ -242,8 +238,8 @@ class Canvas(Widget):
                 stroke_width *= -1
             textAttributes[NSStrokeWidthAttributeName] = stroke_width
         if "fill_color" in kwargs:
-            textAttributes[NSForegroundColorAttributeName] = native_color(
-                kwargs["fill_color"]
+            textAttributes[NSForegroundColorAttributeName] = (
+                native_color_from_toga_color(kwargs["fill_color"])
             )
 
         text_string = NSAttributedString.alloc().initWithString(
@@ -260,7 +256,7 @@ class Canvas(Widget):
     def measure_text(self, text, font):
         # We need at least a fill color to render, but that won't change the size.
         sizes = [
-            self._render_string(line, font, fill_color=color(BLACK)).size()
+            self._render_string(line, font, fill_color=named_color(BLACK)).size()
             for line in text.splitlines()
         ]
         return (

@@ -1,6 +1,7 @@
 from rubicon.objc import SEL, CGSize, objc_method, objc_property
 from travertino.size import at_least
 
+from toga.colors import TRANSPARENT
 from toga_iOS.libs import (
     UIControlEventTouchCancel,
     UIControlEventTouchDown,
@@ -106,6 +107,9 @@ class Slider(Widget):
 
     def set_tick_count(self, tick_count):
         self.tick_count = tick_count
+
+    def set_background_color(self, color):
+        super().set_background_color(TRANSPARENT if color is None else color)
 
     def rehint(self):
         fitting_size = self.native.systemLayoutSizeFittingSize(CGSize(0, 0))

@@ -78,8 +78,5 @@ class Label(TextViewWidget):
     def set_alignment(self, value):
         self.set_textview_alignment(value, Gravity.TOP)
 
-    def set_background_color(self, value):
-        if value is None:
-            self.set_background_simple(TRANSPARENT)
-        else:
-            self.set_background_simple(value)
+    def set_background_color(self, color):
+        self.set_background_simple(TRANSPARENT if color is None else color)

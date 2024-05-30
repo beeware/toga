@@ -29,7 +29,7 @@ def native_color(c):
         )
         COLOR_CACHE[c] = color
 
-    return color
+    return native_color
 
 
 def toga_color(c):  # pragma: no cover

@@ -1,7 +1,7 @@
 from abc import abstractmethod
 
 from toga.colors import TRANSPARENT
-from toga_cocoa.colors import native_color
+from toga_cocoa.colors import native_color_from_toga_color
 from toga_cocoa.constraints import Constraints
 
 
@@ -75,10 +75,9 @@ class Widget:
 
     def set_background_color(self, color):
         if color is TRANSPARENT:
-            self.native.backgroundColor = None
             self.native.drawsBackground = False
         else:
-            self.native.backgroundColor = native_color(color)
+            self.native.backgroundColor = native_color_from_toga_color(color)
             self.native.drawsBackground = True
 
     @property

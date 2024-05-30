@@ -12,7 +12,6 @@ from .probe import get_probe
 from .properties import (  # noqa: F401
     test_background_color,
     test_background_color_reset,
-    test_background_color_transparent,
     test_enable_noop,
     test_flex_widget_size,
     test_focus_noop,

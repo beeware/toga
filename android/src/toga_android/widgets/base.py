@@ -137,16 +137,16 @@ class Widget(ABC, Scalable):
     def set_background_color(self, color):
         pass
 
-    def set_background_simple(self, value):
+    def set_background_simple(self, color):
         self.native.setBackground(
-            ColorDrawable(Color.TRANSPARENT if value is None else native_color(value))
+            ColorDrawable(Color.TRANSPARENT if color is None else native_color(color))
         )
 
-    def set_background_filter(self, value):
+    def set_background_filter(self, color):
         self.native.getBackground().setColorFilter(
             None
-            if value is None
-            else PorterDuffColorFilter(native_color(value), PorterDuff.Mode.SRC_IN)
+            if color is None
+            else PorterDuffColorFilter(native_color(color), PorterDuff.Mode.SRC_IN)
         )
 
     def set_alignment(self, alignment):
@@ -259,12 +259,12 @@ class ContainedWidget(Widget):
             self.native_widget_container.setVisibility(View.VISIBLE)
             self.native.setVisibility(View.VISIBLE)
 
-    def set_background_simple(self, value):
-        self.native_widget_container.setBackground(ColorDrawable(native_color(value)))
+    def set_background_simple(self, color):
+        self.native_widget_container.setBackground(ColorDrawable(native_color(color)))
 
     # Widgets that need to set a different default background_color should
     # override this method and set a background color for the None case.
-    def set_background_color(self, value):
+    def set_background_color(self, color):
         self.set_background_simple(
-            toga_color(DEFAULT_BACKGROUND_COLOR) if value is None else value
+            toga_color(DEFAULT_BACKGROUND_COLOR) if color is None else color
         )

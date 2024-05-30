@@ -2,7 +2,7 @@ from rubicon.objc import SEL, CGSize, objc_method, objc_property
 from travertino.size import at_least
 
 from toga.colors import TRANSPARENT
-from toga_iOS.colors import native_color
+from toga_iOS.colors import native_color_from_toga_color
 from toga_iOS.libs import (
     UIButton,
     UIColor,
@@ -64,14 +64,11 @@ class Button(Widget):
             )
         else:
             self.native.setTitleColor(
-                native_color(color), forState=UIControlStateNormal
+                native_color_from_toga_color(color), forState=UIControlStateNormal
             )
 
     def set_background_color(self, color):
-        if color == TRANSPARENT or color is None:
-            self.native.backgroundColor = None
-        else:
-            self.native.backgroundColor = native_color(color)
+        super().set_background_color(None if color in {None, TRANSPARENT} else color)
 
     def set_font(self, font):
         self.native.titleLabel.font = font._impl.native

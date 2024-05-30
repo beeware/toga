@@ -72,5 +72,5 @@ class Slider(ContainedWidget, toga.widgets.slider.IntSliderImpl):
             self.native.getMeasuredHeight(), ROUND_UP
         )
 
-    def set_background_color(self, value):
-        self.set_background_simple(TRANSPARENT if value is None else value)
+    def set_background_color(self, color):
+        self.set_background_simple(TRANSPARENT if color is None else color)

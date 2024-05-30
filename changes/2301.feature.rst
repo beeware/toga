@@ -1,0 +1,1 @@
+APIs were added for replacing a widget in an existing layout, and for obtaining the index of a widget in a list of children.

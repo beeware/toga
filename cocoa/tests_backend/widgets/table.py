@@ -4,6 +4,7 @@ from rubicon.objc import NSPoint
 from toga_cocoa.libs import NSEventType, NSScrollView, NSTableView
 
 from .base import SimpleProbe
+from .properties import toga_color
 
 NSEventModifierFlagCommand = 1 << 20
 
@@ -22,6 +23,13 @@ class TableProbe(SimpleProbe):
     @property
     def font(self):
         skip("Font changes not implemented for Tree on macOS")
+
+    @property
+    def background_color(self):
+        if self.native.drawsBackground:
+            return toga_color(self.native.backgroundColor)
+        else:
+            return None
 
     @property
     def row_count(self):

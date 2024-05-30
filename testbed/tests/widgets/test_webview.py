@@ -257,7 +257,7 @@ def javascript_error_context(probe):
 
 
 async def test_evaluate_javascript_error(widget, probe):
-    "If JavaScript content raises an error, the error is propegated"
+    "If JavaScript content raises an error, the error is propagated"
     on_result_handler = Mock()
 
     with javascript_error_context(probe):
@@ -285,7 +285,7 @@ async def test_evaluate_javascript_error(widget, probe):
 
 
 async def test_evaluate_javascript_error_without_handler(widget, probe):
-    "A handler isn't needed to propegate a JavaScript error"
+    "A handler isn't needed to propagate a JavaScript error"
     with javascript_error_context(probe):
         result = await wait_for(
             widget.evaluate_javascript("not valid js"),
