@@ -1,12 +1,15 @@
-from System.Drawing import ContentAlignment
+from System.Drawing import Color, ContentAlignment
 from System.Windows.Forms import HorizontalAlignment
 
-from toga.colors import rgba
+from toga.colors import TRANSPARENT, rgba
 from toga.style.pack import BOTTOM, CENTER, LEFT, RIGHT, TOP
 
 
 def toga_color(color):
-    return rgba(color.R, color.G, color.B, color.A / 255)
+    if color == Color.Transparent:
+        return TRANSPARENT
+    else:
+        return rgba(color.R, color.G, color.B, color.A / 255)
 
 
 def toga_xalignment(alignment):

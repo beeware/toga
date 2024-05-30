@@ -1,9 +1,9 @@
-COLOR_CACHE = {}
+CACHE = {}
 
 
 def native_color(c):
     try:
-        color = COLOR_CACHE[c]
+        color = CACHE[c]
     except KeyError:
         color = (
             c.rgba.r / 255,
@@ -11,6 +11,6 @@ def native_color(c):
             c.rgba.b / 255,
             c.rgba.a,
         )
-        COLOR_CACHE[c] = color
+        CACHE[c] = color
 
     return color

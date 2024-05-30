@@ -1,7 +1,7 @@
 from toga.colors import TRANSPARENT
 from toga_iOS.libs import UIColor
 
-COLOR_CACHE = {TRANSPARENT: UIColor.clearColor}
+CACHE = {TRANSPARENT: UIColor.clearColor}
 
 
 def native_color(c):
@@ -9,7 +9,7 @@ def native_color(c):
         return None
 
     try:
-        color = COLOR_CACHE[c]
+        color = CACHE[c]
     except KeyError:
         # Color needs to be retained to be kept in the cache
         color = UIColor.colorWithRed(
@@ -18,6 +18,6 @@ def native_color(c):
             blue=c.rgba.b / 255,
             alpha=c.rgba.a,
         ).retain()
-        COLOR_CACHE[c] = color
+        CACHE[c] = color
 
     return color

@@ -12,14 +12,14 @@ typed_array = MainActivity.singletonThis.getTheme().obtainStyledAttributes(
 DEFAULT_BACKGROUND_COLOR = typed_array.getColor(0, 0)
 typed_array.recycle()
 
-COLOR_CACHE = {
+CACHE = {
     TRANSPARENT: Color.TRANSPARENT,
 }
 
 
 def native_color(c):
     try:
-        color = COLOR_CACHE[c]
+        color = CACHE[c]
     except KeyError:
         color = Color.argb(
             int(c.rgba.a * 255),
@@ -27,9 +27,9 @@ def native_color(c):
             int(c.rgba.g),
             int(c.rgba.b),
         )
-        COLOR_CACHE[c] = color
+        CACHE[c] = color
 
-    return native_color
+    return color
 
 
 def toga_color(c):  # pragma: no cover
