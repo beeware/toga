@@ -226,6 +226,24 @@ else:
 
         assert second_window not in app.windows
 
+    async def test_secondary_window_with_content(app):
+        """A window can be created with initial content"""
+        # Setup the box with something inside it:
+        label1 = toga.Label("Hello World")
+        content = toga.Box(children=[label1])
+
+        try:
+            window_with_content = toga.Window(content=content)
+            window_with_content_probe = window_probe(app, window_with_content)
+
+            window_with_content.show()
+            await window_with_content_probe.wait_for_window(
+                "Create a window with initial content"
+            )
+            assert window_with_content.content == content
+        finally:
+            window_with_content.close()
+
     async def test_secondary_window_cleanup(app_probe):
         """Memory for windows is cleaned up when windows are deleted."""
         # Create and show a window with content. We can't use the second_window fixture

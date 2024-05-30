@@ -5,10 +5,15 @@ on:
     branches:
       - main
   workflow_call:
+    inputs:
+      attest-package:
+        description: "Create GitHub provenance attestation for the package."
+        default: "false"
+        type: string
     outputs:
-      artifact-name:
-        description: "Name of the uploaded artifact; use for artifact retrieval."
-        value: ${{ jobs.package.outputs.artifact-name }}
+      artifact-basename:
+        description: "Base name of the uploaded artifacts; use for artifact retrieval."
+        value: ${{ jobs.package.outputs.artifact-basename }}
 
 env:
   min_python_version: "3.8"
@@ -38,12 +43,11 @@ jobs:
       tox-source: "./core[dev]"
 
   package:
-    name: Python package
-    uses: beeware/.github/.github/workflows/python-package-create.yml@main
-    with:
-      tox-source: "./core[dev]"
-      build-subdirectory: ${{ matrix.subdir }}
-      distribution-path: "*/dist/*"
+    name: Package Toga
+    permissions:
+      id-token: write
+      contents: read
+      attestations: write
     strategy:
       matrix:
         subdir:
@@ -58,6 +62,10 @@ jobs:
         - "textual"
         - "web"
         - "winforms"
+    uses: beeware/.github/.github/workflows/python-package-create.yml@main
+    with:
+      build-subdirectory: ${{ matrix.subdir }}
+      attest: ${{ inputs.attest-package }}
 
   core:
     name: Test core
@@ -94,29 +102,33 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v4.1.6
+      with:
+        fetch-depth: 0
 
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v5.1.0
       with:
         python-version: ${{ matrix.python-version }}
 
-    - name: Install dev Dependencies
-      run: |
-        # We don't actually want to install toga-core;
-        # we just want the dev extras so we have a known version of tox and coverage
-        python -m pip install ./core[dev]
+    - name: Install Tox
+      uses: beeware/.github/.github/actions/install-requirement@main
+      with:
+        requirements: tox
+        extra: dev
+        project-root: core
 
     - name: Get Packages
       uses: actions/download-artifact@v4.1.7
       with:
-        pattern: ${{ needs.package.outputs.artifact-name }}-*
+        pattern: ${{ format('{0}-*', needs.package.outputs.artifact-basename) }}
         merge-multiple: true
+        path: dist
 
     - name: Test
       run: |
         # The $(ls ...) shell expansion is done in the Github environment;
         # the value of TOGA_INSTALL_COMMAND will be a literal string without any shell expansions to perform
-        TOGA_INSTALL_COMMAND="python -m pip install ../$(ls core/dist/toga_core-*.whl)[dev] ../$(ls dummy/dist/toga_dummy-*.whl)" \
+        TOGA_INSTALL_COMMAND="python -m pip install ../$(ls dist/toga_core-*.whl)[dev] ../$(ls dist/toga_dummy-*.whl)" \
           tox -e py-cov
         tox -qe coverage$(tr -dc "0-9" <<< "${{ matrix.python-version }}")
         mv core/.coverage core/.coverage.${{ matrix.platform }}.${{ matrix.python-version }}
@@ -145,11 +157,12 @@ jobs:
         # https://github.com/nedbat/coveragepy/issues/1572#issuecomment-1522546425
         python-version: ${{ env.min_python_version }}
 
-    - name: Install dev dependencies
-      run: |
-        # We don't actually want to install toga-core;
-        # we just want the dev extras so we have a known version of coverage
-        python -m pip install ./core[dev]
+    - name: Install Tox
+      uses: beeware/.github/.github/actions/install-requirement@main
+      with:
+        requirements: tox
+        extra: dev
+        project-root: core
 
     - name: Retrieve Coverage Data
       uses: actions/download-artifact@v4.1.7
