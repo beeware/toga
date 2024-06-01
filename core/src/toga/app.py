@@ -16,6 +16,7 @@ from collections.abc import (
     ValuesView,
 )
 from email.message import Message
+from pathlib import Path
 from typing import TYPE_CHECKING, Any, Protocol
 from warnings import warn
 from weakref import WeakValueDictionary
@@ -209,6 +210,7 @@ class MainWindow(Window):
         size: tuple[int, int] = (640, 480),
         resizable: bool = True,
         minimizable: bool = True,
+        content: Widget | None = None,
         resizeable=None,  # DEPRECATED
         closeable=None,  # DEPRECATED
     ):
@@ -223,6 +225,7 @@ class MainWindow(Window):
             pixels <css-units>`.
         :param resizable: Can the window be resized by the user?
         :param minimizable: Can the window be minimized by the user?
+        :param content: The initial content for the window.
         :param resizeable: **DEPRECATED** - Use ``resizable``.
         :param closeable: **DEPRECATED** - Use ``closable``.
         """
@@ -234,6 +237,7 @@ class MainWindow(Window):
             resizable=resizable,
             closable=True,
             minimizable=minimizable,
+            content=content,
             # Deprecated arguments
             resizeable=resizeable,
             closeable=closeable,
@@ -569,6 +573,15 @@ class App:
     def version(self) -> str | None:
         """The version number of the app (read-only)."""
         return self._version
+
+    @property
+    def is_bundled(self) -> bool:
+        """Has the app been bundled as a standalone binary, or is it running as a Python script?"""
+        return Path(sys.executable).stem not in {
+            "python",
+            f"python{sys.version_info.major}",
+            f"python{sys.version_info.major}.{sys.version_info.minor}",
+        }
 
     ######################################################################
     # App lifecycle

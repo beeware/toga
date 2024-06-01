@@ -66,7 +66,7 @@ contributors`_ will help you get started.
 If you experience problems with Toga, `log them on GitHub`_. If you want to
 contribute code, please `fork the code`_ and `submit a pull request`_.
 
-.. _guide for first time contributors: https://toga.readthedocs.io/en/latest/how-to/contribute-code.html
+.. _guide for first time contributors: https://toga.readthedocs.io/en/latest/how-to/contribute/index.html
 .. _log them on Github: https://github.com/beeware/toga/issues
 .. _fork the code: https://github.com/beeware/toga
 .. _submit a pull request: https://github.com/beeware/toga/pulls

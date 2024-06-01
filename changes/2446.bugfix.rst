@@ -1,0 +1,1 @@
+Dialog windows are now properly modal when using the Gtk+ backend.

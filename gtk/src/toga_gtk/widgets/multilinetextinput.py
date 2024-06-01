@@ -122,7 +122,7 @@ class MultilineTextInput(Widget):
 
     def gtk_on_changed(self, *args):
         # buffer.set_text("foo") generates 2 change signals; one clearing the
-        # buffer, and one setting the new value. We only propegate the second
+        # buffer, and one setting the new value. We only propagate the second
         # signal. To ensure that we also get a signal when the value is
         # deliberately cleared, we add an explicit signal handler to set_value()
         # for the empty value case.
