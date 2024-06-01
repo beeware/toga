@@ -41,17 +41,23 @@ toga_cocoa_factory_imports = {
     "Window": "toga_cocoa.window",
 }
 
+__all__ = list(toga_cocoa_factory_imports.keys()) + ["not_implemented"]
+
 
 def __getattr__(name):
     try:
         module_name = toga_cocoa_factory_imports[name]
+
+        has_dot = module_name.find(".") != -1
+        if not has_dot:
+            module_name = f"toga_cocoa.{name}"
     except KeyError:
         raise NotImplementedError(
             f"Toga's Cocoa backend doesn't implement '{name}'"
         ) from None
     else:
         module = importlib.import_module(module_name)
-        value = getattr(module, name)
+        value = getattr(module, name) if has_dot else module
         globals()[name] = value
         return value
 
