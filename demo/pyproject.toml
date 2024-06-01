@@ -1,7 +1,7 @@
 [build-system]
 requires = [
-    "setuptools==69.5.1",
-    "setuptools_scm==8.0.4",
+    "setuptools==70.0.0",
+    "setuptools_scm==8.1.0",
     "setuptools_dynamic_dependencies @ git+https://github.com/beeware/setuptools_dynamic_dependencies",
 ]
 build-backend = "setuptools.build_meta"
@@ -119,3 +119,7 @@ build_gradle_dependencies = [
     "com.google.android.material:material:1.11.0",
     "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0",
 ]
+
+[tool.check-wheel-contents]
+# WOO2: duplicated files (i.e. resource images)
+ignore = "W002"

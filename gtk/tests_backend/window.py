@@ -273,3 +273,6 @@ class WindowProbe(BaseProbe):
     def press_toolbar_button(self, index):
         item = self.impl.native_toolbar.get_nth_item(index)
         item.emit("clicked")
+
+    def is_modal_dialog(self, dialog):
+        return dialog.native.get_modal()

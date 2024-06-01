@@ -1,7 +1,7 @@
 [build-system]
 requires = [
-    "setuptools==69.5.1",
-    "setuptools_scm==8.0.4",
+    "setuptools==70.0.0",
+    "setuptools_scm==8.1.0",
     "setuptools_dynamic_dependencies @ git+https://github.com/beeware/setuptools_dynamic_dependencies",
 ]
 build-backend = "setuptools.build_meta"
@@ -81,3 +81,8 @@ dependencies = [
     # Web
     "toga-web == {version}; sys_platform=='emscripten'",
 ]
+
+[tool.check-wheel-contents]
+# WOO7: wheel library is empty
+# W008: wheel is empty
+ignore = "W007,W008"

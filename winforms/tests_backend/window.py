@@ -167,3 +167,6 @@ class WindowProbe(BaseProbe):
 
     def press_toolbar_button(self, index):
         self._native_toolbar_item(index).OnClick(EventArgs.Empty)
+
+    def is_modal_dialog(self, dialog):
+        return True

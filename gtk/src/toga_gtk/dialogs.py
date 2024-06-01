@@ -30,6 +30,7 @@ class MessageDialog(BaseDialog):
             buttons=buttons,
             text=title,
         )
+        self.native.set_modal(True)
         self.build_dialog(**kwargs)
 
         self.native.connect("response", self.gtk_response)
