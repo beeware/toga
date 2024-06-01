@@ -385,9 +385,6 @@ class Window:
             elif current_state == WindowState.PRESENTATION:
                 self.interface.app.exit_presentation_mode()
         else:
-            # Set Window state to NORMAL before changing to other states as
-            # some states block changing window state without first exiting them.
-            self.set_window_state(WindowState.NORMAL)
             if state == WindowState.MAXIMIZED:
                 self.native.setIsZoomed(True)
 

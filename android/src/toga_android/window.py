@@ -189,9 +189,6 @@ class Window(Container):
             #     self.app.native.startActivity(new_intent)
             #     self._is_minimized = False
         else:
-            # Restore to normal state before switching states to avoid mixing states
-            # and prevent glitches.
-            self.set_window_state(WindowState.NORMAL)
             if state in {WindowState.FULLSCREEN, WindowState.PRESENTATION}:
                 decor_view.setSystemUiVisibility(
                     decor_view.SYSTEM_UI_FLAG_FULLSCREEN

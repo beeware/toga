@@ -263,9 +263,6 @@ class Window(Container, Scalable):
             )
             self.native.WindowState = WinForms.FormWindowState.Normal
         else:
-            # Set Window state to NORMAL before changing to other states as
-            # some states block changing window state without first exiting them.
-            self.set_window_state(WindowState.NORMAL)
             if state == WindowState.MAXIMIZED:
                 self.native.WindowState = WinForms.FormWindowState.Maximized
 
