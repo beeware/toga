@@ -471,7 +471,7 @@ class Window:
             self._impl.set_window_state(WindowState.FULLSCREEN)
         elif not is_full_screen and (self.state == WindowState.FULLSCREEN):
             self._impl.set_window_state(WindowState.NORMAL)
-        else:  # pragma: no cover
+        else:
             return
 
     # ---------------------------------------------------------------------
@@ -479,10 +479,7 @@ class Window:
     @property
     def state(self) -> WindowState:
         """The current state of the window."""
-        if getattr(self, "_impl", None) is None:  # pragma: no cover
-            return WindowState.NORMAL
-        else:
-            return self._impl.get_window_state()
+        return self._impl.get_window_state()
 
     @state.setter
     def state(self, state: WindowState) -> None:
@@ -499,13 +496,7 @@ class Window:
                     )
                 else:
                     self._impl.set_window_state(state)
-            else:  # pragma: no cover
-                # Marking this branch as no cover, since in core tests, setting the same
-                # state twice and then checking with assert_action_not_performed will still
-                # report that the window state setting action was performed. This is because
-                # the action was performed for the first time setting of window state, hence
-                # the action will still be in the EventLog and we cannot check if the action
-                # was done by the first call or the second call to the setter.
+            else:
                 return
         else:
             raise ValueError(

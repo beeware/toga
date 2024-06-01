@@ -277,6 +277,8 @@ class Window:
                 self.native.fullscreen()
                 self._is_in_presentation_mode = True
             else:  # pragma: no cover
+                # Marking this as no cover, since the type of the state parameter
+                # value is checked on the interface.
                 pass
 
     ######################################################################

@@ -830,16 +830,13 @@ class App:
         #     DeprecationWarning,
         #     stacklevel=2,
         # )
-        if self.windows is not None:
-            self.exit_full_screen()
-            if windows is None:
-                return
-            screen_window_dict = dict()
-            for window, screen in zip(windows, self.screens):
-                screen_window_dict[screen] = window
-            self.enter_presentation_mode(screen_window_dict)
-        else:
-            warn("App doesn't have any windows")
+        self.exit_full_screen()
+        if any(window is None for window in windows):
+            return
+        screen_window_dict = dict()
+        for window, screen in zip(windows, self.screens):
+            screen_window_dict[screen] = window
+        self.enter_presentation_mode(screen_window_dict)
 
     # ---------------------------------------------------------------------
 

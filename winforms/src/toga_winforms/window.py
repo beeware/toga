@@ -240,6 +240,8 @@ class Window(Container, Scalable):
         elif window_state == WinForms.FormWindowState.Normal:
             return WindowState.NORMAL
         else:  # pragma: no cover
+            # Marking this as no cover, since the above cases cover all the possible values
+            # of the FormWindowState enum type that can be returned by WinForms.WindowState.
             return
 
     def set_window_state(self, state):
@@ -285,6 +287,8 @@ class Window(Container, Scalable):
                 self.native.WindowState = WinForms.FormWindowState.Maximized
                 self._is_in_presentation_mode = True
             else:  # pragma: no cover
+                # Marking this as no cover, since the type of the state parameter
+                # value is checked on the interface.
                 pass
 
     ######################################################################

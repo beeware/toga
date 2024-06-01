@@ -153,6 +153,8 @@ class Window(Container):
                 return WindowState.PRESENTATION
             else:
                 return WindowState.FULLSCREEN
+        # elif getattr(self, "_is_minimized", False) is True:
+        #     return WindowState.MINIMIZED
         return WindowState.NORMAL
 
     def set_window_state(self, state):
@@ -185,11 +187,8 @@ class Window(Container):
             #     # This works every time but starts new instance of MainActivity
             #     new_intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
             #     self.app.native.startActivity(new_intent)
+            #     self._is_minimized = False
         else:
-            # # This works but the issue lies in restoring to normal state
-            # if state == WindowState.MINIMIZED:
-            #     self.app.native.moveTaskToBack(True)
-
             # Restore to normal state before switching states to avoid mixing states
             # and prevent glitches.
             self.set_window_state(WindowState.NORMAL)
@@ -201,6 +200,10 @@ class Window(Container):
                 )
                 if state == WindowState.PRESENTATION:
                     self.app.native.getSupportActionBar().hide()
+            # elif state == WindowState.MINIMIZED:
+            #     # This works but the issue lies in restoring to normal state
+            #     self.app.native.moveTaskToBack(True)
+            #     self._is_minimized = True
 
     ######################################################################
     # Window capabilities

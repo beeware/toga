@@ -407,6 +407,11 @@ def test_full_screen(event_loop):
     assert not app.is_full_screen
     assert_action_not_performed(app, "exit presentation mode")
 
+    # Trying to enter full screen with no windows is a no-op
+    app.set_full_screen(None)
+    assert not app.is_full_screen
+    assert_action_not_performed(app, "enter presentation mode")
+
     # Enter full screen with 2 windows
     app.set_full_screen(window2, app.main_window)
     assert app.is_full_screen

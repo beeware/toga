@@ -277,6 +277,16 @@ def test_full_screen(window, app):
         state=WindowState.NORMAL,
     )
 
+    # Setting full screen to False when window is not in full screen, is a no-op
+    #
+    # We cannot assert that the action was not performed, since the same action
+    # was performed previously and would still be in EventLog. Therefore, we
+    # cannot check if the action was done by the first call or the second call.
+    # Hence, this is just to reach coverage.
+    assert not window.full_screen
+    window.full_screen = False
+    # assert_action_not_performed(window, "set window state to WindowState.NORMAL")
+
 
 def test_window_state(window):
     """A window can have different states."""
@@ -291,6 +301,26 @@ def test_window_state(window):
                 f"set window state to {state}",
                 state=state,
             )
+
+            # Setting the window state same as the current window state is a no-op.
+            #
+            # Here, setting the same state twice and then checking with assert_action_not_performed will still
+            # report that the window state setting action was performed. This is because
+            # the action was also performed for the first-time setting of the window state,
+            # hence the action will still be in the EventLog and we cannot check if the
+            # action was done by the first call or the second call to the setter.
+            #
+            # For example: For the test, we need to set window state to WindowState.MAXIMIZED and
+            #              then again the window state needs to be set to WindowState.MAXIMIZED.
+            #              But doing so will cause the above mentioned problem.
+            # Hence, this is just to reach coverage.
+            window.state = WindowState.MAXIMIZED
+            assert window.state == WindowState.MAXIMIZED
+            window.state = WindowState.MAXIMIZED
+            assert window.state == WindowState.MAXIMIZED
+            # assert_action_not_performed(
+            #     window, "set window state to WindowState.MAXIMIZED"
+            # )
 
             window.state = WindowState.NORMAL
             assert window.state == WindowState.NORMAL
