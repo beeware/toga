@@ -24,6 +24,7 @@ toga_cocoa_factory_imports = {
     "ImageView": "toga_cocoa.widgets.imageview",
     "Label": "toga_cocoa.widgets.label",
     "MapView": "toga_cocoa.widgets.mapview",
+    "MainWindow": "toga_cocoa.app",
     "MultilineTextInput": "toga_cocoa.widgets.multilinetextinput",
     "NumberInput": "toga_cocoa.widgets.numberinput",
     "OptionContainer": "toga_cocoa.widgets.optioncontainer",
