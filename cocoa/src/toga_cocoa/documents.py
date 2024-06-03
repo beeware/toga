@@ -1,3 +1,4 @@
+# pragma: no cover
 import os
 from urllib.parse import quote
 
