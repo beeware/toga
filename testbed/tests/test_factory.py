@@ -3,6 +3,6 @@ import pytest
 import toga
 
 
-def test_importing_not_existent_gtk_submodule():
+def test_missing_widget():
     with pytest.raises(NotImplementedError):
-        toga.platform.get_platform_factory().notamodule
+        toga.platform.get_platform_factory().MissingWidget
