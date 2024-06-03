@@ -2,10 +2,10 @@ from __future__ import annotations
 
 import datetime
 import warnings
-from typing import Any, Protocol, Union
+from typing import Any, Protocol
 
-from toga.handlers import HandlerGeneratorReturnT, WrappedHandlerT, wrapped_handler
-from toga.types import TypeAlias
+import toga
+from toga.handlers import WrappedHandlerT, wrapped_handler
 
 from .base import StyleT, Widget
 
@@ -17,26 +17,12 @@ MIN_DATE = datetime.date(1800, 1, 1)
 MAX_DATE = datetime.date(8999, 12, 31)
 
 
-class OnChangeHandlerSync(Protocol):
-    def __call__(self, /) -> object:
-        """A handler that will be invoked when the value changes."""
+class OnChangeHandler(Protocol):
+    def __call__(self, **kwargs: Any) -> None:
+        """A handler that will be invoked when a change occurs.
 
-
-class OnChangeHandlerAsync(Protocol):
-    async def __call__(self, /) -> object:
-        """Async definition of :any:`OnChangeHandlerSync`."""
-
-
-class OnChangeHandlerGenerator(Protocol):
-    def __call__(self, /) -> HandlerGeneratorReturnT[object]:
-        """Generator definition of :any:`OnChangeHandlerSync`."""
-
-
-OnChangeHandlerT: TypeAlias = Union[
-    OnChangeHandlerSync,
-    OnChangeHandlerAsync,
-    OnChangeHandlerGenerator,
-]
+        :param kwargs: Ensures compatibility with arguments added in future versions.
+        """
 
 
 class DateInput(Widget):
@@ -49,7 +35,7 @@ class DateInput(Widget):
         value: datetime.date | None = None,
         min: datetime.date | None = None,
         max: datetime.date | None = None,
-        on_change: OnChangeHandlerT | None = None,
+        on_change: toga.widgets.dateinput.OnChangeHandler | None = None,
     ):
         """Create a new DateInput widget.
 
@@ -173,7 +159,7 @@ class DateInput(Widget):
         return self._on_change
 
     @on_change.setter
-    def on_change(self, handler: OnChangeHandlerT) -> None:
+    def on_change(self, handler: toga.widgets.dateinput.OnChangeHandler) -> None:
         self._on_change = wrapped_handler(self, handler)
 
 

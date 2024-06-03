@@ -1,10 +1,9 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Protocol, Union
+from typing import TYPE_CHECKING, Any, Protocol
 
 import toga
-from toga.handlers import HandlerGeneratorReturnT, WrappedHandlerT, wrapped_handler
-from toga.types import TypeAlias
+from toga.handlers import WrappedHandlerT, wrapped_handler
 
 from .base import StyleT, Widget
 
@@ -12,29 +11,13 @@ if TYPE_CHECKING:
     from toga.icons import IconContent
 
 
-class OnPressHandlerSync(Protocol):
-    def __call__(self, widget: Button, /) -> object:
+class OnPressHandler(Protocol):
+    def __call__(self, widget: Button, **kwargs: Any) -> object:
         """A handler that will be invoked when a button is pressed.
 
         :param widget: The button that was pressed.
+        :param kwargs: Ensures compatibility with arguments added in future versions.
         """
-
-
-class OnPressHandlerAsync(Protocol):
-    async def __call__(self, widget: Button, /) -> object:
-        """Async definition of :any:`OnPressHandlerSync`."""
-
-
-class OnPressHandlerGenerator(Protocol):
-    def __call__(self, widget: Button, /) -> HandlerGeneratorReturnT[object]:
-        """Generator definition of :any:`OnPressHandlerSync`."""
-
-
-OnPressHandlerT: TypeAlias = Union[
-    OnPressHandlerSync,
-    OnPressHandlerAsync,
-    OnPressHandlerGenerator,
-]
 
 
 class Button(Widget):
@@ -44,7 +27,7 @@ class Button(Widget):
         icon: IconContent | None = None,
         id: str | None = None,
         style: StyleT | None = None,
-        on_press: OnPressHandlerT | None = None,
+        on_press: toga.widgets.button.OnPressHandler | None = None,
         enabled: bool = True,
     ):
         """Create a new button widget.
@@ -155,5 +138,5 @@ class Button(Widget):
         return self._on_press
 
     @on_press.setter
-    def on_press(self, handler: OnPressHandlerT) -> None:
+    def on_press(self, handler: toga.widgets.button.OnPressHandler) -> None:
         self._on_press = wrapped_handler(self, handler)

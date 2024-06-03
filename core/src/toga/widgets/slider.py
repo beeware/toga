@@ -3,72 +3,36 @@ from __future__ import annotations
 import warnings
 from abc import ABC, abstractmethod
 from contextlib import contextmanager
-from typing import Any, Protocol, SupportsFloat, Union
+from typing import Any, Protocol, SupportsFloat
 
-from toga.handlers import HandlerGeneratorReturnT, WrappedHandlerT, wrapped_handler
-from toga.types import TypeAlias
+import toga
+from toga.handlers import WrappedHandlerT, wrapped_handler
 
 from .base import StyleT, Widget
 
 
-class OnChangeHandlerSync(Protocol):
-    def __call__(self, /) -> object:
-        """A handler to invoke when the value is changed."""
+class OnChangeHandler(Protocol):
+    def __call__(self, **kwargs: Any) -> object:
+        """A handler to invoke when the value is changed.
+
+        :param kwargs: Ensures compatibility with arguments added in future versions.
+        """
 
 
-class OnChangeHandlerAsync(Protocol):
-    async def __call__(self, /) -> object:
-        """Async definition of :any:`OnChangeHandlerSync`."""
+class OnPressHandler(Protocol):
+    def __call__(self, **kwargs) -> object:
+        """A handler to invoke when the slider is pressed.
+
+        :param kwargs: Ensures compatibility with arguments added in future versions.
+        """
 
 
-class OnChangeHandlerGenerator(Protocol):
-    def __call__(self, /) -> HandlerGeneratorReturnT[object]:
-        """Generator definition of :any:`OnChangeHandlerSync`."""
+class OnReleaseHandler(Protocol):
+    def __call__(self, **kwargs: Any) -> object:
+        """A handler to invoke when the slider is pressed.
 
-
-OnChangeHandlerT: TypeAlias = Union[
-    OnChangeHandlerSync, OnChangeHandlerAsync, OnChangeHandlerGenerator
-]
-
-
-class OnPressHandlerSync(Protocol):
-    def __call__(self, /) -> object:
-        """A handler to invoke when the slider is pressed."""
-
-
-class OnPressHandlerAsync(Protocol):
-    async def __call__(self, /) -> object:
-        """Async definition of :any:`OnPressHandlerSync`."""
-
-
-class OnPressHandlerGenerator(Protocol):
-    def __call__(self, /) -> HandlerGeneratorReturnT[object]:
-        """Generator definition of :any:`OnPressHandlerSync`."""
-
-
-OnPressHandlerT: TypeAlias = Union[
-    OnPressHandlerSync, OnPressHandlerAsync, OnPressHandlerGenerator
-]
-
-
-class OnReleaseHandlerSync(Protocol):
-    def __call__(self, /) -> object:
-        """A handler to invoke when the slider is pressed."""
-
-
-class OnReleaseHandlerAsync(Protocol):
-    async def __call__(self, /) -> object:
-        """Async definition of :any:`OnReleaseHandlerSync`."""
-
-
-class OnReleaseHandlerGenerator(Protocol):
-    def __call__(self, /) -> HandlerGeneratorReturnT[object]:
-        """Generator definition of :any:`OnReleaseHandlerSync`."""
-
-
-OnReleaseHandlerT: TypeAlias = Union[
-    OnReleaseHandlerSync, OnReleaseHandlerAsync, OnReleaseHandlerGenerator
-]
+        :param kwargs: Ensures compatibility with arguments added in future versions.
+        """
 
 
 class Slider(Widget):
@@ -80,9 +44,9 @@ class Slider(Widget):
         min: float | None = None,  # Default to 0.0 when range is removed
         max: float | None = None,  # Default to 1.0 when range is removed
         tick_count: int | None = None,
-        on_change: OnChangeHandlerT | None = None,
-        on_press: OnPressHandlerT | None = None,
-        on_release: OnReleaseHandlerT | None = None,
+        on_change: toga.widgets.slider.OnChangeHandler | None = None,
+        on_press: toga.widgets.slider.OnPressHandler | None = None,
+        on_release: OnReleaseHandler | None = None,
         enabled: bool = True,
         range: None = None,  # DEPRECATED
     ):
@@ -326,7 +290,7 @@ class Slider(Widget):
         return self._on_change
 
     @on_change.setter
-    def on_change(self, handler: OnChangeHandlerT) -> None:
+    def on_change(self, handler: toga.widgets.slider.OnChangeHandler) -> None:
         self._on_change = wrapped_handler(self, handler)
 
     @property
@@ -335,7 +299,7 @@ class Slider(Widget):
         return self._on_press
 
     @on_press.setter
-    def on_press(self, handler: OnPressHandlerT) -> None:
+    def on_press(self, handler: toga.widgets.slider.OnPressHandler) -> None:
         self._on_press = wrapped_handler(self, handler)
 
     @property
@@ -344,7 +308,7 @@ class Slider(Widget):
         return self._on_release
 
     @on_release.setter
-    def on_release(self, handler: OnReleaseHandlerT) -> None:
+    def on_release(self, handler: OnReleaseHandler) -> None:
         self._on_release = wrapped_handler(self, handler)
 
     ######################################################################

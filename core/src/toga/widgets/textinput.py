@@ -1,92 +1,44 @@
 from __future__ import annotations
 
 from collections.abc import Callable, Iterable
-from typing import Protocol, Union
+from typing import Any, Protocol
 
-from toga.handlers import HandlerGeneratorReturnT, WrappedHandlerT, wrapped_handler
-from toga.types import TypeAlias
+import toga
+from toga.handlers import WrappedHandlerT, wrapped_handler
 
 from .base import StyleT, Widget
 
 
-class OnChangeHandlerSync(Protocol):
-    def __call__(self, /) -> object:
-        """A handler to invoke when the text input is changed."""
+class OnChangeHandler(Protocol):
+    def __call__(self, **kwargs: Any) -> object:
+        """A handler to invoke when the text input is changed.
+
+        :param kwargs: Ensures compatibility with arguments added in future versions.
+        """
 
 
-class OnChangeHandlerAsync(Protocol):
-    async def __call__(self, /) -> object:
-        """Async definition of :any:`OnChangeHandlerSync`."""
+class OnConfirmHandler(Protocol):
+    def __call__(self, **kwargs: Any) -> object:
+        """A handler to invoke when the text input is confirmed.
+
+        :param kwargs: Ensures compatibility with arguments added in future versions.
+        """
 
 
-class OnChangeHandlerGenerator(Protocol):
-    def __call__(self, /) -> HandlerGeneratorReturnT[object]:
-        """Generator definition of :any:`OnChangeHandlerSync`."""
+class OnGainFocusHandler(Protocol):
+    def __call__(self, **kwargs: Any) -> object:
+        """A handler to invoke when the text input gains focus.
+
+        :param kwargs: Ensures compatibility with arguments added in future versions.
+        """
 
 
-OnChangeHandlerT: TypeAlias = Union[
-    OnChangeHandlerSync, OnChangeHandlerAsync, OnChangeHandlerGenerator
-]
+class OnLoseFocusHandler(Protocol):
+    def __call__(self, **kwargs: Any) -> object:
+        """A handler to invoke when the text input loses focus.
 
-
-class OnConfirmHandlerSync(Protocol):
-    def __call__(self, /) -> object:
-        """A handler to invoke when the text input is confirmed."""
-
-
-class OnConfirmHandlerAsync(Protocol):
-    async def __call__(self, /) -> object:
-        """Async definition of :any:`OnConfirmHandlerSync`."""
-
-
-class OnConfirmHandlerGenerator(Protocol):
-    def __call__(self, /) -> HandlerGeneratorReturnT[object]:
-        """Generator definition of :any:`OnConfirmHandlerSync`."""
-
-
-OnConfirmHandlerT: TypeAlias = Union[
-    OnConfirmHandlerSync, OnConfirmHandlerAsync, OnConfirmHandlerGenerator
-]
-
-
-class OnGainFocusHandlerSync(Protocol):
-    def __call__(self, /) -> object:
-        """A handler to invoke when the text input gains focus."""
-
-
-class OnGainFocusHandlerAsync(Protocol):
-    async def __call__(self, /) -> object:
-        """Async definition of :any:`OnGainFocusHandlerSync`."""
-
-
-class OnGainFocusHandlerGenerator(Protocol):
-    def __call__(self, /) -> HandlerGeneratorReturnT[object]:
-        """Generator definition of :any:`OnGainFocusHandlerSync`."""
-
-
-OnGainFocusHandlerT: TypeAlias = Union[
-    OnGainFocusHandlerSync, OnGainFocusHandlerAsync, OnGainFocusHandlerGenerator
-]
-
-
-class OnLoseFocusHandlerSync(Protocol):
-    def __call__(self, /) -> object:
-        """A handler to invoke when the text input loses focus."""
-
-
-class OnLoseFocusHandlerAsync(Protocol):
-    async def __call__(self, /) -> object:
-        """Async definition of :any:`OnLoseFocusHandlerSync`."""
-
-
-class OnLoseFocusHandlerGenerator(Protocol):
-    def __call__(self, /) -> HandlerGeneratorReturnT[object]:
-        """Generator definition of :any:`OnLoseFocusHandlerSync`."""
-
-
-OnLoseFocusHandlerT: TypeAlias = Union[
-    OnLoseFocusHandlerSync, OnLoseFocusHandlerAsync, OnLoseFocusHandlerGenerator
-]
+        :param kwargs: Ensures compatibility with arguments added in future versions.
+        """
 
 
 class TextInput(Widget):
@@ -99,10 +51,10 @@ class TextInput(Widget):
         value: str | None = None,
         readonly: bool = False,
         placeholder: str | None = None,
-        on_change: OnChangeHandlerT | None = None,
-        on_confirm: OnConfirmHandlerT | None = None,
-        on_gain_focus: OnGainFocusHandlerT | None = None,
-        on_lose_focus: OnLoseFocusHandlerT | None = None,
+        on_change: toga.widgets.textinput.OnChangeHandler | None = None,
+        on_confirm: OnConfirmHandler | None = None,
+        on_gain_focus: OnGainFocusHandler | None = None,
+        on_lose_focus: OnLoseFocusHandler | None = None,
         validators: Iterable[Callable[[str], bool]] | None = None,
     ):
         """
@@ -211,7 +163,7 @@ class TextInput(Widget):
         return self._on_change
 
     @on_change.setter
-    def on_change(self, handler: OnChangeHandlerT) -> None:
+    def on_change(self, handler: toga.widgets.textinput.OnChangeHandler) -> None:
         self._on_change = wrapped_handler(self, handler)
 
     @property
@@ -239,7 +191,7 @@ class TextInput(Widget):
         return self._on_gain_focus
 
     @on_gain_focus.setter
-    def on_gain_focus(self, handler: OnGainFocusHandlerT) -> None:
+    def on_gain_focus(self, handler: OnGainFocusHandler) -> None:
         self._on_gain_focus = wrapped_handler(self, handler)
 
     @property
@@ -248,7 +200,7 @@ class TextInput(Widget):
         return self._on_lose_focus
 
     @on_lose_focus.setter
-    def on_lose_focus(self, handler: OnLoseFocusHandlerT) -> None:
+    def on_lose_focus(self, handler: OnLoseFocusHandler) -> None:
         self._on_lose_focus = wrapped_handler(self, handler)
 
     def _validate(self) -> None:
@@ -277,5 +229,5 @@ class TextInput(Widget):
         return self._on_confirm
 
     @on_confirm.setter
-    def on_confirm(self, handler: OnConfirmHandlerT) -> None:
+    def on_confirm(self, handler: OnConfirmHandler) -> None:
         self._on_confirm = wrapped_handler(self, handler)

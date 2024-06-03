@@ -85,6 +85,4 @@ Reference
 
 .. autoclass:: toga.Button
 
-.. autoprotocol:: toga.widgets.button.OnPressHandlerSync
-.. autoprotocol:: toga.widgets.button.OnPressHandlerAsync
-.. autoprotocol:: toga.widgets.button.OnPressHandlerGenerator
+.. autoprotocol:: toga.widgets.button.OnPressHandler

@@ -1,11 +1,10 @@
 from __future__ import annotations
 
 from collections.abc import Collection, Iterator
-from typing import Any, Protocol, Union
+from typing import Any, Protocol
 
 import toga
-from toga.handlers import HandlerGeneratorReturnT, WrappedHandlerT, wrapped_handler
-from toga.types import TypeAlias
+from toga.handlers import WrappedHandlerT, wrapped_handler
 
 from .base import StyleT, Widget
 
@@ -121,30 +120,14 @@ class MapPinSet:
         self._pins = set()
 
 
-class OnSelectHandlerSync(Protocol):
-    def __call__(self, widget: MapView, /, *, pin: MapPin) -> object:
+class OnSelectHandler(Protocol):
+    def __call__(self, widget: MapView, *, pin: MapPin, **kwargs: Any) -> object:
         """A handler that will be invoked when the user selects a map pin.
 
         :param widget: The button that was pressed.
         :param pin: The pin that was selected.
+        :param kwargs: Ensures compatibility with arguments added in future versions.
         """
-
-
-class OnSelectHandlerAsync(Protocol):
-    async def __call__(self, widget: MapView, /, *, pin: MapPin) -> object:
-        """Async definition of :any:`OnSelectHandlerSync`."""
-
-
-class OnSelectHandlerGenerator(Protocol):
-    def __call__(
-        self, widget: MapView, /, *, pin: MapPin
-    ) -> HandlerGeneratorReturnT[object]:
-        """Generator definition of :any:`OnSelectHandlerSync`."""
-
-
-OnSelectHandlerT: TypeAlias = Union[
-    OnSelectHandlerSync, OnSelectHandlerAsync, OnSelectHandlerGenerator
-]
 
 
 class MapView(Widget):
@@ -155,7 +138,7 @@ class MapView(Widget):
         location: toga.LatLng | tuple[float, float] | None = None,
         zoom: int = 11,
         pins: Collection[MapPin] | None = None,
-        on_select: OnSelectHandlerT | None = None,
+        on_select: toga.widgets.mapview.OnSelectHandler | None = None,
     ):
         """Create a new MapView widget.
 
@@ -258,7 +241,7 @@ class MapView(Widget):
         return self._on_select
 
     @on_select.setter
-    def on_select(self, handler: OnSelectHandlerT | None) -> None:
+    def on_select(self, handler: toga.widgets.mapview.OnSelectHandler | None) -> None:
         if handler and not getattr(self._impl, "SUPPORTS_ON_SELECT", True):
             self.factory.not_implemented("MapView.on_select")
 

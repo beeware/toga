@@ -2,32 +2,20 @@ from __future__ import annotations
 
 import datetime
 import warnings
-from typing import Any, Protocol, Union
+from typing import Any, Protocol
 
-from toga.handlers import HandlerGeneratorReturnT, WrappedHandlerT, wrapped_handler
-from toga.types import TypeAlias
+import toga
+from toga.handlers import WrappedHandlerT, wrapped_handler
 
 from .base import StyleT, Widget
 
 
-class OnChangeHandlerSync(Protocol):
-    def __call__(self, /) -> object:
-        """A handler to invoke when the time input is changed."""
+class OnChangeHandler(Protocol):
+    def __call__(self, **kwargs: Any) -> object:
+        """A handler to invoke when the time input is changed.
 
-
-class OnChangeHandlerAsync(Protocol):
-    async def __call__(self, /) -> object:
-        """Async definition of :any:`OnChangeHandlerSync`."""
-
-
-class OnChangeHandlerGenerator(Protocol):
-    def __call__(self, /) -> HandlerGeneratorReturnT[object]:
-        """Generator definition of :any:`OnChangeHandlerSync`."""
-
-
-OnChangeHandlerT: TypeAlias = Union[
-    OnChangeHandlerSync, OnChangeHandlerAsync, OnChangeHandlerGenerator
-]
+        :param kwargs: Ensures compatibility with arguments added in future versions.
+        """
 
 
 class TimeInput(Widget):
@@ -38,7 +26,7 @@ class TimeInput(Widget):
         value: datetime.time | None = None,
         min: datetime.time | None = None,
         max: datetime.time | None = None,
-        on_change: OnChangeHandlerT | None = None,
+        on_change: toga.widgets.timeinput.OnChangeHandler | None = None,
     ):
         """Create a new TimeInput widget.
 
@@ -150,7 +138,7 @@ class TimeInput(Widget):
         return self._on_change
 
     @on_change.setter
-    def on_change(self, handler: OnChangeHandlerT) -> None:
+    def on_change(self, handler: toga.widgets.timeinput.OnChangeHandler) -> None:
         self._on_change = wrapped_handler(self, handler)
 
 

@@ -70,12 +70,6 @@ Reference
 
 .. autoclass:: toga.Slider
 
-.. autoprotocol:: toga.widgets.slider.OnChangeHandlerSync
-.. autoprotocol:: toga.widgets.slider.OnChangeHandlerAsync
-.. autoprotocol:: toga.widgets.slider.OnChangeHandlerGenerator
-.. autoprotocol:: toga.widgets.slider.OnPressHandlerSync
-.. autoprotocol:: toga.widgets.slider.OnPressHandlerAsync
-.. autoprotocol:: toga.widgets.slider.OnPressHandlerGenerator
-.. autoprotocol:: toga.widgets.slider.OnReleaseHandlerSync
-.. autoprotocol:: toga.widgets.slider.OnReleaseHandlerAsync
-.. autoprotocol:: toga.widgets.slider.OnReleaseHandlerGenerator
+.. autoprotocol:: toga.widgets.slider.OnChangeHandler
+.. autoprotocol:: toga.widgets.slider.OnPressHandler
+.. autoprotocol:: toga.widgets.slider.OnReleaseHandler

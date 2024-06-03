@@ -9,22 +9,21 @@ import webbrowser
 from collections.abc import Iterator
 from email.message import Message
 from pathlib import Path
-from typing import TYPE_CHECKING, AbstractSet, Any, MutableSet, Protocol, Union
+from typing import TYPE_CHECKING, AbstractSet, Any, MutableSet, Protocol
 from warnings import warn
 from weakref import WeakValueDictionary
 
 from toga.command import CommandSet
 from toga.documents import Document
-from toga.handlers import HandlerGeneratorReturnT, WrappedHandlerT, wrapped_handler
+from toga.handlers import WrappedHandlerT, wrapped_handler
 from toga.hardware.camera import Camera
 from toga.hardware.location import Location
 from toga.icons import Icon
 from toga.paths import Paths
 from toga.platform import get_platform_factory
 from toga.screens import Screen
-from toga.types import TypeAlias
 from toga.widgets.base import Widget
-from toga.window import OnCloseHandlerT, Window
+from toga.window import OnCloseHandler, Window
 
 if TYPE_CHECKING:
     from toga.icons import IconContent
@@ -34,65 +33,41 @@ warnings.filterwarnings("default", category=DeprecationWarning)
 
 
 class AppStartupMethod(Protocol):
-    def __call__(self, app: App, /) -> Widget:
+    def __call__(self, app: App, **kwargs: Any) -> Widget:
         """The startup method of the app.
 
         Called during app startup to set the initial main window content.
 
         :param app: The app instance that is starting.
+        :param kwargs: Ensures compatibility with additional arguments introduced in
+            future versions.
         :returns: The widget to use as the main window content.
         """
 
 
-class OnExitHandlerSync(Protocol):
-    def __call__(self, app: App, /) -> bool:
+class OnExitHandler(Protocol):
+    def __call__(self, app: App, **kwargs: Any) -> bool:
         """A handler to invoke when the app is about to exit.
 
         The return value of this callback controls whether the app is allowed to exit.
         This can be used to prevent the app exiting with unsaved changes, etc.
 
         :param app: The app instance that is exiting.
+        :param kwargs: Ensures compatibility with additional arguments introduced in
+            future versions.
         :returns: ``True`` if the app is allowed to exit; ``False`` if the app is not
             allowed to exit.
         """
 
 
-class OnExitHandlerAsync(Protocol):
-    async def __call__(self, app: App, /) -> bool:
-        """Async definition of :any:`OnExitHandlerSync`."""
-
-
-class OnExitHandlerGenerator(Protocol):
-    def __call__(self, app: App, /) -> HandlerGeneratorReturnT[bool]:
-        """Generator definition of :any:`OnExitHandlerSync`."""
-
-
-OnExitHandlerT: TypeAlias = Union[
-    OnExitHandlerSync, OnExitHandlerAsync, OnExitHandlerGenerator
-]
-
-
-class BackgroundTaskSync(Protocol):
-    def __call__(self, app: App, /) -> object:
-        """Code that will be executed as a background task.
+class BackgroundTask(Protocol):
+    def __call__(self, app: App, **kwargs: Any) -> object:
+        """Code that should be executed as a background task.
 
         :param app: The app that is handling the background task.
+        :param kwargs: Ensures compatibility with additional arguments introduced in
+            future versions.
         """
-
-
-class BackgroundTaskAsync(Protocol):
-    async def __call__(self, app: App, /) -> object:
-        """Async definition of :any:`BackgroundTaskSync`."""
-
-
-class BackgroundTaskGenerator(Protocol):
-    def __call__(self, app: App, /) -> HandlerGeneratorReturnT[object]:
-        """Generator definition of :any:`BackgroundTaskSync`."""
-
-
-BackgroundTaskT: TypeAlias = Union[
-    BackgroundTaskSync, BackgroundTaskAsync, BackgroundTaskGenerator
-]
 
 
 class WindowSet(MutableSet[Window]):
@@ -270,7 +245,7 @@ class MainWindow(Window):
         return None
 
     @on_close.setter
-    def on_close(self, handler: OnCloseHandlerT | None) -> None:
+    def on_close(self, handler: OnCloseHandler | None) -> None:
         if handler:
             raise ValueError(
                 "Cannot set on_close handler for the main window. "
@@ -341,7 +316,7 @@ class App:
         home_page: str | None = None,
         description: str | None = None,
         startup: AppStartupMethod | None = None,
-        on_exit: OnExitHandlerT | None = None,
+        on_exit: OnExitHandler | None = None,
         id: None = None,  # DEPRECATED
         windows: None = None,  # DEPRECATED
     ):
@@ -600,7 +575,7 @@ class App:
     # App lifecycle
     ######################################################################
 
-    def add_background_task(self, handler: BackgroundTaskT) -> None:
+    def add_background_task(self, handler: BackgroundTask) -> None:
         """Schedule a task to run in the background.
 
         Schedules a coroutine or a generator to run in the background. Control
@@ -837,7 +812,7 @@ class App:
         return self._on_exit
 
     @on_exit.setter
-    def on_exit(self, handler: OnExitHandlerT | None) -> None:
+    def on_exit(self, handler: OnExitHandler | None) -> None:
         def cleanup(app: App, should_exit: bool) -> None:
             if should_exit or handler is None:
                 app.exit()
@@ -883,7 +858,7 @@ class DocumentApp(App):
         description: str | None = None,
         startup: AppStartupMethod | None = None,
         document_types: dict[str, type[Document]] | None = None,
-        on_exit: OnExitHandlerT | None = None,
+        on_exit: OnExitHandler | None = None,
         id: None = None,  # DEPRECATED
     ):
         """Create a document-based application.

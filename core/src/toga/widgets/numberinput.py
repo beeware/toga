@@ -3,9 +3,10 @@ from __future__ import annotations
 import re
 import warnings
 from decimal import ROUND_HALF_UP, Decimal, InvalidOperation
-from typing import Protocol, Union
+from typing import Any, Protocol, Union
 
-from toga.handlers import HandlerGeneratorReturnT, WrappedHandlerT, wrapped_handler
+import toga.widgets.numberinput
+from toga.handlers import WrappedHandlerT, wrapped_handler
 from toga.types import TypeAlias
 
 from .base import StyleT, Widget
@@ -66,24 +67,12 @@ def _clean_decimal_str(value: str) -> str:
     return value
 
 
-class OnChangeHandlerSync(Protocol):
-    def __call__(self, /) -> object:
-        """A handler to invoke when the value is changed."""
+class OnChangeHandler(Protocol):
+    def __call__(self, **kwargs: Any) -> object:
+        """A handler to invoke when the value is changed.
 
-
-class OnChangeHandlerAsync(Protocol):
-    async def __call__(self, /) -> object:
-        """Async definition of :any:`OnChangeHandlerSync`."""
-
-
-class OnChangeHandlerGenerator(Protocol):
-    def __call__(self, /) -> HandlerGeneratorReturnT[object]:
-        """Generator definition of :any:`OnChangeHandlerSync`."""
-
-
-OnChangeHandlerT: TypeAlias = Union[
-    OnChangeHandlerSync, OnChangeHandlerAsync, OnChangeHandlerGenerator
-]
+        :param kwargs: Ensures compatibility with arguments added in future versions.
+        """
 
 
 class NumberInput(Widget):
@@ -96,7 +85,7 @@ class NumberInput(Widget):
         max: NumberInputT | None = None,
         value: NumberInputT | None = None,
         readonly: bool = False,
-        on_change: OnChangeHandlerT | None = None,
+        on_change: toga.widgets.numberinput.OnChangeHandler | None = None,
         min_value: None = None,  # DEPRECATED
         max_value: None = None,  # DEPRECATED
     ):
@@ -311,7 +300,7 @@ class NumberInput(Widget):
         return self._on_change
 
     @on_change.setter
-    def on_change(self, handler: OnChangeHandlerT) -> None:
+    def on_change(self, handler: toga.widgets.numberinput.OnChangeHandler) -> None:
         self._on_change = wrapped_handler(self, handler)
 
     ######################################################################

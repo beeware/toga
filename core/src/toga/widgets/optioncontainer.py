@@ -5,12 +5,11 @@ from typing import (
     TYPE_CHECKING,
     Any,
     Protocol,
-    Union,
     overload,
 )
 
 import toga
-from toga.handlers import HandlerGeneratorReturnT, WrappedHandlerT, wrapped_handler
+from toga.handlers import WrappedHandlerT, wrapped_handler
 from toga.platform import get_platform_factory
 from toga.types import TypeAlias
 
@@ -27,24 +26,12 @@ if TYPE_CHECKING:
     )
 
 
-class OnSelectHandlerSync(Protocol):
-    def __call__(self, /) -> object:
-        """A handler to invoke when the option list is selected."""
+class OnSelectHandler(Protocol):
+    def __call__(self, **kwargs: Any) -> object:
+        """A handler to invoke when the option list is selected.
 
-
-class OnSelectHandlerAsync(Protocol):
-    async def __call__(self, /) -> object:
-        """Async definition of :any:`OnSelectHandlerSync`."""
-
-
-class OnSelectHandlerGenerator(Protocol):
-    def __call__(self, /) -> HandlerGeneratorReturnT[object]:
-        """Generator definition of :any:`OnSelectHandlerSync`."""
-
-
-OnSelectHandlerT: TypeAlias = Union[
-    OnSelectHandlerSync, OnSelectHandlerAsync, OnSelectHandlerGenerator
-]
+        :param kwargs: Ensures compatibility with arguments added in future versions.
+        """
 
 
 class OptionItem:
@@ -394,7 +381,7 @@ class OptionContainer(Widget):
         id: str | None = None,
         style: StyleT | None = None,
         content: Collection[tuple[str, Widget]] | None = None,
-        on_select: OnSelectHandlerT | None = None,
+        on_select: toga.widgets.optioncontainer.OnSelectHandler | None = None,
     ):
         """Create a new OptionContainer.
 
@@ -501,5 +488,5 @@ class OptionContainer(Widget):
         return self._on_select
 
     @on_select.setter
-    def on_select(self, handler: OnSelectHandlerT) -> None:
+    def on_select(self, handler: toga.widgets.optioncontainer.OnSelectHandler) -> None:
         self._on_select = wrapped_handler(self, handler)

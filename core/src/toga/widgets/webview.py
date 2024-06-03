@@ -2,15 +2,13 @@ from __future__ import annotations
 
 import asyncio
 from collections.abc import Callable
-from typing import Protocol, Union
+from typing import Any, Protocol
 
 from toga.handlers import (
     AsyncResult,
-    HandlerGeneratorReturnT,
     WrappedHandlerT,
     wrapped_handler,
 )
-from toga.types import TypeAlias
 
 from .base import StyleT, Widget
 
@@ -19,24 +17,12 @@ class JavaScriptResult(AsyncResult):
     RESULT_TYPE = "JavaScript"
 
 
-class OnWebViewLoadHandlerSync(Protocol):
-    def __call__(self, /) -> object:
-        """A handler to invoke when the WebView is loaded."""
+class OnWebViewLoadHandler(Protocol):
+    def __call__(self, **kwargs: Any) -> object:
+        """A handler to invoke when the WebView is loaded.
 
-
-class OnWebViewLoadHandlerAsync(Protocol):
-    async def __call__(self, /) -> object:
-        """Async definition of :any:`OnWebViewLoadHandlerSync`."""
-
-
-class OnWebViewLoadHandlerGenerator(Protocol):
-    def __call__(self, /) -> HandlerGeneratorReturnT[object]:
-        """Generator definition of :any:`OnWebViewLoadHandlerSync`."""
-
-
-OnWebViewLoadHandlerT: TypeAlias = Union[
-    OnWebViewLoadHandlerSync, OnWebViewLoadHandlerAsync, OnWebViewLoadHandlerGenerator
-]
+        :param kwargs: Ensures compatibility with arguments added in future versions.
+        """
 
 
 class WebView(Widget):
@@ -46,7 +32,7 @@ class WebView(Widget):
         style: StyleT | None = None,
         url: str | None = None,
         user_agent: str | None = None,
-        on_webview_load: OnWebViewLoadHandlerT | None = None,
+        on_webview_load: OnWebViewLoadHandler | None = None,
     ):
         """Create a new WebView widget.
 
@@ -120,7 +106,7 @@ class WebView(Widget):
         return self._on_webview_load
 
     @on_webview_load.setter
-    def on_webview_load(self, handler: OnWebViewLoadHandlerT) -> None:
+    def on_webview_load(self, handler: OnWebViewLoadHandler) -> None:
         if handler and not getattr(self._impl, "SUPPORTS_ON_WEBVIEW_LOAD", True):
             self.factory.not_implemented("WebView.on_webview_load")
 

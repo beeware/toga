@@ -1,13 +1,12 @@
 from __future__ import annotations
 
 from collections.abc import Iterator
-from typing import TYPE_CHECKING, Protocol, Union
+from typing import TYPE_CHECKING, Protocol
 
-from toga.handlers import HandlerGeneratorReturnT, WrappedHandlerT, wrapped_handler
+from toga.handlers import WrappedHandlerT, wrapped_handler
 from toga.icons import Icon
 from toga.keys import Key
 from toga.platform import get_platform_factory
-from toga.types import TypeAlias
 
 if TYPE_CHECKING:
     from toga.app import App
@@ -150,35 +149,20 @@ Group.WINDOW = Group("Window", order=90)
 Group.HELP = Group("Help", order=100)
 
 
-class ActionHandlerSync(Protocol):
-    def __call__(self, command: Command, /) -> bool:
+class ActionHandler(Protocol):
+    def __call__(self, command: Command, **kwargs) -> bool:
         """A handler that will be invoked when a Command is invoked.
 
         :param command: The command that triggered the action.
+        :param kwargs: Ensures compatibility with additional arguments introduced in
+            future versions.
         """
-
-
-class ActionHandlerAsync(Protocol):
-    async def __call__(self, command: Command, /) -> bool:
-        """Async definition of :any:`ActionHandlerSync`."""
-
-
-class ActionHandlerGenerator(Protocol):
-    async def __call__(self, command: Command, /) -> HandlerGeneratorReturnT[bool]:
-        """Generator definition of :any:`ActionHandlerSync`."""
-
-
-ActionHandlerT: TypeAlias = Union[
-    ActionHandlerSync,
-    ActionHandlerAsync,
-    ActionHandlerGenerator,
-]
 
 
 class Command:
     def __init__(
         self,
-        action: ActionHandlerT | None,
+        action: ActionHandler | None,
         text: str,
         *,
         shortcut: str | Key | None = None,
@@ -267,7 +251,7 @@ class Command:
         return self._action
 
     @action.setter
-    def action(self, action: ActionHandlerT | None) -> None:
+    def action(self, action: ActionHandler | None) -> None:
         """Set the action attached to the command
 
         Needs to be a valid ActionHandler or ``None``

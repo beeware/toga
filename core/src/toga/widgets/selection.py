@@ -2,11 +2,11 @@ from __future__ import annotations
 
 import warnings
 from collections.abc import Collection
-from typing import Any, Generic, Protocol, TypeVar, Union
+from typing import Any, Generic, Protocol, TypeVar
 
-from toga.handlers import HandlerGeneratorReturnT, WrappedHandlerT, wrapped_handler
+import toga.widgets.selection
+from toga.handlers import WrappedHandlerT, wrapped_handler
 from toga.sources import ListSource, Source
-from toga.types import TypeAlias
 
 from .base import StyleT, Widget
 
@@ -14,24 +14,12 @@ T = TypeVar("T")
 SourceT = TypeVar("SourceT", bound=Source)
 
 
-class OnChangeHandlerSync(Protocol):
-    def __call__(self, /) -> object:
-        """A handler to invoke when the value is changed."""
+class OnChangeHandler(Protocol):
+    def __call__(self, **kwargs: Any) -> object:
+        """A handler to invoke when the value is changed.
 
-
-class OnChangeHandlerAsync(Protocol):
-    async def __call__(self, /) -> object:
-        """Async definition of :any:`OnChangeHandlerSync`."""
-
-
-class OnChangeHandlerGenerator(Protocol):
-    def __call__(self, /) -> HandlerGeneratorReturnT[object]:
-        """Generator definition of :any:`OnChangeHandlerSync`."""
-
-
-OnChangeHandlerT: TypeAlias = Union[
-    OnChangeHandlerSync, OnChangeHandlerAsync, OnChangeHandlerGenerator
-]
+        :param kwargs: Ensures compatibility with arguments added in future versions.
+        """
 
 
 class Selection(Widget, Generic[T]):
@@ -42,7 +30,7 @@ class Selection(Widget, Generic[T]):
         items: SourceT | Collection[T] | None = None,
         accessor: str | None = None,
         value: T | None = None,
-        on_change: OnChangeHandlerT | None = None,
+        on_change: toga.widgets.selection.OnChangeHandler | None = None,
         enabled: bool = True,
         on_select: None = None,  # DEPRECATED
     ):
@@ -199,7 +187,7 @@ class Selection(Widget, Generic[T]):
         return self._on_change
 
     @on_change.setter
-    def on_change(self, handler: OnChangeHandlerT) -> None:
+    def on_change(self, handler: toga.widgets.selection.OnChangeHandler) -> None:
         self._on_change = wrapped_handler(self, handler)
 
     ######################################################################
@@ -216,7 +204,7 @@ class Selection(Widget, Generic[T]):
         return self.on_change
 
     @on_select.setter
-    def on_select(self, handler: OnChangeHandlerT) -> None:
+    def on_select(self, handler: toga.widgets.selection.OnChangeHandler) -> None:
         warnings.warn(
             "Selection.on_select has been renamed Selection.on_change.",
             DeprecationWarning,

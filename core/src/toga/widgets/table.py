@@ -2,12 +2,12 @@ from __future__ import annotations
 
 import warnings
 from collections.abc import Collection, Iterable, MutableSequence
-from typing import Any, Generic, Literal, Protocol, TypeVar, Union
+from typing import Any, Generic, Literal, Protocol, TypeVar
 
-from toga.handlers import HandlerGeneratorReturnT, WrappedHandlerT, wrapped_handler
+import toga
+from toga.handlers import WrappedHandlerT, wrapped_handler
 from toga.sources import ListSource, Row, Source
 from toga.sources.accessors import build_accessors, to_accessor
-from toga.types import TypeAlias
 
 from .base import StyleT, Widget
 
@@ -15,44 +15,20 @@ T = TypeVar("T")
 SourceT = TypeVar("SourceT", bound=Source)
 
 
-class OnSelectHandlerSync(Protocol):
-    def __call__(self, /) -> object:
-        """A handler to invoke when the table is selected."""
+class OnSelectHandler(Protocol):
+    def __call__(self, **kwargs: Any) -> object:
+        """A handler to invoke when the table is selected.
+
+        :param kwargs: Ensures compatibility with arguments added in future versions.
+        """
 
 
-class OnSelectHandlerAsync(Protocol):
-    async def __call__(self, /) -> object:
-        """Async definition of :any:`OnSelectHandlerSync`."""
+class OnActivateHandler(Protocol):
+    def __call__(self, row: Any, **kwargs: Any) -> object:
+        """A handler to invoke when the table is activated.
 
-
-class OnSelectHandlerGenerator(Protocol):
-    def __call__(self, /) -> HandlerGeneratorReturnT[object]:
-        """Generator definition of :any:`OnSelectHandlerSync`."""
-
-
-OnSelectHandlerT: TypeAlias = Union[
-    OnSelectHandlerSync, OnSelectHandlerAsync, OnSelectHandlerGenerator
-]
-
-
-class OnActivateHandlerSync(Protocol):
-    def __call__(self, row: Any, /) -> object:
-        """A handler to invoke when the table is activated."""
-
-
-class OnActivateHandlerAsync(Protocol):
-    async def __call__(self, row: Any, /) -> object:
-        """Async definition of :any:`OnActivateHandlerSync`."""
-
-
-class OnActivateHandlerGenerator(Protocol):
-    def __call__(self, row: Any, /) -> HandlerGeneratorReturnT[object]:
-        """Generator definition of :any:`OnActivateHandlerSync`."""
-
-
-OnActivateHandlerT: TypeAlias = Union[
-    OnActivateHandlerSync, OnActivateHandlerAsync, OnActivateHandlerGenerator
-]
+        :param kwargs: Ensures compatibility with arguments added in future versions.
+        """
 
 
 class Table(Widget, Generic[T]):
@@ -64,8 +40,8 @@ class Table(Widget, Generic[T]):
         data: SourceT | Iterable[T] | None = None,
         accessors: MutableSequence[str] | None = None,
         multiple_select: bool = False,
-        on_select: OnSelectHandlerT | None = None,
-        on_activate: OnActivateHandlerT | None = None,
+        on_select: toga.widgets.table.OnSelectHandler | None = None,
+        on_activate: toga.widgets.table.OnActivateHandler | None = None,
         missing_value: str = "",
         on_double_click: None = None,  # DEPRECATED
     ):
@@ -240,7 +216,7 @@ class Table(Widget, Generic[T]):
         return self._on_select
 
     @on_select.setter
-    def on_select(self, handler: OnSelectHandlerT) -> None:
+    def on_select(self, handler: toga.widgets.table.OnSelectHandler) -> None:
         self._on_select = wrapped_handler(self, handler)
 
     @property
@@ -250,7 +226,7 @@ class Table(Widget, Generic[T]):
         return self._on_activate
 
     @on_activate.setter
-    def on_activate(self, handler: OnActivateHandlerT) -> None:
+    def on_activate(self, handler: toga.widgets.table.OnActivateHandler) -> None:
         self._on_activate = wrapped_handler(self, handler)
 
     def add_column(self, heading: str, accessor: str | None = None) -> None:
@@ -359,7 +335,7 @@ class Table(Widget, Generic[T]):
         return self.on_activate
 
     @on_double_click.setter
-    def on_double_click(self, handler: OnActivateHandlerT) -> None:
+    def on_double_click(self, handler: toga.widgets.table.OnActivateHandler) -> None:
         warnings.warn(
             "Table.on_double_click has been renamed Table.on_activate.",
             DeprecationWarning,

@@ -136,9 +136,5 @@ Reference
 
 .. autoclass:: toga.Table
 
-.. autoprotocol:: toga.widgets.table.OnSelectHandlerSync
-.. autoprotocol:: toga.widgets.table.OnSelectHandlerAsync
-.. autoprotocol:: toga.widgets.table.OnSelectHandlerGenerator
-.. autoprotocol:: toga.widgets.table.OnActivateHandlerSync
-.. autoprotocol:: toga.widgets.table.OnActivateHandlerAsync
-.. autoprotocol:: toga.widgets.table.OnActivateHandlerGenerator
+.. autoprotocol:: toga.widgets.table.OnSelectHandler
+.. autoprotocol:: toga.widgets.table.OnActivateHandler

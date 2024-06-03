@@ -2,14 +2,14 @@ from __future__ import annotations
 
 import warnings
 from collections.abc import Collection, Iterable
-from typing import Generic, Literal, Protocol, TypeVar, Union
+from typing import Any, Generic, Literal, Protocol, TypeVar
 
-from toga.handlers import HandlerGeneratorReturnT, WrappedHandlerT, wrapped_handler
+import toga
+from toga.handlers import WrappedHandlerT, wrapped_handler
 from toga.sources import Node, Source, TreeSource
 from toga.sources.accessors import build_accessors, to_accessor
 from toga.sources.tree_source import TreeSourceDataT
 from toga.style import Pack
-from toga.types import TypeAlias
 
 from .base import Widget
 
@@ -17,44 +17,20 @@ T = TypeVar("T")
 SourceT = TypeVar("SourceT", bound=Source)
 
 
-class OnSelectHandlerSync(Protocol):
-    def __call__(self, /) -> object:
-        """A handler to invoke when the tree is selected."""
+class OnSelectHandler(Protocol):
+    def __call__(self, **kwargs: Any) -> object:
+        """A handler to invoke when the tree is selected.
+
+        :param kwargs: Ensures compatibility with arguments added in future versions.
+        """
 
 
-class OnSelectHandlerAsync(Protocol):
-    async def __call__(self, /) -> object:
-        """Async definition of :any:`OnSelectHandlerSync`."""
+class OnActivateHandler(Protocol):
+    def __call__(self, **kwargs: Any) -> object:
+        """A handler to invoke when the tree is activated.
 
-
-class OnSelectHandlerGenerator(Protocol):
-    def __call__(self, /) -> HandlerGeneratorReturnT[object]:
-        """Generator definition of :any:`OnSelectHandlerSync`."""
-
-
-OnSelectHandlerT: TypeAlias = Union[
-    OnSelectHandlerSync, OnSelectHandlerAsync, OnSelectHandlerGenerator
-]
-
-
-class OnActivateHandlerSync(Protocol):
-    def __call__(self, /) -> object:
-        """A handler to invoke when the tree is activated."""
-
-
-class OnActivateHandlerAsync(Protocol):
-    async def __call__(self, /) -> object:
-        """Async definition of :any:`OnActivateHandlerSync`."""
-
-
-class OnActivateHandlerGenerator(Protocol):
-    def __call__(self, /) -> HandlerGeneratorReturnT[object]:
-        """Generator definition of :any:`OnActivateHandlerSync`."""
-
-
-OnActivateHandlerT: TypeAlias = Union[
-    OnActivateHandlerSync, OnActivateHandlerAsync, OnActivateHandlerGenerator
-]
+        :param kwargs: Ensures compatibility with arguments added in future versions.
+        """
 
 
 class Tree(Widget, Generic[T]):
@@ -66,8 +42,8 @@ class Tree(Widget, Generic[T]):
         data: SourceT | TreeSourceDataT[T] | None = None,
         accessors: Collection[str] | None = None,
         multiple_select: bool = False,
-        on_select: OnSelectHandlerT | None = None,
-        on_activate: OnActivateHandlerT | None = None,
+        on_select: toga.widgets.tree.OnSelectHandler | None = None,
+        on_activate: toga.widgets.tree.OnActivateHandler | None = None,
         missing_value: str = "",
         on_double_click: None = None,  # DEPRECATED
     ):
@@ -333,7 +309,7 @@ class Tree(Widget, Generic[T]):
         return self._on_select
 
     @on_select.setter
-    def on_select(self, handler: OnSelectHandlerT) -> None:
+    def on_select(self, handler: toga.widgets.tree.OnSelectHandler) -> None:
         self._on_select = wrapped_handler(self, handler)
 
     @property
@@ -343,7 +319,7 @@ class Tree(Widget, Generic[T]):
         return self._on_activate
 
     @on_activate.setter
-    def on_activate(self, handler: OnActivateHandlerT) -> None:
+    def on_activate(self, handler: toga.widgets.tree.OnActivateHandler) -> None:
         self._on_activate = wrapped_handler(self, handler)
 
     ######################################################################
@@ -360,7 +336,7 @@ class Tree(Widget, Generic[T]):
         return self.on_activate
 
     @on_double_click.setter
-    def on_double_click(self, handler: OnActivateHandlerT) -> None:
+    def on_double_click(self, handler: toga.widgets.tree.OnActivateHandler) -> None:
         warnings.warn(
             "Tree.on_double_click has been renamed Tree.on_activate.",
             DeprecationWarning,

@@ -8,12 +8,11 @@ from typing import (
     Literal,
     Protocol,
     TypeVar,
-    Union,
 )
 
-from toga.handlers import HandlerGeneratorReturnT, WrappedHandlerT, wrapped_handler
+import toga.widgets.detailedlist
+from toga.handlers import WrappedHandlerT, wrapped_handler
 from toga.sources import ListSource, Row, Source
-from toga.types import TypeAlias
 
 from .base import StyleT, Widget
 
@@ -21,94 +20,38 @@ T = TypeVar("T")
 SourceT = TypeVar("SourceT", bound=Source)
 
 
-class OnPrimaryActionHandlerSync(Protocol):
-    def __call__(self, row: Any, /) -> object:
+class OnPrimaryActionHandler(Protocol):
+    def __call__(self, row: Any, **kwargs: Any) -> object:
         """A handler to invoke for the primary action.
 
-        :param row: The current row for the detailed list.
+        :param widget: The button that was pressed.
+        :param kwargs: Ensures compatibility with arguments added in future versions.
         """
 
 
-class OnPrimaryActionHandlerAsync(Protocol):
-    async def __call__(self, row: Any, /) -> object:
-        """Async definition of :any:`OnPrimaryActionHandlerSync`."""
-
-
-class OnPrimaryActionHandlerGenerator(Protocol):
-    def __call__(self, row: Any, /) -> HandlerGeneratorReturnT[object]:
-        """Generator definition of :any:`OnPrimaryActionHandlerSync`."""
-
-
-OnPrimaryActionHandlerT: TypeAlias = Union[
-    OnPrimaryActionHandlerSync,
-    OnPrimaryActionHandlerAsync,
-    OnPrimaryActionHandlerGenerator,
-]
-
-
-class OnSecondaryActionHandlerSync(Protocol):
-    def __call__(self, row: Any, /) -> object:
+class OnSecondaryActionHandler(Protocol):
+    def __call__(self, row: Any, **kwargs: Any) -> object:
         """A handler to invoke for the secondary action.
 
         :param row: The current row for the detailed list.
+        :param kwargs: Ensures compatibility with arguments added in future versions.
         """
 
 
-class OnSecondaryActionHandlerAsync(Protocol):
-    async def __call__(self, row: Any, /) -> object:
-        """Async definition of :any:`OnSecondaryActionHandlerSync`."""
+class OnRefreshHandler(Protocol):
+    def __call__(self, **kwargs: Any) -> object:
+        """A handler to invoke when the detailed list is refreshed.
+
+        :param kwargs: Ensures compatibility with arguments added in future versions.
+        """
 
 
-class OnSecondaryActionHandlerGenerator(Protocol):
-    def __call__(self, row: Any, /) -> HandlerGeneratorReturnT[object]:
-        """Generator definition of :any:`OnSecondaryActionHandlerSync`."""
+class OnSelectHandler(Protocol):
+    def __call__(self, **kwargs: Any) -> object:
+        """A handler to invoke when the detailed list is selected.
 
-
-OnSecondaryActionHandlerT: TypeAlias = Union[
-    OnSecondaryActionHandlerSync,
-    OnSecondaryActionHandlerAsync,
-    OnSecondaryActionHandlerGenerator,
-]
-
-
-class OnRefreshHandlerSync(Protocol):
-    def __call__(self, /) -> object:
-        """A handler to invoke when the detailed list is refreshed."""
-
-
-class OnRefreshHandlerAsync(Protocol):
-    async def __call__(self, /) -> object:
-        """Async definition of :any:`OnRefreshHandlerSync`."""
-
-
-class OnRefreshHandlerGenerator(Protocol):
-    def __call__(self, /) -> HandlerGeneratorReturnT[object]:
-        """Generator definition of :any:`OnRefreshHandlerSync`."""
-
-
-OnRefreshHandlerT: TypeAlias = Union[
-    OnRefreshHandlerSync, OnRefreshHandlerAsync, OnRefreshHandlerGenerator
-]
-
-
-class OnSelectHandlerSync(Protocol):
-    def __call__(self, /) -> object:
-        """A handler to invoke when the detailed list is selected."""
-
-
-class OnSelectHandlerAsync(Protocol):
-    async def __call__(self, /) -> object:
-        """Async definition of :any:`OnSelectHandlerSync`."""
-
-
-class OnSelectHandlerGenerator(Protocol):
-    def __call__(self, /) -> HandlerGeneratorReturnT[object]:
-        """Generator definition of :any:`OnSelectHandlerSync`."""
-
-
-OnSelectHandlerT: TypeAlias = Union[
-    OnSelectHandlerSync, OnSelectHandlerAsync, OnSelectHandlerGenerator
-]
+        :param kwargs: Ensures compatibility with arguments added in future versions.
+        """
 
 
 class DetailedList(Widget, Generic[T]):
@@ -120,11 +63,11 @@ class DetailedList(Widget, Generic[T]):
         accessors: tuple[str, str, str] = ("title", "subtitle", "icon"),
         missing_value: str = "",
         primary_action: str | None = "Delete",
-        on_primary_action: OnPrimaryActionHandlerT | None = None,
+        on_primary_action: OnPrimaryActionHandler | None = None,
         secondary_action: str | None = "Action",
-        on_secondary_action: OnSecondaryActionHandlerT | None = None,
-        on_refresh: OnRefreshHandlerT | None = None,
-        on_select: OnSelectHandlerT | None = None,
+        on_secondary_action: OnSecondaryActionHandler | None = None,
+        on_refresh: OnRefreshHandler | None = None,
+        on_select: toga.widgets.detailedlist.OnSelectHandler | None = None,
         on_delete: None = None,  # DEPRECATED
     ):
         """Create a new DetailedList widget.
@@ -282,7 +225,7 @@ class DetailedList(Widget, Generic[T]):
         return self._on_primary_action
 
     @on_primary_action.setter
-    def on_primary_action(self, handler: OnPrimaryActionHandlerT) -> None:
+    def on_primary_action(self, handler: OnPrimaryActionHandler) -> None:
         self._on_primary_action = wrapped_handler(self, handler)
         self._impl.set_primary_action_enabled(handler is not None)
 
@@ -300,7 +243,7 @@ class DetailedList(Widget, Generic[T]):
         return self._on_secondary_action
 
     @on_secondary_action.setter
-    def on_secondary_action(self, handler: OnSecondaryActionHandlerT) -> None:
+    def on_secondary_action(self, handler: OnSecondaryActionHandler) -> None:
         self._on_secondary_action = wrapped_handler(self, handler)
         self._impl.set_secondary_action_enabled(handler is not None)
 
@@ -315,7 +258,7 @@ class DetailedList(Widget, Generic[T]):
         return self._on_refresh
 
     @on_refresh.setter
-    def on_refresh(self, handler: OnRefreshHandlerT) -> None:
+    def on_refresh(self, handler: OnRefreshHandler) -> None:
         self._on_refresh = wrapped_handler(
             self, handler, cleanup=self._impl.after_on_refresh
         )
@@ -327,7 +270,7 @@ class DetailedList(Widget, Generic[T]):
         return self._on_select
 
     @on_select.setter
-    def on_select(self, handler: OnSelectHandlerT) -> None:
+    def on_select(self, handler: toga.widgets.detailedlist.OnSelectHandler) -> None:
         self._on_select = wrapped_handler(self, handler)
 
     ######################################################################
@@ -344,7 +287,7 @@ class DetailedList(Widget, Generic[T]):
         return self.on_primary_action
 
     @on_delete.setter
-    def on_delete(self, handler: OnPrimaryActionHandlerT) -> None:
+    def on_delete(self, handler: OnPrimaryActionHandler) -> None:
         warnings.warn(
             "DetailedList.on_delete has been renamed DetailedList.on_primary_action.",
             DeprecationWarning,

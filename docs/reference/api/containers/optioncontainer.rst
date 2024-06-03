@@ -195,6 +195,4 @@ Reference
 
 .. autoclass:: toga.widgets.optioncontainer.OptionItem
 
-.. autoprotocol:: toga.widgets.optioncontainer.OnSelectHandlerSync
-.. autoprotocol:: toga.widgets.optioncontainer.OnSelectHandlerAsync
-.. autoprotocol:: toga.widgets.optioncontainer.OnSelectHandlerGenerator
+.. autoprotocol:: toga.widgets.optioncontainer.OnSelectHandler

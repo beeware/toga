@@ -10,20 +10,17 @@ from typing import (
     Literal,
     Protocol,
     TypeVar,
-    Union,
     overload,
 )
 
 from toga.command import CommandSet
 from toga.handlers import (
     AsyncResult,
-    HandlerGeneratorReturnT,
     WrappedHandlerT,
     wrapped_handler,
 )
 from toga.images import Image
 from toga.platform import get_platform_factory
-from toga.types import TypeAlias
 
 if TYPE_CHECKING:
     from toga.app import App
@@ -77,68 +74,37 @@ class FilteredWidgetRegistry:
                 yield item[1]
 
 
-class OnCloseHandlerSync(Protocol):
-    def __call__(self, window: Window, /) -> bool:
+class OnCloseHandler(Protocol):
+    def __call__(self, window: Window, **kwargs: Any) -> bool:
         """A handler to invoke when a window is about to close.
 
         The return value of this callback controls whether the window is allowed to close.
         This can be used to prevent a window closing with unsaved changes, etc.
 
         :param window: The window instance that is closing.
+        :param kwargs: Ensures compatibility with arguments added in future versions.
         :returns: ``True`` if the window is allowed to close; ``False`` if the window
             is not allowed to close.
         """
 
 
-class OnCloseHandlerAsync(Protocol):
-    async def __call__(self, window: Window, /) -> bool:
-        """Async definition of :any:`OnCloseHandlerSync`."""
-
-
-class OnCloseHandlerGenerator(Protocol):
-    def __call__(self, window: Window, /) -> HandlerGeneratorReturnT[bool]:
-        """Generator definition of :any:`OnCloseHandlerSync`."""
-
-
-OnCloseHandlerT: TypeAlias = Union[
-    OnCloseHandlerSync, OnCloseHandlerAsync, OnCloseHandlerGenerator
-]
-
 _DialogResultT = TypeVar("_DialogResultT", contravariant=True)
 
 
-class DialogResultHandlerSync(Protocol[_DialogResultT]):
-    def __call__(self, window: Window, result: _DialogResultT, /) -> Any:
+class DialogResultHandler(Protocol[_DialogResultT]):
+    def __call__(self, window: Window, result: _DialogResultT, **kwargs: Any) -> Any:
         """A handler to invoke when a dialog is closed.
 
         :param window: The window that opened the dialog.
+        :param kwargs: Ensures compatibility with arguments added in future versions.
         :param result: The result returned by the dialog.
         """
-
-
-class DialogResultHandlerAsync(Protocol[_DialogResultT]):
-    async def __call__(self, window: Window, result: _DialogResultT, /) -> Any:
-        """Async definition of :any:`DialogResultHandlerSync`."""
-
-
-class DialogResultHandlerGenerator(Protocol[_DialogResultT]):
-    def __call__(
-        self, window: Window, result: _DialogResultT, /
-    ) -> HandlerGeneratorReturnT[Any]:
-        """Generator definition of :any:`DialogResultHandlerSync`."""
-
-
-DialogResultHandlerT: TypeAlias = Union[
-    DialogResultHandlerSync[_DialogResultT],
-    DialogResultHandlerAsync[_DialogResultT],
-    DialogResultHandlerGenerator[_DialogResultT],
-]
 
 
 class Dialog(AsyncResult):
     RESULT_TYPE = "dialog"
 
-    def __init__(self, window: Window, on_result: DialogResultHandlerT[Any]):
+    def __init__(self, window: Window, on_result: DialogResultHandler[Any]):
         # TODO:PR: should DialogResultHandlerT include the "exception" arg...
         super().__init__(on_result=on_result)
         self.window = window
@@ -157,7 +123,7 @@ class Window:
         resizable: bool = True,
         closable: bool = True,
         minimizable: bool = True,
-        on_close: OnCloseHandlerT | None = None,
+        on_close: OnCloseHandler | None = None,
         content: Widget | None = None,
         resizeable: None = None,  # DEPRECATED
         closeable: None = None,  # DEPRECATED
@@ -514,7 +480,7 @@ class Window:
         return self._on_close
 
     @on_close.setter
-    def on_close(self, handler: OnCloseHandlerT | None) -> None:
+    def on_close(self, handler: OnCloseHandler | None) -> None:
         def cleanup(window: Window, should_close: bool) -> None:
             if should_close or handler is None:
                 window.close()
@@ -529,7 +495,7 @@ class Window:
         self,
         title: str,
         message: str,
-        on_result: DialogResultHandlerT[None] | None = None,
+        on_result: DialogResultHandler[None] | None = None,
     ) -> Dialog:
         """Ask the user to acknowledge some information.
 
@@ -556,7 +522,7 @@ class Window:
         self,
         title: str,
         message: str,
-        on_result: DialogResultHandlerT[bool] | None = None,
+        on_result: DialogResultHandler[bool] | None = None,
     ) -> Dialog:
         """Ask the user a yes/no question.
 
@@ -583,7 +549,7 @@ class Window:
         self,
         title: str,
         message: str,
-        on_result: DialogResultHandlerT[bool] | None = None,
+        on_result: DialogResultHandler[bool] | None = None,
     ) -> Dialog:
         """Ask the user to confirm if they wish to proceed with an action.
 
@@ -611,7 +577,7 @@ class Window:
         self,
         title: str,
         message: str,
-        on_result: DialogResultHandlerT[None] | None = None,
+        on_result: DialogResultHandler[None] | None = None,
     ) -> Dialog:
         """Ask the user to acknowledge an error state.
 
@@ -641,7 +607,7 @@ class Window:
         message: str,
         content: str,
         retry: Literal[False] = False,
-        on_result: DialogResultHandlerT[None] | None = None,
+        on_result: DialogResultHandler[None] | None = None,
     ) -> Dialog: ...
 
     @overload
@@ -651,7 +617,7 @@ class Window:
         message: str,
         content: str,
         retry: Literal[True] = True,
-        on_result: DialogResultHandlerT[bool] | None = None,
+        on_result: DialogResultHandler[bool] | None = None,
     ) -> Dialog: ...
 
     @overload
@@ -661,9 +627,7 @@ class Window:
         message: str,
         content: str,
         retry: bool = False,
-        on_result: (
-            DialogResultHandlerT[bool] | DialogResultHandlerT[None] | None
-        ) = None,
+        on_result: DialogResultHandler[bool] | DialogResultHandler[None] | None = None,
     ) -> Dialog: ...
 
     def stack_trace_dialog(
@@ -672,9 +636,7 @@ class Window:
         message: str,
         content: str,
         retry: bool = False,
-        on_result: (
-            DialogResultHandlerT[bool] | DialogResultHandlerT[None] | None
-        ) = None,
+        on_result: DialogResultHandler[bool] | DialogResultHandler[None] | None = None,
     ) -> Dialog:
         """Open a dialog to display a large block of text, such as a stack trace.
 
@@ -710,7 +672,7 @@ class Window:
         title: str,
         suggested_filename: Path | str,
         file_types: list[str] | None = None,
-        on_result: DialogResultHandlerT[Path | None] | None = None,
+        on_result: DialogResultHandler[Path | None] | None = None,
     ) -> Dialog:
         """Prompt the user for a location to save a file.
 
@@ -757,9 +719,7 @@ class Window:
         initial_directory: Path | str | None = None,
         file_types: list[str] | None = None,
         multiple_select: Literal[False] = False,
-        on_result: (
-            DialogResultHandlerT[Path] | DialogResultHandlerT[None] | None
-        ) = None,
+        on_result: DialogResultHandler[Path] | DialogResultHandler[None] | None = None,
         multiselect: None = None,  # DEPRECATED
     ) -> Dialog: ...
 
@@ -771,7 +731,7 @@ class Window:
         file_types: list[str] | None = None,
         multiple_select: Literal[True] = True,
         on_result: (
-            DialogResultHandlerT[list[Path]] | DialogResultHandlerT[None] | None
+            DialogResultHandler[list[Path]] | DialogResultHandler[None] | None
         ) = None,
         multiselect: None = None,  # DEPRECATED
     ) -> Dialog: ...
@@ -784,9 +744,9 @@ class Window:
         file_types: list[str] | None = None,
         multiple_select: bool = False,
         on_result: (
-            DialogResultHandlerT[list[Path]]
-            | DialogResultHandlerT[Path]
-            | DialogResultHandlerT[None]
+            DialogResultHandler[list[Path]]
+            | DialogResultHandler[Path]
+            | DialogResultHandler[None]
             | None
         ) = None,
         multiselect: None = None,  # DEPRECATED
@@ -799,9 +759,9 @@ class Window:
         file_types: list[str] | None = None,
         multiple_select: bool = False,
         on_result: (
-            DialogResultHandlerT[list[Path]]
-            | DialogResultHandlerT[Path]
-            | DialogResultHandlerT[None]
+            DialogResultHandler[list[Path]]
+            | DialogResultHandler[Path]
+            | DialogResultHandler[None]
             | None
         ) = None,
         multiselect: None = None,  # DEPRECATED
@@ -860,9 +820,7 @@ class Window:
         title: str,
         initial_directory: Path | str | None = None,
         multiple_select: Literal[False] = False,
-        on_result: (
-            DialogResultHandlerT[Path] | DialogResultHandlerT[None] | None
-        ) = None,
+        on_result: DialogResultHandler[Path] | DialogResultHandler[None] | None = None,
         multiselect: None = None,  # DEPRECATED
     ) -> Dialog: ...
 
@@ -873,7 +831,7 @@ class Window:
         initial_directory: Path | str | None = None,
         multiple_select: Literal[True] = True,
         on_result: (
-            DialogResultHandlerT[list[Path]] | DialogResultHandlerT[None] | None
+            DialogResultHandler[list[Path]] | DialogResultHandler[None] | None
         ) = None,
         multiselect: None = None,  # DEPRECATED
     ) -> Dialog: ...
@@ -885,9 +843,9 @@ class Window:
         initial_directory: Path | str | None = None,
         multiple_select: bool = False,
         on_result: (
-            DialogResultHandlerT[list[Path]]
-            | DialogResultHandlerT[Path]
-            | DialogResultHandlerT[None]
+            DialogResultHandler[list[Path]]
+            | DialogResultHandler[Path]
+            | DialogResultHandler[None]
             | None
         ) = None,
         multiselect: None = None,  # DEPRECATED
@@ -899,9 +857,9 @@ class Window:
         initial_directory: Path | str | None = None,
         multiple_select: bool = False,
         on_result: (
-            DialogResultHandlerT[list[Path]]
-            | DialogResultHandlerT[Path]
-            | DialogResultHandlerT[None]
+            DialogResultHandler[list[Path]]
+            | DialogResultHandler[Path]
+            | DialogResultHandler[None]
             | None
         ) = None,
         multiselect: None = None,  # DEPRECATED

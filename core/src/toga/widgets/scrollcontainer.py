@@ -1,31 +1,18 @@
 from __future__ import annotations
 
-from typing import Literal, Protocol, SupportsInt, Union
+from typing import Any, Literal, Protocol, SupportsInt
 
-from toga.handlers import HandlerGeneratorReturnT, WrappedHandlerT, wrapped_handler
-from toga.types import TypeAlias
+from toga.handlers import WrappedHandlerT, wrapped_handler
 
 from .base import StyleT, Widget
 
 
-class OnScrollHandlerSync(Protocol):
-    def __call__(self, /) -> object:
-        """A handler to invoke when the container is scrolled."""
+class OnScrollHandler(Protocol):
+    def __call__(self, **kwargs: Any) -> object:
+        """A handler to invoke when the container is scrolled.
 
-
-class OnScrollHandlerAsync(Protocol):
-    async def __call__(self, /) -> object:
-        """Async definition of :any:`OnScrollHandlerSync`."""
-
-
-class OnScrollHandlerGenerator(Protocol):
-    def __call__(self, /) -> HandlerGeneratorReturnT[object]:
-        """Generator definition of :any:`OnScrollHandlerSync`."""
-
-
-OnScrollHandlerT: TypeAlias = Union[
-    OnScrollHandlerSync, OnScrollHandlerAsync, OnScrollHandlerGenerator
-]
+        :param kwargs: Ensures compatibility with arguments added in future versions.
+        """
 
 
 class ScrollContainer(Widget):
@@ -35,7 +22,7 @@ class ScrollContainer(Widget):
         style: StyleT | None = None,
         horizontal: bool = True,
         vertical: bool = True,
-        on_scroll: OnScrollHandlerT | None = None,
+        on_scroll: OnScrollHandler | None = None,
         content: Widget | None = None,
     ):
         """Create a new Scroll Container.
@@ -148,7 +135,7 @@ class ScrollContainer(Widget):
         return self._on_scroll
 
     @on_scroll.setter
-    def on_scroll(self, on_scroll: OnScrollHandlerT) -> None:
+    def on_scroll(self, on_scroll: OnScrollHandler) -> None:
         self._on_scroll = wrapped_handler(self, on_scroll)
 
     @property

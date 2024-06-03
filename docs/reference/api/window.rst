@@ -97,9 +97,5 @@ Reference
 .. autoclass:: toga.Window
 
 .. autoprotocol:: toga.window.Dialog
-.. autoprotocol:: toga.window.OnCloseHandlerSync
-.. autoprotocol:: toga.window.OnCloseHandlerAsync
-.. autoprotocol:: toga.window.OnCloseHandlerGenerator
-.. autoprotocol:: toga.window.DialogResultHandlerSync
-.. autoprotocol:: toga.window.DialogResultHandlerAsync
-.. autoprotocol:: toga.window.DialogResultHandlerGenerator
+.. autoprotocol:: toga.window.OnCloseHandler
+.. autoprotocol:: toga.window.DialogResultHandler
