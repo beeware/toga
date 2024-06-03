@@ -1,8 +1,6 @@
 from __future__ import annotations
 
-from toga.style import Pack
-
-from .base import Widget
+from .base import StyleT, Widget
 
 
 class Label(Widget):
@@ -10,7 +8,7 @@ class Label(Widget):
         self,
         text: str,
         id: str | None = None,
-        style: Pack | None = None,
+        style: StyleT | None = None,
     ):
         """Create a new text label.
 

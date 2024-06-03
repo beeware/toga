@@ -3,7 +3,12 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, Protocol
 
 import toga
-from toga.handlers import AsyncResult, PermissionResult, wrapped_handler
+from toga.handlers import (
+    AsyncResult,
+    PermissionResult,
+    WrappedHandlerT,
+    wrapped_handler,
+)
 from toga.platform import get_platform_factory
 
 if TYPE_CHECKING:
@@ -30,7 +35,6 @@ class OnLocationChangeHandler(Protocol):
             None if the altitude could not be determined.
         :param kwargs: Ensures compatibility with arguments added in future versions.
         """
-        ...
 
 
 class Location:
@@ -132,15 +136,15 @@ class Location:
         return result
 
     @property
-    def on_change(self) -> OnLocationChangeHandler:
+    def on_change(self) -> WrappedHandlerT:
         """The handler to invoke when an update to the user's location is available."""
         return self._on_change
 
     @on_change.setter
-    def on_change(self, handler):
+    def on_change(self, handler: OnLocationChangeHandler) -> None:
         self._on_change = wrapped_handler(self, handler)
 
-    def start_tracking(self):
+    def start_tracking(self) -> None:
         """Start monitoring the user's location for changes.
 
         An :any:`on_change` callback will be generated when the user's location
@@ -156,7 +160,7 @@ class Location:
                 "App does not have permission to use location services"
             )
 
-    def stop_tracking(self):
+    def stop_tracking(self) -> None:
         """Stop monitoring the user's location.
 
         :raises PermissionError: If the app has not requested and received permission to

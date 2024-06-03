@@ -4,10 +4,9 @@ from typing import TYPE_CHECKING, Protocol, Union
 
 import toga
 from toga.handlers import HandlerGeneratorReturnT, WrappedHandlerT, wrapped_handler
-from toga.style import Pack
 from toga.types import TypeAlias
 
-from .base import Widget
+from .base import StyleT, Widget
 
 if TYPE_CHECKING:
     from toga.icons import IconContent
@@ -44,7 +43,7 @@ class Button(Widget):
         text: str | None = None,
         icon: IconContent | None = None,
         id: str | None = None,
-        style: Pack | None = None,
+        style: StyleT | None = None,
         on_press: OnPressHandlerT | None = None,
         enabled: bool = True,
     ):
@@ -102,6 +101,7 @@ class Button(Widget):
 
     @text.setter
     def text(self, value: str | None) -> None:
+        # \u200B: zero-width space
         if value is None or value == "\u200B":
             value = ""
         else:

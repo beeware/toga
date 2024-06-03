@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 from builtins import id as identifier
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, TypeVar
 
+from travertino.declaration import BaseStyle
 from travertino.node import Node
 
 from toga.platform import get_platform_factory
@@ -12,12 +13,18 @@ if TYPE_CHECKING:
     from toga.app import App
     from toga.window import Window
 
+StyleT = TypeVar("StyleT", bound=BaseStyle)
+
 
 class Widget(Node):
     _MIN_WIDTH = 100
     _MIN_HEIGHT = 100
 
-    def __init__(self, id: str | None = None, style: Pack | None = None):
+    def __init__(
+        self,
+        id: str | None = None,
+        style: StyleT | None = None,
+    ):
         """Create a base Toga widget.
 
         This is an abstract base class; it cannot be instantiated.

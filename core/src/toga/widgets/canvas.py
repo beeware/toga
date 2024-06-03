@@ -25,9 +25,8 @@ from toga.fonts import (
     Font,
 )
 from toga.handlers import WrappedHandlerT, wrapped_handler
-from toga.style import Pack
 
-from .base import Widget
+from .base import StyleT, Widget
 
 if TYPE_CHECKING:
     from toga.images import ImageT
@@ -1209,7 +1208,7 @@ class Canvas(Widget):
     def __init__(
         self,
         id: str | None = None,
-        style: Pack | None = None,
+        style: StyleT | None = None,
         on_resize: OnResizeHandler | None = None,
         on_press: OnTouchHandler | None = None,
         on_activate: OnTouchHandler | None = None,

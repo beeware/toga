@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from collections.abc import Iterable
+from collections.abc import Collection
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -12,10 +12,9 @@ from typing import (
 import toga
 from toga.handlers import HandlerGeneratorReturnT, WrappedHandlerT, wrapped_handler
 from toga.platform import get_platform_factory
-from toga.style import Pack
 from toga.types import TypeAlias
 
-from .base import Widget
+from .base import StyleT, Widget
 
 if TYPE_CHECKING:
     from toga.icons import IconContent
@@ -393,8 +392,8 @@ class OptionContainer(Widget):
     def __init__(
         self,
         id: str | None = None,
-        style: Pack | None = None,
-        content: Iterable[tuple[str, Widget]] | None = None,
+        style: StyleT | None = None,
+        content: Collection[tuple[str, Widget]] | None = None,
         on_select: OnSelectHandlerT | None = None,
     ):
         """Create a new OptionContainer.

@@ -1,15 +1,14 @@
 from __future__ import annotations
 
 import warnings
-from collections.abc import Iterable
+from collections.abc import Collection
 from typing import Any, Generic, Protocol, TypeVar, Union
 
 from toga.handlers import HandlerGeneratorReturnT, WrappedHandlerT, wrapped_handler
 from toga.sources import ListSource, Source
-from toga.style import Pack
 from toga.types import TypeAlias
 
-from .base import Widget
+from .base import StyleT, Widget
 
 T = TypeVar("T")
 SourceT = TypeVar("SourceT", bound=Source)
@@ -39,8 +38,8 @@ class Selection(Widget, Generic[T]):
     def __init__(
         self,
         id: str | None = None,
-        style: Pack | None = None,
-        items: SourceT | Iterable[T] | None = None,
+        style: StyleT | None = None,
+        items: SourceT | Collection[T] | None = None,
         accessor: str | None = None,
         value: T | None = None,
         on_change: OnChangeHandlerT | None = None,
@@ -111,7 +110,7 @@ class Selection(Widget, Generic[T]):
         return self._items
 
     @items.setter
-    def items(self, items: SourceT | Iterable[T] | None) -> None:
+    def items(self, items: SourceT | Collection[T] | None) -> None:
         if self._accessor is None:
             accessors = ["value"]
         else:

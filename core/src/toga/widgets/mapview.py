@@ -1,14 +1,13 @@
 from __future__ import annotations
 
-from collections.abc import Iterator
+from collections.abc import Collection, Iterator
 from typing import Any, Protocol, Union
 
 import toga
 from toga.handlers import HandlerGeneratorReturnT, WrappedHandlerT, wrapped_handler
-from toga.style import Pack
 from toga.types import TypeAlias
 
-from .base import Widget
+from .base import StyleT, Widget
 
 
 class MapPin:
@@ -30,7 +29,7 @@ class MapPin:
         self._subtitle = subtitle
 
         # A pin isn't tied to a map at time of creation.
-        self.interface: MapView = None
+        self.interface: MapView | None = None
         self._native = None
 
     def __repr__(self) -> str:
@@ -65,7 +64,7 @@ class MapPin:
 
     @property
     def subtitle(self) -> str | None:
-        "The subtitle of the pin."
+        """The subtitle of the pin."""
         return self._subtitle
 
     @subtitle.setter
@@ -78,7 +77,7 @@ class MapPin:
 
 
 class MapPinSet:
-    def __init__(self, interface: MapView, pins: Iterator[MapPin] | None):
+    def __init__(self, interface: MapView, pins: Collection[MapPin] | None):
         self.interface = interface
         self._pins: set[MapPin] = set()
 
@@ -152,10 +151,10 @@ class MapView(Widget):
     def __init__(
         self,
         id: str | None = None,
-        style: Pack | None = None,
+        style: StyleT | None = None,
         location: toga.LatLng | tuple[float, float] | None = None,
         zoom: int = 11,
-        pins: Iterator[MapPin] | None = None,
+        pins: Collection[MapPin] | None = None,
         on_select: OnSelectHandlerT | None = None,
     ):
         """Create a new MapView widget.

@@ -1,16 +1,15 @@
 from __future__ import annotations
 
 import warnings
-from collections.abc import Iterable
+from collections.abc import Collection, Iterable, MutableSequence
 from typing import Any, Generic, Literal, Protocol, TypeVar, Union
 
 from toga.handlers import HandlerGeneratorReturnT, WrappedHandlerT, wrapped_handler
 from toga.sources import ListSource, Row, Source
 from toga.sources.accessors import build_accessors, to_accessor
-from toga.style import Pack
 from toga.types import TypeAlias
 
-from .base import Widget
+from .base import StyleT, Widget
 
 T = TypeVar("T")
 SourceT = TypeVar("SourceT", bound=Source)
@@ -61,9 +60,9 @@ class Table(Widget, Generic[T]):
         self,
         headings: Iterable[str] | None = None,
         id: str | None = None,
-        style: Pack | None = None,
+        style: StyleT | None = None,
         data: SourceT | Iterable[T] | None = None,
-        accessors: list[str] | None = None,
+        accessors: MutableSequence[str] | None = None,
         multiple_select: bool = False,
         on_select: OnSelectHandlerT | None = None,
         on_activate: OnActivateHandlerT | None = None,
@@ -180,7 +179,7 @@ class Table(Widget, Generic[T]):
         return self._data
 
     @data.setter
-    def data(self, data: SourceT | Iterable[T] | None) -> None:
+    def data(self, data: SourceT | Collection[T] | None) -> None:
         if data is None:
             self._data = ListSource(accessors=self._accessors, data=[])
         elif isinstance(data, Source):

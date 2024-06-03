@@ -2,9 +2,7 @@ from __future__ import annotations
 
 from typing import Literal, SupportsFloat
 
-from toga.style import Pack
-
-from .base import Widget
+from .base import StyleT, Widget
 
 
 class ProgressBar(Widget):
@@ -13,7 +11,7 @@ class ProgressBar(Widget):
     def __init__(
         self,
         id: str | None = None,
-        style: Pack | None = None,
+        style: StyleT | None = None,
         max: str | SupportsFloat = 1.0,
         value: str | SupportsFloat = 0.0,
         running: bool = False,

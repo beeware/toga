@@ -10,10 +10,9 @@ from toga.handlers import (
     WrappedHandlerT,
     wrapped_handler,
 )
-from toga.style import Pack
 from toga.types import TypeAlias
 
-from .base import Widget
+from .base import StyleT, Widget
 
 
 class JavaScriptResult(AsyncResult):
@@ -44,7 +43,7 @@ class WebView(Widget):
     def __init__(
         self,
         id: str | None = None,
-        style: Pack | None = None,
+        style: StyleT | None = None,
         url: str | None = None,
         user_agent: str | None = None,
         on_webview_load: OnWebViewLoadHandlerT | None = None,

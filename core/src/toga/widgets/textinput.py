@@ -1,13 +1,12 @@
 from __future__ import annotations
 
-from collections.abc import Callable
+from collections.abc import Callable, Iterable
 from typing import Protocol, Union
 
 from toga.handlers import HandlerGeneratorReturnT, WrappedHandlerT, wrapped_handler
-from toga.style import Pack
 from toga.types import TypeAlias
 
-from .base import Widget
+from .base import StyleT, Widget
 
 
 class OnChangeHandlerSync(Protocol):
@@ -96,7 +95,7 @@ class TextInput(Widget):
     def __init__(
         self,
         id: str | None = None,
-        style: Pack | None = None,
+        style: StyleT | None = None,
         value: str | None = None,
         readonly: bool = False,
         placeholder: str | None = None,
@@ -104,7 +103,7 @@ class TextInput(Widget):
         on_confirm: OnConfirmHandlerT | None = None,
         on_gain_focus: OnGainFocusHandlerT | None = None,
         on_lose_focus: OnLoseFocusHandlerT | None = None,
-        validators: list[Callable[[str], bool]] | None = None,
+        validators: Iterable[Callable[[str], bool]] | None = None,
     ):
         """
         :param id: The ID for the widget.
@@ -224,12 +223,12 @@ class TextInput(Widget):
         return self._validators
 
     @validators.setter
-    def validators(self, validators: list[Callable[[str], bool]] | None) -> None:
+    def validators(self, validators: Iterable[Callable[[str], bool]] | None) -> None:
         replacing = hasattr(self, "_validators")
         if validators is None:
             self._validators = []
         else:
-            self._validators = validators
+            self._validators = list(validators)
 
         if replacing:
             self._validate()
@@ -265,7 +264,7 @@ class TextInput(Widget):
         else:
             self._impl.clear_error()
 
-    def _value_changed(self):
+    def _value_changed(self) -> None:
         """Validate the current value of the widget and invoke the on_change handler."""
         self._validate()
         self.on_change()

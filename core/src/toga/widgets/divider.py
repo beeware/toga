@@ -3,9 +3,8 @@ from __future__ import annotations
 from typing import Literal
 
 from toga.constants import Direction
-from toga.style import Pack
 
-from .base import Widget
+from .base import StyleT, Widget
 
 
 class Divider(Widget):
@@ -15,7 +14,7 @@ class Divider(Widget):
     def __init__(
         self,
         id: str | None = None,
-        style: Pack | None = None,
+        style: StyleT | None = None,
         direction: Direction = HORIZONTAL,
     ):
         """Create a new divider line.

@@ -10,7 +10,6 @@ from warnings import warn
 
 import toga
 from toga.platform import get_platform_factory
-from toga.types import TypeAlias, TypeVar
 
 if sys.version_info >= (3, 10):
     from importlib.metadata import entry_points
@@ -23,6 +22,8 @@ else:
 warnings.filterwarnings("default", category=DeprecationWarning)
 
 if TYPE_CHECKING:
+    from toga.types import TypeAlias, TypeVar
+
     # Define a type variable for generics where an Image type is required.
     ImageT = TypeVar("ImageT")
 

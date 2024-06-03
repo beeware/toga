@@ -183,11 +183,7 @@ class WidgetRegistry:
         return self.values()
 
     def __repr__(self) -> str:
-        return (
-            "{"
-            + ", ".join(f"{k!r}: {v!r}" for k, v in sorted(self._registry.items()))
-            + "}"
-        )
+        return f"{{{', '.join(f'{k!r}: {v!r}' for k, v in sorted(self._registry.items()))}}}"
 
     def items(self) -> Iterator[tuple[str, Widget]]:
         return self._registry.items()
@@ -329,6 +325,9 @@ class App:
     #: The currently running :class:`~toga.App`. Since there can only be one running
     #: Toga app in a process, this is available as a class property via ``toga.App.app``.
     app: App
+    _impl: Any
+    _camera: Camera
+    _location: Location
 
     def __init__(
         self,

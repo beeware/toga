@@ -1,10 +1,8 @@
 from __future__ import annotations
 
-from collections.abc import Iterable
+from collections.abc import Collection
 
-from toga.style import Pack
-
-from .base import Widget
+from .base import StyleT, Widget
 
 
 class Box(Widget):
@@ -14,8 +12,8 @@ class Box(Widget):
     def __init__(
         self,
         id: str | None = None,
-        style: Pack | None = None,
-        children: Iterable[Widget] | None = None,
+        style: StyleT | None = None,
+        children: Collection[Widget] | None = None,
     ):
         """Create a new Box container widget.
 

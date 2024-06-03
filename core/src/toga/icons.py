@@ -7,9 +7,10 @@ from typing import TYPE_CHECKING
 
 import toga
 from toga.platform import get_platform_factory
-from toga.types import TypeAlias
 
 if TYPE_CHECKING:
+    from toga.types import TypeAlias
+
     IconContent: TypeAlias = str | Path | toga.Icon
 
 
@@ -177,5 +178,5 @@ class Icon:
 
         raise FileNotFoundError(f"Can't find icon {self.path}")
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
         return isinstance(other, Icon) and other._impl.path == self._impl.path

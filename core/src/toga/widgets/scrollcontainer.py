@@ -3,10 +3,9 @@ from __future__ import annotations
 from typing import Literal, Protocol, SupportsInt, Union
 
 from toga.handlers import HandlerGeneratorReturnT, WrappedHandlerT, wrapped_handler
-from toga.style import Pack
 from toga.types import TypeAlias
 
-from .base import Widget
+from .base import StyleT, Widget
 
 
 class OnScrollHandlerSync(Protocol):
@@ -33,7 +32,7 @@ class ScrollContainer(Widget):
     def __init__(
         self,
         id: str | None = None,
-        style: Pack | None = None,
+        style: StyleT | None = None,
         horizontal: bool = True,
         vertical: bool = True,
         on_scroll: OnScrollHandlerT | None = None,

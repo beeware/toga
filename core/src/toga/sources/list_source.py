@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from collections.abc import Iterable
+from collections.abc import Collection, Iterable
 from typing import Generic, TypeVar
 
 from .base import Source
@@ -95,7 +95,7 @@ class Row(Generic[T]):
 
 # TODO:PR: consider adding supported Protocols...maybe List?
 class ListSource(Source, Generic[T]):
-    def __init__(self, accessors: Iterable[str], data: Iterable[T] | None = None):
+    def __init__(self, accessors: Iterable[str], data: Collection[T] | None = None):
         """A data source to store an ordered list of multiple data values.
 
         :param accessors: A list of attribute names for accessing the value

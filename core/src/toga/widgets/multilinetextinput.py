@@ -3,10 +3,9 @@ from __future__ import annotations
 from typing import Protocol, Union
 
 from toga.handlers import HandlerGeneratorReturnT, WrappedHandlerT, wrapped_handler
-from toga.style import Pack
 from toga.types import TypeAlias
 
-from .base import Widget
+from .base import StyleT, Widget
 
 
 class OnChangeHandlerSync(Protocol):
@@ -33,7 +32,7 @@ class MultilineTextInput(Widget):
     def __init__(
         self,
         id: str | None = None,
-        style: Pack | None = None,
+        style: StyleT | None = None,
         value: str | None = None,
         readonly: bool = False,
         placeholder: str | None = None,

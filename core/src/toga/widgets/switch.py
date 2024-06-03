@@ -3,10 +3,9 @@ from __future__ import annotations
 from typing import Protocol, Union
 
 from toga.handlers import HandlerGeneratorReturnT, WrappedHandlerT, wrapped_handler
-from toga.style import Pack
 from toga.types import TypeAlias
 
-from .base import Widget
+from .base import StyleT, Widget
 
 
 class OnChangeHandlerSync(Protocol):
@@ -34,7 +33,7 @@ class Switch(Widget):
         self,
         text: str,
         id: str | None = None,
-        style: Pack | None = None,
+        style: StyleT | None = None,
         on_change: OnChangeHandlerT | None = None,
         value: bool = False,
         enabled: bool = True,

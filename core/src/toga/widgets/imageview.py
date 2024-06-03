@@ -5,8 +5,8 @@ from typing import TYPE_CHECKING, Literal
 from travertino.size import at_least
 
 import toga
-from toga.style.pack import NONE, Pack
-from toga.widgets.base import Widget
+from toga.style.pack import NONE
+from toga.widgets.base import StyleT, Widget
 
 if TYPE_CHECKING:
     from toga.images import ImageContent, ImageT
@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 
 def rehint_imageview(
     image: toga.Image,
-    style: Pack,
+    style: StyleT,
     scale: int = 1,
 ) -> tuple[int, int, float | None]:
     """Compute the size hints for an ImageView based on the image.
@@ -67,14 +67,12 @@ def rehint_imageview(
     return width, height, aspect_ratio
 
 
-# Note: remove PIL type annotation when plugin system is implemented for image format
-# registration; replace with ImageT?
 class ImageView(Widget):
     def __init__(
         self,
         image: ImageContent | None = None,
         id: str | None = None,
-        style: Pack | None = None,
+        style: StyleT | None = None,
     ):
         """
         Create a new image view.

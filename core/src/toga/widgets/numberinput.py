@@ -6,10 +6,9 @@ from decimal import ROUND_HALF_UP, Decimal, InvalidOperation
 from typing import Protocol, Union
 
 from toga.handlers import HandlerGeneratorReturnT, WrappedHandlerT, wrapped_handler
-from toga.style import Pack
 from toga.types import TypeAlias
 
-from .base import Widget
+from .base import StyleT, Widget
 
 # Implementation notes
 # ====================
@@ -91,7 +90,7 @@ class NumberInput(Widget):
     def __init__(
         self,
         id: str | None = None,
-        style: Pack | None = None,
+        style: StyleT | None = None,
         step: StepInputT = 1,
         min: NumberInputT | None = None,
         max: NumberInputT | None = None,

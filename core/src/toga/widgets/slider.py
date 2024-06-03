@@ -2,15 +2,13 @@ from __future__ import annotations
 
 import warnings
 from abc import ABC, abstractmethod
-from collections.abc import Iterator
 from contextlib import contextmanager
 from typing import Any, Protocol, SupportsFloat, Union
 
 from toga.handlers import HandlerGeneratorReturnT, WrappedHandlerT, wrapped_handler
-from toga.style import Pack
 from toga.types import TypeAlias
 
-from .base import Widget
+from .base import StyleT, Widget
 
 
 class OnChangeHandlerSync(Protocol):
@@ -77,7 +75,7 @@ class Slider(Widget):
     def __init__(
         self,
         id: str | None = None,
-        style: Pack | None = None,
+        style: StyleT | None = None,
         value: float | None = None,
         min: float | None = None,  # Default to 0.0 when range is removed
         max: float | None = None,  # Default to 1.0 when range is removed
@@ -156,7 +154,7 @@ class Slider(Widget):
     # Backends are inconsistent about when they produce events for programmatic changes,
     # so we deal with those in the interface layer.
     @contextmanager
-    def _programmatic_change(self) -> Iterator[float]:
+    def _programmatic_change(self) -> float:
         old_value = self.value
         on_change = self._on_change
         self.on_change = None

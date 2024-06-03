@@ -5,10 +5,9 @@ import warnings
 from typing import Any, Protocol, Union
 
 from toga.handlers import HandlerGeneratorReturnT, WrappedHandlerT, wrapped_handler
-from toga.style import Pack
 from toga.types import TypeAlias
 
-from .base import Widget
+from .base import StyleT, Widget
 
 # This accommodates the ranges of all existing implementations:
 #  * datetime.date: 1 - 9999
@@ -46,7 +45,7 @@ class DateInput(Widget):
     def __init__(
         self,
         id: str | None = None,
-        style: Pack | None = None,
+        style: StyleT | None = None,
         value: datetime.date | None = None,
         min: datetime.date | None = None,
         max: datetime.date | None = None,

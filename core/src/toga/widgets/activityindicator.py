@@ -2,16 +2,14 @@ from __future__ import annotations
 
 from typing import Literal
 
-from toga.style import Pack
-
-from .base import Widget
+from .base import StyleT, Widget
 
 
 class ActivityIndicator(Widget):
     def __init__(
         self,
         id: str | None = None,
-        style: Pack | None = None,
+        style: StyleT | None = None,
         running: bool = False,
     ):
         """Create a new ActivityIndicator widget.

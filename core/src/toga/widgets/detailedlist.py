@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import warnings
-from collections.abc import Iterable
+from collections.abc import Collection, Iterable
 from typing import (
     Any,
     Generic,
@@ -13,10 +13,9 @@ from typing import (
 
 from toga.handlers import HandlerGeneratorReturnT, WrappedHandlerT, wrapped_handler
 from toga.sources import ListSource, Row, Source
-from toga.style import Pack
 from toga.types import TypeAlias
 
-from .base import Widget
+from .base import StyleT, Widget
 
 T = TypeVar("T")
 SourceT = TypeVar("SourceT", bound=Source)
@@ -116,7 +115,7 @@ class DetailedList(Widget, Generic[T]):
     def __init__(
         self,
         id: str | None = None,
-        style: Pack | None = None,
+        style: StyleT | None = None,
         data: SourceT | Iterable[T] | None = None,
         accessors: tuple[str, str, str] = ("title", "subtitle", "icon"),
         missing_value: str = "",
@@ -215,7 +214,7 @@ class DetailedList(Widget, Generic[T]):
         return self._data
 
     @data.setter
-    def data(self, data: SourceT | Iterable[T] | None) -> None:
+    def data(self, data: SourceT | Collection[T] | None) -> None:
         if data is None:
             self._data = ListSource(data=[], accessors=self.accessors)
         elif isinstance(data, Source):

@@ -5,10 +5,9 @@ import warnings
 from typing import Any, Protocol, Union
 
 from toga.handlers import HandlerGeneratorReturnT, WrappedHandlerT, wrapped_handler
-from toga.style import Pack
 from toga.types import TypeAlias
 
-from .base import Widget
+from .base import StyleT, Widget
 
 
 class OnChangeHandlerSync(Protocol):
@@ -35,7 +34,7 @@ class TimeInput(Widget):
     def __init__(
         self,
         id: str | None = None,
-        style: Pack | None = None,
+        style: StyleT | None = None,
         value: datetime.time | None = None,
         min: datetime.time | None = None,
         max: datetime.time | None = None,

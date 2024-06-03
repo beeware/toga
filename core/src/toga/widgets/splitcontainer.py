@@ -2,11 +2,12 @@ from __future__ import annotations
 
 from typing import Tuple, Union
 
+from toga.app import App
 from toga.constants import Direction
-from toga.style import Pack
 from toga.types import TypeAlias
+from toga.window import Window
 
-from .base import Widget
+from .base import StyleT, Widget
 
 ContentT: TypeAlias = Union[Widget, Tuple[Widget, float], None]
 
@@ -18,7 +19,7 @@ class SplitContainer(Widget):
     def __init__(
         self,
         id: str | None = None,
-        style: Pack | None = None,
+        style: StyleT | None = None,
         direction: Direction = Direction.VERTICAL,
         content: tuple[ContentT, ContentT] = (None, None),
     ):
@@ -123,7 +124,7 @@ class SplitContainer(Widget):
         self.refresh()
 
     @Widget.app.setter
-    def app(self, app):
+    def app(self, app: App | None) -> None:
         # Invoke the superclass property setter
         Widget.app.fset(self, app)
 
@@ -133,7 +134,7 @@ class SplitContainer(Widget):
                 content.app = app
 
     @Widget.window.setter
-    def window(self, window):
+    def window(self, window: Window | None) -> None:
         # Invoke the superclass property setter
         Widget.window.fset(self, window)
 
@@ -144,7 +145,7 @@ class SplitContainer(Widget):
 
     @property
     def direction(self) -> Direction:
-        """The direction of the split"""
+        """The direction of the split."""
         return self._impl.get_direction()
 
     @direction.setter
