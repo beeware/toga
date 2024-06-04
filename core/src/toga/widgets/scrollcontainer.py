@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any, Literal, Protocol, SupportsInt
 
-from toga.handlers import WrappedHandlerT, wrapped_handler
+from toga.handlers import wrapped_handler
 
 from .base import StyleT, Widget
 
@@ -130,7 +130,7 @@ class ScrollContainer(Widget):
             self._content.refresh()
 
     @property
-    def on_scroll(self) -> WrappedHandlerT:
+    def on_scroll(self) -> OnScrollHandler:
         """Handler to invoke when the user moves a scroll bar."""
         return self._on_scroll
 

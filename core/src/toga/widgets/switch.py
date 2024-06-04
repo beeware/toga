@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Any, Protocol
 
 import toga
-from toga.handlers import WrappedHandlerT, wrapped_handler
+from toga.handlers import wrapped_handler
 
 from .base import StyleT, Widget
 
@@ -79,7 +79,7 @@ class Switch(Widget):
         self.refresh()
 
     @property
-    def on_change(self) -> WrappedHandlerT:
+    def on_change(self) -> OnChangeHandler:
         """The handler to invoke when the value of the switch changes."""
         return self._on_change
 

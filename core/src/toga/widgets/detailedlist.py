@@ -11,7 +11,7 @@ from typing import (
 )
 
 import toga
-from toga.handlers import WrappedHandlerT, wrapped_handler
+from toga.handlers import wrapped_handler
 from toga.sources import ListSource, Row, Source
 
 from .base import StyleT, Widget
@@ -212,7 +212,7 @@ class DetailedList(Widget, Generic[T]):
             return None
 
     @property
-    def on_primary_action(self) -> WrappedHandlerT:
+    def on_primary_action(self) -> OnPrimaryActionHandler:
         """The handler to invoke when the user performs the primary action on a row of
         the DetailedList.
 
@@ -230,7 +230,7 @@ class DetailedList(Widget, Generic[T]):
         self._impl.set_primary_action_enabled(handler is not None)
 
     @property
-    def on_secondary_action(self) -> WrappedHandlerT:
+    def on_secondary_action(self) -> OnSecondaryActionHandler:
         """The handler to invoke when the user performs the secondary action on a row of
         the DetailedList.
 
@@ -248,7 +248,7 @@ class DetailedList(Widget, Generic[T]):
         self._impl.set_secondary_action_enabled(handler is not None)
 
     @property
-    def on_refresh(self) -> WrappedHandlerT:
+    def on_refresh(self) -> OnRefreshHandler:
         """The callback function to invoke when the user performs a refresh action
         (usually "pull down") on the DetailedList.
 
@@ -265,7 +265,7 @@ class DetailedList(Widget, Generic[T]):
         self._impl.set_refresh_enabled(handler is not None)
 
     @property
-    def on_select(self) -> WrappedHandlerT:
+    def on_select(self) -> OnSelectHandler:
         """The callback function that is invoked when a row of the DetailedList is selected."""
         return self._on_select
 
@@ -278,7 +278,7 @@ class DetailedList(Widget, Generic[T]):
     ######################################################################
 
     @property
-    def on_delete(self) -> WrappedHandlerT:
+    def on_delete(self) -> OnPrimaryActionHandler:
         """**DEPRECATED**; Use :any:`on_primary_action`"""
         warnings.warn(
             "DetailedList.on_delete has been renamed DetailedList.on_primary_action.",

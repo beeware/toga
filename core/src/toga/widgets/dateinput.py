@@ -5,7 +5,7 @@ import warnings
 from typing import Any, Protocol
 
 import toga
-from toga.handlers import WrappedHandlerT, wrapped_handler
+from toga.handlers import wrapped_handler
 
 from .base import StyleT, Widget
 
@@ -154,7 +154,7 @@ class DateInput(Widget):
             self.value = max
 
     @property
-    def on_change(self) -> WrappedHandlerT:
+    def on_change(self) -> OnChangeHandler:
         """The handler to invoke when the date value changes."""
         return self._on_change
 

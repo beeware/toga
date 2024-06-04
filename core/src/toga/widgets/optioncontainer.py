@@ -9,7 +9,7 @@ from typing import (
 )
 
 import toga
-from toga.handlers import WrappedHandlerT, wrapped_handler
+from toga.handlers import wrapped_handler
 from toga.platform import get_platform_factory
 from toga.types import TypeAlias
 
@@ -483,7 +483,7 @@ class OptionContainer(Widget):
             item._content.window = window
 
     @property
-    def on_select(self) -> WrappedHandlerT:
+    def on_select(self) -> OnSelectHandler:
         """The callback to invoke when a new tab of content is selected."""
         return self._on_select
 

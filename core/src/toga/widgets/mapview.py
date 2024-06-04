@@ -4,7 +4,7 @@ from collections.abc import Iterable, Iterator
 from typing import Any, Protocol
 
 import toga
-from toga.handlers import WrappedHandlerT, wrapped_handler
+from toga.handlers import wrapped_handler
 
 from .base import StyleT, Widget
 
@@ -234,7 +234,7 @@ class MapView(Widget):
         return self._pins
 
     @property
-    def on_select(self) -> WrappedHandlerT:
+    def on_select(self) -> OnSelectHandler:
         """The handler to invoke when the user selects a pin on a map.
 
         **Note:** This is not currently supported on GTK or Windows.

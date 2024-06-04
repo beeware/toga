@@ -6,7 +6,7 @@ from contextlib import contextmanager
 from typing import Any, Protocol, SupportsFloat
 
 import toga
-from toga.handlers import WrappedHandlerT, wrapped_handler
+from toga.handlers import wrapped_handler
 
 from .base import StyleT, Widget
 
@@ -94,8 +94,6 @@ class Slider(Widget):
         ######################################################################
         # End backwards compatibility
         ######################################################################
-
-        self._on_change: WrappedHandlerT
 
         # Set a dummy handler before installing the actual on_change, because we do not want
         # on_change triggered by the initial value being set
@@ -281,7 +279,7 @@ class Slider(Widget):
             self.value = self.min + (tick_value - 1) * self.tick_step
 
     @property
-    def on_change(self) -> WrappedHandlerT:
+    def on_change(self) -> OnChangeHandler:
         """Handler to invoke when the value of the slider is changed, either by the user
         or programmatically.
 
@@ -294,7 +292,7 @@ class Slider(Widget):
         self._on_change = wrapped_handler(self, handler)
 
     @property
-    def on_press(self) -> WrappedHandlerT:
+    def on_press(self) -> OnPressHandler:
         """Handler to invoke when the user presses the slider before changing it."""
         return self._on_press
 
@@ -303,7 +301,7 @@ class Slider(Widget):
         self._on_press = wrapped_handler(self, handler)
 
     @property
-    def on_release(self) -> WrappedHandlerT:
+    def on_release(self) -> OnReleaseHandler:
         """Handler to invoke when the user releases the slider after changing it."""
         return self._on_release
 

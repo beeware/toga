@@ -24,7 +24,7 @@ from toga.fonts import (
     SYSTEM_DEFAULT_FONT_SIZE,
     Font,
 )
-from toga.handlers import WrappedHandlerT, wrapped_handler
+from toga.handlers import wrapped_handler
 
 from .base import StyleT, Widget
 
@@ -1354,7 +1354,7 @@ class Canvas(Widget):
         return self.context.Stroke(x, y, color, line_width, line_dash)
 
     @property
-    def on_resize(self) -> WrappedHandlerT:
+    def on_resize(self) -> OnResizeHandler:
         """The handler to invoke when the canvas is resized."""
         return self._on_resize
 
@@ -1363,7 +1363,7 @@ class Canvas(Widget):
         self._on_resize = wrapped_handler(self, handler)
 
     @property
-    def on_press(self) -> WrappedHandlerT:
+    def on_press(self) -> OnTouchHandler:
         """The handler invoked when the canvas is pressed. When a mouse is being used,
         this press will be with the primary (usually the left) mouse button."""
         return self._on_press
@@ -1373,7 +1373,7 @@ class Canvas(Widget):
         self._on_press = wrapped_handler(self, handler)
 
     @property
-    def on_activate(self) -> WrappedHandlerT:
+    def on_activate(self) -> OnTouchHandler:
         """The handler invoked when the canvas is pressed in a way indicating the
         pressed object should be activated. When a mouse is in use, this will usually be
         a double click with the primary (usually the left) mouse button.
@@ -1386,7 +1386,7 @@ class Canvas(Widget):
         self._on_activate = wrapped_handler(self, handler)
 
     @property
-    def on_release(self) -> WrappedHandlerT:
+    def on_release(self) -> OnTouchHandler:
         """The handler invoked when a press on the canvas ends."""
         return self._on_release
 
@@ -1395,7 +1395,7 @@ class Canvas(Widget):
         self._on_release = wrapped_handler(self, handler)
 
     @property
-    def on_drag(self) -> WrappedHandlerT:
+    def on_drag(self) -> OnTouchHandler:
         """The handler invoked when the location of a press changes."""
         return self._on_drag
 
@@ -1404,7 +1404,7 @@ class Canvas(Widget):
         self._on_drag = wrapped_handler(self, handler)
 
     @property
-    def on_alt_press(self) -> WrappedHandlerT:
+    def on_alt_press(self) -> OnTouchHandler:
         """The handler to invoke when the canvas is pressed in an alternate
         manner. This will usually correspond to a secondary (usually the right) mouse
         button press.
@@ -1418,7 +1418,7 @@ class Canvas(Widget):
         self._on_alt_press = wrapped_handler(self, handler)
 
     @property
-    def on_alt_release(self) -> WrappedHandlerT:
+    def on_alt_release(self) -> OnTouchHandler:
         """The handler to invoke when an alternate press is released.
 
         This event is not supported on Android or iOS.
@@ -1430,7 +1430,7 @@ class Canvas(Widget):
         self._on_alt_release = wrapped_handler(self, handler)
 
     @property
-    def on_alt_drag(self) -> WrappedHandlerT:
+    def on_alt_drag(self) -> OnTouchHandler:
         """The handler to invoke when the location of an alternate press changes.
 
         This event is not supported on Android or iOS.

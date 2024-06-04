@@ -5,7 +5,7 @@ from collections.abc import Iterable
 from typing import Any, Generic, Protocol, TypeVar
 
 import toga
-from toga.handlers import WrappedHandlerT, wrapped_handler
+from toga.handlers import wrapped_handler
 from toga.sources import ListSource, Source
 
 from .base import StyleT, Widget
@@ -67,7 +67,6 @@ class Selection(Widget, Generic[T]):
         ######################################################################
 
         self._items: SourceT | ListSource[T]
-        self._on_change: WrappedHandlerT
 
         self.on_change = None  # needed for _impl initialization
         self._impl = self.factory.Selection(interface=self)
@@ -181,7 +180,7 @@ class Selection(Widget, Generic[T]):
             raise ValueError(f"{value!r} is not a current item in the selection")
 
     @property
-    def on_change(self) -> WrappedHandlerT:
+    def on_change(self) -> OnChangeHandler:
         """Handler to invoke when the value of the selection is changed, either by the user
         or programmatically."""
         return self._on_change
@@ -195,7 +194,7 @@ class Selection(Widget, Generic[T]):
     ######################################################################
 
     @property
-    def on_select(self) -> WrappedHandlerT:
+    def on_select(self) -> OnChangeHandler:
         """**DEPRECATED**: Use ``on_change``"""
         warnings.warn(
             "Selection.on_select has been renamed Selection.on_change.",

@@ -4,11 +4,7 @@ import asyncio
 from collections.abc import Callable
 from typing import Any, Protocol
 
-from toga.handlers import (
-    AsyncResult,
-    WrappedHandlerT,
-    wrapped_handler,
-)
+from toga.handlers import AsyncResult, wrapped_handler
 
 from .base import StyleT, Widget
 
@@ -89,7 +85,7 @@ class WebView(Widget):
         return await loaded_future
 
     @property
-    def on_webview_load(self) -> WrappedHandlerT:
+    def on_webview_load(self) -> OnWebViewLoadHandler:
         """The handler to invoke when the web view finishes loading.
 
         Rendering web content is a complex, multi-threaded process. Although a page

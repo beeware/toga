@@ -6,7 +6,7 @@ from decimal import ROUND_HALF_UP, Decimal, InvalidOperation
 from typing import Any, Protocol, Union
 
 import toga
-from toga.handlers import WrappedHandlerT, wrapped_handler
+from toga.handlers import wrapped_handler
 from toga.types import TypeAlias
 
 from .base import StyleT, Widget
@@ -295,7 +295,7 @@ class NumberInput(Widget):
         self.refresh()
 
     @property
-    def on_change(self) -> WrappedHandlerT:
+    def on_change(self) -> OnChangeHandler:
         """The handler to invoke when the value of the widget changes."""
         return self._on_change
 

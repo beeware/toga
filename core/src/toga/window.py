@@ -14,11 +14,7 @@ from typing import (
 )
 
 from toga.command import CommandSet
-from toga.handlers import (
-    AsyncResult,
-    WrappedHandlerT,
-    wrapped_handler,
-)
+from toga.handlers import AsyncResult, wrapped_handler
 from toga.images import Image
 from toga.platform import get_platform_factory
 
@@ -475,7 +471,7 @@ class Window:
     ######################################################################
 
     @property
-    def on_close(self) -> WrappedHandlerT | None:
+    def on_close(self) -> OnCloseHandler | None:
         """The handler to invoke if the user attempts to close the window."""
         return self._on_close
 

@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections.abc import Iterator
 from typing import TYPE_CHECKING, Protocol
 
-from toga.handlers import WrappedHandlerT, wrapped_handler
+from toga.handlers import wrapped_handler
 from toga.icons import Icon
 from toga.keys import Key
 from toga.platform import get_platform_factory
@@ -246,7 +246,7 @@ class Command:
             self._icon = Icon(icon_or_name)
 
     @property
-    def action(self) -> WrappedHandlerT | None:
+    def action(self) -> ActionHandler | None:
         """The Action attached to the command."""
         return self._action
 

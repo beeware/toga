@@ -15,7 +15,7 @@ from weakref import WeakValueDictionary
 
 from toga.command import CommandSet
 from toga.documents import Document
-from toga.handlers import WrappedHandlerT, wrapped_handler
+from toga.handlers import wrapped_handler
 from toga.hardware.camera import Camera
 from toga.hardware.location import Location
 from toga.icons import Icon
@@ -807,7 +807,7 @@ class App:
     ######################################################################
 
     @property
-    def on_exit(self) -> WrappedHandlerT:
+    def on_exit(self) -> OnExitHandler:
         """The handler to invoke if the user attempts to exit the app."""
         return self._on_exit
 

@@ -3,12 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, Protocol
 
 import toga
-from toga.handlers import (
-    AsyncResult,
-    PermissionResult,
-    WrappedHandlerT,
-    wrapped_handler,
-)
+from toga.handlers import AsyncResult, PermissionResult, wrapped_handler
 from toga.platform import get_platform_factory
 
 if TYPE_CHECKING:
@@ -136,7 +131,7 @@ class Location:
         return result
 
     @property
-    def on_change(self) -> WrappedHandlerT:
+    def on_change(self) -> OnLocationChangeHandler:
         """The handler to invoke when an update to the user's location is available."""
         return self._on_change
 

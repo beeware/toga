@@ -4,7 +4,7 @@ from collections.abc import Callable, Iterable
 from typing import Any, Protocol
 
 import toga
-from toga.handlers import WrappedHandlerT, wrapped_handler
+from toga.handlers import wrapped_handler
 
 from .base import StyleT, Widget
 
@@ -158,7 +158,7 @@ class TextInput(Widget):
         return self._impl.is_valid()
 
     @property
-    def on_change(self) -> WrappedHandlerT:
+    def on_change(self) -> OnChangeHandler:
         """The handler to invoke when the value of the widget changes."""
         return self._on_change
 
@@ -186,7 +186,7 @@ class TextInput(Widget):
             self._validate()
 
     @property
-    def on_gain_focus(self) -> WrappedHandlerT:
+    def on_gain_focus(self) -> OnGainFocusHandler:
         """The handler to invoke when the widget gains input focus."""
         return self._on_gain_focus
 
@@ -195,7 +195,7 @@ class TextInput(Widget):
         self._on_gain_focus = wrapped_handler(self, handler)
 
     @property
-    def on_lose_focus(self) -> WrappedHandlerT:
+    def on_lose_focus(self) -> OnLoseFocusHandler:
         """The handler to invoke when the widget loses input focus."""
         return self._on_lose_focus
 
@@ -222,7 +222,7 @@ class TextInput(Widget):
         self.on_change()
 
     @property
-    def on_confirm(self) -> WrappedHandlerT:
+    def on_confirm(self) -> OnConfirmHandler:
         """The handler to invoke when the user accepts the value of the widget,
         usually by pressing return/enter on the keyboard.
         """

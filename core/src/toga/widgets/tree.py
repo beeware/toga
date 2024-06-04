@@ -5,7 +5,7 @@ from collections.abc import Iterable
 from typing import Any, Generic, Literal, Protocol, TypeVar
 
 import toga
-from toga.handlers import WrappedHandlerT, wrapped_handler
+from toga.handlers import wrapped_handler
 from toga.sources import Node, Source, TreeSource
 from toga.sources.accessors import build_accessors, to_accessor
 from toga.sources.tree_source import TreeSourceDataT
@@ -304,7 +304,7 @@ class Tree(Widget, Generic[T]):
         return self._missing_value
 
     @property
-    def on_select(self) -> WrappedHandlerT:
+    def on_select(self) -> OnSelectHandler:
         """The callback function that is invoked when a row of the tree is selected."""
         return self._on_select
 
@@ -313,7 +313,7 @@ class Tree(Widget, Generic[T]):
         self._on_select = wrapped_handler(self, handler)
 
     @property
-    def on_activate(self) -> WrappedHandlerT:
+    def on_activate(self) -> OnActivateHandler:
         """The callback function that is invoked when a row of the tree is activated,
         usually with a double click or similar action."""
         return self._on_activate
@@ -327,7 +327,7 @@ class Tree(Widget, Generic[T]):
     ######################################################################
 
     @property
-    def on_double_click(self) -> WrappedHandlerT:
+    def on_double_click(self) -> OnActivateHandler:
         """**DEPRECATED**: Use ``on_activate``"""
         warnings.warn(
             "Tree.on_double_click has been renamed Tree.on_activate.",
