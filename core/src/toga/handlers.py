@@ -6,16 +6,8 @@ import sys
 import traceback
 import warnings
 from abc import ABC
-from typing import (
-    Any,
-    Awaitable,
-    Callable,
-    Generator,
-    NoReturn,
-    Protocol,
-    TypeVar,
-    Union,
-)
+from collections.abc import Awaitable, Callable, Generator
+from typing import Any, NoReturn, Protocol, TypeVar, Union
 
 from toga.types import TypeAlias
 
@@ -184,7 +176,7 @@ class AsyncResult(ABC):
         # End backwards compatibility.
         ######################################################################
 
-    def set_result(self, result: Any) -> None:
+    def set_result(self, result: object) -> None:
         if not self.future.cancelled():
             self.future.set_result(result)
             if self.on_result:

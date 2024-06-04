@@ -4,7 +4,7 @@ import warnings
 from collections.abc import Collection
 from typing import Any, Generic, Protocol, TypeVar
 
-import toga.widgets.selection
+import toga
 from toga.handlers import WrappedHandlerT, wrapped_handler
 from toga.sources import ListSource, Source
 

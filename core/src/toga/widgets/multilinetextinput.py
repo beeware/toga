@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any, Protocol
 
-import toga.widgets.multilinetextinput
+import toga
 from toga.handlers import WrappedHandlerT, wrapped_handler
 
 from .base import StyleT, Widget

@@ -5,7 +5,7 @@ import warnings
 from decimal import ROUND_HALF_UP, Decimal, InvalidOperation
 from typing import Any, Protocol, Union
 
-import toga.widgets.numberinput
+import toga
 from toga.handlers import WrappedHandlerT, wrapped_handler
 from toga.types import TypeAlias
 

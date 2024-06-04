@@ -10,7 +10,7 @@ from typing import (
     TypeVar,
 )
 
-import toga.widgets.detailedlist
+import toga
 from toga.handlers import WrappedHandlerT, wrapped_handler
 from toga.sources import ListSource, Row, Source
 
