@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import warnings
-from collections.abc import Collection, Iterable
+from collections.abc import Iterable
 from typing import (
     Any,
     Generic,
@@ -157,7 +157,7 @@ class DetailedList(Widget, Generic[T]):
         return self._data
 
     @data.setter
-    def data(self, data: SourceT | Collection[T] | None) -> None:
+    def data(self, data: SourceT | Iterable[T] | None) -> None:
         if data is None:
             self._data = ListSource(data=[], accessors=self.accessors)
         elif isinstance(data, Source):

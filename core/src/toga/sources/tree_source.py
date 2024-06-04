@@ -218,7 +218,7 @@ class TreeSource(Source, Generic[T]):
         if len(self._accessors) == 0:
             raise ValueError("TreeSource must be provided a list of accessors")
 
-        if data:
+        if data is not None:
             self._roots: list[Node[T]] = self._create_nodes(parent=None, value=data)
         else:
             self._roots = []

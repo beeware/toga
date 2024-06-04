@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import warnings
-from collections.abc import Collection, Iterable, MutableSequence
+from collections.abc import Iterable
 from typing import Any, Generic, Literal, Protocol, TypeVar
 
 import toga
@@ -38,7 +38,7 @@ class Table(Widget, Generic[T]):
         id: str | None = None,
         style: StyleT | None = None,
         data: SourceT | Iterable[T] | None = None,
-        accessors: MutableSequence[str] | None = None,
+        accessors: Iterable[str] | None = None,
         multiple_select: bool = False,
         on_select: toga.widgets.table.OnSelectHandler | None = None,
         on_activate: toga.widgets.table.OnActivateHandler | None = None,
@@ -95,6 +95,7 @@ class Table(Widget, Generic[T]):
         ######################################################################
 
         self._headings: list[str] | None
+        self._accessors: list[str]
         self._data: SourceT | ListSource[T]
 
         if headings is not None:
@@ -102,7 +103,7 @@ class Table(Widget, Generic[T]):
             self._accessors = build_accessors(self._headings, accessors)
         elif accessors is not None:
             self._headings = None
-            self._accessors = accessors
+            self._accessors = list(accessors)
         else:
             raise ValueError(
                 "Cannot create a table without either headings or accessors"
@@ -155,7 +156,7 @@ class Table(Widget, Generic[T]):
         return self._data
 
     @data.setter
-    def data(self, data: SourceT | Collection[T] | None) -> None:
+    def data(self, data: SourceT | Iterable[T] | None) -> None:
         if data is None:
             self._data = ListSource(accessors=self._accessors, data=[])
         elif isinstance(data, Source):

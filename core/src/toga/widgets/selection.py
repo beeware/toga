@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import warnings
-from collections.abc import Collection
+from collections.abc import Iterable
 from typing import Any, Generic, Protocol, TypeVar
 
 import toga
@@ -27,7 +27,7 @@ class Selection(Widget, Generic[T]):
         self,
         id: str | None = None,
         style: StyleT | None = None,
-        items: SourceT | Collection[T] | None = None,
+        items: SourceT | Iterable[T] | None = None,
         accessor: str | None = None,
         value: T | None = None,
         on_change: toga.widgets.selection.OnChangeHandler | None = None,
@@ -98,7 +98,7 @@ class Selection(Widget, Generic[T]):
         return self._items
 
     @items.setter
-    def items(self, items: SourceT | Collection[T] | None) -> None:
+    def items(self, items: SourceT | Iterable[T] | None) -> None:
         if self._accessor is None:
             accessors = ["value"]
         else:

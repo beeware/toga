@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from collections.abc import Collection, Iterable
+from collections.abc import Iterable, Mapping, Sequence
 from typing import Generic, TypeVar
 
 from .base import Source
@@ -9,9 +9,9 @@ T = TypeVar("T")
 
 
 def _find_item(
-    candidates: list[T],
+    candidates: Sequence[T],
     data: object,
-    accessors: list[str],
+    accessors: Sequence[str],
     start: T | None,
     error: str,
 ) -> T:
@@ -24,7 +24,7 @@ def _find_item(
 
     for item in candidates[start_index:]:
         try:
-            if isinstance(data, dict):
+            if isinstance(data, Mapping):
                 found = all(
                     getattr(item, attr) == value for attr, value in data.items()
                 )
@@ -95,7 +95,7 @@ class Row(Generic[T]):
 
 # TODO:PR: consider adding supported Protocols...maybe List?
 class ListSource(Source, Generic[T]):
-    def __init__(self, accessors: Iterable[str], data: Collection[T] | None = None):
+    def __init__(self, accessors: Iterable[str], data: Iterable[T] | None = None):
         """A data source to store an ordered list of multiple data values.
 
         :param accessors: A list of attribute names for accessing the value
@@ -113,7 +113,7 @@ class ListSource(Source, Generic[T]):
             raise ValueError("ListSource must be provided a list of accessors")
 
         # Convert the data into row objects
-        if data:
+        if data is not None:
             self._data = [self._create_row(value) for value in data]
         else:
             self._data = []
@@ -142,7 +142,7 @@ class ListSource(Source, Generic[T]):
 
     # This behavior is documented in list_source.rst.
     def _create_row(self, data: T) -> Row[T]:
-        if isinstance(data, dict):
+        if isinstance(data, Mapping):
             row = Row(**data)
         elif hasattr(data, "__iter__") and not isinstance(data, str):
             row = Row(**dict(zip(self._accessors, data)))

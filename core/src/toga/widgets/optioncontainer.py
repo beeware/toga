@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from collections.abc import Collection
+from collections.abc import Iterable
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -380,7 +380,7 @@ class OptionContainer(Widget):
         self,
         id: str | None = None,
         style: StyleT | None = None,
-        content: Collection[tuple[str, Widget]] | None = None,
+        content: Iterable[tuple[str, Widget]] | None = None,
         on_select: toga.widgets.optioncontainer.OnSelectHandler | None = None,
     ):
         """Create a new OptionContainer.
@@ -398,7 +398,7 @@ class OptionContainer(Widget):
 
         self._impl = self.factory.OptionContainer(interface=self)
 
-        if content:
+        if content is not None:
             for item in content:
                 if isinstance(item, OptionItem):
                     self.content.append(item)

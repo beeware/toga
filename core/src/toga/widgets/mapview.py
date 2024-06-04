@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from collections.abc import Collection, Iterator
+from collections.abc import Iterable, Iterator
 from typing import Any, Protocol
 
 import toga
@@ -75,12 +75,13 @@ class MapPin:
             self.interface._impl.update_pin(self)
 
 
+# TODO:PR: __contains__() is required to subclass Set; should it not be added?
 class MapPinSet:
-    def __init__(self, interface: MapView, pins: Collection[MapPin] | None):
+    def __init__(self, interface: MapView, pins: Iterable[MapPin] | None):
         self.interface = interface
         self._pins: set[MapPin] = set()
 
-        if pins:
+        if pins is not None:
             for item in pins:
                 self.add(item)
 
@@ -137,7 +138,7 @@ class MapView(Widget):
         style: StyleT | None = None,
         location: toga.LatLng | tuple[float, float] | None = None,
         zoom: int = 11,
-        pins: Collection[MapPin] | None = None,
+        pins: Iterable[MapPin] | None = None,
         on_select: toga.widgets.mapview.OnSelectHandler | None = None,
     ):
         """Create a new MapView widget.

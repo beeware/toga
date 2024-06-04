@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import warnings
-from collections.abc import Collection, Iterable
+from collections.abc import Iterable
 from typing import Any, Generic, Literal, Protocol, TypeVar
 
 import toga
@@ -40,7 +40,7 @@ class Tree(Widget, Generic[T]):
         id: str | None = None,
         style: Pack | None = None,
         data: SourceT | TreeSourceDataT[T] | None = None,
-        accessors: Collection[str] | None = None,
+        accessors: Iterable[str] | None = None,
         multiple_select: bool = False,
         on_select: toga.widgets.tree.OnSelectHandler | None = None,
         on_activate: toga.widgets.tree.OnActivateHandler | None = None,

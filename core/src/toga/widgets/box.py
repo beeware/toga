@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from collections.abc import Collection
+from collections.abc import Iterable
 
 from .base import StyleT, Widget
 
@@ -13,7 +13,7 @@ class Box(Widget):
         self,
         id: str | None = None,
         style: StyleT | None = None,
-        children: Collection[Widget] | None = None,
+        children: Iterable[Widget] | None = None,
     ):
         """Create a new Box container widget.
 
@@ -29,7 +29,7 @@ class Box(Widget):
 
         # Children need to be added *after* the impl has been created.
         self._children: list[Widget] = []
-        if children:
+        if children is not None:
             self.add(*children)
 
     @property
