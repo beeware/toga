@@ -6,8 +6,16 @@ import sys
 import traceback
 import warnings
 from abc import ABC
-from collections.abc import Awaitable, Callable, Generator
-from typing import Any, NoReturn, Protocol, TypeVar, Union
+from typing import (
+    Any,
+    Awaitable,
+    Callable,
+    Generator,
+    NoReturn,
+    Protocol,
+    TypeVar,
+    Union,
+)
 
 from toga.types import TypeAlias
 

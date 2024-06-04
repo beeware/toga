@@ -6,10 +6,10 @@ import signal
 import sys
 import warnings
 import webbrowser
-from collections.abc import Iterator, MutableSet, Set
+from collections.abc import Iterator, Set
 from email.message import Message
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Protocol
+from typing import TYPE_CHECKING, Any, MutableSet, Protocol
 from warnings import warn
 from weakref import WeakValueDictionary
 

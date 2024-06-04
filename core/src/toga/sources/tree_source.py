@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from collections.abc import Iterable, Iterator, Mapping
-from typing import Generic, Tuple, TypeVar, Union
+from collections.abc import Iterator
+from typing import Generic, Iterable, Mapping, Tuple, TypeVar, Union
 
 from toga.types import TypeAlias
 
