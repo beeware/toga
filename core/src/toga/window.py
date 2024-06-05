@@ -88,7 +88,7 @@ _DialogResultT = TypeVar("_DialogResultT", contravariant=True)
 
 
 class DialogResultHandler(Protocol[_DialogResultT]):
-    def __call__(self, window: Window, result: _DialogResultT, **kwargs: Any) -> Any:
+    def __call__(self, window: Window, result: _DialogResultT, **kwargs: Any) -> object:
         """A handler to invoke when a dialog is closed.
 
         :param window: The window that opened the dialog.

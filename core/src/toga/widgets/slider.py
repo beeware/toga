@@ -12,25 +12,28 @@ from .base import StyleT, Widget
 
 
 class OnChangeHandler(Protocol):
-    def __call__(self, **kwargs: Any) -> object:
+    def __call__(self, widget: Slider, **kwargs: Any) -> object:
         """A handler to invoke when the value is changed.
 
+        :param widget: The Slider that was changed.
         :param kwargs: Ensures compatibility with arguments added in future versions.
         """
 
 
 class OnPressHandler(Protocol):
-    def __call__(self, **kwargs) -> object:
+    def __call__(self, widget: Slider, **kwargs) -> object:
         """A handler to invoke when the slider is pressed.
 
+        :param widget: The Slider that was pressed.
         :param kwargs: Ensures compatibility with arguments added in future versions.
         """
 
 
 class OnReleaseHandler(Protocol):
-    def __call__(self, **kwargs: Any) -> object:
+    def __call__(self, widget: Slider, **kwargs: Any) -> object:
         """A handler to invoke when the slider is pressed.
 
+        :param widget: The Slider that was released.
         :param kwargs: Ensures compatibility with arguments added in future versions.
         """
 

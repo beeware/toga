@@ -16,17 +16,20 @@ SourceT = TypeVar("SourceT", bound=Source)
 
 
 class OnSelectHandler(Protocol):
-    def __call__(self, **kwargs: Any) -> object:
+    def __call__(self, widget: Table, **kwargs: Any) -> object:
         """A handler to invoke when the table is selected.
 
+        :param widget: The Table that was selected.
         :param kwargs: Ensures compatibility with arguments added in future versions.
         """
 
 
 class OnActivateHandler(Protocol):
-    def __call__(self, row: Any, **kwargs: Any) -> object:
+    def __call__(self, widget: Table, row: Any, **kwargs: Any) -> object:
         """A handler to invoke when the table is activated.
 
+        :param widget: The Table that was activated.
+        :param row: The Table Row that was activated.
         :param kwargs: Ensures compatibility with arguments added in future versions.
         """
 

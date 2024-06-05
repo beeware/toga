@@ -1,21 +1,20 @@
 from __future__ import annotations
 
+import sys
 from collections.abc import Iterable
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Protocol,
-    overload,
-)
+from typing import TYPE_CHECKING, Any, Protocol, overload
 
 import toga
 from toga.handlers import wrapped_handler
 from toga.platform import get_platform_factory
-from toga.types import TypeAlias
 
 from .base import StyleT, Widget
 
 if TYPE_CHECKING:
+    if sys.version_info < (3, 10):
+        from typing_extensions import TypeAlias
+    else:
+        from typing import TypeAlias
     from toga.icons import IconContent
 
     OptionContainerContent: TypeAlias = (
@@ -27,9 +26,10 @@ if TYPE_CHECKING:
 
 
 class OnSelectHandler(Protocol):
-    def __call__(self, **kwargs: Any) -> object:
-        """A handler to invoke when the option list is selected.
+    def __call__(self, widget: OptionContainer, **kwargs: Any) -> None:
+        """A handler that will be invoked when a new tab is selected in the OptionContainer.
 
+        :param widget: The OptionContainer that had a selection change.
         :param kwargs: Ensures compatibility with arguments added in future versions.
         """
 
@@ -380,7 +380,7 @@ class OptionContainer(Widget):
         self,
         id: str | None = None,
         style: StyleT | None = None,
-        content: Iterable[tuple[str, Widget]] | None = None,
+        content: Iterable[OptionContainerContent] | None = None,
         on_select: toga.widgets.optioncontainer.OnSelectHandler | None = None,
     ):
         """Create a new OptionContainer.

@@ -21,35 +21,39 @@ SourceT = TypeVar("SourceT", bound=Source)
 
 
 class OnPrimaryActionHandler(Protocol):
-    def __call__(self, row: Any, **kwargs: Any) -> object:
+    def __call__(self, widget: DetailedList, row: Any, **kwargs: Any) -> object:
         """A handler to invoke for the primary action.
 
-        :param widget: The button that was pressed.
+        :param widget: The DetailedList that was invoked.
+        :param row: The current row for the detailed list.
         :param kwargs: Ensures compatibility with arguments added in future versions.
         """
 
 
 class OnSecondaryActionHandler(Protocol):
-    def __call__(self, row: Any, **kwargs: Any) -> object:
+    def __call__(self, widget: DetailedList, row: Any, **kwargs: Any) -> object:
         """A handler to invoke for the secondary action.
 
+        :param widget: The DetailedList that was invoked.
         :param row: The current row for the detailed list.
         :param kwargs: Ensures compatibility with arguments added in future versions.
         """
 
 
 class OnRefreshHandler(Protocol):
-    def __call__(self, **kwargs: Any) -> object:
+    def __call__(self, widget: DetailedList, **kwargs: Any) -> object:
         """A handler to invoke when the detailed list is refreshed.
 
+        :param widget: The DetailedList that was refreshed.
         :param kwargs: Ensures compatibility with arguments added in future versions.
         """
 
 
 class OnSelectHandler(Protocol):
-    def __call__(self, **kwargs: Any) -> object:
+    def __call__(self, widget: DetailedList, **kwargs: Any) -> object:
         """A handler to invoke when the detailed list is selected.
 
+        :param widget: The DetailedList that was selected.
         :param kwargs: Ensures compatibility with arguments added in future versions.
         """
 

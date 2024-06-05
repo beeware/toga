@@ -1,14 +1,28 @@
 from __future__ import annotations
 
+import sys
 from collections.abc import Iterator
-from typing import Generic, Iterable, Mapping, Tuple, TypeVar, Union
-
-from toga.types import TypeAlias
+from typing import TYPE_CHECKING, Generic, Iterable, Mapping, Tuple, TypeVar, Union
 
 from .base import Source
 from .list_source import Row, _find_item
 
 T = TypeVar("T")
+
+if TYPE_CHECKING:
+    if sys.version_info < (3, 10):
+        from typing_extensions import TypeAlias
+    else:
+        from typing import TypeAlias
+
+    NodeDataT: TypeAlias = Union[object, Mapping[str, T], Iterable[T]]
+    TreeSourceDataT: TypeAlias = Union[
+        object,
+        Mapping[NodeDataT[T], "TreeSourceDataT[T]"],
+        Iterable[Tuple[NodeDataT[T], "TreeSourceDataT[T]"]],
+    ]
+else:
+    TreeSourceDataT = None
 
 
 class Node(Row[T]):
@@ -193,14 +207,6 @@ class Node(Row[T]):
             start=start,
             error=f"No child matching {data!r} in {self}",
         )
-
-
-NodeDataT: TypeAlias = Union[object, Mapping[str, T], Iterable[T]]
-TreeSourceDataT: TypeAlias = Union[
-    object,
-    Mapping[NodeDataT[T], "TreeSourceDataT[T]"],
-    Iterable[Tuple[NodeDataT[T], "TreeSourceDataT[T]"]],
-]
 
 
 class TreeSource(Source, Generic[T]):

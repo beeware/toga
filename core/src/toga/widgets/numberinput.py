@@ -1,15 +1,24 @@
 from __future__ import annotations
 
 import re
+import sys
 import warnings
 from decimal import ROUND_HALF_UP, Decimal, InvalidOperation
-from typing import Any, Protocol, Union
+from typing import TYPE_CHECKING, Any, Protocol, Union
 
 import toga
 from toga.handlers import wrapped_handler
-from toga.types import TypeAlias
 
 from .base import StyleT, Widget
+
+if TYPE_CHECKING:
+    if sys.version_info < (3, 10):
+        from typing_extensions import TypeAlias
+    else:
+        from typing import TypeAlias
+
+    NumberInputT: TypeAlias = Union[Decimal, float, str]
+    StepInputT: TypeAlias = Union[Decimal, int]
 
 # Implementation notes
 # ====================
@@ -24,9 +33,6 @@ from .base import StyleT, Widget
 
 
 NUMERIC_RE = re.compile(r"[^0-9\.-]")
-
-NumberInputT: TypeAlias = Union[Decimal, float, str]
-StepInputT: TypeAlias = Union[Decimal, int]
 
 
 def _clean_decimal(value: NumberInputT, step: StepInputT | None = None) -> Decimal:
@@ -68,9 +74,10 @@ def _clean_decimal_str(value: str) -> str:
 
 
 class OnChangeHandler(Protocol):
-    def __call__(self, **kwargs: Any) -> object:
+    def __call__(self, widget: NumberInput, **kwargs: Any) -> object:
         """A handler to invoke when the value is changed.
 
+        :param widget: The NumberInput that was changed.
         :param kwargs: Ensures compatibility with arguments added in future versions.
         """
 

@@ -9,9 +9,10 @@ from .base import StyleT, Widget
 
 
 class OnChangeHandler(Protocol):
-    def __call__(self, **kwargs: Any) -> object:
+    def __call__(self, widget: Switch, **kwargs: Any) -> object:
         """A handler to invoke when the value is changed.
 
+        :param widget: The Switch that was changed.
         :param kwargs: Ensures compatibility with arguments added in future versions.
         """
 

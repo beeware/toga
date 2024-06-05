@@ -6,7 +6,7 @@ import signal
 import sys
 import warnings
 import webbrowser
-from collections.abc import Iterator, Set
+from collections.abc import Iterator
 from email.message import Message
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, MutableSet, Protocol
@@ -100,7 +100,7 @@ class WindowSet(MutableSet[Window]):
     # 2023-10: Backwards compatibility
     ######################################################################
 
-    def __iadd__(self, window: Set[Any]) -> WindowSet:
+    def __iadd__(self, window: Window) -> WindowSet:
         # The standard set type does not have a += operator.
         warn(
             "Windows are automatically associated with the app; += is not required",
@@ -109,7 +109,7 @@ class WindowSet(MutableSet[Window]):
         )
         return self
 
-    def __isub__(self, other: Set[Any]) -> WindowSet:
+    def __isub__(self, other: Window) -> WindowSet:
         # The standard set type does have a -= operator, but it takes sets rather than
         # individual items.
         warn(

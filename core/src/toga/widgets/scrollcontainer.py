@@ -8,9 +8,10 @@ from .base import StyleT, Widget
 
 
 class OnScrollHandler(Protocol):
-    def __call__(self, **kwargs: Any) -> object:
+    def __call__(self, widget: ScrollContainer, **kwargs: Any) -> object:
         """A handler to invoke when the container is scrolled.
 
+        :param widget: The ScrollContainer that was scrolled.
         :param kwargs: Ensures compatibility with arguments added in future versions.
         """
 

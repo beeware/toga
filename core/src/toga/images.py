@@ -5,7 +5,7 @@ import sys
 import warnings
 from functools import lru_cache
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Protocol
+from typing import TYPE_CHECKING, Any, Protocol, TypeVar
 from warnings import warn
 
 import toga
@@ -22,7 +22,10 @@ else:
 warnings.filterwarnings("default", category=DeprecationWarning)
 
 if TYPE_CHECKING:
-    from toga.types import TypeAlias, TypeVar
+    if sys.version_info < (3, 10):
+        from typing_extensions import TypeAlias
+    else:
+        from typing import TypeAlias
 
     # Define a type variable for generics where an Image type is required.
     ImageT = TypeVar("ImageT")
@@ -34,7 +37,7 @@ if TYPE_CHECKING:
     ImageContent: TypeAlias = PathLike | BytesLike | ImageLike
 
     # Define a type variable representing an image of an externally defined type.
-    ExternalImageT = TypeVar("ExternalImageT", bound=object)
+    ExternalImageT = TypeVar("ExternalImageT")
 
 
 class ImageConverter(Protocol):

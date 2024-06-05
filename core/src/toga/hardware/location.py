@@ -21,7 +21,7 @@ class OnLocationChangeHandler(Protocol):
         location: toga.LatLng,
         altitude: float | None,
         **kwargs: Any,
-    ) -> None:
+    ) -> object:
         """A handler that will be invoked when the user's location changes.
 
         :param service: the location service that generated the update.

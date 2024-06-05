@@ -1,12 +1,6 @@
 from __future__ import annotations
 
-import sys
 from typing import NamedTuple
-
-if sys.version_info < (3, 10):
-    from typing_extensions import TypeAlias, TypeVar  # noqa:F401
-else:
-    from typing import TypeAlias, TypeVar  # noqa:F401
 
 
 class LatLng(NamedTuple):

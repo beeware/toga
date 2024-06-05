@@ -1,15 +1,21 @@
 from __future__ import annotations
 
-from typing import Tuple, Union
+import sys
+from typing import TYPE_CHECKING, Tuple, Union
 
 from toga.app import App
 from toga.constants import Direction
-from toga.types import TypeAlias
 from toga.window import Window
 
 from .base import StyleT, Widget
 
-ContentT: TypeAlias = Union[Widget, Tuple[Widget, float], None]
+if TYPE_CHECKING:
+    if sys.version_info < (3, 10):
+        from typing_extensions import TypeAlias
+    else:
+        from typing import TypeAlias
+
+    ContentT: TypeAlias = Union[Widget, Tuple[Widget, float], None]
 
 
 class SplitContainer(Widget):

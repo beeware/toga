@@ -295,8 +295,12 @@ class Separator:
 
 
 class CommandSetChangeHandler(Protocol):
-    def __call__(self, /) -> object:
-        """A handler that will be invoked when a Command or Group is added to the CommandSet."""
+    def __call__(self, **kwargs) -> object:
+        """A handler that will be invoked when a Command or Group is added to the
+        CommandSet.
+
+        :param kwargs: Ensures compatibility with arguments added in future versions.
+        """
 
 
 class CommandSet:
