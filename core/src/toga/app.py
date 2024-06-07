@@ -33,7 +33,7 @@ warnings.filterwarnings("default", category=DeprecationWarning)
 
 
 class AppStartupMethod(Protocol):
-    def __call__(self, app: App, **kwargs: Any) -> Widget:
+    def __call__(self, app: App, /, **kwargs: Any) -> Widget:
         """The startup method of the app.
 
         Called during app startup to set the initial main window content.
@@ -46,7 +46,7 @@ class AppStartupMethod(Protocol):
 
 
 class OnExitHandler(Protocol):
-    def __call__(self, app: App, **kwargs: Any) -> bool:
+    def __call__(self, app: App, /, **kwargs: Any) -> bool:
         """A handler to invoke when the app is about to exit.
 
         The return value of this callback controls whether the app is allowed to exit.
@@ -61,7 +61,7 @@ class OnExitHandler(Protocol):
 
 
 class BackgroundTask(Protocol):
-    def __call__(self, app: App, **kwargs: Any) -> object:
+    def __call__(self, app: App, /, **kwargs: Any) -> object:
         """Code that should be executed as a background task.
 
         :param app: The app that is handling the background task.

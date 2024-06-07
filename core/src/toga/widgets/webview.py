@@ -1,10 +1,9 @@
 from __future__ import annotations
 
 import asyncio
-from collections.abc import Callable
 from typing import Any, Protocol
 
-from toga.handlers import AsyncResult, wrapped_handler
+from toga.handlers import AsyncResult, OnResultT, wrapped_handler
 
 from .base import StyleT, Widget
 
@@ -14,7 +13,7 @@ class JavaScriptResult(AsyncResult):
 
 
 class OnWebViewLoadHandler(Protocol):
-    def __call__(self, widget: WebView, **kwargs: Any) -> object:
+    def __call__(self, widget: WebView, /, **kwargs: Any) -> object:
         """A handler to invoke when the WebView is loaded.
 
         :param widget: The WebView that was loaded.
@@ -137,7 +136,7 @@ class WebView(Widget):
     def evaluate_javascript(
         self,
         javascript: str,
-        on_result: Callable[[], object] | None = None,
+        on_result: OnResultT | None = None,
     ) -> JavaScriptResult:
         """Evaluate a JavaScript expression.
 

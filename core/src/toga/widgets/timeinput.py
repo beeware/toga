@@ -11,7 +11,7 @@ from .base import StyleT, Widget
 
 
 class OnChangeHandler(Protocol):
-    def __call__(self, widget: TimeInput, **kwargs: Any) -> object:
+    def __call__(self, widget: TimeInput, /, **kwargs: Any) -> object:
         """A handler to invoke when the time input is changed.
 
         :param widget: The TimeInput that was changed.

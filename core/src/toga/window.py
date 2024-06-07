@@ -71,7 +71,7 @@ class FilteredWidgetRegistry:
 
 
 class OnCloseHandler(Protocol):
-    def __call__(self, window: Window, **kwargs: Any) -> bool:
+    def __call__(self, window: Window, /, **kwargs: Any) -> bool:
         """A handler to invoke when a window is about to close.
 
         The return value of this callback controls whether the window is allowed to close.
@@ -84,11 +84,13 @@ class OnCloseHandler(Protocol):
         """
 
 
-_DialogResultT = TypeVar("_DialogResultT", contravariant=True)
+_DialogResultT = TypeVar("_DialogResultT")
 
 
 class DialogResultHandler(Protocol[_DialogResultT]):
-    def __call__(self, window: Window, result: _DialogResultT, **kwargs: Any) -> object:
+    def __call__(
+        self, window: Window, result: _DialogResultT, /, **kwargs: Any
+    ) -> object:
         """A handler to invoke when a dialog is closed.
 
         :param window: The window that opened the dialog.

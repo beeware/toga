@@ -9,7 +9,7 @@ from .base import StyleT, Widget
 
 
 class OnChangeHandler(Protocol):
-    def __call__(self, widget: MultilineTextInput, **kwargs: Any) -> object:
+    def __call__(self, widget: MultilineTextInput, /, **kwargs: Any) -> object:
         """A handler to invoke when the value is changed.
 
         :param widget: The MultilineTextInput that was changed.

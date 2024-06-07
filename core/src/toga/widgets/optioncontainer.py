@@ -26,7 +26,7 @@ if TYPE_CHECKING:
 
 
 class OnSelectHandler(Protocol):
-    def __call__(self, widget: OptionContainer, **kwargs: Any) -> None:
+    def __call__(self, widget: OptionContainer, /, **kwargs: Any) -> None:
         """A handler that will be invoked when a new tab is selected in the OptionContainer.
 
         :param widget: The OptionContainer that had a selection change.

@@ -17,6 +17,7 @@ class LocationResult(AsyncResult):
 class OnLocationChangeHandler(Protocol):
     def __call__(
         self,
+        *,
         service: Location,
         location: toga.LatLng,
         altitude: float | None,
