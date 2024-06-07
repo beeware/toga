@@ -137,10 +137,10 @@ class Window:
         :param id: A unique identifier for the window. If not provided, one will be
             automatically generated.
         :param title: Title for the window. Defaults to "Toga".
-        :param position: Position of the window, as a ``toga.Tuple`` or tuple of
+        :param position: Position of the window, as a :any:`toga.Position` or tuple of
             ``(x, y)`` coordinates, in :ref:`CSS pixels <css-units>`.
-        :param size: Size of the window, as a ``toga.Size`` or tuple of
-            ``(width, height)``, in :ref:`CSS pixels <css-units>`.
+        :param size: Size of the window, as a :any:`toga.Size` or tuple of ``(width,
+            height)``, in :ref:`CSS pixels <css-units>`.
         :param resizable: Can the window be resized by the user?
         :param closable: Can the window be closed by the user?
         :param minimizable: Can the window be minimized by the user?
@@ -342,8 +342,7 @@ class Window:
 
     @property
     def size(self) -> Size:
-        """Size of the window, as a ``toga.Size``, in
-        :ref:`CSS pixels <css-units>`."""
+        """Size of the window, in :ref:`CSS pixels <css-units>`."""
         return self._impl.get_size()
 
     @size.setter
@@ -358,8 +357,7 @@ class Window:
 
     @property
     def position(self) -> Position:
-        """Absolute position of the window, as a ``toga.Position``, in
-        :ref:`CSS pixels <css-units>`.
+        """Absolute position of the window, in :ref:`CSS pixels <css-units>`.
 
         The origin is the top left corner of the primary screen.
         """
@@ -372,9 +370,7 @@ class Window:
     @position.setter
     def position(self, position: PositionT) -> None:
         absolute_origin = self._app.screens[0].origin
-        absolute_new_position = Position(
-            position[0] + absolute_origin.x, position[1] + absolute_origin.y
-        )
+        absolute_new_position = Position(*position) + absolute_origin
         self._impl.set_position(absolute_new_position)
 
     @property
@@ -391,14 +387,13 @@ class Window:
 
     @property
     def screen_position(self) -> Position:
-        """Position of the window with respect to current screen, as a ``toga.Position``."""
+        """Position of the window with respect to current screen, in
+        :ref:`CSS pixels <css-units>`."""
         return self.position - self.screen.origin
 
     @screen_position.setter
     def screen_position(self, position: PositionT) -> None:
-        new_relative_position = Position(
-            position[0] + self.screen.origin.x, position[1] + self.screen.origin.y
-        )
+        new_relative_position = Position(*position) + self.screen.origin
         self._impl.set_position(new_relative_position)
 
     ######################################################################

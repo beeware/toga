@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import TYPE_CHECKING
 
 from toga.command import Separator
@@ -169,7 +171,7 @@ class Window:
         size = self.native.get_size()
         return Size(size.width, size.height)
 
-    def set_size(self, size: "SizeT"):
+    def set_size(self, size: SizeT):
         self.native.resize(size[0], size[1])
 
     ######################################################################
@@ -185,7 +187,7 @@ class Window:
         pos = self.native.get_position()
         return Position(pos.root_x, pos.root_y)
 
-    def set_position(self, position: "PositionT"):
+    def set_position(self, position: PositionT):
         self.native.move(position[0], position[1])
 
     ######################################################################

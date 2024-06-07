@@ -22,12 +22,13 @@ class Screen:
 
     @property
     def origin(self) -> Position:
-        """The absolute coordinates of the screen's origin, as a ``toga.Position``."""
+        """The absolute coordinates of the screen's origin, in :ref:`CSS pixels
+        <css-units>`."""
         return self._impl.get_origin()
 
     @property
     def size(self) -> Size:
-        """The size of the screen, as a ``toga.Size``."""
+        """The size of the screen, in :ref:`CSS pixels <css-units>`."""
         return self._impl.get_size()
 
     def as_image(self, format: type[ImageT] = Image) -> ImageT:

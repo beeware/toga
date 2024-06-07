@@ -219,10 +219,10 @@ class MainWindow(Window):
         :param id: A unique identifier for the window. If not provided, one will be
             automatically generated.
         :param title: Title for the window. Defaults to the formal name of the app.
-        :param position: Position of the window, as a ``toga.Position`` or tuple of
+        :param position: Position of the window, as a :any:`toga.Position` or tuple of
             ``(x, y)`` coordinates, in :ref:`CSS pixels <css-units>`.
-        :param size: Size of the window, as a ``toga.Size`` or tuple of
-            ``(width, height)``, in :ref:`CSS pixels <css-units>`.
+        :param size: Size of the window, as a :any:`toga.Size` or tuple of ``(width,
+            height)``, in :ref:`CSS pixels <css-units>`.
         :param resizable: Can the window be resized by the user?
         :param minimizable: Can the window be minimized by the user?
         :param resizeable: **DEPRECATED** - Use ``resizable``.
@@ -287,9 +287,9 @@ class DocumentMainWindow(Window):
         :param document: The document being managed by this window
         :param id: The ID of the window.
         :param title: Title for the window. Defaults to the formal name of the app.
-        :param position: Position of the window, as a ``toga.Position`` or tuple of
+        :param position: Position of the window, as a :any:`toga.Position` or tuple of
             ``(x, y)`` coordinates.
-        :param size: Size of the window, as a ``toga.Size`` or tuple of
+        :param size: Size of the window, as a :any:`toga.Size` or tuple of
             ``(width, height)``, in pixels.
         :param resizable: Can the window be manually resized by the user?
         :param minimizable: Can the window be minimized by the user?

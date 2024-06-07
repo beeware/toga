@@ -10,12 +10,12 @@ def test_position_properties():
     p == (1, 2)  # Tuple equivalence for backwards-compatibility
 
 
-def test_combining_positions():
+def test_add_positions():
     """The sum of two Positions combines their X and Y values"""
     assert Position(1, 2) + Position(3, 4) == Position(4, 6)
 
 
-def test_subtracting_positions():
+def test_sub_positions():
     """The difference of two Positions subtracts their X and Y values"""
     assert Position(1, 2) - Position(3, 4) == Position(-2, -2)
 
