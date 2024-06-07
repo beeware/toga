@@ -1,6 +1,7 @@
 from travertino.size import at_least
 
 from toga.style.pack import ROW
+from toga.types import Size
 
 
 # We assume a terminal is 800x600 pixels, mapping to 80x25 characters.
@@ -35,8 +36,8 @@ class Widget(Scalable):
         self.container = None
         self.create()
 
-    def get_size(self):
-        return (0, 0)
+    def get_size(self) -> Size:
+        return Size(0, 0)
 
     def create(self):
         pass

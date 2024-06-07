@@ -15,7 +15,7 @@ from .images import Image
 from .keys import Key
 
 # Types
-from .types import LatLng
+from .types import LatLng, Position, Size
 
 # Widgets
 from .widgets.activityindicator import ActivityIndicator
@@ -81,6 +81,8 @@ __all__ = [
     "Image",
     # Types
     "LatLng",
+    "Position",
+    "Size",
     # Widgets
     "ActivityIndicator",
     "Box",

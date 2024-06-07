@@ -1,10 +1,14 @@
 from __future__ import annotations
 
-from typing import Any, Literal, Protocol, SupportsInt
+from typing import TYPE_CHECKING, Any, Literal, Protocol, SupportsInt
 
 from toga.handlers import wrapped_handler
+from toga.types import Position
 
 from .base import StyleT, Widget
+
+if TYPE_CHECKING:
+    from toga.types import PositionT
 
 
 class OnScrollHandler(Protocol):
@@ -203,8 +207,8 @@ class ScrollContainer(Widget):
     # the horizontal and vertical position separately would cause the horizontal and
     # vertical movement to appear as two separate animations.
     @property
-    def position(self) -> tuple[int, int]:
-        """The current scroll position, in the form (horizontal, vertical).
+    def position(self) -> Position:
+        """The current scroll position.
 
         If the value provided for either axis is negative, or greater than the maximum
         position in that axis, the value will be clipped to the valid range.
@@ -212,10 +216,10 @@ class ScrollContainer(Widget):
         If scrolling is disabled in either axis, the value provided for that axis will
         be ignored.
         """
-        return self.horizontal_position, self.vertical_position
+        return Position(self.horizontal_position, self.vertical_position)
 
     @position.setter
-    def position(self, position: tuple[SupportsInt, SupportsInt]) -> None:
+    def position(self, position: PositionT):
         horizontal_position, vertical_position = map(int, position)
         if self.horizontal:
             if horizontal_position < 0:

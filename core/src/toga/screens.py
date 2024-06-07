@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Any
 
 from toga.images import Image
 from toga.platform import get_platform_factory
+from toga.types import Position, Size
 
 if TYPE_CHECKING:
     from toga.images import ImageT
@@ -20,13 +21,14 @@ class Screen:
         return self._impl.get_name()
 
     @property
-    def origin(self) -> tuple[int, int]:
-        """The absolute coordinates of the screen's origin, as a ``(x, y)`` tuple."""
+    def origin(self) -> Position:
+        """The absolute coordinates of the screen's origin, in :ref:`CSS pixels
+        <css-units>`."""
         return self._impl.get_origin()
 
     @property
-    def size(self) -> tuple[int, int]:
-        """The size of the screen, as a ``(width, height)`` tuple."""
+    def size(self) -> Size:
+        """The size of the screen, in :ref:`CSS pixels <css-units>`."""
         return self._impl.get_size()
 
     def as_image(self, format: type[ImageT] = Image) -> ImageT:

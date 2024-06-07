@@ -4,6 +4,7 @@ from android.graphics import (
 )
 
 from toga.screens import Screen as ScreenInterface
+from toga.types import Position, Size
 
 from .widgets.base import Scalable
 
@@ -26,11 +27,11 @@ class Screen(Scalable):
     def get_name(self):
         return self.native.getName()
 
-    def get_origin(self):
-        return (0, 0)
+    def get_origin(self) -> Position:
+        return Position(0, 0)
 
-    def get_size(self):
-        return (
+    def get_size(self) -> Size:
+        return Size(
             self.scale_out(self.native.getWidth()),
             self.scale_out(self.native.getHeight()),
         )
