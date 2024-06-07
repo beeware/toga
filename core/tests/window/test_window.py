@@ -29,7 +29,8 @@ def test_window_created(app):
     # We can't know what the ID is, but it must be a string.
     assert isinstance(window.id, str)
     assert window.title == "Toga"
-    assert window.position == (100, 100)
+    # The app has created a main window, so this will be the second window.
+    assert window.position == (150, 150)
     assert window.size == (640, 480)
     assert window.resizable
     assert window.closable
@@ -193,6 +194,48 @@ def test_set_position(window):
     window.position = (123, 456)
 
     assert window.position == (123, 456)
+
+
+def test_position_casacde(app):
+    """The initial position of windows will cascade."""
+    windows = [app.main_window]
+
+    for i in range(0, 14):
+        win = toga.Window(title=f"Window {i}")
+        # The for the first 14 new windows (the app creates the first window)
+        # the x and y coordinates must be the same
+        assert win.position[0] == win.position[1]
+        # The position of the window should cascade down
+        assert win.position[0] > windows[-1].position[0]
+        assert win.position[1] > windows[-1].position[1]
+
+        windows.append(win)
+
+    # The 15th window will come back to the y origin, but shift along the x axis.
+    win = toga.Window(title=f"Window {i}")
+    assert win.position[0] > windows[0].position[0]
+    assert win.position[1] == windows[0].position[1]
+
+    windows.append(win)
+
+    # Cascade another 15 windows
+    for i in range(16, 30):
+        win = toga.Window(title=f"Window {i}")
+        # The position of the window should cascade down
+        assert win.position[0] > windows[-1].position[0]
+        assert win.position[1] > windows[-1].position[1]
+
+        # The y coordinate of these windows should be the same
+        # as 15 windows ago; the x coordinate is shifted right
+        assert win.position[0] > windows[i - 15].position[0]
+        assert win.position[1] == windows[i - 15].position[1]
+
+        windows.append(win)
+
+    # The 30 window will come back to the y origin, but shift along the x axis.
+    win = toga.Window(title=f"Window {i}")
+    assert win.position[0] > windows[15].position[0]
+    assert win.position[1] == windows[15].position[1]
 
 
 def test_set_size(window):
@@ -380,9 +423,11 @@ def test_screen(window, app):
     # window between the screens.
     # `window.screen` will return `Secondary Screen`
     assert window.screen == app.screens[1]
-    assert window.position == (100, 100)
+    # The app has created a main window; the secondary window will be at second
+    # position.
+    assert window.position == (150, 150)
     window.screen = app.screens[0]
-    assert window.position == (1466, 868)
+    assert window.position == (1516, 918)
 
 
 def test_screen_position(window, app):

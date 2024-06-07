@@ -20,7 +20,8 @@ def test_create(app):
     assert isinstance(window.id, str)
     # Window title is the app title.
     assert window.title == "Test App"
-    assert window.position == (100, 100)
+    # The app has created a main window, so this will be the second window.
+    assert window.position == (150, 150)
     assert window.size == (640, 480)
     assert window.resizable
     assert window.closable

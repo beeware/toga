@@ -206,7 +206,7 @@ class MainWindow(Window):
         self,
         id: str | None = None,
         title: str | None = None,
-        position: tuple[int, int] = (100, 100),
+        position: tuple[int, int] | None = None,
         size: tuple[int, int] = (640, 480),
         resizable: bool = True,
         minimizable: bool = True,

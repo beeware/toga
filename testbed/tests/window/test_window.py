@@ -171,7 +171,12 @@ else:
 
         assert second_window.title == "Toga"
         assert second_window.size == (640, 480)
-        assert second_window.position == (100, 100)
+        # Position will be cascaded; the exact position depends on the platform,
+        # and how many windows have been created. As long as it's not (100,100),
+        # and the x and y coordinate are the same.
+        assert second_window.position[0] > 110
+        assert second_window.position[1] == second_window.position[0]
+
         assert second_window_probe.is_resizable
         if second_window_probe.supports_closable:
             assert second_window_probe.is_closable

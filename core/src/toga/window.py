@@ -29,6 +29,28 @@ if TYPE_CHECKING:
     from toga.widgets.base import Widget
 
 
+_window_count = -1
+
+
+def _initial_position() -> tuple[int, int]:
+    """Compute a cascading initial position for platforms that don't have a native
+    implementation.
+
+    This is a stateful method; each time it is invoked, it will yield a new initial
+    position.
+
+    :param position: The explicitly provided initial"""
+    # Each new window created without an explicit position is positioned
+    # 50px down and to the right from the previous window, with the first
+    # window positioned at (100, 100). Every 15 windows, move back to a
+    # y coordinate of 100, and start from 50 pixels further right.
+    global _window_count
+    _window_count += 1
+
+    pos = 100 + (_window_count % 15) * 50
+    return (pos + (_window_count // 15 * 50), pos)
+
+
 class FilteredWidgetRegistry:
     # A class that exposes a mapping lookup interface, filtered to widgets from a single
     # window. The underlying data store is on the app.
@@ -121,7 +143,7 @@ class Window:
         self,
         id: str | None = None,
         title: str | None = None,
-        position: tuple[int, int] = (100, 100),
+        position: tuple[int, int] | None = None,
         size: tuple[int, int] = (640, 480),
         resizable: bool = True,
         closable: bool = True,
