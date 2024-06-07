@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import warnings
 from collections.abc import Iterable
-from typing import Any, Generic, Protocol, TypeVar
+from typing import Any, Protocol, TypeVar
 
 import toga
 from toga.handlers import wrapped_handler
@@ -10,7 +10,6 @@ from toga.sources import ListSource, Source
 
 from .base import StyleT, Widget
 
-T = TypeVar("T")
 SourceT = TypeVar("SourceT", bound=Source)
 
 
@@ -23,14 +22,14 @@ class OnChangeHandler(Protocol):
         """
 
 
-class Selection(Widget, Generic[T]):
+class Selection(Widget):
     def __init__(
         self,
         id: str | None = None,
         style: StyleT | None = None,
-        items: SourceT | Iterable[T] | None = None,
+        items: SourceT | Iterable | None = None,
         accessor: str | None = None,
-        value: T | None = None,
+        value: object | None = None,
         on_change: toga.widgets.selection.OnChangeHandler | None = None,
         enabled: bool = True,
         on_select: None = None,  # DEPRECATED
@@ -67,7 +66,7 @@ class Selection(Widget, Generic[T]):
         # End backwards compatibility.
         ######################################################################
 
-        self._items: SourceT | ListSource[T]
+        self._items: SourceT | ListSource
 
         self.on_change = None  # needed for _impl initialization
         self._impl = self.factory.Selection(interface=self)
@@ -81,7 +80,7 @@ class Selection(Widget, Generic[T]):
         self.enabled = enabled
 
     @property
-    def items(self) -> SourceT | ListSource[T]:
+    def items(self) -> SourceT | ListSource:
         """The items to display in the selection.
 
         When setting this property:
@@ -98,7 +97,7 @@ class Selection(Widget, Generic[T]):
         return self._items
 
     @items.setter
-    def items(self, items: SourceT | Iterable[T] | None) -> None:
+    def items(self, items: SourceT | Iterable | None) -> None:
         if self._accessor is None:
             accessors = ["value"]
         else:
@@ -140,7 +139,7 @@ class Selection(Widget, Generic[T]):
         return str(title).split("\n")[0]
 
     @property
-    def value(self) -> T | None:
+    def value(self) -> object | None:
         """The currently selected item.
 
         Returns None if there are no items in the selection.
@@ -168,7 +167,7 @@ class Selection(Widget, Generic[T]):
         return item
 
     @value.setter
-    def value(self, value: T) -> None:
+    def value(self, value: object) -> None:
         try:
             if self._accessor is None:
                 item = self._items.find(dict(value=value))

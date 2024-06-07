@@ -1,32 +1,16 @@
 from __future__ import annotations
 
-import sys
 from collections.abc import Iterator
-from typing import TYPE_CHECKING, Generic, Iterable, Mapping, Tuple, TypeVar, Union
+from typing import Iterable, Mapping, TypeVar
 
 from .base import Source
 from .list_source import Row, _find_item
 
 T = TypeVar("T")
 
-if TYPE_CHECKING:
-    if sys.version_info < (3, 10):
-        from typing_extensions import TypeAlias
-    else:
-        from typing import TypeAlias
-
-    NodeDataT: TypeAlias = Union[object, Mapping[str, T], Iterable[T]]
-    TreeSourceDataT: TypeAlias = Union[
-        object,
-        Mapping[NodeDataT[T], "TreeSourceDataT[T]"],
-        Iterable[Tuple[NodeDataT[T], "TreeSourceDataT[T]"]],
-    ]
-else:
-    TreeSourceDataT = None
-
 
 class Node(Row[T]):
-    _source: TreeSource[T]
+    _source: TreeSource
 
     def __init__(self, **data: T):
         """Create a new Node object.
@@ -82,7 +66,7 @@ class Node(Row[T]):
         self._source.notify("remove", parent=self, index=index, item=child)
 
     def __len__(self) -> int:
-        if self._children is not None:
+        if self.can_have_children():
             return len(self._children)
         else:
             return 0
@@ -103,7 +87,7 @@ class Node(Row[T]):
     def __iter__(self) -> Iterator[Node[T]]:
         return iter(self._children or [])
 
-    def __setitem__(self, index: int, data: T) -> None:
+    def __setitem__(self, index: int, data: object) -> None:
         """Set the value of a specific child in the Node.
 
         :param index: The index of the child to change
@@ -209,12 +193,10 @@ class Node(Row[T]):
         )
 
 
-class TreeSource(Source, Generic[T]):
-    def __init__(
-        self,
-        accessors: Iterable[str],
-        data: TreeSourceDataT[T] | None = None,
-    ):
+class TreeSource(Source):
+    _roots: list[Node]
+
+    def __init__(self, accessors: Iterable[str], data: object | None = None):
         super().__init__()
         if isinstance(accessors, str) or not hasattr(accessors, "__iter__"):
             raise ValueError("accessors should be a list of attribute names")
@@ -225,7 +207,7 @@ class TreeSource(Source, Generic[T]):
             raise ValueError("TreeSource must be provided a list of accessors")
 
         if data is not None:
-            self._roots: list[Node[T]] = self._create_nodes(parent=None, value=data)
+            self._roots = self._create_nodes(parent=None, value=data)
         else:
             self._roots = []
 
@@ -236,7 +218,7 @@ class TreeSource(Source, Generic[T]):
     def __len__(self) -> int:
         return len(self._roots)
 
-    def __getitem__(self, index: int) -> Node[T]:
+    def __getitem__(self, index: int) -> Node:
         return self._roots[index]
 
     def __delitem__(self, index: int) -> None:
@@ -251,11 +233,11 @@ class TreeSource(Source, Generic[T]):
 
     def _create_node(
         self,
-        parent: Node[T] | None,
-        data: NodeDataT[T],
-        children: TreeSourceDataT[T] | None = None,
-    ) -> Node[T]:
-        if isinstance(data, dict):
+        parent: Node | None,
+        data: object,
+        children: object | None = None,
+    ) -> Node:
+        if isinstance(data, Mapping):
             node = Node(**data)
         elif hasattr(data, "__iter__") and not isinstance(data, str):
             node = Node(**dict(zip(self._accessors, data)))
@@ -270,12 +252,8 @@ class TreeSource(Source, Generic[T]):
 
         return node
 
-    def _create_nodes(
-        self,
-        parent: Node[T] | None,
-        value: TreeSourceDataT[T],
-    ) -> list[Node[T]]:
-        if isinstance(value, dict):
+    def _create_nodes(self, parent: Node | None, value: object) -> list[Node]:
+        if isinstance(value, Mapping):
             return [
                 self._create_node(parent=parent, data=data, children=children)
                 for data, children in value.items()
@@ -312,12 +290,7 @@ class TreeSource(Source, Generic[T]):
         self._roots = []
         self.notify("clear")
 
-    def insert(
-        self,
-        index: int,
-        data: NodeDataT[T],
-        children: TreeSourceDataT[T] = None,
-    ) -> Node[T]:
+    def insert(self, index: int, data: object, children: object = None) -> Node:
         """Insert a root node into the data source at a specific index.
 
         If the node is a leaf node, it will be converted into a non-leaf node.
@@ -338,13 +311,10 @@ class TreeSource(Source, Generic[T]):
         self._roots.insert(index, node)
         node._parent = None
         self.notify("insert", parent=None, index=index, item=node)
+
         return node
 
-    def append(
-        self,
-        data: NodeDataT[T],
-        children: TreeSourceDataT[T] | None = None,
-    ) -> Node[T]:
+    def append(self, data: object, children: object | None = None) -> Node:
         """Append a root node at the end of the list of children of this source.
 
         If the node is a leaf node, it will be converted into a non-leaf node.
@@ -357,7 +327,7 @@ class TreeSource(Source, Generic[T]):
         """
         return self.insert(len(self), data=data, children=children)
 
-    def remove(self, node: Node[T]) -> None:
+    def remove(self, node: Node) -> None:
         """Remove a node from the data source.
 
         This will also remove the node if it is a descendant of a root node.
@@ -372,7 +342,7 @@ class TreeSource(Source, Generic[T]):
         else:
             node._parent.remove(node)
 
-    def index(self, node: Node[T]) -> int:
+    def index(self, node: Node) -> int:
         """The index of a specific root node in the data source.
 
         This search uses Node instances, and searches for an *instance* match.
@@ -386,7 +356,7 @@ class TreeSource(Source, Generic[T]):
         """
         return self._roots.index(node)
 
-    def find(self, data: NodeDataT[T], start: Node[T] | None = None) -> Node[T]:
+    def find(self, data: object, start: Node | None = None) -> Node:
         """Find the first item in the child nodes of the given node that matches all the
         provided attributes.
 

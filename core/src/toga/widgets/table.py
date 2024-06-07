@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import warnings
 from collections.abc import Iterable
-from typing import Any, Generic, Literal, Protocol, TypeVar
+from typing import Any, Literal, Protocol, TypeVar
 
 import toga
 from toga.handlers import wrapped_handler
@@ -11,7 +11,6 @@ from toga.sources.accessors import build_accessors, to_accessor
 
 from .base import StyleT, Widget
 
-T = TypeVar("T")
 SourceT = TypeVar("SourceT", bound=Source)
 
 
@@ -34,13 +33,13 @@ class OnActivateHandler(Protocol):
         """
 
 
-class Table(Widget, Generic[T]):
+class Table(Widget):
     def __init__(
         self,
         headings: Iterable[str] | None = None,
         id: str | None = None,
         style: StyleT | None = None,
-        data: SourceT | Iterable[T] | None = None,
+        data: SourceT | Iterable | None = None,
         accessors: Iterable[str] | None = None,
         multiple_select: bool = False,
         on_select: toga.widgets.table.OnSelectHandler | None = None,
@@ -99,7 +98,7 @@ class Table(Widget, Generic[T]):
 
         self._headings: list[str] | None
         self._accessors: list[str]
-        self._data: SourceT | ListSource[T]
+        self._data: SourceT | ListSource
 
         if headings is not None:
             self._headings = [heading.split("\n")[0] for heading in headings]
@@ -143,7 +142,7 @@ class Table(Widget, Generic[T]):
         pass
 
     @property
-    def data(self) -> ListSource[T]:
+    def data(self) -> SourceT | ListSource:
         """The data to display in the table.
 
         When setting this property:
@@ -159,7 +158,7 @@ class Table(Widget, Generic[T]):
         return self._data
 
     @data.setter
-    def data(self, data: SourceT | Iterable[T] | None) -> None:
+    def data(self, data: SourceT | Iterable | None) -> None:
         if data is None:
             self._data = ListSource(accessors=self._accessors, data=[])
         elif isinstance(data, Source):
@@ -176,7 +175,7 @@ class Table(Widget, Generic[T]):
         return self._multiple_select
 
     @property
-    def selection(self) -> list[Row[T]] | Row[T] | None:
+    def selection(self) -> list[Row] | Row | None:
         """The current selection of the table.
 
         If multiple selection is enabled, returns a list of Row objects from the data

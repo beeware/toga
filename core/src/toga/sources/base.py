@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Protocol
+from typing import Protocol
 
 
 class Listener(Protocol):
@@ -8,27 +8,27 @@ class Listener(Protocol):
     data source.
     """
 
-    def change(self, item: Any) -> None:
+    def change(self, item: object) -> object:
         """A change has occurred in an item.
 
         :param item: The data object that has changed.
         """
 
-    def insert(self, index: int, item: Any) -> None:
+    def insert(self, index: int, item: object) -> object:
         """An item has been added to the data source.
 
         :param index: The 0-index position in the data.
         :param item: The data object that was added.
         """
 
-    def remove(self, index: int, item: Any) -> None:
+    def remove(self, index: int, item: object) -> object:
         """An item has been removed from the data source.
 
         :param index: The 0-index position in the data.
         :param item: The data object that was added.
         """
 
-    def clear(self) -> None:
+    def clear(self) -> object:
         """All items have been removed from the data source."""
 
 

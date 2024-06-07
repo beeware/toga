@@ -2,13 +2,7 @@ from __future__ import annotations
 
 import warnings
 from collections.abc import Iterable
-from typing import (
-    Any,
-    Generic,
-    Literal,
-    Protocol,
-    TypeVar,
-)
+from typing import Any, Literal, Protocol, TypeVar
 
 import toga
 from toga.handlers import wrapped_handler
@@ -16,7 +10,6 @@ from toga.sources import ListSource, Row, Source
 
 from .base import StyleT, Widget
 
-T = TypeVar("T")
 SourceT = TypeVar("SourceT", bound=Source)
 
 
@@ -58,12 +51,12 @@ class OnSelectHandler(Protocol):
         """
 
 
-class DetailedList(Widget, Generic[T]):
+class DetailedList(Widget):
     def __init__(
         self,
         id: str | None = None,
         style: StyleT | None = None,
-        data: SourceT | Iterable[T] | None = None,
+        data: SourceT | Iterable | None = None,
         accessors: tuple[str, str, str] = ("title", "subtitle", "icon"),
         missing_value: str = "",
         primary_action: str | None = "Delete",
@@ -118,7 +111,7 @@ class DetailedList(Widget, Generic[T]):
         self.on_select = None
 
         # TODO:PR: in reality, _data needs to be Sized and SupportsIndex...
-        self._data: SourceT | ListSource[T] = None
+        self._data: SourceT | ListSource = None
 
         self._impl = self.factory.DetailedList(interface=self)
 
@@ -145,7 +138,7 @@ class DetailedList(Widget, Generic[T]):
         pass
 
     @property
-    def data(self) -> SourceT | ListSource[T]:
+    def data(self) -> SourceT | ListSource:
         """The data to display in the table.
 
         When setting this property:
@@ -161,7 +154,7 @@ class DetailedList(Widget, Generic[T]):
         return self._data
 
     @data.setter
-    def data(self, data: SourceT | Iterable[T] | None) -> None:
+    def data(self, data: SourceT | Iterable | None) -> None:
         if data is None:
             self._data = ListSource(data=[], accessors=self.accessors)
         elif isinstance(data, Source):
@@ -205,7 +198,7 @@ class DetailedList(Widget, Generic[T]):
         return self._missing_value
 
     @property
-    def selection(self) -> Row[T] | None:
+    def selection(self) -> Row | None:
         """The current selection of the table.
 
         Returns the selected Row object, or :any:`None` if no row is currently selected.

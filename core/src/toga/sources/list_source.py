@@ -82,6 +82,9 @@ class Row(Generic[T]):
             if self._source is not None:
                 self._source.notify("change", item=self)
 
+    def __getattr__(self, attr: str) -> T:
+        return super().__getattr__(attr)
+
     def __delattr__(self, attr: str) -> None:
         """Remove an attribute from the Row object, notifying the source of the change.
 
@@ -94,8 +97,10 @@ class Row(Generic[T]):
 
 
 # TODO:PR: consider adding supported Protocols...maybe List?
-class ListSource(Source, Generic[T]):
-    def __init__(self, accessors: Iterable[str], data: Iterable[T] | None = None):
+class ListSource(Source):
+    _data: list[Row]
+
+    def __init__(self, accessors: Iterable[str], data: Iterable | None = None):
         """A data source to store an ordered list of multiple data values.
 
         :param accessors: A list of attribute names for accessing the value
@@ -126,7 +131,7 @@ class ListSource(Source, Generic[T]):
         """Returns the number of items in the list."""
         return len(self._data)
 
-    def __getitem__(self, index: int) -> Row[T]:
+    def __getitem__(self, index: int) -> Row:
         """Returns the item at position ``index`` of the list."""
         return self._data[index]
 
@@ -141,7 +146,7 @@ class ListSource(Source, Generic[T]):
     ######################################################################
 
     # This behavior is documented in list_source.rst.
-    def _create_row(self, data: T) -> Row[T]:
+    def _create_row(self, data: object) -> Row:
         if isinstance(data, Mapping):
             row = Row(**data)
         elif hasattr(data, "__iter__") and not isinstance(data, str):
@@ -155,7 +160,7 @@ class ListSource(Source, Generic[T]):
     # Utility methods to make ListSources more list-like
     ######################################################################
 
-    def __setitem__(self, index: int, value: T) -> None:
+    def __setitem__(self, index: int, value: object) -> None:
         """Set the value of a specific item in the data source.
 
         :param index: The item to change
@@ -171,7 +176,7 @@ class ListSource(Source, Generic[T]):
         self._data = []
         self.notify("clear")
 
-    def insert(self, index: int, data: T) -> Row[T]:
+    def insert(self, index: int, data: object) -> Row:
         """Insert a row into the data source at a specific index.
 
         :param index: The index at which to insert the item.
@@ -184,7 +189,7 @@ class ListSource(Source, Generic[T]):
         self.notify("insert", index=index, item=row)
         return row
 
-    def append(self, data: T) -> Row[T]:
+    def append(self, data: object) -> Row:
         """Insert a row at the end of the data source.
 
         :param data: The data to append to the ListSource. This data will be converted
@@ -193,14 +198,14 @@ class ListSource(Source, Generic[T]):
         """
         return self.insert(len(self), data)
 
-    def remove(self, row: Row[T]) -> None:
+    def remove(self, row: Row) -> None:
         """Remove a row from the data source.
 
         :param row: The row to remove from the data source.
         """
         del self[self._data.index(row)]
 
-    def index(self, row: Row[T]) -> int:
+    def index(self, row: Row) -> int:
         """The index of a specific row in the data source.
 
         This search uses Row instances, and searches for an *instance* match.
@@ -214,7 +219,7 @@ class ListSource(Source, Generic[T]):
         """
         return self._data.index(row)
 
-    def find(self, data: object, start: Row[T] | None = None) -> Row[T]:
+    def find(self, data: object, start: Row | None = None) -> Row:
         """Find the first item in the data that matches all the provided
         attributes.
 

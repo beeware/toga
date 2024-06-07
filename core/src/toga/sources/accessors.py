@@ -63,7 +63,7 @@ def build_accessors(
 
     :returns: The final list of accessors.
     """
-    if accessors:
+    if accessors is not None:
         if isinstance(accessors, Mapping):
             result = [
                 accessors[h] if h in accessors else to_accessor(h) for h in headings

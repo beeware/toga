@@ -2,18 +2,16 @@ from __future__ import annotations
 
 import warnings
 from collections.abc import Iterable
-from typing import Any, Generic, Literal, Protocol, TypeVar
+from typing import Any, Literal, Protocol, TypeVar
 
 import toga
 from toga.handlers import wrapped_handler
 from toga.sources import Node, Source, TreeSource
 from toga.sources.accessors import build_accessors, to_accessor
-from toga.sources.tree_source import TreeSourceDataT
 from toga.style import Pack
 
 from .base import Widget
 
-T = TypeVar("T")
 SourceT = TypeVar("SourceT", bound=Source)
 
 
@@ -35,13 +33,13 @@ class OnActivateHandler(Protocol):
         """
 
 
-class Tree(Widget, Generic[T]):
+class Tree(Widget):
     def __init__(
         self,
         headings: Iterable[str] | None = None,
         id: str | None = None,
         style: Pack | None = None,
-        data: SourceT | TreeSourceDataT[T] | None = None,
+        data: SourceT | object | None = None,
         accessors: Iterable[str] | None = None,
         multiple_select: bool = False,
         on_select: toga.widgets.tree.OnSelectHandler | None = None,
@@ -99,7 +97,7 @@ class Tree(Widget, Generic[T]):
         ######################################################################
 
         self._headings: list[str] | None
-        self._data: SourceT | TreeSource[T]
+        self._data: SourceT | TreeSource
 
         if headings is not None:
             self._headings = [heading.split("\n")[0] for heading in headings]
@@ -142,7 +140,7 @@ class Tree(Widget, Generic[T]):
         pass
 
     @property
-    def data(self) -> TreeSource[T]:
+    def data(self) -> SourceT | TreeSource:
         """The data to display in the tree.
 
         When setting this property:
@@ -158,7 +156,7 @@ class Tree(Widget, Generic[T]):
         return self._data
 
     @data.setter
-    def data(self, data: SourceT | TreeSourceDataT[T] | None) -> None:
+    def data(self, data: SourceT | object | None) -> None:
         if data is None:
             self._data = TreeSource(accessors=self._accessors, data=[])
         elif isinstance(data, Source):
@@ -175,7 +173,7 @@ class Tree(Widget, Generic[T]):
         return self._multiple_select
 
     @property
-    def selection(self) -> list[Node[T]] | Node[T] | None:
+    def selection(self) -> list[Node] | Node | None:
         """The current selection of the tree.
 
         If multiple selection is enabled, returns a list of Node objects from the data
@@ -187,7 +185,7 @@ class Tree(Widget, Generic[T]):
         """
         return self._impl.get_selection()
 
-    def expand(self, node: Node[T] | None = None) -> None:
+    def expand(self, node: Node | None = None) -> None:
         """Expand the specified node of the tree.
 
         If no node is provided, all nodes of the tree will be expanded.
@@ -204,7 +202,7 @@ class Tree(Widget, Generic[T]):
         else:
             self._impl.expand_node(node)
 
-    def collapse(self, node: Node[T] | None = None) -> None:
+    def collapse(self, node: Node | None = None) -> None:
         """Collapse the specified node of the tree.
 
         If no node is provided, all nodes of the tree will be collapsed.
