@@ -76,7 +76,7 @@ project_name = "Toga Demo"
 bundle = "org.beeware"
 version = "0.0.1"
 url = "https://beeware.org"
-license = "BSD license"
+license.file = "LICENSE"
 author = "Tiberius Yak"
 author_email = "tiberius@beeware.org"
 
