@@ -1,18 +1,12 @@
 import io
 import traceback
 from asyncio import wait_for
-from importlib import import_module
 from pathlib import Path
 from unittest.mock import Mock
 
 import pytest
 
 TESTS_DIR = Path(__file__).parent
-
-
-def window_probe(app, window):
-    module = import_module("tests_backend.window")
-    return module.WindowProbe(app, window)
 
 
 async def assert_dialog_result(window, dialog, on_result, expected):
