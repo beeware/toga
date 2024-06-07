@@ -21,25 +21,28 @@ from toga.command import Command, CommandSet
 from toga.handlers import AsyncResult, wrapped_handler
 from toga.images import Image
 from toga.platform import get_platform_factory
+from toga.types import Position, Size
 
 if TYPE_CHECKING:
     from toga.app import App
     from toga.images import ImageT
     from toga.screens import Screen
+    from toga.types import PositionT, SizeT
     from toga.widgets.base import Widget
 
 
 _window_count = -1
 
 
-def _initial_position() -> tuple[int, int]:
+def _initial_position() -> Position:
     """Compute a cascading initial position for platforms that don't have a native
     implementation.
 
     This is a stateful method; each time it is invoked, it will yield a new initial
     position.
 
-    :param position: The explicitly provided initial"""
+    :returns: The position for the new window.
+    """
     # Each new window created without an explicit position is positioned
     # 50px down and to the right from the previous window, with the first
     # window positioned at (100, 100). Every 15 windows, move back to a
@@ -48,7 +51,7 @@ def _initial_position() -> tuple[int, int]:
     _window_count += 1
 
     pos = 100 + (_window_count % 15) * 50
-    return (pos + (_window_count // 15 * 50), pos)
+    return Position(pos + (_window_count // 15 * 50), pos)
 
 
 class FilteredWidgetRegistry:
@@ -143,8 +146,8 @@ class Window:
         self,
         id: str | None = None,
         title: str | None = None,
-        position: tuple[int, int] | None = None,
-        size: tuple[int, int] = (640, 480),
+        position: PositionT | None = None,
+        size: SizeT = Size(640, 480),
         resizable: bool = True,
         closable: bool = True,
         minimizable: bool = True,
@@ -158,10 +161,10 @@ class Window:
         :param id: A unique identifier for the window. If not provided, one will be
             automatically generated.
         :param title: Title for the window. Defaults to "Toga".
-        :param position: Position of the window, as a tuple of ``(x, y)`` coordinates,
-            in :ref:`CSS pixels <css-units>`.
-        :param size: Size of the window, as a tuple of ``(width, height)``, in :ref:`CSS
-            pixels <css-units>`.
+        :param position: Position of the window, as a :any:`toga.Position` or tuple of
+            ``(x, y)`` coordinates, in :ref:`CSS pixels <css-units>`.
+        :param size: Size of the window, as a :any:`toga.Size` or tuple of ``(width,
+            height)``, in :ref:`CSS pixels <css-units>`.
         :param resizable: Can the window be resized by the user?
         :param closable: Can the window be closed by the user?
         :param minimizable: Can the window be minimized by the user?
@@ -207,8 +210,8 @@ class Window:
         self._impl = getattr(self.factory, self._WINDOW_CLASS)(
             interface=self,
             title=title if title else self._default_title,
-            position=position,
-            size=size,
+            position=None if position is None else Position(*position),
+            size=Size(*size),
         )
 
         # Add the window to the app
@@ -365,13 +368,12 @@ class Window:
     ######################################################################
 
     @property
-    def size(self) -> tuple[int, int]:
-        """Size of the window, as a tuple of ``(width, height)``, in
-        :ref:`CSS pixels <css-units>`."""
+    def size(self) -> Size:
+        """Size of the window, in :ref:`CSS pixels <css-units>`."""
         return self._impl.get_size()
 
     @size.setter
-    def size(self, size: tuple[int, int]) -> None:
+    def size(self, size: SizeT) -> None:
         self._impl.set_size(size)
         if self.content:
             self.content.refresh()
@@ -381,28 +383,21 @@ class Window:
     ######################################################################
 
     @property
-    def position(self) -> tuple[int, int]:
-        """Absolute position of the window, as a ``(x, y)`` tuple coordinates, in
-        :ref:`CSS pixels <css-units>`.
+    def position(self) -> Position:
+        """Absolute position of the window, in :ref:`CSS pixels <css-units>`.
 
         The origin is the top left corner of the primary screen.
         """
         absolute_origin = self._app.screens[0].origin
         absolute_window_position = self._impl.get_position()
+        window_position = absolute_window_position - absolute_origin
 
-        window_position = (
-            absolute_window_position[0] - absolute_origin[0],
-            absolute_window_position[1] - absolute_origin[1],
-        )
         return window_position
 
     @position.setter
-    def position(self, position: tuple[int, int]) -> None:
+    def position(self, position: PositionT) -> None:
         absolute_origin = self._app.screens[0].origin
-        absolute_new_position = (
-            position[0] + absolute_origin[0],
-            position[1] + absolute_origin[1],
-        )
+        absolute_new_position = Position(*position) + absolute_origin
         self._impl.set_position(absolute_new_position)
 
     @property
@@ -415,26 +410,17 @@ class Window:
         original_window_location = self.position
         original_origin = self.screen.origin
         new_origin = app_screen.origin
-        x = original_window_location[0] - original_origin[0] + new_origin[0]
-        y = original_window_location[1] - original_origin[1] + new_origin[1]
-
-        self._impl.set_position((x, y))
+        self._impl.set_position(original_window_location - original_origin + new_origin)
 
     @property
-    def screen_position(self) -> tuple[int, int]:
-        """Position of the window with respect to current screen, as a ``(x, y)`` tuple."""
-        current_relative_position = (
-            self.position[0] - self.screen.origin[0],
-            self.position[1] - self.screen.origin[1],
-        )
-        return current_relative_position
+    def screen_position(self) -> Position:
+        """Position of the window with respect to current screen, in
+        :ref:`CSS pixels <css-units>`."""
+        return self.position - self.screen.origin
 
     @screen_position.setter
-    def screen_position(self, position: tuple[int, int]) -> None:
-        new_relative_position = (
-            position[0] + self.screen.origin[0],
-            position[1] + self.screen.origin[1],
-        )
+    def screen_position(self, position: PositionT) -> None:
+        new_relative_position = Position(*position) + self.screen.origin
         self._impl.set_position(new_relative_position)
 
     ######################################################################

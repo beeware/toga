@@ -30,11 +30,13 @@ from toga.icons import Icon
 from toga.paths import Paths
 from toga.platform import get_platform_factory
 from toga.screens import Screen
+from toga.types import Position, Size
 from toga.widgets.base import Widget
 from toga.window import Window
 
 if TYPE_CHECKING:
     from toga.icons import IconContent
+    from toga.types import PositionT, SizeT
 
 # Make sure deprecation warnings are shown by default
 warnings.filterwarnings("default", category=DeprecationWarning)
@@ -206,8 +208,8 @@ class MainWindow(Window):
         self,
         id: str | None = None,
         title: str | None = None,
-        position: tuple[int, int] | None = None,
-        size: tuple[int, int] = (640, 480),
+        position: PositionT | None = None,
+        size: SizeT = Size(640, 480),
         resizable: bool = True,
         minimizable: bool = True,
         content: Widget | None = None,
@@ -219,10 +221,10 @@ class MainWindow(Window):
         :param id: A unique identifier for the window. If not provided, one will be
             automatically generated.
         :param title: Title for the window. Defaults to the formal name of the app.
-        :param position: Position of the window, as a tuple of ``(x, y)`` coordinates,
-            in :ref:`CSS pixels <css-units>`.
-        :param size: Size of the window, as a tuple of ``(width, height)``, in :ref:`CSS
-            pixels <css-units>`.
+        :param position: Position of the window, as a :any:`toga.Position` or tuple of
+            ``(x, y)`` coordinates, in :ref:`CSS pixels <css-units>`.
+        :param size: Size of the window, as a :any:`toga.Size` or tuple of ``(width,
+            height)``, in :ref:`CSS pixels <css-units>`.
         :param resizable: Can the window be resized by the user?
         :param minimizable: Can the window be minimized by the user?
         :param content: The initial content for the window.
@@ -274,8 +276,8 @@ class DocumentMainWindow(Window):
         doc: Document,
         id: str | None = None,
         title: str | None = None,
-        position: tuple[int, int] = (100, 100),
-        size: tuple[int, int] = (640, 480),
+        position: PositionT = Position(100, 100),
+        size: SizeT = Size(640, 480),
         resizable: bool = True,
         minimizable: bool = True,
     ):
@@ -289,8 +291,10 @@ class DocumentMainWindow(Window):
         :param document: The document being managed by this window
         :param id: The ID of the window.
         :param title: Title for the window. Defaults to the formal name of the app.
-        :param position: Position of the window, as a tuple of ``(x, y)`` coordinates.
-        :param size: Size of the window, as a tuple of ``(width, height)``, in pixels.
+        :param position: Position of the window, as a :any:`toga.Position` or tuple of
+            ``(x, y)`` coordinates.
+        :param size: Size of the window, as a :any:`toga.Size` or tuple of
+            ``(width, height)``, in pixels.
         :param resizable: Can the window be manually resized by the user?
         :param minimizable: Can the window be minimized by the user?
         """
