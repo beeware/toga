@@ -31,10 +31,10 @@ class LatLng(NamedTuple):
 class Position(NamedTuple):
     """A 2D window position."""
 
-    #: X coordinate
+    #: X coordinate, in CSS pixels.
     x: int
 
-    #: Y coordinate
+    #: Y coordinate, in CSS pixels.
     y: int
 
     def __str__(self) -> str:
