@@ -5,6 +5,7 @@ from textual.reactive import Reactive
 from textual.screen import Screen as TextualScreen
 from textual.widget import Widget as TextualWidget
 from textual.widgets import Button as TextualButton
+from toga import Position, Size
 
 from .container import Container
 from .screens import Screen as ScreenImpl
@@ -169,8 +170,8 @@ class Window:
     # Window size
     ######################################################################
 
-    def get_size(self):
-        return (self.native.size.width, self.native.size.height)
+    def get_size(self) -> Size:
+        return Size(self.native.size.width, self.native.size.height)
 
     def set_size(self, size):
         pass
@@ -182,8 +183,8 @@ class Window:
     def get_current_screen(self):
         return ScreenImpl(self.native)
 
-    def get_position(self):
-        return (0, 0)
+    def get_position(self) -> Position:
+        return Position(0, 0)
 
     def set_position(self, position):
         pass

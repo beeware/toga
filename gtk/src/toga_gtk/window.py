@@ -1,8 +1,16 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from toga.command import Separator
+from toga.types import Position, Size
 
 from .container import TogaContainer
 from .libs import Gdk, Gtk
 from .screens import Screen as ScreenImpl
+
+if TYPE_CHECKING:  # pragma: no cover
+    from toga.types import PositionT, SizeT
 
 
 class Window:
@@ -159,11 +167,11 @@ class Window:
     # Window size
     ######################################################################
 
-    def get_size(self):
+    def get_size(self) -> Size:
         size = self.native.get_size()
-        return size.width, size.height
+        return Size(size.width, size.height)
 
-    def set_size(self, size):
+    def set_size(self, size: SizeT):
         self.native.resize(size[0], size[1])
 
     ######################################################################
@@ -175,11 +183,11 @@ class Window:
         monitor_native = display.get_monitor_at_window(self.native.get_window())
         return ScreenImpl(monitor_native)
 
-    def get_position(self):
+    def get_position(self) -> Position:
         pos = self.native.get_position()
-        return pos.root_x, pos.root_y
+        return Position(pos.root_x, pos.root_y)
 
-    def set_position(self, position):
+    def set_position(self, position: PositionT):
         self.native.move(position[0], position[1])
 
     ######################################################################
