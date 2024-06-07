@@ -6,7 +6,7 @@ project_name = "Tutorial 1"
 bundle = "org.beeware.toga"
 version = "0.0.1"
 url = "https://beeware.org"
-license = "BSD license"
+license.file = "LICENSE"
 author = "Tiberius Yak"
 author_email = "tiberius@beeware.org"
 
