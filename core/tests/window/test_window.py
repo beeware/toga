@@ -136,26 +136,30 @@ def test_title(window, value, expected):
 
 def test_toolbar_implicit_add(window, app):
     """Adding an item to a toolbar implicitly adds it to the app."""
+    # Clear the app commands to start with
+    app.commands.clear()
+    assert list(window.toolbar) == []
+    assert list(app.commands) == []
+
     cmd1 = toga.Command(None, "Command 1")
     cmd2 = toga.Command(None, "Command 2")
 
-    toolbar = window.toolbar
-    assert list(toolbar) == []
+    assert list(window.toolbar) == []
     assert list(app.commands) == []
 
     # Adding a command to the toolbar automatically adds it to the app
-    toolbar.add(cmd1)
-    assert list(toolbar) == [cmd1]
+    window.toolbar.add(cmd1)
+    assert list(window.toolbar) == [cmd1]
     assert list(app.commands) == [cmd1]
 
     # But not vice versa
     app.commands.add(cmd2)
-    assert list(toolbar) == [cmd1]
+    assert list(window.toolbar) == [cmd1]
     assert list(app.commands) == [cmd1, cmd2]
 
     # Adding a command to both places does not cause a duplicate
     app.commands.add(cmd1)
-    assert list(toolbar) == [cmd1]
+    assert list(window.toolbar) == [cmd1]
     assert list(app.commands) == [cmd1, cmd2]
 
 
