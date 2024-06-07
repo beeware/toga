@@ -6,7 +6,7 @@ from unittest.mock import Mock
 
 import pytest
 
-TESTS_DIR = Path(__file__).parent
+TESTS_DIR = Path(__file__).parent.parent
 
 
 async def assert_dialog_result(window, dialog, on_result, expected):
