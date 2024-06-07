@@ -204,11 +204,6 @@ class App:
         return submenu
 
     def create_menus(self):
-        if self.interface.main_window is None:  # pragma: no branch
-            # The startup method may create commands before creating the window, so
-            # we'll call create_menus again after it returns.
-            return
-
         window = self.interface.main_window._impl
         menubar = window.native.MainMenuStrip
         if menubar:
