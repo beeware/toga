@@ -50,7 +50,6 @@ requires = [
 base_theme = "Theme.MaterialComponents.Light.DarkActionBar"
 
 build_gradle_dependencies = [
-    "androidx.appcompat:appcompat:1.6.1",
     "com.google.android.material:material:1.11.0",
 ]
 
