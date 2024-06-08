@@ -75,7 +75,6 @@ class MapPin:
             self.interface._impl.update_pin(self)
 
 
-# TODO:PR: __contains__() is required to subclass Set; should it not be added?
 class MapPinSet:
     def __init__(self, interface: MapView, pins: Iterable[MapPin] | None):
         self.interface = interface

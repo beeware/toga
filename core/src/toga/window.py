@@ -105,7 +105,6 @@ class Dialog(AsyncResult):
     RESULT_TYPE = "dialog"
 
     def __init__(self, window: Window, on_result: DialogResultHandler[Any]):
-        # TODO:PR: should DialogResultHandlerT include the "exception" arg...
         super().__init__(on_result=on_result)
         self.window = window
         self.app = window.app

@@ -96,7 +96,6 @@ class Row(Generic[T]):
                 self._source.notify("change", item=self)
 
 
-# TODO:PR: consider adding supported Protocols...maybe List?
 class ListSource(Source):
     _data: list[Row]
 

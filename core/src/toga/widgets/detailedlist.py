@@ -110,7 +110,6 @@ class DetailedList(Widget):
         self._secondary_action = secondary_action
         self.on_select = None
 
-        # TODO:PR: in reality, _data needs to be Sized and SupportsIndex...
         self._data: SourceT | ListSource = None
 
         self._impl = self.factory.DetailedList(interface=self)
