@@ -25,9 +25,7 @@ from System.IO import MemoryStream
 
 from toga.colors import TRANSPARENT
 from toga.widgets.canvas import Baseline, FillRule, arc_to_bezier, sweepangle
-from toga_winforms.colors import (
-    native_color,
-)
+from toga_winforms.colors import native_color
 
 from ..libs.wrapper import WeakrefCallable
 from .box import Box
@@ -359,7 +357,7 @@ class Canvas(Box):
         return bytes(stream.ToArray())
 
     def set_background_color(self, color):
-        if color is TRANSPARENT:
+        if color in {None, TRANSPARENT}:
             # BackColor needs to be set to Color.Transparent or else the
             # image captured by get_image_data() won't have transparency.
             self.native.BackColor = Color.Transparent

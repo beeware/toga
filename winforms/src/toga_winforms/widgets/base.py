@@ -47,6 +47,11 @@ class Widget(ABC, Scalable):
 
         self._container = None
         self.native = None
+
+        # Widgets that need to set a different default background_color
+        # should override this attribute.
+        self._default_background_color = toga_color(SystemColors.Control)
+
         self.create()
         self.init_scale(self.native)
         self.interface.style.reapply()
@@ -118,10 +123,11 @@ class Widget(ABC, Scalable):
             self.native.ForeColor = native_color(color)
 
     def set_background_color(self, color):
-        # Widgets that need to set a different default background_color should
-        # override this method and set a background color for the None case.
         if color is None:
-            self.native.BackColor = SystemColors.Control
+            if self._default_background_color != TRANSPARENT:
+                self.native.BackColor = native_color(self._default_background_color)
+            else:
+                color = self._default_background_color
         elif (color != TRANSPARENT) and (color.a == 1):
             self.native.BackColor = native_color(color)
         else:

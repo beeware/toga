@@ -32,6 +32,8 @@ class Slider(Widget, IntSliderImpl):
         self.native.MouseDown += WeakrefCallable(self.winforms_mouse_down)
         self.native.MouseUp += WeakrefCallable(self.winforms_mouse_up)
 
+        self._default_background_color = TRANSPARENT
+
     def winforms_value_chaned(self, sender, event):
         self.on_change()
 
@@ -60,6 +62,3 @@ class Slider(Widget, IntSliderImpl):
         self.interface.intrinsic.height = self.scale_out(
             self.native.PreferredSize.Height, ROUND_UP
         )
-
-    def set_background_color(self, color):
-        super().set_background_color(TRANSPARENT if color is None else color)

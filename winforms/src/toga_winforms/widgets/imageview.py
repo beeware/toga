@@ -19,6 +19,8 @@ class ImageView(Widget):
         # using a 1x1 blank bitmap for the None case.
         self.native.Image = self._empty_image()
 
+        self._default_background_color = TRANSPARENT
+
     def _empty_image(self):
         return Bitmap(1, 1)
 
@@ -41,6 +43,3 @@ class ImageView(Widget):
             self.native.SizeMode = WinForms.PictureBoxSizeMode.Zoom
         else:
             self.native.SizeMode = WinForms.PictureBoxSizeMode.StretchImage
-
-    def set_background_color(self, color):
-        super().set_background_color(TRANSPARENT if color is None else color)

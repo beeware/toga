@@ -27,6 +27,7 @@ class ProgressBar(Widget):
 
     def create(self):
         self.native = WinForms.ProgressBar()
+        self._default_background_color = TRANSPARENT
         self.set_stopping_style()
 
         self._running = False
@@ -85,6 +86,3 @@ class ProgressBar(Widget):
         self.interface.intrinsic.height = self.scale_out(
             self.native.PreferredSize.Height, ROUND_UP
         )
-
-    def set_background_color(self, color):
-        super().set_background_color(TRANSPARENT if color is None else color)
