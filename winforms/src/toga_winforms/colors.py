@@ -20,10 +20,7 @@ def native_color(c):
 
 
 def toga_color(c):
-    if c == Color.Transparent:
-        return TRANSPARENT
-    else:
-        return rgba(c.R, c.G, c.B, c.A / 255)
+    return rgba(c.R, c.G, c.B, c.A / 255)
 
 
 def alpha_blending_over_operation(front_color, back_color):
