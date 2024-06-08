@@ -141,9 +141,6 @@ class SimpleProbe(BaseProbe, FontMixin):
             else:
                 return None
 
-    def assert_background_color(self, color, assert_color_function):
-        assert_color_function(self.background_color, color)
-
     async def press(self):
         self.native.performClick()
 

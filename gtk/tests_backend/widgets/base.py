@@ -98,9 +98,6 @@ class SimpleProbe(BaseProbe, FontMixin):
         sc = self.native.get_style_context()
         return toga_color(sc.get_property("background-color", sc.get_state()))
 
-    def assert_background_color(self, color, assert_color_function):
-        assert_color_function(self.background_color, color)
-
     @property
     def font(self):
         sc = self.native.get_style_context()

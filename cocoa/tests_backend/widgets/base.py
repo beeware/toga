@@ -93,9 +93,6 @@ class SimpleProbe(BaseProbe, FontMixin):
         else:
             return TRANSPARENT
 
-    def assert_background_color(self, color, assert_color_function):
-        assert_color_function(self.background_color, color)
-
     @property
     def font(self):
         return self.native.font

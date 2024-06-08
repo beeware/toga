@@ -1,12 +1,10 @@
 import pytest
 from pytest import approx
 from System import EventArgs, Object
-from System.Drawing import Color, SystemColors
+from System.Drawing import SystemColors
 from System.Windows.Forms import MouseButtons, MouseEventArgs
 
-from toga.colors import TRANSPARENT
 from toga.style.pack import JUSTIFY, LEFT
-from toga_winforms.colors import alpha_blending_over_operation
 
 from ..fonts import FontMixin
 from ..probe import BaseProbe
@@ -57,29 +55,19 @@ class SimpleProbe(BaseProbe, FontMixin):
 
     @property
     def background_color(self):
-        return toga_color(self.native.BackColor)
-
-    def assert_background_color(self, color, assert_color_function):
-        widget_back_color = self.background_color
-        if self.widget.parent:
-            parent_back_color = toga_color(
-                self.widget.parent._impl.native.BackColor
-            ).rgba
-        else:
-            parent_back_color = toga_color(SystemColors.Control).rgba
-
-        if (color is TRANSPARENT) and (self.native.BackColor != Color.Transparent):
-            assert_color_function(widget_back_color, parent_back_color)
-        elif (color is TRANSPARENT) or (color.a == 1):
-            assert_color_function(widget_back_color, color)
-        else:
-            requested_color = color.rgba
-
-            blended_color = alpha_blending_over_operation(
-                requested_color, parent_back_color
-            ).rgba
-            # Both of them should also have an alpha value of 1.
-            assert_color_function(widget_back_color, blended_color)
+        return (
+            toga_color(self.native.BackColor),
+            toga_color(self.impl.interface.parent._impl.native.BackColor),
+            (
+                # self.impl.interface.style.background_color can be None or TRANSPARENT
+                # and so there will be no alpha value on them. In such cases return 0
+                # as the original alpha value.
+                self.impl.interface.style.background_color.a
+                if getattr(self.impl.interface.style.background_color, "a", None)
+                is not None
+                else 0
+            ),
+        )
 
     @property
     def font(self):

@@ -134,9 +134,6 @@ class SimpleProbe(BaseProbe, FontMixin):
     def background_color(self):
         return toga_color(self.native.backgroundColor)
 
-    def assert_background_color(self, color, assert_color_function):
-        assert_color_function(self.background_color, color)
-
     @property
     def font(self):
         return self.native.font
