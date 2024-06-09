@@ -6,7 +6,7 @@ project_name = "ImageView Demo"
 bundle = "org.beeware.toga.examples"
 version = "0.0.1"
 url = "https://beeware.org"
-license = "BSD license"
+license.file = "LICENSE"
 author = "Tiberius Yak"
 author_email = "tiberius@beeware.org"
 
@@ -51,6 +51,12 @@ requires = [
     "../../android",
     "Pillow==9.2.0; python_version=='3.10' or python_version=='3.9'",
     "Pillow==8.4.0; python_version=='3.8'",
+]
+
+base_theme = "Theme.MaterialComponents.Light.DarkActionBar"
+
+build_gradle_dependencies = [
+    "com.google.android.material:material:1.11.0",
 ]
 
 # Web deployment
