@@ -139,10 +139,10 @@ class Group:
     HELP = None  #: Help commands
 
 
-Group.APP = Group("*", order=0)
-Group.FILE = Group("File", order=1)
-Group.EDIT = Group("Edit", order=10)
-Group.VIEW = Group("View", order=20)
+Group.APP = Group("*", order=-100)
+Group.FILE = Group("File", order=-30)
+Group.EDIT = Group("Edit", order=-20)
+Group.VIEW = Group("View", order=-10)
 Group.COMMANDS = Group("Commands", order=30)
 Group.WINDOW = Group("Window", order=90)
 Group.HELP = Group("Help", order=100)
