@@ -27,7 +27,7 @@ from toga.widgets.base import Widget
 from toga.window import OnCloseHandler, Window
 
 if TYPE_CHECKING:
-    from toga.icons import IconContent
+    from toga.icons import IconContentT
     from toga.types import PositionT, SizeT
 
 # Make sure deprecation warnings are shown by default
@@ -314,7 +314,7 @@ class App:
         app_id: str | None = None,
         app_name: str | None = None,
         *,
-        icon: IconContent | None = None,
+        icon: IconContentT | None = None,
         author: str | None = None,
         version: str | None = None,
         home_page: str | None = None,
@@ -345,7 +345,7 @@ class App:
                For example, an ``app_id`` of ``com.example.my-app`` would yield a
                distribution name of ``my-app``.
             #. As a last resort, the name ``toga``.
-        :param icon: The :any:`icon <IconContent>` for the app. Defaults to
+        :param icon: The :any:`icon <IconContentT>` for the app. Defaults to
             :attr:`toga.Icon.APP_ICON`.
         :param author: The person or organization to be credited as the author of the
             app. If not provided, the metadata key ``Author`` will be used.
@@ -535,12 +535,12 @@ class App:
     def icon(self) -> Icon:
         """The Icon for the app.
 
-        Can be specified as any valid :any:`icon content <IconContent>`.
+        Can be specified as any valid :any:`icon content <IconContentT>`.
         """
         return self._icon
 
     @icon.setter
-    def icon(self, icon_or_name: IconContent) -> None:
+    def icon(self, icon_or_name: IconContentT) -> None:
         if isinstance(icon_or_name, Icon):
             self._icon = icon_or_name
         else:
@@ -855,7 +855,7 @@ class DocumentApp(App):
         app_id: str | None = None,
         app_name: str | None = None,
         *,
-        icon: IconContent | None = None,
+        icon: IconContentT | None = None,
         author: str | None = None,
         version: str | None = None,
         home_page: str | None = None,

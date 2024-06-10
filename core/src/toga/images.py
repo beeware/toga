@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib
+import os
 import sys
 import warnings
 from functools import lru_cache
@@ -31,10 +32,10 @@ if TYPE_CHECKING:
     ImageT = TypeVar("ImageT")
 
     # Define the types that can be used as Image content
-    PathLike: TypeAlias = str | Path
-    BytesLike: TypeAlias = bytes | bytearray | memoryview
-    ImageLike: TypeAlias = Any
-    ImageContent: TypeAlias = PathLike | BytesLike | ImageLike
+    PathLikeT: TypeAlias = str | os.PathLike
+    BytesLikeT: TypeAlias = bytes | bytearray | memoryview
+    ImageLikeT: TypeAlias = Any
+    ImageContentT: TypeAlias = PathLikeT | BytesLikeT | ImageLikeT
 
     # Define a type variable representing an image of an externally defined type.
     ExternalImageT = TypeVar("ExternalImageT")
@@ -49,7 +50,7 @@ class ImageConverter(Protocol):
     image_class: type[ExternalImageT]
 
     @staticmethod
-    def convert_from_format(image_in_format: ExternalImageT) -> BytesLike:
+    def convert_from_format(image_in_format: ExternalImageT) -> BytesLikeT:
         """Convert from :any:`image_class` to data in a :ref:`known image format
         <known-image-formats>`.
 
@@ -61,7 +62,7 @@ class ImageConverter(Protocol):
 
     @staticmethod
     def convert_to_format(
-        data: BytesLike,
+        data: BytesLikeT,
         image_class: type[ExternalImageT],
     ) -> ExternalImageT:
         """Convert from data to :any:`image_class` or specified subclass.
@@ -83,7 +84,7 @@ NOT_PROVIDED = object()
 class Image:
     def __init__(
         self,
-        src: ImageContent = NOT_PROVIDED,
+        src: ImageContentT = NOT_PROVIDED,
         *,
         path: object = NOT_PROVIDED,  # DEPRECATED
         data: object = NOT_PROVIDED,  # DEPRECATED
@@ -91,7 +92,7 @@ class Image:
         """Create a new image.
 
         :param src: The source from which to load the image. Can be any valid
-            :any:`image content <ImageContent>` type.
+            :any:`image content <ImageContentT>` type.
         :param path: **DEPRECATED** - Use ``src``.
         :param data: **DEPRECATED** - Use ``src``.
         :raises FileNotFoundError: If a path is provided, but that path does not exist.

@@ -9,7 +9,7 @@ from toga.style.pack import NONE
 from toga.widgets.base import StyleT, Widget
 
 if TYPE_CHECKING:
-    from toga.images import ImageContent, ImageT
+    from toga.images import ImageContentT, ImageT
 
 
 def rehint_imageview(
@@ -70,7 +70,7 @@ def rehint_imageview(
 class ImageView(Widget):
     def __init__(
         self,
-        image: ImageContent | None = None,
+        image: ImageContentT | None = None,
         id: str | None = None,
         style: StyleT | None = None,
     ):
@@ -78,7 +78,7 @@ class ImageView(Widget):
         Create a new image view.
 
         :param image: The image to display. Can be any valid :any:`image content
-            <ImageContent>` type; or :any:`None` to display no image.
+            <ImageContentT>` type; or :any:`None` to display no image.
         :param id: The ID for the widget.
         :param style: A style object. If no style is provided, a default style will be
             applied to the widget.
@@ -111,12 +111,12 @@ class ImageView(Widget):
         """The image to display.
 
         When setting an image, you can provide any valid :any:`image content
-        <ImageContent>` type; or :any:`None` to clear the image view.
+        <ImageContentT>` type; or :any:`None` to clear the image view.
         """
         return self._image
 
     @image.setter
-    def image(self, image: ImageContent) -> None:
+    def image(self, image: ImageContentT) -> None:
         if isinstance(image, toga.Image):
             self._image = image
         elif image is None:

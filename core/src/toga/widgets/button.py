@@ -8,7 +8,7 @@ from toga.handlers import wrapped_handler
 from .base import StyleT, Widget
 
 if TYPE_CHECKING:
-    from toga.icons import IconContent
+    from toga.icons import IconContentT
 
 
 class OnPressHandler(Protocol):
@@ -24,7 +24,7 @@ class Button(Widget):
     def __init__(
         self,
         text: str | None = None,
-        icon: IconContent | None = None,
+        icon: IconContentT | None = None,
         id: str | None = None,
         style: StyleT | None = None,
         on_press: toga.widgets.button.OnPressHandler | None = None,
@@ -34,7 +34,7 @@ class Button(Widget):
 
         :param text: The text to display on the button.
         :param icon: The icon to display on the button. Can be specified as any valid
-            :any:`icon content <IconContent>`.
+            :any:`icon content <IconContentT>`.
         :param id: The ID for the widget.
         :param style: A style object. If no style is provided, a default style will be
             applied to the widget.
@@ -100,7 +100,7 @@ class Button(Widget):
     def icon(self) -> toga.Icon | None:
         """The icon displayed on the button.
 
-        Can be specified as any valid :any:`icon content <IconContent>`.
+        Can be specified as any valid :any:`icon content <IconContentT>`.
 
         If the button is currently displaying text, and an icon is assigned, the text
         will be replaced by the new icon.
@@ -113,7 +113,7 @@ class Button(Widget):
         return self._impl.get_icon()
 
     @icon.setter
-    def icon(self, value: IconContent | None) -> None:
+    def icon(self, value: IconContentT | None) -> None:
         if isinstance(value, toga.Icon):
             icon = value
             text = ""

@@ -17,8 +17,7 @@ if TYPE_CHECKING:
     else:
         from typing import TypeAlias
 
-    NumberInputT: TypeAlias = Union[Decimal, float, str]
-    StepInputT: TypeAlias = Union[Decimal, int]
+    NumberInputT: TypeAlias = Union[Decimal, int, float, str]
 
 # Implementation notes
 # ====================
@@ -35,7 +34,7 @@ if TYPE_CHECKING:
 NUMERIC_RE = re.compile(r"[^0-9\.-]")
 
 
-def _clean_decimal(value: NumberInputT, step: StepInputT | None = None) -> Decimal:
+def _clean_decimal(value: NumberInputT, step: NumberInputT | None = None) -> Decimal:
     # Decimal(3.7) yields "3.700000000...177".
     # However, Decimal(str(3.7)) yields "3.7". If the user provides a float,
     # convert to a string first.
@@ -87,7 +86,7 @@ class NumberInput(Widget):
         self,
         id: str | None = None,
         style: StyleT | None = None,
-        step: StepInputT = 1,
+        step: NumberInputT = 1,
         min: NumberInputT | None = None,
         max: NumberInputT | None = None,
         value: NumberInputT | None = None,
@@ -181,7 +180,7 @@ class NumberInput(Widget):
         return self._step
 
     @step.setter
-    def step(self, step: StepInputT) -> None:
+    def step(self, step: NumberInputT) -> None:
         try:
             self._step = _clean_decimal(step)
         except (ValueError, TypeError, InvalidOperation):

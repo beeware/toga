@@ -15,7 +15,7 @@ if TYPE_CHECKING:
     else:
         from typing import TypeAlias
 
-    IconContent: TypeAlias = str | Path | toga.Icon
+    IconContentT: TypeAlias = str | Path | toga.Icon
 
 
 class cachedicon:

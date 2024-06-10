@@ -10,7 +10,7 @@ from toga.platform import get_platform_factory
 
 if TYPE_CHECKING:
     from toga.app import App
-    from toga.icons import IconContent
+    from toga.icons import IconContentT
 
 
 class Group:
@@ -167,7 +167,7 @@ class Command:
         *,
         shortcut: str | Key | None = None,
         tooltip: str | None = None,
-        icon: IconContent | None = None,
+        icon: IconContentT | None = None,
         group: Group = Group.COMMANDS,
         section: int = 0,
         order: int = 0,
@@ -184,7 +184,7 @@ class Command:
         :param text: A label for the command.
         :param shortcut: A key combination that can be used to invoke the command.
         :param tooltip: A short description of what the command will do.
-        :param icon: The :any:`icon content <IconContent>` that can be used to decorate
+        :param icon: The :any:`icon content <IconContentT>` that can be used to decorate
             the command if the platform requires.
         :param group: The group to which this command belongs.
         :param section: The section where the command should appear within its group.
@@ -234,12 +234,12 @@ class Command:
     def icon(self) -> Icon | None:
         """The Icon for the command.
 
-        Can be specified as any valid :any:`icon content <IconContent>`.
+        Can be specified as any valid :any:`icon content <IconContentT>`.
         """
         return self._icon
 
     @icon.setter
-    def icon(self, icon_or_name: IconContent | None) -> None:
+    def icon(self, icon_or_name: IconContentT | None) -> None:
         if isinstance(icon_or_name, Icon) or icon_or_name is None:
             self._icon = icon_or_name
         else:

@@ -174,14 +174,14 @@ Notes
 Reference
 ---------
 
-.. c:type:: OptionContainerContent
+.. c:type:: OptionContainerContentT
 
     An item of :any:`OptionContainer` content can be:
 
     * a 2-tuple, containing the title for the tab, and the content widget;
-    * a 3-tuple, containing the title, content widget, and :any:`icon <IconContent>`
+    * a 3-tuple, containing the title, content widget, and :any:`icon <IconContentT>`
       for the tab;
-    * a 4-tuple, containing the title, content widget, :any:`icon <IconContent>` for
+    * a 4-tuple, containing the title, content widget, :any:`icon <IconContentT>` for
       the tab, and enabled status; or
     * an :any:`toga.OptionItem` instance.
 
