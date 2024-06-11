@@ -8,7 +8,7 @@ A representation of app functionality that the user can invoke from menus or too
    :header-rows: 1
    :file: ../../data/widgets_by_platform.csv
    :included_cols: 4,5,6,7,8,9,10
-   :exclude: {0: '(?!(Command|Component))'}
+   :exclude: {0: '(?!(Command))', 1:'(?!(Resource))'}
 
 
 Usage
@@ -73,6 +73,10 @@ as well. It isn't possible to have functionality exposed on a toolbar that
 isn't also exposed by the app. So, ``cmd2`` will be added to the app, even though
 it wasn't explicitly added to the app commands.
 
+Each command has an :attr:`~toga.Command.id` attribute. This is set when the app is
+defined; if no ID is provided, a random ID will be generated for the Command. This
+identifier can be used to retrieve a command from :any:`toga.App.commands` and
+:any:`toga.Window.toolbar`.
 
 Reference
 ---------
@@ -82,5 +86,9 @@ Reference
 
 .. autoclass:: toga.Group
     :exclude-members: key
+
+.. autoclass:: toga.command.CommandSet
+
+.. autoclass:: toga.command.Separator
 
 .. autoprotocol:: toga.command.ActionHandler

@@ -21,7 +21,7 @@ from typing import TYPE_CHECKING, Any, Protocol
 from warnings import warn
 from weakref import WeakValueDictionary
 
-from toga.command import Command, CommandSet
+from toga.command import CommandSet
 from toga.documents import Document
 from toga.handlers import wrapped_handler
 from toga.hardware.camera import Camera
@@ -699,7 +699,7 @@ class App:
         return self._camera
 
     @property
-    def commands(self) -> MutableSet[Command]:
+    def commands(self) -> CommandSet:
         """The commands available in the app."""
         return self._commands
 

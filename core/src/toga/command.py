@@ -161,13 +161,13 @@ class ActionHandler(Protocol):
 
 class Command:
     #: An identifier for the system-installed "About" menu item
-    ABOUT = "about"
+    ABOUT: str = "about"
     #: An identifier for the system-installed "Exit" menu item
-    EXIT = "on_exit"
+    EXIT: str = "on_exit"
     #: An identifier for the system-installed "Preferences" menu item
-    PREFERENCES = "preferences"
+    PREFERENCES: str = "preferences"
     #: An identifier for the system-installed "Visit Homepage" menu item
-    VISIT_HOMEPAGE = "visit_homepage"
+    VISIT_HOMEPAGE: str = "visit_homepage"
 
     def __init__(
         self,
@@ -204,7 +204,7 @@ class Command:
         :param enabled: Is the Command currently enabled?
         :param id: A unique identifier for the command.
         """
-        self.id = f"cmd-{hash(self)}" if id is None else id
+        self._id = f"cmd-{hash(self)}" if id is None else id
         self.text = text
 
         self.shortcut = shortcut
@@ -221,6 +221,11 @@ class Command:
         self._impl = self.factory.Command(interface=self)
 
         self.enabled = enabled
+
+    @property
+    def id(self) -> str:
+        """A unique identifier for the command."""
+        return self._id
 
     @property
     def key(self) -> tuple[(int, int, str)]:
@@ -328,15 +333,30 @@ class CommandSet:
         The collection can be iterated over to provide the display order of the commands
         managed by the group.
 
+        The ``in`` operator can be used to evaluate whether a :class:`~toga.Command` is
+        a member of the CommandSet, using either an instance of a Command, or the ID of
+        a command.
+
+        Commands can be retrieved from the CommandSet using ``[]`` notation with the
+        requested command's ID.
+
+        When iterated over, a CommandSet returns :class:`~toga.Command` instances in the
+        their sort order, with :class:`~toga.command.Separator` instances inserted between
+        groups.
+
         :param on_change: A method that should be invoked when this command set changes.
         :param app: The app this command set is associated with, if it is not the app's
-            own commandset.
+            own CommandSet.
         """
         self._app = app
         self._commands = {}
         self.on_change = on_change
 
-    def add(self, *commands: Command | Group):
+    def add(self, *commands: Command):
+        """Add a collection of commands to the command set.
+
+        :param commands: The commands to add to the command set.
+        """
         if self.app and self.app is not None:
             self.app.commands.add(*commands)
         self._commands.update({cmd.id: cmd for cmd in commands})
@@ -344,12 +364,17 @@ class CommandSet:
             self.on_change()
 
     def clear(self):
+        """Remove all commands from the command set."""
         self._commands = {}
         if self.on_change:
             self.on_change()
 
     @property
-    def app(self) -> App:
+    def app(self) -> App | None:
+        """The app this CommandSet is associated with.
+
+        Returns None if this is the app's CommandSet.
+        """
         return self._app
 
     def __contains__(self, obj: str | Command) -> Command:

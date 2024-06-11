@@ -8,7 +8,7 @@ A generic container for other widgets. Used to construct layouts.
    :header-rows: 1
    :file: ../../data/widgets_by_platform.csv
    :included_cols: 4,5,6,7,8,9,10
-   :exclude: {0: '(?!(Box|Component))'}
+   :exclude: {0: '(?!(Box))', 1:'(?!(Layout Widget))'}
 
 Usage
 -----
