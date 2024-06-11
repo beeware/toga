@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 import sys
-from typing import TYPE_CHECKING, Sequence
+from collections.abc import Sequence
+from typing import TYPE_CHECKING
 
 from toga.app import App
 from toga.constants import Direction
@@ -42,10 +43,7 @@ class SplitContainer(Widget):
             of the container. Defaults to both panels being empty.
         """
         super().__init__(id=id, style=style)
-        self._content: Sequence[SplitContainerContentT] = [
-            None,
-            None,
-        ]
+        self._content: list[SplitContainerContentT] = [None, None]
 
         # Create a platform specific implementation of a SplitContainer
         self._impl = self.factory.SplitContainer(interface=self)
@@ -72,7 +70,7 @@ class SplitContainer(Widget):
         pass
 
     @property
-    def content(self) -> Sequence[SplitContainerContentT]:
+    def content(self) -> list[SplitContainerContentT]:
         """The widgets displayed in the SplitContainer.
 
         This property accepts a sequence of exactly 2 elements, each of which can be
