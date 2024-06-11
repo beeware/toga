@@ -153,6 +153,27 @@ def test_retrieve_by_id(app):
     assert app.commands[toga.Command.ABOUT].text == "About Test App"
 
 
+def test_default_command_ordering(app):
+    """The default app commands are in a known order."""
+
+    assert [
+        (
+            obj.id
+            if isinstance(obj, toga.Command)
+            else f"---{obj.group.text}---" if isinstance(obj, Separator) else "?"
+        )
+        for obj in app.commands
+    ] == [
+        # App menu
+        toga.Command.PREFERENCES,
+        "---*---",
+        toga.Command.EXIT,
+        # Help menu
+        toga.Command.ABOUT,
+        toga.Command.VISIT_HOMEPAGE,
+    ]
+
+
 def test_ordering(
     parent_group_1,
     parent_group_2,

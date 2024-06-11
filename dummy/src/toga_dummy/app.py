@@ -46,6 +46,7 @@ class App(LoggedObject):
                 self.interface.on_exit,
                 "Exit",
                 group=Group.APP,
+                section=sys.maxsize,
                 id=Command.EXIT,
             ),
             Command(
