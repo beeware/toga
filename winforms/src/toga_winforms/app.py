@@ -176,7 +176,7 @@ class App:
                 shortcut=Key.MOD_1 + "q",
                 group=Group.FILE,
                 section=sys.maxsize,
-                id=Command.PREFERENCES,
+                id=Command.EXIT,
             ),
             # ---- Help menu -----------------------------------
             Command(
@@ -184,14 +184,14 @@ class App:
                 "Visit homepage",
                 enabled=self.interface.home_page is not None,
                 group=Group.HELP,
-                id=Command.PREFERENCES,
+                id=Command.VISIT_HOMEPAGE,
             ),
             Command(
                 simple_handler(self.interface.about),
                 f"About {self.interface.formal_name}",
                 group=Group.HELP,
                 section=sys.maxsize,
-                id=Command.PREFERENCES,
+                id=Command.ABOUT,
             ),
         )
 
