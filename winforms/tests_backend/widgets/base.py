@@ -57,7 +57,7 @@ class SimpleProbe(BaseProbe, FontMixin):
     def background_color(self):
         return (
             toga_color(self.native.BackColor),
-            toga_color(self.impl.interface.parent._impl.native.BackColor),
+            toga_color(self.widget.parent._impl.native.BackColor),
             (
                 # self.impl.interface.style.background_color can be None or TRANSPARENT
                 # and so there will be no alpha value on them. In such cases return 0
