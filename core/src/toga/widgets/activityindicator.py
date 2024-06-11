@@ -2,14 +2,14 @@ from __future__ import annotations
 
 from typing import Literal
 
-from .base import Widget
+from .base import StyleT, Widget
 
 
 class ActivityIndicator(Widget):
     def __init__(
         self,
-        id=None,
-        style=None,
+        id: str | None = None,
+        style: StyleT | None = None,
         running: bool = False,
     ):
         """Create a new ActivityIndicator widget.
@@ -41,7 +41,7 @@ class ActivityIndicator(Widget):
         pass
 
     def focus(self) -> None:
-        "No-op; ActivityIndicator cannot accept input focus"
+        """No-op; ActivityIndicator cannot accept input focus."""
         pass
 
     @property

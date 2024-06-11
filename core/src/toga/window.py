@@ -2,30 +2,28 @@ from __future__ import annotations
 
 import warnings
 from builtins import id as identifier
-from collections.abc import Mapping, MutableSet
+from collections.abc import Iterator
 from pathlib import Path
 from typing import (
     TYPE_CHECKING,
     Any,
-    ItemsView,
-    Iterator,
-    KeysView,
     Literal,
     Protocol,
     TypeVar,
-    ValuesView,
     overload,
 )
 
-from toga.command import Command, CommandSet
+from toga.command import CommandSet
 from toga.handlers import AsyncResult, wrapped_handler
 from toga.images import Image
 from toga.platform import get_platform_factory
+from toga.types import Position, Size
 
 if TYPE_CHECKING:
     from toga.app import App
     from toga.images import ImageT
     from toga.screens import Screen
+    from toga.types import PositionT, SizeT
     from toga.widgets.base import Widget
 
 
@@ -33,7 +31,7 @@ class FilteredWidgetRegistry:
     # A class that exposes a mapping lookup interface, filtered to widgets from a single
     # window. The underlying data store is on the app.
 
-    def __init__(self, window):
+    def __init__(self, window: Window) -> None:
         self._window = window
 
     def __len__(self) -> int:
@@ -58,51 +56,49 @@ class FilteredWidgetRegistry:
     def __repr__(self) -> str:
         return "{" + ", ".join(f"{k!r}: {v!r}" for k, v in sorted(self.items())) + "}"
 
-    def items(self) -> ItemsView:
+    def items(self) -> Iterator[tuple[str, Widget]]:
         for item in self._window.app.widgets.items():
             if item[1].window == self._window:
                 yield item
 
-    def keys(self) -> KeysView:
+    def keys(self) -> Iterator[str]:
         for item in self._window.app.widgets.items():
             if item[1].window == self._window:
                 yield item[0]
 
-    def values(self) -> ValuesView:
+    def values(self) -> Iterator[Widget]:
         for item in self._window.app.widgets.items():
             if item[1].window == self._window:
                 yield item[1]
 
 
 class OnCloseHandler(Protocol):
-    def __call__(self, window: Window, **kwargs: Any) -> bool:
+    def __call__(self, window: Window, /, **kwargs: Any) -> bool:
         """A handler to invoke when a window is about to close.
 
         The return value of this callback controls whether the window is allowed to close.
         This can be used to prevent a window closing with unsaved changes, etc.
 
         :param window: The window instance that is closing.
-        :param kwargs: Ensures compatibility with additional arguments introduced in
-            future versions.
-        :returns: ``True`` if the window is allowed to close; ``False`` if the window is not
-            allowed to close.
+        :param kwargs: Ensures compatibility with arguments added in future versions.
+        :returns: ``True`` if the window is allowed to close; ``False`` if the window
+            is not allowed to close.
         """
-        ...
 
 
-T = TypeVar("T")
+_DialogResultT = TypeVar("_DialogResultT")
 
 
-class DialogResultHandler(Protocol[T]):
-    def __call__(self, window: Window, result: T, **kwargs: Any) -> None:
+class DialogResultHandler(Protocol[_DialogResultT]):
+    def __call__(
+        self, window: Window, result: _DialogResultT, /, **kwargs: Any
+    ) -> object:
         """A handler to invoke when a dialog is closed.
 
         :param window: The window that opened the dialog.
+        :param kwargs: Ensures compatibility with arguments added in future versions.
         :param result: The result returned by the dialog.
-        :param kwargs: Ensures compatibility with additional arguments introduced in
-            future versions.
         """
-        ...
 
 
 class Dialog(AsyncResult):
@@ -121,25 +117,25 @@ class Window:
         self,
         id: str | None = None,
         title: str | None = None,
-        position: tuple[int, int] = (100, 100),
-        size: tuple[int, int] = (640, 480),
+        position: PositionT = Position(100, 100),
+        size: SizeT = Size(640, 480),
         resizable: bool = True,
         closable: bool = True,
         minimizable: bool = True,
         on_close: OnCloseHandler | None = None,
         content: Widget | None = None,
-        resizeable=None,  # DEPRECATED
-        closeable=None,  # DEPRECATED
+        resizeable: None = None,  # DEPRECATED
+        closeable: None = None,  # DEPRECATED
     ) -> None:
         """Create a new Window.
 
         :param id: A unique identifier for the window. If not provided, one will be
             automatically generated.
         :param title: Title for the window. Defaults to "Toga".
-        :param position: Position of the window, as a tuple of ``(x, y)`` coordinates,
-            in :ref:`CSS pixels <css-units>`.
-        :param size: Size of the window, as a tuple of ``(width, height)``, in :ref:`CSS
-            pixels <css-units>`.
+        :param position: Position of the window, as a :any:`toga.Position` or tuple of
+            ``(x, y)`` coordinates, in :ref:`CSS pixels <css-units>`.
+        :param size: Size of the window, as a :any:`toga.Size` or tuple of ``(width,
+            height)``, in :ref:`CSS pixels <css-units>`.
         :param resizable: Can the window be resized by the user?
         :param closable: Can the window be closed by the user?
         :param minimizable: Can the window be minimized by the user?
@@ -172,8 +168,8 @@ class Window:
         from toga import App
 
         self._id = str(id if id else identifier(self))
-        self._impl = None
-        self._content = None
+        self._impl: Any = None
+        self._content: Widget | None = None
         self._is_full_screen = False
         self._closed = False
 
@@ -182,6 +178,8 @@ class Window:
         self._minimizable = minimizable
 
         self.factory = get_platform_factory()
+        position = Position(*position)
+        size = Size(*size)
         self._impl = getattr(self.factory, self._WINDOW_CLASS)(
             interface=self,
             title=title if title else self._default_title,
@@ -190,7 +188,8 @@ class Window:
         )
 
         # Add the window to the app
-        self._app = None
+        # _app will only be None until the window is added to the app below
+        self._app: App = None
         if App.app is None:
             raise RuntimeError("Cannot create a Window before creating an App")
         App.app.windows.add(self)
@@ -204,7 +203,7 @@ class Window:
 
         self.on_close = on_close
 
-    def __lt__(self, other) -> bool:
+    def __lt__(self, other: Window) -> bool:
         return self.id < other.id
 
     ######################################################################
@@ -326,12 +325,12 @@ class Window:
         widget.refresh()
 
     @property
-    def toolbar(self) -> MutableSet[Command]:
+    def toolbar(self) -> CommandSet:
         """Toolbar for the window."""
         return self._toolbar
 
     @property
-    def widgets(self) -> Mapping[str, Widget]:
+    def widgets(self) -> FilteredWidgetRegistry:
         """The widgets contained in the window.
 
         Can be used to look up widgets by ID (e.g., ``window.widgets["my_id"]``).
@@ -343,13 +342,12 @@ class Window:
     ######################################################################
 
     @property
-    def size(self) -> tuple[int, int]:
-        """Size of the window, as a tuple of ``(width, height)``, in
-        :ref:`CSS pixels <css-units>`."""
+    def size(self) -> Size:
+        """Size of the window, in :ref:`CSS pixels <css-units>`."""
         return self._impl.get_size()
 
     @size.setter
-    def size(self, size: tuple[int, int]) -> None:
+    def size(self, size: SizeT) -> None:
         self._impl.set_size(size)
         if self.content:
             self.content.refresh()
@@ -359,28 +357,21 @@ class Window:
     ######################################################################
 
     @property
-    def position(self) -> tuple[int, int]:
-        """Absolute position of the window, as a ``(x, y)`` tuple coordinates, in
-        :ref:`CSS pixels <css-units>`.
+    def position(self) -> Position:
+        """Absolute position of the window, in :ref:`CSS pixels <css-units>`.
 
         The origin is the top left corner of the primary screen.
         """
         absolute_origin = self._app.screens[0].origin
         absolute_window_position = self._impl.get_position()
+        window_position = absolute_window_position - absolute_origin
 
-        window_position = (
-            absolute_window_position[0] - absolute_origin[0],
-            absolute_window_position[1] - absolute_origin[1],
-        )
         return window_position
 
     @position.setter
-    def position(self, position: tuple[int, int]) -> None:
+    def position(self, position: PositionT) -> None:
         absolute_origin = self._app.screens[0].origin
-        absolute_new_position = (
-            position[0] + absolute_origin[0],
-            position[1] + absolute_origin[1],
-        )
+        absolute_new_position = Position(*position) + absolute_origin
         self._impl.set_position(absolute_new_position)
 
     @property
@@ -393,26 +384,17 @@ class Window:
         original_window_location = self.position
         original_origin = self.screen.origin
         new_origin = app_screen.origin
-        x = original_window_location[0] - original_origin[0] + new_origin[0]
-        y = original_window_location[1] - original_origin[1] + new_origin[1]
-
-        self._impl.set_position((x, y))
+        self._impl.set_position(original_window_location - original_origin + new_origin)
 
     @property
-    def screen_position(self) -> tuple[int, int]:
-        """Position of the window with respect to current screen, as a ``(x, y)`` tuple."""
-        current_relative_position = (
-            self.position[0] - self.screen.origin[0],
-            self.position[1] - self.screen.origin[1],
-        )
-        return current_relative_position
+    def screen_position(self) -> Position:
+        """Position of the window with respect to current screen, in
+        :ref:`CSS pixels <css-units>`."""
+        return self.position - self.screen.origin
 
     @screen_position.setter
-    def screen_position(self, position: tuple[int, int]) -> None:
-        new_relative_position = (
-            position[0] + self.screen.origin[0],
-            position[1] + self.screen.origin[1],
-        )
+    def screen_position(self, position: PositionT) -> None:
+        new_relative_position = Position(*position) + self.screen.origin
         self._impl.set_position(new_relative_position)
 
     ######################################################################
@@ -477,7 +459,7 @@ class Window:
     ######################################################################
 
     @property
-    def on_close(self) -> OnCloseHandler:
+    def on_close(self) -> OnCloseHandler | None:
         """The handler to invoke if the user attempts to close the window."""
         return self._on_close
 
@@ -618,7 +600,7 @@ class Window:
         title: str,
         message: str,
         content: str,
-        retry: Literal[True] = False,
+        retry: Literal[True] = True,
         on_result: DialogResultHandler[bool] | None = None,
     ) -> Dialog: ...
 
@@ -629,7 +611,7 @@ class Window:
         message: str,
         content: str,
         retry: bool = False,
-        on_result: DialogResultHandler[bool | None] | None = None,
+        on_result: DialogResultHandler[bool] | DialogResultHandler[None] | None = None,
     ) -> Dialog: ...
 
     def stack_trace_dialog(
@@ -638,7 +620,7 @@ class Window:
         message: str,
         content: str,
         retry: bool = False,
-        on_result: DialogResultHandler[bool | None] | None = None,
+        on_result: DialogResultHandler[bool] | DialogResultHandler[None] | None = None,
     ) -> Dialog:
         """Open a dialog to display a large block of text, such as a stack trace.
 
@@ -700,7 +682,7 @@ class Window:
         # Convert suggested filename to a path (if it isn't already),
         # and break it into a filename and a directory
         suggested_path = Path(suggested_filename)
-        initial_directory = suggested_path.parent
+        initial_directory: Path | None = suggested_path.parent
         if initial_directory == Path("."):
             initial_directory = None
         filename = suggested_path.name
@@ -721,8 +703,8 @@ class Window:
         initial_directory: Path | str | None = None,
         file_types: list[str] | None = None,
         multiple_select: Literal[False] = False,
-        on_result: DialogResultHandler[Path | None] | None = None,
-        multiselect=None,  # DEPRECATED
+        on_result: DialogResultHandler[Path] | DialogResultHandler[None] | None = None,
+        multiselect: None = None,  # DEPRECATED
     ) -> Dialog: ...
 
     @overload
@@ -732,8 +714,10 @@ class Window:
         initial_directory: Path | str | None = None,
         file_types: list[str] | None = None,
         multiple_select: Literal[True] = True,
-        on_result: DialogResultHandler[list[Path] | None] | None = None,
-        multiselect=None,  # DEPRECATED
+        on_result: (
+            DialogResultHandler[list[Path]] | DialogResultHandler[None] | None
+        ) = None,
+        multiselect: None = None,  # DEPRECATED
     ) -> Dialog: ...
 
     @overload
@@ -743,8 +727,13 @@ class Window:
         initial_directory: Path | str | None = None,
         file_types: list[str] | None = None,
         multiple_select: bool = False,
-        on_result: DialogResultHandler[list[Path] | Path | None] | None = None,
-        multiselect=None,  # DEPRECATED
+        on_result: (
+            DialogResultHandler[list[Path]]
+            | DialogResultHandler[Path]
+            | DialogResultHandler[None]
+            | None
+        ) = None,
+        multiselect: None = None,  # DEPRECATED
     ) -> Dialog: ...
 
     def open_file_dialog(
@@ -753,8 +742,13 @@ class Window:
         initial_directory: Path | str | None = None,
         file_types: list[str] | None = None,
         multiple_select: bool = False,
-        on_result: DialogResultHandler[list[Path] | Path | None] | None = None,
-        multiselect=None,  # DEPRECATED
+        on_result: (
+            DialogResultHandler[list[Path]]
+            | DialogResultHandler[Path]
+            | DialogResultHandler[None]
+            | None
+        ) = None,
+        multiselect: None = None,  # DEPRECATED
     ) -> Dialog:
         """Prompt the user to select a file (or files) to open.
 
@@ -810,8 +804,8 @@ class Window:
         title: str,
         initial_directory: Path | str | None = None,
         multiple_select: Literal[False] = False,
-        on_result: DialogResultHandler[Path | None] | None = None,
-        multiselect=None,  # DEPRECATED
+        on_result: DialogResultHandler[Path] | DialogResultHandler[None] | None = None,
+        multiselect: None = None,  # DEPRECATED
     ) -> Dialog: ...
 
     @overload
@@ -820,8 +814,10 @@ class Window:
         title: str,
         initial_directory: Path | str | None = None,
         multiple_select: Literal[True] = True,
-        on_result: DialogResultHandler[list[Path] | None] | None = None,
-        multiselect=None,  # DEPRECATED
+        on_result: (
+            DialogResultHandler[list[Path]] | DialogResultHandler[None] | None
+        ) = None,
+        multiselect: None = None,  # DEPRECATED
     ) -> Dialog: ...
 
     @overload
@@ -830,8 +826,13 @@ class Window:
         title: str,
         initial_directory: Path | str | None = None,
         multiple_select: bool = False,
-        on_result: DialogResultHandler[list[Path] | Path | None] | None = None,
-        multiselect=None,  # DEPRECATED
+        on_result: (
+            DialogResultHandler[list[Path]]
+            | DialogResultHandler[Path]
+            | DialogResultHandler[None]
+            | None
+        ) = None,
+        multiselect: None = None,  # DEPRECATED
     ) -> Dialog: ...
 
     def select_folder_dialog(
@@ -839,8 +840,13 @@ class Window:
         title: str,
         initial_directory: Path | str | None = None,
         multiple_select: bool = False,
-        on_result: DialogResultHandler[list[Path] | Path | None] | None = None,
-        multiselect=None,  # DEPRECATED
+        on_result: (
+            DialogResultHandler[list[Path]]
+            | DialogResultHandler[Path]
+            | DialogResultHandler[None]
+            | None
+        ) = None,
+        multiselect: None = None,  # DEPRECATED
     ) -> Dialog:
         """Prompt the user to select a directory (or directories).
 
@@ -891,7 +897,6 @@ class Window:
     ######################################################################
     # 2023-08: Backwards compatibility
     ######################################################################
-
     @property
     def resizeable(self) -> bool:
         """**DEPRECATED** Use :attr:`resizable`"""
@@ -909,3 +914,7 @@ class Window:
             DeprecationWarning,
         )
         return self._closable
+
+    ######################################################################
+    # End Backwards compatibility
+    ######################################################################

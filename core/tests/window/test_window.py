@@ -29,8 +29,8 @@ def test_window_created(app):
     # We can't know what the ID is, but it must be a string.
     assert isinstance(window.id, str)
     assert window.title == "Toga"
-    assert window.position == (100, 100)
-    assert window.size == (640, 480)
+    assert window.position == toga.Position(100, 100)
+    assert window.size == toga.Size(640, 480)
     assert window.resizable
     assert window.closable
     assert window.minimizable
@@ -45,8 +45,8 @@ def test_window_created_explicit(app):
     window = toga.Window(
         id="my-window",
         title="My Window",
-        position=(10, 20),
-        size=(200, 300),
+        position=toga.Position(10, 20),
+        size=toga.Position(200, 300),
         resizable=False,
         closable=False,
         minimizable=False,
@@ -61,13 +61,21 @@ def test_window_created_explicit(app):
 
     assert window.id == "my-window"
     assert window.title == "My Window"
-    assert window.position == (10, 20)
-    assert window.size == (200, 300)
+    assert window.position == toga.Position(10, 20)
+    assert window.size == toga.Size(200, 300)
     assert not window.resizable
     assert not window.closable
     assert not window.minimizable
     assert len(window.toolbar) == 0
     assert window.on_close._raw == on_close_handler
+
+
+def test_window_creation_accepts_tuples(app):
+    """Tuple args are accepted and converted to NamedTuples"""
+    on_close_handler = Mock()
+    window = toga.Window(position=(10, 20), size=(200, 300), on_close=on_close_handler)
+    assert window.position == toga.Position(10, 20)
+    assert window.size == toga.Size(200, 300)
 
 
 def test_window_created_without_app():
@@ -196,14 +204,14 @@ def test_set_position(window):
     """The position of the window can be set."""
     window.position = (123, 456)
 
-    assert window.position == (123, 456)
+    assert window.position == toga.Position(123, 456)
 
 
 def test_set_size(window):
     """The size of the window can be set."""
     window.size = (123, 456)
 
-    assert window.size == (123, 456)
+    assert window.size == toga.Size(123, 456)
 
 
 def test_set_size_with_content(window):
@@ -213,7 +221,7 @@ def test_set_size_with_content(window):
 
     window.size = (123, 456)
 
-    assert window.size == (123, 456)
+    assert window.size == toga.Size(123, 456)
     assert_action_performed(content, "refresh")
 
 
@@ -384,9 +392,9 @@ def test_screen(window, app):
     # window between the screens.
     # `window.screen` will return `Secondary Screen`
     assert window.screen == app.screens[1]
-    assert window.position == (100, 100)
+    assert window.position == toga.Position(100, 100)
     window.screen = app.screens[0]
-    assert window.position == (1466, 868)
+    assert window.position == toga.Position(1466, 868)
 
 
 def test_screen_position(window, app):
@@ -395,13 +403,13 @@ def test_screen_position(window, app):
     initial_position = window.position
     window.position = (-100, -100)
     assert window.position != initial_position
-    assert window.position == (-100, -100)
-    assert window.screen_position == (1266, 668)
+    assert window.position == toga.Position(-100, -100)
+    assert window.screen_position == toga.Position(1266, 668)
 
     # Move the window to a new position.
     window.screen_position = (100, 100)
-    assert window.position == (-1266, -668)
-    assert window.screen_position == (100, 100)
+    assert window.position == toga.Position(-1266, -668)
+    assert window.screen_position == toga.Position(100, 100)
 
 
 def test_widget_id_reusablity(window, app):
