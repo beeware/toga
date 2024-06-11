@@ -1,12 +1,20 @@
 from __future__ import annotations
 
-from collections.abc import Iterable
-from typing import Any
+from collections.abc import Iterable, Mapping, Sequence
+from typing import Generic, TypeVar
 
 from .base import Source
 
+T = TypeVar("T")
 
-def _find_item(candidates: list, data: Any, accessors: list[str], start, error: str):
+
+def _find_item(
+    candidates: Sequence[T],
+    data: object,
+    accessors: Sequence[str],
+    start: T | None,
+    error: str,
+) -> T:
     """Find-by-value implementation helper; find an item matching ``data`` in
     ``candidates``, starting with item ``start``."""
     if start is not None:
@@ -16,7 +24,7 @@ def _find_item(candidates: list, data: Any, accessors: list[str], start, error: 
 
     for item in candidates[start_index:]:
         try:
-            if isinstance(data, dict):
+            if isinstance(data, Mapping):
                 found = all(
                     getattr(item, attr) == value for attr, value in data.items()
                 )
@@ -36,8 +44,8 @@ def _find_item(candidates: list, data: Any, accessors: list[str], start, error: 
     raise ValueError(error)
 
 
-class Row:
-    def __init__(self, **data):
+class Row(Generic[T]):
+    def __init__(self, **data: T):
         """Create a new Row object.
 
         The keyword arguments specified in the constructor will be converted into
@@ -51,7 +59,7 @@ class Row:
         for name, value in data.items():
             setattr(self, name, value)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         descriptor = " ".join(
             f"{attr}={getattr(self, attr)!r}"
             for attr in sorted(self.__dict__)
@@ -63,7 +71,7 @@ class Row:
     # Utility wrappers
     ######################################################################
 
-    def __setattr__(self, attr: str, value):
+    def __setattr__(self, attr: str, value: T) -> None:
         """Set an attribute on the Row object, notifying the source of the change.
 
         :param attr: The attribute to change.
@@ -74,11 +82,13 @@ class Row:
             if self._source is not None:
                 self._source.notify("change", item=self)
 
-    def __delattr__(self, attr: str):
+    def __getattr__(self, attr: str) -> T:
+        return super().__getattr__(attr)
+
+    def __delattr__(self, attr: str) -> None:
         """Remove an attribute from the Row object, notifying the source of the change.
 
         :param attr: The attribute to change.
-        :param value: The new attribute value.
         """
         super().__delattr__(attr)
         if not attr.startswith("_"):
@@ -87,7 +97,9 @@ class Row:
 
 
 class ListSource(Source):
-    def __init__(self, accessors: list[str], data: Iterable | None = None):
+    _data: list[Row]
+
+    def __init__(self, accessors: Iterable[str], data: Iterable | None = None):
         """A data source to store an ordered list of multiple data values.
 
         :param accessors: A list of attribute names for accessing the value
@@ -105,7 +117,7 @@ class ListSource(Source):
             raise ValueError("ListSource must be provided a list of accessors")
 
         # Convert the data into row objects
-        if data:
+        if data is not None:
             self._data = [self._create_row(value) for value in data]
         else:
             self._data = []
@@ -122,7 +134,7 @@ class ListSource(Source):
         """Returns the item at position ``index`` of the list."""
         return self._data[index]
 
-    def __delitem__(self, index: int):
+    def __delitem__(self, index: int) -> None:
         """Deletes the item at position ``index`` of the list."""
         row = self._data[index]
         del self._data[index]
@@ -133,8 +145,8 @@ class ListSource(Source):
     ######################################################################
 
     # This behavior is documented in list_source.rst.
-    def _create_row(self, data: Any) -> Row:
-        if isinstance(data, dict):
+    def _create_row(self, data: object) -> Row:
+        if isinstance(data, Mapping):
             row = Row(**data)
         elif hasattr(data, "__iter__") and not isinstance(data, str):
             row = Row(**dict(zip(self._accessors, data)))
@@ -147,7 +159,7 @@ class ListSource(Source):
     # Utility methods to make ListSources more list-like
     ######################################################################
 
-    def __setitem__(self, index: int, value: Any):
+    def __setitem__(self, index: int, value: object) -> None:
         """Set the value of a specific item in the data source.
 
         :param index: The item to change
@@ -158,12 +170,12 @@ class ListSource(Source):
         self._data[index] = row
         self.notify("insert", index=index, item=row)
 
-    def clear(self):
+    def clear(self) -> None:
         """Clear all data from the data source."""
         self._data = []
         self.notify("clear")
 
-    def insert(self, index: int, data: Any):
+    def insert(self, index: int, data: object) -> Row:
         """Insert a row into the data source at a specific index.
 
         :param index: The index at which to insert the item.
@@ -176,7 +188,7 @@ class ListSource(Source):
         self.notify("insert", index=index, item=row)
         return row
 
-    def append(self, data):
+    def append(self, data: object) -> Row:
         """Insert a row at the end of the data source.
 
         :param data: The data to append to the ListSource. This data will be converted
@@ -185,7 +197,7 @@ class ListSource(Source):
         """
         return self.insert(len(self), data)
 
-    def remove(self, row: Row):
+    def remove(self, row: Row) -> None:
         """Remove a row from the data source.
 
         :param row: The row to remove from the data source.
@@ -206,7 +218,7 @@ class ListSource(Source):
         """
         return self._data.index(row)
 
-    def find(self, data: Any, start: None | None = None):
+    def find(self, data: object, start: Row | None = None) -> Row:
         """Find the first item in the data that matches all the provided
         attributes.
 

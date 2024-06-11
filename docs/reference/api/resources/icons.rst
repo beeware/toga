@@ -80,7 +80,7 @@ permission error). In this case, an error will be raised.
 Reference
 ---------
 
-.. c:type:: IconContent
+.. c:type:: IconContentT
 
     When specifying an :any:`Icon`, you can provide:
 

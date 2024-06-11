@@ -64,3 +64,5 @@ Reference
 ---------
 
 .. autoclass:: toga.TimeInput
+
+.. autoprotocol:: toga.widgets.timeinput.OnChangeHandler
