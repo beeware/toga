@@ -4,14 +4,12 @@ import signal
 import sys
 from pathlib import Path
 
-import gbulb
-
 import toga
 from toga import App as toga_App
 from toga.command import Command, Separator
 
 from .keys import gtk_accel
-from .libs import TOGA_DEFAULT_STYLES, Gdk, Gio, GLib, Gtk
+from .libs import TOGA_DEFAULT_STYLES, Gdk, Gio, GLib, GLibEventLoopPolicy, Gtk
 from .screens import Screen as ScreenImpl
 from .window import Window
 
@@ -38,8 +36,9 @@ class App:
         self.interface = interface
         self.interface._impl = self
 
-        gbulb.install(gtk=True)
-        self.loop = asyncio.new_event_loop()
+        self.policy = GLibEventLoopPolicy()
+        asyncio.set_event_loop_policy(self.policy)
+        self.loop = asyncio.get_event_loop()
 
         self.create()
 
@@ -57,10 +56,10 @@ class App:
 
         self.actions = None
 
-    def gtk_activate(self, data=None):
+    def gtk_activate(self, app):
         pass
 
-    def gtk_startup(self, data=None):
+    def gtk_startup(self, app):
         # Set up the default commands for the interface.
         self.create_app_commands()
 
@@ -186,7 +185,8 @@ class App:
         # Modify signal handlers to make sure Ctrl-C is caught and handled.
         signal.signal(signal.SIGINT, signal.SIG_DFL)
 
-        self.loop.run_forever(application=self.native)
+        # Start the app event loop
+        self.native.run()
 
     def set_icon(self, icon):
         for window in self.interface.windows:
