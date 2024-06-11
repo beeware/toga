@@ -1,1 +1,0 @@
-``hynek/build-and-inspect-python-package`` is now used to create the Python package.

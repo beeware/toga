@@ -65,6 +65,7 @@ class App(LoggedObject):
 
     def create_menus(self):
         self._action("create App menus")
+        self.n_menu_items = len(self.interface.commands)
 
     def main_loop(self):
         print("Starting app using Dummy backend.")

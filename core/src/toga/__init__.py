@@ -128,7 +128,10 @@ def _package_version(file: Path | str | None, name: str) -> str:
         # Excluded from coverage because a pure test environment (such as the one
         # used by tox in CI) won't have setuptools_scm
         return get_version(root="../../..", relative_to=file)  # pragma: no cover
-    except (ModuleNotFoundError, LookupError):
+    except (
+        ModuleNotFoundError,
+        LookupError,
+    ):  # pragma: no-cover-if-missing-setuptools_scm
         # If setuptools_scm isn't in the environment, the call to import will fail.
         # If it *is* in the environment, but the code isn't a git checkout (e.g.,
         # it's been pip installed non-editable) the call to get_version() will fail.

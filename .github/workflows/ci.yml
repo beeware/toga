@@ -172,7 +172,7 @@ jobs:
         merge-multiple: true
 
     - name: Generate Coverage Report
-      run: tox -e coverage-html-fail
+      run: tox -e coverage-html-fail-platform
 
     - name: Upload HTML Coverage Report
       uses: actions/upload-artifact@v4.3.3
@@ -304,7 +304,7 @@ jobs:
       timeout-minutes: 15
       run: |
         ${{ matrix.briefcase-run-prefix }} \
-          briefcase run ${{ matrix.platform }} --test ${{ matrix.briefcase-run-args }}
+          briefcase run ${{ matrix.platform }} --log --test ${{ matrix.briefcase-run-args }}
 
     - name: Upload Logs
       uses: actions/upload-artifact@v4.3.3
