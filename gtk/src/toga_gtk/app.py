@@ -7,8 +7,9 @@ from pathlib import Path
 import gbulb
 
 import toga
-from toga import App as toga_App
+from toga.app import App as toga_App, overridden
 from toga.command import Command, Separator
+from toga.handlers import simple_handler
 
 from .keys import gtk_accel
 from .libs import TOGA_DEFAULT_STYLES, Gdk, Gio, GLib, Gtk
@@ -91,27 +92,42 @@ class App:
     # Commands and menus
     ######################################################################
 
-    def _menu_about(self, command, **kwargs):
-        self.interface.about()
-
-    def _menu_quit(self, command, **kwargs):
-        self.interface.on_exit()
-
     def create_app_commands(self):
         self.interface.commands.add(
+            # ---- App menu -----------------------------------
+            # Include a preferences menu item; but only enable it if the user has
+            # overridden it in their App class.
             Command(
-                self._menu_about,
-                "About " + self.interface.formal_name,
-                group=toga.Group.HELP,
+                simple_handler(self.interface.preferences),
+                "Preferences",
+                group=toga.Group.APP,
+                enabled=overridden(self.interface.preferences),
+                id=Command.PREFERENCES,
             ),
-            Command(None, "Preferences", group=toga.Group.APP),
-            # Quit should always be the last item, in a section on its own
+            # Quit should always be the last item, in a section on its own. Invoke
+            # `on_exit` rather than `exit`, because we want to trigger the "OK to exit?"
+            # logic. It's already a bound handler, so we can use it directly.
             Command(
-                self._menu_quit,
+                self.interface.on_exit,
                 "Quit " + self.interface.formal_name,
                 shortcut=toga.Key.MOD_1 + "q",
                 group=toga.Group.APP,
                 section=sys.maxsize,
+                id=Command.EXIT,
+            ),
+            # ---- Help menu -----------------------------------
+            Command(
+                simple_handler(self.interface.about),
+                "About " + self.interface.formal_name,
+                group=toga.Group.HELP,
+                id=Command.ABOUT,
+            ),
+            Command(
+                simple_handler(self.interface.visit_homepage),
+                "Visit homepage",
+                enabled=self.interface.home_page is not None,
+                group=toga.Group.HELP,
+                id=Command.VISIT_HOMEPAGE,
             ),
         )
 
@@ -285,7 +301,7 @@ class DocumentApp(App):  # pragma: no cover
     def create_app_commands(self):
         super().create_app_commands()
         self.interface.commands.add(
-            toga.Command(
+            Command(
                 self.open_file,
                 text="Open...",
                 shortcut=toga.Key.MOD_1 + "o",

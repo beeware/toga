@@ -11,9 +11,10 @@ from System.Media import SystemSounds
 from System.Net import SecurityProtocolType, ServicePointManager
 from System.Windows.Threading import Dispatcher
 
-import toga
 from toga import Key
-from toga.command import Separator
+from toga.app import overridden
+from toga.command import Command, Group, Separator
+from toga.handlers import simple_handler
 
 from .keys import toga_to_winforms_key, toga_to_winforms_shortcut
 from .libs.proactor import WinformsProactorEventLoop
@@ -156,31 +157,41 @@ class App:
 
     def create_app_commands(self):
         self.interface.commands.add(
-            # About should be the last item in the Help menu, in a section on its own.
-            toga.Command(
-                lambda _: self.interface.about(),
-                f"About {self.interface.formal_name}",
-                group=toga.Group.HELP,
-                section=sys.maxsize,
+            # ---- File menu -----------------------------------
+            # Include a preferences menu item; but only enable it if the user has
+            # overridden it in their App class.
+            Command(
+                simple_handler(self.interface.preferences),
+                "Preferences",
+                group=Group.FILE,
+                enabled=overridden(self.interface.preferences),
+                id=Command.PREFERENCES,
             ),
-            #
-            toga.Command(None, "Preferences", group=toga.Group.FILE),
-            #
-            # On Windows, the Exit command doesn't usually contain the app name. It
-            # should be the last item in the File menu, in a section on its own.
-            toga.Command(
-                lambda _: self.interface.on_exit(),
+            # Exit should always be the last item, in a section on its own. Invoke
+            # `on_exit` rather than `exit`, because we want to trigger the "OK to exit?"
+            # logic. It's already a bound handler, so we can use it directly.
+            Command(
+                self.interface.on_exit,
                 "Exit",
                 shortcut=Key.MOD_1 + "q",
-                group=toga.Group.FILE,
+                group=Group.FILE,
                 section=sys.maxsize,
+                id=Command.PREFERENCES,
             ),
-            #
-            toga.Command(
-                lambda _: self.interface.visit_homepage(),
+            # ---- Help menu -----------------------------------
+            Command(
+                simple_handler(self.interface.visit_homepage),
                 "Visit homepage",
                 enabled=self.interface.home_page is not None,
-                group=toga.Group.HELP,
+                group=Group.HELP,
+                id=Command.PREFERENCES,
+            ),
+            Command(
+                simple_handler(self.interface.about),
+                f"About {self.interface.formal_name}",
+                group=Group.HELP,
+                section=sys.maxsize,
+                id=Command.PREFERENCES,
             ),
         )
 
@@ -224,7 +235,7 @@ class App:
 
         # The File menu should come before all user-created menus.
         self._menu_groups = {}
-        toga.Group.FILE.order = -1
+        Group.FILE.order = -1
 
         submenu = None
         for cmd in self.interface.commands:
@@ -389,11 +400,11 @@ class DocumentApp(App):  # pragma: no cover
     def create_app_commands(self):
         super().create_app_commands()
         self.interface.commands.add(
-            toga.Command(
+            Command(
                 lambda w: self.open_file,
                 text="Open...",
                 shortcut=Key.MOD_1 + "o",
-                group=toga.Group.FILE,
+                group=Group.FILE,
                 section=0,
             ),
         )

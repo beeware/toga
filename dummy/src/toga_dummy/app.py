@@ -2,6 +2,10 @@ import asyncio
 import sys
 from pathlib import Path
 
+from toga.app import overridden
+from toga.command import Command, Group
+from toga.handlers import simple_handler
+
 from .screens import Screen as ScreenImpl
 from .utils import LoggedObject
 from .window import Window
@@ -22,7 +26,42 @@ class App(LoggedObject):
 
     def create(self):
         self._action("create App")
+        self.create_app_commands()
         self.interface._startup()
+
+    def create_app_commands(self):
+        self._action("create App commands")
+        self.interface.commands.add(
+            Command(
+                simple_handler(self.interface.preferences),
+                "Preferences",
+                group=Group.APP,
+                # For now, only enable preferences if the user defines an implementation
+                enabled=overridden(self.interface.preferences),
+                id=Command.PREFERENCES,
+            ),
+            # Invoke `on_exit` rather than `exit`, because we want to trigger the "OK to
+            # exit?" logic. It's already a bound handler, so we can use it directly.
+            Command(
+                self.interface.on_exit,
+                "Exit",
+                group=Group.APP,
+                id=Command.EXIT,
+            ),
+            Command(
+                simple_handler(self.interface.about),
+                f"About {self.interface.formal_name}",
+                group=Group.HELP,
+                id=Command.ABOUT,
+            ),
+            Command(
+                simple_handler(self.interface.visit_homepage),
+                "Visit homepage",
+                enabled=self.interface.home_page is not None,
+                group=Group.HELP,
+                id=Command.VISIT_HOMEPAGE,
+            ),
+        )
 
     def create_menus(self):
         self._action("create App menus")

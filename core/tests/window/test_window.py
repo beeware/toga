@@ -144,6 +144,11 @@ def test_title(window, value, expected):
 
 def test_toolbar_implicit_add(window, app):
     """Adding an item to a toolbar implicitly adds it to the app."""
+    # Clear the app commands to start with
+    app.commands.clear()
+    assert list(window.toolbar) == []
+    assert list(app.commands) == []
+
     cmd1 = toga.Command(None, "Command 1")
     cmd2 = toga.Command(None, "Command 2")
 

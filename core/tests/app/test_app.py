@@ -237,6 +237,10 @@ def test_create(
 
     metadata_mock.assert_called_once_with(expected_app_name)
 
+    # Preferences menu item exists, but is disabled
+    assert toga.Command.PREFERENCES in app.commands
+    assert not app.commands[toga.Command.PREFERENCES].enabled
+
 
 @pytest.mark.parametrize(
     "kwargs, exc_type, message",
