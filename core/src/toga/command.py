@@ -334,9 +334,6 @@ class CommandSet:
         CommandSet of your own; you should use existing app or window level CommandSet
         instances.
 
-        The collection can be iterated over to provide the display order of the commands
-        managed by the group.
-
         The ``in`` operator can be used to evaluate whether a :class:`~toga.Command` is
         a member of the CommandSet, using either an instance of a Command, or the ID of
         a command.
@@ -344,9 +341,9 @@ class CommandSet:
         Commands can be retrieved from the CommandSet using ``[]`` notation with the
         requested command's ID.
 
-        When iterated over, a CommandSet returns :class:`~toga.Command` instances in the
-        their sort order, with :class:`~toga.command.Separator` instances inserted between
-        groups.
+        When iterated over, a CommandSet returns :class:`~toga.Command` instances in
+        their sort order, with :class:`~toga.command.Separator` instances inserted
+        between groups.
 
         :param on_change: A method that should be invoked when this CommandSet changes.
         :param app: The app this CommandSet is associated with, if it is not the app's

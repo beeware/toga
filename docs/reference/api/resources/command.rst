@@ -73,7 +73,7 @@ as well. It isn't possible to have functionality exposed on a toolbar that
 isn't also exposed by the app. So, ``cmd2`` will be added to the app, even though
 it wasn't explicitly added to the app commands.
 
-Each command has an :attr:`~toga.Command.id` attribute. This is set when the app is
+Each command has an :attr:`~toga.Command.id` attribute. This is set when the command is
 defined; if no ID is provided, a random ID will be generated for the Command. This
 identifier can be used to retrieve a command from :any:`toga.App.commands` and
 :any:`toga.Window.toolbar`.
