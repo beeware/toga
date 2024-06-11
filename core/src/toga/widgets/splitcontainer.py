@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import sys
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Sequence
 
 from toga.app import App
 from toga.constants import Direction
@@ -27,7 +27,7 @@ class SplitContainer(Widget):
         id: str | None = None,
         style: StyleT | None = None,
         direction: Direction = Direction.VERTICAL,
-        content: tuple[SplitContainerContentT, SplitContainerContentT] = (None, None),
+        content: Sequence[SplitContainerContentT] = [None, None],
     ):
         """Create a new SplitContainer.
 
@@ -42,10 +42,10 @@ class SplitContainer(Widget):
             of the container. Defaults to both panels being empty.
         """
         super().__init__(id=id, style=style)
-        self._content: tuple[SplitContainerContentT, SplitContainerContentT] = (
+        self._content: Sequence[SplitContainerContentT] = [
             None,
             None,
-        )
+        ]
 
         # Create a platform specific implementation of a SplitContainer
         self._impl = self.factory.SplitContainer(interface=self)
@@ -71,7 +71,7 @@ class SplitContainer(Widget):
         pass
 
     @property
-    def content(self) -> tuple[SplitContainerContentT, SplitContainerContentT]:
+    def content(self) -> Sequence[SplitContainerContentT]:
         """The widgets displayed in the SplitContainer.
 
         This property accepts a sequence of exactly 2 elements, each of which can be
@@ -89,9 +89,7 @@ class SplitContainer(Widget):
         return self._content
 
     @content.setter
-    def content(
-        self, content: tuple[SplitContainerContentT, SplitContainerContentT]
-    ) -> None:
+    def content(self, content: Sequence[SplitContainerContentT]) -> None:
         try:
             if len(content) != 2:
                 raise TypeError()
@@ -128,10 +126,10 @@ class SplitContainer(Widget):
                 widget.window = self.window
 
         self._impl.set_content(
-            tuple(w._impl if w is not None else None for w in _content),
+            list(w._impl if w is not None else None for w in _content),
             flex,
         )
-        self._content = tuple(_content)
+        self._content = list(_content)
         self.refresh()
 
     @Widget.app.setter
