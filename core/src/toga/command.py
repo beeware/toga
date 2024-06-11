@@ -160,6 +160,15 @@ class ActionHandler(Protocol):
 
 
 class Command:
+    #: An identifier for the system-installed "About" menu item
+    ABOUT = "about"
+    #: An identifier for the system-installed "Exit" menu item
+    EXIT = "on_exit"
+    #: An identifier for the system-installed "Preferences" menu item
+    PREFERENCES = "preferences"
+    #: An identifier for the system-installed "Visit Homepage" menu item
+    VISIT_HOMEPAGE = "visit_homepage"
+
     def __init__(
         self,
         action: ActionHandler | None,
@@ -172,6 +181,7 @@ class Command:
         section: int = 0,
         order: int = 0,
         enabled: bool = True,
+        id: str = None,
     ):
         """
         Create a new Command.
@@ -192,7 +202,9 @@ class Command:
             If multiple items have the same group, section and order, they will be
             sorted alphabetically by their text.
         :param enabled: Is the Command currently enabled?
+        :param id: A unique identifier for the command.
         """
+        self.id = f"cmd-{hash(self)}" if id is None else id
         self.text = text
 
         self.shortcut = shortcut
@@ -321,18 +333,18 @@ class CommandSet:
             own commandset.
         """
         self._app = app
-        self._commands = set()
+        self._commands = {}
         self.on_change = on_change
 
     def add(self, *commands: Command | Group):
         if self.app and self.app is not None:
             self.app.commands.add(*commands)
-        self._commands.update(commands)
+        self._commands.update({cmd.id: cmd for cmd in commands})
         if self.on_change:
             self.on_change()
 
     def clear(self):
-        self._commands = set()
+        self._commands = {}
         if self.on_change:
             self.on_change()
 
@@ -340,11 +352,17 @@ class CommandSet:
     def app(self) -> App:
         return self._app
 
+    def __contains__(self, id: str) -> Command:
+        return id in self._commands
+
+    def __getitem__(self, id: str) -> Command:
+        return self._commands[id]
+
     def __len__(self) -> int:
         return len(self._commands)
 
     def __iter__(self) -> Command | Separator:
-        cmd_iter = iter(sorted(self._commands))
+        cmd_iter = iter(sorted(self._commands.values()))
 
         def descendant(group, ancestor):
             # Return the immediate descendant of ancestor used by this group.

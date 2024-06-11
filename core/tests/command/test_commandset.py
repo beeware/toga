@@ -27,6 +27,9 @@ def test_create_with_values():
 @pytest.mark.parametrize("change_handler", [(None), (Mock())])
 def test_add_clear(app, change_handler):
     """Commands can be added and removed from a commandset."""
+    # Make sure the app commands are clear to start with.
+    app.commands.clear()
+
     # Put some commands into the app
     cmd_a = toga.Command(None, text="App command a")
     cmd_b = toga.Command(None, text="App command b", order=10)
@@ -68,6 +71,9 @@ def test_add_clear(app, change_handler):
 @pytest.mark.parametrize("change_handler", [(None), (Mock())])
 def test_add_clear_with_app(app, change_handler):
     """Commands can be added and removed from a commandset that is linked to an app."""
+    # Make sure the app commands are clear to start with.
+    app.commands.clear()
+
     # Put some commands into the app
     cmd_a = toga.Command(None, text="App command a")
     cmd_b = toga.Command(None, text="App command b", order=10)
@@ -119,6 +125,24 @@ def test_add_clear_with_app(app, change_handler):
 
     # App command set hasn't changed.
     assert list(app.commands) == [cmd_a, cmd1b, cmd2, cmd1a, cmd_b]
+
+
+def test_retrieve_by_id(app):
+    """Commands can be retrieved by ID."""
+
+    # Put some extra commands into the app
+    cmd_a = toga.Command(None, text="App command a")
+    cmd_b = toga.Command(None, text="App command b", id="custom-command-b")
+
+    app.commands.add(cmd_a, cmd_b)
+
+    # Retrieve the custom command by ID.
+    assert "custom-command-b" in app.commands
+    assert app.commands["custom-command-b"] == cmd_b
+
+    # Check a system installed command
+    assert toga.Command.ABOUT in app.commands
+    assert app.commands[toga.Command.ABOUT].text == "About Test App"
 
 
 def test_ordering(
