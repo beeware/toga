@@ -275,7 +275,7 @@ jobs:
     # Github runners seem to have intermittent connectivity issues.
     # See https://github.com/beeware/toga/issues/2632
     - name: Tune GitHub-hosted runner network
-      uses: smorimoto/tune-github-hosted-runner-network@v1
+      uses: smorimoto/tune-github-hosted-runner-network@v1.0.0
 
     - name: Checkout
       uses: actions/checkout@v4.1.6
