@@ -62,10 +62,7 @@ class SimpleProbe(BaseProbe, FontMixin):
                 # self.impl.interface.style.background_color can be None or TRANSPARENT
                 # and so there will be no alpha value on them. In such cases return 0
                 # as the original alpha value.
-                self.impl.interface.style.background_color.a
-                if getattr(self.impl.interface.style.background_color, "a", None)
-                is not None
-                else 0
+                getattr(self.widget.style.background_color, "a", 0)
             ),
         )
 

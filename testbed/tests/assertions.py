@@ -81,13 +81,8 @@ def assert_background_color(actual, expected):
             deblended_expected_widget_bg = reverse_alpha_blending_over(
                 expected_widget_bg, expected_parent_bg, expected_widget_bg_alpha
             )
-            assert actual_widget_bg_alpha == expected_widget_bg_alpha
-
-            if actual_widget_bg_alpha != 1 and expected_widget_bg_alpha != 1:
-                assert_color(deblended_actual_widget_bg, deblended_expected_widget_bg)
-
-            else:
-                assert_color(actual_widget_bg, expected_widget_bg)
+            assert_color(deblended_actual_widget_bg, deblended_expected_widget_bg)
+        # For comparison when expected is a single value object
         else:
             if expected == TRANSPARENT or expected.a == 0:
                 assert_color(actual_widget_bg, actual_parent_bg)

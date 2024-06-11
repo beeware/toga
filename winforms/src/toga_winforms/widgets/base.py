@@ -123,32 +123,26 @@ class Widget(ABC, Scalable):
             self.native.ForeColor = native_color(color)
 
     def set_background_color(self, color):
-        if color is None:
-            if self._default_background_color != TRANSPARENT:
-                self.native.BackColor = native_color(self._default_background_color)
-            else:
-                color = self._default_background_color
-        elif (color != TRANSPARENT) and (color.a == 1):
-            self.native.BackColor = native_color(color)
+        if self.interface.parent:
+            parent_color = toga_color(self.interface.parent._impl.native.BackColor).rgba
         else:
-            if self.interface.parent:
-                parent_color = toga_color(
-                    self.interface.parent._impl.native.BackColor
-                ).rgba
-            else:
-                parent_color = toga_color(SystemColors.Control).rgba
+            parent_color = toga_color(SystemColors.Control).rgba
 
-            if color is TRANSPARENT:
+        if color is None:
+            if self._default_background_color is TRANSPARENT:
                 requested_color = rgba(0, 0, 0, 0)
             else:
-                requested_color = color.rgba
+                requested_color = self._default_background_color.rgba
+        elif color is TRANSPARENT:
+            requested_color = rgba(0, 0, 0, 0)
+        else:
+            requested_color = color.rgba
 
-            blended_color = alpha_blending_over_operation(requested_color, parent_color)
-            self.native.BackColor = native_color(blended_color)
+        blended_color = alpha_blending_over_operation(requested_color, parent_color)
+        self.native.BackColor = native_color(blended_color)
 
-        if getattr(self.interface, "children", None) is not None:  # pragma: no branch
-            for child in self.interface.children:
-                child._impl.set_background_color(child.style.background_color)
+        for child in self.interface.children:
+            child._impl.set_background_color(child.style.background_color)
 
     # INTERFACE
 
