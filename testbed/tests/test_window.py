@@ -243,6 +243,9 @@ else:
             assert window_with_content.content == content
         finally:
             window_with_content.close()
+            await window_with_content_probe.redraw("Secondary window has been closed")
+            del window_with_content
+            gc.collect()
 
     async def test_secondary_window_cleanup(app_probe):
         """Memory for windows is cleaned up when windows are deleted."""
