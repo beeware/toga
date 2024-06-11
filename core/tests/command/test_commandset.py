@@ -133,12 +133,20 @@ def test_retrieve_by_id(app):
     # Put some extra commands into the app
     cmd_a = toga.Command(None, text="App command a")
     cmd_b = toga.Command(None, text="App command b", id="custom-command-b")
+    cmd_c = toga.Command(None, text="App command C", id="custom-command-c")
 
     app.commands.add(cmd_a, cmd_b)
 
     # Retrieve the custom command by ID.
     assert "custom-command-b" in app.commands
+    assert cmd_b in app.commands
     assert app.commands["custom-command-b"] == cmd_b
+
+    # Look up a command that *hasn't* been added to the app
+    assert "custom-command-c" not in app.commands
+    assert cmd_c not in app.commands
+    with pytest.raises(KeyError):
+        app.commands["custom-command-c"]
 
     # Check a system installed command
     assert toga.Command.ABOUT in app.commands

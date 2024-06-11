@@ -352,8 +352,11 @@ class CommandSet:
     def app(self) -> App:
         return self._app
 
-    def __contains__(self, id: str) -> Command:
-        return id in self._commands
+    def __contains__(self, obj: str | Command) -> Command:
+        if isinstance(obj, Command):
+            return obj in self._commands.values()
+        else:
+            return obj in self._commands
 
     def __getitem__(self, id: str) -> Command:
         return self._commands[id]
