@@ -27,7 +27,7 @@ class SplitContainer(Widget):
         id: str | None = None,
         style: StyleT | None = None,
         direction: Direction = Direction.VERTICAL,
-        content: Sequence[SplitContainerContentT] = [None, None],
+        content: Sequence[SplitContainerContentT] | None = None,
     ):
         """Create a new SplitContainer.
 
@@ -50,7 +50,8 @@ class SplitContainer(Widget):
         # Create a platform specific implementation of a SplitContainer
         self._impl = self.factory.SplitContainer(interface=self)
 
-        self.content = content
+        if content:
+            self.content = content
         self.direction = direction
 
     @property
