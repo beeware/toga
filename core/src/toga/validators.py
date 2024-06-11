@@ -30,7 +30,6 @@ class BooleanValidator:
         :param input_string: The string to validate.
         :returns: ``True`` if the input is valid.
         """
-        ...
 
 
 class CountValidator:
@@ -83,7 +82,6 @@ class CountValidator:
         :param input_string: The string to inspect for content of interest.
         :returns: The number of instances of content that the validator is looking for.
         """
-        ...
 
 
 class LengthBetween(BooleanValidator):
@@ -105,8 +103,8 @@ class LengthBetween(BooleanValidator):
             ``True``
         """
         if error_message is None:
-            error_message = "Input should be between {} and {} characters".format(
-                min_length, max_length
+            error_message = (
+                f"Input should be between {min_length} and {max_length} characters"
             )
         super().__init__(error_message=error_message, allow_empty=allow_empty)
 
@@ -146,9 +144,7 @@ class MinLength(LengthBetween):
             ``True``
         """
         if error_message is None:
-            error_message = "Input is too short (length should be at least {})".format(
-                length
-            )
+            error_message = f"Input is too short (length should be at least {length})"
         super().__init__(
             min_length=length,
             max_length=None,
@@ -170,9 +166,7 @@ class MaxLength(LengthBetween):
             string is too long.
         """
         if error_message is None:
-            error_message = "Input is too long (length should be at most {})".format(
-                length
-            )
+            error_message = f"Input is too long (length should be at most {length})"
         super().__init__(
             min_length=None,
             max_length=length,
@@ -294,7 +288,7 @@ class NotContains(Contains):
 class MatchRegex(BooleanValidator):
     def __init__(
         self,
-        regex_string,
+        regex_string: str,
         error_message: str | None = None,
         allow_empty: bool = True,
     ):
@@ -430,9 +424,7 @@ class ContainsDigit(CountValidator):
         else:
             expected_existence_message = "Input should contain at least one digit"
             expected_non_existence_message = "Input should not contain digits"
-            expected_count_message = "Input should contain exactly {} digits".format(
-                count
-            )
+            expected_count_message = f"Input should contain exactly {count} digits"
 
         super().__init__(
             count=count,

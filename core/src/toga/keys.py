@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from enum import Enum
 
 
@@ -158,7 +160,7 @@ class Key(Enum):
         """Does pressing the key result in a printable character?"""
         return not (self.value.startswith("<") and self.value.endswith(">"))
 
-    def __add__(self, other):
+    def __add__(self, other: Key | str) -> str:
         """Allow two Keys to be concatenated, or a string to be concatenated to a Key.
 
         Produces a single string definition.
@@ -173,6 +175,6 @@ class Key(Enum):
         except AttributeError:
             return self.value + other
 
-    def __radd__(self, other):
+    def __radd__(self, other: str) -> str:
         """Same as add."""
         return other + self.value

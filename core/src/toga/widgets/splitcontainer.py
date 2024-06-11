@@ -1,8 +1,21 @@
 from __future__ import annotations
 
-from toga.constants import Direction
+import sys
+from typing import TYPE_CHECKING
 
-from .base import Widget
+from toga.app import App
+from toga.constants import Direction
+from toga.window import Window
+
+from .base import StyleT, Widget
+
+if TYPE_CHECKING:
+    if sys.version_info < (3, 10):
+        from typing_extensions import TypeAlias
+    else:
+        from typing import TypeAlias
+
+    SplitContainerContentT: TypeAlias = Widget | tuple[Widget, float] | None
 
 
 class SplitContainer(Widget):
@@ -11,10 +24,10 @@ class SplitContainer(Widget):
 
     def __init__(
         self,
-        id=None,
-        style=None,
+        id: str | None = None,
+        style: StyleT | None = None,
         direction: Direction = Direction.VERTICAL,
-        content: tuple[Widget | None | tuple, Widget | None | tuple] = (None, None),
+        content: tuple[SplitContainerContentT, SplitContainerContentT] = (None, None),
     ):
         """Create a new SplitContainer.
 
@@ -25,11 +38,14 @@ class SplitContainer(Widget):
             :attr:`~toga.constants.Direction.HORIZONTAL` or
             :attr:`~toga.constants.Direction.VERTICAL`; defaults to
             :attr:`~toga.constants.Direction.VERTICAL`
-        :param content: Initial :any:`content` of the container. Defaults to both panels
-            being empty.
+        :param content: Initial :any:`SplitContainer content <SplitContainerContentT>`
+            of the container. Defaults to both panels being empty.
         """
         super().__init__(id=id, style=style)
-        self._content = (None, None)
+        self._content: tuple[SplitContainerContentT, SplitContainerContentT] = (
+            None,
+            None,
+        )
 
         # Create a platform specific implementation of a SplitContainer
         self._impl = self.factory.SplitContainer(interface=self)
@@ -47,17 +63,15 @@ class SplitContainer(Widget):
         return True
 
     @enabled.setter
-    def enabled(self, value):
+    def enabled(self, value: object) -> None:
         pass
 
-    def focus(self):
-        "No-op; SplitContainer cannot accept input focus"
+    def focus(self) -> None:
+        """No-op; SplitContainer cannot accept input focus."""
         pass
 
-    # The inner tuple's full type is tuple[Widget | None, float], but that would make
-    # the documentation unreadable.
     @property
-    def content(self) -> tuple[Widget | None | tuple, Widget | None | tuple]:
+    def content(self) -> tuple[SplitContainerContentT, SplitContainerContentT]:
         """The widgets displayed in the SplitContainer.
 
         This property accepts a sequence of exactly 2 elements, each of which can be
@@ -75,7 +89,9 @@ class SplitContainer(Widget):
         return self._content
 
     @content.setter
-    def content(self, content):
+    def content(
+        self, content: tuple[SplitContainerContentT, SplitContainerContentT]
+    ) -> None:
         try:
             if len(content) != 2:
                 raise TypeError()
@@ -119,7 +135,7 @@ class SplitContainer(Widget):
         self.refresh()
 
     @Widget.app.setter
-    def app(self, app):
+    def app(self, app: App | None) -> None:
         # Invoke the superclass property setter
         Widget.app.fset(self, app)
 
@@ -129,7 +145,7 @@ class SplitContainer(Widget):
                 content.app = app
 
     @Widget.window.setter
-    def window(self, window):
+    def window(self, window: Window | None) -> None:
         # Invoke the superclass property setter
         Widget.window.fset(self, window)
 
@@ -140,10 +156,10 @@ class SplitContainer(Widget):
 
     @property
     def direction(self) -> Direction:
-        """The direction of the split"""
+        """The direction of the split."""
         return self._impl.get_direction()
 
     @direction.setter
-    def direction(self, value):
+    def direction(self, value: object) -> None:
         self._impl.set_direction(value)
         self.refresh()

@@ -1,11 +1,12 @@
 from __future__ import annotations
 
 import importlib
+import os
 import sys
 import warnings
 from functools import lru_cache
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Protocol
+from typing import TYPE_CHECKING, Any, Protocol, TypeVar
 from warnings import warn
 
 import toga
@@ -23,18 +24,18 @@ warnings.filterwarnings("default", category=DeprecationWarning)
 
 if TYPE_CHECKING:
     if sys.version_info < (3, 10):
-        from typing_extensions import TypeAlias, TypeVar
+        from typing_extensions import TypeAlias
     else:
-        from typing import TypeAlias, TypeVar
+        from typing import TypeAlias
 
     # Define a type variable for generics where an Image type is required.
     ImageT = TypeVar("ImageT")
 
     # Define the types that can be used as Image content
-    PathLike: TypeAlias = str | Path
-    BytesLike: TypeAlias = bytes | bytearray | memoryview
-    ImageLike: TypeAlias = Any
-    ImageContent: TypeAlias = PathLike | BytesLike | ImageLike
+    PathLikeT: TypeAlias = str | os.PathLike
+    BytesLikeT: TypeAlias = bytes | bytearray | memoryview
+    ImageLikeT: TypeAlias = Any
+    ImageContentT: TypeAlias = PathLikeT | BytesLikeT | ImageLikeT
 
     # Define a type variable representing an image of an externally defined type.
     ExternalImageT = TypeVar("ExternalImageT")
@@ -49,7 +50,7 @@ class ImageConverter(Protocol):
     image_class: type[ExternalImageT]
 
     @staticmethod
-    def convert_from_format(image_in_format: ExternalImageT) -> BytesLike:
+    def convert_from_format(image_in_format: ExternalImageT) -> BytesLikeT:
         """Convert from :any:`image_class` to data in a :ref:`known image format
         <known-image-formats>`.
 
@@ -58,11 +59,10 @@ class ImageConverter(Protocol):
         :param image_in_format: An instance of :any:`image_class` (or a subclass).
         :returns: The image data, in a :ref:`known image format <known-image-formats>`.
         """
-        ...
 
     @staticmethod
     def convert_to_format(
-        data: BytesLike,
+        data: BytesLikeT,
         image_class: type[ExternalImageT],
     ) -> ExternalImageT:
         """Convert from data to :any:`image_class` or specified subclass.
@@ -76,7 +76,6 @@ class ImageConverter(Protocol):
         :param image_class: The class of image to return.
         :returns: The image, as an instance of the image class specified.
         """
-        ...
 
 
 NOT_PROVIDED = object()
@@ -85,15 +84,15 @@ NOT_PROVIDED = object()
 class Image:
     def __init__(
         self,
-        src: ImageContent = NOT_PROVIDED,
+        src: ImageContentT = NOT_PROVIDED,
         *,
-        path=NOT_PROVIDED,  # DEPRECATED
-        data=NOT_PROVIDED,  # DEPRECATED
+        path: object = NOT_PROVIDED,  # DEPRECATED
+        data: object = NOT_PROVIDED,  # DEPRECATED
     ):
         """Create a new image.
 
         :param src: The source from which to load the image. Can be any valid
-            :any:`image content <ImageContent>` type.
+            :any:`image content <ImageContentT>` type.
         :param path: **DEPRECATED** - Use ``src``.
         :param data: **DEPRECATED** - Use ``src``.
         :raises FileNotFoundError: If a path is provided, but that path does not exist.
@@ -157,7 +156,7 @@ class Image:
 
     @classmethod
     @lru_cache(maxsize=None)
-    def _converters(cls):
+    def _converters(cls) -> list[ImageConverter]:
         """Return list of registered image plugin converters. Only loaded once."""
         converters = []
 
@@ -172,9 +171,9 @@ class Image:
         return converters
 
     @property
-    def size(self) -> (int, int):
+    def size(self) -> tuple[int, int]:
         """The size of the image, as a (width, height) tuple."""
-        return (self._impl.get_width(), self._impl.get_height())
+        return self._impl.get_width(), self._impl.get_height()
 
     @property
     def width(self) -> int:
