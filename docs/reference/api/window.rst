@@ -42,14 +42,14 @@ An operating system-managed container of widgets.
 Usage
 -----
 
-A window is the top-level container that the operating system uses to display widgets. A
-window may also have other decorations, such as a title bar or toolbar.
+A window is the top-level container that the operating system uses to display widgets.
+A window may also have other decorations, such as a title bar or toolbar.
 
 When first created, a window is not visible. To display it, call the
 :meth:`~toga.Window.show` method.
 
 The window has content, which will usually be a container widget of some kind. The
-content of the window can be changed by re-assigning its `content` attribute to a
+content of the window can be changed by re-assigning its ``content`` attribute to a
 different widget.
 
 .. code-block:: python
@@ -96,5 +96,6 @@ Reference
 
 .. autoclass:: toga.Window
 
+.. autoprotocol:: toga.window.Dialog
 .. autoprotocol:: toga.window.OnCloseHandler
 .. autoprotocol:: toga.window.DialogResultHandler

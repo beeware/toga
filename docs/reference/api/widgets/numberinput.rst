@@ -53,11 +53,13 @@ Usage
     widget = toga.NumberInput(min_value=1, max_value=10, step=0.001)
     widget.value = 2.718
 
-NumberInput's properties can accept integers, floats, and strings containing
-numbers, but they always return :any:`decimal.Decimal` objects to ensure
-precision is retained.
+NumberInput's properties can accept :class:`~decimal.Decimal`, :any:`int`, :any:`float`,
+or :any:`str` containing numbers, but they always return :class:`~decimal.Decimal`
+objects to ensure precision is retained.
 
 Reference
 ---------
 
 .. autoclass:: toga.NumberInput
+
+.. autoprotocol:: toga.widgets.numberinput.OnChangeHandler

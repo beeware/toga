@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from toga.images import Image
 from toga.platform import get_platform_factory
@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 
 
 class Screen:
-    def __init__(self, _impl):
+    def __init__(self, _impl: Any):
         self._impl = _impl
         self.factory = get_platform_factory()
 

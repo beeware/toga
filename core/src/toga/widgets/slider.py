@@ -3,26 +3,55 @@ from __future__ import annotations
 import warnings
 from abc import ABC, abstractmethod
 from contextlib import contextmanager
+from typing import Any, Protocol, SupportsFloat
 
+import toga
 from toga.handlers import wrapped_handler
 
-from .base import Widget
+from .base import StyleT, Widget
+
+
+class OnChangeHandler(Protocol):
+    def __call__(self, widget: Slider, /, **kwargs: Any) -> object:
+        """A handler to invoke when the value is changed.
+
+        :param widget: The Slider that was changed.
+        :param kwargs: Ensures compatibility with arguments added in future versions.
+        """
+
+
+class OnPressHandler(Protocol):
+    def __call__(self, widget: Slider, /, **kwargs: Any) -> object:
+        """A handler to invoke when the slider is pressed.
+
+        :param widget: The Slider that was pressed.
+        :param kwargs: Ensures compatibility with arguments added in future versions.
+        """
+
+
+class OnReleaseHandler(Protocol):
+    def __call__(self, widget: Slider, /, **kwargs: Any) -> object:
+        """A handler to invoke when the slider is pressed.
+
+        :param widget: The Slider that was released.
+        :param kwargs: Ensures compatibility with arguments added in future versions.
+        """
 
 
 class Slider(Widget):
     def __init__(
         self,
         id: str | None = None,
-        style=None,
+        style: StyleT | None = None,
         value: float | None = None,
-        min: float = None,  # Default to 0.0 when range is removed
-        max: float = None,  # Default to 1.0 when range is removed
+        min: float | None = None,  # Default to 0.0 when range is removed
+        max: float | None = None,  # Default to 1.0 when range is removed
         tick_count: int | None = None,
-        on_change: callable | None = None,
-        on_press: callable | None = None,
-        on_release: callable | None = None,
+        on_change: toga.widgets.slider.OnChangeHandler | None = None,
+        on_press: toga.widgets.slider.OnPressHandler | None = None,
+        on_release: OnReleaseHandler | None = None,
         enabled: bool = True,
-        range: tuple[float, float] | None = None,  # DEPRECATED
+        range: None = None,  # DEPRECATED
     ):
         """Create a new Slider widget.
 
@@ -90,7 +119,7 @@ class Slider(Widget):
     # Backends are inconsistent about when they produce events for programmatic changes,
     # so we deal with those in the interface layer.
     @contextmanager
-    def _programmatic_change(self):
+    def _programmatic_change(self) -> float:
         old_value = self.value
         on_change = self._on_change
         self.on_change = None
@@ -111,7 +140,7 @@ class Slider(Widget):
         return self._impl.get_value()
 
     @value.setter
-    def value(self, value):
+    def value(self, value: float) -> None:
         if value < self.min:
             value = self.min
         elif value > self.max:
@@ -119,10 +148,10 @@ class Slider(Widget):
         with self._programmatic_change():
             self._set_value(value)
 
-    def _set_value(self, value):
+    def _set_value(self, value: SupportsFloat) -> None:
         self._impl.set_value(self._round_value(float(value)))
 
-    def _round_value(self, value):
+    def _round_value(self, value: float) -> float:
         step = self.tick_step
         if step is not None:
             # Round to the nearest tick.
@@ -139,7 +168,7 @@ class Slider(Widget):
         return self._impl.get_min()
 
     @min.setter
-    def min(self, value):
+    def min(self, value: SupportsFloat) -> None:
         with self._programmatic_change() as old_value:
             # Some backends will clip the current value within the range automatically,
             # but do it ourselves to be certain. In discrete mode, setting self.value also
@@ -163,7 +192,7 @@ class Slider(Widget):
         return self._impl.get_max()
 
     @max.setter
-    def max(self, value):
+    def max(self, value: SupportsFloat) -> None:
         with self._programmatic_change() as old_value:
             # Some backends will clip the current value within the range automatically,
             # but do it ourselves to be certain. In discrete mode, setting self.value also
@@ -199,7 +228,7 @@ class Slider(Widget):
         return self._impl.get_tick_count()
 
     @tick_count.setter
-    def tick_count(self, tick_count):
+    def tick_count(self, tick_count: float | None) -> None:
         if (tick_count is not None) and (tick_count < 2):
             raise ValueError("tick count must be at least 2")
         with self._programmatic_change() as old_value:
@@ -226,7 +255,7 @@ class Slider(Widget):
         return (self.max - self.min) / (self.tick_count - 1)
 
     @property
-    def tick_value(self) -> int | None:
+    def tick_value(self) -> float | None:
         """Value of the slider, measured in ticks.
 
         * If the slider is continuous, this property returns ``None``.
@@ -235,25 +264,25 @@ class Slider(Widget):
 
         :raises ValueError: If set to anything inconsistent with the rules above.
         """
-        if self.tick_count is not None:
+        if self.tick_count is not None and self.tick_step is not None:
             return round((self.value - self.min) / self.tick_step) + 1
         else:
             return None
 
     @tick_value.setter
-    def tick_value(self, tick_value):
+    def tick_value(self, tick_value: int | None) -> None:
         if self.tick_count is None:
             if tick_value is not None:
                 raise ValueError("cannot set tick value when tick count is None")
         else:
-            if tick_value is None:
+            if tick_value is None or self.tick_step is None:
                 raise ValueError(
                     "cannot set tick value to None when tick count is not None"
                 )
             self.value = self.min + (tick_value - 1) * self.tick_step
 
     @property
-    def on_change(self) -> callable:
+    def on_change(self) -> OnChangeHandler:
         """Handler to invoke when the value of the slider is changed, either by the user
         or programmatically.
 
@@ -262,25 +291,25 @@ class Slider(Widget):
         return self._on_change
 
     @on_change.setter
-    def on_change(self, handler):
+    def on_change(self, handler: toga.widgets.slider.OnChangeHandler) -> None:
         self._on_change = wrapped_handler(self, handler)
 
     @property
-    def on_press(self) -> callable:
+    def on_press(self) -> OnPressHandler:
         """Handler to invoke when the user presses the slider before changing it."""
         return self._on_press
 
     @on_press.setter
-    def on_press(self, handler):
+    def on_press(self, handler: toga.widgets.slider.OnPressHandler) -> None:
         self._on_press = wrapped_handler(self, handler)
 
     @property
-    def on_release(self) -> callable:
+    def on_release(self) -> OnReleaseHandler:
         """Handler to invoke when the user releases the slider after changing it."""
         return self._on_release
 
     @on_release.setter
-    def on_release(self, handler):
+    def on_release(self, handler: OnReleaseHandler) -> None:
         self._on_release = wrapped_handler(self, handler)
 
     ######################################################################
@@ -303,10 +332,10 @@ class Slider(Widget):
             "Slider.range has been deprecated in favor of Slider.min and Slider.max",
             DeprecationWarning,
         )
-        return (self.min, self.max)
+        return self.min, self.max
 
     @range.setter
-    def range(self, range):
+    def range(self, range: tuple[float, float]) -> None:
         warnings.warn(
             "Slider.range has been deprecated in favor of Slider.min and Slider.max",
             DeprecationWarning,
@@ -317,29 +346,31 @@ class Slider(Widget):
 
 
 class SliderImpl(ABC):
-    @abstractmethod
-    def get_value(self): ...
+    interface: Any
 
     @abstractmethod
-    def set_value(self, value): ...
+    def get_value(self) -> float: ...
 
     @abstractmethod
-    def get_min(self): ...
+    def set_value(self, value: float) -> None: ...
 
     @abstractmethod
-    def set_min(self, value): ...
+    def get_min(self) -> float: ...
 
     @abstractmethod
-    def get_max(self): ...
+    def set_min(self, value: float) -> None: ...
 
     @abstractmethod
-    def set_max(self, value): ...
+    def get_max(self) -> float: ...
 
     @abstractmethod
-    def get_tick_count(self): ...
+    def set_max(self, value: float) -> None: ...
 
     @abstractmethod
-    def set_tick_count(self, tick_count): ...
+    def get_tick_count(self) -> int | None: ...
+
+    @abstractmethod
+    def set_tick_count(self, tick_count: int | None) -> None: ...
 
 
 class IntSliderImpl(SliderImpl):
@@ -348,41 +379,41 @@ class IntSliderImpl(SliderImpl):
     # Number of steps to use to approximate a continuous slider.
     CONTINUOUS_MAX = 10000
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
 
         # Dummy values used during initialization.
-        self.value = 0
-        self.min = 0
-        self.max = 1
+        self.value: int | float = 0
+        self.min: int | float = 0
+        self.max: int | float = 1
         self.discrete = False
 
-    def get_value(self):
+    def get_value(self) -> float:
         return self.value
 
-    def set_value(self, value):
+    def set_value(self, value: float) -> None:
         span = self.max - self.min
         self.set_int_value(
             0 if span == 0 else round((value - self.min) / span * self.get_int_max())
         )
         self.value = value  # Cache the original value so we can round-trip it.
 
-    def get_min(self):
+    def get_min(self) -> float:
         return self.min
 
-    def set_min(self, value):
+    def set_min(self, value: float) -> None:
         self.min = value
 
-    def get_max(self):
+    def get_max(self) -> float:
         return self.max
 
-    def set_max(self, value):
+    def set_max(self, value: float) -> None:
         self.max = value
 
-    def get_tick_count(self):
+    def get_tick_count(self) -> int | None:
         return (self.get_int_max() + 1) if self.discrete else None
 
-    def set_tick_count(self, tick_count):
+    def set_tick_count(self, tick_count: int | None) -> None:
         if tick_count is None:
             self.discrete = False
             self.set_int_max(self.CONTINUOUS_MAX)
@@ -393,22 +424,22 @@ class IntSliderImpl(SliderImpl):
 
     # Instead of calling the event handler directly, implementations should call this
     # method.
-    def on_change(self):
+    def on_change(self) -> None:
         span = self.max - self.min
         self.value = self.min + (self.get_int_value() / self.get_int_max() * span)
         self.interface.on_change()
 
     @abstractmethod
-    def get_int_value(self): ...
+    def get_int_value(self) -> int: ...
 
     @abstractmethod
-    def set_int_value(self, value): ...
+    def set_int_value(self, value: int) -> None: ...
 
     @abstractmethod
-    def get_int_max(self): ...
+    def get_int_max(self) -> int: ...
 
     @abstractmethod
-    def set_int_max(self, max): ...
+    def set_int_max(self, max: int) -> None: ...
 
     @abstractmethod
-    def set_ticks_visible(self, visible): ...
+    def set_ticks_visible(self, visible: bool) -> None: ...

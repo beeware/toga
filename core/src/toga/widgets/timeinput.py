@@ -2,21 +2,32 @@ from __future__ import annotations
 
 import datetime
 import warnings
+from typing import Any, Protocol
 
+import toga
 from toga.handlers import wrapped_handler
 
-from .base import Widget
+from .base import StyleT, Widget
+
+
+class OnChangeHandler(Protocol):
+    def __call__(self, widget: TimeInput, /, **kwargs: Any) -> object:
+        """A handler to invoke when the time input is changed.
+
+        :param widget: The TimeInput that was changed.
+        :param kwargs: Ensures compatibility with arguments added in future versions.
+        """
 
 
 class TimeInput(Widget):
     def __init__(
         self,
-        id=None,
-        style=None,
+        id: str | None = None,
+        style: StyleT | None = None,
         value: datetime.time | None = None,
         min: datetime.time | None = None,
         max: datetime.time | None = None,
-        on_change: callable | None = None,
+        on_change: toga.widgets.timeinput.OnChangeHandler | None = None,
     ):
         """Create a new TimeInput widget.
 
@@ -51,7 +62,18 @@ class TimeInput(Widget):
         """
         return self._impl.get_value()
 
-    def _convert_time(self, value):
+    @value.setter
+    def value(self, value: object) -> None:
+        value = self._convert_time(value)
+
+        if value < self.min:
+            value = self.min
+        elif value > self.max:
+            value = self.max
+
+        self._impl.set_value(value)
+
+    def _convert_time(self, value: object) -> datetime.time:
         if value is None:
             value = datetime.datetime.now().time()
         elif isinstance(value, datetime.datetime):
@@ -65,17 +87,6 @@ class TimeInput(Widget):
 
         return value.replace(microsecond=0)
 
-    @value.setter
-    def value(self, value):
-        value = self._convert_time(value)
-
-        if value < self.min:
-            value = self.min
-        elif value > self.max:
-            value = self.max
-
-        self._impl.set_value(value)
-
     @property
     def min(self) -> datetime.time:
         """The minimum allowable time (inclusive). A value of ``None`` will be converted
@@ -87,7 +98,7 @@ class TimeInput(Widget):
         return self._impl.get_min_time()
 
     @min.setter
-    def min(self, value):
+    def min(self, value: object) -> None:
         if value is None:
             min = datetime.time(0, 0, 0)
         else:
@@ -110,7 +121,7 @@ class TimeInput(Widget):
         return self._impl.get_max_time()
 
     @max.setter
-    def max(self, value):
+    def max(self, value: object) -> None:
         if value is None:
             max = datetime.time(23, 59, 59)
         else:
@@ -123,18 +134,18 @@ class TimeInput(Widget):
             self.value = max
 
     @property
-    def on_change(self) -> callable:
+    def on_change(self) -> OnChangeHandler:
         """The handler to invoke when the time value changes."""
         return self._on_change
 
     @on_change.setter
-    def on_change(self, handler):
+    def on_change(self, handler: toga.widgets.timeinput.OnChangeHandler) -> None:
         self._on_change = wrapped_handler(self, handler)
 
 
 # 2023-05: Backwards compatibility
 class TimePicker(TimeInput):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any):
         warnings.warn("TimePicker has been renamed TimeInput", DeprecationWarning)
 
         for old_name, new_name in [
@@ -155,28 +166,28 @@ class TimePicker(TimeInput):
         super().__init__(*args, **kwargs)
 
     @property
-    def min_time(self):
+    def min_time(self) -> datetime.time:
         warnings.warn(
             "TimePicker.min_time has been renamed TimeInput.min", DeprecationWarning
         )
         return self.min
 
     @min_time.setter
-    def min_time(self, value):
+    def min_time(self, value: object) -> None:
         warnings.warn(
             "TimePicker.min_time has been renamed TimeInput.min", DeprecationWarning
         )
         self.min = value
 
     @property
-    def max_time(self):
+    def max_time(self) -> datetime.time:
         warnings.warn(
             "TimePicker.max_time has been renamed TimeInput.max", DeprecationWarning
         )
         return self.max
 
     @max_time.setter
-    def max_time(self, value):
+    def max_time(self, value: object) -> None:
         warnings.warn(
             "TimePicker.max_time has been renamed TimeInput.max", DeprecationWarning
         )

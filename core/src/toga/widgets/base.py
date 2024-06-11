@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 from builtins import id as identifier
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, TypeVar
 
+from travertino.declaration import BaseStyle
 from travertino.node import Node
 
 from toga.platform import get_platform_factory
@@ -12,6 +13,8 @@ if TYPE_CHECKING:
     from toga.app import App
     from toga.window import Window
 
+StyleT = TypeVar("StyleT", bound=BaseStyle)
+
 
 class Widget(Node):
     _MIN_WIDTH = 100
@@ -20,7 +23,7 @@ class Widget(Node):
     def __init__(
         self,
         id: str | None = None,
-        style=None,
+        style: StyleT | None = None,
     ):
         """Create a base Toga widget.
 
@@ -36,16 +39,16 @@ class Widget(Node):
         )
 
         self._id = str(id if id else identifier(self))
-        self._window = None
-        self._app = None
-        self._impl = None
+        self._window: Window | None = None
+        self._app: App | None = None
+        self._impl: Any = None
 
         self.factory = get_platform_factory()
 
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__}:0x{identifier(self):x}>"
 
-    def __lt__(self, other) -> bool:
+    def __lt__(self, other: Widget) -> bool:
         return self.id < other.id
 
     @property
@@ -62,8 +65,7 @@ class Widget(Node):
 
         .. note::
 
-            This is a beta feature. The ``tab_index`` API may change in
-            the future.
+            This is a beta feature. The ``tab_index`` API may change in the future.
         """
         return self._impl.get_tab_index()
 
@@ -71,7 +73,7 @@ class Widget(Node):
     def tab_index(self, tab_index: int) -> None:
         self._impl.set_tab_index(tab_index)
 
-    def _assert_can_have_children(self):
+    def _assert_can_have_children(self) -> None:
         if not self.can_have_children:
             raise ValueError(f"{type(self).__name__} cannot have children")
 

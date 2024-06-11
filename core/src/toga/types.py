@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import sys
-from typing import TYPE_CHECKING, NamedTuple, Tuple
+from typing import TYPE_CHECKING, NamedTuple
 
 import toga
 
@@ -11,8 +11,8 @@ if TYPE_CHECKING:
     else:
         from typing import TypeAlias
 
-    PositionT: TypeAlias = toga.Position | Tuple[int, int]
-    SizeT: TypeAlias = toga.Size | Tuple[int, int]
+    PositionT: TypeAlias = toga.Position | tuple[int, int]
+    SizeT: TypeAlias = toga.Size | tuple[int, int]
 
 
 class LatLng(NamedTuple):
@@ -24,7 +24,7 @@ class LatLng(NamedTuple):
     #: Longitude
     lng: float
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"({self.lat:6f}, {self.lng:6f})"
 
 

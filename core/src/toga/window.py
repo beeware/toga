@@ -2,22 +2,18 @@ from __future__ import annotations
 
 import warnings
 from builtins import id as identifier
-from collections.abc import Mapping, MutableSet
+from collections.abc import Iterator
 from pathlib import Path
 from typing import (
     TYPE_CHECKING,
     Any,
-    ItemsView,
-    Iterator,
-    KeysView,
     Literal,
     Protocol,
     TypeVar,
-    ValuesView,
     overload,
 )
 
-from toga.command import Command, CommandSet
+from toga.command import CommandSet
 from toga.handlers import AsyncResult, wrapped_handler
 from toga.images import Image
 from toga.platform import get_platform_factory
@@ -58,7 +54,7 @@ class FilteredWidgetRegistry:
     # A class that exposes a mapping lookup interface, filtered to widgets from a single
     # window. The underlying data store is on the app.
 
-    def __init__(self, window):
+    def __init__(self, window: Window) -> None:
         self._window = window
 
     def __len__(self) -> int:
@@ -83,51 +79,49 @@ class FilteredWidgetRegistry:
     def __repr__(self) -> str:
         return "{" + ", ".join(f"{k!r}: {v!r}" for k, v in sorted(self.items())) + "}"
 
-    def items(self) -> ItemsView:
+    def items(self) -> Iterator[tuple[str, Widget]]:
         for item in self._window.app.widgets.items():
             if item[1].window == self._window:
                 yield item
 
-    def keys(self) -> KeysView:
+    def keys(self) -> Iterator[str]:
         for item in self._window.app.widgets.items():
             if item[1].window == self._window:
                 yield item[0]
 
-    def values(self) -> ValuesView:
+    def values(self) -> Iterator[Widget]:
         for item in self._window.app.widgets.items():
             if item[1].window == self._window:
                 yield item[1]
 
 
 class OnCloseHandler(Protocol):
-    def __call__(self, window: Window, **kwargs: Any) -> bool:
+    def __call__(self, window: Window, /, **kwargs: Any) -> bool:
         """A handler to invoke when a window is about to close.
 
         The return value of this callback controls whether the window is allowed to close.
         This can be used to prevent a window closing with unsaved changes, etc.
 
         :param window: The window instance that is closing.
-        :param kwargs: Ensures compatibility with additional arguments introduced in
-            future versions.
-        :returns: ``True`` if the window is allowed to close; ``False`` if the window is not
-            allowed to close.
+        :param kwargs: Ensures compatibility with arguments added in future versions.
+        :returns: ``True`` if the window is allowed to close; ``False`` if the window
+            is not allowed to close.
         """
-        ...
 
 
-T = TypeVar("T")
+_DialogResultT = TypeVar("_DialogResultT")
 
 
-class DialogResultHandler(Protocol[T]):
-    def __call__(self, window: Window, result: T, **kwargs: Any) -> None:
+class DialogResultHandler(Protocol[_DialogResultT]):
+    def __call__(
+        self, window: Window, result: _DialogResultT, /, **kwargs: Any
+    ) -> object:
         """A handler to invoke when a dialog is closed.
 
         :param window: The window that opened the dialog.
+        :param kwargs: Ensures compatibility with arguments added in future versions.
         :param result: The result returned by the dialog.
-        :param kwargs: Ensures compatibility with additional arguments introduced in
-            future versions.
         """
-        ...
 
 
 class Dialog(AsyncResult):
@@ -153,8 +147,8 @@ class Window:
         minimizable: bool = True,
         on_close: OnCloseHandler | None = None,
         content: Widget | None = None,
-        resizeable=None,  # DEPRECATED
-        closeable=None,  # DEPRECATED
+        resizeable: None = None,  # DEPRECATED
+        closeable: None = None,  # DEPRECATED
     ) -> None:
         """Create a new Window.
 
@@ -197,8 +191,8 @@ class Window:
         from toga import App
 
         self._id = str(id if id else identifier(self))
-        self._impl = None
-        self._content = None
+        self._impl: Any = None
+        self._content: Widget | None = None
         self._is_full_screen = False
         self._closed = False
 
@@ -215,7 +209,8 @@ class Window:
         )
 
         # Add the window to the app
-        self._app = None
+        # _app will only be None until the window is added to the app below
+        self._app: App = None
         if App.app is None:
             raise RuntimeError("Cannot create a Window before creating an App")
         App.app.windows.add(self)
@@ -229,7 +224,7 @@ class Window:
 
         self.on_close = on_close
 
-    def __lt__(self, other) -> bool:
+    def __lt__(self, other: Window) -> bool:
         return self.id < other.id
 
     ######################################################################
@@ -351,12 +346,12 @@ class Window:
         widget.refresh()
 
     @property
-    def toolbar(self) -> MutableSet[Command]:
+    def toolbar(self) -> CommandSet:
         """Toolbar for the window."""
         return self._toolbar
 
     @property
-    def widgets(self) -> Mapping[str, Widget]:
+    def widgets(self) -> FilteredWidgetRegistry:
         """The widgets contained in the window.
 
         Can be used to look up widgets by ID (e.g., ``window.widgets["my_id"]``).
@@ -485,7 +480,7 @@ class Window:
     ######################################################################
 
     @property
-    def on_close(self) -> OnCloseHandler:
+    def on_close(self) -> OnCloseHandler | None:
         """The handler to invoke if the user attempts to close the window."""
         return self._on_close
 
@@ -626,7 +621,7 @@ class Window:
         title: str,
         message: str,
         content: str,
-        retry: Literal[True] = False,
+        retry: Literal[True] = True,
         on_result: DialogResultHandler[bool] | None = None,
     ) -> Dialog: ...
 
@@ -637,7 +632,7 @@ class Window:
         message: str,
         content: str,
         retry: bool = False,
-        on_result: DialogResultHandler[bool | None] | None = None,
+        on_result: DialogResultHandler[bool] | DialogResultHandler[None] | None = None,
     ) -> Dialog: ...
 
     def stack_trace_dialog(
@@ -646,7 +641,7 @@ class Window:
         message: str,
         content: str,
         retry: bool = False,
-        on_result: DialogResultHandler[bool | None] | None = None,
+        on_result: DialogResultHandler[bool] | DialogResultHandler[None] | None = None,
     ) -> Dialog:
         """Open a dialog to display a large block of text, such as a stack trace.
 
@@ -708,7 +703,7 @@ class Window:
         # Convert suggested filename to a path (if it isn't already),
         # and break it into a filename and a directory
         suggested_path = Path(suggested_filename)
-        initial_directory = suggested_path.parent
+        initial_directory: Path | None = suggested_path.parent
         if initial_directory == Path("."):
             initial_directory = None
         filename = suggested_path.name
@@ -729,8 +724,8 @@ class Window:
         initial_directory: Path | str | None = None,
         file_types: list[str] | None = None,
         multiple_select: Literal[False] = False,
-        on_result: DialogResultHandler[Path | None] | None = None,
-        multiselect=None,  # DEPRECATED
+        on_result: DialogResultHandler[Path] | DialogResultHandler[None] | None = None,
+        multiselect: None = None,  # DEPRECATED
     ) -> Dialog: ...
 
     @overload
@@ -740,8 +735,10 @@ class Window:
         initial_directory: Path | str | None = None,
         file_types: list[str] | None = None,
         multiple_select: Literal[True] = True,
-        on_result: DialogResultHandler[list[Path] | None] | None = None,
-        multiselect=None,  # DEPRECATED
+        on_result: (
+            DialogResultHandler[list[Path]] | DialogResultHandler[None] | None
+        ) = None,
+        multiselect: None = None,  # DEPRECATED
     ) -> Dialog: ...
 
     @overload
@@ -751,8 +748,13 @@ class Window:
         initial_directory: Path | str | None = None,
         file_types: list[str] | None = None,
         multiple_select: bool = False,
-        on_result: DialogResultHandler[list[Path] | Path | None] | None = None,
-        multiselect=None,  # DEPRECATED
+        on_result: (
+            DialogResultHandler[list[Path]]
+            | DialogResultHandler[Path]
+            | DialogResultHandler[None]
+            | None
+        ) = None,
+        multiselect: None = None,  # DEPRECATED
     ) -> Dialog: ...
 
     def open_file_dialog(
@@ -761,8 +763,13 @@ class Window:
         initial_directory: Path | str | None = None,
         file_types: list[str] | None = None,
         multiple_select: bool = False,
-        on_result: DialogResultHandler[list[Path] | Path | None] | None = None,
-        multiselect=None,  # DEPRECATED
+        on_result: (
+            DialogResultHandler[list[Path]]
+            | DialogResultHandler[Path]
+            | DialogResultHandler[None]
+            | None
+        ) = None,
+        multiselect: None = None,  # DEPRECATED
     ) -> Dialog:
         """Prompt the user to select a file (or files) to open.
 
@@ -818,8 +825,8 @@ class Window:
         title: str,
         initial_directory: Path | str | None = None,
         multiple_select: Literal[False] = False,
-        on_result: DialogResultHandler[Path | None] | None = None,
-        multiselect=None,  # DEPRECATED
+        on_result: DialogResultHandler[Path] | DialogResultHandler[None] | None = None,
+        multiselect: None = None,  # DEPRECATED
     ) -> Dialog: ...
 
     @overload
@@ -828,8 +835,10 @@ class Window:
         title: str,
         initial_directory: Path | str | None = None,
         multiple_select: Literal[True] = True,
-        on_result: DialogResultHandler[list[Path] | None] | None = None,
-        multiselect=None,  # DEPRECATED
+        on_result: (
+            DialogResultHandler[list[Path]] | DialogResultHandler[None] | None
+        ) = None,
+        multiselect: None = None,  # DEPRECATED
     ) -> Dialog: ...
 
     @overload
@@ -838,8 +847,13 @@ class Window:
         title: str,
         initial_directory: Path | str | None = None,
         multiple_select: bool = False,
-        on_result: DialogResultHandler[list[Path] | Path | None] | None = None,
-        multiselect=None,  # DEPRECATED
+        on_result: (
+            DialogResultHandler[list[Path]]
+            | DialogResultHandler[Path]
+            | DialogResultHandler[None]
+            | None
+        ) = None,
+        multiselect: None = None,  # DEPRECATED
     ) -> Dialog: ...
 
     def select_folder_dialog(
@@ -847,8 +861,13 @@ class Window:
         title: str,
         initial_directory: Path | str | None = None,
         multiple_select: bool = False,
-        on_result: DialogResultHandler[list[Path] | Path | None] | None = None,
-        multiselect=None,  # DEPRECATED
+        on_result: (
+            DialogResultHandler[list[Path]]
+            | DialogResultHandler[Path]
+            | DialogResultHandler[None]
+            | None
+        ) = None,
+        multiselect: None = None,  # DEPRECATED
     ) -> Dialog:
         """Prompt the user to select a directory (or directories).
 
@@ -899,7 +918,6 @@ class Window:
     ######################################################################
     # 2023-08: Backwards compatibility
     ######################################################################
-
     @property
     def resizeable(self) -> bool:
         """**DEPRECATED** Use :attr:`resizable`"""
@@ -917,3 +935,7 @@ class Window:
             DeprecationWarning,
         )
         return self._closable
+
+    ######################################################################
+    # End Backwards compatibility
+    ######################################################################

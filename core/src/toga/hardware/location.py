@@ -17,11 +17,12 @@ class LocationResult(AsyncResult):
 class OnLocationChangeHandler(Protocol):
     def __call__(
         self,
+        *,
         service: Location,
         location: toga.LatLng,
         altitude: float | None,
         **kwargs: Any,
-    ) -> None:
+    ) -> object:
         """A handler that will be invoked when the user's location changes.
 
         :param service: the location service that generated the update.
@@ -30,7 +31,6 @@ class OnLocationChangeHandler(Protocol):
             None if the altitude could not be determined.
         :param kwargs: Ensures compatibility with arguments added in future versions.
         """
-        ...
 
 
 class Location:
@@ -137,10 +137,10 @@ class Location:
         return self._on_change
 
     @on_change.setter
-    def on_change(self, handler):
+    def on_change(self, handler: OnLocationChangeHandler) -> None:
         self._on_change = wrapped_handler(self, handler)
 
-    def start_tracking(self):
+    def start_tracking(self) -> None:
         """Start monitoring the user's location for changes.
 
         An :any:`on_change` callback will be generated when the user's location
@@ -156,7 +156,7 @@ class Location:
                 "App does not have permission to use location services"
             )
 
-    def stop_tracking(self):
+    def stop_tracking(self) -> None:
         """Stop monitoring the user's location.
 
         :raises PermissionError: If the app has not requested and received permission to
