@@ -8,7 +8,7 @@ The top-level representation of an application.
    :header-rows: 1
    :file: ../data/widgets_by_platform.csv
    :included_cols: 4,5,6,7,8,9,10
-   :exclude: {0: '(?!(Application))', 1:'(?!(Core Component))'}
+   :include: {0: '^Application$'}
 
 
 Usage

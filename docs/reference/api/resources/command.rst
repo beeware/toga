@@ -8,7 +8,7 @@ A representation of app functionality that the user can invoke from menus or too
    :header-rows: 1
    :file: ../../data/widgets_by_platform.csv
    :included_cols: 4,5,6,7,8,9,10
-   :exclude: {0: '(?!(Command))', 1:'(?!(Resource))'}
+   :include: {0: '^Command$'}
 
 
 Usage

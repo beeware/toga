@@ -8,7 +8,7 @@ A representation of a screen attached to a device.
    :header-rows: 1
    :file: ../../data/widgets_by_platform.csv
    :included_cols: 4,5,6,7,8,9,10
-   :exclude: {0: '(?!(Screen))', 1:'(?!(Hardware))'}
+   :include: {0: '^Screen$'}
 
 Usage
 -----
