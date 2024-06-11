@@ -1,1 +1,0 @@
-Android deployments no longer require the SwipeRefreshLayout component unless the app uses the Toga DetailedList widget.
