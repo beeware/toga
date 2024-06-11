@@ -484,10 +484,8 @@ class App:
 
         self._full_screen_windows: tuple[Window, ...] | None = None
 
+        # Create the implementation. This will trigger any startup logic.
         self._create_impl()
-
-        # Now that we have an impl, set the on_change handler for commands
-        self.commands.on_change = self._impl.create_menus
 
     def _create_impl(self) -> None:
         self.factory.App(interface=self)
@@ -636,10 +634,20 @@ class App:
             )
 
     def _startup(self) -> None:
+        # App commands are created before the startup method so that the user's
+        # code has the opportunity to remove/change the default commands.
+        self._impl.create_app_commands()
+
         # This is a wrapper around the user's startup method that performs any
         # post-setup validation.
         self.startup()
         self._verify_startup()
+
+        # Manifest the initial state of the menus.
+        self._impl.create_menus()
+
+        # Now that we have a finalized impl, set the on_change handler for commands
+        self.commands.on_change = self._impl.create_menus
 
     def startup(self) -> None:
         """Create and show the main window for the application.
