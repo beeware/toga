@@ -12,9 +12,9 @@ if TYPE_CHECKING:
 try:
     import PIL.Image
 
-    PIL_imported = True
+    PIL_imported = True  # pragma: no-cover-if-missing-PIL
 
-except ImportError:  # pragma: no cover
+except ImportError:  # pragma: no-cover-if-PIL-installed
     PIL_imported = False
 
 

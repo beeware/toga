@@ -6,9 +6,9 @@ import sys
 from functools import lru_cache
 from types import ModuleType
 
-if sys.version_info >= (3, 10):  # pragma: no cover
+if sys.version_info >= (3, 10):  # pragma: no-cover-if-lt-py310
     from importlib.metadata import entry_points
-else:  # pragma: no cover
+else:  # pragma: no-cover-if-gte-py310
     # Before Python 3.10, entry_points did not support the group argument;
     # so, the backport package must be used on older versions.
     from importlib_metadata import entry_points

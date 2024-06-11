@@ -172,7 +172,7 @@ jobs:
         merge-multiple: true
 
     - name: Generate Coverage Report
-      run: tox -e coverage-html-fail
+      run: tox -e coverage-html-fail-platform
 
     - name: Upload HTML Coverage Report
       uses: actions/upload-artifact@v4.3.3
