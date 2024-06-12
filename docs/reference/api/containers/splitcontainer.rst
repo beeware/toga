@@ -88,5 +88,12 @@ once it is displayed.
 Reference
 ---------
 
+.. c:type:: SplitContainerContentT
+
+    An item of :any:`SplitContainer` content can be:
+
+    * a :class:`~toga.Widget`; or
+    * a 2-tuple, containing a :class:`~toga.Widget`, and an :any:`int` flex value
+
 .. autoclass:: toga.SplitContainer
    :exclude-members: HORIZONTAL, VERTICAL, window, app

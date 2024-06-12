@@ -109,3 +109,5 @@ Reference
 ---------
 
 .. autoclass:: toga.WebView
+
+.. autoprotocol:: toga.widgets.webview.OnWebViewLoadHandler

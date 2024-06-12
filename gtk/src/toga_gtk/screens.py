@@ -1,6 +1,7 @@
 import os
 
 from toga.screens import Screen as ScreenInterface
+from toga.types import Position, Size
 
 from .libs import Gdk
 
@@ -21,13 +22,13 @@ class Screen:
     def get_name(self):
         return self.native.get_model()
 
-    def get_origin(self):
+    def get_origin(self) -> Position:
         geometry = self.native.get_geometry()
-        return geometry.x, geometry.y
+        return Position(geometry.x, geometry.y)
 
-    def get_size(self):
+    def get_size(self) -> Size:
         geometry = self.native.get_geometry()
-        return geometry.width, geometry.height
+        return Size(geometry.width, geometry.height)
 
     def get_image_data(self):
         if "WAYLAND_DISPLAY" in os.environ:

@@ -135,3 +135,6 @@ Reference
 ---------
 
 .. autoclass:: toga.Table
+
+.. autoprotocol:: toga.widgets.table.OnSelectHandler
+.. autoprotocol:: toga.widgets.table.OnActivateHandler

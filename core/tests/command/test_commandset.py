@@ -27,6 +27,9 @@ def test_create_with_values():
 @pytest.mark.parametrize("change_handler", [(None), (Mock())])
 def test_add_clear(app, change_handler):
     """Commands can be added and removed from a commandset."""
+    # Make sure the app commands are clear to start with.
+    app.commands.clear()
+
     # Put some commands into the app
     cmd_a = toga.Command(None, text="App command a")
     cmd_b = toga.Command(None, text="App command b", order=10)
@@ -68,6 +71,9 @@ def test_add_clear(app, change_handler):
 @pytest.mark.parametrize("change_handler", [(None), (Mock())])
 def test_add_clear_with_app(app, change_handler):
     """Commands can be added and removed from a commandset that is linked to an app."""
+    # Make sure the app commands are clear to start with.
+    app.commands.clear()
+
     # Put some commands into the app
     cmd_a = toga.Command(None, text="App command a")
     cmd_b = toga.Command(None, text="App command b", order=10)

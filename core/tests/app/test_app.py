@@ -459,14 +459,25 @@ def test_show_hide_cursor(app):
 
 def test_startup_method(event_loop):
     """If an app provides a startup method, it will be invoked during startup."""
-    startup = Mock()
+
+    def startup_assertions(app):
+        # At time startup is invoked, there should be an app command installed
+        assert len(app.commands) == 1
+        return toga.Box()
+
+    startup = Mock(side_effect=startup_assertions)
+
     app = toga.App(
         formal_name="Test App",
         app_id="org.example.test",
         startup=startup,
     )
 
+    assert_action_performed(app, "create App commands")
     startup.assert_called_once_with(app)
+    assert_action_performed(app, "create App menus")
+    # There is only 1 menu item - the app command
+    assert app._impl.n_menu_items == 1
 
 
 def test_startup_subclass(event_loop):
@@ -476,10 +487,21 @@ def test_startup_subclass(event_loop):
         def startup(self):
             self.main_window = toga.MainWindow()
 
+            # At time startup is invoked, there should be an app command installed
+            assert len(self.commands) == 1
+
+            # Add an extra user command
+            self.commands.add(toga.Command(None, "User command"))
+
     app = SubclassedApp(formal_name="Test App", app_id="org.example.test")
 
     # The main window will exist, and will have the app's formal name.
     assert app.main_window.title == "Test App"
+
+    assert_action_performed(app, "create App commands")
+    assert_action_performed(app, "create App menus")
+    # 2 menu items have been created
+    assert app._impl.n_menu_items == 2
 
 
 def test_startup_subclass_no_main_window(event_loop):

@@ -3,6 +3,7 @@ from unittest.mock import Mock
 import pytest
 
 import toga
+from toga.types import Position
 from toga_dummy.utils import (
     EventLog,
     assert_action_not_performed,
@@ -395,7 +396,9 @@ def test_set_vertical_position_when_not_vertical(scroll_container):
 @pytest.mark.parametrize(
     "position, expected",
     [
-        ((37, 42), (37, 42)),
+        ((37, 42), Position(37, 42)),  # Cast to a Position type
+        ((37, 42), (37, 42)),  # Backwards-compatible with tuple
+        (Position(82, 82), Position(82, 82)),  # Accepts Position input
         ((-100, 42), (0, 42)),  # Clipped to minimum horizontal value
         ((37, -100), (37, 0)),  # Clipped to minimum vertical value
         ((-100, -100), (0, 0)),  # Clipped to minimum

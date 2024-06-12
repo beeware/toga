@@ -6,6 +6,40 @@ Release History
 
 .. towncrier release notes start
 
+0.4.5 (2024-06-11)
+==================
+
+Features
+--------
+
+* The typing for Toga's API surface was updated to be more precise. (`#2252 <https://github.com/beeware/toga/issues/2252>`__)
+* APIs were added for replacing a widget in an existing layout, and for obtaining the index of a widget in a list of children. (`#2301 <https://github.com/beeware/toga/issues/2301>`__)
+* The content of a window can now be set when the window is constructed. (`#2307 <https://github.com/beeware/toga/issues/2307>`__)
+* Size and position properties now return values as a ``Size`` and ``Position`` ``namedtuple``, respectively. ``namedtuple`` objects support addition and subtraction operations. Basic tuples can still be used to *set* these properties. (`#2388 <https://github.com/beeware/toga/issues/2388>`__)
+* Android deployments no longer require the SwipeRefreshLayout component unless the app uses the Toga DetailedList widget. (`#2454 <https://github.com/beeware/toga/issues/2454>`__)
+
+Bugfixes
+--------
+
+* Invocation order of TextInput on_change and validation is now correct. (`#2325 <https://github.com/beeware/toga/issues/2325>`__)
+* Dialog windows are now properly modal when using the GTK backend. (`#2446 <https://github.com/beeware/toga/issues/2446>`__)
+* The Button testbed tests can accommodate minor rendering differences on Fedora 40. (`#2583 <https://github.com/beeware/toga/issues/2583>`__)
+* On macOS, apps will now raise a warning if camera permissions have been requested, but those permissions have not been declared as part of the application metadata. (`#2589 <https://github.com/beeware/toga/issues/2589>`__)
+
+Documentation
+-------------
+
+* The instructions for adding a change note to a pull request have been clarified. (`#2565 <https://github.com/beeware/toga/issues/2565>`__)
+* The minimum supported Linux release requirements were updated to Ubuntu 20.04 or Fedora 32. (`#2566 <https://github.com/beeware/toga/issues/2566>`__)
+* The first-time contributor README link has been updated. (`#2588 <https://github.com/beeware/toga/issues/2588>`__)
+* Typos in the usage examples of ``toga.MapPin`` were corrected. (`#2617 <https://github.com/beeware/toga/issues/2617>`__)
+
+Misc
+----
+
+* `#2567 <https://github.com/beeware/toga/issues/2567>`__, `#2568 <https://github.com/beeware/toga/issues/2568>`__, `#2569 <https://github.com/beeware/toga/issues/2569>`__, `#2570 <https://github.com/beeware/toga/issues/2570>`__, `#2571 <https://github.com/beeware/toga/issues/2571>`__, `#2576 <https://github.com/beeware/toga/issues/2576>`__, `#2577 <https://github.com/beeware/toga/issues/2577>`__, `#2578 <https://github.com/beeware/toga/issues/2578>`__, `#2579 <https://github.com/beeware/toga/issues/2579>`__, `#2580 <https://github.com/beeware/toga/issues/2580>`__, `#2593 <https://github.com/beeware/toga/issues/2593>`__, `#2600 <https://github.com/beeware/toga/issues/2600>`__, `#2601 <https://github.com/beeware/toga/issues/2601>`__, `#2602 <https://github.com/beeware/toga/issues/2602>`__, `#2604 <https://github.com/beeware/toga/issues/2604>`__, `#2605 <https://github.com/beeware/toga/issues/2605>`__, `#2606 <https://github.com/beeware/toga/issues/2606>`__, `#2614 <https://github.com/beeware/toga/issues/2614>`__, `#2621 <https://github.com/beeware/toga/issues/2621>`__, `#2625 <https://github.com/beeware/toga/issues/2625>`__, `#2626 <https://github.com/beeware/toga/issues/2626>`__, `#2627 <https://github.com/beeware/toga/issues/2627>`__, `#2629 <https://github.com/beeware/toga/issues/2629>`__, `#2631 <https://github.com/beeware/toga/issues/2631>`__, `#2632 <https://github.com/beeware/toga/issues/2632>`__
+
+
 0.4.4 (2024-05-08)
 ==================
 
