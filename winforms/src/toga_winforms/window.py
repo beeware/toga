@@ -63,13 +63,10 @@ class Window(Container, Scalable):
         # If the app is exiting, or a manual close has been requested, don't get
         # confirmation; just close.
         if not self.interface.app._impl._is_exiting and not self._is_closing:
-            if not self.interface.closable:
-                # Window isn't closable, so any request to close should be cancelled.
-                event.Cancel = True
-            else:
-                # See _is_closing comment in __init__.
+            # If the window is closable, trigger on_close handling.
+            if self.interface.closable:
                 self.interface.on_close()
-                event.Cancel = True
+            event.Cancel = True
 
     ######################################################################
     # Window properties
@@ -254,12 +251,4 @@ class Window(Container, Scalable):
 
 
 class MainWindow(Window):
-    def winforms_FormClosing(self, sender, event):
-        # Differentiate between the handling that occurs when the user
-        # requests the app to exit, and the actual application exiting.
-        if not self.interface.app._impl._is_exiting:  # pragma: no branch
-            # If there's an event handler, process it. The decision to
-            # actually exit the app will be processed in the on_exit handler.
-            # If there's no exit handler, assume the close/exit can proceed.
-            self.interface.app.on_exit()
-            event.Cancel = True
+    pass

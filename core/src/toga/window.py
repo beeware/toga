@@ -292,19 +292,25 @@ class Window:
     def close(self) -> None:
         """Close the window.
 
-        This *does not* invoke the ``on_close`` handler; the window will be immediately
-        and unconditionally closed.
+        This *does not* invoke the ``on_close`` handler. If the window being closed
+        is the app's main window, it will trigger ``on_exit`` handling; otherwise, the
+        window will be immediately and unconditionally closed.
 
         Once a window has been closed, it *cannot* be reused. The behavior of any method
         or property on a :class:`~toga.Window` instance after it has been closed is
         undefined, except for :attr:`closed` which can be used to check if the window
         was closed.
         """
-        if self.content:
-            self.content.window = None
-        self.app.windows.discard(self)
-        self._impl.close()
-        self._closed = True
+        if self.app.main_window == self:
+            # Closing the window marked as the main window is a request to exit.
+            # Trigger on_exit handling, which may cause the window to close.
+            self.app.on_exit()
+        else:
+            if self.content:
+                self.content.window = None
+            self.app.windows.discard(self)
+            self._impl.close()
+            self._closed = True
 
     @property
     def closed(self) -> bool:
@@ -954,6 +960,7 @@ class MainWindow(Window):
         size: SizeT = Size(640, 480),
         resizable: bool = True,
         minimizable: bool = True,
+        on_close: OnCloseHandler | None = None,
         content: Widget | None = None,
         resizeable: None = None,  # DEPRECATED
         closeable: None = None,  # DEPRECATED
@@ -970,6 +977,7 @@ class MainWindow(Window):
         :param resizable: Can the window be resized by the user?
         :param minimizable: Can the window be minimized by the user?
         :param content: The initial content for the window.
+        :param on_close: The initial :any:`on_close` handler.
         :param resizeable: **DEPRECATED** - Use ``resizable``.
         :param closeable: **DEPRECATED** - Use ``closable``.
         """
@@ -982,6 +990,7 @@ class MainWindow(Window):
             closable=True,
             minimizable=minimizable,
             content=content,
+            on_close=on_close,
             # Deprecated arguments
             resizeable=resizeable,
             closeable=closeable,
@@ -990,26 +999,6 @@ class MainWindow(Window):
     @property
     def _default_title(self) -> str:
         return toga.App.app.formal_name
-
-    @property
-    def on_close(self) -> None:
-        """The handler to invoke before the window is closed in response to a user
-        action.
-
-        Always returns ``None``. Main windows should use :meth:`toga.App.on_exit`,
-        rather than ``on_close``.
-
-        :raises ValueError: if an attempt is made to set the ``on_close`` handler.
-        """
-        return None
-
-    @on_close.setter
-    def on_close(self, handler: OnCloseHandler | None) -> None:
-        if handler:
-            raise ValueError(
-                "Cannot set on_close handler for the main window. "
-                "Use the app on_exit handler instead."
-            )
 
 
 class DocumentMainWindow(Window):
@@ -1022,6 +1011,7 @@ class DocumentMainWindow(Window):
         size: SizeT = Size(640, 480),
         resizable: bool = True,
         minimizable: bool = True,
+        on_close: OnCloseHandler | None = None,
     ):
         """Create a new document Main Window.
 
@@ -1039,6 +1029,7 @@ class DocumentMainWindow(Window):
             ``(width, height)``, in pixels.
         :param resizable: Can the window be manually resized by the user?
         :param minimizable: Can the window be minimized by the user?
+        :param on_close: The initial :any:`on_close` handler.
         """
         self.doc = doc
         super().__init__(
@@ -1049,7 +1040,7 @@ class DocumentMainWindow(Window):
             resizable=resizable,
             closable=True,
             minimizable=minimizable,
-            on_close=doc.handle_close,
+            on_close=doc.handle_close if on_close is None else on_close,
         )
 
     @property

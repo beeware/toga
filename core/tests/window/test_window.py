@@ -42,6 +42,7 @@ def test_window_created(app):
 def test_window_created_explicit(app):
     """Explicit arguments at construction are stored."""
     on_close_handler = Mock()
+    window_content = toga.Box()
 
     window = toga.Window(
         id="my-window",
@@ -51,11 +52,15 @@ def test_window_created_explicit(app):
         resizable=False,
         closable=False,
         minimizable=False,
+        content=window_content,
         on_close=on_close_handler,
     )
 
     assert window.app == app
-    assert window.content is None
+    assert window.content == window_content
+
+    window_content.window == window
+    window_content.app == app
 
     assert window._impl.interface == window
     assert_action_performed(window, "create Window")
@@ -362,6 +367,36 @@ def test_close_direct(window, app):
     assert window not in app.windows
     assert_action_performed(window, "close")
     on_close_handler.assert_not_called()
+
+
+def test_close_direct_main_window(app):
+    """If the main window is closed directly, it triggers app exit logic."""
+    window = app.main_window
+
+    on_close_handler = Mock(return_value=True)
+    window.on_close = on_close_handler
+
+    on_exit_handler = Mock(return_value=True)
+    app.on_exit = on_exit_handler
+
+    window.show()
+    assert window.app == app
+    assert window in app.windows
+
+    # Close the window directly
+    window.close()
+
+    # Window has *not* been closed.
+    assert not window.closed
+    assert window.app == app
+    assert window in app.windows
+    assert_action_not_performed(window, "close")
+
+    # The close handler has *not* been invoked, but
+    # the exit handler *has*.
+    on_close_handler.assert_not_called()
+    on_exit_handler.assert_called_once_with(app)
+    assert_action_performed(app, "exit")
 
 
 def test_close_no_handler(window, app):

@@ -37,7 +37,11 @@ class TogaWindow(NSWindow):
 
     @objc_method
     def windowShouldClose_(self, notification) -> bool:
-        return self.impl.cocoa_windowShouldClose()
+        # The on_close handler has a cleanup method that will enforce
+        # the close if the on_close handler requests it; this initial
+        # "should close" request always returns False.
+        self.interface.on_close()
+        return False
 
     @objc_method
     def windowDidResize_(self, notification) -> None:
@@ -182,17 +186,6 @@ class Window:
     def __del__(self):
         self.purge_toolbar()
         self.native.release()
-
-    ######################################################################
-    # Native event handlers
-    ######################################################################
-
-    def cocoa_windowShouldClose(self):
-        # The on_close handler has a cleanup method that will enforce
-        # the close if the on_close handler requests it; this initial
-        # "should close" request can always return False.
-        self.interface.on_close()
-        return False
 
     ######################################################################
     # Window properties
@@ -372,11 +365,4 @@ class Window:
 
 
 class MainWindow(Window):
-    def cocoa_windowShouldClose(self):
-        # Main Window close is a proxy for "Exit app".
-        # Defer all handling to the app's on_exit handler.
-        # As a result of calling that method, the app will either
-        # exit, or the user will cancel the exit; in which case
-        # the main window shouldn't close, either.
-        self.interface.app.on_exit()
-        return False
+    pass

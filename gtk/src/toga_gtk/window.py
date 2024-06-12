@@ -19,14 +19,15 @@ class Window:
         self.interface = interface
         self.interface._impl = self
 
-        self._is_closing = False
-
         self.layout = None
 
         self.create()
         self.native._impl = self
 
-        self.native.connect("delete-event", self.gtk_delete_event)
+        self._delete_handler = self.native.connect(
+            "delete-event",
+            self.gtk_delete_event,
+        )
 
         self.native.set_default_size(size[0], size[1])
 
@@ -67,17 +68,12 @@ class Window:
     ######################################################################
 
     def gtk_delete_event(self, widget, data):
-        if self._is_closing:
-            should_close = True
-        else:
-            should_close = self.interface.on_close()
-
-        # Return value of the GTK on_close handler indicates
-        # whether the event has been fully handled. Returning
-        # False indicates the event handling is *not* complete,
-        # so further event processing (including actually
-        # closing the window) should be performed.
-        return not should_close
+        # Return value of the GTK on_close handler indicates whether the event has been
+        # fully handled. Returning True indicates the event has been handled, so further
+        # handling (including actually closing the window) shouldn't be performed. This
+        # handler must be deleted to allow the window to actually close.
+        self.interface.on_close()
+        return True
 
     ######################################################################
     # Window properties
@@ -94,7 +90,8 @@ class Window:
     ######################################################################
 
     def close(self):
-        self._is_closing = True
+        # Disconnect the delete handler so the close will complete
+        self.native.disconnect(self._delete_handler)
         self.native.close()
 
     def create_toolbar(self):
