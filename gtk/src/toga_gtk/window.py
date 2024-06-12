@@ -243,3 +243,20 @@ class Window:
         else:  # pragma: nocover
             # This shouldn't ever happen, and it's difficult to manufacture in test conditions
             raise ValueError(f"Unable to generate screenshot of {self}")
+
+
+class MainWindow(Window):
+    def create(self):
+        self.native = Gtk.ApplicationWindow()
+        self.native.set_role("MainWindow")
+
+    def gtk_delete_event(self, *args):
+        # Return value of the GTK on_close handler indicates
+        # whether the event has been fully handled. Returning
+        # False indicates the event handling is *not* complete,
+        # so further event processing (including actually
+        # closing the window) should be performed; so
+        # "should_exit == True" must be converted to a return
+        # value of False.
+        self.interface.app.on_exit()
+        return True

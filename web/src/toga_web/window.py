@@ -122,3 +122,8 @@ class Window:
 
     def get_image_data(self):
         self.interface.factory.not_implemented("Window.get_image_data()")
+
+
+class MainWindow(Window):
+    def on_close(self, *args):
+        pass

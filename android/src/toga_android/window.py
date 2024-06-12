@@ -157,3 +157,7 @@ class Window(Container):
         stream = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.PNG, 0, stream)
         return bytes(stream.toByteArray())
+
+
+class MainWindow(Window):
+    _is_main_window = True

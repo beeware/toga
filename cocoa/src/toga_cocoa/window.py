@@ -1,25 +1,27 @@
-from rubicon.objc import CGSize
+from rubicon.objc import (
+    SEL,
+    CGSize,
+    NSMakeRect,
+    NSPoint,
+    NSSize,
+    objc_method,
+    objc_property,
+)
 
 from toga.command import Command, Separator
 from toga.types import Position, Size
 from toga.window import _initial_position
 from toga_cocoa.container import Container
 from toga_cocoa.libs import (
-    SEL,
     NSBackingStoreBuffered,
     NSImage,
-    NSMakeRect,
     NSMutableArray,
-    NSPoint,
     NSScreen,
-    NSSize,
     NSToolbar,
     NSToolbarItem,
     NSWindow,
     NSWindowStyleMask,
     core_graphics,
-    objc_method,
-    objc_property,
 )
 
 from .screens import Screen as ScreenImpl
@@ -367,3 +369,14 @@ class Window:
         )
         ns_image = NSImage.alloc().initWithCGImage(cg_image, size=target_size)
         return ns_image
+
+
+class MainWindow(Window):
+    def cocoa_windowShouldClose(self):
+        # Main Window close is a proxy for "Exit app".
+        # Defer all handling to the app's on_exit handler.
+        # As a result of calling that method, the app will either
+        # exit, or the user will cancel the exit; in which case
+        # the main window shouldn't close, either.
+        self.interface.app.on_exit()
+        return False

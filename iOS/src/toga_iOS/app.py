@@ -4,13 +4,8 @@ from rubicon.objc import objc_method
 from rubicon.objc.eventloop import EventLoopPolicy, iOSLifecycle
 
 from toga_iOS.libs import UIResponder, UIScreen, av_foundation
-from toga_iOS.window import Window
 
 from .screens import Screen as ScreenImpl
-
-
-class MainWindow(Window):
-    _is_main_window = True
 
 
 class PythonAppDelegate(UIResponder):

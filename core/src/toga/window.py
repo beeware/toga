@@ -13,6 +13,7 @@ from typing import (
     overload,
 )
 
+import toga
 from toga.command import CommandSet
 from toga.handlers import AsyncResult, wrapped_handler
 from toga.images import Image
@@ -21,6 +22,7 @@ from toga.types import Position, Size
 
 if TYPE_CHECKING:
     from toga.app import App
+    from toga.documents import Document
     from toga.images import ImageT
     from toga.screens import Screen
     from toga.types import PositionT, SizeT
@@ -939,3 +941,117 @@ class Window:
     ######################################################################
     # End Backwards compatibility
     ######################################################################
+
+
+class MainWindow(Window):
+    _WINDOW_CLASS = "MainWindow"
+
+    def __init__(
+        self,
+        id: str | None = None,
+        title: str | None = None,
+        position: PositionT | None = None,
+        size: SizeT = Size(640, 480),
+        resizable: bool = True,
+        minimizable: bool = True,
+        content: Widget | None = None,
+        resizeable: None = None,  # DEPRECATED
+        closeable: None = None,  # DEPRECATED
+    ):
+        """Create a new main window.
+
+        :param id: A unique identifier for the window. If not provided, one will be
+            automatically generated.
+        :param title: Title for the window. Defaults to the formal name of the app.
+        :param position: Position of the window, as a :any:`toga.Position` or tuple of
+            ``(x, y)`` coordinates, in :ref:`CSS pixels <css-units>`.
+        :param size: Size of the window, as a :any:`toga.Size` or tuple of ``(width,
+            height)``, in :ref:`CSS pixels <css-units>`.
+        :param resizable: Can the window be resized by the user?
+        :param minimizable: Can the window be minimized by the user?
+        :param content: The initial content for the window.
+        :param resizeable: **DEPRECATED** - Use ``resizable``.
+        :param closeable: **DEPRECATED** - Use ``closable``.
+        """
+        super().__init__(
+            id=id,
+            title=title,
+            position=position,
+            size=size,
+            resizable=resizable,
+            closable=True,
+            minimizable=minimizable,
+            content=content,
+            # Deprecated arguments
+            resizeable=resizeable,
+            closeable=closeable,
+        )
+
+    @property
+    def _default_title(self) -> str:
+        return toga.App.app.formal_name
+
+    @property
+    def on_close(self) -> None:
+        """The handler to invoke before the window is closed in response to a user
+        action.
+
+        Always returns ``None``. Main windows should use :meth:`toga.App.on_exit`,
+        rather than ``on_close``.
+
+        :raises ValueError: if an attempt is made to set the ``on_close`` handler.
+        """
+        return None
+
+    @on_close.setter
+    def on_close(self, handler: OnCloseHandler | None) -> None:
+        if handler:
+            raise ValueError(
+                "Cannot set on_close handler for the main window. "
+                "Use the app on_exit handler instead."
+            )
+
+
+class DocumentMainWindow(Window):
+    def __init__(
+        self,
+        doc: Document,
+        id: str | None = None,
+        title: str | None = None,
+        position: PositionT = Position(100, 100),
+        size: SizeT = Size(640, 480),
+        resizable: bool = True,
+        minimizable: bool = True,
+    ):
+        """Create a new document Main Window.
+
+        This installs a default on_close handler that honors platform-specific document
+        closing behavior. If you want to control whether a document is allowed to close
+        (e.g., due to having unsaved change), override
+        :meth:`toga.Document.can_close()`, rather than implementing an on_close handler.
+
+        :param doc: The document being managed by this window
+        :param id: The ID of the window.
+        :param title: Title for the window. Defaults to the formal name of the app.
+        :param position: Position of the window, as a :any:`toga.Position` or tuple of
+            ``(x, y)`` coordinates.
+        :param size: Size of the window, as a :any:`toga.Size` or tuple of
+            ``(width, height)``, in pixels.
+        :param resizable: Can the window be manually resized by the user?
+        :param minimizable: Can the window be minimized by the user?
+        """
+        self.doc = doc
+        super().__init__(
+            id=id,
+            title=title,
+            position=position,
+            size=size,
+            resizable=resizable,
+            closable=True,
+            minimizable=minimizable,
+            on_close=doc.handle_close,
+        )
+
+    @property
+    def _default_title(self) -> str:
+        return self.doc.path.name

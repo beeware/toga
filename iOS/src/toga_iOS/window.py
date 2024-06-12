@@ -222,3 +222,7 @@ class Window:
         final_image = UIImage.imageWithCGImage(cropped_image)
         # Convert into PNG data.
         return nsdata_to_bytes(NSData(uikit.UIImagePNGRepresentation(final_image)))
+
+
+class MainWindow(Window):
+    _is_main_window = True
