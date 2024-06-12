@@ -5,9 +5,8 @@ from textual.reactive import Reactive
 from textual.screen import Screen as TextualScreen
 from textual.widget import Widget as TextualWidget
 from textual.widgets import Button as TextualButton
-
-from toga.constants import WindowState
 from toga import Position, Size
+from toga.constants import WindowState
 
 from .container import Container
 from .screens import Screen as ScreenImpl

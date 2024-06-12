@@ -1,7 +1,6 @@
 from pathlib import Path
 
 import toga_dummy
-
 from toga.constants import WindowState
 from toga.types import Size
 

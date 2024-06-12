@@ -1,6 +1,5 @@
 from toga.constants import WindowState
 from toga.types import Position, Size
-
 from toga_web.libs import create_element, js
 
 from .screens import Screen as ScreenImpl

@@ -3,7 +3,6 @@ from rubicon.objc import CGSize
 from toga.command import Command, Separator
 from toga.constants import WindowState
 from toga.types import Position, Size
-
 from toga_cocoa.container import Container
 from toga_cocoa.libs import (
     SEL,

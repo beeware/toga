@@ -8,7 +8,6 @@ from rubicon.objc import (
 
 from toga.constants import WindowState
 from toga.types import Position, Size
-
 from toga_iOS.container import RootContainer
 from toga_iOS.images import nsdata_to_bytes
 from toga_iOS.libs import (
