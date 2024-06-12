@@ -193,7 +193,7 @@ class MainWindow(Window):
         self,
         id: str | None = None,
         title: str | None = None,
-        position: PositionT = Position(100, 100),
+        position: PositionT | None = None,
         size: SizeT = Size(640, 480),
         resizable: bool = True,
         minimizable: bool = True,
