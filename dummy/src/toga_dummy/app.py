@@ -26,7 +26,6 @@ class App(LoggedObject):
 
     def create(self):
         self._action("create App")
-        self.create_app_commands()
         self.interface._startup()
 
     def create_app_commands(self):
