@@ -1,7 +1,9 @@
 from pathlib import Path
 
 import toga_dummy
+
 from toga.constants import WindowState
+from toga.types import Size
 
 from .screens import Screen as ScreenImpl
 from .utils import LoggedObject
@@ -31,11 +33,11 @@ class Container:
 
     @property
     def width(self):
-        return self.content.get_size()[0]
+        return self.content.get_size().width
 
     @property
     def height(self):
-        return self.content.get_size()[1]
+        return self.content.get_size().height
 
     def refreshed(self):
         if self.content:
@@ -73,8 +75,8 @@ class Window(LoggedObject):
     def set_position(self, position):
         self._set_value("position", position)
 
-    def get_size(self):
-        return self._get_value("size", (640, 480))
+    def get_size(self) -> Size:
+        return self._get_value("size", Size(640, 480))
 
     def set_size(self, size):
         self._set_value("size", size)

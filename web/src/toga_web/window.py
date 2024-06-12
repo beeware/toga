@@ -1,4 +1,6 @@
 from toga.constants import WindowState
+from toga.types import Position, Size
+
 from toga_web.libs import create_element, js
 
 from .screens import Screen as ScreenImpl
@@ -78,8 +80,8 @@ class Window:
     # Window size
     ######################################################################
 
-    def get_size(self):
-        return self.native.offsetWidth, self.native.offsetHeight
+    def get_size(self) -> Size:
+        return Size(self.native.offsetWidth, self.native.offsetHeight)
 
     def set_size(self, size):
         # Does nothing on web
@@ -92,8 +94,8 @@ class Window:
     def get_current_screen(self):
         return ScreenImpl(js.document.documentElement)
 
-    def get_position(self):
-        return 0, 0
+    def get_position(self) -> Position:
+        return Position(0, 0)
 
     def set_position(self, position):
         # Does nothing on web

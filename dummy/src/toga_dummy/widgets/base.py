@@ -1,3 +1,5 @@
+from toga.types import Size
+
 from ..utils import LoggedObject
 
 
@@ -9,8 +11,8 @@ class Widget(LoggedObject):
         self.container = None
         self.create()
 
-    def get_size(self):
-        return (37, 42)
+    def get_size(self) -> Size:
+        return Size(37, 42)
 
     def create(self):
         self._action("create Widget")

@@ -196,9 +196,9 @@ class App:
         # The `_listener` listens for activity event callbacks. For simplicity,
         # the app's `.native` is the listener's native Java class.
         self._listener = TogaApp(self)
+
         # Call user code to populate the main window
         self.interface._startup()
-        self.create_app_commands()
 
     ######################################################################
     # Commands and menus

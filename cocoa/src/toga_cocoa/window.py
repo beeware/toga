@@ -2,6 +2,8 @@ from rubicon.objc import CGSize
 
 from toga.command import Command, Separator
 from toga.constants import WindowState
+from toga.types import Position, Size
+
 from toga_cocoa.container import Container
 from toga_cocoa.libs import (
     SEL,
@@ -297,9 +299,9 @@ class Window:
     # Window size
     ######################################################################
 
-    def get_size(self):
+    def get_size(self) -> Size:
         frame = self.native.frame
-        return frame.size.width, frame.size.height
+        return Size(frame.size.width, frame.size.height)
 
     def set_size(self, size):
         frame = self.native.frame
@@ -313,14 +315,14 @@ class Window:
     def get_current_screen(self):
         return ScreenImpl(self.native.screen)
 
-    def get_position(self):
+    def get_position(self) -> Position:
         # The "primary" screen has index 0 and origin (0, 0).
         primary_screen = NSScreen.screens[0].frame
         window_frame = self.native.frame
 
         # macOS origin is bottom left of screen, and the screen might be
         # offset relative to other screens. Adjust for this.
-        return (
+        return Position(
             window_frame.origin.x,
             primary_screen.size.height
             - (window_frame.origin.y + window_frame.size.height),

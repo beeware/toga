@@ -11,6 +11,7 @@ from java import dynamic_proxy
 from java.io import ByteArrayOutputStream
 
 from toga.constants import WindowState
+from toga.types import Position, Size
 
 from .container import Container
 from .screens import Screen as ScreenImpl
@@ -98,8 +99,8 @@ class Window(Container):
     # Window size
     ######################################################################
 
-    def get_size(self):
-        return (self.width, self.height)
+    def get_size(self) -> Size:
+        return Size(self.width, self.height)
 
     def set_size(self, size):
         # Does nothing on mobile
@@ -114,8 +115,8 @@ class Window(Container):
         window_manager = context.getSystemService(Context.WINDOW_SERVICE)
         return ScreenImpl(self.app, window_manager.getDefaultDisplay())
 
-    def get_position(self):
-        return 0, 0
+    def get_position(self) -> Position:
+        return Position(0, 0)
 
     def set_position(self, position):
         # Does nothing on mobile

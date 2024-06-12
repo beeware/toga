@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 import warnings
+from pathlib import Path
 
 from .app import App, DocumentApp, DocumentMainWindow, MainWindow
 
@@ -12,7 +15,7 @@ from .images import Image
 from .keys import Key
 
 # Types
-from .types import LatLng
+from .types import LatLng, Position, Size
 
 # Widgets
 from .widgets.activityindicator import ActivityIndicator
@@ -49,7 +52,7 @@ class NotImplementedWarning(RuntimeWarning):
     # single argument (the warning message). Use a factory method to avoid reproducing
     # the message format and the warn invocation.
     @classmethod
-    def warn(self, platform, feature):
+    def warn(cls, platform: str, feature: str) -> None:
         """Raise a warning that a feature isn't implemented on a platform."""
         warnings.warn(NotImplementedWarning(f"[{platform}] Not implemented: {feature}"))
 
@@ -78,6 +81,8 @@ __all__ = [
     "Image",
     # Types
     "LatLng",
+    "Position",
+    "Size",
     # Widgets
     "ActivityIndicator",
     "Box",
@@ -114,7 +119,7 @@ __all__ = [
 ]
 
 
-def _package_version(file, name):
+def _package_version(file: Path | str | None, name: str) -> str:
     try:
         # Read version from SCM metadata
         # This will only exist in a development environment
@@ -123,7 +128,10 @@ def _package_version(file, name):
         # Excluded from coverage because a pure test environment (such as the one
         # used by tox in CI) won't have setuptools_scm
         return get_version(root="../../..", relative_to=file)  # pragma: no cover
-    except (ModuleNotFoundError, LookupError):
+    except (
+        ModuleNotFoundError,
+        LookupError,
+    ):  # pragma: no-cover-if-missing-setuptools_scm
         # If setuptools_scm isn't in the environment, the call to import will fail.
         # If it *is* in the environment, but the code isn't a git checkout (e.g.,
         # it's been pip installed non-editable) the call to get_version() will fail.

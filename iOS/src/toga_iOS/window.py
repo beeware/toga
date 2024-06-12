@@ -7,6 +7,8 @@ from rubicon.objc import (
 )
 
 from toga.constants import WindowState
+from toga.types import Position, Size
+
 from toga_iOS.container import RootContainer
 from toga_iOS.images import nsdata_to_bytes
 from toga_iOS.libs import (
@@ -105,8 +107,8 @@ class Window:
     # Window size
     ######################################################################
 
-    def get_size(self):
-        return (
+    def get_size(self) -> Size:
+        return Size(
             UIScreen.mainScreen.bounds.size.width,
             UIScreen.mainScreen.bounds.size.height,
         )
@@ -122,8 +124,8 @@ class Window:
     def get_current_screen(self):
         return ScreenImpl(UIScreen.mainScreen)
 
-    def get_position(self):
-        return 0, 0
+    def get_position(self) -> Position:
+        return Position(0, 0)
 
     def set_position(self, position):
         # Does nothing on mobile

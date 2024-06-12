@@ -73,6 +73,10 @@ class App:
     # Commands and menus
     ######################################################################
 
+    def create_app_commands(self):
+        # No menus on an iOS app (for now)
+        pass
+
     def create_menus(self):
         # No menus on an iOS app (for now)
         pass

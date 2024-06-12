@@ -1,1 +1,0 @@
-Updated actions/checkout from 4.1.5 to 4.1.6.
