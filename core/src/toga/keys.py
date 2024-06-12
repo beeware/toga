@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from enum import Enum
 
 
@@ -119,6 +121,7 @@ class Key(Enum):
 
     HOME = "<home>"
     END = "<end>"
+    INSERT = "<insert>"
     DELETE = "<delete>"
     PAGE_UP = "<pg up>"
     PAGE_DOWN = "<pg dn>"
@@ -128,6 +131,7 @@ class Key(Enum):
     LEFT = "<left>"
     RIGHT = "<right>"
 
+    NUMLOCK = "<num lock>"
     NUMPAD_0 = "numpad:0"
     NUMPAD_1 = "numpad:1"
     NUMPAD_2 = "numpad:2"
@@ -147,11 +151,16 @@ class Key(Enum):
     NUMPAD_MULTIPLY = "numpad:*"
     NUMPAD_PLUS = "numpad:+"
 
+    SCROLLLOCK = "<scroll lock>"
+    BEGIN = "<begin>"
+    MENU = "<menu>"
+    PAUSE = "<pause>"
+
     def is_printable(self) -> bool:
         """Does pressing the key result in a printable character?"""
         return not (self.value.startswith("<") and self.value.endswith(">"))
 
-    def __add__(self, other):
+    def __add__(self, other: Key | str) -> str:
         """Allow two Keys to be concatenated, or a string to be concatenated to a Key.
 
         Produces a single string definition.
@@ -166,6 +175,6 @@ class Key(Enum):
         except AttributeError:
             return self.value + other
 
-    def __radd__(self, other):
+    def __radd__(self, other: str) -> str:
         """Same as add."""
         return other + self.value

@@ -6,7 +6,7 @@ project_name = "Hardware"
 bundle = "org.beeware.examples"
 version = "0.0.1"
 url = "https://beeware.org"
-license = "BSD license"
+license.file = "LICENSE"
 author = 'Tiberius Yak'
 author_email = "tiberius@beeware.org"
 
@@ -19,6 +19,9 @@ requires = [
 ]
 
 permission.camera = "This app demonstrates camera capabilities"
+permission.fine_location = "This app demonstrates fine-grained geolocation services."
+permission.coarse_location = "This app demonstrates coarse-grained geolocation services."
+permission.background_location = "This app demonstrates capturing your location while in the background"
 
 [tool.briefcase.app.hardware.macOS]
 requires = [
@@ -51,7 +54,6 @@ requires = [
 base_theme = "Theme.MaterialComponents.Light.DarkActionBar"
 
 build_gradle_dependencies = [
-    "androidx.appcompat:appcompat:1.6.1",
     "com.google.android.material:material:1.11.0",
-    "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0",
+    "org.osmdroid:osmdroid-android:6.1.0",
 ]

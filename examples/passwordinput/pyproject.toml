@@ -6,7 +6,7 @@ project_name = "Password Input"
 bundle = "org.beeware.toga.examples"
 version = "0.0.1"
 url = "https://beeware.org"
-license = "BSD license"
+license.file = "LICENSE"
 author = 'Tiberius Yak'
 author_email = "tiberius@beeware.org"
 
@@ -45,6 +45,12 @@ requires = [
 [tool.briefcase.app.passwordinput.android]
 requires = [
     '../../android',
+]
+
+base_theme = "Theme.MaterialComponents.Light.DarkActionBar"
+
+build_gradle_dependencies = [
+    "com.google.android.material:material:1.11.0",
 ]
 
 # Web deployment

@@ -1,1 +1,0 @@
-Key shortcuts for punctuation and special keys (like Page Up and Escape) were added for GTK and Winforms.

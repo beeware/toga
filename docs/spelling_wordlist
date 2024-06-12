@@ -3,6 +3,7 @@ accessors
 amongst
 App
 apps
+Async
 awaitable
 backend
 backends
@@ -20,6 +21,7 @@ dialogs
 Django
 draggable
 Flexbox
+geolocation
 GMail
 GObject
 Gradle
@@ -35,6 +37,7 @@ KDE
 linters
 macOS
 Manjaro
+misconfigured
 Monetization
 namespace
 OpenStreetMap
@@ -63,6 +66,7 @@ scrollable
 scrollers
 Segoe
 selectable
+Sonoma
 Stimpy
 stylesheet
 subclasses
@@ -96,4 +100,6 @@ Wayland
 WebKit
 whitespace
 Winforms
+Xcode
 zoomable
+AndroidX

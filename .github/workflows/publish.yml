@@ -11,6 +11,9 @@ jobs:
       # This permission is required for trusted publishing.
       id-token: write
     strategy:
+      # One element of this matrix failing should not terminate the others mid-run.
+      # This prevents one bad platform from stalling the publication of others.
+      fail-fast: false
       matrix:
         package:
         - "toga"
@@ -26,7 +29,7 @@ jobs:
         - "toga_winforms"
     steps:
       - name: Get packages
-        uses: dsaltares/fetch-gh-release-asset@1.1.1
+        uses: dsaltares/fetch-gh-release-asset@1.1.2
         with:
           version: tags/${{ github.event.release.tag_name }}
           file: ${{ github.event.repository.name }}.*

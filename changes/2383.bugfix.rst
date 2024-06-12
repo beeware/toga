@@ -1,1 +1,0 @@
-Issues with running the testbed on macOS 14 (Sonoma) were resolved.

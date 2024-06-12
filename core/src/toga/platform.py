@@ -1,11 +1,14 @@
+from __future__ import annotations
+
 import importlib
 import os
 import sys
 from functools import lru_cache
+from types import ModuleType
 
-if sys.version_info >= (3, 10):
+if sys.version_info >= (3, 10):  # pragma: no-cover-if-lt-py310
     from importlib.metadata import entry_points
-else:
+else:  # pragma: no-cover-if-gte-py310
     # Before Python 3.10, entry_points did not support the group argument;
     # so, the backport package must be used on older versions.
     from importlib_metadata import entry_points
@@ -26,7 +29,7 @@ _TOGA_PLATFORMS = {
 }
 
 
-def get_current_platform():
+def get_current_platform() -> str | None:
     # Rely on `sys.getandroidapilevel`, which only exists on Android; see
     # https://github.com/beeware/Python-Android-support/issues/8
     if hasattr(sys, "getandroidapilevel"):
@@ -40,8 +43,16 @@ def get_current_platform():
 current_platform = get_current_platform()
 
 
+def find_backends():
+    # As of Setuptools 65.5, entry points are returned duplicated if the
+    # package is installed editable. Use a set to ensure that each entry point
+    # is only returned once.
+    # See https://github.com/pypa/setuptools/issues/3649
+    return sorted(set(entry_points(group="toga.backends")))
+
+
 @lru_cache(maxsize=1)
-def get_platform_factory():
+def get_platform_factory() -> ModuleType:
     """Determine the current host platform and import the platform factory.
 
     If the ``TOGA_BACKEND`` environment variable is set, the factory will be loaded
@@ -51,17 +62,12 @@ def get_platform_factory():
 
     :returns: The factory for the host platform.
     """
-    toga_backends = entry_points(group="toga.backends")
-    if not toga_backends:
-        raise RuntimeError("No Toga backend could be loaded.")
-
-    backend_value = os.environ.get("TOGA_BACKEND")
-    if backend_value:
+    if backend_value := os.environ.get("TOGA_BACKEND"):
         try:
             factory = importlib.import_module(f"{backend_value}.factory")
         except ModuleNotFoundError as e:
             toga_backends_values = ", ".join(
-                [f"{backend.value!r}" for backend in toga_backends]
+                [f"{backend.value!r}" for backend in find_backends()]
             )
             # Android doesn't report Python exception chains in crashes
             # (https://github.com/chaquo/chaquopy/issues/890), so include the original
@@ -72,13 +78,10 @@ def get_platform_factory():
                 f"not be loaded ({e}). It should be one of: {toga_backends_values}."
             )
     else:
-        # As of Setuptools 65.5, entry points are returned duplicated if the
-        # package is installed editable. Use a set to ensure that each entry point
-        # is only returned once.
-        # See https://github.com/pypa/setuptools/issues/3649
-        toga_backends = sorted(set(toga_backends))
-
-        if len(toga_backends) == 1:
+        toga_backends = find_backends()
+        if len(toga_backends) == 0:
+            raise RuntimeError("No Toga backend could be loaded.")
+        elif len(toga_backends) == 1:
             backend = toga_backends[0]
         else:
             # multiple backends are installed: choose the one that matches the host platform

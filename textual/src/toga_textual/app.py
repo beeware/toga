@@ -37,6 +37,9 @@ class App:
     # Commands and menus
     ######################################################################
 
+    def create_app_commands(self):
+        pass
+
     def create_menus(self):
         pass
 
@@ -49,6 +52,9 @@ class App:
 
     def main_loop(self):
         self.native.run()
+
+    def set_icon(self, icon):
+        pass
 
     def set_main_window(self, window):
         self.native.push_screen(self.interface.main_window.id)

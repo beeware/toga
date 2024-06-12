@@ -1,1 +1,0 @@
-Non-implemented features now raise a formal warning, rather than logging to the console.

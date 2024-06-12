@@ -1,0 +1,1 @@
+The testbed app always creates a Briefcase logfile in CI now.

@@ -1,14 +1,22 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 import System.Windows.Forms as WinForms
-from System.Drawing import Bitmap, Graphics, Point, Size
+from System.Drawing import Bitmap, Graphics, Point, Size as WinSize
 from System.Drawing.Imaging import ImageFormat
 from System.IO import MemoryStream
 
 from toga.command import Separator
+from toga.types import Position, Size
 
 from .container import Container
 from .libs.wrapper import WeakrefCallable
 from .screens import Screen as ScreenImpl
 from .widgets.base import Scalable
+
+if TYPE_CHECKING:  # pragma: no cover
+    from toga.types import PositionT, SizeT
 
 
 class Window(Container, Scalable):
@@ -125,8 +133,6 @@ class Window(Container, Scalable):
     def show(self):
         if self.interface.content is not None:
             self.interface.content.refresh()
-        if self.interface is not self.interface.app._main_window:
-            self.native.Icon = self.interface.app.icon._impl.native
         self.native.Show()
 
     ######################################################################
@@ -153,7 +159,7 @@ class Window(Container, Scalable):
     def refreshed(self):
         super().refreshed()
         layout = self.interface.content.layout
-        self.native.MinimumSize = Size(
+        self.native.MinimumSize = WinSize(
             self.scale_in(layout.min_width) + self._decor_width(),
             self.scale_in(layout.min_height)
             + self._top_bars_height()
@@ -172,18 +178,17 @@ class Window(Container, Scalable):
     # Window size
     ######################################################################
 
-    def get_size(self):
+    def get_size(self) -> Size:
         size = self.native.Size
-        return (
+        return Size(
             self.scale_out(size.Width - self._decor_width()),
             self.scale_out(size.Height - self._decor_height()),
         )
 
-    def set_size(self, size):
-        width, height = size
-        self.native.Size = Size(
-            self.scale_in(width) + self._decor_width(),
-            self.scale_in(height) + self._decor_height(),
+    def set_size(self, size: SizeT):
+        self.native.Size = WinSize(
+            self.scale_in(size[0]) + self._decor_width(),
+            self.scale_in(size[1]) + self._decor_height(),
         )
 
     ######################################################################
@@ -193,11 +198,11 @@ class Window(Container, Scalable):
     def get_current_screen(self):
         return ScreenImpl(WinForms.Screen.FromControl(self.native))
 
-    def get_position(self):
+    def get_position(self) -> Position:
         location = self.native.Location
-        return tuple(map(self.scale_out, (location.X, location.Y)))
+        return Position(*map(self.scale_out, (location.X, location.Y)))
 
-    def set_position(self, position):
+    def set_position(self, position: PositionT):
         self.native.Location = Point(*map(self.scale_in, position))
 
     ######################################################################
@@ -230,7 +235,7 @@ class Window(Container, Scalable):
     ######################################################################
 
     def get_image_data(self):
-        size = Size(self.native_content.Size.Width, self.native_content.Size.Height)
+        size = WinSize(self.native_content.Size.Width, self.native_content.Size.Height)
         bitmap = Bitmap(size.Width, size.Height)
         graphics = Graphics.FromImage(bitmap)
 

@@ -135,7 +135,11 @@ class App:
         self.native = NSApplication.sharedApplication
         self.native.setActivationPolicy(NSApplicationActivationPolicyRegular)
 
-        self.native.setApplicationIconImage_(self.interface.icon._impl.native)
+        # The app icon been set *before* the app instance is created. However, we only
+        # need to set the icon on the app if it has been explicitly defined; the default
+        # icon is... the default. We can't test this branch in the testbed.
+        if self.interface.icon._impl.path:
+            self.set_icon(self.interface.icon)  # pragma: no cover
 
         self.resource_path = os.path.dirname(
             os.path.dirname(NSBundle.mainBundle.bundlePath)
@@ -147,16 +151,12 @@ class App:
         self.appDelegate.native = self.native
         self.native.setDelegate_(self.appDelegate)
 
-        self.create_app_commands()
+        # Create the lookup table for menu items
+        self._menu_groups = {}
+        self._menu_items = {}
 
         # Call user code to populate the main window
         self.interface._startup()
-
-        # Create the lookup table of menu items,
-        # then force the creation of the menus.
-        self._menu_groups = {}
-        self._menu_items = {}
-        self.create_menus()
 
     ######################################################################
     # Commands and menus
@@ -420,6 +420,13 @@ class App:
 
     def main_loop(self):
         self.loop.run_forever(lifecycle=CocoaLifecycle(self.native))
+
+    def set_icon(self, icon):
+        # If the icon is a path, it's an explicit icon; otherwise its the default icon
+        if icon._impl.path:
+            self.native.setApplicationIconImage(icon._impl.native)
+        else:
+            self.native.setApplicationIconImage(None)
 
     def set_main_window(self, window):
         pass

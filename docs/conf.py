@@ -28,7 +28,6 @@ from importlib.metadata import version as metadata_version
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
 extensions = [
     "sphinx.ext.autodoc",
-    "sphinx.ext.napoleon",
     "sphinx.ext.todo",
     "sphinx_tabs.tabs",
     "crate.sphinx.csv",

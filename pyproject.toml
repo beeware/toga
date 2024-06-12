@@ -2,7 +2,7 @@
 skip = ".git,*.pdf,*.svg"
 # the way to make case sensitive skips of words etc
 ignore-regex = "\bNd\b"
-ignore-words-list = "te,crate,re-use"
+ignore-words-list = "te,crate,re-use,MapPin"
 
 # The coverage settings in this file only control `coverage report`. `coverage run` and
 # `coverage combine` are controlled by the pyproject.toml files in each package's
@@ -17,6 +17,7 @@ ignore-words-list = "te,crate,re-use"
 # with `coverage combine`.
 
 [tool.coverage.run]
+plugins = ["coverage_conditional_plugin"]
 relative_files = true
 
 [tool.coverage.report]
@@ -32,6 +33,14 @@ exclude_lines = [
     "class .+?\\(Protocol.*\\):",
     "@overload",
 ]
+
+[tool.coverage.coverage_conditional_plugin.rules]
+no-cover-if-missing-setuptools_scm = "not is_installed('setuptools_scm')"
+no-cover-if-missing-PIL = "not is_installed('PIL')"
+no-cover-if-PIL-installed = "is_installed('PIL')"
+no-cover-if-lt-py310 = "sys_version_info < (3, 10) and os_environ.get('COVERAGE_EXCLUDE_PYTHON_VERSION') != 'disable'"
+no-cover-if-gte-py310 = "sys_version_info > (3, 10) and os_environ.get('COVERAGE_EXCLUDE_PYTHON_VERSION') != 'disable'"
+
 
 [tool.isort]
 profile = "black"

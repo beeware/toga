@@ -73,6 +73,10 @@ class App:
     # Commands and menus
     ######################################################################
 
+    def create_app_commands(self):
+        # No menus on an iOS app (for now)
+        pass
+
     def create_menus(self):
         # No menus on an iOS app (for now)
         pass
@@ -91,6 +95,10 @@ class App:
         # the app in a state such that asyncio events will be scheduled on the
         # iOS event loop.
         self.loop.run_forever_cooperatively(lifecycle=iOSLifecycle())
+
+    def set_icon(self, icon):
+        # iOS apps don't have runtime icons, so this can't be invoked
+        pass  # pragma: no cover
 
     def set_main_window(self, window):
         pass

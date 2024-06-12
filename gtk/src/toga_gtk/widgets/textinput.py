@@ -16,8 +16,7 @@ class TextInput(Widget):
         self.native.connect("key-press-event", self.gtk_key_press_event)
 
     def gtk_on_change(self, entry):
-        self.interface.on_change()
-        self.interface._validate()
+        self.interface._value_changed()
 
     def gtk_focus_in_event(self, entry, user_data):
         self.interface.on_gain_focus()
