@@ -1,1 +1,0 @@
-Typos in the usage examples of ``toga.MapPin`` were corrected.

@@ -1,1 +1,0 @@
-Size and position properties now return values as a `Size` and `Position` namedtuple, respectively. These namedtuple objects support addition and subtraction operations. Basic tuples can still be used to *set* these properties.

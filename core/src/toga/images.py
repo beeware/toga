@@ -12,9 +12,9 @@ from warnings import warn
 import toga
 from toga.platform import get_platform_factory
 
-if sys.version_info >= (3, 10):
+if sys.version_info >= (3, 10):  # pragma: no-cover-if-lt-py310
     from importlib.metadata import entry_points
-else:
+else:  # pragma: no-cover-if-gte-py310
     # Before Python 3.10, entry_points did not support the group argument;
     # so, the backport package must be used on older versions.
     from importlib_metadata import entry_points

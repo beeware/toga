@@ -151,16 +151,12 @@ class App:
         self.appDelegate.native = self.native
         self.native.setDelegate_(self.appDelegate)
 
-        self.create_app_commands()
+        # Create the lookup table for menu items
+        self._menu_groups = {}
+        self._menu_items = {}
 
         # Call user code to populate the main window
         self.interface._startup()
-
-        # Create the lookup table of menu items,
-        # then force the creation of the menus.
-        self._menu_groups = {}
-        self._menu_items = {}
-        self.create_menus()
 
     ######################################################################
     # Commands and menus
