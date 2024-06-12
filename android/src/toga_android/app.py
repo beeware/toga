@@ -11,6 +11,7 @@ from java import dynamic_proxy
 from org.beeware.android import IPythonApp, MainActivity
 
 from toga.command import Command, Group, Separator
+from toga.handlers import simple_handler
 
 from .libs import events
 from .screens import Screen as ScreenImpl
@@ -207,9 +208,10 @@ class App:
         self.interface.commands.add(
             # About should be the last item in the menu, in a section on its own.
             Command(
-                lambda _: self.interface.about(),
+                simple_handler(self.interface.about),
                 f"About {self.interface.formal_name}",
                 section=sys.maxsize,
+                id=Command.ABOUT,
             ),
         )
 

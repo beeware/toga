@@ -8,7 +8,7 @@ The top-level representation of an application.
    :header-rows: 1
    :file: ../data/widgets_by_platform.csv
    :included_cols: 4,5,6,7,8,9,10
-   :exclude: {0: '(?!(Application|Component))'}
+   :include: {0: '^Application$'}
 
 
 Usage
@@ -69,6 +69,10 @@ these are provided as constructor arguments. However, you can also provide these
 details, along with many of the other constructor arguments, as packaging metadata in a
 format compatible with :any:`importlib.metadata`. If you deploy your app with `Briefcase
 <https://briefcase.readthedocs.io/en/stable>`__, this will be done automatically.
+
+A Toga app will install a number of default commands to reflect core application
+functionality (such as the Quit/Exit menu item, and the About menu item). The IDs for
+these commands are defined as constants on the :class:`~toga.Command` class.
 
 Notes
 -----

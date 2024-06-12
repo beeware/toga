@@ -67,10 +67,17 @@ else:
     # Desktop platform tests
     ####################################################################################
 
-    async def test_exit_on_close_main_window(app, main_window_probe, mock_app_exit):
+    async def test_exit_on_close_main_window(
+        monkeypatch,
+        app,
+        main_window_probe,
+        mock_app_exit,
+    ):
         """An app can be exited by closing the main window"""
+        # Rebind the exit command to the on_exit handler.
         on_exit_handler = Mock(return_value=False)
         app.on_exit = on_exit_handler
+        monkeypatch.setattr(app.commands[toga.Command.EXIT], "_action", app.on_exit)
 
         # Close the main window
         main_window_probe.close()
@@ -90,10 +97,12 @@ else:
         on_exit_handler.assert_called_once_with(app)
         mock_app_exit.assert_called_once_with()
 
-    async def test_menu_exit(app, app_probe, mock_app_exit):
+    async def test_menu_exit(monkeypatch, app, app_probe, mock_app_exit):
         """An app can be exited by using the menu item"""
+        # Rebind the exit command to the on_exit handler.
         on_exit_handler = Mock(return_value=False)
         app.on_exit = on_exit_handler
+        monkeypatch.setattr(app.commands[toga.Command.EXIT], "_action", app.on_exit)
 
         # Close the main window
         app_probe.activate_menu_exit()
@@ -470,10 +479,14 @@ async def test_menu_about(monkeypatch, app, app_probe):
 
 async def test_menu_visit_homepage(monkeypatch, app, app_probe):
     """The visit homepage menu item can be used"""
-    # We don't actually want to open a web browser; just check that the interface method
-    # was invoked.
-    visit_homepage = Mock()
-    monkeypatch.setattr(app, "visit_homepage", visit_homepage)
+    # If the backend defines a VISIT_HOMEPAGE command, mock the visit_homepage method,
+    # and rebind the visit homepage command to the visit_homepage method.
+    if toga.Command.VISIT_HOMEPAGE in app.commands:
+        visit_homepage = Mock()
+        monkeypatch.setattr(app, "visit_homepage", visit_homepage)
+        monkeypatch.setattr(
+            app.commands[toga.Command.VISIT_HOMEPAGE], "_action", app.visit_homepage
+        )
 
     app_probe.activate_menu_visit_homepage()
 
