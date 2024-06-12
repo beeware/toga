@@ -2,6 +2,8 @@ import asyncio
 import sys
 from pathlib import Path
 
+from toga.command import Command
+
 from .screens import Screen as ScreenImpl
 from .utils import LoggedObject
 from .window import Window
@@ -24,8 +26,18 @@ class App(LoggedObject):
         self._action("create App")
         self.interface._startup()
 
+    def create_app_commands(self):
+        self._action("create App commands")
+        self.interface.commands.add(
+            Command(
+                None,
+                f"About {self.interface.formal_name}",
+            ),
+        )
+
     def create_menus(self):
         self._action("create App menus")
+        self.n_menu_items = len(self.interface.commands)
 
     def main_loop(self):
         print("Starting app using Dummy backend.")

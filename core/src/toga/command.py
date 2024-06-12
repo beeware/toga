@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Protocol
+from collections.abc import Iterator
+from typing import TYPE_CHECKING, Protocol
 
 from toga.handlers import wrapped_handler
 from toga.icons import Icon
@@ -9,7 +10,7 @@ from toga.platform import get_platform_factory
 
 if TYPE_CHECKING:
     from toga.app import App
-    from toga.icons import IconContent
+    from toga.icons import IconContentT
 
 
 class Group:
@@ -40,7 +41,7 @@ class Group:
 
         # Prime the underlying value of _parent so that the setter has a current value
         # to work with
-        self._parent = None
+        self._parent: Group | None = None
         self.parent = parent
 
     @property
@@ -49,7 +50,7 @@ class Group:
         return self._parent
 
     @parent.setter
-    def parent(self, parent: Group | None):
+    def parent(self, parent: Group | None) -> None:
         if parent is None:
             self._parent = None
         elif parent == self:
@@ -97,17 +98,17 @@ class Group:
     def __hash__(self) -> int:
         return hash(self.key)
 
-    def __lt__(self, other: Any) -> bool:
+    def __lt__(self, other: object) -> bool:
         if not isinstance(other, (Group, Command)):
             return False
         return self.key < other.key
 
-    def __gt__(self, other: Any) -> bool:
+    def __gt__(self, other: object) -> bool:
         if not isinstance(other, (Group, Command)):
             return False
         return other < self
 
-    def __eq__(self, other: Any) -> bool:
+    def __eq__(self, other: object) -> bool:
         if not isinstance(other, (Group, Command)):
             return False
         return self.key == other.key
@@ -121,7 +122,7 @@ class Group:
         return f"<Group text={self.text!r} order={self.order}{parent_string}>"
 
     @property
-    def key(self) -> tuple[(int, int, str)]:
+    def key(self) -> tuple[tuple[int, int, str], ...]:
         """A unique tuple describing the path to this group."""
         self_tuple = (self.section, self.order, self.text)
         if self.parent is None:
@@ -130,13 +131,13 @@ class Group:
 
     # Standard groups - docstrings can only be provided within the `class` statement,
     # but the objects can't be instantiated here.
-    APP = None  #: Application-level commands
-    FILE = None  #: File commands
-    EDIT = None  #: Editing commands
-    VIEW = None  #: Content appearance commands
-    COMMANDS = None  #: Default group for user-provided commands
-    WINDOW = None  #: Window management commands
-    HELP = None  #: Help commands
+    APP: Group  #: Application-level commands
+    FILE: Group  #: File commands
+    EDIT: Group  #: Editing commands
+    VIEW: Group  #: Content appearance commands
+    COMMANDS: Group  #: Default group for user-provided commands
+    WINDOW: Group  #: Window management commands
+    HELP: Group  #: Help commands
 
 
 Group.APP = Group("*", order=0)
@@ -156,7 +157,6 @@ class ActionHandler(Protocol):
         :param kwargs: Ensures compatibility with additional arguments introduced in
             future versions.
         """
-        ...
 
 
 class Command:
@@ -167,7 +167,7 @@ class Command:
         *,
         shortcut: str | Key | None = None,
         tooltip: str | None = None,
-        icon: IconContent | None = None,
+        icon: IconContentT | None = None,
         group: Group = Group.COMMANDS,
         section: int = 0,
         order: int = 0,
@@ -184,7 +184,7 @@ class Command:
         :param text: A label for the command.
         :param shortcut: A key combination that can be used to invoke the command.
         :param tooltip: A short description of what the command will do.
-        :param icon: The :any:`icon content <IconContent>` that can be used to decorate
+        :param icon: The :any:`icon content <IconContentT>` that can be used to decorate
             the command if the platform requires.
         :param group: The group to which this command belongs.
         :param section: The section where the command should appear within its group.
@@ -208,10 +208,11 @@ class Command:
         self.factory = get_platform_factory()
         self._impl = self.factory.Command(interface=self)
 
+        self._enabled = True
         self.enabled = enabled
 
     @property
-    def key(self) -> tuple[(int, int, str)]:
+    def key(self) -> tuple[tuple[int, int, str], ...]:
         """A unique tuple describing the path to this command.
 
         Each element in the tuple describes the (section, order, text) for the
@@ -225,7 +226,7 @@ class Command:
         return self._enabled
 
     @enabled.setter
-    def enabled(self, value: bool):
+    def enabled(self, value: bool) -> None:
         self._enabled = value and getattr(self.action, "_raw", True) is not None
         self._impl.set_enabled(value)
 
@@ -233,12 +234,12 @@ class Command:
     def icon(self) -> Icon | None:
         """The Icon for the command.
 
-        Can be specified as any valid :any:`icon content <IconContent>`.
+        Can be specified as any valid :any:`icon content <IconContentT>`.
         """
         return self._icon
 
     @icon.setter
-    def icon(self, icon_or_name: IconContent | None):
+    def icon(self, icon_or_name: IconContentT | None) -> None:
         if isinstance(icon_or_name, Icon) or icon_or_name is None:
             self._icon = icon_or_name
         else:
@@ -250,24 +251,24 @@ class Command:
         return self._action
 
     @action.setter
-    def action(self, action: ActionHandler | None):
+    def action(self, action: ActionHandler | None) -> None:
         """Set the action attached to the command
 
         Needs to be a valid ActionHandler or ``None``
         """
         self._action = wrapped_handler(self, action)
 
-    def __lt__(self, other: Any) -> bool:
+    def __lt__(self, other: object) -> bool:
         if not isinstance(other, (Group, Command)):
             return False
         return self.key < other.key
 
-    def __gt__(self, other: Any) -> bool:
+    def __gt__(self, other: object) -> bool:
         if not isinstance(other, (Group, Command)):
             return False
         return other < self
 
-    def __repr__(self) -> bool:
+    def __repr__(self) -> str:
         return (
             f"<Command text={self.text!r} "
             f"group={self.group} "
@@ -277,7 +278,7 @@ class Command:
 
 
 class Separator:
-    def __init__(self, group: Group = None):
+    def __init__(self, group: Group | None = None):
         """A representation of a separator between sections in a Group.
 
         :param group: The group that contains the separator.
@@ -285,24 +286,27 @@ class Separator:
         self.group = group
 
     def __repr__(self) -> str:
-        return f"<Separator group={self.group.text}>"
+        return f"<Separator group={None if self.group is None else self.group.text}>"
 
-    def __eq__(self, other) -> bool:
+    def __eq__(self, other: object) -> bool:
         if isinstance(other, Separator):
             return self.group == other.group
         return False
 
 
 class CommandSetChangeHandler(Protocol):
-    def __call__(self) -> None:
-        """A handler that will be invoked when a Command or Group is added to the CommandSet."""
-        ...
+    def __call__(self, **kwargs) -> object:
+        """A handler that will be invoked when a Command or Group is added to the
+        CommandSet.
+
+        :param kwargs: Ensures compatibility with arguments added in future versions.
+        """
 
 
 class CommandSet:
     def __init__(
         self,
-        on_change: CommandSetChangeHandler = None,
+        on_change: CommandSetChangeHandler | None = None,
         app: App | None = None,
     ):
         """
@@ -318,35 +322,35 @@ class CommandSet:
 
         :param on_change: A method that should be invoked when this command set changes.
         :param app: The app this command set is associated with, if it is not the app's
-            own commandset.
+            own :any:`CommandSet`.
         """
         self._app = app
-        self._commands = set()
+        self._commands: set[Command | Group] = set()
         self.on_change = on_change
 
-    def add(self, *commands: Command | Group):
-        if self.app and self.app is not None:
+    def add(self, *commands: Command | Group) -> None:
+        if self.app:
             self.app.commands.add(*commands)
         self._commands.update(commands)
         if self.on_change:
             self.on_change()
 
-    def clear(self):
+    def clear(self) -> None:
         self._commands = set()
         if self.on_change:
             self.on_change()
 
     @property
-    def app(self) -> App:
+    def app(self) -> App | None:
         return self._app
 
     def __len__(self) -> int:
         return len(self._commands)
 
-    def __iter__(self) -> Command | Separator:
+    def __iter__(self) -> Iterator[Command | Separator]:
         cmd_iter = iter(sorted(self._commands))
 
-        def descendant(group, ancestor):
+        def descendant(group: Group, ancestor: Group) -> Group | None:
             # Return the immediate descendant of ancestor used by this group.
             if group.parent == ancestor:
                 return group

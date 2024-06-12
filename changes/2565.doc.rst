@@ -1,1 +1,0 @@
-The instructions for adding a changenote to a pull request have been clarified.

@@ -69,3 +69,7 @@ Reference
 ---------
 
 .. autoclass:: toga.Slider
+
+.. autoprotocol:: toga.widgets.slider.OnChangeHandler
+.. autoprotocol:: toga.widgets.slider.OnPressHandler
+.. autoprotocol:: toga.widgets.slider.OnReleaseHandler

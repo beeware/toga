@@ -60,3 +60,5 @@ Reference
 
 .. autoclass:: toga.ScrollContainer
    :exclude-members: window, app
+
+.. autoprotocol:: toga.widgets.scrollcontainer.OnScrollHandler

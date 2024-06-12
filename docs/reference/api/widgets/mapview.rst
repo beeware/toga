@@ -74,12 +74,12 @@ updated and removed at runtime:
 
     mapview = toga.MapView(
         pins=[
-            toga.MapPin(toga.MapPin((-31.95064, 115.85889), title="Yagan Square"))
+            toga.MapPin((-31.95064, 115.85889), title="Yagan Square"),
         ]
     )
 
     # Create a new pin, and add it to the map
-    brutus = toga.MapPin(toga.MapPin((41.50375, -81.69475), title="Brutus was here"))
+    brutus = toga.MapPin((41.50375, -81.69475), title="Brutus was here")
     mapview.pins.add(brutus)
 
     # Update the pin label and position

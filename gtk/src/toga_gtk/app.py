@@ -61,14 +61,7 @@ class App:
         pass
 
     def gtk_startup(self, data=None):
-        # Set up the default commands for the interface.
-        self.create_app_commands()
-
         self.interface._startup()
-
-        # Create the lookup table of menu items,
-        # then force the creation of the menus.
-        self.create_menus()
 
         # Now that we have menus, make the app take responsibility for
         # showing the menubar.

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from toga.constants import FlashMode
 from toga.handlers import AsyncResult, PermissionResult
@@ -8,6 +8,7 @@ from toga.platform import get_platform_factory
 
 if TYPE_CHECKING:
     from toga.app import App
+    from toga.widgets.base import Widget
 
 
 class PhotoResult(AsyncResult):
@@ -15,7 +16,7 @@ class PhotoResult(AsyncResult):
 
 
 class CameraDevice:
-    def __init__(self, impl):
+    def __init__(self, impl: Any):
         self._impl = impl
 
     @property
@@ -33,7 +34,7 @@ class CameraDevice:
         """Does the device have a flash?"""
         return self._impl.has_flash()
 
-    def __eq__(self, other) -> bool:
+    def __eq__(self, other: Widget) -> bool:
         return self.id == other.id
 
     def __repr__(self) -> str:

@@ -5,11 +5,12 @@ from System.Drawing import (
     Graphics,
     Imaging,
     Point,
-    Size,
+    Size as WinSize,
 )
 from System.IO import MemoryStream
 
 from toga.screens import Screen as ScreenInterface
+from toga.types import Position, Size
 
 from .libs import shcore, user32
 from .widgets.base import Scalable
@@ -47,24 +48,18 @@ class Screen(Scalable):
         # non-text part to prevent any errors due to non-escaped characters.
         return name.split("\\")[-1]
 
-    def get_origin(self):
-        return (
-            self.scale_out(self.native.Bounds.X),
-            self.scale_out(self.native.Bounds.Y),
-        )
+    def get_origin(self) -> Position:
+        return Position(self.native.Bounds.X, self.native.Bounds.Y)
 
-    def get_size(self):
-        return (
-            self.scale_out(self.native.Bounds.Width),
-            self.scale_out(self.native.Bounds.Height),
-        )
+    def get_size(self) -> Size:
+        return Size(self.native.Bounds.Width, self.native.Bounds.Height)
 
     def get_image_data(self):
         bitmap = Bitmap(*map(self.scale_in, self.get_size()))
         graphics = Graphics.FromImage(bitmap)
         source_point = Point(*map(self.scale_in, self.get_origin()))
         destination_point = Point(0, 0)
-        copy_size = Size(*map(self.scale_in, self.get_size()))
+        copy_size = WinSize(*self.get_size())
         graphics.CopyFromScreen(source_point, destination_point, copy_size)
         stream = MemoryStream()
         bitmap.Save(stream, Imaging.ImageFormat.Png)

@@ -1,11 +1,14 @@
+from __future__ import annotations
+
 import importlib
 import os
 import sys
 from functools import lru_cache
+from types import ModuleType
 
-if sys.version_info >= (3, 10):
+if sys.version_info >= (3, 10):  # pragma: no-cover-if-lt-py310
     from importlib.metadata import entry_points
-else:
+else:  # pragma: no-cover-if-gte-py310
     # Before Python 3.10, entry_points did not support the group argument;
     # so, the backport package must be used on older versions.
     from importlib_metadata import entry_points
@@ -26,7 +29,7 @@ _TOGA_PLATFORMS = {
 }
 
 
-def get_current_platform():
+def get_current_platform() -> str | None:
     # Rely on `sys.getandroidapilevel`, which only exists on Android; see
     # https://github.com/beeware/Python-Android-support/issues/8
     if hasattr(sys, "getandroidapilevel"):
@@ -49,7 +52,7 @@ def find_backends():
 
 
 @lru_cache(maxsize=1)
-def get_platform_factory():
+def get_platform_factory() -> ModuleType:
     """Determine the current host platform and import the platform factory.
 
     If the ``TOGA_BACKEND`` environment variable is set, the factory will be loaded
@@ -59,8 +62,7 @@ def get_platform_factory():
 
     :returns: The factory for the host platform.
     """
-    backend_value = os.environ.get("TOGA_BACKEND")
-    if backend_value:
+    if backend_value := os.environ.get("TOGA_BACKEND"):
         try:
             factory = importlib.import_module(f"{backend_value}.factory")
         except ModuleNotFoundError as e:
