@@ -394,7 +394,7 @@ import toga  # noqa: E402
 def typehints_formatter(annotation, config):
     # print(f"({type(annotation)}) {str(annotation)=}")
     if annotation == Union[str, Path, toga.Icon, None]:
-        return "``IconContentT``"
+        return ":any:`IconContentT <IconContentT>`"
     elif annotation == toga.widgets.base.StyleT:
         return "``StyleT``"
     return None
