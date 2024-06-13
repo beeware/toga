@@ -29,6 +29,8 @@ async def second_window_probe(app, app_probe, second_window):
     yield probe
     if second_window in app.windows:
         second_window.close()
+        del second_window
+        gc.collect()
 
 
 async def test_title(main_window, main_window_probe):

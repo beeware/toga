@@ -175,7 +175,11 @@ class App:
     def create_menus(self):
         # Winforms menus are created on the Window.
         for window in self.interface.windows:
-            if hasattr(window._impl, "create_menus"):
+            # It's difficult to trigger this on a simple window, because we can't easily
+            # modify the set of app-level commands that are registered, and a simple
+            # window doesn't exist when the app starts up. Therefore, no-branch the else
+            # case.
+            if hasattr(window._impl, "create_menus"):  # pragma: no branch
                 window._impl.create_menus()
 
     ######################################################################
