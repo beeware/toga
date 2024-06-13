@@ -541,16 +541,14 @@ class App:
         self.startup()
         self._verify_startup()
 
-        # Manifest the initial state of the menus.
+        # Manifest the initial state of the menus. This will cascade down to all
+        # open windows if the platform has window-based menus.
         self._impl.create_menus()
 
-        # Manifest the initial state of window menus and toolbars (on the windows that
-        # have them), then install a change listener so that any future changes to the
-        # toolbar cause a change in toolbar items.
+        # Manifest the initial state of toolbars (on the windows that have
+        # them), then install a change listener so that any future changes to
+        # the toolbar cause a change in toolbar items.
         for window in self.windows:
-            if hasattr(window._impl, "create_menus"):
-                window._impl.create_menus()
-
             if hasattr(window, "toolbar"):
                 window._impl.create_toolbar()
                 window.toolbar.on_change = window._impl.create_toolbar

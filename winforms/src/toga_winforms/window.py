@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import System.Windows.Forms as WinForms
+from System.ComponentModel import InvalidEnumArgumentException
 from System.Drawing import Bitmap, Graphics, Point, Size as WinSize
 from System.Drawing.Imaging import ImageFormat
 from System.IO import MemoryStream
@@ -11,6 +12,7 @@ from toga.command import Separator
 from toga.types import Position, Size
 
 from .container import Container
+from .keys import toga_to_winforms_key, toga_to_winforms_shortcut
 from .libs.wrapper import WeakrefCallable
 from .screens import Screen as ScreenImpl
 from .widgets.base import Scalable
@@ -23,7 +25,8 @@ class Window(Container, Scalable):
     def __init__(self, interface, title, position, size):
         self.interface = interface
 
-        self.native = WinForms.Form()
+        self.create()
+
         self._FormClosing_handler = WeakrefCallable(self.winforms_FormClosing)
         self.native.FormClosing += self._FormClosing_handler
         super().__init__(self.native)
@@ -39,12 +42,13 @@ class Window(Container, Scalable):
         if position:
             self.set_position(position)
 
-        self.toolbar_native = None
-
         self.native.Resize += WeakrefCallable(self.winforms_Resize)
         self.resize_content()  # Store initial size
 
         self.set_full_screen(self.interface.full_screen)
+
+    def create(self):
+        self.native = WinForms.Form()
 
     ######################################################################
     # Native event handlers
@@ -89,46 +93,6 @@ class Window(Container, Scalable):
         self.native.FormClosing -= self._FormClosing_handler
         self.native.Close()
 
-    def create_toolbar(self):
-        if self.interface.toolbar:
-            if self.toolbar_native:
-                self.toolbar_native.Items.Clear()
-            else:
-                # The toolbar doesn't need to be positioned, because its `Dock` property
-                # defaults to `Top`.
-                self.toolbar_native = WinForms.ToolStrip()
-                self.native.Controls.Add(self.toolbar_native)
-                self.toolbar_native.BringToFront()  # In a dock, "front" means "bottom".
-
-            prev_group = None
-            for cmd in self.interface.toolbar:
-                if isinstance(cmd, Separator):
-                    item = WinForms.ToolStripSeparator()
-                    prev_group = None
-                else:
-                    # A change in group requires adding a toolbar separator
-                    if prev_group is not None and prev_group != cmd.group:
-                        self.toolbar_native.Items.Add(WinForms.ToolStripSeparator())
-                        prev_group = None
-                    else:
-                        prev_group = cmd.group
-
-                    item = WinForms.ToolStripMenuItem(cmd.text)
-                    if cmd.tooltip is not None:
-                        item.ToolTipText = cmd.tooltip
-                    if cmd.icon is not None:
-                        item.Image = cmd.icon._impl.native.ToBitmap()
-                    item.Enabled = cmd.enabled
-                    item.Click += WeakrefCallable(cmd._impl.winforms_Click)
-                    cmd._impl.native.append(item)
-                self.toolbar_native.Items.Add(item)
-
-        elif self.toolbar_native:
-            self.native.Controls.Remove(self.toolbar_native)
-            self.toolbar_native = None
-
-        self.resize_content()
-
     def set_app(self, app):
         icon_impl = app.interface.icon._impl
         self.native.Icon = icon_impl.native
@@ -152,12 +116,7 @@ class Window(Container, Scalable):
         return self.native.Size.Height - self.native.ClientSize.Height
 
     def _top_bars_height(self):
-        vertical_shift = 0
-        if self.toolbar_native:
-            vertical_shift += self.toolbar_native.Height
-        if self.native.MainMenuStrip:
-            vertical_shift += self.native.MainMenuStrip.Height
-        return vertical_shift
+        return 0
 
     def refreshed(self):
         super().refreshed()
@@ -254,4 +213,121 @@ class Window(Container, Scalable):
 
 
 class MainWindow(Window):
-    pass
+    def create(self):
+        super().create()
+        self.toolbar_native = None
+
+    def _top_bars_height(self):
+        vertical_shift = 0
+        if self.toolbar_native:
+            vertical_shift += self.toolbar_native.Height
+        if self.native.MainMenuStrip:
+            vertical_shift += self.native.MainMenuStrip.Height
+        return vertical_shift
+
+    def _submenu(self, group, menubar):
+        try:
+            return self._menu_groups[group]
+        except KeyError:
+            if group is None:
+                submenu = menubar
+            else:
+                parent_menu = self._submenu(group.parent, menubar)
+
+                submenu = WinForms.ToolStripMenuItem(group.text)
+
+                # Top level menus are added in a different way to submenus
+                if group.parent is None:
+                    parent_menu.Items.Add(submenu)
+                else:
+                    parent_menu.DropDownItems.Add(submenu)
+
+            self._menu_groups[group] = submenu
+        return submenu
+
+    def create_menus(self):
+        menubar = self.native.MainMenuStrip
+        if menubar:
+            menubar.Items.Clear()
+        else:
+            # The menu bar doesn't need to be positioned, because its `Dock` property
+            # defaults to `Top`.
+            menubar = WinForms.MenuStrip()
+            self.native.Controls.Add(menubar)
+            self.native.MainMenuStrip = menubar
+            menubar.SendToBack()  # In a dock, "back" means "top".
+
+        self._menu_groups = {}
+
+        submenu = None
+        for cmd in self.interface.app.commands:
+            submenu = self._submenu(cmd.group, menubar)
+            if isinstance(cmd, Separator):
+                submenu.DropDownItems.Add("-")
+            else:
+                submenu = self._submenu(cmd.group, menubar)
+                item = WinForms.ToolStripMenuItem(cmd.text)
+                item.Click += WeakrefCallable(cmd._impl.winforms_Click)
+                if cmd.shortcut is not None:
+                    try:
+                        item.ShortcutKeys = toga_to_winforms_key(cmd.shortcut)
+                        # The Winforms key enum is... daft. The "oem" key
+                        # values render as "Oem" or "Oemcomma", so we need to
+                        # *manually* set the display text for the key shortcut.
+                        item.ShortcutKeyDisplayString = toga_to_winforms_shortcut(
+                            cmd.shortcut
+                        )
+                    except (
+                        ValueError,
+                        InvalidEnumArgumentException,
+                    ) as e:  # pragma: no cover
+                        # Make this a non-fatal warning, because different backends may
+                        # accept different shortcuts.
+                        print(f"WARNING: invalid shortcut {cmd.shortcut!r}: {e}")
+
+                item.Enabled = cmd.enabled
+
+                cmd._impl.native.append(item)
+                submenu.DropDownItems.Add(item)
+
+        self.resize_content()
+
+    def create_toolbar(self):
+        if self.interface.toolbar:
+            if self.toolbar_native:
+                self.toolbar_native.Items.Clear()
+            else:
+                # The toolbar doesn't need to be positioned, because its `Dock` property
+                # defaults to `Top`.
+                self.toolbar_native = WinForms.ToolStrip()
+                self.native.Controls.Add(self.toolbar_native)
+                self.toolbar_native.BringToFront()  # In a dock, "front" means "bottom".
+
+            prev_group = None
+            for cmd in self.interface.toolbar:
+                if isinstance(cmd, Separator):
+                    item = WinForms.ToolStripSeparator()
+                    prev_group = None
+                else:
+                    # A change in group requires adding a toolbar separator
+                    if prev_group is not None and prev_group != cmd.group:
+                        self.toolbar_native.Items.Add(WinForms.ToolStripSeparator())
+                        prev_group = None
+                    else:
+                        prev_group = cmd.group
+
+                    item = WinForms.ToolStripMenuItem(cmd.text)
+                    if cmd.tooltip is not None:
+                        item.ToolTipText = cmd.tooltip
+                    if cmd.icon is not None:
+                        item.Image = cmd.icon._impl.native.ToBitmap()
+                    item.Enabled = cmd.enabled
+                    item.Click += WeakrefCallable(cmd._impl.winforms_Click)
+                    cmd._impl.native.append(item)
+                self.toolbar_native.Items.Add(item)
+
+        elif self.toolbar_native:
+            self.native.Controls.Remove(self.toolbar_native)
+            self.toolbar_native = None
+
+        self.resize_content()

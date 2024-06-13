@@ -132,6 +132,10 @@ class App:
         return submenu, section
 
     def create_menus(self):
+        # Although GTK menus manifest on the Window, they're defined at the
+        # application level, and are automatically added to any ApplicationWindow.
+        # (or to the top of the screen if the GTK theme requires)
+
         # Only create the menu if the menu item index has been created.
         self._menu_items = {}
         self._menu_groups = {}

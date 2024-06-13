@@ -6,17 +6,15 @@ from ctypes import windll
 
 import System.Windows.Forms as WinForms
 from System import Environment, Threading
-from System.ComponentModel import InvalidEnumArgumentException
 from System.Media import SystemSounds
 from System.Net import SecurityProtocolType, ServicePointManager
 from System.Windows.Threading import Dispatcher
 
 from toga import Key
 from toga.app import overridden
-from toga.command import Command, Group, Separator
+from toga.command import Command, Group
 from toga.handlers import simple_handler
 
-from .keys import toga_to_winforms_key, toga_to_winforms_shortcut
 from .libs.proactor import WinformsProactorEventLoop
 from .libs.wrapper import WeakrefCallable
 from .screens import Screen as ScreenImpl
@@ -174,75 +172,11 @@ class App:
             ),
         )
 
-    def _submenu(self, group, menubar):
-        try:
-            return self._menu_groups[group]
-        except KeyError:
-            if group is None:
-                submenu = menubar
-            else:
-                parent_menu = self._submenu(group.parent, menubar)
-
-                submenu = WinForms.ToolStripMenuItem(group.text)
-
-                # Top level menus are added in a different way to submenus
-                if group.parent is None:
-                    parent_menu.Items.Add(submenu)
-                else:
-                    parent_menu.DropDownItems.Add(submenu)
-
-            self._menu_groups[group] = submenu
-        return submenu
-
     def create_menus(self):
-        window = self.interface.main_window._impl
-        menubar = window.native.MainMenuStrip
-        if menubar:
-            menubar.Items.Clear()
-        else:
-            # The menu bar doesn't need to be positioned, because its `Dock` property
-            # defaults to `Top`.
-            menubar = WinForms.MenuStrip()
-            window.native.Controls.Add(menubar)
-            window.native.MainMenuStrip = menubar
-            menubar.SendToBack()  # In a dock, "back" means "top".
-
-        # The File menu should come before all user-created menus.
-        self._menu_groups = {}
-        Group.FILE.order = -1
-
-        submenu = None
-        for cmd in self.interface.commands:
-            submenu = self._submenu(cmd.group, menubar)
-            if isinstance(cmd, Separator):
-                submenu.DropDownItems.Add("-")
-            else:
-                submenu = self._submenu(cmd.group, menubar)
-                item = WinForms.ToolStripMenuItem(cmd.text)
-                item.Click += WeakrefCallable(cmd._impl.winforms_Click)
-                if cmd.shortcut is not None:
-                    try:
-                        item.ShortcutKeys = toga_to_winforms_key(cmd.shortcut)
-                        # The Winforms key enum is... daft. The "oem" key
-                        # values render as "Oem" or "Oemcomma", so we need to
-                        # *manually* set the display text for the key shortcut.
-                        item.ShortcutKeyDisplayString = toga_to_winforms_shortcut(
-                            cmd.shortcut
-                        )
-                    except (
-                        ValueError,
-                        InvalidEnumArgumentException,
-                    ) as e:  # pragma: no cover
-                        # Make this a non-fatal warning, because different backends may
-                        # accept different shortcuts.
-                        print(f"WARNING: invalid shortcut {cmd.shortcut!r}: {e}")
-
-                item.Enabled = cmd.enabled
-
-                cmd._impl.native.append(item)
-                submenu.DropDownItems.Add(item)
-
-        window.resize_content()
+        # Winforms menus are created on the Window.
+        for window in self.interface.windows:
+            if hasattr(window._impl, "create_menus"):
+                window._impl.create_menus()
 
     ######################################################################
     # App lifecycle
