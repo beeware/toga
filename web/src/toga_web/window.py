@@ -48,9 +48,6 @@ class Window:
     def close(self):
         self.interface.factory.not_implemented("Window.close()")
 
-    def create_toolbar(self):
-        self.interface.factory.not_implemented("Window.create_toolbar()")
-
     def set_app(self, app):
         pass
 
@@ -125,4 +122,8 @@ class Window:
 
 
 class MainWindow(Window):
-    pass
+    def create_menus(self):
+        pass
+
+    def create_toolbar(self):
+        self.interface.factory.not_implemented("Window.create_toolbar()")

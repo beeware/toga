@@ -35,7 +35,7 @@ class App:
         pass
 
     def create_menus(self):
-        pass
+        self.interface.factory.not_implemented("App.create_menus()")
 
     ######################################################################
     # App lifecycle
