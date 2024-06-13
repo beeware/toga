@@ -72,6 +72,7 @@ class Window:
         # fully handled. Returning True indicates the event has been handled, so further
         # handling (including actually closing the window) shouldn't be performed. This
         # handler must be deleted to allow the window to actually close.
+        print("GTK CLOSE HANDLER")
         self.interface.on_close()
         return True
 
@@ -91,6 +92,7 @@ class Window:
 
     def close(self):
         # Disconnect the delete handler so the close will complete
+        print("IMPL CLOSE")
         self.native.disconnect(self._delete_handler)
         self.native.close()
 
@@ -246,14 +248,3 @@ class MainWindow(Window):
     def create(self):
         self.native = Gtk.ApplicationWindow()
         self.native.set_role("MainWindow")
-
-    def gtk_delete_event(self, *args):
-        # Return value of the GTK on_close handler indicates
-        # whether the event has been fully handled. Returning
-        # False indicates the event handling is *not* complete,
-        # so further event processing (including actually
-        # closing the window) should be performed; so
-        # "should_exit == True" must be converted to a return
-        # value of False.
-        self.interface.app.on_exit()
-        return True

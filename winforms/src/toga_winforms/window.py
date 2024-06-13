@@ -23,15 +23,9 @@ class Window(Container, Scalable):
     def __init__(self, interface, title, position, size):
         self.interface = interface
 
-        # Winforms close handling is caught on the FormClosing handler. To allow
-        # for async close handling, we need to be able to abort this close event,
-        # call the Toga event handler, and let that decide whether to call close().
-        # If it does, there will be another FormClosing event, which we need
-        # to ignore. The `_is_closing` flag lets us do this.
-        self._is_closing = False
-
         self.native = WinForms.Form()
-        self.native.FormClosing += WeakrefCallable(self.winforms_FormClosing)
+        self._FormClosing_handler = WeakrefCallable(self.winforms_FormClosing)
+        self.native.FormClosing += self._FormClosing_handler
         super().__init__(self.native)
         self.init_scale(self.native)
 
@@ -60,10 +54,18 @@ class Window(Container, Scalable):
         self.resize_content()
 
     def winforms_FormClosing(self, sender, event):
-        # If the app is exiting, or a manual close has been requested, don't get
-        # confirmation; just close.
-        if not self.interface.app._impl._is_exiting and not self._is_closing:
-            # If the window is closable, trigger on_close handling.
+        # If the app is exiting, do nothing; we've already approved the exit
+        # (and thus the window close).
+        #
+        # Otherwise, handle the close request by always cancelling the event,
+        # and invoking `on_close()` handling. This will evaluate whether a close
+        # is allowed, and if it is, programmatically invoke close on the window,
+        # removing this handler first so that the close will complete.
+        #
+        # Winforms doesn't provide a way to disable/hide the close button, so if
+        # the window is non-closable, don't trigger on_close handling - just
+        # cancel the close event.
+        if not self.interface.app._impl._is_exiting:
             if self.interface.closable:
                 self.interface.on_close()
             event.Cancel = True
@@ -83,7 +85,7 @@ class Window(Container, Scalable):
     ######################################################################
 
     def close(self):
-        self._is_closing = True
+        self.native.FormClosing -= self._FormClosing_handler
         self.native.Close()
 
     def create_toolbar(self):

@@ -61,13 +61,8 @@ class App:
         self.interface = interface
         self.interface._impl = self
 
-        # Winforms app exit is tightly bound to the close of the MainWindow.
-        # The FormClosing message on MainWindow triggers the "on_exit" handler
-        # (which might abort the exit). However, on success, it will request the
-        # app (and thus the Main Window) to close, causing another close event.
-        # So - we have a flag that is only ever sent once a request has been
-        # made to exit the native app. This flag can be used to shortcut any
-        # window-level close handling.
+        # Track whether the app is exiting. This is used to stop the event loop,
+        # and shortcut close handling on any open windows when the app exits.
         self._is_exiting = False
 
         # Winforms cursor visibility is a stack; If you call hide N times, you

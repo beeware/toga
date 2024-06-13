@@ -68,7 +68,6 @@ else:
     ####################################################################################
 
     async def test_exit_on_close_main_window(
-        monkeypatch,
         app,
         main_window,
         main_window_probe,
