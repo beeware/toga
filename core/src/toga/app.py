@@ -544,6 +544,17 @@ class App:
         # Manifest the initial state of the menus.
         self._impl.create_menus()
 
+        # Manifest the initial state of window menus and toolbars (on the windows that
+        # have them), then install a change listener so that any future changes to the
+        # toolbar cause a change in toolbar items.
+        for window in self.windows:
+            if hasattr(window._impl, "create_menus"):
+                window._impl.create_menus()
+
+            if hasattr(window, "toolbar"):
+                window._impl.create_toolbar()
+                window.toolbar.on_change = window._impl.create_toolbar
+
         # Now that we have a finalized impl, set the on_change handler for commands
         self.commands.on_change = self._impl.create_menus
 

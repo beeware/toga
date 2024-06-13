@@ -480,6 +480,8 @@ def test_startup_method(event_loop):
     assert_action_performed(app, "create App commands")
     startup.assert_called_once_with(app)
     assert_action_performed(app, "create App menus")
+    assert_action_performed(app.main_window, "create Window menus")
+
     # 4 menu items have been created
     assert len(app.commands) == 4
 
@@ -504,6 +506,8 @@ def test_startup_subclass(event_loop):
 
     assert_action_performed(app, "create App commands")
     assert_action_performed(app, "create App menus")
+    assert_action_performed(app.main_window, "create Window menus")
+
     # 5 menu items have been created
     assert app._impl.n_menu_items == 5
 

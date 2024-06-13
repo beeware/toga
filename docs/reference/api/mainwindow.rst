@@ -1,7 +1,7 @@
 MainWindow
 ==========
 
-The main window of the application.
+A window that can be used as the main interface to an app.
 
 .. tabs::
 
@@ -54,8 +54,13 @@ The main window of the application.
 Usage
 -----
 
-The main window of an application is a normal :class:`toga.Window`, with one exception -
-when the main window is closed, the application exits.
+A main window of an application is a :class:`toga.Window` that can serve as the main
+interface to an application. If the platform places menus inside windows, a
+:class:`toga.MainWindow` instance will display a menu bar that contains the app control
+commands (such as About, Quit, and anything else required by the platform's HIG). It may
+also contain a toolbar.
+
+The title of the window will default to the formal name of the app.
 
 .. code-block:: python
 

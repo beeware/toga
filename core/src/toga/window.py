@@ -136,8 +136,6 @@ class Dialog(AsyncResult):
 
 
 class Window:
-    _WINDOW_CLASS = "Window"
-
     def __init__(
         self,
         id: str | None = None,
@@ -203,7 +201,7 @@ class Window:
         self._minimizable = minimizable
 
         self.factory = get_platform_factory()
-        self._impl = getattr(self.factory, self._WINDOW_CLASS)(
+        self._impl = getattr(self.factory, self.__class__.__name__)(
             interface=self,
             title=title if title else self._default_title,
             position=None if position is None else Position(*position),
@@ -220,9 +218,6 @@ class Window:
         # If content has been provided, set it
         if content:
             self.content = content
-
-        # Create a toolbar that is linked to the app
-        self._toolbar = CommandSet(on_change=self._impl.create_toolbar, app=self._app)
 
         self.on_close = on_close
 
@@ -352,11 +347,6 @@ class Window:
 
         # Update the geometry of the widget
         widget.refresh()
-
-    @property
-    def toolbar(self) -> CommandSet:
-        """Toolbar for the window."""
-        return self._toolbar
 
     @property
     def widgets(self) -> FilteredWidgetRegistry:
@@ -950,8 +940,6 @@ class Window:
 
 
 class MainWindow(Window):
-    _WINDOW_CLASS = "MainWindow"
-
     def __init__(
         self,
         id: str | None = None,
@@ -996,9 +984,24 @@ class MainWindow(Window):
             closeable=closeable,
         )
 
+        # Create a toolbar that is linked to the app. Only install a change listener if
+        # the main app has a listener - this is an indicator that the app has finished
+        # starting up.
+        self._toolbar = CommandSet(
+            on_change=(
+                self._impl.create_toolbar if self.app.commands.on_change else None
+            ),
+            app=self.app,
+        )
+
     @property
     def _default_title(self) -> str:
         return toga.App.app.formal_name
+
+    @property
+    def toolbar(self) -> CommandSet:
+        """Toolbar for the window."""
+        return self._toolbar
 
 
 class DocumentMainWindow(Window):
