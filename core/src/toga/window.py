@@ -136,6 +136,8 @@ class Dialog(AsyncResult):
 
 
 class Window:
+    _WINDOW_CLASS = "Window"
+
     def __init__(
         self,
         id: str | None = None,
@@ -201,7 +203,7 @@ class Window:
         self._minimizable = minimizable
 
         self.factory = get_platform_factory()
-        self._impl = getattr(self.factory, self.__class__.__name__)(
+        self._impl = getattr(self.factory, self._WINDOW_CLASS)(
             interface=self,
             title=title if title else self._default_title,
             position=None if position is None else Position(*position),
@@ -940,6 +942,8 @@ class Window:
 
 
 class MainWindow(Window):
+    _WINDOW_CLASS = "MainWindow"
+
     def __init__(
         self,
         id: str | None = None,
@@ -1005,6 +1009,8 @@ class MainWindow(Window):
 
 
 class DocumentMainWindow(Window):
+    _WINDOW_CLASS = "DocumentMainWindow"
+
     def __init__(
         self,
         doc: Document,
