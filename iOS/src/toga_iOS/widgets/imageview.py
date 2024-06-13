@@ -14,10 +14,9 @@ class ImageView(Widget):
         self.native.setTranslatesAutoresizingMaskIntoConstraints_(False)
         self.native.setAutoresizesSubviews_(False)
 
-        self.add_constraints()
+        self._default_background_color = TRANSPARENT
 
-    def set_background_color(self, color):
-        super().set_background_color(TRANSPARENT if color is None else color)
+        self.add_constraints()
 
     def set_image(self, image):
         if image:

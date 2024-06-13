@@ -50,6 +50,8 @@ class Slider(Widget):
         self.native.interface = self.interface
         self.native.impl = self
 
+        self._default_background_color = TRANSPARENT
+
         # Dummy values used during initialization.
         self.value = 0
         self.min_value = 0
@@ -107,9 +109,6 @@ class Slider(Widget):
 
     def set_tick_count(self, tick_count):
         self.tick_count = tick_count
-
-    def set_background_color(self, color):
-        super().set_background_color(TRANSPARENT if color is None else color)
 
     def rehint(self):
         fitting_size = self.native.systemLayoutSizeFittingSize(CGSize(0, 0))

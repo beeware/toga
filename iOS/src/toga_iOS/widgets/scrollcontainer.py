@@ -30,6 +30,8 @@ class ScrollContainer(Widget):
         self.native.impl = self
         self.native.delegate = self.native
 
+        self._default_background_color = TRANSPARENT
+
         # UIScrollView doesn't have a native ability to disable a scrolling direction;
         # it's handled by controlling the scrollable area.
         self._allow_horizontal = True
@@ -66,9 +68,6 @@ class ScrollContainer(Widget):
             height = max(self.interface.content.layout.height, height)
 
         self.native.contentSize = NSMakeSize(width, height)
-
-    def set_background_color(self, color):
-        super().set_background_color(TRANSPARENT if color is None else color)
 
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)

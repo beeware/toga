@@ -11,11 +11,10 @@ class Box(Widget):
         self.native.interface = self.interface
         self.native.impl = self
 
+        self._default_background_color = TRANSPARENT
+
         # Add the layout constraints
         self.add_constraints()
-
-    def set_background_color(self, color):
-        super().set_background_color(TRANSPARENT if color is None else color)
 
     def rehint(self):
         self.interface.intrinsic.width = at_least(0)
