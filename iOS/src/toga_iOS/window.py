@@ -71,7 +71,9 @@ class Window:
     # Window lifecycle
     ######################################################################
 
-    def close(self):
+    def close(self):  # pragma: no cover
+        # An iOS app only ever contains a main window, and that window *can't* be
+        # closed, so the platform-specific close handling is never triggered.
         pass
 
     def create_toolbar(self):
