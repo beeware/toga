@@ -72,7 +72,6 @@ class Window:
         # fully handled. Returning True indicates the event has been handled, so further
         # handling (including actually closing the window) shouldn't be performed. This
         # handler must be deleted to allow the window to actually close.
-        print("GTK CLOSE HANDLER")
         self.interface.on_close()
         return True
 
@@ -92,7 +91,6 @@ class Window:
 
     def close(self):
         # Disconnect the delete handler so the close will complete
-        print("IMPL CLOSE")
         self.native.disconnect(self._delete_handler)
         self.native.close()
 

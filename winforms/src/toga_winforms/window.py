@@ -55,7 +55,8 @@ class Window(Container, Scalable):
 
     def winforms_FormClosing(self, sender, event):
         # If the app is exiting, do nothing; we've already approved the exit
-        # (and thus the window close).
+        # (and thus the window close). This branch can't be triggered in test
+        # conditions, so it's marked no-branch.
         #
         # Otherwise, handle the close request by always cancelling the event,
         # and invoking `on_close()` handling. This will evaluate whether a close
@@ -65,7 +66,7 @@ class Window(Container, Scalable):
         # Winforms doesn't provide a way to disable/hide the close button, so if
         # the window is non-closable, don't trigger on_close handling - just
         # cancel the close event.
-        if not self.interface.app._impl._is_exiting:
+        if not self.interface.app._impl._is_exiting:  # pragma: no branch
             if self.interface.closable:
                 self.interface.on_close()
             event.Cancel = True

@@ -215,5 +215,4 @@ class Window:
 
 
 class MainWindow(Window):
-    def textual_close(self):
-        self.interface.app.on_exit()
+    pass

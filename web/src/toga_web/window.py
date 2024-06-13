@@ -125,5 +125,4 @@ class Window:
 
 
 class MainWindow(Window):
-    def on_close(self, *args):
-        pass
+    pass
