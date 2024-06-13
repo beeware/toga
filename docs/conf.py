@@ -32,6 +32,7 @@ extensions = [
     "sphinx_tabs.tabs",
     "crate.sphinx.csv",
     "sphinx_copybutton",
+    "sphinx_autodoc_typehints",
     "sphinx_toolbox.more_autodoc.autonamedtuple",
     "sphinx_toolbox.more_autodoc.autoprotocol",
     "sphinx.ext.intersphinx",
@@ -377,3 +378,23 @@ todo_include_todos = True
 
 # If this is True, todolist produce output without file path and line, The default is False.
 # todo_link_only = False
+
+
+# Disable WARNING: cannot cache unpickable configuration value: 'typehints_formatter'
+suppress_warnings = ["config.cache"]
+
+always_use_bars_union = True
+
+from pathlib import Path  # noqa: E402
+from typing import Union  # noqa: E402
+
+import toga  # noqa: E402
+
+
+def typehints_formatter(annotation, config):
+    # print(f"({type(annotation)}) {str(annotation)=}")
+    if annotation == Union[str, Path, toga.Icon, None]:
+        return "``IconContentT``"
+    elif annotation == toga.widgets.base.StyleT:
+        return "``StyleT``"
+    return None

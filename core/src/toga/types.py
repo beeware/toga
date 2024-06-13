@@ -13,6 +13,10 @@ if TYPE_CHECKING:
 
     PositionT: TypeAlias = toga.Position | tuple[int, int]
     SizeT: TypeAlias = toga.Size | tuple[int, int]
+else:
+    # sphinx-autodoc-typehints errors when these are gated with TYPE_CHECKING...
+    PositionT = None
+    SizeT = None
 
 
 class LatLng(NamedTuple):
