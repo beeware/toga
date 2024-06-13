@@ -25,9 +25,6 @@ def native_color(c):
 
 
 def toga_color(c):
-    if c == UIColor.clearColor:
-        return TRANSPARENT
-
     red = CGFloat()
     green = CGFloat()
     blue = CGFloat()
