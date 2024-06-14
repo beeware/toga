@@ -111,6 +111,10 @@ otherwise, you wouldn't be able to exit the app.
 Notes
 -----
 
+* On macOS, menus are tied to the app, not the window; and a menu is mandatory.
+  Therefore, a minimal macOS app (i.e., an app using a :any:`toga.Window` as the main
+  window) will still have a menu, but it will only have the bare minimum of menu items.
+
 * Apps executed under Wayland on Linux environment may not show the app's formal name
   correctly. Wayland considers many aspects of app operation to be the domain of the
   windowing environment, not the app; as a result, some API requests will be ignored

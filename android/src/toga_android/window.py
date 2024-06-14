@@ -56,8 +56,9 @@ class Window(Container):
         # closed, so the platform-specific close handling is never triggered.
         pass
 
-    def configure_titlebar(self):
-        # Hide the titlebar on a simple window.
+    def configure_titlebar(self):  # pragma: no cover
+        # Hide the titlebar on a simple window. The testbed can't create a simple
+        # window, so we can't test this.
         self.app.native.getSupportActionBar().hide()
 
     def set_app(self, app):

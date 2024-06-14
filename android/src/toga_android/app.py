@@ -93,9 +93,10 @@ class TogaApp(dynamic_proxy(IPythonApp)):
 
     def onPrepareOptionsMenu(self, menu):
         # If the main window doesn't have a toolbar, there's no preparation required;
-        # this is a simple main window, which can't have commands.
+        # this is a simple main window, which can't have commands. This can't be
+        # validated in the testbed, so it's marked no-cover.
         if not hasattr(self._impl.interface.main_window, "toolbar"):
-            return False
+            return False  # pragma: no cover
 
         menu.clear()
         itemid = 1  # 0 is the same as Menu.NONE.
