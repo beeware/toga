@@ -56,6 +56,10 @@ class Window(Container):
         # closed, so the platform-specific close handling is never triggered.
         pass
 
+    def configure_titlebar(self):
+        # Hide the titlebar on a simple window.
+        self.app.native.getSupportActionBar().hide()
+
     def set_app(self, app):
         if len(app.interface.windows) > 1:
             raise RuntimeError("Secondary windows cannot be created on Android")
@@ -155,5 +159,11 @@ class Window(Container):
 
 
 class MainWindow(Window):
+    def configure_titlebar(self):
+        # Display the titlebar on a MainWindow.
+        pass
+
     def create_toolbar(self):
+        # Toolbar items are configured as part of onPrepareOptionsMenu; trigger that
+        # handler.
         self.app.native.invalidateOptionsMenu()

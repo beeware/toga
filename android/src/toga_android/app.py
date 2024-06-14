@@ -92,6 +92,11 @@ class TogaApp(dynamic_proxy(IPythonApp)):
             return True
 
     def onPrepareOptionsMenu(self, menu):
+        # If the main window doesn't have a toolbar, there's no preparation required;
+        # this is a simple main window, which can't have commands.
+        if not hasattr(self._impl.interface.main_window, "toolbar"):
+            return False
+
         menu.clear()
         itemid = 1  # 0 is the same as Menu.NONE.
         groupid = 1
@@ -199,7 +204,11 @@ class App:
     # Commands and menus
     ######################################################################
 
-    def create_app_commands(self):
+    def create_minimal_app_commands(self):
+        # A simple app can't have any commands.
+        pass
+
+    def create_standard_app_commands(self):
         self.interface.commands.add(
             # About should be the last item in the menu, in a section on its own.
             Command(
@@ -211,7 +220,9 @@ class App:
         )
 
     def create_menus(self):
-        self.native.invalidateOptionsMenu()  # Triggers onPrepareOptionsMenu
+        # Menu items are configured as part of onPrepareOptionsMenu; trigger that
+        # handler.
+        self.native.invalidateOptionsMenu()
 
     ######################################################################
     # App lifecycle
@@ -233,7 +244,10 @@ class App:
         pass  # pragma: no cover
 
     def set_main_window(self, window):
-        pass
+        # The default layout of an Android app includes a titlebar; a simple App then
+        # hides that titlebar. We know what type of app we have when the main window is
+        # set.
+        self.interface.main_window._impl.configure_titlebar()
 
     ######################################################################
     # App resources
