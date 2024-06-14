@@ -11,6 +11,9 @@ from .utils import LoggedObject
 
 
 class App(LoggedObject):
+    # Dummy apps close on the last window close
+    CLOSE_ON_LAST_WINDOW = True
+
     def __init__(self, interface):
         super().__init__()
         self.interface = interface
@@ -22,6 +25,10 @@ class App(LoggedObject):
     def create(self):
         self._action("create App")
         self.interface._startup()
+
+    ######################################################################
+    # Commands and menus
+    ######################################################################
 
     def create_app_commands(self):
         self._action("create App commands")
@@ -70,49 +77,23 @@ class App(LoggedObject):
             if hasattr(window._impl, "create_menus"):
                 window._impl.create_menus()
 
-    def main_loop(self):
-        print("Starting app using Dummy backend.")
-        self._action("main loop")
-
-    def set_icon(self, icon):
-        self._action("set_icon", icon=icon)
-
-    def set_main_window(self, window):
-        self._action("set_main_window", window=window)
-
-    def show_about_dialog(self):
-        self._action("show_about_dialog")
-
-    def beep(self):
-        self._action("beep")
+    ######################################################################
+    # App lifecycle
+    ######################################################################
 
     def exit(self):
         self._action("exit")
 
-    def get_current_window(self):
-        try:
-            return self._get_value("current_window", self.interface.main_window._impl)
-        except AttributeError:
-            return None
+    def main_loop(self):
+        print("Starting app using Dummy backend.")
+        self._action("main loop")
 
-    def set_current_window(self, window):
-        self._action("set_current_window", window=window)
-        self._set_value("current_window", window._impl)
+    def set_main_window(self, window):
+        self._action("set_main_window", window=window)
 
-    def enter_full_screen(self, windows):
-        self._action("enter_full_screen", windows=windows)
-
-    def exit_full_screen(self, windows):
-        self._action("exit_full_screen", windows=windows)
-
-    def show_cursor(self):
-        self._action("show_cursor")
-
-    def hide_cursor(self):
-        self._action("hide_cursor")
-
-    def simulate_exit(self):
-        self.interface.on_exit()
+    ######################################################################
+    # App resources
+    ######################################################################
 
     def get_screens(self):
         # _________________________________________________
@@ -140,6 +121,62 @@ class App(LoggedObject):
             ScreenImpl(native=("Primary Screen", (0, 0), (1920, 1080))),
             ScreenImpl(native=("Secondary Screen", (-1366, -768), (1366, 768))),
         ]
+
+    def set_icon(self, icon):
+        self._action("set_icon", icon=icon)
+
+    ######################################################################
+    # App capabilities
+    ######################################################################
+
+    def beep(self):
+        self._action("beep")
+
+    def show_about_dialog(self):
+        self._action("show_about_dialog")
+
+    ######################################################################
+    # Cursor control
+    ######################################################################
+
+    def hide_cursor(self):
+        self._action("hide_cursor")
+
+    def show_cursor(self):
+        self._action("show_cursor")
+
+    ######################################################################
+    # Window control
+    ######################################################################
+
+    def get_current_window(self):
+        try:
+            main_window = self.interface.main_window._impl
+        except AttributeError:
+            main_window = None
+
+        return self._get_value("current_window", main_window)
+
+    def set_current_window(self, window):
+        self._action("set_current_window", window=window)
+        self._set_value("current_window", window._impl)
+
+    ######################################################################
+    # Full screen control
+    ######################################################################
+
+    def enter_full_screen(self, windows):
+        self._action("enter_full_screen", windows=windows)
+
+    def exit_full_screen(self, windows):
+        self._action("exit_full_screen", windows=windows)
+
+    ######################################################################
+    # Simulation interface
+    ######################################################################
+
+    def simulate_exit(self):
+        self.interface.on_exit()
 
 
 class DocumentApp(App):
