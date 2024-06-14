@@ -1,8 +1,20 @@
-# This project was generated using template: https://github.com/beeware/briefcase-template and branch: v0.3.12
+[project]
+name = "testbed"
+version = "0.0.1"
+dependencies = ["../core"]
+
+[project.optional-dependencies]
+test = [
+    "coverage==7.5.3",
+    "fonttools==4.53.0",
+    "pillow==9.2.0",
+    "pytest==8.2.2",
+    "pytest-asyncio==0.23.7",
+]
+
 [tool.briefcase]
 project_name = "Toga Testbed"
 bundle = "org.beeware.toga"
-version = "0.0.1"
 url = "https://beeware.org"
 license.file = "LICENSE"
 author = "Tiberius Yak"
@@ -17,15 +29,6 @@ sources = [
 ]
 test_sources = [
     "tests",
-]
-requires = [
-    "../core",
-]
-test_requires = [
-    "coverage==7.5.3",
-    "pytest==8.2.2",
-    "pytest-asyncio==0.23.7",
-    "pillow==9.2.0",
 ]
 
 permission.camera = "The testbed needs to exercise Camera APIs"
@@ -75,9 +78,6 @@ test_sources = [
 ]
 requires = [
     "../android",
-]
-test_requires = [
-    "fonttools==4.42.1",
 ]
 
 base_theme = "Theme.MaterialComponents.Light.DarkActionBar"
