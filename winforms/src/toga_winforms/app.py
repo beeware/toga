@@ -132,7 +132,11 @@ class App:
     # Commands and menus
     ######################################################################
 
-    def create_app_commands(self):
+    def create_minimal_app_commands(self):
+        # A minimal app on Winforms has no menu, and thus no default commands.
+        pass
+
+    def create_standard_app_commands(self):
         self.interface.commands.add(
             # ---- File menu -----------------------------------
             # Include a preferences menu item; but only enable it if the user has

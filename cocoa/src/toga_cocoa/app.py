@@ -164,16 +164,31 @@ class App:
         if self.interface.current_window:
             self.interface.current_window._impl.native.miniaturize(None)
 
-    def create_app_commands(self):
-        formal_name = self.interface.formal_name
+    def create_minimal_app_commands(self):
         self.interface.commands.add(
             # ---- App menu -----------------------------------
             Command(
                 simple_handler(self.interface.about),
-                "About " + formal_name,
+                f"About {self.interface.formal_name}",
                 group=toga.Group.APP,
                 id=Command.ABOUT,
             ),
+            # Quit should always be the last item, in a section on its own. Invoke
+            # `on_exit` rather than `exit`, because we want to trigger the "OK to exit?"
+            # logic. It's already a bound handler, so we can use it directly.
+            Command(
+                self.interface.on_exit,
+                f"Quit {self.interface.formal_name}",
+                shortcut=toga.Key.MOD_1 + "q",
+                group=toga.Group.APP,
+                section=sys.maxsize,
+                id=Command.EXIT,
+            ),
+        )
+
+    def create_standard_app_commands(self):
+        self.interface.commands.add(
+            # ---- App menu -----------------------------------
             # Include a preferences menu item; but only enable it if the user has
             # overridden it in their App class.
             Command(
@@ -187,7 +202,7 @@ class App:
             ),
             Command(
                 NativeHandler(SEL("hide:")),
-                "Hide " + formal_name,
+                f"Hide {self.interface.formal_name}",
                 shortcut=toga.Key.MOD_1 + "h",
                 group=toga.Group.APP,
                 order=0,
@@ -207,17 +222,6 @@ class App:
                 group=toga.Group.APP,
                 order=2,
                 section=sys.maxsize - 1,
-            ),
-            # Quit should always be the last item, in a section on its own. Invoke
-            # `on_exit` rather than `exit`, because we want to trigger the "OK to exit?"
-            # logic. It's already a bound handler, so we can use it directly.
-            Command(
-                self.interface.on_exit,
-                f"Quit {formal_name}",
-                shortcut=toga.Key.MOD_1 + "q",
-                group=toga.Group.APP,
-                section=sys.maxsize,
-                id=Command.EXIT,
             ),
             # ---- File menu ----------------------------------
             # This is a bit of an oddity. Apple HIG apps that don't have tabs as

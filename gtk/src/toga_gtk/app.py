@@ -67,18 +67,12 @@ class App:
     # Commands and menus
     ######################################################################
 
-    def create_app_commands(self):
+    def create_minimal_app_commands(self):
+        # Depending on how the desktop is configured, a GTK app *might* have a
+        # macOS-style top-level menu. Just in case, install the default minimal app
+        # commands.
         self.interface.commands.add(
             # ---- App menu -----------------------------------
-            # Include a preferences menu item; but only enable it if the user has
-            # overridden it in their App class.
-            Command(
-                simple_handler(self.interface.preferences),
-                "Preferences",
-                group=toga.Group.APP,
-                enabled=overridden(self.interface.preferences),
-                id=Command.PREFERENCES,
-            ),
             # Quit should always be the last item, in a section on its own. Invoke
             # `on_exit` rather than `exit`, because we want to trigger the "OK to exit?"
             # logic. It's already a bound handler, so we can use it directly.
@@ -97,6 +91,21 @@ class App:
                 group=toga.Group.HELP,
                 id=Command.ABOUT,
             ),
+        )
+
+    def create_standard_app_commands(self):
+        self.interface.commands.add(
+            # ---- App menu -----------------------------------
+            # Include a preferences menu item; but only enable it if the user has
+            # overridden it in their App class.
+            Command(
+                simple_handler(self.interface.preferences),
+                "Preferences",
+                group=toga.Group.APP,
+                enabled=overridden(self.interface.preferences),
+                id=Command.PREFERENCES,
+            ),
+            # ---- Help menu -----------------------------------
             Command(
                 simple_handler(self.interface.visit_homepage),
                 "Visit homepage",
