@@ -22,14 +22,16 @@ class App:
     # Commands and menus
     ######################################################################
 
-    def create_app_commands(self):
-        formal_name = self.interface.formal_name
+    def create_minimal_app_commands(self):
+        # A simple web app has no window decoration.
+        pass
 
+    def create_standard_app_commands(self):
         self.interface.commands.add(
             # ---- Help menu ----------------------------------
             Command(
                 simple_handler(self.interface.about),
-                "About " + formal_name,
+                f"About {self.interface.formal_name}",
                 group=Group.HELP,
                 id=Command.ABOUT,
             ),
@@ -43,9 +45,6 @@ class App:
                 id=Command.PREFERENCES,
             ),
         )
-
-    def _menu_about(self, command, **kwargs):
-        self.interface.about()
 
     def create_menus(self):
         # Web menus are created on the Window.
