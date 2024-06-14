@@ -23,17 +23,9 @@ class App(LoggedObject):
         self._action("create App")
         self.interface._startup()
 
-    def create_app_commands(self):
-        self._action("create App commands")
+    def create_minimal_app_commands(self):
+        self._action("create minimal App commands")
         self.interface.commands.add(
-            Command(
-                simple_handler(self.interface.preferences),
-                "Preferences",
-                group=Group.APP,
-                # For now, only enable preferences if the user defines an implementation
-                enabled=overridden(self.interface.preferences),
-                id=Command.PREFERENCES,
-            ),
             # Invoke `on_exit` rather than `exit`, because we want to trigger the "OK to
             # exit?" logic. It's already a bound handler, so we can use it directly.
             Command(
@@ -48,6 +40,19 @@ class App(LoggedObject):
                 f"About {self.interface.formal_name}",
                 group=Group.HELP,
                 id=Command.ABOUT,
+            ),
+        )
+
+    def create_standard_app_commands(self):
+        self._action("create standard App commands")
+        self.interface.commands.add(
+            Command(
+                simple_handler(self.interface.preferences),
+                "Preferences",
+                group=Group.APP,
+                # For now, only enable preferences if the user defines an implementation
+                enabled=overridden(self.interface.preferences),
+                id=Command.PREFERENCES,
             ),
             Command(
                 simple_handler(self.interface.visit_homepage),
