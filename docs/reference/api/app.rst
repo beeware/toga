@@ -72,7 +72,41 @@ format compatible with :any:`importlib.metadata`. If you deploy your app with `B
 
 A Toga app will install a number of default commands to reflect core application
 functionality (such as the Quit/Exit menu item, and the About menu item). The IDs for
-these commands are defined as constants on the :class:`~toga.Command` class.
+these commands are defined as constants on the :class:`~toga.Command` class. These
+commands are installed by the :meth:`~toga.App.create_app_commands()` method; this
+method is invoked *after* :meth:`~toga.App.startup()`, but *before* menus are populated
+for the first time. If you wish to customize the menu items exposed by your app, you should
+override the :meth:`~toga.App.create_app_commands()` method.
+
+Assigning a main window
+-----------------------
+
+An app *must* assign ``main_window`` as part of the startup process. However, the value
+that is assigned as the main window will affect the behavior of the app.
+
+Standard app
+~~~~~~~~~~~~
+
+The most common type of app will assign a :any:`toga.MainWindow` instance as the main
+window. On platforms that have menu bars inside their windows, this will create a main
+window with a menu bar, populated with the default app commands. The window assigned as
+the main window will have its title set to the formal name of the app. A
+:any:`toga.MainWindow` may also have a toolbar. When the main window is closed, the app
+will exit.
+
+This is the type of app that will be created if you use an instance of :any:`toga.App`
+passing in a ``startup`` argument to the constructor.
+
+Simple app
+~~~~~~~~~~
+
+To create an app that *doesn't* have these default menu items, or you can assign an
+instance of :any:`toga.Window` as the main window. A :any:`toga.Window` does not have a
+menu bar; and as a result, neither will your app. As with a normal app, the window
+assigned as the main window will have its title set to the formal name of the app; and
+when the main window is closed, the app will exit. The :any:`toga.Window` instance used
+used as the main window *must* be closable (i.e., you can't specify `closable=False`) -
+otherwise, you wouldn't be able to exit the app.
 
 Notes
 -----
