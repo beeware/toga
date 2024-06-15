@@ -10,6 +10,7 @@ from androidx.core.content import ContextCompat
 from java import dynamic_proxy
 from org.beeware.android import IPythonApp, MainActivity
 
+import toga
 from toga.command import Command, Group, Separator
 from toga.handlers import simple_handler
 
@@ -182,6 +183,9 @@ class TogaApp(dynamic_proxy(IPythonApp)):
 
 
 class App:
+    # Android apps exit when the last window is closed
+    CLOSE_ON_LAST_WINDOW = True
+
     def __init__(self, interface):
         self.interface = interface
         self.interface._impl = self
@@ -241,10 +245,15 @@ class App:
         pass  # pragma: no cover
 
     def set_main_window(self, window):
-        # The default layout of an Android app includes a titlebar; a simple App then
-        # hides that titlebar. We know what type of app we have when the main window is
-        # set.
-        self.interface.main_window._impl.configure_titlebar()
+        if window is None:
+            raise RuntimeError("Session-based apps are not supported on Android")
+        elif window == toga.App.BACKGROUND:
+            raise RuntimeError("Background apps are not supported on Android")
+        else:
+            # The default layout of an Android app includes a titlebar; a simple App
+            # then hides that titlebar. We know what type of app we have when the main
+            # window is set.
+            self.interface.main_window._impl.configure_titlebar()
 
     ######################################################################
     # App resources

@@ -4,6 +4,7 @@ import sys
 from rubicon.objc import objc_method
 from rubicon.objc.eventloop import EventLoopPolicy, iOSLifecycle
 
+import toga
 from toga.command import Command
 from toga.handlers import simple_handler
 from toga_iOS.libs import UIResponder, UIScreen, av_foundation
@@ -51,6 +52,9 @@ class PythonAppDelegate(UIResponder):
 
 
 class App:
+    # iOS apps exit when the last window is closed
+    CLOSE_ON_LAST_WINDOW = True
+
     def __init__(self, interface):
         self.interface = interface
         self.interface._impl = self
@@ -105,7 +109,10 @@ class App:
         pass  # pragma: no cover
 
     def set_main_window(self, window):
-        pass
+        if window is None:
+            raise RuntimeError("Session-based apps are not supported on Android")
+        elif window == toga.App.BACKGROUND:
+            raise RuntimeError("Background apps are not supported on Android")
 
     ######################################################################
     # App resources
