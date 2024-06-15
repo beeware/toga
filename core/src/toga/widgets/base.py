@@ -54,7 +54,10 @@ class Widget(Node):
     def __del__(self, *a, **kw):
         if type(self).__name__ in {"MapView", "WebView"}:
             import threading
-            print(f"\n{hex(threading.get_ident())}: {type(self).__name__}.__del__ for id:{id(self)}")
+
+            print(
+                f"\n{hex(threading.get_ident())}: {type(self).__name__}.__del__ for id:{self._id}"
+            )
 
     @property
     def id(self) -> str:
