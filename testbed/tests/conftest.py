@@ -69,14 +69,22 @@ async def main_window_probe(app, main_window):
 
 # Controls the event loop used by pytest-asyncio.
 @fixture(scope="session")
-def event_loop(app):
-    loop = ProxyEventLoop(app._impl.loop)
-    yield loop
-    loop.close()
+def event_loop_policy(app):
+    yield ProxyEventLoopPolicy(ProxyEventLoop(app._impl.loop))
 
 
-# Proxy which forwards all tasks to another event loop in a thread-safe manner. It
-# implements only the methods used by pytest-asyncio.
+# Loop policy that ensures proxy loop is always used.
+class ProxyEventLoopPolicy(asyncio.DefaultEventLoopPolicy):
+    def __init__(self, proxy_loop: "ProxyEventLoop"):
+        super().__init__()
+        self._proxy_loop = proxy_loop
+
+    def new_event_loop(self):
+        return self._proxy_loop
+
+
+# Proxy which forwards all tasks to another event loop in a thread-safe manner.
+# It implements only the methods used by pytest-asyncio.
 @dataclass
 class ProxyEventLoop(asyncio.AbstractEventLoop):
     loop: object
