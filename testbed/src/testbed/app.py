@@ -4,6 +4,10 @@ import toga
 
 
 class Testbed(toga.App):
+    # Objects can be added to this list to avoid them being garbage collected in the
+    # middle of the tests running. This is problematic, at least, for WebView (#2648).
+    _gc_protector = []
+
     def startup(self):
         # Set a default return code for the app, so that a value is
         # available if the app exits for a reason other than the test
@@ -95,6 +99,7 @@ class Testbed(toga.App):
         self.main_window.show()
 
         import threading
+
         print(f"App thread id:   {hex(threading.get_ident())}")
 
 
