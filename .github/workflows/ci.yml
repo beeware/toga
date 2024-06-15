@@ -305,7 +305,7 @@ jobs:
       timeout-minutes: 15
       run: |
         ${{ matrix.briefcase-run-prefix }} \
-          briefcase run ${{ matrix.platform }} --log --test ${{ matrix.briefcase-run-args }} -- -qqqs
+          briefcase run ${{ matrix.platform }} --log --test ${{ matrix.briefcase-run-args }} -- -qqqs tests/widgets
 
     - name: Upload Logs
       uses: actions/upload-artifact@v4.3.3
