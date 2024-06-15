@@ -16,6 +16,19 @@ register_assert_rewrite("tests.widgets")
 register_assert_rewrite("tests_backend")
 
 
+# import gc, threading
+#
+# @fixture(autouse=True)
+# def gc_collect():
+#    print(f"running gc in thread ID: {hex(threading.get_ident())}")
+#    gc.collect()
+
+
+def pytest_report_teststatus(report, config):
+    if report.passed and report.when == "call":
+        return report.outcome, "", report.outcome.upper()
+
+
 # Use this for widgets or tests which are not supported on some platforms, but could be
 # supported in the future.
 def skip_on_platforms(*platforms):

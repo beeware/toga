@@ -5,6 +5,8 @@ from toga.widgets.webview import JavaScriptResult
 from ..libs import GLib, WebKit2
 from .base import Widget
 
+import threading
+
 
 class WebView(Widget):
     """GTK WebView implementation."""
@@ -19,6 +21,13 @@ class WebView(Widget):
             )
 
         self.native = WebKit2.WebView()
+
+        print(f"\n{hex(threading.get_ident())}: Created WebView for id:{id(self)}")
+
+        def webview_del(*a, **kw):
+            print(f"{hex(threading.get_ident())}: toga.WebView.native.__del__")
+        
+        self.native.__del__ = webview_del
 
         settings = self.native.get_settings()
         settings.set_property("enable-developer-extras", True)

@@ -78,6 +78,9 @@ class MapView(Widget):
 
         self.native = WebKit2.WebView()
 
+        import threading
+        print(f"\n{hex(threading.get_ident())}: Created MapView for id:{id(self)}")
+
         # Debugging: to enable the developer view.
         # settings = self.native.get_settings()
         # settings.set_property("enable-developer-extras", True)

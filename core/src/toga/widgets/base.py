@@ -51,6 +51,11 @@ class Widget(Node):
     def __lt__(self, other: Widget) -> bool:
         return self.id < other.id
 
+    def __del__(self, *a, **kw):
+        if type(self).__name__ in {"MapView", "WebView"}:
+            import threading
+            print(f"\n{hex(threading.get_ident())}: {type(self).__name__}.__del__ for id:{id(self)}")
+
     @property
     def id(self) -> str:
         """The DOM identifier for the widget.

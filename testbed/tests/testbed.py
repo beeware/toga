@@ -14,6 +14,8 @@ from testbed.app import main
 
 
 def run_tests(app, cov, args, report_coverage, run_slow):
+    import threading
+    print(f"Tests thread id: {hex(threading.get_ident())}")
     try:
         # Wait for the app's main window to be visible.
         print("Waiting for app to be ready for testing... ", end="", flush=True)

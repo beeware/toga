@@ -30,180 +30,181 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  pre-commit:
-    name: Pre-commit checks
-    uses: beeware/.github/.github/workflows/pre-commit-run.yml@main
-    with:
-      pre-commit-source: "./core[dev]"
-
-  towncrier:
-    name: Check towncrier
-    uses: beeware/.github/.github/workflows/towncrier-run.yml@main
-    with:
-      tox-source: "./core[dev]"
-
-  package:
-    name: Package Toga
-    permissions:
-      id-token: write
-      contents: read
-      attestations: write
-    strategy:
-      matrix:
-        subdir:
-        - "android"
-        - "cocoa"
-        - "core"
-        - "demo"
-        - "dummy"
-        - "gtk"
-        - "iOS"
-        - "toga"
-        - "textual"
-        - "web"
-        - "winforms"
-    uses: beeware/.github/.github/workflows/python-package-create.yml@main
-    with:
-      build-subdirectory: ${{ matrix.subdir }}
-      attest: ${{ inputs.attest-package }}
-
-  core:
-    name: Test core
-    runs-on: ${{ matrix.platform }}
-    needs: [ pre-commit, towncrier, package ]
-    continue-on-error: ${{ matrix.experimental }}
-    strategy:
-      fail-fast: false
-      matrix:
-        platform: [ "macos-12", "macos-14", "ubuntu-latest", "windows-latest" ]
-        python-version: [ "3.8", "3.12", "3.13-dev" ]
-        include:
-        - experimental: false
-        # Test Python 3.9-3.11 on Ubuntu only
-        - platform: "ubuntu-latest"
-          python-version: "3.9"
-          experimental: false
-        - platform: "ubuntu-latest"
-          python-version: "3.10"
-          experimental: false
-        - platform: "ubuntu-latest"
-          python-version: "3.11"
-          experimental: false
-        # Allow development Python to fail without failing entire job.
-        - python-version: "3.13-dev"
-          experimental: true
-        exclude:
-        # macos-14 (i.e. arm64) does not support Python 3.8
-        - platform: "macos-14"
-          python-version: "3.8"
-        # Pillow isn't available for Python 3.13 on Windows
-        - platform: "windows-latest"
-          python-version: "3.13-dev"
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v4.1.7
-      with:
-        fetch-depth: 0
-
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v5.1.0
-      with:
-        python-version: ${{ matrix.python-version }}
-
-    - name: Install Tox
-      uses: beeware/.github/.github/actions/install-requirement@main
-      with:
-        requirements: tox
-        extra: dev
-        project-root: core
-
-    - name: Get Packages
-      uses: actions/download-artifact@v4.1.7
-      with:
-        pattern: ${{ format('{0}-*', needs.package.outputs.artifact-basename) }}
-        merge-multiple: true
-        path: dist
-
-    - name: Test
-      run: |
-        # The $(ls ...) shell expansion is done in the Github environment;
-        # the value of TOGA_INSTALL_COMMAND will be a literal string without any shell expansions to perform
-        TOGA_INSTALL_COMMAND="python -m pip install ../$(ls dist/toga_core-*.whl)[dev] ../$(ls dist/toga_dummy-*.whl)" \
-          tox -e py-cov
-        tox -qe coverage$(tr -dc "0-9" <<< "${{ matrix.python-version }}")
-        mv core/.coverage core/.coverage.${{ matrix.platform }}.${{ matrix.python-version }}
-
-    - name: Store Coverage Data
-      uses: actions/upload-artifact@v4.3.3
-      with:
-        name: core-coverage-data-${{ matrix.platform }}-${{ matrix.python-version }}
-        path: "core/.coverage.*"
-        if-no-files-found: error
-
-  core-coverage:
-    name: Coverage
-    needs: core
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v4.1.7
-      with:
-        fetch-depth: 0
-
-    - name: Set up Python ${{ env.min_python_version }}
-      uses: actions/setup-python@v5.1.0
-      with:
-        # Use minimum version of python for coverage to avoid phantom branches
-        # https://github.com/nedbat/coveragepy/issues/1572#issuecomment-1522546425
-        python-version: ${{ env.min_python_version }}
-
-    - name: Install Tox
-      uses: beeware/.github/.github/actions/install-requirement@main
-      with:
-        requirements: tox
-        extra: dev
-        project-root: core
-
-    - name: Retrieve Coverage Data
-      uses: actions/download-artifact@v4.1.7
-      with:
-        pattern: core-coverage-data-*
-        path: core
-        merge-multiple: true
-
-    - name: Generate Coverage Report
-      run: tox -e coverage-html-fail-platform
-
-    - name: Upload HTML Coverage Report
-      uses: actions/upload-artifact@v4.3.3
-      if: failure()
-      with:
-        name: html-coverage-report
-        path: core/htmlcov
+#  pre-commit:
+#    name: Pre-commit checks
+#    uses: beeware/.github/.github/workflows/pre-commit-run.yml@main
+#    with:
+#      pre-commit-source: "./core[dev]"
+#
+#  towncrier:
+#    name: Check towncrier
+#    uses: beeware/.github/.github/workflows/towncrier-run.yml@main
+#    with:
+#      tox-source: "./core[dev]"
+#
+#  package:
+#    name: Package Toga
+#    permissions:
+#      id-token: write
+#      contents: read
+#      attestations: write
+#    strategy:
+#      matrix:
+#        subdir:
+#        - "android"
+#        - "cocoa"
+#        - "core"
+#        - "demo"
+#        - "dummy"
+#        - "gtk"
+#        - "iOS"
+#        - "toga"
+#        - "textual"
+#        - "web"
+#        - "winforms"
+#    uses: beeware/.github/.github/workflows/python-package-create.yml@main
+#    with:
+#      build-subdirectory: ${{ matrix.subdir }}
+#      attest: ${{ inputs.attest-package }}
+#
+#  core:
+#    name: Test core
+#    runs-on: ${{ matrix.platform }}
+#    needs: [ pre-commit, towncrier, package ]
+#    continue-on-error: ${{ matrix.experimental }}
+#    strategy:
+#      fail-fast: false
+#      matrix:
+#        platform: [ "macos-12", "macos-14", "ubuntu-latest", "windows-latest" ]
+#        python-version: [ "3.8", "3.12", "3.13-dev" ]
+#        include:
+#        - experimental: false
+#        # Test Python 3.9-3.11 on Ubuntu only
+#        - platform: "ubuntu-latest"
+#          python-version: "3.9"
+#          experimental: false
+#        - platform: "ubuntu-latest"
+#          python-version: "3.10"
+#          experimental: false
+#        - platform: "ubuntu-latest"
+#          python-version: "3.11"
+#          experimental: false
+#        # Allow development Python to fail without failing entire job.
+#        - python-version: "3.13-dev"
+#          experimental: true
+#        exclude:
+#        # macos-14 (i.e. arm64) does not support Python 3.8
+#        - platform: "macos-14"
+#          python-version: "3.8"
+#        # Pillow isn't available for Python 3.13 on Windows
+#        - platform: "windows-latest"
+#          python-version: "3.13-dev"
+#    steps:
+#    - name: Checkout
+#      uses: actions/checkout@v4.1.6
+#      with:
+#        fetch-depth: 0
+#
+#    - name: Set up Python ${{ matrix.python-version }}
+#      uses: actions/setup-python@v5.1.0
+#      with:
+#        python-version: ${{ matrix.python-version }}
+#
+#    - name: Install Tox
+#      uses: beeware/.github/.github/actions/install-requirement@main
+#      with:
+#        requirements: tox
+#        extra: dev
+#        project-root: core
+#
+#    - name: Get Packages
+#      uses: actions/download-artifact@v4.1.7
+#      with:
+#        pattern: ${{ format('{0}-*', needs.package.outputs.artifact-basename) }}
+#        merge-multiple: true
+#        path: dist
+#
+#    - name: Test
+#      run: |
+#        # The $(ls ...) shell expansion is done in the Github environment;
+#        # the value of TOGA_INSTALL_COMMAND will be a literal string without any shell expansions to perform
+#        TOGA_INSTALL_COMMAND="python -m pip install ../$(ls dist/toga_core-*.whl)[dev] ../$(ls dist/toga_dummy-*.whl)" \
+#          tox -e py-cov
+#        tox -qe coverage$(tr -dc "0-9" <<< "${{ matrix.python-version }}")
+#        mv core/.coverage core/.coverage.${{ matrix.platform }}.${{ matrix.python-version }}
+#
+#    - name: Store Coverage Data
+#      uses: actions/upload-artifact@v4.3.3
+#      with:
+#        name: core-coverage-data-${{ matrix.platform }}-${{ matrix.python-version }}
+#        path: "core/.coverage.*"
+#        if-no-files-found: error
+#
+#  core-coverage:
+#    name: Coverage
+#    needs: core
+#    runs-on: ubuntu-latest
+#    steps:
+#    - name: Checkout
+#      uses: actions/checkout@v4.1.6
+#      with:
+#        fetch-depth: 0
+#
+#    - name: Set up Python ${{ env.min_python_version }}
+#      uses: actions/setup-python@v5.1.0
+#      with:
+#        # Use minimum version of python for coverage to avoid phantom branches
+#        # https://github.com/nedbat/coveragepy/issues/1572#issuecomment-1522546425
+#        python-version: ${{ env.min_python_version }}
+#
+#    - name: Install Tox
+#      uses: beeware/.github/.github/actions/install-requirement@main
+#      with:
+#        requirements: tox
+#        extra: dev
+#        project-root: core
+#
+#    - name: Retrieve Coverage Data
+#      uses: actions/download-artifact@v4.1.7
+#      with:
+#        pattern: core-coverage-data-*
+#        path: core
+#        merge-multiple: true
+#
+#    - name: Generate Coverage Report
+#      run: tox -e coverage-html-fail-platform
+#
+#    - name: Upload HTML Coverage Report
+#      uses: actions/upload-artifact@v4.3.3
+#      if: failure()
+#      with:
+#        name: html-coverage-report
+#        path: core/htmlcov
 
   testbed:
     name: Testbed
-    needs: core
+#    needs: core
     runs-on: ${{ matrix.runs-on }}
     strategy:
       fail-fast: false
       matrix:
-        backend: [ "macOS-x86_64", "macOS-arm64", "windows", "linux", "android", "iOS" ]
+#        backend: [ "macOS-x86_64", "macOS-arm64", "windows", "linux", "android", "iOS" ]
+        backend: [ "linux" ]
         include:
         - pre-command: ""
           briefcase-run-prefix: ""
           briefcase-run-args: ""
           setup-python: true
 
-        - backend: "macOS-x86_64"
-          platform: "macOS"
-          runs-on: "macos-12"
-          app-user-data-path: "$HOME/Library/Application Support/org.beeware.toga.testbed"
-
-        - backend: "macOS-arm64"
-          platform: "macOS"
-          runs-on: "macos-14"
-          app-user-data-path: "$HOME/Library/Application Support/org.beeware.toga.testbed"
+#        - backend: "macOS-x86_64"
+#          platform: "macOS"
+#          runs-on: "macos-12"
+#          app-user-data-path: "$HOME/Library/Application Support/org.beeware.toga.testbed"
+#
+#        - backend: "macOS-arm64"
+#          platform: "macOS"
+#          runs-on: "macos-14"
+#          app-user-data-path: "$HOME/Library/Application Support/org.beeware.toga.testbed"
 
         # We use a fixed Ubuntu version rather than `-latest` because at some point,
         # `-latest` will be updated, but it will be a soft changeover, which would cause
@@ -236,41 +237,41 @@ jobs:
           setup-python: false  # Use the system Python packages
           app-user-data-path: "$HOME/.local/share/testbed"
 
-        - backend: "windows"
-          platform: "windows"
-          runs-on: "windows-latest"
-          app-user-data-path: '$HOME\AppData\Local\Tiberius Yak\Toga Testbed\Data'
-
-        - backend: "iOS"
-          platform: "iOS"
-          runs-on: "macos-14"
-          # As of early April 2024, the XCode 15/iOS 17 simulator had a performance
-          # issue that rendered Github Actions testing impossible. The issue didn't
-          # impact iOS 16.4, but that required the use of Xcode 14.3.1.
-          #
-          # Refs #2476, actions/runner-images#9591.
-          pre-command: "sudo xcode-select -s /Applications/Xcode_14.3.1.app"
-          briefcase-run-args: "--device 'iPhone SE (3rd generation)::iOS 16.4'"
-          # briefcase-run-args: "--device 'iPhone SE (3rd generation)'"
-          app-user-data-path: "$(xcrun simctl get_app_container booted org.beeware.toga.testbed data)/Documents"
-
-        - backend: "android"
-          platform: "android"
-          runs-on: "ubuntu-latest"
-          briefcase-run-prefix: JAVA_HOME=${JAVA_HOME_17_X64}
-          briefcase-run-args: >
-            --device '{"avd":"beePhone","skin":"pixel_3a"}'
-            --Xemulator=-no-window
-            --Xemulator=-no-snapshot
-            --Xemulator=-no-audio
-            --Xemulator=-no-boot-anim
-            --shutdown-on-exit
-          pre-command: |
-            # allow access to KVM to run the emulator
-            echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' \
-              | sudo tee /etc/udev/rules.d/99-kvm4all.rules
-            sudo udevadm control --reload-rules
-            sudo udevadm trigger --name-match=kvm
+#        - backend: "windows"
+#          platform: "windows"
+#          runs-on: "windows-latest"
+#          app-user-data-path: '$HOME\AppData\Local\Tiberius Yak\Toga Testbed\Data'
+#
+#        - backend: "iOS"
+#          platform: "iOS"
+#          runs-on: "macos-14"
+#          # As of early April 2024, the XCode 15/iOS 17 simulator had a performance
+#          # issue that rendered Github Actions testing impossible. The issue didn't
+#          # impact iOS 16.4, but that required the use of Xcode 14.3.1.
+#          #
+#          # Refs #2476, actions/runner-images#9591.
+#          pre-command: "sudo xcode-select -s /Applications/Xcode_14.3.1.app"
+#          briefcase-run-args: "--device 'iPhone SE (3rd generation)::iOS 16.4'"
+#          # briefcase-run-args: "--device 'iPhone SE (3rd generation)'"
+#          app-user-data-path: "$(xcrun simctl get_app_container booted org.beeware.toga.testbed data)/Documents"
+#
+#        - backend: "android"
+#          platform: "android"
+#          runs-on: "ubuntu-latest"
+#          briefcase-run-prefix: JAVA_HOME=${JAVA_HOME_17_X64}
+#          briefcase-run-args: >
+#            --device '{"avd":"beePhone","skin":"pixel_3a"}'
+#            --Xemulator=-no-window
+#            --Xemulator=-no-snapshot
+#            --Xemulator=-no-audio
+#            --Xemulator=-no-boot-anim
+#            --shutdown-on-exit
+#          pre-command: |
+#            # allow access to KVM to run the emulator
+#            echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' \
+#              | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+#            sudo udevadm control --reload-rules
+#            sudo udevadm trigger --name-match=kvm
     steps:
     # Github runners seem to have intermittent connectivity issues.
     # See https://github.com/beeware/toga/issues/2632
@@ -304,7 +305,7 @@ jobs:
       timeout-minutes: 15
       run: |
         ${{ matrix.briefcase-run-prefix }} \
-          briefcase run ${{ matrix.platform }} --log --test ${{ matrix.briefcase-run-args }}
+          briefcase run ${{ matrix.platform }} --log --test ${{ matrix.briefcase-run-args }} -- -qqqs
 
     - name: Upload Logs
       uses: actions/upload-artifact@v4.3.3

@@ -94,6 +94,9 @@ class Testbed(toga.App):
         )
         self.main_window.show()
 
+        import threading
+        print(f"App thread id:   {hex(threading.get_ident())}")
+
 
 def main():
     return Testbed(app_name="testbed")
