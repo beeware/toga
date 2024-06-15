@@ -1,7 +1,6 @@
 [project]
 name = "testbed"
 version = "0.0.1"
-dependencies = ["../core"]
 
 [project.optional-dependencies]
 test = [
@@ -32,6 +31,9 @@ sources = [
 ]
 test_sources = [
     "tests",
+]
+requires = [
+    "../core",
 ]
 
 permission.camera = "The testbed needs to exercise Camera APIs"
