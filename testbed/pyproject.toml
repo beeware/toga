@@ -6,9 +6,9 @@ dependencies = ["../core"]
 [project.optional-dependencies]
 test = [
     "coverage==7.5.3",
-    # fonttools is only needed by Android, but we need to use 
+    # fonttools is only needed by Android, but we need to use
     # sys.platform == 'linux' as there's no dependency identifier
-    # that can target Android exclusively until 3.13 lands. 
+    # that can target Android exclusively until 3.13 lands.
     "fonttools==4.53.0 ; sys.platform == 'linux'",
     "pillow==9.2.0",
     "pytest==8.2.2",
