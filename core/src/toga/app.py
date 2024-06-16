@@ -858,7 +858,8 @@ class App:
         Make one or more windows full screen.
 
         Full screen is not the same as "maximized"; full screen mode is when all window
-        borders and other window decorations are no longer visible.
+        borders and other window decorations are no longer visible, but the toolbars and
+        app menu are visible.
 
         :param windows: The list of windows to go full screen, in order of allocation to
             screens. If the number of windows exceeds the number of available displays,
@@ -894,11 +895,11 @@ class App:
     ) -> None:
         """Enter into presentation mode with one or more windows on different screens.
 
-        Presentation mode is not the same as Full Screen mode; full screen mode is when all window
-        borders and other window decorations are no longer visible.
+        Presentation mode is not the same as "Full Screen" mode; presentation mode is when
+        window borders, other window decorations, app menu and toolbars are no longer visible.
 
         :param window_list_or_screen_window_dict: A list of windows, or a dictionary
-            mapping screens to windows, to go into full screen, in order of allocation to
+            mapping screens to windows, to go into presentation, in order of allocation to
             screens. If the number of windows exceeds the number of available displays,
             those windows will not be visible.
         """
