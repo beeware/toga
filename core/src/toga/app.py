@@ -858,8 +858,7 @@ class App:
         Make one or more windows full screen.
 
         Full screen is not the same as "maximized"; full screen mode is when all window
-        borders and other window decorations are no longer visible, but the toolbars and
-        app menu are visible.
+        borders and other window decorations are no longer visible.
 
         :param windows: The list of windows to go full screen, in order of allocation to
             screens. If the number of windows exceeds the number of available displays,
@@ -874,13 +873,10 @@ class App:
         #     DeprecationWarning,
         #     stacklevel=2,
         # )
-        self.exit_full_screen()
+        self.exit_presentation_mode()
         if any(window is None for window in windows):
             return
-        screen_window_dict = dict()
-        for window, screen in zip(windows, self.screens):
-            screen_window_dict[screen] = window
-        self.enter_presentation_mode(screen_window_dict)
+        self.enter_presentation_mode([*windows])
 
     # ---------------------------------------------------------------------
 
@@ -891,24 +887,24 @@ class App:
 
     def enter_presentation_mode(
         self,
-        window_list_or_screen_window_dict: list[Window] | dict[Screen, Window],
+        windows: list[Window] | dict[Screen, Window],
     ) -> None:
         """Enter into presentation mode with one or more windows on different screens.
 
         Presentation mode is not the same as "Full Screen" mode; presentation mode is when
         window borders, other window decorations, app menu and toolbars are no longer visible.
 
-        :param window_list_or_screen_window_dict: A list of windows, or a dictionary
+        :param windows: A list of windows, or a dictionary
             mapping screens to windows, to go into presentation, in order of allocation to
             screens. If the number of windows exceeds the number of available displays,
             those windows will not be visible.
         """
         screen_window_dict = dict()
-        if isinstance(window_list_or_screen_window_dict, list):
-            for window, screen in zip(window_list_or_screen_window_dict, self.screens):
+        if isinstance(windows, list):
+            for window, screen in zip(windows, self.screens):
                 screen_window_dict[screen] = window
-        elif isinstance(window_list_or_screen_window_dict, dict):
-            screen_window_dict = window_list_or_screen_window_dict
+        elif isinstance(windows, dict):
+            screen_window_dict = windows
         else:
             return
         self._impl.enter_presentation_mode(screen_window_dict)
