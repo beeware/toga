@@ -237,6 +237,10 @@ def test_create(
 
     metadata_mock.assert_called_once_with(expected_app_name)
 
+    # Preferences menu item exists, but is disabled
+    assert toga.Command.PREFERENCES in app.commands
+    assert not app.commands[toga.Command.PREFERENCES].enabled
+
 
 @pytest.mark.parametrize(
     "kwargs, exc_type, message",
@@ -462,7 +466,7 @@ def test_startup_method(event_loop):
 
     def startup_assertions(app):
         # At time startup is invoked, there should be an app command installed
-        assert len(app.commands) == 1
+        assert len(app.commands) == 4
         return toga.Box()
 
     startup = Mock(side_effect=startup_assertions)
@@ -476,8 +480,8 @@ def test_startup_method(event_loop):
     assert_action_performed(app, "create App commands")
     startup.assert_called_once_with(app)
     assert_action_performed(app, "create App menus")
-    # There is only 1 menu item - the app command
-    assert app._impl.n_menu_items == 1
+    # 4 menu items have been created
+    assert len(app.commands) == 4
 
 
 def test_startup_subclass(event_loop):
@@ -488,7 +492,7 @@ def test_startup_subclass(event_loop):
             self.main_window = toga.MainWindow()
 
             # At time startup is invoked, there should be an app command installed
-            assert len(self.commands) == 1
+            assert len(self.commands) == 4
 
             # Add an extra user command
             self.commands.add(toga.Command(None, "User command"))
@@ -500,8 +504,8 @@ def test_startup_subclass(event_loop):
 
     assert_action_performed(app, "create App commands")
     assert_action_performed(app, "create App menus")
-    # 2 menu items have been created
-    assert app._impl.n_menu_items == 2
+    # 5 menu items have been created
+    assert app._impl.n_menu_items == 5
 
 
 def test_startup_subclass_no_main_window(event_loop):
