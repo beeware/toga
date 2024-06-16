@@ -239,7 +239,7 @@ class Window(Container, Scalable):
             if self.native.FormBorderStyle == getattr(WinForms.FormBorderStyle, "None"):
                 # Use a shadow variable since a window without any app menu and toolbar
                 # in presentation mode would be indistinguishable from full screen mode.
-                if getattr(self, "_is_in_presentation_mode", False) is True:
+                if getattr(self, "_is_presentation_mode", False) is True:
                     return WindowState.PRESENTATION
                 else:
                     return WindowState.FULLSCREEN
@@ -265,7 +265,7 @@ class Window(Container, Scalable):
 
                 self.interface.screen = self._before_presentation_mode_screen
                 self._before_presentation_mode_screen = None
-                self._is_in_presentation_mode = False
+                self._is_presentation_mode = False
 
             self.native.FormBorderStyle = getattr(
                 WinForms.FormBorderStyle,
@@ -292,7 +292,7 @@ class Window(Container, Scalable):
                     self.toolbar_native.Visible = False
                 self.native.FormBorderStyle = getattr(WinForms.FormBorderStyle, "None")
                 self.native.WindowState = WinForms.FormWindowState.Maximized
-                self._is_in_presentation_mode = True
+                self._is_presentation_mode = True
             else:  # pragma: no cover
                 # Marking this as no cover, since the type of the state parameter
                 # value is checked on the interface.

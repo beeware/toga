@@ -475,7 +475,7 @@ def test_presentation_mode(event_loop):
     window1 = toga.Window()
     window2 = toga.Window()
 
-    assert not app.is_in_presentation_mode
+    assert not app.is_presentation_mode
 
     # If we're not in presentation mode, exiting presentation mode is a no-op
     app.exit_presentation_mode()
@@ -487,7 +487,7 @@ def test_presentation_mode(event_loop):
 
     # Enter presentation mode with 1 window:
     app.enter_presentation_mode({app.screens[0]: window1})
-    assert app.is_in_presentation_mode
+    assert app.is_presentation_mode
     assert_action_performed_with(
         app,
         "enter presentation mode",
@@ -502,7 +502,7 @@ def test_presentation_mode(event_loop):
 
     # Enter presentation mode with 2 windows:
     app.enter_presentation_mode([window1, window2])
-    assert app.is_in_presentation_mode
+    assert app.is_presentation_mode
     assert_action_performed_with(
         app,
         "enter presentation mode",
@@ -518,7 +518,7 @@ def test_presentation_mode(event_loop):
     # Entering presentation mode with 3 windows should drop the last window,
     # as the app has only 2 screens:
     app.enter_presentation_mode([app.main_window, window2, window1])
-    assert app.is_in_presentation_mode
+    assert app.is_presentation_mode
     assert_action_performed_with(
         app,
         "enter presentation mode",

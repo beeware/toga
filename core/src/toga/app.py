@@ -838,19 +838,19 @@ class App:
 
     @property
     def is_full_screen(self) -> bool:
-        """**DEPRECATED** – Use :any:`App.is_in_presentation_mode`.
+        """**DEPRECATED** – Use :any:`App.is_presentation_mode`.
 
         Is the app currently in full screen mode?
 
         """
         # warn(
         #     (
-        #         "`App.is_full_screen` is deprecated. Use `App.is_in_presentation_mode` instead."
+        #         "`App.is_full_screen` is deprecated. Use `App.is_presentation_mode` instead."
         #     ),
         #     DeprecationWarning,
         #     stacklevel=2,
         # )
-        return self.is_in_presentation_mode
+        return self.is_presentation_mode
 
     def set_full_screen(self, *windows: Window) -> None:
         """**DEPRECATED** – Use :any:`App.enter_presentation_mode()` and :any:`App.exit_presentation_mode()`.
@@ -885,7 +885,7 @@ class App:
     # ---------------------------------------------------------------------
 
     @property
-    def is_in_presentation_mode(self) -> bool:
+    def is_presentation_mode(self) -> bool:
         """Is the app currently in presentation mode?"""
         return any(window.state == WindowState.PRESENTATION for window in self.windows)
 
@@ -915,7 +915,7 @@ class App:
 
     def exit_presentation_mode(self) -> None:
         """Exit presentation mode."""
-        if self.is_in_presentation_mode:
+        if self.is_presentation_mode:
             self._impl.exit_presentation_mode()
         else:
             return

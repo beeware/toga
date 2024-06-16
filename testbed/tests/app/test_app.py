@@ -40,7 +40,7 @@ if toga.platform.current_platform in {"iOS", "android"}:
 
     async def test_presentation_mode(app, app_probe, main_window, main_window_probe):
         """The app can enter into presentation mode"""
-        assert not app.is_in_presentation_mode
+        assert not app.is_presentation_mode
         assert not main_window_probe.is_window_state(WindowState.PRESENTATION)
 
         # Enter presentation mode with main window via the app
@@ -49,7 +49,7 @@ if toga.platform.current_platform in {"iOS", "android"}:
             "Main window is in presentation mode", full_screen=True
         )
 
-        assert app.is_in_presentation_mode
+        assert app.is_presentation_mode
         assert not main_window_probe.is_window_state(WindowState.NORMAL)
         assert main_window_probe.is_window_state(WindowState.PRESENTATION)
 
@@ -60,7 +60,7 @@ if toga.platform.current_platform in {"iOS", "android"}:
             full_screen=True,
         )
 
-        assert not app.is_in_presentation_mode
+        assert not app.is_presentation_mode
         assert not main_window_probe.is_window_state(WindowState.PRESENTATION)
         assert main_window_probe.is_window_state(WindowState.NORMAL)
 
@@ -70,7 +70,7 @@ if toga.platform.current_platform in {"iOS", "android"}:
             "Main window is in presentation mode", full_screen=True
         )
 
-        assert app.is_in_presentation_mode
+        assert app.is_presentation_mode
         assert not main_window_probe.is_window_state(WindowState.NORMAL)
         assert main_window_probe.is_window_state(WindowState.PRESENTATION)
 
@@ -81,7 +81,7 @@ if toga.platform.current_platform in {"iOS", "android"}:
             full_screen=True,
         )
 
-        assert not app.is_in_presentation_mode
+        assert not app.is_presentation_mode
         assert not main_window_probe.is_window_state(WindowState.PRESENTATION)
         assert main_window_probe.is_window_state(WindowState.NORMAL)
 
@@ -362,7 +362,7 @@ else:
             # Add delay for gtk to show the windows
             await app_probe.redraw("Extra windows are visible", delay=0.1)
 
-            assert not app.is_in_presentation_mode
+            assert not app.is_presentation_mode
             assert not main_window_probe.is_window_state(WindowState.PRESENTATION)
             assert not window1_probe.is_window_state(WindowState.PRESENTATION)
             assert window2_probe.has_toolbar()
@@ -379,7 +379,7 @@ else:
                 "Main window is in presentation mode",
                 full_screen=True,
             )
-            assert app.is_in_presentation_mode
+            assert app.is_presentation_mode
 
             assert not window1_probe.is_window_state(WindowState.PRESENTATION)
             assert window1_probe.presentation_content_size == initial_content1_size
@@ -395,7 +395,7 @@ else:
                 "Main window is no longer in presentation mode",
                 full_screen=True,
             )
-            assert not app.is_in_presentation_mode
+            assert not app.is_presentation_mode
             assert (
                 main_window_probe.presentation_content_size
                 == initial_content_main_window_size
@@ -407,7 +407,7 @@ else:
                 "Second extra window is in presentation mode",
                 full_screen=True,
             )
-            assert app.is_in_presentation_mode
+            assert app.is_presentation_mode
 
             assert not window1_probe.is_window_state(WindowState.PRESENTATION)
             assert window1_probe.presentation_content_size == initial_content1_size
@@ -421,7 +421,7 @@ else:
                 "Second extra window is no longer in presentation mode",
                 full_screen=True,
             )
-            assert not app.is_in_presentation_mode
+            assert not app.is_presentation_mode
             assert window2_probe.presentation_content_size == initial_content2_size
 
             # Enter presentation mode with a screen-window1 dict via the app
@@ -430,7 +430,7 @@ else:
                 "First extra window is in presentation mode",
                 full_screen=True,
             )
-            assert app.is_in_presentation_mode
+            assert app.is_presentation_mode
 
             assert not window2_probe.is_window_state(WindowState.PRESENTATION)
             assert window2_probe.presentation_content_size == initial_content2_size
@@ -444,7 +444,7 @@ else:
                 "First extra window is no longer in presentation mode",
                 full_screen=True,
             )
-            assert not app.is_in_presentation_mode
+            assert not app.is_presentation_mode
             assert window1_probe.presentation_content_size == initial_content1_size
 
             if len(app.screens) < 2:
@@ -455,7 +455,7 @@ else:
                     "First extra window is in presentation mode",
                     full_screen=True,
                 )
-                assert app.is_in_presentation_mode
+                assert app.is_presentation_mode
 
                 assert not window2_probe.is_window_state(WindowState.PRESENTATION)
                 assert window2_probe.presentation_content_size == initial_content2_size
@@ -469,7 +469,7 @@ else:
                     "First extra window is no longer in presentation mode",
                     full_screen=True,
                 )
-                assert not app.is_in_presentation_mode
+                assert not app.is_presentation_mode
                 assert window1_probe.presentation_content_size == initial_content1_size
         finally:
             window1.close()

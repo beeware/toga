@@ -50,7 +50,7 @@ class WindowProbe(BaseProbe):
         elif window_state_flags & Gdk.WindowState.FULLSCREEN:
             # Use a shadow variable since a window without any app menu and toolbar
             # in presentation mode would be indistinguishable from full screen mode.
-            if getattr(self.impl, "_is_in_presentation_mode", False) is True:
+            if getattr(self.impl, "_is_presentation_mode", False) is True:
                 current_state = WindowState.PRESENTATION
             else:
                 current_state = WindowState.FULLSCREEN
