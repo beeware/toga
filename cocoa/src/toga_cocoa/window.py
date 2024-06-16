@@ -3,6 +3,7 @@ from rubicon.objc import CGSize
 from toga.command import Command, Separator
 from toga.constants import WindowState
 from toga.types import Position, Size
+from toga.window import _initial_position
 from toga_cocoa.container import Container
 from toga_cocoa.libs import (
     SEL,
@@ -167,7 +168,7 @@ class Window:
 
         self.set_title(title)
         self.set_size(size)
-        self.set_position(position)
+        self.set_position(position if position is not None else _initial_position())
 
         self.native.delegate = self.native
 

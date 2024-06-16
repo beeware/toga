@@ -1,5 +1,7 @@
 import toga
-from toga.command import Separator
+from toga.app import overridden
+from toga.command import Command, Group, Separator
+from toga.handlers import simple_handler
 from toga_web.libs import create_element, js
 from toga_web.window import Window
 
@@ -32,15 +34,20 @@ class App:
 
         self.interface.commands.add(
             # ---- Help menu ----------------------------------
-            toga.Command(
-                self._menu_about,
+            Command(
+                simple_handler(self.interface.about),
                 "About " + formal_name,
-                group=toga.Group.HELP,
+                group=Group.HELP,
+                id=Command.ABOUT,
             ),
-            toga.Command(
-                None,
+            # Include a preferences menu item; but only enable it if the user has
+            # overridden it in their App class.
+            Command(
+                simple_handler(self.interface.preferences),
                 "Preferences",
-                group=toga.Group.HELP,
+                group=Group.HELP,
+                enabled=overridden(self.interface.preferences),
+                id=Command.PREFERENCES,
             ),
         )
 

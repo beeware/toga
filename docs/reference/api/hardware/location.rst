@@ -8,7 +8,7 @@ A sensor that can capture the geographical location of the device.
    :header-rows: 1
    :file: ../../data/widgets_by_platform.csv
    :included_cols: 4,5,6,7,8,9,10
-   :exclude: {0: '(?!(Location|Hardware))'}
+   :include: {0: '^Location$'}
 
 Usage
 -----

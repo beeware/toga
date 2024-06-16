@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from toga.command import Separator
 from toga.constants import WindowState
 from toga.types import Position, Size
+from toga.window import _initial_position
 
 from .container import TogaContainer
 from .libs import Gdk, Gtk
@@ -34,7 +35,7 @@ class Window:
         self.native.set_default_size(size[0], size[1])
 
         self.set_title(title)
-        self.set_position(position)
+        self.set_position(position if position is not None else _initial_position())
 
         # Set the window deletable/closable.
         self.native.set_deletable(self.interface.closable)

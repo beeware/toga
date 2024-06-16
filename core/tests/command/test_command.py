@@ -75,6 +75,7 @@ def test_change_action():
     assert cmd.group == toga.Group.COMMANDS
     assert cmd.section == 0
     assert cmd.order == 0
+    assert cmd.id.startswith("cmd-")
     assert cmd.action._raw == action1
 
     # Change the action to a something new
@@ -101,6 +102,7 @@ def test_create_explicit(app):
         group=grp,
         section=3,
         order=4,
+        id="slartibartfast",
     )
 
     assert cmd.text == "Test command"
@@ -109,6 +111,7 @@ def test_create_explicit(app):
     assert cmd.group == grp
     assert cmd.section == 3
     assert cmd.order == 4
+    assert cmd.id == "slartibartfast"
 
     assert cmd.action._raw == handler
 

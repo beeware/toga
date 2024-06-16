@@ -2,8 +2,10 @@ import asyncio
 import sys
 from pathlib import Path
 
-from toga.command import Command
+from toga.app import overridden
+from toga.command import Command, Group
 from toga.constants import WindowState
+from toga.handlers import simple_handler
 
 from .screens import Screen as ScreenImpl
 from .utils import LoggedObject
@@ -31,8 +33,34 @@ class App(LoggedObject):
         self._action("create App commands")
         self.interface.commands.add(
             Command(
-                None,
+                simple_handler(self.interface.preferences),
+                "Preferences",
+                group=Group.APP,
+                # For now, only enable preferences if the user defines an implementation
+                enabled=overridden(self.interface.preferences),
+                id=Command.PREFERENCES,
+            ),
+            # Invoke `on_exit` rather than `exit`, because we want to trigger the "OK to
+            # exit?" logic. It's already a bound handler, so we can use it directly.
+            Command(
+                self.interface.on_exit,
+                "Exit",
+                group=Group.APP,
+                section=sys.maxsize,
+                id=Command.EXIT,
+            ),
+            Command(
+                simple_handler(self.interface.about),
                 f"About {self.interface.formal_name}",
+                group=Group.HELP,
+                id=Command.ABOUT,
+            ),
+            Command(
+                simple_handler(self.interface.visit_homepage),
+                "Visit homepage",
+                enabled=self.interface.home_page is not None,
+                group=Group.HELP,
+                id=Command.VISIT_HOMEPAGE,
             ),
         )
 

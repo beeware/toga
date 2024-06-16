@@ -3,6 +3,7 @@ from pathlib import Path
 import toga_dummy
 from toga.constants import WindowState
 from toga.types import Size
+from toga.window import _initial_position
 
 from .screens import Screen as ScreenImpl
 from .utils import LoggedObject
@@ -51,7 +52,7 @@ class Window(LoggedObject):
         self.container = Container()
 
         self.set_title(title)
-        self.set_position(position)
+        self.set_position(position if position is not None else _initial_position())
         self.set_size(size)
 
     def create_toolbar(self):

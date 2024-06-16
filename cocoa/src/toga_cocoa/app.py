@@ -8,7 +8,8 @@ from urllib.parse import unquote, urlparse
 from rubicon.objc.eventloop import CocoaLifecycle, EventLoopPolicy
 
 import toga
-from toga.command import Separator
+from toga.app import overridden
+from toga.command import Command, Separator
 from toga.constants import WindowState
 from toga.handlers import NativeHandler
 
@@ -163,9 +164,6 @@ class App:
     # Commands and menus
     ######################################################################
 
-    def _menu_about(self, command, **kwargs):
-        self.interface.about()
-
     def _menu_close_all_windows(self, command, **kwargs):
         # Convert to a list to so that we're not altering a set while iterating
         for window in list(self.interface.windows):
@@ -179,29 +177,28 @@ class App:
         if self.interface.current_window:
             self.interface.current_window._impl.native.miniaturize(None)
 
-    def _menu_quit(self, command, **kwargs):
-        self.interface.on_exit()
-
-    def _menu_visit_homepage(self, command, **kwargs):
-        self.interface.visit_homepage()
-
     def create_app_commands(self):
         formal_name = self.interface.formal_name
         self.interface.commands.add(
             # ---- App menu -----------------------------------
-            toga.Command(
-                self._menu_about,
+            Command(
+                simple_handler(self.interface.about),
                 "About " + formal_name,
                 group=toga.Group.APP,
+                id=Command.ABOUT,
             ),
-            toga.Command(
-                None,
+            # Include a preferences menu item; but only enable it if the user has
+            # overridden it in their App class.
+            Command(
+                simple_handler(self.interface.preferences),
                 "Settings\u2026",
                 shortcut=toga.Key.MOD_1 + ",",
                 group=toga.Group.APP,
                 section=20,
+                enabled=overridden(self.interface.preferences),
+                id=Command.PREFERENCES,
             ),
-            toga.Command(
+            Command(
                 NativeHandler(SEL("hide:")),
                 "Hide " + formal_name,
                 shortcut=toga.Key.MOD_1 + "h",
@@ -209,7 +206,7 @@ class App:
                 order=0,
                 section=sys.maxsize - 1,
             ),
-            toga.Command(
+            Command(
                 NativeHandler(SEL("hideOtherApplications:")),
                 "Hide Others",
                 shortcut=toga.Key.MOD_1 + toga.Key.MOD_2 + "h",
@@ -217,20 +214,23 @@ class App:
                 order=1,
                 section=sys.maxsize - 1,
             ),
-            toga.Command(
+            Command(
                 NativeHandler(SEL("unhideAllApplications:")),
                 "Show All",
                 group=toga.Group.APP,
                 order=2,
                 section=sys.maxsize - 1,
             ),
-            # Quit should always be the last item, in a section on its own
-            toga.Command(
-                self._menu_quit,
-                "Quit " + formal_name,
+            # Quit should always be the last item, in a section on its own. Invoke
+            # `on_exit` rather than `exit`, because we want to trigger the "OK to exit?"
+            # logic. It's already a bound handler, so we can use it directly.
+            Command(
+                self.interface.on_exit,
+                f"Quit {formal_name}",
                 shortcut=toga.Key.MOD_1 + "q",
                 group=toga.Group.APP,
                 section=sys.maxsize,
+                id=Command.EXIT,
             ),
             # ---- File menu ----------------------------------
             # This is a bit of an oddity. Apple HIG apps that don't have tabs as
@@ -238,7 +238,7 @@ class App:
             # have a "Close" item that becomes "Close All" when you press Option
             # (MOD_2). That behavior isn't something we're currently set up to
             # implement, so we live with a separate menu item for now.
-            toga.Command(
+            Command(
                 self._menu_close_window,
                 "Close",
                 shortcut=toga.Key.MOD_1 + "w",
@@ -246,7 +246,7 @@ class App:
                 order=1,
                 section=50,
             ),
-            toga.Command(
+            Command(
                 self._menu_close_all_windows,
                 "Close All",
                 shortcut=toga.Key.MOD_2 + toga.Key.MOD_1 + "w",
@@ -255,21 +255,21 @@ class App:
                 section=50,
             ),
             # ---- Edit menu ----------------------------------
-            toga.Command(
+            Command(
                 NativeHandler(SEL("undo:")),
                 "Undo",
                 shortcut=toga.Key.MOD_1 + "z",
                 group=toga.Group.EDIT,
                 order=10,
             ),
-            toga.Command(
+            Command(
                 NativeHandler(SEL("redo:")),
                 "Redo",
                 shortcut=toga.Key.SHIFT + toga.Key.MOD_1 + "z",
                 group=toga.Group.EDIT,
                 order=20,
             ),
-            toga.Command(
+            Command(
                 NativeHandler(SEL("cut:")),
                 "Cut",
                 shortcut=toga.Key.MOD_1 + "x",
@@ -277,7 +277,7 @@ class App:
                 section=10,
                 order=10,
             ),
-            toga.Command(
+            Command(
                 NativeHandler(SEL("copy:")),
                 "Copy",
                 shortcut=toga.Key.MOD_1 + "c",
@@ -285,7 +285,7 @@ class App:
                 section=10,
                 order=20,
             ),
-            toga.Command(
+            Command(
                 NativeHandler(SEL("paste:")),
                 "Paste",
                 shortcut=toga.Key.MOD_1 + "v",
@@ -293,7 +293,7 @@ class App:
                 section=10,
                 order=30,
             ),
-            toga.Command(
+            Command(
                 NativeHandler(SEL("pasteAsPlainText:")),
                 "Paste and Match Style",
                 shortcut=toga.Key.MOD_2 + toga.Key.SHIFT + toga.Key.MOD_1 + "v",
@@ -301,14 +301,14 @@ class App:
                 section=10,
                 order=40,
             ),
-            toga.Command(
+            Command(
                 NativeHandler(SEL("delete:")),
                 "Delete",
                 group=toga.Group.EDIT,
                 section=10,
                 order=50,
             ),
-            toga.Command(
+            Command(
                 NativeHandler(SEL("selectAll:")),
                 "Select All",
                 shortcut=toga.Key.MOD_1 + "a",
@@ -317,18 +317,19 @@ class App:
                 order=60,
             ),
             # ---- Window menu ----------------------------------
-            toga.Command(
+            Command(
                 self._menu_minimize,
                 "Minimize",
                 shortcut=toga.Key.MOD_1 + "m",
                 group=toga.Group.WINDOW,
             ),
             # ---- Help menu ----------------------------------
-            toga.Command(
-                self._menu_visit_homepage,
+            Command(
+                simple_handler(self.interface.visit_homepage),
                 "Visit homepage",
                 enabled=self.interface.home_page is not None,
                 group=toga.Group.HELP,
+                id=Command.VISIT_HOMEPAGE,
             ),
         )
 

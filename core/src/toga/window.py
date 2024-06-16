@@ -28,6 +28,29 @@ if TYPE_CHECKING:
     from toga.widgets.base import Widget
 
 
+_window_count = -1
+
+
+def _initial_position() -> Position:
+    """Compute a cascading initial position for platforms that don't have a native
+    implementation.
+
+    This is a stateful method; each time it is invoked, it will yield a new initial
+    position.
+
+    :returns: The position for the new window.
+    """
+    # Each new window created without an explicit position is positioned
+    # 50px down and to the right from the previous window, with the first
+    # window positioned at (100, 100). Every 15 windows, move back to a
+    # y coordinate of 100, and start from 50 pixels further right.
+    global _window_count
+    _window_count += 1
+
+    pos = 100 + (_window_count % 15) * 50
+    return Position(pos + (_window_count // 15 * 50), pos)
+
+
 class FilteredWidgetRegistry:
     # A class that exposes a mapping lookup interface, filtered to widgets from a single
     # window. The underlying data store is on the app.
@@ -118,7 +141,7 @@ class Window:
         self,
         id: str | None = None,
         title: str | None = None,
-        position: PositionT = Position(100, 100),
+        position: PositionT | None = None,
         size: SizeT = Size(640, 480),
         resizable: bool = True,
         closable: bool = True,
@@ -179,13 +202,11 @@ class Window:
         self._minimizable = minimizable
 
         self.factory = get_platform_factory()
-        position = Position(*position)
-        size = Size(*size)
         self._impl = getattr(self.factory, self._WINDOW_CLASS)(
             interface=self,
             title=title if title else self._default_title,
-            position=position,
-            size=size,
+            position=None if position is None else Position(*position),
+            size=Size(*size),
         )
 
         # Add the window to the app
