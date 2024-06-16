@@ -11,7 +11,7 @@ import toga
 from toga.app import overridden
 from toga.command import Command, Separator
 from toga.constants import WindowState
-from toga.handlers import NativeHandler
+from toga.handlers import NativeHandler, simple_handler
 
 from .keys import cocoa_key
 from .libs import (
