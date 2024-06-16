@@ -319,66 +319,99 @@ def test_full_screen(window, app):
     # assert_action_not_performed(window, "set window state to WindowState.NORMAL")
 
 
-def test_window_state(window):
+@pytest.mark.parametrize(
+    "state",
+    [
+        WindowState.MAXIMIZED,
+        WindowState.MINIMIZED,
+        WindowState.FULLSCREEN,
+        WindowState.PRESENTATION,
+    ],
+)
+def test_window_state(window, state):
     """A window can have different states."""
     assert window.state == WindowState.NORMAL
 
-    for state in WindowState:
-        if state != WindowState.NORMAL:
-            window.state = state
-            assert window.state == state
-            assert_action_performed_with(
-                window,
-                f"set window state to {state}",
-                state=state,
-            )
+    window.state = state
+    assert window.state == state
+    assert_action_performed_with(
+        window,
+        f"set window state to {state}",
+        state=state,
+    )
 
-            # Setting the window state same as the current window state is a no-op.
-            #
-            # Here, setting the same state twice and then checking with assert_action_not_performed will still
-            # report that the window state setting action was performed. This is because
-            # the action was also performed for the first-time setting of the window state,
-            # hence the action will still be in the EventLog and we cannot check if the
-            # action was done by the first call or the second call to the setter.
-            #
-            # For example: For the test, we need to set window state to WindowState.MAXIMIZED and
-            #              then again the window state needs to be set to WindowState.MAXIMIZED.
-            #              But doing so will cause the above mentioned problem.
-            # Hence, this is just to reach coverage.
-            window.state = WindowState.MAXIMIZED
-            assert window.state == WindowState.MAXIMIZED
-            window.state = WindowState.MAXIMIZED
-            assert window.state == WindowState.MAXIMIZED
-            # assert_action_not_performed(
-            #     window, "set window state to WindowState.MAXIMIZED"
-            # )
+    window.state = WindowState.NORMAL
+    assert window.state == WindowState.NORMAL
+    assert_action_performed_with(
+        window,
+        "set window state to WindowState.NORMAL",
+        state=WindowState.NORMAL,
+    )
 
-            window.state = WindowState.NORMAL
-            assert window.state == WindowState.NORMAL
-            assert_action_performed_with(
-                window,
-                "set window state to WindowState.NORMAL",
-                state=WindowState.NORMAL,
-            )
 
-    non_resizable_window = toga.Window(title="Non-Resizable Window", resizable=False)
-    # Setting window state to any of the following when window is not resizable, is a no-op
-    # and should give a UserWarning.
-    for state in {
+@pytest.mark.parametrize(
+    "state",
+    [
+        WindowState.MAXIMIZED,
+        WindowState.MINIMIZED,
+        WindowState.FULLSCREEN,
+        WindowState.PRESENTATION,
+    ],
+)
+def test_window_state_same_as_previous(window, state):
+    # Setting the window state same as the current window state is a no-op.
+    #
+    # Here, setting the same state twice and then checking with assert_action_not_performed
+    # will still report that the window state setting action was performed. This is because
+    # the action was also performed for the first-time setting of the window state,
+    # hence the action will still be in the EventLog and we cannot check if the
+    # action was done by the first call or the second call to the setter.
+    #
+    # For example: For the test, we need to set window state to WindowState.MAXIMIZED and
+    #              then again the window state needs to be set to WindowState.MAXIMIZED.
+    #              But doing so will cause the above mentioned problem.
+    # Hence, this is just to reach coverage.
+    window.state = state
+    assert window.state == state
+    window.state = state
+    assert window.state == state
+    # assert_action_not_performed(
+    #     window, "set window state to WindowState.MAXIMIZED"
+    # )
+
+    window.state = WindowState.NORMAL
+    assert window.state == WindowState.NORMAL
+    assert_action_performed_with(
+        window,
+        "set window state to WindowState.NORMAL",
+        state=WindowState.NORMAL,
+    )
+
+
+@pytest.mark.parametrize(
+    "state",
+    [
+        # Setting window state to any of the following when window is
+        # not resizable, is a no-op and should give a UserWarning.
         WindowState.MAXIMIZED,
         WindowState.FULLSCREEN,
         WindowState.PRESENTATION,
-    }:
-        with pytest.warns(
-            UserWarning,
-            match=f"Cannot set window state to {state} of a non-resizable window.",
-        ):
-            non_resizable_window.state = state
-            assert_action_not_performed(
-                non_resizable_window, f"set window state to {state}"
-            )
+    ],
+)
+def test_non_resizable_window_state(state):
+    non_resizable_window = toga.Window(title="Non-Resizable Window", resizable=False)
+    with pytest.warns(
+        UserWarning,
+        match=f"Cannot set window state to {state} of a non-resizable window.",
+    ):
+        non_resizable_window.state = state
+        assert_action_not_performed(
+            non_resizable_window, f"set window state to {state}"
+        )
     non_resizable_window.close()
 
+
+def test_window_state_invalid_value(window):
     # Setting window state to any value other than a WindowState enum should raise a ValueError
     with pytest.raises(
         ValueError,
