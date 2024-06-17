@@ -189,8 +189,9 @@ class App:
 
         self.loop.run_forever(application=self.native)
 
-        # Release the reference to the app
-        self.native.release()
+        # Release the reference to the app. This can't be invoked by the testbed,
+        # because it's after the `run_forever()` that runs the testbed.
+        self.native.release()  # pragma: no cover
 
     def set_icon(self, icon):
         for window in self.interface.windows:

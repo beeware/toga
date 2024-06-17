@@ -228,3 +228,11 @@ class AppProbe(BaseProbe):
             keyCode=key_code,
         )
         return toga_key(event)
+
+    async def restore_standard_app(self):
+        # If the tesbed app has been made a background app, it will no longer be
+        # active, which affects whether it can receive focus and input events.
+        # Make it active again. This won't happen immediately; allow for a short
+        # delay.
+        self.app._impl.native.activateIgnoringOtherApps(True)
+        await self.redraw("Restore to standard app", delay=0.1)

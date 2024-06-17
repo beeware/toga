@@ -438,6 +438,23 @@ def test_change_invalid_main_window(app):
     assert_action_not_performed(app, "set_main_window")
 
 
+def test_change_invalid_creation_main_window(event_loop):
+    """If the new main window value provided at creation isn't valid, an exception is raised."""
+
+    class BadMainWindowApp(toga.App):
+        def startup(self):
+            window = toga.MainWindow()
+            window._invalid_main_window = True
+            self.main_window = window
+
+    # Creating an app with an invalid main window raises an exception.
+    with pytest.raises(
+        ValueError,
+        match=r"Invalid dummy main window value",
+    ):
+        BadMainWindowApp(formal_name="Test App", app_id="org.example.test")
+
+
 def test_full_screen(event_loop):
     """The app can be put into full screen mode."""
     window1 = toga.Window()

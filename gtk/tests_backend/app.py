@@ -202,3 +202,7 @@ class AppProbe(BaseProbe):
         event.state = state
 
         return toga_key(event)
+
+    async def restore_standard_app(self):
+        # No special handling needed to restore standard app.
+        await self.redraw("Restore to standard app")

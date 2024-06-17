@@ -424,7 +424,6 @@ else:
             window3.close()
 
     async def test_session_based_app(
-        monkeypatch,
         app,
         app_probe,
         main_window,
@@ -475,6 +474,10 @@ else:
                 # The platform closes the session on the last window close.
                 # Exit should have been called.
                 on_exit_handler.assert_called_once()
+
+                # Main window will not be closed, because that will be
+                # superseded by the app exiting.
+                mock_main_window_close.assert_not_called()
             else:
                 await app_probe.redraw(
                     "Simulate close of main window; app should not exit"
@@ -484,11 +487,12 @@ else:
                 # Exit should *not* have been called.
                 on_exit_handler.assert_not_called()
 
-            # Regardless, the main window will be closed
-            mock_main_window_close.assert_called_once()
+                # However, the the main window will be closed
+                mock_main_window_close.assert_called_once()
 
         finally:
             app.main_window = main_window
+            await app_probe.restore_standard_app()
 
             if secondary_window:
                 secondary_window.close()
@@ -549,6 +553,7 @@ else:
 
         finally:
             app.main_window = main_window
+            await app_probe.restore_standard_app()
 
             if secondary_window:
                 secondary_window.close()
