@@ -15,10 +15,9 @@ Usage
 -----
 
 The App class is the top level representation of all application activity. It is a
-singleton object - any given process can only have a single App. That
-application may manage multiple windows, but it is guaranteed to have at least one
-window (called the :attr:`~toga.App.main_window`); when the App's
-:attr:`~toga.App.main_window` is closed, the application will exit.
+singleton object - any given process can only have a single App. That application may
+manage multiple windows, but it will generally have at least one window (called the
+:attr:`~toga.App.main_window`).
 
 The application is started by calling :meth:`~toga.App.main_loop()`. This will invoke
 the :meth:`~toga.App.startup()` method of the app.
@@ -46,8 +45,11 @@ that will be added to the main window of the app.
 
 This approach to app construction is most useful with simple apps. For most complex
 apps, you should subclass :class:`toga.App`, and provide an implementation of
-:meth:`~toga.App.startup()`. This implementation *must* create and assign a
-``main_window`` for the app.
+:meth:`~toga.App.startup()`. This implementation *must* assign a value to
+:attr:`~toga.App.main_window` for the app. The value that is assigned controls the type
+of app that is created. The possible values that can be assigned to
+:attr:`~toga.App.main_window` is :ref:`discussed below <assigning-main-window>`; the
+most common type of app will assign an instance of :any:`toga.MainWindow`:
 
 .. code-block:: python
 
@@ -76,6 +78,8 @@ these commands are defined as constants on the :class:`~toga.Command` class. The
 commands are automatically installed *before* :meth:`~toga.App.startup()` is invoked. If
 you wish to customize the menu items exposed by your app, you can add or remove commands
 in your :meth:`~toga.App.startup()` implementation.
+
+.. _assigning-main-window:
 
 Assigning a main window
 -----------------------
