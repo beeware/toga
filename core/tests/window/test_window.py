@@ -510,6 +510,31 @@ def test_close_direct(window, app):
     on_close_handler.assert_not_called()
 
 
+def test_close_platform_disallowed(window, app):
+    """A window cannot be closed directly on some platforms."""
+    # Explicitly set to indicate that platform disallows direct close.
+    window._impl._PLATFORM_ALLOWS_CLOSE = False
+
+    on_close_handler = Mock(return_value=True)
+    window.on_close = on_close_handler
+
+    window.show()
+    assert window.app == app
+    assert window in app.windows
+
+    # Close the window directly
+    window.close()
+
+    # Window has *not* been closed, and the close handler has *not* been invoked.
+    assert not window.closed
+    assert window.app == app
+    assert window in app.windows
+    assert_action_not_performed(window, "close")
+    on_close_handler.assert_not_called()
+
+    del window._impl._PLATFORM_ALLOWS_CLOSE
+
+
 def test_close_no_handler(window, app):
     """A window without a close handler can be closed."""
     window.show()
