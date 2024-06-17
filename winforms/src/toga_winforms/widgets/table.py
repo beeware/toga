@@ -173,9 +173,14 @@ class Table(Widget):
 
         # TODO: ListView only has built-in support for one icon per row. One possible
         # workaround is in https://stackoverflow.com/a/46128593.
-        icon = icon(self._accessors[0])
-        if icon is not None:
-            lvi.ImageIndex = self._image_index(icon)
+        try:
+            icon = icon(self._accessors[0])
+        except IndexError:
+            # There's no _accessors, so there's no icon.
+            pass
+        else:
+            if icon is not None:
+                lvi.ImageIndex = self._image_index(icon)
 
         return lvi
 
