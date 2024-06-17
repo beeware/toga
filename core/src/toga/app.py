@@ -29,6 +29,7 @@ if TYPE_CHECKING:
     from toga.dialogs import Dialog
     from toga.icons import IconContentT
 
+
 # Make sure deprecation warnings are shown by default
 warnings.filterwarnings("default", category=DeprecationWarning)
 

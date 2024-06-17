@@ -1,21 +1,14 @@
 from __future__ import annotations
 
-import sys
 import warnings
 from collections.abc import Callable, Iterable
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TypeAlias, Union
 
 import toga
 from toga.platform import get_platform_factory
 
-if TYPE_CHECKING:
-    if sys.version_info < (3, 10):
-        from typing_extensions import TypeAlias
-    else:
-        from typing import TypeAlias
-
-    IconContentT: TypeAlias = str | Path | toga.Icon
+IconContentT: TypeAlias = Union[str, Path, "toga.Icon"]
 
 
 class cachedicon:

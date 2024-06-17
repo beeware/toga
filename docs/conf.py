@@ -144,6 +144,8 @@ def setup(app):
 def autodoc_process_signature(
     app, what, name, obj, options, signature, return_annotation
 ):
+    # print(f"{obj=} {signature=}")
+
     if what == "class":
         # Travertino classes are not part of the public API.
         bases = [
@@ -160,7 +162,7 @@ def autodoc_process_signature(
 linkcheck_ignore = [
     # GitHub generates anchors in javascript
     r"https://github.com/.*#",
-    # References to Github issues/pulls should all be safe.
+    # References to GitHub issues/pulls should all be safe.
     r"^https://github.com/beeware/toga/issues/\d+$",
     r"^https://github.com/beeware/toga/pull/\d+$",
 ]
@@ -385,16 +387,49 @@ suppress_warnings = ["config.cache"]
 
 always_use_bars_union = True
 
-from pathlib import Path  # noqa: E402
+from collections.abc import Iterable
 from typing import Union  # noqa: E402
 
 import toga  # noqa: E402
+from toga.icons import IconContentT
+from toga.widgets.optioncontainer import OptionContainerContentT
+from toga.widgets.splitcontainer import SplitContainerContentT
 
 
-def typehints_formatter(annotation, config):
-    # print(f"({type(annotation)}) {str(annotation)=}")
-    if annotation == Union[str, Path, toga.Icon, None]:
-        return ":any:`IconContentT <IconContentT>`"
-    elif annotation == toga.widgets.base.StyleT:
-        return "``StyleT``"
-    return None
+def typehints_formatter(annotation, config) -> str:
+    """Format override for sphinx_autodoc_typehints.
+
+    For TypeAliases, this overrides the default behavior of inserting the entire
+    definition of the TypeAlias in to the documentation for the argument.
+
+    For TypeVars, this avoids the opaque `TypeVar("NAME", ..., bound="CONSTRAINTS")`
+    formatting and instead links the name of the TypeVar to its documentation.
+
+    Instead, the user-friendly name of the type is linked to its documentation.
+
+    :param annotation: the resolved annotation for the object
+    :param config: configuration for Sphinx
+    :returns: The ReStructured Text for the type or None for the default formatting
+    """
+    if "OptionItem" in str(annotation):
+        print(f"{OptionContainerContentT=}")
+        print(f"{annotation=}")
+    return {
+        IconContentT: ":any:`IconContentT <IconContentT>`",
+        Union[IconContentT, None]: ":any:`IconContentT <IconContentT>`",
+        toga.images.ImageContentT: ":any:`ImageContentT <ImageContentT>`",
+        Union[toga.images.ImageContentT, None]: ":any:`ImageContentT <ImageContentT>`",
+        toga.images.ImageT: "``ImageT``",
+        toga.images.ExternalImageT: "``ExternalImageT``",
+        OptionContainerContentT: "``OptionContainerContentT``",
+        Iterable[OptionContainerContentT]: "``OptionContainerContentT``",
+        Union[Iterable[OptionContainerContentT], None]: "``OptionContainerContentT``",
+        Union[OptionContainerContentT, None]: "``OptionContainerContentT``",
+        SplitContainerContentT: ":any:`SplitContainerContentT <SplitContainerContentT>`",
+        Union[
+            SplitContainerContentT, None
+        ]: ":any:`SplitContainerContentT <SplitContainerContentT>`",
+        toga.widgets.base.StyleT: "``StyleT``",
+        toga.types.PositionT: "``PositionT``",
+        toga.types.SizeT: "``SizeT``",
+    }.get(annotation, None)

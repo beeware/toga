@@ -15,6 +15,7 @@ from toga.platform import get_platform_factory
 from toga.types import Position, Size
 
 if TYPE_CHECKING:
+    import toga.icons
     from toga.app import App
     from toga.images import ImageT
     from toga.screens import Screen
