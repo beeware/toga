@@ -143,10 +143,18 @@ if toga.platform.current_platform in {"iOS", "android"}:
 
     async def test_full_screen(main_window, main_window_probe):
         """Window can be made full screen"""
-        main_window.full_screen = True
+        with pytest.warns(
+            DeprecationWarning,
+            match="`Window.full_screen` is deprecated. Use `Window.state` instead.",
+        ):
+            main_window.full_screen = True
         await main_window_probe.wait_for_window("Main window is in full screen")
 
-        main_window.full_screen = False
+        with pytest.warns(
+            DeprecationWarning,
+            match="`Window.full_screen` is deprecated. Use `Window.state` instead.",
+        ):
+            main_window.full_screen = False
         await main_window_probe.wait_for_window(
             "Main window is no longer in full screen"
         )
@@ -556,7 +564,11 @@ else:
         assert second_window_probe.is_resizable
         initial_content_size = second_window_probe.content_size
 
-        second_window.full_screen = True
+        with pytest.warns(
+            DeprecationWarning,
+            match="`Window.full_screen` is deprecated. Use `Window.state` instead.",
+        ):
+            second_window.full_screen = True
         # A longer delay to allow for genie animations
         await second_window_probe.wait_for_window(
             "Secondary window is full screen",
@@ -566,7 +578,11 @@ else:
         assert second_window_probe.content_size[0] > initial_content_size[0]
         assert second_window_probe.content_size[1] > initial_content_size[1]
 
-        second_window.full_screen = True
+        with pytest.warns(
+            DeprecationWarning,
+            match="`Window.full_screen` is deprecated. Use `Window.state` instead.",
+        ):
+            second_window.full_screen = True
         await second_window_probe.wait_for_window(
             "Secondary window is still full screen"
         )
@@ -574,7 +590,11 @@ else:
         assert second_window_probe.content_size[0] > initial_content_size[0]
         assert second_window_probe.content_size[1] > initial_content_size[1]
 
-        second_window.full_screen = False
+        with pytest.warns(
+            DeprecationWarning,
+            match="`Window.full_screen` is deprecated. Use `Window.state` instead.",
+        ):
+            second_window.full_screen = False
         # A longer delay to allow for genie animations
         await second_window_probe.wait_for_window(
             "Secondary window is not full screen",
@@ -584,7 +604,11 @@ else:
         assert second_window_probe.is_resizable
         assert second_window_probe.content_size == initial_content_size
 
-        second_window.full_screen = False
+        with pytest.warns(
+            DeprecationWarning,
+            match="`Window.full_screen` is deprecated. Use `Window.state` instead.",
+        ):
+            second_window.full_screen = False
         await second_window_probe.wait_for_window(
             "Secondary window is still not full screen"
         )

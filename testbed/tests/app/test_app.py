@@ -35,8 +35,16 @@ if toga.platform.current_platform in {"iOS", "android"}:
         """Window can be made full screen"""
         # Invoke the methods to verify the endpoints exist. However, they're no-ops,
         # so there's nothing to test.
-        app.set_full_screen(app.current_window)
-        app.exit_full_screen()
+        with pytest.warns(
+            DeprecationWarning,
+            match=r"`App.set_full_screen\(\)` is deprecated. Use `App.enter_presentation_mode\(\)` instead.",
+        ):
+            app.set_full_screen(app.current_window)
+        with pytest.warns(
+            DeprecationWarning,
+            match=r"`App.exit_full_screen\(\)` is deprecated. Use `App.exit_presentation_mode\(\)` instead.",
+        ):
+            app.exit_full_screen()
 
     async def test_presentation_mode(app, app_probe, main_window, main_window_probe):
         """The app can enter into presentation mode"""
@@ -258,20 +266,31 @@ else:
             window2.show()
             # Add delay for gtk to show the windows
             await app_probe.redraw("Extra windows are visible", delay=0.1)
-
-            assert not app.is_full_screen
+            with pytest.warns(
+                DeprecationWarning,
+                match=r"`App.is_full_screen` is deprecated. Use `App.is_presentation_mode` instead.",
+            ):
+                assert not app.is_full_screen
             assert not app_probe.is_full_screen(window1)
             assert not app_probe.is_full_screen(window2)
             initial_content1_size = app_probe.content_size(window1)
             initial_content2_size = app_probe.content_size(window2)
 
             # Make window 2 full screen via the app
-            app.set_full_screen(window2)
+            with pytest.warns(
+                DeprecationWarning,
+                match=r"`App.set_full_screen\(\)` is deprecated. Use `App.enter_presentation_mode\(\)` instead.",
+            ):
+                app.set_full_screen(window2)
             await window2_probe.wait_for_window(
                 "Second extra window is full screen",
                 full_screen=True,
             )
-            assert app.is_full_screen
+            with pytest.warns(
+                DeprecationWarning,
+                match=r"`App.is_full_screen` is deprecated. Use `App.is_presentation_mode` instead.",
+            ):
+                assert app.is_full_screen
 
             assert not app_probe.is_full_screen(window1)
             assert app_probe.content_size(window1) == initial_content1_size
@@ -281,12 +300,20 @@ else:
             assert app_probe.content_size(window2)[1] > 700
 
             # Make window 1 full screen via the app, window 2 no longer full screen
-            app.set_full_screen(window1)
+            with pytest.warns(
+                DeprecationWarning,
+                match=r"`App.set_full_screen\(\)` is deprecated. Use `App.enter_presentation_mode\(\)` instead.",
+            ):
+                app.set_full_screen(window1)
             await window1_probe.wait_for_window(
                 "First extra window is full screen",
                 full_screen=True,
             )
-            assert app.is_full_screen
+            with pytest.warns(
+                DeprecationWarning,
+                match=r"`App.is_full_screen` is deprecated. Use `App.is_presentation_mode` instead.",
+            ):
+                assert app.is_full_screen
 
             assert app_probe.is_full_screen(window1)
             assert app_probe.content_size(window1)[0] > 1000
@@ -296,13 +323,21 @@ else:
             assert app_probe.content_size(window2) == initial_content2_size
 
             # Exit full screen
-            app.exit_full_screen()
+            with pytest.warns(
+                DeprecationWarning,
+                match=r"`App.exit_full_screen\(\)` is deprecated. Use `App.exit_presentation_mode\(\)` instead.",
+            ):
+                app.exit_full_screen()
             await window1_probe.wait_for_window(
                 "No longer full screen",
                 full_screen=True,
             )
 
-            assert not app.is_full_screen
+            with pytest.warns(
+                DeprecationWarning,
+                match=r"`App.is_full_screen` is deprecated. Use `App.is_presentation_mode` instead.",
+            ):
+                assert not app.is_full_screen
 
             assert not app_probe.is_full_screen(window1)
             assert app_probe.content_size(window1) == initial_content1_size
@@ -311,13 +346,21 @@ else:
             assert app_probe.content_size(window2) == initial_content2_size
 
             # Go full screen again on window 1
-            app.set_full_screen(window1)
+            with pytest.warns(
+                DeprecationWarning,
+                match=r"`App.set_full_screen\(\)` is deprecated. Use `App.enter_presentation_mode\(\)` instead.",
+            ):
+                app.set_full_screen(window1)
             # A longer delay to allow for genie animations
             await window1_probe.wait_for_window(
                 "First extra window is full screen",
                 full_screen=True,
             )
-            assert app.is_full_screen
+            with pytest.warns(
+                DeprecationWarning,
+                match=r"`App.is_full_screen` is deprecated. Use `App.is_presentation_mode` instead.",
+            ):
+                assert app.is_full_screen
 
             assert app_probe.is_full_screen(window1)
             assert app_probe.content_size(window1)[0] > 1000
@@ -327,13 +370,21 @@ else:
             assert app_probe.content_size(window2) == initial_content2_size
 
             # Exit full screen by passing no windows
-            app.set_full_screen()
+            with pytest.warns(
+                DeprecationWarning,
+                match=r"`App.set_full_screen\(\)` is deprecated. Use `App.enter_presentation_mode\(\)` instead.",
+            ):
+                app.set_full_screen()
 
             await window1_probe.wait_for_window(
                 "No longer full screen",
                 full_screen=True,
             )
-            assert not app.is_full_screen
+            with pytest.warns(
+                DeprecationWarning,
+                match=r"`App.is_full_screen` is deprecated. Use `App.is_presentation_mode` instead.",
+            ):
+                assert not app.is_full_screen
 
             assert not app_probe.is_full_screen(window1)
             assert app_probe.content_size(window1) == initial_content1_size
