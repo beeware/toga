@@ -33,6 +33,7 @@ class LayoutListener(dynamic_proxy(ViewTreeObserver.OnGlobalLayoutListener)):
 
 class Window(Container):
     _is_main_window = False
+    _PLATFORM_ALLOWS_CLOSE = False
 
     def __init__(self, interface, title, position, size):
         super().__init__()

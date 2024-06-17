@@ -91,14 +91,8 @@ class Window(Container, Scalable):
     ######################################################################
 
     def close(self):
-        if self.interface.content:
-            self.interface.content.window = None
-        self.interface.app.windows.discard(self.interface)
-
         self._is_closing = True
         self.native.Close()
-
-        self.interface._closed = True
 
     def create_toolbar(self):
         if self.interface.toolbar:

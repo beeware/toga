@@ -213,13 +213,7 @@ class Window:
     ######################################################################
 
     def close(self):
-        if self.interface.content:
-            self.interface.content.window = None
-        self.interface.app.windows.discard(self.interface)
-
         self.native.close()
-
-        self.interface._closed = True
 
     def create_toolbar(self):
         # Purge any existing toolbar items

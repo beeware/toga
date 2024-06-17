@@ -6,6 +6,8 @@ from .screens import Screen as ScreenImpl
 
 
 class Window:
+    _PLATFORM_ALLOWS_CLOSE = False
+
     def __init__(self, interface, title, position, size):
         self.interface = interface
         self.interface._impl = self
