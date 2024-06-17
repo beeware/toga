@@ -77,25 +77,21 @@ dev = [
     "pytest-freezer == 0.4.8",
     "setuptools-scm == 8.1.0",
     "tox == 4.15.1",
-    # typing-extensions needed for TypeAlias added in Py 3.10
-    "typing-extensions == 4.9.0 ; python_version < '3.10'",
 ]
+# docs can only be built using Python 3.9 or later
 docs = [
     "furo == 2024.5.6",
     "Pillow == 10.3.0",
     "pyenchant == 3.2.2",
-    # Sphinx 7.2 deprecated support for Python 3.8
-    "sphinx == 7.1.2 ; python_version < '3.9'",
-    "sphinx == 7.3.7 ; python_version >= '3.9'",
+    "sphinx == 7.3.7",
     "sphinx_tabs == 3.4.5",
-    # Sphinx 2024.2.4 deprecated support for Python 3.8
-    "sphinx-autobuild == 2021.3.14 ; python_version < '3.9'",
-    "sphinx-autobuild == 2024.4.16 ; python_version >= '3.9'",
+    "sphinx-autobuild == 2024.4.16",
     "sphinx-autodoc-typehints == 2.1.1",
     "sphinx-csv-filter == 0.4.1",
     "sphinx-copybutton == 0.5.2",
     "sphinx-toolbox == 3.5.0",
     "sphinxcontrib-spelling == 8.0.0",
+    "typing-extensions",
 ]
 
 [project.urls]

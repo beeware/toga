@@ -1,28 +1,14 @@
 from __future__ import annotations
 
-import sys
 from collections.abc import Iterable
-from typing import TYPE_CHECKING, Any, Protocol, overload
+from typing import Any, Protocol, Tuple, Union, overload
 
 import toga
 from toga.handlers import wrapped_handler
+from toga.icons import Icon, IconContentT
 from toga.platform import get_platform_factory
 
 from .base import StyleT, Widget
-
-if TYPE_CHECKING:
-    if sys.version_info < (3, 10):
-        from typing_extensions import TypeAlias
-    else:
-        from typing import TypeAlias
-    from toga.icons import IconContentT
-
-    OptionContainerContentT: TypeAlias = (
-        tuple[str, Widget]
-        | tuple[str, Widget, IconContentT | None]
-        | tuple[str, Widget, IconContentT | None, bool]
-        | toga.OptionItem
-    )
 
 
 class OnSelectHandler(Protocol):
@@ -373,6 +359,14 @@ class OptionList:
         # Add the content to the implementation.
         # This will cause the native implementation to be created.
         item._add_as_option(index, self.interface)
+
+
+OptionContainerContentT = Union[
+    OptionItem,
+    Tuple[str, Widget],
+    Tuple[str, Widget, Union[IconContentT, None]],
+    Tuple[str, Widget, Union[IconContentT, None], bool],
+]
 
 
 class OptionContainer(Widget):

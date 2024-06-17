@@ -1,22 +1,9 @@
 from __future__ import annotations
 
-import sys
-from typing import TYPE_CHECKING, NamedTuple
+from typing import NamedTuple, Tuple, Union
 
-import toga
-
-if TYPE_CHECKING:
-    if sys.version_info < (3, 10):
-        from typing_extensions import TypeAlias
-    else:
-        from typing import TypeAlias
-
-    PositionT: TypeAlias = toga.Position | tuple[int, int]
-    SizeT: TypeAlias = toga.Size | tuple[int, int]
-else:
-    # sphinx-autodoc-typehints errors when these are gated with TYPE_CHECKING...
-    PositionT = None
-    SizeT = None
+PositionT = Union["toga.Position", Tuple[int, int]]
+SizeT = Union["toga.Size", Tuple[int, int]]
 
 
 class LatLng(NamedTuple):

@@ -27,8 +27,10 @@ from toga.widgets.base import Widget
 from toga.window import OnCloseHandler, Window
 
 if TYPE_CHECKING:
+    import toga.icons
     from toga.icons import IconContentT
     from toga.types import PositionT, SizeT
+
 
 # Make sure deprecation warnings are shown by default
 warnings.filterwarnings("default", category=DeprecationWarning)
