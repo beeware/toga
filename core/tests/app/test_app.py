@@ -405,21 +405,50 @@ def test_full_screen(event_loop):
     window1 = toga.Window()
     window2 = toga.Window()
 
-    assert not app.is_full_screen
+    with pytest.warns(
+        DeprecationWarning,
+        match=r"`App.is_full_screen` is deprecated. Use `App.is_presentation_mode` instead.",
+    ):
+        assert not app.is_full_screen
 
     # If we're not full screen, exiting full screen is a no-op
-    app.exit_full_screen()
-    assert not app.is_full_screen
+    with pytest.warns(
+        DeprecationWarning,
+        match=r"`App.exit_full_screen\(\)` is deprecated. Use `App.exit_presentation_mode\(\)` instead.",
+    ):
+        app.exit_full_screen()
+    with pytest.warns(
+        DeprecationWarning,
+        match=r"`App.is_full_screen` is deprecated. Use `App.is_presentation_mode` instead.",
+    ):
+        assert not app.is_full_screen
     assert_action_not_performed(app, "exit presentation mode")
 
     # Trying to enter full screen with no windows is a no-op
-    app.set_full_screen(None)
-    assert not app.is_full_screen
+    with pytest.warns(
+        DeprecationWarning,
+        match=r"`App.set_full_screen\(\)` is deprecated. Use `App.enter_presentation_mode\(\)` instead.",
+    ):
+        app.set_full_screen()
+
+    with pytest.warns(
+        DeprecationWarning,
+        match=r"`App.is_full_screen` is deprecated. Use `App.is_presentation_mode` instead.",
+    ):
+        assert not app.is_full_screen
     assert_action_not_performed(app, "enter presentation mode")
 
     # Enter full screen with 2 windows
-    app.set_full_screen(window2, app.main_window)
-    assert app.is_full_screen
+    with pytest.warns(
+        DeprecationWarning,
+        match=r"`App.set_full_screen\(\)` is deprecated. Use `App.enter_presentation_mode\(\)` instead.",
+    ):
+        app.set_full_screen(window2, app.main_window)
+    with pytest.warns(
+        DeprecationWarning,
+        match=r"`App.is_full_screen` is deprecated. Use `App.is_presentation_mode` instead.",
+    ):
+        assert app.is_full_screen
     assert_action_performed_with(
         app,
         "enter presentation mode",
@@ -427,8 +456,16 @@ def test_full_screen(event_loop):
     )
 
     # Change the screens that are full screen
-    app.set_full_screen(app.main_window, window1)
-    assert app.is_full_screen
+    with pytest.warns(
+        DeprecationWarning,
+        match=r"`App.set_full_screen\(\)` is deprecated. Use `App.enter_presentation_mode\(\)` instead.",
+    ):
+        app.set_full_screen(app.main_window, window1)
+    with pytest.warns(
+        DeprecationWarning,
+        match=r"`App.is_full_screen` is deprecated. Use `App.is_presentation_mode` instead.",
+    ):
+        assert app.is_full_screen
     assert_action_performed_with(
         app,
         "enter presentation mode",
@@ -436,8 +473,16 @@ def test_full_screen(event_loop):
     )
 
     # Exit full screen mode
-    app.exit_full_screen()
-    assert not app.is_full_screen
+    with pytest.warns(
+        DeprecationWarning,
+        match=r"`App.exit_full_screen\(\)` is deprecated. Use `App.exit_presentation_mode\(\)` instead.",
+    ):
+        app.exit_full_screen()
+    with pytest.warns(
+        DeprecationWarning,
+        match=r"`App.is_full_screen` is deprecated. Use `App.is_presentation_mode` instead.",
+    ):
+        assert not app.is_full_screen
     assert_action_performed(
         app,
         "exit presentation mode",
@@ -450,54 +495,65 @@ def test_set_empty_full_screen_window_list(event_loop):
     window1 = toga.Window()
     window2 = toga.Window()
 
-    assert not app.is_full_screen
+    with pytest.warns(
+        DeprecationWarning,
+        match=r"`App.is_full_screen` is deprecated. Use `App.is_presentation_mode` instead.",
+    ):
+        assert not app.is_full_screen
 
     # Change the screens that are full screen
-    app.set_full_screen(window1, window2)
-    assert app.is_full_screen
+    with pytest.warns(
+        DeprecationWarning,
+        match=r"`App.set_full_screen\(\)` is deprecated. Use `App.enter_presentation_mode\(\)` instead.",
+    ):
+        app.set_full_screen(window1, window2)
+    with pytest.warns(
+        DeprecationWarning,
+        match=r"`App.is_full_screen` is deprecated. Use `App.is_presentation_mode` instead.",
+    ):
+        assert app.is_full_screen
     assert_action_performed_with(
         app,
         "enter presentation mode",
         screen_window_dict={app.screens[0]: window1, app.screens[1]: window2},
     )
     # Exit full screen mode by setting no windows full screen
-    app.set_full_screen()
-    assert not app.is_full_screen
+    with pytest.warns(
+        DeprecationWarning,
+        match=r"`App.set_full_screen\(\)` is deprecated. Use `App.enter_presentation_mode\(\)` instead.",
+    ):
+        app.set_full_screen()
+    with pytest.warns(
+        DeprecationWarning,
+        match=r"`App.is_full_screen` is deprecated. Use `App.is_presentation_mode` instead.",
+    ):
+        assert not app.is_full_screen
     assert_action_performed(
         app,
         "exit presentation mode",
     )
 
 
-def test_presentation_mode(event_loop):
-    """The app can be put into presentation mode."""
+def test_presentation_mode_with_windows_list(event_loop):
+    """The app can enter presentation mode with a windows list."""
     app = toga.App(formal_name="Test App", app_id="org.example.test")
     window1 = toga.Window()
     window2 = toga.Window()
 
     assert not app.is_presentation_mode
 
-    # If we're not in presentation mode, exiting presentation mode is a no-op
-    app.exit_presentation_mode()
-    assert_action_not_performed(app, "exit presentation mode")
-
-    # Entering presentation mode without any window is a no-op
-    app.enter_presentation_mode(None)
+    # Entering presentation mode with an empty windows list, is a no-op:
+    app.enter_presentation_mode([])
+    assert not app.is_presentation_mode
     assert_action_not_performed(app, "enter presentation mode")
 
     # Enter presentation mode with 1 window:
-    app.enter_presentation_mode({app.screens[0]: window1})
+    app.enter_presentation_mode([window1])
     assert app.is_presentation_mode
     assert_action_performed_with(
         app,
         "enter presentation mode",
         screen_window_dict={app.screens[0]: window1},
-    )
-    # Exit presentation mode:
-    app.exit_presentation_mode()
-    assert_action_performed(
-        app,
-        "exit presentation mode",
     )
 
     # Enter presentation mode with 2 windows:
@@ -515,6 +571,59 @@ def test_presentation_mode(event_loop):
         "exit presentation mode",
     )
 
+
+def test_presentation_mode_with_screen_windows_dict(event_loop):
+    """The app can enter presentation mode with a screen-window paired dict."""
+    app = toga.App(formal_name="Test App", app_id="org.example.test")
+    window1 = toga.Window()
+    window2 = toga.Window()
+
+    assert not app.is_presentation_mode
+
+    # Entering presentation mode with an empty dict, is a no-op:
+    app.enter_presentation_mode({})
+    assert not app.is_presentation_mode
+    assert_action_not_performed(app, "enter presentation mode")
+
+    # Enter presentation mode with an 1 element screen-window dict:
+    app.enter_presentation_mode({app.screens[0]: window1})
+    assert app.is_presentation_mode
+    assert_action_performed_with(
+        app,
+        "enter presentation mode",
+        screen_window_dict={app.screens[0]: window1},
+    )
+    # Exit presentation mode:
+    app.exit_presentation_mode()
+    assert_action_performed(
+        app,
+        "exit presentation mode",
+    )
+
+    # Enter presentation mode with a 2 elements screen-window dict:
+    app.enter_presentation_mode({app.screens[0]: window1, app.screens[1]: window2})
+    assert app.is_presentation_mode
+    assert_action_performed_with(
+        app,
+        "enter presentation mode",
+        screen_window_dict={app.screens[0]: window1, app.screens[1]: window2},
+    )
+    # Exit presentation mode:
+    app.exit_presentation_mode()
+    assert_action_performed(
+        app,
+        "exit presentation mode",
+    )
+
+
+def test_presentation_mode_with_excess_windows_list(event_loop):
+    """Entering presentation mode limits windows to available displays."""
+    app = toga.App(formal_name="Test App", app_id="org.example.test")
+    window1 = toga.Window()
+    window2 = toga.Window()
+
+    assert not app.is_presentation_mode
+
     # Entering presentation mode with 3 windows should drop the last window,
     # as the app has only 2 screens:
     app.enter_presentation_mode([app.main_window, window2, window1])
@@ -530,6 +639,30 @@ def test_presentation_mode(event_loop):
         app,
         "exit presentation mode",
     )
+
+
+def test_presentation_mode_no_op(event_loop):
+    """Entering presentation mode with invalid conditions is a no-op."""
+    app = toga.App(formal_name="Test App", app_id="org.example.test")
+
+    assert not app.is_presentation_mode
+
+    # If we're not in presentation mode, exiting presentation mode is a no-op.
+    app.exit_presentation_mode()
+    assert_action_not_performed(app, "exit presentation mode")
+
+    # Entering presentation mode without any window is a no-op.
+    with pytest.raises(TypeError):
+        app.enter_presentation_mode()
+        assert_action_not_performed(app, "enter presentation mode")
+
+    # Entering presentation mode without proper type of parameter is a no-op.
+    with pytest.raises(
+        TypeError,
+        match="Invalid type for windows parameter. Expected list or dict type.",
+    ):
+        app.enter_presentation_mode(app.main_window)
+        assert_action_not_performed(app, "enter presentation mode")
 
 
 def test_show_hide_cursor(app):

@@ -334,17 +334,36 @@ def test_visibility(window, app):
 
 def test_full_screen(window, app):
     """A window can be set full screen."""
-    assert not window.full_screen
-    window.full_screen = True
-    assert window.full_screen
+    with pytest.warns(
+        DeprecationWarning,
+        match="`Window.full_screen` is deprecated. Use `Window.state` instead.",
+    ):
+        assert not window.full_screen
+    with pytest.warns(
+        DeprecationWarning,
+        match="`Window.full_screen` is deprecated. Use `Window.state` instead.",
+    ):
+        window.full_screen = True
+    with pytest.warns(
+        DeprecationWarning,
+        match="`Window.full_screen` is deprecated. Use `Window.state` instead.",
+    ):
+        assert window.full_screen
     assert_action_performed_with(
         window,
         "set window state to WindowState.FULLSCREEN",
         state=WindowState.FULLSCREEN,
     )
-
-    window.full_screen = False
-    assert not window.full_screen
+    with pytest.warns(
+        DeprecationWarning,
+        match="`Window.full_screen` is deprecated. Use `Window.state` instead.",
+    ):
+        window.full_screen = False
+    with pytest.warns(
+        DeprecationWarning,
+        match="`Window.full_screen` is deprecated. Use `Window.state` instead.",
+    ):
+        assert not window.full_screen
     assert_action_performed_with(
         window,
         "set window state to WindowState.NORMAL",
@@ -357,8 +376,16 @@ def test_full_screen(window, app):
     # was performed previously and would still be in EventLog. Therefore, we
     # cannot check if the action was done by the first call or the second call.
     # Hence, this is just to reach coverage.
-    assert not window.full_screen
-    window.full_screen = False
+    with pytest.warns(
+        DeprecationWarning,
+        match="`Window.full_screen` is deprecated. Use `Window.state` instead.",
+    ):
+        assert not window.full_screen
+    with pytest.warns(
+        DeprecationWarning,
+        match="`Window.full_screen` is deprecated. Use `Window.state` instead.",
+    ):
+        window.full_screen = False
     # assert_action_not_performed(window, "set window state to WindowState.NORMAL")
 
 

@@ -1,4 +1,4 @@
-from enum import Enum, auto, unique
+from enum import Enum, auto
 
 from travertino.constants import *  # noqa: F401, F403  pragma: no cover
 
@@ -70,12 +70,42 @@ class FlashMode(Enum):
 ##########################################################################
 
 
-@unique
 class WindowState(Enum):
     """The possible window states of an app."""
 
-    NORMAL = auto()
     MAXIMIZED = auto()
-    MINIMIZED = auto()
+    """``MAXIMIZED`` state is when the window title bar and window chrome,
+    along with app menu and toolbars remain **visible**."""
+
     FULLSCREEN = auto()
+    """``FULLSCREEN`` state is when the window title bar and window chrome
+    remain **hidden**; But app menu and toolbars remain **visible**."""
+
     PRESENTATION = auto()
+    """``PRESENTATION`` state is when the window title bar, window chrome,
+    app menu and toolbars all remain **hidden**.
+
+    A good example of "full screen" mode is a slideshow app in presentation
+    mode - the only visible content is the slide."""
+
+    MINIMIZED = auto()
+    """``MINIMIZED`` state is:
+
+    For Desktop Platforms:
+        When the window is in the form of an icon or preview image and is placed in the:
+            * Taskbar - For Windows
+            * Dock - For macOS
+            * Area analogous to Taskbar or Dock - For Linux - Depending upon the DE
+
+    For Mobile Platforms:
+        When the App is in the background
+
+    """
+    NORMAL = auto()
+    """``NORMAL`` state is when the window/app is not in any of the above window states.
+
+    On Mobile Platforms(Like on Android) - Once the app is in minimized/background state, then
+    it is currently not possible to bring the app to foreground by setting window state to
+    ``NORMAL``. This is because of the design decisions imposed by the native mobile platforms.
+    (i.e., to prevent apps from becoming intrusively foreground against the user's wishes.)
+    """

@@ -819,21 +819,20 @@ class App:
     ######################################################################
 
     # ------------------------Deprecated methods--------------------------
-    # Warnings are disabled as old API tests are still in testbed and warnings will cause error.
     def exit_full_screen(self) -> None:
         """**DEPRECATED** – Use :any:`App.exit_presentation_mode()`.
 
         Exit full screen mode.
 
         """
-        # warn(
-        #     (
-        #         "`App.exit_full_screen()` is deprecated. Use `App.exit_presentation_mode()` instead."
-        #     ),
-        #     DeprecationWarning,
-        #     stacklevel=2,
-        # )
-        if self.is_full_screen:
+        warn(
+            (
+                "`App.exit_full_screen()` is deprecated. Use `App.exit_presentation_mode()` instead."
+            ),
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        if self.is_presentation_mode:
             self._impl.exit_presentation_mode()
 
     @property
@@ -843,13 +842,13 @@ class App:
         Is the app currently in full screen mode?
 
         """
-        # warn(
-        #     (
-        #         "`App.is_full_screen` is deprecated. Use `App.is_presentation_mode` instead."
-        #     ),
-        #     DeprecationWarning,
-        #     stacklevel=2,
-        # )
+        warn(
+            (
+                "`App.is_full_screen` is deprecated. Use `App.is_presentation_mode` instead."
+            ),
+            DeprecationWarning,
+            stacklevel=2,
+        )
         return self.is_presentation_mode
 
     def set_full_screen(self, *windows: Window) -> None:
@@ -865,18 +864,18 @@ class App:
             those windows will not be visible. If no windows are specified, the app will
             exit full screen mode.
         """
-        # warn(
-        #     (
-        #         "`App.set_full_screen()` is deprecated. Use `App.enter_presentation_mode()` and "
-        #         "`App.exit_presentation_mode()` instead."
-        #     ),
-        #     DeprecationWarning,
-        #     stacklevel=2,
-        # )
+        warn(
+            (
+                "`App.set_full_screen()` is deprecated. Use `App.enter_presentation_mode()` instead."
+            ),
+            DeprecationWarning,
+            stacklevel=2,
+        )
         self.exit_presentation_mode()
-        if any(window is None for window in windows):
+        if not windows:
             return
-        self.enter_presentation_mode([*windows])
+        else:
+            self.enter_presentation_mode([*windows])
 
     # ---------------------------------------------------------------------
 
@@ -899,15 +898,20 @@ class App:
             screens. If the number of windows exceeds the number of available displays,
             those windows will not be visible.
         """
-        screen_window_dict = dict()
-        if isinstance(windows, list):
-            for window, screen in zip(windows, self.screens):
-                screen_window_dict[screen] = window
-        elif isinstance(windows, dict):
-            screen_window_dict = windows
-        else:
+        if not windows:
             return
-        self._impl.enter_presentation_mode(screen_window_dict)
+        else:
+            screen_window_dict = dict()
+            if isinstance(windows, list):
+                for window, screen in zip(windows, self.screens):
+                    screen_window_dict[screen] = window
+            elif isinstance(windows, dict):
+                screen_window_dict = windows
+            else:
+                raise TypeError(
+                    "Invalid type for windows parameter. Expected list or dict type."
+                )
+            self._impl.enter_presentation_mode(screen_window_dict)
 
     def exit_presentation_mode(self) -> None:
         """Exit presentation mode."""

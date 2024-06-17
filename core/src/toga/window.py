@@ -448,34 +448,30 @@ class Window:
     # Window state
     ######################################################################
 
-    # -------------------------Deprecated methods-------------------------
-    # Warnings are disabled as old API tests are still in testbed and warnings will cause error.
+    # -------------------------Deprecated properties-------------------------
     @property
     def full_screen(self) -> bool:
         """**DEPRECATED** – Use :any:`Window.state`.
 
         Is the window in full screen mode?
 
-        Full screen mode is *not* the same as "maximized". A full screen window
-        has no title bar, toolbar or window controls; some or all of these
-        items may be visible on a maximized window. A good example of "full screen"
-        mode is a slideshow app in presentation mode - the only visible content is
-        the slide.
+        Full screen mode is *not* the same as "maximized". A full screen window has
+        no title bar or window chrome; But app menu and toolbars will remain visible.
         """
-        # warnings.warn(
-        #     ("`Window.full_screen` is deprecated. Use `Window.state` instead."),
-        #     DeprecationWarning,
-        #     stacklevel=2,
-        # )
+        warnings.warn(
+            ("`Window.full_screen` is deprecated. Use `Window.state` instead."),
+            DeprecationWarning,
+            stacklevel=2,
+        )
         return bool(self.state == WindowState.FULLSCREEN)
 
     @full_screen.setter
     def full_screen(self, is_full_screen: bool) -> None:
-        # warnings.warn(
-        #     ("`Window.full_screen` is deprecated. Use `Window.state` instead."),
-        #     DeprecationWarning,
-        #     stacklevel=2,
-        # )
+        warnings.warn(
+            ("`Window.full_screen` is deprecated. Use `Window.state` instead."),
+            DeprecationWarning,
+            stacklevel=2,
+        )
         if is_full_screen and (self.state != WindowState.FULLSCREEN):
             self._impl.set_window_state(WindowState.FULLSCREEN)
         elif not is_full_screen and (self.state == WindowState.FULLSCREEN):
