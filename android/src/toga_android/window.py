@@ -61,7 +61,7 @@ class Window(Container):
     ######################################################################
 
     def close(self):
-        pass
+        pass  # pragma: no cover
 
     def create_toolbar(self):
         self.app.native.invalidateOptionsMenu()
