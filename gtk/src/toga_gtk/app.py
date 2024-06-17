@@ -197,8 +197,7 @@ class App:
             window._impl.native.set_icon(icon._impl.native(72))
 
     def set_main_window(self, window):
-        if isinstance(window, toga.Window):
-            window._impl.native.set_role("MainWindow")
+        pass
 
     ######################################################################
     # App resources
