@@ -89,6 +89,10 @@ class App(LoggedObject):
         self._action("main loop")
 
     def set_main_window(self, window):
+        # If the window has been tagged as an invalid main window, raise an error.
+        if hasattr(window, "_invalid_main_window"):
+            raise ValueError("Invalid dummy main window value")
+
         self._action("set_main_window", window=window)
 
     ######################################################################

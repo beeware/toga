@@ -10,6 +10,7 @@ import pytest
 
 import toga
 from toga_dummy.utils import (
+    EventLog,
     assert_action_not_performed,
     assert_action_performed,
     assert_action_performed_with,
@@ -406,6 +407,35 @@ def test_no_current_window(app):
 
     # The current window evaluates as None
     assert app.current_window is None
+
+
+def test_change_main_window(app):
+    """The main window value can be changed."""
+    new_main = toga.Window()
+
+    app.main_window = new_main
+
+    assert app.main_window == new_main
+    assert_action_performed_with(app, "set_main_window", window=new_main)
+
+
+def test_change_invalid_main_window(app):
+    """If the new main window value isn't valid, an exception is raised."""
+    old_main = app.main_window
+    EventLog.reset()
+
+    # Assign a main window value that will raise an exception
+    with pytest.raises(
+        ValueError,
+        match=r"Invalid dummy main window value",
+    ):
+        bad_window = toga.Window()
+        bad_window._invalid_main_window = True
+        app.main_window = bad_window
+
+    # Main window hasn't changed.
+    assert app.main_window == old_main
+    assert_action_not_performed(app, "set_main_window")
 
 
 def test_full_screen(event_loop):

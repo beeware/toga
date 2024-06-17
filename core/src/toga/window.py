@@ -314,11 +314,17 @@ class Window:
                 close_window = False
 
         if close_window:
-            if self.content:
-                self.content.window = None
-            self.app.windows.discard(self)
-            self._impl.close()
-            self._closed = True
+            self._close()
+
+    def _close(self):
+        # The actual logic for closing a window. This is abstracted so that the testbed
+        # can monkeypatch this method, recording the close request without actually
+        # closing the app.
+        if self.content:
+            self.content.window = None
+        self.app.windows.discard(self)
+        self._impl.close()
+        self._closed = True
 
     @property
     def closed(self) -> bool:

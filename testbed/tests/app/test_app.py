@@ -11,10 +11,22 @@ from ..window.test_window import window_probe
 
 @pytest.fixture
 def mock_app_exit(monkeypatch, app):
-    # We can't actually exit during a test, so monkeypatch the exit met"""
+    # We can't actually exit during a test, so monkeypatch the exit call.
     app_exit = Mock()
     monkeypatch.setattr(toga.App, "exit", app_exit)
     return app_exit
+
+
+@pytest.fixture
+def mock_main_window_close(monkeypatch, main_window):
+    # We need to prevent the main window from *actually* closing, so monkeypatch the
+    # method that implements the actual close.
+
+    window_close = Mock()
+
+    monkeypatch.setattr(main_window, "_close", window_close)
+
+    return window_close
 
 
 # Mobile platforms have different windowing characteristics, so they have different tests.
@@ -58,9 +70,25 @@ if toga.platform.current_platform in {"iOS", "android"}:
         await app_probe.redraw("App pre-termination logic has been invoked")
 
     async def test_device_rotation(app, app_probe):
-        """App responds to device rotation"""
+        """App responds to device rotation."""
         app_probe.rotate()
         await app_probe.redraw("Device has been rotated")
+
+    async def test_session_based_app(app):
+        """A mobile app can't be turned into a session-based app."""
+        with pytest.raises(
+            ValueError,
+            match=r"Session-based apps are not supported on .*",
+        ):
+            app.main_window = None
+
+    async def test_background_app(app):
+        """A mobile app can't be turned into a background app."""
+        with pytest.raises(
+            ValueError,
+            match=r"Background apps are not supported on .*",
+        ):
+            app.main_window = toga.App.BACKGROUND
 
 else:
     ####################################################################################
@@ -394,6 +422,136 @@ else:
             window1.close()
             window2.close()
             window3.close()
+
+    async def test_session_based_app(
+        monkeypatch,
+        app,
+        app_probe,
+        main_window,
+        mock_app_exit,
+        mock_main_window_close,
+    ):
+        """A desktop app can be converted into a session-based app."""
+        # Set an on_exit for the app handler, allowing exit.
+        on_exit_handler = Mock(return_value=True)
+        app.on_exit = on_exit_handler
+
+        # Create and show a secondary window
+        secondary_window = toga.Window()
+        secondary_window.show()
+
+        try:
+            # Change the app to a session-based app
+            app.main_window = None
+            await app_probe.redraw("App converted to session-based app")
+
+            # Try to close the main window. This is monkeypatched, so it
+            # will record whether a close was allowed, but won't actually
+            # close or remove the window, so the window will still exist.
+            main_window.close()
+            await app_probe.redraw("Simulate close of main window; app should not exit")
+
+            # The main window will be closed
+            mock_main_window_close.assert_called_once()
+            mock_main_window_close.reset_mock()
+
+            # The app will *not* have been prompted to exit, because there
+            # is still an open window, and this is a session-based app.
+            on_exit_handler.assert_not_called()
+            on_exit_handler.reset_mock()
+
+            # Close the secondary window.
+            secondary_window.close()
+            secondary_window = None
+            await app_probe.redraw("Secondary window has been closed")
+
+            # Try to close the main window again. This time, the main
+            # window is the last open window; the backend's session behavior
+            # defines whether the app exits.
+            main_window.close()
+            if app._impl.CLOSE_ON_LAST_WINDOW:
+                await app_probe.redraw("Simulate close of main window; app should exit")
+
+                # The platform closes the session on the last window close.
+                # Exit should have been called.
+                on_exit_handler.assert_called_once()
+            else:
+                await app_probe.redraw(
+                    "Simulate close of main window; app should not exit"
+                )
+
+                # The platform persists the app when the last window closes.
+                # Exit should *not* have been called.
+                on_exit_handler.assert_not_called()
+
+            # Regardless, the main window will be closed
+            mock_main_window_close.assert_called_once()
+
+        finally:
+            app.main_window = main_window
+
+            if secondary_window:
+                secondary_window.close()
+
+    async def test_background_app(
+        app,
+        app_probe,
+        main_window,
+        mock_app_exit,
+        mock_main_window_close,
+    ):
+        """A mobile app can't be turned into a background app."""
+        # Set an on_exit for the app handler, allowing exit.
+        on_exit_handler = Mock(return_value=True)
+        app.on_exit = on_exit_handler
+
+        # Create and show a secondary window
+        secondary_window = toga.Window()
+        secondary_window.show()
+
+        try:
+            # Change the app to a background app
+            app.main_window = toga.App.BACKGROUND
+            await app_probe.redraw("App converted to background app")
+
+            # Try to close the main window. This is monkeypatched, so it
+            # will record whether a close was allowed, but won't actually
+            # close or remove the window, so the window will still exist.
+            main_window.close()
+            await app_probe.redraw("Simulate close of main window; app should not exit")
+
+            # The main window will be closed
+            mock_main_window_close.assert_called_once()
+            mock_main_window_close.reset_mock()
+
+            # The app will *not* have been prompted to exit, because this is a
+            # background app, which can exist without windows.
+            on_exit_handler.assert_not_called()
+            on_exit_handler.reset_mock()
+
+            # Close the secondary window.
+            secondary_window.close()
+            secondary_window = None
+            await app_probe.redraw("Secondary window has been closed")
+
+            # Try to close the main window again. This time, the main window is the last
+            # open window; but the app will persist because this is a background app,
+            # which doesn't need a window to exist.
+            main_window.close()
+            await app_probe.redraw("Simulate close of main window; app should not exit")
+
+            # The platform persists the app when the last window closes.
+            # Exit should *not* have been called.
+            on_exit_handler.assert_not_called()
+
+            # Regardless, the main window will be closed
+            mock_main_window_close.assert_called_once()
+
+        finally:
+            app.main_window = main_window
+
+            if secondary_window:
+                secondary_window.close()
 
 
 async def test_main_window_toolbar(app, main_window, main_window_probe):

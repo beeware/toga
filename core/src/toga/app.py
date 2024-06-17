@@ -212,6 +212,8 @@ class App:
     #: run in the background without a main window.
     BACKGROUND: str = "background app"
 
+    _UNDEFINED: str = "<main window not assigned>"
+
     def __init__(
         self,
         formal_name: str | None = None,
@@ -383,6 +385,7 @@ class App:
 
         self._startup_method = startup
 
+        self._main_window = App._UNDEFINED
         self._windows = WindowSet(self)
 
         self._full_screen_windows: tuple[Window, ...] | None = None
@@ -522,10 +525,10 @@ class App:
     @property
     def main_window(self) -> Window | str | None:
         """The main window for the app."""
-        try:
-            return self._main_window
-        except AttributeError:
+        if self._main_window is App._UNDEFINED:
             raise ValueError("Application has not set a main window.")
+
+        return self._main_window
 
     @main_window.setter
     def main_window(self, window: MainWindow | str | None) -> None:
@@ -534,8 +537,16 @@ class App:
             if isinstance(window, Window) and not window.closable:
                 raise ValueError("The window used as the main window must be closable.")
 
+            old_window = self._main_window
             self._main_window = window
-            self._impl.set_main_window(window)
+            try:
+                self._impl.set_main_window(window)
+            except Exception as e:
+                # If the main window could not be changed, revert to the previous value
+                # then reraise the exception
+                if old_window is not App._UNDEFINED:
+                    self._main_window = old_window
+                raise e
         else:
             raise ValueError(f"Don't know how to use {window!r} as a main window.")
 

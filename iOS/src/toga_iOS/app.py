@@ -110,9 +110,9 @@ class App:
 
     def set_main_window(self, window):
         if window is None:
-            raise RuntimeError("Session-based apps are not supported on Android")
+            raise ValueError("Session-based apps are not supported on Android")
         elif window == toga.App.BACKGROUND:
-            raise RuntimeError("Background apps are not supported on Android")
+            raise ValueError("Background apps are not supported on Android")
 
     ######################################################################
     # App resources
