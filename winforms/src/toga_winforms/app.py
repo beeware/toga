@@ -233,10 +233,7 @@ class App:
             window._impl.native.Icon = icon._impl.native
 
     def set_main_window(self, window):
-        if isinstance(window, toga.Window):
-            self.app_context.MainForm = window._impl.native
-        else:
-            self.app_context.MainForm = None
+        pass
 
     ######################################################################
     # App resources
