@@ -41,7 +41,10 @@ class Window(Container, Scalable):
 
         self.set_title(title)
         self.set_size(size)
-        self.set_position(position)
+        # Winforms does window cascading by default; use that behavior, rather than
+        # Toga's re-implementation.
+        if position:
+            self.set_position(position)
 
         self.toolbar_native = None
 

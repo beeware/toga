@@ -193,7 +193,7 @@ class MainWindow(Window):
         self,
         id: str | None = None,
         title: str | None = None,
-        position: PositionT = Position(100, 100),
+        position: PositionT | None = None,
         size: SizeT = Size(640, 480),
         resizable: bool = True,
         minimizable: bool = True,
@@ -298,6 +298,21 @@ class DocumentMainWindow(Window):
     @property
     def _default_title(self) -> str:
         return self.doc.path.name
+
+
+def overridable(method):
+    """Decorate the method as being user-overridable"""
+    method._overridden = True
+    return method
+
+
+def overridden(coroutine_or_method):
+    """Has the user overridden this method?
+
+    This is based on the method *not* having a ``_overridden`` attribute. Overridable
+    default methods have this attribute; user-defined method will not.
+    """
+    return not hasattr(coroutine_or_method, "_overridden")
 
 
 class App:
@@ -746,10 +761,25 @@ class App:
         """Play the default system notification sound."""
         self._impl.beep()
 
+    @overridable
+    def preferences(self) -> None:
+        """Open a preferences panel for the app.
+
+        By default, this will do nothing, and the Preferences/Settings menu item
+        will be disabled. However, if you override this method in your App class,
+        the menu item will be enabled, and this method will be invoked when the
+        menu item is selected.
+        """
+        # Default implementation won't ever be invoked, because the menu item
+        # isn't enabled unless it's overridden.
+        pass  # pragma: no cover
+
     def visit_homepage(self) -> None:
         """Open the application's :any:`home_page` in the default browser.
 
-        If the :any:`home_page` is ``None``, this is a no-op.
+        This method is invoked as a handler by the "Visit homepage" default menu item.
+        If the :any:`home_page` is ``None``, this is a no-op, and the default menu item
+        will be disabled.
         """
         if self.home_page is not None:
             webbrowser.open(self.home_page)
