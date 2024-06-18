@@ -8,11 +8,6 @@ from toga.handlers import simple_handler
 
 from .screens import Screen as ScreenImpl
 from .utils import LoggedObject
-from .window import Window
-
-
-class MainWindow(Window):
-    pass
 
 
 class App(LoggedObject):

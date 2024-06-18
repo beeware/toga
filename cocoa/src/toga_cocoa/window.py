@@ -1,25 +1,27 @@
-from rubicon.objc import CGSize
+from rubicon.objc import (
+    SEL,
+    CGSize,
+    NSMakeRect,
+    NSPoint,
+    NSSize,
+    objc_method,
+    objc_property,
+)
 
 from toga.command import Command, Separator
 from toga.types import Position, Size
 from toga.window import _initial_position
 from toga_cocoa.container import Container
 from toga_cocoa.libs import (
-    SEL,
     NSBackingStoreBuffered,
     NSImage,
-    NSMakeRect,
     NSMutableArray,
-    NSPoint,
     NSScreen,
-    NSSize,
     NSToolbar,
     NSToolbarItem,
     NSWindow,
     NSWindowStyleMask,
     core_graphics,
-    objc_method,
-    objc_property,
 )
 
 from .screens import Screen as ScreenImpl
@@ -35,7 +37,11 @@ class TogaWindow(NSWindow):
 
     @objc_method
     def windowShouldClose_(self, notification) -> bool:
-        return self.impl.cocoa_windowShouldClose()
+        # The on_close handler has a cleanup method that will enforce
+        # the close if the on_close handler requests it; this initial
+        # "should close" request always returns False.
+        self.interface.on_close()
+        return False
 
     @objc_method
     def windowDidResize_(self, notification) -> None:
@@ -180,17 +186,6 @@ class Window:
     def __del__(self):
         self.purge_toolbar()
         self.native.release()
-
-    ######################################################################
-    # Native event handlers
-    ######################################################################
-
-    def cocoa_windowShouldClose(self):
-        # The on_close handler has a cleanup method that will enforce
-        # the close if the on_close handler requests it; this initial
-        # "should close" request can always return False.
-        self.interface.on_close()
-        return False
 
     ######################################################################
     # Window properties
@@ -367,3 +362,7 @@ class Window:
         )
         ns_image = NSImage.alloc().initWithCGImage(cg_image, size=target_size)
         return ns_image
+
+
+class MainWindow(Window):
+    pass

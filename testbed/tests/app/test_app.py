@@ -68,30 +68,60 @@ else:
     ####################################################################################
 
     async def test_exit_on_close_main_window(
-        monkeypatch,
         app,
+        main_window,
         main_window_probe,
         mock_app_exit,
     ):
         """An app can be exited by closing the main window"""
-        # Rebind the exit command to the on_exit handler.
+        # Add an on_close handler to the main window, initially rejecting close.
+        on_close_handler = Mock(return_value=False)
+        main_window.on_close = on_close_handler
+
+        # Set an on_exit for the app handler, initially rejecting exit.
         on_exit_handler = Mock(return_value=False)
         app.on_exit = on_exit_handler
-        monkeypatch.setattr(app.commands[toga.Command.EXIT], "_action", app.on_exit)
 
-        # Close the main window
+        # Try to close the main window; rejected by window
         main_window_probe.close()
-        await main_window_probe.redraw("Main window close requested, but rejected")
+        await main_window_probe.redraw(
+            "Main window close requested; rejected by window"
+        )
+
+        # on_close_handler was invoked, rejecting the close.
+        on_close_handler.assert_called_once_with(main_window)
+
+        # on_exit_handler was not invoked; so the app won't be closed
+        on_exit_handler.assert_not_called()
+        mock_app_exit.assert_not_called()
+
+        # Reset and try again, this time allowing the close
+        on_close_handler.reset_mock()
+        on_close_handler.return_value = True
+        on_exit_handler.reset_mock()
+
+        # Close the main window; rejected by app
+        main_window_probe.close()
+        await main_window_probe.redraw("Main window close requested; rejected by app")
+
+        # on_close_handler was invoked, allowing the close
+        on_close_handler.assert_called_once_with(main_window)
 
         # on_exit_handler was invoked, rejecting the close; so the app won't be closed
         on_exit_handler.assert_called_once_with(app)
         mock_app_exit.assert_not_called()
 
         # Reset and try again, this time allowing the exit
+        on_close_handler.reset_mock()
         on_exit_handler.reset_mock()
         on_exit_handler.return_value = True
+
+        # Close the main window; this will succeed
         main_window_probe.close()
-        await main_window_probe.redraw("Main window close requested, and accepted")
+        await main_window_probe.redraw("Main window close requested; accepted")
+
+        # on_close_handler was invoked, allowing the close
+        on_close_handler.assert_called_once_with(main_window)
 
         # on_exit_handler was invoked and accepted, so the mocked exit() was called.
         on_exit_handler.assert_called_once_with(app)

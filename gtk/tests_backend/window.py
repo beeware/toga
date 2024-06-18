@@ -29,7 +29,8 @@ class WindowProbe(BaseProbe):
 
     def close(self):
         if self.is_closable:
-            self.native.close()
+            # Trigger the OS-level window close event.
+            self.native.emit("delete-event", None)
 
     @property
     def content_size(self):

@@ -3,14 +3,8 @@ from toga.app import overridden
 from toga.command import Command, Group, Separator
 from toga.handlers import simple_handler
 from toga_web.libs import create_element, js
-from toga_web.window import Window
 
 from .screens import Screen as ScreenImpl
-
-
-class MainWindow(Window):
-    def on_close(self, *args):
-        pass
 
 
 class App:

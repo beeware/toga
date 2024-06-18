@@ -66,11 +66,6 @@ when the main window is closed, the application exits.
     self.toga.App.main_window = main_window
     main_window.show()
 
-As the main window is closely bound to the App, a main window *cannot* define an
-``on_close`` handler. Instead, if you want to prevent the main window from exiting, you
-should use an ``on_exit`` handler on the :class:`toga.App` that the main window is
-associated with.
-
 Reference
 ---------
 

@@ -58,7 +58,9 @@ class Window(Container):
     # Window lifecycle
     ######################################################################
 
-    def close(self):
+    def close(self):  # pragma: no cover
+        # An Android app only ever contains a main window, and that window *can't* be
+        # closed, so the platform-specific close handling is never triggered.
         pass
 
     def create_toolbar(self):
@@ -157,3 +159,7 @@ class Window(Container):
         stream = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.PNG, 0, stream)
         return bytes(stream.toByteArray())
+
+
+class MainWindow(Window):
+    _is_main_window = True

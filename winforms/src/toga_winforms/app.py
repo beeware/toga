@@ -20,19 +20,6 @@ from .keys import toga_to_winforms_key, toga_to_winforms_shortcut
 from .libs.proactor import WinformsProactorEventLoop
 from .libs.wrapper import WeakrefCallable
 from .screens import Screen as ScreenImpl
-from .window import Window
-
-
-class MainWindow(Window):
-    def winforms_FormClosing(self, sender, event):
-        # Differentiate between the handling that occurs when the user
-        # requests the app to exit, and the actual application exiting.
-        if not self.interface.app._impl._is_exiting:  # pragma: no branch
-            # If there's an event handler, process it. The decision to
-            # actually exit the app will be processed in the on_exit handler.
-            # If there's no exit handler, assume the close/exit can proceed.
-            self.interface.app.on_exit()
-            event.Cancel = True
 
 
 def winforms_thread_exception(sender, winforms_exc):  # pragma: no cover
@@ -70,19 +57,12 @@ def winforms_thread_exception(sender, winforms_exc):  # pragma: no cover
 
 
 class App:
-    _MAIN_WINDOW_CLASS = MainWindow
-
     def __init__(self, interface):
         self.interface = interface
         self.interface._impl = self
 
-        # Winforms app exit is tightly bound to the close of the MainWindow.
-        # The FormClosing message on MainWindow triggers the "on_exit" handler
-        # (which might abort the exit). However, on success, it will request the
-        # app (and thus the Main Window) to close, causing another close event.
-        # So - we have a flag that is only ever sent once a request has been
-        # made to exit the native app. This flag can be used to shortcut any
-        # window-level close handling.
+        # Track whether the app is exiting. This is used to stop the event loop,
+        # and shortcut close handling on any open windows when the app exits.
         self._is_exiting = False
 
         # Winforms cursor visibility is a stack; If you call hide N times, you

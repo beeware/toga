@@ -13,6 +13,7 @@ from typing import (
     overload,
 )
 
+import toga
 from toga.command import CommandSet
 from toga.handlers import AsyncResult, wrapped_handler
 from toga.images import Image
@@ -21,6 +22,7 @@ from toga.types import Position, Size
 
 if TYPE_CHECKING:
     from toga.app import App
+    from toga.documents import Document
     from toga.images import ImageT
     from toga.screens import Screen
     from toga.types import PositionT, SizeT
@@ -290,19 +292,25 @@ class Window:
     def close(self) -> None:
         """Close the window.
 
-        This *does not* invoke the ``on_close`` handler; the window will be immediately
-        and unconditionally closed.
+        This *does not* invoke the ``on_close`` handler. If the window being closed
+        is the app's main window, it will trigger ``on_exit`` handling; otherwise, the
+        window will be immediately and unconditionally closed.
 
         Once a window has been closed, it *cannot* be reused. The behavior of any method
         or property on a :class:`~toga.Window` instance after it has been closed is
         undefined, except for :attr:`closed` which can be used to check if the window
         was closed.
         """
-        if self.content:
-            self.content.window = None
-        self.app.windows.discard(self)
-        self._impl.close()
-        self._closed = True
+        if self.app.main_window == self:
+            # Closing the window marked as the main window is a request to exit.
+            # Trigger on_exit handling, which may cause the window to close.
+            self.app.on_exit()
+        else:
+            if self.content:
+                self.content.window = None
+            self.app.windows.discard(self)
+            self._impl.close()
+            self._closed = True
 
     @property
     def closed(self) -> bool:
@@ -939,3 +947,102 @@ class Window:
     ######################################################################
     # End Backwards compatibility
     ######################################################################
+
+
+class MainWindow(Window):
+    _WINDOW_CLASS = "MainWindow"
+
+    def __init__(
+        self,
+        id: str | None = None,
+        title: str | None = None,
+        position: PositionT | None = None,
+        size: SizeT = Size(640, 480),
+        resizable: bool = True,
+        minimizable: bool = True,
+        on_close: OnCloseHandler | None = None,
+        content: Widget | None = None,
+        resizeable: None = None,  # DEPRECATED
+        closeable: None = None,  # DEPRECATED
+    ):
+        """Create a new main window.
+
+        :param id: A unique identifier for the window. If not provided, one will be
+            automatically generated.
+        :param title: Title for the window. Defaults to the formal name of the app.
+        :param position: Position of the window, as a :any:`toga.Position` or tuple of
+            ``(x, y)`` coordinates, in :ref:`CSS pixels <css-units>`.
+        :param size: Size of the window, as a :any:`toga.Size` or tuple of ``(width,
+            height)``, in :ref:`CSS pixels <css-units>`.
+        :param resizable: Can the window be resized by the user?
+        :param minimizable: Can the window be minimized by the user?
+        :param content: The initial content for the window.
+        :param on_close: The initial :any:`on_close` handler.
+        :param resizeable: **DEPRECATED** - Use ``resizable``.
+        :param closeable: **DEPRECATED** - Use ``closable``.
+        """
+        super().__init__(
+            id=id,
+            title=title,
+            position=position,
+            size=size,
+            resizable=resizable,
+            closable=True,
+            minimizable=minimizable,
+            content=content,
+            on_close=on_close,
+            # Deprecated arguments
+            resizeable=resizeable,
+            closeable=closeable,
+        )
+
+    @property
+    def _default_title(self) -> str:
+        return toga.App.app.formal_name
+
+
+class DocumentMainWindow(Window):
+    def __init__(
+        self,
+        doc: Document,
+        id: str | None = None,
+        title: str | None = None,
+        position: PositionT = Position(100, 100),
+        size: SizeT = Size(640, 480),
+        resizable: bool = True,
+        minimizable: bool = True,
+        on_close: OnCloseHandler | None = None,
+    ):
+        """Create a new document Main Window.
+
+        This installs a default on_close handler that honors platform-specific document
+        closing behavior. If you want to control whether a document is allowed to close
+        (e.g., due to having unsaved change), override
+        :meth:`toga.Document.can_close()`, rather than implementing an on_close handler.
+
+        :param doc: The document being managed by this window
+        :param id: The ID of the window.
+        :param title: Title for the window. Defaults to the formal name of the app.
+        :param position: Position of the window, as a :any:`toga.Position` or tuple of
+            ``(x, y)`` coordinates.
+        :param size: Size of the window, as a :any:`toga.Size` or tuple of
+            ``(width, height)``, in pixels.
+        :param resizable: Can the window be manually resized by the user?
+        :param minimizable: Can the window be minimized by the user?
+        :param on_close: The initial :any:`on_close` handler.
+        """
+        self.doc = doc
+        super().__init__(
+            id=id,
+            title=title,
+            position=position,
+            size=size,
+            resizable=resizable,
+            closable=True,
+            minimizable=minimizable,
+            on_close=doc.handle_close if on_close is None else on_close,
+        )
+
+    @property
+    def _default_title(self) -> str:
+        return self.doc.path.name
