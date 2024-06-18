@@ -328,6 +328,10 @@ class MainWindow(Window):
         self.purge_toolbar()
         super().__del__()
 
+    def create_menus(self):
+        # macOS doesn't have window-level menus
+        pass
+
     def create_toolbar(self):
         # Purge any existing toolbar items
         self.purge_toolbar()

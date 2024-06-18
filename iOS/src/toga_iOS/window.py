@@ -218,6 +218,10 @@ class Window:
 
 
 class MainWindow(Window):
+    def create_menus(self):
+        # No menu handling at present
+        pass
+
     def create_toolbar(self):
         # No toolbar handling at present
         pass

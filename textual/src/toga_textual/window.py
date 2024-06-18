@@ -212,5 +212,8 @@ class Window:
 
 
 class MainWindow(Window):
+    def create_menus(self):
+        self.interface.factory.not_implemented("Window.create_menus()")
+
     def create_toolbar(self):
         self.interface.factory.not_implemented("Window.create_toolbar()")

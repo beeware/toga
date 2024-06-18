@@ -155,5 +155,9 @@ class Window(Container):
 
 
 class MainWindow(Window):
+    def create_menus(self):
+        # Android menus are handled at the app level
+        pass
+
     def create_toolbar(self):
         self.app.native.invalidateOptionsMenu()

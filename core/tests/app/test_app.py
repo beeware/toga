@@ -477,10 +477,12 @@ def test_startup_method(event_loop):
         startup=startup,
     )
 
+    # Menus, commands and toolbars have been created
     assert_action_performed(app, "create App commands")
     startup.assert_called_once_with(app)
     assert_action_performed(app, "create App menus")
     assert_action_performed(app.main_window, "create Window menus")
+    assert_action_performed(app.main_window, "create toolbar")
 
     # 4 menu items have been created
     assert len(app.commands) == 4
@@ -504,9 +506,11 @@ def test_startup_subclass(event_loop):
     # The main window will exist, and will have the app's formal name.
     assert app.main_window.title == "Test App"
 
+    # Menus, commands and toolbars have been created
     assert_action_performed(app, "create App commands")
     assert_action_performed(app, "create App menus")
     assert_action_performed(app.main_window, "create Window menus")
+    assert_action_performed(app.main_window, "create toolbar")
 
     # 5 menu items have been created
     assert app._impl.n_menu_items == 5

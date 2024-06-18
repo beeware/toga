@@ -988,15 +988,21 @@ class MainWindow(Window):
             closeable=closeable,
         )
 
-        # Create a toolbar that is linked to the app. Only install a change listener if
-        # the main app has a listener - this is an indicator that the app has finished
-        # starting up.
-        self._toolbar = CommandSet(
-            on_change=(
-                self._impl.create_toolbar if self.app.commands.on_change else None
-            ),
-            app=self.app,
-        )
+        # Create a toolbar that is linked to the app.
+        self._toolbar = CommandSet(app=self.app)
+
+        # If the window has been created during startup(), we don't want to
+        # install a change listener yet, as the startup process may install
+        # additional commands - we want to wait until startup is complete,
+        # create the initial state of the menus and toolbars, and then add a
+        # change listener. However, if startup *has* completed, we can install a
+        # change listener immediately, and trigger the creation of menus and
+        # toolbars.
+        if self.app.commands.on_change:
+            self._toolbar.on_change = self._impl.create_toolbar
+
+            self._impl.create_menus()
+            self._impl.create_toolbar()
 
     @property
     def _default_title(self) -> str:

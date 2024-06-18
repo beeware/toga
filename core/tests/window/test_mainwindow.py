@@ -1,7 +1,7 @@
 from unittest.mock import Mock
 
 import toga
-from toga_dummy.utils import assert_action_performed
+from toga_dummy.utils import assert_action_not_performed, assert_action_performed
 
 
 def test_create(app):
@@ -13,6 +13,12 @@ def test_create(app):
 
     assert window._impl.interface == window
     assert_action_performed(window, "create MainWindow")
+
+    # This is a secondary main window; app menus have not been created, but
+    # window menus and toolbars have been.
+    assert_action_not_performed(window, "create App menus")
+    assert_action_performed(window, "create Window menus")
+    assert_action_performed(window, "create toolbar")
 
     # We can't know what the ID is, but it must be a string.
     assert isinstance(window.id, str)
@@ -57,6 +63,12 @@ def test_create_explicit(app):
 
     assert window._impl.interface == window
     assert_action_performed(window, "create MainWindow")
+
+    # This is a secondary main window; app menus have not been created, but
+    # window menus and toolbars have been.
+    assert_action_not_performed(window, "create App menus")
+    assert_action_performed(window, "create Window menus")
+    assert_action_performed(window, "create toolbar")
 
     assert window.id == "my-window"
     assert window.title == "My Window"

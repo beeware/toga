@@ -193,6 +193,10 @@ class MainWindow(Window):
         self.toolbar_items = {}
         self.toolbar_separators = set()
 
+    def create_menus(self):
+        # GTK menus are handled at the app level
+        pass
+
     def create_toolbar(self):
         # If there's an existing toolbar, hide it until we know we need it.
         self.layout.remove(self.native_toolbar)
