@@ -1,0 +1,1 @@
+On WinForms, the Divider widget now behaves correctly and allows changing its background_color and dimensions.
