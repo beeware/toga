@@ -1,5 +1,4 @@
 import asyncio
-import gc
 import platform
 from time import time
 from unittest.mock import Mock
@@ -32,14 +31,6 @@ async def on_select():
 
 @pytest.fixture
 async def widget(on_select):
-    if toga.platform.current_platform == "linux":
-        # On Gtk, ensure that any WebViews from a previous test runs have been garbage
-        # collected. This prevents a segfault at GC time likely coming from the test
-        # suite running in a thread and Gtk WebViews sharing resources between
-        # instances. We perform the GC run here since pytest fixtures make earlier
-        # cleanup difficult.
-        gc.collect()
-
     widget = toga.MapView(style=Pack(flex=1), on_select=on_select)
 
     # Some implementations of MapView are a WebView wearing a trenchcoat.
@@ -58,11 +49,12 @@ async def widget(on_select):
     yield widget
 
     if toga.platform.current_platform == "linux":
-        # On Gtk, ensure that the MapView is garbage collection before the next test
-        # case. This prevents a segfault at GC time likely coming from the test suite
-        # running in a thread and Gtk WebViews sharing resources between instances.
-        del widget
-        gc.collect()
+        # On Gtk, ensure that the MapView evades garbage collection by keeping a
+        # reference to it in the app. The WebKit2 WebView will raise a SIGABRT if the
+        # thread disposing of it is not the same thread running the event loop. Since
+        # garbage collection for the WebView can run in either thread, just defer GC
+        # for it until after the testing thread has joined.
+        toga.App.app._gc_protector.append(widget)
 
 
 # The next two tests fail about 75% of the time in the macOS x86_64 CI configuration.
