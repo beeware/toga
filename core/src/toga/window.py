@@ -156,7 +156,7 @@ class Window:
 
         :param id: A unique identifier for the window. If not provided, one will be
             automatically generated.
-        :param title: Title for the window. Defaults to "Toga".
+        :param title: Title for the window. Defaults to the formal name of the app.
         :param position: Position of the window, as a :any:`toga.Position` or tuple of
             ``(x, y)`` coordinates, in :ref:`CSS pixels <css-units>`.
         :param size: Size of the window, as a :any:`toga.Size` or tuple of ``(width,
@@ -202,6 +202,12 @@ class Window:
         self._closable = closable
         self._minimizable = minimizable
 
+        # The app needs to exist before windows are created. _app will only be None
+        # until the window is added to the app below.
+        self._app: App = None
+        if App.app is None:
+            raise RuntimeError("Cannot create a Window before creating an App")
+
         self.factory = get_platform_factory()
         self._impl = getattr(self.factory, self._WINDOW_CLASS)(
             interface=self,
@@ -211,10 +217,6 @@ class Window:
         )
 
         # Add the window to the app
-        # _app will only be None until the window is added to the app below
-        self._app: App = None
-        if App.app is None:
-            raise RuntimeError("Cannot create a Window before creating an App")
         App.app.windows.add(self)
 
         # If content has been provided, set it
@@ -267,7 +269,7 @@ class Window:
 
     @property
     def _default_title(self) -> str:
-        return toga.App.app.formal_name if toga.App.app else "Toga"
+        return toga.App.app.formal_name
 
     @property
     def title(self) -> str:
@@ -942,53 +944,14 @@ class Window:
 
 
 class MainWindow(Window):
-    """Create a new main window."""
-
     _WINDOW_CLASS = "MainWindow"
 
-    def __init__(
-        self,
-        id: str | None = None,
-        title: str | None = None,
-        position: PositionT | None = None,
-        size: SizeT = Size(640, 480),
-        resizable: bool = True,
-        minimizable: bool = True,
-        on_close: OnCloseHandler | None = None,
-        content: Widget | None = None,
-        resizeable: None = None,  # DEPRECATED
-        closeable: None = None,  # DEPRECATED
-    ):
-        """Create a new main window.
+    def __init__(self, *args, **kwargs):
+        """Create a new Main Window.
 
-        :param id: A unique identifier for the window. If not provided, one will be
-            automatically generated.
-        :param title: Title for the window. Defaults to the formal name of the app.
-        :param position: Position of the window, as a :any:`toga.Position` or tuple of
-            ``(x, y)`` coordinates, in :ref:`CSS pixels <css-units>`.
-        :param size: Size of the window, as a :any:`toga.Size` or tuple of ``(width,
-            height)``, in :ref:`CSS pixels <css-units>`.
-        :param resizable: Can the window be resized by the user?
-        :param minimizable: Can the window be minimized by the user?
-        :param content: The initial content for the window.
-        :param on_close: The initial :any:`on_close` handler.
-        :param resizeable: **DEPRECATED** - Use ``resizable``.
-        :param closeable: **DEPRECATED** - Use ``closable``.
+        Accepts the same arguments as :class:`~toga.Window`.
         """
-        super().__init__(
-            id=id,
-            title=title,
-            position=position,
-            size=size,
-            resizable=resizable,
-            closable=True,
-            minimizable=minimizable,
-            content=content,
-            on_close=on_close,
-            # Deprecated arguments
-            resizeable=resizeable,
-            closeable=closeable,
-        )
+        super().__init__(*args, **kwargs)
 
         # Create a toolbar that is linked to the app.
         self._toolbar = CommandSet(app=self.app)
