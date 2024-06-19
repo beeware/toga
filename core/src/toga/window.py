@@ -202,6 +202,12 @@ class Window:
         self._closable = closable
         self._minimizable = minimizable
 
+        # The app needs to exist before windows are created. _app will only be None
+        # until the window is added to the app below.
+        self._app: App = None
+        if App.app is None:
+            raise RuntimeError("Cannot create a Window before creating an App")
+
         self.factory = get_platform_factory()
         self._impl = getattr(self.factory, self._WINDOW_CLASS)(
             interface=self,
@@ -211,10 +217,6 @@ class Window:
         )
 
         # Add the window to the app
-        # _app will only be None until the window is added to the app below
-        self._app: App = None
-        if App.app is None:
-            raise RuntimeError("Cannot create a Window before creating an App")
         App.app.windows.add(self)
 
         # If content has been provided, set it
@@ -267,7 +269,7 @@ class Window:
 
     @property
     def _default_title(self) -> str:
-        return toga.App.app.formal_name if toga.App.app else "Toga"
+        return toga.App.app.formal_name
 
     @property
     def title(self) -> str:
