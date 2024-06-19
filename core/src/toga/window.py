@@ -156,7 +156,7 @@ class Window:
 
         :param id: A unique identifier for the window. If not provided, one will be
             automatically generated.
-        :param title: Title for the window. Defaults to "Toga".
+        :param title: Title for the window. Defaults to the formal name of the app.
         :param position: Position of the window, as a :any:`toga.Position` or tuple of
             ``(x, y)`` coordinates, in :ref:`CSS pixels <css-units>`.
         :param size: Size of the window, as a :any:`toga.Size` or tuple of ``(width,
