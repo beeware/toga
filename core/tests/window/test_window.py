@@ -28,7 +28,7 @@ def test_window_created(app):
 
     # We can't know what the ID is, but it must be a string.
     assert isinstance(window.id, str)
-    assert window.title == "Toga"
+    assert window.title == "Test App"
     # The app has created a main window, so this will be the second window.
     assert window.position == toga.Position(150, 150)
     assert window.size == toga.Size(640, 480)
@@ -136,8 +136,8 @@ def test_set_app_with_content_at_instantiation(app):
     "value, expected",
     [
         ("New Text", "New Text"),
-        ("", "Toga"),
-        (None, "Toga"),
+        ("", "Test App"),
+        (None, "Test App"),
         (12345, "12345"),
         ("Contains\nnewline", "Contains"),
     ],

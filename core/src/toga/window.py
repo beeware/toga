@@ -267,7 +267,7 @@ class Window:
 
     @property
     def _default_title(self) -> str:
-        return "Toga"
+        return toga.App.app.formal_name if toga.App.app else "Toga"
 
     @property
     def title(self) -> str:
@@ -942,6 +942,8 @@ class Window:
 
 
 class MainWindow(Window):
+    """Create a new main window."""
+
     _WINDOW_CLASS = "MainWindow"
 
     def __init__(
@@ -1003,10 +1005,6 @@ class MainWindow(Window):
 
             self._impl.create_menus()
             self._impl.create_toolbar()
-
-    @property
-    def _default_title(self) -> str:
-        return toga.App.app.formal_name
 
     @property
     def toolbar(self) -> CommandSet:
