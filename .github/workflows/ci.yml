@@ -188,7 +188,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        backend: [ "macOS-x86_64", "macOS-arm64", "windows", "linux", "android", "iOS" ]
+        backend: [ "macOS-x86_64", "macOS-arm64", "windows", "linux-x11", "linux-wayland","android", "iOS" ]
         include:
         - pre-command: ""
           briefcase-run-prefix: ""
@@ -208,7 +208,7 @@ jobs:
         # We use a fixed Ubuntu version rather than `-latest` because at some point,
         # `-latest` will be updated, but it will be a soft changeover, which would cause
         # the system Python version to become inconsistent from run to run.
-        - backend: "linux"
+        - backend: "linux-x11"
           platform: "linux"
           runs-on: "ubuntu-22.04"
           # The package list should be the same as in tutorial-0.rst, and the BeeWare
@@ -233,6 +233,35 @@ jobs:
             DISPLAY=:99 blackbox &
             sleep 1
           briefcase-run-prefix: 'DISPLAY=:99'
+          setup-python: false  # Use the system Python packages
+          app-user-data-path: "$HOME/.local/share/testbed"
+
+        - backend: "linux-wayland"
+          platform: "linux"
+          runs-on: "ubuntu-24.04"
+          # The package list should be the same as in tutorial-0.rst, and the BeeWare
+          # tutorial, plus mutter to provide a window manager, and libjpeg-dev for Pillow.
+          pre-command: |
+            sudo apt update -y
+            sudo apt install -y --no-install-recommends \
+              mutter libjpeg-dev \
+              pkg-config python3-dev libgirepository1.0-dev libcairo2-dev gir1.2-webkit2-4.1
+
+            # Start Virtual X server
+            echo "Start X server..."
+            Xvfb :99 -screen 0 2048x1536x24 &
+            sleep 1
+
+            # Start Window manager
+            echo "Start window manager..."
+            DISPLAY=:99 MUTTER_DEBUG_DUMMY_MODE_SPECS=2048x1536 \
+              mutter --nested --wayland --no-x11 --wayland-display toga &
+            sleep 1
+
+            # Bypass guardrails for installing over system packages
+            export PIP_BREAK_SYSTEM_PACKAGES=1
+            export PIP_IGNORE_INSTALLED=1
+          briefcase-run-prefix: "WAYLAND_DISPLAY=toga"
           setup-python: false  # Use the system Python packages
           app-user-data-path: "$HOME/.local/share/testbed"
 
