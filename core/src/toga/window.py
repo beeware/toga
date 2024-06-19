@@ -942,8 +942,6 @@ class Window:
 
 
 class MainWindow(Window):
-    """Create a new main window."""
-
     _WINDOW_CLASS = "MainWindow"
 
     def __init__(
