@@ -47,7 +47,10 @@ Usage
 -----
 
 A window is the top-level container that the operating system uses to display widgets.
-A window will have a title bar; but will not have a menu or toolbar.
+On desktop platforms, an instance of :class:`~toga.Window` will have a title bar, but
+will not have a menu or toolbar. On mobile, web and console platforms,
+:class:`~toga.Window` is a bare container with no other decoration. Subclasses of
+:class:`~toga.Window` (such as :class:`~toga.MainWindow`) add other decorations.
 
 When first created, a window is not visible. To display it, call the
 :meth:`~toga.Window.show` method. The title of the window will default to the

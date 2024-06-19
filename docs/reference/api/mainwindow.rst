@@ -55,10 +55,11 @@ Usage
 -----
 
 A :class:`toga.MainWindow` is a :class:`toga.Window` that can serve as the main
-interface to an application. If the platform places menus inside windows, a
-:class:`toga.MainWindow` instance will display a menu bar that contains the app
-control commands (such as About, Quit, and anything else required by the
-platform's HIG). It may also contain a toolbar.
+interface to an application. On desktop platforms that place menus inside windows, a
+:class:`toga.MainWindow` instance will display a menu bar that contains the app control
+commands (such as About, Quit, and anything else required by the platform's HIG). It may
+also contain a toolbar. On mobile, web and console platforms, a :class:`toga.MainWindow`
+will include a title bar that can contain menus and toolbar items.
 
 In addition to the platform's default commands, user-defined commands can be
 added to the :class:`toga.MainWindow`'s menu by adding them to
