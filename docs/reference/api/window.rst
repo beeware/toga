@@ -43,10 +43,11 @@ Usage
 -----
 
 A window is the top-level container that the operating system uses to display widgets.
-A window may also have other decorations, such as a title bar or toolbar.
+A window will have a title bar; but will not have a menu or toolbar.
 
 When first created, a window is not visible. To display it, call the
-:meth:`~toga.Window.show` method.
+:meth:`~toga.Window.show` method. The title of the window will default to the
+formal name of the app.
 
 The window has content, which will usually be a container widget of some kind. The
 content of the window can be changed by re-assigning its ``content`` attribute to a

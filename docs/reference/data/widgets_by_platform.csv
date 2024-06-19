@@ -2,7 +2,7 @@ Component,Type,Component,Description,macOS,GTK,Windows,iOS,Android,Web,Terminal
 Application,Core Component,:class:`~toga.App`,The application itself,|y|,|y|,|y|,|y|,|y|,|b|,|b|
 DocumentApp,Core Component,:class:`~toga.DocumentApp`,An application that manages documents.,|b|,|b|,,,,,
 Window,Core Component,:class:`~toga.Window`,An operating system-managed container of widgets.,|y|,|y|,|y|,,,,
-MainWindow,Core Component,:class:`~toga.MainWindow`,The main window of the application.,|y|,|y|,|y|,|y|,|y|,|b|,|b|
+MainWindow,Core Component,:class:`~toga.MainWindow`,A window that can use the full set of window-level user interface elements.,|y|,|y|,|y|,|y|,|y|,|b|,|b|
 ActivityIndicator,General Widget,:class:`~toga.ActivityIndicator`,A spinning activity animation,|y|,|y|,,,,|b|,
 Button,General Widget,:class:`~toga.Button`,Basic clickable Button,|y|,|y|,|y|,|y|,|y|,|b|,|b|
 Canvas,General Widget,:class:`~toga.Canvas`,A drawing area for 2D vector graphics.,|y|,|y|,|y|,|y|,|y|,,

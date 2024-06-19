@@ -62,6 +62,11 @@ class App(LoggedObject):
         self._action("create App menus")
         self.n_menu_items = len(self.interface.commands)
 
+        # Replicate the behavior of platforms that have window-level menu handling.
+        for window in self.interface.app.windows:
+            if hasattr(window._impl, "create_menus"):
+                window._impl.create_menus()
+
     def main_loop(self):
         print("Starting app using Dummy backend.")
         self._action("main loop")

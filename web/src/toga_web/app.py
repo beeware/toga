@@ -1,6 +1,5 @@
-import toga
 from toga.app import overridden
-from toga.command import Command, Group, Separator
+from toga.command import Command, Group
 from toga.handlers import simple_handler
 from toga_web.libs import create_element, js
 
@@ -45,99 +44,18 @@ class App:
             ),
         )
 
-    def _create_submenu(self, group, items):
-        submenu = create_element(
-            "sl-dropdown",
-            children=[
-                create_element(
-                    "span",
-                    id=f"menu-{id(group)}",
-                    classes=["menu"],
-                    slot="trigger",
-                    content=group.text,
-                ),
-                create_element(
-                    "sl-menu",
-                    children=items,
-                ),
-            ],
-        )
-        return submenu
-
     def _menu_about(self, command, **kwargs):
         self.interface.about()
 
     def create_menus(self):
-        self._menu_groups = {}
-        submenu = None
-
-        for cmd in self.interface.commands:
-            if isinstance(cmd, Separator):
-                # TODO - add a section break
-                pass
-            else:
-                # TODO - this doesn't handle submenus properly;
-                # all menu items will appear in their root group.
-                submenu = self._menu_groups.setdefault(cmd.group, [])
-
-                menu_item = create_element(
-                    "sl-menu-item",
-                    content=cmd.text,
-                    disabled=not cmd.enabled,
-                )
-                menu_item.onclick = cmd._impl.dom_click
-
-                submenu.append(menu_item)
-
-        menu_container = create_element("nav", classes=["menubar"])
-        help_menu_container = create_element("nav", classes=["menubar"])
-
-        # If there isn't an explicit app menu group, add an inert placeholder
-        if toga.Group.APP not in self._menu_groups:
-            menu_container.appendChild(
-                create_element(
-                    "span",
-                    classes=["app"],
-                    content=self.interface.formal_name,
-                )
-            )
-
-        for group, items in self._menu_groups.items():
-            submenu = self._create_submenu(group, items)
-            if group != toga.Group.HELP:
-                menu_container.appendChild(submenu)
-            else:
-                help_menu_container.appendChild(submenu)
-
-        menubar_id = f"{self.interface.app_id}-header"
-        self.menubar = create_element(
-            "header",
-            id=menubar_id,
-            classes=["toga"],
-            children=[
-                create_element(
-                    "a",
-                    classes=["brand"],
-                    children=[
-                        create_element(
-                            "img",
-                            src="static/logo-32.png",
-                            alt=f"{self.interface.formal_name} logo",
-                            loading="lazy",
-                        )
-                    ],
-                ),
-                menu_container,
-                help_menu_container,
-            ],
-        )
-
-        # If there's an existing menubar, replace it.
-        old_menubar = js.document.getElementById(menubar_id)
-        if old_menubar:
-            old_menubar.replaceWith(self.menubar)
-        else:
-            self.native.prepend(self.menubar)
+        # Web menus are created on the Window.
+        for window in self.interface.windows:
+            # It's difficult to trigger this on a simple window, because we can't easily
+            # modify the set of app-level commands that are registered, and a simple
+            # window doesn't exist when the app starts up. Therefore, no-branch the else
+            # case.
+            if hasattr(window._impl, "create_menus"):  # pragma: no branch
+                window._impl.create_menus()
 
     ######################################################################
     # App lifecycle

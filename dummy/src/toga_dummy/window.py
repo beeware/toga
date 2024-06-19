@@ -73,9 +73,6 @@ class Window(LoggedObject):
         self._action("close")
         self._set_value("visible", False)
 
-    def create_toolbar(self):
-        self._action("create toolbar")
-
     def set_app(self, app):
         self._set_value("app", app)
 
@@ -154,4 +151,13 @@ class Window(LoggedObject):
 
 
 class MainWindow(Window):
+
+    def create_menus(self):
+        self._action("create Window menus")
+
+    def create_toolbar(self):
+        self._action("create toolbar")
+
+
+class DocumentMainWindow(Window):
     pass

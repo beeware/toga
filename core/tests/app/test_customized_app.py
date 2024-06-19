@@ -9,6 +9,9 @@ import toga
 class CustomizedApp(toga.App):
     def startup(self):
         self.main_window = toga.MainWindow()
+        # Create a secondary simple window as part of app startup to verify
+        # that toolbar handling is skipped.
+        self.other_window = toga.Window()
 
         self._preferences = Mock()
 
@@ -43,6 +46,9 @@ def test_create(event_loop, AppClass):
     # Preferences exist and are enabled
     assert toga.Command.PREFERENCES in custom_app.commands
     assert custom_app.commands[toga.Command.PREFERENCES].enabled
+
+    # A change handler has been added to the MainWindow's toolbar CommandSet
+    assert custom_app.main_window.toolbar.on_change is not None
 
 
 @pytest.mark.parametrize(

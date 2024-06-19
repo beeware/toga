@@ -28,14 +28,14 @@ def test_window_created(app):
 
     # We can't know what the ID is, but it must be a string.
     assert isinstance(window.id, str)
-    assert window.title == "Toga"
+    assert window.title == "Test App"
     # The app has created a main window, so this will be the second window.
     assert window.position == toga.Position(150, 150)
     assert window.size == toga.Size(640, 480)
     assert window.resizable
     assert window.closable
     assert window.minimizable
-    assert len(window.toolbar) == 0
+    assert not hasattr(window, "toolbar")
     assert window.on_close._raw is None
 
 
@@ -72,7 +72,7 @@ def test_window_created_explicit(app):
     assert not window.resizable
     assert not window.closable
     assert not window.minimizable
-    assert len(window.toolbar) == 0
+    assert not hasattr(window, "toolbar")
     assert window.on_close._raw == on_close_handler
 
 
@@ -136,8 +136,8 @@ def test_set_app_with_content_at_instantiation(app):
     "value, expected",
     [
         ("New Text", "New Text"),
-        ("", "Toga"),
-        (None, "Toga"),
+        ("", "Test App"),
+        (None, "Test App"),
         (12345, "12345"),
         ("Contains\nnewline", "Contains"),
     ],
@@ -146,35 +146,6 @@ def test_title(window, value, expected):
     """The title of the window can be changed."""
     window.title = value
     assert window.title == expected
-
-
-def test_toolbar_implicit_add(window, app):
-    """Adding an item to a toolbar implicitly adds it to the app."""
-    # Clear the app commands to start with
-    app.commands.clear()
-    assert list(window.toolbar) == []
-    assert list(app.commands) == []
-
-    cmd1 = toga.Command(None, "Command 1")
-    cmd2 = toga.Command(None, "Command 2")
-
-    assert list(window.toolbar) == []
-    assert list(app.commands) == []
-
-    # Adding a command to the toolbar automatically adds it to the app
-    window.toolbar.add(cmd1)
-    assert list(window.toolbar) == [cmd1]
-    assert list(app.commands) == [cmd1]
-
-    # But not vice versa
-    app.commands.add(cmd2)
-    assert list(window.toolbar) == [cmd1]
-    assert list(app.commands) == [cmd1, cmd2]
-
-    # Adding a command to both places does not cause a duplicate
-    app.commands.add(cmd1)
-    assert list(window.toolbar) == [cmd1]
-    assert list(app.commands) == [cmd1, cmd2]
 
 
 def test_change_content(window, app):

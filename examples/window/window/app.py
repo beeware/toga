@@ -45,7 +45,6 @@ class WindowDemoApp(toga.App):
     def do_new_windows(self, widget, **kwargs):
         non_resize_window = toga.Window(
             "Non-resizable Window",
-            position=(200, 200),
             size=(300, 300),
             resizable=False,
             on_close=self.close_handler,
@@ -57,7 +56,6 @@ class WindowDemoApp(toga.App):
 
         non_close_window = toga.Window(
             "Non-closeable Window",
-            position=(300, 300),
             size=(300, 300),
             closable=False,
         )
@@ -75,6 +73,15 @@ class WindowDemoApp(toga.App):
             children=[toga.Label("This window has no close handler")]
         )
         no_close_handler_window.show()
+
+        second_main_window = toga.MainWindow()
+        extra_command = toga.Command(
+            lambda cmd: print("A little extra"),
+            text="Extra",
+            icon=toga.Icon.APP_ICON,
+        )
+        second_main_window.toolbar.add(extra_command)
+        second_main_window.show()
 
     def do_screen_change(self, screen, widget, **kwargs):
         self.current_window.screen = screen
@@ -286,6 +293,7 @@ class WindowDemoApp(toga.App):
             self.do_prev_content,
             text="Restore content",
             tooltip="Restore main window content",
+            icon=toga.Icon.APP_ICON,
         )
 
         self.commands.add(restore_command)

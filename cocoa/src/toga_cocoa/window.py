@@ -179,12 +179,7 @@ class Window:
         self.native.wantsLayer = True
         self.container.native.backgroundColor = self.native.backgroundColor
 
-        # By default, no toolbar
-        self._toolbar_items = {}
-        self.native_toolbar = None
-
     def __del__(self):
-        self.purge_toolbar()
         self.native.release()
 
     ######################################################################
@@ -203,49 +198,6 @@ class Window:
 
     def close(self):
         self.native.close()
-
-    def create_toolbar(self):
-        # Purge any existing toolbar items
-        self.purge_toolbar()
-
-        # Create the new toolbar items.
-        if self.interface.toolbar:
-            for cmd in self.interface.toolbar:
-                if isinstance(cmd, Command):
-                    self._toolbar_items[toolbar_identifier(cmd)] = cmd
-
-            self.native_toolbar = NSToolbar.alloc().initWithIdentifier(
-                "Toolbar-%s" % id(self)
-            )
-            self.native_toolbar.setDelegate(self.native)
-        else:
-            self.native_toolbar = None
-
-        self.native.setToolbar(self.native_toolbar)
-
-        # Adding/removing a toolbar changes the size of the content window.
-        if self.interface.content:
-            self.interface.content.refresh()
-
-    def purge_toolbar(self):
-        while self._toolbar_items:
-            dead_items = []
-            _, cmd = self._toolbar_items.popitem()
-            # The command might have toolbar representations on multiple window
-            # toolbars, and may have other representations (at the very least, a menu
-            # item). Only clean up the representation pointing at *this* window. Do this
-            # in 2 passes so that we're not modifying the set of native objects while
-            # iterating over it.
-            for item_native in cmd._impl.native:
-                if (
-                    isinstance(item_native, NSToolbarItem)
-                    and item_native.target == self.native
-                ):
-                    dead_items.append(item_native)
-
-            for item_native in dead_items:
-                cmd._impl.native.remove(item_native)
-                item_native.release()
 
     def set_app(self, app):
         pass
@@ -365,4 +317,64 @@ class Window:
 
 
 class MainWindow(Window):
+    def __init__(self, interface, title, position, size):
+        super().__init__(interface, title, position, size)
+
+        # By default, no toolbar
+        self._toolbar_items = {}
+        self.native_toolbar = None
+
+    def __del__(self):
+        self.purge_toolbar()
+        super().__del__()
+
+    def create_menus(self):
+        # macOS doesn't have window-level menus
+        pass
+
+    def create_toolbar(self):
+        # Purge any existing toolbar items
+        self.purge_toolbar()
+
+        # Create the new toolbar items.
+        if self.interface.toolbar:
+            for cmd in self.interface.toolbar:
+                if isinstance(cmd, Command):
+                    self._toolbar_items[toolbar_identifier(cmd)] = cmd
+
+            self.native_toolbar = NSToolbar.alloc().initWithIdentifier(
+                "Toolbar-%s" % id(self)
+            )
+            self.native_toolbar.setDelegate(self.native)
+        else:
+            self.native_toolbar = None
+
+        self.native.setToolbar(self.native_toolbar)
+
+        # Adding/removing a toolbar changes the size of the content window.
+        if self.interface.content:
+            self.interface.content.refresh()
+
+    def purge_toolbar(self):
+        while self._toolbar_items:
+            dead_items = []
+            _, cmd = self._toolbar_items.popitem()
+            # The command might have toolbar representations on multiple window
+            # toolbars, and may have other representations (at the very least, a menu
+            # item). Only clean up the representation pointing at *this* window. Do this
+            # in 2 passes so that we're not modifying the set of native objects while
+            # iterating over it.
+            for item_native in cmd._impl.native:
+                if (
+                    isinstance(item_native, NSToolbarItem)
+                    and item_native.target == self.native
+                ):
+                    dead_items.append(item_native)
+
+            for item_native in dead_items:
+                cmd._impl.native.remove(item_native)
+                item_native.release()
+
+
+class DocumentMainWindow(Window):
     pass
