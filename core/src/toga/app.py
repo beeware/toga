@@ -542,8 +542,10 @@ class App:
         self._verify_startup()
 
         # Manifest the initial state of the menus. This will cascade down to all
-        # open windows if the platform has window-based menus.
+        # open windows if the platform has window-based menus. Then install the
+        # on-change handler for menus to respond to any future changes.
         self._impl.create_menus()
+        self.commands.on_change = self._impl.create_menus
 
         # Manifest the initial state of toolbars (on the windows that have
         # them), then install a change listener so that any future changes to
@@ -552,9 +554,6 @@ class App:
             if hasattr(window, "toolbar"):
                 window._impl.create_toolbar()
                 window.toolbar.on_change = window._impl.create_toolbar
-
-        # Now that we have a finalized impl, set the on_change handler for commands
-        self.commands.on_change = self._impl.create_menus
 
     def startup(self) -> None:
         """Create and show the main window for the application.
