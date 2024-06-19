@@ -174,7 +174,7 @@ else:
         assert second_window.app == app
         assert second_window in app.windows
 
-        assert second_window.title == "Toga"
+        assert second_window.title == "Toga Testbed"
         assert second_window.size == (640, 480)
         # Position should be cascaded; the exact position depends on the platform,
         # and how many windows have been created. As long as it's not at (100,100).
