@@ -88,7 +88,7 @@ Standard app
 ~~~~~~~~~~~~
 
 The most common type of app will assign a :any:`MainWindow` or :any:`toga.MainWindow`
-instance as the main window. This window controls the lifecycle of the app; when the
+instance as the main window. This window controls the life cycle of the app; when the
 main window is closed, the app will exit.
 
 This is the type of app that will be created if you use an instance of :any:`toga.App`
