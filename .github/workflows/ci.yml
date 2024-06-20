@@ -238,7 +238,7 @@ jobs:
 
         - backend: "linux-wayland"
           platform: "linux"
-          runs-on: "ubuntu-24.04"
+          runs-on: "ubuntu-22.04"
           # The package list should be the same as in tutorial-0.rst, and the BeeWare
           # tutorial, plus mutter to provide a window manager, and libjpeg-dev for Pillow.
           pre-command: |
