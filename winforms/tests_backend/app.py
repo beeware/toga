@@ -105,6 +105,9 @@ class AppProbe(BaseProbe):
     def content_size(self, window):
         return WindowProbe(self.app, window).content_size
 
+    def assert_current_window(self, window):
+        assert self.app.current_window == window
+
     def assert_app_icon(self, icon):
         for window in self.app.windows:
             # We have no real way to check we've got the right icon; use pixel peeping as a

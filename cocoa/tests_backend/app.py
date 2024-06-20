@@ -60,6 +60,9 @@ class AppProbe(BaseProbe):
             window.content._impl.native.frame.size.height,
         )
 
+    def assert_current_window(self, window):
+        assert self.app.current_window == window
+
     def assert_app_icon(self, icon):
         # We have no real way to check we've got the right icon; use pixel peeping as a
         # guess. Construct a PIL image from the current icon.

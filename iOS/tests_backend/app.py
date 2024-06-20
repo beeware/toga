@@ -44,6 +44,9 @@ class AppProbe(BaseProbe):
     def logs_path(self):
         return self.get_path(NSSearchPathDirectory.ApplicationSupport) / "Logs"
 
+    def assert_current_window(self, window):
+        assert self.app.current_window == window
+
     def assert_app_icon(self, icon):
         pytest.xfail("iOS apps don't have app icons at runtime")
 

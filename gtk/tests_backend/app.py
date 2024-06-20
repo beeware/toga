@@ -48,6 +48,16 @@ class AppProbe(BaseProbe):
         content_allocation = window._impl.container.get_allocation()
         return (content_allocation.width, content_allocation.height)
 
+    def assert_current_window(self, window):
+        # Gtk 3.24.41 ships with Ubuntu 24.04 where present() works on Wayland
+        if self.IS_WAYLAND and self.GTK_VERSION < (3, 24, 41):
+            pytest.skip(
+                f"Assigning the current window is not supported for "
+                f"Gtk {'.'.join(map(str, self.GTK_VERSION))} on Wayland"
+            )
+        else:
+            assert self.app.current_window == window
+
     def assert_app_icon(self, icon):
         for window in self.app.windows:
             # We have no real way to check we've got the right icon; use pixel peeping as a

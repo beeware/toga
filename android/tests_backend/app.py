@@ -38,6 +38,9 @@ class AppProbe(BaseProbe):
     def logs_path(self):
         return Path(self.get_app_context().getFilesDir().getPath()) / "log"
 
+    def assert_current_window(self, window):
+        assert self.app.current_window == window
+
     def assert_app_icon(self, icon):
         xfail("Android apps don't have app icons at runtime")
 
