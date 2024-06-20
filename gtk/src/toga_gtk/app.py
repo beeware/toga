@@ -91,6 +91,13 @@ class App:
                 group=toga.Group.HELP,
                 id=Command.ABOUT,
             ),
+            Command(
+                simple_handler(self.interface.visit_homepage),
+                "Visit homepage",
+                enabled=self.interface.home_page is not None,
+                group=toga.Group.HELP,
+                id=Command.VISIT_HOMEPAGE,
+            ),
         )
 
     def create_standard_app_commands(self):
@@ -104,14 +111,6 @@ class App:
                 group=toga.Group.APP,
                 enabled=overridden(self.interface.preferences),
                 id=Command.PREFERENCES,
-            ),
-            # ---- Help menu -----------------------------------
-            Command(
-                simple_handler(self.interface.visit_homepage),
-                "Visit homepage",
-                enabled=self.interface.home_page is not None,
-                group=toga.Group.HELP,
-                id=Command.VISIT_HOMEPAGE,
             ),
         )
 
