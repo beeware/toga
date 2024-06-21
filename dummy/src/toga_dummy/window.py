@@ -50,6 +50,7 @@ class Window(LoggedObject):
         self._action(f"create {self.__class__.__name__}")
         self.interface = interface
         self.container = Container()
+        self.dialog_responses = {}
 
         self.set_title(title)
         self.set_position(position if position is not None else _initial_position())

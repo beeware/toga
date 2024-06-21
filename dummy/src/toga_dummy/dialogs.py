@@ -1,57 +1,84 @@
-class BaseDialog:
-    def __init__(self, interface):
-        self.interface = interface
-        self.interface._impl = self
+import asyncio
 
-    def simulate_result(self, result):
-        self.interface.set_result(result)
+import toga
+
+from .utils import LoggedObject
+
+
+class BaseDialog(LoggedObject):
+    async def show(self, host_window, future=None):
+        # For backwards compatibility with the old window-function API,
+        # allow the future to be explicitly provided.
+        if future is None:
+            self.future = asyncio.Future()
+        else:
+            self.future = future
+
+        try:
+            if host_window:
+                host_window._impl._action(f"show window {self.__class__.__name__}")
+                result = host_window._impl.dialog_responses[
+                    self.__class__.__name__
+                ].pop(0)
+            else:
+                toga.App.app._impl._action(f"show app {self.__class__.__name__}")
+                result = toga.App.app._impl.dialog_responses[
+                    self.__class__.__name__
+                ].pop(0)
+
+        except KeyError:
+            raise RuntimeError(
+                f"Was not expecting responses for {self.__class__.__name__}"
+            )
+        except IndexError:
+            raise RuntimeError(
+                f"Ran out of prepared responses for {self.__class__.__name__}"
+            )
+
+        self.future.set_result(result)
+        return await self.future
 
 
 class InfoDialog(BaseDialog):
-    def __init__(self, interface, title, message):
-        super().__init__(interface)
-        interface.window._impl._action(
-            "show info dialog",
+    def __init__(self, title, message):
+        self._action(
+            "create InfoDialog",
             title=title,
             message=message,
         )
 
 
 class QuestionDialog(BaseDialog):
-    def __init__(self, interface, title, message):
-        super().__init__(interface)
-        interface.window._impl._action(
-            "show question dialog",
+    def __init__(self, title, message):
+        self._action(
+            "create QuestionDialog",
             title=title,
             message=message,
         )
 
 
 class ConfirmDialog(BaseDialog):
-    def __init__(self, interface, title, message):
-        super().__init__(interface)
-        interface.window._impl._action(
-            "show confirm dialog",
+    def __init__(self, title, message):
+        self._action(
+            "create ConfirmDialog",
             title=title,
             message=message,
         )
 
 
 class ErrorDialog(BaseDialog):
-    def __init__(self, interface, title, message):
-        super().__init__(interface)
-        interface.window._impl._action(
-            "show error dialog",
+    def __init__(self, title, message):
+        self._action(
+            "create ErrorDialog",
             title=title,
             message=message,
         )
 
 
 class StackTraceDialog(BaseDialog):
-    def __init__(self, interface, title, message, content, retry):
-        super().__init__(interface)
-        interface.window._impl._action(
-            "show stack trace dialog",
+    def __init__(self, title, message, content, retry):
+        self._action(
+            "create StackTraceDialog",
             title=title,
             message=message,
             content=content,
@@ -62,16 +89,13 @@ class StackTraceDialog(BaseDialog):
 class SaveFileDialog(BaseDialog):
     def __init__(
         self,
-        interface,
         title,
         filename,
         initial_directory,
         file_types=None,
-        on_result=None,
     ):
-        super().__init__(interface)
-        interface.window._impl._action(
-            "show save file dialog",
+        self._action(
+            "create SaveFileDialog",
             title=title,
             filename=filename,
             initial_directory=initial_directory,
@@ -82,16 +106,13 @@ class SaveFileDialog(BaseDialog):
 class OpenFileDialog(BaseDialog):
     def __init__(
         self,
-        interface,
         title,
         initial_directory,
         file_types,
         multiple_select,
-        on_result=None,
     ):
-        super().__init__(interface)
-        interface.window._impl._action(
-            "show open file dialog",
+        self._action(
+            "create OpenFileDialog",
             title=title,
             initial_directory=initial_directory,
             file_types=file_types,
@@ -102,15 +123,12 @@ class OpenFileDialog(BaseDialog):
 class SelectFolderDialog(BaseDialog):
     def __init__(
         self,
-        interface,
         title,
         initial_directory,
         multiple_select,
-        on_result=None,
     ):
-        super().__init__(interface)
-        interface.window._impl._action(
-            "show select folder dialog",
+        self._action(
+            "create SelectFolderDialog",
             title=title,
             initial_directory=initial_directory,
             multiple_select=multiple_select,

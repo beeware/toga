@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import warnings
 from builtins import id as identifier
 from collections.abc import Iterator
@@ -14,6 +15,7 @@ from typing import (
 )
 
 import toga
+from toga import dialogs
 from toga.command import CommandSet
 from toga.handlers import AsyncResult, wrapped_handler
 from toga.images import Image
@@ -22,6 +24,7 @@ from toga.types import Position, Size
 
 if TYPE_CHECKING:
     from toga.app import App
+    from toga.dialogs import DialogResultT
     from toga.documents import Document
     from toga.images import ImageT
     from toga.screens import Screen
@@ -477,6 +480,14 @@ class Window:
         """
         return Image(self._impl.get_image_data()).as_format(format)
 
+    async def dialog(self, dialog) -> DialogResultT:
+        """Display a to the user dialog, modal to this window.
+
+        :param dialog: The dialog to display to the user.
+        :returns: The result of the dialog.
+        """
+        return await dialog._show(self)
+
     ######################################################################
     # Window events
     ######################################################################
@@ -495,7 +506,7 @@ class Window:
         self._on_close = wrapped_handler(self, handler, cleanup=cleanup)
 
     ######################################################################
-    # Dialogs
+    # 2024-06: Backwards compatibility
     ######################################################################
 
     def info_dialog(
@@ -504,26 +515,25 @@ class Window:
         message: str,
         on_result: DialogResultHandler[None] | None = None,
     ) -> Dialog:
-        """Ask the user to acknowledge some information.
+        """**DEPRECATED** - use await self.dialog(InfoDialog())"""
+        ######################################################################
+        # 2024-06: Backwards compatibility
+        ######################################################################
+        warnings.warn(
+            "info_dialog(...) has been deprecated; use dialog(toga.InfoDialog(...))",
+            DeprecationWarning,
+        )
+        ######################################################################
+        # End Backwards compatibility
+        ######################################################################
 
-        Presents as a dialog with a single "OK" button to close the dialog.
-
-        **This is an asynchronous method**. If you invoke this method in synchronous
-        context, it will show the dialog, but will return *immediately*. The object
-        returned by this method can be awaited to obtain the result of the dialog.
-
-        :param title: The title of the dialog window.
-        :param message: The message to display.
-        :param on_result: **DEPRECATED** ``await`` the return value of this method.
-        :returns: An awaitable Dialog object. The Dialog object returns ``None`` when
-            the user presses the 'OK' button.
-        """
-        dialog = Dialog(
+        result = Dialog(
             self,
             on_result=wrapped_handler(self, on_result) if on_result else None,
         )
-        self.factory.dialogs.InfoDialog(dialog, title, message)
-        return dialog
+        result.dialog = dialogs.InfoDialog(title, message)
+        asyncio.ensure_future(result.dialog._impl.show(self, future=result))
+        return result
 
     def question_dialog(
         self,
@@ -531,26 +541,25 @@ class Window:
         message: str,
         on_result: DialogResultHandler[bool] | None = None,
     ) -> Dialog:
-        """Ask the user a yes/no question.
+        """**DEPRECATED** - use await self.dialog(QuestionDialog())"""
+        ######################################################################
+        # 2024-06: Backwards compatibility
+        ######################################################################
+        warnings.warn(
+            "question_dialog(...) has been deprecated; use dialog(toga.QuestionDialog(...))",
+            DeprecationWarning,
+        )
+        ######################################################################
+        # End Backwards compatibility
+        ######################################################################
 
-        Presents as a dialog with "Yes" and "No" buttons.
-
-        **This is an asynchronous method**. If you invoke this method in synchronous
-        context, it will show the dialog, but will return *immediately*. The object
-        returned by this method can be awaited to obtain the result of the dialog.
-
-        :param title: The title of the dialog window.
-        :param message: The question to be answered.
-        :param on_result: **DEPRECATED** ``await`` the return value of this method.
-        :returns: An awaitable Dialog object. The Dialog object returns ``True`` when
-            the "Yes" button is pressed, ``False`` when the "No" button is pressed.
-        """
-        dialog = Dialog(
+        result = Dialog(
             self,
             on_result=wrapped_handler(self, on_result) if on_result else None,
         )
-        self.factory.dialogs.QuestionDialog(dialog, title, message)
-        return dialog
+        result.dialog = dialogs.QuestionDialog(title, message)
+        asyncio.ensure_future(result.dialog._impl.show(self, future=result))
+        return result
 
     def confirm_dialog(
         self,
@@ -558,27 +567,25 @@ class Window:
         message: str,
         on_result: DialogResultHandler[bool] | None = None,
     ) -> Dialog:
-        """Ask the user to confirm if they wish to proceed with an action.
+        """**DEPRECATED** - use await self.dialog(ConfirmDialog())"""
+        ######################################################################
+        # 2024-06: Backwards compatibility
+        ######################################################################
+        warnings.warn(
+            "confirm_dialog(...) has been deprecated; use dialog(toga.ConfirmDialog(...))",
+            DeprecationWarning,
+        )
+        ######################################################################
+        # End Backwards compatibility
+        ######################################################################
 
-        Presents as a dialog with "Cancel" and "OK" buttons (or whatever labels are
-        appropriate on the current platform).
-
-        **This is an asynchronous method**. If you invoke this method in synchronous
-        context, it will show the dialog, but will return *immediately*. The object
-        returned by this method can be awaited to obtain the result of the dialog.
-
-        :param title: The title of the dialog window.
-        :param message: A message describing the action to be confirmed.
-        :param on_result: **DEPRECATED** ``await`` the return value of this method.
-        :returns: An awaitable Dialog object. The Dialog object returns ``True`` when
-            the "OK" button is pressed, ``False`` when the "Cancel" button is pressed.
-        """
-        dialog = Dialog(
+        result = Dialog(
             self,
             on_result=wrapped_handler(self, on_result) if on_result else None,
         )
-        self.factory.dialogs.ConfirmDialog(dialog, title, message)
-        return dialog
+        result.dialog = dialogs.ConfirmDialog(title, message)
+        asyncio.ensure_future(result.dialog._impl.show(self, future=result))
+        return result
 
     def error_dialog(
         self,
@@ -586,26 +593,25 @@ class Window:
         message: str,
         on_result: DialogResultHandler[None] | None = None,
     ) -> Dialog:
-        """Ask the user to acknowledge an error state.
+        """**DEPRECATED** - use await self.dialog(ErrorDialog())"""
+        ######################################################################
+        # 2024-06: Backwards compatibility
+        ######################################################################
+        warnings.warn(
+            "error_dialog(...) has been deprecated; use dialog(toga.ErrorDialog(...))",
+            DeprecationWarning,
+        )
+        ######################################################################
+        # End Backwards compatibility
+        ######################################################################
 
-        Presents as an error dialog with an "OK" button to close the dialog.
-
-        **This is an asynchronous method**. If you invoke this method in synchronous
-        context, it will show the dialog, but will return *immediately*. The object
-        returned by this method can be awaited to obtain the result of the dialog.
-
-        :param title: The title of the dialog window.
-        :param message: The error message to display.
-        :param on_result: **DEPRECATED** ``await`` the return value of this method.
-        :returns: An awaitable Dialog object. The Dialog object returns ``None`` when
-            the user presses the "OK" button.
-        """
-        dialog = Dialog(
+        result = Dialog(
             self,
             on_result=wrapped_handler(self, on_result) if on_result else None,
         )
-        self.factory.dialogs.ErrorDialog(dialog, title, message)
-        return dialog
+        result.dialog = dialogs.ErrorDialog(title, message)
+        asyncio.ensure_future(result.dialog._impl.show(self, future=result))
+        return result
 
     @overload
     def stack_trace_dialog(
@@ -645,34 +651,30 @@ class Window:
         retry: bool = False,
         on_result: DialogResultHandler[bool] | DialogResultHandler[None] | None = None,
     ) -> Dialog:
-        """Open a dialog to display a large block of text, such as a stack trace.
+        """**DEPRECATED** - use await self.dialog(StackTraceDialog())"""
+        ######################################################################
+        # 2024-06: Backwards compatibility
+        ######################################################################
+        warnings.warn(
+            "stack_trace_dialog(...) has been deprecated; use dialog(toga.StackTraceDialog(...))",
+            DeprecationWarning,
+        )
+        ######################################################################
+        # End Backwards compatibility
+        ######################################################################
 
-        **This is an asynchronous method**. If you invoke this method in synchronous
-        context, it will show the dialog, but will return *immediately*. The object
-        returned by this method can be awaited to obtain the result of the dialog.
-
-        :param title: The title of the dialog window.
-        :param message: Contextual information about the source of the stack trace.
-        :param content: The stack trace, pre-formatted as a multi-line string.
-        :param retry: If true, the user will be given options to "Retry" or "Quit"; if
-            false, a single option to acknowledge the error will be displayed.
-        :param on_result: **DEPRECATED** ``await`` the return value of this method.
-        :returns: An awaitable Dialog object. If ``retry`` is true, the Dialog object
-            returns ``True`` when the user selects "Retry", and ``False`` when they
-            select "Quit". If ``retry`` is false, the Dialog object returns ``None``.
-        """
-        dialog = Dialog(
+        result = Dialog(
             self,
             on_result=wrapped_handler(self, on_result) if on_result else None,
         )
-        self.factory.dialogs.StackTraceDialog(
-            dialog,
+        result.dialog = dialogs.StackTraceDialog(
             title,
             message=message,
             content=content,
             retry=retry,
         )
-        return dialog
+        asyncio.ensure_future(result.dialog._impl.show(self, future=result))
+        return result
 
     def save_file_dialog(
         self,
@@ -681,43 +683,28 @@ class Window:
         file_types: list[str] | None = None,
         on_result: DialogResultHandler[Path | None] | None = None,
     ) -> Dialog:
-        """Prompt the user for a location to save a file.
-
-        This dialog is not currently supported on Android or iOS.
-
-        **This is an asynchronous method**. If you invoke this method in synchronous
-        context, it will show the dialog, but will return *immediately*. The object
-        returned by this method can be awaited to obtain the result of the dialog.
-
-        :param title: The title of the dialog window
-        :param suggested_filename: A default filename
-        :param file_types: The allowed filename extensions, without leading dots. If not
-            provided, any extension will be allowed.
-        :param on_result: **DEPRECATED** ``await`` the return value of this method.
-        :returns: An awaitable Dialog object. The Dialog object returns a path object
-            for the selected file location, or ``None`` if the user cancelled the save
-            operation.
-        """
-        dialog = Dialog(
+        """**DEPRECATED** - use await self.dialog(SaveFileDialog())"""
+        ######################################################################
+        # 2024-06: Backwards compatibility
+        ######################################################################
+        warnings.warn(
+            "save_file_dialog(...) has been deprecated; use dialog(toga.SaveFileDialog(...))",
+            DeprecationWarning,
+        )
+        ######################################################################
+        # End Backwards compatibility
+        ######################################################################
+        result = Dialog(
             self,
             on_result=wrapped_handler(self, on_result) if on_result else None,
         )
-        # Convert suggested filename to a path (if it isn't already),
-        # and break it into a filename and a directory
-        suggested_path = Path(suggested_filename)
-        initial_directory: Path | None = suggested_path.parent
-        if initial_directory == Path("."):
-            initial_directory = None
-        filename = suggested_path.name
-
-        self.factory.dialogs.SaveFileDialog(
-            dialog,
+        result.dialog = dialogs.SaveFileDialog(
             title,
-            filename=filename,
-            initial_directory=initial_directory,
+            suggested_filename=suggested_filename,
             file_types=file_types,
         )
-        return dialog
+        asyncio.ensure_future(result.dialog._impl.show(self, future=result))
+        return result
 
     @overload
     def open_file_dialog(
@@ -773,28 +760,18 @@ class Window:
         ) = None,
         multiselect: None = None,  # DEPRECATED
     ) -> Dialog:
-        """Prompt the user to select a file (or files) to open.
+        """**DEPRECATED** - use await self.dialog(OpenFileDialog())"""
+        ######################################################################
+        # 2024-06: Backwards compatibility
+        ######################################################################
+        warnings.warn(
+            "open_file_dialog(...) has been deprecated; use dialog(toga.OpenFileDialog(...))",
+            DeprecationWarning,
+        )
+        ######################################################################
+        # End Backwards compatibility
+        ######################################################################
 
-        This dialog is not currently supported on Android or iOS.
-
-        **This is an asynchronous method**. If you invoke this method in synchronous
-        context, it will show the dialog, but will return *immediately*. The object
-        returned by this method can be awaited to obtain the result of the dialog.
-
-        :param title: The title of the dialog window
-        :param initial_directory: The initial folder in which to open the dialog. If
-            ``None``, use the default location provided by the operating system (which
-            will often be the last used location)
-        :param file_types: The allowed filename extensions, without leading dots. If not
-            provided, all files will be shown.
-        :param multiple_select: If True, the user will be able to select multiple files;
-            if False, the selection will be restricted to a single file.
-        :param on_result: **DEPRECATED** ``await`` the return value of this method.
-        :param multiselect: **DEPRECATED** Use ``multiple_select``.
-        :returns: An awaitable Dialog object. The Dialog object returns a list of
-            ``Path`` objects if ``multiple_select`` is ``True``, or a single ``Path``
-            otherwise. Returns ``None`` if the open operation is cancelled by the user.
-        """
         ######################################################################
         # 2023-08: Backwards compatibility
         ######################################################################
@@ -808,18 +785,18 @@ class Window:
         # End Backwards compatibility
         ######################################################################
 
-        dialog = Dialog(
+        result = Dialog(
             self,
             on_result=wrapped_handler(self, on_result) if on_result else None,
         )
-        self.factory.dialogs.OpenFileDialog(
-            dialog,
+        result.dialog = dialogs.OpenFileDialog(
             title,
-            initial_directory=Path(initial_directory) if initial_directory else None,
+            initial_directory=initial_directory,
             file_types=file_types,
             multiple_select=multiple_select,
         )
-        return dialog
+        asyncio.ensure_future(result.dialog._impl.show(self, future=result))
+        return result
 
     @overload
     def select_folder_dialog(
@@ -871,27 +848,18 @@ class Window:
         ) = None,
         multiselect: None = None,  # DEPRECATED
     ) -> Dialog:
-        """Prompt the user to select a directory (or directories).
+        """**DEPRECATED** - use await self.dialog(SaveFileDialog())"""
+        ######################################################################
+        # 2024-06: Backwards compatibility
+        ######################################################################
+        warnings.warn(
+            "select_folder_dialog(...) has been deprecated; use dialog(toga.SelectFolderDialog(...))",
+            DeprecationWarning,
+        )
+        ######################################################################
+        # End Backwards compatibility
+        ######################################################################
 
-        This dialog is not currently supported on Android or iOS.
-
-        **This is an asynchronous method**. If you invoke this method in synchronous
-        context, it will show the dialog, but will return *immediately*. The object
-        returned by this method can be awaited to obtain the result of the dialog.
-
-        :param title: The title of the dialog window
-        :param initial_directory: The initial folder in which to open the dialog. If
-            ``None``, use the default location provided by the operating system (which
-            will often be "last used location")
-        :param multiple_select: If True, the user will be able to select multiple
-            directories; if False, the selection will be restricted to a single
-            directory. This option is not supported on WinForms.
-        :param on_result: **DEPRECATED** ``await`` the return value of this method.
-        :param multiselect: **DEPRECATED** Use ``multiple_select``.
-        :returns: An awaitable Dialog object. The Dialog object returns a list of
-            ``Path`` objects if ``multiple_select`` is ``True``, or a single ``Path``
-            otherwise. Returns ``None`` if the open operation is cancelled by the user.
-        """
         ######################################################################
         # 2023-08: Backwards compatibility
         ######################################################################
@@ -904,18 +872,17 @@ class Window:
         ######################################################################
         # End Backwards compatibility
         ######################################################################
-
-        dialog = Dialog(
+        result = Dialog(
             self,
             on_result=wrapped_handler(self, on_result) if on_result else None,
         )
-        self.factory.dialogs.SelectFolderDialog(
-            dialog,
+        result.dialog = dialogs.SelectFolderDialog(
             title,
-            initial_directory=Path(initial_directory) if initial_directory else None,
+            initial_directory=initial_directory,
             multiple_select=multiple_select,
         )
-        return dialog
+        asyncio.ensure_future(result.dialog._impl.show(self, future=result))
+        return result
 
     ######################################################################
     # 2023-08: Backwards compatibility

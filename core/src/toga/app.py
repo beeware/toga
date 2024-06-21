@@ -24,6 +24,7 @@ from toga.widgets.base import Widget
 from toga.window import MainWindow, Window
 
 if TYPE_CHECKING:
+    from toga.dialogs import Dialog
     from toga.documents import Document
     from toga.icons import IconContentT
 
@@ -651,6 +652,14 @@ class App:
     def beep(self) -> None:
         """Play the default system notification sound."""
         self._impl.beep()
+
+    async def dialog(self, dialog: Dialog):
+        """Display a dialog to the user in the app context.
+
+        :param: The dialog to display to the user.
+        :returns: The result of the dialog.
+        """
+        return await dialog._show(None)
 
     @overridable
     def preferences(self) -> None:
