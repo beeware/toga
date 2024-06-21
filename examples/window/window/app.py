@@ -125,28 +125,32 @@ class WindowDemoApp(toga.App):
     def do_prev_content(self, widget):
         self.main_window.content = self.main_scroller
 
-    def do_hide(self, widget):
+    async def do_hide(self, widget):
         self.main_window.visible = False
         for i in range(5, 0, -1):
             print(f"Back in {i}...")
-            yield 1
+            await asyncio.sleep(1)
         self.main_window.visible = True
-        self.main_window.info_dialog("Here we go again", "I'm back!")
+        await self.main_window.dialog(toga.InfoDialog("Here we go again", "I'm back!"))
 
     def do_beep(self, widget):
         self.app.beep()
 
-    def exit_handler(self, app, **kwargs):
+    async def exit_handler(self, app, **kwargs):
         self.close_count += 1
         if self.close_count % 2 == 1:
-            self.main_window.info_dialog("Can't close app", "Try that again")
+            await self.main_window.dialog(
+                toga.InfoDialog("Can't close app", "Try that again")
+            )
             return False
         return True
 
-    def close_handler(self, window, **kwargs):
+    async def close_handler(self, window, **kwargs):
         self.close_count += 1
         if self.close_count % 2 == 1:
-            self.main_window.info_dialog("Can't close window", "Try that again")
+            await self.main_window.dialog(
+                toga.InfoDialog("Can't close window", "Try that again")
+            )
             return False
         return True
 
