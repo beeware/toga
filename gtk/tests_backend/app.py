@@ -126,7 +126,6 @@ class AppProbe(BaseProbe):
         pytest.xfail("GTK doesn't have a visit homepage menu item")
 
     def assert_system_menus(self):
-        self.assert_menu_item(["*", "Preferences"], enabled=False)
         self.assert_menu_item(["*", "Quit Toga Testbed"], enabled=True)
 
         self.assert_menu_item(["Help", "About Toga Testbed"], enabled=True)

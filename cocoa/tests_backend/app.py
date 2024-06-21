@@ -150,7 +150,6 @@ class AppProbe(BaseProbe):
 
     def assert_system_menus(self):
         self.assert_menu_item(["*", "About Toga Testbed"], enabled=True)
-        self.assert_menu_item(["*", "Settings\u2026"], enabled=False)
         self.assert_menu_item(["*", "Hide Toga Testbed"], enabled=True)
         self.assert_menu_item(["*", "Hide Others"], enabled=True)
         self.assert_menu_item(["*", "Show All"], enabled=True)
