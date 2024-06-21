@@ -132,22 +132,9 @@ class App:
     # Commands and menus
     ######################################################################
 
-    def create_minimal_app_commands(self):
-        # A minimal app on Winforms has no menu, and thus no default commands.
-        pass
-
-    def create_standard_app_commands(self):
+    def create_app_commands(self):
         self.interface.commands.add(
             # ---- File menu -----------------------------------
-            # Include a preferences menu item; but only enable it if the user has
-            # overridden it in their App class.
-            Command(
-                simple_handler(self.interface.preferences),
-                "Preferences",
-                group=Group.FILE,
-                enabled=overridden(self.interface.preferences),
-                id=Command.PREFERENCES,
-            ),
             # Exit should always be the last item, in a section on its own. Invoke
             # `on_exit` rather than `exit`, because we want to trigger the "OK to exit?"
             # logic. It's already a bound handler, so we can use it directly.
@@ -175,6 +162,18 @@ class App:
                 id=Command.ABOUT,
             ),
         )
+
+        # If the user has overridden preferences, provide a menu item.
+        if overridden(self.interface.preferences):
+            self.interface.commands.add(
+                Command(
+                    simple_handler(self.interface.preferences),
+                    "Preferences",
+                    group=Group.FILE,
+                    enabled=overridden(self.interface.preferences),
+                    id=Command.PREFERENCES,
+                ),
+            )  # pragma: no cover
 
     def create_menus(self):
         # Winforms menus are created on the Window.

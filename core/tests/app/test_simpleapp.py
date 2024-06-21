@@ -14,8 +14,8 @@ def test_simple_app(event_loop):
         def startup(self):
             self.main_window = toga.Window(title="My App")
 
-            # At time startup is invoked, there should be no app commands installed
-            assert len(self.commands) == 0
+            # At time startup is invoked, the default commands are installed
+            assert len(self.commands) == 3
 
             # Add an extra user command
             self.commands.add(toga.Command(None, "User command"))
@@ -29,16 +29,15 @@ def test_simple_app(event_loop):
     # The main window will exist, and will have the app's formal name.
     assert app.main_window.title == "My App"
 
-    # The minimal app commands exist, but not the standard ones.
-    assert_action_performed(app, "create minimal App commands")
-    assert_action_not_performed(app, "create standard App commands")
+    # The app commands exist, and menus have been created.
+    assert_action_performed(app, "create App commands")
     assert_action_performed(app, "create App menus")
 
     # A simple app has no window menus
     assert_action_not_performed(app.main_window, "create Window menus")
 
-    # 3 menu items have been created
-    assert app._impl.n_menu_items == 3
+    # 4 menu items have been created
+    assert app._impl.n_menu_items == 4
 
 
 def test_non_closeable_main_window(event_loop):

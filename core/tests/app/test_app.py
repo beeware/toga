@@ -238,9 +238,9 @@ def test_create(
 
     metadata_mock.assert_called_once_with(expected_app_name)
 
-    # Preferences menu item exists, but is disabled
-    assert toga.Command.PREFERENCES in app.commands
-    assert not app.commands[toga.Command.PREFERENCES].enabled
+    # About menu item exists and is disabled
+    assert toga.Command.ABOUT in app.commands
+    assert app.commands[toga.Command.ABOUT].enabled
 
 
 @pytest.mark.parametrize(
@@ -474,8 +474,8 @@ def test_startup_method(event_loop):
     """If an app provides a startup method, it will be invoked during startup."""
 
     def startup_assertions(app):
-        # At time startup is invoked, there should no app commands installed
-        assert len(app.commands) == 0
+        # At time startup is invoked, the default commands are installed
+        assert len(app.commands) == 3
         return toga.Box()
 
     startup = Mock(side_effect=startup_assertions)
@@ -487,15 +487,14 @@ def test_startup_method(event_loop):
     )
 
     # Menus, commands and toolbars have been created
-    assert_action_performed(app, "create minimal App commands")
-    assert_action_performed(app, "create standard App commands")
+    assert_action_performed(app, "create App commands")
     startup.assert_called_once_with(app)
     assert_action_performed(app, "create App menus")
     assert_action_performed(app.main_window, "create Window menus")
     assert_action_performed(app.main_window, "create toolbar")
 
-    # 4 menu items have been created
-    assert len(app.commands) == 4
+    # 3 menu items have been created
+    assert len(app.commands) == 3
 
     # The app has a main window that is a MainWindow
     assert isinstance(app.main_window, toga.MainWindow)
@@ -508,8 +507,8 @@ def test_startup_subclass(event_loop):
         def startup(self):
             self.main_window = toga.MainWindow()
 
-            # At time startup is invoked, there should be no app commands installed
-            assert len(self.commands) == 0
+            # At time startup is invoked, the default commands are installed
+            assert len(self.commands) == 3
 
             # Add an extra user command
             self.commands.add(toga.Command(None, "User command"))
@@ -520,14 +519,13 @@ def test_startup_subclass(event_loop):
     assert app.main_window.title == "Test App"
 
     # Menus, commands and toolbars have been created
-    assert_action_performed(app, "create minimal App commands")
-    assert_action_performed(app, "create standard App commands")
+    assert_action_performed(app, "create App commands")
     assert_action_performed(app, "create App menus")
     assert_action_performed(app.main_window, "create Window menus")
     assert_action_performed(app.main_window, "create toolbar")
 
-    # 5 menu items have been created
-    assert app._impl.n_menu_items == 5
+    # 4 menu items have been created
+    assert app._impl.n_menu_items == 4
 
 
 def test_startup_subclass_no_main_window(event_loop):

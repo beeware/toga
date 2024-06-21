@@ -67,10 +67,7 @@ class App:
     # Commands and menus
     ######################################################################
 
-    def create_minimal_app_commands(self):
-        # Depending on how the desktop is configured, a GTK app *might* have a
-        # macOS-style top-level menu. Just in case, install the default minimal app
-        # commands.
+    def create_app_commands(self):
         self.interface.commands.add(
             # ---- App menu -----------------------------------
             # Quit should always be the last item, in a section on its own. Invoke
@@ -100,19 +97,16 @@ class App:
             ),
         )
 
-    def create_standard_app_commands(self):
-        self.interface.commands.add(
-            # ---- App menu -----------------------------------
-            # Include a preferences menu item; but only enable it if the user has
-            # overridden it in their App class.
-            Command(
-                simple_handler(self.interface.preferences),
-                "Preferences",
-                group=toga.Group.APP,
-                enabled=overridden(self.interface.preferences),
-                id=Command.PREFERENCES,
-            ),
-        )
+        # If the user has overridden preferences, provide a menu item.
+        if overridden(self.interface.preferences):
+            self.interface.commands.add(
+                Command(
+                    simple_handler(self.interface.preferences),
+                    "Preferences",
+                    group=toga.Group.APP,
+                    id=Command.PREFERENCES,
+                ),
+            )  # pragma: no cover
 
     def _submenu(self, group, menubar):
         try:

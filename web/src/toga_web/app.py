@@ -22,11 +22,7 @@ class App:
     # Commands and menus
     ######################################################################
 
-    def create_minimal_app_commands(self):
-        # A simple web app has no window decoration.
-        pass
-
-    def create_standard_app_commands(self):
+    def create_app_commands(self):
         self.interface.commands.add(
             # ---- Help menu ----------------------------------
             Command(
@@ -35,16 +31,18 @@ class App:
                 group=Group.HELP,
                 id=Command.ABOUT,
             ),
-            # Include a preferences menu item; but only enable it if the user has
-            # overridden it in their App class.
-            Command(
-                simple_handler(self.interface.preferences),
-                "Preferences",
-                group=Group.HELP,
-                enabled=overridden(self.interface.preferences),
-                id=Command.PREFERENCES,
-            ),
         )
+
+        # If the user has overridden preferences, provide a menu item.
+        if overridden(self.interface.preferences):
+            self.interface.commands.add(
+                Command(
+                    simple_handler(self.interface.preferences),
+                    "Preferences",
+                    group=Group.HELP,
+                    id=Command.PREFERENCES,
+                )
+            )  # pragma: no cover
 
     def create_menus(self):
         # Web menus are created on the Window.

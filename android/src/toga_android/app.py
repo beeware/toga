@@ -205,11 +205,7 @@ class App:
     # Commands and menus
     ######################################################################
 
-    def create_minimal_app_commands(self):
-        # A simple app can't have any commands.
-        pass
-
-    def create_standard_app_commands(self):
+    def create_app_commands(self):
         self.interface.commands.add(
             # About should be the last item in the menu, in a section on its own.
             Command(

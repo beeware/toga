@@ -1,6 +1,9 @@
 import asyncio
+import sys
 
 from textual.app import App as TextualApp
+from toga.command import Command
+from toga.handlers import simple_handler
 
 from .screens import Screen as ScreenImpl
 
@@ -31,11 +34,15 @@ class App:
     # Commands and menus
     ######################################################################
 
-    def create_minimal_app_commands(self):
-        pass
-
-    def create_standard_app_commands(self):
-        pass
+    def create_app_commands(self):
+        self.interface.commands.add(
+            Command(
+                simple_handler(self.interface.about),
+                f"About {self.interface.formal_name}",
+                section=sys.maxsize,
+                id=Command.ABOUT,
+            ),
+        )
 
     def create_menus(self):
         self.interface.factory.not_implemented("App.create_menus()")
