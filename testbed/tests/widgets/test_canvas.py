@@ -696,7 +696,7 @@ async def test_write_text(canvas, probe):
 
 @pytest.mark.xfail(
     condition=os.environ.get("RUNNING_IN_CI") != "true",
-    reason="may fail outside of CI",
+    reason="may fail outside of a GitHub runner environment",
 )
 async def test_multiline_text(canvas, probe):
     "Multiline text can be measured and written"
