@@ -73,10 +73,9 @@ format compatible with :any:`importlib.metadata`. If you deploy your app with `B
 A Toga app will install a number of default commands to reflect core application
 functionality (such as the Quit/Exit menu item, and the About menu item). The IDs for
 these commands are defined as constants on the :class:`~toga.Command` class. These
-commands are installed by the :meth:`~toga.App.create_app_commands()` method; this
-method is invoked *after* :meth:`~toga.App.startup()`, but *before* menus are populated
-for the first time. If you wish to customize the menu items exposed by your app, you should
-override the :meth:`~toga.App.create_app_commands()` method.
+commands are automatically installed *before* :meth:`~toga.App.startup()` is invoked. If
+you wish to customize the menu items exposed by your app, you can add or remove commands
+in your :meth:`~toga.App.startup()` implementation.
 
 Assigning a main window
 -----------------------
