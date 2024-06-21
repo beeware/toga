@@ -59,7 +59,7 @@ interface to an application. A :class:`toga.MainWindow` may optionally have a to
 The presentation of :class:`toga.MainWindow` is highly platform dependent:
 
 * On desktop platforms that place menus inside windows (e.g., Windows, and most Linux
-  window managers, a :class:`toga.MainWindow` instance will display a menu bar that
+  window managers), a :class:`toga.MainWindow` instance will display a menu bar that
   contains the app control commands (such as About, Quit, and anything else required by
   the platform's HIG).
 

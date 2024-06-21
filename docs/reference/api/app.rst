@@ -87,7 +87,7 @@ that is assigned as the main window will affect the behavior of the app.
 Standard app
 ~~~~~~~~~~~~
 
-The most common type of app will assign a :any:`MainWindow` or :any:`toga.MainWindow`
+The most common type of app will assign a :any:`MainWindow` or :any:`toga.Window`
 instance as the main window. This window controls the life cycle of the app; when the
 main window is closed, the app will exit.
 
