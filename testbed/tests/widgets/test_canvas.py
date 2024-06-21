@@ -1,4 +1,5 @@
 import math
+import os
 from math import pi, radians
 from unittest.mock import Mock, call
 
@@ -693,6 +694,10 @@ async def test_write_text(canvas, probe):
     assert_reference(probe, "write_text", threshold=0.07)
 
 
+@pytest.mark.xfail(
+    condition=os.environ.get("RUNNING_IN_CI") != "true",
+    reason="may fail outside of CI",
+)
 async def test_multiline_text(canvas, probe):
     "Multiline text can be measured and written"
 

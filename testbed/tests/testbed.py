@@ -13,7 +13,7 @@ import pytest
 from testbed.app import main
 
 
-def run_tests(app, cov, args, report_coverage, run_slow):
+def run_tests(app, cov, args, report_coverage, run_slow, running_in_ci):
     try:
         # Wait for the app's main window to be visible.
         print("Waiting for app to be ready for testing... ", end="", flush=True)
@@ -25,6 +25,8 @@ def run_tests(app, cov, args, report_coverage, run_slow):
 
         project_path = Path(__file__).parent.parent
         os.chdir(project_path)
+
+        os.environ["RUNNING_IN_CI"] = "true" if running_in_ci else ""
 
         app.returncode = pytest.main(
             [
@@ -146,6 +148,12 @@ if __name__ == "__main__":
     except ValueError:
         report_coverage = False
 
+    try:
+        args.remove("--ci")
+        running_in_ci = True
+    except ValueError:
+        running_in_ci = False
+
     # If there are no other specified arguments, default to running the whole suite,
     # and reporting coverage.
     if len(args) == 0:
@@ -160,6 +168,7 @@ if __name__ == "__main__":
             args=args,
             run_slow=run_slow,
             report_coverage=report_coverage,
+            running_in_ci=running_in_ci,
         )
     )
     # Queue a background task to run that will start the main thread. We do this,

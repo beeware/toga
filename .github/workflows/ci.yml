@@ -287,7 +287,7 @@ jobs:
           platform: "android"
           runs-on: "ubuntu-latest"
           briefcase-run-prefix: JAVA_HOME=${JAVA_HOME_17_X64}
-          briefcase-run-args: >
+          briefcase-run-args: >-
             --device '{"avd":"beePhone","skin":"pixel_3a"}'
             --Xemulator=-no-window
             --Xemulator=-no-snapshot
@@ -333,7 +333,7 @@ jobs:
       timeout-minutes: 15
       run: |
         ${{ matrix.briefcase-run-prefix }} \
-          briefcase run ${{ matrix.platform }} --log --test ${{ matrix.briefcase-run-args }}
+          briefcase run ${{ matrix.platform }} --log --test ${{ matrix.briefcase-run-args }} -- --ci
 
     - name: Upload Logs
       uses: actions/upload-artifact@v4.3.3
