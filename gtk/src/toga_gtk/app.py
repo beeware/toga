@@ -192,13 +192,13 @@ class App:
 
     def get_screens(self):
         display = Gdk.Display.get_default()
-        if "WAYLAND_DISPLAY" in os.environ:  # pragma: no cover
+        if "WAYLAND_DISPLAY" in os.environ:  # pragma: no-cover-if-linux-x
             # `get_primary_monitor()` doesn't work on wayland, so return as it is.
             return [
                 ScreenImpl(native=display.get_monitor(i))
                 for i in range(display.get_n_monitors())
             ]
-        else:
+        else:  # pragma: no-cover-if-linux-wayland
             primary_screen = ScreenImpl(display.get_primary_monitor())
             screen_list = [primary_screen] + [
                 ScreenImpl(native=display.get_monitor(i))
@@ -252,7 +252,7 @@ class App:
     # Window control
     ######################################################################
 
-    def get_current_window(self):
+    def get_current_window(self):  # pragma: no-cover-if-linux-wayland
         current_window = self.native.get_active_window()._impl
         return current_window if current_window.interface.visible else None
 

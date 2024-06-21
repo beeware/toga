@@ -115,6 +115,14 @@ if __name__ == "__main__":
         branch=True,
         source_pkgs=[toga_backend],
     )
+    cov.set_option("run:plugins", ["coverage_conditional_plugin"])
+    cov.set_option(
+        "coverage_conditional_plugin:rules",
+        {
+            "no-cover-if-linux-wayland": "os_environ.get('WAYLAND_DISPLAY') != ''",
+            "no-cover-if-linux-x": "os_environ.get('WAYLAND_DISPLAY', 'not-set') == 'not-set'",
+        },
+    )
     cov.start()
 
     # Create the test app, starting the test suite as a background task
