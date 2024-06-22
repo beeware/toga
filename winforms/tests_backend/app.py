@@ -18,6 +18,7 @@ from .window import WindowProbe
 class AppProbe(BaseProbe):
     supports_key = True
     supports_key_mod3 = False
+    supports_current_window_assignment = True
 
     def __init__(self, app):
         super().__init__()
@@ -104,9 +105,6 @@ class AppProbe(BaseProbe):
 
     def content_size(self, window):
         return WindowProbe(self.app, window).content_size
-
-    def assert_current_window(self, window):
-        assert self.app.current_window == window
 
     def assert_app_icon(self, icon):
         for window in self.app.windows:

@@ -13,6 +13,10 @@ from .probe import BaseProbe
 class AppProbe(BaseProbe):
     supports_key = True
     supports_key_mod3 = True
+    # Gtk 3.24.41 ships with Ubuntu 24.04 where present() works on Wayland
+    supports_current_window_assignment = not (
+        BaseProbe.IS_WAYLAND and BaseProbe.GTK_VERSION < (3, 24, 41)
+    )
 
     def __init__(self, app):
         super().__init__()
@@ -47,16 +51,6 @@ class AppProbe(BaseProbe):
     def content_size(self, window):
         content_allocation = window._impl.container.get_allocation()
         return (content_allocation.width, content_allocation.height)
-
-    def assert_current_window(self, window):
-        # Gtk 3.24.41 ships with Ubuntu 24.04 where present() works on Wayland
-        if self.IS_WAYLAND and self.GTK_VERSION < (3, 24, 41):
-            pytest.skip(
-                f"Assigning the current window is not supported for "
-                f"Gtk {'.'.join(map(str, self.GTK_VERSION))} on Wayland"
-            )
-        else:
-            assert self.app.current_window == window
 
     def assert_app_icon(self, icon):
         for window in self.app.windows:

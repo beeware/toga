@@ -21,6 +21,7 @@ NSPanel = ObjCClass("NSPanel")
 class AppProbe(BaseProbe):
     supports_key = True
     supports_key_mod3 = True
+    supports_current_window_assignment = True
 
     def __init__(self, app):
         super().__init__()
@@ -59,9 +60,6 @@ class AppProbe(BaseProbe):
             window.content._impl.native.frame.size.width,
             window.content._impl.native.frame.size.height,
         )
-
-    def assert_current_window(self, window):
-        assert self.app.current_window == window
 
     def assert_app_icon(self, icon):
         # We have no real way to check we've got the right icon; use pixel peeping as a

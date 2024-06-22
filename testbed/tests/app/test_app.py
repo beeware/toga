@@ -44,7 +44,7 @@ if toga.platform.current_platform in {"iOS", "android"}:
         # Explicitly set the current window
         app.current_window = main_window
         await main_window_probe.wait_for_window("Main window is still current")
-        app_probe.assert_current_window(main_window)
+        assert app.current_window == main_window
 
     async def test_app_lifecycle(app, app_probe):
         """Application lifecycle can be exercised"""
@@ -354,7 +354,8 @@ else:
     async def test_current_window(app, app_probe, main_window):
         """The current window can be retrieved."""
         try:
-            app_probe.assert_current_window(main_window)
+            if app_probe.supports_current_window_assignment:
+                assert app.current_window == main_window
 
             # When all windows are hidden, WinForms and Cocoa return None, while GTK
             # returns the last active window.
@@ -387,11 +388,13 @@ else:
 
             app.current_window = window2
             await window1_probe.wait_for_window("Window 2 is current")
-            app_probe.assert_current_window(window2)
+            if app_probe.supports_current_window_assignment:
+                assert app.current_window == window2
 
             app.current_window = window3
             await window1_probe.wait_for_window("Window 3 is current")
-            app_probe.assert_current_window(window3)
+            if app_probe.supports_current_window_assignment:
+                assert app.current_window == window3
 
             # app_probe.platform tests?
         finally:
