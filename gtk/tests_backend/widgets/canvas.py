@@ -15,7 +15,7 @@ class CanvasProbe(SimpleProbe):
             if self.IS_WAYLAND:
                 return f"{reference}-gtk-wayland"
             else:
-                return f"{reference}-gtk"
+                return f"{reference}-gtk-x11"
         elif reference == "write_text":
             return f"{reference}-gtk"
         else:
