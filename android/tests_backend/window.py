@@ -10,6 +10,7 @@ class WindowProbe(BaseProbe):
     def __init__(self, app, window):
         super().__init__(app)
         self.native = self.app._impl.native
+        self.window = window
 
     async def wait_for_window(self, message, minimize=False, full_screen=False):
         await self.redraw(message)

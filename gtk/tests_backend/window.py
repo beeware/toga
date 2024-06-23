@@ -16,6 +16,9 @@ class WindowProbe(BaseProbe):
     supports_multiple_select_folder = True
     supports_move_while_hidden = False
     supports_unminimize = False
+    # Wayland mostly prohibits interaction with the larger windowing environment
+    supports_minimize = not BaseProbe.IS_WAYLAND
+    supports_placement = not BaseProbe.IS_WAYLAND
 
     def __init__(self, app, window):
         super().__init__()
@@ -30,7 +33,8 @@ class WindowProbe(BaseProbe):
 
     def close(self):
         if self.is_closable:
-            self.native.close()
+            # Trigger the OS-level window close event.
+            self.native.emit("delete-event", None)
 
     @property
     def content_size(self):

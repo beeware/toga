@@ -23,6 +23,7 @@ NSPanel = ObjCClass("NSPanel")
 class AppProbe(BaseProbe):
     supports_key = True
     supports_key_mod3 = True
+    supports_current_window_assignment = True
 
     def __init__(self, app):
         super().__init__()
@@ -206,7 +207,7 @@ class AppProbe(BaseProbe):
             "|": 42,
             " ": 49,
             chr(0xF708): 96,  # F5
-            chr(0x2196): 115,  # Home
+            chr(0xF729): 115,  # Home
             # This only works because we're *not* testing the numeric 5
             "5": 87,
         }[key]

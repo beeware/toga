@@ -15,6 +15,10 @@ from .window import WindowProbe
 class AppProbe(BaseProbe):
     supports_key = True
     supports_key_mod3 = True
+    # Gtk 3.24.41 ships with Ubuntu 24.04 where present() works on Wayland
+    supports_current_window_assignment = not (
+        BaseProbe.IS_WAYLAND and BaseProbe.GTK_VERSION < (3, 24, 41)
+    )
 
     def __init__(self, app):
         super().__init__()

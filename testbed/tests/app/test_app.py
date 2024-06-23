@@ -93,7 +93,7 @@ if toga.platform.current_platform in {"iOS", "android"}:
         assert not main_window_probe.is_window_state(WindowState.PRESENTATION)
         assert main_window_probe.is_window_state(WindowState.NORMAL)
 
-    async def test_current_window(app, main_window, main_window_probe):
+    async def test_current_window(app, main_window, app_probe, main_window_probe):
         """The current window can be retrieved"""
         assert app.current_window == main_window
 
@@ -124,30 +124,60 @@ else:
     ####################################################################################
 
     async def test_exit_on_close_main_window(
-        monkeypatch,
         app,
+        main_window,
         main_window_probe,
         mock_app_exit,
     ):
         """An app can be exited by closing the main window"""
-        # Rebind the exit command to the on_exit handler.
+        # Add an on_close handler to the main window, initially rejecting close.
+        on_close_handler = Mock(return_value=False)
+        main_window.on_close = on_close_handler
+
+        # Set an on_exit for the app handler, initially rejecting exit.
         on_exit_handler = Mock(return_value=False)
         app.on_exit = on_exit_handler
-        monkeypatch.setattr(app.commands[toga.Command.EXIT], "_action", app.on_exit)
 
-        # Close the main window
+        # Try to close the main window; rejected by window
         main_window_probe.close()
-        await main_window_probe.redraw("Main window close requested, but rejected")
+        await main_window_probe.redraw(
+            "Main window close requested; rejected by window"
+        )
+
+        # on_close_handler was invoked, rejecting the close.
+        on_close_handler.assert_called_once_with(main_window)
+
+        # on_exit_handler was not invoked; so the app won't be closed
+        on_exit_handler.assert_not_called()
+        mock_app_exit.assert_not_called()
+
+        # Reset and try again, this time allowing the close
+        on_close_handler.reset_mock()
+        on_close_handler.return_value = True
+        on_exit_handler.reset_mock()
+
+        # Close the main window; rejected by app
+        main_window_probe.close()
+        await main_window_probe.redraw("Main window close requested; rejected by app")
+
+        # on_close_handler was invoked, allowing the close
+        on_close_handler.assert_called_once_with(main_window)
 
         # on_exit_handler was invoked, rejecting the close; so the app won't be closed
         on_exit_handler.assert_called_once_with(app)
         mock_app_exit.assert_not_called()
 
         # Reset and try again, this time allowing the exit
+        on_close_handler.reset_mock()
         on_exit_handler.reset_mock()
         on_exit_handler.return_value = True
+
+        # Close the main window; this will succeed
         main_window_probe.close()
-        await main_window_probe.redraw("Main window close requested, and accepted")
+        await main_window_probe.redraw("Main window close requested; accepted")
+
+        # on_close_handler was invoked, allowing the close
+        on_close_handler.assert_called_once_with(main_window)
 
         # on_exit_handler was invoked and accepted, so the mocked exit() was called.
         on_exit_handler.assert_called_once_with(app)
@@ -179,12 +209,13 @@ else:
         mock_app_exit.assert_called_once_with()
 
     async def test_menu_close_windows(monkeypatch, app, app_probe, mock_app_exit):
+        window1 = toga.Window("Test Window 1", position=(150, 150), size=(200, 200))
+        window2 = toga.Window("Test Window 2", position=(400, 150), size=(200, 200))
+        window3 = toga.Window("Test Window 3", position=(300, 400), size=(200, 200))
+
         try:
-            window1 = toga.Window("Test Window 1", position=(150, 150), size=(200, 200))
             window1.content = toga.Box(style=Pack(background_color=REBECCAPURPLE))
-            window2 = toga.Window("Test Window 2", position=(400, 150), size=(200, 200))
             window2.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
-            window3 = toga.Window("Test Window 3", position=(300, 400), size=(200, 200))
             window3.content = toga.Box(style=Pack(background_color=FIREBRICK))
 
             window1.show()
@@ -235,8 +266,9 @@ else:
                 window3.close()
 
     async def test_menu_minimize(app, app_probe):
+        window1 = toga.Window("Test Window 1", position=(150, 150), size=(200, 200))
+
         try:
-            window1 = toga.Window("Test Window 1", position=(150, 150), size=(200, 200))
             window1.content = toga.Box(style=Pack(background_color=REBECCAPURPLE))
             window1.show()
 
@@ -254,10 +286,11 @@ else:
 
     async def test_full_screen(app, app_probe):
         """Window can be made full screen"""
+        window1 = toga.Window("Test Window 1", position=(150, 150), size=(200, 200))
+        window2 = toga.Window("Test Window 2", position=(400, 150), size=(200, 200))
+
         try:
-            window1 = toga.Window("Test Window 1", position=(150, 150), size=(200, 200))
             window1.content = toga.Box(style=Pack(background_color=REBECCAPURPLE))
-            window2 = toga.Window("Test Window 2", position=(400, 150), size=(200, 200))
             window2.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
             window1_probe = window_probe(app, window1)
             window2_probe = window_probe(app, window2)
@@ -551,7 +584,8 @@ else:
     async def test_current_window(app, app_probe, main_window):
         """The current window can be retrieved."""
         try:
-            assert app.current_window == main_window
+            if app_probe.supports_current_window_assignment:
+                assert app.current_window == main_window
 
             # When all windows are hidden, WinForms and Cocoa return None, while GTK
             # returns the last active window.
@@ -563,12 +597,13 @@ else:
         finally:
             main_window.show()
 
+        window1 = toga.Window("Test Window 1", position=(150, 150), size=(200, 200))
+        window2 = toga.Window("Test Window 2", position=(400, 150), size=(200, 200))
+        window3 = toga.Window("Test Window 3", position=(300, 400), size=(200, 200))
+
         try:
-            window1 = toga.Window("Test Window 1", position=(150, 150), size=(200, 200))
             window1.content = toga.Box(style=Pack(background_color=REBECCAPURPLE))
-            window2 = toga.Window("Test Window 2", position=(400, 150), size=(200, 200))
             window2.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
-            window3 = toga.Window("Test Window 3", position=(300, 400), size=(200, 200))
             window3.content = toga.Box(style=Pack(background_color=FIREBRICK))
 
             # We don't need to probe anything window specific; we just need
@@ -583,11 +618,13 @@ else:
 
             app.current_window = window2
             await window1_probe.wait_for_window("Window 2 is current")
-            assert app.current_window == window2
+            if app_probe.supports_current_window_assignment:
+                assert app.current_window == window2
 
             app.current_window = window3
             await window1_probe.wait_for_window("Window 3 is current")
-            assert app.current_window == window3
+            if app_probe.supports_current_window_assignment:
+                assert app.current_window == window3
 
             # app_probe.platform tests?
         finally:
@@ -711,8 +748,8 @@ async def test_menu_visit_homepage(monkeypatch, app, app_probe):
     """The visit homepage menu item can be used"""
     # If the backend defines a VISIT_HOMEPAGE command, mock the visit_homepage method,
     # and rebind the visit homepage command to the visit_homepage method.
+    visit_homepage = Mock()
     if toga.Command.VISIT_HOMEPAGE in app.commands:
-        visit_homepage = Mock()
         monkeypatch.setattr(app, "visit_homepage", visit_homepage)
         monkeypatch.setattr(
             app.commands[toga.Command.VISIT_HOMEPAGE], "_action", app.visit_homepage
@@ -793,7 +830,7 @@ async def test_menu_items(app, app_probe):
         enabled=False,
     )
 
-    # Dislble the items
+    # Disable the items
     app.disabled_cmd.enabled = False
     app.no_action_cmd.enabled = False
 

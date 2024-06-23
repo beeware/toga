@@ -16,11 +16,6 @@ from toga.handlers import simple_handler
 
 from .libs import events
 from .screens import Screen as ScreenImpl
-from .window import Window
-
-
-class MainWindow(Window):
-    _is_main_window = True
 
 
 class TogaApp(dynamic_proxy(IPythonApp)):

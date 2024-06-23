@@ -15,24 +15,6 @@ from toga.handlers import simple_handler
 from .keys import gtk_accel
 from .libs import TOGA_DEFAULT_STYLES, Gdk, Gio, GLib, Gtk
 from .screens import Screen as ScreenImpl
-from .window import Window
-
-
-class MainWindow(Window):
-    def create(self):
-        self.native = Gtk.ApplicationWindow()
-        self.native.set_role("MainWindow")
-
-    def gtk_delete_event(self, *args):
-        # Return value of the GTK on_close handler indicates
-        # whether the event has been fully handled. Returning
-        # False indicates the event handling is *not* complete,
-        # so further event processing (including actually
-        # closing the window) should be performed; so
-        # "should_exit == True" must be converted to a return
-        # value of False.
-        self.interface.app.on_exit()
-        return True
 
 
 class App:
@@ -151,6 +133,10 @@ class App:
         return submenu, section
 
     def create_menus(self):
+        # Although GTK menus manifest on the Window, they're defined at the
+        # application level, and are automatically added to any ApplicationWindow.
+        # (or to the top of the screen if the GTK theme requires)
+
         # Only create the menu if the menu item index has been created.
         self._menu_items = {}
         self._menu_groups = {}
@@ -211,13 +197,13 @@ class App:
 
     def get_screens(self):
         display = Gdk.Display.get_default()
-        if "WAYLAND_DISPLAY" in os.environ:  # pragma: no cover
+        if "WAYLAND_DISPLAY" in os.environ:  # pragma: no-cover-if-linux-x
             # `get_primary_monitor()` doesn't work on wayland, so return as it is.
             return [
                 ScreenImpl(native=display.get_monitor(i))
                 for i in range(display.get_n_monitors())
             ]
-        else:
+        else:  # pragma: no-cover-if-linux-wayland
             primary_screen = ScreenImpl(display.get_primary_monitor())
             screen_list = [primary_screen] + [
                 ScreenImpl(native=display.get_monitor(i))
@@ -271,7 +257,7 @@ class App:
     # Window control
     ######################################################################
 
-    def get_current_window(self):
+    def get_current_window(self):  # pragma: no-cover-if-linux-wayland
         current_window = self.native.get_active_window()._impl
         return current_window if current_window.interface.visible else None
 

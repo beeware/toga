@@ -5,6 +5,14 @@ import sys
 from pathlib import Path
 from urllib.parse import unquote, urlparse
 
+from rubicon.objc import (
+    SEL,
+    NSMutableArray,
+    NSMutableDictionary,
+    NSObject,
+    objc_method,
+    objc_property,
+)
 from rubicon.objc.eventloop import CocoaLifecycle, EventLoopPolicy
 
 import toga
@@ -16,7 +24,6 @@ from toga.handlers import NativeHandler, simple_handler
 from .keys import cocoa_key
 from .libs import (
     NSURL,
-    SEL,
     NSAboutPanelOptionApplicationIcon,
     NSAboutPanelOptionApplicationName,
     NSAboutPanelOptionApplicationVersion,
@@ -29,29 +36,12 @@ from .libs import (
     NSDocumentController,
     NSMenu,
     NSMenuItem,
-    NSMutableArray,
-    NSMutableDictionary,
     NSNumber,
-    NSObject,
     NSOpenPanel,
     NSScreen,
     NSString,
-    objc_method,
-    objc_property,
 )
 from .screens import Screen as ScreenImpl
-from .window import Window
-
-
-class MainWindow(Window):
-    def cocoa_windowShouldClose(self):
-        # Main Window close is a proxy for "Exit app".
-        # Defer all handling to the app's on_exit handler.
-        # As a result of calling that method, the app will either
-        # exit, or the user will cancel the exit; in which case
-        # the main window shouldn't close, either.
-        self.interface.app.on_exit()
-        return False
 
 
 class AppDelegate(NSObject):
@@ -119,8 +109,6 @@ class AppDelegate(NSObject):
 
 
 class App:
-    _MAIN_WINDOW_CLASS = MainWindow
-
     def __init__(self, interface):
         self.interface = interface
         self.interface._impl = self

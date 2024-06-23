@@ -9,11 +9,6 @@ from toga.handlers import simple_handler
 
 from .screens import Screen as ScreenImpl
 from .utils import LoggedObject
-from .window import Window
-
-
-class MainWindow(Window):
-    pass
 
 
 class App(LoggedObject):
@@ -67,6 +62,11 @@ class App(LoggedObject):
     def create_menus(self):
         self._action("create App menus")
         self.n_menu_items = len(self.interface.commands)
+
+        # Replicate the behavior of platforms that have window-level menu handling.
+        for window in self.interface.app.windows:
+            if hasattr(window._impl, "create_menus"):
+                window._impl.create_menus()
 
     def main_loop(self):
         print("Starting app using Dummy backend.")

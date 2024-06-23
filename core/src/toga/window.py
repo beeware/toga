@@ -13,6 +13,7 @@ from typing import (
     overload,
 )
 
+import toga
 from toga.command import CommandSet
 from toga.constants import WindowState
 from toga.handlers import AsyncResult, wrapped_handler
@@ -22,6 +23,7 @@ from toga.types import Position, Size
 
 if TYPE_CHECKING:
     from toga.app import App
+    from toga.documents import Document
     from toga.images import ImageT
     from toga.screens import Screen
     from toga.types import PositionT, SizeT
@@ -155,7 +157,7 @@ class Window:
 
         :param id: A unique identifier for the window. If not provided, one will be
             automatically generated.
-        :param title: Title for the window. Defaults to "Toga".
+        :param title: Title for the window. Defaults to the formal name of the app.
         :param position: Position of the window, as a :any:`toga.Position` or tuple of
             ``(x, y)`` coordinates, in :ref:`CSS pixels <css-units>`.
         :param size: Size of the window, as a :any:`toga.Size` or tuple of ``(width,
@@ -201,6 +203,12 @@ class Window:
         self._closable = closable
         self._minimizable = minimizable
 
+        # The app needs to exist before windows are created. _app will only be None
+        # until the window is added to the app below.
+        self._app: App = None
+        if App.app is None:
+            raise RuntimeError("Cannot create a Window before creating an App")
+
         self.factory = get_platform_factory()
         self._impl = getattr(self.factory, self._WINDOW_CLASS)(
             interface=self,
@@ -210,18 +218,11 @@ class Window:
         )
 
         # Add the window to the app
-        # _app will only be None until the window is added to the app below
-        self._app: App = None
-        if App.app is None:
-            raise RuntimeError("Cannot create a Window before creating an App")
         App.app.windows.add(self)
 
         # If content has been provided, set it
         if content:
             self.content = content
-
-        # Create a toolbar that is linked to the app
-        self._toolbar = CommandSet(on_change=self._impl.create_toolbar, app=self._app)
 
         self.on_close = on_close
 
@@ -269,7 +270,7 @@ class Window:
 
     @property
     def _default_title(self) -> str:
-        return "Toga"
+        return toga.App.app.formal_name
 
     @property
     def title(self) -> str:
@@ -291,15 +292,20 @@ class Window:
     def close(self) -> None:
         """Close the window.
 
-        This *does not* invoke the ``on_close`` handler; the window will be immediately
-        and unconditionally closed.
+        This *does not* invoke the ``on_close`` handler. If the window being closed
+        is the app's main window, it will trigger ``on_exit`` handling; otherwise, the
+        window will be immediately and unconditionally closed.
 
         Once a window has been closed, it *cannot* be reused. The behavior of any method
         or property on a :class:`~toga.Window` instance after it has been closed is
         undefined, except for :attr:`closed` which can be used to check if the window
         was closed.
         """
-        if getattr(self._impl, "_PLATFORM_ALLOWS_CLOSE", True):
+        if self.app.main_window == self:
+            # Closing the window marked as the main window is a request to exit.
+            # Trigger on_exit handling, which may cause the window to close.
+            self.app.on_exit()
+        else:
             if self.content:
                 self.content.window = None
             self.app.windows.discard(self)
@@ -346,11 +352,6 @@ class Window:
 
         # Update the geometry of the widget
         widget.refresh()
-
-    @property
-    def toolbar(self) -> CommandSet:
-        """Toolbar for the window."""
-        return self._toolbar
 
     @property
     def widgets(self) -> FilteredWidgetRegistry:
@@ -992,3 +993,84 @@ class Window:
     ######################################################################
     # End Backwards compatibility
     ######################################################################
+
+
+class MainWindow(Window):
+    _WINDOW_CLASS = "MainWindow"
+
+    def __init__(self, *args, **kwargs):
+        """Create a new Main Window.
+
+        Accepts the same arguments as :class:`~toga.Window`.
+        """
+        super().__init__(*args, **kwargs)
+
+        # Create a toolbar that is linked to the app.
+        self._toolbar = CommandSet(app=self.app)
+
+        # If the window has been created during startup(), we don't want to
+        # install a change listener yet, as the startup process may install
+        # additional commands - we want to wait until startup is complete,
+        # create the initial state of the menus and toolbars, and then add a
+        # change listener. However, if startup *has* completed, we can install a
+        # change listener immediately, and trigger the creation of menus and
+        # toolbars.
+        if self.app.commands.on_change:
+            self._toolbar.on_change = self._impl.create_toolbar
+
+            self._impl.create_menus()
+            self._impl.create_toolbar()
+
+    @property
+    def toolbar(self) -> CommandSet:
+        """Toolbar for the window."""
+        return self._toolbar
+
+
+class DocumentMainWindow(Window):
+    _WINDOW_CLASS = "DocumentMainWindow"
+
+    def __init__(
+        self,
+        doc: Document,
+        id: str | None = None,
+        title: str | None = None,
+        position: PositionT = Position(100, 100),
+        size: SizeT = Size(640, 480),
+        resizable: bool = True,
+        minimizable: bool = True,
+        on_close: OnCloseHandler | None = None,
+    ):
+        """Create a new document Main Window.
+
+        This installs a default on_close handler that honors platform-specific document
+        closing behavior. If you want to control whether a document is allowed to close
+        (e.g., due to having unsaved change), override
+        :meth:`toga.Document.can_close()`, rather than implementing an on_close handler.
+
+        :param doc: The document being managed by this window
+        :param id: The ID of the window.
+        :param title: Title for the window. Defaults to the formal name of the app.
+        :param position: Position of the window, as a :any:`toga.Position` or tuple of
+            ``(x, y)`` coordinates.
+        :param size: Size of the window, as a :any:`toga.Size` or tuple of
+            ``(width, height)``, in pixels.
+        :param resizable: Can the window be manually resized by the user?
+        :param minimizable: Can the window be minimized by the user?
+        :param on_close: The initial :any:`on_close` handler.
+        """
+        self.doc = doc
+        super().__init__(
+            id=id,
+            title=title,
+            position=position,
+            size=size,
+            resizable=resizable,
+            closable=True,
+            minimizable=minimizable,
+            on_close=doc.handle_close if on_close is None else on_close,
+        )
+
+    @property
+    def _default_title(self) -> str:
+        return self.doc.path.name

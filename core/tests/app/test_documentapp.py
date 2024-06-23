@@ -62,7 +62,7 @@ def test_create_with_cmdline(monkeypatch):
     assert app.documents[0].content == Path("/path/to/filename.foobar")
 
     # Document window has been created and shown
-    assert_action_performed(app.documents[0].main_window, "create Window")
+    assert_action_performed(app.documents[0].main_window, "create DocumentMainWindow")
     assert_action_performed(app.documents[0].main_window, "show")
 
 

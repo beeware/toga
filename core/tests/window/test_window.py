@@ -29,20 +29,21 @@ def test_window_created(app):
 
     # We can't know what the ID is, but it must be a string.
     assert isinstance(window.id, str)
-    assert window.title == "Toga"
+    assert window.title == "Test App"
     # The app has created a main window, so this will be the second window.
     assert window.position == toga.Position(150, 150)
     assert window.size == toga.Size(640, 480)
     assert window.resizable
     assert window.closable
     assert window.minimizable
-    assert len(window.toolbar) == 0
+    assert not hasattr(window, "toolbar")
     assert window.on_close._raw is None
 
 
 def test_window_created_explicit(app):
     """Explicit arguments at construction are stored."""
     on_close_handler = Mock()
+    window_content = toga.Box()
 
     window = toga.Window(
         id="my-window",
@@ -52,11 +53,15 @@ def test_window_created_explicit(app):
         resizable=False,
         closable=False,
         minimizable=False,
+        content=window_content,
         on_close=on_close_handler,
     )
 
     assert window.app == app
-    assert window.content is None
+    assert window.content == window_content
+
+    window_content.window == window
+    window_content.app == app
 
     assert window._impl.interface == window
     assert_action_performed(window, "create Window")
@@ -68,7 +73,7 @@ def test_window_created_explicit(app):
     assert not window.resizable
     assert not window.closable
     assert not window.minimizable
-    assert len(window.toolbar) == 0
+    assert not hasattr(window, "toolbar")
     assert window.on_close._raw == on_close_handler
 
 
@@ -132,8 +137,8 @@ def test_set_app_with_content_at_instantiation(app):
     "value, expected",
     [
         ("New Text", "New Text"),
-        ("", "Toga"),
-        (None, "Toga"),
+        ("", "Test App"),
+        (None, "Test App"),
         (12345, "12345"),
         ("Contains\nnewline", "Contains"),
     ],
@@ -142,35 +147,6 @@ def test_title(window, value, expected):
     """The title of the window can be changed."""
     window.title = value
     assert window.title == expected
-
-
-def test_toolbar_implicit_add(window, app):
-    """Adding an item to a toolbar implicitly adds it to the app."""
-    # Clear the app commands to start with
-    app.commands.clear()
-    assert list(window.toolbar) == []
-    assert list(app.commands) == []
-
-    cmd1 = toga.Command(None, "Command 1")
-    cmd2 = toga.Command(None, "Command 2")
-
-    assert list(window.toolbar) == []
-    assert list(app.commands) == []
-
-    # Adding a command to the toolbar automatically adds it to the app
-    window.toolbar.add(cmd1)
-    assert list(window.toolbar) == [cmd1]
-    assert list(app.commands) == [cmd1]
-
-    # But not vice versa
-    app.commands.add(cmd2)
-    assert list(window.toolbar) == [cmd1]
-    assert list(app.commands) == [cmd1, cmd2]
-
-    # Adding a command to both places does not cause a duplicate
-    app.commands.add(cmd1)
-    assert list(window.toolbar) == [cmd1]
-    assert list(app.commands) == [cmd1, cmd2]
 
 
 def test_change_content(window, app):
@@ -510,13 +486,15 @@ def test_close_direct(window, app):
     on_close_handler.assert_not_called()
 
 
-def test_close_platform_disallowed(window, app):
-    """A window cannot be closed directly on some platforms."""
-    # Explicitly set to indicate that platform disallows direct close.
-    window._impl._PLATFORM_ALLOWS_CLOSE = False
+def test_close_direct_main_window(app):
+    """If the main window is closed directly, it triggers app exit logic."""
+    window = app.main_window
 
     on_close_handler = Mock(return_value=True)
     window.on_close = on_close_handler
+
+    on_exit_handler = Mock(return_value=True)
+    app.on_exit = on_exit_handler
 
     window.show()
     assert window.app == app
@@ -525,14 +503,17 @@ def test_close_platform_disallowed(window, app):
     # Close the window directly
     window.close()
 
-    # Window has *not* been closed, and the close handler has *not* been invoked.
+    # Window has *not* been closed.
     assert not window.closed
     assert window.app == app
     assert window in app.windows
     assert_action_not_performed(window, "close")
-    on_close_handler.assert_not_called()
 
-    del window._impl._PLATFORM_ALLOWS_CLOSE
+    # The close handler has *not* been invoked, but
+    # the exit handler *has*.
+    on_close_handler.assert_not_called()
+    on_exit_handler.assert_called_once_with(app)
+    assert_action_performed(app, "exit")
 
 
 def test_close_no_handler(window, app):

@@ -1,7 +1,7 @@
 MainWindow
 ==========
 
-The main window of the application.
+A window that can use the full set of window-level user interface elements.
 
 .. tabs::
 
@@ -54,8 +54,17 @@ The main window of the application.
 Usage
 -----
 
-The main window of an application is a normal :class:`toga.Window`, with one exception -
-when the main window is closed, the application exits.
+A :class:`toga.MainWindow` is a :class:`toga.Window` that can serve as the main
+interface to an application. If the platform places menus inside windows, a
+:class:`toga.MainWindow` instance will display a menu bar that contains the app
+control commands (such as About, Quit, and anything else required by the
+platform's HIG). It may also contain a toolbar.
+
+In addition to the platform's default commands, user-defined commands can be
+added to the :class:`toga.MainWindow`'s menu by adding them to
+:attr:`~toga.App.commands`. Toolbar items can be added by adding them to
+:attr:`~toga.MainWindow.toolbar`; any command added to the toolbar will be
+automatically added to the App's commands as well.
 
 .. code-block:: python
 
@@ -65,11 +74,6 @@ when the main window is closed, the application exits.
 
     self.toga.App.main_window = main_window
     main_window.show()
-
-As the main window is closely bound to the App, a main window *cannot* define an
-``on_close`` handler. Instead, if you want to prevent the main window from exiting, you
-should use an ``on_exit`` handler on the :class:`toga.App` that the main window is
-associated with.
 
 Reference
 ---------

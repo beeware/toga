@@ -146,9 +146,6 @@ class Window:
     def close(self):
         self.native.dismiss(None)
 
-    def create_toolbar(self):
-        pass
-
     def set_app(self, app):
         app.native.install_screen(self.native, name=self.interface.id)
 
@@ -217,3 +214,11 @@ class Window:
 
     def get_image_data(self):
         self.interface.factory.not_implemented("Window.get_image_data()")
+
+
+class MainWindow(Window):
+    def create_menus(self):
+        self.interface.factory.not_implemented("Window.create_menus()")
+
+    def create_toolbar(self):
+        self.interface.factory.not_implemented("Window.create_toolbar()")
