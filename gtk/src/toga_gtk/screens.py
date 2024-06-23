@@ -31,10 +31,10 @@ class Screen:
         return Size(geometry.width, geometry.height)
 
     def get_image_data(self):
-        if "WAYLAND_DISPLAY" in os.environ:
+        if "WAYLAND_DISPLAY" in os.environ:  # pragma: no cover
             # Not implemented on wayland due to wayland security policies.
             self.interface.factory.not_implemented("Screen.get_image_data() on Wayland")
-        else:
+        else:  # pragma: no-cover-if-linux-wayland
             # Only works for Xorg
             display = self.native.get_display()
             screen = display.get_default_screen()
