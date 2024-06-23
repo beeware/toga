@@ -13,12 +13,14 @@ from toga_cocoa.libs import (
     NSWindow,
 )
 
-from .probe import BaseProbe
+from .dialogs import DialogsMixin
+from .probe import BaseProbe, NSRunLoop
 
 NSPanel = ObjCClass("NSPanel")
+NSDate = ObjCClass("NSDate")
 
 
-class AppProbe(BaseProbe):
+class AppProbe(BaseProbe, DialogsMixin):
     supports_key = True
     supports_key_mod3 = True
     supports_current_window_assignment = True
@@ -26,6 +28,7 @@ class AppProbe(BaseProbe):
     def __init__(self, app):
         super().__init__()
         self.app = app
+
         # Prevents erroneous test fails from secondary windows opening as tabs
         NSWindow.allowsAutomaticWindowTabbing = False
         assert isinstance(self.app._impl.native, NSApplication)
@@ -230,3 +233,35 @@ class AppProbe(BaseProbe):
             keyCode=key_code,
         )
         return toga_key(event)
+
+    def _setup_alert_dialog_result(self, dialog, result):
+        _poll_modal_session = dialog._impl._poll_modal_session
+        count = 0
+
+        # Replace the dialog polling mechanism with an implementation that polls
+        # 5 times, then returns the required result.
+        def auto_poll_modal_session(nsapp, session):
+            nonlocal count
+            if count < 5:
+                count += 1
+                return _poll_modal_session(nsapp, session)
+            return result
+
+        dialog._impl._poll_modal_session = auto_poll_modal_session
+
+    def _setup_file_dialog_result(self, dialog, result):
+        cleanup = dialog._impl.cleanup
+
+        def auto_cleanup(future):
+            # Inject a small pause without blocking the event loop
+            NSRunLoop.currentRunLoop.runUntilDate(
+                NSDate.dateWithTimeIntervalSinceNow(
+                    1.0 if toga.App.app.run_slow else 0.2
+                )
+            )
+            # Close the dialog and trigger the completion handler
+            dialog._impl.native.close()
+            dialog._impl.completion_handler(result)
+            return cleanup(future)
+
+        dialog._impl.cleanup = auto_cleanup

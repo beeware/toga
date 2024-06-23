@@ -9,68 +9,67 @@ import toga
 TESTS_DIR = Path(__file__).parent.parent
 
 
-async def test_info_dialog(main_window, main_window_probe):
-    """An info dialog can be displayed and acknowledged."""
+async def test_info_dialog(app, app_probe):
+    """An app-level info dialog can be displayed and acknowledged."""
     dialog = toga.InfoDialog("Info", "Some info")
-    assert main_window_probe.is_modal_dialog(dialog)
+    assert app_probe.is_modal_dialog(dialog)
 
-    main_window_probe.setup_info_dialog_result(dialog)
+    app_probe.setup_info_dialog_result(dialog)
 
-    await main_window_probe.redraw("Display window modal info dialog")
-    actual = await main_window.dialog(dialog)
+    await app_probe.redraw("Display app modal info dialog")
+    actual = await app.dialog(dialog)
 
     assert actual is None
 
 
 @pytest.mark.parametrize("result", [False, True])
-async def test_question_dialog(main_window, main_window_probe, result):
-    """An question dialog can be displayed and acknowledged."""
+async def test_question_dialog(app, app_probe, result):
+    """An app-level question dialog can be displayed and acknowledged."""
     dialog = toga.QuestionDialog("Question", "Some question")
-    assert main_window_probe.is_modal_dialog(dialog)
+    assert app_probe.is_modal_dialog(dialog)
 
-    main_window_probe.setup_question_dialog_result(dialog, result)
+    app_probe.setup_question_dialog_result(dialog, result)
 
-    await main_window_probe.redraw(
-        "Display window modal question dialog; " f"respond {'YES' if result else 'NO'}"
+    await app_probe.redraw(
+        "Display app modal question dialog; " f"respond {'YES' if result else 'NO'}"
     )
-    actual = await main_window.dialog(dialog)
+    actual = await app.dialog(dialog)
 
     assert actual == result
 
 
 @pytest.mark.parametrize("result", [False, True])
-async def test_confirm_dialog(main_window, main_window_probe, result):
-    """A confirmation dialog can be displayed and acknowledged."""
+async def test_confirm_dialog(app, app_probe, result):
+    """An app-level confirmation dialog can be displayed and acknowledged."""
     dialog = toga.ConfirmDialog("Confirm", "Some confirmation")
-    assert main_window_probe.is_modal_dialog(dialog)
+    assert app_probe.is_modal_dialog(dialog)
 
-    main_window_probe.setup_confirm_dialog_result(dialog, result)
+    app_probe.setup_confirm_dialog_result(dialog, result)
 
-    await main_window_probe.redraw(
-        "Display window modal confirm dialog; "
-        f"respond {'OK' if result else 'CANCEL'}"
+    await app_probe.redraw(
+        "Display app modal confirm dialog; " f"respond {'OK' if result else 'CANCEL'}"
     )
-    actual = await main_window.dialog(dialog)
+    actual = await app.dialog(dialog)
 
     assert actual == result
 
 
-async def test_error_dialog(main_window, main_window_probe):
-    """An error dialog can be displayed and acknowledged."""
+async def test_error_dialog(app, app_probe):
+    """An app-level error dialog can be displayed and acknowledged."""
     dialog = toga.ErrorDialog("Error", "Some error")
-    assert main_window_probe.is_modal_dialog(dialog)
+    assert app_probe.is_modal_dialog(dialog)
 
-    main_window_probe.setup_error_dialog_result(dialog)
+    app_probe.setup_error_dialog_result(dialog)
 
-    await main_window_probe.redraw("Display window modal error dialog")
-    actual = await main_window.dialog(dialog)
+    await app_probe.redraw("Display app modal error dialog")
+    actual = await app.dialog(dialog)
 
     assert actual is None
 
 
 @pytest.mark.parametrize("result", [None, False, True])
-async def test_stack_trace_dialog(main_window, main_window_probe, result):
-    """A confirmation dialog can be displayed and acknowledged."""
+async def test_stack_trace_dialog(app, app_probe, result):
+    """An app-level stack trace dialog can be displayed and acknowledged."""
     stack = io.StringIO()
     traceback.print_stack(file=stack)
 
@@ -80,15 +79,15 @@ async def test_stack_trace_dialog(main_window, main_window_probe, result):
         stack.getvalue(),
         retry=result is not None,
     )
-    assert main_window_probe.is_modal_dialog(dialog)
+    assert app_probe.is_modal_dialog(dialog)
 
-    main_window_probe.setup_stack_trace_dialog_result(dialog, result)
+    app_probe.setup_stack_trace_dialog_result(dialog, result)
 
-    await main_window_probe.redraw(
-        "Display window modal stack track dialog; "
+    await app_probe.redraw(
+        "Display app modal stack track dialog; "
         + ("no retry" if result is None else f"with retry={'YES' if result else 'NO'}")
     )
-    actual = await main_window.dialog(dialog)
+    actual = await app.dialog(dialog)
 
     assert actual == result
 
@@ -103,28 +102,28 @@ async def test_stack_trace_dialog(main_window, main_window_probe, result):
     ],
 )
 async def test_save_file_dialog(
-    main_window,
-    main_window_probe,
+    app,
+    app_probe,
     filename,
     file_types,
     result,
 ):
-    """A file open dialog can be displayed and acknowledged."""
+    """An app-level file open dialog can be displayed and acknowledged."""
     dialog = toga.SaveFileDialog(
         "Save file",
         suggested_filename=filename,
         file_types=file_types,
     )
-    assert main_window_probe.is_modal_dialog(dialog)
+    assert app_probe.is_modal_dialog(dialog)
 
-    main_window_probe.setup_save_file_dialog_result(dialog, result)
+    app_probe.setup_save_file_dialog_result(dialog, result)
 
-    await main_window_probe.redraw(
-        "Display window modal save file dialog"
+    await app_probe.redraw(
+        "Display app modal save file dialog"
         f"{', with' if file_types else ', without'} file types; "
         f"select {'OK' if result else 'CANCEL'}"
     )
-    actual = await main_window.dialog(dialog)
+    actual = await app.dialog(dialog)
 
     # The directory where the file dialog is opened can't be 100% predicted
     # so we need to modify the check to only inspect the filename.
@@ -168,33 +167,33 @@ async def test_save_file_dialog(
     ],
 )
 async def test_open_file_dialog(
-    main_window,
-    main_window_probe,
+    app,
+    app_probe,
     initial_directory,
     file_types,
     multiple_select,
     result,
 ):
-    """A file open dialog can be displayed and acknowledged."""
+    """An app-level file open dialog can be displayed and acknowledged."""
     dialog = toga.OpenFileDialog(
         "Open file",
         initial_directory=initial_directory,
         file_types=file_types,
         multiple_select=multiple_select,
     )
-    assert main_window_probe.is_modal_dialog(dialog)
+    assert app_probe.is_modal_dialog(dialog)
 
-    main_window_probe.setup_open_file_dialog_result(dialog, result, multiple_select)
-
-    await main_window_probe.redraw(
-        "Display window modal"
+    app_probe.setup_open_file_dialog_result(dialog, result, multiple_select)
+    await app_probe.redraw(
+        "Display app modal"
         f"{' multiple selection' if multiple_select else ''}"
         " open file dialog"
         f"{'' if initial_directory else ', no initial directory'}"
         f"{', with' if file_types else ', no'} file types; "
         f"select {'OK' if result else 'CANCEL'}"
     )
-    actual = await main_window.dialog(dialog)
+
+    actual = await app.dialog(dialog)
 
     assert actual == result
 
@@ -217,34 +216,30 @@ async def test_open_file_dialog(
     ],
 )
 async def test_select_folder_dialog(
-    main_window,
-    main_window_probe,
+    app,
+    app_probe,
     initial_directory,
     multiple_select,
     result,
 ):
-    """A folder selection dialog can be displayed and acknowledged."""
+    """An app-level folder selection dialog can be displayed and acknowledged."""
     dialog = toga.SelectFolderDialog(
         "Select folder",
         initial_directory=initial_directory,
         multiple_select=multiple_select,
     )
-    assert main_window_probe.is_modal_dialog(dialog)
+    assert app_probe.is_modal_dialog(dialog)
 
-    main_window_probe.setup_select_folder_dialog_result(dialog, result, multiple_select)
-    await main_window_probe.redraw(
-        "Display window modal"
+    app_probe.setup_select_folder_dialog_result(dialog, result, multiple_select)
+    await app_probe.redraw(
+        "Display app modal"
         f"{' multiple selection' if multiple_select else ''}"
         " select folder dialog"
         f"{'' if initial_directory else ', no initial directory'}"
         f"; select {'OK' if result else 'CANCEL'}"
     )
+    actual = await app.dialog(dialog)
 
-    actual = await main_window.dialog(dialog)
-
-    if (
-        isinstance(result, list)
-        and not main_window_probe.supports_multiple_select_folder
-    ):
+    if isinstance(result, list) and not app_probe.supports_multiple_select_folder:
         result = result[-1:]
     assert actual == result
