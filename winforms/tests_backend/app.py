@@ -11,11 +11,12 @@ from System.Windows.Forms import Application, Cursor, ToolStripSeparator
 import toga
 from toga_winforms.keys import toga_to_winforms_key, winforms_to_toga_key
 
+from .dialogs import DialogsMixin
 from .probe import BaseProbe
 from .window import WindowProbe
 
 
-class AppProbe(BaseProbe):
+class AppProbe(BaseProbe, DialogsMixin):
     supports_key = True
     supports_key_mod3 = False
     supports_current_window_assignment = True

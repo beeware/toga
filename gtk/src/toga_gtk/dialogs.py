@@ -1,30 +1,48 @@
-from abc import ABC
+import asyncio
 from pathlib import Path
 
 from .libs import Gtk
 
 
-class BaseDialog(ABC):
-    def __init__(self, interface):
-        self.interface = interface
-        self.interface._impl = self
+class BaseDialog:
+    def cleanup(self, future):
+        # Provide an interface that can be intercepted to inject
+        # "close dialog" logic for testing purposes.
+        return future
+
+    def show(self, host_window, future=None):
+        # For backwards compatibility with the old window-based API,
+        # allow the future to be explicitly provided.
+        if future is None:
+            self.future = asyncio.Future()
+        else:
+            self.future = future
+
+        # If this is a modal dialog, set the window as transient to the host window.
+        if host_window:
+            self.native.set_transient_for(host_window._impl.native)
+        else:
+            self.native.set_transient_for(None)
+
+        # Show the dialog.
+        self.native.show()
+
+        return self.cleanup(self.future)
 
 
 class MessageDialog(BaseDialog):
     def __init__(
         self,
-        interface,
         title,
         message_type,
         buttons,
         success_result=None,
         **kwargs,
     ):
-        super().__init__(interface=interface)
+        super().__init__()
         self.success_result = success_result
 
         self.native = Gtk.MessageDialog(
-            transient_for=interface.window._impl.native,
             flags=0,
             message_type=message_type,
             buttons=buttons,
@@ -34,7 +52,6 @@ class MessageDialog(BaseDialog):
         self.build_dialog(**kwargs)
 
         self.native.connect("response", self.gtk_response)
-        self.native.show()
 
     def build_dialog(self, message):
         self.native.format_secondary_text(message)
@@ -51,9 +68,8 @@ class MessageDialog(BaseDialog):
 
 
 class InfoDialog(MessageDialog):
-    def __init__(self, interface, title, message):
+    def __init__(self, title, message):
         super().__init__(
-            interface=interface,
             title=title,
             message=message,
             message_type=Gtk.MessageType.INFO,
@@ -62,9 +78,8 @@ class InfoDialog(MessageDialog):
 
 
 class QuestionDialog(MessageDialog):
-    def __init__(self, interface, title, message):
+    def __init__(self, title, message):
         super().__init__(
-            interface=interface,
             title=title,
             message=message,
             message_type=Gtk.MessageType.QUESTION,
@@ -74,9 +89,8 @@ class QuestionDialog(MessageDialog):
 
 
 class ConfirmDialog(MessageDialog):
-    def __init__(self, interface, title, message):
+    def __init__(self, title, message):
         super().__init__(
-            interface=interface,
             title=title,
             message=message,
             message_type=Gtk.MessageType.WARNING,
@@ -86,9 +100,8 @@ class ConfirmDialog(MessageDialog):
 
 
 class ErrorDialog(MessageDialog):
-    def __init__(self, interface, title, message):
+    def __init__(self, title, message):
         super().__init__(
-            interface=interface,
             title=title,
             message=message,
             message_type=Gtk.MessageType.ERROR,
@@ -97,9 +110,8 @@ class ErrorDialog(MessageDialog):
 
 
 class StackTraceDialog(MessageDialog):
-    def __init__(self, interface, title, **kwargs):
+    def __init__(self, title, **kwargs):
         super().__init__(
-            interface=interface,
             title=title,
             message_type=Gtk.MessageType.ERROR,
             buttons=(
@@ -153,7 +165,6 @@ class StackTraceDialog(MessageDialog):
 class FileDialog(BaseDialog):
     def __init__(
         self,
-        interface,
         title,
         filename,
         initial_directory,
@@ -162,10 +173,9 @@ class FileDialog(BaseDialog):
         action,
         ok_icon,
     ):
-        super().__init__(interface=interface)
+        super().__init__()
 
         self.native = Gtk.FileChooserDialog(
-            transient_for=interface.window._impl.native,
             title=title,
             action=action,
         )
@@ -217,14 +227,12 @@ class FileDialog(BaseDialog):
 class SaveFileDialog(FileDialog):
     def __init__(
         self,
-        interface,
         title,
         filename,
         initial_directory,
         file_types=None,
     ):
         super().__init__(
-            interface=interface,
             title=title,
             filename=filename,
             initial_directory=initial_directory,
@@ -238,14 +246,12 @@ class SaveFileDialog(FileDialog):
 class OpenFileDialog(FileDialog):
     def __init__(
         self,
-        interface,
         title,
         initial_directory,
         file_types,
         multiple_select,
     ):
         super().__init__(
-            interface=interface,
             title=title,
             filename=None,
             initial_directory=initial_directory,
@@ -259,13 +265,11 @@ class OpenFileDialog(FileDialog):
 class SelectFolderDialog(FileDialog):
     def __init__(
         self,
-        interface,
         title,
         initial_directory,
         multiple_select,
     ):
         super().__init__(
-            interface=interface,
             title=title,
             filename=None,
             initial_directory=initial_directory,

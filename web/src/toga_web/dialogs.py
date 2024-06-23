@@ -21,7 +21,7 @@ class BaseDialog(ABC):
 
         if self.native:
             # Add the dialog to the DOM. Don't differentiate between app and window
-            # modal dialogs - attack all of them to the app
+            # modal dialogs.
             toga.App.app._impl.native.appendChild(self.native)
 
             self.native.show()
@@ -65,9 +65,7 @@ class QuestionDialog(BaseDialog):
     def __init__(self, title, message):
         super().__init__()
 
-        from toga_web.factory import not_implemented
-
-        not_implemented("dialogs.QuestionDialog()")
+        toga.App.app.factory.not_implemented("dialogs.QuestionDialog()")
         self.native = None
 
 
@@ -75,9 +73,7 @@ class ConfirmDialog(BaseDialog):
     def __init__(self, title, message):
         super().__init__()
 
-        from toga_web.factory import not_implemented
-
-        not_implemented("dialogs.ConfirmDialog()")
+        toga.App.app.factory.not_implemented("dialogs.ConfirmDialog()")
         self.native = None
 
 
@@ -85,9 +81,7 @@ class ErrorDialog(BaseDialog):
     def __init__(self, title, message):
         super().__init__()
 
-        from toga_web.factory import not_implemented
-
-        not_implemented("dialogs.ErrorDialog()")
+        toga.App.app.factory.not_implemented("dialogs.ErrorDialog()")
         self.native = None
 
 
@@ -95,9 +89,7 @@ class StackTraceDialog(BaseDialog):
     def __init__(self, title, message, **kwargs):
         super().__init__()
 
-        from toga_web.factory import not_implemented
-
-        not_implemented("dialogs.StackTraceDialog()")
+        toga.App.app.factory.not_implemented("dialogs.StackTraceDialog()")
         self.native = None
 
 
@@ -112,9 +104,7 @@ class SaveFileDialog(BaseDialog):
     ):
         super().__init__()
 
-        from toga_web.factory import not_implemented
-
-        not_implemented("dialogs.SaveFileDialog()")
+        toga.App.app.factory.not_implemented("dialogs.SaveFileDialog()")
         self.native = None
 
 
@@ -129,9 +119,7 @@ class OpenFileDialog(BaseDialog):
     ):
         super().__init__()
 
-        from toga_web.factory import not_implemented
-
-        not_implemented("dialogs.OpenFileDialog()")
+        toga.App.app.factory.not_implemented("dialogs.OpenFileDialog()")
         self.native = None
 
 
@@ -145,7 +133,5 @@ class SelectFolderDialog(BaseDialog):
     ):
         super().__init__()
 
-        from toga_web.factory import not_implemented
-
-        not_implemented("dialogs.SelectFolderDialog()")
+        toga.App.app.factory.not_implemented("dialogs.SelectFolderDialog()")
         self.native = None
