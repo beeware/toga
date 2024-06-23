@@ -255,9 +255,7 @@ class AppProbe(BaseProbe, DialogsMixin):
         def auto_cleanup(future):
             # Inject a small pause without blocking the event loop
             NSRunLoop.currentRunLoop.runUntilDate(
-                NSDate.dateWithTimeIntervalSinceNow(
-                    1.0 if toga.App.app.run_slow else 0.2
-                )
+                NSDate.dateWithTimeIntervalSinceNow(1.0 if self.app.run_slow else 0.2)
             )
             # Close the dialog and trigger the completion handler
             dialog._impl.native.close()
