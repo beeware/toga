@@ -6,11 +6,12 @@ from pytest import xfail
 
 from toga import Group
 
+from .dialogs import DialogsMixin
 from .probe import BaseProbe
 from .window import WindowProbe
 
 
-class AppProbe(BaseProbe):
+class AppProbe(BaseProbe, DialogsMixin):
     supports_key = False
 
     def __init__(self, app):
