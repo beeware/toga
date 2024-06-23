@@ -29,14 +29,14 @@ class Dialog:
     window-modal dialog), or :meth:`~toga.App.dialog()` for an app-level dialog.
     """
 
-    async def _show(self, window: Window | None) -> Any:
+    def _show(self, window: Window | None) -> Any:
         """Display the dialog and return the user's response.
 
         :param window: The window for which the dialog should be modal; or ``None`` for
             an app-level dialog.
         :returns: The user's response
         """
-        return await self._impl.show(window)
+        return self._impl.show(window)
 
 
 class InfoDialog(Dialog):

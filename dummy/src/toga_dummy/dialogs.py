@@ -6,7 +6,7 @@ from .utils import LoggedObject
 
 
 class BaseDialog(LoggedObject):
-    async def show(self, host_window, future=None):
+    def show(self, host_window, future=None):
         # For backwards compatibility with the old window-function API,
         # allow the future to be explicitly provided.
         if future is None:
@@ -36,7 +36,7 @@ class BaseDialog(LoggedObject):
             )
 
         self.future.set_result(result)
-        return await self.future
+        return self.future
 
 
 class InfoDialog(BaseDialog):
