@@ -24,8 +24,9 @@ class BaseDialog:
             # Show the dialog. Don't differentiate between app and window modal dialogs.
             self.native.show()
         else:
-            # Dialog doesn't have an implementation
-            self.future.set_result(None)
+            # Dialog doesn't have an implementation. This can't be covered, as
+            # the testbed shortcuts the test before showing the dialog.
+            self.future.set_result(None)  # pragma: no cover
 
 
 class TextDialog(BaseDialog):

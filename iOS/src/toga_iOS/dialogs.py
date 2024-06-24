@@ -23,7 +23,9 @@ class BaseDialog:
                 completion=None,
             )
         else:
-            self.future.set_result(None)
+            # Dialog doesn't have an implementation. This can't be covered, as
+            # the testbed shortcuts the test before showing the dialog.
+            self.future.set_result(None)  # pragma: no cover
 
 
 class AlertDialog(BaseDialog):

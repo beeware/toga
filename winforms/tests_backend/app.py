@@ -152,7 +152,7 @@ class AppProbe(BaseProbe, DialogsMixin):
         self._activate_menu_item(["Help", "About Toga Testbed"])
 
     async def close_about_dialog(self):
-        await WindowProbe(self.app, self.main_window)._close_dialog("\n")
+        await self.type_character("\n")
 
     def activate_menu_visit_homepage(self):
         self._activate_menu_item(["Help", "Visit homepage"])
