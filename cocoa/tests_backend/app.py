@@ -235,11 +235,11 @@ class AppProbe(BaseProbe, DialogsMixin):
         return toga_key(event)
 
     def _setup_alert_dialog_result(self, dialog, result):
+        # Replace the dialog polling mechanism with an implementation that polls
+        # 5 times, then returns the required result.
         _poll_modal_session = dialog._impl._poll_modal_session
         count = 0
 
-        # Replace the dialog polling mechanism with an implementation that polls
-        # 5 times, then returns the required result.
         def auto_poll_modal_session(nsapp, session):
             nonlocal count
             if count < 5:
@@ -250,9 +250,13 @@ class AppProbe(BaseProbe, DialogsMixin):
         dialog._impl._poll_modal_session = auto_poll_modal_session
 
     def _setup_file_dialog_result(self, dialog, result):
-        cleanup = dialog._impl.cleanup
+        # Install an overridden show method that invokes the original,
+        # but then closes the open dialog.
+        orig_show = dialog._impl.show
 
-        def auto_cleanup(future):
+        def automated_show(host_window, future):
+            orig_show(host_window, future)
+
             # Inject a small pause without blocking the event loop
             NSRunLoop.currentRunLoop.runUntilDate(
                 NSDate.dateWithTimeIntervalSinceNow(1.0 if self.app.run_slow else 0.2)
@@ -260,6 +264,5 @@ class AppProbe(BaseProbe, DialogsMixin):
             # Close the dialog and trigger the completion handler
             dialog._impl.native.close()
             dialog._impl.completion_handler(result)
-            return cleanup(future)
 
-        dialog._impl.cleanup = auto_cleanup
+        dialog._impl.show = automated_show

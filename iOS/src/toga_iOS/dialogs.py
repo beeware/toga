@@ -1,4 +1,3 @@
-import asyncio
 from abc import abstractmethod
 
 from rubicon.objc import Block, objc_id
@@ -13,18 +12,8 @@ from toga_iOS.libs import (
 
 
 class BaseDialog:
-    def cleanup(self, future):
-        # Provide an interface that can be intercepted to inject
-        # "close dialog" logic for testing purposes.
-        return future
-
-    def show(self, host_window, future=None):
-        # For backwards compatibility with the old window-based API,
-        # allow the future to be explicitly provided.
-        if future is None:
-            self.future = asyncio.Future()
-        else:
-            self.future = future
+    def show(self, host_window, future):
+        self.future = future
 
         if self.native:
             # Don't differentiate between app and window-modal dialogs.
@@ -35,8 +24,6 @@ class BaseDialog:
             )
         else:
             self.future.set_result(None)
-
-        return self.cleanup(self.future)
 
 
 class AlertDialog(BaseDialog):

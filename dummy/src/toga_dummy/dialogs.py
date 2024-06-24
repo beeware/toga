@@ -1,18 +1,11 @@
-import asyncio
-
 import toga
 
 from .utils import LoggedObject
 
 
 class BaseDialog(LoggedObject):
-    def show(self, host_window, future=None):
-        # For backwards compatibility with the old window-function API,
-        # allow the future to be explicitly provided.
-        if future is None:
-            self.future = asyncio.Future()
-        else:
-            self.future = future
+    def show(self, host_window, future):
+        self.future = future
 
         try:
             if host_window:
@@ -36,7 +29,6 @@ class BaseDialog(LoggedObject):
             )
 
         self.future.set_result(result)
-        return self.future
 
 
 class InfoDialog(BaseDialog):

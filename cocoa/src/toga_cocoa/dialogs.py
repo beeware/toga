@@ -21,18 +21,8 @@ from .libs import (
 
 
 class BaseDialog:
-    def cleanup(self, future):
-        # Provide an interface that can be intercepted to inject
-        # "close dialog" logic for testing purposes.
-        return future
-
-    def show(self, host_window, future=None):
-        # For backwards compatibility with the old window-based API,
-        # allow the future to be explicitly provided.
-        if future is None:
-            self.future = asyncio.Future()
-        else:
-            self.future = future
+    def show(self, host_window, future):
+        self.future = future
 
         if host_window:
             # Begin the panel window-modal.
@@ -44,8 +34,6 @@ class BaseDialog:
         else:
             # The mechanism for app-modal display depends on the type of dialog.
             self.run_app_modal()
-
-        return self.cleanup(self.future)
 
 
 class NSAlertDialog(BaseDialog):

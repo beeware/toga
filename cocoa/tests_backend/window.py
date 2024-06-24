@@ -92,17 +92,19 @@ class WindowProbe(BaseProbe, DialogsMixin):
         )
 
     def _setup_alert_dialog_result(self, dialog, result):
-        cleanup = dialog._impl.cleanup
+        # Install an overridden show method that invokes the original,
+        # but then closes the open dialog.
+        orig_show = dialog._impl.show
 
-        def auto_cleanup(future):
+        def automated_show(host_window, future):
+            orig_show(host_window, future)
+
             dialog._impl.host_window.endSheet(
                 dialog._impl.host_window.attachedSheet,
                 returnCode=result,
             )
 
-            return cleanup(future)
-
-        dialog._impl.cleanup = auto_cleanup
+        dialog._impl.show = automated_show
 
     def _setup_file_dialog_result(self, dialog, result):
         # Closing a window modal file dialog is the same as alerts.

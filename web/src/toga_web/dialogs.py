@@ -1,4 +1,3 @@
-import asyncio
 from abc import ABC
 
 import toga
@@ -6,18 +5,8 @@ from toga_web.libs import create_element
 
 
 class BaseDialog(ABC):
-    def cleanup(self, future):
-        # Provide an interface that can be intercepted to inject
-        # "close dialog" logic for testing purposes.
-        return future
-
-    def show(self, host_window, future=None):
-        # For backwards compatibility with the old window-based API,
-        # allow the future to be explicitly provided.
-        if future is None:
-            self.future = asyncio.Future()
-        else:
-            self.future = future
+    def show(self, host_window, future):
+        self.future = future
 
         if self.native:
             # Add the dialog to the DOM. Don't differentiate between app and window
@@ -28,8 +17,6 @@ class BaseDialog(ABC):
         else:
             # Dialog doesn't have an implementation
             self.future.set_result(None)
-
-        return self.cleanup(self.future)
 
 
 class InfoDialog(BaseDialog):

@@ -9,9 +9,13 @@ class DialogsMixin:
         return self.app.current_window._impl.native.rootViewController
 
     def _setup_alert_dialog(self, dialog, action_index):
-        cleanup = dialog._impl.cleanup
+        # Install an overridden show method that invokes the original,
+        # but then closes the open dialog.
+        orig_show = dialog._impl.show
 
-        def auto_cleanup(future):
+        def automated_show(host_window, future):
+            orig_show(host_window, future)
+
             # Inject a small pause without blocking the event loop
             NSRunLoop.currentRunLoop.runUntilDate(
                 NSDate.dateWithTimeIntervalSinceNow(1.0 if self.app.run_slow else 0.2)
@@ -22,9 +26,7 @@ class DialogsMixin:
             )
             dialog._impl.native.actions[action_index].handler(dialog._impl.native)
 
-            return cleanup(future)
-
-        dialog._impl.cleanup = auto_cleanup
+        dialog._impl.show = automated_show
 
     def setup_info_dialog_result(self, dialog):
         self._setup_alert_dialog(dialog, 0)

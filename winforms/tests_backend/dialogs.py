@@ -6,9 +6,13 @@ class DialogsMixin:
     supports_multiple_select_folder = False
 
     def _setup_dialog_result(self, dialog, char, alt=False):
-        cleanup = dialog._impl.cleanup
+        # Install an overridden show method that invokes the original,
+        # but then closes the open dialog.
+        orig_show = dialog._impl.show
 
-        def auto_cleanup(future):
+        def automated_show(host_window, future):
+            orig_show(host_window, future)
+
             async def _close_dialog():
                 try:
                     # Give the inner event loop a chance to start. The MessageBox dialogs work with
@@ -24,9 +28,7 @@ class DialogsMixin:
 
             asyncio.ensure_future(_close_dialog())
 
-            return cleanup(future)
-
-        dialog._impl.cleanup = auto_cleanup
+        dialog._impl.show = automated_show
 
     def setup_info_dialog_result(self, dialog):
         self._setup_dialog_result(dialog, "\n")

@@ -1,22 +1,11 @@
-import asyncio
 from pathlib import Path
 
 from .libs import Gtk
 
 
 class BaseDialog:
-    def cleanup(self, future):
-        # Provide an interface that can be intercepted to inject
-        # "close dialog" logic for testing purposes.
-        return future
-
-    def show(self, host_window, future=None):
-        # For backwards compatibility with the old window-based API,
-        # allow the future to be explicitly provided.
-        if future is None:
-            self.future = asyncio.Future()
-        else:
-            self.future = future
+    def show(self, host_window, future):
+        self.future = future
 
         # If this is a modal dialog, set the window as transient to the host window.
         if host_window:
@@ -26,8 +15,6 @@ class BaseDialog:
 
         # Show the dialog.
         self.native.show()
-
-        return self.cleanup(self.future)
 
 
 class MessageDialog(BaseDialog):

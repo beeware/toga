@@ -74,7 +74,9 @@ class AppProbe(BaseProbe, DialogsMixin):
         self._activate_menu_item(["About Toga Testbed"])
 
     async def close_about_dialog(self):
-        await self.main_window_probe.close_info_dialog(None)
+        about_dialog = self.get_dialog_view()
+        assert about_dialog is not None, "No about dialog displayed"
+        await self.press_dialog_button(about_dialog, "OK")
 
     def activate_menu_visit_homepage(self):
         xfail("This backend doesn't have a visit homepage command")

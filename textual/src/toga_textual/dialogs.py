@@ -1,4 +1,3 @@
-import asyncio
 from pathlib import Path
 
 from toga_textual.window import TitleBar
@@ -56,24 +55,12 @@ class BaseDialog:
 
         self.native = TextualDialog(self)
 
-    def cleanup(self, future):
-        # Provide an interface that can be intercepted to inject
-        # "close dialog" logic for testing purposes.
-        return future
-
-    def show(self, host_window, future=None):
-        # For backwards compatibility with the old window-based API,
-        # allow the future to be explicitly provided.
-        if future is None:
-            self.future = asyncio.Future()
-        else:
-            self.future = future
+    def show(self, host_window, future):
+        self.future = future
 
         # Add the screen for the dialog. Don't differentiate between app and window
         # modal dialogs - attack all of them to the app
         toga.App.app._impl.native.push_screen(self.native, self.on_close)
-
-        return self.cleanup(self.future)
 
     def compose_content(self, dialog):
         dialog.content = Label(self.message, id="message")

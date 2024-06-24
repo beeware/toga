@@ -531,7 +531,7 @@ class Window:
             on_result=wrapped_handler(self, on_result) if on_result else None,
         )
         result.dialog = dialogs.InfoDialog(title, message)
-        result.dialog._impl.show(self, future=result)
+        result.dialog._impl.show(self, result)
         return result
 
     def question_dialog(
@@ -557,7 +557,7 @@ class Window:
             on_result=wrapped_handler(self, on_result) if on_result else None,
         )
         result.dialog = dialogs.QuestionDialog(title, message)
-        result.dialog._impl.show(self, future=result)
+        result.dialog._impl.show(self, result)
         return result
 
     def confirm_dialog(
@@ -583,7 +583,7 @@ class Window:
             on_result=wrapped_handler(self, on_result) if on_result else None,
         )
         result.dialog = dialogs.ConfirmDialog(title, message)
-        result.dialog._impl.show(self, future=result)
+        result.dialog._impl.show(self, result)
         return result
 
     def error_dialog(
@@ -609,7 +609,7 @@ class Window:
             on_result=wrapped_handler(self, on_result) if on_result else None,
         )
         result.dialog = dialogs.ErrorDialog(title, message)
-        result.dialog._impl.show(self, future=result)
+        result.dialog._impl.show(self, result)
         return result
 
     @overload
@@ -672,7 +672,7 @@ class Window:
             content=content,
             retry=retry,
         )
-        result.dialog._impl.show(self, future=result)
+        result.dialog._impl.show(self, result)
         return result
 
     def save_file_dialog(
@@ -702,7 +702,7 @@ class Window:
             suggested_filename=suggested_filename,
             file_types=file_types,
         )
-        result.dialog._impl.show(self, future=result)
+        result.dialog._impl.show(self, result)
         return result
 
     @overload
@@ -794,7 +794,7 @@ class Window:
             file_types=file_types,
             multiple_select=multiple_select,
         )
-        result.dialog._impl.show(self, future=result)
+        result.dialog._impl.show(self, result)
         return result
 
     @overload
@@ -880,7 +880,7 @@ class Window:
             initial_directory=initial_directory,
             multiple_select=multiple_select,
         )
-        result.dialog._impl.show(self, future=result)
+        result.dialog._impl.show(self, result)
         return result
 
     ######################################################################

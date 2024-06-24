@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+import asyncio
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from toga.platform import get_platform_factory
 
@@ -29,14 +30,16 @@ class Dialog:
     window-modal dialog), or :meth:`~toga.App.dialog()` for an app-level dialog.
     """
 
-    def _show(self, window: Window | None) -> Any:
+    def _show(self, window: Window | None) -> asyncio.Future:
         """Display the dialog and return the user's response.
 
         :param window: The window for which the dialog should be modal; or ``None`` for
             an app-level dialog.
-        :returns: The user's response
+        :returns: A future capturing the user's response to the dialog
         """
-        return self._impl.show(window)
+        future = asyncio.Future()
+        self._impl.show(window, future)
+        return future
 
 
 class InfoDialog(Dialog):

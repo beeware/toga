@@ -15,24 +15,12 @@ from .libs.wrapper import WeakrefCallable
 
 
 class BaseDialog:
-    def cleanup(self, future):
-        # Provide an interface that can be intercepted to inject
-        # "close dialog" logic for testing purposes.
-        return future
-
-    def show(self, host_window, future=None):
-        # For backwards compatibility with the old window-based API,
-        # allow the future to be explicitly provided.
-        if future is None:
-            self.future = asyncio.Future()
-        else:
-            self.future = future
+    def show(self, host_window, future):
+        self.future = future
 
         # Don't differentiate between app and window modal dialogs
         # Show the dialog using an inner loop.
         asyncio.get_event_loop().start_inner_loop(self._show)
-
-        return self.cleanup(self.future)
 
 
 class MessageDialog(BaseDialog):

@@ -22,17 +22,19 @@ class DialogsMixin:
         self._wait_for_dialog("Wait for dialog to disappear")
 
     def _setup_dialog_result(self, dialog, gtk_result, close_handler=None):
-        cleanup = dialog._impl.cleanup
+        # Install an overridden show method that invokes the original,
+        # but then closes the open dialog.
+        orig_show = dialog._impl.show
 
-        def auto_cleanup(future):
+        def automated_show(host_window, future):
+            orig_show(host_window, future)
+
             if close_handler:
                 close_handler(dialog, gtk_result)
             else:
                 self._default_close_handler(dialog, gtk_result)
 
-            return cleanup(future)
-
-        dialog._impl.cleanup = auto_cleanup
+        dialog._impl.show = automated_show
 
     def setup_info_dialog_result(self, dialog):
         self._setup_dialog_result(dialog, Gtk.ResponseType.OK)

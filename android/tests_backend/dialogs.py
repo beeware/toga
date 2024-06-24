@@ -5,9 +5,13 @@ import pytest
 
 class DialogsMixin:
     def _setup_alert_dialog_result(self, dialog, buttons, selected_index):
-        cleanup = dialog._impl.cleanup
+        # Install an overridden show method that invokes the original,
+        # but then closes the open dialog.
+        orig_show = dialog._impl.show
 
-        def auto_cleanup(future):
+        def automated_show(host_window, future):
+            orig_show(host_window, future)
+
             async def _close_dialog():
                 # Inject a small pause without blocking the event loop
                 await asyncio.sleep(1.0 if self.app.run_slow else 0.2)
@@ -22,9 +26,7 @@ class DialogsMixin:
 
             asyncio.ensure_future(_close_dialog())
 
-            return cleanup(future)
-
-        dialog._impl.cleanup = auto_cleanup
+        dialog._impl.show = automated_show
 
     def setup_info_dialog_result(self, dialog):
         self._setup_alert_dialog_result(dialog, ["OK"], 0)
