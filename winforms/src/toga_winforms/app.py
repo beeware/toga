@@ -171,7 +171,6 @@ class App:
                     simple_handler(self.interface.preferences),
                     "Preferences",
                     group=Group.FILE,
-                    enabled=overridden(self.interface.preferences),
                     id=Command.PREFERENCES,
                 ),
             )  # pragma: no cover

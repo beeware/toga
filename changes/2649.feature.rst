@@ -1,1 +1,0 @@
-Toga apps now expose a ``create_app_commands()`` method that can be overridden to customize the set of default menu items that are installed.

@@ -60,8 +60,7 @@ The presentation of :class:`toga.MainWindow` is platform dependent:
 
 * On desktop platforms that place menus inside windows (e.g., Windows, and most Linux
   window managers), a :class:`toga.MainWindow` instance will display a menu bar that
-  contains the app control commands (such as About, Quit, and anything else required by
-  the platform's HIG).
+  contains the defined app :attr:`~toga.App.commands`.
 
 * On desktop platforms that use an app-level menu bar (e.g., macOS, and some Linux
   window managers), the window will not have a menu bar; all menu items will be
@@ -70,11 +69,8 @@ The presentation of :class:`toga.MainWindow` is platform dependent:
 * On mobile, web and console platforms, a :class:`toga.MainWindow` will include a title
   bar that can contain both menus and toolbar items.
 
-In addition to the platform's default commands, user-defined commands can be
-added to the :class:`toga.MainWindow`'s menu by adding them to
-:attr:`~toga.App.commands`. Toolbar items can be added by adding them to
-:attr:`~toga.MainWindow.toolbar`; any command added to the toolbar will be
-automatically added to the App's commands as well.
+Toolbar items can be added by adding them to :attr:`~toga.MainWindow.toolbar`; any
+command added to the toolbar will be automatically added to the App's commands as well.
 
 .. code-block:: python
 
