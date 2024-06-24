@@ -28,47 +28,52 @@ class DialogsMixin:
 
         dialog._impl.cleanup = auto_cleanup
 
-    def setup_info_dialog(self, dialog):
-        self._setup_dialog("\n")
+    def setup_info_dialog_result(self, dialog):
+        self._setup_dialog_result(dialog, "\n")
 
-    def setup_question_dialog(self, dialog, result):
-        self._setup_dialog("y" if result else "n")
+    def setup_question_dialog_result(self, dialog, result):
+        self._setup_dialog_result(dialog, "y" if result else "n")
 
-    def setup_confirm_dialog(self, dialog, result):
-        self._setup_dialog("\n" if result else "<esc>")
+    def setup_confirm_dialog_result(self, dialog, result):
+        self._setup_dialog_result(dialog, "\n" if result else "<esc>")
 
-    def setup_error_dialog(self, dialog):
-        self._setup_dialog("\n")
+    def setup_error_dialog_result(self, dialog):
+        self._setup_dialog_result(dialog, "\n")
 
-    def setup_stack_trace_dialog(self, dialog, result):
-        self._setup_dialog(
+    def setup_stack_trace_dialog_result(self, dialog, result):
+        self._setup_dialog_result(
+            dialog,
             {None: "o", True: "r", False: "q"}[result],
             alt=True,
         )
 
-    def setup_save_file_dialog(self, dialog, result):
-        self._setup_dialog("\n" if result else "<esc>")
+    def setup_save_file_dialog_result(self, dialog, result):
+        self._setup_dialog_result(dialog, "\n" if result else "<esc>")
 
-    def setup_open_file_dialog(self, dialog, result, multiple_select):
+    def setup_open_file_dialog_result(self, dialog, result, multiple_select):
         if result is None:
-            self._setup_dialog("<esc>")
+            self._setup_dialog_result(dialog, "<esc>")
         else:
             if multiple_select:
                 # native.FileNames is read-only, so we have to mock the mechanism
                 # returning the result
-                dialog.native.FileName = str(result[0])  # Enable the OK button
-                dialog.selected_paths = Mock(result=[str(path) for path in result])
+                dialog._impl.native.FileName = str(result[0])  # Enable the OK button
+                dialog._impl.selected_paths = Mock(
+                    return_value=[str(path) for path in result]
+                )
             else:
-                dialog.native.FileName = str(result)
+                dialog._impl.native.FileName = str(result)
 
-            self._setup_dialog("\n")
+            self._setup_dialog_result(dialog, "\n")
 
-    def setup_select_folder_dialog(self, dialog, result, multiple_select):
+    def setup_select_folder_dialog_result(self, dialog, result, multiple_select):
         if result is None:
-            self._setup_dialog("<esc>")
+            self._setup_dialog_result(dialog, "<esc>")
         else:
-            dialog.native.SelectedPath = str(result[-1] if multiple_select else result)
-            self._setup_dialog("\n")
+            dialog._impl.native.SelectedPath = str(
+                result[-1] if multiple_select else result
+            )
+            self._setup_dialog_result(dialog, "\n")
 
     def is_modal_dialog(self, dialog):
         return True

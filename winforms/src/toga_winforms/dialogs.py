@@ -29,7 +29,6 @@ class BaseDialog:
             self.future = future
 
         # Don't differentiate between app and window modal dialogs
-
         # Show the dialog using an inner loop.
         asyncio.get_event_loop().start_inner_loop(self._show)
 
@@ -39,23 +38,30 @@ class BaseDialog:
 class MessageDialog(BaseDialog):
     def __init__(
         self,
-        interface,
         title,
         message,
         buttons,
         icon,
         success_result=None,
     ):
-        super().__init__(interface)
+        super().__init__()
+        self.message = message
+        self.title = title
+        self.buttons = buttons
+        self.icon = icon
+        self.success_result = success_result
 
-        def show():
-            return_value = WinForms.MessageBox.Show(message, title, buttons, icon)
-            if success_result:
-                self.set_result(return_value == success_result)
-            else:
-                self.set_result(None)
-
-        self._show = show
+    def _show(self):
+        return_value = WinForms.MessageBox.Show(
+            self.message,
+            self.title,
+            self.buttons,
+            self.icon,
+        )
+        if self.success_result:
+            self.future.set_result(return_value == self.success_result)
+        else:
+            self.future.set_result(None)
 
 
 class InfoDialog(MessageDialog):
@@ -169,33 +175,28 @@ class StackTraceDialog(BaseDialog):
 
             self.native.Controls.Add(accept)
 
-        def show():
-            self.native.ShowDialog()
-
-        self._show = show
+    def _show(self):
+        self.native.ShowDialog()
 
     def winforms_FormClosing(self, sender, event):
-        # If the close button is pressed, there won't be a future yet.
+        # If the close button is pressed, the future won't be done.
         # We cancel this event to prevent the dialog from closing.
         # If a button is pressed, the future will be set, and a close
         # event will be triggered.
-        try:
-            self.interface.future.result()
-        except asyncio.InvalidStateError:  # pragma: no cover
-            event.Cancel = True
-
-    def cleanup(self, future):
-        self.native.Close()
-        return super().cleanup(future)
+        if not self.future.done():
+            event.Cancel = True  # pragma: no cover
 
     def winforms_Click_quit(self, sender, event):
         self.future.set_result(False)
+        self.native.Close()
 
     def winforms_Click_retry(self, sender, event):
         self.future.set_result(True)
+        self.native.Close()
 
     def winforms_Click_accept(self, sender, event):
         self.future.set_result(None)
+        self.native.Close()
 
 
 class FileDialog(BaseDialog):
@@ -229,14 +230,12 @@ class FileDialog(BaseDialog):
 
             native.Filter = "|".join(filters)
 
-        def show():
-            response = native.ShowDialog()
-            if response == DialogResult.OK:
-                self.future.set_result(self._get_filenames())
-            else:
-                self.future.set_result(None)
-
-        self.start_inner_loop(show)
+    def _show(self):
+        response = self.native.ShowDialog()
+        if response == DialogResult.OK:
+            self.future.set_result(self._get_filenames())
+        else:
+            self.future.set_result(None)
 
     def _set_title(self, title):
         self.native.Title = title

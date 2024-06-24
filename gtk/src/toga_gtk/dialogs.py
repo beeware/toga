@@ -62,7 +62,7 @@ class MessageDialog(BaseDialog):
         else:
             result = None
 
-        self.interface.set_result(result)
+        self.future.set_result(result)
 
         self.native.destroy()
 
@@ -181,6 +181,7 @@ class FileDialog(BaseDialog):
         )
         self.native.add_button(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL)
         self.native.add_button(ok_icon, Gtk.ResponseType.OK)
+        self.native.set_modal(True)
 
         if filename:
             self.native.set_current_name(filename)
@@ -200,7 +201,6 @@ class FileDialog(BaseDialog):
             self.native.set_select_multiple(True)
 
         self.native.connect("response", self.gtk_response)
-        self.native.show()
 
     # Provided as a stub that can be mocked in test conditions
     def selected_path(self):
@@ -219,7 +219,7 @@ class FileDialog(BaseDialog):
         else:
             result = None
 
-        self.interface.set_result(result)
+        self.future.set_result(result)
 
         self.native.destroy()
 
