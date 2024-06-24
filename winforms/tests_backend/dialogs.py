@@ -1,6 +1,8 @@
 import asyncio
 from unittest.mock import Mock
 
+from System import Array as WinArray, String as WinString
+
 
 class DialogsMixin:
     supports_multiple_select_folder = False
@@ -57,6 +59,14 @@ class DialogsMixin:
             self._setup_dialog_result(dialog, "<esc>")
         else:
             if multiple_select:
+                # Since we are mocking selected_path(), it's never actually invoked
+                # under test conditions. Call it just to confirm that it returns the
+                # type we think it does.
+                assert isinstance(
+                    dialog._impl.selected_paths(),
+                    type(WinArray.CreateInstance(WinString, 0)),
+                )
+
                 # native.FileNames is read-only, so we have to mock the mechanism
                 # returning the result
                 dialog._impl.native.FileName = str(result[0])  # Enable the OK button
