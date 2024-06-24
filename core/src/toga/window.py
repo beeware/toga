@@ -514,7 +514,7 @@ class Window:
         message: str,
         on_result: DialogResultHandler[None] | None = None,
     ) -> Dialog:
-        """**DEPRECATED** - use await self.dialog(InfoDialog())"""
+        """**DEPRECATED** - use ``await self.dialog(InfoDialog())``"""
         ######################################################################
         # 2024-06: Backwards compatibility
         ######################################################################
@@ -540,7 +540,7 @@ class Window:
         message: str,
         on_result: DialogResultHandler[bool] | None = None,
     ) -> Dialog:
-        """**DEPRECATED** - use await self.dialog(QuestionDialog())"""
+        """**DEPRECATED** - use ``await self.dialog(QuestionDialog())``"""
         ######################################################################
         # 2024-06: Backwards compatibility
         ######################################################################
@@ -566,7 +566,7 @@ class Window:
         message: str,
         on_result: DialogResultHandler[bool] | None = None,
     ) -> Dialog:
-        """**DEPRECATED** - use await self.dialog(ConfirmDialog())"""
+        """**DEPRECATED** - use ``await self.dialog(ConfirmDialog())``"""
         ######################################################################
         # 2024-06: Backwards compatibility
         ######################################################################
@@ -592,7 +592,7 @@ class Window:
         message: str,
         on_result: DialogResultHandler[None] | None = None,
     ) -> Dialog:
-        """**DEPRECATED** - use await self.dialog(ErrorDialog())"""
+        """**DEPRECATED** - use ``await self.dialog(ErrorDialog())``"""
         ######################################################################
         # 2024-06: Backwards compatibility
         ######################################################################
@@ -650,7 +650,7 @@ class Window:
         retry: bool = False,
         on_result: DialogResultHandler[bool] | DialogResultHandler[None] | None = None,
     ) -> Dialog:
-        """**DEPRECATED** - use await self.dialog(StackTraceDialog())"""
+        """**DEPRECATED** - use ``await self.dialog(StackTraceDialog())``"""
         ######################################################################
         # 2024-06: Backwards compatibility
         ######################################################################
@@ -682,7 +682,7 @@ class Window:
         file_types: list[str] | None = None,
         on_result: DialogResultHandler[Path | None] | None = None,
     ) -> Dialog:
-        """**DEPRECATED** - use await self.dialog(SaveFileDialog())"""
+        """**DEPRECATED** - use ``await self.dialog(SaveFileDialog())``"""
         ######################################################################
         # 2024-06: Backwards compatibility
         ######################################################################
@@ -759,7 +759,7 @@ class Window:
         ) = None,
         multiselect: None = None,  # DEPRECATED
     ) -> Dialog:
-        """**DEPRECATED** - use await self.dialog(OpenFileDialog())"""
+        """**DEPRECATED** - use ``await self.dialog(OpenFileDialog())``"""
         ######################################################################
         # 2024-06: Backwards compatibility
         ######################################################################
@@ -847,7 +847,7 @@ class Window:
         ) = None,
         multiselect: None = None,  # DEPRECATED
     ) -> Dialog:
-        """**DEPRECATED** - use await self.dialog(SaveFileDialog())"""
+        """**DEPRECATED** - use ``await self.dialog(SaveFileDialog())``"""
         ######################################################################
         # 2024-06: Backwards compatibility
         ######################################################################
