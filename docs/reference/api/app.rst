@@ -97,8 +97,8 @@ Notes
 -----
 
 * On macOS, menus are tied to the app, not the window; and a menu is mandatory.
-  Therefore, a minimal macOS app (i.e., an app using a :any:`toga.Window` as the main
-  window) will still have a menu, but it will only have the bare minimum of menu items.
+  Therefore, a macOS app will *always* have a menu with the default menu items,
+  regardless of the window being used as the main window.
 
 * Apps executed under Wayland on Linux environment may not show the app's formal name
   correctly. Wayland considers many aspects of app operation to be the domain of the

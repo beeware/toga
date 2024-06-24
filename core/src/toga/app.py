@@ -660,10 +660,10 @@ class App:
     def preferences(self) -> None:
         """Open a preferences panel for the app.
 
-        By default, this will do nothing, and the Preferences/Settings menu item
-        will be disabled. However, if you override this method in your App class,
-        the menu item will be enabled, and this method will be invoked when the
-        menu item is selected.
+        By default, this will do nothing, and the Preferences/Settings menu item will
+        not be installed. However, if you override this method in your App class, the
+        :attr:`toga.Command.PREFERENCES` command will be added, and this method will be
+        invoked when the menu item is selected.
         """
         # Default implementation won't ever be invoked, because the menu item
         # isn't enabled unless it's overridden.
