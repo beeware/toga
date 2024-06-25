@@ -43,6 +43,10 @@ def test_create(event_loop, AppClass):
     assert custom_app.app_name == "customized-app"
     assert custom_app.on_exit._raw is None
 
+    # About menu item exists and is disabled
+    assert toga.Command.ABOUT in custom_app.commands
+    assert custom_app.commands[toga.Command.ABOUT].enabled
+
     # Preferences exist and are enabled
     assert toga.Command.PREFERENCES in custom_app.commands
     assert custom_app.commands[toga.Command.PREFERENCES].enabled

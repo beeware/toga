@@ -165,8 +165,6 @@ def test_default_command_ordering(app):
         for obj in app.commands
     ] == [
         # App menu
-        toga.Command.PREFERENCES,
-        "---*---",
         toga.Command.EXIT,
         # Help menu
         toga.Command.ABOUT,

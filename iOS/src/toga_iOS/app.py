@@ -1,8 +1,11 @@
 import asyncio
+import sys
 
 from rubicon.objc import objc_method
 from rubicon.objc.eventloop import EventLoopPolicy, iOSLifecycle
 
+from toga.command import Command
+from toga.handlers import simple_handler
 from toga_iOS.libs import UIResponder, UIScreen, av_foundation
 
 from .screens import Screen as ScreenImpl
@@ -69,8 +72,14 @@ class App:
     ######################################################################
 
     def create_app_commands(self):
-        # No menus on an iOS app (for now)
-        pass
+        self.interface.commands.add(
+            Command(
+                simple_handler(self.interface.about),
+                f"About {self.interface.formal_name}",
+                section=sys.maxsize,
+                id=Command.ABOUT,
+            ),
+        )
 
     def create_menus(self):
         # No menus on an iOS app (for now)

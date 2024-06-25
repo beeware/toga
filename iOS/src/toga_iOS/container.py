@@ -124,7 +124,58 @@ class RootContainer(Container):
         layout_native=None,
         on_refresh=None,
     ):
+        """A bare content container.
+
+        This is a container that *doesn't* include a navigation/title bar at the top.
+
+        :param content: The widget impl that is the container's initial content.
+        :param layout_native: The native widget that should be used to provide
+            size hints to the layout. This will usually be the container widget
+            itself; however, for widgets like ScrollContainer where the layout
+            needs to be computed based on a different size to what will be
+            rendered, the source of the size can be different.
+        :param on_refresh: The callback to be notified when this container's layout is
+            refreshed.
         """
+        super().__init__(
+            content=content,
+            layout_native=layout_native,
+            on_refresh=on_refresh,
+        )
+
+        # Construct a UIViewController to hold the root content
+        self.controller = UIViewController.alloc().init()
+
+        # Set the controller's view to be the root content widget
+        self.controller.view = self.native
+
+    # The testbed app won't instantiate a simple app, so we can't test these properties
+    @property
+    def height(self):  # pragma: no cover
+        return self.layout_native.bounds.size.height - self.top_offset
+
+    @property
+    def top_offset(self):  # pragma: no cover
+        return UIApplication.sharedApplication.statusBarFrame.size.height
+
+    @property
+    def title(self):  # pragma: no cover
+        return self._title
+
+    @title.setter
+    def title(self, value):
+        self._title = value
+
+
+class NavigationContainer(Container):
+    def __init__(
+        self,
+        content=None,
+        layout_native=None,
+        on_refresh=None,
+    ):
+        """A top level container that provides a navigation/title bar.
+
         :param content: The widget impl that is the container's initial content.
         :param layout_native: The native widget that should be used to provide
             size hints to the layout. This will usually be the container widget

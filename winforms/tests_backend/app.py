@@ -184,7 +184,6 @@ class AppProbe(BaseProbe):
                 assert item.Text == title
 
     def assert_system_menus(self):
-        self.assert_menu_item(["File", "Preferences"], enabled=False)
         self.assert_menu_item(["File", "Exit"])
 
         self.assert_menu_item(["Help", "Visit homepage"])

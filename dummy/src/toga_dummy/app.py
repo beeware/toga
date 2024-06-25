@@ -26,14 +26,6 @@ class App(LoggedObject):
     def create_app_commands(self):
         self._action("create App commands")
         self.interface.commands.add(
-            Command(
-                simple_handler(self.interface.preferences),
-                "Preferences",
-                group=Group.APP,
-                # For now, only enable preferences if the user defines an implementation
-                enabled=overridden(self.interface.preferences),
-                id=Command.PREFERENCES,
-            ),
             # Invoke `on_exit` rather than `exit`, because we want to trigger the "OK to
             # exit?" logic. It's already a bound handler, so we can use it directly.
             Command(
@@ -57,6 +49,17 @@ class App(LoggedObject):
                 id=Command.VISIT_HOMEPAGE,
             ),
         )
+
+        # If the user has overridden preferences, provide a menu item.
+        if overridden(self.interface.preferences):
+            self.interface.commands.add(
+                Command(
+                    simple_handler(self.interface.preferences),
+                    "Preferences",
+                    group=Group.APP,
+                    id=Command.PREFERENCES,
+                ),
+            )  # pragma: no cover
 
     def create_menus(self):
         self._action("create App menus")
