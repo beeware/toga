@@ -90,13 +90,13 @@ that is assigned as the main window will affect the behavior of the app.
 :class:`toga.Window`
 ~~~~~~~~~~~~~~~~~~~~
 
-The most common type of app will assign an instance of :class:`toga.Window` (or a
-subclass, such as :class:`toga.MainWindow`) as the main window. This window will control
+Most apps will assign an instance of :class:`toga.Window` (or a subclass, 
+such as :class:`toga.MainWindow`) as the main window. This window will control
 the life cycle of the app. When the window assigned as the main window is closed, the
 app will exit.
 
-This is the type of app that will be created if you use an instance of :any:`toga.App`
-passing in a ``startup`` argument to the constructor.
+If you create an ``App`` by passing a ``startup`` argument to the constructor, a 
+:class:`~toga.MainWindow` will be automatically created and assigned to ``main_window``.
 
 ``None``
 ~~~~~~~~
