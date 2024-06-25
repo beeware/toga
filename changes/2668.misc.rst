@@ -1,0 +1,1 @@
+Add Wayland to the matrix for testbed CI testing.

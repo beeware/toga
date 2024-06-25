@@ -23,6 +23,8 @@ class WindowProbe(BaseProbe):
     supports_move_while_hidden = True
     supports_multiple_select_folder = False
     supports_unminimize = True
+    supports_minimize = True
+    supports_placement = True
 
     def __init__(self, app, window):
         super().__init__()

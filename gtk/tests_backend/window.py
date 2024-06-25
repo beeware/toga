@@ -15,6 +15,9 @@ class WindowProbe(BaseProbe):
     supports_multiple_select_folder = True
     supports_move_while_hidden = False
     supports_unminimize = False
+    # Wayland mostly prohibits interaction with the larger windowing environment
+    supports_minimize = not BaseProbe.IS_WAYLAND
+    supports_placement = not BaseProbe.IS_WAYLAND
 
     def __init__(self, app, window):
         super().__init__()
