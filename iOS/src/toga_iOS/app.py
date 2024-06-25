@@ -109,10 +109,8 @@ class App:
         pass  # pragma: no cover
 
     def set_main_window(self, window):
-        if window is None:
-            raise ValueError("Session-based apps are not supported on Android")
-        elif window == toga.App.BACKGROUND:
-            raise ValueError("Background apps are not supported on Android")
+        if window is None or window == toga.App.BACKGROUND:
+            raise ValueError("Apps without main windows are not supported on iOS")
 
     ######################################################################
     # App resources
