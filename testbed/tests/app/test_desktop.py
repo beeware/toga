@@ -101,12 +101,14 @@ async def test_menu_exit(monkeypatch, app, app_probe, mock_app_exit):
 
 
 async def test_menu_close_windows(monkeypatch, app, app_probe, mock_app_exit):
+    """Windows can be closed by a menu item"""
+    window1 = toga.Window("Test Window 1", position=(150, 150), size=(200, 200))
+    window2 = toga.Window("Test Window 2", position=(400, 150), size=(200, 200))
+    window3 = toga.Window("Test Window 3", position=(300, 400), size=(200, 200))
+
     try:
-        window1 = toga.Window("Test Window 1", position=(150, 150), size=(200, 200))
         window1.content = toga.Box(style=Pack(background_color=REBECCAPURPLE))
-        window2 = toga.Window("Test Window 2", position=(400, 150), size=(200, 200))
         window2.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
-        window3 = toga.Window("Test Window 3", position=(300, 400), size=(200, 200))
         window3.content = toga.Box(style=Pack(background_color=FIREBRICK))
 
         window1.show()
@@ -158,8 +160,10 @@ async def test_menu_close_windows(monkeypatch, app, app_probe, mock_app_exit):
 
 
 async def test_menu_minimize(app, app_probe):
+    """Windows can be minimized by a menu item"""
+    window1 = toga.Window("Test Window 1", position=(150, 150), size=(200, 200))
+
     try:
-        window1 = toga.Window("Test Window 1", position=(150, 150), size=(200, 200))
         window1.content = toga.Box(style=Pack(background_color=REBECCAPURPLE))
         window1.show()
 
@@ -178,10 +182,11 @@ async def test_menu_minimize(app, app_probe):
 
 async def test_full_screen(app, app_probe):
     """Window can be made full screen"""
+    window1 = toga.Window("Test Window 1", position=(150, 150), size=(200, 200))
+    window2 = toga.Window("Test Window 2", position=(400, 150), size=(200, 200))
+
     try:
-        window1 = toga.Window("Test Window 1", position=(150, 150), size=(200, 200))
         window1.content = toga.Box(style=Pack(background_color=REBECCAPURPLE))
-        window2 = toga.Window("Test Window 2", position=(400, 150), size=(200, 200))
         window2.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
         window1_probe = window_probe(app, window1)
         window2_probe = window_probe(app, window2)
@@ -301,9 +306,10 @@ async def test_show_hide_cursor(app, app_probe):
 
 
 async def test_current_window(app, app_probe, main_window):
-    """The current window can be retrieved."""
+    """The current window can be retrieved"""
     try:
-        assert app.current_window == main_window
+        if app_probe.supports_current_window_assignment:
+            assert app.current_window == main_window
 
         # When all windows are hidden, WinForms and Cocoa return None, while GTK
         # returns the last active window.
@@ -315,12 +321,13 @@ async def test_current_window(app, app_probe, main_window):
     finally:
         main_window.show()
 
+    window1 = toga.Window("Test Window 1", position=(150, 150), size=(200, 200))
+    window2 = toga.Window("Test Window 2", position=(400, 150), size=(200, 200))
+    window3 = toga.Window("Test Window 3", position=(300, 400), size=(200, 200))
+
     try:
-        window1 = toga.Window("Test Window 1", position=(150, 150), size=(200, 200))
         window1.content = toga.Box(style=Pack(background_color=REBECCAPURPLE))
-        window2 = toga.Window("Test Window 2", position=(400, 150), size=(200, 200))
         window2.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
-        window3 = toga.Window("Test Window 3", position=(300, 400), size=(200, 200))
         window3.content = toga.Box(style=Pack(background_color=FIREBRICK))
 
         # We don't need to probe anything window specific; we just need
@@ -335,11 +342,13 @@ async def test_current_window(app, app_probe, main_window):
 
         app.current_window = window2
         await window1_probe.wait_for_window("Window 2 is current")
-        assert app.current_window == window2
+        if app_probe.supports_current_window_assignment:
+            assert app.current_window == window2
 
         app.current_window = window3
         await window1_probe.wait_for_window("Window 3 is current")
-        assert app.current_window == window3
+        if app_probe.supports_current_window_assignment:
+            assert app.current_window == window3
 
         # app_probe.platform tests?
     finally:

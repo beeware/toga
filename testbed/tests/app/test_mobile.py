@@ -48,13 +48,13 @@ async def test_app_lifecycle(app, app_probe):
 
 
 async def test_device_rotation(app, app_probe):
-    """App responds to device rotation."""
+    """App responds to device rotation"""
     app_probe.rotate()
     await app_probe.redraw("Device has been rotated")
 
 
 async def test_session_based_app(app):
-    """A mobile app can't be turned into a session-based app."""
+    """A mobile app can't be turned into a session-based app"""
     with pytest.raises(
         ValueError,
         match=r"Apps without main windows are not supported on .*",
@@ -63,7 +63,7 @@ async def test_session_based_app(app):
 
 
 async def test_background_app(app):
-    """A mobile app can't be turned into a background app."""
+    """A mobile app can't be turned into a background app"""
     with pytest.raises(
         ValueError,
         match=r"Apps without main windows are not supported on .*",

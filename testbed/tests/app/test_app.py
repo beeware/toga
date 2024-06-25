@@ -118,8 +118,8 @@ async def test_menu_visit_homepage(monkeypatch, app, app_probe):
     """The visit homepage menu item can be used"""
     # If the backend defines a VISIT_HOMEPAGE command, mock the visit_homepage method,
     # and rebind the visit homepage command to the visit_homepage method.
+    visit_homepage = Mock()
     if toga.Command.VISIT_HOMEPAGE in app.commands:
-        visit_homepage = Mock()
         monkeypatch.setattr(app, "visit_homepage", visit_homepage)
         monkeypatch.setattr(
             app.commands[toga.Command.VISIT_HOMEPAGE], "_action", app.visit_homepage
@@ -200,7 +200,7 @@ async def test_menu_items(app, app_probe):
         enabled=False,
     )
 
-    # Dislble the items
+    # Disable the items
     app.disabled_cmd.enabled = False
     app.no_action_cmd.enabled = False
 

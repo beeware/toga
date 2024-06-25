@@ -1,10 +1,14 @@
 import asyncio
+import os
 
 import toga
 from toga_gtk.libs import Gtk
 
 
 class BaseProbe:
+    GTK_VERSION = Gtk.MAJOR_VERSION, Gtk.MINOR_VERSION, Gtk.MICRO_VERSION
+    IS_WAYLAND = os.environ.get("WAYLAND_DISPLAY", "") != ""
+
     def repaint_needed(self):
         return Gtk.events_pending()
 
