@@ -2,10 +2,9 @@ import toga
 
 
 class ExampleDocument(toga.Document):
-    def __init__(self, path, app):
-        super().__init__(path=path, document_type="Example Document", app=app)
+    document_type = "Example Document"
 
-    async def can_close(self):
+    async def can_close(self, window, **kwargs):
         return await self.main_window.dialog(
             toga.QuestionDialog(
                 "Are you sure?",
@@ -17,23 +16,25 @@ class ExampleDocument(toga.Document):
         # Create the main window for the document.
         self.main_window = toga.DocumentMainWindow(
             doc=self,
-            title=f"Example: {self.path.name}",
+            content=toga.MultilineTextInput(),
+            on_close=self.can_close,
         )
-        self.main_window.content = toga.MultilineTextInput()
 
     def read(self):
         with self.path.open() as f:
-            self.content = f.read()
+            self.main_window.content.value = f.read()
 
-        self.main_window.content.value = self.content
+    def write(self):
+        with self.path.open("w") as f:
+            f.write(self.main_window.content.value)
 
 
-class ExampleDocumentApp(toga.DocumentApp):
+class ExampleDocumentApp(toga.App):
     def startup(self):
-        # A document-based app is a session app, so it has no main window. A window (or
-        # windows) will be created from the document(s) specified at the command line;
-        # or if no document is specified, the platform will determine how to create an
-        # empty document.
+        # A document-based app does not have a single main window. A window (or windows)
+        # will be created from the document(s) specified at the command line; or if no
+        # document is specified, the platform will determine how to create an initial
+        # document.
         self.main_window = None
 
 

@@ -35,6 +35,7 @@ Screen,Hardware,:class:`~toga.screens.Screen`,A representation of a screen attac
 App Paths,Resource,:class:`~toga.paths.Paths`,A mechanism for obtaining platform-appropriate filesystem locations for an application.,|y|,|y|,|y|,|y|,|y|,,|b|
 Command,Resource,:class:`~toga.Command`,Command,|y|,|y|,|y|,,|y|,,
 Dialogs,Resource,:ref:`Dialogs <dialogs>`,A short-lived window asking the user for input,|y|,|y|,|y|,|y|,|y|,|b|,|b|
+Document,Resource,:class:`~toga.Document`,A representation of a file on disk that will be displayed in one or more windows.,|y|,|y|,|y|,,,,
 Font,Resource,:class:`~toga.Font`,A text font,|y|,|y|,|y|,|y|,|y|,,
 Icon,Resource,:class:`~toga.Icon`,"A small, square image, used to provide easily identifiable visual context to a widget.",|y|,|y|,|y|,|y|,|y|,,|b|
 Image,Resource,:class:`~toga.Image`,Graphical content of arbitrary size.,|y|,|y|,|y|,|y|,|y|,,
