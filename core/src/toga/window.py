@@ -307,8 +307,8 @@ class Window:
             self.app.on_exit()
             close_window = False
         elif self.app.main_window is None:
-            # If this is a session-based app, this is the last window in the app,
-            # and the platform exits on last window close, trigger an exit.
+            # If this is an app without a main window, this is the last window in the
+            # app, and the platform exits on last window close, trigger an exit.
             if len(self.app.windows) == 1 and self.app._impl.CLOSE_ON_LAST_WINDOW:
                 self.app.on_exit()
                 close_window = False

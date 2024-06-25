@@ -524,7 +524,11 @@ class App:
 
     @property
     def main_window(self) -> Window | str | None:
-        """The main window for the app."""
+        """The main window for the app.
+
+        See :ref:`the documentation on assigning a main window <assigning-main-window>`
+        for values that can be used for this attribute.
+        """
         if self._main_window is App._UNDEFINED:
             raise ValueError("Application has not set a main window.")
 

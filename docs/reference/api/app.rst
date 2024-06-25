@@ -87,67 +87,41 @@ Assigning a main window
 An app *must* assign ``main_window`` as part of the startup process. However, the value
 that is assigned as the main window will affect the behavior of the app.
 
-Standard app
-~~~~~~~~~~~~
+:class:`toga.Window`
+~~~~~~~~~~~~~~~~~~~~
 
-The most common type of app will assign a :any:`MainWindow` or :any:`toga.Window`
-instance as the main window. This window controls the life cycle of the app; when the
-main window is closed, the app will exit.
+The most common type of app will assign an instance of :class:`toga.Window` (or a
+subclass, such as :class:`toga.MainWindow`) as the main window. This window will control
+the life cycle of the app. When the window assigned as the main window is closed, the
+app will exit.
 
 This is the type of app that will be created if you use an instance of :any:`toga.App`
 passing in a ``startup`` argument to the constructor.
 
-.. _session-based-app:
+``None``
+~~~~~~~~
 
-Session-based app
-~~~~~~~~~~~~~~~~~
+If your app doesn't have a single "main" window, but instead has multiple windows that
+are equally important (e.g., a document editor, or a web browser), you can assign a
+value of ``None`` to :attr:`~toga.App.main_window`. The resulting behavior is slightly
+different on each platform, reflecting platform differences.
 
-A session-based app is an app that doesn't have a single main window. Instead, the app
-will have a number of windows, with each window corresponding to a "session" of
-interaction with the app. This session might be a editing a single document, or it could
-be a particular view of data - web browsers or file browsers would be examples of
-session-based apps, with each window representing a view of a URL, or a view of the file
-system.
+On macOS, there is only ever a single instance of an App running at any time, and the
+app is allowed to continue running without any open windows. The app can open and close
+windows as required; the app will keep running until explicitly exited.
 
-To define a session-based app, you assign a value of ``None`` as the main window. Your
-application code can then create new windows as required.
+Linux and Windows allow multiple instances of an app to run; each app instance can open
+and close windows as required. When the last window being managed by an app instance is
+closed, that app instance will exit.
 
-The exact behavior of a session-based app is slightly different on each platform,
-reflecting platform differences.
+Mobile, web and console platforms *must* define a main window.
 
-macOS
-^^^^^
+:attr:`toga.App.BACKGROUND`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-On macOS, there is only ever a single instance of an App running at any time. If you use
-the Finder to open a second document of a type managed by the app, it will be opened in
-the existing app instance. Closing all windows will not cause the app to exit; the app
-will keep executing until explicitly exited.
-
-If the app is started without an explicit file reference (e.g., by specifying a filename
-at the command line, or dragging a file onto the app's icon), a file dialog will be
-displayed prompting the user to select a file to open. If this dialog is dismissed, the
-app will continue running. Selecting "Open" from the file menu will also display this
-dialog. If a file is selected, a new document window will be opened.
-
-Linux/Windows
-^^^^^^^^^^^^^
-
-On Linux and Windows, a single app instance app can also manage multiple windows;
-however when the last window being managed by an app instance is closed, the app
-instance will exit. If the App is started without an explicit file reference, an empty
-document of the default document type will be opened.
-
-Mobile, web and console
-^^^^^^^^^^^^^^^^^^^^^^^
-
-Session-based apps are not supported on mobile, web and console platforms.
-
-Background app
-~~~~~~~~~~~~~~
-
-To create an app without *any* main window, assign ``toga.BACKGROUND`` as the main
-window. This will allow your app to persist even if it doesn't have any open windows. It
-will also hide any app-level icon from your taskbar.
+Assigning a value of ``toga.BACKGROUND`` as the main window will allow your app to
+persist even if it doesn't have any open windows. It will also hide any app-level icon
+from your taskbar.
 
 Background apps are not supported on mobile, web and console platforms.
 
