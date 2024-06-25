@@ -87,15 +87,15 @@ Assigning a main window
 An app *must* assign ``main_window`` as part of the startup process. However, the value
 that is assigned as the main window will affect the behavior of the app.
 
-:class:`toga.Window`
-~~~~~~~~~~~~~~~~~~~~
+:class:`~toga.Window`
+~~~~~~~~~~~~~~~~~~~~~
 
-Most apps will assign an instance of :class:`toga.Window` (or a subclass, 
+Most apps will assign an instance of :class:`toga.Window` (or a subclass,
 such as :class:`toga.MainWindow`) as the main window. This window will control
 the life cycle of the app. When the window assigned as the main window is closed, the
 app will exit.
 
-If you create an ``App`` by passing a ``startup`` argument to the constructor, a 
+If you create an ``App`` by passing a ``startup`` argument to the constructor, a
 :class:`~toga.MainWindow` will be automatically created and assigned to ``main_window``.
 
 ``None``
@@ -106,22 +106,23 @@ are equally important (e.g., a document editor, or a web browser), you can assig
 value of ``None`` to :attr:`~toga.App.main_window`. The resulting behavior is slightly
 different on each platform, reflecting platform differences.
 
-On macOS, there is only ever a single instance of an App running at any time, and the
-app is allowed to continue running without any open windows. The app can open and close
-windows as required; the app will keep running until explicitly exited.
+On macOS, the app is allowed to continue running without having any open windows. The
+app can open and close windows as required; the app will keep running until explicitly
+exited.
 
-Linux and Windows allow multiple instances of an app to run; each app instance can open
-and close windows as required. When the last window being managed by an app instance is
-closed, that app instance will exit.
+On Linux and Windows, when an app closes the last window it is managing, the app will
+automatically exit. Attempting to closing the last window will trigger any app-level
+:meth:`~toga.App.on_exit` handling in addition to any window-specific
+:meth:`~toga.Window.on_close` handling.
 
 Mobile, web and console platforms *must* define a main window.
 
-:attr:`toga.App.BACKGROUND`
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+:attr:`~toga.App.BACKGROUND`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Assigning a value of ``toga.BACKGROUND`` as the main window will allow your app to
-persist even if it doesn't have any open windows. It will also hide any app-level icon
-from your taskbar.
+Assigning a value of :attr:`toga.App.BACKGROUND` as the main window will allow your app
+to persist even if it doesn't have any open windows. It will also hide any app-level
+icon from your taskbar.
 
 Background apps are not supported on mobile, web and console platforms.
 
