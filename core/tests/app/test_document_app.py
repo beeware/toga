@@ -47,18 +47,15 @@ def test_create_no_cmdline(monkeypatch):
     """A document app can be created with no command line."""
     monkeypatch.setattr(sys, "argv", ["app-exe"])
 
-    app = ExampleDocumentApp(
-        "Test App",
-        "org.beeware.document-app",
-        document_types={"foobar": ExampleDocument},
-    )
-    app.main_loop()
-
-    assert app._impl.interface == app
-    assert_action_performed(app, "create DocumentApp")
-
-    assert app.document_types == {"foobar": ExampleDocument}
-    assert app.documents == []
+    with pytest.raises(
+        ValueError,
+        match=r"App doesn't define any initial windows.",
+    ):
+        ExampleDocumentApp(
+            "Test App",
+            "org.beeware.document-app",
+            document_types={"foobar": ExampleDocument},
+        )
 
 
 def test_create_with_cmdline(monkeypatch):
@@ -110,6 +107,33 @@ def test_create_no_document_type():
         match=r"A document must manage at least one document type.",
     ):
         toga.DocumentApp("Test App", "org.beeware.document-app")
+
+
+def test_create_no_windows_non_persistent(event_loop):
+    """Non-persistent apps must define at least one window in startup."""
+
+    class NoWindowApp(toga.App):
+        def startup(self):
+            self.main_window = None
+
+    with pytest.raises(
+        ValueError,
+        match=r"App doesn't define any initial windows.",
+    ):
+        NoWindowApp(formal_name="Test App", app_id="org.example.test")
+
+
+def test_create_no_windows_persistent(monkeypatch, event_loop):
+    """Persistent apps do not have to define windows during startup."""
+    # Monkeypatch the property that makes the backend persistent
+    monkeypatch.setattr(DummyApp, "CLOSE_ON_LAST_WINDOW", False)
+
+    class NoWindowApp(toga.App):
+        def startup(self):
+            self.main_window = None
+
+    # We can create the app without an error
+    NoWindowApp(formal_name="Test App", app_id="org.example.test")
 
 
 def test_close_last_document_non_persistent(monkeypatch):

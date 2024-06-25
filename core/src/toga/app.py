@@ -550,6 +550,15 @@ class App:
         else:
             raise ValueError(f"Don't know how to use {window!r} as a main window.")
 
+    def _create_initial_windows(self):
+        # TODO: Create the initial windows for the app.
+
+        # Safety check: Do we have at least one window?
+        if len(self.app.windows) == 0 and self.main_window is None:
+            # macOS document-based apps are allowed to have no open windows.
+            if self.app._impl.CLOSE_ON_LAST_WINDOW:
+                raise ValueError("App doesn't define any initial windows.")
+
     def _startup(self) -> None:
         # Install the platform-specific app commands. This is done *before* startup so
         # the user's code has the opporuntity to remove/change the default commands.
@@ -562,6 +571,9 @@ class App:
         # Accessing the main window attribute will raise an exception if the app hasn't
         # defined a main window.
         _ = self.main_window
+
+        # Create any initial windows
+        self._create_initial_windows()
 
         # Manifest the initial state of the menus. This will cascade down to all
         # open windows if the platform has window-based menus. Then install the

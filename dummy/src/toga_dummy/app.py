@@ -186,10 +186,11 @@ class App(LoggedObject):
 class DocumentApp(App):
     def create(self):
         self._action("create DocumentApp")
-        self.interface._startup()
 
         try:
             # Create and show the document instance
             self.interface._open(Path(sys.argv[1]))
         except IndexError:
             pass
+
+        self.interface._startup()
