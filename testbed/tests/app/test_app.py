@@ -1,3 +1,4 @@
+import random
 from unittest.mock import Mock
 
 import pytest
@@ -429,135 +430,213 @@ else:
             window1.close()
             window2.close()
 
-    async def test_presentation_mode(app, app_probe, main_window, main_window_probe):
-        """The app can enter into presentation mode"""
+    async def test_presentation_mode_with_main_window(
+        app, app_probe, main_window, main_window_probe
+    ):
+        """The app can enter presentation mode with just the main window."""
+        # This test is required since the toolbar is present only on the main window.
         try:
-            window1 = toga.Window("Test Window 1", position=(150, 150), size=(200, 200))
-            window1.content = toga.Box(style=Pack(background_color=REBECCAPURPLE))
-            window2 = toga.Window("Test Window 2", position=(400, 150), size=(200, 200))
-            window2.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
-            window2.toolbar.add(app.cmd1)
-            window1_probe = window_probe(app, window1)
-            window2_probe = window_probe(app, window2)
-
-            window1.show()
-            window2.show()
-
-            # Add delay for gtk to show the windows
-            await app_probe.redraw("Extra windows are visible", delay=0.1)
-
-            assert not app.is_presentation_mode
-            assert not main_window_probe.is_window_state(WindowState.PRESENTATION)
-            assert not window1_probe.is_window_state(WindowState.PRESENTATION)
-            assert window2_probe.has_toolbar()
-            assert not window2_probe.is_window_state(WindowState.PRESENTATION)
-            initial_content_main_window_size = (
+            main_window.toolbar.add(app.cmd1)
+            main_window_initial_content_size = (
                 main_window_probe.presentation_content_size
             )
-            initial_content1_size = window1_probe.presentation_content_size
-            initial_content2_size = window2_probe.presentation_content_size
-
-            # Enter presentation mode with main window via the app
-            app.enter_presentation_mode([main_window])
-            await main_window_probe.wait_for_window(
-                "Main window is in presentation mode",
-                full_screen=True,
+            extra_window = toga.Window(
+                "Extra Test Window", position=(150, 150), size=(200, 200)
             )
+            extra_window.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
+            extra_window.show()
+            extra_window_probe = window_probe(app, extra_window)
+            extra_window_initial_content_size = (
+                extra_window_probe.presentation_content_size
+            )
+
+            # Add delay for gtk to show the windows
+            await app_probe.redraw("Extra windows is visible", delay=0.1)
+
+            # Enter presentation mode with only main window
+            app.enter_presentation_mode([main_window])
+            # Add delay for gtk to show the windows
+            await app_probe.redraw("App is in presentation mode", delay=0.1)
             assert app.is_presentation_mode
 
-            assert not window1_probe.is_window_state(WindowState.PRESENTATION)
-            assert window1_probe.presentation_content_size == initial_content1_size
-            assert not window2_probe.is_window_state(WindowState.PRESENTATION)
-            assert window2_probe.presentation_content_size == initial_content2_size
+            # Extra  window should not be in presentation mode.
+            assert not extra_window_probe.is_window_state(
+                WindowState.PRESENTATION
+            ), "Extra Window:"
+            assert (
+                extra_window_probe.presentation_content_size
+                == extra_window_initial_content_size
+            ), "Extra Window"
 
+            # Main Window should be in presentation mode.
             assert main_window_probe.is_window_state(WindowState.PRESENTATION)
             assert main_window_probe.presentation_content_size[0] > 1000
             assert main_window_probe.presentation_content_size[1] > 700
+
             # Exit presentation mode
             app.exit_presentation_mode()
-            await main_window_probe.wait_for_window(
-                "Main window is no longer in presentation mode",
-                full_screen=True,
-            )
+            await app_probe.redraw("App is no longer in presentation mode", delay=0.1)
             assert not app.is_presentation_mode
+
             assert (
                 main_window_probe.presentation_content_size
-                == initial_content_main_window_size
+                == main_window_initial_content_size
             )
 
-            # Enter presentation mode with window 2 via the app
-            app.enter_presentation_mode([window2])
-            await window2_probe.wait_for_window(
-                "Second extra window is in presentation mode",
-                full_screen=True,
-            )
-            assert app.is_presentation_mode
-
-            assert not window1_probe.is_window_state(WindowState.PRESENTATION)
-            assert window1_probe.presentation_content_size == initial_content1_size
-
-            assert window2_probe.is_window_state(WindowState.PRESENTATION)
-            assert window2_probe.presentation_content_size[0] > 1000
-            assert window2_probe.presentation_content_size[1] > 700
-            # Exit presentation mode
-            app.exit_presentation_mode()
-            await window2_probe.wait_for_window(
-                "Second extra window is no longer in presentation mode",
-                full_screen=True,
-            )
-            assert not app.is_presentation_mode
-            assert window2_probe.presentation_content_size == initial_content2_size
-
-            # Enter presentation mode with a screen-window1 dict via the app
-            app.enter_presentation_mode({app.screens[0]: window1})
-            await window1_probe.wait_for_window(
-                "First extra window is in presentation mode",
-                full_screen=True,
-            )
-            assert app.is_presentation_mode
-
-            assert not window2_probe.is_window_state(WindowState.PRESENTATION)
-            assert window2_probe.presentation_content_size == initial_content2_size
-
-            assert window1_probe.is_window_state(WindowState.PRESENTATION)
-            assert window1_probe.presentation_content_size[0] > 1000
-            assert window1_probe.presentation_content_size[1] > 700
-            # Exit presentation mode
-            app.exit_presentation_mode()
-            await window1_probe.wait_for_window(
-                "First extra window is no longer in presentation mode",
-                full_screen=True,
-            )
-            assert not app.is_presentation_mode
-            assert window1_probe.presentation_content_size == initial_content1_size
-
-            if len(app.screens) < 2:
-                # Enter presentation mode with 2 windows via the app, but the
-                # second window should be dropped as there is only 1 screen.
-                app.enter_presentation_mode([window1, window2])
-                await window1_probe.wait_for_window(
-                    "First extra window is in presentation mode",
-                    full_screen=True,
-                )
-                assert app.is_presentation_mode
-
-                assert not window2_probe.is_window_state(WindowState.PRESENTATION)
-                assert window2_probe.presentation_content_size == initial_content2_size
-
-                assert window1_probe.is_window_state(WindowState.PRESENTATION)
-                assert window1_probe.presentation_content_size[0] > 1000
-                assert window1_probe.presentation_content_size[1] > 700
-                # Exit presentation mode
-                app.exit_presentation_mode()
-                await window1_probe.wait_for_window(
-                    "First extra window is no longer in presentation mode",
-                    full_screen=True,
-                )
-                assert not app.is_presentation_mode
-                assert window1_probe.presentation_content_size == initial_content1_size
         finally:
-            window1.close()
-            window2.close()
+            main_window.toolbar.clear()
+            extra_window.close()
+
+    async def test_presentation_mode_with_screen_window_dict(app, app_probe):
+        """The app can enter presentation mode with a screen-window paired dict."""
+        try:
+            window_information_list = list()
+            windows_list = list()
+            for i in range(len(app.screens)):
+                window = toga.Window(
+                    title=f"Test Window {i}",
+                    position=(150 + (10 * i), 150 + (10 * i)),
+                    size=(200, 200),
+                )
+                r = random.randint(0, 255)
+                g = random.randint(0, 255)
+                b = random.randint(0, 255)
+                window.content = toga.Box(
+                    style=Pack(background_color=f"#{r:02X}{g:02X}{b:02X}")
+                )
+                window.show()
+                # Add delay for gtk to show the windows
+                await app_probe.redraw(f"Test Window {i} is visible", delay=0.1)
+
+                window_information = dict()
+                window_information["window"] = window
+                window_information["window_probe"] = window_probe(app, window)
+                window_information["initial_content_size"] = window_information[
+                    "window_probe"
+                ].presentation_content_size
+
+                window_information_list.append(window_information)
+                windows_list.append(window)
+
+            screen_window_dict = dict()
+            for window, screen in zip(windows_list, app.screens):
+                screen_window_dict[screen] = window
+
+            # Enter presentation mode with a screen-window dict via the app
+            app.enter_presentation_mode(screen_window_dict)
+            # Add delay for gtk to show the windows
+            await app_probe.redraw("App is in presentation mode", delay=0.1)
+
+            assert app.is_presentation_mode
+            for window_information in window_information_list:
+                assert window_information["window_probe"].is_window_state(
+                    WindowState.PRESENTATION
+                ), f"{window_information['window'].title}:"
+                assert (
+                    window_information["window_probe"].presentation_content_size[0]
+                    > 1000
+                ), f"{window_information['window'].title}:"
+                assert (
+                    window_information["window_probe"].presentation_content_size[1]
+                    > 700
+                ), f"{window_information['window'].title}:"
+
+            # Exit presentation mode
+            app.exit_presentation_mode()
+            await app_probe.redraw("App is no longer in presentation mode", delay=0.1)
+
+            assert not app.is_presentation_mode
+            for window_information in window_information_list:
+                assert (
+                    window_information["window_probe"].presentation_content_size
+                    == window_information["initial_content_size"]
+                ), f"{window_information['window'].title}:"
+
+        finally:
+            for window in windows_list:
+                window.close()
+
+    async def test_presentation_mode_with_excess_windows_list(app, app_probe):
+        """Entering presentation mode limits windows to available displays."""
+        try:
+            window_information_list = list()
+            excess_windows_list = list()
+            for i in range(len(app.screens) + 1):
+                window = toga.Window(
+                    title=f"Test Window {i}",
+                    position=(150 + (10 * i), 150 + (10 * i)),
+                    size=(200, 200),
+                )
+                r = random.randint(0, 255)
+                g = random.randint(0, 255)
+                b = random.randint(0, 255)
+                window.content = toga.Box(
+                    style=Pack(background_color=f"#{r:02X}{g:02X}{b:02X}")
+                )
+                window.show()
+                # Add delay for gtk to show the windows
+                await app_probe.redraw(f"Test Window {i} is visible", delay=0.1)
+
+                window_information = dict()
+                window_information["window"] = window
+                window_information["window_probe"] = window_probe(app, window)
+                window_information["initial_content_size"] = window_information[
+                    "window_probe"
+                ].presentation_content_size
+
+                window_information_list.append(window_information)
+                excess_windows_list.append(window)
+
+            last_window = window_information_list[-1]["window"]
+            last_window_probe = window_information_list[-1]["window_probe"]
+            last_window_initial_content_size = window_information_list[-1][
+                "initial_content_size"
+            ]
+
+            # Enter presentation mode with excess windows via the app, but
+            # the last window should be dropped as there are less screens.
+            app.enter_presentation_mode(excess_windows_list)
+            # Add delay for gtk to show the windows
+            await app_probe.redraw("App is in presentation mode", delay=0.1)
+            assert app.is_presentation_mode
+
+            # Last window should not be in presentation mode.
+            assert not last_window_probe.is_window_state(
+                WindowState.PRESENTATION
+            ), f"Last Window({last_window.title}):"
+            assert (
+                last_window_probe.presentation_content_size
+                == last_window_initial_content_size
+            ), f"Last Window({last_window.title}):"
+
+            # All other windows should be in presentation mode.
+            for window_information in window_information_list[:-1]:
+                assert window_information["window_probe"].is_window_state(
+                    WindowState.PRESENTATION
+                ), f"{window_information['window'].title}:"
+                assert (
+                    window_information["window_probe"].presentation_content_size[0]
+                    > 1000
+                ), f"{window_information['window'].title}:"
+                assert (
+                    window_information["window_probe"].presentation_content_size[1]
+                    > 700
+                ), f"{window_information['window'].title}:"
+
+            # Exit presentation mode
+            app.exit_presentation_mode()
+            await app_probe.redraw("App is no longer in presentation mode", delay=0.1)
+            assert not app.is_presentation_mode
+
+            for window_information in window_information_list:
+                assert (
+                    window_information["window_probe"].presentation_content_size
+                    == window_information["initial_content_size"]
+                ), f"{window_information['window'].title}:"
+
+        finally:
+            for window in excess_windows_list:
+                window.close()
 
     async def test_show_hide_cursor(app, app_probe):
         """The app cursor can be hidden and shown"""

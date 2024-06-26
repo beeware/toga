@@ -581,7 +581,7 @@ def test_presentation_mode_with_windows_list(event_loop):
     )
 
 
-def test_presentation_mode_with_screen_windows_dict(event_loop):
+def test_presentation_mode_with_screen_window_dict(event_loop):
     """The app can enter presentation mode with a screen-window paired dict."""
     app = toga.App(formal_name="Test App", app_id="org.example.test")
     window1 = toga.Window()

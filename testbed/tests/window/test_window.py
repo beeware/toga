@@ -716,8 +716,13 @@ else:
         assert not second_window_probe.is_window_state(WindowState.MINIMIZED)
 
     @pytest.mark.parametrize(
-        "second_window_kwargs",
-        [dict(title="Secondary Window", position=(200, 150))],
+        "second_window_class, second_window_kwargs",
+        [
+            (
+                toga.Window,
+                dict(title="Secondary Window", position=(200, 150)),
+            )
+        ],
     )
     async def test_window_state_maximized(second_window, second_window_probe):
         """Window can have maximized window state"""
@@ -760,8 +765,13 @@ else:
         assert second_window_probe.content_size == initial_content_size
 
     @pytest.mark.parametrize(
-        "second_window_kwargs",
-        [dict(title="Secondary Window", position=(200, 150))],
+        "second_window_class, second_window_kwargs",
+        [
+            (
+                toga.Window,
+                dict(title="Secondary Window", position=(200, 150)),
+            )
+        ],
     )
     async def test_window_state_full_screen(second_window, second_window_probe):
         """Window can have full screen window state"""
@@ -810,8 +820,13 @@ else:
         assert second_window_probe.content_size == initial_content_size
 
     @pytest.mark.parametrize(
-        "second_window_kwargs",
-        [dict(title="Secondary Window", position=(200, 150))],
+        "second_window_class, second_window_kwargs",
+        [
+            (
+                toga.Window,
+                dict(title="Secondary Window", position=(200, 150)),
+            )
+        ],
     )
     async def test_window_state_presentation(second_window, second_window_probe):
         """Window can have presentation window state"""

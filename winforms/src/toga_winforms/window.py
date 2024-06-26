@@ -213,7 +213,7 @@ class Window(Container, Scalable):
             if current_state == WindowState.PRESENTATION:
                 if self.native.MainMenuStrip:
                     self.native.MainMenuStrip.Visible = True
-                if self.toolbar_native:
+                if getattr(self, "toolbar_native", None):
                     self.toolbar_native.Visible = True
 
                 self.interface.screen = self._before_presentation_mode_screen
@@ -241,7 +241,7 @@ class Window(Container, Scalable):
                     self._before_presentation_mode_screen = self.interface.screen
                 if self.native.MainMenuStrip:
                     self.native.MainMenuStrip.Visible = False
-                if self.toolbar_native:
+                if getattr(self, "toolbar_native", None):
                     self.toolbar_native.Visible = False
                 self.native.FormBorderStyle = getattr(WinForms.FormBorderStyle, "None")
                 self.native.WindowState = WinForms.FormWindowState.Maximized
@@ -278,9 +278,9 @@ class MainWindow(Window):
 
     def _top_bars_height(self):
         vertical_shift = 0
-        if self.toolbar_native:
+        if self.toolbar_native and self.toolbar_native.Visible:
             vertical_shift += self.toolbar_native.Height
-        if self.native.MainMenuStrip:
+        if self.native.MainMenuStrip and self.native.MainMenuStrip.Visible:
             vertical_shift += self.native.MainMenuStrip.Height
         return vertical_shift
 
