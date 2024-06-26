@@ -156,7 +156,7 @@ class Window:
         if window_state_flags & Gdk.WindowState.MAXIMIZED:
             return WindowState.MAXIMIZED
         elif window_state_flags & Gdk.WindowState.ICONIFIED:
-            return WindowState.MINIMIZED
+            return WindowState.MINIMIZED  # pragma: no-cover-if-linux-wayland
         elif window_state_flags & Gdk.WindowState.FULLSCREEN:
             # Use a shadow variable since a window without any app menu and toolbar
             # in presentation mode would be indistinguishable from full screen mode.
@@ -176,7 +176,7 @@ class Window:
             # Deminiaturize the window to restore it to its previous state
             elif current_state == WindowState.MINIMIZED:
                 # deconify() doesn't work
-                self.native.present()
+                self.native.present()  # pragma: no-cover-if-linux-wayland
             # If the window is in full-screen mode, exit full-screen mode
             elif current_state == WindowState.FULLSCREEN:
                 self.native.unfullscreen()
@@ -196,7 +196,7 @@ class Window:
                 self.native.maximize()
 
             elif state == WindowState.MINIMIZED:
-                self.native.iconify()
+                self.native.iconify()  # pragma: no-cover-if-linux-wayland
 
             elif state == WindowState.FULLSCREEN:
                 self.native.fullscreen()
