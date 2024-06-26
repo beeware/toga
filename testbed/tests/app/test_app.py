@@ -444,7 +444,7 @@ else:
             extra_window.show()
             extra_window_probe = window_probe(app, extra_window)
             # Add delay for gtk to show the windows
-            await app_probe.redraw("Extra window is visible", delay=0.1)
+            await app_probe.redraw("Extra window is visible", delay=0.5)
 
             main_window_initial_content_size = (
                 main_window_probe.presentation_content_size
@@ -474,7 +474,7 @@ else:
 
             # Exit presentation mode
             app.exit_presentation_mode()
-            await app_probe.redraw("App is no longer in presentation mode", delay=0.1)
+            await app_probe.redraw("App is no longer in presentation mode", delay=0.5)
             assert not app.is_presentation_mode
 
             assert (
