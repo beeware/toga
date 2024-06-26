@@ -479,7 +479,7 @@ class Window:
     async def dialog(self, dialog) -> Coroutine[None, None, Any]:
         """Display a dialog to the user, modal to this window.
 
-        :param dialog: The dialog to display to the user.
+        :param: The :doc:`dialog <resources/dialogs>` to display to the user.
         :returns: The result of the dialog.
         """
         return await dialog._show(self)
@@ -511,7 +511,7 @@ class Window:
         message: str,
         on_result: DialogResultHandler[None] | None = None,
     ) -> Dialog:
-        """**DEPRECATED** - use ``await self.dialog(InfoDialog())``"""
+        """**DEPRECATED** - await :meth:`dialog` with an :any:`InfoDialog`"""
         ######################################################################
         # 2024-06: Backwards compatibility
         ######################################################################
@@ -537,7 +537,7 @@ class Window:
         message: str,
         on_result: DialogResultHandler[bool] | None = None,
     ) -> Dialog:
-        """**DEPRECATED** - use ``await self.dialog(QuestionDialog())``"""
+        """**DEPRECATED** - await :meth:`dialog` with a :any:`QuestionDialog`"""
         ######################################################################
         # 2024-06: Backwards compatibility
         ######################################################################
@@ -563,7 +563,7 @@ class Window:
         message: str,
         on_result: DialogResultHandler[bool] | None = None,
     ) -> Dialog:
-        """**DEPRECATED** - use ``await self.dialog(ConfirmDialog())``"""
+        """**DEPRECATED** - await :meth:`dialog` with a :any:`ConfirmDialog`"""
         ######################################################################
         # 2024-06: Backwards compatibility
         ######################################################################
@@ -589,7 +589,7 @@ class Window:
         message: str,
         on_result: DialogResultHandler[None] | None = None,
     ) -> Dialog:
-        """**DEPRECATED** - use ``await self.dialog(ErrorDialog())``"""
+        """**DEPRECATED** - await :meth:`dialog` with an :any:`ErrorDialog`"""
         ######################################################################
         # 2024-06: Backwards compatibility
         ######################################################################
@@ -617,7 +617,7 @@ class Window:
         retry: bool = False,
         on_result: DialogResultHandler[bool] | DialogResultHandler[None] | None = None,
     ) -> Dialog:
-        """**DEPRECATED** - use ``await self.dialog(StackTraceDialog())``"""
+        """**DEPRECATED** - await :meth:`dialog` with a :any:`StackTraceDialog`"""
         ######################################################################
         # 2024-06: Backwards compatibility
         ######################################################################
@@ -649,7 +649,7 @@ class Window:
         file_types: list[str] | None = None,
         on_result: DialogResultHandler[Path | None] | None = None,
     ) -> Dialog:
-        """**DEPRECATED** - use ``await self.dialog(SaveFileDialog())``"""
+        """**DEPRECATED** - await :meth:`dialog` with a :any:`SaveFileDialog`"""
         ######################################################################
         # 2024-06: Backwards compatibility
         ######################################################################
@@ -686,7 +686,7 @@ class Window:
         ) = None,
         multiselect: None = None,  # DEPRECATED
     ) -> Dialog:
-        """**DEPRECATED** - use ``await self.dialog(OpenFileDialog())``"""
+        """**DEPRECATED** - await :meth:`dialog` with an :any:`OpenFileDialog`"""
         ######################################################################
         # 2024-06: Backwards compatibility
         ######################################################################
@@ -737,7 +737,7 @@ class Window:
         ) = None,
         multiselect: None = None,  # DEPRECATED
     ) -> Dialog:
-        """**DEPRECATED** - use ``await self.dialog(SaveFileDialog())``"""
+        """**DEPRECATED** - await :meth:`dialog` with a :any:`SelectFolderDialog`"""
         ######################################################################
         # 2024-06: Backwards compatibility
         ######################################################################

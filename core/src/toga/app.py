@@ -660,7 +660,7 @@ class App:
     async def dialog(self, dialog: Dialog) -> Coroutine[None, None, Any]:
         """Display a dialog to the user in the app context.
 
-        :param: The dialog to display to the user.
+        :param: The :doc:`dialog <resources/dialogs>` to display to the user.
         :returns: The result of the dialog.
         """
         return await dialog._show(None)
