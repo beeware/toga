@@ -4,20 +4,24 @@ import warnings
 from pathlib import Path
 
 from .app import App, DocumentApp
-
-# Resources
 from .colors import hsl, hsla, rgb, rgba
 from .command import Command, Group
+from .dialogs import (
+    ConfirmDialog,
+    ErrorDialog,
+    InfoDialog,
+    OpenFileDialog,
+    QuestionDialog,
+    SaveFileDialog,
+    SelectFolderDialog,
+    StackTraceDialog,
+)
 from .documents import Document
 from .fonts import Font
 from .icons import Icon
 from .images import Image
 from .keys import Key
-
-# Types
 from .types import LatLng, Position, Size
-
-# Widgets
 from .widgets.activityindicator import ActivityIndicator
 from .widgets.base import Widget
 from .widgets.box import Box
@@ -67,6 +71,15 @@ __all__ = [
     "Group",
     # Documents
     "Document",
+    # Dialogs
+    "ConfirmDialog",
+    "ErrorDialog",
+    "InfoDialog",
+    "OpenFileDialog",
+    "QuestionDialog",
+    "SaveFileDialog",
+    "SelectFolderDialog",
+    "StackTraceDialog",
     # Keys
     "Key",
     # Resources

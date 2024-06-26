@@ -11,11 +11,12 @@ from System.Windows.Forms import Application, Cursor, ToolStripSeparator
 import toga
 from toga_winforms.keys import toga_to_winforms_key, winforms_to_toga_key
 
+from .dialogs import DialogsMixin
 from .probe import BaseProbe
 from .window import WindowProbe
 
 
-class AppProbe(BaseProbe):
+class AppProbe(BaseProbe, DialogsMixin):
     supports_key = True
     supports_key_mod3 = False
     supports_current_window_assignment = True
@@ -151,7 +152,7 @@ class AppProbe(BaseProbe):
         self._activate_menu_item(["Help", "About Toga Testbed"])
 
     async def close_about_dialog(self):
-        await WindowProbe(self.app, self.main_window)._close_dialog("\n")
+        await self.type_character("\n")
 
     def activate_menu_visit_homepage(self):
         self._activate_menu_item(["Help", "Visit homepage"])

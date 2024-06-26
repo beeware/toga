@@ -12,6 +12,7 @@ from org.beeware.android import IPythonApp, MainActivity
 
 import toga
 from toga.command import Command, Group, Separator
+from toga.dialogs import InfoDialog
 from toga.handlers import simple_handler
 
 from .libs import events
@@ -287,8 +288,16 @@ class App:
             message_parts.append(f"Author: {self.interface.author}")
         if self.interface.description is not None:
             message_parts.append(f"\n{self.interface.description}")
-        self.interface.main_window.info_dialog(
-            f"About {self.interface.formal_name}", "\n".join(message_parts)
+
+        # Create and show an info dialog as the about dialog.
+        # We don't care about the response.
+        asyncio.create_task(
+            self.interface.dialog(
+                InfoDialog(
+                    f"About {self.interface.formal_name}",
+                    "\n".join(message_parts),
+                )
+            )
         )
 
     ######################################################################

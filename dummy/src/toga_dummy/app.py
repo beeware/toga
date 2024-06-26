@@ -18,6 +18,7 @@ class App(LoggedObject):
         super().__init__()
         self.interface = interface
         self.interface._impl = self
+        self.dialog_responses = {}
 
         self.loop = asyncio.get_event_loop()
         self.create()
