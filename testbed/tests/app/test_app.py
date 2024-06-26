@@ -437,23 +437,21 @@ else:
         # This test is required since the toolbar is present only on the main window.
         try:
             main_window.toolbar.add(app.cmd1)
-            main_window.show()
-            main_window_initial_content_size = (
-                main_window_probe.presentation_content_size
-            )
             extra_window = toga.Window(
                 "Extra Test Window", position=(150, 150), size=(200, 200)
             )
             extra_window.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
             extra_window.show()
             extra_window_probe = window_probe(app, extra_window)
+            # Add delay for gtk to show the windows
+            await app_probe.redraw("Extra window is visible", delay=0.1)
+
+            main_window_initial_content_size = (
+                main_window_probe.presentation_content_size
+            )
             extra_window_initial_content_size = (
                 extra_window_probe.presentation_content_size
             )
-
-            # Add delay for gtk to show the windows
-            await app_probe.redraw("Extra windows is visible", delay=0.1)
-
             # Enter presentation mode with only main window
             app.enter_presentation_mode([main_window])
             # Add delay for gtk to show the windows
