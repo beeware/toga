@@ -179,7 +179,7 @@ class OpenFileDialog(Dialog):
 
         If ``multiple_select`` is ``True``, returns a list of ``Path`` objects.
 
-        If ``multiple_select`` is ``False``, returns single ``Path``.
+        If ``multiple_select`` is ``False``, returns a single ``Path``.
 
         Returns ``None`` if the open operation is cancelled by the user.
 
@@ -214,7 +214,7 @@ class SelectFolderDialog(Dialog):
 
         If ``multiple_select`` is ``True``, returns a list of ``Path`` objects.
 
-        If ``multiple_select`` is ``False``, returns single ``Path``.
+        If ``multiple_select`` is ``False``, returns a single ``Path``.
 
         Returns ``None`` if the select operation is cancelled by the user.
 

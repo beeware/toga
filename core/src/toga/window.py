@@ -477,7 +477,7 @@ class Window:
         return Image(self._impl.get_image_data()).as_format(format)
 
     async def dialog(self, dialog) -> Coroutine[None, None, Any]:
-        """Display a to the user dialog, modal to this window.
+        """Display a dialog to the user, modal to this window.
 
         :param dialog: The dialog to display to the user.
         :returns: The result of the dialog.

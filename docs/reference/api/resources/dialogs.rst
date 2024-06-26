@@ -27,7 +27,7 @@ in this behavior; see the :ref:`platform notes <dialog-notes>` for details).
 
 When a dialog is presented, the app's event loop will continue to run, and the content
 of the app windows will redraw if requested by the event loop. For this reason, dialogs
-are implemented as *asynchronously* - that is, they must be ``await``-ed in the context
+are implemented *asynchronously* - that is, they must be ``await``-ed in the context
 of an ``async`` method. The value returned by the ``await`` is the response of the
 dialog; the return type will vary depending on the type of dialog being displayed.
 
