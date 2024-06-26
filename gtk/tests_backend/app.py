@@ -7,10 +7,11 @@ import toga
 from toga_gtk.keys import gtk_accel, toga_key
 from toga_gtk.libs import Gdk, Gtk
 
+from .dialogs import DialogsMixin
 from .probe import BaseProbe
 
 
-class AppProbe(BaseProbe):
+class AppProbe(BaseProbe, DialogsMixin):
     supports_key = True
     supports_key_mod3 = True
     # Gtk 3.24.41 ships with Ubuntu 24.04 where present() works on Wayland

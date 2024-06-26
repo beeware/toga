@@ -95,9 +95,10 @@ class App:
     ######################################################################
 
     def get_current_window(self):
-        pass
+        return self._current_window
 
     def set_current_window(self, window):
+        self._current_window = window
         self.native.switch_screen(window.native)
         self.native.title = window.get_title()
 

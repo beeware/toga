@@ -80,6 +80,7 @@ Resources
                                                                       for an application.
  :doc:`Command </reference/api/resources/command>`                    A representation of app functionality that the user can invoke from
                                                                       menus or toolbars.
+ :doc:`Dialogs </reference/api/resources/dialogs>`                    A short-lived window asking the user for input.
  :doc:`Font </reference/api/resources/fonts>`                         Fonts
  :doc:`Icon </reference/api/resources/icons>`                         An icon for buttons, menus, etc
  :doc:`Image </reference/api/resources/images>`                       An image

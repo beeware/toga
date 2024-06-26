@@ -44,16 +44,20 @@ class ExampleTableApp(toga.App):
         else:
             self.label_table2.text = "No row selected"
 
-    def on_activate1(self, widget, row, **kwargs):
-        self.main_window.info_dialog(
-            title="movie selection",
-            message=self.build_activate_message(row=row, table_index=1),
+    async def on_activate1(self, widget, row, **kwargs):
+        await self.main_window.dialog(
+            toga.InfoDialog(
+                title="movie selection",
+                message=self.build_activate_message(row=row, table_index=1),
+            )
         )
 
-    def on_activate2(self, widget, row, **kwargs):
-        self.main_window.info_dialog(
-            title="movie selection",
-            message=self.build_activate_message(row=row, table_index=2),
+    async def on_activate2(self, widget, row, **kwargs):
+        await self.main_window.dialog(
+            toga.InfoDialog(
+                title="movie selection",
+                message=self.build_activate_message(row=row, table_index=2),
+            )
         )
 
     # Button callback functions

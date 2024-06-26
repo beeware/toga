@@ -6,9 +6,11 @@ class ExampleDocument(toga.Document):
         super().__init__(path=path, document_type="Example Document", app=app)
 
     async def can_close(self):
-        return await self.main_window.question_dialog(
-            "Are you sure?",
-            "Do you want to close this document?",
+        return await self.main_window.dialog(
+            toga.QuestionDialog(
+                "Are you sure?",
+                "Do you want to close this document?",
+            )
         )
 
     def create(self):
