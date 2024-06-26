@@ -883,8 +883,13 @@ else:
         assert second_window_probe.presentation_content_size == initial_content_size
 
     @pytest.mark.parametrize(
-        "second_window_kwargs",
-        [dict(title="Secondary Window", position=(200, 150))],
+        "second_window_class, second_window_kwargs",
+        [
+            (
+                toga.Window,
+                dict(title="Secondary Window", position=(200, 150)),
+            )
+        ],
     )
     async def test_screen(second_window, second_window_probe):
         """The window can be relocated to another screen, using both absolute and relative screen positions."""
