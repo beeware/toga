@@ -2,15 +2,13 @@ from __future__ import annotations
 
 import warnings
 from builtins import id as identifier
-from collections.abc import Iterator
+from collections.abc import Coroutine, Iterator
 from pathlib import Path
 from typing import (
     TYPE_CHECKING,
     Any,
-    Literal,
     Protocol,
     TypeVar,
-    overload,
 )
 
 import toga
@@ -23,7 +21,6 @@ from toga.types import Position, Size
 
 if TYPE_CHECKING:
     from toga.app import App
-    from toga.dialogs import DialogResultT
     from toga.documents import Document
     from toga.images import ImageT
     from toga.screens import Screen
@@ -479,7 +476,7 @@ class Window:
         """
         return Image(self._impl.get_image_data()).as_format(format)
 
-    async def dialog(self, dialog) -> DialogResultT:
+    async def dialog(self, dialog) -> Coroutine[None, None, Any]:
         """Display a to the user dialog, modal to this window.
 
         :param dialog: The dialog to display to the user.
@@ -612,36 +609,6 @@ class Window:
         result.dialog._impl.show(self, result)
         return result
 
-    @overload
-    def stack_trace_dialog(
-        self,
-        title: str,
-        message: str,
-        content: str,
-        retry: Literal[False] = False,
-        on_result: DialogResultHandler[None] | None = None,
-    ) -> Dialog: ...
-
-    @overload
-    def stack_trace_dialog(
-        self,
-        title: str,
-        message: str,
-        content: str,
-        retry: Literal[True] = True,
-        on_result: DialogResultHandler[bool] | None = None,
-    ) -> Dialog: ...
-
-    @overload
-    def stack_trace_dialog(
-        self,
-        title: str,
-        message: str,
-        content: str,
-        retry: bool = False,
-        on_result: DialogResultHandler[bool] | DialogResultHandler[None] | None = None,
-    ) -> Dialog: ...
-
     def stack_trace_dialog(
         self,
         title: str,
@@ -705,46 +672,6 @@ class Window:
         result.dialog._impl.show(self, result)
         return result
 
-    @overload
-    def open_file_dialog(
-        self,
-        title: str,
-        initial_directory: Path | str | None = None,
-        file_types: list[str] | None = None,
-        multiple_select: Literal[False] = False,
-        on_result: DialogResultHandler[Path] | DialogResultHandler[None] | None = None,
-        multiselect: None = None,  # DEPRECATED
-    ) -> Dialog: ...
-
-    @overload
-    def open_file_dialog(
-        self,
-        title: str,
-        initial_directory: Path | str | None = None,
-        file_types: list[str] | None = None,
-        multiple_select: Literal[True] = True,
-        on_result: (
-            DialogResultHandler[list[Path]] | DialogResultHandler[None] | None
-        ) = None,
-        multiselect: None = None,  # DEPRECATED
-    ) -> Dialog: ...
-
-    @overload
-    def open_file_dialog(
-        self,
-        title: str,
-        initial_directory: Path | str | None = None,
-        file_types: list[str] | None = None,
-        multiple_select: bool = False,
-        on_result: (
-            DialogResultHandler[list[Path]]
-            | DialogResultHandler[Path]
-            | DialogResultHandler[None]
-            | None
-        ) = None,
-        multiselect: None = None,  # DEPRECATED
-    ) -> Dialog: ...
-
     def open_file_dialog(
         self,
         title: str,
@@ -796,43 +723,6 @@ class Window:
         )
         result.dialog._impl.show(self, result)
         return result
-
-    @overload
-    def select_folder_dialog(
-        self,
-        title: str,
-        initial_directory: Path | str | None = None,
-        multiple_select: Literal[False] = False,
-        on_result: DialogResultHandler[Path] | DialogResultHandler[None] | None = None,
-        multiselect: None = None,  # DEPRECATED
-    ) -> Dialog: ...
-
-    @overload
-    def select_folder_dialog(
-        self,
-        title: str,
-        initial_directory: Path | str | None = None,
-        multiple_select: Literal[True] = True,
-        on_result: (
-            DialogResultHandler[list[Path]] | DialogResultHandler[None] | None
-        ) = None,
-        multiselect: None = None,  # DEPRECATED
-    ) -> Dialog: ...
-
-    @overload
-    def select_folder_dialog(
-        self,
-        title: str,
-        initial_directory: Path | str | None = None,
-        multiple_select: bool = False,
-        on_result: (
-            DialogResultHandler[list[Path]]
-            | DialogResultHandler[Path]
-            | DialogResultHandler[None]
-            | None
-        ) = None,
-        multiselect: None = None,  # DEPRECATED
-    ) -> Dialog: ...
 
     def select_folder_dialog(
         self,

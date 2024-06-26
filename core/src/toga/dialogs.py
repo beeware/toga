@@ -78,7 +78,7 @@ class ConfirmDialog(Dialog):
         """Ask the user to confirm if they wish to proceed with an action.
 
         Presents as a dialog with "Cancel" and "OK" buttons (or whatever labels are
-        appropriate on the current platform), bound to a window.
+        appropriate on the current platform).
 
         Returns a response of ``True`` when the "OK" button is pressed, ``False`` when
         the "Cancel" button is pressed.
@@ -94,8 +94,7 @@ class ErrorDialog(Dialog):
     def __init__(self, title: str, message: str):
         """Ask the user to acknowledge an error state.
 
-        Presents as an error dialog with an "OK" button to close the dialog, bound to a
-        window.
+        Presents as an error dialog with an "OK" button to close the dialog.
 
         Returns a response of ``None``.
 
@@ -108,8 +107,7 @@ class ErrorDialog(Dialog):
 
 class StackTraceDialog(Dialog):
     def __init__(self, title: str, message: str, content: str, retry: bool = False):
-        """Open a dialog, bound to a window, to display a large block of text, such as a
-        stack trace.
+        """Open a dialog to display a large block of text, such as a stack trace.
 
         If ``retry`` is true, returns a response of ``True`` when the user selects
         "Retry", and ``False`` when they select "Quit".
@@ -138,7 +136,7 @@ class SaveFileDialog(Dialog):
         suggested_filename: Path | str,
         file_types: list[str] | None = None,
     ):
-        """Prompt the user for a location to save a file, bound to a window.
+        """Prompt the user for a location to save a file.
 
         This dialog is not currently supported on Android or iOS.
 
@@ -175,13 +173,13 @@ class OpenFileDialog(Dialog):
         file_types: list[str] | None = None,
         multiple_select: bool = False,
     ):
-        """Prompt the user to select a file (or files) to open, bound to a window.
+        """Prompt the user to select a file (or files) to open.
 
         This dialog is not currently supported on Android or iOS.
 
         If ``multiple_select`` is ``True``, returns a list of ``Path`` objects.
 
-        If ``multiple_select is ``False``, returns single ``Path``.
+        If ``multiple_select`` is ``False``, returns single ``Path``.
 
         Returns ``None`` if the open operation is cancelled by the user.
 
@@ -210,13 +208,13 @@ class SelectFolderDialog(Dialog):
         initial_directory: Path | str | None = None,
         multiple_select: bool = False,
     ):
-        """Prompt the user to select a directory (or directories), bound to a window.
+        """Prompt the user to select a directory (or directories).
 
         This dialog is not currently supported on Android or iOS.
 
         If ``multiple_select`` is ``True``, returns a list of ``Path`` objects.
 
-        If ``multiple_select is ``False``, returns single ``Path``.
+        If ``multiple_select`` is ``False``, returns single ``Path``.
 
         Returns ``None`` if the select operation is cancelled by the user.
 

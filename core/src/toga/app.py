@@ -6,7 +6,7 @@ import signal
 import sys
 import warnings
 import webbrowser
-from collections.abc import Iterator
+from collections.abc import Coroutine, Iterator
 from email.message import Message
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, MutableSet, Protocol
@@ -653,7 +653,7 @@ class App:
         """Play the default system notification sound."""
         self._impl.beep()
 
-    async def dialog(self, dialog: Dialog):
+    async def dialog(self, dialog: Dialog) -> Coroutine[None, None, Any]:
         """Display a dialog to the user in the app context.
 
         :param: The dialog to display to the user.
