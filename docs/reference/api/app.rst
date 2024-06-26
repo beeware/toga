@@ -46,10 +46,9 @@ that will be added to the main window of the app.
 This approach to app construction is most useful with simple apps. For most complex
 apps, you should subclass :class:`toga.App`, and provide an implementation of
 :meth:`~toga.App.startup()`. This implementation *must* assign a value to
-:attr:`~toga.App.main_window` for the app. The value that is assigned controls the type
-of app that is created. The possible values that can be assigned to
-:attr:`~toga.App.main_window` is :ref:`discussed below <assigning-main-window>`; the
-most common type of app will assign an instance of :any:`toga.MainWindow`:
+:attr:`~toga.App.main_window` for the app. The possible values are :ref:`discussed 
+below <assigning-main-window>`; most apps will assign an instance of 
+:any:`toga.MainWindow`:
 
 .. code-block:: python
 
@@ -111,7 +110,7 @@ app can open and close windows as required; the app will keep running until expl
 exited.
 
 On Linux and Windows, when an app closes the last window it is managing, the app will
-automatically exit. Attempting to closing the last window will trigger any app-level
+automatically exit. Attempting to close the last window will trigger any app-level
 :meth:`~toga.App.on_exit` handling in addition to any window-specific
 :meth:`~toga.Window.on_close` handling.
 
