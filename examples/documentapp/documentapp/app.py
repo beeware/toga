@@ -28,8 +28,17 @@ class ExampleDocument(toga.Document):
         self.main_window.content.value = self.content
 
 
+class ExampleDocumentApp(toga.DocumentApp):
+    def startup(self):
+        # A document-based app is a session app, so it has no main window. A window (or
+        # windows) will be created from the document(s) specified at the command line;
+        # or if no document is specified, the platform will determine how to create an
+        # empty document.
+        self.main_window = None
+
+
 def main():
-    return toga.DocumentApp(
+    return ExampleDocumentApp(
         "Document App",
         "org.beeware.toga.examples.documentapp",
         document_types={

@@ -1,0 +1,1 @@
+Toga can now define an app whose life cycle isn't tied to a single main window.

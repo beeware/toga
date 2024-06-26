@@ -201,3 +201,7 @@ class AppProbe(BaseProbe, DialogsMixin):
 
     def keystroke(self, combination):
         return winforms_to_toga_key(toga_to_winforms_key(combination))
+
+    async def restore_standard_app(self):
+        # No special handling needed to restore standard app.
+        await self.redraw("Restore to standard app")

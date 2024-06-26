@@ -1,0 +1,1 @@
+On Winforms, the window of an application that is set as the main window is no longer shown as a result of assigning the window as ``App.main_window``.

@@ -1,3 +1,4 @@
+import toga
 from toga.app import overridden
 from toga.command import Command, Group
 from toga.handlers import simple_handler
@@ -7,13 +8,16 @@ from .screens import Screen as ScreenImpl
 
 
 class App:
+    # Web apps exit when the last window is closed
+    CLOSE_ON_LAST_WINDOW = True
+
     def __init__(self, interface):
         self.interface = interface
         self.interface._impl = self
 
     def create(self):
-        # self.resource_path = os.path.dirname(os.path.dirname(NSBundle.mainBundle.bundlePath))
         self.native = js.document.getElementById("app-placeholder")
+        # self.resource_path = ???
 
         # Call user code to populate the main window
         self.interface._startup()
@@ -68,7 +72,10 @@ class App:
         pass
 
     def set_main_window(self, window):
-        pass
+        if window is None:
+            raise RuntimeError("Session-based apps are not supported on Web")
+        elif window == toga.App.BACKGROUND:
+            raise RuntimeError("Background apps are not supported on Web")
 
     ######################################################################
     # App resources

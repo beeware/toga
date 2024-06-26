@@ -233,6 +233,14 @@ class AppProbe(BaseProbe, DialogsMixin):
         )
         return toga_key(event)
 
+    async def restore_standard_app(self):
+        # If the tesbed app has been made a background app, it will no longer be
+        # active, which affects whether it can receive focus and input events.
+        # Make it active again. This won't happen immediately; allow for a short
+        # delay.
+        self.app._impl.native.activateIgnoringOtherApps(True)
+        await self.redraw("Restore to standard app", delay=0.1)
+
     def _setup_alert_dialog_result(self, dialog, result):
         # Replace the dialog polling mechanism with an implementation that polls
         # 5 times, then returns the required result.
