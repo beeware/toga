@@ -46,8 +46,8 @@ that will be added to the main window of the app.
 This approach to app construction is most useful with simple apps. For most complex
 apps, you should subclass :class:`toga.App`, and provide an implementation of
 :meth:`~toga.App.startup()`. This implementation *must* assign a value to
-:attr:`~toga.App.main_window` for the app. The possible values are :ref:`discussed 
-below <assigning-main-window>`; most apps will assign an instance of 
+:attr:`~toga.App.main_window` for the app. The possible values are :ref:`discussed
+below <assigning-main-window>`; most apps will assign an instance of
 :any:`toga.MainWindow`:
 
 .. code-block:: python
