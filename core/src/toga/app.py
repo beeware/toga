@@ -522,19 +522,23 @@ class App:
 
     @main_window.setter
     def main_window(self, window: MainWindow | None) -> None:
+        # The main window must be closable
+        if isinstance(window, Window) and not window.closable:
+            raise ValueError("The window used as the main window must be closable.")
+
         self._main_window = window
         self._impl.set_main_window(window)
 
     def _verify_startup(self) -> None:
-        if not isinstance(self.main_window, MainWindow):
+        if not isinstance(self.main_window, Window):
             raise ValueError(
                 "Application does not have a main window. "
                 "Does your startup() method assign a value to self.main_window?"
             )
 
     def _startup(self) -> None:
-        # App commands are created before the startup method so that the user's
-        # code has the opportunity to remove/change the default commands.
+        # Install the platform-specific app commands. This is done *before* startup so
+        # the user's code has the opporuntity to remove/change the default commands.
         self._impl.create_app_commands()
 
         # This is a wrapper around the user's startup method that performs any
@@ -657,10 +661,10 @@ class App:
     def preferences(self) -> None:
         """Open a preferences panel for the app.
 
-        By default, this will do nothing, and the Preferences/Settings menu item
-        will be disabled. However, if you override this method in your App class,
-        the menu item will be enabled, and this method will be invoked when the
-        menu item is selected.
+        By default, this will do nothing, and the Preferences/Settings menu item will
+        not be installed. However, if you override this method in your App class, the
+        :attr:`toga.Command.PREFERENCES` command will be added, and this method will be
+        invoked when the menu item is selected.
         """
         # Default implementation won't ever be invoked, because the menu item
         # isn't enabled unless it's overridden.

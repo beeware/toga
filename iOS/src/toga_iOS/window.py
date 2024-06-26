@@ -8,7 +8,7 @@ from rubicon.objc import (
 
 from toga.constants import WindowState
 from toga.types import Position, Size
-from toga_iOS.container import RootContainer
+from toga_iOS.container import NavigationContainer, RootContainer
 from toga_iOS.images import nsdata_to_bytes
 from toga_iOS.libs import (
     NSData,
@@ -32,8 +32,7 @@ class Window:
         self.native = UIWindow.alloc().initWithFrame(UIScreen.mainScreen.bounds)
 
         # Set up a container for the window's content
-        # RootContainer provides a titlebar for the window.
-        self.container = RootContainer(on_refresh=self.content_refreshed)
+        self.create_container()
 
         # Set the size of the content to the size of the window
         self.container.native.frame = self.native.bounds
@@ -50,6 +49,10 @@ class Window:
             self.native.backgroundColor = UIColor.whiteColor
 
         self.set_title(title)
+
+    def create_container(self):
+        # RootContainer provides a titlebar for the window.
+        self.container = RootContainer(on_refresh=self.content_refreshed)
 
     ######################################################################
     # Window properties
@@ -222,6 +225,10 @@ class Window:
 
 
 class MainWindow(Window):
+    def create_container(self):
+        # NavigationContainer provides a titlebar for the window.
+        self.container = NavigationContainer(on_refresh=self.content_refreshed)
+
     def create_toolbar(self):
         # No toolbar handling at present
         pass

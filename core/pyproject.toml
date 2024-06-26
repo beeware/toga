@@ -1,6 +1,6 @@
 [build-system]
 requires = [
-    "setuptools==70.0.0",
+    "setuptools==70.1.0",
     "setuptools_scm==8.1.0",
     "setuptools_dynamic_dependencies @ git+https://github.com/beeware/setuptools_dynamic_dependencies",
 ]
@@ -66,7 +66,7 @@ dependencies = [
 # Extras used by developers *of* Toga are pinned to specific versions to
 # ensure environment consistency.
 dev = [
-    "coverage[toml] == 7.5.3",
+    "coverage[toml] == 7.5.4",
     "coverage-conditional-plugin == 0.9.0",
     "Pillow == 10.3.0",
     # Pre-commit 3.6.0 deprecated support for Python 3.8

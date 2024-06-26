@@ -23,29 +23,26 @@ class App:
     ######################################################################
 
     def create_app_commands(self):
-        formal_name = self.interface.formal_name
-
         self.interface.commands.add(
             # ---- Help menu ----------------------------------
             Command(
                 simple_handler(self.interface.about),
-                "About " + formal_name,
+                f"About {self.interface.formal_name}",
                 group=Group.HELP,
                 id=Command.ABOUT,
             ),
-            # Include a preferences menu item; but only enable it if the user has
-            # overridden it in their App class.
-            Command(
-                simple_handler(self.interface.preferences),
-                "Preferences",
-                group=Group.HELP,
-                enabled=overridden(self.interface.preferences),
-                id=Command.PREFERENCES,
-            ),
         )
 
-    def _menu_about(self, command, **kwargs):
-        self.interface.about()
+        # If the user has overridden preferences, provide a menu item.
+        if overridden(self.interface.preferences):
+            self.interface.commands.add(
+                Command(
+                    simple_handler(self.interface.preferences),
+                    "Preferences",
+                    group=Group.HELP,
+                    id=Command.PREFERENCES,
+                )
+            )  # pragma: no cover
 
     def create_menus(self):
         # Web menus are created on the Window.

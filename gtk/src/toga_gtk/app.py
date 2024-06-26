@@ -71,15 +71,6 @@ class App:
     def create_app_commands(self):
         self.interface.commands.add(
             # ---- App menu -----------------------------------
-            # Include a preferences menu item; but only enable it if the user has
-            # overridden it in their App class.
-            Command(
-                simple_handler(self.interface.preferences),
-                "Preferences",
-                group=toga.Group.APP,
-                enabled=overridden(self.interface.preferences),
-                id=Command.PREFERENCES,
-            ),
             # Quit should always be the last item, in a section on its own. Invoke
             # `on_exit` rather than `exit`, because we want to trigger the "OK to exit?"
             # logic. It's already a bound handler, so we can use it directly.
@@ -106,6 +97,17 @@ class App:
                 id=Command.VISIT_HOMEPAGE,
             ),
         )
+
+        # If the user has overridden preferences, provide a menu item.
+        if overridden(self.interface.preferences):
+            self.interface.commands.add(
+                Command(
+                    simple_handler(self.interface.preferences),
+                    "Preferences",
+                    group=toga.Group.APP,
+                    id=Command.PREFERENCES,
+                ),
+            )  # pragma: no cover
 
     def _submenu(self, group, menubar):
         try:

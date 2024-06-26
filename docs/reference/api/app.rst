@@ -72,10 +72,33 @@ format compatible with :any:`importlib.metadata`. If you deploy your app with `B
 
 A Toga app will install a number of default commands to reflect core application
 functionality (such as the Quit/Exit menu item, and the About menu item). The IDs for
-these commands are defined as constants on the :class:`~toga.Command` class.
+these commands are defined as constants on the :class:`~toga.Command` class. These
+commands are automatically installed *before* :meth:`~toga.App.startup()` is invoked. If
+you wish to customize the menu items exposed by your app, you can add or remove commands
+in your :meth:`~toga.App.startup()` implementation.
+
+Assigning a main window
+-----------------------
+
+An app *must* assign ``main_window`` as part of the startup process. However, the value
+that is assigned as the main window will affect the behavior of the app.
+
+Standard app
+~~~~~~~~~~~~
+
+The most common type of app will assign a :any:`MainWindow` or :any:`toga.Window`
+instance as the main window. This window controls the life cycle of the app; when the
+main window is closed, the app will exit.
+
+This is the type of app that will be created if you use an instance of :any:`toga.App`
+passing in a ``startup`` argument to the constructor.
 
 Notes
 -----
+
+* On macOS, menus are tied to the app, not the window; and a menu is mandatory.
+  Therefore, a macOS app will *always* have a menu with the default menu items,
+  regardless of the window being used as the main window.
 
 * Apps executed under Wayland on Linux environment may not show the app's formal name
   correctly. Wayland considers many aspects of app operation to be the domain of the

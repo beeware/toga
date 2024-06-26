@@ -166,29 +166,20 @@ class App:
             self.interface.current_window._impl.native.miniaturize(None)
 
     def create_app_commands(self):
-        formal_name = self.interface.formal_name
         self.interface.commands.add(
             # ---- App menu -----------------------------------
+            # About should be the first menu item
             Command(
                 simple_handler(self.interface.about),
-                "About " + formal_name,
+                f"About {self.interface.formal_name}",
                 group=toga.Group.APP,
                 id=Command.ABOUT,
+                section=-1,
             ),
-            # Include a preferences menu item; but only enable it if the user has
-            # overridden it in their App class.
-            Command(
-                simple_handler(self.interface.preferences),
-                "Settings\u2026",
-                shortcut=toga.Key.MOD_1 + ",",
-                group=toga.Group.APP,
-                section=20,
-                enabled=overridden(self.interface.preferences),
-                id=Command.PREFERENCES,
-            ),
+            # App-level window management commands should be in the second last section.
             Command(
                 NativeHandler(SEL("hide:")),
-                "Hide " + formal_name,
+                f"Hide {self.interface.formal_name}",
                 shortcut=toga.Key.MOD_1 + "h",
                 group=toga.Group.APP,
                 order=0,
@@ -214,7 +205,7 @@ class App:
             # logic. It's already a bound handler, so we can use it directly.
             Command(
                 self.interface.on_exit,
-                f"Quit {formal_name}",
+                f"Quit {self.interface.formal_name}",
                 shortcut=toga.Key.MOD_1 + "q",
                 group=toga.Group.APP,
                 section=sys.maxsize,
@@ -320,6 +311,19 @@ class App:
                 id=Command.VISIT_HOMEPAGE,
             ),
         )
+
+        # If the user has overridden preferences, provide a menu item.
+        if overridden(self.interface.preferences):
+            self.interface.commands.add(
+                Command(
+                    simple_handler(self.interface.preferences),
+                    "Settings\u2026",
+                    shortcut=toga.Key.MOD_1 + ",",
+                    group=toga.Group.APP,
+                    section=20,
+                    id=Command.PREFERENCES,
+                ),
+            )  # pragma: no cover
 
     def _submenu(self, group, menubar):
         """Obtain the submenu representing the command group.
