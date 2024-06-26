@@ -679,6 +679,11 @@ else:
     )
     async def test_window_state_minimized(second_window, second_window_probe):
         """Window can have minimized window state"""
+        if not second_window_probe.supports_minimize:
+            pytest.xfail(
+                "This backend doesn't reliably support minimized window state."
+            )
+
         second_window.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
 
         assert second_window_probe.is_window_state(WindowState.NORMAL)

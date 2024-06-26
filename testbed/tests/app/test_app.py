@@ -455,7 +455,7 @@ else:
             # Enter presentation mode with only main window
             app.enter_presentation_mode([main_window])
             # Add delay for gtk to show the windows
-            await app_probe.redraw("App is in presentation mode", delay=0.1)
+            await app_probe.redraw("App is in presentation mode", delay=0.5)
             assert app.is_presentation_mode
 
             # Extra  window should not be in presentation mode.
@@ -505,7 +505,7 @@ else:
                 )
                 window.show()
                 # Add delay for gtk to show the windows
-                await app_probe.redraw(f"Test Window {i} is visible", delay=0.1)
+                await app_probe.redraw(f"Test Window {i} is visible", delay=0.5)
 
                 window_information = dict()
                 window_information["window"] = window
@@ -524,7 +524,7 @@ else:
             # Enter presentation mode with a screen-window dict via the app
             app.enter_presentation_mode(screen_window_dict)
             # Add delay for gtk to show the windows
-            await app_probe.redraw("App is in presentation mode", delay=0.1)
+            await app_probe.redraw("App is in presentation mode", delay=0.5)
 
             assert app.is_presentation_mode
             # All the windows should be in presentation mode.
@@ -543,7 +543,7 @@ else:
 
             # Exit presentation mode
             app.exit_presentation_mode()
-            await app_probe.redraw("App is no longer in presentation mode", delay=0.1)
+            await app_probe.redraw("App is no longer in presentation mode", delay=0.5)
 
             assert not app.is_presentation_mode
             for window_information in window_information_list:
@@ -575,7 +575,7 @@ else:
                 )
                 window.show()
                 # Add delay for gtk to show the windows
-                await app_probe.redraw(f"Test Window {i} is visible", delay=0.1)
+                await app_probe.redraw(f"Test Window {i} is visible", delay=0.5)
 
                 window_information = dict()
                 window_information["window"] = window
@@ -597,7 +597,7 @@ else:
             # the last window should be dropped as there are less screens.
             app.enter_presentation_mode(excess_windows_list)
             # Add delay for gtk to show the windows
-            await app_probe.redraw("App is in presentation mode", delay=0.1)
+            await app_probe.redraw("App is in presentation mode", delay=0.5)
             assert app.is_presentation_mode
 
             # Last window should not be in presentation mode.
@@ -625,7 +625,7 @@ else:
 
             # Exit presentation mode
             app.exit_presentation_mode()
-            await app_probe.redraw("App is no longer in presentation mode", delay=0.1)
+            await app_probe.redraw("App is no longer in presentation mode", delay=0.5)
             assert not app.is_presentation_mode
 
             for window_information in window_information_list:
