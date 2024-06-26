@@ -437,6 +437,7 @@ else:
         # This test is required since the toolbar is present only on the main window.
         try:
             main_window.toolbar.add(app.cmd1)
+            main_window.show()
             main_window_initial_content_size = (
                 main_window_probe.presentation_content_size
             )
@@ -528,6 +529,7 @@ else:
             await app_probe.redraw("App is in presentation mode", delay=0.1)
 
             assert app.is_presentation_mode
+            # All the windows should be in presentation mode.
             for window_information in window_information_list:
                 assert window_information["window_probe"].is_window_state(
                     WindowState.PRESENTATION

@@ -184,9 +184,8 @@ class Window:
             elif current_state == WindowState.PRESENTATION:
                 if isinstance(self.native, Gtk.ApplicationWindow):
                     self.native.set_show_menubar(True)
-                # self.native_toolbar is always set to Gtk.Toolbar(), so no need
-                # to check if self.native_toolbar exists.
-                self.native_toolbar.set_visible(True)
+                if getattr(self, "native_toolbar", None):
+                    self.native_toolbar.set_visible(True)
                 self.native.unfullscreen()
 
                 self.interface.screen = self._before_presentation_mode_screen
@@ -207,9 +206,8 @@ class Window:
                     self._before_presentation_mode_screen = self.interface.screen
                 if isinstance(self.native, Gtk.ApplicationWindow):
                     self.native.set_show_menubar(False)
-                # self.native_toolbar is always set to Gtk.Toolbar(), so no need
-                # to check if self.native_toolbar exists.
-                self.native_toolbar.set_visible(False)
+                if getattr(self, "native_toolbar", None):
+                    self.native_toolbar.set_visible(False)
                 self.native.fullscreen()
                 self._is_presentation_mode = True
             else:  # pragma: no cover
