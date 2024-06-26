@@ -160,13 +160,18 @@ class ActionHandler(Protocol):
 
 
 class Command:
-    #: An identifier for the system-installed "About" menu item
+    #: An identifier for the system-installed "About" menu item. This command is
+    #: always installed.
     ABOUT: str = "about"
-    #: An identifier for the system-installed "Exit" menu item
+    #: An identifier for the system-installed "Exit" menu item. This command is always
+    #: installed.
     EXIT: str = "on_exit"
-    #: An identifier for the system-installed "Preferences" menu item
+    #: An identifier for the system-installed "Preferences" menu item. A command
+    #: with this identifier will be installed automatically if the app overrides the
+    #: :meth:`~toga.App.preferences` method.
     PREFERENCES: str = "preferences"
-    #: An identifier for the system-installed "Visit Homepage" menu item
+    #: An identifier for the system-installed "Visit Homepage" menu item. This
+    #: command is always installed.
     VISIT_HOMEPAGE: str = "visit_homepage"
 
     def __init__(
