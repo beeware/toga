@@ -174,7 +174,7 @@ if __name__ == "__main__":
     # Queue a background task to run that will start the main thread. We do this,
     # instead of just starting the thread directly, so that we can make sure the App has
     # been fully initialized, and the event loop is running.
-    app.on_running = lambda app, **kwargs: thread.start()
+    app.loop.call_soon_threadsafe(thread.start)
 
     # Start the test app.
     app.main_loop()
