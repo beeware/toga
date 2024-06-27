@@ -1,0 +1,1 @@
+An ``on_running`` event handler was added to ``toga.App``. This event will be triggered when the main app loop starts.

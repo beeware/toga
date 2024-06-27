@@ -125,6 +125,34 @@ icon from your taskbar.
 
 Background apps are not supported on mobile, web and console platforms.
 
+Life cycle of an app
+--------------------
+
+Regardless of what an application does, every application goes through the same
+life cycle of starting, running, and shutting down.
+
+Application startup is handled by the :meth:`~toga.App.startup` method described above.
+:meth:`~toga.App.startup` *cannot* be an asynchronous method, as it runs *before* the
+App's event loop is started.
+
+All other events in the life cycle of the app can be managed with event handlers.
+:class:`toga.App` defines the following event handlers:
+
+* :meth:`~toga.App.on_running` occurs as soon as the app's event loop has started.
+
+* :meth:`~toga.App.on_exit` occurs when the app wishes to exit. The handler for this
+  event must return a boolean value: ``True`` if the app is allowed to exit; ``False``
+  otherwise. This allows an app to abort the exit process (for example, to prevent exit
+  if there are unsaved changes).
+
+Event handlers can be defined by subclassing :class:`toga.App` and overriding the event
+handler method, by assigning a value to the event handler when the app instance is
+constructed, or by assigning the event handler attribute on an existing app instance.
+When the event handler is set by assigning a value to the event handler, the handler
+method must accept an ``app`` argument. This argument is not required when subclassing,
+as the app instance can be implied. Regardless of how they are defined, event handlers
+*can* be defined as ``async`` methods.
+
 Notes
 -----
 
