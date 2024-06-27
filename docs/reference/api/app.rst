@@ -141,7 +141,7 @@ All other events in the life cycle of the app can be managed with event handlers
 * :meth:`~toga.App.on_running` occurs as soon as the app's event loop has started.
 
 * :meth:`~toga.App.on_exit` occurs when the app wishes to exit. The handler for this
-  event must return a boolean value: ``True`` if the app is allowed to exit; ``False``
+  event must return a Boolean value: ``True`` if the app is allowed to exit; ``False``
   otherwise. This allows an app to abort the exit process (for example, to prevent exit
   if there are unsaved changes).
 

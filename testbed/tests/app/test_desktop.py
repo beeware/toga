@@ -16,6 +16,7 @@ if toga.platform.current_platform not in {"macOS", "windows", "linux"}:
 
 
 async def test_exit_on_close_main_window(
+    monkeypatch,
     app,
     main_window,
     main_window_probe,
@@ -28,7 +29,7 @@ async def test_exit_on_close_main_window(
 
     # Set an on_exit for the app handler, initially rejecting exit.
     on_exit_handler = Mock(return_value=False)
-    app.on_exit = on_exit_handler
+    monkeypatch.setattr(app, "on_exit", on_exit_handler)
 
     # Try to close the main window; rejected by window
     main_window_probe.close()
@@ -326,7 +327,6 @@ async def test_current_window(app, app_probe, main_window):
 
     try:
         window1.content = toga.Box(style=Pack(background_color=REBECCAPURPLE))
-        window2 = toga.Window("Test Window 2", position=(400, 150), size=(200, 200))
         window2.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
         window3.content = toga.Box(style=Pack(background_color=FIREBRICK))
 
@@ -358,6 +358,7 @@ async def test_current_window(app, app_probe, main_window):
 
 
 async def test_session_based_app(
+    monkeypatch,
     app,
     app_probe,
     main_window,
@@ -367,7 +368,7 @@ async def test_session_based_app(
     """A desktop app can be converted into a session-based app."""
     # Set an on_exit for the app handler, allowing exit.
     on_exit_handler = Mock(return_value=True)
-    app.on_exit = on_exit_handler
+    monkeypatch.setattr(app, "on_exit", on_exit_handler)
 
     # Create and show a secondary window
     secondary_window = toga.Window()
@@ -431,6 +432,7 @@ async def test_session_based_app(
 
 
 async def test_background_app(
+    monkeypatch,
     app,
     app_probe,
     main_window,
@@ -440,7 +442,7 @@ async def test_background_app(
     """A desktop app can be turned into a background app."""
     # Set an on_exit for the app handler, allowing exit.
     on_exit_handler = Mock(return_value=True)
-    app.on_exit = on_exit_handler
+    monkeypatch.setattr(app, "on_exit", on_exit_handler)
 
     # Create and show a secondary window
     secondary_window = toga.Window()
