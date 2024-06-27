@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import asyncio
-import warnings
 from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -12,20 +10,17 @@ if TYPE_CHECKING:
 
 
 class Document(ABC):
-    def __init__(
-        self,
-        path: str | Path,
-        document_type: str,
-        app: App,
-    ):
+    # Subclasses should override this definition
+
+    #: A short description of the type of document
+    document_type: str
+
+    def __init__(self, app: App):
         """Create a new Document.
 
-        :param path: The path where the document is stored.
-        :param document_type: A human-readable description of the document type.
         :param app: The application the document is associated with.
         """
-        self._path = Path(path)
-        self._document_type = document_type
+        self._path: Path | None = None
         self._app = app
         self._main_window: Window | None = None
 
@@ -35,60 +30,14 @@ class Document(ABC):
         # Create a platform specific implementation of the Document
         self._impl = app.factory.Document(interface=self)
 
-    # TODO: This will be covered when the document API is finalized
-    def can_close(self) -> bool:  # pragma: no cover
-        """Is the main document window allowed to close?
-
-        The default implementation always returns ``True``; subclasses can override this
-        to prevent a window closing with unsaved changes, etc.
-
-        This default implementation is a function; however, subclasses can define it
-        as an asynchronous co-routine if necessary to allow for dialog confirmations.
-        """
-        return True
-
-    # TODO: This will be covered when the document API is finalized
-    async def handle_close(
-        self, window: Window, **kwargs: object
-    ) -> bool:  # pragma: no cover
-        """An ``on-close`` handler for the main window of this document that implements
-        platform-specific document close behavior.
-
-        It interrogates the :meth:`~toga.Document.can_close()` method to determine if
-        the document is allowed to close.
-        """
-        if asyncio.iscoroutinefunction(self.can_close):
-            can_close = await self.can_close()
-        else:
-            can_close = self.can_close()
-
-        if can_close:
-            if self._impl.SINGLE_DOCUMENT_APP:
-                self.app.exit()
-                return False
-            else:
-                return True
-        else:
-            return False
+    ######################################################################
+    # Document properties
+    ######################################################################
 
     @property
     def path(self) -> Path:
         """The path where the document is stored (read-only)."""
         return self._path
-
-    @property
-    def filename(self) -> Path:
-        """**DEPRECATED** - Use :attr:`path`."""
-        warnings.warn(
-            "Document.filename has been renamed Document.path.",
-            DeprecationWarning,
-        )
-        return self._path
-
-    @property
-    def document_type(self) -> str:
-        """A human-readable description of the document type (read-only)."""
-        return self._document_type
 
     @property
     def app(self) -> App:
@@ -104,9 +53,37 @@ class Document(ABC):
     def main_window(self, window: Window) -> None:
         self._main_window = window
 
+    @property
+    def title(self) -> str:
+        """The title of the document.
+
+        This will be used as the default title of a :any:`toga.DocumentMainWindow` that
+        contains the document.
+        """
+        return f"{self.document_type}: {self.path.name if self.path else 'Untitled'}"
+
+    ######################################################################
+    # Document operations
+    ######################################################################
+
+    def open(self, path: str | Path):
+        """Open a file as a document.
+
+        :param path: The file to open.
+        """
+        self._path = Path(path).absolute()
+        self._impl.open()
+
+        # Set the title of the document window to match the path
+        self._main_window.title = self._main_window._default_title
+
     def show(self) -> None:
-        """Show the :any:`main_window` for this document."""
+        """Show the visual representation for this document."""
         self.main_window.show()
+
+    ######################################################################
+    # Abstract interface
+    ######################################################################
 
     @abstractmethod
     def create(self) -> None:
@@ -118,5 +95,6 @@ class Document(ABC):
 
     @abstractmethod
     def read(self) -> None:
-        """Load a representation of the document into memory and populate the document
-        window."""
+        """Load a representation of the document into memory from
+        :attr:`~toga.Document.path`, and populate the document window.
+        """

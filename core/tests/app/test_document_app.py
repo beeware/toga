@@ -1,5 +1,5 @@
 import sys
-from pathlib import Path
+from unittest.mock import Mock
 
 import pytest
 
@@ -12,29 +12,69 @@ from toga_dummy.utils import (
 
 
 class ExampleDocument(toga.Document):
-    def __init__(self, path, app):
-        super().__init__(path=path, document_type="Example Document", app=app)
+    document_type = "Example Document"
+
+    def create(self):
+        self.main_window = toga.DocumentMainWindow(self)
+        self._mock_read = Mock(self.path)
+
+    def read(self):
+        # We don't actually care about the file or it's contents, but it needs to exist;
+        # so we open it to verify that behavior.
+        with self.path.open():
+            self._mock_read(self.path)
+
+
+class OtherDocument(toga.Document):
+    document_type = "Other Document"
 
     def create(self):
         self.main_window = toga.DocumentMainWindow(self)
 
     def read(self):
-        self.content = self.path
+        pass
 
 
-class ExampleDocumentApp(toga.DocumentApp):
+@pytest.fixture
+def example_file(tmp_path):
+    """Create an actual file with the .foobar extension"""
+    path = tmp_path / "path/to/filename.foobar"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w") as f:
+        f.write("Dummy content")
+
+    return path
+
+
+@pytest.fixture
+def other_file(tmp_path):
+    """Create an actual file with the .other extension"""
+    path = tmp_path / "path/to/other.other"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w") as f:
+        f.write("Dummy content")
+
+    return path
+
+
+class ExampleDocumentApp(toga.App):
     def startup(self):
         self.main_window = None
 
 
 @pytest.fixture
-def doc_app(event_loop):
+def doc_app(monkeypatch, event_loop, example_file):
+    # Create an instance of an ExampleDocumentApp that has 1 file open.
+    monkeypatch.setattr(sys, "argv", ["app-exe", str(example_file)])
     app = ExampleDocumentApp(
         "Test App",
         "org.beeware.document-app",
         document_types={
-            # Register ExampleDocument
+            # Register ExampleDocument with 2 extensions
             "foobar": ExampleDocument,
+            "fbr": ExampleDocument,
+            # Register a second document type
+            "other": OtherDocument,
         },
     )
     # The app will have a single window; set this window as the current window
@@ -58,40 +98,67 @@ def test_create_no_cmdline(monkeypatch):
         )
 
 
-def test_create_with_cmdline(monkeypatch):
-    """If a document is specified at the command line, it is opened."""
-    monkeypatch.setattr(sys, "argv", ["app-exe", "/path/to/filename.foobar"])
+def test_create_no_cmdline_default_handling(monkeypatch):
+    """If the backend uses the app's command line handling, no error is raised for an
+    empty command line."""
+    monkeypatch.setattr(sys, "argv", ["app-exe"])
+
+    # Monkeypatch the property that makes the backend handle command lines
+    monkeypatch.setattr(DummyApp, "HANDLES_COMMAND_LINE", True)
 
     app = ExampleDocumentApp(
         "Test App",
         "org.beeware.document-app",
         document_types={"foobar": ExampleDocument},
     )
-    app.main_loop()
 
     assert app._impl.interface == app
-    assert_action_performed(app, "create DocumentApp")
+    assert_action_performed(app, "create App")
 
     assert app.document_types == {"foobar": ExampleDocument}
+
+    # No documents or windows exit
+    assert len(app.documents) == 0
+    assert len(app.windows) == 0
+
+
+def test_create_with_cmdline(monkeypatch, example_file):
+    """If a document is specified at the command line, it is opened."""
+    monkeypatch.setattr(sys, "argv", ["app-exe", str(example_file)])
+
+    app = ExampleDocumentApp(
+        "Test App",
+        "org.beeware.document-app",
+        document_types={"foobar": ExampleDocument},
+    )
+
+    assert app._impl.interface == app
+    assert_action_performed(app, "create App")
+
+    assert app.document_types == {"foobar": ExampleDocument}
+
+    # The document is registered
     assert len(app.documents) == 1
     assert isinstance(app.documents[0], ExampleDocument)
 
     # Document content has been read
-    assert app.documents[0].content == Path("/path/to/filename.foobar")
+    app.documents[0]._mock_read.assert_called_once_with(example_file)
 
     # Document window has been created and shown
+    assert len(app.windows) == 1
+    assert list(app.windows)[0] == app.documents[0].main_window
     assert_action_performed(app.documents[0].main_window, "create DocumentMainWindow")
     assert_action_performed(app.documents[0].main_window, "show")
 
 
-def test_create_with_unknown_document_type(monkeypatch):
+def test_create_with_unknown_document_type(monkeypatch, capsys):
     """If the document specified at the command line is an unknown type, an exception is
     raised."""
     monkeypatch.setattr(sys, "argv", ["app-exe", "/path/to/filename.unknown"])
 
     with pytest.raises(
         ValueError,
-        match=r"Don't know how to open documents of type .unknown",
+        match=r"App doesn't define any initial windows",
     ):
         ExampleDocumentApp(
             "Test App",
@@ -99,66 +166,49 @@ def test_create_with_unknown_document_type(monkeypatch):
             document_types={"foobar": ExampleDocument},
         )
 
-
-def test_create_no_document_type():
-    """A document app must manage at least one document type."""
-    with pytest.raises(
-        ValueError,
-        match=r"A document must manage at least one document type.",
-    ):
-        toga.DocumentApp("Test App", "org.beeware.document-app")
+    stdout = capsys.readouterr().out
+    assert "Don't know how to open documents with extension .unknown" in stdout
 
 
-def test_create_no_windows_non_persistent(event_loop):
-    """Non-persistent apps must define at least one window in startup."""
+def test_create_with_missing_file(monkeypatch, capsys):
+    """If the document specified at the command line is a known type, but not present, an exception is raised"""
+    monkeypatch.setattr(sys, "argv", ["app-exe", "/path/to/filename.foobar"])
 
-    class NoWindowApp(toga.App):
-        def startup(self):
-            self.main_window = None
-
-    with pytest.raises(
-        ValueError,
-        match=r"App doesn't define any initial windows.",
-    ):
-        NoWindowApp(formal_name="Test App", app_id="org.example.test")
-
-
-def test_create_no_windows_persistent(monkeypatch, event_loop):
-    """Persistent apps do not have to define windows during startup."""
-    # Monkeypatch the property that makes the backend persistent
-    monkeypatch.setattr(DummyApp, "CLOSE_ON_LAST_WINDOW", False)
-
-    class NoWindowApp(toga.App):
-        def startup(self):
-            self.main_window = None
-
-    # We can create the app without an error
-    NoWindowApp(formal_name="Test App", app_id="org.example.test")
-
-
-def test_close_last_document_non_persistent(monkeypatch):
-    """Non-persistent apps exit when the last document is closed"""
-    monkeypatch.setattr(sys, "argv", ["app-exe", "/path/to/example.foobar"])
-
-    app = ExampleDocumentApp(
+    ExampleDocumentApp(
         "Test App",
         "org.beeware.document-app",
         document_types={"foobar": ExampleDocument},
     )
-    # Create a second window
-    # TODO: Use the document interface for this
-    # app.open(other_file)
-    _ = toga.Window()
+
+    stdout = capsys.readouterr().out
+    assert "Document /path/to/filename.foobar not found" in stdout
+
+
+def test_close_last_document_non_persistent(monkeypatch, example_file, other_file):
+    """Non-persistent apps exit when the last document is closed"""
+    monkeypatch.setattr(sys, "argv", ["app-exe", str(example_file)])
+
+    app = ExampleDocumentApp(
+        "Test App",
+        "org.beeware.document-app",
+        document_types={
+            "foobar": ExampleDocument,
+            "other": OtherDocument,
+        },
+    )
+
+    # Create a second document window
+    app.open(other_file)
 
     # There are 2 open documents
-    # assert len(app.documents) == 2
+    assert len(app.documents) == 2
     assert len(app.windows) == 2
 
     # Close the first document window
     list(app.windows)[0].close()
 
     # One document window closed.
-    # assert len(app.documents) == 1
+    assert len(app.documents) == 1
     assert len(app.windows) == 1
 
     # App hasn't exited
@@ -171,32 +221,34 @@ def test_close_last_document_non_persistent(monkeypatch):
     assert_action_performed(app, "exit")
 
 
-def test_close_last_document_persistent(monkeypatch):
+def test_close_last_document_persistent(monkeypatch, example_file, other_file):
     """Persistent apps don't exit when the last document is closed"""
     # Monkeypatch the property that makes the backend persistent
     monkeypatch.setattr(DummyApp, "CLOSE_ON_LAST_WINDOW", False)
 
-    monkeypatch.setattr(sys, "argv", ["app-exe", "/path/to/example.foobar"])
+    monkeypatch.setattr(sys, "argv", ["app-exe", str(example_file)])
 
     app = ExampleDocumentApp(
         "Test App",
         "org.beeware.document-app",
-        document_types={"foobar": ExampleDocument},
+        document_types={
+            "foobar": ExampleDocument,
+            "other": OtherDocument,
+        },
     )
-    # Create a second window
-    # TODO: Use the document interface for this
-    # app.open(other_file)
-    _ = toga.Window()
+
+    # Create a second document window
+    app.open(other_file)
 
     # There are 2 open documents
-    # assert len(app.documents) == 2
+    assert len(app.documents) == 2
     assert len(app.windows) == 2
 
     # Close the first document window
     list(app.windows)[0].close()
 
     # One document window closed.
-    # assert len(app.documents) == 1
+    assert len(app.documents) == 1
     assert len(app.windows) == 1
 
     # App hasn't exited
@@ -206,8 +258,62 @@ def test_close_last_document_persistent(monkeypatch):
     list(app.windows)[0].close()
 
     # No document windows.
-    # assert len(app.documents) == 0
+    assert len(app.documents) == 0
     assert len(app.windows) == 0
 
     # App still hasn't exited
     assert_action_not_performed(app, "exit")
+
+
+def test_open_menu(doc_app, example_file):
+    """The open method is activated by the open menu"""
+    doc_app._impl.dialog_responses["OpenFileDialog"] = [example_file]
+
+    future = doc_app.commands[toga.Command.OPEN].action()
+    doc_app.loop.run_until_complete(future)
+
+    # There are now 2 documents, and 2 windows
+    assert len(doc_app.documents) == 2
+    assert len(doc_app.windows) == 2
+
+    # The second document is the one we just loaded
+    new_doc = doc_app.documents[1]
+    assert new_doc.path == example_file
+    assert new_doc.main_window.doc == new_doc
+    assert new_doc.main_window in doc_app.windows
+
+
+def test_open_menu_cancel(doc_app):
+    """The open menu action can be cancelled by not selecting a file."""
+    doc_app._impl.dialog_responses["OpenFileDialog"] = [None]
+
+    future = doc_app.commands[toga.Command.OPEN].action()
+    doc_app.loop.run_until_complete(future)
+
+    # No second window was opened
+    assert len(doc_app.documents) == 1
+    assert len(doc_app.windows) == 1
+
+
+def test_deprecated_document_app(monkeypatch, event_loop, example_file):
+    """The deprecated API for creating Document-based apps still works."""
+
+    class DeprecatedDocumentApp(toga.DocumentApp):
+        def startup(self):
+            self.main_window = None
+
+    monkeypatch.setattr(sys, "argv", ["app-exe", str(example_file)])
+
+    with pytest.warns(
+        DeprecationWarning,
+        match=r"toga.DocumentApp is no longer required. Use toga.App instead",
+    ):
+        app = DeprecatedDocumentApp(
+            "Deprecated App",
+            "org.beeware.deprecated-app",
+            document_types={"foobar": ExampleDocument},
+        )
+
+    # The app has an open document
+    assert len(app.documents) == 1
+    assert isinstance(app.documents[0], ExampleDocument)

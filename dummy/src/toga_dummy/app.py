@@ -13,6 +13,8 @@ from .utils import LoggedObject
 class App(LoggedObject):
     # Dummy apps close on the last window close
     CLOSE_ON_LAST_WINDOW = True
+    # Dummy backend uses default command line handling
+    HANDLES_COMMAND_LINE = False
 
     def __init__(self, interface):
         super().__init__()
@@ -68,6 +70,17 @@ class App(LoggedObject):
                     id=Command.PREFERENCES,
                 ),
             )  # pragma: no cover
+
+        # If the app has document types, or has overridden open(), provide a menu item
+        if self.interface.document_types or overridden(self.interface.open):
+            self.interface.commands.add(
+                Command(
+                    simple_handler(self.interface._open),
+                    text="Open",
+                    group=Group.FILE,
+                    id=Command.OPEN,
+                )
+            )
 
     def create_menus(self):
         self._action("create App menus")

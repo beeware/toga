@@ -848,47 +848,27 @@ class MainWindow(Window):
 class DocumentMainWindow(Window):
     _WINDOW_CLASS = "DocumentMainWindow"
 
-    def __init__(
-        self,
-        doc: Document,
-        id: str | None = None,
-        title: str | None = None,
-        position: PositionT = Position(100, 100),
-        size: SizeT = Size(640, 480),
-        resizable: bool = True,
-        minimizable: bool = True,
-        on_close: OnCloseHandler | None = None,
-    ):
+    def __init__(self, doc: Document, *args, **kwargs):
         """Create a new document Main Window.
 
-        This installs a default on_close handler that honors platform-specific document
-        closing behavior. If you want to control whether a document is allowed to close
-        (e.g., due to having unsaved change), override
-        :meth:`toga.Document.can_close()`, rather than implementing an on_close handler.
+        A document main window is a normal MainWindow, bound to a document instance.
 
         :param doc: The document being managed by this window
-        :param id: The ID of the window.
-        :param title: Title for the window. Defaults to the formal name of the app.
-        :param position: Position of the window, as a :any:`toga.Position` or tuple of
-            ``(x, y)`` coordinates.
-        :param size: Size of the window, as a :any:`toga.Size` or tuple of
-            ``(width, height)``, in pixels.
-        :param resizable: Can the window be manually resized by the user?
-        :param minimizable: Can the window be minimized by the user?
-        :param on_close: The initial :any:`on_close` handler.
         """
-        self.doc = doc
-        super().__init__(
-            id=id,
-            title=title,
-            position=position,
-            size=size,
-            resizable=resizable,
-            closable=True,
-            minimizable=minimizable,
-            on_close=doc.handle_close if on_close is None else on_close,
-        )
+        self._doc = doc
+        super().__init__(*args, **kwargs)
+
+    @property
+    def doc(self) -> Document:
+        """The document managed by this window"""
+        return self._doc
 
     @property
     def _default_title(self) -> str:
-        return self.doc.path.name
+        return self.doc.title
+
+    def _close(self):
+        # When then window is closed, remove the document it is managing from the app's
+        # list of managed documents.
+        self._app._documents.remove(self.doc)
+        super()._close()

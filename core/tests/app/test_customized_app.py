@@ -13,10 +13,14 @@ class CustomizedApp(toga.App):
         # that toolbar handling is skipped.
         self.other_window = toga.Window()
 
-        self._preferences = Mock()
+        self._mock_open = Mock()
+        self._mock_preferences = Mock()
+
+    def open(self, path):
+        self._mock_open(path)
 
     def preferences(self):
-        self._preferences()
+        self._mock_preferences()
 
 
 class AsyncCustomizedApp(CustomizedApp):
@@ -24,7 +28,7 @@ class AsyncCustomizedApp(CustomizedApp):
     # as async handlers.
 
     async def preferences(self):
-        self._preferences()
+        self._mock_preferences()
 
 
 @pytest.mark.parametrize(
@@ -59,6 +63,19 @@ def test_create(event_loop, AppClass):
     assert custom_app.main_window.toolbar.on_change is not None
 
 
+def test_open_menu(event_loop):
+    """The custom preferences method is activated by the preferences menu"""
+    custom_app = CustomizedApp("Custom App", "org.beeware.customized-app")
+
+    file_path = Mock()
+    custom_app._impl.dialog_responses["OpenFileDialog"] = [file_path]
+
+    result = custom_app.commands[toga.Command.OPEN].action()
+    if asyncio.isfuture(result):
+        custom_app.loop.run_until_complete(result)
+    custom_app._mock_open.assert_called_once_with(file_path)
+
+
 @pytest.mark.parametrize(
     "AppClass",
     [
@@ -73,4 +90,4 @@ def test_preferences_menu(event_loop, AppClass):
     result = custom_app.commands[toga.Command.PREFERENCES].action()
     if asyncio.isfuture(result):
         custom_app.loop.run_until_complete(result)
-    custom_app._preferences.assert_called_once_with()
+    custom_app._mock_preferences.assert_called_once_with()

@@ -97,11 +97,15 @@ def simple_handler(fn, *args, **kwargs):
     required ``command`` argument passed to handlers), so that you can use a method like
     :meth:`~toga.App.about()` as a command handler.
 
-    It can accept either a function or a coroutine.
+    It can accept either a function or a coroutine. Arguments that will be passed to the
+    function/coroutine are provided at the time the wrapper is defined. It is assumed
+    that the mechanism invoking the handler will add no additional arguments other than
+    the ``command`` that is invoking the handler.
+
 
     :param fn: The callable to invoke as a handler.
-    :param args: The arguments to pass to the handler when invoked.
-    :param kwargs: The keyword arguments to pass to the handler when invoked.
+    :param args: Positional arguments that should be passed to the invoked handler.
+    :param kwargs: Keyword arguments that should be passed to the invoked handler.
     :returns: A handler that will invoke the callable.
     """
     if inspect.iscoroutinefunction(fn):

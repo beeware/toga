@@ -1,4 +1,5 @@
 from pathlib import Path
+from unittest.mock import Mock
 
 import pytest
 
@@ -6,47 +7,48 @@ import toga
 
 
 class MyDoc(toga.Document):
-    def __init__(self, path, app):
-        super().__init__(path, "Dummy Document", app)
-        pass
+    document_type = "My Document"
 
     def create(self):
-        pass
+        self.main_window = Mock(title="Mock Window")
+        self.content = None
 
     def read(self):
-        pass
+        self.content = "file content"
 
 
-@pytest.mark.parametrize("path", ["/path/to/doc.mydoc", Path("/path/to/doc.mydoc")])
-def test_create_document(app, path):
-    doc = MyDoc(path, app)
+def test_create_document(app):
+    doc = MyDoc(app)
 
-    assert doc.path == Path(path)
+    assert doc.path is None
     assert doc.app == app
-    assert doc.document_type == "Dummy Document"
+    assert doc.document_type == "My Document"
+    assert doc.title == "My Document: Untitled"
+
+    # create() has been invoked
+    assert doc.content is None
+    assert doc.main_window.title == "Mock Window"
+
+    # Document can be shown
+    doc.show()
+    doc.main_window.show.assert_called_once_with()
 
 
-class MyDeprecatedDoc(toga.Document):
-    def __init__(self, filename, app):
-        super().__init__(
-            path=filename,
-            document_type="Deprecated Document",
-            app=app,
-        )
+@pytest.mark.parametrize(
+    "path,expected",
+    [
+        ("/path/to/doc.mydoc", Path("/path/to/doc.mydoc")),
+        (Path("/path/to/doc.mydoc"), Path("/path/to/doc.mydoc")),
+        ("doc.mydoc", Path.cwd() / "doc.mydoc"),
+        (Path("doc.mydoc"), Path.cwd() / "doc.mydoc"),
+    ],
+)
+def test_open_document(app, path, expected):
+    """A document can be opened"""
+    doc = MyDoc(app)
 
-    def create(self):
-        pass
+    doc.open(path)
 
-    def read(self):
-        pass
-
-
-def test_deprecated_names(app):
-    """Deprecated names still work."""
-    doc = MyDeprecatedDoc("/path/to/doc.mydoc", app)
-
-    with pytest.warns(
-        DeprecationWarning,
-        match=r"Document.filename has been renamed Document.path.",
-    ):
-        assert doc.filename == Path("/path/to/doc.mydoc")
+    # Calling absolute() ensures the expected value is correct on Windows
+    assert doc.path == expected.absolute()
+    assert doc.content == "file content"

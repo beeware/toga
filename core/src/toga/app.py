@@ -13,6 +13,7 @@ from typing import TYPE_CHECKING, Any, MutableSet, Protocol
 from weakref import WeakValueDictionary
 
 from toga.command import CommandSet
+from toga.dialogs import OpenFileDialog
 from toga.handlers import simple_handler, wrapped_handler
 from toga.hardware.camera import Camera
 from toga.hardware.location import Location
@@ -236,6 +237,7 @@ class App:
         home_page: str | None = None,
         description: str | None = None,
         startup: AppStartupMethod | None = None,
+        document_types: dict[str, type[Document]] = None,
         on_running: OnRunningHandler | None = None,
         on_exit: OnExitHandler | None = None,
         id: None = None,  # DEPRECATED
@@ -275,6 +277,8 @@ class App:
         :param startup: A callable to run before starting the app.
         :param on_running: The initial :any:`on_running` handler.
         :param on_exit: The initial :any:`on_exit` handler.
+        :param document_types: A mapping of document types managed by this app, to
+             the :any:`Document` class managing that document type.
         :param id: **DEPRECATED** - This argument will be ignored. If you need a
             machine-friendly identifier, use ``app_id``.
         :param windows: **DEPRECATED** – Windows are now automatically added to the
@@ -389,6 +393,10 @@ class App:
         else:
             self.icon = icon
 
+        # Set up the document types and list of documents being managed.
+        self._document_types = document_types
+        self._documents = []
+
         # Install the lifecycle handlers. If passed in as an argument, or assigned using
         # `app.on_event = my_handler`, the event handler will take the app as the first
         # argument. If we're using the default value, or we're subclassing app, the app
@@ -415,9 +423,6 @@ class App:
         self._full_screen_windows: tuple[Window, ...] | None = None
 
         # Create the implementation. This will trigger any startup logic.
-        self._create_impl()
-
-    def _create_impl(self) -> None:
         self.factory.App(interface=self)
 
     ######################################################################
@@ -577,13 +582,29 @@ class App:
             raise ValueError(f"Don't know how to use {window!r} as a main window.")
 
     def _create_initial_windows(self):
-        # TODO: Create the initial windows for the app.
+        """Internal utility method for creating initial windows based on command line
+        arguments. This method is used when the platform doesn't provide it's own
+        command-line handling interface.
+
+        If document types are defined, try to open every argument on the command line as
+        a document (unless the backend manages the command line arguments).
+        """
+        # If the backend handles the command line, don't do any command line processing.
+        if self._impl.HANDLES_COMMAND_LINE:
+            return
+
+        if self.document_types:
+            for filename in sys.argv[1:]:
+                try:
+                    self.open(Path(filename).absolute())
+                except ValueError as e:
+                    print(e)
+                except FileNotFoundError:
+                    print(f"Document {filename} not found")
 
         # Safety check: Do we have at least one window?
         if len(self.app.windows) == 0 and self.main_window is None:
-            # macOS document-based apps are allowed to have no open windows.
-            if self.app._impl.CLOSE_ON_LAST_WINDOW:
-                raise ValueError("App doesn't define any initial windows.")
+            raise ValueError("App doesn't define any initial windows.")
 
     def _startup(self) -> None:
         # Install the platform-specific app commands. This is done *before* startup so
@@ -654,6 +675,21 @@ class App:
         return self._commands
 
     @property
+    def document_types(self) -> dict[str, type[Document]]:
+        """The document types this app can manage.
+
+        A dictionary of file extensions, without leading dots, mapping to the
+        :class:`toga.Document` subclass that will be created when a document with that
+        extension is opened.
+        """
+        return self._document_types
+
+    @property
+    def documents(self) -> list[Document]:
+        """The list of documents associated with this app."""
+        return self._documents
+
+    @property
     def location(self) -> Location:
         """A representation of the device's location service."""
         try:
@@ -722,6 +758,50 @@ class App:
         :returns: The result of the dialog.
         """
         return await dialog._show(None)
+
+    async def _open(self, **kwargs):
+        # The menu interface to open(). Prompt the user to select a file;
+        # then open that file.
+        path = await self.dialog(
+            OpenFileDialog(
+                self.formal_name,
+                file_types=(
+                    list(self.document_types.keys()) if self.document_types else None
+                ),
+            )
+        )
+
+        if path:
+            self.open(path)
+
+    @overridable
+    def open(self, path: Path | str) -> None:
+        """Open a document in this app, and show the document window.
+
+        The default implementation uses registered document types to open the file. Apps
+        can overwrite this implementation if they wish to provide custom behavior for
+        opening a file path.
+
+        If you override this method in your App class, or you define
+        :attr:`~toga.App.document_types`, the :attr:`toga.Command.OPEN` command will be
+        added to your app, and this method will be invoked when the menu item is selected.
+
+        :param path: The path to the document to be opened.
+        :raises ValueError: If the path cannot be opened.
+        """
+        try:
+            path = Path(path).absolute()
+            DocType = self.document_types[path.suffix[1:]]
+        except KeyError:
+            raise ValueError(
+                f"Don't know how to open documents with extension {path.suffix}"
+            )
+        else:
+            document = DocType(app=self)
+            document.open(path)
+
+            self._documents.append(document)
+            document.show()
 
     @overridable
     def preferences(self) -> None:
@@ -874,87 +954,13 @@ class App:
 
 
 class DocumentApp(App):
-    def __init__(
-        self,
-        formal_name: str | None = None,
-        app_id: str | None = None,
-        app_name: str | None = None,
-        *,
-        icon: IconContentT | None = None,
-        author: str | None = None,
-        version: str | None = None,
-        home_page: str | None = None,
-        description: str | None = None,
-        startup: AppStartupMethod | None = None,
-        document_types: dict[str, type[Document]] | None = None,
-        on_exit: OnExitHandler | None = None,
-        id: None = None,  # DEPRECATED
-    ):
-        """Create a document-based application.
-
-        A document-based application is the same as a normal application, with the
-        exception that there is no main window. Instead, each document managed by the
-        app will create and manage its own window (or windows).
-
-        :param document_types: Initial :any:`document_types` mapping.
+    def __init__(self, *args, **kwargs):
+        """**DEPRECATED** - :any:`toga.DocumentApp` can be replaced with
+        :any:`toga.App`.
         """
-        if document_types is None:
-            raise ValueError("A document must manage at least one document type.")
-
-        self._document_types = document_types
-        self._documents: list[Document] = []
-
-        super().__init__(
-            formal_name=formal_name,
-            app_id=app_id,
-            app_name=app_name,
-            icon=icon,
-            author=author,
-            version=version,
-            home_page=home_page,
-            description=description,
-            startup=startup,
-            on_exit=on_exit,
-            id=id,
+        warnings.warn(
+            "toga.DocumentApp is no longer required. Use toga.App instead",
+            DeprecationWarning,
+            stacklevel=2,
         )
-
-    def _create_impl(self) -> None:
-        self.factory.DocumentApp(interface=self)
-
-    @property
-    def document_types(self) -> dict[str, type[Document]]:
-        """The document types this app can manage.
-
-        A dictionary of file extensions, without leading dots, mapping to the
-        :class:`toga.Document` subclass that will be created when a document with that
-        extension is opened. The subclass must take exactly 2 arguments in its
-        constructor: ``path`` and ``app``.
-        """
-        return self._document_types
-
-    @property
-    def documents(self) -> list[Document]:
-        """The list of documents associated with this app."""
-        return self._documents
-
-    def startup(self) -> None:
-        """No-op; a DocumentApp has no windows until a document is opened.
-
-        Subclasses can override this method to define customized startup behavior.
-        """
-
-    def _open(self, path: Path) -> None:
-        """Internal utility method; open a new document in this app, and shows the document.
-
-        :param path: The path to the document to be opened.
-        :raises ValueError: If the document is of a type that can't be opened. Backends can
-            suppress this exception if necessary to preserve platform-native behavior.
-        """
-        try:
-            DocType = self.document_types[path.suffix[1:]]
-        except KeyError:
-            raise ValueError(f"Don't know how to open documents of type {path.suffix}")
-        else:
-            document = DocType(path, app=self)
-            self._documents.append(document)
-            document.show()
+        super().__init__(*args, **kwargs)

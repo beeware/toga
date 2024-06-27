@@ -166,6 +166,9 @@ class Command:
     #: An identifier for the system-installed "Exit" menu item. This command is always
     #: installed.
     EXIT: str = "on_exit"
+    #: An identifier for the system-installed "Open" menu item. This command will be
+    #: automatically installed if your app declares any document types.
+    OPEN: str = "open"
     #: An identifier for the system-installed "Preferences" menu item. A command
     #: with this identifier will be installed automatically if the app overrides the
     #: :meth:`~toga.App.preferences` method.
