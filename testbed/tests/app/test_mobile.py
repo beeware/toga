@@ -17,67 +17,69 @@ async def test_show_hide_cursor(app):
     app.show_cursor()
     app.hide_cursor()
 
-    async def test_full_screen(app):
-        """Window can be made full screen"""
-        # Invoke the methods to verify the endpoints exist. However, they're no-ops,
-        # so there's nothing to test.
-        with pytest.warns(
-            DeprecationWarning,
-            match=r"`App.set_full_screen\(\)` is deprecated. Use `App.enter_presentation_mode\(\)` instead.",
-        ):
-            app.set_full_screen(app.current_window)
-        with pytest.warns(
-            DeprecationWarning,
-            match=r"`App.exit_full_screen\(\)` is deprecated. Use `App.exit_presentation_mode\(\)` instead.",
-        ):
-            app.exit_full_screen()
 
-    async def test_presentation_mode(app, app_probe, main_window, main_window_probe):
-        """The app can enter into presentation mode"""
-        assert not app.is_presentation_mode
-        assert not main_window_probe.is_window_state(WindowState.PRESENTATION)
+async def test_full_screen(app):
+    """Window can be made full screen"""
+    # Invoke the methods to verify the endpoints exist. However, they're no-ops,
+    # so there's nothing to test.
+    with pytest.warns(
+        DeprecationWarning,
+        match=r"`App.set_full_screen\(\)` is deprecated. Use `App.enter_presentation_mode\(\)` instead.",
+    ):
+        app.set_full_screen(app.current_window)
+    with pytest.warns(
+        DeprecationWarning,
+        match=r"`App.exit_full_screen\(\)` is deprecated. Use `App.exit_presentation_mode\(\)` instead.",
+    ):
+        app.exit_full_screen()
 
-        # Enter presentation mode with main window via the app
-        app.enter_presentation_mode([main_window])
-        await main_window_probe.wait_for_window(
-            "Main window is in presentation mode", full_screen=True
-        )
 
-        assert app.is_presentation_mode
-        assert not main_window_probe.is_window_state(WindowState.NORMAL)
-        assert main_window_probe.is_window_state(WindowState.PRESENTATION)
+async def test_presentation_mode(app, app_probe, main_window, main_window_probe):
+    """The app can enter into presentation mode"""
+    assert not app.is_presentation_mode
+    assert not main_window_probe.is_window_state(WindowState.PRESENTATION)
 
-        # Exit presentation mode
-        app.exit_presentation_mode()
-        await main_window_probe.wait_for_window(
-            "Main window is no longer in presentation mode",
-            full_screen=True,
-        )
+    # Enter presentation mode with main window via the app
+    app.enter_presentation_mode([main_window])
+    await main_window_probe.wait_for_window(
+        "Main window is in presentation mode", full_screen=True
+    )
 
-        assert not app.is_presentation_mode
-        assert not main_window_probe.is_window_state(WindowState.PRESENTATION)
-        assert main_window_probe.is_window_state(WindowState.NORMAL)
+    assert app.is_presentation_mode
+    assert not main_window_probe.is_window_state(WindowState.NORMAL)
+    assert main_window_probe.is_window_state(WindowState.PRESENTATION)
 
-        # Enter presentation mode with a screen-window dict via the app
-        app.enter_presentation_mode({app.screens[0]: main_window})
-        await main_window_probe.wait_for_window(
-            "Main window is in presentation mode", full_screen=True
-        )
+    # Exit presentation mode
+    app.exit_presentation_mode()
+    await main_window_probe.wait_for_window(
+        "Main window is no longer in presentation mode",
+        full_screen=True,
+    )
 
-        assert app.is_presentation_mode
-        assert not main_window_probe.is_window_state(WindowState.NORMAL)
-        assert main_window_probe.is_window_state(WindowState.PRESENTATION)
+    assert not app.is_presentation_mode
+    assert not main_window_probe.is_window_state(WindowState.PRESENTATION)
+    assert main_window_probe.is_window_state(WindowState.NORMAL)
 
-        # Exit presentation mode
-        app.exit_presentation_mode()
-        await main_window_probe.wait_for_window(
-            "Main window is no longer in presentation mode",
-            full_screen=True,
-        )
+    # Enter presentation mode with a screen-window dict via the app
+    app.enter_presentation_mode({app.screens[0]: main_window})
+    await main_window_probe.wait_for_window(
+        "Main window is in presentation mode", full_screen=True
+    )
 
-        assert not app.is_presentation_mode
-        assert not main_window_probe.is_window_state(WindowState.PRESENTATION)
-        assert main_window_probe.is_window_state(WindowState.NORMAL)
+    assert app.is_presentation_mode
+    assert not main_window_probe.is_window_state(WindowState.NORMAL)
+    assert main_window_probe.is_window_state(WindowState.PRESENTATION)
+
+    # Exit presentation mode
+    app.exit_presentation_mode()
+    await main_window_probe.wait_for_window(
+        "Main window is no longer in presentation mode",
+        full_screen=True,
+    )
+
+    assert not app.is_presentation_mode
+    assert not main_window_probe.is_window_state(WindowState.PRESENTATION)
+    assert main_window_probe.is_window_state(WindowState.NORMAL)
 
 
 async def test_current_window(app, main_window, main_window_probe):
