@@ -78,8 +78,7 @@ async def test_menu_exit(monkeypatch, app, app_probe, mock_app_exit):
     """An app can be exited by using the menu item"""
     # Rebind the exit command to the on_exit handler.
     on_exit_handler = Mock(return_value=False)
-    app.on_exit = on_exit_handler
-    monkeypatch.setattr(app.commands[toga.Command.EXIT], "_action", app.on_exit)
+    monkeypatch.setattr(app, "on_exit", on_exit_handler)
 
     # Close the main window
     app_probe.activate_menu_exit()
@@ -327,6 +326,7 @@ async def test_current_window(app, app_probe, main_window):
 
     try:
         window1.content = toga.Box(style=Pack(background_color=REBECCAPURPLE))
+        window2 = toga.Window("Test Window 2", position=(400, 150), size=(200, 200))
         window2.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
         window3.content = toga.Box(style=Pack(background_color=FIREBRICK))
 
