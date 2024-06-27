@@ -88,7 +88,7 @@ def run_tests(app, cov, args, report_coverage, run_slow, running_in_ci):
         print(f">>>>>>>>>> EXIT {app.returncode} <<<<<<<<<<")
         # Add a short pause to make sure any log tailing gets a chance to flush
         time.sleep(0.5)
-        app.add_background_task(lambda app, **kwargs: app.exit())
+        app.loop.call_soon_threadsafe(app.exit)
 
 
 if __name__ == "__main__":
