@@ -1,0 +1,1 @@
+Dialogs can now be displayed relative to an app, in addition to be being modal to a window.

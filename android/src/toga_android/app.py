@@ -10,8 +10,10 @@ from androidx.core.content import ContextCompat
 from java import dynamic_proxy
 from org.beeware.android import IPythonApp, MainActivity
 
+import toga
 from toga.command import Command, Group, Separator
 from toga.constants import WindowState
+from toga.dialogs import InfoDialog
 from toga.handlers import simple_handler
 
 from .libs import events
@@ -183,6 +185,9 @@ class TogaApp(dynamic_proxy(IPythonApp)):
 
 
 class App:
+    # Android apps exit when the last window is closed
+    CLOSE_ON_LAST_WINDOW = True
+
     def __init__(self, interface):
         self.interface = interface
         self.interface._impl = self
@@ -242,10 +247,13 @@ class App:
         pass  # pragma: no cover
 
     def set_main_window(self, window):
-        # The default layout of an Android app includes a titlebar; a simple App then
-        # hides that titlebar. We know what type of app we have when the main window is
-        # set.
-        self.interface.main_window._impl.configure_titlebar()
+        if window is None or window == toga.App.BACKGROUND:
+            raise ValueError("Apps without main windows are not supported on Android")
+        else:
+            # The default layout of an Android app includes a titlebar; a simple App
+            # then hides that titlebar. We know what type of app we have when the main
+            # window is set.
+            self.interface.main_window._impl.configure_titlebar()
 
     ######################################################################
     # App resources
@@ -281,8 +289,16 @@ class App:
             message_parts.append(f"Author: {self.interface.author}")
         if self.interface.description is not None:
             message_parts.append(f"\n{self.interface.description}")
-        self.interface.main_window.info_dialog(
-            f"About {self.interface.formal_name}", "\n".join(message_parts)
+
+        # Create and show an info dialog as the about dialog.
+        # We don't care about the response.
+        asyncio.create_task(
+            self.interface.dialog(
+                InfoDialog(
+                    f"About {self.interface.formal_name}",
+                    "\n".join(message_parts),
+                )
+            )
         )
 
     ######################################################################

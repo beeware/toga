@@ -1,0 +1,47 @@
+[build-system]
+requires = ["briefcase"]
+
+[tool.briefcase]
+project_name = "Status Icon App"
+bundle = "org.beeware.toga.examples"
+version = "0.0.1"
+url = "https://beeware.org"
+license.file = "LICENSE"
+author = 'Tiberius Yak'
+author_email = "tiberius@beeware.org"
+
+[tool.briefcase.app.statusiconapp]
+formal_name = "Status Icon App"
+description = "A testing app"
+sources = ['statusiconapp']
+requires = [
+    '../../core',
+]
+
+
+[tool.briefcase.app.statusiconapp.macOS]
+requires = [
+    '../../cocoa',
+    'std-nslog>=1.0.0',
+]
+
+[tool.briefcase.app.statusiconapp.linux]
+requires = [
+    '../../gtk',
+]
+
+[tool.briefcase.app.statusiconapp.windows]
+requires = [
+    '../../winforms',
+]
+
+# Mobile deployments
+[tool.briefcase.app.statusiconapp.iOS]
+supported = false
+
+[tool.briefcase.app.statusiconapp.android]
+supported = false
+
+# Web deployment
+[tool.briefcase.app.statusiconapp.web]
+supported = false

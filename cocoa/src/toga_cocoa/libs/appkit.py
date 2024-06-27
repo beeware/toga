@@ -764,6 +764,7 @@ class NSWindowStyleMask(IntEnum):
 
 NSModalResponseOK = 1
 NSModalResponseCancel = 0
+NSModalResponseContinue = -1002
 
 # NSCompositingOperationXXX is equivalent to NSCompositeXXX
 NSCompositingOperationClear = 0

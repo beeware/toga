@@ -2,11 +2,12 @@ from __future__ import annotations
 
 import asyncio
 import importlib.metadata
+import inspect
 import signal
 import sys
 import warnings
 import webbrowser
-from collections.abc import Iterator
+from collections.abc import Coroutine, Iterator
 from email.message import Message
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, MutableSet, Protocol
@@ -25,6 +26,7 @@ from toga.widgets.base import Widget
 from toga.window import MainWindow, Window
 
 if TYPE_CHECKING:
+    from toga.dialogs import Dialog
     from toga.documents import Document
     from toga.icons import IconContentT
 
@@ -206,6 +208,13 @@ class App:
     _impl: Any
     _camera: Camera
     _location: Location
+    _main_window: Window | str | None
+
+    #: A constant that can be used as the main window to indicate that an app will
+    #: run in the background without a main window.
+    BACKGROUND: str = "background app"
+
+    _UNDEFINED: str = "<main window not assigned>"
 
     def __init__(
         self,
@@ -378,7 +387,7 @@ class App:
 
         self._startup_method = startup
 
-        self._main_window: MainWindow | None = None
+        self._main_window = App._UNDEFINED
         self._windows = WindowSet(self)
 
         self._full_screen_windows: tuple[Window, ...] | None = None
@@ -516,35 +525,61 @@ class App:
         self._impl.main_loop()
 
     @property
-    def main_window(self) -> MainWindow | None:
-        """The main window for the app."""
+    def main_window(self) -> Window | str | None:
+        """The main window for the app.
+
+        See :ref:`the documentation on assigning a main window <assigning-main-window>`
+        for values that can be used for this attribute.
+        """
+        if self._main_window is App._UNDEFINED:
+            raise ValueError("Application has not set a main window.")
+
         return self._main_window
 
     @main_window.setter
-    def main_window(self, window: MainWindow | None) -> None:
-        # The main window must be closable
-        if isinstance(window, Window) and not window.closable:
-            raise ValueError("The window used as the main window must be closable.")
+    def main_window(self, window: MainWindow | str | None) -> None:
+        if window is None or window is App.BACKGROUND or isinstance(window, Window):
+            # The main window must be closable
+            if isinstance(window, Window) and not window.closable:
+                raise ValueError("The window used as the main window must be closable.")
 
-        self._main_window = window
-        self._impl.set_main_window(window)
+            old_window = self._main_window
+            self._main_window = window
+            try:
+                self._impl.set_main_window(window)
+            except Exception as e:
+                # If the main window could not be changed, revert to the previous value
+                # then reraise the exception
+                if old_window is not App._UNDEFINED:
+                    self._main_window = old_window
+                raise e
+        else:
+            raise ValueError(f"Don't know how to use {window!r} as a main window.")
 
-    def _verify_startup(self) -> None:
-        if not isinstance(self.main_window, Window):
-            raise ValueError(
-                "Application does not have a main window. "
-                "Does your startup() method assign a value to self.main_window?"
-            )
+    def _create_initial_windows(self):
+        # TODO: Create the initial windows for the app.
+
+        # Safety check: Do we have at least one window?
+        if len(self.app.windows) == 0 and self.main_window is None:
+            # macOS document-based apps are allowed to have no open windows.
+            if self.app._impl.CLOSE_ON_LAST_WINDOW:
+                raise ValueError("App doesn't define any initial windows.")
 
     def _startup(self) -> None:
         # Install the platform-specific app commands. This is done *before* startup so
         # the user's code has the opporuntity to remove/change the default commands.
         self._impl.create_app_commands()
 
-        # This is a wrapper around the user's startup method that performs any
-        # post-setup validation.
+        # Invoke the user's startup method (or the default implementation)
         self.startup()
-        self._verify_startup()
+
+        # Validate that the startup requirements have been met.
+        # Accessing the main window attribute will raise an exception if the app hasn't
+        # defined a main window.
+        _ = self.main_window
+
+        # Create any initial windows
+        self._create_initial_windows()
 
         # Manifest the initial state of the menus. This will cascade down to all
         # open windows if the platform has window-based menus. Then install the
@@ -560,6 +595,17 @@ class App:
                 window._impl.create_toolbar()
                 window.toolbar.on_change = window._impl.create_toolbar
 
+        # Queue a task to run as soon as the event loop starts.
+        if inspect.iscoroutinefunction(self.running):
+            # running is a co-routine; create a sync wrapper
+            def on_app_running():
+                asyncio.ensure_future(self.running())
+
+        else:
+            on_app_running = self.running
+
+        self.loop.call_soon_threadsafe(on_app_running)
+
     def startup(self) -> None:
         """Create and show the main window for the application.
 
@@ -573,6 +619,15 @@ class App:
             self.main_window.content = self._startup_method(self)
 
         self.main_window.show()
+
+    def running(self) -> None:
+        """Logic to execute as soon as the main event loop is running.
+
+        Override this method to add any logic you want to run as soon as the app's event
+        loop is running.
+
+        If necessary, the overridden method can be defined as as an ``async`` coroutine.
+        """
 
     ######################################################################
     # App resources
@@ -656,6 +711,14 @@ class App:
     def beep(self) -> None:
         """Play the default system notification sound."""
         self._impl.beep()
+
+    async def dialog(self, dialog: Dialog) -> Coroutine[None, None, Any]:
+        """Display a dialog to the user in the app context.
+
+        :param: The :doc:`dialog <resources/dialogs>` to display to the user.
+        :returns: The result of the dialog.
+        """
+        return await dialog._show(None)
 
     @overridable
     def preferences(self) -> None:
@@ -904,10 +967,6 @@ class DocumentApp(App):
 
     def _create_impl(self) -> None:
         self.factory.DocumentApp(interface=self)
-
-    def _verify_startup(self) -> None:
-        # No post-startup validation required for DocumentApps
-        pass
 
     @property
     def document_types(self) -> dict[str, type[Document]]:

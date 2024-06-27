@@ -35,7 +35,8 @@ class Document(ABC):
         # Create a platform specific implementation of the Document
         self._impl = app.factory.Document(interface=self)
 
-    def can_close(self) -> bool:
+    # TODO: This will be covered when the document API is finalized
+    def can_close(self) -> bool:  # pragma: no cover
         """Is the main document window allowed to close?
 
         The default implementation always returns ``True``; subclasses can override this
@@ -46,7 +47,10 @@ class Document(ABC):
         """
         return True
 
-    async def handle_close(self, window: Window, **kwargs: object) -> bool:
+    # TODO: This will be covered when the document API is finalized
+    async def handle_close(
+        self, window: Window, **kwargs: object
+    ) -> bool:  # pragma: no cover
         """An ``on-close`` handler for the main window of this document that implements
         platform-specific document close behavior.
 

@@ -4,6 +4,7 @@ Resources
 .. toctree::
 
    app_paths
+   dialogs
    fonts
    command
    icons

@@ -10,7 +10,7 @@ from System.Media import SystemSounds
 from System.Net import SecurityProtocolType, ServicePointManager
 from System.Windows.Threading import Dispatcher
 
-from toga import Key
+import toga
 from toga.app import overridden
 from toga.command import Command, Group
 from toga.constants import WindowState
@@ -56,6 +56,9 @@ def winforms_thread_exception(sender, winforms_exc):  # pragma: no cover
 
 
 class App:
+    # Winforms apps exit when the last window is closed
+    CLOSE_ON_LAST_WINDOW = True
+
     def __init__(self, interface):
         self.interface = interface
         self.interface._impl = self
@@ -127,8 +130,6 @@ class App:
         # Call user code to populate the main window
         self.interface._startup()
 
-        self.interface.main_window._impl.set_app(self)
-
     ######################################################################
     # Commands and menus
     ######################################################################
@@ -142,7 +143,7 @@ class App:
             Command(
                 self.interface.on_exit,
                 "Exit",
-                shortcut=Key.MOD_1 + "q",
+                shortcut=toga.Key.MOD_1 + "q",
                 group=Group.FILE,
                 section=sys.maxsize,
                 id=Command.EXIT,
@@ -232,7 +233,7 @@ class App:
             window._impl.native.Icon = icon._impl.native
 
     def set_main_window(self, window):
-        self.app_context.MainForm = window._impl.native
+        pass
 
     ######################################################################
     # App resources
@@ -321,7 +322,7 @@ class DocumentApp(App):  # pragma: no cover
             Command(
                 lambda w: self.open_file,
                 text="Open...",
-                shortcut=Key.MOD_1 + "o",
+                shortcut=toga.Key.MOD_1 + "o",
                 group=Group.FILE,
                 section=0,
             ),

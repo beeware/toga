@@ -18,6 +18,9 @@ from .screens import Screen as ScreenImpl
 
 
 class App:
+    # GTK apps exit when the last window is closed
+    CLOSE_ON_LAST_WINDOW = True
+
     def __init__(self, interface):
         self.interface = interface
         self.interface._impl = self
@@ -25,9 +28,6 @@ class App:
         gbulb.install(gtk=True)
         self.loop = asyncio.new_event_loop()
 
-        self.create()
-
-    def create(self):
         # Stimulate the build of the app
         self.native = Gtk.Application(
             application_id=self.interface.app_id,
@@ -37,6 +37,7 @@ class App:
 
         # Connect the GTK signal that will cause app startup to occur
         self.native.connect("startup", self.gtk_startup)
+        # Activate is a no-op, but GTK complains if you don't implement it
         self.native.connect("activate", self.gtk_activate)
 
         self.actions = None
@@ -46,14 +47,6 @@ class App:
 
     def gtk_startup(self, data=None):
         self.interface._startup()
-
-        # Now that we have menus, make the app take responsibility for
-        # showing the menubar.
-        # This is required because of inconsistencies in how the Gnome
-        # shell operates on different windowing environments;
-        # see #872 for details.
-        settings = Gtk.Settings.get_default()
-        settings.set_property("gtk-shell-shows-menubar", False)
 
         # Set any custom styles
         css_provider = Gtk.CssProvider()
@@ -172,6 +165,14 @@ class App:
         # Set the menu for the app.
         self.native.set_menubar(menubar)
 
+        # Now that we have menus, make the app take responsibility for
+        # showing the menubar.
+        # This is required because of inconsistencies in how the Gnome
+        # shell operates on different windowing environments;
+        # see #872 for details.
+        settings = Gtk.Settings.get_default()
+        settings.set_property("gtk-shell-shows-menubar", False)
+
     ######################################################################
     # App lifecycle
     ######################################################################
@@ -184,7 +185,14 @@ class App:
         # Modify signal handlers to make sure Ctrl-C is caught and handled.
         signal.signal(signal.SIGINT, signal.SIG_DFL)
 
+        # Retain a reference to the app so that no-window apps can exist
+        self.native.hold()
+
         self.loop.run_forever(application=self.native)
+
+        # Release the reference to the app. This can't be invoked by the testbed,
+        # because it's after the `run_forever()` that runs the testbed.
+        self.native.release()  # pragma: no cover
 
     def set_icon(self, icon):
         for window in self.interface.windows:

@@ -1,29 +1,16 @@
-from unittest.mock import Mock
-
 from rubicon.objc import objc_id, send_message
-from rubicon.objc.collections import ObjCListInstance
 
 from toga.constants import WindowState
-from toga_cocoa.libs import (
-    NSURL,
-    NSAlertFirstButtonReturn,
-    NSAlertSecondButtonReturn,
-    NSModalResponseCancel,
-    NSModalResponseOK,
-    NSOpenPanel,
-    NSSavePanel,
-    NSWindow,
-    NSWindowStyleMask,
-)
+from toga_cocoa.libs import NSWindow, NSWindowStyleMask
 
+from .dialogs import DialogsMixin
 from .probe import BaseProbe
 
 
-class WindowProbe(BaseProbe):
+class WindowProbe(BaseProbe, DialogsMixin):
     supports_closable = True
     supports_minimizable = True
     supports_move_while_hidden = True
-    supports_multiple_select_folder = True
     supports_unminimize = True
     supports_minimize = True
     supports_placement = True
@@ -100,166 +87,6 @@ class WindowProbe(BaseProbe):
     def unminimize(self):
         self.native.deminiaturize(None)
 
-    async def close_info_dialog(self, dialog):
-        self.native.endSheet(
-            self.native.attachedSheet,
-            returnCode=NSAlertFirstButtonReturn,
-        )
-        await self.redraw("Info dialog dismissed")
-
-    async def close_question_dialog(self, dialog, result):
-        if result:
-            self.native.endSheet(
-                self.native.attachedSheet,
-                returnCode=NSAlertFirstButtonReturn,
-            )
-        else:
-            self.native.endSheet(
-                self.native.attachedSheet,
-                returnCode=NSAlertSecondButtonReturn,
-            )
-        await self.redraw(f"Question dialog ({'YES' if result else 'NO'}) dismissed")
-
-    async def close_confirm_dialog(self, dialog, result):
-        if result:
-            self.native.endSheet(
-                self.native.attachedSheet,
-                returnCode=NSAlertFirstButtonReturn,
-            )
-        else:
-            self.native.endSheet(
-                self.native.attachedSheet,
-                returnCode=NSAlertSecondButtonReturn,
-            )
-
-        await self.redraw(f"Question dialog ({'OK' if result else 'CANCEL'}) dismissed")
-
-    async def close_error_dialog(self, dialog):
-        self.native.endSheet(
-            self.native.attachedSheet,
-            returnCode=NSAlertFirstButtonReturn,
-        )
-        await self.redraw("Error dialog dismissed")
-
-    async def close_stack_trace_dialog(self, dialog, result):
-        if result is None:
-            self.native.endSheet(
-                self.native.attachedSheet,
-                returnCode=NSAlertFirstButtonReturn,
-            )
-            await self.redraw("Stack trace dialog dismissed")
-        else:
-            if result:
-                self.native.endSheet(
-                    self.native.attachedSheet,
-                    returnCode=NSAlertFirstButtonReturn,
-                )
-            else:
-                self.native.endSheet(
-                    self.native.attachedSheet,
-                    returnCode=NSAlertSecondButtonReturn,
-                )
-
-            await self.redraw(
-                f"Stack trace dialog ({'RETRY' if result else 'QUIT'}) dismissed"
-            )
-
-    async def close_save_file_dialog(self, dialog, result):
-        assert isinstance(dialog.native, NSSavePanel)
-
-        if result:
-            self.native.endSheet(
-                self.native.attachedSheet,
-                returnCode=NSModalResponseOK,
-            )
-        else:
-            self.native.endSheet(
-                self.native.attachedSheet,
-                returnCode=NSModalResponseCancel,
-            )
-
-        await self.redraw(
-            f"Save file dialog ({'SAVE' if result else 'CANCEL'}) dismissed"
-        )
-
-    async def close_open_file_dialog(self, dialog, result, multiple_select):
-        assert isinstance(dialog.native, NSOpenPanel)
-
-        if result is not None:
-            if multiple_select:
-                # Since we are mocking selected_path(), it's never actually invoked
-                # under test conditions. Call it just to confirm that it returns the
-                # type we think it does.
-                assert isinstance(dialog.selected_paths(), ObjCListInstance)
-
-                dialog.selected_paths = Mock(
-                    return_value=[
-                        NSURL.fileURLWithPath(str(path), isDirectory=False)
-                        for path in result
-                    ]
-                )
-            else:
-                dialog.selected_path = Mock(
-                    return_value=NSURL.fileURLWithPath(
-                        str(result),
-                        isDirectory=False,
-                    )
-                )
-
-            self.native.endSheet(
-                self.native.attachedSheet,
-                returnCode=NSModalResponseOK,
-            )
-        else:
-            self.native.endSheet(
-                self.native.attachedSheet,
-                returnCode=NSModalResponseCancel,
-            )
-
-        await self.redraw(
-            f"Open {'multiselect ' if multiple_select else ''}file dialog "
-            f"({'OPEN' if result else 'CANCEL'}) dismissed"
-        )
-
-    async def close_select_folder_dialog(self, dialog, result, multiple_select):
-        assert isinstance(dialog.native, NSOpenPanel)
-
-        if result is not None:
-            if multiple_select:
-                # Since we are mocking selected_path(), it's never actually invoked
-                # under test conditions. Call it just to confirm that it returns the
-                # type we think it does.
-                assert isinstance(dialog.selected_paths(), ObjCListInstance)
-
-                dialog.selected_paths = Mock(
-                    return_value=[
-                        NSURL.fileURLWithPath(str(path), isDirectory=True)
-                        for path in result
-                    ]
-                )
-            else:
-                dialog.selected_path = Mock(
-                    return_value=NSURL.fileURLWithPath(
-                        str(result),
-                        isDirectory=True,
-                    )
-                )
-
-            self.native.endSheet(
-                self.native.attachedSheet,
-                returnCode=NSModalResponseOK,
-            )
-        else:
-            self.native.endSheet(
-                self.native.attachedSheet,
-                returnCode=NSModalResponseCancel,
-            )
-
-        await self.redraw(
-            f"{'Multiselect' if multiple_select else ' Select'} folder dialog "
-            f"({'OPEN' if result else 'CANCEL'}) dismissed"
-        )
-
     def has_toolbar(self):
         return self.native.toolbar is not None
 
@@ -287,5 +114,21 @@ class WindowProbe(BaseProbe):
             argtypes=[objc_id],
         )
 
-    def is_modal_dialog(self, dialog):
-        return True
+    def _setup_alert_dialog_result(self, dialog, result):
+        # Install an overridden show method that invokes the original,
+        # but then closes the open dialog.
+        orig_show = dialog._impl.show
+
+        def automated_show(host_window, future):
+            orig_show(host_window, future)
+
+            dialog._impl.host_window.endSheet(
+                dialog._impl.host_window.attachedSheet,
+                returnCode=result,
+            )
+
+        dialog._impl.show = automated_show
+
+    def _setup_file_dialog_result(self, dialog, result):
+        # Closing a window modal file dialog is the same as alerts.
+        self._setup_alert_dialog_result(dialog, result)

@@ -10,6 +10,7 @@ import pytest
 
 import toga
 from toga_dummy.utils import (
+    EventLog,
     assert_action_not_performed,
     assert_action_performed,
     assert_action_performed_with,
@@ -408,6 +409,52 @@ def test_no_current_window(app):
     assert app.current_window is None
 
 
+def test_change_main_window(app):
+    """The main window value can be changed."""
+    new_main = toga.Window()
+
+    app.main_window = new_main
+
+    assert app.main_window == new_main
+    assert_action_performed_with(app, "set_main_window", window=new_main)
+
+
+def test_change_invalid_main_window(app):
+    """If the new main window value isn't valid, an exception is raised."""
+    old_main = app.main_window
+    EventLog.reset()
+
+    # Assign a main window value that will raise an exception
+    with pytest.raises(
+        ValueError,
+        match=r"Invalid dummy main window value",
+    ):
+        bad_window = toga.Window()
+        bad_window._invalid_main_window = True
+        app.main_window = bad_window
+
+    # Main window hasn't changed.
+    assert app.main_window == old_main
+    assert_action_not_performed(app, "set_main_window")
+
+
+def test_change_invalid_creation_main_window(event_loop):
+    """If the new main window value provided at creation isn't valid, an exception is raised."""
+
+    class BadMainWindowApp(toga.App):
+        def startup(self):
+            window = toga.MainWindow()
+            window._invalid_main_window = True
+            self.main_window = window
+
+    # Creating an app with an invalid main window raises an exception.
+    with pytest.raises(
+        ValueError,
+        match=r"Invalid dummy main window value",
+    ):
+        BadMainWindowApp(formal_name="Test App", app_id="org.example.test")
+
+
 def test_full_screen(event_loop):
     """The app can be put into full screen mode."""
     app = toga.App(formal_name="Test App", app_id="org.example.test")
@@ -748,7 +795,18 @@ def test_startup_subclass_no_main_window(event_loop):
         def startup(self):
             pass
 
-    with pytest.raises(ValueError, match=r"Application does not have a main window."):
+    with pytest.raises(ValueError, match=r"Application has not set a main window."):
+        SubclassedApp(formal_name="Test App", app_id="org.example.test")
+
+
+def test_startup_subclass_unknown_main_window(event_loop):
+    """If a subclassed app uses an unknown main window type, an error is raised"""
+
+    class SubclassedApp(toga.App):
+        def startup(self):
+            self.main_window = 42
+
+    with pytest.raises(ValueError, match=r"Don't know how to use 42 as a main window"):
         SubclassedApp(formal_name="Test App", app_id="org.example.test")
 
 
@@ -839,6 +897,36 @@ def test_exit_rejected_handler(app):
     on_exit_handler.assert_called_once_with(app)
 
 
+def test_no_exit_last_window_close(app):
+    """Windows can be created and closed without closing the app."""
+    # App has 1 window initially
+    assert len(app.windows) == 1
+
+    # Create a second, non-main window
+    window1 = toga.Window()
+    window1.content = toga.Box()
+    window1.show()
+
+    window2 = toga.Window()
+    window2.content = toga.Box()
+    window2.show()
+
+    # App has 3 windows
+    assert len(app.windows) == 3
+
+    # Close one of the secondary windows
+    window1.close()
+
+    # Window has been closed, but the app hasn't exited.
+    assert len(app.windows) == 2
+    assert_action_performed(window1, "close")
+    assert_action_not_performed(app, "exit")
+
+    # Closing the MainWindow kills the app
+    app.main_window.close()
+    assert_action_performed(app, "exit")
+
+
 def test_loop(app, event_loop):
     """The main thread's event loop can be accessed."""
     assert isinstance(app.loop, asyncio.AbstractEventLoop)
@@ -862,6 +950,46 @@ def test_background_task(app):
 
     # Once the loop has executed, the background task should have executed as well.
     canary.assert_called_once()
+
+
+def test_running(event_loop):
+    """The running() method is invoked when the main loop starts"""
+    running = {}
+
+    class SubclassedApp(toga.App):
+        def startup(self):
+            self.main_window = toga.MainWindow()
+
+        def running(self):
+            running["called"] = True
+
+    app = SubclassedApp(formal_name="Test App", app_id="org.example.test")
+
+    # Run a fake main loop.
+    app.loop.run_until_complete(asyncio.sleep(0.5))
+
+    # The running method was invoked
+    assert running["called"]
+
+
+def test_async_running_method(event_loop):
+    """The running() method can be a coroutine."""
+    running = {}
+
+    class SubclassedApp(toga.App):
+        def startup(self):
+            self.main_window = toga.MainWindow()
+
+        async def running(self):
+            running["called"] = True
+
+    app = SubclassedApp(formal_name="Test App", app_id="org.example.test")
+
+    # Run a fake main loop.
+    app.loop.run_until_complete(asyncio.sleep(0.5))
+
+    # The running coroutine was invoked
+    assert running["called"]
 
 
 def test_deprecated_id(event_loop):

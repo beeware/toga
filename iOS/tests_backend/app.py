@@ -9,10 +9,11 @@ from toga_iOS.libs import (
     UIApplication,
 )
 
+from .dialogs import DialogsMixin
 from .probe import BaseProbe
 
 
-class AppProbe(BaseProbe):
+class AppProbe(BaseProbe, DialogsMixin):
     supports_key = False
 
     def __init__(self, app):

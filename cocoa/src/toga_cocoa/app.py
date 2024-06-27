@@ -1,6 +1,5 @@
 import asyncio
 import inspect
-import os
 import sys
 from pathlib import Path
 from urllib.parse import unquote, urlparse
@@ -29,6 +28,7 @@ from .libs import (
     NSAboutPanelOptionApplicationVersion,
     NSAboutPanelOptionVersion,
     NSApplication,
+    NSApplicationActivationPolicyAccessory,
     NSApplicationActivationPolicyRegular,
     NSBeep,
     NSBundle,
@@ -109,6 +109,9 @@ class AppDelegate(NSObject):
 
 
 class App:
+    # macOS apps persist when there are no windows open
+    CLOSE_ON_LAST_WINDOW = False
+
     def __init__(self, interface):
         self.interface = interface
         self.interface._impl = self
@@ -118,12 +121,7 @@ class App:
         asyncio.set_event_loop_policy(EventLoopPolicy())
         self.loop = asyncio.new_event_loop()
 
-        # Stimulate the build of the app
-        self.create()
-
-    def create(self):
         self.native = NSApplication.sharedApplication
-        self.native.setActivationPolicy(NSApplicationActivationPolicyRegular)
 
         # The app icon been set *before* the app instance is created. However, we only
         # need to set the icon on the app if it has been explicitly defined; the default
@@ -131,15 +129,13 @@ class App:
         if self.interface.icon._impl.path:
             self.set_icon(self.interface.icon)  # pragma: no cover
 
-        self.resource_path = os.path.dirname(
-            os.path.dirname(NSBundle.mainBundle.bundlePath)
-        )
+        self.resource_path = Path(NSBundle.mainBundle.bundlePath).parent.parent
 
         self.appDelegate = AppDelegate.alloc().init()
         self.appDelegate.impl = self
         self.appDelegate.interface = self.interface
         self.appDelegate.native = self.native
-        self.native.setDelegate_(self.appDelegate)
+        self.native.setDelegate(self.appDelegate)
 
         # Create the lookup table for menu items
         self._menu_groups = {}
@@ -423,7 +419,10 @@ class App:
             self.native.setApplicationIconImage(None)
 
     def set_main_window(self, window):
-        pass
+        if window == toga.App.BACKGROUND:
+            self.native.setActivationPolicy(NSApplicationActivationPolicyAccessory)
+        else:
+            self.native.setActivationPolicy(NSApplicationActivationPolicyRegular)
 
     ######################################################################
     # App resources

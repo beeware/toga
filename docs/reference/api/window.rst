@@ -81,6 +81,7 @@ Once a window has been closed (either by user action, or programmatically with
 
 Notes
 -----
+
 * The operating system may provide controls that allow the user to resize, reposition,
   minimize, maximize or close the window. However, the availability of these controls
   is entirely operating system dependent.
