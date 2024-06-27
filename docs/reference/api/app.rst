@@ -174,4 +174,5 @@ Reference
 
 .. autoprotocol:: toga.app.AppStartupMethod
 .. autoprotocol:: toga.app.BackgroundTask
+.. autoprotocol:: toga.app.OnRunningHandler
 .. autoprotocol:: toga.app.OnExitHandler
