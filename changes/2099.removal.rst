@@ -1,0 +1,1 @@
+The ``add_background_task()`` API on ``toga.App`` has been deprecated. Background tasks can be implemented using the new ``on_running`` event handler, or by using :any:`asyncio.create_task`.

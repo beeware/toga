@@ -13,7 +13,7 @@ class ExampleStatusIconApp(toga.App):
         #
         # Support for defining status icons is coming soon (See #97)
 
-    async def running(self):
+    async def on_running(self):
         # Once the app is running, start a heartbeat
         while True:
             await asyncio.sleep(1)

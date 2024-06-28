@@ -136,7 +136,7 @@ class WindowDemoApp(toga.App):
     def do_beep(self, widget):
         self.app.beep()
 
-    async def exit_handler(self, app, **kwargs):
+    async def on_exit(self):
         self.close_count += 1
         if self.close_count % 2 == 1:
             await self.main_window.dialog(
@@ -160,7 +160,6 @@ class WindowDemoApp(toga.App):
 
         # Set up main window
         self.main_window = toga.MainWindow()
-        self.on_exit = self.exit_handler
 
         # Label to show responses.
         self.label = toga.Label("Ready.")

@@ -586,11 +586,12 @@ def test_simple_handler_function():
         handler_call["kwargs"] = kwargs
         return 42
 
-    wrapped = simple_handler(handler)
+    wrapped = simple_handler(handler, "arg1", "arg2", kwarg1=3, kwarg2=4)
 
     # Invoke the handler as if it were a method handler (i.e., with the extra "widget"
     # argument)
-    assert wrapped("obj", "arg1", "arg2", kwarg1=3, kwarg2=4) == 42
+    assert wrapped("obj") == 42
+    assert wrapped._raw == handler
 
     # The "widget" bound argument has been dropped
     assert handler_call == {
@@ -608,16 +609,12 @@ def test_simple_handler_coroutine(event_loop):
         handler_call["kwargs"] = kwargs
         return 42
 
-    wrapped = simple_handler(handler)
+    wrapped = simple_handler(handler, "arg1", "arg2", kwarg1=3, kwarg2=4)
 
     # Invoke the handler as if it were a coroutine method handler (i.e., with the extra
     # "widget" argument)
-    assert (
-        event_loop.run_until_complete(
-            wrapped("obj", "arg1", "arg2", kwarg1=3, kwarg2=4)
-        )
-        == 42
-    )
+    assert event_loop.run_until_complete(wrapped("obj")) == 42
+    assert wrapped._raw == handler
 
     # The "widget" bound argument has been dropped
     assert handler_call == {

@@ -41,7 +41,11 @@ def test_create(event_loop, AppClass):
     assert custom_app.formal_name == "Custom App"
     assert custom_app.app_id == "org.beeware.customized-app"
     assert custom_app.app_name == "customized-app"
-    assert custom_app.on_exit._raw is None
+
+    # The default implementations of the on_running and on_exit handlers
+    # have been wrapped as simple handlers
+    assert custom_app.on_running._raw.__func__ == toga.App.on_running
+    assert custom_app.on_exit._raw.__func__ == toga.App.on_exit
 
     # About menu item exists and is disabled
     assert toga.Command.ABOUT in custom_app.commands
