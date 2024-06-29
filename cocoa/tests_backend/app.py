@@ -1,5 +1,4 @@
 from pathlib import Path
-from unittest.mock import Mock
 
 import PIL.Image
 from rubicon.objc import SEL, NSPoint, ObjCClass, objc_id, send_message
@@ -275,11 +274,10 @@ class AppProbe(BaseProbe, DialogsMixin):
 
         dialog._impl.show = automated_show
 
-    async def assert_open_initial_document(self, monkeypatch):
-        mock_open = Mock()
-
+    async def open_initial_document(self, monkeypatch, document_path):
+        # Mock the async menu item with an implementation that directly opens the doc
         async def _mock_open():
-            mock_open()
+            self.app.open(document_path)
 
         monkeypatch.setattr(self.app, "_open", _mock_open)
 
@@ -303,12 +301,6 @@ class AppProbe(BaseProbe, DialogsMixin):
         )
 
         await self.redraw("Initial document has been triggered", delay=0.1)
-
-        # _open() has been invoked.
-        mock_open.assert_called_once_with()
-
-        # If we've got here, the test has passed.
-        return True
 
     def open_document_by_drag(self, document_path):
         self.app._impl.native.delegate.application(

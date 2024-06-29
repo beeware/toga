@@ -212,7 +212,7 @@ class AppProbe(BaseProbe, DialogsMixin):
         # No special handling needed to restore standard app.
         await self.redraw("Restore to standard app")
 
-    async def assert_open_initial_document(self, monkeypatch):
+    async def open_initial_document(self, monkeypatch, document_path):
         pytest.xfail("GTK doesn't require initial document support")
 
     def open_document_by_drag(self, document_path):
