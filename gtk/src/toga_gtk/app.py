@@ -2,7 +2,6 @@ import asyncio
 import os
 import signal
 import sys
-from pathlib import Path
 
 import gbulb
 
@@ -102,6 +101,22 @@ class App:
                     id=Command.PREFERENCES,
                 ),
             )  # pragma: no cover
+
+        # If the app has document types, or has overridden open(), provide a menu item.
+        # Testbed always has document types, so this must be covered
+        if self.interface.document_types or overridden(
+            self.interface.open
+        ):  # pragma: no branch
+            self.interface.commands.add(
+                Command(
+                    simple_handler(self.interface._open),
+                    text="Open...",
+                    shortcut=toga.Key.MOD_1 + "o",
+                    group=toga.Group.FILE,
+                    section=0,
+                    id=Command.OPEN,
+                ),
+            )
 
     def _submenu(self, group, menubar):
         try:
@@ -286,44 +301,3 @@ class App:
     def exit_full_screen(self, windows):
         for window in windows:
             window._impl.set_full_screen(False)
-
-
-class DocumentApp(App):  # pragma: no cover
-    def create_app_commands(self):
-        super().create_app_commands()
-        self.interface.commands.add(
-            Command(
-                self.open_file,
-                text="Open...",
-                shortcut=toga.Key.MOD_1 + "o",
-                group=toga.Group.FILE,
-                section=0,
-            ),
-        )
-
-    def gtk_startup(self, data=None):
-        super().gtk_startup(data=data)
-
-        try:
-            # Look for a filename specified on the command line
-            self.interface._open(Path(sys.argv[1]))
-        except IndexError:
-            # Nothing on the command line; open a file dialog instead.
-            # Create a temporary window so we have context for the dialog
-            m = toga.Window()
-            m.open_file_dialog(
-                self.interface.formal_name,
-                file_types=self.interface.document_types.keys(),
-                on_result=lambda dialog, path: (
-                    self.interface._open(path) if path else self.exit()
-                ),
-            )
-
-    def open_file(self, widget, **kwargs):
-        # Create a temporary window so we have context for the dialog
-        m = toga.Window()
-        m.open_file_dialog(
-            self.interface.formal_name,
-            file_types=self.interface.document_types.keys(),
-            on_result=lambda dialog, path: self.interface._open(path) if path else None,
-        )

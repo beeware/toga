@@ -177,6 +177,22 @@ class App:
                 ),
             )  # pragma: no cover
 
+        # If the app has document types, or has overridden open(), provide a menu item.
+        # Testbed always has document types, so this must be covered
+        if self.interface.document_types or overridden(
+            self.interface.open
+        ):  # pragma: no branch
+            self.interface.commands.add(
+                Command(
+                    simple_handler(self.interface._open),
+                    text="Open...",
+                    shortcut=toga.Key.MOD_1 + "o",
+                    group=toga.Group.FILE,
+                    section=0,
+                    id=Command.OPEN,
+                ),
+            )
+
     def create_menus(self):
         # Winforms menus are created on the Window.
         for window in self.interface.windows:
@@ -311,17 +327,3 @@ class App:
     def exit_full_screen(self, windows):
         for window in windows:
             window._impl.set_full_screen(False)
-
-
-class DocumentApp(App):  # pragma: no cover
-    def create_app_commands(self):
-        super().create_app_commands()
-        self.interface.commands.add(
-            Command(
-                lambda w: self.open_file,
-                text="Open...",
-                shortcut=toga.Key.MOD_1 + "o",
-                group=Group.FILE,
-                section=0,
-            ),
-        )

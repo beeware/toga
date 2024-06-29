@@ -300,6 +300,7 @@ class App:
                     simple_handler(self.interface._open),
                     text="Open\u2026",
                     group=Group.FILE,
+                    section=0,
                     id=Command.OPEN,
                 )
             )
