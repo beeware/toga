@@ -1,7 +1,8 @@
 from pathlib import Path
+from unittest.mock import Mock
 
 import PIL.Image
-from rubicon.objc import NSPoint, ObjCClass, objc_id, send_message
+from rubicon.objc import SEL, NSPoint, ObjCClass, objc_id, send_message
 
 import toga
 from toga_cocoa.keys import cocoa_key, toga_key
@@ -273,3 +274,44 @@ class AppProbe(BaseProbe, DialogsMixin):
             dialog._impl.completion_handler(result)
 
         dialog._impl.show = automated_show
+
+    async def assert_open_initial_document(self, monkeypatch):
+        mock_open = Mock()
+
+        async def _mock_open():
+            mock_open()
+
+        monkeypatch.setattr(self.app, "_open", _mock_open)
+
+        # Call the APIs that are triggered when the app is activated.
+        nsapp = self.app._impl.native
+
+        # We are running in an async context. Invoking a selector moves
+        # to an sync context, but the handling needs to queue an async
+        # task. By invoking the relevant methods using Objective C's
+        # deferred invocation mechanism, the method is invoked in a
+        # sync context, so it is able to queue the required async task.
+        nsapp.delegate.performSelector(
+            SEL("applicationShouldOpenUntitledFile:"),
+            withObject=nsapp,
+            afterDelay=0.01,
+        )
+        nsapp.delegate.performSelector(
+            SEL("applicationOpenUntitledFile:"),
+            withObject=nsapp,
+            afterDelay=0.02,
+        )
+
+        await self.redraw("Initial document has been triggered", delay=0.1)
+
+        # _open() has been invoked.
+        mock_open.assert_called_once_with()
+
+        # If we've got here, the test has passed.
+        return True
+
+    def open_document_by_drag(self, document_path):
+        self.app._impl.native.delegate.application(
+            self.app._impl.native,
+            openFiles=[str(document_path)],
+        )

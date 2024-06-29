@@ -119,7 +119,7 @@ class Window(LoggedObject):
     ######################################################################
 
     def get_visible(self):
-        return self._get_value("visible")
+        return self._get_value("visible", False)
 
     def hide(self):
         self._action("hide")

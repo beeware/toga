@@ -13,16 +13,21 @@ from toga_dummy.utils import (
 
 class ExampleDocument(toga.Document):
     document_type = "Example Document"
+    read_error = None
 
     def create(self):
         self.main_window = toga.DocumentMainWindow(self)
         self._mock_read = Mock(self.path)
 
     def read(self):
-        # We don't actually care about the file or it's contents, but it needs to exist;
-        # so we open it to verify that behavior.
-        with self.path.open():
-            self._mock_read(self.path)
+        if self.read_error:
+            # If the object has a "read_error" attribute, raise that exception
+            raise self.read_error
+        else:
+            # We don't actually care about the file or it's contents, but it needs to exist;
+            # so we open it to verify that behavior.
+            with self.path.open():
+                self._mock_read(self.path)
 
 
 class OtherDocument(toga.Document):
@@ -117,7 +122,7 @@ def test_create_no_cmdline_default_handling(monkeypatch):
 
     assert app.document_types == {"foobar": ExampleDocument}
 
-    # No documents or windows exit
+    # No documents or windows exist
     assert len(app.documents) == 0
     assert len(app.windows) == 0
 
@@ -171,10 +176,11 @@ def test_create_with_unknown_document_type(monkeypatch, capsys):
 
 
 def test_create_with_missing_file(monkeypatch, capsys):
-    """If the document specified at the command line is a known type, but not present, an exception is raised"""
+    """If the document specified at the command line is a known type, but not present,
+    an error is logged."""
     monkeypatch.setattr(sys, "argv", ["app-exe", "/path/to/filename.foobar"])
 
-    ExampleDocumentApp(
+    app = ExampleDocumentApp(
         "Test App",
         "org.beeware.document-app",
         document_types={"foobar": ExampleDocument},
@@ -182,6 +188,40 @@ def test_create_with_missing_file(monkeypatch, capsys):
 
     stdout = capsys.readouterr().out
     assert "Document /path/to/filename.foobar not found" in stdout
+
+    # No documents exist
+    assert len(app.documents) == 0
+    # There is 1 window... but it's not visible, and a request to exit has been issued
+    # because it's would be the last (and only) window.
+    assert len(app.windows) == 1
+    assert not list(app.windows)[0].visible
+    assert_action_performed(app, "exit")
+
+
+def test_create_with_bad_file(monkeypatch, example_file, capsys):
+    """If an error occurs reading the document, an error is logged is raised."""
+    monkeypatch.setattr(sys, "argv", ["app-exe", str(example_file)])
+    # Mock a reading error.
+    monkeypatch.setattr(
+        ExampleDocument, "read_error", ValueError("Bad file. No cookie.")
+    )
+
+    app = ExampleDocumentApp(
+        "Test App",
+        "org.beeware.document-app",
+        document_types={"foobar": ExampleDocument},
+    )
+
+    stdout = capsys.readouterr().out
+    assert "path/to/filename.foobar: Bad file. No cookie.\n" in stdout
+
+    # No documents exist
+    assert len(app.documents) == 0
+    # There is 1 window... but it's not visible, and a request to exit has been issued
+    # because it's would be the last (and only) window.
+    assert len(app.windows) == 1
+    assert not list(app.windows)[0].visible
+    assert_action_performed(app, "exit")
 
 
 def test_close_last_document_non_persistent(monkeypatch, example_file, other_file):
@@ -265,6 +305,31 @@ def test_close_last_document_persistent(monkeypatch, example_file, other_file):
     assert_action_not_performed(app, "exit")
 
 
+def test_open_missing_file(doc_app):
+    """Attempting to read a missing file of a known type raises an error."""
+    with pytest.raises(FileNotFoundError):
+        doc_app.open("/does/not/exist.foobar")
+
+    # Only the original document and window exists
+    assert len(doc_app.documents) == 1
+    assert len(doc_app.windows) == 1
+
+
+def test_open_bad_file(monkeypatch, doc_app, example_file):
+    """If an error occurs reading the document, an error is logged is raised."""
+    # Mock a reading error.
+    monkeypatch.setattr(
+        ExampleDocument, "read_error", ValueError("Bad file. No cookie.")
+    )
+
+    with pytest.raises(ValueError, match=r"Bad file. No cookie."):
+        doc_app.open(example_file)
+
+    # Only the original document and window exists
+    assert len(doc_app.documents) == 1
+    assert len(doc_app.windows) == 1
+
+
 def test_open_menu(doc_app, example_file):
     """The open method is activated by the open menu"""
     doc_app._impl.dialog_responses["OpenFileDialog"] = [example_file]
@@ -291,6 +356,21 @@ def test_open_menu_cancel(doc_app):
     doc_app.loop.run_until_complete(future)
 
     # No second window was opened
+    assert len(doc_app.documents) == 1
+    assert len(doc_app.windows) == 1
+
+
+def test_open_menu_duplicate(doc_app, example_file):
+    """If the open method is activated by the open menu"""
+    # Mock a pre-existing open dialog
+    doc_app.__open_dialog = Mock()
+
+    # Activate the open dialog a second time.
+    future = doc_app.commands[toga.Command.OPEN].action()
+
+    doc_app.loop.run_until_complete(future)
+
+    # There is still only one document
     assert len(doc_app.documents) == 1
     assert len(doc_app.windows) == 1
 

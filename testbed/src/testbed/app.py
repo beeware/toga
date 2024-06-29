@@ -3,6 +3,24 @@ from unittest.mock import Mock
 import toga
 
 
+class TestbedDoc(toga.Document):
+    document_type = "Testbed Document"
+
+    def create(self):
+        # Create the main window for the document.
+        self.main_window = toga.DocumentMainWindow(
+            doc=self,
+            content=toga.Box(),
+        )
+        self._content = Mock()
+
+    def read(self):
+        if self.path.name == "broken.testbed":
+            raise RuntimeError("Unable to load broken document")
+        else:
+            self._content.read(self.path)
+
+
 class Testbed(toga.App):
     # Objects can be added to this list to avoid them being garbage collected in the
     # middle of the tests running. This is problematic, at least, for WebView (#2648).
@@ -100,4 +118,9 @@ class Testbed(toga.App):
 
 
 def main():
-    return Testbed(app_name="testbed")
+    return Testbed(
+        app_name="testbed",
+        document_types={
+            "testbed": TestbedDoc,
+        },
+    )

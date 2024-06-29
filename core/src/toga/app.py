@@ -581,6 +581,21 @@ class App:
         else:
             raise ValueError(f"Don't know how to use {window!r} as a main window.")
 
+    def _open_initial_document(self, filename):
+        """Internal utility method for opening a document provided at the command line.
+
+        This is abstracted so that backends that have their own management of command
+        line arguments can share the same error handling.
+
+        :param filename: The filename passed as an argument, as a string.
+        """
+        try:
+            self.open(Path(filename).absolute())
+        except FileNotFoundError:
+            print(f"Document {filename} not found")
+        except Exception as e:
+            print(f"{filename}: {e}")
+
     def _create_initial_windows(self):
         """Internal utility method for creating initial windows based on command line
         arguments. This method is used when the platform doesn't provide it's own
@@ -595,12 +610,7 @@ class App:
 
         if self.document_types:
             for filename in sys.argv[1:]:
-                try:
-                    self.open(Path(filename).absolute())
-                except ValueError as e:
-                    print(e)
-                except FileNotFoundError:
-                    print(f"Document {filename} not found")
+                self._open_initial_document(filename)
 
         # Safety check: Do we have at least one window?
         if len(self.app.windows) == 0 and self.main_window is None:
@@ -760,16 +770,24 @@ class App:
         return await dialog._show(None)
 
     async def _open(self, **kwargs):
-        # The menu interface to open(). Prompt the user to select a file;
-        # then open that file.
-        path = await self.dialog(
-            OpenFileDialog(
-                self.formal_name,
-                file_types=(
-                    list(self.document_types.keys()) if self.document_types else None
-                ),
-            )
+        # The menu interface to open(). Prompt the user to select a file; then open that
+        # file.
+
+        # A safety catch: if app modal dialogs aren't actually modal (eg, macOS) prevent
+        # a second open dialog from being opened when one is already active. Attach the
+        # dialog instance as a private attribute; delete as soon as the future is
+        # complete.
+        if hasattr(self, "__open_dialog"):
+            return
+
+        self.__open_dialog = OpenFileDialog(
+            self.formal_name,
+            file_types=(
+                list(self.document_types.keys()) if self.document_types else None
+            ),
         )
+        path = await self.dialog(self.__open_dialog)
+        del self.__open_dialog
 
         if path:
             self.open(path)
@@ -798,10 +816,16 @@ class App:
             )
         else:
             document = DocType(app=self)
-            document.open(path)
-
-            self._documents.append(document)
-            document.show()
+            try:
+                document.open(path)
+            except Exception:
+                # Open failed; make sure any windows opened by the document are closed.
+                document.close()
+                raise
+            else:
+                # Document is open; register the document and show.
+                self._documents.append(document)
+                document.show()
 
     @overridable
     def preferences(self) -> None:

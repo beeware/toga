@@ -870,5 +870,11 @@ class DocumentMainWindow(Window):
     def _close(self):
         # When then window is closed, remove the document it is managing from the app's
         # list of managed documents.
-        self._app._documents.remove(self.doc)
+        try:
+            self._app._documents.remove(self.doc)
+        except ValueError:
+            # If the error occurred opening the document,
+            # the document might not be registered.
+            pass
+
         super()._close()

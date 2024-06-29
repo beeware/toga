@@ -66,6 +66,14 @@ class Document(ABC):
     # Document operations
     ######################################################################
 
+    def close(self):
+        """Close all the windows for this document.
+
+        This will immediately close any document windows, *without* invoking any
+        ``on_close`` handlers.
+        """
+        self.main_window.close()
+
     def open(self, path: str | Path):
         """Open a file as a document.
 
