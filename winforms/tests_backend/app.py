@@ -205,3 +205,9 @@ class AppProbe(BaseProbe, DialogsMixin):
     async def restore_standard_app(self):
         # No special handling needed to restore standard app.
         await self.redraw("Restore to standard app")
+
+    async def assert_open_initial_document(self, monkeypatch):
+        pytest.xfail("Winforms doesn't require initial document support")
+
+    def open_document_by_drag(self, document_path):
+        pytest.xfail("Winforms doesn't support opening documents by drag")
