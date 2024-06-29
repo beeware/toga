@@ -54,6 +54,9 @@ class PythonAppDelegate(UIResponder):
 class App:
     # iOS apps exit when the last window is closed
     CLOSE_ON_LAST_WINDOW = True
+    # iOS doesn't have command line handling;
+    # but saying it does shortcuts the default handling
+    HANDLES_COMMAND_LINE = True
 
     def __init__(self, interface):
         self.interface = interface

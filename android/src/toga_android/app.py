@@ -186,6 +186,9 @@ class TogaApp(dynamic_proxy(IPythonApp)):
 class App:
     # Android apps exit when the last window is closed
     CLOSE_ON_LAST_WINDOW = True
+    # Android doesn't have command line handling;
+    # but saying it does shortcuts the default handling
+    HANDLES_COMMAND_LINE = True
 
     def __init__(self, interface):
         self.interface = interface

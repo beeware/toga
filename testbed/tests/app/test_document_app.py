@@ -5,10 +5,12 @@ import pytest
 import toga
 
 ####################################################################################
-# Desktop platform tests
+# Document API tests
 ####################################################################################
 if toga.platform.current_platform not in {"macOS", "windows", "linux"}:
-    pytest.skip("Test is specific to desktop platforms", allow_module_level=True)
+    pytest.skip(
+        "Document API is specific to desktop platforms", allow_module_level=True
+    )
 
 
 async def test_open_document(app, app_probe):
