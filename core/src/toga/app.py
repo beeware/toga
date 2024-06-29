@@ -13,11 +13,8 @@ from typing import TYPE_CHECKING, Any, MutableSet, Protocol
 from weakref import WeakValueDictionary
 
 from toga.command import CommandSet
-
 from toga.constants import WindowState
-
 from toga.handlers import simple_handler, wrapped_handler
-
 from toga.hardware.camera import Camera
 from toga.hardware.location import Location
 from toga.icons import Icon
