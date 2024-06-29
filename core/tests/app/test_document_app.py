@@ -88,19 +88,43 @@ def doc_app(monkeypatch, event_loop, example_file):
     return app
 
 
-def test_create_no_cmdline(monkeypatch):
-    """A document app can be created with no command line."""
+def test_create_no_cmdline_no_document_types(monkeypatch):
+    """A app without document types and no windows raises an error."""
     monkeypatch.setattr(sys, "argv", ["app-exe"])
 
     with pytest.raises(
         ValueError,
-        match=r"App doesn't define any initial windows.",
+        match=(
+            r"App doesn't define any initial windows, "
+            r"and doesn't have a default document type."
+        ),
     ):
         ExampleDocumentApp(
             "Test App",
             "org.beeware.document-app",
-            document_types={"foobar": ExampleDocument},
         )
+
+
+def test_create_no_cmdline(monkeypatch):
+    """A document app can be created with no command line."""
+    monkeypatch.setattr(sys, "argv", ["app-exe"])
+
+    app = ExampleDocumentApp(
+        "Test App",
+        "org.beeware.document-app",
+        document_types={"foobar": ExampleDocument},
+    )
+
+    # An untitled document has been created
+    assert len(app.documents) == 1
+    assert isinstance(app.documents[0], ExampleDocument)
+    assert app.documents[0].title == "Example Document: Untitled"
+
+    # Document window has been created and shown
+    assert len(app.windows) == 1
+    assert list(app.windows)[0] == app.documents[0].main_window
+    assert_action_performed(app.documents[0].main_window, "create DocumentMainWindow")
+    assert_action_performed(app.documents[0].main_window, "show")
 
 
 def test_create_no_cmdline_default_handling(monkeypatch):
@@ -145,6 +169,7 @@ def test_create_with_cmdline(monkeypatch, example_file):
     # The document is registered
     assert len(app.documents) == 1
     assert isinstance(app.documents[0], ExampleDocument)
+    assert app.documents[0].title == "Example Document: filename.foobar"
 
     # Document content has been read
     app.documents[0]._mock_read.assert_called_once_with(example_file)
@@ -157,22 +182,28 @@ def test_create_with_cmdline(monkeypatch, example_file):
 
 
 def test_create_with_unknown_document_type(monkeypatch, capsys):
-    """If the document specified at the command line is an unknown type, an exception is
-    raised."""
+    """If the document specified at the command line is an unknown type, it is ignored."""
     monkeypatch.setattr(sys, "argv", ["app-exe", "/path/to/filename.unknown"])
 
-    with pytest.raises(
-        ValueError,
-        match=r"App doesn't define any initial windows",
-    ):
-        ExampleDocumentApp(
-            "Test App",
-            "org.beeware.document-app",
-            document_types={"foobar": ExampleDocument},
-        )
+    app = ExampleDocumentApp(
+        "Test App",
+        "org.beeware.document-app",
+        document_types={"foobar": ExampleDocument},
+    )
 
     stdout = capsys.readouterr().out
     assert "Don't know how to open documents with extension .unknown" in stdout
+
+    # An untitled document has been created
+    assert len(app.documents) == 1
+    assert isinstance(app.documents[0], ExampleDocument)
+    assert app.documents[0].title == "Example Document: Untitled"
+
+    # Document window has been created and shown
+    assert len(app.windows) == 1
+    assert list(app.windows)[0] == app.documents[0].main_window
+    assert_action_performed(app.documents[0].main_window, "create DocumentMainWindow")
+    assert_action_performed(app.documents[0].main_window, "show")
 
 
 def test_create_with_missing_file(monkeypatch, capsys):
@@ -189,13 +220,16 @@ def test_create_with_missing_file(monkeypatch, capsys):
     stdout = capsys.readouterr().out
     assert "Document /path/to/filename.foobar not found" in stdout
 
-    # No documents exist
-    assert len(app.documents) == 0
-    # There is 1 window... but it's not visible, and a request to exit has been issued
-    # because it's would be the last (and only) window.
+    # An untitled document has been created
+    assert len(app.documents) == 1
+    assert isinstance(app.documents[0], ExampleDocument)
+    assert app.documents[0].title == "Example Document: Untitled"
+
+    # Document window has been created and shown
     assert len(app.windows) == 1
-    assert not list(app.windows)[0].visible
-    assert_action_performed(app, "exit")
+    assert list(app.windows)[0] == app.documents[0].main_window
+    assert_action_performed(app.documents[0].main_window, "create DocumentMainWindow")
+    assert_action_performed(app.documents[0].main_window, "show")
 
 
 def test_create_with_bad_file(monkeypatch, example_file, capsys):
@@ -215,13 +249,16 @@ def test_create_with_bad_file(monkeypatch, example_file, capsys):
     stdout = capsys.readouterr().out
     assert "filename.foobar: Bad file. No cookie.\n" in stdout
 
-    # No documents exist
-    assert len(app.documents) == 0
-    # There is 1 window... but it's not visible, and a request to exit has been issued
-    # because it's would be the last (and only) window.
+    # An untitled document has been created
+    assert len(app.documents) == 1
+    assert isinstance(app.documents[0], ExampleDocument)
+    assert app.documents[0].title == "Example Document: Untitled"
+
+    # Document window has been created and shown
     assert len(app.windows) == 1
-    assert not list(app.windows)[0].visible
-    assert_action_performed(app, "exit")
+    assert list(app.windows)[0] == app.documents[0].main_window
+    assert_action_performed(app.documents[0].main_window, "create DocumentMainWindow")
+    assert_action_performed(app.documents[0].main_window, "show")
 
 
 def test_close_last_document_non_persistent(monkeypatch, example_file, other_file):
@@ -244,8 +281,11 @@ def test_close_last_document_non_persistent(monkeypatch, example_file, other_fil
     assert len(app.documents) == 2
     assert len(app.windows) == 2
 
-    # Close the first document window
-    list(app.windows)[0].close()
+    # Close the first document window (in a running app loop)
+    async def close_window(app):
+        list(app.windows)[0].close()
+
+    app.loop.run_until_complete(close_window(app))
 
     # One document window closed.
     assert len(app.documents) == 1
@@ -254,8 +294,8 @@ def test_close_last_document_non_persistent(monkeypatch, example_file, other_fil
     # App hasn't exited
     assert_action_not_performed(app, "exit")
 
-    # Close the last remaining document window
-    list(app.windows)[0].close()
+    # Close the first document window (in a running app loop)
+    app.loop.run_until_complete(close_window(app))
 
     # App has now exited
     assert_action_performed(app, "exit")
@@ -284,8 +324,11 @@ def test_close_last_document_persistent(monkeypatch, example_file, other_file):
     assert len(app.documents) == 2
     assert len(app.windows) == 2
 
-    # Close the first document window
-    list(app.windows)[0].close()
+    # Close the first document window (in a running app loop)
+    async def close_window(app):
+        list(app.windows)[0].close()
+
+    app.loop.run_until_complete(close_window(app))
 
     # One document window closed.
     assert len(app.documents) == 1
@@ -295,7 +338,7 @@ def test_close_last_document_persistent(monkeypatch, example_file, other_file):
     assert_action_not_performed(app, "exit")
 
     # Close the last remaining document window
-    list(app.windows)[0].close()
+    app.loop.run_until_complete(close_window(app))
 
     # No document windows.
     assert len(app.documents) == 0

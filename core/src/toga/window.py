@@ -305,9 +305,14 @@ class Window:
             self.app._request_exit()
             close_window = False
         elif self.app.main_window is None:
-            # If this is an app without a main window, this is the last window in the
-            # app, and the platform exits on last window close, request an exit.
-            if len(self.app.windows) == 1 and self.app._impl.CLOSE_ON_LAST_WINDOW:
+            # If this is an app without a main window, the app is running, this
+            # is the last window in the app, and the platform exits on last
+            # window close, request an exit.
+            if (
+                len(self.app.windows) == 1
+                and self.app._impl.CLOSE_ON_LAST_WINDOW
+                and self.app.loop.is_running()
+            ):
                 self.app._request_exit()
                 close_window = False
 

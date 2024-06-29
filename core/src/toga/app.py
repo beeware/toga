@@ -237,7 +237,7 @@ class App:
         home_page: str | None = None,
         description: str | None = None,
         startup: AppStartupMethod | None = None,
-        document_types: dict[str, type[Document]] = None,
+        document_types: dict[str, type[Document]] | None = None,
         on_running: OnRunningHandler | None = None,
         on_exit: OnExitHandler | None = None,
         id: None = None,  # DEPRECATED
@@ -394,7 +394,7 @@ class App:
             self.icon = icon
 
         # Set up the document types and list of documents being managed.
-        self._document_types = document_types
+        self._document_types = {} if document_types is None else document_types
         self._documents = []
 
         # Install the lifecycle handlers. If passed in as an argument, or assigned using
@@ -581,20 +581,24 @@ class App:
         else:
             raise ValueError(f"Don't know how to use {window!r} as a main window.")
 
-    def _open_initial_document(self, filename):
+    def _open_initial_document(self, filename: Path) -> bool:
         """Internal utility method for opening a document provided at the command line.
 
         This is abstracted so that backends that have their own management of command
         line arguments can share the same error handling.
 
         :param filename: The filename passed as an argument, as a string.
+        :returns: ``True`` if a document was successfully loaded; ``False`` otherwise.
         """
         try:
             self.open(Path(filename).absolute())
+            return True
         except FileNotFoundError:
             print(f"Document {filename} not found")
+            return False
         except Exception as e:
             print(f"{filename}: {e}")
+            return False
 
     def _create_initial_windows(self):
         """Internal utility method for creating initial windows based on command line
@@ -608,13 +612,26 @@ class App:
         if self._impl.HANDLES_COMMAND_LINE:
             return
 
+        doc_count = len(self.windows)
         if self.document_types:
             for filename in sys.argv[1:]:
-                self._open_initial_document(filename)
+                if self._open_initial_document(filename):
+                    doc_count += 1
 
-        # Safety check: Do we have at least one window?
-        if len(self.app.windows) == 0 and self.main_window is None:
-            raise ValueError("App doesn't define any initial windows.")
+        # Safety check: Do we have at least one document?
+        if self.main_window is None and doc_count == 0:
+            try:
+                DefaultDocType = next(iter(self.document_types.values()))
+            except StopIteration:
+                raise ValueError(
+                    "App doesn't define any initial windows, "
+                    "and doesn't have a default document type."
+                )
+            else:
+                document = DefaultDocType(app=self)
+
+                self._documents.append(document)
+                document.show()
 
     def _startup(self) -> None:
         # Install the platform-specific app commands. This is done *before* startup so
