@@ -213,7 +213,7 @@ def test_create_with_bad_file(monkeypatch, example_file, capsys):
     )
 
     stdout = capsys.readouterr().out
-    assert "path/to/filename.foobar: Bad file. No cookie.\n" in stdout
+    assert "filename.foobar: Bad file. No cookie.\n" in stdout
 
     # No documents exist
     assert len(app.documents) == 0
@@ -363,7 +363,7 @@ def test_open_menu_cancel(doc_app):
 def test_open_menu_duplicate(doc_app, example_file):
     """If the open method is activated by the open menu"""
     # Mock a pre-existing open dialog
-    doc_app.__open_dialog = Mock()
+    doc_app._open_dialog = Mock()
 
     # Activate the open dialog a second time.
     future = doc_app.commands[toga.Command.OPEN].action()

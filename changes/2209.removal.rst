@@ -1,8 +1,11 @@
-The API for Documents and Document-based apps has been significantly modified. Unfortunately. these changes are not backwards compatible; any existing Document-based app will require modification.
+The API for Documents and Document-based apps has been significantly modified. Unfortunately, these changes are not backwards compatible; any existing Document-based app will require modification.
 
 The ``DocumentApp`` base class is no longer required. Apps can subclass ``App``, providing the same arguments as before.
 
 The API for ``Document`` subclasses has also changed:
-* A path is no longer provided at time of construction;
+
+* A path is no longer provided as an argument to the Document constructor;
+
 * The ``document_type`` is now specified as a class property; and
-* The ``can_close()`` handler is no longer automatically honored. It should be converted into a ``on_close`` handler and explicitly installed on the document's ``main_window``.
+
+* The ``can_close()`` handler is no longer honored. It should be converted into a normal ``on_close`` handler and explicitly installed on the document's ``main_window``.

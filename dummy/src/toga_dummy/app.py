@@ -69,7 +69,7 @@ class App(LoggedObject):
                     group=Group.APP,
                     id=Command.PREFERENCES,
                 ),
-            )  # pragma: no cover
+            )
 
         # If the app has document types, or has overridden open(), provide a menu item
         if self.interface.document_types or overridden(self.interface.open):

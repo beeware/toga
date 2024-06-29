@@ -376,5 +376,5 @@ class MainWindow(Window):
                 item_native.release()
 
 
-class DocumentMainWindow(Window):
+class DocumentMainWindow(MainWindow):
     pass

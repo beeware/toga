@@ -8,11 +8,6 @@ class TogaDocument(NSDocument):
     interface = objc_property(object, weak=True)
     impl = objc_property(object, weak=True)
 
-    # @objc_method
-    # def autosavesInPlace(self) -> bool:  # pragma: no cover
-    #     # Method is required by NSDocument
-    #     return True
-
     @objc_method
     def readFromFileWrapper_ofType_error_(
         self, fileWrapper, typeName, outError

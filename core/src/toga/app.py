@@ -777,17 +777,17 @@ class App:
         # a second open dialog from being opened when one is already active. Attach the
         # dialog instance as a private attribute; delete as soon as the future is
         # complete.
-        if hasattr(self, "__open_dialog"):
+        if hasattr(self, "_open_dialog"):
             return
 
-        self.__open_dialog = OpenFileDialog(
+        self._open_dialog = OpenFileDialog(
             self.formal_name,
             file_types=(
                 list(self.document_types.keys()) if self.document_types else None
             ),
         )
-        path = await self.dialog(self.__open_dialog)
-        del self.__open_dialog
+        path = await self.dialog(self._open_dialog)
+        del self._open_dialog
 
         if path:
             self.open(path)
