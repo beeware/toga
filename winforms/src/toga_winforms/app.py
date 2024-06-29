@@ -57,6 +57,8 @@ def winforms_thread_exception(sender, winforms_exc):  # pragma: no cover
 class App:
     # Winforms apps exit when the last window is closed
     CLOSE_ON_LAST_WINDOW = True
+    # Winforms apps use default command line handling
+    HANDLES_COMMAND_LINE = False
 
     def __init__(self, interface):
         self.interface = interface

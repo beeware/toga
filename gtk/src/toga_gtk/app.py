@@ -19,6 +19,8 @@ from .screens import Screen as ScreenImpl
 class App:
     # GTK apps exit when the last window is closed
     CLOSE_ON_LAST_WINDOW = True
+    # GTK apps use default command line handling
+    HANDLES_COMMAND_LINE = False
 
     def __init__(self, interface):
         self.interface = interface
