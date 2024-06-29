@@ -3,4 +3,7 @@ class Document:
         self.interface = interface
 
     def open(self):
-        self.interface.read()
+        if self.interface.path.exists():
+            self.interface.read()
+        else:
+            raise FileNotFoundError()

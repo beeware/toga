@@ -47,6 +47,10 @@ async def app_probe(app):
         print("\nConstructing app probe")
     yield probe
 
+    # Force a GC pass on the main thread. This isn't perfect, but it helps
+    # minimize garbage collection on the test thread.
+    gc.collect()
+
 
 @fixture(scope="session")
 def main_window(app):
