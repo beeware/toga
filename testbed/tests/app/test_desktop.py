@@ -18,6 +18,7 @@ if toga.platform.current_platform not in {"macOS", "windows", "linux"}:
 
 
 async def test_exit_on_close_main_window(
+    monkeypatch,
     app,
     main_window,
     main_window_probe,
@@ -30,7 +31,7 @@ async def test_exit_on_close_main_window(
 
     # Set an on_exit for the app handler, initially rejecting exit.
     on_exit_handler = Mock(return_value=False)
-    app.on_exit = on_exit_handler
+    monkeypatch.setattr(app, "on_exit", on_exit_handler)
 
     # Try to close the main window; rejected by window
     main_window_probe.close()
@@ -80,8 +81,7 @@ async def test_menu_exit(monkeypatch, app, app_probe, mock_app_exit):
     """An app can be exited by using the menu item"""
     # Rebind the exit command to the on_exit handler.
     on_exit_handler = Mock(return_value=False)
-    app.on_exit = on_exit_handler
-    monkeypatch.setattr(app.commands[toga.Command.EXIT], "_action", app.on_exit)
+    monkeypatch.setattr(app, "on_exit", on_exit_handler)
 
     # Close the main window
     app_probe.activate_menu_exit()
@@ -607,6 +607,7 @@ async def test_current_window(app, app_probe, main_window):
 
 
 async def test_session_based_app(
+    monkeypatch,
     app,
     app_probe,
     main_window,
@@ -616,7 +617,7 @@ async def test_session_based_app(
     """A desktop app can be converted into a session-based app."""
     # Set an on_exit for the app handler, allowing exit.
     on_exit_handler = Mock(return_value=True)
-    app.on_exit = on_exit_handler
+    monkeypatch.setattr(app, "on_exit", on_exit_handler)
 
     # Create and show a secondary window
     secondary_window = toga.Window()
@@ -680,6 +681,7 @@ async def test_session_based_app(
 
 
 async def test_background_app(
+    monkeypatch,
     app,
     app_probe,
     main_window,
@@ -689,7 +691,7 @@ async def test_background_app(
     """A desktop app can be turned into a background app."""
     # Set an on_exit for the app handler, allowing exit.
     on_exit_handler = Mock(return_value=True)
-    app.on_exit = on_exit_handler
+    monkeypatch.setattr(app, "on_exit", on_exit_handler)
 
     # Create and show a secondary window
     secondary_window = toga.Window()

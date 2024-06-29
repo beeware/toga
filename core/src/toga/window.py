@@ -303,14 +303,13 @@ class Window:
         close_window = True
         if self.app.main_window == self:
             # Closing the window marked as the main window is a request to exit.
-            # Trigger on_exit handling, which may cause the window to close.
-            self.app.on_exit()
+            self.app._request_exit()
             close_window = False
         elif self.app.main_window is None:
             # If this is an app without a main window, this is the last window in the
-            # app, and the platform exits on last window close, trigger an exit.
+            # app, and the platform exits on last window close, request an exit.
             if len(self.app.windows) == 1 and self.app._impl.CLOSE_ON_LAST_WINDOW:
-                self.app.on_exit()
+                self.app._request_exit()
                 close_window = False
 
         if close_window:

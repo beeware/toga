@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import asyncio
 import importlib.metadata
-import inspect
 import signal
 import sys
 import warnings
@@ -14,8 +13,11 @@ from typing import TYPE_CHECKING, Any, MutableSet, Protocol
 from weakref import WeakValueDictionary
 
 from toga.command import CommandSet
+
 from toga.constants import WindowState
-from toga.handlers import wrapped_handler
+
+from toga.handlers import simple_handler, wrapped_handler
+
 from toga.hardware.camera import Camera
 from toga.hardware.location import Location
 from toga.icons import Icon
@@ -44,6 +46,16 @@ class AppStartupMethod(Protocol):
         :param kwargs: Ensures compatibility with additional arguments introduced in
             future versions.
         :returns: The widget to use as the main window content.
+        """
+
+
+class OnRunningHandler(Protocol):
+    def __call__(self, app: App, /, **kwargs: Any) -> None:
+        """A handler to invoke when the app event loop is running.
+
+        :param app: The app instance that is running.
+        :param kwargs: Ensures compatibility with additional arguments introduced in
+            future versions.
         """
 
 
@@ -228,6 +240,7 @@ class App:
         home_page: str | None = None,
         description: str | None = None,
         startup: AppStartupMethod | None = None,
+        on_running: OnRunningHandler | None = None,
         on_exit: OnExitHandler | None = None,
         id: None = None,  # DEPRECATED
         windows: None = None,  # DEPRECATED
@@ -264,6 +277,7 @@ class App:
         :param description: A brief (one line) description of the app. If not provided,
             the metadata key ``Summary`` will be used.
         :param startup: A callable to run before starting the app.
+        :param on_running: The initial :any:`on_running` handler.
         :param on_exit: The initial :any:`on_exit` handler.
         :param id: **DEPRECATED** - This argument will be ignored. If you need a
             machine-friendly identifier, use ``app_id``.
@@ -379,7 +393,19 @@ class App:
         else:
             self.icon = icon
 
-        self.on_exit = on_exit
+        # Install the lifecycle handlers. If passed in as an argument, or assigned using
+        # `app.on_event = my_handler`, the event handler will take the app as the first
+        # argument. If we're using the default value, or we're subclassing app, the app
+        # can be safely implied; so we wrap the method as a simple handler.
+        if on_running:
+            self.on_running = on_running
+        else:
+            self.on_running = simple_handler(self.on_running)
+
+        if on_exit:
+            self.on_exit = on_exit
+        else:
+            self.on_exit = simple_handler(self.on_exit)
 
         # We need the command set to exist so that startup et al. can add commands;
         # but we don't have an impl yet, so we can't set the on_change handler
@@ -485,18 +511,16 @@ class App:
     # App lifecycle
     ######################################################################
 
-    def add_background_task(self, handler: BackgroundTask) -> None:
-        """Schedule a task to run in the background.
+    def _request_exit(self):
+        # Internal method to request an exit. This triggers on_exit handling, and
+        # will only exit if the user agrees.
+        def cleanup(app, should_exit):
+            if should_exit:
+                app.exit()
 
-        Schedules a coroutine or a generator to run in the background. Control
-        will be returned to the event loop during await or yield statements,
-        respectively. Use this to run background tasks without blocking the
-        GUI. If a regular callable is passed, it will be called as is and will
-        block the GUI until the call returns.
-
-        :param handler: A coroutine, generator or callable.
-        """
-        self.loop.call_soon_threadsafe(wrapped_handler(self, handler))
+        # Wrap on_exit to ensure that an async handler is turned into a task,
+        # then immediately invoke.
+        wrapped_handler(self, self.on_exit, cleanup=cleanup)()
 
     def exit(self) -> None:
         """Exit the application gracefully.
@@ -596,15 +620,7 @@ class App:
                 window.toolbar.on_change = window._impl.create_toolbar
 
         # Queue a task to run as soon as the event loop starts.
-        if inspect.iscoroutinefunction(self.running):
-            # running is a co-routine; create a sync wrapper
-            def on_app_running():
-                asyncio.ensure_future(self.running())
-
-        else:
-            on_app_running = self.running
-
-        self.loop.call_soon_threadsafe(on_app_running)
+        self.loop.call_soon_threadsafe(wrapped_handler(self, self.on_running))
 
     def startup(self) -> None:
         """Create and show the main window for the application.
@@ -619,15 +635,6 @@ class App:
             self.main_window.content = self._startup_method(self)
 
         self.main_window.show()
-
-    def running(self) -> None:
-        """Logic to execute as soon as the main event loop is running.
-
-        Override this method to add any logic you want to run as soon as the app's event
-        loop is running.
-
-        If necessary, the overridden method can be defined as as an ``async`` coroutine.
-        """
 
     ######################################################################
     # App resources
@@ -882,18 +889,27 @@ class App:
     # App events
     ######################################################################
 
-    @property
-    def on_exit(self) -> OnExitHandler:
-        """The handler to invoke if the user attempts to exit the app."""
-        return self._on_exit
+    @overridable
+    def on_exit(self) -> bool:
+        """The event handler that will be invoked when the app is about to exit.
 
-    @on_exit.setter
-    def on_exit(self, handler: OnExitHandler | None) -> None:
-        def cleanup(app: App, should_exit: bool) -> None:
-            if should_exit or handler is None:
-                app.exit()
+        The return value of this method controls whether the app is allowed to exit.
+        This can be used to prevent the app exiting with unsaved changes, etc.
 
-        self._on_exit = wrapped_handler(self, handler, cleanup=cleanup)
+        If necessary, the overridden method can be defined as as an ``async`` coroutine.
+
+        :returns: ``True`` if the app is allowed to exit; ``False`` if the app is not
+            allowed to exit.
+        """
+        # Always allow exit
+        return True
+
+    @overridable
+    def on_running(self) -> None:
+        """The event handler that will be invoked when the app's event loop starts running.
+
+        If necessary, the overridden method can be defined as as an ``async`` coroutine.
+        """
 
     ######################################################################
     # 2023-10: Backwards compatibility
@@ -914,6 +930,22 @@ class App:
     def windows(self, windows: WindowSet) -> None:
         if windows is not self._windows:
             raise AttributeError("can't set attribute 'windows'")
+
+    ######################################################################
+    # 2024-06: Backwards compatibility
+    ######################################################################
+
+    def add_background_task(self, handler: BackgroundTask) -> None:
+        """**DEPRECATED** – Use :any:`asyncio.create_task`, or override/assign
+        :meth:`~toga.App.on_running`."""
+        warnings.warn(
+            "App.add_background_task is deprecated. Use asyncio.create_task(), "
+            "or set an App.on_running() handler",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+
+        self.loop.call_soon_threadsafe(wrapped_handler(self, handler))
 
     ######################################################################
     # End backwards compatibility

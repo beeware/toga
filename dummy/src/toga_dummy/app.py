@@ -35,10 +35,10 @@ class App(LoggedObject):
     def create_app_commands(self):
         self._action("create App commands")
         self.interface.commands.add(
-            # Invoke `on_exit` rather than `exit`, because we want to trigger the "OK to
-            # exit?" logic. It's already a bound handler, so we can use it directly.
+            # Invoke `_request_exit` rather than `exit`, because we want to trigger the
+            # "OK to exit?" logic.
             Command(
-                self.interface.on_exit,
+                simple_handler(self.interface._request_exit),
                 "Exit",
                 group=Group.APP,
                 section=sys.maxsize,
@@ -187,7 +187,7 @@ class App(LoggedObject):
     ######################################################################
 
     def simulate_exit(self):
-        self.interface.on_exit()
+        self.interface._request_exit()
 
 
 class DocumentApp(App):

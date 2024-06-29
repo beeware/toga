@@ -235,7 +235,11 @@ def test_create(
     assert app.formal_name == expected_formal_name
     assert app.app_id == expected_app_id
     assert app.app_name == expected_app_name
-    assert app.on_exit._raw is None
+
+    # The default implementations of the on_running and on_exit handlers
+    # have been wrapped as simple handlers
+    assert app.on_running._raw.__func__ == toga.App.on_running
+    assert app.on_exit._raw.__func__ == toga.App.on_exit
 
     metadata_mock.assert_called_once_with(expected_app_name)
 
@@ -316,6 +320,7 @@ def test_explicit_app_metadata(monkeypatch, event_loop):
         ),
     )
 
+    on_running_handler = Mock()
     on_exit_handler = Mock()
 
     app = toga.App(
@@ -325,6 +330,7 @@ def test_explicit_app_metadata(monkeypatch, event_loop):
         version="1.2.3",
         home_page="https://example.com/test-app",
         description="A test app",
+        on_running=on_running_handler,
         on_exit=on_exit_handler,
     )
 
@@ -333,7 +339,11 @@ def test_explicit_app_metadata(monkeypatch, event_loop):
     assert app.home_page == "https://example.com/test-app"
     assert app.description == "A test app"
 
-    assert app.on_exit._raw == on_exit_handler
+    # App handlers have been installed; they have not been wrapped.
+    # Wrapping will occur when they are invoked, to allow for late
+    # assignment of a new handler.
+    assert app.on_running == on_running_handler
+    assert app.on_exit == on_exit_handler
 
 
 @pytest.mark.parametrize("construct", [True, False])
@@ -871,6 +881,30 @@ def test_exit_no_handler(app):
     assert_action_performed(app, "exit")
 
 
+def test_exit_subclassed_handler(app):
+    """An app can implement on_exit by subclassing."""
+    exit = {}
+
+    class SubclassedApp(toga.App):
+        def startup(self):
+            self.main_window = toga.MainWindow()
+
+        def on_exit(self):
+            exit["called"] = True
+            return True
+
+    app = SubclassedApp(formal_name="Test App", app_id="org.example.test")
+
+    # Close the app
+    app._impl.simulate_exit()
+
+    # The exit method was invoked
+    assert exit["called"]
+
+    # App has been exited
+    assert_action_performed(app, "exit")
+
+
 def test_exit_successful_handler(app):
     """An app with a successful exit handler can be exited."""
     on_exit_handler = Mock(return_value=True)
@@ -933,25 +967,6 @@ def test_loop(app, event_loop):
     assert app.loop is event_loop
 
 
-def test_background_task(app):
-    """A background task can be queued."""
-    canary = Mock()
-
-    async def background(app, **kwargs):
-        canary()
-
-    app.add_background_task(background)
-
-    # Create an async task that we can use to start the event loop for a short time.
-    async def waiter():
-        await asyncio.sleep(0.1)
-
-    app.loop.run_until_complete(waiter())
-
-    # Once the loop has executed, the background task should have executed as well.
-    canary.assert_called_once()
-
-
 def test_running(event_loop):
     """The running() method is invoked when the main loop starts"""
     running = {}
@@ -960,7 +975,7 @@ def test_running(event_loop):
         def startup(self):
             self.main_window = toga.MainWindow()
 
-        def running(self):
+        def on_running(self):
             running["called"] = True
 
     app = SubclassedApp(formal_name="Test App", app_id="org.example.test")
@@ -980,7 +995,7 @@ def test_async_running_method(event_loop):
         def startup(self):
             self.main_window = toga.MainWindow()
 
-        async def running(self):
+        async def on_running(self):
             running["called"] = True
 
     app = SubclassedApp(formal_name="Test App", app_id="org.example.test")
@@ -1012,3 +1027,25 @@ def test_deprecated_name(event_loop):
     assert app.formal_name == "Test App"
     with pytest.warns(DeprecationWarning, match=name_warning):
         assert app.name == "Test App"
+
+
+def test_deprecated_background_task(app):
+    """A background task can be queued using the deprecated API."""
+    canary = Mock()
+
+    async def background(app, **kwargs):
+        canary()
+
+    with pytest.warns(
+        DeprecationWarning, match="App.add_background_task is deprecated"
+    ):
+        app.add_background_task(background)
+
+    # Create an async task that we can use to start the event loop for a short time.
+    async def waiter():
+        await asyncio.sleep(0.1)
+
+    app.loop.run_until_complete(waiter())
+
+    # Once the loop has executed, the background task should have executed as well.
+    canary.assert_called_once()

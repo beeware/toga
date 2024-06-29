@@ -88,7 +88,7 @@ def run_tests(app, cov, args, report_coverage, run_slow, running_in_ci):
         print(f">>>>>>>>>> EXIT {app.returncode} <<<<<<<<<<")
         # Add a short pause to make sure any log tailing gets a chance to flush
         time.sleep(0.5)
-        app.add_background_task(lambda app, **kwargs: app.exit())
+        app.loop.call_soon_threadsafe(app.exit)
 
 
 if __name__ == "__main__":
@@ -174,7 +174,7 @@ if __name__ == "__main__":
     # Queue a background task to run that will start the main thread. We do this,
     # instead of just starting the thread directly, so that we can make sure the App has
     # been fully initialized, and the event loop is running.
-    app.add_background_task(lambda app, **kwargs: thread.start())
+    app.loop.call_soon_threadsafe(thread.start)
 
     # Start the test app.
     app.main_loop()

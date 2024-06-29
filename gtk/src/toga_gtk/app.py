@@ -65,10 +65,10 @@ class App:
         self.interface.commands.add(
             # ---- App menu -----------------------------------
             # Quit should always be the last item, in a section on its own. Invoke
-            # `on_exit` rather than `exit`, because we want to trigger the "OK to exit?"
-            # logic. It's already a bound handler, so we can use it directly.
+            # `_request_exit` rather than `exit`, because we want to trigger the "OK to
+            # exit?" logic.
             Command(
-                self.interface.on_exit,
+                simple_handler(self.interface._request_exit),
                 "Quit " + self.interface.formal_name,
                 shortcut=toga.Key.MOD_1 + "q",
                 group=toga.Group.APP,

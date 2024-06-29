@@ -137,11 +137,11 @@ class App:
     def create_app_commands(self):
         self.interface.commands.add(
             # ---- File menu -----------------------------------
-            # Exit should always be the last item, in a section on its own. Invoke
-            # `on_exit` rather than `exit`, because we want to trigger the "OK to exit?"
-            # logic. It's already a bound handler, so we can use it directly.
+            # Quit should always be the last item, in a section on its own. Invoke
+            # `_request_exit` rather than `exit`, because we want to trigger the "OK to
+            # exit?" logic.
             Command(
-                self.interface.on_exit,
+                simple_handler(self.interface._request_exit),
                 "Exit",
                 shortcut=toga.Key.MOD_1 + "q",
                 group=Group.FILE,
