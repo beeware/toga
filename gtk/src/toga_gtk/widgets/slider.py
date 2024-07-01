@@ -15,6 +15,7 @@ from .base import Widget
 # From GTK's point of view, these two features are independent, but we arrange for them
 # to line up at the same values.
 
+
 class Slider(Widget, SliderImpl):
     def create(self):
         self.adj = Gtk.Adjustment()

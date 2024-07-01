@@ -6,6 +6,7 @@ from android.widget import SeekBar
 from java import dynamic_proxy
 
 from toga.widgets.slider import IntSliderImpl
+
 from .base import Widget
 
 # Implementation notes
@@ -28,6 +29,7 @@ class TogaOnSeekBarChangeListener(dynamic_proxy(SeekBar.OnSeekBarChangeListener)
 
     def onStopTrackingTouch(self, native_seekbar):
         self.impl.interface.on_release()
+
 
 class Slider(Widget, IntSliderImpl):
     focusable = False
