@@ -6,7 +6,7 @@ project_name = "Document App"
 bundle = "org.beeware.toga.examples"
 version = "0.0.1"
 url = "https://beeware.org"
-license = "BSD license"
+license.file = "LICENSE"
 author = "Tiberius Yak"
 author_email = "tiberius@beeware.org"
 
@@ -37,26 +37,11 @@ requires = [
 
 # Mobile deployments
 [tool.briefcase.app.documentapp.iOS]
-requires = [
-    "../../iOS",
-    "std-nslog>=1.0.0",
-]
+supported = false
 
 [tool.briefcase.app.documentapp.android]
-requires = [
-    "../../android",
-]
-
-base_theme = "Theme.MaterialComponents.Light.DarkActionBar"
-
-build_gradle_dependencies = [
-    "androidx.appcompat:appcompat:1.6.1",
-    "com.google.android.material:material:1.11.0",
-]
+supported = false
 
 # Web deployment
 [tool.briefcase.app.documentapp.web]
-requires = [
-    "../../web",
-]
-style_framework = "Shoelace v2.3"
+supported = false

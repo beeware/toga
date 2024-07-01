@@ -7,12 +7,17 @@ import toga
 from toga_gtk.keys import gtk_accel, toga_key
 from toga_gtk.libs import Gdk, Gtk
 
+from .dialogs import DialogsMixin
 from .probe import BaseProbe
 
 
-class AppProbe(BaseProbe):
+class AppProbe(BaseProbe, DialogsMixin):
     supports_key = True
     supports_key_mod3 = True
+    # Gtk 3.24.41 ships with Ubuntu 24.04 where present() works on Wayland
+    supports_current_window_assignment = not (
+        BaseProbe.IS_WAYLAND and BaseProbe.GTK_VERSION < (3, 24, 41)
+    )
 
     def __init__(self, app):
         super().__init__()
@@ -126,7 +131,6 @@ class AppProbe(BaseProbe):
         pytest.xfail("GTK doesn't have a visit homepage menu item")
 
     def assert_system_menus(self):
-        self.assert_menu_item(["*", "Preferences"], enabled=False)
         self.assert_menu_item(["*", "Quit Toga Testbed"], enabled=True)
 
         self.assert_menu_item(["Help", "About Toga Testbed"], enabled=True)
@@ -203,3 +207,7 @@ class AppProbe(BaseProbe):
         event.state = state
 
         return toga_key(event)
+
+    async def restore_standard_app(self):
+        # No special handling needed to restore standard app.
+        await self.redraw("Restore to standard app")

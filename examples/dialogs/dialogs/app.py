@@ -11,55 +11,81 @@ class ExampleDialogsApp(toga.App):
     def do_clear(self, widget, **kwargs):
         self.label.text = "Ready."
 
+    async def action_app_info_dialog(self, widget):
+        await self.dialog(toga.InfoDialog("Toga", "THIS! IS! TOGA!!"))
+        self.label.text = "Information was provided to the app."
+
     async def action_info_dialog(self, widget):
-        await self.main_window.info_dialog("Toga", "THIS! IS! TOGA!!")
-        self.label.text = "Information was provided."
+        await self.main_window.dialog(toga.InfoDialog("Toga", "THIS! IS! TOGA!!"))
+        self.label.text = "Information was provided to the window."
 
     async def action_question_dialog(self, widget):
-        if await self.main_window.question_dialog("Toga", "Is this cool or what?"):
+        if await self.main_window.dialog(
+            toga.QuestionDialog("Toga", "Is this cool or what?")
+        ):
             self.label.text = "User said yes!"
-            await self.main_window.info_dialog("Happiness", "I know, right! :-)")
+            await self.main_window.dialog(
+                toga.InfoDialog("Happiness", "I know, right! :-)")
+            )
         else:
             self.label.text = "User says no..."
-            await self.main_window.info_dialog(
-                "Shucks...", "Well aren't you a spoilsport... :-("
+            await self.main_window.dialog(
+                toga.InfoDialog("Shucks...", "Well aren't you a spoilsport... :-(")
             )
 
     async def action_confirm_dialog(self, widget):
-        if await self.main_window.confirm_dialog("Toga", "Are you sure you want to?"):
+        if await self.main_window.dialog(
+            toga.ConfirmDialog("Toga", "Are you sure you want to?")
+        ):
             self.label.text = "Lets do it!"
         else:
             self.label.text = "Left it as it was."
 
     async def action_error_dialog(self, widget):
-        await self.main_window.error_dialog(
-            "Toga", "Well that didn't work... or did it?"
+        await self.main_window.dialog(
+            toga.ErrorDialog("Toga", "Well that didn't work... or did it?")
         )
         self.label.text = "Oh no..."
 
     async def action_stack_trace(self, widget):
-        await self.main_window.stack_trace_dialog(
-            "Well that wasn't good",
-            "Here's where you were when it went bad:",
-            "".join(traceback.format_stack()),
+        await self.main_window.dialog(
+            toga.StackTraceDialog(
+                "Well that wasn't good",
+                "Here's where you were when it went bad:",
+                "".join(traceback.format_stack()),
+            )
         )
         self.label.text = "Stack traced..."
 
     async def action_stack_trace_retry(self, widget):
-        retry = await self.main_window.stack_trace_dialog(
-            "Want a do-over?",
-            "Here's where you were when it went bad:",
-            "".join(traceback.format_stack()),
-            retry=True,
+        retry = await self.main_window.dialog(
+            toga.StackTraceDialog(
+                "Want a do-over?",
+                "Here's where you were when it went bad:",
+                "".join(traceback.format_stack()),
+                retry=True,
+            )
         )
         if retry:
             self.label.text = "Lets try that again..."
         else:
             self.label.text = "Quit while you're ahead..."
 
+    async def action_app_open_file_dialog(self, widget):
+        try:
+            fname = await self.dialog(toga.OpenFileDialog("Open file with Toga"))
+            if fname is not None:
+                self.label.text = f"App file to open: {fname}"
+            else:
+                self.label.text = "No file selected!"
+        except ValueError:
+            self.label.text = "Open file (app) dialog was canceled"
+
     async def action_open_file_dialog(self, widget):
         try:
-            fname = await self.main_window.open_file_dialog("Open file with Toga")
+            fname = await self.main_window.dialog(
+                toga.OpenFileDialog("Open file with Toga")
+            )
             if fname is not None:
                 self.label.text = f"File to open: {fname}"
             else:
@@ -69,8 +95,8 @@ class ExampleDialogsApp(toga.App):
 
     async def action_open_file_filtered_dialog(self, widget):
         try:
-            fname = await self.main_window.open_file_dialog(
-                "Open file with Toga", file_types=["doc", "txt"]
+            fname = await self.main_window.dialog(
+                toga.OpenFileDialog("Open file with Toga", file_types=["doc", "txt"])
             )
             if fname is not None:
                 self.label.text = f"File to open: {fname}"
@@ -81,8 +107,10 @@ class ExampleDialogsApp(toga.App):
 
     async def action_open_file_dialog_multi(self, widget):
         try:
-            filenames = await self.main_window.open_file_dialog(
-                "Open multiple files with Toga", multiple_select=True
+            filenames = await self.main_window.dialog(
+                toga.OpenFileDialog(
+                    "Open multiple files with Toga", multiple_select=True
+                )
             )
             if filenames is not None:
                 msg = f"Files to open: {', '.join(str(f) for f in filenames)}"
@@ -95,9 +123,11 @@ class ExampleDialogsApp(toga.App):
 
     async def action_open_file_dialog_with_inital_folder(self, widget):
         try:
-            fname = await self.main_window.open_file_dialog(
-                title="Open file with Toga in home folder",
-                initial_directory=Path.home(),
+            fname = await self.main_window.dialog(
+                toga.OpenFileDialog(
+                    title="Open file with Toga in home folder",
+                    initial_directory=Path.home(),
+                )
             )
             if fname is not None:
                 self.label.text = f"File to open: {fname}"
@@ -108,8 +138,8 @@ class ExampleDialogsApp(toga.App):
 
     async def action_select_folder_dialog(self, widget):
         try:
-            path_name = await self.main_window.select_folder_dialog(
-                title="Select folder with Toga"
+            path_name = await self.main_window.dialog(
+                toga.SelectFolderDialog(title="Select folder with Toga")
             )
             if path_name is not None:
                 self.label.text = f"Folder selected: {path_name}"
@@ -120,8 +150,11 @@ class ExampleDialogsApp(toga.App):
 
     async def action_select_folder_dialog_multi(self, widget):
         try:
-            path_names = await self.main_window.select_folder_dialog(
-                "Select multiple folders with Toga", multiple_select=True
+            path_names = await self.main_window.dialog(
+                toga.SelectFolderDialog(
+                    "Select multiple folders with Toga",
+                    multiple_select=True,
+                )
             )
             if path_names is not None:
                 self.label.text = (
@@ -134,9 +167,11 @@ class ExampleDialogsApp(toga.App):
 
     async def action_select_folder_dialog_with_initial_folder(self, widget):
         try:
-            path_name = await self.main_window.select_folder_dialog(
-                title="Select folder with Toga in current folder",
-                initial_directory=Path.cwd(),
+            path_name = await self.main_window.dialog(
+                toga.SelectFolderDialog(
+                    title="Select folder with Toga in current folder",
+                    initial_directory=Path.cwd(),
+                )
             )
             self.label.text = f"Folder selected: {path_name}"
         except ValueError:
@@ -145,9 +180,11 @@ class ExampleDialogsApp(toga.App):
     async def action_save_file_dialog(self, widget):
         fname = "Toga_file.txt"
         try:
-            save_path = await self.main_window.save_file_dialog(
-                "Save file with Toga",
-                suggested_filename=fname,
+            save_path = await self.main_window.dialog(
+                toga.SaveFileDialog(
+                    "Save file with Toga",
+                    suggested_filename=fname,
+                )
             )
             if save_path is not None:
                 self.label.text = f"File saved with Toga: {save_path}"
@@ -172,8 +209,8 @@ class ExampleDialogsApp(toga.App):
             self.set_window_label_text(len(self.windows) - 2)
             return True
         else:
-            await window.info_dialog(
-                f"Abort {window.title}!", "Maybe try that again..."
+            await window.dialog(
+                toga.InfoDialog(f"Abort {window.title}!", "Maybe try that again...")
             )
             self.close_attempts.add(window)
             return False
@@ -198,8 +235,8 @@ class ExampleDialogsApp(toga.App):
 
     async def exit_handler(self, app):
         # Return True if app should close, and False if it should remain open
-        if await self.main_window.confirm_dialog(
-            "Toga", "Are you sure you want to quit?"
+        if await self.dialog(
+            toga.ConfirmDialog("Toga", "Are you sure you want to quit?")
         ):
             print(f"Label text was '{self.label.text}' when you quit the app")
             return True
@@ -224,6 +261,9 @@ class ExampleDialogsApp(toga.App):
 
         # Buttons
         btn_style = Pack(flex=1)
+        btn_app_info = toga.Button(
+            "Info (App)", on_press=self.action_app_info_dialog, style=btn_style
+        )
         btn_info = toga.Button(
             "Info", on_press=self.action_info_dialog, style=btn_style
         )
@@ -242,6 +282,11 @@ class ExampleDialogsApp(toga.App):
         btn_stack_trace_retry = toga.Button(
             "Stack Trace (with retry)",
             on_press=self.action_stack_trace_retry,
+            style=btn_style,
+        )
+        btn_app_open = toga.Button(
+            "Open File (App)",
+            on_press=self.action_app_open_file_dialog,
             style=btn_style,
         )
         btn_open = toga.Button(
@@ -295,12 +340,14 @@ class ExampleDialogsApp(toga.App):
         # Outermost box
         box = toga.Box(
             children=[
+                btn_app_info,
                 btn_info,
                 btn_question,
                 btn_confirm,
                 btn_error,
                 btn_stack_trace,
                 btn_stack_trace_retry,
+                btn_app_open,
                 btn_open,
                 btn_open_filtered,
                 btn_open_multi,

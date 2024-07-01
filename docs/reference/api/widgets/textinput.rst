@@ -94,3 +94,8 @@ Reference
 ---------
 
 .. autoclass:: toga.TextInput
+
+.. autoprotocol:: toga.widgets.textinput.OnChangeHandler
+.. autoprotocol:: toga.widgets.textinput.OnConfirmHandler
+.. autoprotocol:: toga.widgets.textinput.OnGainFocusHandler
+.. autoprotocol:: toga.widgets.textinput.OnLoseFocusHandler

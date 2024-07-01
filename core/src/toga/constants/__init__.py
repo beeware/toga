@@ -4,13 +4,15 @@ from travertino.constants import *  # noqa: F401, F403  pragma: no cover
 
 
 class Direction(Enum):
-    "The direction a given property should act"
+    """The direction a given property should act."""
+
     HORIZONTAL = 0
     VERTICAL = 1
 
 
 class Baseline(Enum):
-    "The meaning of a Y coordinate when drawing text."
+    """The meaning of a Y coordinate when drawing text."""
+
     ALPHABETIC = auto()  #: Alphabetic baseline of the first line
     TOP = auto()  #: Top of text
     MIDDLE = auto()  #: Middle of text
@@ -18,7 +20,8 @@ class Baseline(Enum):
 
 
 class FillRule(Enum):
-    "The rule to use when filling paths."
+    """The rule to use when filling paths."""
+
     EVENODD = 0
     NONZERO = 1
 
@@ -36,7 +39,7 @@ class FlashMode(Enum):
     OFF = 0
     ON = 1
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name.title()
 
 

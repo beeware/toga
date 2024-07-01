@@ -1,30 +1,35 @@
-from abc import ABC
 from pathlib import Path
 
 from .libs import Gtk
 
 
-class BaseDialog(ABC):
-    def __init__(self, interface):
-        self.interface = interface
-        self.interface._impl = self
+class BaseDialog:
+    def show(self, host_window, future):
+        self.future = future
+
+        # If this is a modal dialog, set the window as transient to the host window.
+        if host_window:
+            self.native.set_transient_for(host_window._impl.native)
+        else:
+            self.native.set_transient_for(None)
+
+        # Show the dialog.
+        self.native.show()
 
 
 class MessageDialog(BaseDialog):
     def __init__(
         self,
-        interface,
         title,
         message_type,
         buttons,
         success_result=None,
         **kwargs,
     ):
-        super().__init__(interface=interface)
+        super().__init__()
         self.success_result = success_result
 
         self.native = Gtk.MessageDialog(
-            transient_for=interface.window._impl.native,
             flags=0,
             message_type=message_type,
             buttons=buttons,
@@ -34,7 +39,6 @@ class MessageDialog(BaseDialog):
         self.build_dialog(**kwargs)
 
         self.native.connect("response", self.gtk_response)
-        self.native.show()
 
     def build_dialog(self, message):
         self.native.format_secondary_text(message)
@@ -45,15 +49,14 @@ class MessageDialog(BaseDialog):
         else:
             result = None
 
-        self.interface.set_result(result)
+        self.future.set_result(result)
 
         self.native.destroy()
 
 
 class InfoDialog(MessageDialog):
-    def __init__(self, interface, title, message):
+    def __init__(self, title, message):
         super().__init__(
-            interface=interface,
             title=title,
             message=message,
             message_type=Gtk.MessageType.INFO,
@@ -62,9 +65,8 @@ class InfoDialog(MessageDialog):
 
 
 class QuestionDialog(MessageDialog):
-    def __init__(self, interface, title, message):
+    def __init__(self, title, message):
         super().__init__(
-            interface=interface,
             title=title,
             message=message,
             message_type=Gtk.MessageType.QUESTION,
@@ -74,9 +76,8 @@ class QuestionDialog(MessageDialog):
 
 
 class ConfirmDialog(MessageDialog):
-    def __init__(self, interface, title, message):
+    def __init__(self, title, message):
         super().__init__(
-            interface=interface,
             title=title,
             message=message,
             message_type=Gtk.MessageType.WARNING,
@@ -86,9 +87,8 @@ class ConfirmDialog(MessageDialog):
 
 
 class ErrorDialog(MessageDialog):
-    def __init__(self, interface, title, message):
+    def __init__(self, title, message):
         super().__init__(
-            interface=interface,
             title=title,
             message=message,
             message_type=Gtk.MessageType.ERROR,
@@ -97,9 +97,8 @@ class ErrorDialog(MessageDialog):
 
 
 class StackTraceDialog(MessageDialog):
-    def __init__(self, interface, title, **kwargs):
+    def __init__(self, title, **kwargs):
         super().__init__(
-            interface=interface,
             title=title,
             message_type=Gtk.MessageType.ERROR,
             buttons=(
@@ -153,7 +152,6 @@ class StackTraceDialog(MessageDialog):
 class FileDialog(BaseDialog):
     def __init__(
         self,
-        interface,
         title,
         filename,
         initial_directory,
@@ -162,15 +160,15 @@ class FileDialog(BaseDialog):
         action,
         ok_icon,
     ):
-        super().__init__(interface=interface)
+        super().__init__()
 
         self.native = Gtk.FileChooserDialog(
-            transient_for=interface.window._impl.native,
             title=title,
             action=action,
         )
         self.native.add_button(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL)
         self.native.add_button(ok_icon, Gtk.ResponseType.OK)
+        self.native.set_modal(True)
 
         if filename:
             self.native.set_current_name(filename)
@@ -190,7 +188,6 @@ class FileDialog(BaseDialog):
             self.native.set_select_multiple(True)
 
         self.native.connect("response", self.gtk_response)
-        self.native.show()
 
     # Provided as a stub that can be mocked in test conditions
     def selected_path(self):
@@ -209,7 +206,7 @@ class FileDialog(BaseDialog):
         else:
             result = None
 
-        self.interface.set_result(result)
+        self.future.set_result(result)
 
         self.native.destroy()
 
@@ -217,14 +214,12 @@ class FileDialog(BaseDialog):
 class SaveFileDialog(FileDialog):
     def __init__(
         self,
-        interface,
         title,
         filename,
         initial_directory,
         file_types=None,
     ):
         super().__init__(
-            interface=interface,
             title=title,
             filename=filename,
             initial_directory=initial_directory,
@@ -238,14 +233,12 @@ class SaveFileDialog(FileDialog):
 class OpenFileDialog(FileDialog):
     def __init__(
         self,
-        interface,
         title,
         initial_directory,
         file_types,
         multiple_select,
     ):
         super().__init__(
-            interface=interface,
             title=title,
             filename=None,
             initial_directory=initial_directory,
@@ -259,13 +252,11 @@ class OpenFileDialog(FileDialog):
 class SelectFolderDialog(FileDialog):
     def __init__(
         self,
-        interface,
         title,
         initial_directory,
         multiple_select,
     ):
         super().__init__(
-            interface=interface,
             title=title,
             filename=None,
             initial_directory=initial_directory,

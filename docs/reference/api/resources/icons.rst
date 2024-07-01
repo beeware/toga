@@ -8,7 +8,7 @@ A small, square image, used to provide easily identifiable visual context to a w
    :header-rows: 1
    :file: ../../data/widgets_by_platform.csv
    :included_cols: 4,5,6,7,8,9,10
-   :exclude: {0: '(?!(Icon|Component))'}
+   :include: {0: '^Icon$'}
 
 Usage
 -----
@@ -80,7 +80,7 @@ permission error). In this case, an error will be raised.
 Reference
 ---------
 
-.. c:type:: IconContent
+.. c:type:: IconContentT
 
     When specifying an :any:`Icon`, you can provide:
 

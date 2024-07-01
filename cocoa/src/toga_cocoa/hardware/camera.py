@@ -214,6 +214,8 @@ class TogaCameraWindow(toga.Window):
         self._update_flash_mode()
 
     def close_window(self, widget, **kwargs):
+        # If the user actually takes a photo, the window will be programmatically closed.
+        # This handler is only triggered if the user manually closes the window.
         # Stop the camera session
         self.camera_session.stopRunning()
 

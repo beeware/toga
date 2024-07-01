@@ -1,8 +1,10 @@
 accessor
 accessors
+acknowledgement
 amongst
 App
 apps
+Async
 awaitable
 backend
 backends
@@ -12,6 +14,7 @@ Bugfixes
 Cairo
 cancelled
 clickable
+closable
 codepoint
 coroutine
 CSS

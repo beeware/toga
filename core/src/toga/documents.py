@@ -16,7 +16,7 @@ class Document(ABC):
         self,
         path: str | Path,
         document_type: str,
-        app: App = None,
+        app: App,
     ):
         """Create a new Document.
 
@@ -27,7 +27,7 @@ class Document(ABC):
         self._path = Path(path)
         self._document_type = document_type
         self._app = app
-        self._main_window = None
+        self._main_window: Window | None = None
 
         # Create the visual representation of the document
         self.create()
@@ -35,7 +35,8 @@ class Document(ABC):
         # Create a platform specific implementation of the Document
         self._impl = app.factory.Document(interface=self)
 
-    def can_close(self) -> bool:
+    # TODO: This will be covered when the document API is finalized
+    def can_close(self) -> bool:  # pragma: no cover
         """Is the main document window allowed to close?
 
         The default implementation always returns ``True``; subclasses can override this
@@ -46,7 +47,10 @@ class Document(ABC):
         """
         return True
 
-    async def handle_close(self, window, **kwargs):
+    # TODO: This will be covered when the document API is finalized
+    async def handle_close(
+        self, window: Window, **kwargs: object
+    ) -> bool:  # pragma: no cover
         """An ``on-close`` handler for the main window of this document that implements
         platform-specific document close behavior.
 
@@ -82,7 +86,7 @@ class Document(ABC):
         return self._path
 
     @property
-    def document_type(self) -> Path:
+    def document_type(self) -> str:
         """A human-readable description of the document type (read-only)."""
         return self._document_type
 
@@ -92,12 +96,12 @@ class Document(ABC):
         return self._app
 
     @property
-    def main_window(self) -> Window:
+    def main_window(self) -> Window | None:
         """The main window for the document."""
         return self._main_window
 
     @main_window.setter
-    def main_window(self, window):
+    def main_window(self, window: Window) -> None:
         self._main_window = window
 
     def show(self) -> None:

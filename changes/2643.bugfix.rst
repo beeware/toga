@@ -1,0 +1,1 @@
+Programmatically invoking ``close()`` on the main window will now trigger ``on_exit`` handling. Previously ``on_exit`` handling would only be triggered if the close was initiated by a user action.

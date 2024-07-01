@@ -1,6 +1,7 @@
 from rubicon.objc import CGSize
 
 from toga.screens import Screen as ScreenInterface
+from toga.types import Position, Size
 from toga_cocoa.libs import (
     NSImage,
     core_graphics,
@@ -23,13 +24,13 @@ class Screen:
     def get_name(self):
         return str(self.native.localizedName)
 
-    def get_origin(self):
+    def get_origin(self) -> Position:
         frame_native = self.native.frame
-        return (int(frame_native.origin.x), int(frame_native.origin.y))
+        return Position(int(frame_native.origin.x), int(frame_native.origin.y))
 
-    def get_size(self):
+    def get_size(self) -> Size:
         frame_native = self.native.frame
-        return (int(frame_native.size.width), int(frame_native.size.height))
+        return Size(int(frame_native.size.width), int(frame_native.size.height))
 
     def get_image_data(self):
         # Retrieve the device description dictionary for the NSScreen

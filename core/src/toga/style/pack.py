@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from typing import Any
+
 from travertino.constants import (  # noqa: F401
     BOLD,
     BOTTOM,
@@ -27,6 +31,7 @@ from travertino.constants import (  # noqa: F401
 )
 from travertino.declaration import BaseStyle, Choices
 from travertino.layout import BaseBox
+from travertino.node import Node
 from travertino.size import BaseIntrinsicSize
 
 from toga.fonts import (
@@ -80,15 +85,15 @@ class Pack(BaseStyle):
 
     _depth = -1
 
-    def _debug(self, *args):  # pragma: no cover
+    def _debug(self, *args: str) -> None:  # pragma: no cover
         print("    " * self.__class__._depth, *args)
 
     @property
-    def _hidden(self):
-        """Does this style declaration define an object that should be hidden"""
+    def _hidden(self) -> bool:
+        """Does this style declaration define an object that should be hidden."""
         return self.visibility == HIDDEN
 
-    def apply(self, prop, value):
+    def apply(self, prop: str, value: object) -> None:
         if self._applicator:
             if prop == "text_align":
                 if value is None:
@@ -127,7 +132,7 @@ class Pack(BaseStyle):
                 # so perform a refresh.
                 self._applicator.refresh()
 
-    def layout(self, node, viewport):
+    def layout(self, node: Node, viewport: Any) -> None:
         # self._debug("=" * 80)
         # self._debug(f"Layout root {node}, available {viewport.width}x{viewport.height}")
         self.__class__._depth = -1
@@ -147,12 +152,12 @@ class Pack(BaseStyle):
 
     def _layout_node(
         self,
-        node,
-        alloc_width,
-        alloc_height,
-        use_all_width,
-        use_all_height,
-    ):
+        node: Node,
+        alloc_width: int,
+        alloc_height: int,
+        use_all_width: bool,
+        use_all_height: bool,
+    ) -> None:
         self.__class__._depth += 1
         # self._debug(
         #     f"COMPUTE LAYOUT for {node} available "
@@ -259,12 +264,12 @@ class Pack(BaseStyle):
 
     def _layout_row_children(
         self,
-        node,
-        available_width,
-        available_height,
-        use_all_width,
-        use_all_height,
-    ):
+        node: Node,
+        available_width: int,
+        available_height: int,
+        use_all_width: bool,
+        use_all_height: bool,
+    ) -> tuple[int, int, int, int]:
         # self._debug(f"LAYOUT ROW CHILDREN {available_width=} {available_height=}")
         # Pass 1: Lay out all children with a hard-specified width, or an
         # intrinsic non-flexible width. While iterating, collect the flex
@@ -543,12 +548,12 @@ class Pack(BaseStyle):
 
     def _layout_column_children(
         self,
-        node,
-        available_width,
-        available_height,
-        use_all_width,
-        use_all_height,
-    ):
+        node: Node,
+        available_width: int,
+        available_height: int,
+        use_all_width: bool,
+        use_all_height: bool,
+    ) -> tuple[int, int, int, int]:
         # self._debug(f"LAYOUT COLUMN CHILDREN {available_width=} {available_height=}")
         # Pass 1: Lay out all children with a hard-specified height, or an
         # intrinsic non-flexible height. While iterating, collect the flex
@@ -819,7 +824,7 @@ class Pack(BaseStyle):
 
         return min_width, width, min_height, height
 
-    def __css__(self):
+    def __css__(self) -> str:
         css = []
         # display
         if self.display == NONE:
