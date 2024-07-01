@@ -3,7 +3,6 @@ from toga import NotImplementedWarning
 from . import dialogs
 from .app import App, DocumentApp
 from .command import Command
-from .documents import Document
 from .fonts import Font
 from .hardware.camera import Camera
 from .hardware.location import Location
@@ -48,7 +47,6 @@ __all__ = [
     "App",
     "DocumentApp",
     "Command",
-    "Document",
     "Font",
     "Icon",
     "Image",

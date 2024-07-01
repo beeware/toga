@@ -27,9 +27,6 @@ class Document(ABC):
         # Create the visual representation of the document
         self.create()
 
-        # Create a platform specific implementation of the Document
-        self._impl = app.factory.Document(interface=self)
-
     ######################################################################
     # Document properties
     ######################################################################
@@ -80,7 +77,10 @@ class Document(ABC):
         :param path: The file to open.
         """
         self._path = Path(path).absolute()
-        self._impl.open()
+        if self._path.exists():
+            self.read()
+        else:
+            raise FileNotFoundError()
 
         # Set the title of the document window to match the path
         self._main_window.title = self._main_window._default_title
