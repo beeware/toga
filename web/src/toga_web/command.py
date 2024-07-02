@@ -23,7 +23,15 @@ class Command:
                 "group": Group.HELP,
             }
         # ---- Non-existent commands ----------------------------------
-        elif id in {StandardCommand.EXIT, StandardCommand.VISIT_HOMEPAGE}:
+        elif id in {
+            StandardCommand.EXIT,
+            StandardCommand.NEW,
+            StandardCommand.OPEN,
+            StandardCommand.SAVE,
+            StandardCommand.SAVE_AS,
+            StandardCommand.SAVE_ALL,
+            StandardCommand.VISIT_HOMEPAGE,
+        }:
             # These commands are valid, but don't exist on web.
             return None
 

@@ -34,12 +34,46 @@ class Command:
             }
 
         # ---- File menu -----------------------------------
+        elif id == StandardCommand.NEW:
+            return {
+                "text": "New",
+                "shortcut": Key.MOD_1 + "n",
+                "group": Group.FILE,
+                "section": 0,
+                "order": 0,
+            }
         elif id == StandardCommand.OPEN:
             return {
                 "text": "Open...",
                 "shortcut": Key.MOD_1 + "o",
                 "group": Group.FILE,
                 "section": 0,
+                "order": 10,
+            }
+
+        elif id == StandardCommand.SAVE:
+            return {
+                "text": "Save",
+                "shortcut": Key.MOD_1 + "s",
+                "group": Group.FILE,
+                "section": 0,
+                "order": 20,
+            }
+        elif id == StandardCommand.SAVE_AS:
+            return {
+                "text": "Save As...",
+                "shortcut": Key.MOD_1 + "S",
+                "group": Group.FILE,
+                "section": 0,
+                "order": 21,
+            }
+        elif id == StandardCommand.SAVE_ALL:
+            return {
+                "text": "Save All",
+                "shortcut": Key.MOD_1 + Key.MOD_2 + "s",
+                "group": Group.FILE,
+                "section": 0,
+                "order": 21,
             }
         # ---- Help menu -----------------------------------
         elif id == StandardCommand.VISIT_HOMEPAGE:

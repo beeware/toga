@@ -11,8 +11,12 @@ class Command:
         if id in {
             StandardCommand.ABOUT,
             StandardCommand.EXIT,
+            StandardCommand.NEW,
             StandardCommand.OPEN,
             StandardCommand.PREFERENCES,
+            StandardCommand.SAVE,
+            StandardCommand.SAVE_AS,
+            StandardCommand.SAVE_ALL,
             StandardCommand.VISIT_HOMEPAGE,
         }:
             # These are valid commands, but they're not defined on iOS.

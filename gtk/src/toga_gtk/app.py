@@ -188,7 +188,7 @@ class App:
     def beep(self):
         Gdk.beep()
 
-    def _close_about(self, dialog):
+    def _close_about(self, dialog, **kwargs):
         self.native_about_dialog.destroy()
         self.native_about_dialog = None
 
@@ -211,6 +211,7 @@ class App:
 
         self.native_about_dialog.show()
         self.native_about_dialog.connect("close", self._close_about)
+        self.native_about_dialog.connect("response", self._close_about)
 
     ######################################################################
     # Cursor control

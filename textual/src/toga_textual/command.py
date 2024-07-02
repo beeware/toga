@@ -11,15 +11,19 @@ class Command:
 
     @classmethod
     def standard(cls, app, id):
-        if id == StandardCommand.PREFERENCES:
-            return None
-        elif id == StandardCommand.EXIT:
-            return None
-        elif id == StandardCommand.OPEN:
-            return None
-        elif id == StandardCommand.ABOUT:
-            return None
-        elif id == StandardCommand.VISIT_HOMEPAGE:
+        # ---- Non-existent commands ----------------------------------
+        if id in {
+            StandardCommand.ABOUT,
+            StandardCommand.EXIT,
+            StandardCommand.NEW,
+            StandardCommand.OPEN,
+            StandardCommand.PREFERENCES,
+            StandardCommand.SAVE,
+            StandardCommand.SAVE_AS,
+            StandardCommand.SAVE_ALL,
+            StandardCommand.VISIT_HOMEPAGE,
+        }:
+            # These commands are valid, but don't exist on textual.
             return None
 
         raise ValueError(f"Unknown standard command {id!r}")
