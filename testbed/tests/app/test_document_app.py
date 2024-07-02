@@ -3,6 +3,7 @@ from pathlib import Path
 import pytest
 
 import toga
+from testbed.app import ExampleDoc
 
 ####################################################################################
 # Document API tests
@@ -11,6 +12,21 @@ if toga.platform.current_platform not in {"macOS", "windows", "linux"}:
     pytest.skip(
         "Document API is specific to desktop platforms", allow_module_level=True
     )
+
+
+async def test_new_document(app, app_probe):
+    """A new document can be created."""
+    # Create a new document
+    app.new(ExampleDoc)
+
+    await app_probe.redraw("New document has been created")
+
+    assert len(app.documents) == 1
+    assert len(app.windows) == 2
+
+    # Document has not been read
+    app.documents[0]._content.read.assert_not_called()
+    app.documents[0].title == "Example document: Untitled"
 
 
 async def test_open_document(app, app_probe):
@@ -85,3 +101,78 @@ async def test_open_document_by_drag(app, app_probe):
 
     # Document has been read.
     app.documents[0]._content.read.assert_called_with(document_path)
+
+
+async def test_save_document(app, app_probe):
+    """A document can be saved."""
+    # A document can be opened
+    document_path = Path(__file__).parent / "docs/example.testbed"
+    app.open(document_path)
+
+    await app_probe.redraw("Document has been opened")
+
+    assert len(app.documents) == 1
+    assert len(app.windows) == 2
+
+    # Document has been read.
+    app.documents[0]._content.read.assert_called_with(document_path)
+
+    # Save the document
+    await app.save()
+    await app_probe.redraw("Document has been saved")
+
+    # Document has been saved.
+    app.documents[0]._content.write.assert_called_with(document_path)
+
+
+async def test_save_as_document(monkeypatch, app, app_probe, tmp_path):
+    """A document can be saved under a new filename."""
+
+    # Monkeypatch the replacement filename handling so that a dialog isn't activated.
+    async def mock_replacement_filename(suggested_filename, window):
+        return tmp_path / "new_filename.testbed"
+
+    monkeypatch.setattr(app, "replacement_filename", mock_replacement_filename)
+
+    # A document can be opened
+    document_path = Path(__file__).parent / "docs/example.testbed"
+    app.open(document_path)
+
+    await app_probe.redraw("Document has been opened")
+
+    assert len(app.documents) == 1
+    assert len(app.windows) == 2
+
+    # Document has been read.
+    app.documents[0]._content.read.assert_called_with(document_path)
+
+    # Save the document in a new location
+    await app.save_as()
+    await app_probe.redraw("Document has been saved with a new filename")
+
+    # Document has been saved in a new location
+    app.documents[0]._content.write.assert_called_with(
+        tmp_path / "new_filename.testbed"
+    )
+
+
+async def test_save_all_documents(app, app_probe):
+    """All documents can be saved."""
+    # A document can be opened
+    document_path = Path(__file__).parent / "docs/example.testbed"
+    app.open(document_path)
+
+    await app_probe.redraw("Document has been opened")
+
+    assert len(app.documents) == 1
+    assert len(app.windows) == 2
+
+    # Document has been read.
+    app.documents[0]._content.read.assert_called_with(document_path)
+
+    # Save all windows in the app
+    await app.save_all()
+    await app_probe.redraw("Save All has been invoked")
+
+    # Document has been saved.
+    app.documents[0]._content.write.assert_called_with(document_path)

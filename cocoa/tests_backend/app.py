@@ -159,6 +159,12 @@ class AppProbe(BaseProbe, DialogsMixin):
         self.assert_menu_item(["*", "Show All"], enabled=True)
         self.assert_menu_item(["*", "Quit Toga Testbed"], enabled=True)
 
+        self.assert_menu_item(["File", "New Example Document"], enabled=True)
+        self.assert_menu_item(["File", "New Read-only Document"], enabled=True)
+        self.assert_menu_item(["File", "Open\u2026"], enabled=True)
+        self.assert_menu_item(["File", "Save"], enabled=True)
+        self.assert_menu_item(["File", "Save As\u2026"], enabled=True)
+        self.assert_menu_item(["File", "Save All"], enabled=True)
         self.assert_menu_item(["File", "Close"], enabled=True)
         self.assert_menu_item(["File", "Close All"], enabled=True)
 

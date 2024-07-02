@@ -12,9 +12,9 @@ from rubicon.objc import (
 from rubicon.objc.eventloop import CocoaLifecycle, EventLoopPolicy
 
 import toga
-from toga.app import overridden
 from toga.command import Command, Group, Separator
-from toga.handlers import NativeHandler, simple_handler
+from toga.handlers import NativeHandler, overridden, simple_handler
+from toga.keys import Key
 
 from .keys import cocoa_key
 from .libs import (
@@ -290,8 +290,41 @@ class App:
                 ),
             )  # pragma: no cover
 
+        # If the app has document types, or has overridden new(), provide a menu item.
+        # Testbed always has document types, so this must be covered.
+        if self.interface.document_types:  # pragma: no branch
+            known_document_classes = set()
+            for i, (extension, document_class) in enumerate(
+                self.interface.document_types.items()
+            ):
+                if document_class not in known_document_classes:
+                    self.interface.commands.add(
+                        Command(
+                            simple_handler(self.interface.new, document_class),
+                            text=f"New {document_class.document_type}",
+                            shortcut=(Key.MOD_1 + "n" if i == 0 else None),
+                            group=Group.FILE,
+                            section=0,
+                            order=i,
+                            id=Command.NEW.format(extension),
+                        ),
+                    )
+                    known_document_classes.add(document_class)
+        elif overridden(self.interface.new):  # pragma: no cover
+            self.interface.commands.add(
+                Command(
+                    simple_handler(self.interface.new),
+                    text="New",
+                    shortcut=Key.MOD_1 + "n",
+                    group=Group.FILE,
+                    section=0,
+                    order=0,
+                    id=Command.NEW.format(None),
+                )
+            )
+
         # If the app has document types, or has overridden open(), provide a menu item.
-        # Testbed always has document types, so this must be covered
+        # Testbed always has document types, so this must be covered.
         if self.interface.document_types or overridden(
             self.interface.open
         ):  # pragma: no branch
@@ -299,9 +332,62 @@ class App:
                 Command(
                     simple_handler(self.interface._open),
                     text="Open\u2026",
+                    shortcut=Key.MOD_1 + "o",
                     group=Group.FILE,
                     section=0,
+                    order=10,
                     id=Command.OPEN,
+                )
+            )
+
+        # If the app has document types, or has overridden save(), provide a menu item.
+        # Testbed always has document types, so this must be covered.
+        if self.interface.document_types or overridden(
+            self.interface.save
+        ):  # pragma: no branch
+            self.interface.commands.add(
+                Command(
+                    simple_handler(self.interface.save),
+                    text="Save",
+                    shortcut=Key.MOD_1 + "s",
+                    group=Group.FILE,
+                    section=30,
+                    order=10,
+                    id=Command.SAVE,
+                )
+            )
+
+        # If the app has document types, or has overridden save_as(), provide a menu
+        # item. Testbed always has document types, so this must be covered.
+        if self.interface.document_types or overridden(
+            self.interface.save_as
+        ):  # pragma: no branch
+            self.interface.commands.add(
+                Command(
+                    simple_handler(self.interface.save_as),
+                    text="Save As\u2026",
+                    shortcut=Key.MOD_1 + "S",
+                    group=Group.FILE,
+                    section=30,
+                    order=11,
+                    id=Command.SAVE_AS,
+                )
+            )
+
+        # If the app has document types, or has overridden save_all(), provide a menu
+        # item. Testbed always has document types, so this must be covered.
+        if self.interface.document_types or overridden(
+            self.interface.save_all
+        ):  # pragma: no branch
+            self.interface.commands.add(
+                Command(
+                    simple_handler(self.interface.save_all),
+                    text="Save All",
+                    shortcut=Key.MOD_1 + Key.MOD_2 + "s",
+                    group=Group.FILE,
+                    section=30,
+                    order=12,
+                    id=Command.SAVE_ALL,
                 )
             )
 
