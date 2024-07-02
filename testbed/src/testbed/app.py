@@ -141,6 +141,7 @@ def main():
         app_name="testbed",
         document_types={
             "testbed": ExampleDoc,
+            "tbed": ExampleDoc,
             "other": ReadonlyDoc,
         },
     )
