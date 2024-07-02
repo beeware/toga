@@ -597,9 +597,50 @@ class App:
                 self.commands.add(command)
 
         if self.document_types:
-            command = Command.standard(self, Command.OPEN)
+            default_document_type = list(self.document_types.values())[0]
+            command = Command.standard(
+                self,
+                Command.NEW,
+                action=simple_handler(self._new, default_document_type),
+            )
             if command:
-                self.commands.add(command)
+                if len(set(self.document_types.values())) == 1:
+                    # There's only 1 document type. The new command can be used as is.
+                    self.commands.add(command)
+                else:
+                    # There's more than one document type. Create a new command for each
+                    # document type, updating the title of the command to disambiguate,
+                    # and modifying the shortcut, order and ID of the document types 2+
+                    known_document_classes = set()
+                    for i, (extension, document_class) in enumerate(
+                        self.document_types.items()
+                    ):
+                        if document_class not in known_document_classes:
+                            command = Command.standard(
+                                self,
+                                Command.NEW,
+                                action=simple_handler(self._new, document_class),
+                            )
+                            command.text = (
+                                command.text + f" {document_class.document_type}"
+                            )
+                            if i > 0:
+                                command.shortcut = None
+                                command.id = f"{command.id}:{extension}"
+                                command.order = command.order + i
+
+                            self.commands.add(command)
+                            known_document_classes.add(document_class)
+
+            for cmd_id in [
+                Command.OPEN,
+                Command.SAVE,
+                Command.SAVE_AS,
+                Command.SAVE_ALL,
+            ]:
+                command = Command.standard(self, cmd_id)
+                if command:
+                    self.commands.add(command)
 
     def _create_initial_windows(self):
         """Internal utility method for creating initial windows based on command line
@@ -790,21 +831,12 @@ class App:
         """
         return await dialog._show(None)
 
-    @overridable
-    def new(self, document_type: type[Document]) -> Document:
+    def _new(self, document_type: type[Document]) -> Document:
         """Create a new document of the given type, and show the document window.
-
-        Override this method to provide custom behavior for creating new document
-        windows.
 
         If your app defines :attr:`~toga.App.document_types`, a :attr:`toga.Command.NEW`
         command will be added to your app for each document type that is registered, and
         this method will be invoked when the menu item is selected.
-
-        If the method is overridden, and there are no document types registered, a
-        :attr:`toga.Command.NEW` command will be registered with a document type of
-        ``None``, and the ``document_type`` parameter will *not* be provided when
-        the menu item is selected.
 
         :param document_type: The document type that has been requested.
         :returns: The newly created document.
@@ -911,53 +943,29 @@ class App:
                 # User chose to cancel the save
                 return None
 
-    @overridable
-    async def save(self):
+    async def _save(self):
         """Save the current content of an app.
 
-        The default implementation will invoke ``save()`` on the current window. If the
-        current window doesn't define a ``save()`` method, the save request will be
-        ignored.
-
-        If you override this method in your App class, or you define
-        :attr:`~toga.App.document_types`, the :attr:`toga.Command.SAVE` command will be
-        added to your app, and this method will be invoked when the menu item is
-        selected.
-
-        :param window: The window whose content is to be saved. If ``None``, the
-            currently selected window will be used.
+        If there isn't a current window, or current window doesn't define a ``save()``
+        method, the save request will be ignored.
         """
         if hasattr(self.current_window, "save"):
             await self.current_window.save()
 
-    @overridable
-    async def save_as(self):
+    async def _save_as(self):
         """Save the current content of an app under a different filename.
 
-        The default implementation will invoke ``save_as()`` on the current window. If
-        there isn't a current window, or the current window hasn't defined a
+        If there isn't a current window, or the current window hasn't defined a
         ``save_as()`` method, the save-as request will be ignored.
-
-        If you override this method in your App class, or you define
-        :attr:`~toga.App.document_types`, the :attr:`toga.Command.SAVE_AS` command will
-        be added to your app, and this method will be invoked when the menu item is
-        selected.
         """
         if hasattr(self.current_window, "save_as"):
             await self.current_window.save_as()
 
-    @overridable
-    async def save_all(self):
+    async def _save_all(self):
         """Save the state of all content in the app.
 
-        The default implementation will attempt to call ``save()`` on every window
-        associated with the app. Any windows that do not provide a ``save()`` method
-        will be ignored.
-
-        If you override this method in your App class, or you define
-        :attr:`~toga.App.document_types`, the :attr:`toga.Command.SAVE_ALL` command will
-        be added to your app, and this method will be invoked when the menu item is
-        selected.
+        This method will attempt to call ``save()`` on every window associated with the
+        app. Any windows that do not provide a ``save()`` method will be ignored.
         """
         for window in self.windows:
             if hasattr(window, "save"):

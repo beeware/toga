@@ -166,14 +166,11 @@ class Command:
     #: An identifier for the system-installed "Exit" menu item. This command may be
     #: installed by default, depending on platform requirements.
     EXIT: str = "_request_exit"
-    #: A template for identifiers for system-installed "New" menu items. This constant
-    #: will be used as a template that is formatted with the first extension for which
-    #: a document type is registered with your app (e.g., if a text document type is
-    #: registered with ``txt`` and ``doc`` extensions, the ID ``new:txt`` will be
-    #: used). If the "New" menu item is enabled by overriding ``toga.App.new()``, the
-    #: template will be formatted with the value ``None`` (so the identifier will be
-    #: ``new:None``).
-    NEW: str = "new:{}"
+    #: An identifier for the system-installed "New" menu item. This constant
+    #: will be used for the default document type for your app; if you specify more
+    #: than one document type, the command for the subsequent commands will have a
+    #: colon and the first extension for that data type appended to the ID.
+    NEW: str = "_new"
     #: An identifier for the system-installed "Open" menu item. This command will be
     #: automatically installed if your app declares any document types, or the app
     #: overrides the :meth:`~toga.App.open` method.
@@ -183,15 +180,15 @@ class Command:
     #: An identifier for the system-installed "Save" menu item. This command will be
     #: automatically installed if your app declares any document types, or the app
     #: overrides the :meth:`~toga.App.save` method.
-    SAVE: str = "save"
+    SAVE: str = "_save"
     #: An identifier for the system-installed "Save As..." menu item. This command
     #: will be automatically installed if your app declares any document types, or
     #: the app overrides the :meth:`~toga.App.save_as` method.
-    SAVE_AS: str = "save_as"
+    SAVE_AS: str = "_save_as"
     #: An identifier for the system-installed "Save All" menu item. This command
     #: will be automatically installed if your app declares any document types, or
     #: the app overrides the :meth:`~toga.App.save_all` method.
-    SAVE_ALL: str = "save_all"
+    SAVE_ALL: str = "_save_all"
     #: An identifier for the system-installed "Visit Homepage" menu item. This
     #: command may be installed by default, depending on platform requirements.
     VISIT_HOMEPAGE: str = "visit_homepage"

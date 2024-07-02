@@ -3,8 +3,8 @@ from unittest.mock import Mock
 import toga
 
 
-class TestbedDoc(toga.Document):
-    document_type = "Testbed Document"
+class ExampleDoc(toga.Document):
+    document_type = "Example Document"
 
     def create(self):
         # Create the main window for the document.
@@ -19,6 +19,24 @@ class TestbedDoc(toga.Document):
             raise RuntimeError("Unable to load broken document")
         else:
             self._content.read(self.path)
+
+    def write(self):
+        self._content.write(self.path)
+
+
+class ReadonlyDoc(toga.Document):
+    document_type = "Read-only Document"
+
+    def create(self):
+        # Create the main window for the document.
+        self.main_window = toga.DocumentMainWindow(
+            doc=self,
+            content=toga.Box(),
+        )
+        self._content = Mock()
+
+    def read(self):
+        self._content.read(self.path)
 
 
 class Testbed(toga.App):
@@ -122,6 +140,7 @@ def main():
     return Testbed(
         app_name="testbed",
         document_types={
-            "testbed": TestbedDoc,
+            "testbed": ExampleDoc,
+            "other": ReadonlyDoc,
         },
     )
