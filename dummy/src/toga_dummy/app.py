@@ -71,7 +71,32 @@ class App(LoggedObject):
                 ),
             )
 
-        # If the app has document types, or has overridden open(), provide a menu item
+        # If the app has document types, or has overridden new(), provide a menu item.
+        if self.interface.document_types:
+            known_document_classes = set()
+            for extension, document_class in self.interface.document_types.items():
+                if document_class not in known_document_classes:
+                    self.interface.commands.add(
+                        Command(
+                            simple_handler(self.interface.new, document_class),
+                            text=f"New {document_class.document_type}",
+                            group=Group.FILE,
+                            id=Command.NEW.format(extension),
+                        ),
+                    )
+                    known_document_classes.add(document_class)
+        elif overridden(self.interface.new):
+            # If the user has overridden `new`, provide a menu item
+            self.interface.commands.add(
+                Command(
+                    simple_handler(self.interface.new),
+                    text="New",
+                    group=Group.FILE,
+                    id=Command.NEW.format(None),
+                )
+            )
+
+        # If the app has document types, or has overridden open(), provide a menu item.
         if self.interface.document_types or overridden(self.interface.open):
             self.interface.commands.add(
                 Command(
@@ -79,6 +104,40 @@ class App(LoggedObject):
                     text="Open",
                     group=Group.FILE,
                     id=Command.OPEN,
+                )
+            )
+
+        # If the app has document types, or has overridden save(), provide a menu item.
+        if self.interface.document_types or overridden(self.interface.save):
+            self.interface.commands.add(
+                Command(
+                    simple_handler(self.interface.save),
+                    text="Save",
+                    group=Group.FILE,
+                    id=Command.SAVE,
+                )
+            )
+
+        # If the app has document types, or has overridden save_as(), provide a menu item.
+        if self.interface.document_types or overridden(self.interface.save_as):
+            self.interface.commands.add(
+                Command(
+                    simple_handler(self.interface.save_as),
+                    text="Save As",
+                    group=Group.FILE,
+                    id=Command.SAVE_AS,
+                )
+            )
+
+        # If the app has document types, or has overridden save_all(), provide a menu
+        # item.
+        if self.interface.document_types or overridden(self.interface.save_all):
+            self.interface.commands.add(
+                Command(
+                    simple_handler(self.interface.save_all),
+                    text="Save All",
+                    group=Group.FILE,
+                    id=Command.SAVE_ALL,
                 )
             )
 

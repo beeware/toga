@@ -165,6 +165,45 @@ a :class:`toga.Document` instance for each argument matching a registered docume
 For details on how to define and register document types, refer to :doc:`the
 documentation on document handling <./resources/document>`.
 
+System-installed commands
+-------------------------
+
+Every app install a collection of default :ref:`commands`, reflecting basic app
+operations like quitting the app, displaying an About dialog, and so on. These commands
+are all backed by default implementations on :class:`toga.App`. You can alter the default
+Toga behavior by overriding these methods.
+
+The commands installed by default is dependent on platform requirements. For example,
+mobile apps won't install an :attr:`~toga.Command.EXIT` command because mobile apps
+don't usually provide an in-app way to quit the app.
+
+If your app :ref:`registers at least one document type <registering-document-types>`,
+the system-installed commands will include all file management commands (New, Open,
+Save, etc). These commands use the :class:`toga.Document` API to save the content
+managed by your app.
+
+The system-installed commands are also affected by the methods defined by your app. For
+example, the preferences menu item will only be installed if your app overrides
+:meth:`~toga.App.preferences`. The file management commands can also be installed by
+overriding the corresponding methods in your app; overriding the :meth:`~toga.App.save`
+method will enable the Save menu item; overriding the :meth:`~toga.App.open` method will
+enable the Open menu item, and so on.
+
+The system-installed commands will all be installed *before* your app's
+:meth:`~toga.App.startup` method is invoked. If you wish to remove a menu item that has
+been installed by default, you delete the command from your app's
+:attr:`~toga.App.commands` set, using the :attr:`~toga.Command.id` attribute of the
+command. For example, to remove the About menu item that is installed by default you
+would add the following to your app's startup method:
+
+.. code-block:: python
+
+    def startup(self):
+        del self.commands[toga.Command.ABOUT]
+
+        # Other startup logic
+        ...
+
 Notes
 -----
 

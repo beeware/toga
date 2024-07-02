@@ -1,0 +1,1 @@
+File management menu items (such as New, Open and Save) can now be overridden to install default menu items.

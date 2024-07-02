@@ -13,14 +13,30 @@ class CustomizedApp(toga.App):
         # that toolbar handling is skipped.
         self.other_window = toga.Window()
 
+        self._mock_new = Mock()
         self._mock_open = Mock()
         self._mock_preferences = Mock()
+        self._mock_save = Mock()
+        self._mock_save_as = Mock()
+        self._mock_save_all = Mock()
+
+    def new(self):
+        self._mock_new()
 
     def open(self, path):
         self._mock_open(path)
 
     def preferences(self):
         self._mock_preferences()
+
+    def save(self):
+        self._mock_save()
+
+    def save_as(self):
+        self._mock_save_as()
+
+    def save_all(self):
+        self._mock_save_all()
 
 
 class AsyncCustomizedApp(CustomizedApp):
@@ -29,6 +45,15 @@ class AsyncCustomizedApp(CustomizedApp):
 
     async def preferences(self):
         self._mock_preferences()
+
+    async def save(self):
+        self._mock_save()
+
+    async def save_as(self):
+        self._mock_save_as()
+
+    async def save_all(self):
+        self._mock_save_all()
 
 
 @pytest.mark.parametrize(
@@ -63,8 +88,22 @@ def test_create(event_loop, AppClass):
     assert custom_app.main_window.toolbar.on_change is not None
 
 
+def test_new_menu(event_loop):
+    """The custom new method is activated by the new menu"""
+    custom_app = CustomizedApp("Custom App", "org.beeware.customized-app")
+
+    # Command.NEW is a template.
+    result = custom_app.commands[toga.Command.NEW.format(None)].action()
+    if asyncio.isfuture(result):
+        custom_app.loop.run_until_complete(result)
+
+    # A custom new method, on an app without document types, is invoked without
+    # arguments.
+    custom_app._mock_new.assert_called_once_with()
+
+
 def test_open_menu(event_loop):
-    """The custom preferences method is activated by the preferences menu"""
+    """The custom open method is activated by the open menu"""
     custom_app = CustomizedApp("Custom App", "org.beeware.customized-app")
 
     file_path = Mock()
@@ -91,3 +130,73 @@ def test_preferences_menu(event_loop, AppClass):
     if asyncio.isfuture(result):
         custom_app.loop.run_until_complete(result)
     custom_app._mock_preferences.assert_called_once_with()
+
+
+@pytest.mark.parametrize(
+    "AppClass",
+    [
+        CustomizedApp,
+        AsyncCustomizedApp,
+    ],
+)
+def test_save_menu(event_loop, AppClass):
+    """The custom save method is activated by the save menu"""
+    custom_app = AppClass("Custom App", "org.beeware.customized-app")
+
+    result = custom_app.commands[toga.Command.SAVE].action()
+    if asyncio.isfuture(result):
+        custom_app.loop.run_until_complete(result)
+    custom_app._mock_save.assert_called_once_with()
+
+
+@pytest.mark.parametrize(
+    "AppClass",
+    [
+        CustomizedApp,
+        AsyncCustomizedApp,
+    ],
+)
+def test_save_as_menu(event_loop, AppClass):
+    """The custom save_as method is activated by the save_as menu"""
+    custom_app = AppClass("Custom App", "org.beeware.customized-app")
+
+    result = custom_app.commands[toga.Command.SAVE_AS].action()
+    if asyncio.isfuture(result):
+        custom_app.loop.run_until_complete(result)
+    custom_app._mock_save_as.assert_called_once_with()
+
+
+@pytest.mark.parametrize(
+    "AppClass",
+    [
+        CustomizedApp,
+        AsyncCustomizedApp,
+    ],
+)
+def test_save_all_menu(event_loop, AppClass):
+    """The custom save_all method is activated by the save_all menu"""
+    custom_app = AppClass("Custom App", "org.beeware.customized-app")
+
+    result = custom_app.commands[toga.Command.SAVE_ALL].action()
+    if asyncio.isfuture(result):
+        custom_app.loop.run_until_complete(result)
+    custom_app._mock_save_all.assert_called_once_with()
+
+
+def test_initial_window_from_new(event_loop):
+    """If an app doesn't have a main window or doc types, but *does* have a new method,
+    that method is used to populate the initial window."""
+
+    class PseudoDocApp(toga.App):
+        def startup(self):
+            self.main_window = None
+
+        def new(self):
+            window = toga.Window(title="Pseudo Document")
+            window.show()
+
+    app = PseudoDocApp("Pseudo Doc App", "org.beeware.pseudo-doc-app")
+
+    # The new method was used to create an initial window.
+    assert len(app.windows) == 1
+    assert list(app.windows)[0].title == "Pseudo Document"
