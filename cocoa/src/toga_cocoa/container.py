@@ -59,25 +59,25 @@ class Container:
         # bigger. If the window is resizable, using >= allows the window to
         # be dragged larger; if not resizable, it enforces the smallest
         # size that can be programmatically set on the window.
-        self._min_width_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # noqa: E501
+        self._min_width_constraint = NSLayoutConstraint.constraintWithItem(
             self.native,
-            NSLayoutAttributeRight,
-            NSLayoutRelationGreaterThanOrEqual,
-            self.native,
-            NSLayoutAttributeLeft,
-            1.0,
-            min_width,
+            attribute__1=NSLayoutAttributeRight,
+            relatedBy=NSLayoutRelationGreaterThanOrEqual,
+            toItem=self.native,
+            attribute__2=NSLayoutAttributeLeft,
+            multiplier=1.0,
+            constant=min_width,
         ).retain()
         self.native.addConstraint(self._min_width_constraint)
 
-        self._min_height_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # noqa: E501
+        self._min_height_constraint = NSLayoutConstraint.constraintWithItem(
             self.native,
-            NSLayoutAttributeBottom,
-            NSLayoutRelationGreaterThanOrEqual,
-            self.native,
-            NSLayoutAttributeTop,
-            1.0,
-            min_height,
+            attribute__1=NSLayoutAttributeBottom,
+            relatedBy=NSLayoutRelationGreaterThanOrEqual,
+            toItem=self.native,
+            attribute__2=NSLayoutAttributeTop,
+            multiplier=1.0,
+            constant=min_height,
         ).retain()
         self.native.addConstraint(self._min_height_constraint)
 
