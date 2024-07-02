@@ -47,7 +47,10 @@ main window contains a :class:`~toga.MultilineTextInput`:
             with self.path.open("w") as f:
                 f.write(self.main_window.content.value)
 
-This document class can then be registered with an app instance. The constructor for
+Registering document types
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+A document class can then be registered with an app instance. The constructor for
 :any:`toga.App` allows you to declare the full collection of document types that your
 app supports; the first declared document type is treated as the default document type
 for your app.

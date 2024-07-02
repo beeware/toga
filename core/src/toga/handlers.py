@@ -36,6 +36,21 @@ if TYPE_CHECKING:
     WrappedHandlerT: TypeAlias = Callable[..., object]
 
 
+def overridable(method):
+    """Decorate the method as being user-overridable"""
+    method._overridden = True
+    return method
+
+
+def overridden(coroutine_or_method):
+    """Has the user overridden this method?
+
+    This is based on the method *not* having a ``_overridden`` attribute. Overridable
+    default methods have this attribute; user-defined method will not.
+    """
+    return not hasattr(coroutine_or_method, "_overridden")
+
+
 class NativeHandler:
     def __init__(self, handler: Callable[..., object]):
         self.native = handler

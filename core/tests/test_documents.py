@@ -19,6 +19,19 @@ class MyDoc(toga.Document):
         self.content = "file content"
         self._mock_content.read(self.path)
 
+    def write(self):
+        self._mock_content.write(self.path)
+
+
+class OtherDoc(toga.Document):
+    document_type = "Other Document"
+
+    def create(self):
+        self.main_window = Mock(title="Mock Window")
+
+    def read(self):
+        pass
+
 
 def test_create_document(app):
     doc = MyDoc(app)
@@ -37,6 +50,36 @@ def test_create_document(app):
     doc.main_window.show.assert_called_once_with()
 
 
+def test_default_extension(event_loop):
+    """The default extension for a document type can be determined."""
+
+    app = toga.App(
+        "Test App",
+        "org.beeware.document-app",
+        document_types={
+            "foobar": OtherDoc,
+            "doc1": MyDoc,
+            "doc2": MyDoc,
+        },
+    )
+
+    doc = MyDoc(app)
+
+    assert doc.default_extension == "doc1"
+
+
+def test_default_extension_unregistered(app):
+    """The default extension for a document type can be determined."""
+
+    doc = MyDoc(app)
+
+    with pytest.raises(
+        RuntimeError,
+        match=r"Document type isn't registered with the current app",
+    ):
+        doc.default_extension
+
+
 @pytest.mark.parametrize("converter", [str, lambda s: s])
 def test_open_absolute_document(app, converter, tmp_path):
     """A document can be opened with an absolute path."""
@@ -51,6 +94,7 @@ def test_open_absolute_document(app, converter, tmp_path):
     # Calling absolute() ensures the expected value is correct on Windows
     assert doc.path == path.absolute()
     assert doc.content == "file content"
+    assert doc._mock_content.read(path.absolute())
 
 
 @pytest.mark.parametrize("converter", [str, lambda s: s])
@@ -72,6 +116,7 @@ def test_open_relative_document(app, converter, tmp_path):
         # Calling absolute() ensures the expected value is correct on Windows
         assert doc.path == path.absolute()
         assert doc.content == "file content"
+        assert doc._mock_content.read(path.absolute())
     finally:
         os.chdir(orig_cwd)
 
@@ -83,3 +128,66 @@ def test_open_missing_document(app, tmp_path):
     # Read the file
     with pytest.raises(FileNotFoundError):
         doc.open(tmp_path / "doc.mydoc")
+
+
+@pytest.mark.parametrize("converter", [str, lambda s: s])
+def test_save_absolute_document(app, converter, tmp_path):
+    """A document can be saved with an absolute path."""
+    doc = MyDoc(app)
+
+    path = tmp_path / "doc.mydoc"
+
+    # Read the file
+    doc.save(converter(path))
+
+    # Calling absolute() ensures the expected value is correct on Windows
+    assert doc.path == path.absolute()
+    assert doc.title == "My Document: doc"
+    assert doc._mock_content.write(path.absolute())
+
+
+@pytest.mark.parametrize("converter", [str, lambda s: s])
+def test_save_relative_document(app, converter, tmp_path):
+    """A document can be saved with a relative path."""
+    doc = MyDoc(app)
+
+    path = Path("doc.mydoc")
+
+    # Read the file
+    doc.save(converter(path))
+
+    # Calling absolute() ensures the expected value is correct on Windows
+    assert doc.path == (Path.cwd() / path).absolute()
+    assert doc.title == "My Document: doc"
+    assert doc._mock_content.write(path.absolute())
+
+
+def test_save_existing_document(app, tmp_path):
+    """A document can be saved at its existing path."""
+    doc = MyDoc(app)
+    path = tmp_path / "doc.mydoc"
+    # Prime the document's path
+    doc._path = path
+
+    # Save the file
+    doc.save()
+
+    # Calling absolute() ensures the expected value is correct on Windows
+    assert doc.path == path.absolute()
+    assert doc.title == "My Document: doc"
+    assert doc._mock_content.write(path.absolute())
+
+
+def test_save_readonly_document(app, tmp_path):
+    """Save is a no-op on a readonly document."""
+    doc = OtherDoc(app)
+    path = tmp_path / "doc.other"
+    # Prime the document's path
+    doc._path = path
+
+    # Save the file
+    doc.save()
+
+    # Calling absolute() ensures the expected value is correct on Windows
+    assert doc.path == path.absolute()
+    assert doc.title == "Other Document: doc"

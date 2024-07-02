@@ -13,8 +13,8 @@ from typing import TYPE_CHECKING, Any, MutableSet, Protocol
 from weakref import WeakValueDictionary
 
 from toga.command import Command, CommandSet
-from toga.dialogs import OpenFileDialog
-from toga.handlers import simple_handler, wrapped_handler
+from toga.dialogs import ConfirmDialog, OpenFileDialog, SaveFileDialog
+from toga.handlers import overridable, overridden, simple_handler, wrapped_handler
 from toga.hardware.camera import Camera
 from toga.hardware.location import Location
 from toga.icons import Icon
@@ -622,17 +622,19 @@ class App:
         # Safety check: Do we have at least one document?
         if self.main_window is None and doc_count == 0:
             try:
-                DefaultDocType = next(iter(self.document_types.values()))
+                # Pass in the first document type as the default
+                default_doc_type = next(iter(self.document_types.values()))
+                self.new(default_doc_type)
             except StopIteration:
-                raise ValueError(
-                    "App doesn't define any initial windows, "
-                    "and doesn't have a default document type."
-                )
-            else:
-                document = DefaultDocType(app=self)
-
-                self._documents.append(document)
-                document.show()
+                # No document types defined. If `new` has been overridden,
+                # we can invoke it without arguments.
+                if overridden(self.new):
+                    self.new()
+                else:
+                    raise ValueError(
+                        "App doesn't define any initial windows, doesn't override new, "
+                        "and doesn't have a default document type."
+                    )
 
     def _startup(self) -> None:
         # Install the standard commands. This is done *before* startup so the user's
@@ -788,6 +790,29 @@ class App:
         """
         return await dialog._show(None)
 
+    @overridable
+    def new(self, document_type: type[Document]) -> Document:
+        """Create a new document of the given type, and show the document window.
+
+        Override this method to provide custom behavior for creating new document
+        windows.
+
+        If your app defines :attr:`~toga.App.document_types`, a :attr:`toga.Command.NEW`
+        command will be added to your app for each document type that is registered, and
+        this method will be invoked when the menu item is selected.
+
+        If the method is overridden, and there are no document types registered, a
+        :attr:`toga.Command.NEW` command will be registered with a document type of
+        ``None``, and the ``document_type`` parameter will *not* be provided when
+        the menu item is selected.
+
+        :param document_type: The document type that has been requested.
+        :returns: The newly created document.
+        """
+        document = document_type(app=self)
+        document.show()
+        return document
+
     async def _open(self):
         # The menu interface to open(). Prompt the user to select a file; then open that
         # file.
@@ -811,10 +836,11 @@ class App:
         if path:
             self.open(path)
 
-    def open(self, path: Path | str) -> None:
+    def open(self, path: Path | str) -> Document:
         """Open a document in this app, and show the document window.
 
         :param path: The path to the document to be opened.
+        :returns: The document that was opened.
         :raises ValueError: If the path describes a file that is of a type that doesn't
             match a registered document type.
         """
@@ -829,14 +855,113 @@ class App:
             document = DocType(app=self)
             try:
                 document.open(path)
+                document.show()
+                return document
             except Exception:
                 # Open failed; make sure any windows opened by the document are closed.
                 document.close()
                 raise
+
+    async def replacement_filename(
+        self,
+        suggested_name: Path,
+        window: Window | None,
+    ) -> Path | None:
+        """Select a new filename for a file.
+
+        Displays a save file dialog to the user, allowing the user to select a file
+        name. If they provide a file name that already exists, a confirmation dialog
+        will be displayed. The user will be repeatedly prompted for a filename until:
+
+        1. They select a non-existent filename; or
+        2. They confirm that it's OK to overwrite an existing filename; or
+        3. They cancel the file selection dialog.
+
+        This is the workflow that is used implement filename selection when changing the
+        name of a file with "Save As", or setting the initial name of an untitled file
+        with "Save". Custom implementations of `save()`/`save_as()` may find this method
+        useful.
+
+        :param window: The window against which any dialogs will be opened. If no
+            window is provided, dialogs will be opened modal to the app.
+        :param suggested name: The initial candidate filename
+        :returns: The path to use, or ``None`` if the user cancelled the request.
+        """
+        context = self if window is None else window
+        while True:
+            new_path = await context.dialog(
+                SaveFileDialog("Save as...", suggested_name)
+            )
+            if new_path:
+                if new_path.exists():
+                    save_ok = await context.dialog(
+                        ConfirmDialog(
+                            "Are you sure?",
+                            f"The file {new_path.name} already exists. Overwrite?",
+                        )
+                    )
+                else:
+                    # Filename doesn't exist, so saving must be ok.
+                    save_ok = True
+
+                if save_ok:
+                    # Save the document and return
+                    return new_path
             else:
-                # Document is open; register the document and show.
-                self._documents.append(document)
-                document.show()
+                # User chose to cancel the save
+                return None
+
+    @overridable
+    async def save(self):
+        """Save the current content of an app.
+
+        The default implementation will invoke ``save()`` on the current window. If the
+        current window doesn't define a ``save()`` method, the save request will be
+        ignored.
+
+        If you override this method in your App class, or you define
+        :attr:`~toga.App.document_types`, the :attr:`toga.Command.SAVE` command will be
+        added to your app, and this method will be invoked when the menu item is
+        selected.
+
+        :param window: The window whose content is to be saved. If ``None``, the
+            currently selected window will be used.
+        """
+        if hasattr(self.current_window, "save"):
+            await self.current_window.save()
+
+    @overridable
+    async def save_as(self):
+        """Save the current content of an app under a different filename.
+
+        The default implementation will invoke ``save_as()`` on the current window. If
+        there isn't a current window, or the current window hasn't defined a
+        ``save_as()`` method, the save-as request will be ignored.
+
+        If you override this method in your App class, or you define
+        :attr:`~toga.App.document_types`, the :attr:`toga.Command.SAVE_AS` command will
+        be added to your app, and this method will be invoked when the menu item is
+        selected.
+        """
+        if hasattr(self.current_window, "save_as"):
+            await self.current_window.save_as()
+
+    @overridable
+    async def save_all(self):
+        """Save the state of all content in the app.
+
+        The default implementation will attempt to call ``save()`` on every window
+        associated with the app. Any windows that do not provide a ``save()`` method
+        will be ignored.
+
+        If you override this method in your App class, or you define
+        :attr:`~toga.App.document_types`, the :attr:`toga.Command.SAVE_ALL` command will
+        be added to your app, and this method will be invoked when the menu item is
+        selected.
+        """
+        for window in self.windows:
+            if hasattr(window, "save"):
+                await window.save()
 
     def visit_homepage(self) -> None:
         """Open the application's :any:`home_page` in the default browser.

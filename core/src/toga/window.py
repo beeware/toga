@@ -14,7 +14,7 @@ from typing import (
 import toga
 from toga import dialogs
 from toga.command import CommandSet
-from toga.handlers import AsyncResult, wrapped_handler
+from toga.handlers import AsyncResult, overridden, wrapped_handler
 from toga.images import Image
 from toga.platform import get_platform_factory
 from toga.types import Position, Size
@@ -876,11 +876,44 @@ class DocumentMainWindow(MainWindow):
     def _close(self):
         # When then window is closed, remove the document it is managing from the app's
         # list of managed documents.
-        try:
-            self._app._documents.remove(self.doc)
-        except ValueError:
-            # If the error occurred opening the document,
-            # the document might not be registered.
-            pass
-
+        self._app._documents.remove(self.doc)
         super()._close()
+
+    async def save(self):
+        """Save the document associated with this window.
+
+        If the document associated with a window hasn't been saved before, and the
+        document type defines a :meth:`~toga.Document.write` method, the user will be
+        prompted to provide a filename.
+        """
+        if overridden(self.doc.write):
+            if self.doc.path:
+                self.doc.save()
+            else:
+                suggested_name = f"Untitled{self.doc.default_extension}"
+                new_path = await self.app.replacement_filename(
+                    suggested_name,
+                    window=self,
+                )
+                if new_path:
+                    self.doc.save(new_path)
+
+    async def save_as(self):
+        """Save the document associated with this window under a new filename.
+
+        The default implementation will prompt the user for a new filename, then save
+        the document with that new filename. If the document type doesn't define a
+        :meth:`~toga.Document.write` method, the save-as request will be ignored.
+        """
+        if overridden(self.doc.write):
+            suggested_path = (
+                self.doc.path
+                if self.doc.path
+                else f"Untitled{self.doc.default_extension}"
+            )
+            new_path = await self.app.replacement_filename(
+                suggested_path,
+                window=self,
+            )
+            if new_path:
+                self.doc.save(new_path)
