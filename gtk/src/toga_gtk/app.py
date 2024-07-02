@@ -6,9 +6,9 @@ import sys
 import gbulb
 
 import toga
-from toga.app import App as toga_App, overridden
-from toga.command import Command, Separator
-from toga.handlers import simple_handler
+from toga.app import App as toga_App
+from toga.command import Command, Group, Separator
+from toga.handlers import overridden, simple_handler
 
 from .keys import gtk_accel
 from .libs import TOGA_DEFAULT_STYLES, Gdk, Gio, GLib, Gtk
@@ -71,7 +71,7 @@ class App:
                 simple_handler(self.interface._request_exit),
                 "Quit " + self.interface.formal_name,
                 shortcut=toga.Key.MOD_1 + "q",
-                group=toga.Group.APP,
+                group=Group.APP,
                 section=sys.maxsize,
                 id=Command.EXIT,
             ),
@@ -79,14 +79,14 @@ class App:
             Command(
                 simple_handler(self.interface.about),
                 "About " + self.interface.formal_name,
-                group=toga.Group.HELP,
+                group=Group.HELP,
                 id=Command.ABOUT,
             ),
             Command(
                 simple_handler(self.interface.visit_homepage),
                 "Visit homepage",
                 enabled=self.interface.home_page is not None,
-                group=toga.Group.HELP,
+                group=Group.HELP,
                 id=Command.VISIT_HOMEPAGE,
             ),
         )
@@ -97,10 +97,49 @@ class App:
                 Command(
                     simple_handler(self.interface.preferences),
                     "Preferences",
-                    group=toga.Group.APP,
+                    group=Group.APP,
                     id=Command.PREFERENCES,
                 ),
             )  # pragma: no cover
+
+        # If the app has document types, or has overridden new(), provide a menu item.
+        # Testbed always has document types, so this must be covered
+        if self.interface.document_types:  # pragma: no branch
+            known_document_classes = set()
+            for i, (extension, document_class) in enumerate(
+                self.interface.document_types.items()
+            ):
+                if document_class not in known_document_classes:
+                    self.interface.commands.add(
+                        toga.Command(
+                            simple_handler(self.interface.new, document_class),
+                            text=f"New {document_class.document_type}",
+                            shortcut=(
+                                (toga.Key.MOD_1 + "n")
+                                if not known_document_classes
+                                else None
+                            ),
+                            group=toga.Group.FILE,
+                            section=0,
+                            order=i,
+                            id=Command.NEW.format(extension),
+                        ),
+                    )
+                    known_document_classes.add(document_class)
+        elif overridden(self.interface.new):  # pragma: no cover
+            # If the user has overridden `new`, provide a menu item. This can't happen
+            # in testbed.
+            self.interface.commands.add(
+                Command(
+                    simple_handler(self.interface.new),
+                    text="New",
+                    shortcut=toga.Key.MOD_1 + "n",
+                    group=Group.FILE,
+                    section=0,
+                    order=0,
+                    id=Command.NEW.format(None),
+                )
+            )
 
         # If the app has document types, or has overridden open(), provide a menu item.
         # Testbed always has document types, so this must be covered
@@ -112,10 +151,62 @@ class App:
                     simple_handler(self.interface._open),
                     text="Open...",
                     shortcut=toga.Key.MOD_1 + "o",
-                    group=toga.Group.FILE,
+                    group=Group.FILE,
                     section=0,
+                    order=10,
                     id=Command.OPEN,
                 ),
+            )
+
+        # If the app has document types, or has overridden save(), provide a menu item.
+        # Testbed always has document types, so this must be covered
+        if self.interface.document_types or overridden(
+            self.interface.save
+        ):  # pragma: no branch
+            self.interface.commands.add(
+                Command(
+                    simple_handler(self.interface.save),
+                    text="Save",
+                    shortcut=toga.Key.MOD_1 + "s",
+                    group=Group.FILE,
+                    id=Command.SAVE,
+                    section=0,
+                    order=20,
+                )
+            )
+
+        # If the app has document types, or has overridden save_as(), provide a menu item.
+        # Testbed always has document types, so this must be covered
+        if self.interface.document_types or overridden(
+            self.interface.save_as
+        ):  # pragma: no branch
+            self.interface.commands.add(
+                Command(
+                    simple_handler(self.interface.save_as),
+                    text="Save As...",
+                    shortcut=toga.Key.MOD_1 + "S",
+                    group=Group.FILE,
+                    id=Command.SAVE_AS,
+                    section=0,
+                    order=21,
+                )
+            )
+
+        # If the app has document types, or has overridden save_all(), provide a menu
+        # item. Testbed always has document types, so this must be covered
+        if self.interface.document_types or overridden(
+            self.interface.save_all
+        ):  # pragma: no branch
+            self.interface.commands.add(
+                Command(
+                    simple_handler(self.interface.save_all),
+                    text="Save All",
+                    shortcut=toga.Key.MOD_1 + toga.Key.MOD_2 + "s",
+                    group=Group.FILE,
+                    id=Command.SAVE_ALL,
+                    section=0,
+                    order=22,
+                )
             )
 
     def _submenu(self, group, menubar):
@@ -245,7 +336,7 @@ class App:
     def beep(self):
         Gdk.beep()
 
-    def _close_about(self, dialog):
+    def _close_about(self, dialog, **kwargs):
         self.native_about_dialog.destroy()
         self.native_about_dialog = None
 
@@ -268,6 +359,7 @@ class App:
 
         self.native_about_dialog.show()
         self.native_about_dialog.connect("close", self._close_about)
+        self.native_about_dialog.connect("response", self._close_about)
 
     ######################################################################
     # Cursor control

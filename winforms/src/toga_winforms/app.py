@@ -11,9 +11,8 @@ from System.Net import SecurityProtocolType, ServicePointManager
 from System.Windows.Threading import Dispatcher
 
 import toga
-from toga.app import overridden
 from toga.command import Command, Group
-from toga.handlers import simple_handler
+from toga.handlers import overridden, simple_handler
 
 from .libs.proactor import WinformsProactorEventLoop
 from .libs.wrapper import WeakrefCallable
@@ -177,8 +176,47 @@ class App:
                 ),
             )  # pragma: no cover
 
+        # If the app has document types, or has overridden new(), provide a menu item.
+        # Testbed always has document types, so this must be covered.
+        if self.interface.document_types:  # pragma: no branch
+            known_document_classes = set()
+            for i, (extension, document_class) in enumerate(
+                self.interface.document_types.items()
+            ):
+                if document_class not in known_document_classes:
+                    self.interface.commands.add(
+                        toga.Command(
+                            simple_handler(self.interface.new, document_class),
+                            text=f"New {document_class.document_type}",
+                            shortcut=(
+                                (toga.Key.MOD_1 + "n")
+                                if not known_document_classes
+                                else None
+                            ),
+                            group=toga.Group.FILE,
+                            section=0,
+                            order=i,
+                            id=Command.NEW.format(extension),
+                        ),
+                    )
+                    known_document_classes.add(document_class)
+        elif overridden(self.interface.new):  # pragma: no cover
+            # If the user has overridden `new`, provide a menu item. This can't happen
+            # in testbed.
+            self.interface.commands.add(
+                Command(
+                    simple_handler(self.interface.new),
+                    text="New",
+                    shortcut=toga.Key.MOD_1 + "n",
+                    group=Group.FILE,
+                    section=0,
+                    order=0,
+                    id=Command.NEW.format(None),
+                )
+            )
+
         # If the app has document types, or has overridden open(), provide a menu item.
-        # Testbed always has document types, so this must be covered
+        # Testbed always has document types, so this must be covered.
         if self.interface.document_types or overridden(
             self.interface.open
         ):  # pragma: no branch
@@ -189,8 +227,60 @@ class App:
                     shortcut=toga.Key.MOD_1 + "o",
                     group=toga.Group.FILE,
                     section=0,
+                    order=10,
                     id=Command.OPEN,
                 ),
+            )
+
+        # If the app has document types, or has overridden save(), provide a menu item.
+        # Testbed always has document types, so this must be covered.
+        if self.interface.document_types or overridden(
+            self.interface.save
+        ):  # pragma: no branch
+            self.interface.commands.add(
+                Command(
+                    simple_handler(self.interface.save),
+                    text="Save",
+                    shortcut=toga.Key.MOD_1 + "s",
+                    group=Group.FILE,
+                    id=Command.SAVE,
+                    section=0,
+                    order=20,
+                )
+            )
+
+        # If the app has document types, or has overridden save_as(), provide a menu item.
+        # Testbed always has document types, so this must be covered.
+        if self.interface.document_types or overridden(
+            self.interface.save_as
+        ):  # pragma: no branch
+            self.interface.commands.add(
+                Command(
+                    simple_handler(self.interface.save_as),
+                    text="Save As...",
+                    shortcut=toga.Key.MOD_1 + "S",
+                    group=Group.FILE,
+                    id=Command.SAVE_AS,
+                    section=0,
+                    order=21,
+                )
+            )
+
+        # If the app has document types, or has overridden save_all(), provide a menu
+        # item. Testbed always has document types, so this must be covered.
+        if self.interface.document_types or overridden(
+            self.interface.save_all
+        ):  # pragma: no branch
+            self.interface.commands.add(
+                Command(
+                    simple_handler(self.interface.save_all),
+                    text="Save All",
+                    shortcut=toga.Key.MOD_1 + toga.Key.MOD_2 + "s",
+                    group=Group.FILE,
+                    id=Command.SAVE_ALL,
+                    section=0,
+                    order=22,
+                )
             )
 
     def create_menus(self):
