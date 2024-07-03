@@ -9,8 +9,6 @@ toga_core_imports = {
     # toga.app imports
     "App": "toga.app",
     "DocumentApp": "toga.app",
-    "DocumentMainWindow": "toga.app",
-    "MainWindow": "toga.app",
     # toga.colors imports
     "hsl": "toga.colors",
     "hsla": "toga.colors",
@@ -74,6 +72,8 @@ toga_core_imports = {
     "Tree": "toga.widgets.tree",
     "WebView": "toga.widgets.webview",
     # toga.window imports
+    "DocumentMainWindow": "toga.window",
+    "MainWindow": "toga.window",
     "Window": "toga.window",
 }
 __all__ = list(toga_core_imports.keys())
