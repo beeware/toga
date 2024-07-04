@@ -870,8 +870,8 @@ class App:
             elif isinstance(windows, dict):
                 screen_window_dict = windows
             else:
-                raise TypeError(
-                    "Invalid type for windows parameter. Expected list or dict type."
+                raise ValueError(
+                    "Presentation layout should be a list of windows, or a dict mapping windows to screens."
                 )
             self._impl.enter_presentation_mode(screen_window_dict)
 
