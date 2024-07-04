@@ -9,7 +9,6 @@ from System.Drawing import Bitmap, Point
 from System.Windows.Forms import Application, Cursor, ToolStripSeparator
 
 import toga
-from toga.constants import WindowState
 from toga_winforms.keys import toga_to_winforms_key, winforms_to_toga_key
 
 from .dialogs import DialogsMixin
@@ -101,11 +100,6 @@ class AppProbe(BaseProbe, DialogsMixin):
         # returns 2 ("the system is not drawing the cursor because the user is providing
         # input through touch or pen instead of the mouse"). hCursor is more reliable.
         return info.hCursor is not None
-
-    def is_full_screen(self, window):
-        return bool(
-            WindowProbe(self.app, window).get_window_state() == WindowState.PRESENTATION
-        )
 
     def content_size(self, window):
         return WindowProbe(self.app, window).presentation_content_size

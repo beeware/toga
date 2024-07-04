@@ -4,7 +4,6 @@ import PIL.Image
 from rubicon.objc import NSPoint, ObjCClass, objc_id, send_message
 
 import toga
-from toga.constants import WindowState
 from toga_cocoa.keys import cocoa_key, toga_key
 from toga_cocoa.libs import (
     NSApplication,
@@ -56,11 +55,6 @@ class AppProbe(BaseProbe, DialogsMixin):
         # There's no API level mechanism to detect cursor visibility;
         # fall back to the implementation's proxy variable.
         return self.app._impl._cursor_visible
-
-    def is_full_screen(self, window):
-        return bool(
-            WindowProbe(self.app, window).get_window_state() == WindowState.PRESENTATION
-        )
 
     def content_size(self, window):
         return WindowProbe(self.app, window).presentation_content_size

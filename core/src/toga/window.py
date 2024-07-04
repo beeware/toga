@@ -195,7 +195,6 @@ class Window:
         self._id = str(id if id else identifier(self))
         self._impl: Any = None
         self._content: Widget | None = None
-        self._is_full_screen = False
         self._closed = False
 
         self._resizable = resizable

@@ -70,10 +70,6 @@ class WindowProbe(BaseProbe, DialogsMixin):
         return current_state
 
     @property
-    def is_full_screen(self):
-        return bool(self.get_window_state() == WindowState.FULLSCREEN)
-
-    @property
     def is_resizable(self):
         return self.native.FormBorderStyle == FormBorderStyle.Sizable
 

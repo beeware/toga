@@ -4,7 +4,6 @@ import PIL.Image
 import pytest
 
 import toga
-from toga.constants import WindowState
 from toga_gtk.keys import gtk_accel, toga_key
 from toga_gtk.libs import Gdk, Gtk
 
@@ -45,11 +44,6 @@ class AppProbe(BaseProbe, DialogsMixin):
     @property
     def is_cursor_visible(self):
         pytest.skip("Cursor visibility not implemented on GTK")
-
-    def is_full_screen(self, window):
-        return bool(
-            WindowProbe(self.app, window).get_window_state() == WindowState.PRESENTATION
-        )
 
     def content_size(self, window):
         return WindowProbe(self.app, window).presentation_content_size
