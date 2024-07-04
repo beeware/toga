@@ -1,4 +1,5 @@
 import asyncio
+import gc
 import inspect
 from dataclasses import dataclass
 from importlib import import_module
@@ -46,10 +47,35 @@ async def app_probe(app):
         print("\nConstructing app probe")
     yield probe
 
+    # Force a GC pass on the main thread. This isn't perfect, but it helps
+    # minimize garbage collection on the test thread.
+    gc.collect()
+
 
 @fixture(scope="session")
 def main_window(app):
     return app.main_window
+
+
+@fixture(autouse=True)
+async def window_cleanup(app, main_window):
+    # Ensure that at the end of every test, all windows that aren't the
+    # main window have been closed and deleted. This needs to be done in
+    # 2 passes because we can't modify the list while iterating over it.
+    kill_list = []
+    for window in app.windows:
+        if window != main_window:
+            kill_list.append(window)
+
+    # Then purge everything on the kill list.
+    while kill_list:
+        window = kill_list.pop()
+        window.close()
+        del window
+
+    # Force a GC pass on the main thread. This isn't perfect, but it helps
+    # minimize garbage collection on the test thread.
+    gc.collect()
 
 
 @fixture(scope="session")

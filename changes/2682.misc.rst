@@ -1,0 +1,1 @@
+An intermittent failure in macOS CI was corrected, and usage of Rubicon syntax was upgraded.

@@ -1,6 +1,6 @@
 [build-system]
 requires = [
-    "setuptools==70.1.0",
+    "setuptools==70.1.1",
     "setuptools_scm==8.1.0",
     "setuptools_dynamic_dependencies @ git+https://github.com/beeware/setuptools_dynamic_dependencies",
 ]
@@ -93,7 +93,7 @@ docs = [
     "sphinx-autobuild == 2024.4.16 ; python_version >= '3.9'",
     "sphinx-csv-filter == 0.4.1",
     "sphinx-copybutton == 0.5.2",
-    "sphinx-toolbox == 3.5.0",
+    "sphinx-toolbox == 3.6.0",
     "sphinxcontrib-spelling == 8.0.0",
 ]
 
