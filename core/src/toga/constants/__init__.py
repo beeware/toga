@@ -74,14 +74,8 @@ class WindowState(Enum):
     """The possible window states of an app."""
 
     NORMAL = 0
-    """``NORMAL`` state is when the window/app is not in any of the other window states.
-
-    On Mobile Platforms(Like on Android) - Once the app is in minimized/background
-    state, then it is currently not possible to bring the app to foreground by setting
-    window state to ``NORMAL``. This is because of the design decisions imposed by the
-    native mobile platforms.(i.e., to prevent apps from becoming intrusively foreground
-    against the user's wishes.)
-    """
+    """The ``NORMAL`` state represents the default state of the window or app when it is
+    not in any other specific window state."""
 
     MINIMIZED = 1
     """``MINIMIZED`` state is when the window isn't currently visible, although it will
@@ -91,6 +85,9 @@ class WindowState(Enum):
     MAXIMIZED = 2
     """The window is the largest size it can be on the screen with title bar and window
     chrome still visible.
+
+    On Mobile Platforms(Like on Android) - The ``MAXIMIZED`` state is the same as the
+    ``NORMAL`` state.
     """
 
     FULLSCREEN = 3

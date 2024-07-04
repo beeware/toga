@@ -800,7 +800,7 @@ class App:
             those windows will not be visible.
 
         :raises ValueError: If the presentation layout supplied is not a list of windows or
-        or a dict mapping windows to screens.
+            or a dict mapping windows to screens.
         """
         if not windows:
             return

@@ -32,6 +32,7 @@ class LayoutListener(dynamic_proxy(ViewTreeObserver.OnGlobalLayoutListener)):
 
 
 class Window(Container):
+    # ActionBar is always hidden on Window.
     _actionbar_shown_by_default = False
 
     def __init__(self, interface, title, position, size):
@@ -156,8 +157,6 @@ class Window(Container):
                 return WindowState.PRESENTATION
             else:
                 return WindowState.FULLSCREEN
-        # elif getattr(self, "_is_minimized", False) is True:
-        #     return WindowState.MINIMIZED
         return WindowState.NORMAL
 
     def set_window_state(self, state):
@@ -176,25 +175,6 @@ class Window(Container):
                     if self._actionbar_shown_by_default:  # pragma: no branch
                         self.app.native.getSupportActionBar().show()
                     self._is_presentation_mode = False
-
-            # Doesn't work consistently
-            # elif current_state == WindowState.MINIMIZED:
-            #     # Get the context
-            #     context = self.app.native.getApplicationContext()
-            #     # Create the intent to bring the activity to the foreground
-            #     new_intent = Intent(context, self.app.native.getClass())
-            #     # These 2 options work properly by resuming existing MainActivity instead of creating
-            #     # a new instance of MainActivity, but they work only once:
-            #     new_intent.addFlags(
-            #         Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP
-            #     )
-            #     new_intent.setFlags(
-            #         Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP
-            #     )
-            #     # This works every time but starts new instance of MainActivity
-            #     new_intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-            #     self.app.native.startActivity(new_intent)
-            #     self._is_minimized = False
         else:
             if state in {WindowState.FULLSCREEN, WindowState.PRESENTATION}:
                 decor_view.setSystemUiVisibility(
@@ -208,10 +188,6 @@ class Window(Container):
                     if self._actionbar_shown_by_default:  # pragma: no branch
                         self.app.native.getSupportActionBar().hide()
                     self._is_presentation_mode = True
-            # elif state == WindowState.MINIMIZED:
-            #     # This works but the issue lies in restoring to normal state
-            #     self.app.native.moveTaskToBack(True)
-            #     self._is_minimized = True
 
     ######################################################################
     # Window capabilities
@@ -233,6 +209,7 @@ class Window(Container):
 
 
 class MainWindow(Window):
+    # ActionBar is always hidden on MainWindow.
     _actionbar_shown_by_default = True
 
     def configure_titlebar(self):
