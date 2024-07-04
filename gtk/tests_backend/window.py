@@ -41,7 +41,7 @@ class WindowProbe(BaseProbe, DialogsMixin):
     def presentation_content_size(self):
         return self.content_size
 
-    def get_window_state(self, state):
+    def get_window_state(self):
         window_state_flags = self.impl._window_state_flags
         if window_state_flags & Gdk.WindowState.MAXIMIZED:
             current_state = WindowState.MAXIMIZED

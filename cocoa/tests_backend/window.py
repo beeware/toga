@@ -46,7 +46,7 @@ class WindowProbe(BaseProbe, DialogsMixin):
             self.window.content._impl.native.frame.size.height,
         )
 
-    def get_window_state(self, state):
+    def get_window_state(self):
         if self.window.content and bool(
             self.window.content._impl.native.isInFullScreenMode()
         ):

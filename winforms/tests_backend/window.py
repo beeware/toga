@@ -53,7 +53,7 @@ class WindowProbe(BaseProbe, DialogsMixin):
     def presentation_content_size(self):
         return self.content_size
 
-    def get_window_state(self, state):
+    def get_window_state(self):
         window_state = self.native.WindowState
         if window_state == FormWindowState.Maximized:
             if self.native.FormBorderStyle == getattr(FormBorderStyle, "None"):

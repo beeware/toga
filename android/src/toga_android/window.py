@@ -32,11 +32,16 @@ class LayoutListener(dynamic_proxy(ViewTreeObserver.OnGlobalLayoutListener)):
 
 
 class Window(Container):
+    _actionbar_shown_by_default = False
+
     def __init__(self, interface, title, position, size):
         super().__init__()
         self.interface = interface
         self.interface._impl = self
         self._initial_title = title
+        # Use a shadow variable since the presence of ActionBar is not
+        # a reliable indicator for confirmation of presentation mode.
+        self._is_presentation_mode = False
 
     ######################################################################
     # Window properties
@@ -142,15 +147,12 @@ class Window(Container):
         # Windows are always full screen
         decor_view = self.app.native.getWindow().getDecorView()
         system_ui_flags = decor_view.getSystemUiVisibility()
-        if (
-            system_ui_flags
-            & (
-                decor_view.SYSTEM_UI_FLAG_FULLSCREEN
-                | decor_view.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                | decor_view.SYSTEM_UI_FLAG_IMMERSIVE
-            )
-        ) != 0:
-            if not self.app.native.getSupportActionBar().isShowing():
+        if system_ui_flags & (
+            decor_view.SYSTEM_UI_FLAG_FULLSCREEN
+            | decor_view.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+            | decor_view.SYSTEM_UI_FLAG_IMMERSIVE
+        ):
+            if self._is_presentation_mode:
                 return WindowState.PRESENTATION
             else:
                 return WindowState.FULLSCREEN
@@ -169,7 +171,11 @@ class Window(Container):
             }:
                 decor_view.setSystemUiVisibility(0)
                 if current_state == WindowState.PRESENTATION:
-                    self.app.native.getSupportActionBar().show()
+                    # Marking this as no branch, since the testbed can't create a simple
+                    # window, so we can't test the other branch.
+                    if self._actionbar_shown_by_default:  # pragma: no branch
+                        self.app.native.getSupportActionBar().show()
+                    self._is_presentation_mode = False
 
             # Doesn't work consistently
             # elif current_state == WindowState.MINIMIZED:
@@ -197,7 +203,11 @@ class Window(Container):
                     | decor_view.SYSTEM_UI_FLAG_IMMERSIVE
                 )
                 if state == WindowState.PRESENTATION:
-                    self.app.native.getSupportActionBar().hide()
+                    # Marking this as no branch, since the testbed can't create a simple
+                    # window, so we can't test the other branch.
+                    if self._actionbar_shown_by_default:  # pragma: no branch
+                        self.app.native.getSupportActionBar().hide()
+                    self._is_presentation_mode = True
             # elif state == WindowState.MINIMIZED:
             #     # This works but the issue lies in restoring to normal state
             #     self.app.native.moveTaskToBack(True)
@@ -223,6 +233,8 @@ class Window(Container):
 
 
 class MainWindow(Window):
+    _actionbar_shown_by_default = True
+
     def configure_titlebar(self):
         # Display the titlebar on a MainWindow.
         pass
