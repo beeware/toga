@@ -74,8 +74,7 @@ class WindowState(Enum):
     """The possible window states of an app."""
 
     MAXIMIZED = auto()
-    """``MAXIMIZED`` state is when the window title bar and window chrome,
-    along with app menu and toolbars remain **visible**."""
+    """The window is the largest size it can be on the screen with title bar and window chrome still visible."""
 
     FULLSCREEN = auto()
     """``FULLSCREEN`` state is when the window title bar and window chrome
