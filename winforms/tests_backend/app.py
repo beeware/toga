@@ -103,7 +103,9 @@ class AppProbe(BaseProbe, DialogsMixin):
         return info.hCursor is not None
 
     def is_full_screen(self, window):
-        return WindowProbe(self.app, window).is_window_state(WindowState.PRESENTATION)
+        return bool(
+            WindowProbe(self.app, window).get_window_state() == WindowState.PRESENTATION
+        )
 
     def content_size(self, window):
         return WindowProbe(self.app, window).presentation_content_size

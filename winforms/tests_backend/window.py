@@ -53,7 +53,7 @@ class WindowProbe(BaseProbe, DialogsMixin):
     def presentation_content_size(self):
         return self.content_size
 
-    def is_window_state(self, state):
+    def get_window_state(self, state):
         window_state = self.native.WindowState
         if window_state == FormWindowState.Maximized:
             if self.native.FormBorderStyle == getattr(FormBorderStyle, "None"):
@@ -67,11 +67,11 @@ class WindowProbe(BaseProbe, DialogsMixin):
             current_state = WindowState.MINIMIZED
         elif window_state == FormWindowState.Normal:
             current_state = WindowState.NORMAL
-        return bool(current_state == state)
+        return current_state
 
     @property
     def is_full_screen(self):
-        return self.is_window_state(WindowState.FULLSCREEN)
+        return bool(self.get_window_state() == WindowState.FULLSCREEN)
 
     @property
     def is_resizable(self):
@@ -83,7 +83,7 @@ class WindowProbe(BaseProbe, DialogsMixin):
 
     @property
     def is_minimized(self):
-        return self.is_window_state(WindowState.MINIMIZED)
+        return bool(self.get_window_state() == WindowState.MINIMIZED)
 
     def minimize(self):
         if self.native.MinimizeBox:

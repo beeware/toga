@@ -164,79 +164,79 @@ if toga.platform.current_platform in {"iOS", "android"}:
     async def test_window_state_minimized(main_window, main_window_probe):
         """Window can have minimized window state"""
         # WindowState.MINIMIZED is unimplemented on both Android and iOS.
-        assert main_window_probe.is_window_state(WindowState.NORMAL)
-        assert not main_window_probe.is_window_state(WindowState.MINIMIZED)
+        assert main_window_probe.get_window_state() == WindowState.NORMAL
+        assert main_window_probe.get_window_state() != WindowState.MINIMIZED
         main_window.state = WindowState.MINIMIZED
         await main_window_probe.wait_for_window("WindowState.MINIMIZED is a no-op")
-        assert not main_window_probe.is_window_state(WindowState.MINIMIZED)
-        assert main_window_probe.is_window_state(WindowState.NORMAL)
+        assert main_window_probe.get_window_state() != WindowState.MINIMIZED
+        assert main_window_probe.get_window_state() == WindowState.NORMAL
 
     async def test_window_state_maximized(main_window, main_window_probe):
         """Window can have maximized window state"""
         # WindowState.MAXIMIZED is unimplemented on both Android and iOS.
-        assert main_window_probe.is_window_state(WindowState.NORMAL)
-        assert not main_window_probe.is_window_state(WindowState.MAXIMIZED)
+        assert main_window_probe.get_window_state() == WindowState.NORMAL
+        assert main_window_probe.get_window_state() != WindowState.MAXIMIZED
         main_window.state = WindowState.MAXIMIZED
         await main_window_probe.wait_for_window("WindowState.MAXIMIZED is a no-op")
-        assert not main_window_probe.is_window_state(WindowState.MAXIMIZED)
-        assert main_window_probe.is_window_state(WindowState.NORMAL)
+        assert main_window_probe.get_window_state() != WindowState.MAXIMIZED
+        assert main_window_probe.get_window_state() == WindowState.NORMAL
 
     async def test_window_state_full_screen(main_window, main_window_probe):
         """Window can have full screen window state"""
         # WindowState.FULLSCREEN is implemented on Android but not on iOS.
-        assert main_window_probe.is_window_state(WindowState.NORMAL)
-        assert not main_window_probe.is_window_state(WindowState.FULLSCREEN)
+        assert main_window_probe.get_window_state() == WindowState.NORMAL
+        assert main_window_probe.get_window_state() != WindowState.FULLSCREEN
         # Make main window full screen
         main_window.state = WindowState.FULLSCREEN
         await main_window_probe.wait_for_window("Main window is full screen")
-        assert main_window_probe.is_window_state(WindowState.FULLSCREEN)
-        assert not main_window_probe.is_window_state(WindowState.NORMAL)
+        assert main_window_probe.get_window_state() == WindowState.FULLSCREEN
+        assert main_window_probe.get_window_state() != WindowState.NORMAL
 
         main_window.state = WindowState.FULLSCREEN
         await main_window_probe.wait_for_window("Main window is still full screen")
-        assert main_window_probe.is_window_state(WindowState.FULLSCREEN)
-        assert not main_window_probe.is_window_state(WindowState.NORMAL)
+        assert main_window_probe.get_window_state() == WindowState.FULLSCREEN
+        assert main_window_probe.get_window_state() != WindowState.NORMAL
         # Exit full screen
         main_window.state = WindowState.NORMAL
         await main_window_probe.wait_for_window("Main window is not full screen")
-        assert not main_window_probe.is_window_state(WindowState.FULLSCREEN)
-        assert main_window_probe.is_window_state(WindowState.NORMAL)
+        assert main_window_probe.get_window_state() != WindowState.FULLSCREEN
+        assert main_window_probe.get_window_state() == WindowState.NORMAL
 
         main_window.state = WindowState.NORMAL
         await main_window_probe.wait_for_window("Main window is still not full screen")
-        assert not main_window_probe.is_window_state(WindowState.FULLSCREEN)
-        assert main_window_probe.is_window_state(WindowState.NORMAL)
+        assert main_window_probe.get_window_state() != WindowState.FULLSCREEN
+        assert main_window_probe.get_window_state() == WindowState.NORMAL
 
     async def test_window_state_presentation(main_window, main_window_probe):
         # WindowState.PRESENTATION is implemented on Android but not on iOS.
-        assert main_window_probe.is_window_state(WindowState.NORMAL)
-        assert not main_window_probe.is_window_state(WindowState.PRESENTATION)
+        assert main_window_probe.get_window_state() == WindowState.NORMAL
+        assert main_window_probe.get_window_state() != WindowState.PRESENTATION
         # Enter presentation mode with main window
         main_window.state = WindowState.PRESENTATION
         await main_window_probe.wait_for_window("Main window is in presentation mode")
-        assert main_window_probe.is_window_state(WindowState.PRESENTATION)
-        assert not main_window_probe.is_window_state(WindowState.NORMAL)
+        assert main_window_probe.get_window_state() == WindowState.PRESENTATION
+        assert main_window_probe.get_window_state() != WindowState.NORMAL
 
         main_window.state = WindowState.PRESENTATION
         await main_window_probe.wait_for_window(
             "Main window is still in presentation mode"
         )
-        assert main_window_probe.is_window_state(WindowState.PRESENTATION)
-        assert not main_window_probe.is_window_state(WindowState.NORMAL)
+        assert main_window_probe.get_window_state() == WindowState.PRESENTATION
+        assert main_window_probe.get_window_state() != WindowState.NORMAL
         # Exit presentation mode
         main_window.state = WindowState.NORMAL
         await main_window_probe.wait_for_window(
             "Main window is not in presentation mode"
         )
-        assert not main_window_probe.is_window_state(WindowState.PRESENTATION)
-        assert main_window_probe.is_window_state(WindowState.NORMAL)
+        assert main_window_probe.get_window_state() != WindowState.PRESENTATION
+        assert main_window_probe.get_window_state() == WindowState.NORMAL
 
         main_window.state = WindowState.NORMAL
         await main_window_probe.wait_for_window(
             "Main window is still not in presentation mode"
         )
-        assert not main_window_probe.is_window_state(WindowState.PRESENTATION)
-        assert main_window_probe.is_window_state(WindowState.NORMAL)
+        assert main_window_probe.get_window_state() != WindowState.PRESENTATION
+        assert main_window_probe.get_window_state() == WindowState.NORMAL
 
     async def test_screen(main_window, main_window_probe):
         """The window can be relocated to another screen, using both absolute and relative screen positions."""
@@ -618,8 +618,8 @@ else:
 
         second_window.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
 
-        assert second_window_probe.is_window_state(WindowState.NORMAL)
-        assert not second_window_probe.is_window_state(WindowState.MINIMIZED)
+        assert second_window_probe.get_window_state() == WindowState.NORMAL
+        assert second_window_probe.get_window_state() != WindowState.MINIMIZED
         if second_window_probe.supports_minimizable:
             assert second_window_probe.is_minimizable
 
@@ -629,11 +629,11 @@ else:
             "Secondary window is minimized",
             minimize=True,
         )
-        assert second_window_probe.is_window_state(WindowState.MINIMIZED)
+        assert second_window_probe.get_window_state() == WindowState.MINIMIZED
 
         second_window.state = WindowState.MINIMIZED
         await second_window_probe.wait_for_window("Secondary window is still minimized")
-        assert second_window_probe.is_window_state(WindowState.MINIMIZED)
+        assert second_window_probe.get_window_state() == WindowState.MINIMIZED
 
         second_window.state = WindowState.NORMAL
         # A longer delay to allow for genie animations
@@ -641,7 +641,7 @@ else:
             "Secondary window is not minimized",
             minimize=True,
         )
-        assert not second_window_probe.is_window_state(WindowState.MINIMIZED)
+        assert second_window_probe.get_window_state() != WindowState.MINIMIZED
         if second_window_probe.supports_minimizable:
             assert second_window_probe.is_minimizable
 
@@ -650,7 +650,7 @@ else:
             "Secondary window is still not minimized",
             minimize=True,
         )
-        assert not second_window_probe.is_window_state(WindowState.MINIMIZED)
+        assert second_window_probe.get_window_state() != WindowState.MINIMIZED
 
     @pytest.mark.parametrize(
         "second_window_class, second_window_kwargs",
@@ -665,8 +665,8 @@ else:
         """Window can have maximized window state"""
         second_window.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
 
-        assert second_window_probe.is_window_state(WindowState.NORMAL)
-        assert not second_window_probe.is_window_state(WindowState.MAXIMIZED)
+        assert second_window_probe.get_window_state() == WindowState.NORMAL
+        assert second_window_probe.get_window_state() != WindowState.MAXIMIZED
         assert second_window_probe.is_resizable
         initial_content_size = second_window_probe.content_size
 
@@ -675,13 +675,13 @@ else:
         await second_window_probe.wait_for_window(
             "Secondary window is maximized",
         )
-        assert second_window_probe.is_window_state(WindowState.MAXIMIZED)
+        assert second_window_probe.get_window_state() == WindowState.MAXIMIZED
         assert second_window_probe.content_size[0] > initial_content_size[0]
         assert second_window_probe.content_size[1] > initial_content_size[1]
 
         second_window.state = WindowState.MAXIMIZED
         await second_window_probe.wait_for_window("Secondary window is still maximized")
-        assert second_window_probe.is_window_state(WindowState.MAXIMIZED)
+        assert second_window_probe.get_window_state() == WindowState.MAXIMIZED
         assert second_window_probe.content_size[0] > initial_content_size[0]
         assert second_window_probe.content_size[1] > initial_content_size[1]
 
@@ -690,7 +690,7 @@ else:
         await second_window_probe.wait_for_window(
             "Secondary window is not maximized",
         )
-        assert not second_window_probe.is_window_state(WindowState.MAXIMIZED)
+        assert second_window_probe.get_window_state() != WindowState.MAXIMIZED
         assert second_window_probe.is_resizable
         assert second_window_probe.content_size == initial_content_size
 
@@ -698,7 +698,7 @@ else:
         await second_window_probe.wait_for_window(
             "Secondary window is still not maximized"
         )
-        assert not second_window_probe.is_window_state(WindowState.MAXIMIZED)
+        assert second_window_probe.get_window_state() != WindowState.MAXIMIZED
         assert second_window_probe.content_size == initial_content_size
 
     @pytest.mark.parametrize(
@@ -714,8 +714,8 @@ else:
         """Window can have full screen window state"""
         second_window.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
 
-        assert second_window_probe.is_window_state(WindowState.NORMAL)
-        assert not second_window_probe.is_window_state(WindowState.FULLSCREEN)
+        assert second_window_probe.get_window_state() == WindowState.NORMAL
+        assert second_window_probe.get_window_state() != WindowState.FULLSCREEN
         assert second_window_probe.is_resizable
         initial_content_size = second_window_probe.content_size
 
@@ -725,7 +725,7 @@ else:
             "Secondary window is full screen",
             full_screen=True,
         )
-        assert second_window_probe.is_window_state(WindowState.FULLSCREEN)
+        assert second_window_probe.get_window_state() == WindowState.FULLSCREEN
         assert second_window_probe.content_size[0] > initial_content_size[0]
         assert second_window_probe.content_size[1] > initial_content_size[1]
 
@@ -734,7 +734,7 @@ else:
             "Secondary window is still full screen",
             full_screen=True,
         )
-        assert second_window_probe.is_window_state(WindowState.FULLSCREEN)
+        assert second_window_probe.get_window_state() == WindowState.FULLSCREEN
         assert second_window_probe.content_size[0] > initial_content_size[0]
         assert second_window_probe.content_size[1] > initial_content_size[1]
 
@@ -744,7 +744,7 @@ else:
             "Secondary window is not full screen",
             full_screen=True,
         )
-        assert not second_window_probe.is_window_state(WindowState.FULLSCREEN)
+        assert second_window_probe.get_window_state() != WindowState.FULLSCREEN
         assert second_window_probe.is_resizable
         assert second_window_probe.content_size == initial_content_size
 
@@ -753,7 +753,7 @@ else:
             "Secondary window is still not full screen",
             full_screen=True,
         )
-        assert not second_window_probe.is_window_state(WindowState.FULLSCREEN)
+        assert second_window_probe.get_window_state() != WindowState.FULLSCREEN
         assert second_window_probe.content_size == initial_content_size
 
     @pytest.mark.parametrize(
@@ -769,8 +769,8 @@ else:
         """Window can have presentation window state"""
         second_window.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
 
-        assert second_window_probe.is_window_state(WindowState.NORMAL)
-        assert not second_window_probe.is_window_state(WindowState.PRESENTATION)
+        assert second_window_probe.get_window_state() == WindowState.NORMAL
+        assert second_window_probe.get_window_state() != WindowState.PRESENTATION
         assert second_window_probe.is_resizable
         initial_content_size = second_window_probe.presentation_content_size
 
@@ -780,7 +780,7 @@ else:
             "Secondary window is in presentation mode",
             full_screen=True,
         )
-        assert second_window_probe.is_window_state(WindowState.PRESENTATION)
+        assert second_window_probe.get_window_state() == WindowState.PRESENTATION
         assert (
             second_window_probe.presentation_content_size[0] > initial_content_size[0]
         )
@@ -793,7 +793,7 @@ else:
             "Secondary window is still in presentation mode",
             full_screen=True,
         )
-        assert second_window_probe.is_window_state(WindowState.PRESENTATION)
+        assert second_window_probe.get_window_state() == WindowState.PRESENTATION
         assert (
             second_window_probe.presentation_content_size[0] > initial_content_size[0]
         )
@@ -807,7 +807,7 @@ else:
             "Secondary window is not in presentation mode",
             full_screen=True,
         )
-        assert not second_window_probe.is_window_state(WindowState.PRESENTATION)
+        assert second_window_probe.get_window_state() != WindowState.PRESENTATION
         assert second_window_probe.is_resizable
         assert second_window_probe.presentation_content_size == initial_content_size
 
@@ -816,7 +816,7 @@ else:
             "Secondary window is still not in presentation mode",
             full_screen=True,
         )
-        assert not second_window_probe.is_window_state(WindowState.PRESENTATION)
+        assert second_window_probe.get_window_state() != WindowState.PRESENTATION
         assert second_window_probe.presentation_content_size == initial_content_size
 
     @pytest.mark.parametrize(

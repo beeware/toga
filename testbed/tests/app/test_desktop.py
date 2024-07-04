@@ -207,8 +207,8 @@ async def test_presentation_mode_with_main_window(
         assert app.is_presentation_mode
 
         # Extra  window should not be in presentation mode.
-        assert not extra_window_probe.is_window_state(
-            WindowState.PRESENTATION
+        assert (
+            extra_window_probe.get_window_state() != WindowState.PRESENTATION
         ), "Extra Window:"
         assert (
             extra_window_probe.presentation_content_size
@@ -216,7 +216,7 @@ async def test_presentation_mode_with_main_window(
         ), "Extra Window"
 
         # Main Window should be in presentation mode.
-        assert main_window_probe.is_window_state(WindowState.PRESENTATION)
+        assert main_window_probe.get_window_state() == WindowState.PRESENTATION
         assert main_window_probe.presentation_content_size[0] > 1000
         assert main_window_probe.presentation_content_size[1] > 700
 
@@ -278,8 +278,9 @@ async def test_presentation_mode_with_screen_window_dict(app, app_probe):
         assert app.is_presentation_mode
         # All the windows should be in presentation mode.
         for window_information in window_information_list:
-            assert window_information["window_probe"].is_window_state(
-                WindowState.PRESENTATION
+            assert (
+                window_information["window_probe"].get_window_state()
+                == WindowState.PRESENTATION
             ), f"{window_information['window'].title}:"
             assert (
                 window_information["window_probe"].presentation_content_size[0] > 1000
@@ -349,8 +350,8 @@ async def test_presentation_mode_with_excess_windows_list(app, app_probe):
         assert app.is_presentation_mode
 
         # Last window should not be in presentation mode.
-        assert not last_window_probe.is_window_state(
-            WindowState.PRESENTATION
+        assert (
+            last_window_probe.get_window_state() != WindowState.PRESENTATION
         ), f"Last Window({last_window.title}):"
         assert (
             last_window_probe.presentation_content_size
@@ -359,8 +360,9 @@ async def test_presentation_mode_with_excess_windows_list(app, app_probe):
 
         # All other windows should be in presentation mode.
         for window_information in window_information_list[:-1]:
-            assert window_information["window_probe"].is_window_state(
-                WindowState.PRESENTATION
+            assert (
+                window_information["window_probe"].get_window_state()
+                == WindowState.PRESENTATION
             ), f"{window_information['window'].title}:"
             assert (
                 window_information["window_probe"].presentation_content_size[0] > 1000

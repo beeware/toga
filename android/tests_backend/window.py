@@ -22,7 +22,7 @@ class WindowProbe(BaseProbe, DialogsMixin):
             self.root_view.getHeight() / self.scale_factor,
         )
 
-    def is_window_state(self, state):
+    def get_window_state(self, state):
         # Windows are always full screen
         decor_view = self.native.getWindow().getDecorView()
         system_ui_flags = decor_view.getSystemUiVisibility()
@@ -40,7 +40,7 @@ class WindowProbe(BaseProbe, DialogsMixin):
                 current_state = WindowState.FULLSCREEN
         else:
             current_state = WindowState.NORMAL
-        return bool(current_state == state)
+        return current_state
 
     def _native_menu(self):
         return self.native.findViewById(appcompat_R.id.action_bar).getMenu()
