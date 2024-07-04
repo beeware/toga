@@ -170,7 +170,33 @@ class Window:
 
     def set_window_state(self, state):
         current_state = self.get_window_state()
-        if state == WindowState.NORMAL:
+        if current_state != WindowState.NORMAL and state != WindowState.NORMAL:
+            # Set Window state to NORMAL before changing to other states as some
+            # states block changing window state without first exiting them or
+            # can even cause rendering glitches.
+            self._pending_window_state_transition = state
+            self.set_window_state(WindowState.NORMAL)
+
+        elif state == WindowState.MAXIMIZED:
+            self.native.maximize()
+
+        elif state == WindowState.MINIMIZED:
+            self.native.iconify()  # pragma: no-cover-if-linux-wayland
+
+        elif state == WindowState.FULLSCREEN:
+            self.native.fullscreen()
+
+        elif state == WindowState.PRESENTATION:
+            self._before_presentation_mode_screen = self.interface.screen
+            if isinstance(self.native, Gtk.ApplicationWindow):
+                self.native.set_show_menubar(False)
+            if getattr(self, "native_toolbar", None):
+                self.native_toolbar.set_visible(False)
+            self.native.fullscreen()
+            self._is_presentation_mode = True
+
+        # WindowState.NORMAL case:
+        else:
             # If the window is maximized, restore it to its normal size
             if current_state == WindowState.MAXIMIZED:
                 self.native.unmaximize()
@@ -192,28 +218,11 @@ class Window:
                 self.interface.screen = self._before_presentation_mode_screen
                 del self._before_presentation_mode_screen
                 self._is_presentation_mode = False
-        else:
-            if state == WindowState.MAXIMIZED:
-                self.native.maximize()
 
-            elif state == WindowState.MINIMIZED:
-                self.native.iconify()  # pragma: no-cover-if-linux-wayland
-
-            elif state == WindowState.FULLSCREEN:
-                self.native.fullscreen()
-
-            elif state == WindowState.PRESENTATION:
-                self._before_presentation_mode_screen = self.interface.screen
-                if isinstance(self.native, Gtk.ApplicationWindow):
-                    self.native.set_show_menubar(False)
-                if getattr(self, "native_toolbar", None):
-                    self.native_toolbar.set_visible(False)
-                self.native.fullscreen()
-                self._is_presentation_mode = True
-            else:  # pragma: no cover
-                # Marking this as no cover, since the type of the state parameter
-                # value is checked on the interface.
-                pass
+            # Complete any pending window state transition.
+            if getattr(self, "_pending_window_state_transition", None) is not None:
+                self.set_window_state(self._pending_window_state_transition)
+                del self._pending_window_state_transition
 
     ######################################################################
     # Window capabilities

@@ -210,8 +210,36 @@ class Window(Container, Scalable):
             return
 
     def set_window_state(self, state):
-        if state == WindowState.NORMAL:
-            current_state = self.get_window_state()
+        current_state = self.get_window_state()
+        if current_state != WindowState.NORMAL and state != WindowState.NORMAL:
+            # Set Window state to NORMAL before changing to other states as some
+            # states block changing window state without first exiting them or
+            # can even cause rendering glitches.
+            self._pending_window_state_transition = state
+            self.set_window_state(WindowState.NORMAL)
+
+        elif state == WindowState.MAXIMIZED:
+            self.native.WindowState = WinForms.FormWindowState.Maximized
+
+        elif state == WindowState.MINIMIZED:
+            self.native.WindowState = WinForms.FormWindowState.Minimized
+
+        elif state == WindowState.FULLSCREEN:
+            self.native.FormBorderStyle = getattr(WinForms.FormBorderStyle, "None")
+            self.native.WindowState = WinForms.FormWindowState.Maximized
+
+        elif state == WindowState.PRESENTATION:
+            self._before_presentation_mode_screen = self.interface.screen
+            if self.native.MainMenuStrip:
+                self.native.MainMenuStrip.Visible = False
+            if getattr(self, "toolbar_native", None):
+                self.toolbar_native.Visible = False
+            self.native.FormBorderStyle = getattr(WinForms.FormBorderStyle, "None")
+            self.native.WindowState = WinForms.FormWindowState.Maximized
+            self._is_presentation_mode = True
+
+        # WindowState.NORMAL case:
+        else:
             if current_state == WindowState.PRESENTATION:
                 if self.native.MainMenuStrip:
                     self.native.MainMenuStrip.Visible = True
@@ -227,30 +255,10 @@ class Window(Container, Scalable):
                 "Sizable" if self.interface.resizable else "FixedSingle",
             )
             self.native.WindowState = WinForms.FormWindowState.Normal
-        else:
-            if state == WindowState.MAXIMIZED:
-                self.native.WindowState = WinForms.FormWindowState.Maximized
-
-            elif state == WindowState.MINIMIZED:
-                self.native.WindowState = WinForms.FormWindowState.Minimized
-
-            elif state == WindowState.FULLSCREEN:
-                self.native.FormBorderStyle = getattr(WinForms.FormBorderStyle, "None")
-                self.native.WindowState = WinForms.FormWindowState.Maximized
-
-            elif state == WindowState.PRESENTATION:
-                self._before_presentation_mode_screen = self.interface.screen
-                if self.native.MainMenuStrip:
-                    self.native.MainMenuStrip.Visible = False
-                if getattr(self, "toolbar_native", None):
-                    self.toolbar_native.Visible = False
-                self.native.FormBorderStyle = getattr(WinForms.FormBorderStyle, "None")
-                self.native.WindowState = WinForms.FormWindowState.Maximized
-                self._is_presentation_mode = True
-            else:  # pragma: no cover
-                # Marking this as no cover, since the type of the state parameter
-                # value is checked on the interface.
-                pass
+            # Complete any pending window state transition.
+            if getattr(self, "_pending_window_state_transition", None) is not None:
+                self.set_window_state(self._pending_window_state_transition)
+                del self._pending_window_state_transition
 
     ######################################################################
     # Window capabilities

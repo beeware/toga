@@ -51,9 +51,19 @@ class TogaWindow(NSWindow):
             self.interface.content.refresh()
 
     @objc_method
+    def windowDidDeminiaturize_(self, notification) -> None:
+        # Complete any pending window state transition.
+        if getattr(self.impl, "_pending_window_state_transition", None) is not None:
+            self.impl.set_window_state(self.impl._pending_window_state_transition)
+            del self.impl._pending_window_state_transition
+
+    @objc_method
     def windowDidExitFullScreen_(self, notification) -> None:
         # This can be used to ensure that the window has completed exiting full screen.
-        pass
+        # Complete any pending window state transition.
+        if getattr(self.impl, "_pending_window_state_transition", None) is not None:
+            self.impl.set_window_state(self.impl._pending_window_state_transition)
+            del self.impl._pending_window_state_transition
 
     ######################################################################
     # Toolbar delegate methods
@@ -310,13 +320,40 @@ class Window:
 
     def set_window_state(self, state):
         current_state = self.get_window_state()
-        if state == WindowState.NORMAL:
+        if current_state != WindowState.NORMAL and state != WindowState.NORMAL:
+            # Set Window state to NORMAL before changing to other states as some
+            # states block changing window state without first exiting them or
+            # can even cause rendering glitches.
+            self._pending_window_state_transition = state
+            self.set_window_state(WindowState.NORMAL)
+
+        elif state == WindowState.MAXIMIZED:
+            self.native.setIsZoomed(True)
+
+        elif state == WindowState.MINIMIZED:
+            self.native.setIsMiniaturized(True)
+
+        elif state == WindowState.FULLSCREEN:
+            self.native.toggleFullScreen(self.native)
+
+        elif state == WindowState.PRESENTATION:
+            self.interface.app.enter_presentation_mode(
+                {self.interface.screen: self.interface}
+            )
+        # WindowState.NORMAL case:
+        else:
             # If the window is maximized, restore it to its normal size
             if current_state == WindowState.MAXIMIZED:
                 self.native.setIsZoomed(False)
+                # Complete any pending window state transition.
+                if getattr(self, "_pending_window_state_transition", None) is not None:
+                    self.set_window_state(self._pending_window_state_transition)
+                    del self._pending_window_state_transition
+
             # Deminiaturize the window to restore it to its previous state
             elif current_state == WindowState.MINIMIZED:
                 self.native.setIsMiniaturized(False)
+
             # If the window is in full-screen mode, exit full-screen mode
             elif current_state == WindowState.FULLSCREEN:
                 # This doesn't wait for completely exiting full screen mode. Hence,
@@ -324,27 +361,14 @@ class Window:
                 # We should wait until `windowDidExitFullScreen_` is notified and then
                 # return to user.
                 self.native.toggleFullScreen(self.native)
+
             # If the window is in presentation mode, exit presentation mode
             elif current_state == WindowState.PRESENTATION:
                 self.interface.app.exit_presentation_mode()
-        else:
-            if state == WindowState.MAXIMIZED:
-                self.native.setIsZoomed(True)
-
-            elif state == WindowState.MINIMIZED:
-                self.native.setIsMiniaturized(True)
-
-            elif state == WindowState.FULLSCREEN:
-                self.native.toggleFullScreen(self.native)
-
-            elif state == WindowState.PRESENTATION:
-                self.interface.app.enter_presentation_mode(
-                    {self.interface.screen: self.interface}
-                )
-            else:  # pragma: no cover
-                # Marking this as no cover, since the type of the state parameter
-                # value is checked on the interface.
-                return
+                # Complete any pending window state transition.
+                if getattr(self, "_pending_window_state_transition", None) is not None:
+                    self.set_window_state(self._pending_window_state_transition)
+                    del self._pending_window_state_transition
 
     ######################################################################
     # Window capabilities

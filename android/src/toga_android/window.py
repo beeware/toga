@@ -176,6 +176,7 @@ class Window(Container):
                         self.app.native.getSupportActionBar().show()
                     self._is_presentation_mode = False
         else:
+            self.set_window_state(WindowState.NORMAL)
             if state in {WindowState.FULLSCREEN, WindowState.PRESENTATION}:
                 decor_view.setSystemUiVisibility(
                     decor_view.SYSTEM_UI_FLAG_FULLSCREEN

@@ -476,13 +476,7 @@ class Window:
                     f"Cannot set window state to {state} of a non-resizable window."
                 )
             else:
-                # Set Window state to NORMAL before changing to other states as some
-                # states block changing window state without first exiting them or
-                # can even cause rendering glitches.
-                self._impl.set_window_state(WindowState.NORMAL)
-
-                if state != WindowState.NORMAL:
-                    self._impl.set_window_state(state)
+                self._impl.set_window_state(state)
 
     ######################################################################
     # Window capabilities
