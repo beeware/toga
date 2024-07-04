@@ -459,39 +459,6 @@ class Window:
     # Window state
     ######################################################################
 
-    # -------------------------Deprecated properties-------------------------
-    @property
-    def full_screen(self) -> bool:
-        """**DEPRECATED** – Use :any:`Window.state`.
-
-        Is the window in full screen mode?
-
-        Full screen mode is *not* the same as "maximized". A full screen window has
-        no title bar or window chrome; But app menu and toolbars will remain visible.
-        """
-        warnings.warn(
-            ("`Window.full_screen` is deprecated. Use `Window.state` instead."),
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        return bool(self.state == WindowState.FULLSCREEN)
-
-    @full_screen.setter
-    def full_screen(self, is_full_screen: bool) -> None:
-        warnings.warn(
-            ("`Window.full_screen` is deprecated. Use `Window.state` instead."),
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        if is_full_screen and (self.state != WindowState.FULLSCREEN):
-            self._impl.set_window_state(WindowState.FULLSCREEN)
-        elif not is_full_screen and (self.state == WindowState.FULLSCREEN):
-            self._impl.set_window_state(WindowState.NORMAL)
-        else:
-            return
-
-    # ---------------------------------------------------------------------
-
     @property
     def state(self) -> WindowState:
         """The current state of the window."""
@@ -499,33 +466,24 @@ class Window:
 
     @state.setter
     def state(self, state: WindowState) -> None:
-        if isinstance(state, WindowState):
-            current_state = self._impl.get_window_state()
-            if current_state != state:
-                if not self.resizable and state in {
-                    WindowState.MAXIMIZED,
-                    WindowState.FULLSCREEN,
-                    WindowState.PRESENTATION,
-                }:
-                    warnings.warn(
-                        f"Cannot set window state to {state} of a non-resizable window."
-                    )
-                else:
-                    # Set Window state to NORMAL before changing to other states as some
-                    # states block changing window state without first exiting them or
-                    # can even cause rendering glitches.
-                    self._impl.set_window_state(WindowState.NORMAL)
-
-                    if state != WindowState.NORMAL:
-                        self._impl.set_window_state(state)
-                    else:
-                        return
+        current_state = self._impl.get_window_state()
+        if current_state != state:
+            if not self.resizable and state in {
+                WindowState.MAXIMIZED,
+                WindowState.FULLSCREEN,
+                WindowState.PRESENTATION,
+            }:
+                warnings.warn(
+                    f"Cannot set window state to {state} of a non-resizable window."
+                )
             else:
-                return
-        else:
-            raise ValueError(
-                "Invalid type for state parameter. Expected WindowState enum type."
-            )
+                # Set Window state to NORMAL before changing to other states as some
+                # states block changing window state without first exiting them or
+                # can even cause rendering glitches.
+                self._impl.set_window_state(WindowState.NORMAL)
+
+                if state != WindowState.NORMAL:
+                    self._impl.set_window_state(state)
 
     ######################################################################
     # Window capabilities
@@ -859,6 +817,35 @@ class Window:
             DeprecationWarning,
         )
         return self._closable
+
+    ######################################################################
+    # End Backwards compatibility
+    ######################################################################
+
+    ######################################################################
+    # 2024-07: Backwards compatibility
+    ######################################################################
+    @property
+    def full_screen(self) -> bool:
+        """**DEPRECATED** – Use :any:`Window.state`."""
+        warnings.warn(
+            ("`Window.full_screen` is deprecated. Use `Window.state` instead."),
+            DeprecationWarning,
+        )
+        return bool(self.state == WindowState.FULLSCREEN)
+
+    @full_screen.setter
+    def full_screen(self, is_full_screen: bool) -> None:
+        warnings.warn(
+            ("`Window.full_screen` is deprecated. Use `Window.state` instead."),
+            DeprecationWarning,
+        )
+        if is_full_screen and (self.state != WindowState.FULLSCREEN):
+            self._impl.set_window_state(WindowState.FULLSCREEN)
+        elif not is_full_screen and (self.state == WindowState.FULLSCREEN):
+            self._impl.set_window_state(WindowState.NORMAL)
+        else:
+            return
 
     ######################################################################
     # End Backwards compatibility

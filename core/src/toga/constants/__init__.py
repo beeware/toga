@@ -73,38 +73,35 @@ class FlashMode(Enum):
 class WindowState(Enum):
     """The possible window states of an app."""
 
-    MAXIMIZED = auto()
-    """The window is the largest size it can be on the screen with title bar and window chrome still visible."""
+    NORMAL = 0
+    """``NORMAL`` state is when the window/app is not in any of the other window states.
 
-    FULLSCREEN = auto()
-    """``FULLSCREEN`` state is when the window title bar and window chrome
-    remain **hidden**; But app menu and toolbars remain **visible**."""
-
-    PRESENTATION = auto()
-    """``PRESENTATION`` state is when the window title bar, window chrome,
-    app menu and toolbars all remain **hidden**.
-
-    A good example of "full screen" mode is a slideshow app in presentation
-    mode - the only visible content is the slide."""
-
-    MINIMIZED = auto()
-    """``MINIMIZED`` state is:
-
-    For Desktop Platforms:
-        When the window is in the form of an icon or preview image and is placed in the:
-            * Taskbar - For Windows
-            * Dock - For macOS
-            * Area analogous to Taskbar or Dock - For Linux - Depending upon the DE
-
-    For Mobile Platforms:
-        When the App is in the background
-
+    On Mobile Platforms(Like on Android) - Once the app is in minimized/background
+    state, then it is currently not possible to bring the app to foreground by setting
+    window state to ``NORMAL``. This is because of the design decisions imposed by the
+    native mobile platforms.(i.e., to prevent apps from becoming intrusively foreground
+    against the user's wishes.)
     """
-    NORMAL = auto()
-    """``NORMAL`` state is when the window/app is not in any of the above window states.
 
-    On Mobile Platforms(Like on Android) - Once the app is in minimized/background state, then
-    it is currently not possible to bring the app to foreground by setting window state to
-    ``NORMAL``. This is because of the design decisions imposed by the native mobile platforms.
-    (i.e., to prevent apps from becoming intrusively foreground against the user's wishes.)
+    MINIMIZED = 1
+    """``MINIMIZED`` state is when the window isn't currently visible, although it will
+    appear in any operating system's list of active windows.
+    """
+
+    MAXIMIZED = 2
+    """The window is the largest size it can be on the screen with title bar and window
+    chrome still visible.
+    """
+
+    FULLSCREEN = 3
+    """``FULLSCREEN`` state is when the window title bar and window chrome remain
+    **hidden**; But app menu and toolbars remain **visible**.
+    """
+
+    PRESENTATION = 4
+    """``PRESENTATION`` state is when the window title bar, window chrome, app menu
+    and toolbars all remain **hidden**.
+
+    A good example is a slideshow app in presentation mode - the only visible content
+    is the slide.
     """

@@ -780,67 +780,6 @@ class App:
     # Presentation mode controls
     ######################################################################
 
-    # ------------------------Deprecated methods--------------------------
-    def exit_full_screen(self) -> None:
-        """**DEPRECATED** – Use :any:`App.exit_presentation_mode()`.
-
-        Exit full screen mode.
-
-        """
-        warnings.warn(
-            (
-                "`App.exit_full_screen()` is deprecated. Use `App.exit_presentation_mode()` instead."
-            ),
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        if self.is_presentation_mode:
-            self._impl.exit_presentation_mode()
-
-    @property
-    def is_full_screen(self) -> bool:
-        """**DEPRECATED** – Use :any:`App.is_presentation_mode`.
-
-        Is the app currently in full screen mode?
-
-        """
-        warnings.warn(
-            (
-                "`App.is_full_screen` is deprecated. Use `App.is_presentation_mode` instead."
-            ),
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        return self.is_presentation_mode
-
-    def set_full_screen(self, *windows: Window) -> None:
-        """**DEPRECATED** – Use :any:`App.enter_presentation_mode()` and :any:`App.exit_presentation_mode()`.
-
-        Make one or more windows full screen.
-
-        Full screen is not the same as "maximized"; full screen mode is when all window
-        borders and other window decorations are no longer visible.
-
-        :param windows: The list of windows to go full screen, in order of allocation to
-            screens. If the number of windows exceeds the number of available displays,
-            those windows will not be visible. If no windows are specified, the app will
-            exit full screen mode.
-        """
-        warnings.warn(
-            (
-                "`App.set_full_screen()` is deprecated. Use `App.enter_presentation_mode()` instead."
-            ),
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        self.exit_presentation_mode()
-        if not windows:
-            return
-        else:
-            self.enter_presentation_mode([*windows])
-
-    # ---------------------------------------------------------------------
-
     @property
     def is_presentation_mode(self) -> bool:
         """Is the app currently in presentation mode?"""
@@ -859,6 +798,9 @@ class App:
             mapping screens to windows, to go into presentation, in order of allocation to
             screens. If the number of windows exceeds the number of available displays,
             those windows will not be visible.
+
+        :raises ValueError: If the presentation layout supplied is not a list of windows or
+        or a dict mapping windows to screens.
         """
         if not windows:
             return
@@ -943,6 +885,49 @@ class App:
         )
 
         self.loop.call_soon_threadsafe(wrapped_handler(self, handler))
+
+    ######################################################################
+    # 2024-07: Backwards compatibility
+    ######################################################################
+
+    def exit_full_screen(self) -> None:
+        """**DEPRECATED** – Use :any:`App.exit_presentation_mode()`."""
+        warnings.warn(
+            (
+                "`App.exit_full_screen()` is deprecated. Use `App.exit_presentation_mode()` instead."
+            ),
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        if self.is_presentation_mode:
+            self._impl.exit_presentation_mode()
+
+    @property
+    def is_full_screen(self) -> bool:
+        """**DEPRECATED** – Use :any:`App.is_presentation_mode`."""
+        warnings.warn(
+            (
+                "`App.is_full_screen` is deprecated. Use `App.is_presentation_mode` instead."
+            ),
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.is_presentation_mode
+
+    def set_full_screen(self, *windows: Window) -> None:
+        """**DEPRECATED** – Use :any:`App.enter_presentation_mode()` and :any:`App.exit_presentation_mode()`."""
+        warnings.warn(
+            (
+                "`App.set_full_screen()` is deprecated. Use `App.enter_presentation_mode()` instead."
+            ),
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        self.exit_presentation_mode()
+        if not windows:
+            return
+        else:
+            self.enter_presentation_mode([*windows])
 
     ######################################################################
     # End backwards compatibility

@@ -452,15 +452,6 @@ def test_non_resizable_window_state(state):
     non_resizable_window.close()
 
 
-def test_window_state_invalid_parameter(window):
-    # Setting window state to any value other than a WindowState enum should raise a ValueError.
-    with pytest.raises(
-        ValueError,
-        match="Invalid type for state parameter. Expected WindowState enum type.",
-    ):
-        window.state = None
-
-
 def test_close_direct(window, app):
     """A window can be closed directly."""
     on_close_handler = Mock(return_value=True)

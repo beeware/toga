@@ -36,6 +36,10 @@ class Window(Container, Scalable):
         self.native.MinimizeBox = self.interface.minimizable
         self.native.MaximizeBox = self.interface.resizable
 
+        # Use a shadow variable since a window without any app menu and toolbar
+        # in presentation mode would be indistinguishable from full screen mode.
+        self._is_presentation_mode = False
+
         self.set_title(title)
         self.set_size(size)
         # Winforms does window cascading by default; use that behavior, rather than
@@ -190,9 +194,7 @@ class Window(Container, Scalable):
         window_state = self.native.WindowState
         if window_state == WinForms.FormWindowState.Maximized:
             if self.native.FormBorderStyle == getattr(WinForms.FormBorderStyle, "None"):
-                # Use a shadow variable since a window without any app menu and toolbar
-                # in presentation mode would be indistinguishable from full screen mode.
-                if getattr(self, "_is_presentation_mode", False) is True:
+                if self._is_presentation_mode:
                     return WindowState.PRESENTATION
                 else:
                     return WindowState.FULLSCREEN
@@ -217,7 +219,7 @@ class Window(Container, Scalable):
                     self.toolbar_native.Visible = True
 
                 self.interface.screen = self._before_presentation_mode_screen
-                self._before_presentation_mode_screen = None
+                del self._before_presentation_mode_screen
                 self._is_presentation_mode = False
 
             self.native.FormBorderStyle = getattr(
@@ -237,8 +239,7 @@ class Window(Container, Scalable):
                 self.native.WindowState = WinForms.FormWindowState.Maximized
 
             elif state == WindowState.PRESENTATION:
-                if getattr(self, "_before_presentation_mode_screen", None) is None:
-                    self._before_presentation_mode_screen = self.interface.screen
+                self._before_presentation_mode_screen = self.interface.screen
                 if self.native.MainMenuStrip:
                     self.native.MainMenuStrip.Visible = False
                 if getattr(self, "toolbar_native", None):

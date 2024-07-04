@@ -32,6 +32,7 @@ class Window:
         self.native.connect("window-state-event", self.gtk_window_state_event)
 
         self._window_state_flags = None
+        self._is_presentation_mode = False
 
         self.native.set_default_size(size[0], size[1])
 
@@ -160,7 +161,7 @@ class Window:
         elif window_state_flags & Gdk.WindowState.FULLSCREEN:
             # Use a shadow variable since a window without any app menu and toolbar
             # in presentation mode would be indistinguishable from full screen mode.
-            if getattr(self, "_is_presentation_mode", False) is True:
+            if self._is_presentation_mode:
                 return WindowState.PRESENTATION
             else:
                 return WindowState.FULLSCREEN
@@ -189,7 +190,7 @@ class Window:
                 self.native.unfullscreen()
 
                 self.interface.screen = self._before_presentation_mode_screen
-                self._before_presentation_mode_screen = None
+                del self._before_presentation_mode_screen
                 self._is_presentation_mode = False
         else:
             if state == WindowState.MAXIMIZED:
@@ -202,8 +203,7 @@ class Window:
                 self.native.fullscreen()
 
             elif state == WindowState.PRESENTATION:
-                if getattr(self, "_before_presentation_mode_screen", None) is None:
-                    self._before_presentation_mode_screen = self.interface.screen
+                self._before_presentation_mode_screen = self.interface.screen
                 if isinstance(self.native, Gtk.ApplicationWindow):
                     self.native.set_show_menubar(False)
                 if getattr(self, "native_toolbar", None):
