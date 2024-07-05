@@ -182,66 +182,13 @@ async def test_menu_minimize(app, app_probe):
         window1.close()
 
 
-async def test_presentation_mode_with_main_window(
-    app, app_probe, main_window, main_window_probe
-):
-    """The app can enter presentation mode with just the main window."""
-    # This test is required since the toolbar is present only on the main window.
-    try:
-        main_window.toolbar.add(app.cmd1)
-        extra_window = toga.Window(
-            "Extra Test Window", position=(150, 150), size=(200, 200)
-        )
-        extra_window.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
-        extra_window.show()
-        extra_window_probe = window_probe(app, extra_window)
-        # Add delay for gtk to show the windows
-        await app_probe.redraw("Extra window is visible", delay=0.5)
-
-        main_window_initial_content_size = main_window_probe.presentation_content_size
-        extra_window_initial_content_size = extra_window_probe.presentation_content_size
-        # Enter presentation mode with only main window
-        app.enter_presentation_mode([main_window])
-        # Add delay for gtk to show the windows
-        await app_probe.redraw("App is in presentation mode", delay=0.5)
-        assert app.is_presentation_mode
-
-        # Extra  window should not be in presentation mode.
-        assert (
-            extra_window_probe.get_window_state() != WindowState.PRESENTATION
-        ), "Extra Window:"
-        assert (
-            extra_window_probe.presentation_content_size
-            == extra_window_initial_content_size
-        ), "Extra Window"
-
-        # Main Window should be in presentation mode.
-        assert main_window_probe.get_window_state() == WindowState.PRESENTATION
-        assert main_window_probe.presentation_content_size[0] > 1000
-        assert main_window_probe.presentation_content_size[1] > 700
-
-        # Exit presentation mode
-        app.exit_presentation_mode()
-        await app_probe.redraw("App is no longer in presentation mode", delay=0.5)
-        assert not app.is_presentation_mode
-
-        assert (
-            main_window_probe.presentation_content_size
-            == main_window_initial_content_size
-        )
-
-    finally:
-        main_window.toolbar.clear()
-        extra_window.close()
-
-
-async def test_presentation_mode_with_screen_window_dict(app, app_probe):
-    """The app can enter presentation mode with a screen-window paired dict."""
+async def test_presentation_mode(app, app_probe):
+    """The app can enter presentation mode."""
     try:
         window_information_list = list()
         windows_list = list()
         for i in range(len(app.screens)):
-            window = toga.Window(
+            window = toga.MainWindow(
                 title=f"Test Window {i}",
                 position=(150 + (10 * i), 150 + (10 * i)),
                 size=(200, 200),
@@ -252,6 +199,7 @@ async def test_presentation_mode_with_screen_window_dict(app, app_probe):
             window.content = toga.Box(
                 style=Pack(background_color=f"#{r:02X}{g:02X}{b:02X}")
             )
+            window.toolbar.add(app.cmd1)
             window.show()
             # Add delay for gtk to show the windows
             await app_probe.redraw(f"Test Window {i} is visible", delay=0.5)
@@ -311,7 +259,7 @@ async def test_presentation_mode_with_excess_windows_list(app, app_probe):
         window_information_list = list()
         excess_windows_list = list()
         for i in range(len(app.screens) + 1):
-            window = toga.Window(
+            window = toga.MainWindow(
                 title=f"Test Window {i}",
                 position=(150 + (10 * i), 150 + (10 * i)),
                 size=(200, 200),
@@ -322,6 +270,7 @@ async def test_presentation_mode_with_excess_windows_list(app, app_probe):
             window.content = toga.Box(
                 style=Pack(background_color=f"#{r:02X}{g:02X}{b:02X}")
             )
+            window.toolbar.add(app.cmd1)
             window.show()
             # Add delay for gtk to show the windows
             await app_probe.redraw(f"Test Window {i} is visible", delay=0.5)

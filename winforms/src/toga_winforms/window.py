@@ -211,7 +211,13 @@ class Window(Container, Scalable):
 
     def set_window_state(self, state):
         current_state = self.get_window_state()
-        if current_state != WindowState.NORMAL and state != WindowState.NORMAL:
+        if self.interface.app.is_presentation_mode and state != WindowState.NORMAL:
+            # Exit app presentation mode before changing to other states as it
+            # can cause rendering glitches.
+            self.interface.app.exit_presentation_mode()
+            self.set_window_state(state)
+
+        elif current_state != WindowState.NORMAL and state != WindowState.NORMAL:
             # Set Window state to NORMAL before changing to other states as some
             # states block changing window state without first exiting them or
             # can even cause rendering glitches.
