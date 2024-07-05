@@ -303,63 +303,6 @@ def test_visibility(window, app):
     assert not window.visible
 
 
-def test_full_screen(window, app):
-    """A window can be set full screen."""
-    with pytest.warns(
-        DeprecationWarning,
-        match="`Window.full_screen` is deprecated. Use `Window.state` instead.",
-    ):
-        assert not window.full_screen
-    with pytest.warns(
-        DeprecationWarning,
-        match="`Window.full_screen` is deprecated. Use `Window.state` instead.",
-    ):
-        window.full_screen = True
-    with pytest.warns(
-        DeprecationWarning,
-        match="`Window.full_screen` is deprecated. Use `Window.state` instead.",
-    ):
-        assert window.full_screen
-    assert_action_performed_with(
-        window,
-        "set window state to WindowState.FULLSCREEN",
-        state=WindowState.FULLSCREEN,
-    )
-    with pytest.warns(
-        DeprecationWarning,
-        match="`Window.full_screen` is deprecated. Use `Window.state` instead.",
-    ):
-        window.full_screen = False
-    with pytest.warns(
-        DeprecationWarning,
-        match="`Window.full_screen` is deprecated. Use `Window.state` instead.",
-    ):
-        assert not window.full_screen
-    assert_action_performed_with(
-        window,
-        "set window state to WindowState.NORMAL",
-        state=WindowState.NORMAL,
-    )
-
-    # Setting full screen to False when window is not in full screen, is a no-op
-    #
-    # We cannot assert that the action was not performed, since the same action
-    # was performed previously and would still be in EventLog. Therefore, we
-    # cannot check if the action was done by the first call or the second call.
-    # Hence, this is just to reach coverage.
-    with pytest.warns(
-        DeprecationWarning,
-        match="`Window.full_screen` is deprecated. Use `Window.state` instead.",
-    ):
-        assert not window.full_screen
-    with pytest.warns(
-        DeprecationWarning,
-        match="`Window.full_screen` is deprecated. Use `Window.state` instead.",
-    ):
-        window.full_screen = False
-    # assert_action_not_performed(window, "set window state to WindowState.NORMAL")
-
-
 @pytest.mark.parametrize(
     "state",
     [
@@ -1296,3 +1239,60 @@ def test_deprecated_names_closeable():
         match=r"Window.closeable has been renamed Window.closable",
     ):
         assert window.closeable
+
+
+def test_deprecated_full_screen(window, app):
+    """A window can be set full screen using the deprecated API."""
+    with pytest.warns(
+        DeprecationWarning,
+        match="`Window.full_screen` is deprecated. Use `Window.state` instead.",
+    ):
+        assert not window.full_screen
+    with pytest.warns(
+        DeprecationWarning,
+        match="`Window.full_screen` is deprecated. Use `Window.state` instead.",
+    ):
+        window.full_screen = True
+    with pytest.warns(
+        DeprecationWarning,
+        match="`Window.full_screen` is deprecated. Use `Window.state` instead.",
+    ):
+        assert window.full_screen
+    assert_action_performed_with(
+        window,
+        "set window state to WindowState.FULLSCREEN",
+        state=WindowState.FULLSCREEN,
+    )
+    with pytest.warns(
+        DeprecationWarning,
+        match="`Window.full_screen` is deprecated. Use `Window.state` instead.",
+    ):
+        window.full_screen = False
+    with pytest.warns(
+        DeprecationWarning,
+        match="`Window.full_screen` is deprecated. Use `Window.state` instead.",
+    ):
+        assert not window.full_screen
+    assert_action_performed_with(
+        window,
+        "set window state to WindowState.NORMAL",
+        state=WindowState.NORMAL,
+    )
+
+    # Setting full screen to False when window is not in full screen, is a no-op
+    #
+    # We cannot assert that the action was not performed, since the same action
+    # was performed previously and would still be in EventLog. Therefore, we
+    # cannot check if the action was done by the first call or the second call.
+    # Hence, this is just to reach coverage.
+    with pytest.warns(
+        DeprecationWarning,
+        match="`Window.full_screen` is deprecated. Use `Window.state` instead.",
+    ):
+        assert not window.full_screen
+    with pytest.warns(
+        DeprecationWarning,
+        match="`Window.full_screen` is deprecated. Use `Window.state` instead.",
+    ):
+        window.full_screen = False
+    # assert_action_not_performed(window, "set window state to WindowState.NORMAL")

@@ -345,10 +345,6 @@ class Window:
             # If the window is maximized, restore it to its normal size
             if current_state == WindowState.MAXIMIZED:
                 self.native.setIsZoomed(False)
-                # Complete any pending window state transition.
-                if getattr(self, "_pending_window_state_transition", None) is not None:
-                    self.set_window_state(self._pending_window_state_transition)
-                    del self._pending_window_state_transition
 
             # Deminiaturize the window to restore it to its previous state
             elif current_state == WindowState.MINIMIZED:
@@ -365,7 +361,10 @@ class Window:
             # If the window is in presentation mode, exit presentation mode
             elif current_state == WindowState.PRESENTATION:
                 self.interface.app.exit_presentation_mode()
-                # Complete any pending window state transition.
+
+            # Complete any pending window state transition. This operation is performed on the
+            # window delegate notifications for MINIMIZED and FULLSCREEN. Hence, exclude them here.
+            if current_state in {WindowState.MAXIMIZED, WindowState.PRESENTATION}:
                 if getattr(self, "_pending_window_state_transition", None) is not None:
                     self.set_window_state(self._pending_window_state_transition)
                     del self._pending_window_state_transition
