@@ -71,7 +71,11 @@ class FlashMode(Enum):
 
 
 class WindowState(Enum):
-    """The possible window states of an app."""
+    """The possible window states of an app.
+
+    Note: Changing window state while the app is in presentation mode will cause
+        the app to exit presentation mode, and the new window state will be set.
+    """
 
     NORMAL = 0
     """The ``NORMAL`` state represents the default state of the window or app when it is

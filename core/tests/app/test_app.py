@@ -9,6 +9,7 @@ from unittest.mock import Mock
 import pytest
 
 import toga
+from toga.constants import WindowState
 from toga_dummy.utils import (
     EventLog,
     assert_action_not_performed,
@@ -597,6 +598,84 @@ def test_presentation_mode_no_op(event_loop):
         app.enter_presentation_mode(app.main_window)
         assert_action_not_performed(app, "enter presentation mode")
         assert not app.is_presentation_mode
+
+
+@pytest.mark.parametrize(
+    "new_window_state",
+    [
+        WindowState.MINIMIZED,
+        WindowState.MAXIMIZED,
+        WindowState.FULLSCREEN,
+    ],
+)
+def test_presentation_mode_exit_on_window_state_change(event_loop, new_window_state):
+    """Changing window state exits presentation mode and sets the new state."""
+    app = toga.App(formal_name="Test App", app_id="org.example.test")
+    extra_window = toga.Window()
+
+    # Enter presentation mode
+    app.enter_presentation_mode([app.main_window])
+    assert_action_performed_with(
+        app,
+        "enter presentation mode",
+        screen_window_dict={app.screens[0]: app.main_window},
+    )
+
+    assert app.is_presentation_mode
+    assert app.main_window.state == WindowState.PRESENTATION
+    assert extra_window.state != WindowState.PRESENTATION
+
+    # Changing window state of main_window should make the app exit presentation mode.
+    app.main_window.state = new_window_state
+    assert_action_performed_with(
+        app.main_window,
+        f"set window state to {new_window_state}",
+        state=new_window_state,
+    )
+
+    assert not app.is_presentation_mode
+    assert_action_performed(
+        app,
+        "exit presentation mode",
+    )
+    assert app.main_window.state != WindowState.PRESENTATION
+    assert app.main_window.state == new_window_state
+
+    # Reset window states
+    app.main_window.state = WindowState.NORMAL
+    extra_window.state = WindowState.NORMAL
+
+    # Enter presentation mode again
+    app.enter_presentation_mode([app.main_window])
+    assert_action_performed_with(
+        app,
+        "enter presentation mode",
+        screen_window_dict={app.screens[0]: app.main_window},
+    )
+
+    assert app.is_presentation_mode
+    assert app.main_window.state == WindowState.PRESENTATION
+    assert extra_window.state != WindowState.PRESENTATION
+
+    # Changing window state of extra window should make the app exit presentation mode.
+    extra_window.state = new_window_state
+    assert_action_performed_with(
+        extra_window,
+        f"set window state to {new_window_state}",
+        state=new_window_state,
+    )
+
+    assert not app.is_presentation_mode
+    assert_action_performed(
+        app,
+        "exit presentation mode",
+    )
+    assert app.main_window.state != WindowState.PRESENTATION
+    assert extra_window.state == new_window_state
+
+    # Reset window states
+    app.main_window.state = WindowState.NORMAL
+    extra_window.state = WindowState.NORMAL
 
 
 def test_show_hide_cursor(app):

@@ -504,9 +504,9 @@ class App:
             window.content._impl.native.enterFullScreenMode(
                 screen._impl.native, withOptions=opts
             )
-            # Going full screen causes the window content to be re-homed
-            # in a NSFullScreenWindow; teach the new parent window
-            # about its Toga representations.
+            # Going presentation mode causes the window content to be re-homed
+            # in a NSFullScreenWindow; teach the new parent window about its
+            # Toga representations.
             window.content._impl.native.window._impl = window._impl
             window.content._impl.native.window.interface = window
             window.content.refresh()

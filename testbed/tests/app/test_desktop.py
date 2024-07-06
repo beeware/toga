@@ -258,6 +258,7 @@ async def test_presentation_mode_with_excess_windows_list(app, app_probe):
     try:
         window_information_list = list()
         excess_windows_list = list()
+        # Generate an additional window compared to the number of screens present.
         for i in range(len(app.screens) + 1):
             window = toga.MainWindow(
                 title=f"Test Window {i}",
@@ -334,6 +335,88 @@ async def test_presentation_mode_with_excess_windows_list(app, app_probe):
     finally:
         for window in excess_windows_list:
             window.close()
+
+
+@pytest.mark.parametrize(
+    "new_window_state",
+    [
+        WindowState.MINIMIZED,
+        WindowState.MAXIMIZED,
+        WindowState.FULLSCREEN,
+    ],
+)
+async def test_presentation_mode_exit_on_window_state_change(
+    app, app_probe, main_window, main_window_probe, new_window_state
+):
+    """Changing window state exits presentation mode and sets the new state."""
+    try:
+        main_window.toolbar.add(app.cmd1)
+        extra_window = toga.MainWindow(
+            title="Extra Window", position=(150, 150), size=(200, 200)
+        )
+        extra_window.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
+        extra_window_probe = window_probe(app, extra_window)
+        extra_window.show()
+        # Add delay for gtk to show the windows
+        await app_probe.redraw("Extra window is shown", delay=0.5)
+
+        # Enter presentation mode
+        app.enter_presentation_mode([main_window])
+        # Add delay for gtk to show the windows
+        await app_probe.redraw("App is in presentation mode", delay=0.5)
+
+        assert app.is_presentation_mode
+        assert main_window_probe.get_window_state() == WindowState.PRESENTATION
+        assert extra_window_probe.get_window_state() != WindowState.PRESENTATION
+
+        # Changing window state of main window should make the app exit presentation mode.
+        main_window.state = new_window_state
+        # Add delay for gtk to show the windows
+        await app_probe.redraw(
+            "App is not in presentation mode" f"\nMain Window is in {new_window_state}",
+            delay=0.5,
+        )
+
+        assert not app.is_presentation_mode
+        assert main_window_probe.get_window_state != WindowState.PRESENTATION
+        assert main_window_probe.get_window_state() == new_window_state
+
+        # Reset window states
+        main_window.state = WindowState.NORMAL
+        extra_window.state = WindowState.NORMAL
+        # Add delay for gtk to show the windows
+        await app_probe.redraw("All windows are in WindowState.NORMAL", delay=0.5)
+
+        # Enter presentation mode again
+        app.enter_presentation_mode([main_window])
+        # Add delay for gtk to show the windows
+        await app_probe.redraw("App is in presentation mode", delay=0.5)
+        assert app.is_presentation_mode
+        assert main_window_probe.get_window_state() == WindowState.PRESENTATION
+        assert extra_window_probe.get_window_state() != WindowState.PRESENTATION
+
+        # Changing window state of extra window should make the app exit presentation mode.
+        extra_window.state = new_window_state
+        # Add delay for gtk to show the windows
+        await app_probe.redraw(
+            "App is not in presentation mode"
+            f"\nExtra Window is in {new_window_state}",
+            delay=0.5,
+        )
+
+        assert not app.is_presentation_mode
+        assert main_window_probe.get_window_state() != WindowState.PRESENTATION
+        assert extra_window_probe.get_window_state() == new_window_state
+
+        # Reset window states
+        main_window.state = WindowState.NORMAL
+        extra_window.state = WindowState.NORMAL
+        # Add delay for gtk to show the windows
+        await app_probe.redraw("All windows are in WindowState.NORMAL", delay=0.5)
+
+    finally:
+        main_window.toolbar.clear()
+        extra_window.close()
 
 
 async def test_show_hide_cursor(app, app_probe):
