@@ -137,9 +137,6 @@ class Window(LoggedObject):
         return self._get_value("state", WindowState.NORMAL)
 
     def set_window_state(self, state):
-        if self.interface.app.is_presentation_mode and state != WindowState.NORMAL:
-            self.interface.app.exit_presentation_mode()
-            self.set_window_state(state)
         self._action(f"set window state to {state}", state=state)
         self._set_value("state", state)
 
