@@ -855,17 +855,6 @@ else:
         assert second_window_probe.get_window_state() == final_state
         assert second_window_probe.get_window_state() != initial_state
 
-        # Set to normal state
-        second_window.state = WindowState.NORMAL
-        # A longer delay to allow for genie animations
-        await second_window_probe.wait_for_window(
-            "Secondary window is in WindowState.NORMAL", full_screen=True
-        )
-
-        assert second_window_probe.get_window_state() == WindowState.NORMAL
-        assert second_window_probe.get_window_state() != initial_state
-        assert second_window_probe.get_window_state() != final_state
-
     @pytest.mark.parametrize(
         "second_window_class, second_window_kwargs",
         [

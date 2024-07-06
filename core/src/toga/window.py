@@ -318,6 +318,13 @@ class Window:
         # The actual logic for closing a window. This is abstracted so that the testbed
         # can monkeypatch this method, recording the close request without actually
         # closing the app.
+
+        # Restore to normal state if in presentation mode. On some backends (e.g., Cocoa),
+        # the content itself is in presentation mode, and not the window. Directly closing
+        # the window without the content exiting presentation mode can cause rendering issues.
+        if self.state == WindowState.PRESENTATION:
+            self.state = WindowState.NORMAL
+
         if self.content:
             self.content.window = None
         self.app.windows.discard(self)
@@ -465,6 +472,13 @@ class Window:
 
     @state.setter
     def state(self, state: WindowState) -> None:
+        # Changing the window state while the app is in presentation mode can cause
+        # rendering glitches. Hence, first exit presentation and then set the new
+        # window state.
+        # The check for determining if the app is currently in presentation
+        # mode, is already present in exit_presentation_mode(), so just call it.
+        self.app.exit_presentation_mode()
+
         current_state = self._impl.get_window_state()
         if current_state != state:
             if not self.resizable and state in {
