@@ -46,7 +46,7 @@ class TogaWindow(NSWindow):
 
     @objc_method
     def windowDidResize_(self, notification) -> None:
-        if self.interface.content:
+        if getattr(self, "interface", None) is not None and self.interface.content:
             # Set the window to the new size
             self.interface.content.refresh()
 
