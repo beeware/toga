@@ -822,6 +822,12 @@ else:
     ):
         second_window.toolbar.add(app.cmd1)
         second_window.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
+        second_window.show()
+
+        # A longer delay to allow for genie animations
+        await second_window_probe.wait_for_window(
+            "Secondary window is visible", full_screen=True
+        )
 
         assert second_window_probe.get_window_state() == WindowState.NORMAL
         assert second_window_probe.get_window_state() != initial_state
