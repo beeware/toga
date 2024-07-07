@@ -57,7 +57,7 @@ class WindowProbe(BaseProbe, DialogsMixin):
         window_state = self.native.WindowState
         if window_state == FormWindowState.Maximized:
             if self.native.FormBorderStyle == getattr(FormBorderStyle, "None"):
-                if getattr(self.impl, "_is_presentation_mode", False) is True:
+                if self.impl._is_presentation_mode:
                     current_state = WindowState.PRESENTATION
                 else:
                     current_state = WindowState.FULLSCREEN

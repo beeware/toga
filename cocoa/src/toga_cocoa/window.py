@@ -344,6 +344,7 @@ class Window:
             self.interface.app.enter_presentation_mode(
                 {self.interface.screen: self.interface}
             )
+
         # WindowState.NORMAL case:
         else:
             # If the window is maximized, restore it to its normal size
@@ -363,7 +364,8 @@ class Window:
                 self.native.toggleFullScreen(self.native)
 
             # If the window is in presentation mode, exit presentation mode
-            elif current_state == WindowState.PRESENTATION:
+            # WindowState.PRESENTATION case:
+            else:
                 self.interface.app.exit_presentation_mode()
 
             # Complete any pending window state transition. This operation is performed on the
