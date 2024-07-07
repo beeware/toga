@@ -802,9 +802,7 @@ class App:
         :raises ValueError: If the presentation layout supplied is not a list of windows or
             or a dict mapping windows to screens.
         """
-        if not windows:
-            return
-        else:
+        if windows:
             screen_window_dict = dict()
             if isinstance(windows, list):
                 for window, screen in zip(windows, self.screens):
@@ -819,10 +817,7 @@ class App:
 
     def exit_presentation_mode(self) -> None:
         """Exit presentation mode."""
-        if self.is_presentation_mode:
-            self._impl.exit_presentation_mode()
-        else:
-            return
+        self._impl.exit_presentation_mode()
 
     ######################################################################
     # App events

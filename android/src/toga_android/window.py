@@ -165,6 +165,8 @@ class Window(Container):
 
     def set_window_state(self, state):
         current_state = self.get_window_state()
+        if current_state == state:
+            return
         decor_view = self.app.native.getWindow().getDecorView()
         if (
             current_state != WindowState.NORMAL

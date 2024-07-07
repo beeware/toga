@@ -640,6 +640,11 @@ else:
             )
 
         second_window.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
+        second_window.show()
+        # A longer delay to allow for genie animations
+        await second_window_probe.wait_for_window(
+            "Secondary window is shown",
+        )
 
         assert second_window_probe.get_window_state() == WindowState.NORMAL
         assert second_window_probe.get_window_state() != WindowState.MINIMIZED
@@ -684,6 +689,11 @@ else:
     async def test_window_state_maximized(second_window, second_window_probe):
         """Window can have maximized window state"""
         second_window.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
+        second_window.show()
+        # A longer delay to allow for genie animations
+        await second_window_probe.wait_for_window(
+            "Secondary window is shown",
+        )
 
         assert second_window_probe.get_window_state() == WindowState.NORMAL
         assert second_window_probe.get_window_state() != WindowState.MAXIMIZED
@@ -733,6 +743,11 @@ else:
     async def test_window_state_full_screen(second_window, second_window_probe):
         """Window can have full screen window state"""
         second_window.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
+        second_window.show()
+        # A longer delay to allow for genie animations
+        await second_window_probe.wait_for_window(
+            "Secondary window is shown",
+        )
 
         assert second_window_probe.get_window_state() == WindowState.NORMAL
         assert second_window_probe.get_window_state() != WindowState.FULLSCREEN
@@ -784,6 +799,11 @@ else:
     async def test_window_state_presentation(second_window, second_window_probe):
         """Window can have presentation window state"""
         second_window.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
+        second_window.show()
+        # A longer delay to allow for genie animations
+        await second_window_probe.wait_for_window(
+            "Secondary window is shown",
+        )
 
         assert second_window_probe.get_window_state() == WindowState.NORMAL
         assert second_window_probe.get_window_state() != WindowState.PRESENTATION

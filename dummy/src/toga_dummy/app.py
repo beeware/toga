@@ -174,13 +174,13 @@ class App(LoggedObject):
     def enter_presentation_mode(self, screen_window_dict):
         self._action("enter presentation mode", screen_window_dict=screen_window_dict)
         for screen, window in screen_window_dict.items():
-            window.state = WindowState.PRESENTATION
+            window._impl.set_window_state(WindowState.PRESENTATION)
 
     def exit_presentation_mode(self):
         self._action("exit presentation mode")
         for window in self.interface.windows:
             if window.state == WindowState.PRESENTATION:
-                window.state = WindowState.NORMAL
+                window._impl.set_window_state(WindowState.NORMAL)
 
     ######################################################################
     # Simulation interface

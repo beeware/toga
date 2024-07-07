@@ -472,17 +472,6 @@ class Window:
 
     @state.setter
     def state(self, state: WindowState) -> None:
-        # Changing the window state while the app is in presentation mode can cause
-        # rendering glitches. Hence, first exit presentation and then set the new
-        # window state.
-        if state != WindowState.NORMAL or (
-            any(
-                window.state == WindowState.PRESENTATION and window != self
-                for window in self.app.windows
-            )
-        ):
-            self.app.exit_presentation_mode()
-
         current_state = self._impl.get_window_state()
         if current_state != state:
             if not self.resizable and state in {
@@ -494,6 +483,11 @@ class Window:
                     f"Cannot set window state to {state} of a non-resizable window."
                 )
             else:
+                # Changing the window state while the app is in presentation mode
+                # can cause rendering glitches. Hence, first exit presentation and
+                # then set the new window state.
+                self.app.exit_presentation_mode()
+
                 self._impl.set_window_state(state)
 
     ######################################################################

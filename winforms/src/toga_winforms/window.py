@@ -211,6 +211,8 @@ class Window(Container, Scalable):
 
     def set_window_state(self, state):
         current_state = self.get_window_state()
+        if current_state == state:
+            return
         if (
             current_state != WindowState.NORMAL
             and state != WindowState.NORMAL

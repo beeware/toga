@@ -188,7 +188,7 @@ async def test_presentation_mode(app, app_probe):
         window_information_list = list()
         windows_list = list()
         for i in range(len(app.screens)):
-            window = toga.MainWindow(
+            window = toga.Window(
                 title=f"Test Window {i}",
                 position=(150 + (10 * i), 150 + (10 * i)),
                 size=(200, 200),
@@ -199,7 +199,6 @@ async def test_presentation_mode(app, app_probe):
             window.content = toga.Box(
                 style=Pack(background_color=f"#{r:02X}{g:02X}{b:02X}")
             )
-            window.toolbar.add(app.cmd1)
             window.show()
             # Add delay for gtk to show the windows
             await app_probe.redraw(f"Test Window {i} is visible", delay=0.5)
@@ -260,7 +259,7 @@ async def test_presentation_mode_with_excess_windows_list(app, app_probe):
         excess_windows_list = list()
         # Generate an additional window compared to the number of screens present.
         for i in range(len(app.screens) + 1):
-            window = toga.MainWindow(
+            window = toga.Window(
                 title=f"Test Window {i}",
                 position=(150 + (10 * i), 150 + (10 * i)),
                 size=(200, 200),
@@ -271,7 +270,6 @@ async def test_presentation_mode_with_excess_windows_list(app, app_probe):
             window.content = toga.Box(
                 style=Pack(background_color=f"#{r:02X}{g:02X}{b:02X}")
             )
-            window.toolbar.add(app.cmd1)
             window.show()
             # Add delay for gtk to show the windows
             await app_probe.redraw(f"Test Window {i} is visible", delay=0.5)
@@ -346,7 +344,7 @@ async def test_presentation_mode_with_excess_windows_list(app, app_probe):
     ],
 )
 async def test_presentation_mode_exit_on_window_state_change(
-    app, app_probe, main_window_probe, new_window_state
+    app, app_probe, main_window, main_window_probe, new_window_state
 ):
     """Changing window state exits presentation mode and sets the new state."""
     if (
@@ -356,16 +354,14 @@ async def test_presentation_mode_exit_on_window_state_change(
         pytest.xfail("This backend doesn't reliably support minimized window state.")
 
     try:
-        window1 = toga.MainWindow(
+        window1 = toga.Window(
             title="Test Window 1", position=(150, 150), size=(200, 200)
         )
-        window2 = toga.MainWindow(
+        window2 = toga.Window(
             title="Test Window 2", position=(160, 160), size=(200, 200)
         )
         window1.content = toga.Box(style=Pack(background_color=REBECCAPURPLE))
         window2.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
-        window1.toolbar.add(app.cmd1)
-        window2.toolbar.add(app.cmd1)
         window1_probe = window_probe(app, window1)
         window2_probe = window_probe(app, window2)
         window1.show()
