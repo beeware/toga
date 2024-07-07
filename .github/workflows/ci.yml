@@ -118,7 +118,7 @@ jobs:
         project-root: core
 
     - name: Get Packages
-      uses: actions/download-artifact@v4.1.7
+      uses: actions/download-artifact@v4.1.8
       with:
         pattern: ${{ format('{0}-*', needs.package.outputs.artifact-basename) }}
         merge-multiple: true
@@ -165,7 +165,7 @@ jobs:
         project-root: core
 
     - name: Retrieve Coverage Data
-      uses: actions/download-artifact@v4.1.7
+      uses: actions/download-artifact@v4.1.8
       with:
         pattern: core-coverage-data-*
         path: core
