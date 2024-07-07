@@ -32,8 +32,8 @@ class Window:
         self.native.connect("window-state-event", self.gtk_window_state_event)
 
         self._window_state_flags = None
-        # Use a shadow variable since a window without any app menu and toolbar
-        # in presentation mode would be indistinguishable from full screen mode.
+
+        # Gdk.WindowState.FULLSCREEN is unreliable, use shadow variables.
         self._is_presentation_mode = False
         self._is_full_screen = False
 
@@ -217,7 +217,8 @@ class Window:
                 self.native.unfullscreen()
                 self._is_full_screen = False
             # If the window is in presentation mode, exit presentation mode
-            elif current_state == WindowState.PRESENTATION:
+            # WindowState.PRESENTATION case:
+            else:
                 if isinstance(self.native, Gtk.ApplicationWindow):
                     self.native.set_show_menubar(True)
                 if getattr(self, "native_toolbar", None):
