@@ -346,9 +346,15 @@ async def test_presentation_mode_with_excess_windows_list(app, app_probe):
     ],
 )
 async def test_presentation_mode_exit_on_window_state_change(
-    app, app_probe, new_window_state
+    app, app_probe, main_window_probe, new_window_state
 ):
     """Changing window state exits presentation mode and sets the new state."""
+    if (
+        new_window_state == WindowState.MINIMIZED
+        and not main_window_probe.supports_minimize
+    ):
+        pytest.xfail("This backend doesn't reliably support minimized window state.")
+
     try:
         window1 = toga.MainWindow(
             title="Test Window 1", position=(150, 150), size=(200, 200)

@@ -23,18 +23,14 @@ class WindowProbe(BaseProbe, DialogsMixin):
         )
 
     def get_window_state(self):
-        # Windows are always full screen
         decor_view = self.native.getWindow().getDecorView()
         system_ui_flags = decor_view.getSystemUiVisibility()
-        if (
-            system_ui_flags
-            & (
-                decor_view.SYSTEM_UI_FLAG_FULLSCREEN
-                | decor_view.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                | decor_view.SYSTEM_UI_FLAG_IMMERSIVE
-            )
-        ) != 0:
-            if not self.native.getSupportActionBar().isShowing():
+        if system_ui_flags & (
+            decor_view.SYSTEM_UI_FLAG_FULLSCREEN
+            | decor_view.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+            | decor_view.SYSTEM_UI_FLAG_IMMERSIVE
+        ):
+            if self.window._impl._is_presentation_mode:
                 current_state = WindowState.PRESENTATION
             else:
                 current_state = WindowState.FULLSCREEN

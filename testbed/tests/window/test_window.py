@@ -217,6 +217,50 @@ if toga.platform.current_platform in {"iOS", "android"}:
         assert main_window_probe.get_window_state() != WindowState.PRESENTATION
         assert main_window_probe.get_window_state() == WindowState.NORMAL
 
+    @pytest.mark.parametrize(
+        "initial_state, final_state",
+        [
+            # Direct switch from FULLSCREEN:
+            (WindowState.FULLSCREEN, WindowState.PRESENTATION),
+            # Direct switch from PRESENTATION:
+            (WindowState.PRESENTATION, WindowState.FULLSCREEN),
+        ],
+    )
+    async def test_window_state_direct_change(
+        app, initial_state, final_state, main_window, main_window_probe
+    ):
+        assert main_window_probe.get_window_state() == WindowState.NORMAL
+        assert main_window_probe.get_window_state() != initial_state
+        assert main_window_probe.get_window_state() != final_state
+        try:
+            # Set to initial state
+            main_window.state = initial_state
+            await main_window_probe.wait_for_window(
+                f"Main window is in {initial_state}"
+            )
+
+            assert main_window_probe.get_window_state() != WindowState.NORMAL
+            assert main_window_probe.get_window_state() == initial_state
+            assert main_window_probe.get_window_state() != final_state
+
+            # Set to final state
+            main_window.state = final_state
+            await main_window_probe.wait_for_window(f"Main window is in {final_state}")
+
+            assert main_window_probe.get_window_state() != WindowState.NORMAL
+            assert main_window_probe.get_window_state() == final_state
+            assert main_window_probe.get_window_state() != initial_state
+        finally:
+            # Set to NORMAL state
+            main_window.state = WindowState.NORMAL
+            await main_window_probe.wait_for_window(
+                "Main window is in WindowState.NORMAL"
+            )
+
+            assert main_window_probe.get_window_state() == WindowState.NORMAL
+            assert main_window_probe.get_window_state() != final_state
+            assert main_window_probe.get_window_state() != initial_state
+
     async def test_screen(main_window, main_window_probe):
         """The window can be relocated to another screen, using both absolute and relative screen positions."""
         assert main_window.screen.origin == (0, 0)
@@ -820,6 +864,14 @@ else:
     async def test_window_state_direct_change(
         app, initial_state, final_state, second_window, second_window_probe
     ):
+        if (
+            WindowState.MINIMIZED in {initial_state, final_state}
+            and not second_window_probe.supports_minimize
+        ):
+            pytest.xfail(
+                "This backend doesn't reliably support minimized window state."
+            )
+
         second_window.toolbar.add(app.cmd1)
         second_window.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
         second_window.show()

@@ -145,7 +145,11 @@ class Window(Container):
     ######################################################################
 
     def get_window_state(self):
-        # Windows are always full screen
+        # window.state is called in _close(), which itself sometimes
+        # is called during early stages of app startup, during which
+        # the app attribute may not exist. In such cases, return NORMAL.
+        if getattr(self, "app", None) is None:
+            return WindowState.NORMAL
         decor_view = self.app.native.getWindow().getDecorView()
         system_ui_flags = decor_view.getSystemUiVisibility()
         if system_ui_flags & (
@@ -162,33 +166,49 @@ class Window(Container):
     def set_window_state(self, state):
         current_state = self.get_window_state()
         decor_view = self.app.native.getWindow().getDecorView()
-        # On Android Maximized state is same as the Normal state
-        if state in {WindowState.NORMAL, WindowState.MAXIMIZED}:
-            if current_state in {
-                WindowState.FULLSCREEN,
-                WindowState.PRESENTATION,
-            }:
-                decor_view.setSystemUiVisibility(0)
-                if current_state == WindowState.PRESENTATION:
-                    # Marking this as no branch, since the testbed can't create a simple
-                    # window, so we can't test the other branch.
-                    if self._actionbar_shown_by_default:  # pragma: no branch
-                        self.app.native.getSupportActionBar().show()
-                    self._is_presentation_mode = False
-        else:
+        if (
+            current_state != WindowState.NORMAL
+            and state != WindowState.NORMAL
+            and (getattr(self, "_pending_window_state_transition", None) is None)
+        ):
+            # Set Window state to NORMAL before changing to other states as some
+            # states block changing window state without first exiting them or
+            # can even cause rendering glitches.
+            self._pending_window_state_transition = state
             self.set_window_state(WindowState.NORMAL)
-            if state in {WindowState.FULLSCREEN, WindowState.PRESENTATION}:
-                decor_view.setSystemUiVisibility(
-                    decor_view.SYSTEM_UI_FLAG_FULLSCREEN
-                    | decor_view.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                    | decor_view.SYSTEM_UI_FLAG_IMMERSIVE
-                )
-                if state == WindowState.PRESENTATION:
-                    # Marking this as no branch, since the testbed can't create a simple
-                    # window, so we can't test the other branch.
-                    if self._actionbar_shown_by_default:  # pragma: no branch
-                        self.app.native.getSupportActionBar().hide()
-                    self._is_presentation_mode = True
+
+        elif state in {WindowState.FULLSCREEN, WindowState.PRESENTATION}:
+            decor_view.setSystemUiVisibility(
+                decor_view.SYSTEM_UI_FLAG_FULLSCREEN
+                | decor_view.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                | decor_view.SYSTEM_UI_FLAG_IMMERSIVE
+            )
+            if state == WindowState.PRESENTATION:
+                # Marking this as no branch, since the testbed can't create a simple
+                # window, so we can't test the other branch.
+                if self._actionbar_shown_by_default:  # pragma: no branch
+                    self.app.native.getSupportActionBar().hide()
+                self._is_presentation_mode = True
+
+        else:
+            # On Android Maximized state is same as the Normal state
+            if state in {WindowState.NORMAL, WindowState.MAXIMIZED}:
+                if current_state in {
+                    WindowState.FULLSCREEN,
+                    WindowState.PRESENTATION,
+                }:
+                    decor_view.setSystemUiVisibility(0)
+                    if current_state == WindowState.PRESENTATION:
+                        # Marking this as no branch, since the testbed can't create a simple
+                        # window, so we can't test the other branch.
+                        if self._actionbar_shown_by_default:  # pragma: no branch
+                            self.app.native.getSupportActionBar().show()
+                        self._is_presentation_mode = False
+
+                # Complete any pending window state transition.
+                if getattr(self, "_pending_window_state_transition", None) is not None:
+                    self.set_window_state(self._pending_window_state_transition)
+                    del self._pending_window_state_transition
 
     ######################################################################
     # Window capabilities
