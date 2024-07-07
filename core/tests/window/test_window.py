@@ -343,8 +343,8 @@ def test_window_state(window, state):
     ],
 )
 def test_window_state_same_as_previous(window, state):
-    # Setting the window state same as the current window state is a no-op.
-    #
+    """Setting the window state same as the current window state is a no-op."""
+
     # Here, setting the same state twice and then checking with assert_action_not_performed
     # will still report that the window state setting action was performed. This is because
     # the action was also performed for the first-time setting of the window state,
@@ -383,6 +383,7 @@ def test_window_state_same_as_previous(window, state):
     ],
 )
 def test_non_resizable_window_state(state):
+    """Non-resizable window's states other than minimized or normal are no-ops."""
     non_resizable_window = toga.Window(title="Non-Resizable Window", resizable=False)
     with pytest.warns(
         UserWarning,
@@ -393,6 +394,25 @@ def test_non_resizable_window_state(state):
             non_resizable_window, f"set window state to {state}"
         )
     non_resizable_window.close()
+
+
+def test_close_direct_in_presentation_mode(window, app):
+    """Directly closing a window in presentation mode restores to normal first."""
+    window.state = WindowState.PRESENTATION
+    assert window.state == WindowState.PRESENTATION
+    assert_action_performed_with(
+        window,
+        "set window state to WindowState.PRESENTATION",
+        state=WindowState.PRESENTATION,
+    )
+
+    window.close()
+    assert window.state == WindowState.NORMAL
+    assert_action_performed_with(
+        window,
+        "set window state to WindowState.NORMAL",
+        state=WindowState.NORMAL,
+    )
 
 
 def test_close_direct(window, app):
@@ -1243,19 +1263,22 @@ def test_deprecated_names_closeable():
 
 def test_deprecated_full_screen(window, app):
     """A window can be set full screen using the deprecated API."""
+    full_screen_warning = (
+        "`Window.full_screen` is deprecated. Use `Window.state` instead."
+    )
     with pytest.warns(
         DeprecationWarning,
-        match="`Window.full_screen` is deprecated. Use `Window.state` instead.",
+        match=full_screen_warning,
     ):
         assert not window.full_screen
     with pytest.warns(
         DeprecationWarning,
-        match="`Window.full_screen` is deprecated. Use `Window.state` instead.",
+        match=full_screen_warning,
     ):
         window.full_screen = True
     with pytest.warns(
         DeprecationWarning,
-        match="`Window.full_screen` is deprecated. Use `Window.state` instead.",
+        match=full_screen_warning,
     ):
         assert window.full_screen
     assert_action_performed_with(
@@ -1265,12 +1288,12 @@ def test_deprecated_full_screen(window, app):
     )
     with pytest.warns(
         DeprecationWarning,
-        match="`Window.full_screen` is deprecated. Use `Window.state` instead.",
+        match=full_screen_warning,
     ):
         window.full_screen = False
     with pytest.warns(
         DeprecationWarning,
-        match="`Window.full_screen` is deprecated. Use `Window.state` instead.",
+        match=full_screen_warning,
     ):
         assert not window.full_screen
     assert_action_performed_with(
@@ -1287,12 +1310,12 @@ def test_deprecated_full_screen(window, app):
     # Hence, this is just to reach coverage.
     with pytest.warns(
         DeprecationWarning,
-        match="`Window.full_screen` is deprecated. Use `Window.state` instead.",
+        match=full_screen_warning,
     ):
         assert not window.full_screen
     with pytest.warns(
         DeprecationWarning,
-        match="`Window.full_screen` is deprecated. Use `Window.state` instead.",
+        match=full_screen_warning,
     ):
         window.full_screen = False
     # assert_action_not_performed(window, "set window state to WindowState.NORMAL")

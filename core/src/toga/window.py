@@ -475,9 +475,13 @@ class Window:
         # Changing the window state while the app is in presentation mode can cause
         # rendering glitches. Hence, first exit presentation and then set the new
         # window state.
-        # The check for determining if the app is currently in presentation
-        # mode, is already present in exit_presentation_mode(), so just call it.
-        self.app.exit_presentation_mode()
+        if state != WindowState.NORMAL or (
+            any(
+                window.state == WindowState.PRESENTATION and window != self
+                for window in self.app.windows
+            )
+        ):
+            self.app.exit_presentation_mode()
 
         current_state = self._impl.get_window_state()
         if current_state != state:
