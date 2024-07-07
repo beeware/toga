@@ -93,7 +93,7 @@ docs = [
     "sphinx-autobuild == 2024.4.16 ; python_version >= '3.9'",
     "sphinx-csv-filter == 0.4.1",
     "sphinx-copybutton == 0.5.2",
-    "sphinx-toolbox == 3.6.0",
+    "sphinx-toolbox == 3.7.0",
     "sphinxcontrib-spelling == 8.0.0",
 ]
 
