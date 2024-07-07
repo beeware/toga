@@ -821,6 +821,11 @@ else:
             "Secondary window is not in presentation mode", full_screen=True
         )
         assert second_window_probe.get_window_state() != WindowState.PRESENTATION
+        assert (
+            second_window_probe.get_window_state() != WindowState.NORMAL
+        ), f"Current window state: Actual:{second_window.state}\t"
+        f"Probe:{second_window_probe.get_window_state()}"
+
         assert second_window_probe.is_resizable
         assert second_window_probe.presentation_content_size == initial_content_size
 

@@ -330,7 +330,9 @@ async def test_presentation_mode_with_excess_windows_list(app, app_probe):
             assert (
                 window_information["window_probe"].presentation_content_size
                 == window_information["initial_content_size"]
-            ), f"{window_information['window'].title}:"
+            ), f"{window_information['window'].title}:\n"
+            f"Actual:{window_information['window'].state}\t"
+            f"Probe:{window_information['window_probe'].get_window_state()}"
 
     finally:
         for window in excess_windows_list:
