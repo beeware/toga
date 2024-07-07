@@ -35,6 +35,7 @@ class Window:
         # Use a shadow variable since a window without any app menu and toolbar
         # in presentation mode would be indistinguishable from full screen mode.
         self._is_presentation_mode = False
+        self._is_full_screen = False
 
         self.native.set_default_size(size[0], size[1])
 
@@ -163,8 +164,10 @@ class Window:
         elif window_state_flags & Gdk.WindowState.FULLSCREEN:
             if self._is_presentation_mode:
                 return WindowState.PRESENTATION
-            else:
+            elif self._is_full_screen:
                 return WindowState.FULLSCREEN
+            else:
+                return WindowState.NORMAL
         else:
             return WindowState.NORMAL
 
@@ -189,6 +192,7 @@ class Window:
 
         elif state == WindowState.FULLSCREEN:
             self.native.fullscreen()
+            self._is_full_screen = True
 
         elif state == WindowState.PRESENTATION:
             self._before_presentation_mode_screen = self.interface.screen
@@ -211,6 +215,7 @@ class Window:
             # If the window is in full-screen mode, exit full-screen mode
             elif current_state == WindowState.FULLSCREEN:
                 self.native.unfullscreen()
+                self._is_full_screen = False
             # If the window is in presentation mode, exit presentation mode
             elif current_state == WindowState.PRESENTATION:
                 if isinstance(self.native, Gtk.ApplicationWindow):
