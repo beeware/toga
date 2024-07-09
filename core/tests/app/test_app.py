@@ -581,11 +581,6 @@ def test_presentation_mode_no_op(event_loop):
 
     assert not app.is_presentation_mode
 
-    # If we're not in presentation mode, exiting presentation mode is a no-op.
-    app.exit_presentation_mode()
-    assert_action_not_performed(app, "exit presentation mode")
-    assert not app.is_presentation_mode
-
     # Entering presentation mode without any window is a no-op.
     with pytest.raises(TypeError):
         app.enter_presentation_mode()

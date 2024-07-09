@@ -307,12 +307,12 @@ class App:
         for screen, window in screen_window_dict.items():
             window._impl._before_presentation_mode_screen = window.screen
             window.screen = screen
-            window.state = WindowState.PRESENTATION
+            window._impl.set_window_state(WindowState.PRESENTATION)
 
     def exit_presentation_mode(self):
         for window in self.interface.windows:
             if window.state == WindowState.PRESENTATION:
-                window.state = WindowState.NORMAL
+                window._impl.set_window_state(WindowState.NORMAL)
 
 
 class DocumentApp(App):  # pragma: no cover
