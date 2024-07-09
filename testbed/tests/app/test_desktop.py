@@ -354,16 +354,14 @@ async def test_presentation_mode_exit_on_window_state_change(
         pytest.xfail("This backend doesn't reliably support minimized window state.")
 
     try:
-        window1 = toga.MainWindow(
+        window1 = toga.Window(
             title="Test Window 1", position=(150, 150), size=(200, 200)
         )
-        window2 = toga.MainWindow(
+        window2 = toga.Window(
             title="Test Window 2", position=(160, 160), size=(200, 200)
         )
         window1.content = toga.Box(style=Pack(background_color=REBECCAPURPLE))
         window2.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
-        window1.toolbar.add(app.cmd1)
-        window2.toolbar.add(app.cmd1)
         window1_probe = window_probe(app, window1)
         window2_probe = window_probe(app, window2)
         window1.show()
