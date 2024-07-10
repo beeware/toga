@@ -876,7 +876,7 @@ else:
         "second_window_class, second_window_kwargs",
         [
             (
-                toga.Window,
+                toga.MainWindow,
                 dict(title="Secondary Window", position=(200, 150)),
             )
         ],
@@ -891,7 +891,7 @@ else:
             pytest.xfail(
                 "This backend doesn't reliably support minimized window state."
             )
-
+        second_window.toolbar.add(app.cmd1)
         second_window.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
         second_window.show()
 
