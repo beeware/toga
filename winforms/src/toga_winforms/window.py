@@ -14,7 +14,7 @@ from toga.types import Position, Size
 from .container import Container
 from .keys import toga_to_winforms_key, toga_to_winforms_shortcut
 from .libs.wrapper import WeakrefCallable
-from .screens import Screen
+from .screens import Screen as ScreenImpl
 from .widgets.base import Scalable
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -162,10 +162,7 @@ class Window(Container, Scalable):
 
     def update_dpi(self):
         self._dpi_scale = self.get_current_screen().dpi_scale
-        if (self.toolbar_native is not None) and (  # pragma: no branch
-            getattr(self, "original_toolbar_font", None) is not None
-        ):
-            self.toolbar_native.Font = self.scale_font(self.original_toolbar_font)
+
         for widget in self.interface.widgets:
             widget._impl.scale_font()
             widget.refresh()
@@ -193,7 +190,7 @@ class Window(Container, Scalable):
     ######################################################################
 
     def get_current_screen(self):
-        return Screen(WinForms.Screen.FromControl(self.native))
+        return ScreenImpl(WinForms.Screen.FromControl(self.native))
 
     def get_position(self) -> Position:
         location = self.native.Location
@@ -258,6 +255,11 @@ class MainWindow(Window):
             getattr(self, "original_menubar_font", None) is not None
         ):  # pragma: no branch
             self.native.MainMenuStrip.Font = self.scale_font(self.original_menubar_font)
+
+        if (self.toolbar_native is not None) and (  # pragma: no branch
+            getattr(self, "original_toolbar_font", None) is not None
+        ):
+            self.toolbar_native.Font = self.scale_font(self.original_toolbar_font)
 
     def _top_bars_height(self):
         vertical_shift = 0
