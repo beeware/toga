@@ -182,7 +182,7 @@ async def test_menu_minimize(app, app_probe):
         window1.close()
 
 
-async def test_presentation_mode(app, app_probe):
+async def test_presentation_mode(app, app_probe, main_window):
     """The app can enter presentation mode."""
     try:
         window_information_list = list()
@@ -250,9 +250,13 @@ async def test_presentation_mode(app, app_probe):
     finally:
         for window in windows_list:
             window.close()
+        app.current_window = main_window
+        # Add delay for gtk to show the windows
+        await app_probe.redraw("main_window is now the current window", delay=0.5)
+        assert app.current_window == main_window
 
 
-async def test_presentation_mode_with_excess_windows_list(app, app_probe):
+async def test_presentation_mode_with_excess_windows_list(app, app_probe, main_window):
     """Entering presentation mode limits windows to available displays."""
     try:
         window_information_list = list()
@@ -333,6 +337,10 @@ async def test_presentation_mode_with_excess_windows_list(app, app_probe):
     finally:
         for window in excess_windows_list:
             window.close()
+        app.current_window = main_window
+        # Add delay for gtk to show the windows
+        await app_probe.redraw("main_window is now the current window", delay=0.5)
+        assert app.current_window == main_window
 
 
 @pytest.mark.parametrize(
@@ -427,6 +435,10 @@ async def test_presentation_mode_exit_on_window_state_change(
     finally:
         window1.close()
         window2.close()
+        app.current_window = main_window
+        # Add delay for gtk to show the windows
+        await app_probe.redraw("main_window is now the current window", delay=0.5)
+        assert app.current_window == main_window
 
 
 async def test_show_hide_cursor(app, app_probe):

@@ -59,7 +59,6 @@ class TogaWindow(NSWindow):
 
     @objc_method
     def windowDidExitFullScreen_(self, notification) -> None:
-        # This can be used to ensure that the window has completed exiting full screen.
         # Complete any pending window state transition.
         if getattr(self.impl, "_pending_window_state_transition", None) is not None:
             self.impl.set_window_state(self.impl._pending_window_state_transition)
@@ -359,19 +358,42 @@ class Window:
 
             # If the window is in full-screen mode, exit full-screen mode
             elif current_state == WindowState.FULLSCREEN:
-                # This doesn't wait for completely exiting full screen mode. Hence,
-                # this will cause problems when rapid window state switching is done.
-                # We should wait until `windowDidExitFullScreen_` is notified and then
-                # return to user.
                 self.native.toggleFullScreen(self.native)
 
             # If the window is in presentation mode, exit presentation mode
             # WindowState.PRESENTATION case:
-            else:
-                self.interface.app.exit_presentation_mode()
+            else:  # branch: no cover
+                # --- Review Notes: Will be removed after review ---
+                # Marking this as no cover, since exit_presentation_mode() is triggered
+                # on any call to window.state setter. It checks if any window is in
+                # presentation mode and sets those windows' state to NORMAL.
+                #
+                # So, if the window was in PRESENTATION state and window.state is set to NORMAL, then
+                # exit_presentation_mode() would be called in the window.state setter and would exit
+                # app presentation mode. Since the window would now be in NORMAL state, this
+                # branch would never be triggered.
+                #
+                # On other backends presentation mode is window-based(i.e., window is manipulated
+                # to create presentation mode), as they do not have a native presentation mode.
+                # However, on cocoa, presentation mode is app-based(i.e., window is not manipulated
+                # to create presentation mode), since cocoa natively supports a separate presentation
+                # mode.
+                #
+                # Hence, this branch is required on other backends(gtk, winforms), but not on cocoa.
 
-            # Complete any pending window state transition. This operation is performed on the
-            # window delegate notifications for MINIMIZED and FULLSCREEN. Hence, exclude them here.
+                # self.interface.app.exit_presentation_mode()
+                pass
+
+            # Complete any pending window state transition.
+            #
+            # `setIsMiniaturized()` and `toggleFullScreen()` do not wait for completely exiting
+            # `MINIMIZED` and `FULLSCREEN` respectively. Hence,they will cause problems
+            # when direct window state switching is done. We should wait until
+            # `windowDidDeminiaturize_` and `windowDidExitFullScreen_` are notified and then
+            # set the pending window state.
+
+            # This operation is performed on the window delegate notifications for MINIMIZED
+            # and FULLSCREEN. Hence, exclude them here.
             if current_state in {WindowState.MAXIMIZED, WindowState.PRESENTATION}:
                 if getattr(self, "_pending_window_state_transition", None) is not None:
                     self.set_window_state(self._pending_window_state_transition)
