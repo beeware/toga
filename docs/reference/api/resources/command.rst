@@ -23,7 +23,7 @@ they invoke it. It doesn't matter if they select a menu item, press a button on 
 toolbar, or use a key combination - the functionality is wrapped up in a Command.
 
 Commands are added to an app using the properties :any:`toga.App.commands` and
-:any:`toga.Window.toolbar`. Toga then takes control of ensuring that the
+:any:`toga.MainWindow.toolbar`. Toga then takes control of ensuring that the
 command is exposed to the user in a way that they can access. On desktop platforms,
 this may result in a command being added to a menu.
 
@@ -76,7 +76,7 @@ it wasn't explicitly added to the app commands.
 Each command has an :attr:`~toga.Command.id` attribute. This is set when the command is
 defined; if no ID is provided, a random ID will be generated for the Command. This
 identifier can be used to retrieve a command from :any:`toga.App.commands` and
-:any:`toga.Window.toolbar`.
+:any:`toga.MainWindow.toolbar`.
 
 Reference
 ---------

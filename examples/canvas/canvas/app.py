@@ -326,15 +326,19 @@ class ExampleCanvasApp(toga.App):
         self.render_drawing()
 
     async def on_save_canvas(self, widget):
-        path = await self.main_window.save_file_dialog(
-            "Image save path",
-            suggested_filename="canvas_example.png",
-            file_types=["jpg", "png"],
+        path = await self.main_window.dialog(
+            toga.SaveFileDialog(
+                "Image save path",
+                suggested_filename="canvas_example.png",
+                file_types=["jpg", "png"],
+            )
         )
         if path is None:
             return
         self.canvas.as_image().save(path)
-        self.main_window.info_dialog("Image saved", "Canvas was saved properly!")
+        await self.main_window.dialog(
+            toga.InfoDialog("Image saved", "Canvas was saved!")
+        )
 
     def move(self, delta_x, delta_y):
         try:

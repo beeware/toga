@@ -1,0 +1,61 @@
+[build-system]
+requires = ["briefcase"]
+
+[tool.briefcase]
+project_name = "Simple App"
+bundle = "org.beeware"
+version = "0.0.1"
+url = "https://beeware.org"
+license.file = "LICENSE"
+author = 'Tiberius Yak'
+author_email = "tiberius@beeware.org"
+
+[tool.briefcase.app.simpleapp]
+formal_name = "Simple App"
+description = "A testing app"
+sources = ['simpleapp']
+requires = [
+    '../../core',
+]
+
+
+[tool.briefcase.app.simpleapp.macOS]
+requires = [
+    '../../cocoa',
+    'std-nslog>=1.0.0',
+]
+
+[tool.briefcase.app.simpleapp.linux]
+requires = [
+    '../../gtk',
+]
+
+[tool.briefcase.app.simpleapp.windows]
+requires = [
+    '../../winforms',
+]
+
+# Mobile deployments
+[tool.briefcase.app.simpleapp.iOS]
+requires = [
+    '../../iOS',
+    'std-nslog>=1.0.0',
+]
+
+[tool.briefcase.app.simpleapp.android]
+requires = [
+    '../../android',
+]
+
+base_theme = "Theme.MaterialComponents.Light.DarkActionBar"
+
+build_gradle_dependencies = [
+    "com.google.android.material:material:1.11.0",
+]
+
+# Web deployment
+[tool.briefcase.app.simpleapp.web]
+requires = [
+    "../../web",
+]
+style_framework = "Shoelace v2.3"

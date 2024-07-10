@@ -3,21 +3,25 @@ from __future__ import annotations
 import warnings
 from pathlib import Path
 
-from .app import App, DocumentApp, DocumentMainWindow, MainWindow
-
-# Resources
+from .app import App, DocumentApp
 from .colors import hsl, hsla, rgb, rgba
 from .command import Command, Group
+from .dialogs import (
+    ConfirmDialog,
+    ErrorDialog,
+    InfoDialog,
+    OpenFileDialog,
+    QuestionDialog,
+    SaveFileDialog,
+    SelectFolderDialog,
+    StackTraceDialog,
+)
 from .documents import Document
 from .fonts import Font
 from .icons import Icon
 from .images import Image
 from .keys import Key
-
-# Types
 from .types import LatLng, Position, Size
-
-# Widgets
 from .widgets.activityindicator import ActivityIndicator
 from .widgets.base import Widget
 from .widgets.box import Box
@@ -44,7 +48,7 @@ from .widgets.textinput import TextInput
 from .widgets.timeinput import TimeInput, TimePicker
 from .widgets.tree import Tree
 from .widgets.webview import WebView
-from .window import Window
+from .window import DocumentMainWindow, MainWindow, Window
 
 
 class NotImplementedWarning(RuntimeWarning):
@@ -62,13 +66,20 @@ __all__ = [
     # Applications
     "App",
     "DocumentApp",
-    "MainWindow",
-    "DocumentMainWindow",
     # Commands
     "Command",
     "Group",
     # Documents
     "Document",
+    # Dialogs
+    "ConfirmDialog",
+    "ErrorDialog",
+    "InfoDialog",
+    "OpenFileDialog",
+    "QuestionDialog",
+    "SaveFileDialog",
+    "SelectFolderDialog",
+    "StackTraceDialog",
     # Keys
     "Key",
     # Resources
@@ -112,6 +123,9 @@ __all__ = [
     "Tree",
     "WebView",
     "Widget",
+    # Windows
+    "DocumentMainWindow",
+    "MainWindow",
     "Window",
     # Deprecated widget names
     "DatePicker",

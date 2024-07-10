@@ -4,35 +4,19 @@ import sys
 import threading
 
 import System.Windows.Forms as WinForms
-from Microsoft.Win32 import SystemEvents
-from System import Threading
-from System.ComponentModel import InvalidEnumArgumentException
+from System import Environment, Threading
 from System.Media import SystemSounds
 from System.Net import SecurityProtocolType, ServicePointManager
 from System.Windows.Threading import Dispatcher
 
-from toga import Key
+import toga
 from toga.app import overridden
-from toga.command import Command, Group, Separator
+from toga.command import Command, Group
 from toga.handlers import simple_handler
 
-from .keys import toga_to_winforms_key, toga_to_winforms_shortcut
 from .libs.proactor import WinformsProactorEventLoop
 from .libs.wrapper import WeakrefCallable
-from .screens import Screen
-from .window import Window
-
-
-class MainWindow(Window):
-    def winforms_FormClosing(self, sender, event):
-        # Differentiate between the handling that occurs when the user
-        # requests the app to exit, and the actual application exiting.
-        if not self.interface.app._impl._is_exiting:  # pragma: no branch
-            # If there's an event handler, process it. The decision to
-            # actually exit the app will be processed in the on_exit handler.
-            # If there's no exit handler, assume the close/exit can proceed.
-            self.interface.app.on_exit()
-            event.Cancel = True
+from .screens import Screen as ScreenImpl
 
     def update_dpi(self):
         super().update_dpi()
@@ -77,19 +61,15 @@ def winforms_thread_exception(sender, winforms_exc):  # pragma: no cover
 
 
 class App:
-    _MAIN_WINDOW_CLASS = MainWindow
+    # Winforms apps exit when the last window is closed
+    CLOSE_ON_LAST_WINDOW = True
 
     def __init__(self, interface):
         self.interface = interface
         self.interface._impl = self
 
-        # Winforms app exit is tightly bound to the close of the MainWindow.
-        # The FormClosing message on MainWindow triggers the "on_exit" handler
-        # (which might abort the exit). However, on success, it will request the
-        # app (and thus the Main Window) to close, causing another close event.
-        # So - we have a flag that is only ever sent once a request has been
-        # made to exit the native app. This flag can be used to shortcut any
-        # window-level close handling.
+        # Track whether the app is exiting. This is used to stop the event loop,
+        # and shortcut close handling on any open windows when the app exits.
         self._is_exiting = False
 
         # Winforms cursor visibility is a stack; If you call hide N times, you
@@ -133,16 +113,6 @@ class App:
         # Call user code to populate the main window
         self.interface._startup()
 
-        self.interface.main_window._impl.set_app(self)
-
-    ######################################################################
-    # Native event handlers
-    ######################################################################
-
-    def winforms_DisplaySettingsChanged(self, sender, event):
-        for window in self.interface.windows:
-            window._impl.update_dpi()
-
     ######################################################################
     # Commands and menus
     ######################################################################
@@ -150,22 +120,13 @@ class App:
     def create_app_commands(self):
         self.interface.commands.add(
             # ---- File menu -----------------------------------
-            # Include a preferences menu item; but only enable it if the user has
-            # overridden it in their App class.
+            # Quit should always be the last item, in a section on its own. Invoke
+            # `_request_exit` rather than `exit`, because we want to trigger the "OK to
+            # exit?" logic.
             Command(
-                simple_handler(self.interface.preferences),
-                "Preferences",
-                group=Group.FILE,
-                enabled=overridden(self.interface.preferences),
-                id=Command.PREFERENCES,
-            ),
-            # Exit should always be the last item, in a section on its own. Invoke
-            # `on_exit` rather than `exit`, because we want to trigger the "OK to exit?"
-            # logic. It's already a bound handler, so we can use it directly.
-            Command(
-                self.interface.on_exit,
+                simple_handler(self.interface._request_exit),
                 "Exit",
-                shortcut=Key.MOD_1 + "q",
+                shortcut=toga.Key.MOD_1 + "q",
                 group=Group.FILE,
                 section=sys.maxsize,
                 id=Command.EXIT,
@@ -187,77 +148,26 @@ class App:
             ),
         )
 
-    def _submenu(self, group, menubar):
-        try:
-            return self._menu_groups[group]
-        except KeyError:
-            if group is None:
-                submenu = menubar
-            else:
-                parent_menu = self._submenu(group.parent, menubar)
-
-                submenu = WinForms.ToolStripMenuItem(group.text)
-
-                # Top level menus are added in a different way to submenus
-                if group.parent is None:
-                    parent_menu.Items.Add(submenu)
-                else:
-                    parent_menu.DropDownItems.Add(submenu)
-
-            self._menu_groups[group] = submenu
-        return submenu
+        # If the user has overridden preferences, provide a menu item.
+        if overridden(self.interface.preferences):
+            self.interface.commands.add(
+                Command(
+                    simple_handler(self.interface.preferences),
+                    "Preferences",
+                    group=Group.FILE,
+                    id=Command.PREFERENCES,
+                ),
+            )  # pragma: no cover
 
     def create_menus(self):
-        window = self.interface.main_window._impl
-        menubar = window.native.MainMenuStrip
-        if menubar:
-            menubar.Items.Clear()
-        else:
-            # The menu bar doesn't need to be positioned, because its `Dock` property
-            # defaults to `Top`.
-            menubar = WinForms.MenuStrip()
-            window.native.Controls.Add(menubar)
-            window.native.MainMenuStrip = menubar
-            menubar.SendToBack()  # In a dock, "back" means "top".
-
-        # The File menu should come before all user-created menus.
-        self._menu_groups = {}
-        Group.FILE.order = -1
-
-        submenu = None
-        for cmd in self.interface.commands:
-            submenu = self._submenu(cmd.group, menubar)
-            if isinstance(cmd, Separator):
-                submenu.DropDownItems.Add("-")
-            else:
-                submenu = self._submenu(cmd.group, menubar)
-                item = WinForms.ToolStripMenuItem(cmd.text)
-                item.Click += WeakrefCallable(cmd._impl.winforms_Click)
-                if cmd.shortcut is not None:
-                    try:
-                        item.ShortcutKeys = toga_to_winforms_key(cmd.shortcut)
-                        # The Winforms key enum is... daft. The "oem" key
-                        # values render as "Oem" or "Oemcomma", so we need to
-                        # *manually* set the display text for the key shortcut.
-                        item.ShortcutKeyDisplayString = toga_to_winforms_shortcut(
-                            cmd.shortcut
-                        )
-                    except (
-                        ValueError,
-                        InvalidEnumArgumentException,
-                    ) as e:  # pragma: no cover
-                        # Make this a non-fatal warning, because different backends may
-                        # accept different shortcuts.
-                        print(f"WARNING: invalid shortcut {cmd.shortcut!r}: {e}")
-
-                item.Enabled = cmd.enabled
-
-                cmd._impl.native.append(item)
-                submenu.DropDownItems.Add(item)
-
-        # Required for font scaling on DPI changes
-        window.original_menubar_font = menubar.Font
-        window.resize_content()
+        # Winforms menus are created on the Window.
+        for window in self.interface.windows:
+            # It's difficult to trigger this on a simple window, because we can't easily
+            # modify the set of app-level commands that are registered, and a simple
+            # window doesn't exist when the app starts up. Therefore, no-branch the else
+            # case.
+            if hasattr(window._impl, "create_menus"):  # pragma: no branch
+                window._impl.create_menus()
 
     ######################################################################
     # App lifecycle
@@ -306,7 +216,7 @@ class App:
             window._impl.native.Icon = icon._impl.native
 
     def set_main_window(self, window):
-        self.app_context.MainForm = window._impl.native
+        pass
 
     ######################################################################
     # App resources
@@ -392,7 +302,7 @@ class DocumentApp(App):  # pragma: no cover
             Command(
                 lambda w: self.open_file,
                 text="Open...",
-                shortcut=Key.MOD_1 + "o",
+                shortcut=toga.Key.MOD_1 + "o",
                 group=Group.FILE,
                 section=0,
             ),

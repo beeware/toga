@@ -1,25 +1,27 @@
-from rubicon.objc import CGSize
+from rubicon.objc import (
+    SEL,
+    CGSize,
+    NSMakeRect,
+    NSPoint,
+    NSSize,
+    objc_method,
+    objc_property,
+)
 
 from toga.command import Command, Separator
 from toga.types import Position, Size
 from toga.window import _initial_position
 from toga_cocoa.container import Container
 from toga_cocoa.libs import (
-    SEL,
     NSBackingStoreBuffered,
     NSImage,
-    NSMakeRect,
     NSMutableArray,
-    NSPoint,
     NSScreen,
-    NSSize,
     NSToolbar,
     NSToolbarItem,
     NSWindow,
     NSWindowStyleMask,
     core_graphics,
-    objc_method,
-    objc_property,
 )
 
 from .screens import Screen as ScreenImpl
@@ -35,7 +37,11 @@ class TogaWindow(NSWindow):
 
     @objc_method
     def windowShouldClose_(self, notification) -> bool:
-        return self.impl.cocoa_windowShouldClose()
+        # The on_close handler has a cleanup method that will enforce
+        # the close if the on_close handler requests it; this initial
+        # "should close" request always returns False.
+        self.interface.on_close()
+        return False
 
     @objc_method
     def windowDidResize_(self, notification) -> None:
@@ -173,24 +179,8 @@ class Window:
         self.native.wantsLayer = True
         self.container.native.backgroundColor = self.native.backgroundColor
 
-        # By default, no toolbar
-        self._toolbar_items = {}
-        self.native_toolbar = None
-
     def __del__(self):
-        self.purge_toolbar()
         self.native.release()
-
-    ######################################################################
-    # Native event handlers
-    ######################################################################
-
-    def cocoa_windowShouldClose(self):
-        # The on_close handler has a cleanup method that will enforce
-        # the close if the on_close handler requests it; this initial
-        # "should close" request can always return False.
-        self.interface.on_close()
-        return False
 
     ######################################################################
     # Window properties
@@ -208,49 +198,6 @@ class Window:
 
     def close(self):
         self.native.close()
-
-    def create_toolbar(self):
-        # Purge any existing toolbar items
-        self.purge_toolbar()
-
-        # Create the new toolbar items.
-        if self.interface.toolbar:
-            for cmd in self.interface.toolbar:
-                if isinstance(cmd, Command):
-                    self._toolbar_items[toolbar_identifier(cmd)] = cmd
-
-            self.native_toolbar = NSToolbar.alloc().initWithIdentifier(
-                "Toolbar-%s" % id(self)
-            )
-            self.native_toolbar.setDelegate(self.native)
-        else:
-            self.native_toolbar = None
-
-        self.native.setToolbar(self.native_toolbar)
-
-        # Adding/removing a toolbar changes the size of the content window.
-        if self.interface.content:
-            self.interface.content.refresh()
-
-    def purge_toolbar(self):
-        while self._toolbar_items:
-            dead_items = []
-            _, cmd = self._toolbar_items.popitem()
-            # The command might have toolbar representations on multiple window
-            # toolbars, and may have other representations (at the very least, a menu
-            # item). Only clean up the representation pointing at *this* window. Do this
-            # in 2 passes so that we're not modifying the set of native objects while
-            # iterating over it.
-            for item_native in cmd._impl.native:
-                if (
-                    isinstance(item_native, NSToolbarItem)
-                    and item_native.target == self.native
-                ):
-                    dead_items.append(item_native)
-
-            for item_native in dead_items:
-                cmd._impl.native.remove(item_native)
-                item_native.release()
 
     def set_app(self, app):
         pass
@@ -367,3 +314,67 @@ class Window:
         )
         ns_image = NSImage.alloc().initWithCGImage(cg_image, size=target_size)
         return ns_image
+
+
+class MainWindow(Window):
+    def __init__(self, interface, title, position, size):
+        super().__init__(interface, title, position, size)
+
+        # By default, no toolbar
+        self._toolbar_items = {}
+        self.native_toolbar = None
+
+    def __del__(self):
+        self.purge_toolbar()
+        super().__del__()
+
+    def create_menus(self):
+        # macOS doesn't have window-level menus
+        pass
+
+    def create_toolbar(self):
+        # Purge any existing toolbar items
+        self.purge_toolbar()
+
+        # Create the new toolbar items.
+        if self.interface.toolbar:
+            for cmd in self.interface.toolbar:
+                if isinstance(cmd, Command):
+                    self._toolbar_items[toolbar_identifier(cmd)] = cmd
+
+            self.native_toolbar = NSToolbar.alloc().initWithIdentifier(
+                "Toolbar-%s" % id(self)
+            )
+            self.native_toolbar.setDelegate(self.native)
+        else:
+            self.native_toolbar = None
+
+        self.native.setToolbar(self.native_toolbar)
+
+        # Adding/removing a toolbar changes the size of the content window.
+        if self.interface.content:
+            self.interface.content.refresh()
+
+    def purge_toolbar(self):
+        while self._toolbar_items:
+            dead_items = []
+            _, cmd = self._toolbar_items.popitem()
+            # The command might have toolbar representations on multiple window
+            # toolbars, and may have other representations (at the very least, a menu
+            # item). Only clean up the representation pointing at *this* window. Do this
+            # in 2 passes so that we're not modifying the set of native objects while
+            # iterating over it.
+            for item_native in cmd._impl.native:
+                if (
+                    isinstance(item_native, NSToolbarItem)
+                    and item_native.target == self.native
+                ):
+                    dead_items.append(item_native)
+
+            for item_native in dead_items:
+                cmd._impl.native.remove(item_native)
+                item_native.release()
+
+
+class DocumentMainWindow(Window):
+    pass

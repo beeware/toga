@@ -90,7 +90,7 @@ async def handler_with_cleanup(
         return result
 
 
-def simple_handler(fn):
+def simple_handler(fn, *args, **kwargs):
     """Wrap a function (with args and kwargs) so it can be used as a command handler.
 
     This essentially accepts and ignores the handler-related arguments (i.e., the
@@ -100,18 +100,22 @@ def simple_handler(fn):
     It can accept either a function or a coroutine.
 
     :param fn: The callable to invoke as a handler.
+    :param args: The arguments to pass to the handler when invoked.
+    :param kwargs: The keyword arguments to pass to the handler when invoked.
     :returns: A handler that will invoke the callable.
     """
     if inspect.iscoroutinefunction(fn):
 
-        async def _handler(command, *args, **kwargs):
+        async def _handler(command):
             return await fn(*args, **kwargs)
 
     else:
 
-        def _handler(command, *args, **kwargs):
+        def _handler(command):
             return fn(*args, **kwargs)
 
+    # Preserve a reference to the original function
+    _handler._raw = fn
     return _handler
 
 

@@ -188,7 +188,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        backend: [ "macOS-x86_64", "macOS-arm64", "windows", "linux", "android", "iOS" ]
+        backend: [ "macOS-x86_64", "macOS-arm64", "windows", "linux-x11", "linux-wayland","android", "iOS" ]
         include:
         - pre-command: ""
           briefcase-run-prefix: ""
@@ -208,7 +208,7 @@ jobs:
         # We use a fixed Ubuntu version rather than `-latest` because at some point,
         # `-latest` will be updated, but it will be a soft changeover, which would cause
         # the system Python version to become inconsistent from run to run.
-        - backend: "linux"
+        - backend: "linux-x11"
           platform: "linux"
           runs-on: "ubuntu-22.04"
           # The package list should be the same as in tutorial-0.rst, and the BeeWare
@@ -223,16 +223,42 @@ jobs:
             sudo apt install -y --no-install-recommends \
               blackbox pkg-config python3-dev libgirepository1.0-dev libcairo2-dev gir1.2-webkit2-4.1
 
-            # Start Virtual X server
+            # Start Virtual X Server
             echo "Start X server..."
             Xvfb :99 -screen 0 2048x1536x24 &
             sleep 1
 
-            # Start Window manager
+            # Start Window Mmanager
             echo "Start window manager..."
             DISPLAY=:99 blackbox &
             sleep 1
           briefcase-run-prefix: 'DISPLAY=:99'
+          setup-python: false  # Use the system Python packages
+          app-user-data-path: "$HOME/.local/share/testbed"
+
+        - backend: "linux-wayland"
+          platform: "linux"
+          runs-on: "ubuntu-22.04"
+          # The package list should be the same as in tutorial-0.rst, and the BeeWare
+          # tutorial, plus mutter to provide a window manager, and libjpeg-dev for Pillow.
+          pre-command: |
+            sudo apt update -y
+            sudo apt install -y --no-install-recommends \
+              mutter pkg-config python3-dev libgirepository1.0-dev libcairo2-dev gir1.2-webkit2-4.1
+
+            # Start Virtual X Server
+            echo "Start X server..."
+            Xvfb :99 -screen 0 2048x1536x24 &
+            sleep 1
+
+            # Start Window Manager
+            echo "Start window manager..."
+            # mutter is being run inside a virtual X server because mutter's headless
+            # mode is not compatible with Gtk
+            DISPLAY=:99 MUTTER_DEBUG_DUMMY_MODE_SPECS=2048x1536 \
+              mutter --nested --wayland --no-x11 --wayland-display toga &
+            sleep 1
+          briefcase-run-prefix: "WAYLAND_DISPLAY=toga"
           setup-python: false  # Use the system Python packages
           app-user-data-path: "$HOME/.local/share/testbed"
 
@@ -258,7 +284,7 @@ jobs:
           platform: "android"
           runs-on: "ubuntu-latest"
           briefcase-run-prefix: JAVA_HOME=${JAVA_HOME_17_X64}
-          briefcase-run-args: >
+          briefcase-run-args: >-
             --device '{"avd":"beePhone","skin":"pixel_3a"}'
             --Xemulator=-no-window
             --Xemulator=-no-snapshot
@@ -304,7 +330,7 @@ jobs:
       timeout-minutes: 15
       run: |
         ${{ matrix.briefcase-run-prefix }} \
-          briefcase run ${{ matrix.platform }} --log --test ${{ matrix.briefcase-run-args }}
+          briefcase run ${{ matrix.platform }} --log --test ${{ matrix.briefcase-run-args }} -- --ci
 
     - name: Upload Logs
       uses: actions/upload-artifact@v4.3.3

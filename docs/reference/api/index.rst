@@ -7,14 +7,14 @@ API Reference
 Core application components
 ---------------------------
 
-================================================= ===================================================
+================================================= =============================================================================
  Component                                         Description
-================================================= ===================================================
+================================================= =============================================================================
  :doc:`App </reference/api/app>`                   The top-level representation of an application.
  :doc:`DocumentApp </reference/api/documentapp>`   An application that manages documents.
  :doc:`Window </reference/api/window>`             An operating system-managed container of widgets.
- :doc:`MainWindow </reference/api/mainwindow>`     The main window of the application.
-================================================= ===================================================
+ :doc:`MainWindow </reference/api/mainwindow>`     A window that can use the full set of window-level user interface elements.
+================================================= =============================================================================
 
 General widgets
 ---------------
@@ -80,6 +80,7 @@ Resources
                                                                       for an application.
  :doc:`Command </reference/api/resources/command>`                    A representation of app functionality that the user can invoke from
                                                                       menus or toolbars.
+ :doc:`Dialogs </reference/api/resources/dialogs>`                    A short-lived window asking the user for input.
  :doc:`Font </reference/api/resources/fonts>`                         Fonts
  :doc:`Icon </reference/api/resources/icons>`                         An icon for buttons, menus, etc
  :doc:`Image </reference/api/resources/images>`                       An image

@@ -1,5 +1,6 @@
 accessor
 accessors
+acknowledgement
 amongst
 App
 apps
@@ -13,6 +14,7 @@ Bugfixes
 Cairo
 cancelled
 clickable
+closable
 codepoint
 coroutine
 CSS

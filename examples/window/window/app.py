@@ -51,7 +51,6 @@ class WindowDemoApp(toga.App):
     def do_new_windows(self, widget, **kwargs):
         non_resize_window = toga.Window(
             "Non-resizable Window",
-            position=(200, 200),
             size=(300, 300),
             resizable=False,
             on_close=self.close_handler,
@@ -63,7 +62,6 @@ class WindowDemoApp(toga.App):
 
         non_close_window = toga.Window(
             "Non-closeable Window",
-            position=(300, 300),
             size=(300, 300),
             closable=False,
         )
@@ -81,6 +79,15 @@ class WindowDemoApp(toga.App):
             children=[toga.Label("This window has no close handler")]
         )
         no_close_handler_window.show()
+
+        second_main_window = toga.MainWindow()
+        extra_command = toga.Command(
+            lambda cmd: print("A little extra"),
+            text="Extra",
+            icon=toga.Icon.APP_ICON,
+        )
+        second_main_window.toolbar.add(extra_command)
+        second_main_window.show()
 
     def do_screen_change(self, screen, widget, **kwargs):
         self.current_window.screen = screen
@@ -124,28 +131,32 @@ class WindowDemoApp(toga.App):
     def do_prev_content(self, widget):
         self.main_window.content = self.main_scroller
 
-    def do_hide(self, widget):
+    async def do_hide(self, widget):
         self.main_window.visible = False
         for i in range(5, 0, -1):
             print(f"Back in {i}...")
-            yield 1
+            await asyncio.sleep(1)
         self.main_window.visible = True
-        self.main_window.info_dialog("Here we go again", "I'm back!")
+        await self.main_window.dialog(toga.InfoDialog("Here we go again", "I'm back!"))
 
     def do_beep(self, widget):
         self.app.beep()
 
-    def exit_handler(self, app, **kwargs):
+    async def on_exit(self):
         self.close_count += 1
         if self.close_count % 2 == 1:
-            self.main_window.info_dialog("Can't close app", "Try that again")
+            await self.main_window.dialog(
+                toga.InfoDialog("Can't close app", "Try that again")
+            )
             return False
         return True
 
-    def close_handler(self, window, **kwargs):
+    async def close_handler(self, window, **kwargs):
         self.close_count += 1
         if self.close_count % 2 == 1:
-            self.main_window.info_dialog("Can't close window", "Try that again")
+            await self.main_window.dialog(
+                toga.InfoDialog("Can't close window", "Try that again")
+            )
             return False
         return True
 
@@ -155,7 +166,6 @@ class WindowDemoApp(toga.App):
 
         # Set up main window
         self.main_window = toga.MainWindow()
-        self.on_exit = self.exit_handler
 
         # Label to show responses.
         self.label = toga.Label("Ready.")
@@ -292,6 +302,7 @@ class WindowDemoApp(toga.App):
             self.do_prev_content,
             text="Restore content",
             tooltip="Restore main window content",
+            icon=toga.Icon.APP_ICON,
         )
 
         self.commands.add(restore_command)

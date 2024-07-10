@@ -6,29 +6,27 @@ import signal
 import sys
 import warnings
 import webbrowser
-from collections.abc import Iterator
+from collections.abc import Coroutine, Iterator
 from email.message import Message
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, MutableSet, Protocol
-from warnings import warn
 from weakref import WeakValueDictionary
 
 from toga.command import CommandSet
-from toga.documents import Document
-from toga.handlers import wrapped_handler
+from toga.handlers import simple_handler, wrapped_handler
 from toga.hardware.camera import Camera
 from toga.hardware.location import Location
 from toga.icons import Icon
 from toga.paths import Paths
 from toga.platform import get_platform_factory
 from toga.screens import Screen
-from toga.types import Position, Size
 from toga.widgets.base import Widget
-from toga.window import OnCloseHandler, Window
+from toga.window import MainWindow, Window
 
 if TYPE_CHECKING:
+    from toga.dialogs import Dialog
+    from toga.documents import Document
     from toga.icons import IconContentT
-    from toga.types import PositionT, SizeT
 
 # Make sure deprecation warnings are shown by default
 warnings.filterwarnings("default", category=DeprecationWarning)
@@ -44,6 +42,16 @@ class AppStartupMethod(Protocol):
         :param kwargs: Ensures compatibility with additional arguments introduced in
             future versions.
         :returns: The widget to use as the main window content.
+        """
+
+
+class OnRunningHandler(Protocol):
+    def __call__(self, app: App, /, **kwargs: Any) -> None:
+        """A handler to invoke when the app event loop is running.
+
+        :param app: The app instance that is running.
+        :param kwargs: Ensures compatibility with additional arguments introduced in
+            future versions.
         """
 
 
@@ -104,7 +112,7 @@ class WindowSet(MutableSet[Window]):
 
     def __iadd__(self, window: Window) -> WindowSet:
         # The standard set type does not have a += operator.
-        warn(
+        warnings.warn(
             "Windows are automatically associated with the app; += is not required",
             DeprecationWarning,
             stacklevel=2,
@@ -114,7 +122,7 @@ class WindowSet(MutableSet[Window]):
     def __isub__(self, other: Window) -> WindowSet:
         # The standard set type does have a -= operator, but it takes sets rather than
         # individual items.
-        warn(
+        warnings.warn(
             "Windows are automatically removed from the app; -= is not required",
             DeprecationWarning,
             stacklevel=2,
@@ -186,120 +194,6 @@ class WidgetRegistry:
         del self._registry[id]
 
 
-class MainWindow(Window):
-    _WINDOW_CLASS = "MainWindow"
-
-    def __init__(
-        self,
-        id: str | None = None,
-        title: str | None = None,
-        position: PositionT | None = None,
-        size: SizeT = Size(640, 480),
-        resizable: bool = True,
-        minimizable: bool = True,
-        content: Widget | None = None,
-        resizeable: None = None,  # DEPRECATED
-        closeable: None = None,  # DEPRECATED
-    ):
-        """Create a new main window.
-
-        :param id: A unique identifier for the window. If not provided, one will be
-            automatically generated.
-        :param title: Title for the window. Defaults to the formal name of the app.
-        :param position: Position of the window, as a :any:`toga.Position` or tuple of
-            ``(x, y)`` coordinates, in :ref:`CSS pixels <css-units>`.
-        :param size: Size of the window, as a :any:`toga.Size` or tuple of ``(width,
-            height)``, in :ref:`CSS pixels <css-units>`.
-        :param resizable: Can the window be resized by the user?
-        :param minimizable: Can the window be minimized by the user?
-        :param content: The initial content for the window.
-        :param resizeable: **DEPRECATED** - Use ``resizable``.
-        :param closeable: **DEPRECATED** - Use ``closable``.
-        """
-        super().__init__(
-            id=id,
-            title=title,
-            position=position,
-            size=size,
-            resizable=resizable,
-            closable=True,
-            minimizable=minimizable,
-            content=content,
-            # Deprecated arguments
-            resizeable=resizeable,
-            closeable=closeable,
-        )
-
-    @property
-    def _default_title(self) -> str:
-        return App.app.formal_name
-
-    @property
-    def on_close(self) -> None:
-        """The handler to invoke before the window is closed in response to a user
-        action.
-
-        Always returns ``None``. Main windows should use :meth:`toga.App.on_exit`,
-        rather than ``on_close``.
-
-        :raises ValueError: if an attempt is made to set the ``on_close`` handler.
-        """
-        return None
-
-    @on_close.setter
-    def on_close(self, handler: OnCloseHandler | None) -> None:
-        if handler:
-            raise ValueError(
-                "Cannot set on_close handler for the main window. "
-                "Use the app on_exit handler instead."
-            )
-
-
-class DocumentMainWindow(Window):
-    def __init__(
-        self,
-        doc: Document,
-        id: str | None = None,
-        title: str | None = None,
-        position: PositionT = Position(100, 100),
-        size: SizeT = Size(640, 480),
-        resizable: bool = True,
-        minimizable: bool = True,
-    ):
-        """Create a new document Main Window.
-
-        This installs a default on_close handler that honors platform-specific document
-        closing behavior. If you want to control whether a document is allowed to close
-        (e.g., due to having unsaved change), override
-        :meth:`toga.Document.can_close()`, rather than implementing an on_close handler.
-
-        :param doc: The document being managed by this window
-        :param id: The ID of the window.
-        :param title: Title for the window. Defaults to the formal name of the app.
-        :param position: Position of the window, as a :any:`toga.Position` or tuple of
-            ``(x, y)`` coordinates.
-        :param size: Size of the window, as a :any:`toga.Size` or tuple of
-            ``(width, height)``, in pixels.
-        :param resizable: Can the window be manually resized by the user?
-        :param minimizable: Can the window be minimized by the user?
-        """
-        self.doc = doc
-        super().__init__(
-            id=id,
-            title=title,
-            position=position,
-            size=size,
-            resizable=resizable,
-            closable=True,
-            minimizable=minimizable,
-            on_close=doc.handle_close,
-        )
-
-    @property
-    def _default_title(self) -> str:
-        return self.doc.path.name
-
-
 def overridable(method):
     """Decorate the method as being user-overridable"""
     method._overridden = True
@@ -322,6 +216,13 @@ class App:
     _impl: Any
     _camera: Camera
     _location: Location
+    _main_window: Window | str | None
+
+    #: A constant that can be used as the main window to indicate that an app will
+    #: run in the background without a main window.
+    BACKGROUND: str = "background app"
+
+    _UNDEFINED: str = "<main window not assigned>"
 
     def __init__(
         self,
@@ -335,6 +236,7 @@ class App:
         home_page: str | None = None,
         description: str | None = None,
         startup: AppStartupMethod | None = None,
+        on_running: OnRunningHandler | None = None,
         on_exit: OnExitHandler | None = None,
         id: None = None,  # DEPRECATED
         windows: None = None,  # DEPRECATED
@@ -371,6 +273,7 @@ class App:
         :param description: A brief (one line) description of the app. If not provided,
             the metadata key ``Summary`` will be used.
         :param startup: A callable to run before starting the app.
+        :param on_running: The initial :any:`on_running` handler.
         :param on_exit: The initial :any:`on_exit` handler.
         :param id: **DEPRECATED** - This argument will be ignored. If you need a
             machine-friendly identifier, use ``app_id``.
@@ -381,7 +284,7 @@ class App:
         # 2023-10: Backwards compatibility
         ######################################################################
         if id is not None:
-            warn(
+            warnings.warn(
                 "App.id is deprecated and will be ignored. Use app_id instead",
                 DeprecationWarning,
                 stacklevel=2,
@@ -486,7 +389,19 @@ class App:
         else:
             self.icon = icon
 
-        self.on_exit = on_exit
+        # Install the lifecycle handlers. If passed in as an argument, or assigned using
+        # `app.on_event = my_handler`, the event handler will take the app as the first
+        # argument. If we're using the default value, or we're subclassing app, the app
+        # can be safely implied; so we wrap the method as a simple handler.
+        if on_running:
+            self.on_running = on_running
+        else:
+            self.on_running = simple_handler(self.on_running)
+
+        if on_exit:
+            self.on_exit = on_exit
+        else:
+            self.on_exit = simple_handler(self.on_exit)
 
         # We need the command set to exist so that startup et al. can add commands;
         # but we don't have an impl yet, so we can't set the on_change handler
@@ -494,7 +409,7 @@ class App:
 
         self._startup_method = startup
 
-        self._main_window: MainWindow | None = None
+        self._main_window = App._UNDEFINED
         self._windows = WindowSet(self)
 
         self._full_screen_windows: tuple[Window, ...] | None = None
@@ -569,7 +484,7 @@ class App:
     @property
     def id(self) -> str:
         """**DEPRECATED** – Use :any:`app_id`."""
-        warn(
+        warnings.warn(
             "App.id is deprecated. Use app_id instead", DeprecationWarning, stacklevel=2
         )
         return self._app_id
@@ -592,18 +507,16 @@ class App:
     # App lifecycle
     ######################################################################
 
-    def add_background_task(self, handler: BackgroundTask) -> None:
-        """Schedule a task to run in the background.
+    def _request_exit(self):
+        # Internal method to request an exit. This triggers on_exit handling, and
+        # will only exit if the user agrees.
+        def cleanup(app, should_exit):
+            if should_exit:
+                app.exit()
 
-        Schedules a coroutine or a generator to run in the background. Control
-        will be returned to the event loop during await or yield statements,
-        respectively. Use this to run background tasks without blocking the
-        GUI. If a regular callable is passed, it will be called as is and will
-        block the GUI until the call returns.
-
-        :param handler: A coroutine, generator or callable.
-        """
-        self.loop.call_soon_threadsafe(wrapped_handler(self, handler))
+        # Wrap on_exit to ensure that an async handler is turned into a task,
+        # then immediately invoke.
+        wrapped_handler(self, self.on_exit, cleanup=cleanup)()
 
     def exit(self) -> None:
         """Exit the application gracefully.
@@ -632,37 +545,78 @@ class App:
         self._impl.main_loop()
 
     @property
-    def main_window(self) -> MainWindow | None:
-        """The main window for the app."""
+    def main_window(self) -> Window | str | None:
+        """The main window for the app.
+
+        See :ref:`the documentation on assigning a main window <assigning-main-window>`
+        for values that can be used for this attribute.
+        """
+        if self._main_window is App._UNDEFINED:
+            raise ValueError("Application has not set a main window.")
+
         return self._main_window
 
     @main_window.setter
-    def main_window(self, window: MainWindow | None) -> None:
-        self._main_window = window
-        self._impl.set_main_window(window)
+    def main_window(self, window: MainWindow | str | None) -> None:
+        if window is None or window is App.BACKGROUND or isinstance(window, Window):
+            # The main window must be closable
+            if isinstance(window, Window) and not window.closable:
+                raise ValueError("The window used as the main window must be closable.")
 
-    def _verify_startup(self) -> None:
-        if not isinstance(self.main_window, MainWindow):
-            raise ValueError(
-                "Application does not have a main window. "
-                "Does your startup() method assign a value to self.main_window?"
-            )
+            old_window = self._main_window
+            self._main_window = window
+            try:
+                self._impl.set_main_window(window)
+            except Exception as e:
+                # If the main window could not be changed, revert to the previous value
+                # then reraise the exception
+                if old_window is not App._UNDEFINED:
+                    self._main_window = old_window
+                raise e
+        else:
+            raise ValueError(f"Don't know how to use {window!r} as a main window.")
+
+    def _create_initial_windows(self):
+        # TODO: Create the initial windows for the app.
+
+        # Safety check: Do we have at least one window?
+        if len(self.app.windows) == 0 and self.main_window is None:
+            # macOS document-based apps are allowed to have no open windows.
+            if self.app._impl.CLOSE_ON_LAST_WINDOW:
+                raise ValueError("App doesn't define any initial windows.")
 
     def _startup(self) -> None:
-        # App commands are created before the startup method so that the user's
-        # code has the opportunity to remove/change the default commands.
+        # Install the platform-specific app commands. This is done *before* startup so
+        # the user's code has the opporuntity to remove/change the default commands.
         self._impl.create_app_commands()
 
-        # This is a wrapper around the user's startup method that performs any
-        # post-setup validation.
+        # Invoke the user's startup method (or the default implementation)
         self.startup()
-        self._verify_startup()
 
-        # Manifest the initial state of the menus.
+        # Validate that the startup requirements have been met.
+        # Accessing the main window attribute will raise an exception if the app hasn't
+        # defined a main window.
+        _ = self.main_window
+
+        # Create any initial windows
+        self._create_initial_windows()
+
+        # Manifest the initial state of the menus. This will cascade down to all
+        # open windows if the platform has window-based menus. Then install the
+        # on-change handler for menus to respond to any future changes.
         self._impl.create_menus()
-
-        # Now that we have a finalized impl, set the on_change handler for commands
         self.commands.on_change = self._impl.create_menus
+
+        # Manifest the initial state of toolbars (on the windows that have
+        # them), then install a change listener so that any future changes to
+        # the toolbar cause a change in toolbar items.
+        for window in self.windows:
+            if hasattr(window, "toolbar"):
+                window._impl.create_toolbar()
+                window.toolbar.on_change = window._impl.create_toolbar
+
+        # Queue a task to run as soon as the event loop starts.
+        self.loop.call_soon_threadsafe(wrapped_handler(self, self.on_running))
 
     def startup(self) -> None:
         """Create and show the main window for the application.
@@ -761,14 +715,22 @@ class App:
         """Play the default system notification sound."""
         self._impl.beep()
 
+    async def dialog(self, dialog: Dialog) -> Coroutine[None, None, Any]:
+        """Display a dialog to the user in the app context.
+
+        :param: The :doc:`dialog <resources/dialogs>` to display to the user.
+        :returns: The result of the dialog.
+        """
+        return await dialog._show(None)
+
     @overridable
     def preferences(self) -> None:
         """Open a preferences panel for the app.
 
-        By default, this will do nothing, and the Preferences/Settings menu item
-        will be disabled. However, if you override this method in your App class,
-        the menu item will be enabled, and this method will be invoked when the
-        menu item is selected.
+        By default, this will do nothing, and the Preferences/Settings menu item will
+        not be installed. However, if you override this method in your App class, the
+        :attr:`toga.Command.PREFERENCES` command will be added, and this method will be
+        invoked when the menu item is selected.
         """
         # Default implementation won't ever be invoked, because the menu item
         # isn't enabled unless it's overridden.
@@ -848,18 +810,27 @@ class App:
     # App events
     ######################################################################
 
-    @property
-    def on_exit(self) -> OnExitHandler:
-        """The handler to invoke if the user attempts to exit the app."""
-        return self._on_exit
+    @overridable
+    def on_exit(self) -> bool:
+        """The event handler that will be invoked when the app is about to exit.
 
-    @on_exit.setter
-    def on_exit(self, handler: OnExitHandler | None) -> None:
-        def cleanup(app: App, should_exit: bool) -> None:
-            if should_exit or handler is None:
-                app.exit()
+        The return value of this method controls whether the app is allowed to exit.
+        This can be used to prevent the app exiting with unsaved changes, etc.
 
-        self._on_exit = wrapped_handler(self, handler, cleanup=cleanup)
+        If necessary, the overridden method can be defined as as an ``async`` coroutine.
+
+        :returns: ``True`` if the app is allowed to exit; ``False`` if the app is not
+            allowed to exit.
+        """
+        # Always allow exit
+        return True
+
+    @overridable
+    def on_running(self) -> None:
+        """The event handler that will be invoked when the app's event loop starts running.
+
+        If necessary, the overridden method can be defined as as an ``async`` coroutine.
+        """
 
     ######################################################################
     # 2023-10: Backwards compatibility
@@ -868,7 +839,7 @@ class App:
     @property
     def name(self) -> str:
         """**DEPRECATED** – Use :any:`formal_name`."""
-        warn(
+        warnings.warn(
             "App.name is deprecated. Use formal_name instead",
             DeprecationWarning,
             stacklevel=2,
@@ -880,6 +851,22 @@ class App:
     def windows(self, windows: WindowSet) -> None:
         if windows is not self._windows:
             raise AttributeError("can't set attribute 'windows'")
+
+    ######################################################################
+    # 2024-06: Backwards compatibility
+    ######################################################################
+
+    def add_background_task(self, handler: BackgroundTask) -> None:
+        """**DEPRECATED** – Use :any:`asyncio.create_task`, or override/assign
+        :meth:`~toga.App.on_running`."""
+        warnings.warn(
+            "App.add_background_task is deprecated. Use asyncio.create_task(), "
+            "or set an App.on_running() handler",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+
+        self.loop.call_soon_threadsafe(wrapped_handler(self, handler))
 
     ######################################################################
     # End backwards compatibility
@@ -933,10 +920,6 @@ class DocumentApp(App):
 
     def _create_impl(self) -> None:
         self.factory.DocumentApp(interface=self)
-
-    def _verify_startup(self) -> None:
-        # No post-startup validation required for DocumentApps
-        pass
 
     @property
     def document_types(self) -> dict[str, type[Document]]:

@@ -3,7 +3,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import System.Windows.Forms as WinForms
-from System.Drawing import Bitmap, Font as WinFont, Graphics, Point, Size as WinSize
+from System.ComponentModel import InvalidEnumArgumentException
+from System.Drawing import Bitmap, Graphics, Point, Size as WinSize
 from System.Drawing.Imaging import ImageFormat
 from System.IO import MemoryStream
 
@@ -11,6 +12,7 @@ from toga.command import Separator
 from toga.types import Position, Size
 
 from .container import Container
+from .keys import toga_to_winforms_key, toga_to_winforms_shortcut
 from .libs.wrapper import WeakrefCallable
 from .screens import Screen
 from .widgets.base import Scalable
@@ -23,15 +25,10 @@ class Window(Container, Scalable):
     def __init__(self, interface, title, position, size):
         self.interface = interface
 
-        # Winforms close handling is caught on the FormClosing handler. To allow
-        # for async close handling, we need to be able to abort this close event,
-        # call the Toga event handler, and let that decide whether to call close().
-        # If it does, there will be another FormClosing event, which we need
-        # to ignore. The `_is_closing` flag lets us do this.
-        self._is_closing = False
+        self.create()
 
-        self.native = WinForms.Form()
-        self.native.FormClosing += WeakrefCallable(self.winforms_FormClosing)
+        self._FormClosing_handler = WeakrefCallable(self.winforms_FormClosing)
+        self.native.FormClosing += self._FormClosing_handler
         super().__init__(self.native)
 
         self._dpi_scale = self._original_dpi_scale = self.get_current_screen().dpi_scale
@@ -46,25 +43,13 @@ class Window(Container, Scalable):
         if position:
             self.set_position(position)
 
-        self.toolbar_native = None
-
-        self.native.LocationChanged += WeakrefCallable(self.winforms_LocationChanged)
         self.native.Resize += WeakrefCallable(self.winforms_Resize)
         self.resize_content()  # Store initial size
 
         self.set_full_screen(self.interface.full_screen)
 
-    # We cache the scale to make sure that it only changes inside update_dpi.
-    @property
-    def dpi_scale(self):
-        return self._dpi_scale
-
-    def scale_font(self, native_font):
-        return WinFont(
-            native_font.FontFamily,
-            native_font.Size * (self.dpi_scale / self._original_dpi_scale),
-            native_font.Style,
-        )
+    def create(self):
+        self.native = WinForms.Form()
 
     ######################################################################
     # Native event handlers
@@ -78,16 +63,22 @@ class Window(Container, Scalable):
             self.update_dpi()
 
     def winforms_FormClosing(self, sender, event):
-        # If the app is exiting, or a manual close has been requested, don't get
-        # confirmation; just close.
-        if not self.interface.app._impl._is_exiting and not self._is_closing:
-            if not self.interface.closable:
-                # Window isn't closable, so any request to close should be cancelled.
-                event.Cancel = True
-            else:
-                # See _is_closing comment in __init__.
+        # If the app is exiting, do nothing; we've already approved the exit
+        # (and thus the window close). This branch can't be triggered in test
+        # conditions, so it's marked no-branch.
+        #
+        # Otherwise, handle the close request by always cancelling the event,
+        # and invoking `on_close()` handling. This will evaluate whether a close
+        # is allowed, and if it is, programmatically invoke close on the window,
+        # removing this handler first so that the close will complete.
+        #
+        # Winforms doesn't provide a way to disable/hide the close button, so if
+        # the window is non-closable, don't trigger on_close handling - just
+        # cancel the close event.
+        if not self.interface.app._impl._is_exiting:  # pragma: no branch
+            if self.interface.closable:
                 self.interface.on_close()
-                event.Cancel = True
+            event.Cancel = True
 
     def winforms_LocationChanged(self, sender, event):
         if self.get_current_screen().dpi_scale == self._dpi_scale:
@@ -110,48 +101,8 @@ class Window(Container, Scalable):
     ######################################################################
 
     def close(self):
-        self._is_closing = True
+        self.native.FormClosing -= self._FormClosing_handler
         self.native.Close()
-
-    def create_toolbar(self):
-        if self.interface.toolbar:
-            if self.toolbar_native:
-                self.toolbar_native.Items.Clear()
-            else:
-                # The toolbar doesn't need to be positioned, because its `Dock` property
-                # defaults to `Top`.
-                self.toolbar_native = WinForms.ToolStrip()
-                self.native.Controls.Add(self.toolbar_native)
-                self.toolbar_native.BringToFront()  # In a dock, "front" means "bottom".
-
-            prev_group = None
-            for cmd in self.interface.toolbar:
-                if isinstance(cmd, Separator):
-                    item = WinForms.ToolStripSeparator()
-                    prev_group = None
-                else:
-                    # A change in group requires adding a toolbar separator
-                    if prev_group is not None and prev_group != cmd.group:
-                        self.toolbar_native.Items.Add(WinForms.ToolStripSeparator())
-                        prev_group = None
-                    else:
-                        prev_group = cmd.group
-
-                    item = WinForms.ToolStripMenuItem(cmd.text)
-                    if cmd.tooltip is not None:
-                        item.ToolTipText = cmd.tooltip
-                    if cmd.icon is not None:
-                        item.Image = cmd.icon._impl.native.ToBitmap()
-                    item.Enabled = cmd.enabled
-                    item.Click += WeakrefCallable(cmd._impl.winforms_Click)
-                    cmd._impl.native.append(item)
-                self.toolbar_native.Items.Add(item)
-            self.original_toolbar_font = self.toolbar_native.Font
-        elif self.toolbar_native:
-            self.native.Controls.Remove(self.toolbar_native)
-            self.toolbar_native = None
-
-        self.resize_content()
 
     def set_app(self, app):
         icon_impl = app.interface.icon._impl
@@ -177,12 +128,7 @@ class Window(Container, Scalable):
         return self.native.Size.Height - self.native.ClientSize.Height
 
     def _top_bars_height(self):
-        vertical_shift = 0
-        if self.toolbar_native:
-            vertical_shift += self.toolbar_native.Height
-        if self.native.MainMenuStrip:
-            vertical_shift += self.native.MainMenuStrip.Height
-        return vertical_shift
+        return 0
 
     def refreshed(self):
         super().refreshed()
@@ -287,3 +233,124 @@ class Window(Container, Scalable):
         stream = MemoryStream()
         bitmap.Save(stream, ImageFormat.Png)
         return bytes(stream.ToArray())
+
+
+class MainWindow(Window):
+    def create(self):
+        super().create()
+        self.toolbar_native = None
+
+    def _top_bars_height(self):
+        vertical_shift = 0
+        if self.toolbar_native:
+            vertical_shift += self.toolbar_native.Height
+        if self.native.MainMenuStrip:
+            vertical_shift += self.native.MainMenuStrip.Height
+        return vertical_shift
+
+    def _submenu(self, group, menubar):
+        try:
+            return self._menu_groups[group]
+        except KeyError:
+            if group is None:
+                submenu = menubar
+            else:
+                parent_menu = self._submenu(group.parent, menubar)
+
+                submenu = WinForms.ToolStripMenuItem(group.text)
+
+                # Top level menus are added in a different way to submenus
+                if group.parent is None:
+                    parent_menu.Items.Add(submenu)
+                else:
+                    parent_menu.DropDownItems.Add(submenu)
+
+            self._menu_groups[group] = submenu
+        return submenu
+
+    def create_menus(self):
+        menubar = self.native.MainMenuStrip
+        if menubar:
+            menubar.Items.Clear()
+        else:
+            # The menu bar doesn't need to be positioned, because its `Dock` property
+            # defaults to `Top`.
+            menubar = WinForms.MenuStrip()
+            self.native.Controls.Add(menubar)
+            self.native.MainMenuStrip = menubar
+            menubar.SendToBack()  # In a dock, "back" means "top".
+
+        self._menu_groups = {}
+
+        submenu = None
+        for cmd in self.interface.app.commands:
+            submenu = self._submenu(cmd.group, menubar)
+            if isinstance(cmd, Separator):
+                submenu.DropDownItems.Add("-")
+            else:
+                submenu = self._submenu(cmd.group, menubar)
+                item = WinForms.ToolStripMenuItem(cmd.text)
+                item.Click += WeakrefCallable(cmd._impl.winforms_Click)
+                if cmd.shortcut is not None:
+                    try:
+                        item.ShortcutKeys = toga_to_winforms_key(cmd.shortcut)
+                        # The Winforms key enum is... daft. The "oem" key
+                        # values render as "Oem" or "Oemcomma", so we need to
+                        # *manually* set the display text for the key shortcut.
+                        item.ShortcutKeyDisplayString = toga_to_winforms_shortcut(
+                            cmd.shortcut
+                        )
+                    except (
+                        ValueError,
+                        InvalidEnumArgumentException,
+                    ) as e:  # pragma: no cover
+                        # Make this a non-fatal warning, because different backends may
+                        # accept different shortcuts.
+                        print(f"WARNING: invalid shortcut {cmd.shortcut!r}: {e}")
+
+                item.Enabled = cmd.enabled
+
+                cmd._impl.native.append(item)
+                submenu.DropDownItems.Add(item)
+
+        self.resize_content()
+
+    def create_toolbar(self):
+        if self.interface.toolbar:
+            if self.toolbar_native:
+                self.toolbar_native.Items.Clear()
+            else:
+                # The toolbar doesn't need to be positioned, because its `Dock` property
+                # defaults to `Top`.
+                self.toolbar_native = WinForms.ToolStrip()
+                self.native.Controls.Add(self.toolbar_native)
+                self.toolbar_native.BringToFront()  # In a dock, "front" means "bottom".
+
+            prev_group = None
+            for cmd in self.interface.toolbar:
+                if isinstance(cmd, Separator):
+                    item = WinForms.ToolStripSeparator()
+                    prev_group = None
+                else:
+                    # A change in group requires adding a toolbar separator
+                    if prev_group is not None and prev_group != cmd.group:
+                        self.toolbar_native.Items.Add(WinForms.ToolStripSeparator())
+                        prev_group = None
+                    else:
+                        prev_group = cmd.group
+
+                    item = WinForms.ToolStripMenuItem(cmd.text)
+                    if cmd.tooltip is not None:
+                        item.ToolTipText = cmd.tooltip
+                    if cmd.icon is not None:
+                        item.Image = cmd.icon._impl.native.ToBitmap()
+                    item.Enabled = cmd.enabled
+                    item.Click += WeakrefCallable(cmd._impl.winforms_Click)
+                    cmd._impl.native.append(item)
+                self.toolbar_native.Items.Add(item)
+
+        elif self.toolbar_native:
+            self.native.Controls.Remove(self.toolbar_native)
+            self.toolbar_native = None
+
+        self.resize_content()

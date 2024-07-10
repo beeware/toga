@@ -130,8 +130,10 @@ class StartApp(toga.App):
             self.text_border.x = left_pad - 5
             widget.redraw()
 
-    def on_press(self, widget, x, y, **kwargs):
-        self.main_window.info_dialog("Hey!", f"You poked the yak at ({x}, {y})")
+    async def on_press(self, widget, x, y, **kwargs):
+        await self.main_window.dialog(
+            toga.InfoDialog("Hey!", f"You poked the yak at ({x}, {y})")
+        )
 
 
 def main():

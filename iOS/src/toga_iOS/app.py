@@ -1,16 +1,15 @@
 import asyncio
+import sys
 
 from rubicon.objc import objc_method
 from rubicon.objc.eventloop import EventLoopPolicy, iOSLifecycle
 
+import toga
+from toga.command import Command
+from toga.handlers import simple_handler
 from toga_iOS.libs import UIResponder, UIScreen, av_foundation
-from toga_iOS.window import Window
 
 from .screens import Screen as ScreenImpl
-
-
-class MainWindow(Window):
-    _is_main_window = True
 
 
 class PythonAppDelegate(UIResponder):
@@ -53,6 +52,9 @@ class PythonAppDelegate(UIResponder):
 
 
 class App:
+    # iOS apps exit when the last window is closed
+    CLOSE_ON_LAST_WINDOW = True
+
     def __init__(self, interface):
         self.interface = interface
         self.interface._impl = self
@@ -74,8 +76,14 @@ class App:
     ######################################################################
 
     def create_app_commands(self):
-        # No menus on an iOS app (for now)
-        pass
+        self.interface.commands.add(
+            Command(
+                simple_handler(self.interface.about),
+                f"About {self.interface.formal_name}",
+                section=sys.maxsize,
+                id=Command.ABOUT,
+            ),
+        )
 
     def create_menus(self):
         # No menus on an iOS app (for now)
@@ -101,7 +109,8 @@ class App:
         pass  # pragma: no cover
 
     def set_main_window(self, window):
-        pass
+        if window is None or window == toga.App.BACKGROUND:
+            raise ValueError("Apps without main windows are not supported on iOS")
 
     ######################################################################
     # App resources

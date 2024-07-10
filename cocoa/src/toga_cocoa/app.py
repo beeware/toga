@@ -1,10 +1,17 @@
 import asyncio
 import inspect
-import os
 import sys
 from pathlib import Path
 from urllib.parse import unquote, urlparse
 
+from rubicon.objc import (
+    SEL,
+    NSMutableArray,
+    NSMutableDictionary,
+    NSObject,
+    objc_method,
+    objc_property,
+)
 from rubicon.objc.eventloop import CocoaLifecycle, EventLoopPolicy
 
 import toga
@@ -15,12 +22,12 @@ from toga.handlers import NativeHandler, simple_handler
 from .keys import cocoa_key
 from .libs import (
     NSURL,
-    SEL,
     NSAboutPanelOptionApplicationIcon,
     NSAboutPanelOptionApplicationName,
     NSAboutPanelOptionApplicationVersion,
     NSAboutPanelOptionVersion,
     NSApplication,
+    NSApplicationActivationPolicyAccessory,
     NSApplicationActivationPolicyRegular,
     NSBeep,
     NSBundle,
@@ -28,29 +35,12 @@ from .libs import (
     NSDocumentController,
     NSMenu,
     NSMenuItem,
-    NSMutableArray,
-    NSMutableDictionary,
     NSNumber,
-    NSObject,
     NSOpenPanel,
     NSScreen,
     NSString,
-    objc_method,
-    objc_property,
 )
 from .screens import Screen as ScreenImpl
-from .window import Window
-
-
-class MainWindow(Window):
-    def cocoa_windowShouldClose(self):
-        # Main Window close is a proxy for "Exit app".
-        # Defer all handling to the app's on_exit handler.
-        # As a result of calling that method, the app will either
-        # exit, or the user will cancel the exit; in which case
-        # the main window shouldn't close, either.
-        self.interface.app.on_exit()
-        return False
 
 
 class AppDelegate(NSObject):
@@ -118,7 +108,8 @@ class AppDelegate(NSObject):
 
 
 class App:
-    _MAIN_WINDOW_CLASS = MainWindow
+    # macOS apps persist when there are no windows open
+    CLOSE_ON_LAST_WINDOW = False
 
     def __init__(self, interface):
         self.interface = interface
@@ -129,12 +120,7 @@ class App:
         asyncio.set_event_loop_policy(EventLoopPolicy())
         self.loop = asyncio.new_event_loop()
 
-        # Stimulate the build of the app
-        self.create()
-
-    def create(self):
         self.native = NSApplication.sharedApplication
-        self.native.setActivationPolicy(NSApplicationActivationPolicyRegular)
 
         # The app icon been set *before* the app instance is created. However, we only
         # need to set the icon on the app if it has been explicitly defined; the default
@@ -142,15 +128,13 @@ class App:
         if self.interface.icon._impl.path:
             self.set_icon(self.interface.icon)  # pragma: no cover
 
-        self.resource_path = os.path.dirname(
-            os.path.dirname(NSBundle.mainBundle.bundlePath)
-        )
+        self.resource_path = Path(NSBundle.mainBundle.bundlePath).parent.parent
 
         self.appDelegate = AppDelegate.alloc().init()
         self.appDelegate.impl = self
         self.appDelegate.interface = self.interface
         self.appDelegate.native = self.native
-        self.native.setDelegate_(self.appDelegate)
+        self.native.setDelegate(self.appDelegate)
 
         # Create the lookup table for menu items
         self._menu_groups = {}
@@ -177,29 +161,20 @@ class App:
             self.interface.current_window._impl.native.miniaturize(None)
 
     def create_app_commands(self):
-        formal_name = self.interface.formal_name
         self.interface.commands.add(
             # ---- App menu -----------------------------------
+            # About should be the first menu item
             Command(
                 simple_handler(self.interface.about),
-                "About " + formal_name,
+                f"About {self.interface.formal_name}",
                 group=toga.Group.APP,
                 id=Command.ABOUT,
+                section=-1,
             ),
-            # Include a preferences menu item; but only enable it if the user has
-            # overridden it in their App class.
-            Command(
-                simple_handler(self.interface.preferences),
-                "Settings\u2026",
-                shortcut=toga.Key.MOD_1 + ",",
-                group=toga.Group.APP,
-                section=20,
-                enabled=overridden(self.interface.preferences),
-                id=Command.PREFERENCES,
-            ),
+            # App-level window management commands should be in the second last section.
             Command(
                 NativeHandler(SEL("hide:")),
-                "Hide " + formal_name,
+                f"Hide {self.interface.formal_name}",
                 shortcut=toga.Key.MOD_1 + "h",
                 group=toga.Group.APP,
                 order=0,
@@ -221,11 +196,11 @@ class App:
                 section=sys.maxsize - 1,
             ),
             # Quit should always be the last item, in a section on its own. Invoke
-            # `on_exit` rather than `exit`, because we want to trigger the "OK to exit?"
-            # logic. It's already a bound handler, so we can use it directly.
+            # `_request_exit` rather than `exit`, because we want to trigger the "OK to
+            # exit?" logic.
             Command(
-                self.interface.on_exit,
-                f"Quit {formal_name}",
+                simple_handler(self.interface._request_exit),
+                f"Quit {self.interface.formal_name}",
                 shortcut=toga.Key.MOD_1 + "q",
                 group=toga.Group.APP,
                 section=sys.maxsize,
@@ -332,6 +307,19 @@ class App:
             ),
         )
 
+        # If the user has overridden preferences, provide a menu item.
+        if overridden(self.interface.preferences):
+            self.interface.commands.add(
+                Command(
+                    simple_handler(self.interface.preferences),
+                    "Settings\u2026",
+                    shortcut=toga.Key.MOD_1 + ",",
+                    group=toga.Group.APP,
+                    section=20,
+                    id=Command.PREFERENCES,
+                ),
+            )  # pragma: no cover
+
     def _submenu(self, group, menubar):
         """Obtain the submenu representing the command group.
 
@@ -430,7 +418,10 @@ class App:
             self.native.setApplicationIconImage(None)
 
     def set_main_window(self, window):
-        pass
+        if window == toga.App.BACKGROUND:
+            self.native.setActivationPolicy(NSApplicationActivationPolicyAccessory)
+        else:
+            self.native.setActivationPolicy(NSApplicationActivationPolicyRegular)
 
     ######################################################################
     # App resources

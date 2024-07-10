@@ -193,58 +193,58 @@ class RefreshableScrollView(NSScrollView):
         self.contentView.addSubview(self.refresh_view)
 
         # set layout constraints
-        indicatorHCenter = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # noqa: E501
+        indicatorHCenter = NSLayoutConstraint.constraintWithItem(
             self.refresh_indicator,
-            NSLayoutAttributeCenterX,
-            NSLayoutRelationEqual,
-            self.refresh_view,
-            NSLayoutAttributeCenterX,
-            1.0,
-            0,
+            attribute__1=NSLayoutAttributeCenterX,
+            relatedBy=NSLayoutRelationEqual,
+            toItem=self.refresh_view,
+            attribute__2=NSLayoutAttributeCenterX,
+            multiplier=1.0,
+            constant=0,
         )
         self.refresh_view.addConstraint(indicatorHCenter)
 
-        indicatorVCenter = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # noqa: E501
+        indicatorVCenter = NSLayoutConstraint.constraintWithItem(
             self.refresh_indicator,
-            NSLayoutAttributeCenterY,
-            NSLayoutRelationEqual,
-            self.refresh_view,
-            NSLayoutAttributeCenterY,
-            1.0,
-            0,
+            attribute__1=NSLayoutAttributeCenterY,
+            relatedBy=NSLayoutRelationEqual,
+            toItem=self.refresh_view,
+            attribute__2=NSLayoutAttributeCenterY,
+            multiplier=1.0,
+            constant=0,
         )
         self.refresh_view.addConstraint(indicatorVCenter)
 
-        refreshWidth = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # noqa: E501
+        refreshWidth = NSLayoutConstraint.constraintWithItem(
             self.refresh_view,
-            NSLayoutAttributeWidth,
-            NSLayoutRelationEqual,
-            self.contentView,
-            NSLayoutAttributeWidth,
-            1.0,
-            0,
+            attribute__1=NSLayoutAttributeWidth,
+            relatedBy=NSLayoutRelationEqual,
+            toItem=self.contentView,
+            attribute__2=NSLayoutAttributeWidth,
+            multiplier=1.0,
+            constant=0,
         )
         self.contentView.addConstraint(refreshWidth)
 
-        refreshHeight = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # noqa: E501
+        refreshHeight = NSLayoutConstraint.constraintWithItem(
             self.refresh_view,
-            NSLayoutAttributeHeight,
-            NSLayoutRelationEqual,
-            None,
-            NSLayoutAttributeNotAnAttribute,
-            1.0,
-            HEADER_HEIGHT,
+            attribute__1=NSLayoutAttributeHeight,
+            relatedBy=NSLayoutRelationEqual,
+            toItem=None,
+            attribute__2=NSLayoutAttributeNotAnAttribute,
+            multiplier=1.0,
+            constant=HEADER_HEIGHT,
         )
         self.contentView.addConstraint(refreshHeight)
 
-        refreshHeight = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # noqa: E501
+        refreshHeight = NSLayoutConstraint.constraintWithItem(
             self.refresh_view,
-            NSLayoutAttributeTop,
-            NSLayoutRelationEqual,
-            self.contentView,
-            NSLayoutAttributeTop,
-            1.0,
-            -HEADER_HEIGHT,
+            attribute__1=NSLayoutAttributeTop,
+            relatedBy=NSLayoutRelationEqual,
+            toItem=self.contentView,
+            attribute__2=NSLayoutAttributeTop,
+            multiplier=1.0,
+            constant=-HEADER_HEIGHT,
         )
         self.contentView.addConstraint(refreshHeight)
 

@@ -9,6 +9,9 @@ import toga
 class CustomizedApp(toga.App):
     def startup(self):
         self.main_window = toga.MainWindow()
+        # Create a secondary simple window as part of app startup to verify
+        # that toolbar handling is skipped.
+        self.other_window = toga.Window()
 
         self._preferences = Mock()
 
@@ -38,11 +41,22 @@ def test_create(event_loop, AppClass):
     assert custom_app.formal_name == "Custom App"
     assert custom_app.app_id == "org.beeware.customized-app"
     assert custom_app.app_name == "customized-app"
-    assert custom_app.on_exit._raw is None
+
+    # The default implementations of the on_running and on_exit handlers
+    # have been wrapped as simple handlers
+    assert custom_app.on_running._raw.__func__ == toga.App.on_running
+    assert custom_app.on_exit._raw.__func__ == toga.App.on_exit
+
+    # About menu item exists and is disabled
+    assert toga.Command.ABOUT in custom_app.commands
+    assert custom_app.commands[toga.Command.ABOUT].enabled
 
     # Preferences exist and are enabled
     assert toga.Command.PREFERENCES in custom_app.commands
     assert custom_app.commands[toga.Command.PREFERENCES].enabled
+
+    # A change handler has been added to the MainWindow's toolbar CommandSet
+    assert custom_app.main_window.toolbar.on_change is not None
 
 
 @pytest.mark.parametrize(

@@ -1,5 +1,4 @@
 import asyncio
-from abc import ABC
 from pathlib import Path
 
 import System.Windows.Forms as WinForms
@@ -14,45 +13,47 @@ from .libs.user32 import DPI_AWARENESS_CONTEXT_UNAWARE, SetThreadDpiAwarenessCon
 from .libs.wrapper import WeakrefCallable
 
 
-class BaseDialog(ABC):
-    def __init__(self, interface):
-        self.interface = interface
-        self.interface._impl = self
+class BaseDialog:
+    def show(self, host_window, future):
+        self.future = future
 
-    # See libs/proactor.py
-    def start_inner_loop(self, callback, *args):
-        asyncio.get_event_loop().start_inner_loop(callback, *args)
-
-    def set_result(self, result):
-        self.interface.set_result(result)
+        # Don't differentiate between app and window modal dialogs
+        # Show the dialog using an inner loop.
+        asyncio.get_event_loop().start_inner_loop(self._show)
 
 
 class MessageDialog(BaseDialog):
     def __init__(
         self,
-        interface,
         title,
         message,
         buttons,
         icon,
         success_result=None,
     ):
-        super().__init__(interface)
+        super().__init__()
+        self.message = message
+        self.title = title
+        self.buttons = buttons
+        self.icon = icon
+        self.success_result = success_result
 
-        def show():
-            return_value = WinForms.MessageBox.Show(message, title, buttons, icon)
-            if success_result:
-                self.set_result(return_value == success_result)
-            else:
-                self.set_result(None)
-
-        self.start_inner_loop(show)
+    def _show(self):
+        return_value = WinForms.MessageBox.Show(
+            self.message,
+            self.title,
+            self.buttons,
+            self.icon,
+        )
+        if self.success_result:
+            self.future.set_result(return_value == self.success_result)
+        else:
+            self.future.set_result(None)
 
 
 class InfoDialog(MessageDialog):
-    def __init__(self, interface, title, message):
+    def __init__(self, title, message):
         super().__init__(
-            interface,
             title,
             message,
             MessageBoxButtons.OK,
@@ -61,9 +62,8 @@ class InfoDialog(MessageDialog):
 
 
 class QuestionDialog(MessageDialog):
-    def __init__(self, interface, title, message):
+    def __init__(self, title, message):
         super().__init__(
-            interface,
             title,
             message,
             MessageBoxButtons.YesNo,
@@ -73,9 +73,8 @@ class QuestionDialog(MessageDialog):
 
 
 class ConfirmDialog(MessageDialog):
-    def __init__(self, interface, title, message):
+    def __init__(self, title, message):
         super().__init__(
-            interface,
             title,
             message,
             MessageBoxButtons.OKCancel,
@@ -85,9 +84,8 @@ class ConfirmDialog(MessageDialog):
 
 
 class ErrorDialog(MessageDialog):
-    def __init__(self, interface, title, message=None):
+    def __init__(self, title, message=None):
         super().__init__(
-            interface,
             title,
             message,
             WinForms.MessageBoxButtons.OK,
@@ -96,26 +94,8 @@ class ErrorDialog(MessageDialog):
 
 
 class StackTraceDialog(BaseDialog):
-    def __init__(self, interface, title, message, content, retry):
-        super().__init__(interface)
-
-        # This dialog uses a fixed layout, so we create it as DPI-unaware so it will be
-        # scaled by the system. "When a window is created, its DPI awareness is defined
-        # as the DPI awareness of the calling thread at that time."
-        # (https://learn.microsoft.com/en-us/windows/win32/hidpi/high-dpi-improvements-for-desktop-applications).
-        self.prev_dpi_context = None
-        if SetThreadDpiAwarenessContext is not None:  # pragma: no branch
-            self.prev_dpi_context = SetThreadDpiAwarenessContext(
-                DPI_AWARENESS_CONTEXT_UNAWARE
-            )
-            if not self.prev_dpi_context:  # pragma: no cover
-                print("WARNING: Failed to set DPI Awareness for StackTraceDialog")
-
-        # Changing the DPI awareness re-scales all pre-existing Font objects, including
-        # the system fonts.
-        font_size = 8.25
-        message_font = WinFont(FontFamily.GenericSansSerif, font_size)
-        monospace_font = WinFont(FontFamily.GenericMonospace, font_size)
+    def __init__(self, title, message, content, retry):
+        super().__init__()
 
         self.native = WinForms.Form()
         self.native.MinimizeBox = False
@@ -181,60 +161,41 @@ class StackTraceDialog(BaseDialog):
 
             self.native.Controls.Add(accept)
 
-        # Wrap `ShowDialog` in a Python function to preserve a reference to `self`.
-        def show():
-            self.native.ShowDialog()
-
-        self.start_inner_loop(show)
+    def _show(self):
+        self.native.ShowDialog()
 
     def winforms_FormClosing(self, sender, event):
-        # If the close button is pressed, there won't be a future yet.
+        # If the close button is pressed, the future won't be done.
         # We cancel this event to prevent the dialog from closing.
         # If a button is pressed, the future will be set, and a close
         # event will be triggered.
-        try:
-            self.interface.future.result()
-        except asyncio.InvalidStateError:  # pragma: no cover
-            event.Cancel = True
-        else:
-            # Reverting the DPI awareness at the end of __init__ would cause the window
-            # to be DPI-aware, presumably because the window isn't actually "created"
-            # until we call ShowDialog.
-            #
-            # This cleanup doesn't make any difference to the dialogs example, because
-            # "When the window procedure for a window is called [e.g. when clicking a
-            # button], the thread is automatically switched to the DPI awareness context
-            # that was in use when the window was created." However, other apps may do
-            # things outside of the context of a window event.
-            if self.prev_dpi_context:  # pragma: no branch
-                SetThreadDpiAwarenessContext(self.prev_dpi_context)
-
-    def set_result(self, result):
-        super().set_result(result)
-        self.native.Close()
+        if not self.future.done():
+            event.Cancel = True  # pragma: no cover
 
     def winforms_Click_quit(self, sender, event):
-        self.set_result(False)
+        self.future.set_result(False)
+        self.native.Close()
 
     def winforms_Click_retry(self, sender, event):
-        self.set_result(True)
+        self.future.set_result(True)
+        self.native.Close()
 
     def winforms_Click_accept(self, sender, event):
-        self.set_result(None)
+        self.future.set_result(None)
+        self.native.Close()
 
 
 class FileDialog(BaseDialog):
     def __init__(
         self,
         native,
-        interface,
         title,
         initial_directory,
         *,
         filename=None,
         file_types=None,
     ):
-        super().__init__(interface)
+        super().__init__()
         self.native = native
 
         self._set_title(title)
@@ -255,14 +216,12 @@ class FileDialog(BaseDialog):
 
             native.Filter = "|".join(filters)
 
-        def show():
-            response = native.ShowDialog()
-            if response == DialogResult.OK:
-                self.set_result(self._get_filenames())
-            else:
-                self.set_result(None)
-
-        self.start_inner_loop(show)
+    def _show(self):
+        response = self.native.ShowDialog()
+        if response == DialogResult.OK:
+            self.future.set_result(self._get_filenames())
+        else:
+            self.future.set_result(None)
 
     def _set_title(self, title):
         self.native.Title = title
@@ -272,10 +231,9 @@ class FileDialog(BaseDialog):
 
 
 class SaveFileDialog(FileDialog):
-    def __init__(self, interface, title, filename, initial_directory, file_types):
+    def __init__(self, title, filename, initial_directory, file_types):
         super().__init__(
             WinForms.SaveFileDialog(),
-            interface,
             title,
             initial_directory,
             filename=filename,
@@ -289,7 +247,6 @@ class SaveFileDialog(FileDialog):
 class OpenFileDialog(FileDialog):
     def __init__(
         self,
-        interface,
         title,
         initial_directory,
         file_types,
@@ -297,7 +254,6 @@ class OpenFileDialog(FileDialog):
     ):
         super().__init__(
             WinForms.OpenFileDialog(),
-            interface,
             title,
             initial_directory,
             file_types=file_types,
@@ -305,18 +261,21 @@ class OpenFileDialog(FileDialog):
         if multiple_select:
             self.native.Multiselect = True
 
+    # Provided as a stub that can be mocked in test conditions
+    def selected_paths(self):
+        return self.native.FileNames
+
     def _get_filenames(self):
         if self.native.Multiselect:
-            return [Path(filename) for filename in self.native.FileNames]
+            return [Path(filename) for filename in self.selected_paths()]
         else:
             return Path(self.native.FileName)
 
 
 class SelectFolderDialog(FileDialog):
-    def __init__(self, interface, title, initial_directory, multiple_select):
+    def __init__(self, title, initial_directory, multiple_select):
         super().__init__(
             WinForms.FolderBrowserDialog(),
-            interface,
             title,
             initial_directory,
         )

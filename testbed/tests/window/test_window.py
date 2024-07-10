@@ -17,8 +17,8 @@ def window_probe(app, window):
 
 
 @pytest.fixture
-async def second_window(second_window_kwargs):
-    yield toga.Window(**second_window_kwargs)
+async def second_window(second_window_class, second_window_kwargs):
+    yield second_window_class(**second_window_kwargs)
 
 
 @pytest.fixture
@@ -29,6 +29,8 @@ async def second_window_probe(app, app_probe, second_window):
     yield probe
     if second_window in app.windows:
         second_window.close()
+        del second_window
+        gc.collect()
 
 
 async def test_title(main_window, main_window_probe):
@@ -47,7 +49,7 @@ async def test_title(main_window, main_window_probe):
         await main_window_probe.wait_for_window("Window title can be reverted")
 
 
-# Mobile platforms have different windowing characterics, so they have different tests.
+# Mobile platforms have different windowing characteristics, so they have different tests.
 if toga.platform.current_platform in {"iOS", "android"}:
     ####################################################################################
     # Mobile platform tests
@@ -69,7 +71,7 @@ if toga.platform.current_platform in {"iOS", "android"}:
         """A secondary window cannot be created"""
         with pytest.raises(
             RuntimeError,
-            match=r"Secondary windows cannot be created on mobile platforms",
+            match=r"Secondary windows cannot be created on .*",
         ):
             toga.Window()
 
@@ -92,9 +94,9 @@ if toga.platform.current_platform in {"iOS", "android"}:
         assert main_window.size == initial_size
         assert main_window.position == (0, 0)
 
-        try:
-            orig_content = main_window.content
+        orig_content = main_window.content
 
+        try:
             box1 = toga.Box(
                 style=Pack(background_color=REBECCAPURPLE, width=10, height=10)
             )
@@ -163,13 +165,16 @@ else:
     # Desktop platform tests
     ####################################################################################
 
-    @pytest.mark.parametrize("second_window_kwargs", [{}])
+    @pytest.mark.parametrize(
+        "second_window_class, second_window_kwargs",
+        [(toga.Window, {})],
+    )
     async def test_secondary_window(app, second_window, second_window_probe):
         """A secondary window can be created"""
         assert second_window.app == app
         assert second_window in app.windows
 
-        assert second_window.title == "Toga"
+        assert second_window.title == "Toga Testbed"
         assert second_window.size == (640, 480)
         # Position should be cascaded; the exact position depends on the platform,
         # and how many windows have been created. As long as it's not at (100,100).
@@ -187,8 +192,13 @@ else:
         assert second_window not in app.windows
 
     @pytest.mark.parametrize(
-        "second_window_kwargs",
-        [dict(title="Secondary Window", position=(200, 300), size=(300, 200))],
+        "second_window_class, second_window_kwargs",
+        [
+            (
+                toga.Window,
+                dict(title="Secondary Window", position=(200, 300), size=(300, 200)),
+            )
+        ],
     )
     async def test_secondary_window_with_args(app, second_window, second_window_probe):
         """A secondary window can be created with a specific size and position."""
@@ -203,7 +213,8 @@ else:
 
         assert second_window.title == "Secondary Window"
         assert second_window.size == (300, 200)
-        assert second_window.position == (200, 300)
+        if second_window_probe.supports_placement:
+            assert second_window.position == (200, 300)
 
         second_window_probe.close()
         await second_window_probe.wait_for_window(
@@ -231,10 +242,10 @@ else:
         label1 = toga.Label("Hello World")
         content = toga.Box(children=[label1])
 
-        try:
-            window_with_content = toga.Window(content=content)
-            window_with_content_probe = window_probe(app, window_with_content)
+        window_with_content = toga.Window(content=content)
+        window_with_content_probe = window_probe(app, window_with_content)
 
+        try:
             window_with_content.show()
             await window_with_content_probe.wait_for_window(
                 "Create a window with initial content"
@@ -273,8 +284,13 @@ else:
         assert impl_ref() is None
 
     @pytest.mark.parametrize(
-        "second_window_kwargs",
-        [dict(title="Secondary Window", position=(200, 300), size=(400, 200))],
+        "second_window_class, second_window_kwargs",
+        [
+            (
+                toga.MainWindow,
+                dict(title="Secondary Window", position=(200, 300), size=(400, 200)),
+            )
+        ],
     )
     async def test_secondary_window_toolbar(app, second_window, second_window_probe):
         """A toolbar can be added to a secondary window"""
@@ -287,8 +303,13 @@ else:
         await second_window_probe.redraw("Secondary window has a toolbar")
 
     @pytest.mark.parametrize(
-        "second_window_kwargs",
-        [dict(title="Not Resizable", resizable=False, position=(200, 150))],
+        "second_window_class, second_window_kwargs",
+        [
+            (
+                toga.Window,
+                dict(title="Not Resizable", resizable=False, position=(200, 150)),
+            )
+        ],
     )
     async def test_non_resizable(second_window, second_window_probe):
         """A non-resizable window can be created"""
@@ -296,8 +317,13 @@ else:
         assert not second_window_probe.is_resizable
 
     @pytest.mark.parametrize(
-        "second_window_kwargs",
-        [dict(title="Not Closeable", closable=False, position=(200, 150))],
+        "second_window_class, second_window_kwargs",
+        [
+            (
+                toga.Window,
+                dict(title="Not Closeable", closable=False, position=(200, 150)),
+            )
+        ],
     )
     async def test_non_closable(second_window, second_window_probe):
         """A non-closable window can be created. Backends that don't support this
@@ -323,8 +349,13 @@ else:
         assert not second_window.visible
 
     @pytest.mark.parametrize(
-        "second_window_kwargs",
-        [dict(title="Not Minimizable", minimizable=False, position=(200, 150))],
+        "second_window_class, second_window_kwargs",
+        [
+            (
+                toga.Window,
+                dict(title="Not Minimizable", minimizable=False, position=(200, 150)),
+            )
+        ],
     )
     async def test_non_minimizable(second_window, second_window_probe):
         """A non-minimizable window can be created"""
@@ -339,8 +370,13 @@ else:
         assert not second_window_probe.is_minimized
 
     @pytest.mark.parametrize(
-        "second_window_kwargs",
-        [dict(title="Secondary Window", position=(200, 150))],
+        "second_window_class, second_window_kwargs",
+        [
+            (
+                toga.Window,
+                dict(title="Secondary Window", position=(200, 150)),
+            )
+        ],
     )
     async def test_visibility(app, second_window, second_window_probe):
         """Visibility of a window can be controlled"""
@@ -349,14 +385,16 @@ else:
 
         assert second_window.visible
         assert second_window.size == (640, 480)
-        assert second_window.position == (200, 150)
+        if second_window_probe.supports_placement:
+            assert second_window.position == (200, 150)
 
         # Move the window
         second_window.position = (250, 200)
 
         await second_window_probe.wait_for_window("Secondary window has been moved")
         assert second_window.size == (640, 480)
-        assert second_window.position == (250, 200)
+        if second_window_probe.supports_placement:
+            assert second_window.position == (250, 200)
 
         # Resize the window
         second_window.size = (300, 250)
@@ -386,7 +424,10 @@ else:
 
         assert second_window.visible
         assert second_window.size == (250, 200)
-        if second_window_probe.supports_move_while_hidden:
+        if (
+            second_window_probe.supports_move_while_hidden
+            and second_window_probe.supports_placement
+        ):
             assert second_window.position == (300, 150)
 
         second_window_probe.minimize()
@@ -396,7 +437,8 @@ else:
             minimize=True,
         )
 
-        assert second_window_probe.is_minimized
+        if second_window_probe.supports_minimize:
+            assert second_window_probe.is_minimized
 
         if second_window_probe.supports_unminimize:
             second_window_probe.unminimize()
@@ -414,8 +456,13 @@ else:
         assert second_window not in app.windows
 
     @pytest.mark.parametrize(
-        "second_window_kwargs",
-        [dict(title="Secondary Window", position=(200, 150))],
+        "second_window_class, second_window_kwargs",
+        [
+            (
+                toga.Window,
+                dict(title="Secondary Window", position=(200, 150)),
+            )
+        ],
     )
     async def test_move_and_resize(second_window, second_window_probe):
         """A window can be moved and resized."""
@@ -426,7 +473,8 @@ else:
 
         second_window.position = (150, 50)
         await second_window_probe.wait_for_window("Secondary window has been moved")
-        assert second_window.position == (150, 50)
+        if second_window_probe.supports_placement:
+            assert second_window.position == (150, 50)
 
         second_window.size = (200, 150)
         await second_window_probe.wait_for_window("Secondary window has been resized")
@@ -465,8 +513,13 @@ else:
         assert second_window_probe.content_size == (250, 210)
 
     @pytest.mark.parametrize(
-        "second_window_kwargs",
-        [dict(title="Secondary Window", position=(200, 150))],
+        "second_window_class, second_window_kwargs",
+        [
+            (
+                toga.Window,
+                dict(title="Secondary Window", position=(200, 150)),
+            )
+        ],
     )
     async def test_full_screen(second_window, second_window_probe):
         """Window can be made full screen"""
@@ -510,8 +563,13 @@ else:
         assert second_window_probe.content_size == initial_content_size
 
     @pytest.mark.parametrize(
-        "second_window_kwargs",
-        [dict(title="Secondary Window", position=(200, 150))],
+        "second_window_class, second_window_kwargs",
+        [
+            (
+                toga.Window,
+                dict(title="Secondary Window", position=(200, 150)),
+            )
+        ],
     )
     async def test_screen(second_window, second_window_probe):
         """The window can be relocated to another screen, using both absolute and relative screen positions."""
@@ -521,11 +579,13 @@ else:
         # Move the window using absolute position.
         second_window.position = (200, 200)
         await second_window_probe.wait_for_window("Secondary window has been moved")
-        assert second_window.position != initial_position
+        if second_window_probe.supports_placement:
+            assert second_window.position != initial_position
 
         # `position` and `screen_position` will be same as the window will be in primary screen.
-        assert second_window.position == (200, 200)
-        assert second_window.screen_position == (200, 200)
+        if second_window_probe.supports_placement:
+            assert second_window.position == (200, 200)
+            assert second_window.screen_position == (200, 200)
 
         # Move the window between available screens and assert its `screen_position`
         for screen in second_window.app.screens:
