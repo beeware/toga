@@ -4,7 +4,8 @@ import sys
 import threading
 
 import System.Windows.Forms as WinForms
-from System import Environment, Threading
+from Microsoft.Win32 import SystemEvents
+from System import Threading
 from System.Media import SystemSounds
 from System.Net import SecurityProtocolType, ServicePointManager
 from System.Windows.Threading import Dispatcher
@@ -112,6 +113,14 @@ class App:
 
         # Call user code to populate the main window
         self.interface._startup()
+
+    ######################################################################
+    # Native event handlers
+    ######################################################################
+
+    def winforms_DisplaySettingsChanged(self, sender, event):
+        for window in self.interface.windows:
+            window._impl.update_dpi()
 
     ######################################################################
     # Commands and menus

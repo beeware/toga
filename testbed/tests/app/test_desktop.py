@@ -6,6 +6,7 @@ import toga
 from toga.colors import CORNFLOWERBLUE, FIREBRICK, REBECCAPURPLE
 from toga.style.pack import Pack
 
+from ..widgets.probe import get_probe
 from ..window.test_window import window_probe
 
 ####################################################################################
@@ -355,6 +356,102 @@ async def test_current_window(app, app_probe, main_window):
         window1.close()
         window2.close()
         window3.close()
+
+
+@pytest.mark.skipif(
+    toga.platform.current_platform != "windows", reason="This test is Windows specific"
+)
+async def test_system_dpi_change(
+    monkeypatch, app, app_probe, main_window, main_window_probe
+):
+    # Store original window content
+    main_window_content_original = main_window.content
+
+    from toga_winforms.libs import shcore
+
+    GetScaleFactorForMonitor_original = getattr(shcore, "GetScaleFactorForMonitor")
+
+    def set_mock_dpi_scale(value):
+        def GetScaleFactorForMonitor_mock(hMonitor, pScale):
+            pScale.value = int(value * 100)
+
+        monkeypatch.setattr(
+            "toga_winforms.libs.shcore.GetScaleFactorForMonitor",
+            GetScaleFactorForMonitor_mock,
+        )
+
+    dpi_change_events = [
+        app._impl.winforms_DisplaySettingsChanged,
+        main_window._impl.winforms_LocationChanged,
+        main_window._impl.winforms_Resize,
+    ]
+    for flex_direction in ("row", "column"):
+        main_window.content = toga.Box(
+            style=Pack(direction=flex_direction),
+            children=[
+                toga.Box(style=Pack(flex=1)),
+                toga.Button(text="hello"),
+                toga.Label(text="toga"),
+                toga.Button(text="world"),
+                toga.Box(style=Pack(flex=1)),
+            ],
+        )
+        widget_dimension_to_compare = "width" if flex_direction == "row" else "height"
+        await main_window_probe.redraw(
+            "\nMain Window is ready for testing DPI scaling with "
+            f"window content flex direction set to: {flex_direction}"
+        )
+        for dpi_change_event in dpi_change_events:
+            print(
+                f"\nRunning DPI change event: {dpi_change_event.__func__.__qualname__}"
+            )
+
+            # Set initial DPI scale value
+            set_mock_dpi_scale(1.0)
+            dpi_change_events[0](None, None)
+            await main_window_probe.redraw(
+                "Setting initial DPI scale value to 1.0 before starting DPI scale testing"
+            )
+
+            for pScale_value_mock in (1.25, 1.5, 1.75, 2.0):
+                # Store original widget dimension
+                original_widget_dimension = dict()
+                for widget in main_window.content.children:
+                    widget_probe = get_probe(widget)
+                    original_widget_dimension[widget] = getattr(
+                        widget_probe, widget_dimension_to_compare
+                    )
+
+                set_mock_dpi_scale(pScale_value_mock)
+                # Trigger DPI change event
+                dpi_change_event(None, None)
+                await main_window_probe.redraw(
+                    f"Triggering DPI change event for testing scaling at {pScale_value_mock} scale"
+                )
+
+                # Check Widget size DPI scaling
+                for widget in main_window.content.children:
+                    if isinstance(widget, toga.Box):
+                        # Dimension of spacer boxes should decrease when dpi scale increases
+                        getattr(
+                            get_probe(widget), widget_dimension_to_compare
+                        ) < original_widget_dimension[widget]
+                    else:
+                        # Dimension of other widgets should increase when dpi scale increases
+                        getattr(
+                            get_probe(widget), widget_dimension_to_compare
+                        ) > original_widget_dimension[widget]
+
+    # Restore original state
+    monkeypatch.setattr(
+        "toga_winforms.libs.shcore.GetScaleFactorForMonitor",
+        GetScaleFactorForMonitor_original,
+    )
+    dpi_change_events[0](None, None)
+    main_window.content.window = None
+    main_window.content = main_window_content_original
+    main_window.show()
+    await main_window_probe.redraw("\nRestoring original state of Main Window")
 
 
 async def test_session_based_app(

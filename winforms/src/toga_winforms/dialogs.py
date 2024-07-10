@@ -97,6 +97,24 @@ class StackTraceDialog(BaseDialog):
     def __init__(self, title, message, content, retry):
         super().__init__()
 
+        # This dialog uses a fixed layout, so we create it as DPI-unaware so it will be
+        # scaled by the system. "When a window is created, its DPI awareness is defined
+        # as the DPI awareness of the calling thread at that time."
+        # (https://learn.microsoft.com/en-us/windows/win32/hidpi/high-dpi-improvements-for-desktop-applications).
+        self.prev_dpi_context = None
+        if SetThreadDpiAwarenessContext is not None:  # pragma: no branch
+            self.prev_dpi_context = SetThreadDpiAwarenessContext(
+                DPI_AWARENESS_CONTEXT_UNAWARE
+            )
+            if not self.prev_dpi_context:  # pragma: no cover
+                print("WARNING: Failed to set DPI Awareness for StackTraceDialog")
+
+        # Changing the DPI awareness re-scales all pre-existing Font objects, including
+        # the system fonts.
+        font_size = 8.25
+        message_font = WinFont(FontFamily.GenericSansSerif, font_size)
+        monospace_font = WinFont(FontFamily.GenericMonospace, font_size)
+
         self.native = WinForms.Form()
         self.native.MinimizeBox = False
         self.native.FormBorderStyle = self.native.FormBorderStyle.FixedSingle
@@ -171,6 +189,18 @@ class StackTraceDialog(BaseDialog):
         # event will be triggered.
         if not self.future.done():
             event.Cancel = True  # pragma: no cover
+        else:
+            # Reverting the DPI awareness at the end of __init__ would cause the window
+            # to be DPI-aware, presumably because the window isn't actually "created"
+            # until we call ShowDialog.
+            #
+            # This cleanup doesn't make any difference to the dialogs example, because
+            # "When the window procedure for a window is called [e.g. when clicking a
+            # button], the thread is automatically switched to the DPI awareness context
+            # that was in use when the window was created." However, other apps may do
+            # things outside of the context of a window event.
+            if self.prev_dpi_context:  # pragma: no branch
+                SetThreadDpiAwarenessContext(self.prev_dpi_context)
 
     def winforms_Click_quit(self, sender, event):
         self.future.set_result(False)

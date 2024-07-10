@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 import System.Windows.Forms as WinForms
 from System.ComponentModel import InvalidEnumArgumentException
-from System.Drawing import Bitmap, Graphics, Point, Size as WinSize
+from System.Drawing import Bitmap, Font as WinFont, Graphics, Point, Size as WinSize
 from System.Drawing.Imaging import ImageFormat
 from System.IO import MemoryStream
 
@@ -30,7 +30,6 @@ class Window(Container, Scalable):
         self._FormClosing_handler = WeakrefCallable(self.winforms_FormClosing)
         self.native.FormClosing += self._FormClosing_handler
         super().__init__(self.native)
-
         self._dpi_scale = self._original_dpi_scale = self.get_current_screen().dpi_scale
 
         self.native.MinimizeBox = self.interface.minimizable
@@ -43,6 +42,7 @@ class Window(Container, Scalable):
         if position:
             self.set_position(position)
 
+        self.native.LocationChanged += WeakrefCallable(self.winforms_LocationChanged)
         self.native.Resize += WeakrefCallable(self.winforms_Resize)
         self.resize_content()  # Store initial size
 
@@ -50,6 +50,18 @@ class Window(Container, Scalable):
 
     def create(self):
         self.native = WinForms.Form()
+
+    # We cache the scale to make sure that it only changes inside update_dpi.
+    @property
+    def dpi_scale(self):
+        return self._dpi_scale
+
+    def scale_font(self, native_font):
+        return WinFont(
+            native_font.FontFamily,
+            native_font.Size * (self.dpi_scale / self._original_dpi_scale),
+            native_font.Style,
+        )
 
     ######################################################################
     # Native event handlers
@@ -240,6 +252,13 @@ class MainWindow(Window):
         super().create()
         self.toolbar_native = None
 
+    def update_dpi(self):
+        super().update_dpi()
+        if (
+            getattr(self, "original_menubar_font", None) is not None
+        ):  # pragma: no branch
+            self.native.MainMenuStrip.Font = self.scale_font(self.original_menubar_font)
+
     def _top_bars_height(self):
         vertical_shift = 0
         if self.toolbar_native:
@@ -313,6 +332,8 @@ class MainWindow(Window):
                 cmd._impl.native.append(item)
                 submenu.DropDownItems.Add(item)
 
+        # Required for font scaling on DPI changes
+        self.original_menubar_font = menubar.Font
         self.resize_content()
 
     def create_toolbar(self):
@@ -348,7 +369,7 @@ class MainWindow(Window):
                     item.Click += WeakrefCallable(cmd._impl.winforms_Click)
                     cmd._impl.native.append(item)
                 self.toolbar_native.Items.Add(item)
-
+            self.original_toolbar_font = self.toolbar_native.Font
         elif self.toolbar_native:
             self.native.Controls.Remove(self.toolbar_native)
             self.toolbar_native = None

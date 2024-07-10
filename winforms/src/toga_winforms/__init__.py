@@ -35,5 +35,4 @@ if SetProcessDpiAwarenessContext is not None:
     ):  # pragma: no cover
         print("WARNING: Failed to set the DPI Awareness mode for the app.")
 
-
 __version__ = toga._package_version(__file__, __name__)
