@@ -16,6 +16,7 @@ from .widgets.box import Box
 from .widgets.button import Button
 from .widgets.canvas import Canvas
 from .widgets.detailedlist import DetailedList
+from .widgets.divider import Divider
 from .widgets.imageview import ImageView
 from .widgets.label import Label
 from .widgets.mapview import MapView
@@ -62,6 +63,7 @@ __all__ = [
     "Button",
     "Canvas",
     "DetailedList",
+    "Divider",
     "ImageView",
     "Label",
     "MapView",
