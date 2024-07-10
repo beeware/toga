@@ -55,9 +55,9 @@ class Screen(Scalable):
         return Size(self.native.Bounds.Width, self.native.Bounds.Height)
 
     def get_image_data(self):
-        bitmap = Bitmap(*map(self.scale_in, self.get_size()))
+        bitmap = Bitmap(*self.get_size())
         graphics = Graphics.FromImage(bitmap)
-        source_point = Point(*map(self.scale_in, self.get_origin()))
+        source_point = Point(*self.get_origin())
         destination_point = Point(0, 0)
         copy_size = WinSize(*self.get_size())
         graphics.CopyFromScreen(source_point, destination_point, copy_size)

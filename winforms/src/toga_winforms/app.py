@@ -19,13 +19,6 @@ from .libs.proactor import WinformsProactorEventLoop
 from .libs.wrapper import WeakrefCallable
 from .screens import Screen as ScreenImpl
 
-    def update_dpi(self):
-        super().update_dpi()
-        if (
-            getattr(self, "original_menubar_font", None) is not None
-        ):  # pragma: no branch
-            self.native.MainMenuStrip.Font = self.scale_font(self.original_menubar_font)
-
 
 def winforms_thread_exception(sender, winforms_exc):  # pragma: no cover
     # The PythonException returned by Winforms doesn't give us
@@ -232,9 +225,9 @@ class App:
     ######################################################################
 
     def get_screens(self):
-        primary_screen = Screen(WinForms.Screen.PrimaryScreen)
+        primary_screen = ScreenImpl(WinForms.Screen.PrimaryScreen)
         screen_list = [primary_screen] + [
-            Screen(native=screen)
+            ScreenImpl(native=screen)
             for screen in WinForms.Screen.AllScreens
             if screen != primary_screen.native
         ]

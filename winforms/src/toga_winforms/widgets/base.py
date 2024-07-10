@@ -103,14 +103,6 @@ class Widget(Scalable, ABC):
 
         self.refresh()
 
-    @property
-    def dpi_scale(self):
-        window = self.interface.window
-        if window:
-            return window._impl.dpi_scale
-        else:
-            return 1
-
     def get_tab_index(self):
         return self.native.TabIndex
 
