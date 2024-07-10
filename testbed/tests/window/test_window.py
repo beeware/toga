@@ -852,15 +852,6 @@ else:
         assert second_window_probe.presentation_content_size == initial_content_size
 
     @pytest.mark.parametrize(
-        "second_window_class, second_window_kwargs",
-        [
-            (
-                toga.MainWindow,
-                dict(title="Secondary Window", position=(200, 150)),
-            )
-        ],
-    )
-    @pytest.mark.parametrize(
         "initial_state, final_state",
         [
             # Direct switch from MINIMIZED:
@@ -881,6 +872,15 @@ else:
             (WindowState.PRESENTATION, WindowState.FULLSCREEN),
         ],
     )
+    @pytest.mark.parametrize(
+        "second_window_class, second_window_kwargs",
+        [
+            (
+                toga.Window,
+                dict(title="Secondary Window", position=(200, 150)),
+            )
+        ],
+    )
     async def test_window_state_direct_change(
         app, initial_state, final_state, second_window, second_window_probe
     ):
@@ -892,7 +892,6 @@ else:
                 "This backend doesn't reliably support minimized window state."
             )
 
-        second_window.toolbar.add(app.cmd1)
         second_window.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
         second_window.show()
 
