@@ -343,9 +343,8 @@ async def test_presentation_mode_with_excess_windows_list(app, app_probe):
         WindowState.FULLSCREEN,
     ],
 )
-@pytest.mark.skip
 async def test_presentation_mode_exit_on_window_state_change(
-    app, app_probe, main_window_probe, new_window_state
+    app, app_probe, main_window, main_window_probe, new_window_state
 ):
     """Changing window state exits presentation mode and sets the new state."""
     if (
