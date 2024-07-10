@@ -321,7 +321,7 @@ class Window:
 
         # Restore to normal state if in presentation mode. On some backends (e.g., Cocoa),
         # the content itself is in presentation mode, and not the window. Directly closing
-        # the window without the content exiting presentation mode can cause rendering issues.
+        # the window without the content exiting presentation mode can cause rendering glitches.
         if self.state == WindowState.PRESENTATION:
             self.state = WindowState.NORMAL
 

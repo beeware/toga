@@ -250,6 +250,8 @@ async def test_presentation_mode(app, app_probe, main_window):
     finally:
         for window in windows_list:
             window.close()
+        # After closing the window, the input focus might not be on main_window.
+        # Ensure that main_window will be in focus for other tests.
         app.current_window = main_window
         # Add delay for gtk to show the windows
         await app_probe.redraw("main_window is now the current window", delay=0.5)
@@ -337,6 +339,8 @@ async def test_presentation_mode_with_excess_windows_list(app, app_probe, main_w
     finally:
         for window in excess_windows_list:
             window.close()
+        # After closing the window, the input focus might not be on main_window.
+        # Ensure that main_window will be in focus for other tests.
         app.current_window = main_window
         # Add delay for gtk to show the windows
         await app_probe.redraw("main_window is now the current window", delay=0.5)
@@ -435,6 +439,8 @@ async def test_presentation_mode_exit_on_window_state_change(
     finally:
         window1.close()
         window2.close()
+        # After closing the window, the input focus might not be on main_window.
+        # Ensure that main_window will be in focus for other tests.
         app.current_window = main_window
         # Add delay for gtk to show the windows
         await app_probe.redraw("main_window is now the current window", delay=0.5)
