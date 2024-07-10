@@ -362,7 +362,7 @@ class Window:
 
             # If the window is in presentation mode, exit presentation mode
             # WindowState.PRESENTATION case:
-            else:
+            else:  # pragma: no cover
                 # --- Review Notes: Will be removed after review ---
                 # Marking this as no cover, since exit_presentation_mode() is triggered
                 # on any call to window.state setter, which checks if any window is in
@@ -382,7 +382,7 @@ class Window:
                 # Hence, this branch is required on other backends(gtk, winforms), but not on cocoa.
 
                 # self.interface.app.exit_presentation_mode()
-                pass  # branch: no cover
+                pass
 
             # Complete any pending window state transition.
             #
