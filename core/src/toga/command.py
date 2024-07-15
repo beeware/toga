@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Iterator
-from typing import TYPE_CHECKING, Protocol
+from typing import TYPE_CHECKING, MutableMapping, MutableSet, Protocol
 
 from toga.handlers import wrapped_handler
 from toga.icons import Icon
@@ -325,7 +325,7 @@ class CommandSetChangeHandler(Protocol):
         """
 
 
-class CommandSet:
+class CommandSet(MutableSet[Command], MutableMapping[str, Command]):
     def __init__(
         self,
         on_change: CommandSetChangeHandler | None = None,
@@ -391,6 +391,25 @@ class CommandSet:
 
     def __getitem__(self, id: str) -> Command:
         return self._commands[id]
+
+    def __setitem__(self, id: str, command: Command) -> Command:
+        if id != command.id:
+            raise ValueError(f"Command has id {command.id!r}; can't add as {id!r}")
+
+        self.add(command)
+
+    def __delitem__(self, id: str) -> Command:
+        del self._commands[id]
+        if self.on_change:
+            self.on_change()
+
+    def discard(self, command: Command):
+        try:
+            self._commands.pop(command.id)
+            if self.on_change:
+                self.on_change()
+        except KeyError:
+            pass
 
     def __len__(self) -> int:
         return len(self._commands)
