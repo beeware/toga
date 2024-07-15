@@ -1,3 +1,5 @@
+import asyncio
+
 from ..container import TogaContainer
 from ..libs import Gtk
 from .base import Widget
@@ -12,7 +14,14 @@ class OptionContainer(Widget):
         self.sub_containers = []
 
     def gtk_on_switch_page(self, widget, page, page_num):
-        self.interface.on_select()
+        # Inside the switch-page event handler, the page_num argument gives the
+        # correct value for the page that has just been selected, but
+        # self.native.current_page() does not. It won't return the correct value
+        # until the switch-page event has completed. Since `on_select()` will
+        # likely need to retrieve the current tab, we need to defer triggering
+        # on_select() until we know current_page will return the correct value.
+        # We do this by deferring the callback to execute on the event loop.
+        asyncio.get_event_loop().call_soon_threadsafe(self.interface.on_select)
 
     def add_option(self, index, text, widget, icon):
         sub_container = TogaContainer()
