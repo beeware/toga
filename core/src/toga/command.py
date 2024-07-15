@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from collections.abc import Iterator, MutableMapping, MutableSet
-from typing import TYPE_CHECKING, Protocol
+from collections.abc import Iterator
+from typing import TYPE_CHECKING, MutableMapping, MutableSet, Protocol
 
 from toga.handlers import wrapped_handler
 from toga.icons import Icon
