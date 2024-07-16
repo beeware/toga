@@ -1,0 +1,1 @@
+CommandSet now exposes a full set and dictionary interface. Commands can be added to a CommandSet using ``[]`` notation and a command ID; they can be removed using set-like ``remove()`` or ``discard()`` calls with a Command instance, or using dictionary-like ``pop()`` or ``del`` calls with the command ID.
