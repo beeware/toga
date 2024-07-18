@@ -78,6 +78,17 @@ defined; if no ID is provided, a random ID will be generated for the Command. Th
 identifier can be used to retrieve a command from :any:`toga.App.commands` and
 :any:`toga.MainWindow.toolbar`.
 
+Commands can be removed using set-like and dictionary-like APIs. The set-like APIs use
+the command instance; the dictionary-like APIs use the command ID:
+
+.. code-block:: python
+
+    # Remove the app using the instance
+    app.commands.remove(cmd_1)
+
+    # Remove a command by ID
+    del app.commands["Some-Command-ID"]
+
 Reference
 ---------
 
