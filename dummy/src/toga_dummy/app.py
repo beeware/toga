@@ -2,10 +2,6 @@ import asyncio
 import sys
 from pathlib import Path
 
-from toga.app import overridden
-from toga.command import Command, Group
-from toga.handlers import simple_handler
-
 from .screens import Screen as ScreenImpl
 from .utils import LoggedObject
 
@@ -33,54 +29,8 @@ class App(LoggedObject):
     # Commands and menus
     ######################################################################
 
-    def create_app_commands(self):
+    def create_standard_commands(self):
         self._action("create App commands")
-        self.interface.commands.add(
-            # Invoke `_request_exit` rather than `exit`, because we want to trigger the
-            # "OK to exit?" logic.
-            Command(
-                simple_handler(self.interface._request_exit),
-                "Exit",
-                group=Group.APP,
-                section=sys.maxsize,
-                id=Command.EXIT,
-            ),
-            Command(
-                simple_handler(self.interface.about),
-                f"About {self.interface.formal_name}",
-                group=Group.HELP,
-                id=Command.ABOUT,
-            ),
-            Command(
-                simple_handler(self.interface.visit_homepage),
-                "Visit homepage",
-                enabled=self.interface.home_page is not None,
-                group=Group.HELP,
-                id=Command.VISIT_HOMEPAGE,
-            ),
-        )
-
-        # If the user has overridden preferences, provide a menu item.
-        if overridden(self.interface.preferences):
-            self.interface.commands.add(
-                Command(
-                    simple_handler(self.interface.preferences),
-                    "Preferences",
-                    group=Group.APP,
-                    id=Command.PREFERENCES,
-                ),
-            )
-
-        # If the app has document types, or has overridden open(), provide a menu item
-        if self.interface.document_types or overridden(self.interface.open):
-            self.interface.commands.add(
-                Command(
-                    simple_handler(self.interface._open),
-                    text="Open",
-                    group=Group.FILE,
-                    id=Command.OPEN,
-                )
-            )
 
     def create_menus(self):
         self._action("create App menus")

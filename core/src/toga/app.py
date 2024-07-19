@@ -12,7 +12,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any, MutableSet, Protocol
 from weakref import WeakValueDictionary
 
-from toga.command import CommandSet
+from toga.command import Command, CommandSet
 from toga.dialogs import OpenFileDialog
 from toga.handlers import simple_handler, wrapped_handler
 from toga.hardware.camera import Camera
@@ -193,21 +193,6 @@ class WidgetRegistry:
 
     def _remove(self, id: str) -> None:
         del self._registry[id]
-
-
-def overridable(method):
-    """Decorate the method as being user-overridable"""
-    method._overridden = True
-    return method
-
-
-def overridden(coroutine_or_method):
-    """Has the user overridden this method?
-
-    This is based on the method *not* having a ``_overridden`` attribute. Overridable
-    default methods have this attribute; user-defined method will not.
-    """
-    return not hasattr(coroutine_or_method, "_overridden")
 
 
 class App:
@@ -600,6 +585,21 @@ class App:
             print(f"{filename}: {e}")
             return False
 
+    def _create_standard_commands(self):
+        """Internal utility method to create the standard commands for the app."""
+        for cmd_id in [
+            Command.ABOUT,
+            Command.EXIT,
+            Command.VISIT_HOMEPAGE,
+        ]:
+            command = Command.standard(self, cmd_id)
+            if command:
+                self.commands.add(command)
+
+        if self.document_types:
+            command = Command.standard(self, Command.OPEN)
+            self.commands.add(command)
+
     def _create_initial_windows(self):
         """Internal utility method for creating initial windows based on command line
         arguments. This method is used when the platform doesn't provide it's own
@@ -634,9 +634,10 @@ class App:
                 document.show()
 
     def _startup(self) -> None:
-        # Install the platform-specific app commands. This is done *before* startup so
-        # the user's code has the opporuntity to remove/change the default commands.
-        self._impl.create_app_commands()
+        # Install the standard commands. This is done *before* startup so the user's
+        # code has the opporuntity to remove/change the default commands.
+        self._create_standard_commands()
+        self._impl.create_standard_commands()
 
         # Invoke the user's startup method (or the default implementation)
         self.startup()
@@ -786,7 +787,7 @@ class App:
         """
         return await dialog._show(None)
 
-    async def _open(self, **kwargs):
+    async def _open(self):
         # The menu interface to open(). Prompt the user to select a file; then open that
         # file.
 
@@ -809,20 +810,12 @@ class App:
         if path:
             self.open(path)
 
-    @overridable
     def open(self, path: Path | str) -> None:
         """Open a document in this app, and show the document window.
 
-        The default implementation uses registered document types to open the file. Apps
-        can overwrite this implementation if they wish to provide custom behavior for
-        opening a file path.
-
-        If you override this method in your App class, or you define
-        :attr:`~toga.App.document_types`, the :attr:`toga.Command.OPEN` command will be
-        added to your app, and this method will be invoked when the menu item is selected.
-
         :param path: The path to the document to be opened.
-        :raises ValueError: If the path cannot be opened.
+        :raises ValueError: If the path describes a file that is of a type that doesn't
+            match a registered document type.
         """
         try:
             path = Path(path).absolute()
@@ -843,19 +836,6 @@ class App:
                 # Document is open; register the document and show.
                 self._documents.append(document)
                 document.show()
-
-    @overridable
-    def preferences(self) -> None:
-        """Open a preferences panel for the app.
-
-        By default, this will do nothing, and the Preferences/Settings menu item will
-        not be installed. However, if you override this method in your App class, the
-        :attr:`toga.Command.PREFERENCES` command will be added, and this method will be
-        invoked when the menu item is selected.
-        """
-        # Default implementation won't ever be invoked, because the menu item
-        # isn't enabled unless it's overridden.
-        pass  # pragma: no cover
 
     def visit_homepage(self) -> None:
         """Open the application's :any:`home_page` in the default browser.
@@ -931,7 +911,6 @@ class App:
     # App events
     ######################################################################
 
-    @overridable
     def on_exit(self) -> bool:
         """The event handler that will be invoked when the app is about to exit.
 
@@ -946,7 +925,6 @@ class App:
         # Always allow exit
         return True
 
-    @overridable
     def on_running(self) -> None:
         """The event handler that will be invoked when the app's event loop starts running.
 

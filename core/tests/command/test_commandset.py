@@ -342,17 +342,16 @@ def test_default_command_ordering(app):
 
     assert [
         (
-            obj.id
+            (obj.group.text, obj.id)
             if isinstance(obj, toga.Command)
-            else f"---{obj.group.text}---" if isinstance(obj, Separator) else "?"
+            else "---" if isinstance(obj, Separator) else "?"
         )
         for obj in app.commands
     ] == [
         # App menu
-        toga.Command.EXIT,
+        ("*", toga.Command.EXIT),
         # Help menu
-        toga.Command.ABOUT,
-        toga.Command.VISIT_HOMEPAGE,
+        ("Help", toga.Command.ABOUT),
     ]
 
 

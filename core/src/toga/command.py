@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections.abc import Iterator
 from typing import TYPE_CHECKING, MutableMapping, MutableSet, Protocol
 
-from toga.handlers import wrapped_handler
+from toga.handlers import simple_handler, wrapped_handler
 from toga.icons import Icon
 from toga.keys import Key
 from toga.platform import get_platform_factory
@@ -165,14 +165,12 @@ class Command:
     ABOUT: str = "about"
     #: An identifier for the system-installed "Exit" menu item. This command is always
     #: installed.
-    EXIT: str = "on_exit"
+    EXIT: str = "_request_exit"
     #: An identifier for the system-installed "Open" menu item. This command will be
     #: automatically installed if your app declares any document types.
-    OPEN: str = "open"
-    #: An identifier for the system-installed "Preferences" menu item. A command
-    #: with this identifier will be installed automatically if the app overrides the
-    #: :meth:`~toga.App.preferences` method.
-    PREFERENCES: str = "preferences"
+    OPEN: str = "_open"
+    #: An identifier for the system-installed "Preferences" menu item.
+    PREFERENCES: str = "_preferences"
     #: An identifier for the system-installed "Visit Homepage" menu item. This
     #: command is always installed.
     VISIT_HOMEPAGE: str = "visit_homepage"
@@ -230,6 +228,36 @@ class Command:
 
         self._enabled = True
         self.enabled = enabled
+
+    @classmethod
+    def standard(cls, app, id, **kwargs):
+        """Create an instance of a standard command for the provided app.
+
+        :param app: The application instance for which the command is being created.
+        :param id: The ID of the standard command to create.
+        :param kwargs: Overrides for any default properties of the standard command.
+            Accepts the same arguments as the :class:`~toga.Command` constructor.
+        """
+        # The value of the ID constant is the method on the app instance
+        cmd_kwargs = {"id": id}
+        try:
+            cmd_kwargs["action"] = simple_handler(getattr(app, id))
+        except AttributeError:
+            cmd_kwargs["action"] = None
+
+        # Get the platform-specific keyword arguments for the command
+        factory = get_platform_factory()
+        platform_kwargs = factory.Command.standard(app, id)
+
+        if platform_kwargs:
+            cmd_kwargs.update(platform_kwargs)
+            cmd_kwargs.update(kwargs)
+
+            # Return the command instance
+            return Command(**cmd_kwargs)
+        else:
+            # Standard command doesn't exist on the platform.
+            return None
 
     @property
     def id(self) -> str:
