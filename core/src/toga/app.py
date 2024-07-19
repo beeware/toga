@@ -592,9 +592,7 @@ class App:
             Command.EXIT,
             Command.VISIT_HOMEPAGE,
         ]:
-            command = Command.standard(self, cmd_id)
-            if command:
-                self.commands.add(command)
+            self.commands.add(Command.standard(self, cmd_id))
 
         if self.document_types:
             default_document_type = list(self.document_types.values())[0]
@@ -640,9 +638,7 @@ class App:
                 Command.SAVE_AS,
                 Command.SAVE_ALL,
             ]:
-                command = Command.standard(self, cmd_id)
-                if command:
-                    self.commands.add(command)
+                self.commands.add(Command.standard(self, cmd_id))
 
     def _create_initial_windows(self):
         """Internal utility method for creating initial windows based on command line

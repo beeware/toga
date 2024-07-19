@@ -127,6 +127,19 @@ def test_add_clear_with_app(app, change_handler):
     assert list(app.commands) == [cmd_a, cmd1b, cmd2, cmd1a, cmd_b]
 
 
+def test_add_missing_command(app):
+    """Missing commands are ignored by addition."""
+    # Make sure the app commands are clear to start with.
+    app.commands.clear()
+
+    # Put some commands (and some missing commands) into the app
+    cmd_a = toga.Command(None, text="App command a")
+    cmd_b = toga.Command(None, text="App command b", order=10)
+    app.commands.add(cmd_a, None, cmd_b, None)
+    # The missing commands are ignored.
+    assert list(app.commands) == [cmd_a, cmd_b]
+
+
 @pytest.mark.parametrize("change_handler", [(None), (Mock())])
 def test_add_by_existing_id(change_handler):
     """Commands can be added by ID."""

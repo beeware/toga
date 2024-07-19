@@ -124,6 +124,8 @@ class Testbed(toga.App):
             self.deep_cmd,
             self.cmd5,
             self.cmd6,
+            # Add a default Preferences menu item (with no action)
+            # so that we can verify the command definition is valid.
             toga.Command.standard(self, toga.Command.PREFERENCES),
         )
 

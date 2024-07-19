@@ -407,14 +407,18 @@ class CommandSet(MutableSet[Command], MutableMapping[str, Command]):
         self._commands: dict[str:Command] = {}
         self.on_change = on_change
 
-    def add(self, *commands: Command):
+    def add(self, *commands: Command | None):
         """Add a collection of commands to the command set.
+
+        A command value of ``None`` will be ignored. This allows you to add standard
+        commands to a command set without first validating that the platform provides an
+        implementation of that command.
 
         :param commands: The commands to add to the command set.
         """
         if self.app:
             self.app.commands.add(*commands)
-        self._commands.update({cmd.id: cmd for cmd in commands})
+        self._commands.update({cmd.id: cmd for cmd in commands if cmd is not None})
         if self.on_change:
             self.on_change()
 
