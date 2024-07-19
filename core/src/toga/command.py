@@ -170,25 +170,25 @@ class Command:
     #: will be used for the default document type for your app; if you specify more
     #: than one document type, the command for the subsequent commands will have a
     #: colon and the first extension for that data type appended to the ID.
-    NEW: str = "_new"
+    NEW: str = "new"
     #: An identifier for the system-installed "Open" menu item. This command will be
     #: automatically installed if your app declares any document types, or the app
     #: overrides the :meth:`~toga.App.open` method.
     OPEN: str = "_open"
     #: An identifier for the system-installed "Preferences" menu item.
-    PREFERENCES: str = "_preferences"
+    PREFERENCES: str = "preferences"
     #: An identifier for the system-installed "Save" menu item. This command will be
     #: automatically installed if your app declares any document types, or the app
     #: overrides the :meth:`~toga.App.save` method.
-    SAVE: str = "_save"
+    SAVE: str = "save"
     #: An identifier for the system-installed "Save As..." menu item. This command
     #: will be automatically installed if your app declares any document types, or
     #: the app overrides the :meth:`~toga.App.save_as` method.
-    SAVE_AS: str = "_save_as"
+    SAVE_AS: str = "save_as"
     #: An identifier for the system-installed "Save All" menu item. This command
     #: will be automatically installed if your app declares any document types, or
     #: the app overrides the :meth:`~toga.App.save_all` method.
-    SAVE_ALL: str = "_save_all"
+    SAVE_ALL: str = "save_all"
     #: An identifier for the system-installed "Visit Homepage" menu item. This
     #: command may be installed by default, depending on platform requirements.
     VISIT_HOMEPAGE: str = "visit_homepage"

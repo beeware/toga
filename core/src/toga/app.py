@@ -599,7 +599,7 @@ class App:
             command = Command.standard(
                 self,
                 Command.NEW,
-                action=simple_handler(self._new, default_document_type),
+                action=simple_handler(self.new, default_document_type),
             )
             if command:
                 if len(set(self.document_types.values())) == 1:
@@ -617,7 +617,7 @@ class App:
                             command = Command.standard(
                                 self,
                                 Command.NEW,
-                                action=simple_handler(self._new, document_class),
+                                action=simple_handler(self.new, document_class),
                             )
                             command.text = (
                                 command.text + f" {document_class.document_type}"
@@ -663,7 +663,7 @@ class App:
             try:
                 # Pass in the first document type as the default
                 default_doc_type = next(iter(self.document_types.values()))
-                self._new(default_doc_type)
+                self.new(default_doc_type)
             except StopIteration:
                 # No document types defined.
                 raise ValueError(
@@ -825,12 +825,8 @@ class App:
         """
         return await dialog._show(None)
 
-    def _new(self, document_type: type[Document]) -> Document:
+    def new(self, document_type: type[Document]) -> Document:
         """Create a new document of the given type, and show the document window.
-
-        If your app defines :attr:`~toga.App.document_types`, a :attr:`toga.Command.NEW`
-        command will be added to your app for each document type that is registered, and
-        this method will be invoked when the menu item is selected.
 
         :param document_type: The document type that has been requested.
         :returns: The newly created document.
@@ -937,7 +933,7 @@ class App:
                 # User chose to cancel the save
                 return None
 
-    async def _save(self):
+    async def save(self):
         """Save the current content of an app.
 
         If there isn't a current window, or current window doesn't define a ``save()``
@@ -946,7 +942,7 @@ class App:
         if hasattr(self.current_window, "save"):
             await self.current_window.save()
 
-    async def _save_as(self):
+    async def save_as(self):
         """Save the current content of an app under a different filename.
 
         If there isn't a current window, or the current window hasn't defined a
@@ -955,7 +951,7 @@ class App:
         if hasattr(self.current_window, "save_as"):
             await self.current_window.save_as()
 
-    async def _save_all(self):
+    async def save_all(self):
         """Save the state of all content in the app.
 
         This method will attempt to call ``save()`` on every window associated with the

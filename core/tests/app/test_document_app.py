@@ -561,7 +561,7 @@ def test_save_menu(doc_app, example_file):
     assert first_doc.path == example_file
 
     # Open a second new document
-    second_doc = doc_app._new(ExampleDocument)
+    second_doc = doc_app.new(ExampleDocument)
 
     # Activate the save menu
     future = doc_app.commands[toga.Command.SAVE].action()
@@ -598,7 +598,7 @@ def test_save_menu_untitled(doc_app, example_file, tmp_path):
     assert first_doc.path == example_file
 
     # Open a second new document, set to be current
-    second_doc = doc_app._new(ExampleDocument)
+    second_doc = doc_app.new(ExampleDocument)
     doc_app.current_window = second_doc.main_window
 
     # Prime the save dialog on the second window
@@ -625,7 +625,7 @@ def test_save_menu_untitled_cancel(doc_app, example_file, tmp_path):
     assert first_doc.path == example_file
 
     # Open a second new document, set to be current
-    second_doc = doc_app._new(ExampleDocument)
+    second_doc = doc_app.new(ExampleDocument)
     doc_app.current_window = second_doc.main_window
 
     # Prime the save dialog on the second window
@@ -647,7 +647,7 @@ def test_save_menu_untitled_overwrite(doc_app, example_file, tmp_path):
     assert first_doc.path == example_file
 
     # Open a second new document, set to be current
-    second_doc = doc_app._new(ExampleDocument)
+    second_doc = doc_app.new(ExampleDocument)
     doc_app.current_window = second_doc.main_window
 
     # Prime the save dialog on the second window to save using the existing filename,
@@ -676,7 +676,7 @@ def test_save_menu_untitled_overwrite_reconsidered(doc_app, example_file, tmp_pa
     assert first_doc.path == example_file
 
     # Open a second new document, set to be current
-    second_doc = doc_app._new(ExampleDocument)
+    second_doc = doc_app.new(ExampleDocument)
     doc_app.current_window = second_doc.main_window
 
     # Prime the save dialog on the second window to save using the existing filename,
@@ -708,7 +708,7 @@ def test_save_menu_non_document(doc_app, example_file):
     assert first_doc.path == example_file
 
     # Open a second new document
-    second_doc = doc_app._new(ExampleDocument)
+    second_doc = doc_app.new(ExampleDocument)
 
     # Open a non-document window, and make it current
     third_window = toga.Window(title="Not a document")
@@ -730,7 +730,7 @@ def test_save_as_menu(doc_app, example_file, tmp_path):
     assert first_doc.path == example_file
 
     # Open a second new document
-    second_doc = doc_app._new(ExampleDocument)
+    second_doc = doc_app.new(ExampleDocument)
 
     # Prime the save dialog on the first window
     path = tmp_path / "path/to/filename2.foobar"
@@ -775,7 +775,7 @@ def test_save_as_menu_untitled(doc_app, example_file, tmp_path):
     assert first_doc.path == example_file
 
     # Open a second new document, set to be current
-    second_doc = doc_app._new(ExampleDocument)
+    second_doc = doc_app.new(ExampleDocument)
     doc_app.current_window = second_doc.main_window
 
     # Prime the save dialog on the second window
@@ -802,7 +802,7 @@ def test_save_as_menu_cancel(doc_app, example_file, tmp_path):
     assert first_doc.path == example_file
 
     # Open a second new document
-    second_doc = doc_app._new(ExampleDocument)
+    second_doc = doc_app.new(ExampleDocument)
 
     # Cancel the request to save
     first_doc.main_window._impl.dialog_responses["SaveFileDialog"] = [None]
@@ -823,7 +823,7 @@ def test_save_as_menu_non_document(doc_app, example_file):
     assert first_doc.path == example_file
 
     # Open a second new document
-    second_doc = doc_app._new(ExampleDocument)
+    second_doc = doc_app.new(ExampleDocument)
 
     # Open a non-document window, and make it current
     third_window = toga.Window(title="Not a document")
@@ -845,7 +845,7 @@ def test_save_all_menu(doc_app, example_file, tmp_path):
     assert first_doc.path == example_file
 
     # Open a second new document
-    second_doc = doc_app._new(ExampleDocument)
+    second_doc = doc_app.new(ExampleDocument)
 
     # Open a third window, with no document attached
     third_window = toga.Window(title="Not a document")
