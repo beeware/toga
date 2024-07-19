@@ -158,7 +158,3 @@ class MainWindow(Window):
 
     def create_toolbar(self):
         self._action("create toolbar")
-
-
-class DocumentMainWindow(MainWindow):
-    pass

@@ -112,7 +112,3 @@ class App:
 
     def exit_full_screen(self, windows):
         pass
-
-
-class DocumentApp(App):
-    pass

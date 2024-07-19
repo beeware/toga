@@ -123,7 +123,7 @@ def test_create_no_cmdline(monkeypatch):
     # Document window has been created and shown
     assert len(app.windows) == 1
     assert list(app.windows)[0] == app.documents[0].main_window
-    assert_action_performed(app.documents[0].main_window, "create DocumentMainWindow")
+    assert_action_performed(app.documents[0].main_window, "create MainWindow")
     assert_action_performed(app.documents[0].main_window, "show")
 
 
@@ -177,7 +177,7 @@ def test_create_with_cmdline(monkeypatch, example_file):
     # Document window has been created and shown
     assert len(app.windows) == 1
     assert list(app.windows)[0] == app.documents[0].main_window
-    assert_action_performed(app.documents[0].main_window, "create DocumentMainWindow")
+    assert_action_performed(app.documents[0].main_window, "create MainWindow")
     assert_action_performed(app.documents[0].main_window, "show")
 
 
@@ -202,7 +202,7 @@ def test_create_with_unknown_document_type(monkeypatch, capsys):
     # Document window has been created and shown
     assert len(app.windows) == 1
     assert list(app.windows)[0] == app.documents[0].main_window
-    assert_action_performed(app.documents[0].main_window, "create DocumentMainWindow")
+    assert_action_performed(app.documents[0].main_window, "create MainWindow")
     assert_action_performed(app.documents[0].main_window, "show")
 
 
@@ -228,7 +228,7 @@ def test_create_with_missing_file(monkeypatch, capsys):
     # Document window has been created and shown
     assert len(app.windows) == 1
     assert list(app.windows)[0] == app.documents[0].main_window
-    assert_action_performed(app.documents[0].main_window, "create DocumentMainWindow")
+    assert_action_performed(app.documents[0].main_window, "create MainWindow")
     assert_action_performed(app.documents[0].main_window, "show")
 
 
@@ -257,7 +257,7 @@ def test_create_with_bad_file(monkeypatch, example_file, capsys):
     # Document window has been created and shown
     assert len(app.windows) == 1
     assert list(app.windows)[0] == app.documents[0].main_window
-    assert_action_performed(app.documents[0].main_window, "create DocumentMainWindow")
+    assert_action_performed(app.documents[0].main_window, "create MainWindow")
     assert_action_performed(app.documents[0].main_window, "show")
 
 

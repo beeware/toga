@@ -851,8 +851,6 @@ class MainWindow(Window):
 
 
 class DocumentMainWindow(MainWindow):
-    _WINDOW_CLASS = "DocumentMainWindow"
-
     def __init__(self, doc: Document, *args, **kwargs):
         """Create a new document Main Window.
 

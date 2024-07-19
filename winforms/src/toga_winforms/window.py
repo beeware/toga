@@ -331,8 +331,3 @@ class MainWindow(Window):
             self.toolbar_native = None
 
         self.resize_content()
-
-
-class DocumentMainWindow(MainWindow):
-    # On GTK, there's no real difference between a DocumentMainWindow and a MainWindow
-    pass

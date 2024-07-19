@@ -34,7 +34,7 @@ from .widgets.table import Table
 from .widgets.textinput import TextInput
 from .widgets.tree import Tree
 from .widgets.webview import WebView
-from .window import DocumentMainWindow, MainWindow, Window
+from .window import MainWindow, Window
 
 
 def not_implemented(feature):
@@ -79,7 +79,6 @@ __all__ = [
     "Tree",
     "WebView",
     # Windows,
-    "DocumentMainWindow",
     "MainWindow",
     "Window",
 ]
