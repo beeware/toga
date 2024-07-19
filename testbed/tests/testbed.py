@@ -102,9 +102,13 @@ def run_tests(app, cov, args, report_coverage, run_slow, running_in_ci):
         traceback.print_exc()
         app.returncode = 1
     finally:
-        print(f">>>>>>>>>> EXIT {app.returncode} <<<<<<<<<<")
-        # Add a short pause to make sure any log tailing gets a chance to flush
-        time.sleep(0.5)
+        # Add a short pause to make sure any log tailing gets a chance to flush Run a
+        # couple of times to make sure any log streaming dropouts don't prevent
+        # Briefcase from seeing the output.
+        for i in range(0, 6):
+            print(f">>>>>>>>>> EXIT {app.returncode} <<<<<<<<<<")
+            time.sleep(0.5)
+
         app.loop.call_soon_threadsafe(app.exit)
 
 
