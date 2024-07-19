@@ -1,14 +1,11 @@
 import asyncio
 import os
 import signal
-import sys
 
 import gbulb
 
-import toga
-from toga.app import App as toga_App, overridden
-from toga.command import Command, Separator
-from toga.handlers import simple_handler
+from toga.app import App as toga_App
+from toga.command import Separator
 
 from .keys import gtk_accel
 from .libs import TOGA_DEFAULT_STYLES, Gdk, Gio, GLib, Gtk
@@ -61,62 +58,8 @@ class App:
     # Commands and menus
     ######################################################################
 
-    def create_app_commands(self):
-        self.interface.commands.add(
-            # ---- App menu -----------------------------------
-            # Quit should always be the last item, in a section on its own. Invoke
-            # `_request_exit` rather than `exit`, because we want to trigger the "OK to
-            # exit?" logic.
-            Command(
-                simple_handler(self.interface._request_exit),
-                "Quit " + self.interface.formal_name,
-                shortcut=toga.Key.MOD_1 + "q",
-                group=toga.Group.APP,
-                section=sys.maxsize,
-                id=Command.EXIT,
-            ),
-            # ---- Help menu -----------------------------------
-            Command(
-                simple_handler(self.interface.about),
-                "About " + self.interface.formal_name,
-                group=toga.Group.HELP,
-                id=Command.ABOUT,
-            ),
-            Command(
-                simple_handler(self.interface.visit_homepage),
-                "Visit homepage",
-                enabled=self.interface.home_page is not None,
-                group=toga.Group.HELP,
-                id=Command.VISIT_HOMEPAGE,
-            ),
-        )
-
-        # If the user has overridden preferences, provide a menu item.
-        if overridden(self.interface.preferences):
-            self.interface.commands.add(
-                Command(
-                    simple_handler(self.interface.preferences),
-                    "Preferences",
-                    group=toga.Group.APP,
-                    id=Command.PREFERENCES,
-                ),
-            )  # pragma: no cover
-
-        # If the app has document types, or has overridden open(), provide a menu item.
-        # Testbed always has document types, so this must be covered
-        if self.interface.document_types or overridden(
-            self.interface.open
-        ):  # pragma: no branch
-            self.interface.commands.add(
-                Command(
-                    simple_handler(self.interface._open),
-                    text="Open...",
-                    shortcut=toga.Key.MOD_1 + "o",
-                    group=toga.Group.FILE,
-                    section=0,
-                    id=Command.OPEN,
-                ),
-            )
+    def create_standard_commands(self):
+        pass
 
     def _submenu(self, group, menubar):
         try:

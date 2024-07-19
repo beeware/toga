@@ -2,8 +2,8 @@ from toga import NotImplementedWarning
 
 from . import dialogs
 from .app import App, DocumentApp
+from .command import Command
 
-# from .command import Command
 # from .documents import Document
 # from .fonts import Font
 from .icons import Icon
@@ -50,7 +50,7 @@ __all__ = [
     "not_implemented",
     "App",
     "DocumentApp",
-    # "Command",
+    "Command",
     # "Document",
     # "Font",
     "Icon",

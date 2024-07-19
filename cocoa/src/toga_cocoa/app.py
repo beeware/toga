@@ -12,9 +12,8 @@ from rubicon.objc import (
 from rubicon.objc.eventloop import CocoaLifecycle, EventLoopPolicy
 
 import toga
-from toga.app import overridden
 from toga.command import Command, Group, Separator
-from toga.handlers import NativeHandler, simple_handler
+from toga.handlers import NativeHandler
 
 from .keys import cocoa_key
 from .libs import (
@@ -129,17 +128,11 @@ class App:
         if self.interface.current_window:
             self.interface.current_window._impl.native.miniaturize(None)
 
-    def create_app_commands(self):
+    def create_standard_commands(self):
+        # macOS defines some default management commands that aren't
+        # exposed as standard commands.
         self.interface.commands.add(
             # ---- App menu -----------------------------------
-            # About should be the first menu item
-            Command(
-                simple_handler(self.interface.about),
-                f"About {self.interface.formal_name}",
-                group=Group.APP,
-                id=Command.ABOUT,
-                section=-1,
-            ),
             # App-level window management commands should be in the second last section.
             Command(
                 NativeHandler(SEL("hide:")),
@@ -163,17 +156,6 @@ class App:
                 group=Group.APP,
                 order=2,
                 section=sys.maxsize - 1,
-            ),
-            # Quit should always be the last item, in a section on its own. Invoke
-            # `_request_exit` rather than `exit`, because we want to trigger the "OK to
-            # exit?" logic.
-            Command(
-                simple_handler(self.interface._request_exit),
-                f"Quit {self.interface.formal_name}",
-                shortcut=toga.Key.MOD_1 + "q",
-                group=Group.APP,
-                section=sys.maxsize,
-                id=Command.EXIT,
             ),
             # ---- File menu ----------------------------------
             # This is a bit of an oddity. Apple HIG apps that don't have tabs as
@@ -266,44 +248,7 @@ class App:
                 shortcut=toga.Key.MOD_1 + "m",
                 group=Group.WINDOW,
             ),
-            # ---- Help menu ----------------------------------
-            Command(
-                simple_handler(self.interface.visit_homepage),
-                "Visit homepage",
-                enabled=self.interface.home_page is not None,
-                group=Group.HELP,
-                id=Command.VISIT_HOMEPAGE,
-            ),
         )
-
-        # If the user has overridden preferences, provide a menu item.
-        # Testbed doesn't have a preferences menu, so this can't be covered
-        if overridden(self.interface.preferences):
-            self.interface.commands.add(
-                Command(
-                    simple_handler(self.interface.preferences),
-                    "Settings\u2026",
-                    shortcut=toga.Key.MOD_1 + ",",
-                    group=Group.APP,
-                    section=20,
-                    id=Command.PREFERENCES,
-                ),
-            )  # pragma: no cover
-
-        # If the app has document types, or has overridden open(), provide a menu item.
-        # Testbed always has document types, so this must be covered
-        if self.interface.document_types or overridden(
-            self.interface.open
-        ):  # pragma: no branch
-            self.interface.commands.add(
-                Command(
-                    simple_handler(self.interface._open),
-                    text="Open\u2026",
-                    group=Group.FILE,
-                    section=0,
-                    id=Command.OPEN,
-                )
-            )
 
     def _submenu(self, group, menubar):
         """Obtain the submenu representing the command group.
