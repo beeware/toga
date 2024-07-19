@@ -11,14 +11,12 @@ class Command:
         if id in {
             StandardCommand.ABOUT,
             StandardCommand.EXIT,
+            StandardCommand.OPEN,
             StandardCommand.PREFERENCES,
             StandardCommand.VISIT_HOMEPAGE,
         }:
             # These are valid commands, but they're not defined on iOS.
             return None
-        elif id in {StandardCommand.OPEN}:  # pragma: no-cover
-            # Document-based apps aren't supported on mobile.
-            raise ValueError
 
         raise ValueError(f"Unknown standard command {id!r}")
 

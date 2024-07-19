@@ -21,15 +21,12 @@ class Command:
         # ---- Undefined commands--------------------------
         elif id in {
             StandardCommand.EXIT,
+            StandardCommand.OPEN,
             StandardCommand.PREFERENCES,
             StandardCommand.VISIT_HOMEPAGE,
         }:
             # These are valid commands, but they're not defined on Android.
             return None
-
-        elif id in {StandardCommand.OPEN}:  # pragma: no-cover
-            # Document-based apps aren't supported on mobile.
-            raise ValueError
 
         raise ValueError(f"Unknown standard command {id!r}")
 

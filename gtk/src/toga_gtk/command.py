@@ -21,7 +21,7 @@ class Command:
             # Preferences should be towards the end of the File menu.
             return {
                 "text": "Preferences",
-                "group": Group.FILE,
+                "group": Group.APP,
                 "section": sys.maxsize - 1,
             }
         elif id == StandardCommand.EXIT:

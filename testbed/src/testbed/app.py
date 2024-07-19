@@ -106,6 +106,7 @@ class Testbed(toga.App):
             self.deep_cmd,
             self.cmd5,
             self.cmd6,
+            toga.Command.standard(self, toga.Command.PREFERENCES),
         )
 
         self.main_window = toga.MainWindow(title=self.formal_name)
