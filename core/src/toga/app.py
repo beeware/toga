@@ -598,7 +598,8 @@ class App:
 
         if self.document_types:
             command = Command.standard(self, Command.OPEN)
-            self.commands.add(command)
+            if command:
+                self.commands.add(command)
 
     def _create_initial_windows(self):
         """Internal utility method for creating initial windows based on command line

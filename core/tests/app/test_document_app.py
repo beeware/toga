@@ -5,6 +5,7 @@ import pytest
 
 import toga
 from toga_dummy.app import App as DummyApp
+from toga_dummy.command import Command as DummyCommand
 from toga_dummy.utils import (
     assert_action_not_performed,
     assert_action_performed,
@@ -125,6 +126,14 @@ def test_create_no_cmdline(monkeypatch):
     assert list(app.windows)[0] == app.documents[0].main_window
     assert_action_performed(app.documents[0].main_window, "create MainWindow")
     assert_action_performed(app.documents[0].main_window, "show")
+
+    # Menus and commands have been created
+    assert_action_performed(app, "create App commands")
+    assert_action_performed(app, "create App menus")
+
+    # 3 menu items have been created (Open, About and Exit).
+    assert app._impl.n_menu_items == 3
+    assert toga.Command.OPEN in app.commands
 
 
 def test_create_no_cmdline_default_handling(monkeypatch):
@@ -259,6 +268,40 @@ def test_create_with_bad_file(monkeypatch, example_file, capsys):
     assert list(app.windows)[0] == app.documents[0].main_window
     assert_action_performed(app.documents[0].main_window, "create MainWindow")
     assert_action_performed(app.documents[0].main_window, "show")
+
+
+def test_no_backend_support(monkeypatch, example_file):
+    """If the backend doesn't define document commands, no document management commands
+    are created."""
+    orig_standard = DummyCommand.standard
+
+    def mock_standard(app, id):
+        if id == toga.Command.OPEN:
+            return None
+        return orig_standard(app, id)
+
+    # Monkeypatch the backend to *not* create the open command
+    monkeypatch.setattr(DummyCommand, "standard", mock_standard)
+
+    # Mock the command line to open a file.
+    monkeypatch.setattr(sys, "argv", ["app-exe", str(example_file)])
+
+    app = ExampleDocumentApp(
+        "Test App",
+        "org.beeware.document-app",
+        document_types={
+            # Register ExampleDocument with 2 extensions
+            "foobar": ExampleDocument,
+        },
+    )
+
+    # Menus and commands have been created
+    assert_action_performed(app, "create App commands")
+    assert_action_performed(app, "create App menus")
+
+    # 2 menu items have been created (About and Exit). Open hasn't been created.
+    assert app._impl.n_menu_items == 2
+    assert toga.Command.OPEN not in app.commands
 
 
 def test_close_last_document_non_persistent(monkeypatch, example_file, other_file):
