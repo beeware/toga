@@ -1,6 +1,6 @@
 import sys
 
-from toga import Command as StandardCommand, Group
+from toga import Command as StandardCommand, Group, Key
 from toga_dummy.utils import LoggedObject
 
 
@@ -25,11 +25,41 @@ class Command(LoggedObject):
                 "section": sys.maxsize,
             }
         # ---- File menu ----------------------------------
+        elif id == StandardCommand.NEW:
+            return {
+                "text": "New",
+                "shortcut": Key.MOD_1 + "n",
+                "group": Group.FILE,
+                "section": 0,
+                "order": 0,
+            }
         elif id == StandardCommand.OPEN:
             return {
                 "text": "Open",
                 "group": Group.FILE,
                 "section": 0,
+                "order": 10,
+            }
+        elif id == StandardCommand.SAVE:
+            return {
+                "text": "Save",
+                "group": Group.FILE,
+                "section": 10,
+                "order": 0,
+            }
+        elif id == StandardCommand.SAVE_AS:
+            return {
+                "text": "Save As",
+                "group": Group.FILE,
+                "section": 10,
+                "order": 1,
+            }
+        elif id == StandardCommand.SAVE_ALL:
+            return {
+                "text": "Save All",
+                "group": Group.FILE,
+                "section": 10,
+                "order": 2,
             }
         # ---- Help menu ----------------------------------
         elif id == StandardCommand.ABOUT:

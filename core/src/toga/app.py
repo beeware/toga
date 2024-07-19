@@ -14,7 +14,7 @@ from weakref import WeakValueDictionary
 
 from toga.command import Command, CommandSet
 from toga.dialogs import ConfirmDialog, OpenFileDialog, SaveFileDialog
-from toga.handlers import overridable, overridden, simple_handler, wrapped_handler
+from toga.handlers import simple_handler, wrapped_handler
 from toga.hardware.camera import Camera
 from toga.hardware.location import Location
 from toga.icons import Icon
@@ -626,8 +626,10 @@ class App:
                             )
                             if i > 0:
                                 command.shortcut = None
-                                command.id = f"{command.id}:{extension}"
-                                command.order = command.order + i
+                                command._id = f"{command.id}:{extension}"
+                                command.order = command.order + len(
+                                    known_document_classes
+                                )
 
                             self.commands.add(command)
                             known_document_classes.add(document_class)
@@ -665,17 +667,13 @@ class App:
             try:
                 # Pass in the first document type as the default
                 default_doc_type = next(iter(self.document_types.values()))
-                self.new(default_doc_type)
+                self._new(default_doc_type)
             except StopIteration:
-                # No document types defined. If `new` has been overridden,
-                # we can invoke it without arguments.
-                if overridden(self.new):
-                    self.new()
-                else:
-                    raise ValueError(
-                        "App doesn't define any initial windows, doesn't override new, "
-                        "and doesn't have a default document type."
-                    )
+                # No document types defined.
+                raise ValueError(
+                    "App doesn't define any initial windows, "
+                    "and doesn't have a default document type."
+                )
 
     def _startup(self) -> None:
         # Install the standard commands. This is done *before* startup so the user's

@@ -102,7 +102,7 @@ def test_create_no_cmdline_no_document_types(monkeypatch):
     with pytest.raises(
         ValueError,
         match=(
-            r"App doesn't define any initial windows, doesn't override new, "
+            r"App doesn't define any initial windows, "
             r"and doesn't have a default document type."
         ),
     ):
@@ -119,7 +119,13 @@ def test_create_no_cmdline(monkeypatch):
     app = ExampleDocumentApp(
         "Test App",
         "org.beeware.document-app",
-        document_types={"foobar": ExampleDocument},
+        document_types={
+            # Register ExampleDocument with 2 extensions
+            "foobar": ExampleDocument,
+            "fbr": ExampleDocument,
+            # Register a second document type
+            "other": OtherDocument,
+        },
     )
 
     # An untitled document has been created
@@ -137,9 +143,22 @@ def test_create_no_cmdline(monkeypatch):
     assert_action_performed(app, "create App commands")
     assert_action_performed(app, "create App menus")
 
-    # 3 menu items have been created (Open, About and Exit).
-    assert app._impl.n_menu_items == 3
+    # 8 menu items have been created (About, Exit, plus document management cmds).
+    assert app._impl.n_menu_items == 8
+    assert toga.Command.NEW in app.commands
+    assert app.commands[toga.Command.NEW].text == "New Example Document"
+    assert app.commands[toga.Command.NEW].shortcut is not None
+    assert app.commands[toga.Command.NEW].order == 0
+
+    assert f"{toga.Command.NEW}:other" in app.commands
+    assert app.commands[f"{toga.Command.NEW}:other"].text == "New Other Document"
+    assert app.commands[f"{toga.Command.NEW}:other"].shortcut is None
+    assert app.commands[f"{toga.Command.NEW}:other"].order == 1
+
     assert toga.Command.OPEN in app.commands
+    assert toga.Command.SAVE in app.commands
+    assert toga.Command.SAVE_AS in app.commands
+    assert toga.Command.SAVE_ALL in app.commands
 
 
 def test_create_no_cmdline_default_handling(monkeypatch):
@@ -194,6 +213,16 @@ def test_create_with_cmdline(monkeypatch, example_file):
     assert list(app.windows)[0] == app.documents[0].main_window
     assert_action_performed(app.documents[0].main_window, "create MainWindow")
     assert_action_performed(app.documents[0].main_window, "show")
+
+    # 7 menu items have been created (About, Exit, plus document management cmds).
+    # There's only one document type, so there's a single New command
+    assert app._impl.n_menu_items == 7
+    assert toga.Command.NEW in app.commands
+    assert app.commands[toga.Command.NEW].text == "New"
+    assert toga.Command.OPEN in app.commands
+    assert toga.Command.SAVE in app.commands
+    assert toga.Command.SAVE_AS in app.commands
+    assert toga.Command.SAVE_ALL in app.commands
 
 
 def test_create_with_unknown_document_type(monkeypatch, capsys):
@@ -276,9 +305,46 @@ def test_create_with_bad_file(monkeypatch, example_file, capsys):
     assert_action_performed(app.documents[0].main_window, "show")
 
 
-def test_no_backend_support(monkeypatch, example_file):
-    """If the backend doesn't define document commands, no document management commands
-    are created."""
+def test_no_backend_new_support(monkeypatch, example_file):
+    """If the backend doesn't define support for new, the commands are not created."""
+    orig_standard = DummyCommand.standard
+
+    def mock_standard(app, id):
+        if id == toga.Command.NEW:
+            return None
+        return orig_standard(app, id)
+
+    # Monkeypatch the backend to *not* create the new command
+    monkeypatch.setattr(DummyCommand, "standard", mock_standard)
+
+    # Mock the command line to open a file.
+    monkeypatch.setattr(sys, "argv", ["app-exe", str(example_file)])
+
+    app = ExampleDocumentApp(
+        "Test App",
+        "org.beeware.document-app",
+        document_types={
+            "foobar": ExampleDocument,
+        },
+    )
+
+    # Menus and commands have been created
+    assert_action_performed(app, "create App commands")
+    assert_action_performed(app, "create App menus")
+
+    # 6 menu items have been created (About and Exit). File management
+    # commands exist, *except* for NEW
+    assert app._impl.n_menu_items == 6
+    assert toga.Command.NEW not in app.commands
+    assert toga.Command.OPEN in app.commands
+    assert toga.Command.SAVE in app.commands
+    assert toga.Command.SAVE_AS in app.commands
+    assert toga.Command.SAVE_ALL in app.commands
+
+
+def test_no_backend_other_support(monkeypatch, example_file):
+    """If the backend doesn't define support for other document commands, those commands
+    not are created."""
     orig_standard = DummyCommand.standard
 
     def mock_standard(app, id):
@@ -305,9 +371,14 @@ def test_no_backend_support(monkeypatch, example_file):
     assert_action_performed(app, "create App commands")
     assert_action_performed(app, "create App menus")
 
-    # 2 menu items have been created (About and Exit). Open hasn't been created.
-    assert app._impl.n_menu_items == 2
+    # 6 menu items have been created (About and Exit). File management
+    # commands exist, *except* for Open
+    assert app._impl.n_menu_items == 6
+    assert toga.Command.NEW in app.commands
     assert toga.Command.OPEN not in app.commands
+    assert toga.Command.SAVE in app.commands
+    assert toga.Command.SAVE_AS in app.commands
+    assert toga.Command.SAVE_ALL in app.commands
 
 
 def test_close_last_document_non_persistent(monkeypatch, example_file, other_file):
@@ -490,7 +561,7 @@ def test_save_menu(doc_app, example_file):
     assert first_doc.path == example_file
 
     # Open a second new document
-    second_doc = doc_app.new(ExampleDocument)
+    second_doc = doc_app._new(ExampleDocument)
 
     # Activate the save menu
     future = doc_app.commands[toga.Command.SAVE].action()
@@ -527,7 +598,7 @@ def test_save_menu_untitled(doc_app, example_file, tmp_path):
     assert first_doc.path == example_file
 
     # Open a second new document, set to be current
-    second_doc = doc_app.new(ExampleDocument)
+    second_doc = doc_app._new(ExampleDocument)
     doc_app.current_window = second_doc.main_window
 
     # Prime the save dialog on the second window
@@ -554,7 +625,7 @@ def test_save_menu_untitled_cancel(doc_app, example_file, tmp_path):
     assert first_doc.path == example_file
 
     # Open a second new document, set to be current
-    second_doc = doc_app.new(ExampleDocument)
+    second_doc = doc_app._new(ExampleDocument)
     doc_app.current_window = second_doc.main_window
 
     # Prime the save dialog on the second window
@@ -576,7 +647,7 @@ def test_save_menu_untitled_overwrite(doc_app, example_file, tmp_path):
     assert first_doc.path == example_file
 
     # Open a second new document, set to be current
-    second_doc = doc_app.new(ExampleDocument)
+    second_doc = doc_app._new(ExampleDocument)
     doc_app.current_window = second_doc.main_window
 
     # Prime the save dialog on the second window to save using the existing filename,
@@ -605,7 +676,7 @@ def test_save_menu_untitled_overwrite_reconsidered(doc_app, example_file, tmp_pa
     assert first_doc.path == example_file
 
     # Open a second new document, set to be current
-    second_doc = doc_app.new(ExampleDocument)
+    second_doc = doc_app._new(ExampleDocument)
     doc_app.current_window = second_doc.main_window
 
     # Prime the save dialog on the second window to save using the existing filename,
@@ -637,7 +708,7 @@ def test_save_menu_non_document(doc_app, example_file):
     assert first_doc.path == example_file
 
     # Open a second new document
-    second_doc = doc_app.new(ExampleDocument)
+    second_doc = doc_app._new(ExampleDocument)
 
     # Open a non-document window, and make it current
     third_window = toga.Window(title="Not a document")
@@ -659,7 +730,7 @@ def test_save_as_menu(doc_app, example_file, tmp_path):
     assert first_doc.path == example_file
 
     # Open a second new document
-    second_doc = doc_app.new(ExampleDocument)
+    second_doc = doc_app._new(ExampleDocument)
 
     # Prime the save dialog on the first window
     path = tmp_path / "path/to/filename2.foobar"
@@ -704,7 +775,7 @@ def test_save_as_menu_untitled(doc_app, example_file, tmp_path):
     assert first_doc.path == example_file
 
     # Open a second new document, set to be current
-    second_doc = doc_app.new(ExampleDocument)
+    second_doc = doc_app._new(ExampleDocument)
     doc_app.current_window = second_doc.main_window
 
     # Prime the save dialog on the second window
@@ -731,7 +802,7 @@ def test_save_as_menu_cancel(doc_app, example_file, tmp_path):
     assert first_doc.path == example_file
 
     # Open a second new document
-    second_doc = doc_app.new(ExampleDocument)
+    second_doc = doc_app._new(ExampleDocument)
 
     # Cancel the request to save
     first_doc.main_window._impl.dialog_responses["SaveFileDialog"] = [None]
@@ -752,7 +823,7 @@ def test_save_as_menu_non_document(doc_app, example_file):
     assert first_doc.path == example_file
 
     # Open a second new document
-    second_doc = doc_app.new(ExampleDocument)
+    second_doc = doc_app._new(ExampleDocument)
 
     # Open a non-document window, and make it current
     third_window = toga.Window(title="Not a document")
@@ -774,7 +845,7 @@ def test_save_all_menu(doc_app, example_file, tmp_path):
     assert first_doc.path == example_file
 
     # Open a second new document
-    second_doc = doc_app.new(ExampleDocument)
+    second_doc = doc_app._new(ExampleDocument)
 
     # Open a third window, with no document attached
     third_window = toga.Window(title="Not a document")
