@@ -1,3 +1,5 @@
+import gc
+import weakref
 from unittest.mock import Mock, call
 
 from pytest import fixture
@@ -25,6 +27,16 @@ else:
 @fixture
 async def widget():
     return toga.Switch("Hello")
+
+
+async def test_cleanup():
+    widget = toga.Switch("Hello")
+    ref = weakref.ref(widget)
+
+    del widget
+    gc.collect()
+
+    assert ref() is None
 
 
 async def test_text(widget, probe):

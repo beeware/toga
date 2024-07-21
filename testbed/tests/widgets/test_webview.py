@@ -1,4 +1,6 @@
 import asyncio
+import gc
+import weakref
 from asyncio import wait_for
 from contextlib import nullcontext
 from time import time
@@ -112,6 +114,16 @@ async def widget(on_load):
         # garbage collection for the WebView can run in either thread, just defer GC
         # for it until after the testing thread has joined.
         toga.App.app._gc_protector.append(widget)
+
+
+async def test_cleanup():
+    widget = toga.WebView()
+    ref = weakref.ref(widget)
+
+    del widget
+    gc.collect()
+
+    assert ref() is None
 
 
 async def test_set_url(widget, probe, on_load):

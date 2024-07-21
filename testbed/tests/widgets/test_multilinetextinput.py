@@ -1,3 +1,6 @@
+import gc
+import weakref
+
 import pytest
 
 import toga
@@ -34,6 +37,16 @@ from .test_textinput import (  # noqa: F401
 @pytest.fixture
 async def widget():
     return toga.MultilineTextInput(value="Hello", style=Pack(flex=1))
+
+
+async def test_cleanup():
+    widget = toga.MultilineTextInput(value="Hello")
+    ref = weakref.ref(widget)
+
+    del widget
+    gc.collect()
+
+    assert ref() is None
 
 
 @pytest.fixture

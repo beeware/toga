@@ -1,3 +1,6 @@
+import gc
+import weakref
+
 from pytest import approx, fixture
 
 import toga
@@ -22,6 +25,16 @@ from .properties import (  # noqa: F401
 @fixture
 async def widget():
     return toga.Label("hello, this is a label")
+
+
+async def test_cleanup():
+    widget = toga.Label("hello, this is a label")
+    ref = weakref.ref(widget)
+
+    del widget
+    gc.collect()
+
+    assert ref() is None
 
 
 async def test_multiline(widget, probe):

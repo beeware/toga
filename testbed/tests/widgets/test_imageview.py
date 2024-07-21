@@ -1,3 +1,6 @@
+import gc
+import weakref
+
 import pytest
 
 import toga
@@ -15,6 +18,16 @@ from .properties import (  # noqa: F401
 @pytest.fixture
 async def widget():
     return toga.ImageView(image="resources/sample.png")
+
+
+async def test_cleanup():
+    widget = toga.ImageView(image="resources/sample.png")
+    ref = weakref.ref(widget)
+
+    del widget
+    gc.collect()
+
+    assert ref() is None
 
 
 async def test_implicit_size(widget, probe, container_probe):

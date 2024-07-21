@@ -1,3 +1,5 @@
+import gc
+import weakref
 from unittest.mock import Mock
 
 import pytest
@@ -38,6 +40,16 @@ else:
 @pytest.fixture
 async def widget():
     return toga.Selection(items=["first", "second", "third"])
+
+
+async def test_cleanup():
+    widget = toga.Selection(items=["first", "second", "third"])
+    ref = weakref.ref(widget)
+
+    del widget
+    gc.collect()
+
+    assert ref() is None
 
 
 @pytest.fixture
