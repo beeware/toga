@@ -74,8 +74,6 @@ async def widget(content1, content2, content3, on_select_handler):
 
 
 async def test_cleanup():
-    skip_on_platforms("android", "iOS")
-
     widget = toga.OptionContainer(content=[("Tab 1", toga.Box())])
     ref = weakref.ref(widget)
 
