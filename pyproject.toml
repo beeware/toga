@@ -40,6 +40,8 @@ no-cover-if-missing-PIL = "not is_installed('PIL')"
 no-cover-if-PIL-installed = "is_installed('PIL')"
 no-cover-if-lt-py310 = "sys_version_info < (3, 10) and os_environ.get('COVERAGE_EXCLUDE_PYTHON_VERSION') != 'disable'"
 no-cover-if-gte-py310 = "sys_version_info > (3, 10) and os_environ.get('COVERAGE_EXCLUDE_PYTHON_VERSION') != 'disable'"
+no-cover-if-lt-py39 = "sys_version_info < (3, 9) and os_environ.get('COVERAGE_EXCLUDE_PYTHON_VERSION') != 'disable'"
+no-cover-if-gte-py39 = "sys_version_info > (3, 9) and os_environ.get('COVERAGE_EXCLUDE_PYTHON_VERSION') != 'disable'"
 
 
 [tool.isort]
