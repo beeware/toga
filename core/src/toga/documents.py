@@ -99,7 +99,7 @@ class Document(ABC):
 
     def focus(self):
         """Give the document focus in the app."""
-        self.main_window.show()
+        self.app.current_window = self.main_window
 
     def open(self, path: str | Path):
         """Open a file as a document.

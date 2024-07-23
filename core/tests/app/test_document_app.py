@@ -10,7 +10,6 @@ from toga_dummy.utils import (
     EventLog,
     assert_action_not_performed,
     assert_action_performed,
-    assert_action_performed_with,
 )
 
 
@@ -513,7 +512,6 @@ def test_open_existing_file(doc_app, example_file, other_file):
     assert len(doc_app.windows) == 2
 
     assert other_doc in doc_app.documents
-    assert_action_performed_with(other_doc.main_window, "show")
 
     EventLog.reset()
 
@@ -525,7 +523,7 @@ def test_open_existing_file(doc_app, example_file, other_file):
     assert len(doc_app.windows) == 2
 
     assert repeat_example_doc == example_doc
-    assert_action_performed_with(example_doc.main_window, "show")
+    assert doc_app.current_window == example_doc.main_window
 
 
 def test_new_menu(doc_app):

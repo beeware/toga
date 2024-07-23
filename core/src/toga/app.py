@@ -107,7 +107,7 @@ class DocumentSet(Sequence[Document], Mapping[Path, Document]):
 
         # Look up by path
         for item in self.elements:
-            if item.path == Path(path_or_index).absolute():
+            if item.path == Path(path_or_index).resolve():
                 return item
 
         # No match found
@@ -621,7 +621,7 @@ class App:
         :returns: ``True`` if a document was successfully loaded; ``False`` otherwise.
         """
         try:
-            self.open(Path(filename).absolute())
+            self.open(filename)
             return True
         except FileNotFoundError:
             print(f"Document {filename} not found")
@@ -915,7 +915,7 @@ class App:
             match a registered document type.
         """
         try:
-            path = Path(path).absolute()
+            path = Path(path).resolve()
             document = self.documents[path]
             document.focus()
             return document

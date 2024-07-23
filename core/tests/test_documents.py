@@ -5,6 +5,7 @@ from unittest.mock import Mock
 import pytest
 
 import toga
+from toga_dummy.utils import assert_action_performed_with
 
 
 class MyDoc(toga.Document):
@@ -222,10 +223,10 @@ def test_save_readonly_document(app, tmp_path):
 
 def test_focus(app):
     """A document can be given focus."""
-    doc = MyDoc(app)
+    doc1 = MyDoc(app)
 
-    # Touch the document to mark it as modified
-    doc.focus()
+    # Give the document focus.
+    doc1.focus()
 
-    # Show was invoked on the document's main window. This gives the window focus.
-    doc.main_window.show.assert_called_once_with()
+    # The app's current window has been set.
+    assert_action_performed_with(app, "set_current_window", window=doc1.main_window)
