@@ -897,6 +897,13 @@ class App:
         if hasattr(self, "_open_dialog"):
             return
 
+        # CLOSE_ON_LAST_WINDOW is a proxy for the GTK/Windows behavior of loading content
+        # into the existing window. This is actually implemented by creating a new window
+        # and disposing of the old one; mark the current window for cleanup
+        if self._impl.CLOSE_ON_LAST_WINDOW:
+            if hasattr(self.current_window, "_commit"):
+                self.current_window._replace = await self.current_window._commit()
+
         self._open_dialog = OpenFileDialog(
             self.formal_name,
             file_types=(
@@ -908,6 +915,11 @@ class App:
 
         if path:
             self.open(path)
+        else:
+            # If the open was cancelled, but the current window has a replacement
+            # marker, remove the replacement marker
+            if hasattr(self.current_window, "_replace"):
+                del self.current_window._replace
 
     def open(self, path: Path | str) -> Document:
         """Open a document in this app, and show the document window.
@@ -939,14 +951,27 @@ class App:
                     f"Don't know how to open documents with extension {path.suffix}"
                 )
             else:
+                prev_window = self.current_window
                 document = DocType(app=self)
                 try:
                     document.open(path)
+
+                    # If the previous window is marked for replacement, close it; but
+                    # put the new document window in the same position as the previous
+                    # one.
+                    if getattr(prev_window, "_replace", False):
+                        document.main_window.position = prev_window.position
+                        prev_window.close()
+
                     document.show()
                     return document
                 except Exception:
-                    # Open failed; ensure any windows opened by the document are closed.
+                    # Open failed; ensure any windows opened by the document are closed,
+                    # and remove the replacement marker if it exists.
                     document.close()
+
+                    if hasattr(prev_window, "_replace"):
+                        del prev_window._replace
                     raise
 
     async def replacement_filename(

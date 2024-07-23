@@ -542,8 +542,115 @@ def test_new_menu(doc_app):
     assert new_doc.main_window in doc_app.windows
 
 
-def test_open_menu(doc_app, other_file):
-    """The open method is activated by the open menu."""
+def test_open_menu(doc_app, example_file, other_file):
+    """The open menu item replaces the current document window."""
+    # There is initially 1 document, and 1 window
+    assert len(doc_app.documents) == 1
+    assert len(doc_app.windows) == 1
+    assert doc_app.documents[0].path == example_file
+    orig_position = doc_app.documents[0].main_window.position
+
+    # Select the other file as the new document
+    doc_app._impl.dialog_responses["OpenFileDialog"] = [other_file]
+
+    future = doc_app.commands[toga.Command.OPEN].action()
+    doc_app.loop.run_until_complete(future)
+
+    # There is still only 1 document, and 1 window
+    assert len(doc_app.documents) == 1
+    assert len(doc_app.windows) == 1
+
+    # The second document is the one we just loaded
+    new_doc = doc_app.documents[-1]
+    assert new_doc.path == other_file
+    assert new_doc.main_window.doc == new_doc
+    assert new_doc.main_window in doc_app.windows
+
+    # New window is in the same position as the old one.
+    assert new_doc.main_window.position == orig_position
+
+
+def test_open_menu_save_existing(doc_app, example_file, other_file):
+    """The user can choose to save existing changes before opening a new file."""
+    # There is initially 1 document, and 1 window
+    assert len(doc_app.documents) == 1
+    assert len(doc_app.windows) == 1
+    example_doc = doc_app.documents[0]
+    assert example_doc.path == example_file
+    orig_position = doc_app.documents[0].main_window.position
+
+    # Mark document 1 as modified; approve the save, and open other_file
+    example_doc.touch()
+    example_doc.main_window._impl.dialog_responses["QuestionDialog"] = [True]
+    doc_app._impl.dialog_responses["OpenFileDialog"] = [other_file]
+
+    future = doc_app.commands[toga.Command.OPEN].action()
+    doc_app.loop.run_until_complete(future)
+
+    # There is still only 1 document, and 1 window
+    assert len(doc_app.documents) == 1
+    assert len(doc_app.windows) == 1
+
+    # The second document is the one we just loaded
+    new_doc = doc_app.documents[-1]
+    assert new_doc.path == other_file
+    assert new_doc.main_window.doc == new_doc
+    assert new_doc.main_window in doc_app.windows
+
+    # New window is in the same position as the old one.
+    assert new_doc.main_window.position == orig_position
+
+    # The example doc has been saved
+    assert not example_doc.is_modified
+
+
+def test_open_menu_no_save_existing(doc_app, example_file, other_file):
+    """The user can choose not to save existing changes before opening a new file."""
+    # There is initially 1 document, and 1 window
+    assert len(doc_app.documents) == 1
+    assert len(doc_app.windows) == 1
+    example_doc = doc_app.documents[0]
+    assert example_doc.path == example_file
+    orig_position = doc_app.documents[0].main_window.position
+
+    # Mark document 1 as modified; don't save, and open other_file
+    example_doc.touch()
+    example_doc.main_window._impl.dialog_responses["QuestionDialog"] = [False]
+    doc_app._impl.dialog_responses["OpenFileDialog"] = [other_file]
+
+    future = doc_app.commands[toga.Command.OPEN].action()
+    doc_app.loop.run_until_complete(future)
+
+    # There is still only 1 document, and 1 window
+    assert len(doc_app.documents) == 1
+    assert len(doc_app.windows) == 1
+
+    # The second document is the one we just loaded
+    new_doc = doc_app.documents[-1]
+    assert new_doc.path == other_file
+    assert new_doc.main_window.doc == new_doc
+    assert new_doc.main_window in doc_app.windows
+
+    # New window is in the same position as the old one.
+    assert new_doc.main_window.position == orig_position
+
+    # The example doc has not been saved
+    assert example_doc.is_modified
+
+
+def test_open_menu_no_replace(monkeypatch, doc_app, example_file, other_file):
+    """If the backend doesn't close on last window, open creates a new window."""
+    # Monkeypatch the property that makes the backend persistent
+    monkeypatch.setattr(DummyApp, "CLOSE_ON_LAST_WINDOW", False)
+
+    # There is initially 1 document, and 1 window
+    assert len(doc_app.documents) == 1
+    assert len(doc_app.windows) == 1
+    example_doc = doc_app.documents[0]
+    assert example_doc.path == example_file
+    orig_position = doc_app.documents[0].main_window.position
+
+    # Select the other file as the new document
     doc_app._impl.dialog_responses["OpenFileDialog"] = [other_file]
 
     future = doc_app.commands[toga.Command.OPEN].action()
@@ -552,12 +659,17 @@ def test_open_menu(doc_app, other_file):
     # There are now 2 documents, and 2 windows
     assert len(doc_app.documents) == 2
     assert len(doc_app.windows) == 2
+    assert doc_app.documents[0].path == example_file
+    assert doc_app.documents[1].path == other_file
 
     # The second document is the one we just loaded
-    new_doc = doc_app.documents[1]
+    new_doc = doc_app.documents[-1]
     assert new_doc.path == other_file
     assert new_doc.main_window.doc == new_doc
     assert new_doc.main_window in doc_app.windows
+
+    # New window is *not* in the same position as the old one.
+    assert new_doc.main_window.position != orig_position
 
 
 def test_open_menu_cancel(doc_app):
@@ -571,9 +683,30 @@ def test_open_menu_cancel(doc_app):
     assert len(doc_app.documents) == 1
     assert len(doc_app.windows) == 1
 
+    # The replace attribute has been removed.
+    assert not hasattr(doc_app.documents[0].main_window, "_replace")
+
+
+def test_open_menu_cancel_no_replace(monkeypatch, doc_app):
+    """If the replace attribute was never set, it won't be removed."""
+    # Monkeypatch the property that makes the backend persistent
+    monkeypatch.setattr(DummyApp, "CLOSE_ON_LAST_WINDOW", False)
+
+    doc_app._impl.dialog_responses["OpenFileDialog"] = [None]
+
+    future = doc_app.commands[toga.Command.OPEN].action()
+    doc_app.loop.run_until_complete(future)
+
+    # No second window was opened
+    assert len(doc_app.documents) == 1
+    assert len(doc_app.windows) == 1
+
+    # The replace attribute has been removed.
+    assert not hasattr(doc_app.documents[0].main_window, "_replace")
+
 
 def test_open_menu_duplicate(doc_app, example_file):
-    """If the open method is activated by the open menu."""
+    """The open menu is modal."""
     # Mock a pre-existing open dialog
     doc_app._open_dialog = Mock()
 
@@ -585,6 +718,54 @@ def test_open_menu_duplicate(doc_app, example_file):
     # There is still only one document
     assert len(doc_app.documents) == 1
     assert len(doc_app.windows) == 1
+
+
+def test_open_menu_read_fail(monkeypatch, doc_app, example_file, other_file):
+    """If the new file open fails, the existing window won't be cleaned up."""
+    # Mock a reading error.
+    monkeypatch.setattr(OtherDocument, "read_error", ValueError("Bad file. No cookie."))
+
+    doc_app._impl.dialog_responses["OpenFileDialog"] = [other_file]
+
+    future = doc_app.commands[toga.Command.OPEN].action()
+    doc_app.loop.run_until_complete(future)
+
+    # No second window was opened; the open window is the old file.
+    assert len(doc_app.documents) == 1
+    assert len(doc_app.windows) == 1
+    assert doc_app.documents[0].path == example_file
+
+    # The replace attribute has been removed.
+    assert not hasattr(doc_app.documents[0].main_window, "_replace")
+
+
+def test_open_non_document_window(doc_app, example_file, other_file):
+    """If the current window isn't a document window, commit/cleanup behavior isn't used."""
+    # Make a non-document window current.
+    non_doc_window = toga.Window(title="Not a Document", content=toga.Box())
+    non_doc_window.show()
+    doc_app.current_window = non_doc_window
+
+    # There is 1 document, but 2 windows
+    assert len(doc_app.documents) == 1
+    assert len(doc_app.windows) == 2
+    assert doc_app.documents[0].path == example_file
+
+    # Open a new file.
+    doc_app._impl.dialog_responses["OpenFileDialog"] = [other_file]
+
+    future = doc_app.commands[toga.Command.OPEN].action()
+    doc_app.loop.run_until_complete(future)
+
+    # There is now 2 documents, and 3 windows
+    assert len(doc_app.documents) == 2
+    assert len(doc_app.windows) == 3
+    assert doc_app.documents[0].path == example_file
+    assert doc_app.documents[1].path == other_file
+
+    # There are no replace attributes.
+    assert not hasattr(doc_app.documents[0].main_window, "_replace")
+    assert not hasattr(non_doc_window, "_replace")
 
 
 def test_save_menu(doc_app, example_file):

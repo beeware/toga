@@ -892,6 +892,12 @@ class DocumentMainWindow(MainWindow):
                 return await self.save()
         return True
 
+    async def _commit(self):
+        # Get the window into a state where new content could be opened.
+        # Used by the open method on GTK/Linux to ensure the current document
+        # has been saved before closing this window and opening a replacement.
+        return await self._confirm_close(self)
+
     def _close(self):
         # When then window is closed, remove the document it is managing from the app's
         # list of managed documents.
