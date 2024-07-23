@@ -31,7 +31,7 @@ class Document(ABC):
         self.create()
 
         # Add the document to the list of managed documents.
-        self.app._documents.append(self)
+        self.app._documents._add(self)
 
     ######################################################################
     # Document properties
@@ -99,7 +99,7 @@ class Document(ABC):
 
     def focus(self):
         """Give the document focus in the app."""
-        self.main_window.focus()
+        self.main_window.show()
 
     def open(self, path: str | Path):
         """Open a file as a document.

@@ -7,15 +7,16 @@ import toga
 from toga_dummy.app import App as DummyApp
 from toga_dummy.command import Command as DummyCommand
 from toga_dummy.utils import (
+    EventLog,
     assert_action_not_performed,
     assert_action_performed,
+    assert_action_performed_with,
 )
 
 
 class ExampleDocument(toga.Document):
     document_type = "Example Document"
     read_error = None
-    write_error = None
 
     def create(self):
         self.main_window = toga.DocumentMainWindow(self)
@@ -39,12 +40,15 @@ class ExampleDocument(toga.Document):
 
 class OtherDocument(toga.Document):
     document_type = "Other Document"
+    read_error = None
 
     def create(self):
         self.main_window = toga.DocumentMainWindow(self)
 
     def read(self):
-        pass
+        if self.read_error:
+            # If the object has a "read_error" attribute, raise that exception
+            raise self.read_error
 
 
 @pytest.fixture
@@ -478,19 +482,50 @@ def test_open_missing_file(doc_app):
     assert len(doc_app.windows) == 1
 
 
-def test_open_bad_file(monkeypatch, doc_app, example_file):
+def test_open_bad_file(monkeypatch, doc_app, other_file):
     """If an error occurs reading the document, an error is logged is raised."""
+
     # Mock a reading error.
-    monkeypatch.setattr(
-        ExampleDocument, "read_error", ValueError("Bad file. No cookie.")
-    )
+    monkeypatch.setattr(OtherDocument, "read_error", ValueError("Bad file. No cookie."))
 
     with pytest.raises(ValueError, match=r"Bad file. No cookie."):
-        doc_app.open(example_file)
+        doc_app.open(other_file)
 
     # Only the original document and window exists
     assert len(doc_app.documents) == 1
     assert len(doc_app.windows) == 1
+
+
+def test_open_existing_file(doc_app, example_file, other_file):
+    """If a document is already open, the existing document instance is returned and focused."""
+    # Only the original document and window exists
+    assert len(doc_app.documents) == 1
+    assert len(doc_app.windows) == 1
+
+    # Retrieve the existing document by filename.
+    example_doc = doc_app.documents[example_file]
+
+    # Open a new document.
+    other_doc = doc_app.open(other_file)
+
+    # There are now 2 documents, each with a window
+    assert len(doc_app.documents) == 2
+    assert len(doc_app.windows) == 2
+
+    assert other_doc in doc_app.documents
+    assert_action_performed_with(other_doc.main_window, "show")
+
+    EventLog.reset()
+
+    # Open the example doc
+    repeat_example_doc = doc_app.open(example_file)
+
+    # There are still only 2 documents
+    assert len(doc_app.documents) == 2
+    assert len(doc_app.windows) == 2
+
+    assert repeat_example_doc == example_doc
+    assert_action_performed_with(example_doc.main_window, "show")
 
 
 def test_new_menu(doc_app):
@@ -509,9 +544,9 @@ def test_new_menu(doc_app):
     assert new_doc.main_window in doc_app.windows
 
 
-def test_open_menu(doc_app, example_file):
+def test_open_menu(doc_app, other_file):
     """The open method is activated by the open menu."""
-    doc_app._impl.dialog_responses["OpenFileDialog"] = [example_file]
+    doc_app._impl.dialog_responses["OpenFileDialog"] = [other_file]
 
     future = doc_app.commands[toga.Command.OPEN].action()
     doc_app.loop.run_until_complete(future)
@@ -522,7 +557,7 @@ def test_open_menu(doc_app, example_file):
 
     # The second document is the one we just loaded
     new_doc = doc_app.documents[1]
-    assert new_doc.path == example_file
+    assert new_doc.path == other_file
     assert new_doc.main_window.doc == new_doc
     assert new_doc.main_window in doc_app.windows
 

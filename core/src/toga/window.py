@@ -895,7 +895,7 @@ class DocumentMainWindow(MainWindow):
     def _close(self):
         # When then window is closed, remove the document it is managing from the app's
         # list of managed documents.
-        self._app._documents.remove(self.doc)
+        self._app._documents._remove(self.doc)
         super()._close()
 
     async def save(self):

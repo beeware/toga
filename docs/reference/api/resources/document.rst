@@ -98,5 +98,4 @@ Reference
 ---------
 
 .. autoclass:: toga.Document
-   :members:
-   :undoc-members:
+.. autoclass:: toga.app.DocumentSet

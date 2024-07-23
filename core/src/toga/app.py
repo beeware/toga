@@ -9,11 +9,12 @@ import webbrowser
 from collections.abc import Coroutine, Iterator
 from email.message import Message
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, MutableSet, Protocol
+from typing import TYPE_CHECKING, Any, Mapping, MutableSet, Protocol, Sequence
 from weakref import WeakValueDictionary
 
 from toga.command import Command, CommandSet
 from toga.dialogs import ConfirmDialog, OpenFileDialog, SaveFileDialog
+from toga.documents import Document
 from toga.handlers import simple_handler, wrapped_handler
 from toga.hardware.camera import Camera
 from toga.hardware.location import Location
@@ -26,7 +27,6 @@ from toga.window import MainWindow, Window
 
 if TYPE_CHECKING:
     from toga.dialogs import Dialog
-    from toga.documents import Document
     from toga.icons import IconContentT
 
 # Make sure deprecation warnings are shown by default
@@ -79,6 +79,51 @@ class BackgroundTask(Protocol):
         :param kwargs: Ensures compatibility with additional arguments introduced in
             future versions.
         """
+
+
+class DocumentSet(Sequence[Document], Mapping[Path, Document]):
+    def __init__(self):
+        """A collection of documents managed by an app.
+
+        A document is automatically added to the app when it is created, and removed
+        when it is closed. The document collection will be stored in the order that
+        documents were created.
+        """
+        self.elements: list[Document] = []
+
+    def __iter__(self) -> Iterator[Document]:
+        return iter(self.elements)
+
+    def __contains__(self, value: object) -> bool:
+        return value in self.elements
+
+    def __len__(self) -> int:
+        return len(self.elements)
+
+    def __getitem__(self, path_or_index):
+        # Look up by index
+        if isinstance(path_or_index, int):
+            return self.elements[path_or_index]
+
+        # Look up by path
+        for item in self.elements:
+            if item.path == Path(path_or_index).absolute():
+                return item
+
+        # No match found
+        raise KeyError(path_or_index)
+
+    def _add(self, document: Path):
+        if document in self:
+            raise ValueError("Document is already being managed.")
+
+        self.elements.append(document)
+
+    def _remove(self, document: Path):
+        if document not in self:
+            raise ValueError("Document is not being managed.")
+
+        self.elements.remove(document)
 
 
 class WindowSet(MutableSet[Window]):
@@ -378,9 +423,9 @@ class App:
         else:
             self.icon = icon
 
-        # Set up the document types and list of documents being managed.
+        # Set up the document types and collection of documents being managed.
         self._document_types = {} if document_types is None else document_types
-        self._documents = []
+        self._documents = DocumentSet()
 
         # Install the lifecycle handlers. If passed in as an argument, or assigned using
         # `app.on_event = my_handler`, the event handler will take the app as the first
@@ -751,7 +796,7 @@ class App:
         return self._document_types
 
     @property
-    def documents(self) -> list[Document]:
+    def documents(self) -> DocumentSet:
         """The list of documents associated with this app."""
         return self._documents
 
@@ -861,6 +906,9 @@ class App:
     def open(self, path: Path | str) -> Document:
         """Open a document in this app, and show the document window.
 
+        If the provided path is already an open document, the existing representation for
+        the document will be given focus.
+
         :param path: The path to the document to be opened.
         :returns: The document that was opened.
         :raises ValueError: If the path describes a file that is of a type that doesn't
@@ -868,21 +916,27 @@ class App:
         """
         try:
             path = Path(path).absolute()
-            DocType = self.document_types[path.suffix[1:]]
+            document = self.documents[path]
+            document.focus()
+            return document
         except KeyError:
-            raise ValueError(
-                f"Don't know how to open documents with extension {path.suffix}"
-            )
-        else:
-            document = DocType(app=self)
+            # No existing representation for the document.
             try:
-                document.open(path)
-                document.show()
-                return document
-            except Exception:
-                # Open failed; make sure any windows opened by the document are closed.
-                document.close()
-                raise
+                DocType = self.document_types[path.suffix[1:]]
+            except KeyError:
+                raise ValueError(
+                    f"Don't know how to open documents with extension {path.suffix}"
+                )
+            else:
+                document = DocType(app=self)
+                try:
+                    document.open(path)
+                    document.show()
+                    return document
+                except Exception:
+                    # Open failed; ensure any windows opened by the document are closed.
+                    document.close()
+                    raise
 
     async def replacement_filename(
         self,

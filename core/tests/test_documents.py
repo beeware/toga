@@ -227,5 +227,5 @@ def test_focus(app):
     # Touch the document to mark it as modified
     doc.focus()
 
-    # Focus was invoked on the document's main window.
-    doc.main_window.focus.assert_called_once_with()
+    # Show was invoked on the document's main window. This gives the window focus.
+    doc.main_window.show.assert_called_once_with()
