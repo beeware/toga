@@ -8,4 +8,4 @@ The API for ``Document`` subclasses has also changed:
 
 * The ``document_type`` is now specified as a class property; and
 
-* The ``can_close()`` handler is no longer honored. It should be converted into a normal ``on_close`` handler and explicitly installed on the document's ``main_window``.
+* The ``can_close()`` handler is no longer honored. Documents now track if they are modified, and have a default ``on_close`` handler that uses the modification status of a document to control whether a document can close. Invoking ``touch()`` on document will mark a document as modified. This modification flag is cleared by saving the document.

@@ -147,7 +147,7 @@ class Window(LoggedObject):
 
     def simulate_close(self):
         result = self.interface.on_close()
-        if asyncio.iscoroutine(result):
+        if isinstance(result, asyncio.Task):
             self.interface.app.loop.run_until_complete(result)
 
 

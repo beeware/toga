@@ -107,7 +107,8 @@ different on each platform, reflecting platform differences.
 
 On macOS, the app is allowed to continue running without having any open windows. The
 app can open and close windows as required; the app will keep running until explicitly
-exited.
+exited. If you give the app focus when it has no open windows, a file dialog will be
+displayed prompting you to select a file to open.
 
 On Linux and Windows, when an app closes the last window it is managing, the app will
 automatically exit. Attempting to close the last window will trigger any app-level

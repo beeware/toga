@@ -25,8 +25,9 @@ class Document(ABC):
         self._path: Path | None = None
         self._app = app
         self._main_window: Window | None = None
+        self._modified = False
 
-        # Create the visual representation of the document
+        # Create the visual representation of the document.
         self.create()
 
         # Add the document to the list of managed documents.
@@ -79,6 +80,11 @@ class Document(ABC):
         """
         return f"{self.document_type}: {self.path.stem if self.path else 'Untitled'}"
 
+    @property
+    def is_modified(self):
+        """Has the document been modified?"""
+        return self._modified
+
     ######################################################################
     # Document operations
     ######################################################################
@@ -90,6 +96,10 @@ class Document(ABC):
         ``on_close`` handlers.
         """
         self.main_window.close()
+
+    def focus(self):
+        """Give the document focus in the app."""
+        self.main_window.focus()
 
     def open(self, path: str | Path):
         """Open a file as a document.
@@ -104,6 +114,8 @@ class Document(ABC):
 
         # Set the title of the document window to match the path
         self._main_window.title = self._main_window._default_title
+        # Document is initially unmodified
+        self._modified = False
 
     def save(self, path: str | Path | None = None):
         """Save the document as a file.
@@ -120,10 +132,20 @@ class Document(ABC):
                 # Re-set the title of the document with the new path
                 self._main_window.title = self._main_window._default_title
             self.write()
+            # Clear the modification flag.
+            self._modified = False
 
     def show(self) -> None:
         """Show the visual representation for this document."""
         self.main_window.show()
+
+    def touch(self, *args, **kwargs):
+        """Mark the document as modified.
+
+        This method accepts `*args` and `**kwargs` so that it can be used as an
+        ``on_change`` handler; these arguments are not used.
+        """
+        self._modified = True
 
     ######################################################################
     # Abstract interface

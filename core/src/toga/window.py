@@ -859,19 +859,38 @@ class DocumentMainWindow(MainWindow):
         In addition to the required ``doc`` argument, accepts the same arguments as
         :class:`~toga.Window`.
 
+        The default ``on_close`` handler will use the document's modification status to
+        determine if the document has been modified. It will allow the window to close
+        if the document is fully saved, or the user explicitly declines the opportunity
+        to save.
+
         :param doc: The document being managed by this window
         """
         self._doc = doc
+        if "on_close" not in kwargs:
+            kwargs["on_close"] = self._confirm_close
+
         super().__init__(*args, **kwargs)
 
     @property
     def doc(self) -> Document:
-        """The document managed by this window"""
+        """The document displayed by this window."""
         return self._doc
 
     @property
     def _default_title(self) -> str:
         return self.doc.title
+
+    async def _confirm_close(self, window, **kwargs):
+        if self.doc.is_modified:
+            if await self.dialog(
+                toga.QuestionDialog(
+                    "Are you sure?",
+                    "This document has unsaved changes. Do you want to save these changes?",
+                )
+            ):
+                return await self.save()
+        return True
 
     def _close(self):
         # When then window is closed, remove the document it is managing from the app's
@@ -885,18 +904,27 @@ class DocumentMainWindow(MainWindow):
         If the document associated with a window hasn't been saved before, and the
         document type defines a :meth:`~toga.Document.write` method, the user will be
         prompted to provide a filename.
+
+        :returns: True if the save was successful; False if the save was aborted.
         """
         if overridden(self.doc.write):
             if self.doc.path:
+                # Document has been saved previously; save using that filename.
                 self.doc.save()
+                return True
             else:
-                suggested_name = f"Untitled{self.doc.default_extension}"
+                # Document has not been saved previously; prompt for a filename.
+                suggested_name = f"Untitled.{self.doc.default_extension}"
                 new_path = await self.app.replacement_filename(
                     suggested_name,
                     window=self,
                 )
+                # If a replacement filename has been provided, save using that filename.
+                # If there isn't a replacement filename, the save was cancelled.
                 if new_path:
                     self.doc.save(new_path)
+                    return True
+        return False
 
     async def save_as(self):
         """Save the document associated with this window under a new filename.
@@ -904,12 +932,14 @@ class DocumentMainWindow(MainWindow):
         The default implementation will prompt the user for a new filename, then save
         the document with that new filename. If the document type doesn't define a
         :meth:`~toga.Document.write` method, the save-as request will be ignored.
+
+        :returns: True if the save was successful; False if the save was aborted.
         """
         if overridden(self.doc.write):
             suggested_path = (
                 self.doc.path
                 if self.doc.path
-                else f"Untitled{self.doc.default_extension}"
+                else f"Untitled.{self.doc.default_extension}"
             )
             new_path = await self.app.replacement_filename(
                 suggested_path,
@@ -917,3 +947,6 @@ class DocumentMainWindow(MainWindow):
             )
             if new_path:
                 self.doc.save(new_path)
+                return True
+
+        return False

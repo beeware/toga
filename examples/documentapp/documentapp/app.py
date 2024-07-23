@@ -4,27 +4,22 @@ import toga
 class ExampleDocument(toga.Document):
     document_type = "Example Document"
 
-    async def can_close(self, window, **kwargs):
-        return await self.main_window.dialog(
-            toga.QuestionDialog(
-                "Are you sure?",
-                "Do you want to close this document?",
-            )
-        )
-
     def create(self):
-        # Create the main window for the document.
+        # Create the main window for the document. The window has a single widget;
+        # when that widget changes, the document is modified.
         self.main_window = toga.DocumentMainWindow(
             doc=self,
-            content=toga.MultilineTextInput(),
-            on_close=self.can_close,
+            content=toga.MultilineTextInput(on_change=self.touch),
         )
 
     def read(self):
+        # Read the content of the file represented by the document, and populate the
+        # widgets in the main window with that content.
         with self.path.open() as f:
             self.main_window.content.value = f.read()
 
     def write(self):
+        # Save the content currently displayed by the main window.
         with self.path.open("w") as f:
             f.write(self.main_window.content.value)
 
