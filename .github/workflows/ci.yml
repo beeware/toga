@@ -106,7 +106,7 @@ jobs:
         fetch-depth: 0
 
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v5.1.0
+      uses: actions/setup-python@v5.1.1
       with:
         python-version: ${{ matrix.python-version }}
 
@@ -118,7 +118,7 @@ jobs:
         project-root: core
 
     - name: Get Packages
-      uses: actions/download-artifact@v4.1.7
+      uses: actions/download-artifact@v4.1.8
       with:
         pattern: ${{ format('{0}-*', needs.package.outputs.artifact-basename) }}
         merge-multiple: true
@@ -134,7 +134,7 @@ jobs:
         mv core/.coverage core/.coverage.${{ matrix.platform }}.${{ matrix.python-version }}
 
     - name: Store Coverage Data
-      uses: actions/upload-artifact@v4.3.3
+      uses: actions/upload-artifact@v4.3.4
       with:
         name: core-coverage-data-${{ matrix.platform }}-${{ matrix.python-version }}
         path: "core/.coverage.*"
@@ -151,7 +151,7 @@ jobs:
         fetch-depth: 0
 
     - name: Set up Python ${{ env.min_python_version }}
-      uses: actions/setup-python@v5.1.0
+      uses: actions/setup-python@v5.1.1
       with:
         # Use minimum version of python for coverage to avoid phantom branches
         # https://github.com/nedbat/coveragepy/issues/1572#issuecomment-1522546425
@@ -165,7 +165,7 @@ jobs:
         project-root: core
 
     - name: Retrieve Coverage Data
-      uses: actions/download-artifact@v4.1.7
+      uses: actions/download-artifact@v4.1.8
       with:
         pattern: core-coverage-data-*
         path: core
@@ -175,7 +175,7 @@ jobs:
       run: tox -e coverage-html-fail-platform
 
     - name: Upload HTML Coverage Report
-      uses: actions/upload-artifact@v4.3.3
+      uses: actions/upload-artifact@v4.3.4
       if: failure()
       with:
         name: html-coverage-report
@@ -302,7 +302,7 @@ jobs:
         fetch-depth: 0
 
     - name: Set up Python
-      uses: actions/setup-python@v5.1.0
+      uses: actions/setup-python@v5.1.1
       if: matrix.setup-python
       with:
         # We're not using Python 3.11 yet, because:
@@ -326,7 +326,7 @@ jobs:
           briefcase run ${{ matrix.platform }} --log --test ${{ matrix.briefcase-run-args }} -- --ci
 
     - name: Upload Logs
-      uses: actions/upload-artifact@v4.3.3
+      uses: actions/upload-artifact@v4.3.4
       if: failure()
       with:
         name: testbed-failure-logs-${{ matrix.backend }}
@@ -339,7 +339,7 @@ jobs:
         cp -r "${{ matrix.app-user-data-path }}" testbed/app_data/testbed-app_data-${{ matrix.backend }}
 
     - name: Upload App Data
-      uses: actions/upload-artifact@v4.3.3
+      uses: actions/upload-artifact@v4.3.4
       if: failure() && matrix.backend != 'android'
       with:
         name: testbed-failure-app-data-${{ matrix.backend }}
