@@ -21,7 +21,7 @@ class OptionContainer(Widget):
         # likely need to retrieve the current tab, we need to defer triggering
         # on_select() until we know current_page will return the correct value.
         # We do this by deferring the callback to execute on the event loop.
-        asyncio.get_event_loop().call_soon_threadsafe(self.interface.on_select)
+        asyncio.get_event_loop().call_soon(self.interface.on_select)
 
     def add_option(self, index, text, widget, icon):
         sub_container = TogaContainer()
