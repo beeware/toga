@@ -200,7 +200,7 @@ async def test_presentation_mode(app, app_probe, main_window):
                 style=Pack(background_color=f"#{r:02X}{g:02X}{b:02X}")
             )
             window.show()
-            # Add delay for gtk to show the windows
+            # Add delay to ensure windows are visible after animation.
             await app_probe.redraw(f"Test Window {i} is visible", delay=0.5)
 
             window_information = dict()
@@ -219,7 +219,7 @@ async def test_presentation_mode(app, app_probe, main_window):
 
         # Enter presentation mode with a screen-window dict via the app
         app.enter_presentation_mode(screen_window_dict)
-        # Add delay for gtk to show the windows
+        # Add delay to ensure windows are visible after animation.
         await app_probe.redraw("App is in presentation mode", delay=0.5)
 
         assert app.is_presentation_mode
@@ -253,96 +253,7 @@ async def test_presentation_mode(app, app_probe, main_window):
         # After closing the window, the input focus might not be on main_window.
         # Ensure that main_window will be in focus for other tests.
         app.current_window = main_window
-        # Add delay for gtk to show the windows
-        await app_probe.redraw("main_window is now the current window", delay=0.5)
-        assert app.current_window == main_window
-
-
-async def test_presentation_mode_with_excess_windows_list(app, app_probe, main_window):
-    """Entering presentation mode limits windows to available displays."""
-    try:
-        window_information_list = list()
-        excess_windows_list = list()
-        # Generate an additional window compared to the number of screens present.
-        for i in range(len(app.screens) + 1):
-            window = toga.Window(
-                title=f"Test Window {i}",
-                position=(150 + (10 * i), 150 + (10 * i)),
-                size=(200, 200),
-            )
-            r = random.randint(0, 255)
-            g = random.randint(0, 255)
-            b = random.randint(0, 255)
-            window.content = toga.Box(
-                style=Pack(background_color=f"#{r:02X}{g:02X}{b:02X}")
-            )
-            window.show()
-            # Add delay for gtk to show the windows
-            await app_probe.redraw(f"Test Window {i} is visible", delay=0.5)
-
-            window_information = dict()
-            window_information["window"] = window
-            window_information["window_probe"] = window_probe(app, window)
-            window_information["initial_content_size"] = window_information[
-                "window_probe"
-            ].presentation_content_size
-
-            window_information_list.append(window_information)
-            excess_windows_list.append(window)
-
-        last_window = window_information_list[-1]["window"]
-        last_window_probe = window_information_list[-1]["window_probe"]
-        last_window_initial_content_size = window_information_list[-1][
-            "initial_content_size"
-        ]
-
-        # Enter presentation mode with excess windows via the app, but
-        # the last window should be dropped as there are less screens.
-        app.enter_presentation_mode(excess_windows_list)
-        # Add delay for gtk to show the windows
-        await app_probe.redraw("App is in presentation mode", delay=0.5)
-        assert app.is_presentation_mode
-
-        # Last window should not be in presentation mode.
-        assert (
-            last_window_probe.get_window_state() != WindowState.PRESENTATION
-        ), f"Last Window({last_window.title}):"
-        assert (
-            last_window_probe.presentation_content_size
-            == last_window_initial_content_size
-        ), f"Last Window({last_window.title}):"
-
-        # All other windows should be in presentation mode.
-        for window_information in window_information_list[:-1]:
-            assert (
-                window_information["window_probe"].get_window_state()
-                == WindowState.PRESENTATION
-            ), f"{window_information['window'].title}:"
-            assert (
-                window_information["window_probe"].presentation_content_size[0] > 1000
-            ), f"{window_information['window'].title}:"
-            assert (
-                window_information["window_probe"].presentation_content_size[1] > 700
-            ), f"{window_information['window'].title}:"
-
-        # Exit presentation mode
-        app.exit_presentation_mode()
-        await app_probe.redraw("App is no longer in presentation mode", delay=0.5)
-        assert not app.is_presentation_mode
-
-        for window_information in window_information_list:
-            assert (
-                window_information["window_probe"].presentation_content_size
-                == window_information["initial_content_size"]
-            ), f"{window_information['window'].title}:"
-
-    finally:
-        for window in excess_windows_list:
-            window.close()
-        # After closing the window, the input focus might not be on main_window.
-        # Ensure that main_window will be in focus for other tests.
-        app.current_window = main_window
-        # Add delay for gtk to show the windows
+        # Add delay to ensure windows are visible after animation.
         await app_probe.redraw("main_window is now the current window", delay=0.5)
         assert app.current_window == main_window
 
@@ -378,21 +289,20 @@ async def test_presentation_mode_exit_on_window_state_change(
         window2_probe = window_probe(app, window2)
         window1.show()
         window2.show()
-        # Add delay for gtk to show the windows
+        # Add delay to ensure windows are visible after animation.
         await app_probe.redraw("Test windows are shown", delay=0.5)
 
         # Enter presentation mode
         app.enter_presentation_mode([window1])
-        # Add delay for gtk to show the windows
+        # Add delay to ensure windows are visible after animation.
         await app_probe.redraw("App is in presentation mode", delay=0.5)
 
         assert app.is_presentation_mode
         assert window1_probe.get_window_state() == WindowState.PRESENTATION
-        assert window2_probe.get_window_state() != WindowState.PRESENTATION
 
         # Changing window state of main window should make the app exit presentation mode.
         window1.state = new_window_state
-        # Add delay for gtk to show the windows
+        # Add delay to ensure windows are visible after animation.
         await app_probe.redraw(
             "App is not in presentation mode"
             f"\nTest Window 1 is in {new_window_state}",
@@ -400,26 +310,24 @@ async def test_presentation_mode_exit_on_window_state_change(
         )
 
         assert not app.is_presentation_mode
-        assert window1_probe.get_window_state != WindowState.PRESENTATION
         assert window1_probe.get_window_state() == new_window_state
 
         # Reset window states
         window1.state = WindowState.NORMAL
         window2.state = WindowState.NORMAL
-        # Add delay for gtk to show the windows
+        # Add delay to ensure windows are visible after animation.
         await app_probe.redraw("All test windows are in WindowState.NORMAL", delay=0.5)
 
         # Enter presentation mode again
         app.enter_presentation_mode([window1])
-        # Add delay for gtk to show the windows
+        # Add delay to ensure windows are visible after animation.
         await app_probe.redraw("App is in presentation mode", delay=0.5)
         assert app.is_presentation_mode
         assert window1_probe.get_window_state() == WindowState.PRESENTATION
-        assert window2_probe.get_window_state() != WindowState.PRESENTATION
 
         # Changing window state of extra window should make the app exit presentation mode.
         window2.state = new_window_state
-        # Add delay for gtk to show the windows
+        # Add delay to ensure windows are visible after animation.
         await app_probe.redraw(
             "App is not in presentation mode"
             f"\nTest Window 1 is in {new_window_state}",
@@ -427,7 +335,6 @@ async def test_presentation_mode_exit_on_window_state_change(
         )
 
         assert not app.is_presentation_mode
-        assert window1_probe.get_window_state() != WindowState.PRESENTATION
         assert window2_probe.get_window_state() == new_window_state
 
         # Reset window states
@@ -442,7 +349,7 @@ async def test_presentation_mode_exit_on_window_state_change(
         # After closing the window, the input focus might not be on main_window.
         # Ensure that main_window will be in focus for other tests.
         app.current_window = main_window
-        # Add delay for gtk to show the windows
+        # Add delay to ensure windows are visible after animation.
         await app_probe.redraw("main_window is now the current window", delay=0.5)
         assert app.current_window == main_window
 

@@ -30,7 +30,6 @@ async def test_presentation_mode(app, app_probe, main_window, main_window_probe)
     )
 
     assert app.is_presentation_mode
-    assert main_window_probe.get_window_state() != WindowState.NORMAL
     assert main_window_probe.get_window_state() == WindowState.PRESENTATION
 
     # Exit presentation mode
@@ -41,7 +40,6 @@ async def test_presentation_mode(app, app_probe, main_window, main_window_probe)
     )
 
     assert not app.is_presentation_mode
-    assert main_window_probe.get_window_state() != WindowState.PRESENTATION
     assert main_window_probe.get_window_state() == WindowState.NORMAL
 
     # Enter presentation mode with a screen-window dict via the app
@@ -51,7 +49,6 @@ async def test_presentation_mode(app, app_probe, main_window, main_window_probe)
     )
 
     assert app.is_presentation_mode
-    assert main_window_probe.get_window_state() != WindowState.NORMAL
     assert main_window_probe.get_window_state() == WindowState.PRESENTATION
 
     # Exit presentation mode
@@ -62,7 +59,6 @@ async def test_presentation_mode(app, app_probe, main_window, main_window_probe)
     )
 
     assert not app.is_presentation_mode
-    assert main_window_probe.get_window_state() != WindowState.PRESENTATION
     assert main_window_probe.get_window_state() == WindowState.NORMAL
 
 
