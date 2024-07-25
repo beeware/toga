@@ -143,7 +143,9 @@ if toga.platform.current_platform in {"iOS", "android"}:
         finally:
             main_window.content = orig_content
 
-    @pytest.mark.skipif(toga.platform.current_platform == "iOS")
+    @pytest.mark.skipif(
+        toga.platform.current_platform == "iOS", reason="Not implemented on iOS"
+    )
     async def test_window_state_minimized(main_window, main_window_probe):
         """Window can have minimized window state"""
         assert main_window_probe.get_window_state() == WindowState.NORMAL
@@ -151,7 +153,9 @@ if toga.platform.current_platform in {"iOS", "android"}:
         await main_window_probe.wait_for_window("WindowState.MINIMIZED is a no-op")
         assert main_window_probe.get_window_state() == WindowState.NORMAL
 
-    @pytest.mark.skipif(toga.platform.current_platform == "iOS")
+    @pytest.mark.skipif(
+        toga.platform.current_platform == "iOS", reason="Not implemented on iOS"
+    )
     async def test_window_state_maximized(main_window, main_window_probe):
         """Window can have maximized window state"""
         assert main_window_probe.get_window_state() == WindowState.NORMAL
@@ -159,7 +163,9 @@ if toga.platform.current_platform in {"iOS", "android"}:
         await main_window_probe.wait_for_window("WindowState.MAXIMIZED is a no-op")
         assert main_window_probe.get_window_state() == WindowState.NORMAL
 
-    @pytest.mark.skipif(toga.platform.current_platform == "iOS")
+    @pytest.mark.skipif(
+        toga.platform.current_platform == "iOS", reason="Not implemented on iOS"
+    )
     async def test_window_state_full_screen(main_window, main_window_probe):
         """Window can have full screen window state"""
         assert main_window_probe.get_window_state() == WindowState.NORMAL
@@ -176,7 +182,9 @@ if toga.platform.current_platform in {"iOS", "android"}:
         await main_window_probe.wait_for_window("Main window is not full screen")
         assert main_window_probe.get_window_state() == WindowState.NORMAL
 
-    @pytest.mark.skipif(toga.platform.current_platform == "iOS")
+    @pytest.mark.skipif(
+        toga.platform.current_platform == "iOS", reason="Not implemented on iOS"
+    )
     async def test_window_state_presentation(main_window, main_window_probe):
         assert main_window_probe.get_window_state() == WindowState.NORMAL
         # Enter presentation mode with main window
