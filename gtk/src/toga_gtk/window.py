@@ -34,7 +34,7 @@ class Window:
         self._window_state_flags = None
 
         # Gdk.WindowState.FULLSCREEN is unreliable, use shadow variables.
-        self._is_presentation_mode = False
+        self._in_presentation_mode = False
         self._is_full_screen = False
 
         self.native.set_default_size(size[0], size[1])
@@ -162,7 +162,7 @@ class Window:
         elif window_state_flags & Gdk.WindowState.ICONIFIED:
             return WindowState.MINIMIZED  # pragma: no-cover-if-linux-wayland
         elif window_state_flags & Gdk.WindowState.FULLSCREEN:
-            if self._is_presentation_mode:
+            if self._in_presentation_mode:
                 return WindowState.PRESENTATION
             elif self._is_full_screen:
                 return WindowState.FULLSCREEN
@@ -203,7 +203,7 @@ class Window:
             if getattr(self, "native_toolbar", None):
                 self.native_toolbar.set_visible(False)
             self.native.fullscreen()
-            self._is_presentation_mode = True
+            self._in_presentation_mode = True
 
         # WindowState.NORMAL case:
         else:
@@ -229,7 +229,7 @@ class Window:
 
                 self.interface.screen = self._before_presentation_mode_screen
                 del self._before_presentation_mode_screen
-                self._is_presentation_mode = False
+                self._in_presentation_mode = False
 
             # Complete any pending window state transition.
             if getattr(self, "_pending_window_state_transition", None) is not None:

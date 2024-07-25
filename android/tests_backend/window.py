@@ -30,7 +30,7 @@ class WindowProbe(BaseProbe, DialogsMixin):
             | decor_view.SYSTEM_UI_FLAG_HIDE_NAVIGATION
             | decor_view.SYSTEM_UI_FLAG_IMMERSIVE
         ):
-            if self.window._impl._is_presentation_mode:
+            if self.window._impl._in_presentation_mode:
                 current_state = WindowState.PRESENTATION
             else:
                 current_state = WindowState.FULLSCREEN

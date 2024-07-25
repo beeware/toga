@@ -42,7 +42,7 @@ class Window(Container):
         self._initial_title = title
         # Use a shadow variable since the presence of ActionBar is not
         # a reliable indicator for confirmation of presentation mode.
-        self._is_presentation_mode = False
+        self._in_presentation_mode = False
 
     ######################################################################
     # Window properties
@@ -157,7 +157,7 @@ class Window(Container):
             | decor_view.SYSTEM_UI_FLAG_HIDE_NAVIGATION
             | decor_view.SYSTEM_UI_FLAG_IMMERSIVE
         ):
-            if self._is_presentation_mode:
+            if self._in_presentation_mode:
                 return WindowState.PRESENTATION
             else:
                 return WindowState.FULLSCREEN
@@ -190,7 +190,7 @@ class Window(Container):
                 # window, so we can't test the other branch.
                 if self._actionbar_shown_by_default:  # pragma: no branch
                     self.app.native.getSupportActionBar().hide()
-                self._is_presentation_mode = True
+                self._in_presentation_mode = True
 
         else:
             # On Android Maximized state is same as the Normal state
@@ -205,7 +205,7 @@ class Window(Container):
                         # window, so we can't test the other branch.
                         if self._actionbar_shown_by_default:  # pragma: no branch
                             self.app.native.getSupportActionBar().show()
-                        self._is_presentation_mode = False
+                        self._in_presentation_mode = False
 
                 # Complete any pending window state transition.
                 if getattr(self, "_pending_window_state_transition", None) is not None:

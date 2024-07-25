@@ -53,7 +53,7 @@ class WindowDemoApp(toga.App):
         self.main_window.state = WindowState.PRESENTATION
 
     def do_app_presentation_mode(self, widget, **kwargs):
-        if self.is_presentation_mode:
+        if self.in_presentation_mode:
             self.exit_presentation_mode()
         else:
             self.enter_presentation_mode([self.main_window])

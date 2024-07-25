@@ -20,7 +20,7 @@ async def test_show_hide_cursor(app):
 
 async def test_presentation_mode(app, app_probe, main_window, main_window_probe):
     """The app can enter into presentation mode"""
-    assert not app.is_presentation_mode
+    assert not app.in_presentation_mode
     assert main_window_probe.get_window_state() != WindowState.PRESENTATION
 
     # Enter presentation mode with main window via the app
@@ -29,7 +29,7 @@ async def test_presentation_mode(app, app_probe, main_window, main_window_probe)
         "Main window is in presentation mode", full_screen=True
     )
 
-    assert app.is_presentation_mode
+    assert app.in_presentation_mode
     assert main_window_probe.get_window_state() == WindowState.PRESENTATION
 
     # Exit presentation mode
@@ -39,7 +39,7 @@ async def test_presentation_mode(app, app_probe, main_window, main_window_probe)
         full_screen=True,
     )
 
-    assert not app.is_presentation_mode
+    assert not app.in_presentation_mode
     assert main_window_probe.get_window_state() == WindowState.NORMAL
 
     # Enter presentation mode with a screen-window dict via the app
@@ -48,7 +48,7 @@ async def test_presentation_mode(app, app_probe, main_window, main_window_probe)
         "Main window is in presentation mode", full_screen=True
     )
 
-    assert app.is_presentation_mode
+    assert app.in_presentation_mode
     assert main_window_probe.get_window_state() == WindowState.PRESENTATION
 
     # Exit presentation mode
@@ -58,7 +58,7 @@ async def test_presentation_mode(app, app_probe, main_window, main_window_probe)
         full_screen=True,
     )
 
-    assert not app.is_presentation_mode
+    assert not app.in_presentation_mode
     assert main_window_probe.get_window_state() == WindowState.NORMAL
 
 

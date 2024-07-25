@@ -38,7 +38,7 @@ class Window(Container, Scalable):
 
         # Use a shadow variable since a window without any app menu and toolbar
         # in presentation mode would be indistinguishable from full screen mode.
-        self._is_presentation_mode = False
+        self._in_presentation_mode = False
 
         self.set_title(title)
         self.set_size(size)
@@ -194,7 +194,7 @@ class Window(Container, Scalable):
         window_state = self.native.WindowState
         if window_state == WinForms.FormWindowState.Maximized:
             if self.native.FormBorderStyle == getattr(WinForms.FormBorderStyle, "None"):
-                if self._is_presentation_mode:
+                if self._in_presentation_mode:
                     return WindowState.PRESENTATION
                 else:
                     return WindowState.FULLSCREEN
@@ -242,7 +242,7 @@ class Window(Container, Scalable):
                 self.toolbar_native.Visible = False
             self.native.FormBorderStyle = getattr(WinForms.FormBorderStyle, "None")
             self.native.WindowState = WinForms.FormWindowState.Maximized
-            self._is_presentation_mode = True
+            self._in_presentation_mode = True
 
         # WindowState.NORMAL case:
         else:
@@ -254,7 +254,7 @@ class Window(Container, Scalable):
 
                 self.interface.screen = self._before_presentation_mode_screen
                 del self._before_presentation_mode_screen
-                self._is_presentation_mode = False
+                self._in_presentation_mode = False
 
             self.native.FormBorderStyle = getattr(
                 WinForms.FormBorderStyle,

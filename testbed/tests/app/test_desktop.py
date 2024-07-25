@@ -222,7 +222,7 @@ async def test_presentation_mode(app, app_probe, main_window):
         # Add delay to ensure windows are visible after animation.
         await app_probe.redraw("App is in presentation mode", delay=0.5)
 
-        assert app.is_presentation_mode
+        assert app.in_presentation_mode
         # All the windows should be in presentation mode.
         for window_information in window_information_list:
             assert (
@@ -240,7 +240,7 @@ async def test_presentation_mode(app, app_probe, main_window):
         app.exit_presentation_mode()
         await app_probe.redraw("App is no longer in presentation mode", delay=0.5)
 
-        assert not app.is_presentation_mode
+        assert not app.in_presentation_mode
         for window_information in window_information_list:
             assert (
                 window_information["window_probe"].presentation_content_size
@@ -297,7 +297,7 @@ async def test_presentation_mode_exit_on_window_state_change(
         # Add delay to ensure windows are visible after animation.
         await app_probe.redraw("App is in presentation mode", delay=0.5)
 
-        assert app.is_presentation_mode
+        assert app.in_presentation_mode
         assert window1_probe.get_window_state() == WindowState.PRESENTATION
 
         # Changing window state of main window should make the app exit presentation mode.
@@ -309,7 +309,7 @@ async def test_presentation_mode_exit_on_window_state_change(
             delay=0.5,
         )
 
-        assert not app.is_presentation_mode
+        assert not app.in_presentation_mode
         assert window1_probe.get_window_state() == new_window_state
 
         # Reset window states
@@ -322,7 +322,7 @@ async def test_presentation_mode_exit_on_window_state_change(
         app.enter_presentation_mode([window1])
         # Add delay to ensure windows are visible after animation.
         await app_probe.redraw("App is in presentation mode", delay=0.5)
-        assert app.is_presentation_mode
+        assert app.in_presentation_mode
         assert window1_probe.get_window_state() == WindowState.PRESENTATION
 
         # Changing window state of extra window should make the app exit presentation mode.
@@ -334,7 +334,7 @@ async def test_presentation_mode_exit_on_window_state_change(
             delay=0.5,
         )
 
-        assert not app.is_presentation_mode
+        assert not app.in_presentation_mode
         assert window2_probe.get_window_state() == new_window_state
 
         # Reset window states
