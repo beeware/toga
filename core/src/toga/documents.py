@@ -25,7 +25,7 @@ class Document(ABC):
         self._path: Path | None = None
         self._app = app
         self._main_window: Window | None = None
-        self._modified = False
+        self.modified = False
 
         # Create the visual representation of the document.
         self.create()
@@ -81,9 +81,13 @@ class Document(ABC):
         return f"{self.document_type}: {self.path.stem if self.path else 'Untitled'}"
 
     @property
-    def modified(self):
+    def modified(self) -> bool:
         """Has the document been modified?"""
         return self._modified
+
+    @modified.setter
+    def modified(self, value: bool):
+        self._modified = bool(value)
 
     ######################################################################
     # Document operations
@@ -115,7 +119,7 @@ class Document(ABC):
         # Set the title of the document window to match the path
         self._main_window.title = self._main_window._default_title
         # Document is initially unmodified
-        self._modified = False
+        self.modified = False
 
     def save(self, path: str | Path | None = None):
         """Save the document as a file.
@@ -133,7 +137,7 @@ class Document(ABC):
                 self._main_window.title = self._main_window._default_title
             self.write()
             # Clear the modification flag.
-            self._modified = False
+            self.modified = False
 
     def show(self) -> None:
         """Show the visual representation for this document."""
@@ -145,7 +149,7 @@ class Document(ABC):
         This method accepts `*args` and `**kwargs` so that it can be used as an
         ``on_change`` handler; these arguments are not used.
         """
-        self._modified = True
+        self.modified = True
 
     ######################################################################
     # Abstract interface
