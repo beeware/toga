@@ -160,37 +160,33 @@ class ActionHandler(Protocol):
 
 
 class Command:
-    #: An identifier for the system-installed "About" menu item. This command is
-    #: always installed by default.
+    #: An identifier for the standard "About" menu item. This command is always
+    #: installed by default.
     ABOUT: str = "about"
-    #: An identifier for the system-installed "Exit" menu item. This command may be
-    #: installed by default, depending on platform requirements.
+    #: An identifier for the standard "Exit" menu item. This command may be installed by
+    #: default, depending on platform requirements.
     EXIT: str = "_request_exit"
-    #: An identifier for the system-installed "New" menu item. This constant
-    #: will be used for the default document type for your app; if you specify more
-    #: than one document type, the command for the subsequent commands will have a
-    #: colon and the first extension for that data type appended to the ID.
+    #: An identifier for the standard "New" menu item. This constant will be used for
+    #: the default document type for your app; if you specify more than one document
+    #: type, the command for the subsequent commands will have a colon and the first
+    #: extension for that data type appended to the ID.
     NEW: str = "new"
-    #: An identifier for the system-installed "Open" menu item. This command will be
-    #: automatically installed if your app declares any document types, or the app
-    #: overrides the :meth:`~toga.App.open` method.
+    #: An identifier for the standard "Open" menu item. This command will be
+    #: automatically installed if your app declares any document types.
     OPEN: str = "_open"
-    #: An identifier for the system-installed "Preferences" menu item.
+    #: An identifier for the standard "Preferences" menu item.
     PREFERENCES: str = "preferences"
-    #: An identifier for the system-installed "Save" menu item. This command will be
-    #: automatically installed if your app declares any document types, or the app
-    #: overrides the :meth:`~toga.App.save` method.
+    #: An identifier for the standard "Save" menu item. This command will be
+    #: automatically installed if your app declares any document types.
     SAVE: str = "save"
-    #: An identifier for the system-installed "Save As..." menu item. This command
-    #: will be automatically installed if your app declares any document types, or
-    #: the app overrides the :meth:`~toga.App.save_as` method.
+    #: An identifier for the standard "Save As..." menu item. This command will be
+    #: automatically installed if your app declares any document types.
     SAVE_AS: str = "save_as"
-    #: An identifier for the system-installed "Save All" menu item. This command
-    #: will be automatically installed if your app declares any document types, or
-    #: the app overrides the :meth:`~toga.App.save_all` method.
+    #: An identifier for the standard "Save All" menu item. This command will be
+    #: automatically installed if your app declares any document types.
     SAVE_ALL: str = "save_all"
-    #: An identifier for the system-installed "Visit Homepage" menu item. This
-    #: command may be installed by default, depending on platform requirements.
+    #: An identifier for the standard "Visit Homepage" menu item. This command may be
+    #: installed by default, depending on platform requirements.
     VISIT_HOMEPAGE: str = "visit_homepage"
 
     def __init__(
