@@ -882,7 +882,7 @@ class DocumentMainWindow(MainWindow):
         return self.doc.title
 
     async def _confirm_close(self, window, **kwargs):
-        if self.doc.is_modified:
+        if self.doc.modified:
             if await self.dialog(
                 toga.QuestionDialog(
                     "Are you sure?",
@@ -921,12 +921,11 @@ class DocumentMainWindow(MainWindow):
             else:
                 # Document has not been saved previously; prompt for a filename.
                 suggested_name = f"Untitled.{self.doc.default_extension}"
-                new_path = await self.app.replacement_filename(
-                    suggested_name,
-                    window=self,
+                new_path = await self.dialog(
+                    dialogs.SaveFileDialog("Save as...", suggested_name)
                 )
-                # If a replacement filename has been provided, save using that filename.
-                # If there isn't a replacement filename, the save was cancelled.
+                # If a filename has been returned, save using that filename.
+                # If there isn't a filename, the save was cancelled.
                 if new_path:
                     self.doc.save(new_path)
                     return True
@@ -947,10 +946,11 @@ class DocumentMainWindow(MainWindow):
                 if self.doc.path
                 else f"Untitled.{self.doc.default_extension}"
             )
-            new_path = await self.app.replacement_filename(
-                suggested_path,
-                window=self,
+            new_path = await self.dialog(
+                dialogs.SaveFileDialog("Save as...", suggested_path)
             )
+            # If a filename has been returned, save using that filename.
+            # If there isn't a filename, the save was cancelled.
             if new_path:
                 self.doc.save(new_path)
                 return True

@@ -13,7 +13,7 @@ from typing import TYPE_CHECKING, Any, Mapping, MutableSet, Protocol, Sequence
 from weakref import WeakValueDictionary
 
 from toga.command import Command, CommandSet
-from toga.dialogs import ConfirmDialog, OpenFileDialog, SaveFileDialog
+from toga.dialogs import OpenFileDialog
 from toga.documents import Document
 from toga.handlers import simple_handler, wrapped_handler
 from toga.hardware.camera import Camera
@@ -973,55 +973,6 @@ class App:
                     if hasattr(prev_window, "_replace"):
                         del prev_window._replace
                     raise
-
-    async def replacement_filename(
-        self,
-        suggested_name: Path,
-        window: Window | None,
-    ) -> Path | None:
-        """Select a new filename for a file.
-
-        Displays a save file dialog to the user, allowing the user to select a file
-        name. If they provide a file name that already exists, a confirmation dialog
-        will be displayed. The user will be repeatedly prompted for a filename until:
-
-        1. They select a non-existent filename; or
-        2. They confirm that it's OK to overwrite an existing filename; or
-        3. They cancel the file selection dialog.
-
-        This is the workflow that is used to implement filename selection when changing the
-        name of a file with "Save As", or setting the initial name of an untitled file
-        with "Save". Custom implementations of `save()`/`save_as()` may find this method
-        useful.
-
-        :param window: The window against which any dialogs will be opened. If no
-            window is provided, dialogs will be opened modal to the app.
-        :param suggested_name: The initial candidate filename
-        :returns: The path to use, or ``None`` if the user cancelled the request.
-        """
-        context = self if window is None else window
-        while True:
-            new_path = await context.dialog(
-                SaveFileDialog("Save as...", suggested_name)
-            )
-            if new_path:
-                if new_path.exists():
-                    save_ok = await context.dialog(
-                        ConfirmDialog(
-                            "Are you sure?",
-                            f"The file {new_path.name} already exists. Overwrite?",
-                        )
-                    )
-                else:
-                    # Filename doesn't exist, so saving must be ok.
-                    save_ok = True
-
-                if save_ok:
-                    # Save the document and return
-                    return new_path
-            else:
-                # User chose to cancel the save
-                return None
 
     async def save(self):
         """Save the current content of an app.

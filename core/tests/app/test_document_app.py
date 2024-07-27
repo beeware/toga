@@ -854,67 +854,6 @@ def test_save_menu_untitled_cancel(doc_app, example_file, tmp_path):
     second_doc._mock_write.assert_not_called()
 
 
-def test_save_menu_untitled_overwrite(doc_app, example_file, tmp_path):
-    """An untitled file can overwrite an existing file."""
-    current_window = doc_app.current_window
-    first_doc = current_window.doc
-    assert first_doc.path == example_file
-
-    # Open a second new document, set to be current
-    second_doc = doc_app.new(ExampleDocument)
-    doc_app.current_window = second_doc.main_window
-
-    # Prime the save dialog on the second window to save using the existing filename,
-    # and accept the overwrite.
-    second_doc.main_window._impl.dialog_responses["SaveFileDialog"] = [example_file]
-    second_doc.main_window._impl.dialog_responses["ConfirmDialog"] = [True]
-
-    # Activate the save menu
-    future = doc_app.commands[toga.Command.SAVE].action()
-    doc_app.loop.run_until_complete(future)
-
-    # Neither document is saved.
-    first_doc._mock_write.assert_not_called()
-    second_doc._mock_write.assert_called_once_with(example_file)
-
-    # Second document has had properties updated
-    assert second_doc.path == example_file
-    assert second_doc.title == "Example Document: filename"
-
-
-def test_save_menu_untitled_overwrite_reconsidered(doc_app, example_file, tmp_path):
-    """An untitled file attempting to overwrite an existing file will be warned, but the
-    decision can be walked back."""
-    current_window = doc_app.current_window
-    first_doc = current_window.doc
-    assert first_doc.path == example_file
-
-    # Open a second new document, set to be current
-    second_doc = doc_app.new(ExampleDocument)
-    doc_app.current_window = second_doc.main_window
-
-    # Prime the save dialog on the second window to save using the existing filename,
-    # and reject the overwrite, then pick a unique filename
-    path = tmp_path / "path/to/filename2.foobar"
-    second_doc.main_window._impl.dialog_responses["SaveFileDialog"] = [
-        example_file,
-        path,
-    ]
-    second_doc.main_window._impl.dialog_responses["ConfirmDialog"] = [False]
-
-    # Activate the save menu
-    future = doc_app.commands[toga.Command.SAVE].action()
-    doc_app.loop.run_until_complete(future)
-
-    # Neither document is saved.
-    first_doc._mock_write.assert_not_called()
-    second_doc._mock_write.assert_called_once_with(path)
-
-    # Second document has had properties updated
-    assert second_doc.path == path
-    assert second_doc.title == "Example Document: filename2"
-
-
 def test_save_menu_non_document(doc_app, example_file):
     """On a non-document window, save is ignored."""
     current_window = doc_app.current_window
