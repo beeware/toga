@@ -3,6 +3,7 @@ import pytest
 import toga
 
 from .properties import (  # noqa: F401
+    test_background_color_transparent,
     test_enable_noop,
     test_flex_horizontal_widget_size,
 )
