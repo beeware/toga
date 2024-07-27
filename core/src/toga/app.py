@@ -989,14 +989,14 @@ class App:
         2. They confirm that it's OK to overwrite an existing filename; or
         3. They cancel the file selection dialog.
 
-        This is the workflow that is used implement filename selection when changing the
+        This is the workflow that is used to implement filename selection when changing the
         name of a file with "Save As", or setting the initial name of an untitled file
         with "Save". Custom implementations of `save()`/`save_as()` may find this method
         useful.
 
         :param window: The window against which any dialogs will be opened. If no
             window is provided, dialogs will be opened modal to the app.
-        :param suggested name: The initial candidate filename
+        :param suggested_name: The initial candidate filename
         :returns: The path to use, or ``None`` if the user cancelled the request.
         """
         context = self if window is None else window

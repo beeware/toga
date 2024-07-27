@@ -22,8 +22,8 @@ A command encapsulates a piece of functionality that the user can invoke - no ma
 they invoke it. It doesn't matter if they select a menu item, press a button on a
 toolbar, or use a key combination - the functionality is wrapped up in a Command.
 
-Adding new commands
--------------------
+Adding commands
+---------------
 
 Commands are added to an app using the properties :any:`toga.App.commands` and
 :any:`toga.MainWindow.toolbar`. Toga then takes control of ensuring that the
@@ -118,7 +118,7 @@ They also include document management commands:
 These commands are automatically added to your app, depending on platform requirements
 and app definition. For example, mobile apps won't have an Exit command as mobile apps
 don't have a concept of "exiting". Document management commands will be automatically
-added automatically if your app defines :doc:`document types <./document>`.
+added if your app defines :doc:`document types <./document>`.
 
 The label, shortcut, grouping and ordering of these commands is platform dependent. For
 example, on macOS, the :attr:`~toga.Command.EXIT` command will be labeled "Quit My App",
