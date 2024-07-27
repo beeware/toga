@@ -96,7 +96,7 @@ def test_open_absolute_document(app, converter, tmp_path):
     assert doc.path == path.absolute()
     assert doc.content == "file content"
     assert doc._mock_content.read(path.absolute())
-    assert not doc.is_modified
+    assert not doc.modified
 
 
 @pytest.mark.parametrize("converter", [str, lambda s: s])
@@ -119,7 +119,7 @@ def test_open_relative_document(app, converter, tmp_path):
         assert doc.path == path.absolute()
         assert doc.content == "file content"
         assert doc._mock_content.read(path.absolute())
-        assert not doc.is_modified
+        assert not doc.modified
     finally:
         os.chdir(orig_cwd)
 
@@ -142,7 +142,7 @@ def test_save_absolute_document(app, converter, tmp_path):
 
     # Touch the document to mark it as modified
     doc.touch()
-    assert doc.is_modified
+    assert doc.modified
 
     # Read the file
     doc.save(converter(path))
@@ -152,7 +152,7 @@ def test_save_absolute_document(app, converter, tmp_path):
     assert doc.title == "My Document: doc"
     assert doc._mock_content.write(path.absolute())
     # Saving clears the modification flag
-    assert not doc.is_modified
+    assert not doc.modified
 
 
 @pytest.mark.parametrize("converter", [str, lambda s: s])
@@ -164,7 +164,7 @@ def test_save_relative_document(app, converter, tmp_path):
 
     # Touch the document to mark it as modified
     doc.touch()
-    assert doc.is_modified
+    assert doc.modified
 
     # Read the file
     doc.save(converter(path))
@@ -174,7 +174,7 @@ def test_save_relative_document(app, converter, tmp_path):
     assert doc.title == "My Document: doc"
     assert doc._mock_content.write(path.absolute())
     # Saving clears the modification flag
-    assert not doc.is_modified
+    assert not doc.modified
 
 
 def test_save_existing_document(app, tmp_path):
@@ -186,7 +186,7 @@ def test_save_existing_document(app, tmp_path):
 
     # Touch the document to mark it as modified
     doc.touch()
-    assert doc.is_modified
+    assert doc.modified
 
     # Save the file
     doc.save()
@@ -196,7 +196,7 @@ def test_save_existing_document(app, tmp_path):
     assert doc.title == "My Document: doc"
     assert doc._mock_content.write(path.absolute())
     # Saving clears the modification flag
-    assert not doc.is_modified
+    assert not doc.modified
 
 
 def test_save_readonly_document(app, tmp_path):
@@ -209,7 +209,7 @@ def test_save_readonly_document(app, tmp_path):
     # Touch the document to mark it as modified. This isn't a likely setup for a
     # readonly document, but it's possible.
     doc.touch()
-    assert doc.is_modified
+    assert doc.modified
 
     # Save the file
     doc.save()
@@ -218,7 +218,7 @@ def test_save_readonly_document(app, tmp_path):
     assert doc.path == path.absolute()
     assert doc.title == "Other Document: doc"
     # There's no write method, so modifications can't be committed.
-    assert doc.is_modified
+    assert doc.modified
 
 
 def test_focus(app):

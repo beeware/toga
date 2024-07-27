@@ -81,7 +81,7 @@ class Document(ABC):
         return f"{self.document_type}: {self.path.stem if self.path else 'Untitled'}"
 
     @property
-    def is_modified(self):
+    def modified(self):
         """Has the document been modified?"""
         return self._modified
 

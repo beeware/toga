@@ -601,7 +601,7 @@ def test_open_menu_save_existing(doc_app, example_file, other_file):
     assert new_doc.main_window.position == orig_position
 
     # The example doc has been saved
-    assert not example_doc.is_modified
+    assert not example_doc.modified
 
 
 def test_open_menu_no_save_existing(doc_app, example_file, other_file):
@@ -635,7 +635,7 @@ def test_open_menu_no_save_existing(doc_app, example_file, other_file):
     assert new_doc.main_window.position == orig_position
 
     # The example doc has not been saved
-    assert example_doc.is_modified
+    assert example_doc.modified
 
 
 def test_open_menu_no_replace(monkeypatch, doc_app, example_file, other_file):

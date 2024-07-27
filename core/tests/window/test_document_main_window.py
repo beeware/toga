@@ -123,7 +123,7 @@ def test_create_explicit(app):
 def test_close_unmodified(app):
     """An unmodified document doesn't need to be saved."""
     doc = ExampleDocument(app)
-    assert not doc.is_modified
+    assert not doc.modified
 
     window = doc.main_window
 
@@ -146,7 +146,7 @@ def test_close_modified(app):
     doc = ExampleDocument(app)
     doc._path = mock_path
     doc.touch()
-    assert doc.is_modified
+    assert doc.modified
 
     window = doc.main_window
     # Prime the user's responses to the dialogs
@@ -171,7 +171,7 @@ def test_close_modified_cancel(app):
     doc = ExampleDocument(app)
     doc._path = mock_path
     doc.touch()
-    assert doc.is_modified
+    assert doc.modified
 
     window = doc.main_window
     # Prime the user's responses to the dialogs
@@ -195,7 +195,7 @@ def test_close_modified_unsaved(app, tmp_path):
     app._document_types[".exampledoc"] = ExampleDocument
     doc = ExampleDocument(app)
     doc.touch()
-    assert doc.is_modified
+    assert doc.modified
 
     window = doc.main_window
     # Prime the user's responses to the dialogs
@@ -221,7 +221,7 @@ def test_close_modified_save_cancel(app, tmp_path):
     app._document_types[".exampledoc"] = ExampleDocument
     doc = ExampleDocument(app)
     doc.touch()
-    assert doc.is_modified
+    assert doc.modified
 
     window = doc.main_window
     # Prime the user's responses to the dialogs
