@@ -128,15 +128,15 @@ async def test_save_document(app, app_probe):
 async def test_save_as_document(monkeypatch, app, app_probe, tmp_path):
     """A document can be saved under a new filename."""
 
-    # Monkeypatch the replacement filename handling so that a dialog isn't activated.
-    async def mock_replacement_filename(suggested_filename, window):
-        return tmp_path / "new_filename.testbed"
-
-    monkeypatch.setattr(app, "replacement_filename", mock_replacement_filename)
-
     # A document can be opened
     document_path = Path(__file__).parent / "docs/example.testbed"
-    app.open(document_path)
+    document = app.open(document_path)
+
+    # Monkeypatch the save_as dialog handling so that a dialog isn't activated.
+    async def mock_save_as_dialog(dialog):
+        return tmp_path / "new_filename.testbed"
+
+    monkeypatch.setattr(document.main_window, "dialog", mock_save_as_dialog)
 
     await app_probe.redraw("Document has been opened")
 
