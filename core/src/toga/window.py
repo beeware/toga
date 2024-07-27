@@ -850,11 +850,12 @@ class MainWindow(Window):
         return self._toolbar
 
 
-class DocumentMainWindow(MainWindow):
+class DocumentWindow(MainWindow):
     def __init__(self, doc: Document, *args, **kwargs):
-        """Create a new document Main Window.
+        """Create a new document Window.
 
-        A document main window is a normal MainWindow, bound to a document instance.
+        A document window is a MainWindow (so it will have a menu bar, and *can* have a
+        toolbar), bound to a document instance.
 
         In addition to the required ``doc`` argument, accepts the same arguments as
         :class:`~toga.Window`.

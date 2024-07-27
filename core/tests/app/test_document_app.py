@@ -18,7 +18,7 @@ class ExampleDocument(toga.Document):
     read_error = None
 
     def create(self):
-        self.main_window = toga.DocumentMainWindow(self)
+        self.main_window = toga.DocumentWindow(self)
         self._mock_read = Mock()
         self._mock_write = Mock()
 
@@ -42,7 +42,7 @@ class OtherDocument(toga.Document):
     read_error = None
 
     def create(self):
-        self.main_window = toga.DocumentMainWindow(self)
+        self.main_window = toga.DocumentWindow(self)
 
     def read(self):
         if self.read_error:

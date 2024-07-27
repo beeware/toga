@@ -7,14 +7,14 @@ API Reference
 Core application components
 ---------------------------
 
-=============================================================== =============================================================================
+======================================================= =============================================================================
  Component                                                       Description
-=============================================================== =============================================================================
- :doc:`App </reference/api/app>`                                 The top-level representation of an application.
- :doc:`Window </reference/api/window>`                           An operating system-managed container of widgets.
- :doc:`MainWindow </reference/api/mainwindow>`                   A window that can use the full set of window-level user interface elements.
- :doc:`DocumentMainWindow </reference/api/documentmainwindow>`   A window that can be used as the main interface to a document-based app.
-=============================================================== =============================================================================
+======================================================= =============================================================================
+ :doc:`App </reference/api/app>`                         The top-level representation of an application.
+ :doc:`Window </reference/api/window>`                   An operating system-managed container of widgets.
+ :doc:`MainWindow </reference/api/mainwindow>`           A window that can use the full set of window-level user interface elements.
+ :doc:`DocumentWindow </reference/api/documentwindow>`   A window that can be used as the main interface to a document-based app.
+======================================================= =============================================================================
 
 General widgets
 ---------------
@@ -121,7 +121,7 @@ Other
    app
    window
    mainwindow
-   documentmainwindow
+   documentwindow
    containers/index
    hardware/index
    resources/index

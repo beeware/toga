@@ -8,7 +8,7 @@ class ExampleDoc(toga.Document):
 
     def create(self):
         # Create the main window for the document.
-        self.main_window = toga.DocumentMainWindow(
+        self.main_window = toga.DocumentWindow(
             doc=self,
             content=toga.Box(),
         )
@@ -29,7 +29,7 @@ class ReadonlyDoc(toga.Document):
 
     def create(self):
         # Create the main window for the document.
-        self.main_window = toga.DocumentMainWindow(
+        self.main_window = toga.DocumentWindow(
             doc=self,
             content=toga.Box(),
         )

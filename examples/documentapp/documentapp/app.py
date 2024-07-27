@@ -7,7 +7,7 @@ class ExampleDocument(toga.Document):
     def create(self):
         # Create the main window for the document. The window has a single widget;
         # when that widget changes, the document is modified.
-        self.main_window = toga.DocumentMainWindow(
+        self.main_window = toga.DocumentWindow(
             doc=self,
             content=toga.MultilineTextInput(on_change=self.touch),
         )

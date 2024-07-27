@@ -1,5 +1,5 @@
-DocumentMainWindow
-==================
+DocumentWindow
+==============
 
 A window that can be used as the main interface to a document-based app.
 
@@ -42,14 +42,14 @@ A window that can be used as the main interface to a document-based app.
 Usage
 -----
 
-A DocumentMainWindow is the same as a :any:`toga.MainWindow`, except that it is bound to
-a :any:`toga.Document` instance, exposed as the :any:`toga.DocumentMainWindow.doc`
+A DocumentWindow is the same as a :any:`toga.MainWindow`, except that it is bound to
+a :any:`toga.Document` instance, exposed as the :any:`toga.DocumentWindow.doc`
 attribute.
 
-Instances of :any:`toga.DocumentMainWindow` should be created as part of the
+Instances of :any:`toga.DocumentWindow` should be created as part of the
 :meth:`~toga.Document.create()` method of an implementation of :any:`toga.Document`.
 
 Reference
 ---------
 
-.. autoclass:: toga.DocumentMainWindow
+.. autoclass:: toga.DocumentWindow

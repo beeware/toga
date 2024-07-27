@@ -10,7 +10,7 @@ class ExampleDocument(toga.Document):
     write_error = None
 
     def create(self):
-        self.main_window = toga.DocumentMainWindow(self)
+        self.main_window = toga.DocumentWindow(self)
         self._mock_read = Mock()
         self._mock_write = Mock()
 
@@ -76,7 +76,7 @@ def test_create_explicit(app):
     # Don't use a document, because we want to exercise the constructor
     doc = Mock()
 
-    window = toga.DocumentMainWindow(
+    window = toga.DocumentWindow(
         doc=doc,
         id="my-window",
         title="My Window",

@@ -75,7 +75,7 @@ class Document(ABC):
     def title(self) -> str:
         """The title of the document.
 
-        This will be used as the default title of a :any:`toga.DocumentMainWindow` that
+        This will be used as the default title of a :any:`toga.DocumentWindow` that
         contains the document.
         """
         return f"{self.document_type}: {self.path.stem if self.path else 'Untitled'}"
