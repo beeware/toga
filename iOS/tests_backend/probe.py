@@ -1,7 +1,7 @@
 import asyncio
 
 import toga
-from toga_iOS.libs import NSRunLoop, UIScreen
+from toga_iOS.libs import NSRunLoop
 
 
 class BaseProbe:
@@ -21,5 +21,5 @@ class BaseProbe:
 
     def assert_image_size(self, image_size, size, screen):
         # Retina displays render images at a higher resolution than their reported size.
-        scale = int(UIScreen.mainScreen.scale)
+        scale = int(screen._impl.native.scale)
         assert image_size == (size[0] * scale, size[1] * scale)

@@ -6,13 +6,22 @@ from .widgets.base import Scalable
 
 class Container(Scalable):
     def __init__(self, native_parent):
-        self.init_scale(native_parent)
         self.native_parent = native_parent
         self.native_width = self.native_height = 0
         self.content = None
 
         self.native_content = WinForms.Panel()
         native_parent.Controls.Add(self.native_content)
+
+        self.native_content.CreateGraphics().Dispose()
+
+    @property
+    def dpi_scale(self):
+        window = self.content.interface.window
+        if window:
+            return window._impl.dpi_scale
+        else:
+            return 1
 
     @property
     def width(self):

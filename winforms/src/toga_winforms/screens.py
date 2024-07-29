@@ -1,3 +1,5 @@
+from ctypes import wintypes
+
 from System.Drawing import (
     Bitmap,
     Graphics,
@@ -10,8 +12,11 @@ from System.IO import MemoryStream
 from toga.screens import Screen as ScreenInterface
 from toga.types import Position, Size
 
+from .libs import shcore, user32
+from .widgets.base import Scalable
 
-class Screen:
+
+class Screen(Scalable):
     _instances = {}
 
     def __new__(cls, native):
@@ -23,6 +28,19 @@ class Screen:
             instance.native = native
             cls._instances[native] = instance
             return instance
+
+    @property
+    def dpi_scale(self):
+        screen_rect = wintypes.RECT(
+            self.native.Bounds.Left,
+            self.native.Bounds.Top,
+            self.native.Bounds.Right,
+            self.native.Bounds.Bottom,
+        )
+        hMonitor = user32.MonitorFromRect(screen_rect, user32.MONITOR_DEFAULTTONEAREST)
+        pScale = wintypes.UINT()
+        shcore.GetScaleFactorForMonitor(hMonitor, pScale)
+        return pScale.value / 100
 
     def get_name(self):
         name = self.native.DeviceName
