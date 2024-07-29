@@ -1,6 +1,6 @@
 [build-system]
 requires = [
-    "setuptools==70.3.0",
+    "setuptools==71.1.0",
     "setuptools_scm==8.1.0",
     "setuptools_dynamic_dependencies @ git+https://github.com/beeware/setuptools_dynamic_dependencies",
 ]
@@ -71,9 +71,9 @@ dev = [
     "Pillow == 10.4.0",
     # Pre-commit 3.6.0 deprecated support for Python 3.8
     "pre-commit == 3.5.0 ; python_version < '3.9'",
-    "pre-commit == 3.7.1 ; python_version >= '3.9'",
-    "pytest == 8.2.2",
-    "pytest-asyncio == 0.23.7",
+    "pre-commit == 3.8.0 ; python_version >= '3.9'",
+    "pytest == 8.3.2",
+    "pytest-asyncio == 0.23.8",
     "pytest-freezer == 0.4.8",
     "setuptools-scm == 8.1.0",
     "tox == 4.16.0",
@@ -81,7 +81,7 @@ dev = [
     "typing-extensions == 4.9.0 ; python_version < '3.10'",
 ]
 docs = [
-    "furo == 2024.5.6",
+    "furo == 2024.7.18",
     "Pillow == 10.4.0",
     "pyenchant == 3.2.2",
     # Sphinx 7.2 deprecated support for Python 3.8
