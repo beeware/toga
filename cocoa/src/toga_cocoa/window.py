@@ -318,13 +318,13 @@ class Window:
             return WindowState.NORMAL
 
     def _process_pending_state_transitions(self):
-        while True:
+        while not self._pending_state_transitions_queue.empty():
             try:
-                requested_state = self._pending_state_transitions_queue.get(timeout=1)
+                requested_state = self._pending_state_transitions_queue.get_nowait()
                 self.set_window_state(requested_state)
             except queue.Empty:
-                self._is_state_transitioning = False
                 break
+        self._is_state_transitioning = False
 
     def set_window_state(self, state):
         current_state = self.get_window_state()
@@ -333,6 +333,7 @@ class Window:
 
         elif self._is_state_transitioning:
             self._pending_state_transitions_queue.put(state)
+            return
 
         elif current_state == WindowState.NORMAL:
             if state == WindowState.MAXIMIZED:
@@ -351,11 +352,8 @@ class Window:
 
         # current_state != WindowState.NORMAL:
         else:
-            # If requested state was not NORMAL, then put the requested
-            # state to pending state transitions queue.
-            if state != WindowState.NORMAL:
-                self._pending_state_transitions_queue.put(state)
-                self._is_state_transitioning = True
+            self._pending_state_transitions_queue.put(state)
+            self._is_state_transitioning = True
 
             # If the window is maximized, restore it to its normal size
             if current_state == WindowState.MAXIMIZED:
