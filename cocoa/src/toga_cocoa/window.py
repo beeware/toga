@@ -54,11 +54,11 @@ class TogaWindow(NSWindow):
 
     @objc_method
     def windowDidDeminiaturize_(self, notification) -> None:
-        self._process_pending_state_transitions()
+        self.impl._process_pending_state_transitions()
 
     @objc_method
     def windowDidExitFullScreen_(self, notification) -> None:
-        self._process_pending_state_transitions()
+        self.impl._process_pending_state_transitions()
 
     ######################################################################
     # Toolbar delegate methods
