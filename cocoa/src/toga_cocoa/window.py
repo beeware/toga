@@ -335,9 +335,7 @@ class Window:
             self._pending_state_transitions_queue.put(state)
             return
 
-        self._is_state_transitioning = True
-
-        if current_state == WindowState.NORMAL:
+        elif current_state == WindowState.NORMAL:
             if state == WindowState.MAXIMIZED:
                 self.native.setIsZoomed(True)
 
@@ -351,6 +349,7 @@ class Window:
                 self.interface.app.enter_presentation_mode(
                     {self.interface.screen: self.interface}
                 )
+            return
 
         # current_state != WindowState.NORMAL:
         else:
@@ -373,7 +372,7 @@ class Window:
             # If the window is in presentation mode, exit presentation mode
             # WindowState.PRESENTATION case:
             else:
-                self.interface.app.exit_presentation_mode()
+                # self.interface.app.exit_presenstation_mode()
                 self._process_pending_state_transitions()
 
     ######################################################################
