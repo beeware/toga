@@ -10,7 +10,6 @@ class NumberInputProbe(SimpleProbe):
     allows_invalid_value = False
     allows_empty_value = True
     allows_extra_digits = True
-    background_supports_alpha = False
     fixed_height = 23
 
     @property

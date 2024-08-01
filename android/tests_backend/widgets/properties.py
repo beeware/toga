@@ -18,7 +18,7 @@ def toga_color(color_int):
             Color.red(color_int),
             Color.green(color_int),
             Color.blue(color_int),
-            Color.alpha(color_int) / 255,
+            round(Color.alpha(color_int) / 255, 2),
         )
 
 

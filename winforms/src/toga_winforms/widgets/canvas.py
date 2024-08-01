@@ -4,6 +4,7 @@ import System.Windows.Forms as WinForms
 from System import Array
 from System.Drawing import (
     Bitmap,
+    Color,
     Graphics,
     Pen,
     PointF,
@@ -22,6 +23,7 @@ from System.Drawing.Drawing2D import (
 from System.Drawing.Imaging import ImageFormat
 from System.IO import MemoryStream
 
+from toga.colors import TRANSPARENT
 from toga.widgets.canvas import Baseline, FillRule, arc_to_bezier, sweepangle
 from toga_winforms.colors import native_color
 
@@ -272,7 +274,10 @@ class Canvas(Box):
         draw_context.clear_paths()
 
     def stroke(self, color, line_width, line_dash, draw_context, **kwargs):
-        pen = Pen(native_color(color), self.scale_in(line_width, rounding=None))
+        pen = Pen(
+            native_color(color),
+            self.scale_in(line_width, rounding=None),
+        )
         if line_dash is not None:
             pen.DashPattern = [ld / line_width for ld in line_dash]
 
@@ -350,3 +355,11 @@ class Canvas(Box):
         stream = MemoryStream()
         bitmap.Save(stream, ImageFormat.Png)
         return bytes(stream.ToArray())
+
+    def set_background_color(self, color):
+        if color in {None, TRANSPARENT}:
+            # BackColor needs to be set to Color.Transparent or else the
+            # image captured by get_image_data() won't have transparency.
+            self.native.BackColor = Color.Transparent
+        else:
+            super().set_background_color(color)

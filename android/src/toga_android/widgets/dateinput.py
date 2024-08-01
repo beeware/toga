@@ -4,6 +4,8 @@ from android import R
 from android.app import DatePickerDialog
 from java import dynamic_proxy
 
+from toga_android.widgets.base import ContainedWidget
+
 from .internal.pickers import PickerBase
 
 
@@ -27,7 +29,7 @@ class DatePickerListener(dynamic_proxy(DatePickerDialog.OnDateSetListener)):
         self.impl.interface.value = date(year, month_0 + 1, day)
 
 
-class DateInput(PickerBase):
+class DateInput(PickerBase, ContainedWidget):
     @classmethod
     def _get_icon(cls):
         return R.drawable.ic_menu_my_calendar

@@ -3,6 +3,7 @@ from decimal import ROUND_UP
 import System.Windows.Forms as WinForms
 from System.Drawing import Bitmap
 
+from toga.colors import TRANSPARENT
 from toga.widgets.imageview import rehint_imageview
 
 from .base import Widget
@@ -17,6 +18,8 @@ class ImageView(Widget):
         # with a red cross through it. Ensure we always have an actual image,
         # using a 1x1 blank bitmap for the None case.
         self.native.Image = self._empty_image()
+
+        self._default_background_color = TRANSPARENT
 
     def _empty_image(self):
         return Bitmap(1, 1)

@@ -1,6 +1,6 @@
 from android.widget import RelativeLayout
 
-from .widgets.base import Scalable
+from .widgets.base import ContainedWidget, Scalable
 
 
 class Container(Scalable):
@@ -51,13 +51,22 @@ class Container(Scalable):
         self.native_content.setLayoutParams(lp)
 
     def add_content(self, widget):
-        self.native_content.addView(widget.native)
+        if isinstance(widget, ContainedWidget):
+            self.native_content.addView(widget.native_widget_container)
+        else:
+            self.native_content.addView(widget.native)
 
     def remove_content(self, widget):
-        self.native_content.removeView(widget.native)
+        if isinstance(widget, ContainedWidget):
+            self.native_content.removeView(widget.native_widget_container)
+        else:
+            self.native_content.removeView(widget.native)
 
     def set_content_bounds(self, widget, x, y, width, height):
         lp = RelativeLayout.LayoutParams(width, height)
         lp.topMargin = y
         lp.leftMargin = x
-        widget.native.setLayoutParams(lp)
+        if isinstance(widget, ContainedWidget):
+            widget.native_widget_container.setLayoutParams(lp)
+        else:
+            widget.native.setLayoutParams(lp)
