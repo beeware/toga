@@ -366,6 +366,7 @@ class Window:
             # If the window is in full-screen mode, exit full-screen mode
             elif current_state == WindowState.FULLSCREEN:
                 self.native.toggleFullScreen(self.native)
+                self._process_pending_state()
             # If the window is in presentation mode, exit presentation mode
             # elif current_state == WindowState.PRESENTATION:
             else:  # pragma: no cover
@@ -380,6 +381,7 @@ class Window:
                 #
                 # self.interface.app.exit_presentation_mode()
                 # Pending window state is processed at app._impl.exit_presentation_mode()
+                # self._process_pending_state()
                 pass
         elif target_state == WindowState.MAXIMIZED:
             self.native.setIsZoomed(True)
