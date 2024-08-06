@@ -520,6 +520,8 @@ class App:
             if window.state == WindowState.PRESENTATION:
                 window.content._impl.native.exitFullScreenModeWithOptions(opts)
                 window.content.refresh()
+            # Process any pending window state.
+            window._impl._process_pending_state()
 
 
 class DocumentApp(App):  # pragma: no cover
