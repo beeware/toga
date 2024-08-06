@@ -1,0 +1,1 @@
+The environment for RTD builds was pinned, and protection for Sphinx updates was added.
