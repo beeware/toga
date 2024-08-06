@@ -4,6 +4,7 @@ from pathlib import Path
 
 from toga.app import overridden
 from toga.command import Command, Group
+from toga.constants import WindowState
 from toga.handlers import simple_handler
 
 from .screens import Screen as ScreenImpl
@@ -167,14 +168,19 @@ class App(LoggedObject):
         self._set_value("current_window", window._impl)
 
     ######################################################################
-    # Full screen control
+    # Presentation mode control
     ######################################################################
 
-    def enter_full_screen(self, windows):
-        self._action("enter_full_screen", windows=windows)
+    def enter_presentation_mode(self, screen_window_dict):
+        self._action("enter presentation mode", screen_window_dict=screen_window_dict)
+        for screen, window in screen_window_dict.items():
+            window._impl.set_window_state(WindowState.PRESENTATION)
 
-    def exit_full_screen(self, windows):
-        self._action("exit_full_screen", windows=windows)
+    def exit_presentation_mode(self):
+        self._action("exit presentation mode")
+        for window in self.interface.windows:
+            if window.state == WindowState.PRESENTATION:
+                window._impl.set_window_state(WindowState.NORMAL)
 
     ######################################################################
     # Simulation interface

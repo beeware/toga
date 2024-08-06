@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from toga.command import Separator
+from toga.constants import WindowState
 from toga.types import Position, Size
 from toga.window import _initial_position
 
@@ -28,6 +29,17 @@ class Window:
             "delete-event",
             self.gtk_delete_event,
         )
+        self.native.connect("window-state-event", self.gtk_window_state_event)
+
+        self._window_state_flags = None
+
+        # Gdk.WindowState.FULLSCREEN is unreliable, use shadow variables.
+        self._in_presentation_mode = False
+        self._is_full_screen = False
+
+        # Pending Window state transition variable and flag:
+        self._pending_state_transition = None
+        self._processing_pending_state = False
 
         self.native.set_default_size(size[0], size[1])
 
@@ -59,6 +71,10 @@ class Window:
     ######################################################################
     # Native event handlers
     ######################################################################
+
+    def gtk_window_state_event(self, widget, event):
+        # Get the window state flags
+        self._window_state_flags = event.new_window_state
 
     def gtk_delete_event(self, widget, data):
         # Return value of the GTK on_close handler indicates whether the event has been
@@ -143,11 +159,103 @@ class Window:
     # Window state
     ######################################################################
 
-    def set_full_screen(self, is_full_screen):
-        if is_full_screen:
-            self.native.fullscreen()
+    def get_window_state(self):
+        window_state_flags = self._window_state_flags
+        if window_state_flags & Gdk.WindowState.MAXIMIZED:
+            return WindowState.MAXIMIZED
+        elif window_state_flags & Gdk.WindowState.ICONIFIED:
+            return WindowState.MINIMIZED  # pragma: no-cover-if-linux-wayland
+        elif window_state_flags & Gdk.WindowState.FULLSCREEN:
+            if self._in_presentation_mode:
+                return WindowState.PRESENTATION
+            elif self._is_full_screen:
+                return WindowState.FULLSCREEN
+            else:
+                return WindowState.NORMAL
         else:
-            self.native.unfullscreen()
+            return WindowState.NORMAL
+
+    def set_window_state(self, state):
+        current_state = self.get_window_state()
+
+        if current_state == state:
+            return
+
+        elif self._processing_pending_state:
+            # If we're processing a transition then store the requested state
+            # in the class variable.
+            self._pending_state_transition = state
+            return
+
+        # Set Window state to NORMAL before changing to other states as some
+        # states block changing window state without first exiting them or
+        # can even cause rendering glitches.
+        elif current_state != WindowState.NORMAL:
+            self._pending_state_transition = state
+            self._processing_pending_state = True
+            self._apply_state(WindowState.NORMAL)
+
+        # elif current_state == WindowState.NORMAL:
+        else:
+            self._processing_pending_state = True
+            self._apply_state(state)
+
+    def _process_pending_state(self):
+        pending_state = self._pending_state_transition
+        self._pending_state_transition = None
+        if (pending_state is not None) and (self.get_window_state() != pending_state):
+            self._apply_state(pending_state)
+
+        if self._pending_state_transition is not None:
+            # The new requested state must have been added while the pending
+            # state was being applied. Hence, process the new requested state.
+            self._process_pending_state()
+
+        self._processing_pending_state = False
+
+    def _apply_state(self, target_state):
+        if target_state == WindowState.NORMAL:
+            current_state = self.get_window_state()
+            # If the window is maximized, restore it to its normal size
+            if current_state == WindowState.MAXIMIZED:
+                self.native.unmaximize()
+            # Deminiaturize the window to restore it to its previous state
+            elif current_state == WindowState.MINIMIZED:
+                # deiconify() doesn't work
+                self.native.present()
+            # If the window is in full-screen mode, exit full-screen mode
+            elif current_state == WindowState.FULLSCREEN:
+                self.native.unfullscreen()
+                self._is_full_screen = False
+            # If the window is in presentation mode, exit presentation mode
+            # elif current_state == WindowState.PRESENTATION:
+            else:
+                if isinstance(self.native, Gtk.ApplicationWindow):
+                    self.native.set_show_menubar(True)
+                if getattr(self, "native_toolbar", None):
+                    self.native_toolbar.set_visible(True)
+                self.native.unfullscreen()
+                self.interface.screen = self._before_presentation_mode_screen
+                del self._before_presentation_mode_screen
+                self._in_presentation_mode = False
+        elif target_state == WindowState.MAXIMIZED:
+            self.native.maximize()
+        elif target_state == WindowState.MINIMIZED:
+            self.native.iconify()  # pragma: no-cover-if-linux-wayland
+        elif target_state == WindowState.FULLSCREEN:
+            self.native.fullscreen()
+            self._is_full_screen = True
+        # elif target_state == WindowState.PRESENTATION:
+        else:
+            self._before_presentation_mode_screen = self.interface.screen
+            if isinstance(self.native, Gtk.ApplicationWindow):
+                self.native.set_show_menubar(False)
+            if getattr(self, "native_toolbar", None):
+                self.native_toolbar.set_visible(False)
+            self.native.fullscreen()
+            self._in_presentation_mode = True
+
+        self._process_pending_state()
 
     ######################################################################
     # Window capabilities

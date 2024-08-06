@@ -9,6 +9,7 @@ from toga_gtk.libs import Gdk, Gtk
 
 from .dialogs import DialogsMixin
 from .probe import BaseProbe
+from .window import WindowProbe
 
 
 class AppProbe(BaseProbe, DialogsMixin):
@@ -44,14 +45,8 @@ class AppProbe(BaseProbe, DialogsMixin):
     def is_cursor_visible(self):
         pytest.skip("Cursor visibility not implemented on GTK")
 
-    def is_full_screen(self, window):
-        return bool(
-            window._impl.native.get_window().get_state() & Gdk.WindowState.FULLSCREEN
-        )
-
     def content_size(self, window):
-        content_allocation = window._impl.container.get_allocation()
-        return (content_allocation.width, content_allocation.height)
+        return WindowProbe(self.app, window).presentation_content_size
 
     def assert_app_icon(self, icon):
         for window in self.app.windows:

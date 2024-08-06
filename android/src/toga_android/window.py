@@ -10,6 +10,7 @@ from android.view import ViewTreeObserver
 from java import dynamic_proxy
 from java.io import ByteArrayOutputStream
 
+from toga.constants import WindowState
 from toga.types import Position, Size
 
 from .container import Container
@@ -31,11 +32,17 @@ class LayoutListener(dynamic_proxy(ViewTreeObserver.OnGlobalLayoutListener)):
 
 
 class Window(Container):
+    # ActionBar is always hidden on Window.
+    _actionbar_shown_by_default = False
+
     def __init__(self, interface, title, position, size):
         super().__init__()
         self.interface = interface
         self.interface._impl = self
         self._initial_title = title
+        # Use a shadow variable since the presence of ActionBar is not
+        # a reliable indicator for confirmation of presentation mode.
+        self._in_presentation_mode = False
 
     ######################################################################
     # Window properties
@@ -137,8 +144,73 @@ class Window(Container):
     # Window state
     ######################################################################
 
-    def set_full_screen(self, is_full_screen):
-        self.interface.factory.not_implemented("Window.set_full_screen()")
+    def get_window_state(self):
+        # window.state is called in _close(), which itself sometimes
+        # is called during early stages of app startup, during which
+        # the app attribute may not exist. In such cases, return NORMAL.
+        if getattr(self, "app", None) is None:
+            return WindowState.NORMAL
+        decor_view = self.app.native.getWindow().getDecorView()
+        system_ui_flags = decor_view.getSystemUiVisibility()
+        if system_ui_flags & (
+            decor_view.SYSTEM_UI_FLAG_FULLSCREEN
+            | decor_view.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+            | decor_view.SYSTEM_UI_FLAG_IMMERSIVE
+        ):
+            if self._in_presentation_mode:
+                return WindowState.PRESENTATION
+            else:
+                return WindowState.FULLSCREEN
+        return WindowState.NORMAL
+
+    def set_window_state(self, state):
+        current_state = self.get_window_state()
+        if current_state == state:
+            return
+        decor_view = self.app.native.getWindow().getDecorView()
+        if (
+            current_state != WindowState.NORMAL
+            and state != WindowState.NORMAL
+            and (getattr(self, "_pending_window_state_transition", None) is None)
+        ):
+            # Set Window state to NORMAL before changing to other states as some
+            # states block changing window state without first exiting them or
+            # can even cause rendering glitches.
+            self._pending_window_state_transition = state
+            self.set_window_state(WindowState.NORMAL)
+
+        elif state in {WindowState.FULLSCREEN, WindowState.PRESENTATION}:
+            decor_view.setSystemUiVisibility(
+                decor_view.SYSTEM_UI_FLAG_FULLSCREEN
+                | decor_view.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                | decor_view.SYSTEM_UI_FLAG_IMMERSIVE
+            )
+            if state == WindowState.PRESENTATION:
+                # Marking this as no branch, since the testbed can't create a simple
+                # window, so we can't test the other branch.
+                if self._actionbar_shown_by_default:  # pragma: no branch
+                    self.app.native.getSupportActionBar().hide()
+                self._in_presentation_mode = True
+
+        else:
+            # On Android Maximized state is same as the Normal state
+            if state in {WindowState.NORMAL, WindowState.MAXIMIZED}:
+                if current_state in {
+                    WindowState.FULLSCREEN,
+                    WindowState.PRESENTATION,
+                }:
+                    decor_view.setSystemUiVisibility(0)
+                    if current_state == WindowState.PRESENTATION:
+                        # Marking this as no branch, since the testbed can't create a simple
+                        # window, so we can't test the other branch.
+                        if self._actionbar_shown_by_default:  # pragma: no branch
+                            self.app.native.getSupportActionBar().show()
+                        self._in_presentation_mode = False
+
+                # Complete any pending window state transition.
+                if getattr(self, "_pending_window_state_transition", None) is not None:
+                    self.set_window_state(self._pending_window_state_transition)
+                    del self._pending_window_state_transition
 
     ######################################################################
     # Window capabilities
@@ -160,6 +232,9 @@ class Window(Container):
 
 
 class MainWindow(Window):
+    # ActionBar is always hidden on MainWindow.
+    _actionbar_shown_by_default = True
+
     def configure_titlebar(self):
         # Display the titlebar on a MainWindow.
         pass

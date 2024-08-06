@@ -12,6 +12,7 @@ from org.beeware.android import IPythonApp, MainActivity
 
 import toga
 from toga.command import Command, Group, Separator
+from toga.constants import WindowState
 from toga.dialogs import InfoDialog
 from toga.handlers import simple_handler
 
@@ -321,14 +322,19 @@ class App:
         pass
 
     ######################################################################
-    # Full screen control
+    # Presentation mode controls
     ######################################################################
 
-    def enter_full_screen(self, windows):
-        pass
+    def enter_presentation_mode(self, screen_window_dict):
+        for screen, window in screen_window_dict.items():
+            window._impl._before_presentation_mode_screen = window.screen
+            window.screen = screen
+            window._impl.set_window_state(WindowState.PRESENTATION)
 
-    def exit_full_screen(self, windows):
-        pass
+    def exit_presentation_mode(self):
+        for window in self.interface.windows:
+            if window.state == WindowState.PRESENTATION:
+                window._impl.set_window_state(WindowState.NORMAL)
 
     ######################################################################
     # Platform-specific APIs

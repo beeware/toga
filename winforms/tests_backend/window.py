@@ -8,6 +8,8 @@ from System.Windows.Forms import (
     ToolStripSeparator,
 )
 
+from toga.constants import WindowState
+
 from .dialogs import DialogsMixin
 from .probe import BaseProbe
 
@@ -48,11 +50,24 @@ class WindowProbe(BaseProbe, DialogsMixin):
         )
 
     @property
-    def is_full_screen(self):
-        return (
-            self.native.FormBorderStyle == getattr(FormBorderStyle, "None")
-            and self.native.WindowState == FormWindowState.Maximized
-        )
+    def presentation_content_size(self):
+        return self.content_size
+
+    def get_window_state(self):
+        window_state = self.native.WindowState
+        if window_state == FormWindowState.Maximized:
+            if self.native.FormBorderStyle == getattr(FormBorderStyle, "None"):
+                if self.impl._in_presentation_mode:
+                    current_state = WindowState.PRESENTATION
+                else:
+                    current_state = WindowState.FULLSCREEN
+            else:
+                current_state = WindowState.MAXIMIZED
+        elif window_state == FormWindowState.Minimized:
+            current_state = WindowState.MINIMIZED
+        elif window_state == FormWindowState.Normal:
+            current_state = WindowState.NORMAL
+        return current_state
 
     @property
     def is_resizable(self):
@@ -64,7 +79,7 @@ class WindowProbe(BaseProbe, DialogsMixin):
 
     @property
     def is_minimized(self):
-        return self.native.WindowState == FormWindowState.Minimized
+        return bool(self.get_window_state() == WindowState.MINIMIZED)
 
     def minimize(self):
         if self.native.MinimizeBox:

@@ -64,3 +64,45 @@ class FlashMode(Enum):
 #     CELLULAR = 0
 #     WIFI = 1
 #     HIGHEST = 2
+
+##########################################################################
+# Window States
+##########################################################################
+
+
+class WindowState(Enum):
+    """The possible window states of an app.
+
+    Note: Changing window state while the app is in presentation mode will cause
+        the app to exit presentation mode, and the new window state will be set.
+    """
+
+    NORMAL = 0
+    """The ``NORMAL`` state represents the default state of the window or app when it is
+    not in any other specific window state."""
+
+    MINIMIZED = 1
+    """``MINIMIZED`` state is when the window isn't currently visible, although it will
+    appear in any operating system's list of active windows.
+    """
+
+    MAXIMIZED = 2
+    """The window is the largest size it can be on the screen with title bar and window
+    chrome still visible.
+
+    On Mobile Platforms(Like on Android) - The ``MAXIMIZED`` state is the same as the
+    ``NORMAL`` state.
+    """
+
+    FULLSCREEN = 3
+    """``FULLSCREEN`` state is when the window title bar and window chrome remain
+    **hidden**; But app menu and toolbars remain **visible**.
+    """
+
+    PRESENTATION = 4
+    """``PRESENTATION`` state is when the window title bar, window chrome, app menu
+    and toolbars all remain **hidden**.
+
+    A good example is a slideshow app in presentation mode - the only visible content
+    is the slide.
+    """

@@ -17,6 +17,7 @@ from rubicon.objc.eventloop import CocoaLifecycle, EventLoopPolicy
 import toga
 from toga.app import overridden
 from toga.command import Command, Separator
+from toga.constants import WindowState
 from toga.handlers import NativeHandler, simple_handler
 
 from .keys import cocoa_key
@@ -491,33 +492,36 @@ class App:
         window._impl.native.makeKeyAndOrderFront(window._impl.native)
 
     ######################################################################
-    # Full screen control
+    # Presentation mode controls
     ######################################################################
 
-    def enter_full_screen(self, windows):
+    def enter_presentation_mode(self, screen_window_dict):
         opts = NSMutableDictionary.alloc().init()
         opts.setObject(
             NSNumber.numberWithBool(True), forKey="NSFullScreenModeAllScreens"
         )
-
-        for window, screen in zip(windows, NSScreen.screens):
-            window.content._impl.native.enterFullScreenMode(screen, withOptions=opts)
-            # Going full screen causes the window content to be re-homed
-            # in a NSFullScreenWindow; teach the new parent window
-            # about its Toga representations.
+        for screen, window in screen_window_dict.items():
+            window.content._impl.native.enterFullScreenMode(
+                screen._impl.native, withOptions=opts
+            )
+            # Going presentation mode causes the window content to be re-homed
+            # in a NSFullScreenWindow; teach the new parent window about its
+            # Toga representations.
             window.content._impl.native.window._impl = window._impl
             window.content._impl.native.window.interface = window
             window.content.refresh()
 
-    def exit_full_screen(self, windows):
+    def exit_presentation_mode(self):
         opts = NSMutableDictionary.alloc().init()
         opts.setObject(
             NSNumber.numberWithBool(True), forKey="NSFullScreenModeAllScreens"
         )
-
-        for window in windows:
-            window.content._impl.native.exitFullScreenModeWithOptions(opts)
-            window.content.refresh()
+        for window in self.interface.windows:
+            if window.state == WindowState.PRESENTATION:
+                window.content._impl.native.exitFullScreenModeWithOptions(opts)
+                window.content.refresh()
+            # Process any pending window state.
+            window._impl._process_pending_state()
 
 
 class DocumentApp(App):  # pragma: no cover

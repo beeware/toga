@@ -1,9 +1,11 @@
+import random
 from unittest.mock import Mock
 
 import pytest
 
 import toga
 from toga.colors import CORNFLOWERBLUE, FIREBRICK, REBECCAPURPLE
+from toga.constants import WindowState
 from toga.style.pack import Pack
 
 from ..window.test_window import window_probe
@@ -180,106 +182,176 @@ async def test_menu_minimize(app, app_probe):
         window1.close()
 
 
-async def test_full_screen(app, app_probe):
-    """Window can be made full screen"""
-    window1 = toga.Window("Test Window 1", position=(150, 150), size=(200, 200))
-    window2 = toga.Window("Test Window 2", position=(400, 150), size=(200, 200))
+async def test_presentation_mode(app, app_probe, main_window):
+    """The app can enter presentation mode."""
+    try:
+        window_information_list = list()
+        windows_list = list()
+        for i in range(len(app.screens)):
+            window = toga.Window(
+                title=f"Test Window {i}",
+                position=(150 + (10 * i), 150 + (10 * i)),
+                size=(200, 200),
+            )
+            r = random.randint(0, 255)
+            g = random.randint(0, 255)
+            b = random.randint(0, 255)
+            window.content = toga.Box(
+                style=Pack(background_color=f"#{r:02X}{g:02X}{b:02X}")
+            )
+            window.show()
+            # Add delay to ensure windows are visible after animation.
+            await app_probe.redraw(f"Test Window {i} is visible", delay=0.5)
+
+            window_information = dict()
+            window_information["window"] = window
+            window_information["window_probe"] = window_probe(app, window)
+            window_information["initial_content_size"] = window_information[
+                "window_probe"
+            ].presentation_content_size
+
+            window_information_list.append(window_information)
+            windows_list.append(window)
+
+        screen_window_dict = dict()
+        for window, screen in zip(windows_list, app.screens):
+            screen_window_dict[screen] = window
+
+        # Enter presentation mode with a screen-window dict via the app
+        app.enter_presentation_mode(screen_window_dict)
+        # Add delay to ensure windows are visible after animation.
+        await app_probe.redraw("App is in presentation mode", delay=0.5)
+
+        assert app.in_presentation_mode
+        # All the windows should be in presentation mode.
+        for window_information in window_information_list:
+            assert (
+                window_information["window_probe"].get_window_state()
+                == WindowState.PRESENTATION
+            ), f"{window_information['window'].title}:"
+            assert (
+                window_information["window_probe"].presentation_content_size[0] > 1000
+            ), f"{window_information['window'].title}:"
+            assert (
+                window_information["window_probe"].presentation_content_size[1] > 700
+            ), f"{window_information['window'].title}:"
+
+        # Exit presentation mode
+        app.exit_presentation_mode()
+        await app_probe.redraw("App is no longer in presentation mode", delay=0.5)
+
+        assert not app.in_presentation_mode
+        for window_information in window_information_list:
+            assert (
+                window_information["window_probe"].presentation_content_size
+                == window_information["initial_content_size"]
+            ), f"{window_information['window'].title}:"
+
+    finally:
+        for window in windows_list:
+            window.close()
+        # After closing the window, the input focus might not be on main_window.
+        # Ensure that main_window will be in focus for other tests.
+        app.current_window = main_window
+        # Add delay to ensure windows are visible after animation.
+        await app_probe.redraw("main_window is now the current window", delay=0.5)
+        assert app.current_window == main_window
+
+
+@pytest.mark.parametrize(
+    "new_window_state",
+    [
+        WindowState.MINIMIZED,
+        WindowState.MAXIMIZED,
+        WindowState.FULLSCREEN,
+    ],
+)
+async def test_presentation_mode_exit_on_window_state_change(
+    app, app_probe, main_window, main_window_probe, new_window_state
+):
+    """Changing window state exits presentation mode and sets the new state."""
+    if (
+        new_window_state == WindowState.MINIMIZED
+        and not main_window_probe.supports_minimize
+    ):
+        pytest.xfail("This backend doesn't reliably support minimized window state.")
 
     try:
+        window1 = toga.Window(
+            title="Test Window 1", position=(150, 150), size=(200, 200)
+        )
+        window2 = toga.Window(
+            title="Test Window 2", position=(160, 160), size=(200, 200)
+        )
         window1.content = toga.Box(style=Pack(background_color=REBECCAPURPLE))
         window2.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
         window1_probe = window_probe(app, window1)
         window2_probe = window_probe(app, window2)
-
         window1.show()
         window2.show()
-        await app_probe.redraw("Extra windows are visible")
+        # Add delay to ensure windows are visible after animation.
+        await app_probe.redraw("Test windows are shown", delay=0.5)
 
-        assert not app.is_full_screen
-        assert not app_probe.is_full_screen(window1)
-        assert not app_probe.is_full_screen(window2)
-        initial_content1_size = app_probe.content_size(window1)
-        initial_content2_size = app_probe.content_size(window2)
+        # Enter presentation mode
+        app.enter_presentation_mode([window1])
+        # Add delay to ensure windows are visible after animation.
+        await app_probe.redraw("App is in presentation mode", delay=0.5)
 
-        # Make window 2 full screen via the app
-        app.set_full_screen(window2)
-        await window2_probe.wait_for_window(
-            "Second extra window is full screen",
-            full_screen=True,
-        )
-        assert app.is_full_screen
+        assert app.in_presentation_mode
+        assert window1_probe.get_window_state() == WindowState.PRESENTATION
 
-        assert not app_probe.is_full_screen(window1)
-        assert app_probe.content_size(window1) == initial_content1_size
-
-        assert app_probe.is_full_screen(window2)
-        assert app_probe.content_size(window2)[0] > 1000
-        assert app_probe.content_size(window2)[1] > 700
-
-        # Make window 1 full screen via the app, window 2 no longer full screen
-        app.set_full_screen(window1)
-        await window1_probe.wait_for_window(
-            "First extra window is full screen",
-            full_screen=True,
-        )
-        assert app.is_full_screen
-
-        assert app_probe.is_full_screen(window1)
-        assert app_probe.content_size(window1)[0] > 1000
-        assert app_probe.content_size(window1)[1] > 700
-
-        assert not app_probe.is_full_screen(window2)
-        assert app_probe.content_size(window2) == initial_content2_size
-
-        # Exit full screen
-        app.exit_full_screen()
-        await window1_probe.wait_for_window(
-            "No longer full screen",
-            full_screen=True,
+        # Changing window state of main window should make the app exit presentation mode.
+        window1.state = new_window_state
+        # Add delay to ensure windows are visible after animation.
+        await app_probe.redraw(
+            "App is not in presentation mode"
+            f"\nTest Window 1 is in {new_window_state}",
+            delay=0.5,
         )
 
-        assert not app.is_full_screen
+        assert not app.in_presentation_mode
+        assert window1_probe.get_window_state() == new_window_state
 
-        assert not app_probe.is_full_screen(window1)
-        assert app_probe.content_size(window1) == initial_content1_size
+        # Reset window states
+        window1.state = WindowState.NORMAL
+        window2.state = WindowState.NORMAL
+        # Add delay to ensure windows are visible after animation.
+        await app_probe.redraw("All test windows are in WindowState.NORMAL", delay=0.5)
 
-        assert not app_probe.is_full_screen(window2)
-        assert app_probe.content_size(window2) == initial_content2_size
+        # Enter presentation mode again
+        app.enter_presentation_mode([window1])
+        # Add delay to ensure windows are visible after animation.
+        await app_probe.redraw("App is in presentation mode", delay=0.5)
+        assert app.in_presentation_mode
+        assert window1_probe.get_window_state() == WindowState.PRESENTATION
 
-        # Go full screen again on window 1
-        app.set_full_screen(window1)
-        # A longer delay to allow for genie animations
-        await window1_probe.wait_for_window(
-            "First extra window is full screen",
-            full_screen=True,
+        # Changing window state of extra window should make the app exit presentation mode.
+        window2.state = new_window_state
+        # Add delay to ensure windows are visible after animation.
+        await app_probe.redraw(
+            "App is not in presentation mode"
+            f"\nTest Window 1 is in {new_window_state}",
+            delay=0.5,
         )
-        assert app.is_full_screen
 
-        assert app_probe.is_full_screen(window1)
-        assert app_probe.content_size(window1)[0] > 1000
-        assert app_probe.content_size(window1)[1] > 700
+        assert not app.in_presentation_mode
+        assert window2_probe.get_window_state() == new_window_state
 
-        assert not app_probe.is_full_screen(window2)
-        assert app_probe.content_size(window2) == initial_content2_size
-
-        # Exit full screen by passing no windows
-        app.set_full_screen()
-
-        await window1_probe.wait_for_window(
-            "No longer full screen",
-            full_screen=True,
-        )
-        assert not app.is_full_screen
-
-        assert not app_probe.is_full_screen(window1)
-        assert app_probe.content_size(window1) == initial_content1_size
-
-        assert not app_probe.is_full_screen(window2)
-        assert app_probe.content_size(window2) == initial_content2_size
+        # Reset window states
+        window1.state = WindowState.NORMAL
+        window2.state = WindowState.NORMAL
+        # Add delay for gtk to show the windows
+        await app_probe.redraw("All test windows are in WindowState.NORMAL", delay=0.5)
 
     finally:
         window1.close()
         window2.close()
+        # After closing the window, the input focus might not be on main_window.
+        # Ensure that main_window will be in focus for other tests.
+        app.current_window = main_window
+        # Add delay to ensure windows are visible after animation.
+        await app_probe.redraw("main_window is now the current window", delay=0.5)
+        assert app.current_window == main_window
 
 
 async def test_show_hide_cursor(app, app_probe):

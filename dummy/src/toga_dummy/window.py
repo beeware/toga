@@ -2,6 +2,7 @@ import asyncio
 from pathlib import Path
 
 import toga_dummy
+from toga.constants import WindowState
 from toga.types import Size
 from toga.window import _initial_position
 
@@ -131,6 +132,13 @@ class Window(LoggedObject):
 
     def set_full_screen(self, is_full_screen):
         self._action("set full screen", full_screen=is_full_screen)
+
+    def get_window_state(self):
+        return self._get_value("state", WindowState.NORMAL)
+
+    def set_window_state(self, state):
+        self._action(f"set window state to {state}", state=state)
+        self._set_value("state", state)
 
     ######################################################################
     # Window capabilities

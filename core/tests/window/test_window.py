@@ -4,6 +4,7 @@ from unittest.mock import Mock
 import pytest
 
 import toga
+from toga.constants import WindowState
 from toga_dummy.utils import (
     assert_action_not_performed,
     assert_action_performed,
@@ -302,17 +303,116 @@ def test_visibility(window, app):
     assert not window.visible
 
 
-def test_full_screen(window, app):
-    """A window can be set full screen."""
-    assert not window.full_screen
+@pytest.mark.parametrize(
+    "state",
+    [
+        WindowState.MAXIMIZED,
+        WindowState.MINIMIZED,
+        WindowState.FULLSCREEN,
+        WindowState.PRESENTATION,
+    ],
+)
+def test_window_state(window, state):
+    """A window can have different states."""
+    assert window.state == WindowState.NORMAL
 
-    window.full_screen = True
-    assert window.full_screen
-    assert_action_performed_with(window, "set full screen", full_screen=True)
+    window.state = state
+    assert window.state == state
+    assert_action_performed_with(
+        window,
+        f"set window state to {state}",
+        state=state,
+    )
 
-    window.full_screen = False
-    assert not window.full_screen
-    assert_action_performed_with(window, "set full screen", full_screen=False)
+    window.state = WindowState.NORMAL
+    assert window.state == WindowState.NORMAL
+    assert_action_performed_with(
+        window,
+        "set window state to WindowState.NORMAL",
+        state=WindowState.NORMAL,
+    )
+
+
+@pytest.mark.parametrize(
+    "state",
+    [
+        WindowState.MAXIMIZED,
+        WindowState.MINIMIZED,
+        WindowState.FULLSCREEN,
+        WindowState.PRESENTATION,
+    ],
+)
+def test_window_state_same_as_previous(window, state):
+    """Setting the window state same as the current window state is a no-op."""
+
+    # Here, setting the same state twice and then checking with assert_action_not_performed
+    # will still report that the window state setting action was performed. This is because
+    # the action was also performed for the first-time setting of the window state,
+    # hence the action will still be in the EventLog and we cannot check if the
+    # action was done by the first call or the second call to the setter.
+    #
+    # For example: For the test, we need to set window state to WindowState.MAXIMIZED and
+    #              then again the window state needs to be set to WindowState.MAXIMIZED.
+    #              But doing so will cause the above mentioned problem.
+    # Hence, this is just to reach coverage.
+    window.state = state
+    assert window.state == state
+    window.state = state
+    assert window.state == state
+    # assert_action_not_performed(
+    #     window, "set window state to WindowState.MAXIMIZED"
+    # )
+
+    window.state = WindowState.NORMAL
+    assert window.state == WindowState.NORMAL
+    assert_action_performed_with(
+        window,
+        "set window state to WindowState.NORMAL",
+        state=WindowState.NORMAL,
+    )
+
+
+@pytest.mark.parametrize(
+    "state",
+    [
+        # Setting window state to any of the following when window is
+        # not resizable, is a no-op and should give a UserWarning.
+        WindowState.MAXIMIZED,
+        WindowState.FULLSCREEN,
+        WindowState.PRESENTATION,
+    ],
+)
+def test_non_resizable_window_state(state):
+    """Non-resizable window's states other than minimized or normal are no-ops."""
+    non_resizable_window = toga.Window(title="Non-Resizable Window", resizable=False)
+    with pytest.warns(
+        UserWarning,
+        match=f"Cannot set window state to {state} of a non-resizable window.",
+    ):
+        non_resizable_window.state = state
+        assert_action_not_performed(
+            non_resizable_window, f"set window state to {state}"
+        )
+    non_resizable_window.close()
+
+
+def test_close_direct_in_presentation_mode(window, app):
+    """Directly closing a window in presentation mode restores to normal first."""
+    window.state = WindowState.PRESENTATION
+    assert window.state == WindowState.PRESENTATION
+    assert_action_performed_with(
+        window,
+        "set window state to WindowState.PRESENTATION",
+        state=WindowState.PRESENTATION,
+    )
+
+    window.close()
+    assert window.state == WindowState.NORMAL
+    assert_action_performed_with(
+        window,
+        "set window state to WindowState.NORMAL",
+        state=WindowState.NORMAL,
+    )
 
 
 def test_close_direct(window, app):
@@ -1159,3 +1259,63 @@ def test_deprecated_names_closeable():
         match=r"Window.closeable has been renamed Window.closable",
     ):
         assert window.closeable
+
+
+def test_deprecated_full_screen(window, app):
+    """A window can be set full screen using the deprecated API."""
+    full_screen_warning = (
+        "`Window.full_screen` is deprecated. Use `Window.state` instead."
+    )
+    with pytest.warns(
+        DeprecationWarning,
+        match=full_screen_warning,
+    ):
+        assert not window.full_screen
+    with pytest.warns(
+        DeprecationWarning,
+        match=full_screen_warning,
+    ):
+        window.full_screen = True
+    with pytest.warns(
+        DeprecationWarning,
+        match=full_screen_warning,
+    ):
+        assert window.full_screen
+    assert_action_performed_with(
+        window,
+        "set window state to WindowState.FULLSCREEN",
+        state=WindowState.FULLSCREEN,
+    )
+    with pytest.warns(
+        DeprecationWarning,
+        match=full_screen_warning,
+    ):
+        window.full_screen = False
+    with pytest.warns(
+        DeprecationWarning,
+        match=full_screen_warning,
+    ):
+        assert not window.full_screen
+    assert_action_performed_with(
+        window,
+        "set window state to WindowState.NORMAL",
+        state=WindowState.NORMAL,
+    )
+
+    # Setting full screen to False when window is not in full screen, is a no-op
+    #
+    # We cannot assert that the action was not performed, since the same action
+    # was performed previously and would still be in EventLog. Therefore, we
+    # cannot check if the action was done by the first call or the second call.
+    # Hence, this is just to reach coverage.
+    with pytest.warns(
+        DeprecationWarning,
+        match=full_screen_warning,
+    ):
+        assert not window.full_screen
+    with pytest.warns(
+        DeprecationWarning,
+        match=full_screen_warning,
+    ):
+        window.full_screen = False
+    # assert_action_not_performed(window, "set window state to WindowState.NORMAL")

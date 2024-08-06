@@ -101,11 +101,8 @@ class AppProbe(BaseProbe, DialogsMixin):
         # input through touch or pen instead of the mouse"). hCursor is more reliable.
         return info.hCursor is not None
 
-    def is_full_screen(self, window):
-        return WindowProbe(self.app, window).is_full_screen
-
     def content_size(self, window):
-        return WindowProbe(self.app, window).content_size
+        return WindowProbe(self.app, window).presentation_content_size
 
     def assert_app_icon(self, icon):
         for window in self.app.windows:

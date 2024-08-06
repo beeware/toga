@@ -9,6 +9,7 @@ from rubicon.objc import (
 )
 
 from toga.command import Command, Separator
+from toga.constants import WindowState
 from toga.types import Position, Size
 from toga.window import _initial_position
 from toga_cocoa.container import Container
@@ -45,9 +46,17 @@ class TogaWindow(NSWindow):
 
     @objc_method
     def windowDidResize_(self, notification) -> None:
-        if self.interface.content:
+        if getattr(self, "interface", None) is not None and self.interface.content:
             # Set the window to the new size
             self.interface.content.refresh()
+
+    @objc_method
+    def windowDidDeminiaturize_(self, notification) -> None:
+        self.impl._process_pending_state()
+
+    @objc_method
+    def windowDidExitFullScreen_(self, notification) -> None:
+        self.impl._process_pending_state()
 
     ######################################################################
     # Toolbar delegate methods
@@ -165,6 +174,10 @@ class Window:
         # references to the object left. Add a reference that can be released
         # in response to the close.
         self.native.retain()
+
+        # Pending Window state transition variable and flag:
+        self._pending_state_transition = None
+        self._processing_pending_state = False
 
         self.set_title(title)
         self.set_size(size)
@@ -288,10 +301,105 @@ class Window:
     # Window state
     ######################################################################
 
-    def set_full_screen(self, is_full_screen):
-        current_state = bool(self.native.styleMask & NSWindowStyleMask.FullScreen)
-        if is_full_screen != current_state:
+    def get_window_state(self):
+        if self.interface.content and bool(
+            self.interface.content._impl.native.isInFullScreenMode()
+        ):
+            return WindowState.PRESENTATION
+        elif bool(self.native.styleMask & NSWindowStyleMask.FullScreen):
+            return WindowState.FULLSCREEN
+        elif bool(self.native.isZoomed):
+            return WindowState.MAXIMIZED
+        elif bool(self.native.isMiniaturized):
+            return WindowState.MINIMIZED
+        else:
+            return WindowState.NORMAL
+
+    def set_window_state(self, state):
+        current_state = self.get_window_state()
+
+        if current_state == state:
+            return
+
+        elif self._processing_pending_state:
+            # If we're processing a transition then store the requested state
+            # in the class variable.
+            self._pending_state_transition = state
+            return
+
+        # Set Window state to NORMAL before changing to other states as some
+        # states block changing window state without first exiting them or
+        # can even cause rendering glitches.
+        elif current_state != WindowState.NORMAL:
+            self._pending_state_transition = state
+            self._processing_pending_state = True
+            self._apply_state(WindowState.NORMAL)
+
+        # elif current_state == WindowState.NORMAL:
+        else:
+            self._processing_pending_state = True
+            self._apply_state(state)
+
+    def _process_pending_state(self):
+        pending_state = self._pending_state_transition
+        self._pending_state_transition = None
+        if (pending_state is not None) and (self.get_window_state() != pending_state):
+            self._apply_state(pending_state)
+
+        if self._pending_state_transition is not None:
+            # The new requested state must have been added while the pending
+            # state was being applied. Hence, process the new requested state.
+            self._process_pending_state()
+
+        self._processing_pending_state = False
+
+    def _apply_state(self, target_state):
+        if target_state == WindowState.NORMAL:
+            current_state = self.get_window_state()
+            # If the window is maximized, restore it to its normal size
+            if current_state == WindowState.MAXIMIZED:
+                self.native.setIsZoomed(False)
+                self._process_pending_state()
+            # Deminiaturize the window to restore it to its previous state
+            elif current_state == WindowState.MINIMIZED:
+                self.native.setIsMiniaturized(False)
+            # If the window is in full-screen mode, exit full-screen mode
+            elif current_state == WindowState.FULLSCREEN:
+                self.native.toggleFullScreen(self.native)
+                self._process_pending_state()
+            # If the window is in presentation mode, exit presentation mode
+            # elif current_state == WindowState.PRESENTATION:
+            else:  # pragma: no cover
+                # Marking this as no cover, since exit_presentation_mode() is triggered on
+                # window.state setter, which sets windows in presentation mode to NORMAL.
+                # Thus, if a window was in PRESENTATION state and switched to NORMAL,
+                # exit_presentation_mode() would handle it, making this branch unreachable.
+                #
+                # On other backends (gtk, winforms), presentation mode is window-based and
+                # manipulated directly. On cocoa, it's app-based with native support, so
+                # this branch isn't needed.
+                #
+                # self.interface.app.exit_presentation_mode()
+                # Pending window state is processed at app._impl.exit_presentation_mode()
+                # self._process_pending_state()
+                pass
+        elif target_state == WindowState.MAXIMIZED:
+            self.native.setIsZoomed(True)
+        elif target_state == WindowState.MINIMIZED:
+            self.native.setIsMiniaturized(True)
+        elif target_state == WindowState.FULLSCREEN:
             self.native.toggleFullScreen(self.native)
+        # elif target_state == WindowState.PRESENTATION:
+        else:
+            self.interface.app.enter_presentation_mode(
+                {self.interface.screen: self.interface}
+            )
+
+        # Skip pending state processing when target state is NORMAL. This is handled by
+        # window delegation notifications (`windowDidDeminiaturize_` and `windowDidExitFullScreen_`).
+        # Methods `setIsMiniaturized()` and `toggleFullScreen()` don't wait for full state exit.
+        if target_state != WindowState.NORMAL:
+            self._process_pending_state()
 
     ######################################################################
     # Window capabilities

@@ -30,5 +30,8 @@ class WindowProbe(BaseProbe, DialogsMixin):
             ),
         )
 
+    def get_window_state(self):
+        pytest.skip("Window states are not implemented on iOS")
+
     def has_toolbar(self):
         pytest.skip("Toolbars not implemented on iOS")

@@ -160,13 +160,11 @@ class App:
         pass
 
     ######################################################################
-    # Full screen control
+    # Presentation mode controls
     ######################################################################
 
-    def enter_full_screen(self, windows):
-        # No-op; mobile doesn't support full screen
-        pass
+    def enter_presentation_mode(self, screen_window_dict):
+        self.interface.factory.not_implemented("App.enter_presentation_mode()")
 
-    def exit_full_screen(self, windows):
-        # No-op; mobile doesn't support full screen
-        pass
+    def exit_presentation_mode(self):
+        self.interface.factory.not_implemented("App.exit_presentation_mode()")

@@ -13,6 +13,7 @@ from System.Windows.Threading import Dispatcher
 import toga
 from toga.app import overridden
 from toga.command import Command, Group
+from toga.constants import WindowState
 from toga.handlers import simple_handler
 
 from .libs.proactor import WinformsProactorEventLoop
@@ -299,16 +300,19 @@ class App:
         window._impl.native.Activate()
 
     ######################################################################
-    # Full screen control
+    # Presentation mode controls
     ######################################################################
 
-    def enter_full_screen(self, windows):
-        for window in windows:
-            window._impl.set_full_screen(True)
+    def enter_presentation_mode(self, screen_window_dict):
+        for screen, window in screen_window_dict.items():
+            window._impl._before_presentation_mode_screen = window.screen
+            window.screen = screen
+            window._impl.set_window_state(WindowState.PRESENTATION)
 
-    def exit_full_screen(self, windows):
-        for window in windows:
-            window._impl.set_full_screen(False)
+    def exit_presentation_mode(self):
+        for window in self.interface.windows:
+            if window.state == WindowState.PRESENTATION:
+                window._impl.set_window_state(WindowState.NORMAL)
 
 
 class DocumentApp(App):  # pragma: no cover

@@ -9,6 +9,7 @@ from System.Drawing.Imaging import ImageFormat
 from System.IO import MemoryStream
 
 from toga.command import Separator
+from toga.constants import WindowState
 from toga.types import Position, Size
 
 from .container import Container
@@ -35,6 +36,10 @@ class Window(Container, Scalable):
         self.native.MinimizeBox = self.interface.minimizable
         self.native.MaximizeBox = self.interface.resizable
 
+        # Use a shadow variable since a window without any app menu and toolbar
+        # in presentation mode would be indistinguishable from full screen mode.
+        self._in_presentation_mode = False
+
         self.set_title(title)
         self.set_size(size)
         # Winforms does window cascading by default; use that behavior, rather than
@@ -45,7 +50,11 @@ class Window(Container, Scalable):
         self.native.Resize += WeakrefCallable(self.winforms_Resize)
         self.resize_content()  # Store initial size
 
-        self.set_full_screen(self.interface.full_screen)
+        # Set window border style based on whether window resizability is enabled or not.
+        self.native.FormBorderStyle = getattr(
+            WinForms.FormBorderStyle,
+            "Sizable" if self.interface.resizable else "FixedSingle",
+        )
 
     def create(self):
         self.native = WinForms.Form()
@@ -181,16 +190,81 @@ class Window(Container, Scalable):
     # Window state
     ######################################################################
 
-    def set_full_screen(self, is_full_screen):
-        if is_full_screen:
+    def get_window_state(self):
+        window_state = self.native.WindowState
+        if window_state == WinForms.FormWindowState.Maximized:
+            if self.native.FormBorderStyle == getattr(WinForms.FormBorderStyle, "None"):
+                if self._in_presentation_mode:
+                    return WindowState.PRESENTATION
+                else:
+                    return WindowState.FULLSCREEN
+            else:
+                return WindowState.MAXIMIZED
+        elif window_state == WinForms.FormWindowState.Minimized:
+            return WindowState.MINIMIZED
+        elif window_state == WinForms.FormWindowState.Normal:
+            return WindowState.NORMAL
+        else:  # pragma: no cover
+            # Marking this as no cover, since the above cases cover all the possible values
+            # of the FormWindowState enum type that can be returned by WinForms.WindowState.
+            return
+
+    def set_window_state(self, state):
+        current_state = self.get_window_state()
+        if current_state == state:
+            return
+        if (
+            current_state != WindowState.NORMAL
+            and state != WindowState.NORMAL
+            and (getattr(self, "_pending_window_state_transition", None) is None)
+        ):
+            # Set Window state to NORMAL before changing to other states as some
+            # states block changing window state without first exiting them or
+            # can even cause rendering glitches.
+            self._pending_window_state_transition = state
+            self.set_window_state(WindowState.NORMAL)
+
+        elif state == WindowState.MAXIMIZED:
+            self.native.WindowState = WinForms.FormWindowState.Maximized
+
+        elif state == WindowState.MINIMIZED:
+            self.native.WindowState = WinForms.FormWindowState.Minimized
+
+        elif state == WindowState.FULLSCREEN:
             self.native.FormBorderStyle = getattr(WinForms.FormBorderStyle, "None")
             self.native.WindowState = WinForms.FormWindowState.Maximized
+
+        elif state == WindowState.PRESENTATION:
+            self._before_presentation_mode_screen = self.interface.screen
+            if self.native.MainMenuStrip:
+                self.native.MainMenuStrip.Visible = False
+            if getattr(self, "toolbar_native", None):
+                self.toolbar_native.Visible = False
+            self.native.FormBorderStyle = getattr(WinForms.FormBorderStyle, "None")
+            self.native.WindowState = WinForms.FormWindowState.Maximized
+            self._in_presentation_mode = True
+
+        # WindowState.NORMAL case:
         else:
+            if current_state == WindowState.PRESENTATION:
+                if self.native.MainMenuStrip:
+                    self.native.MainMenuStrip.Visible = True
+                if getattr(self, "toolbar_native", None):
+                    self.toolbar_native.Visible = True
+
+                self.interface.screen = self._before_presentation_mode_screen
+                del self._before_presentation_mode_screen
+                self._in_presentation_mode = False
+
             self.native.FormBorderStyle = getattr(
                 WinForms.FormBorderStyle,
                 "Sizable" if self.interface.resizable else "FixedSingle",
             )
             self.native.WindowState = WinForms.FormWindowState.Normal
+            # Complete any pending window state transition.
+            if getattr(self, "_pending_window_state_transition", None) is not None:
+                self.set_window_state(self._pending_window_state_transition)
+                del self._pending_window_state_transition
 
     ######################################################################
     # Window capabilities
@@ -219,9 +293,9 @@ class MainWindow(Window):
 
     def _top_bars_height(self):
         vertical_shift = 0
-        if self.toolbar_native:
+        if self.toolbar_native and self.toolbar_native.Visible:
             vertical_shift += self.toolbar_native.Height
-        if self.native.MainMenuStrip:
+        if self.native.MainMenuStrip and self.native.MainMenuStrip.Visible:
             vertical_shift += self.native.MainMenuStrip.Height
         return vertical_shift
 

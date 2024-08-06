@@ -1,3 +1,4 @@
+from toga.constants import WindowState
 from toga_gtk.libs import Gdk, Gtk
 
 from .dialogs import DialogsMixin
@@ -37,8 +38,25 @@ class WindowProbe(BaseProbe, DialogsMixin):
         return (content_allocation.width, content_allocation.height)
 
     @property
-    def is_full_screen(self):
-        return bool(self.native.get_window().get_state() & Gdk.WindowState.FULLSCREEN)
+    def presentation_content_size(self):
+        return self.content_size
+
+    def get_window_state(self):
+        window_state_flags = self.impl._window_state_flags
+        if window_state_flags & Gdk.WindowState.MAXIMIZED:
+            current_state = WindowState.MAXIMIZED
+        elif window_state_flags & Gdk.WindowState.ICONIFIED:
+            current_state = WindowState.MINIMIZED
+        elif window_state_flags & Gdk.WindowState.FULLSCREEN:
+            if getattr(self.impl, "_in_presentation_mode", False) is True:
+                current_state = WindowState.PRESENTATION
+            elif getattr(self.impl, "_is_full_screen", False) is True:
+                current_state = WindowState.FULLSCREEN
+            else:
+                current_state = WindowState.NORMAL
+        else:
+            current_state = WindowState.NORMAL
+        return current_state
 
     @property
     def is_resizable(self):
@@ -50,7 +68,7 @@ class WindowProbe(BaseProbe, DialogsMixin):
 
     @property
     def is_minimized(self):
-        return bool(self.native.get_window().get_state() & Gdk.WindowState.ICONIFIED)
+        return bool(self.get_window_state() == WindowState.MINIMIZED)
 
     def minimize(self):
         self.native.iconify()
