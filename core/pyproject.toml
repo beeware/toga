@@ -80,19 +80,15 @@ dev = [
     # typing-extensions needed for TypeAlias added in Py 3.10
     "typing-extensions == 4.9.0 ; python_version < '3.10'",
 ]
+# Docs are always built on Py3.12; see RTD and tox config files,
+# and the docs contribution guide.
 docs = [
     "furo == 2024.7.18",
     "Pillow == 10.4.0",
     "pyenchant == 3.2.2",
-    # Sphinx 7.2 deprecated support for Python 3.8
-    # Sphinx 8.0 deprecated support for Python 3.8
-    "sphinx == 7.1.2 ; python_version < '3.9'",
-    "sphinx == 7.3.7 ; python_version == '3.9'",
-    "sphinx == 7.3.7 ; python_version >= '3.10'",
+    "sphinx == 7.3.7",
     "sphinx_tabs == 3.4.5",
-    # sphinx-autobuild 2024.2.4 deprecated support for Python 3.8
-    "sphinx-autobuild == 2021.3.14 ; python_version < '3.9'",
-    "sphinx-autobuild == 2024.4.16 ; python_version >= '3.9'",
+    "sphinx-autobuild == 2024.4.16",
     "sphinx-csv-filter == 0.4.1",
     "sphinx-copybutton == 0.5.2",
     "sphinx-toolbox == 3.7.0",
