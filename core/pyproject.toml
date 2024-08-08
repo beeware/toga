@@ -86,7 +86,7 @@ docs = [
     "furo == 2024.7.18",
     "Pillow == 10.4.0",
     "pyenchant == 3.2.2",
-    "sphinx == 7.3.7",
+    "sphinx == 8.0.2",
     "sphinx_tabs == 3.4.5",
     "sphinx-autobuild == 2024.4.16",
     "sphinx-csv-filter == 0.4.1",
