@@ -48,7 +48,7 @@ from .widgets.textinput import TextInput
 from .widgets.timeinput import TimeInput, TimePicker
 from .widgets.tree import Tree
 from .widgets.webview import WebView
-from .window import DocumentMainWindow, MainWindow, Window
+from .window import DocumentWindow, MainWindow, Window
 
 
 class NotImplementedWarning(RuntimeWarning):
@@ -124,7 +124,7 @@ __all__ = [
     "WebView",
     "Widget",
     # Windows
-    "DocumentMainWindow",
+    "DocumentWindow",
     "MainWindow",
     "Window",
     # Deprecated widget names

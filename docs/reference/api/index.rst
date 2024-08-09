@@ -7,14 +7,14 @@ API Reference
 Core application components
 ---------------------------
 
-================================================= =============================================================================
- Component                                         Description
-================================================= =============================================================================
- :doc:`App </reference/api/app>`                   The top-level representation of an application.
- :doc:`DocumentApp </reference/api/documentapp>`   An application that manages documents.
- :doc:`Window </reference/api/window>`             An operating system-managed container of widgets.
- :doc:`MainWindow </reference/api/mainwindow>`     A window that can use the full set of window-level user interface elements.
-================================================= =============================================================================
+======================================================= =============================================================================
+ Component                                                       Description
+======================================================= =============================================================================
+ :doc:`App </reference/api/app>`                         The top-level representation of an application.
+ :doc:`Window </reference/api/window>`                   An operating system-managed container of widgets.
+ :doc:`MainWindow </reference/api/mainwindow>`           A window that can use the full set of window-level user interface elements.
+ :doc:`DocumentWindow </reference/api/documentwindow>`   A window that can be used as the main interface to a document-based app.
+======================================================= =============================================================================
 
 General widgets
 ---------------
@@ -81,7 +81,9 @@ Resources
  :doc:`Command </reference/api/resources/command>`                    A representation of app functionality that the user can invoke from
                                                                       menus or toolbars.
  :doc:`Dialogs </reference/api/resources/dialogs>`                    A short-lived window asking the user for input.
- :doc:`Font </reference/api/resources/fonts>`                         Fonts
+ :doc:`Document </reference/api/resources/document>`                  A representation of a file on disk that will be displayed in one or
+                                                                      more windows
+ :doc:`Font </reference/api/resources/fonts>`                         A representation of a Font
  :doc:`Icon </reference/api/resources/icons>`                         An icon for buttons, menus, etc
  :doc:`Image </reference/api/resources/images>`                       An image
  :doc:`Source </reference/api/resources/sources/source>`              A base class for data source implementations.
@@ -117,9 +119,9 @@ Other
    :hidden:
 
    app
-   documentapp
    window
    mainwindow
+   documentwindow
    containers/index
    hardware/index
    resources/index

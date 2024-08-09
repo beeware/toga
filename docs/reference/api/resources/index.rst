@@ -7,6 +7,7 @@ Resources
    dialogs
    fonts
    command
+   document
    icons
    images
    sources/source

@@ -104,6 +104,7 @@ Reference
 ---------
 
 .. autoclass:: toga.Window
+.. autoclass:: toga.app.WindowSet
 
 .. autoprotocol:: toga.window.Dialog
 .. autoprotocol:: toga.window.OnCloseHandler

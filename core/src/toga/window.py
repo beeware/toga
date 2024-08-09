@@ -14,7 +14,7 @@ from typing import (
 import toga
 from toga import dialogs
 from toga.command import CommandSet
-from toga.handlers import AsyncResult, wrapped_handler
+from toga.handlers import AsyncResult, overridden, wrapped_handler
 from toga.images import Image
 from toga.platform import get_platform_factory
 from toga.types import Position, Size
@@ -305,9 +305,14 @@ class Window:
             self.app._request_exit()
             close_window = False
         elif self.app.main_window is None:
-            # If this is an app without a main window, this is the last window in the
-            # app, and the platform exits on last window close, request an exit.
-            if len(self.app.windows) == 1 and self.app._impl.CLOSE_ON_LAST_WINDOW:
+            # If this is an app without a main window, the app is running, this
+            # is the last window in the app, and the platform exits on last
+            # window close, request an exit.
+            if (
+                len(self.app.windows) == 1
+                and self.app._impl.CLOSE_ON_LAST_WINDOW
+                and self.app.loop.is_running()
+            ):
                 self.app._request_exit()
                 close_window = False
 
@@ -845,50 +850,110 @@ class MainWindow(Window):
         return self._toolbar
 
 
-class DocumentMainWindow(Window):
-    _WINDOW_CLASS = "DocumentMainWindow"
+class DocumentWindow(MainWindow):
+    def __init__(self, doc: Document, *args, **kwargs):
+        """Create a new document Window.
 
-    def __init__(
-        self,
-        doc: Document,
-        id: str | None = None,
-        title: str | None = None,
-        position: PositionT = Position(100, 100),
-        size: SizeT = Size(640, 480),
-        resizable: bool = True,
-        minimizable: bool = True,
-        on_close: OnCloseHandler | None = None,
-    ):
-        """Create a new document Main Window.
+        A document window is a MainWindow (so it will have a menu bar, and *can* have a
+        toolbar), bound to a document instance.
 
-        This installs a default on_close handler that honors platform-specific document
-        closing behavior. If you want to control whether a document is allowed to close
-        (e.g., due to having unsaved change), override
-        :meth:`toga.Document.can_close()`, rather than implementing an on_close handler.
+        In addition to the required ``doc`` argument, accepts the same arguments as
+        :class:`~toga.Window`.
+
+        The default ``on_close`` handler will use the document's modification status to
+        determine if the document has been modified. It will allow the window to close
+        if the document is fully saved, or the user explicitly declines the opportunity
+        to save.
 
         :param doc: The document being managed by this window
-        :param id: The ID of the window.
-        :param title: Title for the window. Defaults to the formal name of the app.
-        :param position: Position of the window, as a :any:`toga.Position` or tuple of
-            ``(x, y)`` coordinates.
-        :param size: Size of the window, as a :any:`toga.Size` or tuple of
-            ``(width, height)``, in pixels.
-        :param resizable: Can the window be manually resized by the user?
-        :param minimizable: Can the window be minimized by the user?
-        :param on_close: The initial :any:`on_close` handler.
         """
-        self.doc = doc
-        super().__init__(
-            id=id,
-            title=title,
-            position=position,
-            size=size,
-            resizable=resizable,
-            closable=True,
-            minimizable=minimizable,
-            on_close=doc.handle_close if on_close is None else on_close,
-        )
+        self._doc = doc
+        if "on_close" not in kwargs:
+            kwargs["on_close"] = self._confirm_close
+
+        super().__init__(*args, **kwargs)
+
+    @property
+    def doc(self) -> Document:
+        """The document displayed by this window."""
+        return self._doc
 
     @property
     def _default_title(self) -> str:
-        return self.doc.path.name
+        return self.doc.title
+
+    async def _confirm_close(self, window, **kwargs):
+        if self.doc.modified:
+            if await self.dialog(
+                toga.QuestionDialog(
+                    "Are you sure?",
+                    "This document has unsaved changes. Do you want to save these changes?",
+                )
+            ):
+                return await self.save()
+        return True
+
+    async def _commit(self):
+        # Get the window into a state where new content could be opened.
+        # Used by the open method on GTK/Linux to ensure the current document
+        # has been saved before closing this window and opening a replacement.
+        return await self._confirm_close(self)
+
+    def _close(self):
+        # When then window is closed, remove the document it is managing from the app's
+        # list of managed documents.
+        self._app._documents._remove(self.doc)
+        super()._close()
+
+    async def save(self):
+        """Save the document associated with this window.
+
+        If the document associated with a window hasn't been saved before, and the
+        document type defines a :meth:`~toga.Document.write` method, the user will be
+        prompted to provide a filename.
+
+        :returns: True if the save was successful; False if the save was aborted.
+        """
+        if overridden(self.doc.write):
+            if self.doc.path:
+                # Document has been saved previously; save using that filename.
+                self.doc.save()
+                return True
+            else:
+                # Document has not been saved previously; prompt for a filename.
+                suggested_name = f"Untitled.{self.doc.default_extension}"
+                new_path = await self.dialog(
+                    dialogs.SaveFileDialog("Save as...", suggested_name)
+                )
+                # If a filename has been returned, save using that filename.
+                # If there isn't a filename, the save was cancelled.
+                if new_path:
+                    self.doc.save(new_path)
+                    return True
+        return False
+
+    async def save_as(self):
+        """Save the document associated with this window under a new filename.
+
+        The default implementation will prompt the user for a new filename, then save
+        the document with that new filename. If the document type doesn't define a
+        :meth:`~toga.Document.write` method, the save-as request will be ignored.
+
+        :returns: True if the save was successful; False if the save was aborted.
+        """
+        if overridden(self.doc.write):
+            suggested_path = (
+                self.doc.path
+                if self.doc.path
+                else f"Untitled.{self.doc.default_extension}"
+            )
+            new_path = await self.dialog(
+                dialogs.SaveFileDialog("Save as...", suggested_path)
+            )
+            # If a filename has been returned, save using that filename.
+            # If there isn't a filename, the save was cancelled.
+            if new_path:
+                self.doc.save(new_path)
+                return True
+
+        return False

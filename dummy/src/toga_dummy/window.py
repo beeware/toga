@@ -119,7 +119,7 @@ class Window(LoggedObject):
     ######################################################################
 
     def get_visible(self):
-        return self._get_value("visible")
+        return self._get_value("visible", False)
 
     def hide(self):
         self._action("hide")
@@ -147,7 +147,7 @@ class Window(LoggedObject):
 
     def simulate_close(self):
         result = self.interface.on_close()
-        if asyncio.iscoroutine(result):
+        if isinstance(result, asyncio.Task):
             self.interface.app.loop.run_until_complete(result)
 
 
@@ -158,7 +158,3 @@ class MainWindow(Window):
 
     def create_toolbar(self):
         self._action("create toolbar")
-
-
-class DocumentMainWindow(Window):
-    pass

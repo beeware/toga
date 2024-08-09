@@ -274,15 +274,6 @@ NSColor.declare_class_property("yellowColor")
 NSCursor = ObjCClass("NSCursor")
 
 ######################################################################
-# NSDocument.h
-NSDocument = ObjCClass("NSDocument")
-
-######################################################################
-# NSDocumentController.h
-NSDocumentController = ObjCClass("NSDocumentController")
-NSDocumentController.declare_class_property("sharedDocumentController")
-
-######################################################################
 # NSEvent.h
 NSEvent = ObjCClass("NSEvent")
 

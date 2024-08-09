@@ -140,8 +140,11 @@ class SaveFileDialog(Dialog):
 
         This dialog is not currently supported on Android or iOS.
 
-        Returns a path object for the selected file location, or ``None`` if
-        the user cancelled the save operation.
+        Returns a path object for the selected file location, or ``None`` if the user
+        cancelled the save operation.
+
+        If the filename already exists, the user will be prompted to confirm they want
+        to overwrite the existing file.
 
         :param title: The title of the dialog window
         :param suggested_filename: The initial suggested filename

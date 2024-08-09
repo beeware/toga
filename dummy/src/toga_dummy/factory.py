@@ -3,7 +3,6 @@ from toga import NotImplementedWarning
 from . import dialogs
 from .app import App, DocumentApp
 from .command import Command
-from .documents import Document
 from .fonts import Font
 from .hardware.camera import Camera
 from .hardware.location import Location
@@ -36,7 +35,7 @@ from .widgets.textinput import TextInput
 from .widgets.timeinput import TimeInput
 from .widgets.tree import Tree
 from .widgets.webview import WebView
-from .window import DocumentMainWindow, MainWindow, Window
+from .window import MainWindow, Window
 
 
 def not_implemented(feature):
@@ -48,7 +47,6 @@ __all__ = [
     "App",
     "DocumentApp",
     "Command",
-    "Document",
     "Font",
     "Icon",
     "Image",
@@ -84,7 +82,6 @@ __all__ = [
     "Tree",
     "WebView",
     # Windows
-    "DocumentMainWindow",
     "MainWindow",
     "Window",
     # Widget is also required for testing purposes
