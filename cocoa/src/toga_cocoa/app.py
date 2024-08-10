@@ -511,17 +511,24 @@ class App:
             window.content._impl.native.window.interface = window
             window.content.refresh()
 
+            # Process any pending window state.
+            window._impl._requested_state_applied = True
+            window._impl._process_pending_state()
+
     def exit_presentation_mode(self):
         opts = NSMutableDictionary.alloc().init()
         opts.setObject(
             NSNumber.numberWithBool(True), forKey="NSFullScreenModeAllScreens"
         )
+
         for window in self.interface.windows:
             if window.state == WindowState.PRESENTATION:
                 window.content._impl.native.exitFullScreenModeWithOptions(opts)
                 window.content.refresh()
-            # Process any pending window state.
-            window._impl._process_pending_state()
+
+                # Process any pending window state.
+                window._impl._requested_state_applied = True
+                window._impl._process_pending_state()
 
 
 class DocumentApp(App):  # pragma: no cover

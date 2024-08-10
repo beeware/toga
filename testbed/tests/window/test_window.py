@@ -1,4 +1,5 @@
 import gc
+import random
 import re
 import weakref
 from importlib import import_module
@@ -834,10 +835,27 @@ else:
         ],
     )
     async def test_window_state_direct_change(
-        app, initial_state, final_state, second_window, second_window_probe
+        app,
+        app_probe,
+        initial_state,
+        final_state,
+        second_window,
+        second_window_probe,
+        intermediate_states=tuple(
+            random.sample(
+                [
+                    WindowState.NORMAL,
+                    WindowState.MINIMIZED,
+                    WindowState.MAXIMIZED,
+                    WindowState.FULLSCREEN,
+                    WindowState.PRESENTATION,
+                ],
+                5,
+            )
+        ),
     ):
         if (
-            WindowState.MINIMIZED in {initial_state, final_state}
+            WindowState.MINIMIZED in {initial_state, final_state, *intermediate_states}
             and not second_window_probe.supports_minimize
         ):
             pytest.xfail(
@@ -863,13 +881,14 @@ else:
 
         assert second_window_probe.get_window_state() == initial_state
 
+        # Set to the intermediate states but don't wait for the OS delay.
+        for state in intermediate_states:
+            second_window.state = state
+
         # Set to final state
         second_window.state = final_state
         # Add delay to ensure windows are visible after animation.
-        await second_window_probe.wait_for_window(
-            f"Secondary window is in {final_state}", full_screen=True
-        )
-
+        await app_probe.redraw(f"Secondary window is in {final_state}", delay=1.5)
         assert second_window_probe.get_window_state() == final_state
 
     @pytest.mark.parametrize(

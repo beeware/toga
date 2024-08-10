@@ -314,6 +314,7 @@ def test_visibility(window, app):
 )
 def test_window_state(window, state):
     """A window can have different states."""
+    window.content = toga.Box()
     assert window.state == WindowState.NORMAL
 
     window.state = state
@@ -323,45 +324,6 @@ def test_window_state(window, state):
         f"set window state to {state}",
         state=state,
     )
-
-    window.state = WindowState.NORMAL
-    assert window.state == WindowState.NORMAL
-    assert_action_performed_with(
-        window,
-        "set window state to WindowState.NORMAL",
-        state=WindowState.NORMAL,
-    )
-
-
-@pytest.mark.parametrize(
-    "state",
-    [
-        WindowState.MAXIMIZED,
-        WindowState.MINIMIZED,
-        WindowState.FULLSCREEN,
-        WindowState.PRESENTATION,
-    ],
-)
-def test_window_state_same_as_previous(window, state):
-    """Setting the window state same as the current window state is a no-op."""
-
-    # Here, setting the same state twice and then checking with assert_action_not_performed
-    # will still report that the window state setting action was performed. This is because
-    # the action was also performed for the first-time setting of the window state,
-    # hence the action will still be in the EventLog and we cannot check if the
-    # action was done by the first call or the second call to the setter.
-    #
-    # For example: For the test, we need to set window state to WindowState.MAXIMIZED and
-    #              then again the window state needs to be set to WindowState.MAXIMIZED.
-    #              But doing so will cause the above mentioned problem.
-    # Hence, this is just to reach coverage.
-    window.state = state
-    assert window.state == state
-    window.state = state
-    assert window.state == state
-    # assert_action_not_performed(
-    #     window, "set window state to WindowState.MAXIMIZED"
-    # )
 
     window.state = WindowState.NORMAL
     assert window.state == WindowState.NORMAL
@@ -385,6 +347,7 @@ def test_window_state_same_as_previous(window, state):
 def test_non_resizable_window_state(state):
     """Non-resizable window's states other than minimized or normal are no-ops."""
     non_resizable_window = toga.Window(title="Non-Resizable Window", resizable=False)
+    non_resizable_window.content = toga.Box()
     with pytest.warns(
         UserWarning,
         match=f"Cannot set window state to {state} of a non-resizable window.",
@@ -396,8 +359,21 @@ def test_non_resizable_window_state(state):
     non_resizable_window.close()
 
 
+def test_no_content_window_presentation_state(window):
+    """Setting window states on a window without content is a no-op."""
+    with pytest.warns(
+        UserWarning,
+        match="Cannot enter presentation mode on a window without a content.",
+    ):
+        window.state = WindowState.PRESENTATION
+        assert_action_not_performed(
+            window, "set window state to WindowState.PRESENTATION"
+        )
+
+
 def test_close_direct_in_presentation_mode(window, app):
     """Directly closing a window in presentation mode restores to normal first."""
+    window.content = toga.Box()
     window.state = WindowState.PRESENTATION
     assert window.state == WindowState.PRESENTATION
     assert_action_performed_with(

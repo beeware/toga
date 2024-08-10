@@ -37,10 +37,6 @@ class Window:
         self._in_presentation_mode = False
         self._is_full_screen = False
 
-        # Pending Window state transition variable and flag:
-        self._pending_state_transition = None
-        self._processing_pending_state = False
-
         self.native.set_default_size(size[0], size[1])
 
         self.set_title(title)
@@ -176,58 +172,26 @@ class Window:
             return WindowState.NORMAL
 
     def set_window_state(self, state):
-        current_state = self.get_window_state()
-
-        if current_state == state:
-            return
-
-        elif self._processing_pending_state:
-            # If we're processing a transition then store the requested state
-            # in the class variable.
-            self._pending_state_transition = state
-            return
-
         # Set Window state to NORMAL before changing to other states as some
         # states block changing window state without first exiting them or
         # can even cause rendering glitches.
-        elif current_state != WindowState.NORMAL:
-            self._pending_state_transition = state
-            self._processing_pending_state = True
+        if self.get_window_state() != WindowState.NORMAL:
             self._apply_state(WindowState.NORMAL)
-
-        # elif current_state == WindowState.NORMAL:
-        else:
-            self._processing_pending_state = True
-            self._apply_state(state)
-
-    def _process_pending_state(self):
-        pending_state = self._pending_state_transition
-        self._pending_state_transition = None
-        if (pending_state is not None) and (self.get_window_state() != pending_state):
-            self._apply_state(pending_state)
-
-        if self._pending_state_transition is not None:
-            # The new requested state must have been added while the pending
-            # state was being applied. Hence, process the new requested state.
-            self._process_pending_state()
-
-        self._processing_pending_state = False
+        self._apply_state(state)
 
     def _apply_state(self, target_state):
-        if target_state == WindowState.NORMAL:
+        if target_state == self.get_window_state():
+            return
+        elif target_state == WindowState.NORMAL:
             current_state = self.get_window_state()
-            # If the window is maximized, restore it to its normal size
             if current_state == WindowState.MAXIMIZED:
                 self.native.unmaximize()
-            # Deminiaturize the window to restore it to its previous state
             elif current_state == WindowState.MINIMIZED:
                 # deiconify() doesn't work
                 self.native.present()
-            # If the window is in full-screen mode, exit full-screen mode
             elif current_state == WindowState.FULLSCREEN:
                 self.native.unfullscreen()
                 self._is_full_screen = False
-            # If the window is in presentation mode, exit presentation mode
             # elif current_state == WindowState.PRESENTATION:
             else:
                 if isinstance(self.native, Gtk.ApplicationWindow):
@@ -254,8 +218,6 @@ class Window:
                 self.native_toolbar.set_visible(False)
             self.native.fullscreen()
             self._in_presentation_mode = True
-
-        self._process_pending_state()
 
     ######################################################################
     # Window capabilities

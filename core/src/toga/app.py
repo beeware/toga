@@ -797,17 +797,27 @@ class App:
         :param windows: A list of windows, or a dictionary
             mapping screens to windows, to go into presentation, in order of allocation to
             screens. If the number of windows exceeds the number of available displays,
-            those windows will not be visible.
+            those windows will not be visible. The windows must have a content set on them.
 
         :raises ValueError: If the presentation layout supplied is not a list of windows or
-            or a dict mapping windows to screens.
+            or a dict mapping windows to screens, or if any window does not have content.
         """
         if windows:
             screen_window_dict = dict()
             if isinstance(windows, list):
                 for window, screen in zip(windows, self.screens):
-                    screen_window_dict[screen] = window
+                    if window.content is None:
+                        raise ValueError(
+                            f"Cannot enter presentation mode on {window.title} window without a content."
+                        )
+                    else:
+                        screen_window_dict[screen] = window
             elif isinstance(windows, dict):
+                for _, window in windows.items():
+                    if window.content is None:
+                        raise ValueError(
+                            f"Cannot enter presentation mode on {window.title} window without a content."
+                        )
                 screen_window_dict = windows
             else:
                 raise ValueError(

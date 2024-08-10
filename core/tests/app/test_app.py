@@ -469,8 +469,8 @@ def test_change_invalid_creation_main_window(event_loop):
 def test_presentation_mode_with_windows_list(event_loop):
     """The app can enter presentation mode with a windows list."""
     app = toga.App(formal_name="Test App", app_id="org.example.test")
-    window1 = toga.Window()
-    window2 = toga.Window()
+    window1 = toga.Window(content=toga.Box())
+    window2 = toga.Window(content=toga.Box())
 
     assert not app.in_presentation_mode
 
@@ -507,8 +507,8 @@ def test_presentation_mode_with_windows_list(event_loop):
 def test_presentation_mode_with_screen_window_dict(event_loop):
     """The app can enter presentation mode with a screen-window paired dict."""
     app = toga.App(formal_name="Test App", app_id="org.example.test")
-    window1 = toga.Window()
-    window2 = toga.Window()
+    window1 = toga.Window(content=toga.Box())
+    window2 = toga.Window(content=toga.Box())
 
     assert not app.in_presentation_mode
 
@@ -551,19 +551,20 @@ def test_presentation_mode_with_screen_window_dict(event_loop):
 def test_presentation_mode_with_excess_windows_list(event_loop):
     """Entering presentation mode limits windows to available displays."""
     app = toga.App(formal_name="Test App", app_id="org.example.test")
-    window1 = toga.Window()
-    window2 = toga.Window()
+    window1 = toga.Window(content=toga.Box())
+    window2 = toga.Window(content=toga.Box())
+    window3 = toga.Window(content=toga.Box())
 
     assert not app.in_presentation_mode
 
     # Entering presentation mode with 3 windows should drop the last window,
     # as the app has only 2 screens:
-    app.enter_presentation_mode([app.main_window, window2, window1])
+    app.enter_presentation_mode([window1, window2, window3])
     assert app.in_presentation_mode
     assert_action_performed_with(
         app,
         "enter presentation mode",
-        screen_window_dict={app.screens[0]: app.main_window, app.screens[1]: window2},
+        screen_window_dict={app.screens[0]: window1, app.screens[1]: window2},
     )
 
     # Exit presentation mode:
@@ -592,7 +593,26 @@ def test_presentation_mode_no_op(event_loop):
         ValueError,
         match="Presentation layout should be a list of windows, or a dict mapping windows to screens.",
     ):
-        app.enter_presentation_mode(app.main_window)
+        app.enter_presentation_mode(toga.Window(content=toga.Box()))
+        assert_action_not_performed(app, "enter presentation mode")
+        assert not app.in_presentation_mode
+
+    # Entering presentation mode with a window having no content is a no-op:
+    no_content_window = toga.Window()
+    # Window passed as a windows list:
+    with pytest.raises(
+        ValueError,
+        match=f"Cannot enter presentation mode on {no_content_window.title} window without a content.",
+    ):
+        app.enter_presentation_mode([no_content_window])
+        assert_action_not_performed(app, "enter presentation mode")
+        assert not app.in_presentation_mode
+    # Window passed as a screen-window dict:
+    with pytest.raises(
+        ValueError,
+        match=f"Cannot enter presentation mode on {no_content_window.title} window without a content.",
+    ):
+        app.enter_presentation_mode({app.screens[0]: no_content_window})
         assert_action_not_performed(app, "enter presentation mode")
         assert not app.in_presentation_mode
 
@@ -608,7 +628,8 @@ def test_presentation_mode_no_op(event_loop):
 def test_presentation_mode_exit_on_window_state_change(event_loop, new_window_state):
     """Changing window state exits presentation mode and sets the new state."""
     app = toga.App(formal_name="Test App", app_id="org.example.test")
-    extra_window = toga.Window()
+    app.main_window.content = toga.Box()
+    extra_window = toga.Window(content=toga.Box())
 
     # Enter presentation mode
     app.enter_presentation_mode([app.main_window])
@@ -998,8 +1019,9 @@ def test_deprecated_background_task(app):
 def test_deprecated_full_screen(event_loop):
     """The app can be put into full screen mode using the deprecated API."""
     app = toga.App(formal_name="Test App", app_id="org.example.test")
-    window1 = toga.Window()
-    window2 = toga.Window()
+    app.main_window.content = toga.Box()
+    window1 = toga.Window(content=toga.Box())
+    window2 = toga.Window(content=toga.Box())
 
     is_full_screen_warning = (
         r"`App.is_full_screen` is deprecated. Use `App.in_presentation_mode` instead."
@@ -1100,8 +1122,9 @@ def test_deprecated_full_screen(event_loop):
 def test_deprecated_set_empty_full_screen_window_list(event_loop):
     """Setting the full screen window list to [] is an explicit exit."""
     app = toga.App(formal_name="Test App", app_id="org.example.test")
-    window1 = toga.Window()
-    window2 = toga.Window()
+    app.main_window.content = toga.Box()
+    window1 = toga.Window(content=toga.Box())
+    window2 = toga.Window(content=toga.Box())
 
     is_full_screen_warning = (
         r"`App.is_full_screen` is deprecated. Use `App.in_presentation_mode` instead."

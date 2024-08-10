@@ -105,4 +105,6 @@ class WindowState(Enum):
 
     A good example is a slideshow app in presentation mode - the only visible content
     is the slide.
+
+    The window must have a content set on it, before entering presentation mode.
     """
