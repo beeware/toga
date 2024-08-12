@@ -360,7 +360,10 @@ class Window:
         if not self._requested_state_applied:
             return
 
-        if self._pending_state_transition is not None:
+        if self._pending_state_transition is not None:  # pragma: no cover
+            # Marking as no cover since it cannot be tested consistently,
+            # as the delay in processing next pending state is OS dependent.
+            # So, this branch is reached only sometimes.
             self._process_pending_state()
 
     def _apply_state(self, target_state):
