@@ -234,7 +234,8 @@ class Window(Container, Scalable):
 
             self.set_window_state(state)
 
-        elif current_state == WindowState.NORMAL:
+        # elif current_state == WindowState.NORMAL:
+        else:
             if state == WindowState.MAXIMIZED:
                 self.native.WindowState = WinForms.FormWindowState.Maximized
 
