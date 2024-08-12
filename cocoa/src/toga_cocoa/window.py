@@ -75,7 +75,7 @@ class TogaWindow(NSWindow):
 
     @objc_method
     def windowDidExitFullScreen_(self, notification) -> None:
-        if self.impl:
+        if self.impl:  # pragma: no branch
             self.impl._in_full_screen = False
             self.impl._requested_state_applied = True
             self.impl._process_pending_state()
