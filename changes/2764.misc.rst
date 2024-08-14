@@ -1,1 +1,1 @@
-Updated winforms WebView2 DLLs to v1.0.2592.51
+WebView2 on Winforms now uses the v1.0.2592.51 DLLs.

@@ -4,9 +4,6 @@ These DLLs are the official stable release v1.0.2592.51 (net462), downloaded fro
 [NuGet](https://www.nuget.org/packages/Microsoft.Web.WebView2). They are
 released under the terms of the [license in this folder](./LICENSE.txt).
 
-To make them work after download, the "mark of the web" (MotW) had been set manually.
-See also https://github.com/beeware/briefcase/issues/1890
-
 For details on usage and distribution, see [the Microsoft WebView2
 documentation](https://docs.microsoft.com/en-us/microsoft-edge/webview2/)
 
