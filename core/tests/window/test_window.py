@@ -371,7 +371,7 @@ def test_no_content_window_presentation_state(window):
         )
 
 
-def test_close_direct_in_presentation_mode(window, app):
+def test_close_direct_in_presentation(window, app):
     """Directly closing a window in presentation mode restores to normal first."""
     window.content = toga.Box()
     window.state = WindowState.PRESENTATION
@@ -380,6 +380,26 @@ def test_close_direct_in_presentation_mode(window, app):
         window,
         "set window state to WindowState.PRESENTATION",
         state=WindowState.PRESENTATION,
+    )
+
+    window.close()
+    assert window.state == WindowState.NORMAL
+    assert_action_performed_with(
+        window,
+        "set window state to WindowState.NORMAL",
+        state=WindowState.NORMAL,
+    )
+
+
+def test_close_direct_in_fullscreen(window, app):
+    """Directly closing a window in fullscreen mode restores to normal first."""
+    window.content = toga.Box()
+    window.state = WindowState.FULLSCREEN
+    assert window.state == WindowState.FULLSCREEN
+    assert_action_performed_with(
+        window,
+        "set window state to WindowState.FULLSCREEN",
+        state=WindowState.FULLSCREEN,
     )
 
     window.close()

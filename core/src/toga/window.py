@@ -320,9 +320,11 @@ class Window:
         # closing the app.
 
         # Restore to normal state if in presentation mode. On some backends (e.g., Cocoa),
-        # the content itself is in presentation mode, and not the window. Directly closing
-        # the window without the content exiting presentation mode can cause rendering glitches.
-        if self.state == WindowState.PRESENTATION:
+        # the content is in presentation mode, not the window. Closing the window directly
+        # can cause rendering glitches. Also, restore if in fullscreen, as delegate events
+        # on Cocoa might trigger even after the impl reference is lost, causing attribute
+        # access errors for `self.impl`.
+        if self.state in {WindowState.PRESENTATION, WindowState.FULLSCREEN}:
             self.state = WindowState.NORMAL
 
         if self.content:

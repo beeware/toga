@@ -512,8 +512,10 @@ class App:
             window.content.refresh()
 
             # Process any pending window state.
-            window._impl._requested_state_applied = True
-            window._impl._process_pending_state()
+            if window._impl._requested_state == WindowState.PRESENTATION:
+                window._impl._requested_state_applied = True
+                window._impl._requested_state = None
+                window._impl._process_pending_state()
 
     def exit_presentation_mode(self):
         opts = NSMutableDictionary.alloc().init()
@@ -527,8 +529,14 @@ class App:
                 window.content.refresh()
 
                 # Process any pending window state.
-                window._impl._requested_state_applied = True
-                window._impl._process_pending_state()
+                if (
+                    window._impl._requested_state == WindowState.NORMAL
+                    and window._impl._previous_state == WindowState.PRESENTATION
+                ):
+                    window._impl._requested_state_applied = True
+                    window._impl._requested_state = None
+                    window._impl._previous_state = None
+                    window._impl._process_pending_state()
 
 
 class DocumentApp(App):  # pragma: no cover

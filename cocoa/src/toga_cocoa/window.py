@@ -52,13 +52,21 @@ class TogaWindow(NSWindow):
 
     @objc_method
     def windowDidMiniaturize_(self, notification) -> None:
-        self.impl._requested_state_applied = True
-        self.impl._process_pending_state()
+        if self.impl._requested_state == WindowState.MINIMIZED:
+            self.impl._requested_state_applied = True
+            self.impl._requested_state = None
+            self.impl._process_pending_state()
 
     @objc_method
     def windowDidDeminiaturize_(self, notification) -> None:
-        self.impl._requested_state_applied = True
-        self.impl._process_pending_state()
+        if (
+            self.impl._requested_state == WindowState.NORMAL
+            and self.impl._previous_state == WindowState.MINIMIZED
+        ):
+            self.impl._requested_state_applied = True
+            self.impl._requested_state = None
+            self.impl._previous_state = None
+            self.impl._process_pending_state()
 
     @objc_method
     def windowDidEnterFullScreen_(self, notification) -> None:
@@ -69,15 +77,22 @@ class TogaWindow(NSWindow):
         # Doing the following directly in `windowDidEnterFullScreen_` will result in error:
         # ````2024-08-09 15:46:39.050 python[2646:37395] not in fullscreen state````
         # and any subsequent window state calls to the OS will not work or will be glitchy.
-        self.impl._in_full_screen = True
-        self.impl._requested_state_applied = True
-        self.impl._process_pending_state()
+        if self.impl._requested_state == WindowState.FULLSCREEN:
+            self.impl._in_full_screen = True
+            self.impl._requested_state_applied = True
+            self.impl._requested_state = None
+            self.impl._process_pending_state()
 
     @objc_method
     def windowDidExitFullScreen_(self, notification) -> None:
-        if self.impl:  # pragma: no branch
+        if (
+            self.impl._requested_state == WindowState.NORMAL
+            and self.impl._previous_state == WindowState.FULLSCREEN
+        ):
             self.impl._in_full_screen = False
             self.impl._requested_state_applied = True
+            self.impl._requested_state = None
+            self.impl._previous_state = None
             self.impl._process_pending_state()
 
     ######################################################################
@@ -199,6 +214,8 @@ class Window:
 
         # Pending Window state transition variable and flags:
         self._pending_state_transition = None
+        self._previous_state = None
+        self._requested_state = None
         self._requested_state_applied = True
 
         self.set_title(title)
@@ -368,16 +385,20 @@ class Window:
             self._process_pending_state()
 
     def _apply_state(self, target_state):
+        self._requested_state = target_state
         self._requested_state_applied = False
         if target_state == self.get_window_state():
+            self._requested_state = None
             self._requested_state_applied = True
             return
         elif target_state == WindowState.NORMAL:
             current_state = self.get_window_state()
+            self._previous_state = current_state
             if current_state == WindowState.MAXIMIZED:
                 self.native.setIsZoomed(False)
                 self._requested_state_applied = True
-                self._process_pending_state()
+                self._requested_state = None
+                self._previous_state = None
             elif current_state == WindowState.MINIMIZED:
                 self.native.setIsMiniaturized(False)
                 # `self._requested_state_applied` is confirmed at `windowDidDeminiaturize_`.
@@ -393,6 +414,7 @@ class Window:
         elif target_state == WindowState.MAXIMIZED:
             self.native.setIsZoomed(True)
             self._requested_state_applied = True
+            self._requested_state = None
         elif target_state == WindowState.MINIMIZED:
             self.native.setIsMiniaturized(True)
             # `self._requested_state_applied` is confirmed at `windowDidMiniaturize_`.

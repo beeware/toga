@@ -37,6 +37,11 @@ class Window:
         self._in_presentation_mode = False
         self._is_full_screen = False
 
+        # Pending Window state transition variable and flags:
+        self._pending_state_transition = None
+        self._requested_state = None
+        self._requested_state_applied = True
+
         self.native.set_default_size(size[0], size[1])
 
         self.set_title(title)
@@ -71,6 +76,14 @@ class Window:
     def gtk_window_state_event(self, widget, event):
         # Get the window state flags
         self._window_state_flags = event.new_window_state
+
+        # Check if any requested state's application is completed.
+        if self._requested_state:
+            current_state = self.get_window_state()
+            if current_state == self._requested_state:
+                self._requested_state_applied = True
+                self._requested_state = None
+                self._process_pending_state()
 
     def gtk_delete_event(self, widget, data):
         # Return value of the GTK on_close handler indicates whether the event has been
@@ -172,15 +185,41 @@ class Window:
             return WindowState.NORMAL
 
     def set_window_state(self, state):
-        # Set Window state to NORMAL before changing to other states as some
-        # states block changing window state without first exiting them or
-        # can even cause rendering glitches.
+        self._pending_state_transition = state
+        self._process_pending_state()
+
+    def _process_pending_state(self):
+        if not self._requested_state_applied:
+            return
+
+        pending_state = self._pending_state_transition
+        if pending_state is None or self.get_window_state() == pending_state:
+            return
+
+        self._pending_state_transition = None
+
         if self.get_window_state() != WindowState.NORMAL:
             self._apply_state(WindowState.NORMAL)
-        self._apply_state(state)
+            if not self._requested_state_applied:
+                self._pending_state_transition = pending_state
+                return
+
+        self._apply_state(pending_state)
+        if not self._requested_state_applied:
+            return
+
+        if self._pending_state_transition is not None:  # pragma: no cover
+            # Marking as no cover since it cannot be tested consistently,
+            # as the delay in processing next pending state is OS dependent.
+            # So, this branch is reached only sometimes.
+            self._process_pending_state()
 
     def _apply_state(self, target_state):
+        self._requested_state = target_state
+        self._requested_state_applied = False
         if target_state == self.get_window_state():
+            self._requested_state = None
+            self._requested_state_applied = True
             return
         elif target_state == WindowState.NORMAL:
             current_state = self.get_window_state()
