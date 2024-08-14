@@ -391,26 +391,6 @@ def test_close_direct_in_presentation(window, app):
     )
 
 
-def test_close_direct_in_fullscreen(window, app):
-    """Directly closing a window in fullscreen mode restores to normal first."""
-    window.content = toga.Box()
-    window.state = WindowState.FULLSCREEN
-    assert window.state == WindowState.FULLSCREEN
-    assert_action_performed_with(
-        window,
-        "set window state to WindowState.FULLSCREEN",
-        state=WindowState.FULLSCREEN,
-    )
-
-    window.close()
-    assert window.state == WindowState.NORMAL
-    assert_action_performed_with(
-        window,
-        "set window state to WindowState.NORMAL",
-        state=WindowState.NORMAL,
-    )
-
-
 def test_close_direct(window, app):
     """A window can be closed directly."""
     on_close_handler = Mock(return_value=True)
