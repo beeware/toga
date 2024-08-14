@@ -80,7 +80,8 @@ class Window:
         # Check if any requested state's application is completed.
         if self._requested_state:
             current_state = self.get_window_state()
-            if current_state == self._requested_state:
+            # The omitted else branch is difficult to manufacture in testbed.
+            if current_state == self._requested_state:  # pragma: no branch
                 self._requested_state_applied = True
                 self._requested_state = None
                 self._process_pending_state()
@@ -200,7 +201,8 @@ class Window:
 
         if self.get_window_state() != WindowState.NORMAL:
             self._apply_state(WindowState.NORMAL)
-            if not self._requested_state_applied:
+            # The omitted else branch is difficult to manufacture in testbed.
+            if not self._requested_state_applied:  # pragma: no branch
                 self._pending_state_transition = pending_state
                 return
 
@@ -217,7 +219,8 @@ class Window:
     def _apply_state(self, target_state):
         self._requested_state = target_state
         self._requested_state_applied = False
-        if target_state == self.get_window_state():
+        # This branch is difficult to manufacture in testbed.
+        if target_state == self.get_window_state():  # pragma: no cover
             self._requested_state = None
             self._requested_state_applied = True
             return

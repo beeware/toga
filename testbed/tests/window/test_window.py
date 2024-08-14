@@ -753,7 +753,9 @@ else:
             )
         ],
     )
-    async def test_window_state_presentation(second_window, second_window_probe):
+    async def test_window_state_presentation(
+        second_window, second_window_probe, app_probe
+    ):
         """Window can have presentation window state"""
         second_window.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
         second_window.show()
@@ -793,8 +795,11 @@ else:
 
         second_window.state = WindowState.NORMAL
         # Add delay to ensure windows are visible after animation.
-        await second_window_probe.wait_for_window(
-            "Secondary window is not in presentation mode", full_screen=True
+        # await second_window_probe.wait_for_window(
+        #     "Secondary window is not in presentation mode", full_screen=True
+        # )
+        await app_probe.redraw(
+            "Secondary window is not in presentation mode", delay=1.5
         )
         assert second_window_probe.get_window_state() == WindowState.NORMAL
         assert second_window_probe.is_resizable
