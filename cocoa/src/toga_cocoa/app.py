@@ -19,7 +19,7 @@ from toga.app import overridden
 from toga.command import Command, Separator
 from toga.handlers import NativeHandler, simple_handler
 
-from .command import submenu_for_group
+from .command import Command as CommandImpl, submenu_for_group
 from .libs import (
     NSURL,
     NSAboutPanelOptionApplicationIcon,
@@ -98,12 +98,12 @@ class AppDelegate(NSObject):
 
     @objc_method
     def selectMenuItem_(self, sender) -> None:
-        cmd = self.impl._menu_items[sender]
+        cmd = CommandImpl.for_menu_item(sender)
         cmd.action()
 
     @objc_method
     def validateMenuItem_(self, sender) -> bool:
-        cmd = self.impl._menu_items[sender]
+        cmd = CommandImpl.for_menu_item(sender)
         return cmd.enabled
 
 
@@ -136,8 +136,7 @@ class App:
         self.appDelegate.native = self.native
         self.native.setDelegate(self.appDelegate)
 
-        # Create the lookup table for menu items
-        self._menu_groups = {}
+        # Create the lookup table for commands and menu items
         self._menu_items = {}
 
         # Call user code to populate the main window
@@ -324,18 +323,18 @@ class App:
         # Recreate the menu.
         # Remove any native references to the existing menu
         for menu_item, cmd in self._menu_items.items():
-            cmd._impl.native.remove(menu_item)
+            cmd._impl.remove_menu_item(menu_item)
 
         # Create a clean menubar instance.
         menubar = NSMenu.alloc().initWithTitle("MainMenu")
         submenu = None
 
         # Warm the menu group cache with the root menubar
-        self._menu_groups = {None: menubar}
+        group_cache = {None: menubar}
         self._menu_items = {}
 
         for cmd in self.interface.commands:
-            submenu = submenu_for_group(cmd.group, self._menu_groups)
+            submenu = submenu_for_group(cmd.group, group_cache)
 
             if isinstance(cmd, Separator):
                 menu_item = NSMenuItem.separatorItem()

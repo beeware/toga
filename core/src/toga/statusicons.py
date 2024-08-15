@@ -119,13 +119,27 @@ class MenuStatusIcon(BaseStatusIcon, Group):
                 Command.EXIT,
             ]:
                 self.commands.add(
-                    Command.standard(
-                        toga.App.app,
-                        cmd_id,
-                        section=sys.maxsize,
-                        group=self,
-                    )
+                    # TODO: Re-enable when standard commands are available
+                    # Command.standard(
+                    #     toga.App.app,
+                    #     cmd_id,
+                    #     section=sys.maxsize,
+                    #     group=self,
+                    # )
                 )
+
+            # TODO: Remove when standard commands are available
+            from toga.handlers import simple_handler
+
+            self.commands.add(
+                Command(
+                    simple_handler(toga.App.app._request_exit),
+                    text="Quit",
+                    group=self,
+                    section=sys.maxsize,
+                    id=Command.EXIT,
+                )
+            )
 
     def __repr__(self):
         return f"<{self.text}>"

@@ -10,6 +10,7 @@ from .hardware.location import Location
 from .icons import Icon
 from .images import Image
 from .paths import Paths
+from .statusicons import MenuStatusIcon, StatusIcon
 
 # Widgets
 from .widgets.activityindicator import ActivityIndicator
@@ -57,6 +58,9 @@ __all__ = [
     # Hardware
     "Camera",
     "Location",
+    # Status Icons
+    "MenuStatusIcon",
+    "StatusIcon",
     # Widgets
     "ActivityIndicator",
     "Box",
