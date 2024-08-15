@@ -8,6 +8,7 @@ from .fonts import Font
 from .icons import Icon
 from .images import Image
 from .paths import Paths
+from .statusicons import MenuStatusIcon, StatusIcon
 from .widgets.activityindicator import ActivityIndicator
 from .widgets.box import Box
 from .widgets.button import Button
@@ -50,6 +51,9 @@ __all__ = [
     "Image",
     "Paths",
     "dialogs",
+    # Status icons
+    "MenuStatusIcon",
+    "StatusIcon",
     # Widgets
     "ActivityIndicator",
     "Box",
