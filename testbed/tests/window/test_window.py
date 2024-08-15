@@ -795,11 +795,8 @@ else:
 
         second_window.state = WindowState.NORMAL
         # Add delay to ensure windows are visible after animation.
-        # await second_window_probe.wait_for_window(
-        #     "Secondary window is not in presentation mode", full_screen=True
-        # )
-        await app_probe.redraw(
-            "Secondary window is not in presentation mode", delay=1.5
+        await second_window_probe.wait_for_window(
+            "Secondary window is not in presentation mode", full_screen=True
         )
         assert second_window_probe.get_window_state() == WindowState.NORMAL
         assert second_window_probe.is_resizable
