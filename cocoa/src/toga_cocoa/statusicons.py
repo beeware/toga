@@ -33,9 +33,6 @@ class BaseStatusIcon:
         )
         self.set_icon(self.interface.icon)
 
-    def clear_menus(self):
-        pass
-
     def remove(self):
         NSStatusBar.systemStatusBar.removeStatusItem(self.native)
 
