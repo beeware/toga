@@ -62,7 +62,7 @@ class TogaWindow(NSWindow):
 
     @objc_method
     def windowDidEnterFullScreen_(self, notification) -> None:
-        self.performSelector_withObject_afterDelay_(SEL("enteredFullScreen:"), None, 0)
+        self.performSelector(SEL("enteredFullScreen:"), withObject=None, afterDelay=0)
 
     @objc_method
     def enteredFullScreen_(self, sender) -> None:
