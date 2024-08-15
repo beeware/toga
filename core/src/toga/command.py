@@ -12,6 +12,8 @@ if TYPE_CHECKING:
     from toga.app import App
     from toga.icons import IconContentT
 
+_py_id = id
+
 
 class Group:
     def __init__(
@@ -21,6 +23,7 @@ class Group:
         parent: Group | None = None,
         section: int = 0,
         order: int = 0,
+        id: str | None = None,
     ):
         """
         A collection of commands to display together.
@@ -32,7 +35,9 @@ class Group:
         :param order: The position where the group should appear within its section.
             If multiple items have the same group, section and order, they will be
             sorted alphabetically by their text.
+        :param id: A unique identifier for the group.
         """
+        self._id = f"group-{_py_id(self)}" if id is None else id
         self.text = text
         self.order = order
         if parent is None and section != 0:
@@ -43,6 +48,11 @@ class Group:
         # to work with
         self._parent: Group | None = None
         self.parent = parent
+
+    @property
+    def id(self) -> str:
+        """A unique identifier for the group."""
+        return self._id
 
     @property
     def parent(self) -> Group | None:
@@ -209,7 +219,7 @@ class Command:
         :param enabled: Is the Command currently enabled?
         :param id: A unique identifier for the command.
         """
-        self._id = f"cmd-{hash(self)}" if id is None else id
+        self._id = f"cmd-{_py_id(self)}" if id is None else id
         self.text = text
 
         self.shortcut = shortcut

@@ -20,6 +20,7 @@ from toga.icons import Icon
 from toga.paths import Paths
 from toga.platform import get_platform_factory
 from toga.screens import Screen
+from toga.statusicons import StatusIconSet
 from toga.widgets.base import Widget
 from toga.window import MainWindow, Window
 
@@ -406,6 +407,7 @@ class App:
         # We need the command set to exist so that startup et al. can add commands;
         # but we don't have an impl yet, so we can't set the on_change handler
         self._commands = CommandSet()
+        self._status_icons = StatusIconSet()
 
         self._startup_method = startup
 
@@ -607,6 +609,10 @@ class App:
         self._impl.create_menus()
         self.commands.on_change = self._impl.create_menus
 
+        # Manifest the initial state of the status icons.
+        for status_icon in self.status_icons:
+            status_icon._create()
+
         # Manifest the initial state of toolbars (on the windows that have
         # them), then install a change listener so that any future changes to
         # the toolbar cause a change in toolbar items.
@@ -652,6 +658,11 @@ class App:
     def commands(self) -> CommandSet:
         """The commands available in the app."""
         return self._commands
+
+    @property
+    def status_icons(self) -> CommandSet:
+        """The status icons displayed by the app."""
+        return self._status_icons
 
     @property
     def location(self) -> Location:
