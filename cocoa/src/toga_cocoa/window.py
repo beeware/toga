@@ -52,13 +52,17 @@ class TogaWindow(NSWindow):
 
     @objc_method
     def windowDidMiniaturize_(self, notification) -> None:
-        self.impl._requested_state_applied = True
-        self.impl._process_pending_state()
+        if (
+            self.impl._pending_state_transition
+            and self.impl._pending_state_transition != WindowState.MINIMIZED
+        ):
+            self.impl._apply_state(WindowState.NORMAL)
+        else:
+            self.impl._pending_state_transition = None
 
     @objc_method
     def windowDidDeminiaturize_(self, notification) -> None:
-        self.impl._requested_state_applied = True
-        self.impl._process_pending_state()
+        self.impl._apply_state(self.impl._pending_state_transition)
 
     @objc_method
     def windowDidEnterFullScreen_(self, notification) -> None:
@@ -69,16 +73,19 @@ class TogaWindow(NSWindow):
         # Doing the following directly in `windowDidEnterFullScreen_` will result in error:
         # ````2024-08-09 15:46:39.050 python[2646:37395] not in fullscreen state````
         # and any subsequent window state calls to the OS will not work or will be glitchy.
-        self.impl._in_full_screen = True
-        self.impl._requested_state_applied = True
-        self.impl._process_pending_state()
+        if self.impl:  # pragma: no branch
+            if (
+                self.impl._pending_state_transition
+                and self.impl._pending_state_transition != WindowState.FULLSCREEN
+            ):
+                self.impl._apply_state(WindowState.NORMAL)
+            else:
+                self.impl._pending_state_transition = None
 
     @objc_method
     def windowDidExitFullScreen_(self, notification) -> None:
         if self.impl:  # pragma: no branch
-            self.impl._in_full_screen = False
-            self.impl._requested_state_applied = True
-            self.impl._process_pending_state()
+            self.impl._apply_state(self.impl._pending_state_transition)
 
     ######################################################################
     # Toolbar delegate methods
@@ -197,9 +204,8 @@ class Window:
         # in response to the close.
         self.native.retain()
 
-        # Pending Window state transition variable and flags:
+        # Pending Window state transition variable:
         self._pending_state_transition = None
-        self._requested_state_applied = True
 
         self.set_title(title)
         self.set_size(size)
@@ -338,51 +344,47 @@ class Window:
             return WindowState.NORMAL
 
     def set_window_state(self, state):
-        self._pending_state_transition = state
-        self._process_pending_state()
+        # Since the requests to the OS for changing window states are non-blocking,
+        # if we are in the middle of processing a state, we need to store the
+        # user-requested state and apply the state when we have completed processing
+        # a transition. There are 2 types of callbacks:
+        # * EnteredState:
+        #   Here, we need to check if the current state is the same as the pending
+        #   state.
+        #   -- If yes: Clear the pending state variable and return.
+        #   -- If no: Apply NORMAL state, which will later apply the pending state
+        #             when the state is NORMAL.
+        # * ExitedState:
+        #   Here, since we are in NORMAL state, we just apply the pending state.
+        #   When we enter the user-requested pending state, then clear the pending
+        #   state variable and return.
 
-    def _process_pending_state(self):
-        if not self._requested_state_applied:
-            return
-
-        pending_state = self._pending_state_transition
-        if pending_state is None or self.get_window_state() == pending_state:
-            return
-
-        self._pending_state_transition = None
-
-        if self.get_window_state() != WindowState.NORMAL:
-            self._apply_state(WindowState.NORMAL)
-            if not self._requested_state_applied:
-                self._pending_state_transition = pending_state
-                return
-
-        self._apply_state(pending_state)
-        if not self._requested_state_applied:
-            return
-
-        if self._pending_state_transition is not None:  # pragma: no cover
-            # Marking as no cover since it cannot be tested consistently,
-            # as the delay in processing next pending state is OS dependent.
-            # So, this branch is reached only sometimes.
-            self._process_pending_state()
+        if self._pending_state_transition:
+            self._pending_state_transition = state
+        else:
+            self._pending_state_transition = state
+            if self.get_window_state() != WindowState.NORMAL:
+                self._apply_state(WindowState.NORMAL)
+            else:
+                self._apply_state(state)
 
     def _apply_state(self, target_state):
-        self._requested_state_applied = False
-        if target_state == self.get_window_state():
-            self._requested_state_applied = True
+        if target_state is None:
             return
+
+        elif target_state == self.get_window_state():
+            self._pending_state_transition = None
+            return
+
         elif target_state == WindowState.NORMAL:
             current_state = self.get_window_state()
             if current_state == WindowState.MAXIMIZED:
                 self.native.setIsZoomed(False)
-                self._requested_state_applied = True
+                self._apply_state(self._pending_state_transition)
             elif current_state == WindowState.MINIMIZED:
                 self.native.setIsMiniaturized(False)
-                # `self._requested_state_applied` is confirmed at `windowDidDeminiaturize_`.
             elif current_state == WindowState.FULLSCREEN:
                 self.native.toggleFullScreen(self.native)
-                # `self._requested_state_applied` is confirmed at `windowDidExitFullScreen_`.
             # elif current_state == WindowState.PRESENTATION:
             else:  # pragma: no cover
                 # Presentation mode is natively supported by cocoa and is app-based.
@@ -391,19 +393,23 @@ class Window:
                 pass
         elif target_state == WindowState.MAXIMIZED:
             self.native.setIsZoomed(True)
-            self._requested_state_applied = True
+            if (
+                self._pending_state_transition
+                and self._pending_state_transition != WindowState.MAXIMIZED
+            ):
+                self._apply_state(WindowState.NORMAL)
+            else:
+                self._pending_state_transition = None
+
         elif target_state == WindowState.MINIMIZED:
             self.native.setIsMiniaturized(True)
-            # `self._requested_state_applied` is confirmed at `windowDidMiniaturize_`.
         elif target_state == WindowState.FULLSCREEN:
             self.native.toggleFullScreen(self.native)
-            # `self._requested_state_applied` is confirmed at `windowDidEnterFullScreen_`.
         # elif target_state == WindowState.PRESENTATION:
         else:
             self.interface.app.enter_presentation_mode(
                 {self.interface.screen: self.interface}
             )
-            # `self._requested_state_applied` is confirmed at `app._impl.enter_presentation_mode()`.
 
     ######################################################################
     # Window capabilities
