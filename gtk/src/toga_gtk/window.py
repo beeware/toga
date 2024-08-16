@@ -77,14 +77,15 @@ class Window:
         # Get the window state flags
         self._window_state_flags = event.new_window_state
 
-        # Check if any requested state's application is completed.
-        if self._requested_state:
+        if self._pending_state_transition:
             current_state = self.get_window_state()
-            # The omitted else branch is difficult to manufacture in testbed.
-            if current_state == self._requested_state:  # pragma: no branch
-                self._requested_state_applied = True
-                self._requested_state = None
-                self._process_pending_state()
+            if current_state != WindowState.NORMAL:
+                if self._pending_state_transition != current_state:
+                    self._apply_state(WindowState.NORMAL)
+                else:
+                    self._pending_state_transition = None
+            else:
+                self._apply_state(self._pending_state_transition)
 
     def gtk_delete_event(self, widget, data):
         # Return value of the GTK on_close handler indicates whether the event has been
@@ -186,44 +187,23 @@ class Window:
             return WindowState.NORMAL
 
     def set_window_state(self, state):
-        self._pending_state_transition = state
-        self._process_pending_state()
-
-    def _process_pending_state(self):
-        if not self._requested_state_applied:
-            return
-
-        pending_state = self._pending_state_transition
-        if pending_state is None or self.get_window_state() == pending_state:
-            return
-
-        self._pending_state_transition = None
-
-        if self.get_window_state() != WindowState.NORMAL:
-            self._apply_state(WindowState.NORMAL)
-            # The omitted else branch is difficult to manufacture in testbed.
-            if not self._requested_state_applied:  # pragma: no branch
-                self._pending_state_transition = pending_state
-                return
-
-        self._apply_state(pending_state)
-        if not self._requested_state_applied:
-            return
-
-        if self._pending_state_transition is not None:  # pragma: no cover
-            # Marking as no cover since it cannot be tested consistently,
-            # as the delay in processing next pending state is OS dependent.
-            # So, this branch is reached only sometimes.
-            self._process_pending_state()
+        if self._pending_state_transition:
+            self._pending_state_transition = state
+        else:
+            self._pending_state_transition = state
+            if self.get_window_state() != WindowState.NORMAL:
+                self._apply_state(WindowState.NORMAL)
+            else:
+                self._apply_state(state)
 
     def _apply_state(self, target_state):
-        self._requested_state = target_state
-        self._requested_state_applied = False
-        # This branch is difficult to manufacture in testbed.
-        if target_state == self.get_window_state():  # pragma: no cover
-            self._requested_state = None
-            self._requested_state_applied = True
+        if target_state is None:
             return
+
+        elif target_state == self.get_window_state():
+            self._pending_state_transition = None
+            return
+
         elif target_state == WindowState.NORMAL:
             current_state = self.get_window_state()
             if current_state == WindowState.MAXIMIZED:
