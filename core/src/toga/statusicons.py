@@ -66,8 +66,11 @@ class StatusIcon(BaseStatusIcon):
         super().__init__(icon=icon)
         self.on_press = on_press
 
-        self._id = f"status_icon-{_py_id(self)}" if id is None else id
+        self._id = f"statusicon-{_py_id(self)}" if id is None else id
         self._text = text if text is not None else toga.App.app.formal_name
+
+    def __repr__(self):
+        return f"<StatusIcon {self.text!r}: {self.id}>"
 
     @property
     def id(self) -> str:
@@ -109,7 +112,7 @@ class MenuStatusIcon(BaseStatusIcon, Group):
             the app.
         """
         super().__init__(
-            id=id,
+            id=f"menustatusitem-{_py_id(self)}" if id is None else id,
             icon=icon,
             text=(text if text is not None else toga.App.app.formal_name),
         )
@@ -191,14 +194,31 @@ class StatusIconSet(Sequence[StatusIcon], Mapping[str, StatusIcon]):
             return self.elements[index_or_id]
 
     def add(self, *status_icons: StatusIcon):
+        added = False
         for status_icon in status_icons:
             if status_icon.id not in self.elements:
                 self.elements[status_icon.id] = status_icon
                 status_icon._impl.create()
+                added = True
+
+        if added and self.commands.on_change:
+            self.commands.on_change()
 
     def remove(self, status_icon: StatusIcon):
         try:
             self.elements.pop(status_icon.id)
             status_icon._impl.remove()
+
+            if self.commands.on_change:
+                self.commands.on_change()
         except KeyError:
             raise ValueError("Not a known status icon.")
+
+    def clear(self):
+        # Convert into a list so that we're not deleting from a list while iterating.
+        for status_icon in list(self):
+            self.elements.pop(status_icon.id)
+            status_icon._impl.remove()
+
+        if self.commands.on_change:
+            self.commands.on_change()

@@ -549,6 +549,7 @@ def test_startup_method(event_loop):
     assert_action_performed(app, "create App menus")
     assert_action_performed(app.main_window, "create Window menus")
     assert_action_performed(app.main_window, "create toolbar")
+    assert_action_performed(app.status_icons, "create status icons")
 
     # 3 menu items have been created
     assert len(app.commands) == 3
@@ -580,6 +581,7 @@ def test_startup_subclass(event_loop):
     assert_action_performed(app, "create App menus")
     assert_action_performed(app.main_window, "create Window menus")
     assert_action_performed(app.main_window, "create toolbar")
+    assert_action_performed(app.status_icons, "create status icons")
 
     # 4 menu items have been created
     assert app._impl.n_menu_items == 4
