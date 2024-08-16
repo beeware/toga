@@ -52,3 +52,9 @@ try:
     from gi.repository import AyatanaAppIndicator3 as AppIndicator
 except (ImportError, ValueError):
     AppIndicator = None
+
+try:
+    gi.require_version("XApp", "1.0")
+    from gi.repository import XApp
+except (ImportError, ValueError):
+    XApp = None

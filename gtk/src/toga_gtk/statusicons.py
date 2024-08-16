@@ -1,7 +1,7 @@
 import toga
-from toga.command import Separator
+from toga.command import Group, Separator
 
-from .libs import AppIndicator, Gtk
+from .libs import Gtk, XApp
 
 
 class BaseStatusIcon:
@@ -14,42 +14,47 @@ class BaseStatusIcon:
             path = str(
                 icon._impl.paths[32] if icon else toga.App.app.icon._impl.paths[32]
             )
-            self.native.set_icon_full(path, "")
+            self.native.set_icon_name(path)
 
     def create(self):
-        if AppIndicator is None:
+        if XApp is None:
             raise RuntimeError(
-                "Unable to import AyatanaAppIndicator3. Ensure that "
-                "the system package providing AyatanaAppIndicator3 "
-                "its GTK bindings have been installed."
+                "Unable to import XApp. Ensure that the system package "
+                "providing libxapp and its GTK bindings have been installed."
             )
 
-        self.native = AppIndicator.Indicator.new(
-            f"indicator-{id(self)}",
-            "",
-            AppIndicator.IndicatorCategory.APPLICATION_STATUS,
-        )
-        self.native.set_status(AppIndicator.IndicatorStatus.ACTIVE)
+        self.native = XApp.StatusIcon.new()
+        self.native.set_tooltip_text(self.interface.text)
         self.set_icon(self.interface.icon)
 
     def remove(self):
-        self.native.set_status(AppIndicator.IndicatorStatus.PASSIVE)
+        del self.native
 
 
 class StatusIcon(BaseStatusIcon):
     def create(self):
         super().create()
-        # FIXME: Need to work out how to display an icon-only status item,
-        # and connect the activate event to self.interface.on_press()
+        self.native.connect("activate", self.gtk_activate)
+
+    def gtk_activate(self, icon, button, time):
+        self.interface.on_press()
 
 
 class MenuStatusIcon(BaseStatusIcon):
+    pass
+
+
+class StatusIconSet:
+    def __init__(self, interface):
+        self.interface = interface
+        self._menu_items = {}
+
     def _submenu(self, group, group_cache):
         try:
             return group_cache[group]
         except KeyError:
-            if group.parent is None:
-                submenu = self.native.get_menu()
+            if group is None:
+                raise ValueError("Unknown top level item")
             else:
                 parent_menu = self._submenu(group.parent, group_cache)
 
@@ -63,21 +68,43 @@ class MenuStatusIcon(BaseStatusIcon):
             group_cache[group] = submenu
         return submenu
 
-    def create_menus(self):
-        # Clear existing menu
-        submenu = Gtk.Menu.new()
-        self.native.set_menu(submenu)
+    def create(self):
+        # Menu status icons are the only icons that have extra construction needs.
+        # Clear existing menus
+        for item in self.interface.menu_status_icons:
+            submenu = Gtk.Menu.new()
+            item._impl.native.set_primary_menu(submenu)
 
-        # Create a clean menubar instance.
-        group_cache = {}
+        # Determine the primary status icon.
+        primary_group = self.interface.primary_menu_status_icon
+        if primary_group is None:
+            # If there isn't at least one menu status icon, then there aren't any menus
+            # to populate.
+            return
+
+        # Add the menu status items to the cache
+        group_cache = {
+            item: item._impl.native.get_primary_menu()
+            for item in self.interface.menu_status_icons
+        }
+        # Map the COMMANDS group to the primary status icon's menu.
+        group_cache[Group.COMMANDS] = primary_group._impl.native.get_primary_menu()
+        self._menu_items = {}
+
         for cmd in self.interface.commands:
-            submenu = self._submenu(cmd.group, group_cache)
-
-            if isinstance(cmd, Separator):
-                menu_item = Gtk.SeparatorMenuItem.new()
+            try:
+                submenu = self._submenu(cmd.group, group_cache)
+            except ValueError:
+                print(
+                    f"Command {cmd.text!r} does not belong to "
+                    "a current status icon group; ignoring"
+                )
             else:
-                menu_item = Gtk.MenuItem.new_with_label(cmd.text)
-                menu_item.connect("activate", cmd._impl.gtk_activate)
+                if isinstance(cmd, Separator):
+                    menu_item = Gtk.SeparatorMenuItem.new()
+                else:
+                    menu_item = Gtk.MenuItem.new_with_label(cmd.text)
+                    menu_item.connect("activate", cmd._impl.gtk_activate)
 
-            submenu.append(menu_item)
-            submenu.show_all()
+                submenu.append(menu_item)
+                submenu.show_all()

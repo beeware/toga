@@ -71,6 +71,7 @@ class StatusIconSet:
         self._menu_items = {}
 
     def create(self):
+        # Menu status icons are the only icons that have extra construction needs.
         # Clear existing menu items
         for menu_item, cmd in self._menu_items.items():
             cmd._impl.remove_menu_item(menu_item)
@@ -84,9 +85,7 @@ class StatusIconSet:
 
         # Add the menu status items to the cache
         group_cache = {
-            item: item._impl.native.menu
-            for item in self.interface
-            if isinstance(item, Group)
+            item: item._impl.native.menu for item in self.interface.menu_status_icons
         }
         # Map the COMMANDS group to the primary status icon's menu.
         group_cache[Group.COMMANDS] = primary_group._impl.native.menu
@@ -97,7 +96,8 @@ class StatusIconSet:
                 submenu = submenu_for_group(cmd.group, group_cache)
             except ValueError:
                 print(
-                    f"Command {cmd.text!r} does not belong to a current status icon group; ignoring"
+                    f"Command {cmd.text!r} does not belong to "
+                    "a current status icon group; ignoring"
                 )
             else:
                 if isinstance(cmd, Separator):

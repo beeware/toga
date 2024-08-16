@@ -222,7 +222,7 @@ jobs:
             sudo apt update -y
             sudo apt install -y --no-install-recommends \
               blackbox pkg-config python3-dev libgirepository1.0-dev libcairo2-dev \
-              gir1.2-webkit2-4.1 gir1.2-ayatanaappindicator3-0.1
+              gir1.2-webkit2-4.1 gir1.2-xapp-1.0
 
             # Start Virtual X Server
             echo "Start X server..."
@@ -245,7 +245,8 @@ jobs:
           pre-command: |
             sudo apt update -y
             sudo apt install -y --no-install-recommends \
-              mutter pkg-config python3-dev libgirepository1.0-dev libcairo2-dev gir1.2-webkit2-4.1
+              mutter pkg-config python3-dev libgirepository1.0-dev libcairo2-dev \
+              gir1.2-webkit2-4.1 gir1.2-xapp-1.0
 
             # Start Virtual X Server
             echo "Start X server..."
