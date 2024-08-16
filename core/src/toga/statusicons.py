@@ -42,15 +42,13 @@ class BaseStatusIcon:
 
         self._impl.set_icon(self._icon)
 
-    def _create(self):
-        pass
-
 
 class StatusIcon(BaseStatusIcon):
     def __init__(
         self,
         id: str | None = None,
         icon: IconContentT | None = None,
+        text: str | None = None,
         on_press: toga.widgets.button.OnPressHandler | None = None,
     ):
         """
@@ -61,16 +59,25 @@ class StatusIcon(BaseStatusIcon):
         :param id: An identifier for the status icon.
         :param icon: The icon, or icon resource, that will be displayed in the status
             bar or system tray.
+        :param text: A text label for the status icon. Defaults to the formal name of
+            the app.
         :param on_press: The handler to invoke when the status icon is pressed.
         """
         super().__init__(icon=icon)
         self.on_press = on_press
+
         self._id = f"status_icon-{_py_id(self)}" if id is None else id
+        self._text = text if text is not None else toga.App.app.formal_name
 
     @property
     def id(self) -> str:
-        """A unique identifier for the group."""
+        """A unique identifier for the icon."""
         return self._id
+
+    @property
+    def text(self) -> str:
+        """A text label for the icon."""
+        return self._text
 
     @property
     def on_press(self) -> toga.widgets.button.OnPressHandler:
@@ -87,76 +94,78 @@ class MenuStatusIcon(BaseStatusIcon, Group):
         self,
         id: str | None = None,
         icon: IconContentT | None = None,
-        standard_commands=True,
+        text: str | None = None,
     ):
         """
         An item in a status bar or system tray that displays a menu when pressed.
 
         A ``MenuStatusIcon`` can be used as a :class:`~toga.Group` when defining
-        :class:`toga.Command` instances. It will have ordering priority equivalent to
-        :attr:`~toga.Group.COMMANDS`.
+        :class:`toga.Command` instances.
 
         :param id: An identifier for the status icon.
         :param icon: The icon, or icon resource, that will be displayed in the status
             bar or system tray.
-        :param standard_commands: Should the standard menu commands be installed into
-            the menu?
+        :param text: A text label for the status icon. Defaults to the formal name of
+            the app.
         """
         super().__init__(
             id=id,
             icon=icon,
-            order=Group.COMMANDS.order,
-            text=f"Menu Status Icon {id if id else _py_id(self)}",
+            text=(text if text is not None else toga.App.app.formal_name),
         )
-        self.commands = CommandSet()
-
-        if standard_commands:
-            # Create the standard commands for the menu status icon.
-            # Use the default standard constructor, but force the commands
-            # into the last section of *this* group for ordering purposes.
-            for cmd_id in [
-                Command.ABOUT,
-                Command.EXIT,
-            ]:
-                self.commands.add(
-                    # TODO: Re-enable when standard commands are available
-                    # Command.standard(
-                    #     toga.App.app,
-                    #     cmd_id,
-                    #     section=sys.maxsize,
-                    #     group=self,
-                    # )
-                )
-
-            # TODO: Remove when standard commands are available
-            from toga.handlers import simple_handler
-
-            self.commands.add(
-                Command(
-                    simple_handler(toga.App.app._request_exit),
-                    text="Quit",
-                    group=self,
-                    section=sys.maxsize,
-                    id=Command.EXIT,
-                )
-            )
 
     def __repr__(self):
-        return f"<{self.text}>"
-
-    def _create(self):
-        super()._create()
-
-        # Create the menus for the status icon, and install a handler to respond to
-        # command changes.
-        self._impl.create_menus()
-        self.commands.on_change = self._impl.create_menus
+        return f"<MenuStatusIcon {self.text!r}: {self.id}>"
 
 
 class StatusIconSet(Sequence[StatusIcon], Mapping[str, StatusIcon]):
     def __init__(self):
         """A collection of status icons."""
+        self.factory = get_platform_factory()
+        self._impl = self.factory.StatusIconSet(interface=self)
+
         self.elements: dict[str, StatusIcon] = {}
+        self.commands = CommandSet()
+
+    @property
+    def primary_menu_status_icon(self):
+        """The first menu status icon that has been registered."""
+        try:
+            return [icon for icon in self if isinstance(icon, Group)][0]
+        except IndexError:
+            # No menu status icons registered.
+            return None
+
+    def _create_standard_commands(self):
+        # Create the standard commands for the menu status icon. Use the standard
+        # constructor, but force the commands into *last* section of the COMMANDS group
+        # so they'll appear on the first MenuStatusIcon.
+        for cmd_id in [
+            Command.ABOUT,
+            Command.EXIT,
+        ]:
+            self.commands.add(
+                # TODO: Re-enable when standard commands are available
+                # Command.standard(
+                #     toga.App.app,
+                #     cmd_id,
+                #     section=sys.maxsize,
+                #     group=Group.COMMANDS,
+                # )
+            )
+
+        # TODO: Remove when standard commands are available
+        from toga.handlers import simple_handler
+
+        self.commands.add(
+            Command(
+                simple_handler(toga.App.app._request_exit),
+                text="Quit",
+                group=Group.COMMANDS,
+                section=sys.maxsize,
+                id=Command.EXIT,
+            )
+        )
 
     def __iter__(self) -> Iterator[StatusIcon]:
         return iter(self.elements.values())

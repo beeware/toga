@@ -7,7 +7,7 @@ from rubicon.objc import (
 )
 
 import toga
-from toga.command import Separator
+from toga.command import Group, Separator
 
 from .command import submenu_for_group
 from .libs import NSMenu, NSMenuItem, NSSquareStatusItemLength, NSStatusBar
@@ -31,6 +31,7 @@ class BaseStatusIcon:
         self.native = NSStatusBar.systemStatusBar.statusItemWithLength(
             NSSquareStatusItemLength
         )
+        self.native.button.toolTip = self.interface.text
         self.set_icon(self.interface.icon)
 
     def remove(self):
@@ -60,30 +61,49 @@ class StatusIcon(BaseStatusIcon):
 class MenuStatusIcon(BaseStatusIcon):
     def create(self):
         super().create()
-        self._menu_items = {}
         submenu = NSMenu.alloc().init()
         self.native.menu = submenu
 
-    def create_menus(self):
-        # Clear existing items
+
+class StatusIconSet:
+    def __init__(self, interface):
+        self.interface = interface
+        self._menu_items = {}
+
+    def create(self):
+        # Clear existing menu items
         for menu_item, cmd in self._menu_items.items():
             cmd._impl.remove_menu_item(menu_item)
 
-        # Create a clean menubar instance.
-        group_cache = {}
+        # Determine the primary status icon.
+        primary_group = self.interface.primary_menu_status_icon
+        if primary_group is None:
+            # If there isn't at least one menu status icon, then there aren't any menus
+            # to populate.
+            return
+
+        # Add the menu status items to the cache
+        group_cache = {
+            item: item._impl.native.menu
+            for item in self.interface
+            if isinstance(item, Group)
+        }
+        # Map the COMMANDS group to the primary status icon's menu.
+        group_cache[Group.COMMANDS] = primary_group._impl.native.menu
         self._menu_items = {}
 
         for cmd in self.interface.commands:
-            submenu = submenu_for_group(
-                cmd.group,
-                group_cache,
-                default_parent=self.native.menu,
-            )
-
-            if isinstance(cmd, Separator):
-                menu_item = NSMenuItem.separatorItem()
+            try:
+                submenu = submenu_for_group(cmd.group, group_cache)
+            except ValueError:
+                print(
+                    f"Command {cmd.text!r} does not belong to a current status icon group; ignoring"
+                )
             else:
-                menu_item = cmd._impl.create_menu_item()
-                self._menu_items[menu_item] = cmd
+                if isinstance(cmd, Separator):
+                    menu_item = NSMenuItem.separatorItem()
+                else:
+                    menu_item = cmd._impl.create_menu_item()
+                    self._menu_items[menu_item] = cmd
 
-            submenu.addItem(menu_item)
+                submenu.addItem(menu_item)

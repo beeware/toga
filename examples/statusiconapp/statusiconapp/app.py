@@ -13,17 +13,21 @@ class ExampleStatusIconApp(toga.App):
         status_1 = toga.MenuStatusIcon(icon="resources/status-icon.png")
         self.status_icons.add(
             status_1,
-            toga.MenuStatusIcon(id="second", standard_commands=False),
+            toga.MenuStatusIcon(id="second", text="Other icon"),
             toga.StatusIcon(icon="resources/blue.png", on_press=self.do_stuff),
         )
 
-        # Create some commands that can be added to status icon 1.
+        # Create some commands that can be added to the first status icon.
+        # A MenuStatusIcon is also a group, so the commands will appear in that group.
         cmd1 = toga.Command(
             self.do_stuff,
             text="Action 1",
             tooltip="Perform action 1",
             order=2,
+            group=status_1,
         )
+        # If a command *doesn't* define a group, and it's added as a status icon, it
+        # will be added to the end of the first status icon that has been registered.
         cmd2 = toga.Command(
             self.do_stuff,
             text="Action 2",
@@ -31,8 +35,7 @@ class ExampleStatusIconApp(toga.App):
             order=1,
         )
 
-        # Create a submenu on status menu. The menu status item acts as
-        # the parent group.
+        # Create a submenu on the first status menu; the status icon is the parent group.
         sub_menu = toga.Group("Sub Menu", parent=status_1, order=3)
         cmd3 = toga.Command(
             self.do_stuff,
@@ -47,22 +50,23 @@ class ExampleStatusIconApp(toga.App):
             group=sub_menu,
         )
 
-        # Two commands for the second status icon
+        # Two commands for the second status icon. The status icon can be retrieved by ID,
+        # and by index.
         cmd5 = toga.Command(
             self.do_stuff,
             text="Action 5",
             tooltip="Perform action 5",
+            group=self.status_icons["second"],
         )
         cmd6 = toga.Command(
             self.do_stuff,
             text="Action 6",
             tooltip="Perform action 6",
+            group=self.status_icons[1],
         )
 
-        # Add the commands to the status icons.
-        # Retrieve the second status icon from the app by ID.
-        status_1.commands.add(cmd1, cmd2, cmd3, cmd4)
-        self.status_icons["second"].commands.add(cmd5, cmd6)
+        # Add the commands that will be part of status icons.
+        self.status_icons.commands.add(cmd1, cmd2, cmd3, cmd4, cmd5, cmd6)
 
     async def on_running(self):
         # Once the app is running, start a heartbeat

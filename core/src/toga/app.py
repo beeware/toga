@@ -592,6 +592,10 @@ class App:
         # the user's code has the opporuntity to remove/change the default commands.
         self._impl.create_app_commands()
 
+        # Install the standard status icon commands. Again, this is done *before* startup
+        # so that the user's code can remove/change the defaults.
+        self.status_icons._create_standard_commands()
+
         # Invoke the user's startup method (or the default implementation)
         self.startup()
 
@@ -609,9 +613,10 @@ class App:
         self._impl.create_menus()
         self.commands.on_change = self._impl.create_menus
 
-        # Manifest the initial state of the status icons.
-        for status_icon in self.status_icons:
-            status_icon._create()
+        # Manifest the initial state of the status icons, then install an on-change
+        # handler so that any future changes will be reflected in the GUI.
+        self.status_icons._impl.create()
+        self.status_icons.commands.on_change = self.status_icons._impl.create
 
         # Manifest the initial state of toolbars (on the windows that have
         # them), then install a change listener so that any future changes to

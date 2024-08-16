@@ -4,30 +4,29 @@ from toga_cocoa.keys import cocoa_key
 from toga_cocoa.libs import NSMenu, NSMenuItem
 
 
-def submenu_for_group(group, group_cache, default_parent=None):
+def submenu_for_group(group, group_cache):
     """Obtain the submenu representing the command group.
 
-    This will create the submenu if it doesn't exist. It will call itself
-    recursively to build the full path to menus inside submenus, returning the
-    "leaf" node in the submenu path. Once created, it caches the menu that has been
-    created for future lookup.
+    This will create the submenu if it doesn't exist. It will call itself recursively to
+    build the full path to menus inside submenus, returning the "leaf" node in the
+    submenu path. Once created, it caches the menu that has been created for future
+    lookup.
+
+    This method assumes that the top-level item (for group=None) exists in the
+    group_cache. If it doesn't, a ValueError is raised when the top level group is
+    requested.
 
     :param group: The group to turn into a submenu.
     :param group_cache: The cache of existing groups.
-    :param default_parent: If specified, any group with no parent will be mapped
-        to this submenu.
+    :raises ValueError: If the top level group cannot be found in the group cache.
     """
     try:
         return group_cache[group]
     except KeyError:
-        if default_parent and group.parent is None:
-            submenu = default_parent
+        if group is None:
+            raise ValueError("Cannot find top level group")
         else:
-            parent_menu = submenu_for_group(
-                group.parent,
-                group_cache,
-                default_parent=default_parent,
-            )
+            parent_menu = submenu_for_group(group.parent, group_cache)
 
             menu_item = parent_menu.addItemWithTitle(
                 group.text, action=None, keyEquivalent=""
@@ -35,9 +34,9 @@ def submenu_for_group(group, group_cache, default_parent=None):
             submenu = NSMenu.alloc().initWithTitle(group.text)
             parent_menu.setSubmenu(submenu, forItem=menu_item)
 
-        # Install the item in the group cache.
-        group_cache[group] = submenu
-        return submenu
+            # Install the item in the group cache.
+            group_cache[group] = submenu
+            return submenu
 
 
 class Command:
