@@ -1,0 +1,1 @@
+Building Toga's documentation now requires the use of Python 3.12.
