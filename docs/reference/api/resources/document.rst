@@ -60,8 +60,16 @@ Registering document types
 
 A document type is used by registering it with an app instance. The constructor for
 :any:`toga.App` allows you to declare the collection of document types that your app
-supports; the first declared document type is treated as the default document type for
-your app.
+supports. The first declared document type is treated as the default document type for
+your app; this is the type that will be connected to the keyboard shortcut of the 
+:any:`~Command.NEW` command. 
+
+After :any:`App.startup` returns, any filenames which were passed to the app by the 
+operating system will be opened using the registered document types. If after this 
+the app still has no windows, then:
+
+* On Windows and GTK, an untitled document of the default type will be opened.
+* On macOS, an Open dialog will be shown.
 
 In the following example, the ``ExampleDocument`` class is set as the default content
 type, and is registered as representing documents with extension ``.mydoc`` or

@@ -99,8 +99,7 @@ identifier can be used to retrieve a command from :any:`toga.App.commands` and
 :any:`toga.MainWindow.toolbar`.
 
 These command IDs are also used to create *standard* commands. These are commands that
-are expected functionality in most applications. They cover basic functionality common
-to all apps:
+are expected functionality in most applications.
 
 * :attr:`~toga.Command.ABOUT` - Display the about page for the app
 * :attr:`~toga.Command.VISIT_HOMEPAGE` - Open the app's homepage in the system browser

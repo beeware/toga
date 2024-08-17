@@ -717,9 +717,9 @@ class App:
                 self.new(default_doc_type)
             except StopIteration:
                 # No document types defined.
-                raise ValueError(
-                    "App doesn't define any initial windows, "
-                    "and doesn't have a default document type."
+                raise RuntimeError(
+                    "App didn't create any windows, "
+                    "or register any document types."
                 )
 
     def _startup(self) -> None:
