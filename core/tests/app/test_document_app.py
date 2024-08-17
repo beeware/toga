@@ -103,7 +103,7 @@ def test_create_no_cmdline_no_document_types(monkeypatch):
     monkeypatch.setattr(sys, "argv", ["app-exe"])
 
     with pytest.raises(
-        ValueError,
+        RuntimeError,
         match=r"App didn't create any windows, or register any document types.",
     ):
         ExampleDocumentApp(
