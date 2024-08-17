@@ -718,8 +718,7 @@ class App:
             except StopIteration:
                 # No document types defined.
                 raise RuntimeError(
-                    "App didn't create any windows, "
-                    "or register any document types."
+                    "App didn't create any windows, or register any document types."
                 )
 
     def _startup(self) -> None:
