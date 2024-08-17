@@ -90,74 +90,73 @@ class Testbed(toga.App):
             self.cmd6,
         )
 
-        # Set up some status icons (as long as we're not on mobile)
-        if toga.platform.current_platform not in {"iOS", "android"}:
-            self.status1 = toga.MenuStatusIcon(icon="resources/icons/red.png")
-            self.status2 = toga.MenuStatusIcon(id="second", text="Other icon")
-            self.status_button = toga.StatusIcon(
-                id="button",
-                icon="resources/icons/blue.png",
-                on_press=self.cmd_action,
-            )
-            self.status_icons.add(
-                self.status1,
-                self.status2,
-                self.status_button,
-            )
+        # Set up some status icons. This will raise warnings on mobile.
+        self.status1 = toga.MenuStatusIcon(icon="resources/icons/red.png")
+        self.status2 = toga.MenuStatusIcon(id="second", text="Other icon")
+        self.status_button = toga.StatusIcon(
+            id="button",
+            icon="resources/icons/blue.png",
+            on_press=self.cmd_action,
+        )
+        self.status_icons.add(
+            self.status1,
+            self.status2,
+            self.status_button,
+        )
 
-            # Commands for the first status icon
-            self.status_cmd1 = toga.Command(
-                self.cmd_action,
-                text="Action 1",
-                tooltip="Perform action 1",
-                group=self.status1,
-            )
-            # If a command *doesn't* define a group, and it's added as a status icon, it
-            # will be added to the end of the first status icon that has been registered.
-            self.status_cmd2 = toga.Command(
-                self.cmd_action,
-                text="Action 2",
-                tooltip="Perform action 2",
-            )
+        # Commands for the first status icon
+        self.status_cmd1 = toga.Command(
+            self.cmd_action,
+            text="Action 1",
+            tooltip="Perform action 1",
+            group=self.status1,
+        )
+        # If a command *doesn't* define a group, and it's added as a status icon, it
+        # will be added to the end of the first status icon that has been registered.
+        self.status_cmd2 = toga.Command(
+            self.cmd_action,
+            text="Action 2",
+            tooltip="Perform action 2",
+        )
 
-            # Create a submenu on the first status menu; the status icon is the parent group.
-            self.status1_sub_menu = toga.Group("Sub Menu", parent=self.status1, order=3)
-            self.status_cmd3 = toga.Command(
-                self.cmd_action,
-                text="Action 3",
-                tooltip="Perform action 3",
-                group=self.status1_sub_menu,
-            )
-            self.status_cmd4 = toga.Command(
-                self.cmd_action,
-                text="Action 4",
-                tooltip="Perform action 4",
-                group=self.status1_sub_menu,
-            )
+        # Create a submenu on the first status menu; the status icon is the parent group.
+        self.status1_sub_menu = toga.Group("Sub Menu", parent=self.status1, order=3)
+        self.status_cmd3 = toga.Command(
+            self.cmd_action,
+            text="Action 3",
+            tooltip="Perform action 3",
+            group=self.status1_sub_menu,
+        )
+        self.status_cmd4 = toga.Command(
+            self.cmd_action,
+            text="Action 4",
+            tooltip="Perform action 4",
+            group=self.status1_sub_menu,
+        )
 
-            # Commands for the second status icon
-            self.status_cmd5 = toga.Command(
-                self.cmd_action,
-                text="Action 5",
-                tooltip="Perform action 5",
-                group=self.status_icons["second"],
-            )
-            self.status_cmd6 = toga.Command(
-                self.cmd_action,
-                text="Action 6",
-                tooltip="Perform action 6",
-                group=self.status_icons[1],
-            )
+        # Commands for the second status icon
+        self.status_cmd5 = toga.Command(
+            self.cmd_action,
+            text="Action 5",
+            tooltip="Perform action 5",
+            group=self.status_icons["second"],
+        )
+        self.status_cmd6 = toga.Command(
+            self.cmd_action,
+            text="Action 6",
+            tooltip="Perform action 6",
+            group=self.status_icons[1],
+        )
 
-            # Add the commands that will be part of status icons.
-            self.status_icons.commands.add(
-                self.status_cmd1,
-                self.status_cmd2,
-                self.status_cmd3,
-                self.status_cmd4,
-                self.status_cmd5,
-                self.status_cmd6,
-            )
+        # Add the commands that will be part of status icons.
+        self.status_icons.commands.add(
+            self.status_cmd1,
+            self.status_cmd2,
+            self.status_cmd3,
+            self.status_cmd4,
+            self.status_cmd5,
+            self.status_cmd6,
+        )
 
         self.main_window = toga.MainWindow(title=self.formal_name)
         self.main_window.content = toga.Box(
