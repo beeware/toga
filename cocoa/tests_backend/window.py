@@ -26,7 +26,7 @@ class WindowProbe(BaseProbe, DialogsMixin):
     async def wait_for_window(self, message, minimize=False, full_screen=False):
         await self.redraw(
             message,
-            delay=0.75 if full_screen else 0.5 if minimize else 0.1,
+            delay=0.75 if full_screen else 0.5 if minimize else 0.5,
         )
 
     def close(self):
