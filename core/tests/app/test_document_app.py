@@ -104,10 +104,7 @@ def test_create_no_cmdline_no_document_types(monkeypatch):
 
     with pytest.raises(
         ValueError,
-        match=(
-            r"App doesn't define any initial windows, "
-            r"and doesn't have a default document type."
-        ),
+        match=r"App didn't create any windows, or register any document types.",
     ):
         ExampleDocumentApp(
             "Test App",

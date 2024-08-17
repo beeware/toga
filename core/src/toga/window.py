@@ -4,24 +4,18 @@ import warnings
 from builtins import id as identifier
 from collections.abc import Coroutine, Iterator
 from pathlib import Path
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Protocol,
-    TypeVar,
-)
+from typing import TYPE_CHECKING, Any, MutableSet, Protocol, TypeVar
 
 import toga
 from toga import dialogs
 from toga.command import CommandSet
-from toga.handlers import AsyncResult, overridden, wrapped_handler
+from toga.handlers import AsyncResult, wrapped_handler
 from toga.images import Image
 from toga.platform import get_platform_factory
 from toga.types import Position, Size
 
 if TYPE_CHECKING:
     from toga.app import App
-    from toga.documents import Document
     from toga.images import ImageT
     from toga.screens import Screen
     from toga.types import PositionT, SizeT
@@ -850,110 +844,64 @@ class MainWindow(Window):
         return self._toolbar
 
 
-class DocumentWindow(MainWindow):
-    def __init__(self, doc: Document, *args, **kwargs):
-        """Create a new document Window.
+class WindowSet(MutableSet[Window]):
+    def __init__(self, app: App):
+        """A collection of windows managed by an app.
 
-        A document window is a MainWindow (so it will have a menu bar, and *can* have a
-        toolbar), bound to a document instance.
-
-        In addition to the required ``doc`` argument, accepts the same arguments as
-        :class:`~toga.Window`.
-
-        The default ``on_close`` handler will use the document's modification status to
-        determine if the document has been modified. It will allow the window to close
-        if the document is fully saved, or the user explicitly declines the opportunity
-        to save.
-
-        :param doc: The document being managed by this window
+        A window is automatically added to the app when it is created, and removed when
+        it is closed. Adding a window to an App's window set automatically sets the
+        :attr:`~toga.Window.app` property of the Window.
         """
-        self._doc = doc
-        if "on_close" not in kwargs:
-            kwargs["on_close"] = self._confirm_close
+        self.app = app
+        self.elements: set[Window] = set()
 
-        super().__init__(*args, **kwargs)
+    def add(self, window: Window) -> None:
+        if not isinstance(window, Window):
+            raise TypeError("Can only add objects of type toga.Window")
+        # Silently not add if duplicate
+        if window not in self.elements:
+            self.elements.add(window)
+            window.app = self.app
 
-    @property
-    def doc(self) -> Document:
-        """The document displayed by this window."""
-        return self._doc
+    def discard(self, window: Window) -> None:
+        if not isinstance(window, Window):
+            raise TypeError("Can only discard objects of type toga.Window")
+        if window not in self.elements:
+            raise ValueError(f"{window!r} is not part of this app")
+        self.elements.remove(window)
 
-    @property
-    def _default_title(self) -> str:
-        return self.doc.title
+    ######################################################################
+    # 2023-10: Backwards compatibility
+    ######################################################################
 
-    async def _confirm_close(self, window, **kwargs):
-        if self.doc.modified:
-            if await self.dialog(
-                toga.QuestionDialog(
-                    "Are you sure?",
-                    "This document has unsaved changes. Do you want to save these changes?",
-                )
-            ):
-                return await self.save()
-        return True
+    def __iadd__(self, window: Window) -> WindowSet:
+        # The standard set type does not have a += operator.
+        warnings.warn(
+            "Windows are automatically associated with the app; += is not required",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self
 
-    async def _commit(self):
-        # Get the window into a state where new content could be opened.
-        # Used by the open method on GTK/Linux to ensure the current document
-        # has been saved before closing this window and opening a replacement.
-        return await self._confirm_close(self)
+    def __isub__(self, other: Window) -> WindowSet:
+        # The standard set type does have a -= operator, but it takes sets rather than
+        # individual items.
+        warnings.warn(
+            "Windows are automatically removed from the app; -= is not required",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self
 
-    def _close(self):
-        # When then window is closed, remove the document it is managing from the app's
-        # list of managed documents.
-        self._app._documents._remove(self.doc)
-        super()._close()
+    ######################################################################
+    # End backwards compatibility
+    ######################################################################
 
-    async def save(self):
-        """Save the document associated with this window.
+    def __iter__(self) -> Iterator[Window]:
+        return iter(self.elements)
 
-        If the document associated with a window hasn't been saved before, and the
-        document type defines a :meth:`~toga.Document.write` method, the user will be
-        prompted to provide a filename.
+    def __contains__(self, value: object) -> bool:
+        return value in self.elements
 
-        :returns: True if the save was successful; False if the save was aborted.
-        """
-        if overridden(self.doc.write):
-            if self.doc.path:
-                # Document has been saved previously; save using that filename.
-                self.doc.save()
-                return True
-            else:
-                # Document has not been saved previously; prompt for a filename.
-                suggested_name = f"Untitled.{self.doc.default_extension}"
-                new_path = await self.dialog(
-                    dialogs.SaveFileDialog("Save as...", suggested_name)
-                )
-                # If a filename has been returned, save using that filename.
-                # If there isn't a filename, the save was cancelled.
-                if new_path:
-                    self.doc.save(new_path)
-                    return True
-        return False
-
-    async def save_as(self):
-        """Save the document associated with this window under a new filename.
-
-        The default implementation will prompt the user for a new filename, then save
-        the document with that new filename. If the document type doesn't define a
-        :meth:`~toga.Document.write` method, the save-as request will be ignored.
-
-        :returns: True if the save was successful; False if the save was aborted.
-        """
-        if overridden(self.doc.write):
-            suggested_path = (
-                self.doc.path
-                if self.doc.path
-                else f"Untitled.{self.doc.default_extension}"
-            )
-            new_path = await self.dialog(
-                dialogs.SaveFileDialog("Save as...", suggested_path)
-            )
-            # If a filename has been returned, save using that filename.
-            # If there isn't a filename, the save was cancelled.
-            if new_path:
-                self.doc.save(new_path)
-                return True
-
-        return False
+    def __len__(self) -> int:
+        return len(self.elements)

@@ -9,12 +9,12 @@ import webbrowser
 from collections.abc import Coroutine, Iterator
 from email.message import Message
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Mapping, MutableSet, Protocol, Sequence
+from typing import TYPE_CHECKING, Any, Protocol
 from weakref import WeakValueDictionary
 
 from toga.command import Command, CommandSet
 from toga.dialogs import OpenFileDialog
-from toga.documents import Document
+from toga.documents import Document, DocumentSet
 from toga.handlers import simple_handler, wrapped_handler
 from toga.hardware.camera import Camera
 from toga.hardware.location import Location
@@ -23,7 +23,7 @@ from toga.paths import Paths
 from toga.platform import get_platform_factory
 from toga.screens import Screen
 from toga.widgets.base import Widget
-from toga.window import MainWindow, Window
+from toga.window import MainWindow, Window, WindowSet
 
 if TYPE_CHECKING:
     from toga.dialogs import Dialog
@@ -79,120 +79,6 @@ class BackgroundTask(Protocol):
         :param kwargs: Ensures compatibility with additional arguments introduced in
             future versions.
         """
-
-
-class DocumentSet(Sequence[Document], Mapping[Path, Document]):
-    def __init__(self):
-        """A collection of documents managed by an app.
-
-        A document is automatically added to the app when it is created, and removed
-        when it is closed. The document collection will be stored in the order that
-        documents were created.
-        """
-        self.elements: list[Document] = []
-
-    def __iter__(self) -> Iterator[Document]:
-        return iter(self.elements)
-
-    def __contains__(self, value: object) -> bool:
-        return value in self.elements
-
-    def __len__(self) -> int:
-        return len(self.elements)
-
-    def __getitem__(self, path_or_index):
-        # Look up by index
-        if isinstance(path_or_index, int):
-            return self.elements[path_or_index]
-
-        # Look up by path
-        if sys.version_info < (3, 9):  # pragma: no-cover-if-gte-py39
-            # resolve() *should* turn the path into an absolute path;
-            # but on Windows, with Python 3.8, it doesn't.
-            path = Path(path_or_index).absolute().resolve()
-        else:  # pragma: no-cover-if-lt-py39
-            path = Path(path_or_index).resolve()
-        for item in self.elements:
-            if item.path == path:
-                return item
-
-        # No match found
-        raise KeyError(path_or_index)
-
-    def _add(self, document: Path):
-        if document in self:
-            raise ValueError("Document is already being managed.")
-
-        self.elements.append(document)
-
-    def _remove(self, document: Path):
-        if document not in self:
-            raise ValueError("Document is not being managed.")
-
-        self.elements.remove(document)
-
-
-class WindowSet(MutableSet[Window]):
-    def __init__(self, app: App):
-        """A collection of windows managed by an app.
-
-        A window is automatically added to the app when it is created, and removed when
-        it is closed. Adding a window to an App's window set automatically sets the
-        :attr:`~toga.Window.app` property of the Window.
-        """
-        self.app = app
-        self.elements: set[Window] = set()
-
-    def add(self, window: Window) -> None:
-        if not isinstance(window, Window):
-            raise TypeError("Can only add objects of type toga.Window")
-        # Silently not add if duplicate
-        if window not in self.elements:
-            self.elements.add(window)
-            window.app = self.app
-
-    def discard(self, window: Window) -> None:
-        if not isinstance(window, Window):
-            raise TypeError("Can only discard objects of type toga.Window")
-        if window not in self.elements:
-            raise ValueError(f"{window!r} is not part of this app")
-        self.elements.remove(window)
-
-    ######################################################################
-    # 2023-10: Backwards compatibility
-    ######################################################################
-
-    def __iadd__(self, window: Window) -> WindowSet:
-        # The standard set type does not have a += operator.
-        warnings.warn(
-            "Windows are automatically associated with the app; += is not required",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        return self
-
-    def __isub__(self, other: Window) -> WindowSet:
-        # The standard set type does have a -= operator, but it takes sets rather than
-        # individual items.
-        warnings.warn(
-            "Windows are automatically removed from the app; -= is not required",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        return self
-
-    ######################################################################
-    # End backwards compatibility
-    ######################################################################
-
-    def __iter__(self) -> Iterator[Window]:
-        return iter(self.elements)
-
-    def __contains__(self, value: object) -> bool:
-        return value in self.elements
-
-    def __len__(self) -> int:
-        return len(self.elements)
 
 
 class WidgetRegistry:

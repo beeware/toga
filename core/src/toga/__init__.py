@@ -16,7 +16,7 @@ from .dialogs import (
     SelectFolderDialog,
     StackTraceDialog,
 )
-from .documents import Document
+from .documents import Document, DocumentWindow
 from .fonts import Font
 from .icons import Icon
 from .images import Image
@@ -48,7 +48,7 @@ from .widgets.textinput import TextInput
 from .widgets.timeinput import TimeInput, TimePicker
 from .widgets.tree import Tree
 from .widgets.webview import WebView
-from .window import DocumentWindow, MainWindow, Window
+from .window import MainWindow, Window
 
 
 class NotImplementedWarning(RuntimeWarning):
@@ -71,6 +71,7 @@ __all__ = [
     "Group",
     # Documents
     "Document",
+    "DocumentWindow",
     # Dialogs
     "ConfirmDialog",
     "ErrorDialog",
@@ -124,7 +125,6 @@ __all__ = [
     "WebView",
     "Widget",
     # Windows
-    "DocumentWindow",
     "MainWindow",
     "Window",
     # Deprecated widget names
