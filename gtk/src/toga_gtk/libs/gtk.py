@@ -48,13 +48,7 @@ except (ImportError, ValueError):  # pragma: no cover
     PangoFc = None
 
 try:
-    gi.require_version("AyatanaAppIndicator3", "0.1")
-    from gi.repository import AyatanaAppIndicator3 as AppIndicator
-except (ImportError, ValueError):
-    AppIndicator = None
-
-try:
     gi.require_version("XApp", "1.0")
-    from gi.repository import XApp
-except (ImportError, ValueError):
+    from gi.repository import XApp  # noqa: F401
+except (ImportError, ValueError):  # pragma: no cover
     XApp = None
