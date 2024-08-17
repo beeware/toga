@@ -10,7 +10,7 @@ class BaseStatusIcon:
         pass
 
     def create(self):
-        toga.NotImplementedWarning.warn("iOS", "Status Icons")
+        toga.NotImplementedWarning.warn("Web", "Status Icons")
 
     def remove(self):
         pass
