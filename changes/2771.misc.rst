@@ -1,0 +1,1 @@
+Testbed CI was temporarily reverted to use briefcase 0.3.19.
