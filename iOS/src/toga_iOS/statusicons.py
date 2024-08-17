@@ -13,7 +13,7 @@ class BaseStatusIcon:
         toga.NotImplementedWarning.warn("iOS", "Status Icons")
 
     def remove(self):
-        pass
+        pass  # pragma: no cover
 
 
 class StatusIcon(BaseStatusIcon):
