@@ -244,6 +244,7 @@ class Window:
     ######################################################################
 
     def close(self):
+        self.native.delegate = None
         self.native.close()
 
     def set_app(self, app):
