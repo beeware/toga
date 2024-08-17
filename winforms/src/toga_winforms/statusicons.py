@@ -26,6 +26,7 @@ class BaseStatusIcon:
     def remove(self):
         self.native.Visible = False
         self.native.Dispose()
+        self.native = None
 
 
 class StatusIcon(BaseStatusIcon):
@@ -71,9 +72,9 @@ class StatusIconSet:
 
         # Determine the primary status icon.
         primary_group = self.interface.primary_menu_status_icon
-        if primary_group is None:
+        if primary_group is None:  # pragma: no cover
             # If there isn't at least one menu status icon, then there aren't any menus
-            # to populate.
+            # to populate. This can't be replicated in the testbed.
             return
 
         # Add the menu status items to the cache

@@ -211,3 +211,26 @@ class AppProbe(BaseProbe, DialogsMixin):
     async def restore_standard_app(self):
         # No special handling needed to restore standard app.
         await self.redraw("Restore to standard app")
+
+    def has_status_icon(self, status_icon):
+        return status_icon._impl.native is not None
+
+    def status_menu_items(self, status_icon):
+        menu = status_icon._impl.native.get_primary_menu()
+        if menu:
+            return [
+                child.get_label() if child.get_label() else "---"
+                for child in menu.get_children()
+            ]
+        else:
+            # It's a button status item
+            return None
+
+    def activate_status_icon_button(self, item_id):
+        self.app.status_icons[item_id]._impl.native.emit("activate", 0, 0)
+
+    def activate_status_menu_item(self, item_id, title):
+        menu = self.app.status_icons[item_id]._impl.native.get_primary_menu()
+        item = {child.get_label(): child for child in menu.get_children()}[title]
+
+        item.emit("activate")
