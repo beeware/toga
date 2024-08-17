@@ -134,7 +134,7 @@ jobs:
         mv core/.coverage core/.coverage.${{ matrix.platform }}.${{ matrix.python-version }}
 
     - name: Store Coverage Data
-      uses: actions/upload-artifact@v4.3.4
+      uses: actions/upload-artifact@v4.3.6
       with:
         name: core-coverage-data-${{ matrix.platform }}-${{ matrix.python-version }}
         path: "core/.coverage.*"
@@ -175,7 +175,7 @@ jobs:
       run: tox -e coverage-html-fail-platform
 
     - name: Upload HTML Coverage Report
-      uses: actions/upload-artifact@v4.3.4
+      uses: actions/upload-artifact@v4.3.6
       if: failure()
       with:
         name: html-coverage-report
@@ -323,7 +323,9 @@ jobs:
         ${{ matrix.pre-command }}
         # Use the development version of Briefcase
         python -m pip install -U pip
-        python -m pip install git+https://github.com/beeware/briefcase.git
+        # python -m pip install git+https://github.com/beeware/briefcase.git
+        # TODO: Use the stable release of Briefcase so that binary packages are available.
+        python -m pip install briefcase==0.3.19
 
     - name: Test App
       working-directory: testbed
@@ -333,7 +335,7 @@ jobs:
           briefcase run ${{ matrix.platform }} --log --test ${{ matrix.briefcase-run-args }} -- --ci
 
     - name: Upload Logs
-      uses: actions/upload-artifact@v4.3.4
+      uses: actions/upload-artifact@v4.3.6
       if: failure()
       with:
         name: testbed-failure-logs-${{ matrix.backend }}
@@ -346,7 +348,7 @@ jobs:
         cp -r "${{ matrix.app-user-data-path }}" testbed/app_data/testbed-app_data-${{ matrix.backend }}
 
     - name: Upload App Data
-      uses: actions/upload-artifact@v4.3.4
+      uses: actions/upload-artifact@v4.3.6
       if: failure() && matrix.backend != 'android'
       with:
         name: testbed-failure-app-data-${{ matrix.backend }}
