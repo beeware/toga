@@ -99,20 +99,9 @@ identifier can be used to retrieve a command from :any:`toga.App.commands` and
 :any:`toga.MainWindow.toolbar`.
 
 These command IDs are also used to create *standard* commands. These are commands that
-are expected functionality in most applications.
-
-* :attr:`~toga.Command.ABOUT` - Display the about page for the app
-* :attr:`~toga.Command.VISIT_HOMEPAGE` - Open the app's homepage in the system browser
-* :attr:`~toga.Command.PREFERENCES` - display a preferences dialog for the app
-* :attr:`~toga.Command.EXIT` - Exit the application
-
-They also include document management commands:
-
-* :attr:`~toga.Command.NEW` - Create a new document
-* :attr:`~toga.Command.OPEN` - Select a new file to open
-* :attr:`~toga.Command.SAVE` - Save the currently active document
-* :attr:`~toga.Command.SAVE_AS` - Save the currently active document under a new name
-* :attr:`~toga.Command.SAVE_ALL` - Save all open files.
+are expected functionality in most applications, such as :attr:`~toga.Command.ABOUT` and
+:attr:`~toga.Command.EXIT`, as well as document management commands such as
+:attr:`~toga.Command.NEW`, :attr:`~toga.Command.OPEN` and :attr:`~toga.Command.SAVE`.
 
 These commands are automatically added to your app, depending on platform requirements
 and app definition. For example, mobile apps won't have an Exit command as mobile apps
