@@ -402,13 +402,9 @@ class Window:
                 pass
         elif target_state == WindowState.MAXIMIZED:
             self.native.setIsZoomed(True)
-            if (
-                self._pending_state_transition
-                and self._pending_state_transition != WindowState.MAXIMIZED
-            ):
-                self._apply_state(WindowState.NORMAL)
-            else:
-                self._pending_state_transition = None
+            # No need to check for other pending states, since this is completely
+            # applied here only.
+            self._pending_state_transition = None
 
         elif target_state == WindowState.MINIMIZED:
             self.native.setIsMiniaturized(True)
