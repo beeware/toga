@@ -52,6 +52,7 @@ class TogaWindow(NSWindow):
 
     @objc_method
     def windowDidMiniaturize_(self, notification) -> None:
+        # Needs a delay on macOS-arm64 testbed, delaying longer on the testbed doesn't work.
         self.performSelector(
             SEL("enteredMiniaturize:"), withObject=None, afterDelay=0.1
         )

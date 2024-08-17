@@ -37,10 +37,8 @@ class Window:
         self._in_presentation_mode = False
         self._is_full_screen = False
 
-        # Pending Window state transition variable and flags:
+        # Pending Window state transition variable:
         self._pending_state_transition = None
-        self._requested_state = None
-        self._requested_state_applied = True
 
         self.native.set_default_size(size[0], size[1])
 

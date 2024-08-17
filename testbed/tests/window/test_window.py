@@ -805,6 +805,11 @@ else:
     @pytest.mark.parametrize(
         "initial_state, final_state",
         [
+            # Direct switch from NORMAL:
+            (WindowState.NORMAL, WindowState.MINIMIZED),
+            (WindowState.NORMAL, WindowState.MAXIMIZED),
+            (WindowState.NORMAL, WindowState.FULLSCREEN),
+            (WindowState.NORMAL, WindowState.PRESENTATION),
             # Direct switch from MINIMIZED:
             (WindowState.MINIMIZED, WindowState.NORMAL),
             (WindowState.MINIMIZED, WindowState.MAXIMIZED),
