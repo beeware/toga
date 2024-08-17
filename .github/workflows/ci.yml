@@ -323,7 +323,9 @@ jobs:
         ${{ matrix.pre-command }}
         # Use the development version of Briefcase
         python -m pip install -U pip
-        python -m pip install git+https://github.com/beeware/briefcase.git
+        # python -m pip install git+https://github.com/beeware/briefcase.git
+        # TODO: Use the stable release of Briefcase so that binary packages are available.
+        python -m pip install briefcase==0.3.19
 
     - name: Test App
       working-directory: testbed
