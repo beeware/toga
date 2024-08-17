@@ -46,7 +46,7 @@ class TogaWindow(NSWindow):
 
     @objc_method
     def windowDidResize_(self, notification) -> None:
-        if getattr(self, "interface", None) is not None and self.interface.content:
+        if self.interface and self.interface.content:
             # Set the window to the new size
             self.interface.content.refresh()
 
@@ -58,17 +58,19 @@ class TogaWindow(NSWindow):
 
     @objc_method
     def enteredMiniaturize_(self, sender) -> None:
-        if (
-            self.impl._pending_state_transition
-            and self.impl._pending_state_transition != WindowState.MINIMIZED
-        ):
-            self.impl._apply_state(WindowState.NORMAL)
-        else:
-            self.impl._pending_state_transition = None
+        if self.impl:  # pragma: no branch
+            if (
+                self.impl._pending_state_transition
+                and self.impl._pending_state_transition != WindowState.MINIMIZED
+            ):
+                self.impl._apply_state(WindowState.NORMAL)
+            else:
+                self.impl._pending_state_transition = None
 
     @objc_method
     def windowDidDeminiaturize_(self, notification) -> None:
-        self.impl._apply_state(self.impl._pending_state_transition)
+        if self.impl:  # pragma: no branch
+            self.impl._apply_state(self.impl._pending_state_transition)
 
     @objc_method
     def windowDidEnterFullScreen_(self, notification) -> None:
@@ -244,7 +246,6 @@ class Window:
     ######################################################################
 
     def close(self):
-        # self.native.delegate = None
         self.native.close()
 
     def set_app(self, app):
