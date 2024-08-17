@@ -96,5 +96,6 @@ class Command:
         return item
 
     def remove_menu_item(self, menu_item):
+        menu_item.menu.removeItem(menu_item)
         self.native.remove(menu_item)
         self.menu_items.pop(menu_item)

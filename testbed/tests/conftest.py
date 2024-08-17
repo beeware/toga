@@ -51,6 +51,9 @@ async def app_probe(app):
     # minimize garbage collection on the test thread.
     gc.collect()
 
+    # Reset the command action mock
+    app.cmd_action.reset_mock()
+
 
 @fixture(scope="session")
 def main_window(app):

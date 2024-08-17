@@ -30,12 +30,14 @@ class BaseStatusIcon:
     def create(self):
         self.native = NSStatusBar.systemStatusBar.statusItemWithLength(
             NSSquareStatusItemLength
-        )
+        ).retain()
         self.native.button.toolTip = self.interface.text
         self.set_icon(self.interface.icon)
 
     def remove(self):
         NSStatusBar.systemStatusBar.removeStatusItem(self.native)
+        self.native.release()
+        self.native = None
 
 
 class StatusItemButtonDelegate(NSObject):
@@ -61,8 +63,12 @@ class StatusIcon(BaseStatusIcon):
 class MenuStatusIcon(BaseStatusIcon):
     def create(self):
         super().create()
+        self.create_menu()
+
+    def create_menu(self):
         submenu = NSMenu.alloc().init()
         self.native.menu = submenu
+        return submenu
 
 
 class StatusIconSet:
@@ -78,14 +84,14 @@ class StatusIconSet:
 
         # Determine the primary status icon.
         primary_group = self.interface.primary_menu_status_icon
-        if primary_group is None:
+        if primary_group is None:  # pragma: no cover
             # If there isn't at least one menu status icon, then there aren't any menus
-            # to populate.
+            # to populate. This can't happen in the testbed, so it's marked nocover.
             return
 
-        # Add the menu status items to the cache
+        # Recreate the menus for the menu status icons
         group_cache = {
-            item: item._impl.native.menu for item in self.interface.menu_status_icons
+            item: item._impl.create_menu() for item in self.interface.menu_status_icons
         }
         # Map the COMMANDS group to the primary status icon's menu.
         group_cache[Group.COMMANDS] = primary_group._impl.native.menu

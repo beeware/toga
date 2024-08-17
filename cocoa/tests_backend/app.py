@@ -273,3 +273,29 @@ class AppProbe(BaseProbe, DialogsMixin):
             dialog._impl.completion_handler(result)
 
         dialog._impl.show = automated_show
+
+    def has_status_icon(self, status_icon):
+        return status_icon._impl.native is not None
+
+    def status_menu_items(self, status_icon):
+        if status_icon._impl.native.menu:
+            return [
+                str(item.title) if str(item.title) else "---"
+                for item in status_icon._impl.native.menu.itemArray
+            ]
+        else:
+            # It's a button status item
+            return None
+
+    def activate_status_icon_button(self, item_id):
+        self.app.status_icons[item_id]._impl.native.button.performClick(None)
+
+    def activate_status_menu_item(self, item_id, title):
+        item = self.app.status_icons[item_id]._impl.native.menu.itemWithTitle(title)
+        send_message(
+            self.app._impl.native.delegate,
+            item.action,
+            item,
+            restype=None,
+            argtypes=[objc_id],
+        )
