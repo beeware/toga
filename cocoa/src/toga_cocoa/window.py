@@ -52,9 +52,7 @@ class TogaWindow(NSWindow):
 
     @objc_method
     def windowDidMiniaturize_(self, notification) -> None:
-        self.performSelector(
-            SEL("enteredMiniaturize:"), withObject=None, afterDelay=0.2
-        )
+        self.performSelector(SEL("enteredMiniaturize:"), withObject=None, afterDelay=0)
 
     @objc_method
     def enteredMiniaturize_(self, sender) -> None:
