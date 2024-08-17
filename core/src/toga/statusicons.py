@@ -18,6 +18,7 @@ _py_id = id
 
 class BaseStatusIcon:
     def __init__(self, icon: IconContentT | None = None, **kwargs):
+        """An abstract base class for all status icons."""
         super().__init__(**kwargs)
         self.factory = get_platform_factory()
         self._impl = getattr(self.factory, self.__class__.__name__)(interface=self)
@@ -121,13 +122,17 @@ class MenuStatusIcon(BaseStatusIcon, Group):
         return f"<MenuStatusIcon {self.text!r}: {self.id}>"
 
 
-class StatusIconSet(Sequence[StatusIcon], Mapping[str, StatusIcon]):
+class StatusIconSet(Sequence[BaseStatusIcon], Mapping[str, BaseStatusIcon]):
     def __init__(self):
-        """A collection of status icons."""
+        """An ordered collection of status icons.
+
+        The items in the set can be retrieved by instance, or by ID. When iterated, the
+        items are returned in the order they were added.
+        """
         self.factory = get_platform_factory()
         self._impl = self.factory.StatusIconSet(interface=self)
 
-        self.elements: dict[str, StatusIcon] = {}
+        self.elements: dict[str, BaseStatusIcon] = {}
         self.commands = CommandSet()
 
     @property
@@ -137,7 +142,10 @@ class StatusIconSet(Sequence[StatusIcon], Mapping[str, StatusIcon]):
 
     @property
     def primary_menu_status_icon(self):
-        """The first menu status icon that has been registered."""
+        """The first menu status icon that has been registered.
+
+        Returns ``None`` if no menu status icons have been registered.
+        """
         try:
             return next(self.menu_status_icons)
         except StopIteration:
@@ -175,7 +183,7 @@ class StatusIconSet(Sequence[StatusIcon], Mapping[str, StatusIcon]):
             )
         )
 
-    def __iter__(self) -> Iterator[StatusIcon]:
+    def __iter__(self) -> Iterator[BaseStatusIcon]:
         return iter(self.elements.values())
 
     def __contains__(self, value: object) -> bool:
@@ -193,7 +201,11 @@ class StatusIconSet(Sequence[StatusIcon], Mapping[str, StatusIcon]):
         else:
             return self.elements[index_or_id]
 
-    def add(self, *status_icons: StatusIcon):
+    def add(self, *status_icons: BaseStatusIcon):
+        """Add one or more icons to the set.
+
+        :param status_icons: The icon (or icons) to add to the set.
+        """
         added = False
         for status_icon in status_icons:
             if status_icon.id not in self.elements:
@@ -204,7 +216,11 @@ class StatusIconSet(Sequence[StatusIcon], Mapping[str, StatusIcon]):
         if added and self.commands.on_change:
             self.commands.on_change()
 
-    def remove(self, status_icon: StatusIcon):
+    def remove(self, status_icon: BaseStatusIcon):
+        """Remove a single icon from the set.
+
+        :param status_icon: The status icon instance to remove.
+        """
         try:
             self.elements.pop(status_icon.id)
             status_icon._impl.remove()
@@ -215,6 +231,7 @@ class StatusIconSet(Sequence[StatusIcon], Mapping[str, StatusIcon]):
             raise ValueError("Not a known status icon.")
 
     def clear(self):
+        """Remove all the icons from the set."""
         # Convert into a list so that we're not deleting from a list while iterating.
         for status_icon in list(self):
             self.elements.pop(status_icon.id)

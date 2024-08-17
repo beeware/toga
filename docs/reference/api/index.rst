@@ -85,6 +85,8 @@ Resources
  :doc:`Icon </reference/api/resources/icons>`                         An icon for buttons, menus, etc
  :doc:`Image </reference/api/resources/images>`                       An image
  :doc:`Source </reference/api/resources/sources/source>`              A base class for data source implementations.
+ :doc:`Status Icons </reference/api/resources/statusicons>`           Icons that appear in the system tray for representing app status
+                                                                      while the app isn't visible.
  :doc:`ListSource </reference/api/resources/sources/list_source>`     A data source describing an ordered list of data.
  :doc:`TreeSource </reference/api/resources/sources/tree_source>`     A data source describing an ordered hierarchical tree of data.
  :doc:`ValueSource </reference/api/resources/sources/value_source>`   A data source describing a single value.
