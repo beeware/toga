@@ -23,6 +23,8 @@ class WindowProbe(BaseProbe, DialogsMixin):
     supports_move_while_hidden = True
     supports_unminimize = True
     supports_minimize = True
+    supports_fullscreen = True
+    supports_presentation = True
     supports_placement = True
 
     def __init__(self, app, window):

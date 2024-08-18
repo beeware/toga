@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from typing import TYPE_CHECKING
 
 from toga.command import Separator
@@ -33,9 +34,9 @@ class Window:
 
         self._window_state_flags = None
 
-        # Gdk.WindowState.FULLSCREEN is unreliable, use shadow variables.
-        self._in_presentation_mode = False
-        self._is_full_screen = False
+        # Gdk.WindowState.FULLSCREEN is unreliable, use shadow variables also.
+        self._in_presentation = False
+        self._in_fullscreen = False
 
         # Pending Window state transition variable:
         self._pending_state_transition = None
@@ -175,9 +176,9 @@ class Window:
         elif window_state_flags & Gdk.WindowState.ICONIFIED:
             return WindowState.MINIMIZED  # pragma: no-cover-if-linux-wayland
         elif window_state_flags & Gdk.WindowState.FULLSCREEN:
-            if self._in_presentation_mode:
+            if self._in_presentation:
                 return WindowState.PRESENTATION
-            elif self._is_full_screen:
+            elif self._in_fullscreen:
                 return WindowState.FULLSCREEN
             else:
                 return WindowState.NORMAL
@@ -185,17 +186,30 @@ class Window:
             return WindowState.NORMAL
 
     def set_window_state(self, state):
-        if self._pending_state_transition:
-            self._pending_state_transition = state
-        else:
-            self._pending_state_transition = state
-            if self.get_window_state() != WindowState.NORMAL:
-                self._apply_state(WindowState.NORMAL)
+        if ("WAYLAND_DISPLAY" in os.environ) and (
+            state
+            in {WindowState.MINIMIZED, WindowState.FULLSCREEN, WindowState.PRESENTATION}
+        ):  # pragma: no-cover-if-linux-x
+            # Not implemented on wayland due to wayland security policies.
+            self.interface.factory.not_implemented(
+                f"Window.set_window_state({state}) on Wayland"
+            )
+        else:  # pragma: no-cover-if-linux-wayland
+            if self._pending_state_transition:
+                self._pending_state_transition = state
             else:
-                self._apply_state(state)
+                self._pending_state_transition = state
+                if self.get_window_state() != WindowState.NORMAL:
+                    self._apply_state(WindowState.NORMAL)
+                else:
+                    self._apply_state(state)
 
     def _apply_state(self, target_state):
-        if target_state is None:
+        if target_state is None:  # pragma: no cover
+            # This is OS delay related and is only sometimes triggered
+            # when there is a delay in processing the states by the OS.
+            # Hence, this branch cannot be consistently reached by the
+            # testbed coverage.
             return
 
         elif target_state == self.get_window_state():
@@ -211,7 +225,7 @@ class Window:
                 self.native.present()
             elif current_state == WindowState.FULLSCREEN:
                 self.native.unfullscreen()
-                self._is_full_screen = False
+                self._in_fullscreen = False
             # elif current_state == WindowState.PRESENTATION:
             else:
                 if isinstance(self.native, Gtk.ApplicationWindow):
@@ -221,14 +235,14 @@ class Window:
                 self.native.unfullscreen()
                 self.interface.screen = self._before_presentation_mode_screen
                 del self._before_presentation_mode_screen
-                self._in_presentation_mode = False
+                self._in_presentation = False
         elif target_state == WindowState.MAXIMIZED:
             self.native.maximize()
         elif target_state == WindowState.MINIMIZED:
             self.native.iconify()  # pragma: no-cover-if-linux-wayland
         elif target_state == WindowState.FULLSCREEN:
             self.native.fullscreen()
-            self._is_full_screen = True
+            self._in_fullscreen = True
         # elif target_state == WindowState.PRESENTATION:
         else:
             self._before_presentation_mode_screen = self.interface.screen
@@ -237,7 +251,7 @@ class Window:
             if getattr(self, "native_toolbar", None):
                 self.native_toolbar.set_visible(False)
             self.native.fullscreen()
-            self._in_presentation_mode = True
+            self._in_presentation = True
 
     ######################################################################
     # Window capabilities

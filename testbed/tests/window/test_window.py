@@ -707,6 +707,10 @@ else:
     )
     async def test_window_state_full_screen(second_window, second_window_probe):
         """Window can have full screen window state"""
+        if not second_window_probe.supports_fullscreen:
+            pytest.xfail(
+                "This backend doesn't reliably support fullscreen window state."
+            )
         second_window.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
         second_window.show()
         # Add delay to ensure windows are visible after animation.
@@ -757,6 +761,10 @@ else:
         second_window, second_window_probe, app_probe
     ):
         """Window can have presentation window state"""
+        if not second_window_probe.supports_presentation:
+            pytest.xfail(
+                "This backend doesn't reliably support presentation window state."
+            )
         second_window.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
         second_window.show()
         # Add delay to ensure windows are visible after animation.
@@ -862,12 +870,27 @@ else:
         ),
     ):
         if (
-            WindowState.MINIMIZED in {initial_state, final_state, *intermediate_states}
+            WindowState.MINIMIZED in {initial_state, final_state}
             and not second_window_probe.supports_minimize
         ):
             pytest.xfail(
                 "This backend doesn't reliably support minimized window state."
             )
+        elif (
+            WindowState.FULLSCREEN in {initial_state, final_state}
+            and not second_window_probe.supports_fullscreen
+        ):
+            pytest.xfail(
+                "This backend doesn't reliably support minimized window state."
+            )
+        elif (
+            WindowState.PRESENTATION in {initial_state, final_state}
+            and not second_window_probe.supports_presentation
+        ):
+            pytest.xfail(
+                "This backend doesn't reliably support minimized window state."
+            )
+
         second_window.toolbar.add(app.cmd1)
         second_window.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
         second_window.show()

@@ -14,6 +14,8 @@ class WindowProbe(BaseProbe, DialogsMixin):
     supports_unminimize = False
     # Wayland mostly prohibits interaction with the larger windowing environment
     supports_minimize = not BaseProbe.IS_WAYLAND
+    supports_fullscreen = not BaseProbe.IS_WAYLAND
+    supports_presentation = not BaseProbe.IS_WAYLAND
     supports_placement = not BaseProbe.IS_WAYLAND
 
     def __init__(self, app, window):
@@ -48,9 +50,9 @@ class WindowProbe(BaseProbe, DialogsMixin):
         elif window_state_flags & Gdk.WindowState.ICONIFIED:
             current_state = WindowState.MINIMIZED
         elif window_state_flags & Gdk.WindowState.FULLSCREEN:
-            if getattr(self.impl, "_in_presentation_mode", False) is True:
+            if getattr(self.impl, "_in_presentation", False) is True:
                 current_state = WindowState.PRESENTATION
-            elif getattr(self.impl, "_is_full_screen", False) is True:
+            elif getattr(self.impl, "_in_fullscreen", False) is True:
                 current_state = WindowState.FULLSCREEN
             else:
                 current_state = WindowState.NORMAL
