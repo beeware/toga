@@ -182,8 +182,11 @@ async def test_menu_minimize(app, app_probe):
         window1.close()
 
 
-async def test_presentation_mode(app, app_probe, main_window):
+async def test_presentation_mode(app, app_probe, main_window, main_window_probe):
     """The app can enter presentation mode."""
+    if not main_window_probe.supports_presentation:
+        pytest.xfail("This backend doesn't reliably support presentation window state.")
+
     try:
         window_information_list = list()
         windows_list = list()
@@ -270,11 +273,8 @@ async def test_presentation_mode_exit_on_window_state_change(
     app, app_probe, main_window, main_window_probe, new_window_state
 ):
     """Changing window state exits presentation mode and sets the new state."""
-    if (
-        new_window_state == WindowState.MINIMIZED
-        and not main_window_probe.supports_minimize
-    ):
-        pytest.xfail("This backend doesn't reliably support minimized window state.")
+    if not main_window_probe.supports_presentation:
+        pytest.xfail("This backend doesn't reliably support presentation window state.")
 
     try:
         window1 = toga.Window(
