@@ -189,7 +189,7 @@ class DocumentSet(Sequence[Document], Mapping[Path, Document]):
         when it is closed. The document collection will be stored in the order that
         documents were created.
 
-        :param app: The app that this documentset is bound to.
+        :param app: The app that this instance is bound to.
         """
         self.app = app
         self.elements: list[Document] = []
