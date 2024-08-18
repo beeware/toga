@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Iterator
-from typing import TYPE_CHECKING, Any, MutableMapping, MutableSet, Protocol
+from typing import TYPE_CHECKING, MutableMapping, MutableSet, Protocol
 
 from toga.handlers import simple_handler, wrapped_handler
 from toga.icons import Icon
@@ -170,21 +170,21 @@ class Command:
     #: the default document type for your app; if you specify more than one document
     #: type, the command for the subsequent commands will have a colon and the first
     #: extension for that data type appended to the ID.
-    NEW: str = "new"
+    NEW: str = "documents.new"
     #: An identifier for the standard "Open" menu item. This command will be
     #: automatically installed if your app declares any document types.
-    OPEN: str = "request_open"
+    OPEN: str = "documents.request_open"
     #: An identifier for the standard "Preferences" menu item.
     PREFERENCES: str = "preferences"
     #: An identifier for the standard "Save" menu item. This command will be
     #: automatically installed if your app declares any document types.
-    SAVE: str = "save"
+    SAVE: str = "documents.save"
     #: An identifier for the standard "Save As..." menu item. This command will be
     #: automatically installed if your app declares any document types.
-    SAVE_AS: str = "save_as"
+    SAVE_AS: str = "documents.save_as"
     #: An identifier for the standard "Save All" menu item. This command will be
     #: automatically installed if your app declares any document types.
-    SAVE_ALL: str = "save_all"
+    SAVE_ALL: str = "documents.save_all"
     #: An identifier for the standard "Visit Homepage" menu item. This command may be
     #: installed by default, depending on platform requirements.
     VISIT_HOMEPAGE: str = "visit_homepage"
@@ -244,16 +244,15 @@ class Command:
         self.enabled = enabled
 
     @classmethod
-    def standard(cls, obj: Any, id, **kwargs):
+    def standard(cls, app: App, id, **kwargs):
         """Create an instance of a standard command for the provided app.
 
-        The default action for the command will be constructed by looking for the value
-        of the command's ID as a method name on the object passed as a context object.
-        If a method or co-routine with that name exists on the context object, that
-        method or co-routine will be used as the action. Otherwise, a value of ``None``
-        will be used as the default action.
+        The default action for the command will be constructed using the value of the
+        command's ID as an attribute of the app object. If a method or co-routine
+        matching that name doesn't exist, a value of ``None`` will be used as the
+        default action.
 
-        :param obj: The context object for the command.
+        :param app: The app for which the standard command will be created.
         :param id: The ID of the standard command to create.
         :param kwargs: Overrides for any default properties of the standard command.
             Accepts the same arguments as the :class:`~toga.Command` constructor.
@@ -261,13 +260,17 @@ class Command:
         # The value of the ID constant is the method on the app instance
         cmd_kwargs = {"id": id}
         try:
-            cmd_kwargs["action"] = simple_handler(getattr(obj, id))
+            attrs = id.split(".")
+            action = getattr(app, attrs[0])
+            for attr in attrs[1:]:
+                action = getattr(action, attr)
+            cmd_kwargs["action"] = simple_handler(action)
         except AttributeError:
             cmd_kwargs["action"] = None
 
         # Get the platform-specific keyword arguments for the command
         factory = get_platform_factory()
-        platform_kwargs = factory.Command.standard(obj, id)
+        platform_kwargs = factory.Command.standard(app, id)
 
         if platform_kwargs:
             cmd_kwargs.update(platform_kwargs)

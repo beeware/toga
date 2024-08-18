@@ -538,7 +538,7 @@ class App:
         if self.document_types:
             default_document_type = list(self.document_types.values())[0]
             command = Command.standard(
-                self.documents,
+                self,
                 Command.NEW,
                 action=simple_handler(self.documents.new, default_document_type),
             )
@@ -556,7 +556,7 @@ class App:
                     ):
                         if document_class not in known_document_classes:
                             command = Command.standard(
-                                self.documents,
+                                self,
                                 Command.NEW,
                                 action=simple_handler(
                                     self.documents.new, document_class
@@ -581,7 +581,7 @@ class App:
                 Command.SAVE_AS,
                 Command.SAVE_ALL,
             ]:
-                self.commands.add(Command.standard(self.documents, cmd_id))
+                self.commands.add(Command.standard(self, cmd_id))
 
     def _create_initial_windows(self):
         """Internal utility method for creating initial windows based on command line
