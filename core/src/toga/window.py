@@ -296,7 +296,7 @@ class Window:
         close_window = True
         if self.app.main_window == self:
             # Closing the window marked as the main window is a request to exit.
-            self.app._request_exit()
+            self.app.request_exit()
             close_window = False
         elif self.app.main_window is None:
             # If this is an app without a main window, the app is running, this
@@ -307,7 +307,7 @@ class Window:
                 and self.app._impl.CLOSE_ON_LAST_WINDOW
                 and self.app.loop.is_running()
             ):
-                self.app._request_exit()
+                self.app.request_exit()
                 close_window = False
 
         if close_window:

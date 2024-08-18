@@ -31,15 +31,15 @@ def document2(app):
 
 def test_create(app):
     """An empty documentset can be created."""
-    documentset = DocumentSet()
+    documentset = DocumentSet(app)
 
     assert len(documentset) == 0
     assert list(documentset) == []
 
 
-def test_add_discard(document1, document2):
+def test_add_discard(app, document1, document2):
     """Documents can be added and removed to a documentset."""
-    documentset = DocumentSet()
+    documentset = DocumentSet(app)
 
     # Add a document
     documentset._add(document2)
@@ -65,9 +65,9 @@ def test_add_discard(document1, document2):
         documentset._remove(document2)
 
 
-def test_retrieve(document1, document2):
+def test_retrieve(app, document1, document2):
     """Documents can be added and removed to a documentset."""
-    documentset = DocumentSet()
+    documentset = DocumentSet(app)
     documentset._add(document2)
     documentset._add(document1)
 

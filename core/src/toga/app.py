@@ -13,7 +13,6 @@ from typing import TYPE_CHECKING, Any, Protocol
 from weakref import WeakValueDictionary
 
 from toga.command import Command, CommandSet
-from toga.dialogs import OpenFileDialog
 from toga.documents import Document, DocumentSet
 from toga.handlers import simple_handler, wrapped_handler
 from toga.hardware.camera import Camera
@@ -317,7 +316,7 @@ class App:
 
         # Set up the document types and collection of documents being managed.
         self._document_types = {} if document_types is None else document_types
-        self._documents = DocumentSet()
+        self._documents = DocumentSet(self)
 
         # Install the lifecycle handlers. If passed in as an argument, or assigned using
         # `app.on_event = my_handler`, the event handler will take the app as the first
@@ -434,9 +433,14 @@ class App:
     # App lifecycle
     ######################################################################
 
-    def _request_exit(self):
-        # Internal method to request an exit. This triggers on_exit handling, and
-        # will only exit if the user agrees.
+    def request_exit(self):
+        """Request an exit from the application.
+
+        This method will call the :meth:`~toga.App.on_exit` handler to confirm if the
+        app should be allowed to exit; if that handler confirms the action, the app will
+        exit.
+        """
+
         def cleanup(app, should_exit):
             if should_exit:
                 app.exit()
@@ -446,7 +450,7 @@ class App:
         wrapped_handler(self, self.on_exit, cleanup=cleanup)()
 
     def exit(self) -> None:
-        """Exit the application gracefully.
+        """Unconditionally exit the application.
 
         This *does not* invoke the ``on_exit`` handler; the app will be immediately
         and unconditionally closed.
@@ -513,7 +517,7 @@ class App:
         :returns: ``True`` if a document was successfully loaded; ``False`` otherwise.
         """
         try:
-            self.open(filename)
+            self.documents.open(filename)
             return True
         except FileNotFoundError:
             print(f"Document {filename} not found")
@@ -534,9 +538,9 @@ class App:
         if self.document_types:
             default_document_type = list(self.document_types.values())[0]
             command = Command.standard(
-                self,
+                self.documents,
                 Command.NEW,
-                action=simple_handler(self.new, default_document_type),
+                action=simple_handler(self.documents.new, default_document_type),
             )
             if command:
                 if len(set(self.document_types.values())) == 1:
@@ -552,9 +556,11 @@ class App:
                     ):
                         if document_class not in known_document_classes:
                             command = Command.standard(
-                                self,
+                                self.documents,
                                 Command.NEW,
-                                action=simple_handler(self.new, document_class),
+                                action=simple_handler(
+                                    self.documents.new, document_class
+                                ),
                             )
                             command.text = (
                                 command.text + f" {document_class.document_type}"
@@ -575,7 +581,7 @@ class App:
                 Command.SAVE_AS,
                 Command.SAVE_ALL,
             ]:
-                self.commands.add(Command.standard(self, cmd_id))
+                self.commands.add(Command.standard(self.documents, cmd_id))
 
     def _create_initial_windows(self):
         """Internal utility method for creating initial windows based on command line
@@ -588,7 +594,6 @@ class App:
         # If the backend handles the command line, don't do any command line processing.
         if self._impl.HANDLES_COMMAND_LINE:
             return
-
         doc_count = len(self.windows)
         if self.document_types:
             for filename in sys.argv[1:]:
@@ -600,7 +605,7 @@ class App:
             try:
                 # Pass in the first document type as the default
                 default_doc_type = next(iter(self.document_types.values()))
-                self.new(default_doc_type)
+                self.documents.new(default_doc_type)
             except StopIteration:
                 # No document types defined.
                 raise RuntimeError(
@@ -760,132 +765,6 @@ class App:
         :returns: The result of the dialog.
         """
         return await dialog._show(None)
-
-    def new(self, document_type: type[Document]) -> Document:
-        """Create a new document of the given type, and show the document window.
-
-        :param document_type: The document type that has been requested.
-        :returns: The newly created document.
-        """
-        document = document_type(app=self)
-        document.show()
-        return document
-
-    async def _open(self):
-        # The menu interface to open(). Prompt the user to select a file; then open that
-        # file.
-
-        # A safety catch: if app modal dialogs aren't actually modal (eg, macOS) prevent
-        # a second open dialog from being opened when one is already active. Attach the
-        # dialog instance as a private attribute; delete as soon as the future is
-        # complete.
-        if hasattr(self, "_open_dialog"):
-            return
-
-        # CLOSE_ON_LAST_WINDOW is a proxy for the GTK/Windows behavior of loading content
-        # into the existing window. This is actually implemented by creating a new window
-        # and disposing of the old one; mark the current window for cleanup
-        if self._impl.CLOSE_ON_LAST_WINDOW:
-            if hasattr(self.current_window, "_commit"):
-                self.current_window._replace = await self.current_window._commit()
-
-        self._open_dialog = OpenFileDialog(
-            self.formal_name,
-            file_types=(
-                list(self.document_types.keys()) if self.document_types else None
-            ),
-        )
-        path = await self.dialog(self._open_dialog)
-        del self._open_dialog
-
-        if path:
-            self.open(path)
-        else:
-            # If the open was cancelled, but the current window has a replacement
-            # marker, remove the replacement marker
-            if hasattr(self.current_window, "_replace"):
-                del self.current_window._replace
-
-    def open(self, path: Path | str) -> Document:
-        """Open a document in this app, and show the document window.
-
-        If the provided path is already an open document, the existing representation for
-        the document will be given focus.
-
-        :param path: The path to the document to be opened.
-        :returns: The document that was opened.
-        :raises ValueError: If the path describes a file that is of a type that doesn't
-            match a registered document type.
-        """
-        try:
-            if sys.version_info < (3, 9):  # pragma: no-cover-if-gte-py39
-                # resolve() *should* turn the path into an absolute path;
-                # but on Windows, with Python 3.8, it doesn't.
-                path = Path(path).absolute().resolve()
-            else:  # pragma: no-cover-if-lt-py39
-                path = Path(path).resolve()
-            document = self.documents[path]
-            document.focus()
-            return document
-        except KeyError:
-            # No existing representation for the document.
-            try:
-                DocType = self.document_types[path.suffix[1:]]
-            except KeyError:
-                raise ValueError(
-                    f"Don't know how to open documents with extension {path.suffix}"
-                )
-            else:
-                prev_window = self.current_window
-                document = DocType(app=self)
-                try:
-                    document.open(path)
-
-                    # If the previous window is marked for replacement, close it; but
-                    # put the new document window in the same position as the previous
-                    # one.
-                    if getattr(prev_window, "_replace", False):
-                        document.main_window.position = prev_window.position
-                        prev_window.close()
-
-                    document.show()
-                    return document
-                except Exception:
-                    # Open failed; ensure any windows opened by the document are closed,
-                    # and remove the replacement marker if it exists.
-                    document.close()
-
-                    if hasattr(prev_window, "_replace"):
-                        del prev_window._replace
-                    raise
-
-    async def save(self):
-        """Save the current content of an app.
-
-        If there isn't a current window, or current window doesn't define a ``save()``
-        method, the save request will be ignored.
-        """
-        if hasattr(self.current_window, "save"):
-            await self.current_window.save()
-
-    async def save_as(self):
-        """Save the current content of an app under a different filename.
-
-        If there isn't a current window, or the current window hasn't defined a
-        ``save_as()`` method, the save-as request will be ignored.
-        """
-        if hasattr(self.current_window, "save_as"):
-            await self.current_window.save_as()
-
-    async def save_all(self):
-        """Save the state of all content in the app.
-
-        This method will attempt to call ``save()`` on every window associated with the
-        app. Any windows that do not provide a ``save()`` method will be ignored.
-        """
-        for window in self.windows:
-            if hasattr(window, "save"):
-                await window.save()
 
     def visit_homepage(self) -> None:
         """Open the application's :any:`home_page` in the default browser.

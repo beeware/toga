@@ -395,7 +395,7 @@ def test_close_last_document_non_persistent(monkeypatch, example_file, other_fil
     )
 
     # Create a second document window
-    app.open(other_file)
+    app.documents.open(other_file)
 
     # There are 2 open documents
     assert len(app.documents) == 2
@@ -438,7 +438,7 @@ def test_close_last_document_persistent(monkeypatch, example_file, other_file):
     )
 
     # Create a second document window
-    app.open(other_file)
+    app.documents.open(other_file)
 
     # There are 2 open documents
     assert len(app.documents) == 2
@@ -471,7 +471,7 @@ def test_close_last_document_persistent(monkeypatch, example_file, other_file):
 def test_open_missing_file(doc_app):
     """Attempting to read a missing file of a known type raises an error."""
     with pytest.raises(FileNotFoundError):
-        doc_app.open("/does/not/exist.foobar")
+        doc_app.documents.open("/does/not/exist.foobar")
 
     # Only the original document and window exists
     assert len(doc_app.documents) == 1
@@ -485,7 +485,7 @@ def test_open_bad_file(monkeypatch, doc_app, other_file):
     monkeypatch.setattr(OtherDocument, "read_error", ValueError("Bad file. No cookie."))
 
     with pytest.raises(ValueError, match=r"Bad file. No cookie."):
-        doc_app.open(other_file)
+        doc_app.documents.open(other_file)
 
     # Only the original document and window exists
     assert len(doc_app.documents) == 1
@@ -502,7 +502,7 @@ def test_open_existing_file(doc_app, example_file, other_file):
     example_doc = doc_app.documents[example_file]
 
     # Open a new document.
-    other_doc = doc_app.open(other_file)
+    other_doc = doc_app.documents.open(other_file)
 
     # There are now 2 documents, each with a window
     assert len(doc_app.documents) == 2
@@ -513,7 +513,7 @@ def test_open_existing_file(doc_app, example_file, other_file):
     EventLog.reset()
 
     # Open the example doc
-    repeat_example_doc = doc_app.open(example_file)
+    repeat_example_doc = doc_app.documents.open(example_file)
 
     # There are still only 2 documents
     assert len(doc_app.documents) == 2
@@ -705,7 +705,7 @@ def test_open_menu_cancel_no_replace(monkeypatch, doc_app):
 def test_open_menu_duplicate(doc_app, example_file):
     """The open menu is modal."""
     # Mock a pre-existing open dialog
-    doc_app._open_dialog = Mock()
+    doc_app.documents._open_dialog = Mock()
 
     # Activate the open dialog a second time.
     future = doc_app.commands[toga.Command.OPEN].action()
@@ -772,7 +772,7 @@ def test_save_menu(doc_app, example_file):
     assert first_doc.path == example_file
 
     # Open a second new document
-    second_doc = doc_app.new(ExampleDocument)
+    second_doc = doc_app.documents.new(ExampleDocument)
 
     # Activate the save menu
     future = doc_app.commands[toga.Command.SAVE].action()
@@ -790,7 +790,7 @@ def test_save_menu_readonly(doc_app, example_file, other_file, tmp_path):
     assert first_doc.path == example_file
 
     # Open a readonly document, set to be current
-    second_doc = doc_app.open(other_file)
+    second_doc = doc_app.documents.open(other_file)
     doc_app.current_window = second_doc.main_window
 
     # Activate the save menu
@@ -809,7 +809,7 @@ def test_save_menu_untitled(doc_app, example_file, tmp_path):
     assert first_doc.path == example_file
 
     # Open a second new document, set to be current
-    second_doc = doc_app.new(ExampleDocument)
+    second_doc = doc_app.documents.new(ExampleDocument)
     doc_app.current_window = second_doc.main_window
 
     # Prime the save dialog on the second window
@@ -836,7 +836,7 @@ def test_save_menu_untitled_cancel(doc_app, example_file, tmp_path):
     assert first_doc.path == example_file
 
     # Open a second new document, set to be current
-    second_doc = doc_app.new(ExampleDocument)
+    second_doc = doc_app.documents.new(ExampleDocument)
     doc_app.current_window = second_doc.main_window
 
     # Prime the save dialog on the second window
@@ -858,7 +858,7 @@ def test_save_menu_non_document(doc_app, example_file):
     assert first_doc.path == example_file
 
     # Open a second new document
-    second_doc = doc_app.new(ExampleDocument)
+    second_doc = doc_app.documents.new(ExampleDocument)
 
     # Open a non-document window, and make it current
     third_window = toga.Window(title="Not a document")
@@ -880,7 +880,7 @@ def test_save_as_menu(doc_app, example_file, tmp_path):
     assert first_doc.path == example_file
 
     # Open a second new document
-    second_doc = doc_app.new(ExampleDocument)
+    second_doc = doc_app.documents.new(ExampleDocument)
 
     # Prime the save dialog on the first window
     path = tmp_path / "path/to/filename2.foobar"
@@ -906,7 +906,7 @@ def test_save_as_menu_readonly(doc_app, example_file, other_file, tmp_path):
     assert first_doc.path == example_file
 
     # Open a readonly document, set to be current
-    second_doc = doc_app.open(other_file)
+    second_doc = doc_app.documents.open(other_file)
     doc_app.current_window = second_doc.main_window
 
     # Activate the Save As menu
@@ -925,7 +925,7 @@ def test_save_as_menu_untitled(doc_app, example_file, tmp_path):
     assert first_doc.path == example_file
 
     # Open a second new document, set to be current
-    second_doc = doc_app.new(ExampleDocument)
+    second_doc = doc_app.documents.new(ExampleDocument)
     doc_app.current_window = second_doc.main_window
 
     # Prime the save dialog on the second window
@@ -952,7 +952,7 @@ def test_save_as_menu_cancel(doc_app, example_file, tmp_path):
     assert first_doc.path == example_file
 
     # Open a second new document
-    second_doc = doc_app.new(ExampleDocument)
+    second_doc = doc_app.documents.new(ExampleDocument)
 
     # Cancel the request to save
     first_doc.main_window._impl.dialog_responses["SaveFileDialog"] = [None]
@@ -973,7 +973,7 @@ def test_save_as_menu_non_document(doc_app, example_file):
     assert first_doc.path == example_file
 
     # Open a second new document
-    second_doc = doc_app.new(ExampleDocument)
+    second_doc = doc_app.documents.new(ExampleDocument)
 
     # Open a non-document window, and make it current
     third_window = toga.Window(title="Not a document")
@@ -995,7 +995,7 @@ def test_save_all_menu(doc_app, example_file, tmp_path):
     assert first_doc.path == example_file
 
     # Open a second new document
-    second_doc = doc_app.new(ExampleDocument)
+    second_doc = doc_app.documents.new(ExampleDocument)
 
     # Open a third window, with no document attached
     third_window = toga.Window(title="Not a document")

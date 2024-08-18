@@ -17,7 +17,7 @@ if toga.platform.current_platform not in {"macOS", "windows", "linux"}:
 async def test_new_document(app, app_probe):
     """A new document can be created."""
     # Create a new document
-    app.new(ExampleDoc)
+    app.documents.new(ExampleDoc)
 
     await app_probe.redraw("New document has been created")
 
@@ -33,7 +33,7 @@ async def test_open_document(app, app_probe):
     """A document can be opened."""
     # A document can be opened
     document_path = Path(__file__).parent / "docs/example.testbed"
-    app.open(document_path)
+    app.documents.open(document_path)
 
     await app_probe.redraw("Document has been opened")
 
@@ -48,7 +48,7 @@ async def test_open_missing_document(app, app_probe):
     """If an attempt is made to open a missing file, an error is raised."""
     # If the file doesn't exist, an exception is raised
     with pytest.raises(FileNotFoundError):
-        app.open(Path(__file__).parent / "docs/does_not_exist.testbed")
+        app.documents.open(Path(__file__).parent / "docs/does_not_exist.testbed")
 
     await app_probe.redraw("Attempt to open a missing document has been made")
 
@@ -65,7 +65,7 @@ async def test_open_bad_document(app, app_probe, capsys):
         RuntimeError,
         match=r"Unable to load broken document",
     ):
-        app.open(document_path)
+        app.documents.open(document_path)
 
     await app_probe.redraw("Attempt to open a bad document has been made")
 
@@ -107,7 +107,7 @@ async def test_save_document(app, app_probe):
     """A document can be saved."""
     # A document can be opened
     document_path = Path(__file__).parent / "docs/example.testbed"
-    app.open(document_path)
+    app.documents.open(document_path)
 
     await app_probe.redraw("Document has been opened")
 
@@ -118,7 +118,7 @@ async def test_save_document(app, app_probe):
     app.documents[0]._content.read.assert_called_with(document_path)
 
     # Save the document
-    await app.save()
+    await app.documents.save()
     await app_probe.redraw("Document has been saved")
 
     # Document has been saved.
@@ -130,7 +130,7 @@ async def test_save_as_document(monkeypatch, app, app_probe, tmp_path):
 
     # A document can be opened
     document_path = Path(__file__).parent / "docs/example.testbed"
-    document = app.open(document_path)
+    document = app.documents.open(document_path)
 
     # Monkeypatch the save_as dialog handling so that a dialog isn't activated.
     async def mock_save_as_dialog(dialog):
@@ -147,7 +147,7 @@ async def test_save_as_document(monkeypatch, app, app_probe, tmp_path):
     app.documents[0]._content.read.assert_called_with(document_path)
 
     # Save the document in a new location
-    await app.save_as()
+    await app.documents.save_as()
     await app_probe.redraw("Document has been saved with a new filename")
 
     # Document has been saved in a new location
@@ -160,7 +160,7 @@ async def test_save_all_documents(app, app_probe):
     """All documents can be saved."""
     # A document can be opened
     document_path = Path(__file__).parent / "docs/example.testbed"
-    app.open(document_path)
+    app.documents.open(document_path)
 
     await app_probe.redraw("Document has been opened")
 
@@ -171,7 +171,7 @@ async def test_save_all_documents(app, app_probe):
     app.documents[0]._content.read.assert_called_with(document_path)
 
     # Save all windows in the app
-    await app.save_all()
+    await app.documents.save_all()
     await app_probe.redraw("Save All has been invoked")
 
     # Document has been saved.

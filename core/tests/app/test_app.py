@@ -661,8 +661,8 @@ def test_exit_direct(app):
 
 def test_exit_no_handler(app):
     """An app without an exit handler can be exited."""
-    # Exit the app
-    app._impl.simulate_exit()
+    # Request an app exit
+    app.request_exit()
 
     # Window has been exited, and is no longer in the app's list of windows.
     assert_action_performed(app, "exit")
@@ -682,8 +682,8 @@ def test_exit_subclassed_handler(app):
 
     app = SubclassedApp(formal_name="Test App", app_id="org.example.test")
 
-    # Close the app
-    app._impl.simulate_exit()
+    # Request an app exit
+    app.request_exit()
 
     # The exit method was invoked
     assert exit["called"]
@@ -697,8 +697,8 @@ def test_exit_successful_handler(app):
     on_exit_handler = Mock(return_value=True)
     app.on_exit = on_exit_handler
 
-    # Close the app
-    app._impl.simulate_exit()
+    # Request an app exit
+    app.request_exit()
 
     # App has been exited
     assert_action_performed(app, "exit")
@@ -710,8 +710,8 @@ def test_exit_rejected_handler(app):
     on_exit_handler = Mock(return_value=False)
     app.on_exit = on_exit_handler
 
-    # Close the window
-    app._impl.simulate_exit()
+    # Request an app exit
+    app.request_exit()
 
     # App has been *not* exited
     assert_action_not_performed(app, "exit")

@@ -283,9 +283,9 @@ class AppProbe(BaseProbe, DialogsMixin):
     async def open_initial_document(self, monkeypatch, document_path):
         # Mock the async menu item with an implementation that directly opens the doc
         async def _mock_open():
-            self.app.open(document_path)
+            self.app.documents.open(document_path)
 
-        monkeypatch.setattr(self.app, "_open", _mock_open)
+        monkeypatch.setattr(self.app.documents, "request_open", _mock_open)
 
         # Call the APIs that are triggered when the app is activated.
         nsapp = self.app._impl.native

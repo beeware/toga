@@ -139,13 +139,6 @@ class App(LoggedObject):
     def exit_full_screen(self, windows):
         self._action("exit_full_screen", windows=windows)
 
-    ######################################################################
-    # Simulation interface
-    ######################################################################
-
-    def simulate_exit(self):
-        self.interface._request_exit()
-
 
 class DocumentApp(App):
     def create(self):
