@@ -278,13 +278,15 @@ class App:
     # Presentation mode controls
     ######################################################################
 
-    def enter_presentation_mode(self, screen_window_dict):
+    def enter_presentation_mode(
+        self, screen_window_dict
+    ):  # pragma: no-cover-if-linux-wayland
         for screen, window in screen_window_dict.items():
             window._impl._before_presentation_mode_screen = window.screen
             window.screen = screen
             window._impl.set_window_state(WindowState.PRESENTATION)
 
-    def exit_presentation_mode(self):
+    def exit_presentation_mode(self):  # pragma: no-cover-if-linux-wayland
         for window in self.interface.windows:
             if window.state == WindowState.PRESENTATION:
                 window._impl.set_window_state(WindowState.NORMAL)

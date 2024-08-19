@@ -371,8 +371,6 @@ class Window:
         if self._pending_state_transition:
             self._pending_state_transition = state
         else:
-            if self.get_window_state() == state:
-                return
             self._pending_state_transition = state
             if self.get_window_state() != WindowState.NORMAL:
                 self._apply_state(WindowState.NORMAL)

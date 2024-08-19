@@ -80,7 +80,11 @@ class Window:
             current_state = self.get_window_state()
             if current_state != WindowState.NORMAL:
                 if self._pending_state_transition != current_state:
-                    self._apply_state(WindowState.NORMAL)
+                    # Marking as no cover, since wayland has only MAXIMIZED & NORMAL state
+                    # support, so no other type of state will be in pending_state.
+                    self._apply_state(
+                        WindowState.NORMAL
+                    )  # pragma: no-cover-if-linux-wayland
                 else:
                     self._pending_state_transition = None
             else:
@@ -175,7 +179,9 @@ class Window:
             return WindowState.MAXIMIZED
         elif window_state_flags & Gdk.WindowState.ICONIFIED:
             return WindowState.MINIMIZED  # pragma: no-cover-if-linux-wayland
-        elif window_state_flags & Gdk.WindowState.FULLSCREEN:
+        elif (
+            window_state_flags & Gdk.WindowState.FULLSCREEN
+        ):  # pragma: no-cover-if-linux-wayland
             if self._in_presentation:
                 return WindowState.PRESENTATION
             elif self._in_fullscreen:
@@ -222,14 +228,18 @@ class Window:
             current_state = self.get_window_state()
             if current_state == WindowState.MAXIMIZED:
                 self.native.unmaximize()
-            elif current_state == WindowState.MINIMIZED:
+            elif (
+                current_state == WindowState.MINIMIZED
+            ):  # pragma: no-cover-if-linux-wayland
                 # deiconify() doesn't work
                 self.native.present()
-            elif current_state == WindowState.FULLSCREEN:
+            elif (
+                current_state == WindowState.FULLSCREEN
+            ):  # pragma: no-cover-if-linux-wayland
                 self.native.unfullscreen()
                 self._in_fullscreen = False
             # elif current_state == WindowState.PRESENTATION:
-            else:
+            else:  # pragma: no-cover-if-linux-wayland
                 if isinstance(self.native, Gtk.ApplicationWindow):
                     self.native.set_show_menubar(True)
                 if getattr(self, "native_toolbar", None):
@@ -240,13 +250,15 @@ class Window:
                 self._in_presentation = False
         elif target_state == WindowState.MAXIMIZED:
             self.native.maximize()
-        elif target_state == WindowState.MINIMIZED:
-            self.native.iconify()  # pragma: no-cover-if-linux-wayland
-        elif target_state == WindowState.FULLSCREEN:
+        elif target_state == WindowState.MINIMIZED:  # pragma: no-cover-if-linux-wayland
+            self.native.iconify()
+        elif (
+            target_state == WindowState.FULLSCREEN
+        ):  # pragma: no-cover-if-linux-wayland
             self.native.fullscreen()
             self._in_fullscreen = True
         # elif target_state == WindowState.PRESENTATION:
-        else:
+        else:  # pragma: no-cover-if-linux-wayland
             self._before_presentation_mode_screen = self.interface.screen
             if isinstance(self.native, Gtk.ApplicationWindow):
                 self.native.set_show_menubar(False)
