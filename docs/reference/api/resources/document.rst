@@ -106,4 +106,4 @@ Reference
 ---------
 
 .. autoclass:: toga.Document
-.. autoclass:: toga.app.DocumentSet
+.. autoclass:: toga.documents.DocumentSet
