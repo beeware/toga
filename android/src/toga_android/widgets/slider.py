@@ -5,7 +5,7 @@ from android.view import View
 from android.widget import SeekBar
 from java import dynamic_proxy
 
-import toga
+from toga.widgets.slider import IntSliderImpl
 
 from .base import Widget
 
@@ -31,7 +31,7 @@ class TogaOnSeekBarChangeListener(dynamic_proxy(SeekBar.OnSeekBarChangeListener)
         self.impl.interface.on_release()
 
 
-class Slider(Widget, toga.widgets.slider.IntSliderImpl):
+class Slider(Widget, IntSliderImpl):
     focusable = False
     TICK_DRAWABLE = None
 

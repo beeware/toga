@@ -1,9 +1,9 @@
-import toga
+from toga.widgets.slider import SliderImpl
 
 from .base import Widget
 
 
-class Slider(Widget, toga.widgets.slider.SliderImpl):
+class Slider(Widget, SliderImpl):
     def create(self):
         self._action("create Slider")
 
