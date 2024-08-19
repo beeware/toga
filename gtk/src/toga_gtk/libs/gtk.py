@@ -3,12 +3,22 @@ import gi
 gi.require_version("Gdk", "3.0")
 gi.require_version("Gtk", "3.0")
 
-from gi.repository import Gdk, GdkPixbuf, Gio, GLib, GObject, Gtk  # noqa: E402, F401
+from gi.repository import (  # noqa: E402, F401
+    Gdk,
+    GdkPixbuf,
+    GdkX11,
+    Gio,
+    GLib,
+    GObject,
+    Gtk,
+)
 
 if Gdk.Screen.get_default() is None:  # pragma: no cover
     raise RuntimeError(
         "Cannot identify an active display. Is the `DISPLAY` environment variable set correctly?"
     )
+
+IS_WAYLAND = not isinstance(Gdk.Display.get_default(), GdkX11.X11Display)
 
 # The following imports will fail if the underlying libraries or their API
 # wrappers aren't installed; handle failure gracefully (see

@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 import PIL.Image
@@ -5,7 +6,7 @@ import pytest
 
 import toga
 from toga_gtk.keys import gtk_accel, toga_key
-from toga_gtk.libs import Gdk, Gtk
+from toga_gtk.libs import IS_WAYLAND, Gdk, Gtk
 
 from .dialogs import DialogsMixin
 from .probe import BaseProbe
@@ -16,13 +17,14 @@ class AppProbe(BaseProbe, DialogsMixin):
     supports_key_mod3 = True
     # Gtk 3.24.41 ships with Ubuntu 24.04 where present() works on Wayland
     supports_current_window_assignment = not (
-        BaseProbe.IS_WAYLAND and BaseProbe.GTK_VERSION < (3, 24, 41)
+        IS_WAYLAND and BaseProbe.GTK_VERSION < (3, 24, 41)
     )
 
     def __init__(self, app):
         super().__init__()
         self.app = app
         assert isinstance(self.app._impl.native, Gtk.Application)
+        assert IS_WAYLAND is (os.environ.get("WAYLAND_DISPLAY", "") != "")
 
     @property
     def config_path(self):
