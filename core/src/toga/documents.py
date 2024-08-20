@@ -89,14 +89,6 @@ class Document(ABC):
     # Document operations
     ######################################################################
 
-    def close(self):
-        """Close all the windows for this document.
-
-        This will immediately close any document windows, *without* invoking any
-        ``on_close`` handlers.
-        """
-        self.main_window.close()
-
     def focus(self):
         """Give the document focus in the app."""
         self.app.current_window = self.main_window
@@ -362,7 +354,7 @@ class DocumentSet(Sequence[Document], Mapping[Path, Document]):
                 except Exception:
                     # Open failed; ensure any windows opened by the document are closed,
                     # and remove the replacement marker if it exists.
-                    document.close()
+                    document.main_window.close()
 
                     if hasattr(prev_window, "_replace"):
                         del prev_window._replace

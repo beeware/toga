@@ -292,6 +292,9 @@ class Window:
         or property on a :class:`~toga.Window` instance after it has been closed is
         undefined, except for :attr:`closed` which can be used to check if the window
         was closed.
+
+        :returns: True if the window was actually closed; False if closing the window
+            triggered ``on_exit`` handling.
         """
         close_window = True
         if self.app.main_window == self:
@@ -312,6 +315,9 @@ class Window:
 
         if close_window:
             self._close()
+
+        # Return whether the window was actually closed
+        return close_window
 
     def _close(self):
         # The actual logic for closing a window. This is abstracted so that the testbed
