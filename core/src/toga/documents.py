@@ -274,10 +274,11 @@ class DocumentSet(Sequence[Document], Mapping[Path, Document]):
         # CLOSE_ON_LAST_WINDOW is a proxy for the GTK/Windows behavior of loading content
         # into the existing window. This is actually implemented by creating a new window
         # and disposing of the old one; mark the current window for cleanup
+        current_window = self.app.current_window
         if self.app._impl.CLOSE_ON_LAST_WINDOW:
             if hasattr(self.app.current_window, "_commit"):
                 if await self.app.current_window._commit():
-                    self.app.current_window._replace = True
+                    current_window._replace = True
                 else:
                     # The changes in the current document window couldn't be committed
                     # (e.g., a save was requested, but then cancelled), so we can't
@@ -295,13 +296,13 @@ class DocumentSet(Sequence[Document], Mapping[Path, Document]):
         path = await self.app.dialog(self._open_dialog)
         del self._open_dialog
 
-        if path:
-            return self.open(path)
-        else:
-            # If the open was cancelled, but the current window has a replacement
-            # marker, remove the replacement marker
-            if hasattr(self.app.current_window, "_replace"):
-                del self.app.current_window._replace
+        try:
+            if path:
+                return self.open(path)
+        finally:
+            # Remove the replacement marker
+            if hasattr(current_window, "_replace"):
+                del current_window._replace
 
     def open(self, path: Path | str) -> Document:
         """Open a document in the app, and show the document window.
@@ -352,12 +353,8 @@ class DocumentSet(Sequence[Document], Mapping[Path, Document]):
                     document.show()
                     return document
                 except Exception:
-                    # Open failed; ensure any windows opened by the document are closed,
-                    # and remove the replacement marker if it exists.
+                    # Open failed; ensure any windows opened by the document are closed.
                     document.main_window.close()
-
-                    if hasattr(prev_window, "_replace"):
-                        del prev_window._replace
                     raise
 
     async def save(self):
