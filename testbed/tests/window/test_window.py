@@ -801,67 +801,6 @@ else:
         assert second_window_probe.presentation_content_size == initial_content_size
 
     @pytest.mark.parametrize(
-        "state",
-        [
-            WindowState.NORMAL,
-            WindowState.MINIMIZED,
-            WindowState.MAXIMIZED,
-            WindowState.FULLSCREEN,
-            WindowState.PRESENTATION,
-        ],
-    )
-    @pytest.mark.parametrize(
-        "second_window_class, second_window_kwargs",
-        [
-            (
-                toga.Window,
-                dict(title="Secondary Window", position=(200, 150)),
-            )
-        ],
-    )
-    async def test_window_state_same_as_previous(
-        second_window, second_window_probe, app_probe, state
-    ):
-        """Setting window state same as previous is a no-op."""
-        if state == WindowState.MINIMIZED and not second_window_probe.supports_minimize:
-            pytest.xfail(
-                "This backend doesn't reliably support minimized window state."
-            )
-        elif (
-            state == WindowState.FULLSCREEN
-            and not second_window_probe.supports_fullscreen
-        ):
-            pytest.xfail(
-                "This backend doesn't reliably support minimized window state."
-            )
-        elif (
-            state == WindowState.PRESENTATION
-            and not second_window_probe.supports_presentation
-        ):
-            pytest.xfail(
-                "This backend doesn't reliably support minimized window state."
-            )
-
-        second_window.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
-        second_window.show()
-        # Add delay to ensure windows are visible after animation.
-        await second_window_probe.wait_for_window(
-            "Secondary window is shown",
-        )
-
-        # Set the window state:
-        second_window.state = state
-        # Add delay to ensure windows are visible after animation.
-        await app_probe.redraw(f"Secondary window is in {state}", delay=0.5)
-        assert second_window_probe.get_window_state() == state
-
-        # Set the window state same as previous:
-        second_window.state = state
-        # Add delay to ensure windows are visible after animation.
-        await app_probe.redraw(f"Secondary window is in {state}", delay=0.5)
-        assert second_window_probe.get_window_state() == state
-
-    @pytest.mark.parametrize(
         "initial_state, final_state",
         [
             # Direct switch from NORMAL:
@@ -972,6 +911,67 @@ else:
         # Add delay to ensure windows are visible after animation.
         await app_probe.redraw(f"Secondary window is in {final_state}", delay=1.5)
         assert second_window_probe.get_window_state() == final_state
+
+    @pytest.mark.parametrize(
+        "state",
+        [
+            WindowState.NORMAL,
+            WindowState.MINIMIZED,
+            WindowState.MAXIMIZED,
+            WindowState.FULLSCREEN,
+            WindowState.PRESENTATION,
+        ],
+    )
+    @pytest.mark.parametrize(
+        "second_window_class, second_window_kwargs",
+        [
+            (
+                toga.Window,
+                dict(title="Secondary Window", position=(200, 150)),
+            )
+        ],
+    )
+    async def test_window_state_same_as_previous(
+        second_window, second_window_probe, app_probe, state
+    ):
+        """Setting window state same as previous is a no-op."""
+        if state == WindowState.MINIMIZED and not second_window_probe.supports_minimize:
+            pytest.xfail(
+                "This backend doesn't reliably support minimized window state."
+            )
+        elif (
+            state == WindowState.FULLSCREEN
+            and not second_window_probe.supports_fullscreen
+        ):
+            pytest.xfail(
+                "This backend doesn't reliably support minimized window state."
+            )
+        elif (
+            state == WindowState.PRESENTATION
+            and not second_window_probe.supports_presentation
+        ):
+            pytest.xfail(
+                "This backend doesn't reliably support minimized window state."
+            )
+
+        second_window.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
+        second_window.show()
+        # Add delay to ensure windows are visible after animation.
+        await second_window_probe.wait_for_window(
+            "Secondary window is shown",
+        )
+
+        # Set the window state:
+        second_window.state = state
+        # Add delay to ensure windows are visible after animation.
+        await app_probe.redraw(f"Secondary window is in {state}", delay=0.5)
+        assert second_window_probe.get_window_state() == state
+
+        # Set the window state same as previous:
+        second_window.state = state
+        # Add delay to ensure windows are visible after animation.
+        await app_probe.redraw(f"Secondary window is in {state}", delay=0.5)
+        assert second_window_probe.get_window_state() == state
 
     @pytest.mark.parametrize(
         "second_window_class, second_window_kwargs",
