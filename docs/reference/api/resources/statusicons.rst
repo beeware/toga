@@ -151,8 +151,11 @@ add some standard commands to the app's status icon command set. These items wil
 at the end of menu of the first :class:`~toga.MenuStatusIcon`'s menu. To remove these
 items, clear the app's status icon command set before adding your own commands.
 
-If you add a command to the app's status icon command set that *doesn't* belong to
-:class:`~toga.MenuStatusIcon` group, that command will be ignored with a warning.
+If you add a command to the app's status icon command set that *doesn't* belong to a
+:class:`~toga.MenuStatusIcon` group, or that belongs to a :class:`~toga.MenuStatusIcon`
+group that hasn't been registered with the app as a status icon, a ``ValueError`` will
+be raised. An error will also be raised if you *remove* a status icon while there status
+icon commands referencing that command.
 
 Notes
 -----

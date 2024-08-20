@@ -1,5 +1,7 @@
 from unittest.mock import Mock
 
+import pytest
+
 import toga
 
 
@@ -36,15 +38,15 @@ async def test_add_remove(app, app_probe):
     await app_probe.redraw("Status icon created but not added")
     assert not app_probe.has_status_icon(new_status_icon)
 
-    # Add the command to the status command set. The status icon isn't known yet, so
-    # this won't result in a visible icon.
-    app.status_icons.commands.add(new_cmd1)
-    await app_probe.redraw("Command added, but not visible")
-    assert not app_probe.has_status_icon(new_status_icon)
-
-    # Add the command to the status command set
+    # Add the command to the status command set. It won't have any commands yet.
     app.status_icons.add(new_status_icon)
     await app_probe.redraw("Status icon added")
+    assert app_probe.has_status_icon(new_status_icon)
+    assert app_probe.status_menu_items(new_status_icon) == []
+
+    # Add the command to the status command set.
+    app.status_icons.commands.add(new_cmd1)
+    await app_probe.redraw("Command added, but not visible")
     assert app_probe.has_status_icon(new_status_icon)
     assert app_probe.status_menu_items(new_status_icon) == [
         "New Action 1",
@@ -74,10 +76,38 @@ async def test_add_remove(app, app_probe):
         "New Action 2",
     ]
 
+    # Remove the second command
+    app.status_icons.commands.remove(new_cmd2)
+    await app_probe.redraw("Second command removed")
+    assert app_probe.has_status_icon(new_status_icon)
+    assert app_probe.status_menu_items(new_status_icon) == []
+
     # Remove the extra status icon
     app.status_icons.remove(new_status_icon)
     await app_probe.redraw("Status icon removed")
     assert not app_probe.has_status_icon(new_status_icon)
+
+
+async def test_unknown_status_icon(app, app_probe):
+    """Adding a command when the status icon is unknown raises an error."""
+    # Create a new menu status item
+    absent_status_icon = toga.MenuStatusIcon(text="Absent Item")
+    bad_cmd = toga.Command(
+        Mock(),
+        text="Bad Action",
+        group=absent_status_icon,
+    )
+
+    # Add the command without adding the status icon first
+    try:
+        with pytest.raises(
+            ValueError,
+            match=r"Command 'Bad Action' does not belong to a current status icon group.",
+        ):
+            app.status_icons.commands.add(bad_cmd)
+    finally:
+        # Clean up and make sure the bad command is removed.
+        app.status_icons.commands.remove(bad_cmd)
 
 
 async def test_activate_button_icon(app, app_probe):

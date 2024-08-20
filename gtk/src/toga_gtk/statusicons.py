@@ -97,9 +97,9 @@ class StatusIconSet:
             try:
                 submenu = self._submenu(cmd.group, group_cache)
             except ValueError:
-                print(
+                raise ValueError(
                     f"Command {cmd.text!r} does not belong to "
-                    "a current status icon group; ignoring"
+                    "a current status icon group."
                 )
             else:
                 if isinstance(cmd, Separator):
