@@ -823,6 +823,25 @@ else:
         second_window, second_window_probe, app_probe, state
     ):
         """Setting window state same as previous is a no-op."""
+        if state == WindowState.MINIMIZED and not second_window_probe.supports_minimize:
+            pytest.xfail(
+                "This backend doesn't reliably support minimized window state."
+            )
+        elif (
+            state == WindowState.FULLSCREEN
+            and not second_window_probe.supports_fullscreen
+        ):
+            pytest.xfail(
+                "This backend doesn't reliably support minimized window state."
+            )
+        elif (
+            state == WindowState.PRESENTATION
+            and not second_window_probe.supports_presentation
+        ):
+            pytest.xfail(
+                "This backend doesn't reliably support minimized window state."
+            )
+
         second_window.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
         second_window.show()
         # Add delay to ensure windows are visible after animation.
