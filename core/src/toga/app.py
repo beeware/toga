@@ -563,7 +563,7 @@ class App:
                                 ),
                             )
                             command.text = (
-                                command.text + f" {document_class.document_type}"
+                                command.text + f" {document_class.description}"
                             )
                             if i > 0:
                                 command.shortcut = None

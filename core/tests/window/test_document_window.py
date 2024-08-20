@@ -5,7 +5,7 @@ from toga_dummy.utils import assert_action_not_performed, assert_action_performe
 
 
 class ExampleDocument(toga.Document):
-    document_type = "Example Document"
+    description = "Example Document"
     read_error = None
     write_error = None
 

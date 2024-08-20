@@ -16,13 +16,14 @@ if TYPE_CHECKING:
 
 
 class Document(ABC):
-    # Subclasses should override this definition
-
-    #: A short description of the type of document
-    document_type: str
+    #: A short description of the type of document (e.g., "Text document"). This is a
+    #: class variable that subclasses should define.
+    description: str
 
     def __init__(self, app: App):
-        """Create a new Document.
+        """Create a new Document. Do not call this constructor directly - use
+        :meth:`DocumentSet.new`, :meth:`DocumentSet.open` or
+        :meth:`DocumentSet.request_open` instead.
 
         :param app: The application the document is associated with.
         """
@@ -82,7 +83,7 @@ class Document(ABC):
         This will be used as the default title of a :any:`toga.DocumentWindow` that
         contains the document.
         """
-        return f"{self.document_type}: {self.path.stem if self.path else 'Untitled'}"
+        return f"{self.description}: {self.path.stem if self.path else 'Untitled'}"
 
     @property
     def modified(self) -> bool:
@@ -245,11 +246,8 @@ class DocumentSet(Sequence[Document], Mapping[Path, Document]):
         return document
 
     async def request_open(self) -> Document:
-        """Present a dialog asking the user for a document to open, and show the window
-        for that document.
-
-        If the provided path is already an open document, the existing representation
-        for the document will be given focus.
+        """Present a dialog asking the user for a document to open, and pass the
+        selected path to :meth:`open`.
 
         :returns: The document that was opened.
         :raises ValueError: If the path describes a file that is of a type that doesn't
@@ -267,9 +265,13 @@ class DocumentSet(Sequence[Document], Mapping[Path, Document]):
         # and disposing of the old one; mark the current window for cleanup
         if self.app._impl.CLOSE_ON_LAST_WINDOW:
             if hasattr(self.app.current_window, "_commit"):
-                self.app.current_window._replace = (
-                    await self.app.current_window._commit()
-                )
+                if await self.app.current_window._commit():
+                    self.app.current_window._replace = True
+                else:
+                    # The changes in the current document window couldn't be committed
+                    # (e.g., a save was requested, but then cancelled), so we can't
+                    # proceed with opening a new document.
+                    return
 
         self._open_dialog = dialogs.OpenFileDialog(
             self.app.formal_name,
@@ -408,7 +410,7 @@ class DocumentWindow(MainWindow):
         if self.doc.modified:
             if await self.dialog(
                 toga.QuestionDialog(
-                    "Are you sure?",
+                    "Save changes?",
                     "This document has unsaved changes. Do you want to save these changes?",
                 )
             ):
@@ -442,16 +444,7 @@ class DocumentWindow(MainWindow):
                 self.doc.save()
                 return True
             else:
-                # Document has not been saved previously; prompt for a filename.
-                suggested_name = f"Untitled.{self.doc.default_extension}"
-                new_path = await self.dialog(
-                    dialogs.SaveFileDialog("Save as...", suggested_name)
-                )
-                # If a filename has been returned, save using that filename.
-                # If there isn't a filename, the save was cancelled.
-                if new_path:
-                    self.doc.save(new_path)
-                    return True
+                return await self.save_as()
         return False
 
     async def save_as(self):

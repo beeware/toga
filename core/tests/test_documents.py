@@ -9,7 +9,7 @@ from toga_dummy.utils import assert_action_performed_with
 
 
 class MyDoc(toga.Document):
-    document_type = "My Document"
+    description = "My Document"
 
     def create(self):
         self.main_window = Mock(title="Mock Window")
@@ -25,7 +25,7 @@ class MyDoc(toga.Document):
 
 
 class OtherDoc(toga.Document):
-    document_type = "Other Document"
+    description = "Other Document"
 
     def create(self):
         self.main_window = Mock(title="Mock Window")
@@ -39,7 +39,7 @@ def test_create_document(app):
 
     assert doc.path is None
     assert doc.app == app
-    assert doc.document_type == "My Document"
+    assert doc.description == "My Document"
     assert doc.title == "My Document: Untitled"
 
     # create() has been invoked

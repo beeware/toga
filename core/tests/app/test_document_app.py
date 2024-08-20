@@ -14,7 +14,7 @@ from toga_dummy.utils import (
 
 
 class ExampleDocument(toga.Document):
-    document_type = "Example Document"
+    description = "Example Document"
     read_error = None
 
     def create(self):
@@ -38,7 +38,7 @@ class ExampleDocument(toga.Document):
 
 
 class OtherDocument(toga.Document):
-    document_type = "Other Document"
+    description = "Other Document"
     read_error = None
 
     def create(self):
@@ -630,6 +630,35 @@ def test_open_menu_no_save_existing(doc_app, example_file, other_file):
 
     # New window is in the same position as the old one.
     assert new_doc.main_window.position == orig_position
+
+    # The example doc has not been saved
+    assert example_doc.modified
+
+
+def test_open_menu_cancel_save_existing(doc_app, example_file, other_file):
+    """If the user cancels the save of existing changes, a new file isn't opened."""
+    # There is initially 1 document, and 1 window
+    assert len(doc_app.documents) == 1
+    assert len(doc_app.windows) == 1
+    example_doc = doc_app.documents[0]
+
+    # Make Document 1 an untitled, unsaved document.
+    example_doc._path = None
+
+    # Mark document 1 as modified; say we want to save, but cancel that save
+    example_doc.touch()
+    example_doc.main_window._impl.dialog_responses["QuestionDialog"] = [True]
+    example_doc.main_window._impl.dialog_responses["SaveFileDialog"] = [None]
+
+    future = doc_app.commands[toga.Command.OPEN].action()
+    doc_app.loop.run_until_complete(future)
+
+    # There is still only 1 document, and 1 window
+    assert len(doc_app.documents) == 1
+    assert len(doc_app.windows) == 1
+
+    # The open document is still the example doc
+    assert doc_app.documents[-1] == example_doc
 
     # The example doc has not been saved
     assert example_doc.modified
