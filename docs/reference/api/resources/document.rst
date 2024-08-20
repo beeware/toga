@@ -21,16 +21,19 @@ when the :class:`~toga.App` instance is created.
 
 The :class:`toga.Document` class describes how your document can be read, displayed, and
 saved. It also tracks whether the document has been modified. In this example, the code
-declares an "Example Document" document type, whose main window contains a
-:class:`~toga.MultilineTextInput`. Whenever the content of that widget changes, the
-document is marked as modified:
+declares an "Example Document" document type, which will create files with the
+extensions ``.mydoc``and ``.mydocument``; because it is listed first, the ``.mydoc``
+extension will be the default for documents of this type. The main window for this
+document type contains a :class:`~toga.MultilineTextInput`. Whenever the content of that
+widget changes, the document is marked as modified:
 
 .. code-block:: python
 
     import toga
 
     class ExampleDocument(toga.Document):
-        document_type = "Example Document"
+        description = "Example Document"
+        extensions = ["mydoc", "mydocument"]
 
         def create(self):
             # Create the main window for the document. The window has a single widget;
@@ -71,12 +74,10 @@ the app still has no windows, then:
 * On Windows and GTK, an untitled document of the default type will be opened.
 * On macOS, an Open dialog will be shown.
 
-In the following example, the ``ExampleDocument`` class is set as the default content
-type, and is registered as representing documents with extension ``.mydoc`` or
-``.mydocument``. The app will also support documents with the extension ``.otherdoc``.
-The app is configured :ref:`to not have a single "main" window <assigning-main-window>`,
-so the life cycle of the app is not tied to a specific window. It will use
-``ExampleDocument`` (with extension ``mydoc``) as the default document type:
+In the following example, the app will be able to manage documents of type
+``ExampleDocument`` or ``OtherDocument``, with ``ExampleDocument`` being the default
+content type.The app is configured :ref:`to not have a single "main" window
+<assigning-main-window>`, so the life cycle of the app is not tied to a specific window.
 
 .. code-block:: python
 
@@ -90,11 +91,7 @@ so the life cycle of the app is not tied to a specific window. It will use
     app = ExampleApp(
         "Document App",
         "com.example.documentapp",
-        document_types={
-            "mydoc": ExampleDocument,
-            "mydocument": ExampleDocument,
-            "otherdoc": OtherDocument,
-        }
+        document_types=[ExampleDocument, OtherDocument]
     )
 
     app.main_loop()
