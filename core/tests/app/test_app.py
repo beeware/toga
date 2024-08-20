@@ -466,86 +466,85 @@ def test_change_invalid_creation_main_window(event_loop):
         BadMainWindowApp(formal_name="Test App", app_id="org.example.test")
 
 
-def test_presentation_mode_with_windows_list(event_loop):
+@pytest.mark.parametrize(
+    "windows",
+    [
+        [],  # No windows
+        [{}],  # One window
+        [{}, {}],  # Two windows
+    ],
+)
+def test_presentation_mode_with_windows_list(event_loop, windows):
     """The app can enter presentation mode with a windows list."""
     app = toga.App(formal_name="Test App", app_id="org.example.test")
-    window1 = toga.Window(content=toga.Box())
-    window2 = toga.Window(content=toga.Box())
+    windows_list = [toga.Window(content=toga.Box()) for window in windows]
 
     assert not app.in_presentation_mode
 
-    # Entering presentation mode with an empty windows list, is a no-op:
-    app.enter_presentation_mode([])
-    assert not app.in_presentation_mode
-    assert_action_not_performed(app, "enter presentation mode")
-
-    # Enter presentation mode with 1 window:
-    app.enter_presentation_mode([window1])
-    assert app.in_presentation_mode
-    assert_action_performed_with(
-        app,
-        "enter presentation mode",
-        screen_window_dict={app.screens[0]: window1},
-    )
-
-    # Enter presentation mode with 2 windows:
-    app.enter_presentation_mode([window1, window2])
-    assert app.in_presentation_mode
-    assert_action_performed_with(
-        app,
-        "enter presentation mode",
-        screen_window_dict={app.screens[0]: window1, app.screens[1]: window2},
-    )
-    # Exit presentation mode:
-    app.exit_presentation_mode()
-    assert_action_performed(
-        app,
-        "exit presentation mode",
-    )
+    if not windows_list:
+        # Entering presentation mode with an empty windows list, is a no-op:
+        app.enter_presentation_mode(windows_list)
+        assert not app.in_presentation_mode
+        assert_action_not_performed(app, "enter presentation mode")
+    else:
+        # Enter presentation mode with 1 or more windows:
+        app.enter_presentation_mode(windows_list)
+        assert app.in_presentation_mode
+        assert_action_performed_with(
+            app,
+            "enter presentation mode",
+            screen_window_dict={
+                app.screens[i]: window for i, window in enumerate(windows_list)
+            },
+        )
+        # Exit presentation mode:
+        app.exit_presentation_mode()
+        assert not app.in_presentation_mode
+        assert_action_performed(
+            app,
+            "exit presentation mode",
+        )
 
 
-def test_presentation_mode_with_screen_window_dict(event_loop):
+@pytest.mark.parametrize(
+    "windows",
+    [
+        [],  # No windows
+        [{}],  # One window
+        [{}, {}],  # Two windows
+    ],
+)
+def test_presentation_mode_with_screen_window_dict(event_loop, windows):
     """The app can enter presentation mode with a screen-window paired dict."""
     app = toga.App(formal_name="Test App", app_id="org.example.test")
-    window1 = toga.Window(content=toga.Box())
-    window2 = toga.Window(content=toga.Box())
+    screen_window_dict = {
+        app.screens[i]: toga.Window(content=toga.Box())
+        for i, window in enumerate(windows)
+    }
 
     assert not app.in_presentation_mode
 
-    # Entering presentation mode with an empty dict, is a no-op:
-    app.enter_presentation_mode({})
-    assert not app.in_presentation_mode
-    assert_action_not_performed(app, "enter presentation mode")
-
-    # Enter presentation mode with an 1 element screen-window dict:
-    app.enter_presentation_mode({app.screens[0]: window1})
-    assert app.in_presentation_mode
-    assert_action_performed_with(
-        app,
-        "enter presentation mode",
-        screen_window_dict={app.screens[0]: window1},
-    )
-    # Exit presentation mode:
-    app.exit_presentation_mode()
-    assert_action_performed(
-        app,
-        "exit presentation mode",
-    )
-
-    # Enter presentation mode with a 2 elements screen-window dict:
-    app.enter_presentation_mode({app.screens[0]: window1, app.screens[1]: window2})
-    assert app.in_presentation_mode
-    assert_action_performed_with(
-        app,
-        "enter presentation mode",
-        screen_window_dict={app.screens[0]: window1, app.screens[1]: window2},
-    )
-    # Exit presentation mode:
-    app.exit_presentation_mode()
-    assert_action_performed(
-        app,
-        "exit presentation mode",
-    )
+    if not screen_window_dict:
+        # Entering presentation mode with an empty dict, is a no-op:
+        app.enter_presentation_mode({})
+        assert not app.in_presentation_mode
+        assert_action_not_performed(app, "enter presentation mode")
+    else:
+        # Enter presentation mode with a 1 or more elements screen-window dict:
+        app.enter_presentation_mode(screen_window_dict)
+        assert app.in_presentation_mode
+        assert_action_performed_with(
+            app,
+            "enter presentation mode",
+            screen_window_dict=screen_window_dict,
+        )
+        # Exit presentation mode:
+        app.exit_presentation_mode()
+        assert not app.in_presentation_mode
+        assert_action_performed(
+            app,
+            "exit presentation mode",
+        )
 
 
 def test_presentation_mode_with_excess_windows_list(event_loop):

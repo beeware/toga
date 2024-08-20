@@ -84,6 +84,8 @@ class WindowState(Enum):
     MINIMIZED = 1
     """``MINIMIZED`` state is when the window isn't currently visible, although it will
     appear in any operating system's list of active windows.
+
+    Supported Platforms: ``Windows``, ``macOS``, ``Linux-Xorg``
     """
 
     MAXIMIZED = 2
@@ -92,11 +94,15 @@ class WindowState(Enum):
 
     On Mobile Platforms(Like on Android) - The ``MAXIMIZED`` state is the same as the
     ``NORMAL`` state.
+
+    Supported Platforms: ``Windows``, ``macOS``, ``Linux-Xorg``, ``Linux-Wayland``
     """
 
     FULLSCREEN = 3
     """``FULLSCREEN`` state is when the window title bar and window chrome remain
     **hidden**; But app menu and toolbars remain **visible**.
+
+    Supported Platforms: ``Windows``, ``macOS``, ``Linux-Xorg``
     """
 
     PRESENTATION = 4
@@ -107,4 +113,6 @@ class WindowState(Enum):
     is the slide.
 
     The window must have a content set on it, before entering presentation mode.
+
+    Supported Platforms: ``Windows``, ``macOS``, ``Linux-Xorg``
     """
