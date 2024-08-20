@@ -823,6 +823,13 @@ else:
         second_window, second_window_probe, app_probe, state
     ):
         """Setting window state same as previous is a no-op."""
+        second_window.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
+        second_window.show()
+        # Add delay to ensure windows are visible after animation.
+        await second_window_probe.wait_for_window(
+            "Secondary window is shown",
+        )
+
         # Set the window state:
         second_window.state = state
         # Add delay to ensure windows are visible after animation.

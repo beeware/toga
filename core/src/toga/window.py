@@ -850,12 +850,9 @@ class Window:
             ("`Window.full_screen` is deprecated. Use `Window.state` instead."),
             DeprecationWarning,
         )
-        if is_full_screen and (self.state != WindowState.FULLSCREEN):
-            self._impl.set_window_state(WindowState.FULLSCREEN)
-        elif not is_full_screen and (self.state == WindowState.FULLSCREEN):
-            self._impl.set_window_state(WindowState.NORMAL)
-        else:
-            return
+        self._impl.set_window_state(
+            WindowState.FULLSCREEN if is_full_screen else WindowState.NORMAL
+        )
 
     ######################################################################
     # End Backwards compatibility

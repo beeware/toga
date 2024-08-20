@@ -929,9 +929,7 @@ class App:
             stacklevel=2,
         )
         self.exit_presentation_mode()
-        if not windows:
-            return
-        else:
+        if windows:
             self.enter_presentation_mode([*windows])
 
     ######################################################################
