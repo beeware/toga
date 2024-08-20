@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import os
 from typing import TYPE_CHECKING
 
 from toga.command import Separator
@@ -9,7 +8,7 @@ from toga.types import Position, Size
 from toga.window import _initial_position
 
 from .container import TogaContainer
-from .libs import Gdk, Gtk
+from .libs import IS_WAYLAND, Gdk, Gtk
 from .screens import Screen as ScreenImpl
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -192,7 +191,7 @@ class Window:
             return WindowState.NORMAL
 
     def set_window_state(self, state):
-        if ("WAYLAND_DISPLAY" in os.environ) and (
+        if IS_WAYLAND and (
             state
             in {WindowState.MINIMIZED, WindowState.FULLSCREEN, WindowState.PRESENTATION}
         ):  # pragma: no-cover-if-linux-x
