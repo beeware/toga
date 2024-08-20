@@ -143,11 +143,11 @@ class Window:
     ######################################################################
 
     def get_window_state(self):
-        # Windows are always normal
+        # Windows are always normal.
         return WindowState.NORMAL
 
     def set_window_state(self, state):
-        self.interface.factory.not_implemented("Window.set_window_state()")
+        self.interface.factory.not_implemented(f"Window.set_window_state({state})")
 
     ######################################################################
     # Window capabilities

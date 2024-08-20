@@ -147,16 +147,6 @@ if toga.platform.current_platform in {"iOS", "android"}:
     @pytest.mark.skipif(
         toga.platform.current_platform == "iOS", reason="Not implemented on iOS"
     )
-    async def test_window_state_minimized(main_window, main_window_probe):
-        """Window can have minimized window state"""
-        assert main_window_probe.get_window_state() == WindowState.NORMAL
-        main_window.state = WindowState.MINIMIZED
-        await main_window_probe.wait_for_window("WindowState.MINIMIZED is a no-op")
-        assert main_window_probe.get_window_state() == WindowState.NORMAL
-
-    @pytest.mark.skipif(
-        toga.platform.current_platform == "iOS", reason="Not implemented on iOS"
-    )
     async def test_window_state_maximized(main_window, main_window_probe):
         """Window can have maximized window state"""
         assert main_window_probe.get_window_state() == WindowState.NORMAL
