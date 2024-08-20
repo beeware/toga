@@ -1,0 +1,1 @@
+The WebView can now be loaded when using Python from the Windows Store.
