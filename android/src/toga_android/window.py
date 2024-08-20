@@ -32,9 +32,6 @@ class LayoutListener(dynamic_proxy(ViewTreeObserver.OnGlobalLayoutListener)):
 
 
 class Window(Container):
-    # ActionBar is always hidden on Window.
-    _actionbar_shown_by_default = False
-
     def __init__(self, interface, title, position, size):
         super().__init__()
         self.interface = interface
@@ -54,7 +51,9 @@ class Window(Container):
     def set_title(self, title):
         self.app.native.setTitle(title)
 
-    def show_actionbar(self, show):
+    def show_actionbar(self, show):  # pragma: no cover
+        # The testbed can't create a simple window, so we can't test this.
+        # ActionBar is always hidden on Window.
         pass
 
     ######################################################################
@@ -233,9 +232,6 @@ class Window(Container):
 
 
 class MainWindow(Window):
-    # ActionBar is always hidden on MainWindow.
-    _actionbar_shown_by_default = True
-
     def configure_titlebar(self):
         # Display the titlebar on a MainWindow.
         pass
