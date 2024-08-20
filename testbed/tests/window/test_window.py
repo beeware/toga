@@ -857,6 +857,8 @@ else:
 
         # Set the window state same as previous:
         second_window.state = state
+        # Add delay to ensure windows are visible after animation.
+        await app_probe.redraw(f"Secondary window is in {state}", delay=0.5)
         assert second_window_probe.get_window_state() == state
 
     @pytest.mark.parametrize(
