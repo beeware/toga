@@ -1,5 +1,4 @@
 import asyncio
-import os
 import signal
 import sys
 from pathlib import Path
@@ -13,7 +12,7 @@ from toga.constants import WindowState
 from toga.handlers import simple_handler
 
 from .keys import gtk_accel
-from .libs import TOGA_DEFAULT_STYLES, Gdk, Gio, GLib, Gtk
+from .libs import IS_WAYLAND, TOGA_DEFAULT_STYLES, Gdk, Gio, GLib, Gtk
 from .screens import Screen as ScreenImpl
 
 
@@ -207,7 +206,7 @@ class App:
 
     def get_screens(self):
         display = Gdk.Display.get_default()
-        if "WAYLAND_DISPLAY" in os.environ:  # pragma: no-cover-if-linux-x
+        if IS_WAYLAND:  # pragma: no-cover-if-linux-x
             # `get_primary_monitor()` doesn't work on wayland, so return as it is.
             return [
                 ScreenImpl(native=display.get_monitor(i))

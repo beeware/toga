@@ -2,7 +2,7 @@ from io import BytesIO
 
 from PIL import Image
 
-from toga_gtk.libs import Gdk, Gtk
+from toga_gtk.libs import IS_WAYLAND, Gdk, Gtk
 
 from .base import SimpleProbe
 
@@ -12,7 +12,7 @@ class CanvasProbe(SimpleProbe):
 
     def reference_variant(self, reference):
         if reference == "multiline_text":
-            if self.IS_WAYLAND:
+            if IS_WAYLAND:
                 return f"{reference}-gtk-wayland"
             else:
                 return f"{reference}-gtk-x11"
