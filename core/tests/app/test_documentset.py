@@ -31,15 +31,27 @@ def document2(app):
 
 def test_create(app):
     """An empty documentset can be created."""
-    documentset = DocumentSet(app)
+    documentset = DocumentSet(app, [])
 
     assert len(documentset) == 0
     assert list(documentset) == []
+    assert documentset.types == []
+
+
+def test_create_with_types(app):
+    """An documentset can be created with document types."""
+    first_type = Mock(extensions=["first", "1st"])
+    second_type = Mock(extensions=["second"])
+    documentset = DocumentSet(app, [first_type, second_type])
+
+    assert len(documentset) == 0
+    assert list(documentset) == []
+    assert documentset.types == [first_type, second_type]
 
 
 def test_add_discard(app, document1, document2):
     """Documents can be added and removed to a documentset."""
-    documentset = DocumentSet(app)
+    documentset = DocumentSet(app, [])
 
     # Add a document
     documentset._add(document2)
@@ -67,7 +79,7 @@ def test_add_discard(app, document1, document2):
 
 def test_retrieve(app, document1, document2):
     """Documents can be added and removed to a documentset."""
-    documentset = DocumentSet(app)
+    documentset = DocumentSet(app, [])
     documentset._add(document2)
     documentset._add(document1)
 

@@ -10,6 +10,7 @@ from toga_dummy.utils import assert_action_performed_with
 
 class MyDoc(toga.Document):
     description = "My Document"
+    extensions = ["doc"]
 
     def create(self):
         self.main_window = Mock(title="Mock Window")
@@ -26,6 +27,7 @@ class MyDoc(toga.Document):
 
 class OtherDoc(toga.Document):
     description = "Other Document"
+    extensions = ["other"]
 
     def create(self):
         self.main_window = Mock(title="Mock Window")
@@ -51,34 +53,72 @@ def test_create_document(app):
     doc.main_window.show.assert_called_once_with()
 
 
-def test_default_extension(event_loop):
-    """The default extension for a document type can be determined."""
+def test_no_description(event_loop):
+    """If a document class doesn't define a description, an error is raised."""
 
-    app = toga.App(
-        "Test App",
-        "org.beeware.document-app",
-        document_types={
-            "foobar": OtherDoc,
-            "doc1": MyDoc,
-            "doc2": MyDoc,
-        },
-    )
+    class BadDoc(toga.Document):
+        def create(self):
+            self.main_window = Mock(title="Mock Window")
 
-    doc = MyDoc(app)
-
-    assert doc.default_extension == "doc1"
-
-
-def test_default_extension_unregistered(app):
-    """The default extension for a document type can be determined."""
-
-    doc = MyDoc(app)
+        def read(self):
+            pass
 
     with pytest.raises(
-        RuntimeError,
-        match=r"Document type isn't registered with the current app",
+        ValueError,
+        match=r"Document type 'BadDoc' doesn't define a 'descriptions' attribute",
     ):
-        doc.default_extension
+        toga.App(
+            "Test App",
+            "org.beeware.document-app",
+            document_types=[MyDoc, BadDoc],
+        )
+
+
+def test_no_extensions(event_loop):
+    """If a document class doesn't define extensions, an error is raised."""
+
+    class BadDoc(toga.Document):
+        description = "Bad Document"
+
+        def create(self):
+            self.main_window = Mock(title="Mock Window")
+
+        def read(self):
+            pass
+
+    with pytest.raises(
+        ValueError,
+        match=r"Document type 'BadDoc' doesn't define an 'extensions' attribute",
+    ):
+        toga.App(
+            "Test App",
+            "org.beeware.document-app",
+            document_types=[MyDoc, BadDoc],
+        )
+
+
+def test_empty_extensions(event_loop):
+    """If a document class doesn't define extensions, an error is raised."""
+
+    class BadDoc(toga.Document):
+        description = "Bad Document"
+        extensions = []
+
+        def create(self):
+            self.main_window = Mock(title="Mock Window")
+
+        def read(self):
+            pass
+
+    with pytest.raises(
+        ValueError,
+        match=r"Document type 'BadDoc' doesn't define at least one extension",
+    ):
+        toga.App(
+            "Test App",
+            "org.beeware.document-app",
+            document_types=[MyDoc, BadDoc],
+        )
 
 
 @pytest.mark.parametrize("converter", [str, lambda s: s])

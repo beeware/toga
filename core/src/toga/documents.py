@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import itertools
 import sys
 from abc import ABC, abstractmethod
 from collections.abc import Iterator
@@ -19,6 +20,12 @@ class Document(ABC):
     #: A short description of the type of document (e.g., "Text document"). This is a
     #: class variable that subclasses should define.
     description: str
+
+    #: A list of extensions that documents of this type might use (e.g.,
+    #: ``["doc", "txt"]``). The list must have at least one extension; the first is the
+    #: default extension for documents of this type. This is a class variable that
+    #: subclasses should define.
+    extensions: list[str]
 
     def __init__(self, app: App):
         """Create a new Document. Do not call this constructor directly - use
@@ -41,22 +48,6 @@ class Document(ABC):
     ######################################################################
     # Document properties
     ######################################################################
-    @property
-    def default_extension(self) -> str:
-        """The default extension for documents of this type.
-
-        Inspects the extensions against which this document type is registered
-        with the app, and returns the first match.
-        """
-        try:
-            return [
-                extension
-                for extension, document_type in self.app.document_types.items()
-                if isinstance(self, document_type)
-            ][0]
-        except IndexError:
-            raise RuntimeError("Document type isn't registered with the current app")
-
     @property
     def path(self) -> Path:
         """The path where the document is stored (read-only)."""
@@ -183,7 +174,7 @@ class Document(ABC):
 
 
 class DocumentSet(Sequence[Document], Mapping[Path, Document]):
-    def __init__(self, app: App):
+    def __init__(self, app: App, types: list[type[Document]]):
         """A collection of documents managed by an app.
 
         A document is automatically added to the app when it is created, and removed
@@ -191,9 +182,37 @@ class DocumentSet(Sequence[Document], Mapping[Path, Document]):
         documents were created.
 
         :param app: The app that this instance is bound to.
+        :param types: The document types managed by this app.
         """
         self.app = app
+        for doc_type in types:
+            if not hasattr(doc_type, "description"):
+                raise ValueError(
+                    f"Document type {doc_type.__name__!r} "
+                    "doesn't define a 'descriptions' attribute"
+                )
+            if not hasattr(doc_type, "extensions"):
+                raise ValueError(
+                    f"Document type {doc_type.__name__!r} "
+                    "doesn't define an 'extensions' attribute"
+                )
+            if len(doc_type.extensions) == 0:
+                raise ValueError(
+                    f"Document type {doc_type.__name__!r} "
+                    "doesn't define at least one extension"
+                )
+
+        self._types = types
+
         self.elements: list[Document] = []
+
+    @property
+    def types(self) -> list[type[Document]]:
+        """The list of document types the app can manage.
+
+        The first document type in the list is the app's default document type.
+        """
+        return self._types
 
     def __iter__(self) -> Iterator[Document]:
         return iter(self.elements)
@@ -276,8 +295,8 @@ class DocumentSet(Sequence[Document], Mapping[Path, Document]):
         self._open_dialog = dialogs.OpenFileDialog(
             self.app.formal_name,
             file_types=(
-                list(self.app.document_types.keys())
-                if self.app.document_types
+                list(itertools.chain(*(doc_type.extensions for doc_type in self.types)))
+                if self.types
                 else None
             ),
         )
@@ -316,7 +335,11 @@ class DocumentSet(Sequence[Document], Mapping[Path, Document]):
         except KeyError:
             # No existing representation for the document.
             try:
-                DocType = self.app.document_types[path.suffix[1:]]
+                DocType = {
+                    extension: doc_type
+                    for doc_type in self.types
+                    for extension in doc_type.extensions
+                }[path.suffix[1:]]
             except KeyError:
                 raise ValueError(
                     f"Don't know how to open documents with extension {path.suffix}"
@@ -458,9 +481,7 @@ class DocumentWindow(MainWindow):
         """
         if overridden(self.doc.write):
             suggested_path = (
-                self.doc.path
-                if self.doc.path
-                else f"Untitled.{self.doc.default_extension}"
+                self.doc.path if self.doc.path else f"Untitled.{self.doc.extensions[0]}"
             )
             new_path = await self.dialog(
                 dialogs.SaveFileDialog("Save as...", suggested_path)

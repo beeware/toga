@@ -158,7 +158,7 @@ class App:
         home_page: str | None = None,
         description: str | None = None,
         startup: AppStartupMethod | None = None,
-        document_types: dict[str, type[Document]] | None = None,
+        document_types: list[type[Document]] | None = None,
         on_running: OnRunningHandler | None = None,
         on_exit: OnExitHandler | None = None,
         id: None = None,  # DEPRECATED
@@ -198,8 +198,8 @@ class App:
         :param startup: A callable to run before starting the app.
         :param on_running: The initial :any:`on_running` handler.
         :param on_exit: The initial :any:`on_exit` handler.
-        :param document_types: A mapping of document types managed by this app, to
-             the :any:`Document` class managing that document type.
+        :param document_types: A list of :any:`Document` classes that this app
+            can manage.
         :param id: **DEPRECATED** - This argument will be ignored. If you need a
             machine-friendly identifier, use ``app_id``.
         :param windows: **DEPRECATED** – Windows are now automatically added to the
@@ -315,8 +315,10 @@ class App:
             self.icon = icon
 
         # Set up the document types and collection of documents being managed.
-        self._document_types = {} if document_types is None else document_types
-        self._documents = DocumentSet(self)
+        self._documents = DocumentSet(
+            self,
+            types=[] if document_types is None else document_types,
+        )
 
         # Install the lifecycle handlers. If passed in as an argument, or assigned using
         # `app.on_event = my_handler`, the event handler will take the app as the first
@@ -535,45 +537,34 @@ class App:
         ]:
             self.commands.add(Command.standard(self, cmd_id))
 
-        if self.document_types:
-            default_document_type = list(self.document_types.values())[0]
+        if self.documents.types:
+            default_document_type = self.documents.types[0]
             command = Command.standard(
                 self,
                 Command.NEW,
                 action=simple_handler(self.documents.new, default_document_type),
             )
             if command:
-                if len(set(self.document_types.values())) == 1:
+                if len(self.documents.types) == 1:
                     # There's only 1 document type. The new command can be used as is.
                     self.commands.add(command)
                 else:
                     # There's more than one document type. Create a new command for each
                     # document type, updating the title of the command to disambiguate,
                     # and modifying the shortcut, order and ID of the document types 2+
-                    known_document_classes = set()
-                    for i, (extension, document_class) in enumerate(
-                        self.document_types.items()
-                    ):
-                        if document_class not in known_document_classes:
-                            command = Command.standard(
-                                self,
-                                Command.NEW,
-                                action=simple_handler(
-                                    self.documents.new, document_class
-                                ),
-                            )
-                            command.text = (
-                                command.text + f" {document_class.description}"
-                            )
-                            if i > 0:
-                                command.shortcut = None
-                                command._id = f"{command.id}:{extension}"
-                                command.order = command.order + len(
-                                    known_document_classes
-                                )
+                    for i, document_class in enumerate(self.documents.types):
+                        command = Command.standard(
+                            self,
+                            Command.NEW,
+                            action=simple_handler(self.documents.new, document_class),
+                        )
+                        command.text = command.text + f" {document_class.description}"
+                        if i > 0:
+                            command.shortcut = None
+                            command._id = f"{command.id}:{document_class.extensions[0]}"
+                            command.order = command.order + i
 
-                            self.commands.add(command)
-                            known_document_classes.add(document_class)
+                        self.commands.add(command)
 
             for cmd_id in [
                 Command.OPEN,
@@ -595,7 +586,7 @@ class App:
         if self._impl.HANDLES_COMMAND_LINE:
             return
         doc_count = len(self.windows)
-        if self.document_types:
+        if self.documents.types:
             for filename in sys.argv[1:]:
                 if self._open_initial_document(filename):
                     doc_count += 1
@@ -604,9 +595,9 @@ class App:
         if self.main_window is None and doc_count == 0:
             try:
                 # Pass in the first document type as the default
-                default_doc_type = next(iter(self.document_types.values()))
+                default_doc_type = self.documents.types[0]
                 self.documents.new(default_doc_type)
-            except StopIteration:
+            except IndexError:
                 # No document types defined.
                 raise RuntimeError(
                     "App didn't create any windows, or register any document types."
@@ -680,16 +671,6 @@ class App:
     def commands(self) -> CommandSet:
         """The commands available in the app."""
         return self._commands
-
-    @property
-    def document_types(self) -> dict[str, type[Document]]:
-        """The document types this app can manage.
-
-        A dictionary of file extensions, without leading dots, mapping to the
-        :class:`toga.Document` subclass that will be created when a document with that
-        extension is opened.
-        """
-        return self._document_types
 
     @property
     def documents(self) -> DocumentSet:
@@ -897,6 +878,26 @@ class App:
         self.loop.call_soon_threadsafe(wrapped_handler(self, handler))
 
     ######################################################################
+    # 2024-08: Backwards compatibility
+    ######################################################################
+
+    @property
+    def document_types(self) -> dict[str, type[Document]]:
+        """**DEPRECATED** - Use ``documents.types``; extensions can be
+        obtained from the individual document classes itself.
+        """
+        warnings.warn(
+            "App.document_types is deprecated. Use App.documents.types",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return {
+            extension: doc_type
+            for doc_type in self.documents.types
+            for extension in doc_type.extensions
+        }
+
+    ######################################################################
     # End backwards compatibility
     ######################################################################
 
@@ -911,4 +912,8 @@ class DocumentApp(App):
             DeprecationWarning,
             stacklevel=2,
         )
+        # Convert document types from dictionary format to list format.
+        # The old API guaranteed that document_types was provided
+        kwargs["document_types"] = list(kwargs["document_types"].values())
+
         super().__init__(*args, **kwargs)

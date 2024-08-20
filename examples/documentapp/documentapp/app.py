@@ -2,7 +2,8 @@ import toga
 
 
 class ExampleDocument(toga.Document):
-    document_type = "Example Document"
+    description = "Example Document"
+    extensions = ["exampledoc"]
 
     def create(self):
         # Create the main window for the document. The window has a single widget;
@@ -37,9 +38,7 @@ def main():
     return ExampleDocumentApp(
         "Document App",
         "org.beeware.toga.examples.documentapp",
-        document_types={
-            "exampledoc": ExampleDocument,
-        },
+        document_types=[ExampleDocument],
     )
 
 

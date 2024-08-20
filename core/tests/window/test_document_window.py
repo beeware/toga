@@ -6,6 +6,7 @@ from toga_dummy.utils import assert_action_not_performed, assert_action_performe
 
 class ExampleDocument(toga.Document):
     description = "Example Document"
+    extensions = "exampledoc"
     read_error = None
     write_error = None
 
@@ -190,9 +191,9 @@ def test_close_modified_cancel(app):
     doc._mock_write.assert_not_called()
 
 
-def test_close_modified_unsaved(app, tmp_path):
+def test_close_modified_unsaved(monkeypatch, app, tmp_path):
     """If a document is modified but unsaved, the save prompts for a filename."""
-    app._document_types[".exampledoc"] = ExampleDocument
+    monkeypatch.setattr(app.documents, "_types", ExampleDocument)
     doc = ExampleDocument(app)
     doc.touch()
     assert doc.modified
@@ -216,9 +217,9 @@ def test_close_modified_unsaved(app, tmp_path):
     doc._mock_write.assert_called_once_with(new_path)
 
 
-def test_close_modified_save_cancel(app, tmp_path):
+def test_close_modified_save_cancel(monkeypatch, app, tmp_path):
     """A close is aborted by canceling the save."""
-    app._document_types[".exampledoc"] = ExampleDocument
+    monkeypatch.setattr(app.documents, "_types", ExampleDocument)
     doc = ExampleDocument(app)
     doc.touch()
     assert doc.modified

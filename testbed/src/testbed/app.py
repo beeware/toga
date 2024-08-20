@@ -4,7 +4,8 @@ import toga
 
 
 class ExampleDoc(toga.Document):
-    document_type = "Example Document"
+    description = "Example Document"
+    extensions = ["testbed", "tbed"]
 
     def create(self):
         # Create the main window for the document.
@@ -25,7 +26,8 @@ class ExampleDoc(toga.Document):
 
 
 class ReadonlyDoc(toga.Document):
-    document_type = "Read-only Document"
+    description = "Read-only Document"
+    extensions = ["other"]
 
     def create(self):
         # Create the main window for the document.
@@ -141,9 +143,5 @@ class Testbed(toga.App):
 def main():
     return Testbed(
         app_name="testbed",
-        document_types={
-            "testbed": ExampleDoc,
-            "tbed": ExampleDoc,
-            "other": ReadonlyDoc,
-        },
+        document_types=[ExampleDoc, ReadonlyDoc],
     )

@@ -15,6 +15,7 @@ from toga_dummy.utils import (
 
 class ExampleDocument(toga.Document):
     description = "Example Document"
+    extensions = ["foobar", "fbr"]
     read_error = None
 
     def create(self):
@@ -39,6 +40,7 @@ class ExampleDocument(toga.Document):
 
 class OtherDocument(toga.Document):
     description = "Other Document"
+    extensions = ["other"]
     read_error = None
 
     def create(self):
@@ -84,13 +86,7 @@ def doc_app(monkeypatch, event_loop, example_file):
     app = ExampleDocumentApp(
         "Test App",
         "org.beeware.document-app",
-        document_types={
-            # Register ExampleDocument with 2 extensions
-            "foobar": ExampleDocument,
-            "fbr": ExampleDocument,
-            # Register a second document type
-            "other": OtherDocument,
-        },
+        document_types=[ExampleDocument, OtherDocument],
     )
     # The app will have a single window; set this window as the current window
     # so that dialogs have something to hang off.
@@ -119,13 +115,7 @@ def test_create_no_cmdline(monkeypatch):
     app = ExampleDocumentApp(
         "Test App",
         "org.beeware.document-app",
-        document_types={
-            # Register ExampleDocument with 2 extensions
-            "foobar": ExampleDocument,
-            "fbr": ExampleDocument,
-            # Register a second document type
-            "other": OtherDocument,
-        },
+        document_types=[ExampleDocument, OtherDocument],
     )
 
     # An untitled document has been created
@@ -172,13 +162,13 @@ def test_create_no_cmdline_default_handling(monkeypatch):
     app = ExampleDocumentApp(
         "Test App",
         "org.beeware.document-app",
-        document_types={"foobar": ExampleDocument},
+        document_types=[ExampleDocument],
     )
 
     assert app._impl.interface == app
     assert_action_performed(app, "create App")
 
-    assert app.document_types == {"foobar": ExampleDocument}
+    assert app.documents.types == [ExampleDocument]
 
     # No documents or windows exist
     assert len(app.documents) == 0
@@ -192,13 +182,13 @@ def test_create_with_cmdline(monkeypatch, example_file):
     app = ExampleDocumentApp(
         "Test App",
         "org.beeware.document-app",
-        document_types={"foobar": ExampleDocument},
+        document_types=[ExampleDocument],
     )
 
     assert app._impl.interface == app
     assert_action_performed(app, "create App")
 
-    assert app.document_types == {"foobar": ExampleDocument}
+    assert app.documents.types == [ExampleDocument]
 
     # The document is registered
     assert len(app.documents) == 1
@@ -232,7 +222,7 @@ def test_create_with_unknown_document_type(monkeypatch, capsys):
     app = ExampleDocumentApp(
         "Test App",
         "org.beeware.document-app",
-        document_types={"foobar": ExampleDocument},
+        document_types=[ExampleDocument],
     )
 
     stdout = capsys.readouterr().out
@@ -258,7 +248,7 @@ def test_create_with_missing_file(monkeypatch, capsys):
     app = ExampleDocumentApp(
         "Test App",
         "org.beeware.document-app",
-        document_types={"foobar": ExampleDocument},
+        document_types=[ExampleDocument],
     )
 
     stdout = capsys.readouterr().out
@@ -287,7 +277,7 @@ def test_create_with_bad_file(monkeypatch, example_file, capsys):
     app = ExampleDocumentApp(
         "Test App",
         "org.beeware.document-app",
-        document_types={"foobar": ExampleDocument},
+        document_types=[ExampleDocument],
     )
 
     stdout = capsys.readouterr().out
@@ -323,9 +313,7 @@ def test_no_backend_new_support(monkeypatch, example_file):
     app = ExampleDocumentApp(
         "Test App",
         "org.beeware.document-app",
-        document_types={
-            "foobar": ExampleDocument,
-        },
+        document_types=[ExampleDocument],
     )
 
     # Menus and commands have been created
@@ -361,10 +349,7 @@ def test_no_backend_other_support(monkeypatch, example_file):
     app = ExampleDocumentApp(
         "Test App",
         "org.beeware.document-app",
-        document_types={
-            # Register ExampleDocument with 2 extensions
-            "foobar": ExampleDocument,
-        },
+        document_types=[ExampleDocument],
     )
 
     # Menus and commands have been created
@@ -388,10 +373,7 @@ def test_close_last_document_non_persistent(monkeypatch, example_file, other_fil
     app = ExampleDocumentApp(
         "Test App",
         "org.beeware.document-app",
-        document_types={
-            "foobar": ExampleDocument,
-            "other": OtherDocument,
-        },
+        document_types=[ExampleDocument, OtherDocument],
     )
 
     # Create a second document window
@@ -431,10 +413,7 @@ def test_close_last_document_persistent(monkeypatch, example_file, other_file):
     app = ExampleDocumentApp(
         "Test App",
         "org.beeware.document-app",
-        document_types={
-            "foobar": ExampleDocument,
-            "other": OtherDocument,
-        },
+        document_types=[ExampleDocument, OtherDocument],
     )
 
     # Create a second document window
@@ -1063,9 +1042,23 @@ def test_deprecated_document_app(monkeypatch, event_loop, example_file):
         app = DeprecatedDocumentApp(
             "Deprecated App",
             "org.beeware.deprecated-app",
-            document_types={"foobar": ExampleDocument},
+            document_types={
+                "foobar": ExampleDocument,
+                "fbr": ExampleDocument,
+                "other": OtherDocument,
+            },
         )
 
     # The app has an open document
     assert len(app.documents) == 1
     assert isinstance(app.documents[0], ExampleDocument)
+
+    with pytest.warns(
+        DeprecationWarning,
+        match=r"App.document_types is deprecated. Use App.documents.types",
+    ):
+        assert app.document_types == {
+            "foobar": ExampleDocument,
+            "fbr": ExampleDocument,
+            "other": OtherDocument,
+        }
