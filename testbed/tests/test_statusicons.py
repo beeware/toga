@@ -90,6 +90,10 @@ async def test_add_remove(app, app_probe):
 
 async def test_unknown_status_icon(app, app_probe):
     """Adding a command when the status icon is unknown raises an error."""
+    # Verify the app status icons are present. This enforces the test skip
+    # if the platform doesn't support status icons.
+    assert app_probe.has_status_icon(app.status1)
+
     # Create a new menu status item
     absent_status_icon = toga.MenuStatusIcon(text="Absent Item")
     bad_cmd = toga.Command(
