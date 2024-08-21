@@ -1,0 +1,1 @@
+Updated sphinx from 7.3.7 to 8.0.2 in /core.
