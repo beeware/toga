@@ -58,11 +58,11 @@ Simple status icons
 A simple status icon is a bare icon in the status bar. You can set and change the icon
 as required to reflect changes in application state; by default, the status icon will
 use the app's icon. The text associated with the icon will be used as a tooltip; again,
-the apps formal name will be used as default text. The icon can respond to mouse clicks
+the app's formal name will be used as default text. The icon can respond to mouse clicks
 by defining an ``on_press`` handler.
 
 To define a simple status icon, declare an instance of :class:`toga.StatusIcon`, and add
-it to your app's :attr:`toga.App.status_icons` set:
+it to your app's :attr:`~toga.App.status_icons` set:
 
 .. code-block:: python
 
@@ -112,7 +112,7 @@ Commands that will be displayed in a menu when the icon is clicked.
 The :class:`~toga.MenuStatusIcon` is a :class:`~toga.Group` for command sorting
 purposes. To put a command in a menu associated with a :class:`~toga.MenuStatusIcon`,
 set the ``group`` associated with that command, then add the command to the
-:class:`~toga.commands.CommandSet` associated with status icons. The following example
+:class:`~toga.command.CommandSet` associated with status icons. The following example
 will create a :class:`~toga.MenuStatusIcon` that has a single top-level menu item, plus
 a sub-menu that itself has a single menu item:
 
@@ -121,7 +121,7 @@ a sub-menu that itself has a single menu item:
     # Create a MenuStatusIcon
     status_icon = MenuStatusIcon(icon="icons/blue")
 
-    # Create some commands that are associated with the # menu status icon's group.
+    # Create some commands that are associated with the menu status icon's group.
     def callback(sender, **kwargs):
         print("Command activated")
 
@@ -148,7 +148,7 @@ a sub-menu that itself has a single menu item:
 
 If you add at least one :class:`~toga.MenuStatusIcon` instance to your app, Toga will
 add some standard commands to the app's status icon command set. These items will appear
-at the end of menu of the first :class:`~toga.MenuStatusIcon`'s menu. To remove these
+at the end of the first :class:`~toga.MenuStatusIcon`'s menu. To remove these
 items, clear the app's status icon command set before adding your own commands.
 
 If you add a command to the app's status icon command set that *doesn't* belong to a

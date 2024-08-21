@@ -221,7 +221,7 @@ class StatusIconSet(Sequence[BaseStatusIcon], Mapping[str, BaseStatusIcon]):
 
         :param status_icon: The status icon instance to remove.
         :raises ValueError: If the status icon commands include any commands that
-            reference the icon that has been removed, a ValueError error will be raised.
+            reference the icon that has been removed.
         """
         try:
             self.elements.pop(status_icon.id)
@@ -236,7 +236,7 @@ class StatusIconSet(Sequence[BaseStatusIcon], Mapping[str, BaseStatusIcon]):
         """Remove all the icons from the set.
 
         :raises ValueError: If the status icon commands include any commands that
-            reference the icon that has been removed, a ValueError error will be raised.
+            reference an icon that has been removed.
         """
         # Convert into a list so that we're not deleting from a list while iterating.
         for status_icon in list(self):

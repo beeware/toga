@@ -665,7 +665,7 @@ class App:
         return self._commands
 
     @property
-    def status_icons(self) -> CommandSet:
+    def status_icons(self) -> StatusIconSet:
         """The status icons displayed by the app."""
         return self._status_icons
 
