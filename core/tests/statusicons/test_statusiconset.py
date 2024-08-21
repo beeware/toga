@@ -3,7 +3,7 @@ from unittest.mock import Mock
 import pytest
 
 from toga.command import Command
-from toga.statusicons import MenuStatusIcon, StatusIcon, StatusIconSet
+from toga.statusicons import MenuStatusIcon, SimpleStatusIcon, StatusIconSet
 from toga_dummy.utils import (
     EventLog,
     assert_action_not_performed,
@@ -46,7 +46,7 @@ def test_add_single(statusiconset, change_handler):
     if change_handler:
         statusiconset.commands.on_change = change_handler
 
-    status_1 = StatusIcon(id="s1")
+    status_1 = SimpleStatusIcon(id="s1")
     statusiconset.add(status_1)
 
     assert len(statusiconset) == 1
@@ -73,9 +73,9 @@ def test_add_multiple(statusiconset, change_handler):
     if change_handler:
         statusiconset.commands.on_change = change_handler
 
-    status_1 = StatusIcon(id="s1")
-    status_2 = StatusIcon(id="s2")
-    status_3 = StatusIcon(id="s3")
+    status_1 = SimpleStatusIcon(id="s1")
+    status_2 = SimpleStatusIcon(id="s2")
+    status_3 = SimpleStatusIcon(id="s3")
     statusiconset.add(status_1, status_2, status_3)
 
     assert len(statusiconset) == 3
@@ -113,9 +113,9 @@ def test_add_existing(statusiconset, change_handler):
     if change_handler:
         statusiconset.commands.on_change = change_handler
 
-    status_1 = StatusIcon(id="s1")
-    status_2 = StatusIcon(id="s2")
-    status_3 = StatusIcon(id="s3")
+    status_1 = SimpleStatusIcon(id="s1")
+    status_2 = SimpleStatusIcon(id="s2")
+    status_3 = SimpleStatusIcon(id="s3")
     statusiconset.add(status_1, status_2, status_3)
 
     assert len(statusiconset) == 3
@@ -159,9 +159,9 @@ def test_remove(statusiconset, change_handler):
     if change_handler:
         statusiconset.commands.on_change = change_handler
 
-    status_1 = StatusIcon(id="s1")
-    status_2 = StatusIcon(id="s2")
-    status_3 = StatusIcon(id="s3")
+    status_1 = SimpleStatusIcon(id="s1")
+    status_2 = SimpleStatusIcon(id="s2")
+    status_3 = SimpleStatusIcon(id="s3")
     statusiconset.add(status_1, status_2, status_3)
 
     assert list(statusiconset) == [status_1, status_2, status_3]
@@ -213,9 +213,9 @@ def test_clear(statusiconset, change_handler):
     if change_handler:
         statusiconset.commands.on_change = change_handler
 
-    status_1 = StatusIcon(id="s1")
-    status_2 = StatusIcon(id="s2")
-    status_3 = StatusIcon(id="s3")
+    status_1 = SimpleStatusIcon(id="s1")
+    status_2 = SimpleStatusIcon(id="s2")
+    status_3 = SimpleStatusIcon(id="s3")
     statusiconset.add(status_1, status_2, status_3)
 
     assert list(statusiconset) == [status_1, status_2, status_3]
@@ -248,9 +248,9 @@ def test_menu_status_items(statusiconset):
     assert statusiconset.primary_menu_status_icon is None
 
     # When the list *only* contains non-menu status icons, nothing is returned
-    status_1 = StatusIcon(id="s1")
-    status_2 = StatusIcon(id="s2")
-    status_3 = StatusIcon(id="s3")
+    status_1 = SimpleStatusIcon(id="s1")
+    status_2 = SimpleStatusIcon(id="s2")
+    status_3 = SimpleStatusIcon(id="s3")
     statusiconset.add(status_1, status_2, status_3)
 
     assert list(statusiconset.menu_status_icons) == []
@@ -258,7 +258,7 @@ def test_menu_status_items(statusiconset):
 
     # When there is a menu status item, the can be filtered out.
     menu_status_1 = MenuStatusIcon(id="m1")
-    status_4 = StatusIcon(id="s4")
+    status_4 = SimpleStatusIcon(id="s4")
     menu_status_2 = MenuStatusIcon(id="m2")
     menu_status_3 = MenuStatusIcon(id="m3")
     statusiconset.add(menu_status_1, status_4, menu_status_2, menu_status_3)

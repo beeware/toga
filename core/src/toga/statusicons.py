@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import sys
+from abc import abstractmethod
 from collections.abc import Iterator
 from typing import TYPE_CHECKING, Mapping, Sequence
 
@@ -16,14 +17,23 @@ if TYPE_CHECKING:
 _py_id = id
 
 
-class BaseStatusIcon:
-    def __init__(self, icon: IconContentT | None = None, **kwargs):
+class StatusIcon:
+    def __init__(self, icon: IconContentT | None = None):
         """An abstract base class for all status icons."""
-        super().__init__(**kwargs)
         self.factory = get_platform_factory()
         self._impl = getattr(self.factory, self.__class__.__name__)(interface=self)
 
         self.icon = icon
+
+    @property
+    @abstractmethod
+    def id(self) -> str:
+        """A unique identifier for the status icon."""
+
+    @property
+    @abstractmethod
+    def text(self) -> str:
+        """A text label for the status icon."""
 
     @property
     def icon(self) -> Icon | None:
@@ -44,7 +54,7 @@ class BaseStatusIcon:
         self._impl.set_icon(self._icon)
 
 
-class StatusIcon(BaseStatusIcon):
+class SimpleStatusIcon(StatusIcon):
     def __init__(
         self,
         id: str | None = None,
@@ -71,16 +81,14 @@ class StatusIcon(BaseStatusIcon):
         self._text = text if text is not None else toga.App.app.formal_name
 
     def __repr__(self):
-        return f"<StatusIcon {self.text!r}: {self.id}>"
+        return f"<SimpleStatusIcon {self.text!r}: {self.id}>"
 
     @property
     def id(self) -> str:
-        """A unique identifier for the icon."""
         return self._id
 
     @property
     def text(self) -> str:
-        """A text label for the icon."""
         return self._text
 
     @property
@@ -93,7 +101,7 @@ class StatusIcon(BaseStatusIcon):
         self._on_press = wrapped_handler(self, handler)
 
 
-class MenuStatusIcon(BaseStatusIcon, Group):
+class MenuStatusIcon(Group, StatusIcon):
     def __init__(
         self,
         id: str | None = None,
@@ -112,17 +120,18 @@ class MenuStatusIcon(BaseStatusIcon, Group):
         :param text: A text label for the status icon. Defaults to the formal name of
             the app.
         """
-        super().__init__(
+        Group.__init__(
+            self,
             id=f"menustatusitem-{_py_id(self)}" if id is None else id,
-            icon=icon,
             text=(text if text is not None else toga.App.app.formal_name),
         )
+        StatusIcon.__init__(self, icon=icon)
 
     def __repr__(self):
         return f"<MenuStatusIcon {self.text!r}: {self.id}>"
 
 
-class StatusIconSet(Sequence[BaseStatusIcon], Mapping[str, BaseStatusIcon]):
+class StatusIconSet(Sequence[StatusIcon], Mapping[str, StatusIcon]):
     def __init__(self):
         """An ordered collection of status icons.
 
@@ -132,7 +141,7 @@ class StatusIconSet(Sequence[BaseStatusIcon], Mapping[str, BaseStatusIcon]):
         self.factory = get_platform_factory()
         self._impl = self.factory.StatusIconSet(interface=self)
 
-        self.elements: dict[str, BaseStatusIcon] = {}
+        self.elements: dict[str, StatusIcon] = {}
         self.commands = CommandSet()
 
     @property
@@ -183,7 +192,7 @@ class StatusIconSet(Sequence[BaseStatusIcon], Mapping[str, BaseStatusIcon]):
             )
         )
 
-    def __iter__(self) -> Iterator[BaseStatusIcon]:
+    def __iter__(self) -> Iterator[StatusIcon]:
         return iter(self.elements.values())
 
     def __contains__(self, value: object) -> bool:
@@ -201,7 +210,7 @@ class StatusIconSet(Sequence[BaseStatusIcon], Mapping[str, BaseStatusIcon]):
         else:
             return self.elements[index_or_id]
 
-    def add(self, *status_icons: BaseStatusIcon):
+    def add(self, *status_icons: StatusIcon):
         """Add one or more icons to the set.
 
         :param status_icons: The icon (or icons) to add to the set.
@@ -216,7 +225,7 @@ class StatusIconSet(Sequence[BaseStatusIcon], Mapping[str, BaseStatusIcon]):
         if added and self.commands.on_change:
             self.commands.on_change()
 
-    def remove(self, status_icon: BaseStatusIcon):
+    def remove(self, status_icon: StatusIcon):
         """Remove a single icon from the set.
 
         :param status_icon: The status icon instance to remove.

@@ -38,7 +38,7 @@ class Group:
         :param id: A unique identifier for the group.
         """
         self._id = f"group-{_py_id(self)}" if id is None else id
-        self.text = text
+        self._text = text
         self.order = order
         if parent is None and section != 0:
             raise ValueError("Section cannot be set without parent group")
@@ -53,6 +53,11 @@ class Group:
     def id(self) -> str:
         """A unique identifier for the group."""
         return self._id
+
+    @property
+    def text(self) -> str:
+        """A text label for the group."""
+        return self._text
 
     @property
     def parent(self) -> Group | None:

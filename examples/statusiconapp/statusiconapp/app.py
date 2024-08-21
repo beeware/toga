@@ -14,7 +14,7 @@ class ExampleStatusIconApp(toga.App):
         self.status_icons.add(
             status_1,
             toga.MenuStatusIcon(id="second", text="Other icon"),
-            toga.StatusIcon(icon="resources/blue.png", on_press=self.do_stuff),
+            toga.SimpleStatusIcon(icon="resources/blue.png", on_press=self.do_stuff),
         )
 
         # Create some commands that can be added to the first status icon.

@@ -4,7 +4,7 @@ from toga.command import Group, Separator
 from .libs import Gtk, XApp
 
 
-class BaseStatusIcon:
+class StatusIcon:
     def __init__(self, interface):
         self.interface = interface
         self.native = None
@@ -33,7 +33,7 @@ class BaseStatusIcon:
         self.native = None
 
 
-class StatusIcon(BaseStatusIcon):
+class SimpleStatusIcon(StatusIcon):
     def create(self):
         super().create()
         self.native.connect("activate", self.gtk_activate)
@@ -42,7 +42,7 @@ class StatusIcon(BaseStatusIcon):
         self.interface.on_press()
 
 
-class MenuStatusIcon(BaseStatusIcon):
+class MenuStatusIcon(StatusIcon):
     pass
 
 

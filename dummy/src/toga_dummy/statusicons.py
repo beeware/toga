@@ -1,7 +1,7 @@
 from .utils import LoggedObject
 
 
-class BaseStatusIcon(LoggedObject):
+class StatusIcon(LoggedObject):
     def __init__(self, interface):
         self.interface = interface
 
@@ -16,12 +16,12 @@ class BaseStatusIcon(LoggedObject):
         self._action("remove")
 
 
-class StatusIcon(BaseStatusIcon):
+class SimpleStatusIcon(StatusIcon):
     def simulate_press(self):
         self.interface.on_press()
 
 
-class MenuStatusIcon(BaseStatusIcon):
+class MenuStatusIcon(StatusIcon):
     pass
 
 

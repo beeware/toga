@@ -93,7 +93,7 @@ class Testbed(toga.App):
         # Set up some status icons. This will raise warnings on mobile.
         self.status1 = toga.MenuStatusIcon(icon="resources/icons/red.png")
         self.status2 = toga.MenuStatusIcon(id="second", text="Other icon")
-        self.status_button = toga.StatusIcon(
+        self.status_button = toga.SimpleStatusIcon(
             id="button",
             icon="resources/icons/blue.png",
             on_press=self.cmd_action,

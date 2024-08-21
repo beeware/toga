@@ -1,7 +1,7 @@
 import toga
 
 
-class BaseStatusIcon:
+class StatusIcon:
     def __init__(self, interface):
         self.interface = interface
         self.native = None
@@ -16,11 +16,11 @@ class BaseStatusIcon:
         pass  # pragma: no cover
 
 
-class StatusIcon(BaseStatusIcon):
+class SimpleStatusIcon(StatusIcon):
     pass
 
 
-class MenuStatusIcon(BaseStatusIcon):
+class MenuStatusIcon(StatusIcon):
     pass
 
 

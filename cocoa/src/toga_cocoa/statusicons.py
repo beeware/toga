@@ -13,7 +13,7 @@ from .command import submenu_for_group
 from .libs import NSMenu, NSMenuItem, NSSquareStatusItemLength, NSStatusBar
 
 
-class BaseStatusIcon:
+class StatusIcon:
     def __init__(self, interface):
         self.interface = interface
         self.native = None
@@ -48,7 +48,7 @@ class StatusItemButtonDelegate(NSObject):
         self.interface.on_press()
 
 
-class StatusIcon(BaseStatusIcon):
+class SimpleStatusIcon(StatusIcon):
     def __init__(self, interface):
         super().__init__(interface)
         self.delegate = StatusItemButtonDelegate.alloc().init()
@@ -60,7 +60,7 @@ class StatusIcon(BaseStatusIcon):
         self.native.button.target = self.delegate
 
 
-class MenuStatusIcon(BaseStatusIcon):
+class MenuStatusIcon(StatusIcon):
     def create(self):
         super().create()
         self.create_menu()
