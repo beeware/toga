@@ -22,7 +22,7 @@ when the :class:`~toga.App` instance is created.
 The :class:`toga.Document` class describes how your document can be read, displayed, and
 saved. It also tracks whether the document has been modified. In this example, the code
 declares an "Example Document" document type, which will create files with the
-extensions ``.mydoc``and ``.mydocument``; because it is listed first, the ``.mydoc``
+extensions ``.mydoc`` and ``.mydocument``; because it is listed first, the ``.mydoc``
 extension will be the default for documents of this type. The main window for this
 document type contains a :class:`~toga.MultilineTextInput`. Whenever the content of that
 widget changes, the document is marked as modified:

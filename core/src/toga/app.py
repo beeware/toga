@@ -878,28 +878,13 @@ class App:
         self.loop.call_soon_threadsafe(wrapped_handler(self, handler))
 
     ######################################################################
-    # 2024-08: Backwards compatibility
-    ######################################################################
-
-    @property
-    def document_types(self) -> dict[str, type[Document]]:
-        """**DEPRECATED** - Use ``documents.types``; extensions can be
-        obtained from the individual document classes itself.
-        """
-        warnings.warn(
-            "App.document_types is deprecated. Use App.documents.types",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        return {
-            extension: doc_type
-            for doc_type in self.documents.types
-            for extension in doc_type.extensions
-        }
-
-    ######################################################################
     # End backwards compatibility
     ######################################################################
+
+
+######################################################################
+# 2024-08: Backwards compatibility
+######################################################################
 
 
 class DocumentApp(App):
@@ -917,3 +902,19 @@ class DocumentApp(App):
         kwargs["document_types"] = list(kwargs["document_types"].values())
 
         super().__init__(*args, **kwargs)
+
+    @property
+    def document_types(self) -> dict[str, type[Document]]:
+        """**DEPRECATED** - Use ``documents.types``; extensions can be
+        obtained from the individual document classes itself.
+        """
+        warnings.warn(
+            "App.document_types is deprecated. Use App.documents.types",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return {
+            extension: doc_type
+            for doc_type in self.documents.types
+            for extension in doc_type.extensions
+        }
