@@ -1,5 +1,4 @@
 import asyncio
-import gc
 from asyncio import wait_for
 from contextlib import nullcontext
 from time import time
@@ -79,13 +78,6 @@ async def on_load():
 
 @pytest.fixture
 async def widget(on_load):
-    if toga.platform.current_platform == "linux":
-        # On Gtk, ensure that the WebView from a previous test run is garbage collected.
-        # This prevents a segfault at GC time likely coming from the test suite running
-        # in a thread and Gtk WebViews sharing resources between instances. We perform
-        # the GC run here since pytest fixtures make earlier cleanup difficult.
-        gc.collect()
-
     widget = toga.WebView(style=Pack(flex=1), on_webview_load=on_load)
     # We shouldn't be able to get a callback until at least one tick of the event loop
     # has completed.
@@ -114,11 +106,12 @@ async def widget(on_load):
     yield widget
 
     if toga.platform.current_platform == "linux":
-        # On Gtk, ensure that the WebView is garbage collection before the next test
-        # case. This prevents a segfault at GC time likely coming from the test suite
-        # running in a thread and Gtk WebViews sharing resources between instances.
-        del widget
-        gc.collect()
+        # On Gtk, ensure that the MapView evades garbage collection by keeping a
+        # reference to it in the app. The WebKit2 WebView will raise a SIGABRT if the
+        # thread disposing of it is not the same thread running the event loop. Since
+        # garbage collection for the WebView can run in either thread, just defer GC
+        # for it until after the testing thread has joined.
+        toga.App.app._gc_protector.append(widget)
 
 
 async def test_set_url(widget, probe, on_load):

@@ -50,64 +50,64 @@ class TogaIconView(NSTableCellView):
         self.textField.translatesAutoresizingMaskIntoConstraints = False
 
         # center icon vertically in cell
-        self.iv_vertical_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # NOQA:E501
+        self.iv_vertical_constraint = NSLayoutConstraint.constraintWithItem(
             self.imageView,
-            NSLayoutAttributeCenterY,
-            NSLayoutRelationEqual,
-            self,
-            NSLayoutAttributeCenterY,
-            1,
-            0,
+            attribute__1=NSLayoutAttributeCenterY,
+            relatedBy=NSLayoutRelationEqual,
+            toItem=self,
+            attribute__2=NSLayoutAttributeCenterY,
+            multiplier=1,
+            constant=0,
         )
         # align left edge of icon with left edge of cell
-        self.iv_left_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # NOQA:E501
+        self.iv_left_constraint = NSLayoutConstraint.constraintWithItem(
             self.imageView,
-            NSLayoutAttributeLeft,
-            NSLayoutRelationEqual,
-            self,
-            NSLayoutAttributeLeft,
-            1,
-            0,
+            attribute__1=NSLayoutAttributeLeft,
+            relatedBy=NSLayoutRelationEqual,
+            toItem=self,
+            attribute__2=NSLayoutAttributeLeft,
+            multiplier=1,
+            constant=0,
         )
         # set fixed width of icon
-        self.iv_width_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # NOQA:E501
+        self.iv_width_constraint = NSLayoutConstraint.constraintWithItem(
             self.imageView,
-            NSLayoutAttributeWidth,
-            NSLayoutRelationEqual,
-            None,
-            NSLayoutAttributeNotAnAttribute,
-            1,
-            16,
+            attribute__1=NSLayoutAttributeWidth,
+            relatedBy=NSLayoutRelationEqual,
+            toItem=None,
+            attribute__2=NSLayoutAttributeNotAnAttribute,
+            multiplier=1,
+            constant=6,
         )
         # align text vertically in cell
-        self.tv_vertical_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # NOQA:E501
+        self.tv_vertical_constraint = NSLayoutConstraint.constraintWithItem(
             self.textField,
-            NSLayoutAttributeCenterY,
-            NSLayoutRelationEqual,
-            self,
-            NSLayoutAttributeCenterY,
-            1,
-            0,
+            attribute__1=NSLayoutAttributeCenterY,
+            relatedBy=NSLayoutRelationEqual,
+            toItem=self,
+            attribute__2=NSLayoutAttributeCenterY,
+            multiplier=1,
+            constant=0,
         )
         # align left edge of text with right edge of icon
-        self.tv_left_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # NOQA:E501
+        self.tv_left_constraint = NSLayoutConstraint.constraintWithItem(
             self.textField,
-            NSLayoutAttributeLeft,
-            NSLayoutRelationEqual,
-            self.imageView,
-            NSLayoutAttributeRight,
-            1,
-            5,  # 5 pixels padding between icon and text
+            attribute__1=NSLayoutAttributeLeft,
+            relatedBy=NSLayoutRelationEqual,
+            toItem=self.imageView,
+            attribute__2=NSLayoutAttributeRight,
+            multiplier=1,
+            constant=5,  # 5 pixels padding between icon and text
         )
         # align right edge of text with right edge of cell
-        self.tv_right_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # NOQA:E501
+        self.tv_right_constraint = NSLayoutConstraint.constraintWithItem(
             self.textField,
-            NSLayoutAttributeRight,
-            NSLayoutRelationEqual,
-            self,
-            NSLayoutAttributeRight,
-            1,
-            -5,
+            attribute__1=NSLayoutAttributeRight,
+            relatedBy=NSLayoutRelationEqual,
+            toItem=self,
+            attribute__2=NSLayoutAttributeRight,
+            multiplier=1,
+            constant=-5,
         )
 
         self.addConstraint(self.iv_vertical_constraint)

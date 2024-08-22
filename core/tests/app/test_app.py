@@ -1,5 +1,6 @@
 import asyncio
 import importlib.metadata
+import signal
 import sys
 import webbrowser
 from pathlib import Path
@@ -9,6 +10,7 @@ import pytest
 
 import toga
 from toga_dummy.utils import (
+    EventLog,
     assert_action_not_performed,
     assert_action_performed,
     assert_action_performed_with,
@@ -233,9 +235,17 @@ def test_create(
     assert app.formal_name == expected_formal_name
     assert app.app_id == expected_app_id
     assert app.app_name == expected_app_name
-    assert app.on_exit._raw is None
+
+    # The default implementations of the on_running and on_exit handlers
+    # have been wrapped as simple handlers
+    assert app.on_running._raw.__func__ == toga.App.on_running
+    assert app.on_exit._raw.__func__ == toga.App.on_exit
 
     metadata_mock.assert_called_once_with(expected_app_name)
+
+    # About menu item exists and is disabled
+    assert toga.Command.ABOUT in app.commands
+    assert app.commands[toga.Command.ABOUT].enabled
 
 
 @pytest.mark.parametrize(
@@ -310,6 +320,7 @@ def test_explicit_app_metadata(monkeypatch, event_loop):
         ),
     )
 
+    on_running_handler = Mock()
     on_exit_handler = Mock()
 
     app = toga.App(
@@ -319,6 +330,7 @@ def test_explicit_app_metadata(monkeypatch, event_loop):
         version="1.2.3",
         home_page="https://example.com/test-app",
         description="A test app",
+        on_running=on_running_handler,
         on_exit=on_exit_handler,
     )
 
@@ -327,7 +339,11 @@ def test_explicit_app_metadata(monkeypatch, event_loop):
     assert app.home_page == "https://example.com/test-app"
     assert app.description == "A test app"
 
-    assert app.on_exit._raw == on_exit_handler
+    # App handlers have been installed; they have not been wrapped.
+    # Wrapping will occur when they are invoked, to allow for late
+    # assignment of a new handler.
+    assert app.on_running == on_running_handler
+    assert app.on_exit == on_exit_handler
 
 
 @pytest.mark.parametrize("construct", [True, False])
@@ -368,6 +384,14 @@ def test_icon(app, construct):
     assert_action_performed_with(app, "set_icon", icon=toga.Icon("path/to/icon"))
 
 
+def test_main_loop(app):
+    """The main loop installs signal handlers."""
+    app.main_loop()
+
+    # Assert the default signal handler has been installed
+    assert signal.getsignal(signal.SIGINT) == signal.SIG_DFL
+
+
 def test_current_window(app):
     """The current window can be set and changed."""
     other_window = toga.Window()
@@ -393,6 +417,52 @@ def test_no_current_window(app):
 
     # The current window evaluates as None
     assert app.current_window is None
+
+
+def test_change_main_window(app):
+    """The main window value can be changed."""
+    new_main = toga.Window()
+
+    app.main_window = new_main
+
+    assert app.main_window == new_main
+    assert_action_performed_with(app, "set_main_window", window=new_main)
+
+
+def test_change_invalid_main_window(app):
+    """If the new main window value isn't valid, an exception is raised."""
+    old_main = app.main_window
+    EventLog.reset()
+
+    # Assign a main window value that will raise an exception
+    with pytest.raises(
+        ValueError,
+        match=r"Invalid dummy main window value",
+    ):
+        bad_window = toga.Window()
+        bad_window._invalid_main_window = True
+        app.main_window = bad_window
+
+    # Main window hasn't changed.
+    assert app.main_window == old_main
+    assert_action_not_performed(app, "set_main_window")
+
+
+def test_change_invalid_creation_main_window(event_loop):
+    """If the new main window value provided at creation isn't valid, an exception is raised."""
+
+    class BadMainWindowApp(toga.App):
+        def startup(self):
+            window = toga.MainWindow()
+            window._invalid_main_window = True
+            self.main_window = window
+
+    # Creating an app with an invalid main window raises an exception.
+    with pytest.raises(
+        ValueError,
+        match=r"Invalid dummy main window value",
+    ):
+        BadMainWindowApp(formal_name="Test App", app_id="org.example.test")
 
 
 def test_full_screen(event_loop):
@@ -461,8 +531,8 @@ def test_startup_method(event_loop):
     """If an app provides a startup method, it will be invoked during startup."""
 
     def startup_assertions(app):
-        # At time startup is invoked, there should be an app command installed
-        assert len(app.commands) == 1
+        # At time startup is invoked, the default commands are installed
+        assert len(app.commands) == 3
         return toga.Box()
 
     startup = Mock(side_effect=startup_assertions)
@@ -473,11 +543,18 @@ def test_startup_method(event_loop):
         startup=startup,
     )
 
+    # Menus, commands and toolbars have been created
     assert_action_performed(app, "create App commands")
     startup.assert_called_once_with(app)
     assert_action_performed(app, "create App menus")
-    # There is only 1 menu item - the app command
-    assert app._impl.n_menu_items == 1
+    assert_action_performed(app.main_window, "create Window menus")
+    assert_action_performed(app.main_window, "create toolbar")
+
+    # 3 menu items have been created
+    assert len(app.commands) == 3
+
+    # The app has a main window that is a MainWindow
+    assert isinstance(app.main_window, toga.MainWindow)
 
 
 def test_startup_subclass(event_loop):
@@ -487,8 +564,8 @@ def test_startup_subclass(event_loop):
         def startup(self):
             self.main_window = toga.MainWindow()
 
-            # At time startup is invoked, there should be an app command installed
-            assert len(self.commands) == 1
+            # At time startup is invoked, the default commands are installed
+            assert len(self.commands) == 3
 
             # Add an extra user command
             self.commands.add(toga.Command(None, "User command"))
@@ -498,10 +575,14 @@ def test_startup_subclass(event_loop):
     # The main window will exist, and will have the app's formal name.
     assert app.main_window.title == "Test App"
 
+    # Menus, commands and toolbars have been created
     assert_action_performed(app, "create App commands")
     assert_action_performed(app, "create App menus")
-    # 2 menu items have been created
-    assert app._impl.n_menu_items == 2
+    assert_action_performed(app.main_window, "create Window menus")
+    assert_action_performed(app.main_window, "create toolbar")
+
+    # 4 menu items have been created
+    assert app._impl.n_menu_items == 4
 
 
 def test_startup_subclass_no_main_window(event_loop):
@@ -511,7 +592,18 @@ def test_startup_subclass_no_main_window(event_loop):
         def startup(self):
             pass
 
-    with pytest.raises(ValueError, match=r"Application does not have a main window."):
+    with pytest.raises(ValueError, match=r"Application has not set a main window."):
+        SubclassedApp(formal_name="Test App", app_id="org.example.test")
+
+
+def test_startup_subclass_unknown_main_window(event_loop):
+    """If a subclassed app uses an unknown main window type, an error is raised"""
+
+    class SubclassedApp(toga.App):
+        def startup(self):
+            self.main_window = 42
+
+    with pytest.raises(ValueError, match=r"Don't know how to use 42 as a main window"):
         SubclassedApp(formal_name="Test App", app_id="org.example.test")
 
 
@@ -576,6 +668,30 @@ def test_exit_no_handler(app):
     assert_action_performed(app, "exit")
 
 
+def test_exit_subclassed_handler(app):
+    """An app can implement on_exit by subclassing."""
+    exit = {}
+
+    class SubclassedApp(toga.App):
+        def startup(self):
+            self.main_window = toga.MainWindow()
+
+        def on_exit(self):
+            exit["called"] = True
+            return True
+
+    app = SubclassedApp(formal_name="Test App", app_id="org.example.test")
+
+    # Close the app
+    app._impl.simulate_exit()
+
+    # The exit method was invoked
+    assert exit["called"]
+
+    # App has been exited
+    assert_action_performed(app, "exit")
+
+
 def test_exit_successful_handler(app):
     """An app with a successful exit handler can be exited."""
     on_exit_handler = Mock(return_value=True)
@@ -602,29 +718,80 @@ def test_exit_rejected_handler(app):
     on_exit_handler.assert_called_once_with(app)
 
 
+def test_no_exit_last_window_close(app):
+    """Windows can be created and closed without closing the app."""
+    # App has 1 window initially
+    assert len(app.windows) == 1
+
+    # Create a second, non-main window
+    window1 = toga.Window()
+    window1.content = toga.Box()
+    window1.show()
+
+    window2 = toga.Window()
+    window2.content = toga.Box()
+    window2.show()
+
+    # App has 3 windows
+    assert len(app.windows) == 3
+
+    # Close one of the secondary windows
+    window1.close()
+
+    # Window has been closed, but the app hasn't exited.
+    assert len(app.windows) == 2
+    assert_action_performed(window1, "close")
+    assert_action_not_performed(app, "exit")
+
+    # Closing the MainWindow kills the app
+    app.main_window.close()
+    assert_action_performed(app, "exit")
+
+
 def test_loop(app, event_loop):
     """The main thread's event loop can be accessed."""
     assert isinstance(app.loop, asyncio.AbstractEventLoop)
     assert app.loop is event_loop
 
 
-def test_background_task(app):
-    """A background task can be queued."""
-    canary = Mock()
+def test_running(event_loop):
+    """The running() method is invoked when the main loop starts"""
+    running = {}
 
-    async def background(app, **kwargs):
-        canary()
+    class SubclassedApp(toga.App):
+        def startup(self):
+            self.main_window = toga.MainWindow()
 
-    app.add_background_task(background)
+        def on_running(self):
+            running["called"] = True
 
-    # Create an async task that we can use to start the event loop for a short time.
-    async def waiter():
-        await asyncio.sleep(0.1)
+    app = SubclassedApp(formal_name="Test App", app_id="org.example.test")
 
-    app.loop.run_until_complete(waiter())
+    # Run a fake main loop.
+    app.loop.run_until_complete(asyncio.sleep(0.5))
 
-    # Once the loop has executed, the background task should have executed as well.
-    canary.assert_called_once()
+    # The running method was invoked
+    assert running["called"]
+
+
+def test_async_running_method(event_loop):
+    """The running() method can be a coroutine."""
+    running = {}
+
+    class SubclassedApp(toga.App):
+        def startup(self):
+            self.main_window = toga.MainWindow()
+
+        async def on_running(self):
+            running["called"] = True
+
+    app = SubclassedApp(formal_name="Test App", app_id="org.example.test")
+
+    # Run a fake main loop.
+    app.loop.run_until_complete(asyncio.sleep(0.5))
+
+    # The running coroutine was invoked
+    assert running["called"]
 
 
 def test_deprecated_id(event_loop):
@@ -647,3 +814,25 @@ def test_deprecated_name(event_loop):
     assert app.formal_name == "Test App"
     with pytest.warns(DeprecationWarning, match=name_warning):
         assert app.name == "Test App"
+
+
+def test_deprecated_background_task(app):
+    """A background task can be queued using the deprecated API."""
+    canary = Mock()
+
+    async def background(app, **kwargs):
+        canary()
+
+    with pytest.warns(
+        DeprecationWarning, match="App.add_background_task is deprecated"
+    ):
+        app.add_background_task(background)
+
+    # Create an async task that we can use to start the event loop for a short time.
+    async def waiter():
+        await asyncio.sleep(0.1)
+
+    app.loop.run_until_complete(waiter())
+
+    # Once the loop has executed, the background task should have executed as well.
+    canary.assert_called_once()

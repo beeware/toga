@@ -1,0 +1,1 @@
+A potential workaround for macOS CI result reporting was added.

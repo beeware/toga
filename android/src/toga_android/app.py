@@ -10,15 +10,13 @@ from androidx.core.content import ContextCompat
 from java import dynamic_proxy
 from org.beeware.android import IPythonApp, MainActivity
 
+import toga
 from toga.command import Command, Group, Separator
+from toga.dialogs import InfoDialog
+from toga.handlers import simple_handler
 
 from .libs import events
 from .screens import Screen as ScreenImpl
-from .window import Window
-
-
-class MainWindow(Window):
-    _is_main_window = True
 
 
 class TogaApp(dynamic_proxy(IPythonApp)):
@@ -96,6 +94,12 @@ class TogaApp(dynamic_proxy(IPythonApp)):
             return True
 
     def onPrepareOptionsMenu(self, menu):
+        # If the main window doesn't have a toolbar, there's no preparation required;
+        # this is a simple main window, which can't have commands. This can't be
+        # validated in the testbed, so it's marked no-cover.
+        if not hasattr(self._impl.interface.main_window, "toolbar"):
+            return False  # pragma: no cover
+
         menu.clear()
         itemid = 1  # 0 is the same as Menu.NONE.
         groupid = 1
@@ -180,6 +184,9 @@ class TogaApp(dynamic_proxy(IPythonApp)):
 
 
 class App:
+    # Android apps exit when the last window is closed
+    CLOSE_ON_LAST_WINDOW = True
+
     def __init__(self, interface):
         self.interface = interface
         self.interface._impl = self
@@ -207,14 +214,17 @@ class App:
         self.interface.commands.add(
             # About should be the last item in the menu, in a section on its own.
             Command(
-                lambda _: self.interface.about(),
+                simple_handler(self.interface.about),
                 f"About {self.interface.formal_name}",
                 section=sys.maxsize,
+                id=Command.ABOUT,
             ),
         )
 
     def create_menus(self):
-        self.native.invalidateOptionsMenu()  # Triggers onPrepareOptionsMenu
+        # Menu items are configured as part of onPrepareOptionsMenu; trigger that
+        # handler.
+        self.native.invalidateOptionsMenu()
 
     ######################################################################
     # App lifecycle
@@ -236,7 +246,13 @@ class App:
         pass  # pragma: no cover
 
     def set_main_window(self, window):
-        pass
+        if window is None or window == toga.App.BACKGROUND:
+            raise ValueError("Apps without main windows are not supported on Android")
+        else:
+            # The default layout of an Android app includes a titlebar; a simple App
+            # then hides that titlebar. We know what type of app we have when the main
+            # window is set.
+            self.interface.main_window._impl.configure_titlebar()
 
     ######################################################################
     # App resources
@@ -272,8 +288,16 @@ class App:
             message_parts.append(f"Author: {self.interface.author}")
         if self.interface.description is not None:
             message_parts.append(f"\n{self.interface.description}")
-        self.interface.main_window.info_dialog(
-            f"About {self.interface.formal_name}", "\n".join(message_parts)
+
+        # Create and show an info dialog as the about dialog.
+        # We don't care about the response.
+        asyncio.create_task(
+            self.interface.dialog(
+                InfoDialog(
+                    f"About {self.interface.formal_name}",
+                    "\n".join(message_parts),
+                )
+            )
         )
 
     ######################################################################

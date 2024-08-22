@@ -13,18 +13,37 @@ import pytest
 from testbed.app import main
 
 
-def run_tests(app, cov, args, report_coverage, run_slow):
+def run_tests(app, cov, args, report_coverage, run_slow, running_in_ci):
     try:
-        # Wait for the app's main window to be visible.
+        # Wait for the app's main window to be visible. Retrieving the actual main window
+        # will raise an exception until the app is actually initialized.
         print("Waiting for app to be ready for testing... ", end="", flush=True)
-        while app.main_window is None or not app.main_window.visible:
+        i = 0
+        ready = False
+        while i < 100 and not ready:
+            try:
+                main_window = app.main_window
+                if main_window.visible:
+                    ready = True
+            except ValueError:
+                pass
+
             time.sleep(0.05)
+            i += 1
+
+        if not ready:
+            print("\nApp didn't display a main window.")
+            app.returncode = 1
+            return
+
         print("ready.")
         # Control the run speed of the test app.
         app.run_slow = run_slow
 
         project_path = Path(__file__).parent.parent
         os.chdir(project_path)
+
+        os.environ["RUNNING_IN_CI"] = "true" if running_in_ci else ""
 
         app.returncode = pytest.main(
             [
@@ -83,10 +102,13 @@ def run_tests(app, cov, args, report_coverage, run_slow):
         traceback.print_exc()
         app.returncode = 1
     finally:
-        print(f">>>>>>>>>> EXIT {app.returncode} <<<<<<<<<<")
-        # Add a short pause to make sure any log tailing gets a chance to flush
-        time.sleep(0.5)
-        app.add_background_task(lambda app, **kwargs: app.exit())
+        # Add a short pause to make sure any log tailing gets a chance to flush. Run a
+        # couple of times to make sure any log streaming dropouts don't prevent
+        # Briefcase from seeing the output.
+        for i in range(0, 6):
+            print(f">>>>>>>>>> EXIT {app.returncode} <<<<<<<<<<")
+            time.sleep(0.5)
+        app.loop.call_soon_threadsafe(app.exit)
 
 
 if __name__ == "__main__":
@@ -115,6 +137,14 @@ if __name__ == "__main__":
         branch=True,
         source_pkgs=[toga_backend],
     )
+    cov.set_option("run:plugins", ["coverage_conditional_plugin"])
+    cov.set_option(
+        "coverage_conditional_plugin:rules",
+        {
+            "no-cover-if-linux-wayland": "os_environ.get('WAYLAND_DISPLAY', '') != ''",
+            "no-cover-if-linux-x": "os_environ.get('WAYLAND_DISPLAY', 'not-set') == 'not-set'",
+        },
+    )
     cov.start()
 
     # Create the test app, starting the test suite as a background task
@@ -138,6 +168,12 @@ if __name__ == "__main__":
     except ValueError:
         report_coverage = False
 
+    try:
+        args.remove("--ci")
+        running_in_ci = True
+    except ValueError:
+        running_in_ci = False
+
     # If there are no other specified arguments, default to running the whole suite,
     # and reporting coverage.
     if len(args) == 0:
@@ -152,12 +188,13 @@ if __name__ == "__main__":
             args=args,
             run_slow=run_slow,
             report_coverage=report_coverage,
+            running_in_ci=running_in_ci,
         )
     )
     # Queue a background task to run that will start the main thread. We do this,
     # instead of just starting the thread directly, so that we can make sure the App has
     # been fully initialized, and the event loop is running.
-    app.add_background_task(lambda app, **kwargs: thread.start())
+    app.loop.call_soon_threadsafe(thread.start)
 
     # Start the test app.
     app.main_loop()

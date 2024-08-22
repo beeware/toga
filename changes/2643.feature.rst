@@ -1,0 +1,1 @@
+A MainWindow can now have an ``on_close`` handler. If a request is made to close the main window, the ``on_close`` handler will be evaluated; app exit handling will only be processed if the close handler allows the close to continue.

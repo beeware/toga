@@ -65,6 +65,7 @@ async def long_running_task(
             except Exception as e:
                 print("Error in long running handler cleanup:", e, file=sys.stderr)
                 traceback.print_exc()
+        return result
 
 
 async def handler_with_cleanup(
@@ -86,6 +87,36 @@ async def handler_with_cleanup(
             except Exception as e:
                 print("Error in async handler cleanup:", e, file=sys.stderr)
                 traceback.print_exc()
+        return result
+
+
+def simple_handler(fn, *args, **kwargs):
+    """Wrap a function (with args and kwargs) so it can be used as a command handler.
+
+    This essentially accepts and ignores the handler-related arguments (i.e., the
+    required ``command`` argument passed to handlers), so that you can use a method like
+    :meth:`~toga.App.about()` as a command handler.
+
+    It can accept either a function or a coroutine.
+
+    :param fn: The callable to invoke as a handler.
+    :param args: The arguments to pass to the handler when invoked.
+    :param kwargs: The keyword arguments to pass to the handler when invoked.
+    :returns: A handler that will invoke the callable.
+    """
+    if inspect.iscoroutinefunction(fn):
+
+        async def _handler(command):
+            return await fn(*args, **kwargs)
+
+    else:
+
+        def _handler(command):
+            return fn(*args, **kwargs)
+
+    # Preserve a reference to the original function
+    _handler._raw = fn
+    return _handler
 
 
 def wrapped_handler(
@@ -116,7 +147,7 @@ def wrapped_handler(
 
         def _handler(*args: object, **kwargs: object) -> object:
             if asyncio.iscoroutinefunction(handler):
-                asyncio.ensure_future(
+                return asyncio.ensure_future(
                     handler_with_cleanup(handler, cleanup, interface, *args, **kwargs)
                 )
             else:
@@ -127,7 +158,7 @@ def wrapped_handler(
                     traceback.print_exc()
                 else:
                     if inspect.isgenerator(result):
-                        asyncio.ensure_future(
+                        return asyncio.ensure_future(
                             long_running_task(interface, result, cleanup)
                         )
                     else:
@@ -138,7 +169,7 @@ def wrapped_handler(
                         except Exception as e:
                             print("Error in handler cleanup:", e, file=sys.stderr)
                             traceback.print_exc()
-            return None
+                    return result
 
         _handler._raw = handler
 

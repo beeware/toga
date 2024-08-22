@@ -1,5 +1,4 @@
 import asyncio
-import os
 import signal
 import sys
 from pathlib import Path
@@ -7,33 +6,19 @@ from pathlib import Path
 import gbulb
 
 import toga
-from toga import App as toga_App
+from toga.app import App as toga_App, overridden
 from toga.command import Command, Separator
+from toga.handlers import simple_handler
 
 from .keys import gtk_accel
-from .libs import TOGA_DEFAULT_STYLES, Gdk, Gio, GLib, Gtk
+from .libs import IS_WAYLAND, TOGA_DEFAULT_STYLES, Gdk, Gio, GLib, Gtk
 from .screens import Screen as ScreenImpl
-from .window import Window
-
-
-class MainWindow(Window):
-    def create(self):
-        self.native = Gtk.ApplicationWindow()
-        self.native.set_role("MainWindow")
-
-    def gtk_delete_event(self, *args):
-        # Return value of the GTK on_close handler indicates
-        # whether the event has been fully handled. Returning
-        # False indicates the event handling is *not* complete,
-        # so further event processing (including actually
-        # closing the window) should be performed; so
-        # "should_exit == True" must be converted to a return
-        # value of False.
-        self.interface.app.on_exit()
-        return True
 
 
 class App:
+    # GTK apps exit when the last window is closed
+    CLOSE_ON_LAST_WINDOW = True
+
     def __init__(self, interface):
         self.interface = interface
         self.interface._impl = self
@@ -41,9 +26,6 @@ class App:
         gbulb.install(gtk=True)
         self.loop = asyncio.new_event_loop()
 
-        self.create()
-
-    def create(self):
         # Stimulate the build of the app
         self.native = Gtk.Application(
             application_id=self.interface.app_id,
@@ -53,6 +35,7 @@ class App:
 
         # Connect the GTK signal that will cause app startup to occur
         self.native.connect("startup", self.gtk_startup)
+        # Activate is a no-op, but GTK complains if you don't implement it
         self.native.connect("activate", self.gtk_activate)
 
         self.actions = None
@@ -62,14 +45,6 @@ class App:
 
     def gtk_startup(self, data=None):
         self.interface._startup()
-
-        # Now that we have menus, make the app take responsibility for
-        # showing the menubar.
-        # This is required because of inconsistencies in how the Gnome
-        # shell operates on different windowing environments;
-        # see #872 for details.
-        settings = Gtk.Settings.get_default()
-        settings.set_property("gtk-shell-shows-menubar", False)
 
         # Set any custom styles
         css_provider = Gtk.CssProvider()
@@ -84,29 +59,46 @@ class App:
     # Commands and menus
     ######################################################################
 
-    def _menu_about(self, command, **kwargs):
-        self.interface.about()
-
-    def _menu_quit(self, command, **kwargs):
-        self.interface.on_exit()
-
     def create_app_commands(self):
         self.interface.commands.add(
+            # ---- App menu -----------------------------------
+            # Quit should always be the last item, in a section on its own. Invoke
+            # `_request_exit` rather than `exit`, because we want to trigger the "OK to
+            # exit?" logic.
             Command(
-                self._menu_about,
-                "About " + self.interface.formal_name,
-                group=toga.Group.HELP,
-            ),
-            Command(None, "Preferences", group=toga.Group.APP),
-            # Quit should always be the last item, in a section on its own
-            Command(
-                self._menu_quit,
+                simple_handler(self.interface._request_exit),
                 "Quit " + self.interface.formal_name,
                 shortcut=toga.Key.MOD_1 + "q",
                 group=toga.Group.APP,
                 section=sys.maxsize,
+                id=Command.EXIT,
+            ),
+            # ---- Help menu -----------------------------------
+            Command(
+                simple_handler(self.interface.about),
+                "About " + self.interface.formal_name,
+                group=toga.Group.HELP,
+                id=Command.ABOUT,
+            ),
+            Command(
+                simple_handler(self.interface.visit_homepage),
+                "Visit homepage",
+                enabled=self.interface.home_page is not None,
+                group=toga.Group.HELP,
+                id=Command.VISIT_HOMEPAGE,
             ),
         )
+
+        # If the user has overridden preferences, provide a menu item.
+        if overridden(self.interface.preferences):
+            self.interface.commands.add(
+                Command(
+                    simple_handler(self.interface.preferences),
+                    "Preferences",
+                    group=toga.Group.APP,
+                    id=Command.PREFERENCES,
+                ),
+            )  # pragma: no cover
 
     def _submenu(self, group, menubar):
         try:
@@ -134,6 +126,10 @@ class App:
         return submenu, section
 
     def create_menus(self):
+        # Although GTK menus manifest on the Window, they're defined at the
+        # application level, and are automatically added to any ApplicationWindow.
+        # (or to the top of the screen if the GTK theme requires)
+
         # Only create the menu if the menu item index has been created.
         self._menu_items = {}
         self._menu_groups = {}
@@ -167,6 +163,14 @@ class App:
         # Set the menu for the app.
         self.native.set_menubar(menubar)
 
+        # Now that we have menus, make the app take responsibility for
+        # showing the menubar.
+        # This is required because of inconsistencies in how the Gnome
+        # shell operates on different windowing environments;
+        # see #872 for details.
+        settings = Gtk.Settings.get_default()
+        settings.set_property("gtk-shell-shows-menubar", False)
+
     ######################################################################
     # App lifecycle
     ######################################################################
@@ -179,7 +183,14 @@ class App:
         # Modify signal handlers to make sure Ctrl-C is caught and handled.
         signal.signal(signal.SIGINT, signal.SIG_DFL)
 
+        # Retain a reference to the app so that no-window apps can exist
+        self.native.hold()
+
         self.loop.run_forever(application=self.native)
+
+        # Release the reference to the app. This can't be invoked by the testbed,
+        # because it's after the `run_forever()` that runs the testbed.
+        self.native.release()  # pragma: no cover
 
     def set_icon(self, icon):
         for window in self.interface.windows:
@@ -194,13 +205,13 @@ class App:
 
     def get_screens(self):
         display = Gdk.Display.get_default()
-        if "WAYLAND_DISPLAY" in os.environ:  # pragma: no cover
+        if IS_WAYLAND:  # pragma: no-cover-if-linux-x
             # `get_primary_monitor()` doesn't work on wayland, so return as it is.
             return [
                 ScreenImpl(native=display.get_monitor(i))
                 for i in range(display.get_n_monitors())
             ]
-        else:
+        else:  # pragma: no-cover-if-linux-wayland
             primary_screen = ScreenImpl(display.get_primary_monitor())
             screen_list = [primary_screen] + [
                 ScreenImpl(native=display.get_monitor(i))
@@ -254,7 +265,7 @@ class App:
     # Window control
     ######################################################################
 
-    def get_current_window(self):
+    def get_current_window(self):  # pragma: no-cover-if-linux-wayland
         current_window = self.native.get_active_window()._impl
         return current_window if current_window.interface.visible else None
 
@@ -278,7 +289,7 @@ class DocumentApp(App):  # pragma: no cover
     def create_app_commands(self):
         super().create_app_commands()
         self.interface.commands.add(
-            toga.Command(
+            Command(
                 self.open_file,
                 text="Open...",
                 shortcut=toga.Key.MOD_1 + "o",

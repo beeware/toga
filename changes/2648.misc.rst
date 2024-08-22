@@ -1,0 +1,1 @@
+The testbed testing strategy for MapView and WebView were updated to avoid Python crashes from WebKit.

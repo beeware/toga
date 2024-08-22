@@ -1,14 +1,12 @@
 import asyncio
+import sys
 
+import toga
 from textual.app import App as TextualApp
+from toga.command import Command
+from toga.handlers import simple_handler
 
 from .screens import Screen as ScreenImpl
-from .window import Window
-
-
-class MainWindow(Window):
-    def textual_close(self):
-        self.interface.app.on_exit()
 
 
 class TogaApp(TextualApp):
@@ -22,6 +20,9 @@ class TogaApp(TextualApp):
 
 
 class App:
+    # Textual apps exit when the last window is closed
+    CLOSE_ON_LAST_WINDOW = True
+
     def __init__(self, interface):
         self.interface = interface
         self.interface._impl = self
@@ -38,10 +39,17 @@ class App:
     ######################################################################
 
     def create_app_commands(self):
-        pass
+        self.interface.commands.add(
+            Command(
+                simple_handler(self.interface.about),
+                f"About {self.interface.formal_name}",
+                section=sys.maxsize,
+                id=Command.ABOUT,
+            ),
+        )
 
     def create_menus(self):
-        pass
+        self.interface.factory.not_implemented("App.create_menus()")
 
     ######################################################################
     # App lifecycle
@@ -57,7 +65,12 @@ class App:
         pass
 
     def set_main_window(self, window):
-        self.native.push_screen(self.interface.main_window.id)
+        if window is None:
+            raise RuntimeError("Session-based apps are not supported on Textual")
+        elif window == toga.App.BACKGROUND:
+            raise RuntimeError("Background apps are not supported on Textual")
+        else:
+            self.native.push_screen(self.interface.main_window.id)
 
     ######################################################################
     # App resources
@@ -91,9 +104,10 @@ class App:
     ######################################################################
 
     def get_current_window(self):
-        pass
+        return self._current_window
 
     def set_current_window(self, window):
+        self._current_window = window
         self.native.switch_screen(window.native)
         self.native.title = window.get_title()
 

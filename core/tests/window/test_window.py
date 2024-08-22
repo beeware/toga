@@ -11,11 +11,6 @@ from toga_dummy.utils import (
 )
 
 
-@pytest.fixture
-def window(app):
-    return toga.Window()
-
-
 def test_window_created(app):
     """A Window can be created with minimal arguments."""
     window = toga.Window()
@@ -28,19 +23,21 @@ def test_window_created(app):
 
     # We can't know what the ID is, but it must be a string.
     assert isinstance(window.id, str)
-    assert window.title == "Toga"
-    assert window.position == toga.Position(100, 100)
+    assert window.title == "Test App"
+    # The app has created a main window, so this will be the second window.
+    assert window.position == toga.Position(150, 150)
     assert window.size == toga.Size(640, 480)
     assert window.resizable
     assert window.closable
     assert window.minimizable
-    assert len(window.toolbar) == 0
+    assert not hasattr(window, "toolbar")
     assert window.on_close._raw is None
 
 
 def test_window_created_explicit(app):
     """Explicit arguments at construction are stored."""
     on_close_handler = Mock()
+    window_content = toga.Box()
 
     window = toga.Window(
         id="my-window",
@@ -50,11 +47,15 @@ def test_window_created_explicit(app):
         resizable=False,
         closable=False,
         minimizable=False,
+        content=window_content,
         on_close=on_close_handler,
     )
 
     assert window.app == app
-    assert window.content is None
+    assert window.content == window_content
+
+    window_content.window == window
+    window_content.app == app
 
     assert window._impl.interface == window
     assert_action_performed(window, "create Window")
@@ -66,7 +67,7 @@ def test_window_created_explicit(app):
     assert not window.resizable
     assert not window.closable
     assert not window.minimizable
-    assert len(window.toolbar) == 0
+    assert not hasattr(window, "toolbar")
     assert window.on_close._raw == on_close_handler
 
 
@@ -130,8 +131,8 @@ def test_set_app_with_content_at_instantiation(app):
     "value, expected",
     [
         ("New Text", "New Text"),
-        ("", "Toga"),
-        (None, "Toga"),
+        ("", "Test App"),
+        (None, "Test App"),
         (12345, "12345"),
         ("Contains\nnewline", "Contains"),
     ],
@@ -140,35 +141,6 @@ def test_title(window, value, expected):
     """The title of the window can be changed."""
     window.title = value
     assert window.title == expected
-
-
-def test_toolbar_implicit_add(window, app):
-    """Adding an item to a toolbar implicitly adds it to the app."""
-    # Clear the app commands to start with
-    app.commands.clear()
-    assert list(window.toolbar) == []
-    assert list(app.commands) == []
-
-    cmd1 = toga.Command(None, "Command 1")
-    cmd2 = toga.Command(None, "Command 2")
-
-    assert list(window.toolbar) == []
-    assert list(app.commands) == []
-
-    # Adding a command to the toolbar automatically adds it to the app
-    window.toolbar.add(cmd1)
-    assert list(window.toolbar) == [cmd1]
-    assert list(app.commands) == [cmd1]
-
-    # But not vice versa
-    app.commands.add(cmd2)
-    assert list(window.toolbar) == [cmd1]
-    assert list(app.commands) == [cmd1, cmd2]
-
-    # Adding a command to both places does not cause a duplicate
-    app.commands.add(cmd1)
-    assert list(window.toolbar) == [cmd1]
-    assert list(app.commands) == [cmd1, cmd2]
 
 
 def test_change_content(window, app):
@@ -205,6 +177,48 @@ def test_set_position(window):
     window.position = (123, 456)
 
     assert window.position == toga.Position(123, 456)
+
+
+def test_position_cascade(app):
+    """The initial position of windows will cascade."""
+    windows = [app.main_window]
+
+    for i in range(0, 14):
+        win = toga.Window(title=f"Window {i}")
+        # The for the first 14 new windows (the app creates the first window)
+        # the x and y coordinates must be the same
+        assert win.position[0] == win.position[1]
+        # The position of the window should cascade down
+        assert win.position[0] > windows[-1].position[0]
+        assert win.position[1] > windows[-1].position[1]
+
+        windows.append(win)
+
+    # The 15th window will come back to the y origin, but shift along the x axis.
+    win = toga.Window(title=f"Window {i}")
+    assert win.position[0] > windows[0].position[0]
+    assert win.position[1] == windows[0].position[1]
+
+    windows.append(win)
+
+    # Cascade another 15 windows
+    for i in range(16, 30):
+        win = toga.Window(title=f"Window {i}")
+        # The position of the window should cascade down
+        assert win.position[0] > windows[-1].position[0]
+        assert win.position[1] > windows[-1].position[1]
+
+        # The y coordinate of these windows should be the same
+        # as 15 windows ago; the x coordinate is shifted right
+        assert win.position[0] > windows[i - 15].position[0]
+        assert win.position[1] == windows[i - 15].position[1]
+
+        windows.append(win)
+
+    # The 30 window will come back to the y origin, but shift along the x axis.
+    win = toga.Window(title=f"Window {i}")
+    assert win.position[0] > windows[15].position[0]
+    assert win.position[1] == windows[15].position[1]
 
 
 def test_set_size(window):
@@ -321,6 +335,36 @@ def test_close_direct(window, app):
     on_close_handler.assert_not_called()
 
 
+def test_close_direct_main_window(app):
+    """If the main window is closed directly, it triggers app exit logic."""
+    window = app.main_window
+
+    on_close_handler = Mock(return_value=True)
+    window.on_close = on_close_handler
+
+    on_exit_handler = Mock(return_value=True)
+    app.on_exit = on_exit_handler
+
+    window.show()
+    assert window.app == app
+    assert window in app.windows
+
+    # Close the window directly
+    window.close()
+
+    # Window has *not* been closed.
+    assert not window.closed
+    assert window.app == app
+    assert window in app.windows
+    assert_action_not_performed(window, "close")
+
+    # The close handler has *not* been invoked, but
+    # the exit handler *has*.
+    on_close_handler.assert_not_called()
+    on_exit_handler.assert_called_once_with(app)
+    assert_action_performed(app, "exit")
+
+
 def test_close_no_handler(window, app):
     """A window without a close handler can be closed."""
     window.show()
@@ -392,9 +436,11 @@ def test_screen(window, app):
     # window between the screens.
     # `window.screen` will return `Secondary Screen`
     assert window.screen == app.screens[1]
-    assert window.position == toga.Position(100, 100)
+    # The app has created a main window; the secondary window will be at second
+    # position.
+    assert window.position == toga.Position(150, 150)
     window.screen = app.screens[0]
-    assert window.position == toga.Position(1466, 868)
+    assert window.position == toga.Position(1516, 918)
 
 
 def test_screen_position(window, app):
@@ -496,13 +542,19 @@ def test_widget_id_reusablity(window, app):
     third_window.close()
 
 
-def test_info_dialog(window, app):
+def test_deprecated_info_dialog(window, app):
     """An info dialog can be shown."""
     on_result_handler = Mock()
+
+    # Prime the user's response
+    window._impl.dialog_responses["InfoDialog"] = [None]
 
     with pytest.warns(
         DeprecationWarning,
         match=r"Synchronous `on_result` handlers have been deprecated;",
+    ), pytest.warns(
+        DeprecationWarning,
+        match=r"info_dialog\(...\) has been deprecated; use dialog\(toga.InfoDialog\(...\)\)",
     ):
         dialog = window.info_dialog("Title", "Body", on_result=on_result_handler)
 
@@ -516,28 +568,34 @@ def test_info_dialog(window, app):
         # Perform a synchronous comparison; this will raise a runtime error
         dialog == 1
 
-    async def run_dialog(dialog):
-        dialog._impl.simulate_result(None)
-        return await dialog
-
-    assert app._impl.loop.run_until_complete(run_dialog(dialog)) is None
+    assert app._impl.loop.run_until_complete(dialog) is None
 
     assert_action_performed_with(
-        window,
-        "show info dialog",
+        dialog.dialog,
+        "create InfoDialog",
         title="Title",
         message="Body",
+    )
+    assert_action_performed_with(
+        window,
+        "show window InfoDialog",
     )
     on_result_handler.assert_called_once_with(window, None)
 
 
-def test_question_dialog(window, app):
+def test_deprecated_question_dialog(window, app):
     """A question dialog can be shown."""
     on_result_handler = Mock()
+
+    # Prime the user's response
+    window._impl.dialog_responses["QuestionDialog"] = [True]
 
     with pytest.warns(
         DeprecationWarning,
         match=r"Synchronous `on_result` handlers have been deprecated;",
+    ), pytest.warns(
+        DeprecationWarning,
+        match=r"question_dialog\(...\) has been deprecated; use dialog\(toga.QuestionDialog\(...\)\)",
     ):
         dialog = window.question_dialog("Title", "Body", on_result=on_result_handler)
 
@@ -551,28 +609,34 @@ def test_question_dialog(window, app):
         # Perform a synchronous comparison; this will raise a runtime error
         dialog == 1
 
-    async def run_dialog(dialog):
-        dialog._impl.simulate_result(True)
-        return await dialog
-
-    assert app._impl.loop.run_until_complete(run_dialog(dialog))
+    assert app._impl.loop.run_until_complete(dialog)
 
     assert_action_performed_with(
-        window,
-        "show question dialog",
+        dialog.dialog,
+        "create QuestionDialog",
         title="Title",
         message="Body",
+    )
+    assert_action_performed_with(
+        window,
+        "show window QuestionDialog",
     )
     on_result_handler.assert_called_once_with(window, True)
 
 
-def test_confirm_dialog(window, app):
+def test_deprecated_confirm_dialog(window, app):
     """A confirm dialog can be shown."""
     on_result_handler = Mock()
+
+    # Prime the user's response
+    window._impl.dialog_responses["ConfirmDialog"] = [True]
 
     with pytest.warns(
         DeprecationWarning,
         match=r"Synchronous `on_result` handlers have been deprecated;",
+    ), pytest.warns(
+        DeprecationWarning,
+        match=r"confirm_dialog\(...\) has been deprecated; use dialog\(toga.ConfirmDialog\(...\)\)",
     ):
         dialog = window.confirm_dialog("Title", "Body", on_result=on_result_handler)
 
@@ -586,28 +650,34 @@ def test_confirm_dialog(window, app):
         # Perform a synchronous comparison; this will raise a runtime error
         dialog == 1
 
-    async def run_dialog(dialog):
-        dialog._impl.simulate_result(True)
-        return await dialog
-
-    assert app._impl.loop.run_until_complete(run_dialog(dialog))
+    assert app._impl.loop.run_until_complete(dialog)
 
     assert_action_performed_with(
-        window,
-        "show confirm dialog",
+        dialog.dialog,
+        "create ConfirmDialog",
         title="Title",
         message="Body",
+    )
+    assert_action_performed_with(
+        window,
+        "show window ConfirmDialog",
     )
     on_result_handler.assert_called_once_with(window, True)
 
 
-def test_error_dialog(window, app):
+def test_deprecated_error_dialog(window, app):
     """An error dialog can be shown."""
     on_result_handler = Mock()
+
+    # Prime the user's response
+    window._impl.dialog_responses["ErrorDialog"] = [None]
 
     with pytest.warns(
         DeprecationWarning,
         match=r"Synchronous `on_result` handlers have been deprecated;",
+    ), pytest.warns(
+        DeprecationWarning,
+        match=r"error_dialog\(...\) has been deprecated; use dialog\(toga.ErrorDialog\(...\)\)",
     ):
         dialog = window.error_dialog("Title", "Body", on_result=on_result_handler)
 
@@ -621,28 +691,34 @@ def test_error_dialog(window, app):
         # Perform a synchronous comparison; this will raise a runtime error
         dialog == 1
 
-    async def run_dialog(dialog):
-        dialog._impl.simulate_result(None)
-        return await dialog
-
-    assert app._impl.loop.run_until_complete(run_dialog(dialog)) is None
+    assert app._impl.loop.run_until_complete(dialog) is None
 
     assert_action_performed_with(
-        window,
-        "show error dialog",
+        dialog.dialog,
+        "create ErrorDialog",
         title="Title",
         message="Body",
+    )
+    assert_action_performed_with(
+        window,
+        "show window ErrorDialog",
     )
     on_result_handler.assert_called_once_with(window, None)
 
 
-def test_stack_trace_dialog(window, app):
+def test_deprecated_stack_trace_dialog(window, app):
     """A stack trace dialog can be shown."""
     on_result_handler = Mock()
+
+    # Prime the user's response
+    window._impl.dialog_responses["StackTraceDialog"] = [None]
 
     with pytest.warns(
         DeprecationWarning,
         match=r"Synchronous `on_result` handlers have been deprecated;",
+    ), pytest.warns(
+        DeprecationWarning,
+        match=r"stack_trace_dialog\(...\) has been deprecated; use dialog\(toga.StackTraceDialog\(...\)\)",
     ):
         dialog = window.stack_trace_dialog(
             "Title",
@@ -661,30 +737,37 @@ def test_stack_trace_dialog(window, app):
         # Perform a synchronous comparison; this will raise a runtime error
         dialog == 1
 
-    async def run_dialog(dialog):
-        dialog._impl.simulate_result(None)
-        return await dialog
-
-    assert app._impl.loop.run_until_complete(run_dialog(dialog)) is None
+    assert app._impl.loop.run_until_complete(dialog) is None
 
     assert_action_performed_with(
-        window,
-        "show stack trace dialog",
+        dialog.dialog,
+        "create StackTraceDialog",
         title="Title",
         message="Body",
         content="The error",
         retry=False,
     )
+    assert_action_performed_with(
+        window,
+        "show window StackTraceDialog",
+    )
     on_result_handler.assert_called_once_with(window, None)
 
 
-def test_save_file_dialog(window, app):
+def test_deprecated_save_file_dialog(window, app):
     """A save file dialog can be shown."""
     on_result_handler = Mock()
+
+    # Prime the user's response
+    saved_file = Path("/saved/path/filename.txt")
+    window._impl.dialog_responses["SaveFileDialog"] = [saved_file]
 
     with pytest.warns(
         DeprecationWarning,
         match=r"Synchronous `on_result` handlers have been deprecated;",
+    ), pytest.warns(
+        DeprecationWarning,
+        match=r"save_file_dialog\(...\) has been deprecated; use dialog\(toga.SaveFileDialog\(...\)\)",
     ):
         dialog = window.save_file_dialog(
             "Title",
@@ -702,32 +785,37 @@ def test_save_file_dialog(window, app):
         # Perform a synchronous comparison; this will raise a runtime error
         dialog == 1
 
-    saved_file = Path("/saved/path/filename.txt")
-
-    async def run_dialog(dialog):
-        dialog._impl.simulate_result(saved_file)
-        return await dialog
-
-    assert app._impl.loop.run_until_complete(run_dialog(dialog)) is saved_file
+    assert app._impl.loop.run_until_complete(dialog) is saved_file
 
     assert_action_performed_with(
-        window,
-        "show save file dialog",
+        dialog.dialog,
+        "create SaveFileDialog",
         title="Title",
         filename="initial_file.txt",
         initial_directory=Path("/path/to"),
         file_types=None,
     )
+    assert_action_performed_with(
+        window,
+        "show window SaveFileDialog",
+    )
     on_result_handler.assert_called_once_with(window, saved_file)
 
 
-def test_save_file_dialog_default_directory(window, app):
+def test_deprecated_save_file_dialog_default_directory(window, app):
     """If no path is provided, a save file dialog will use the default directory."""
     on_result_handler = Mock()
+
+    # Prime the user's response
+    saved_file = Path("/saved/path/filename.txt")
+    window._impl.dialog_responses["SaveFileDialog"] = [saved_file]
 
     with pytest.warns(
         DeprecationWarning,
         match=r"Synchronous `on_result` handlers have been deprecated;",
+    ), pytest.warns(
+        DeprecationWarning,
+        match=r"save_file_dialog\(...\) has been deprecated; use dialog\(toga.SaveFileDialog\(...\)\)",
     ):
         dialog = window.save_file_dialog(
             "Title",
@@ -746,32 +834,37 @@ def test_save_file_dialog_default_directory(window, app):
         # Perform a synchronous comparison; this will raise a runtime error
         dialog == 1
 
-    saved_file = Path("/saved/path/filename.txt")
-
-    async def run_dialog(dialog):
-        dialog._impl.simulate_result(saved_file)
-        return await dialog
-
-    assert app._impl.loop.run_until_complete(run_dialog(dialog)) is saved_file
+    assert app._impl.loop.run_until_complete(dialog) is saved_file
 
     assert_action_performed_with(
-        window,
-        "show save file dialog",
+        dialog.dialog,
+        "create SaveFileDialog",
         title="Title",
         filename="initial_file.txt",
         initial_directory=None,
         file_types=[".txt", ".pdf"],
     )
+    assert_action_performed_with(
+        window,
+        "show window SaveFileDialog",
+    )
     on_result_handler.assert_called_once_with(window, saved_file)
 
 
-def test_open_file_dialog(window, app):
+def test_deprecated_open_file_dialog(window, app):
     """A open file dialog can be shown."""
     on_result_handler = Mock()
+
+    # Prime the user's response
+    opened_file = Path("/opened/path/filename.txt")
+    window._impl.dialog_responses["OpenFileDialog"] = [opened_file]
 
     with pytest.warns(
         DeprecationWarning,
         match=r"Synchronous `on_result` handlers have been deprecated;",
+    ), pytest.warns(
+        DeprecationWarning,
+        match=r"open_file_dialog\(...\) has been deprecated; use dialog\(toga.OpenFileDialog\(...\)\)",
     ):
         dialog = window.open_file_dialog(
             "Title",
@@ -789,32 +882,40 @@ def test_open_file_dialog(window, app):
         # Perform a synchronous comparison; this will raise a runtime error
         dialog == 1
 
-    opened_file = Path("/opened/path/filename.txt")
-
-    async def run_dialog(dialog):
-        dialog._impl.simulate_result(opened_file)
-        return await dialog
-
-    assert app._impl.loop.run_until_complete(run_dialog(dialog)) is opened_file
+    assert app._impl.loop.run_until_complete(dialog) is opened_file
 
     assert_action_performed_with(
-        window,
-        "show open file dialog",
+        dialog.dialog,
+        "create OpenFileDialog",
         title="Title",
         initial_directory=Path("/path/to/folder"),
         file_types=None,
         multiple_select=False,
     )
+    assert_action_performed_with(
+        window,
+        "show window OpenFileDialog",
+    )
     on_result_handler.assert_called_once_with(window, opened_file)
 
 
-def test_open_file_dialog_default_directory(window, app):
+def test_deprecated_open_file_dialog_default_directory(window, app):
     """If no path is provided, a open file dialog will use the default directory."""
     on_result_handler = Mock()
+
+    # Prime the user's response
+    opened_files = [
+        Path("/opened/path/filename.txt"),
+        Path("/opened/path/filename2.txt"),
+    ]
+    window._impl.dialog_responses["OpenFileDialog"] = [opened_files]
 
     with pytest.warns(
         DeprecationWarning,
         match=r"Synchronous `on_result` handlers have been deprecated;",
+    ), pytest.warns(
+        DeprecationWarning,
+        match=r"open_file_dialog\(...\) has been deprecated; use dialog\(toga.OpenFileDialog\(...\)\)",
     ):
         dialog = window.open_file_dialog(
             "Title",
@@ -833,35 +934,37 @@ def test_open_file_dialog_default_directory(window, app):
         # Perform a synchronous comparison; this will raise a runtime error
         dialog == 1
 
-    opened_files = [
-        Path("/opened/path/filename.txt"),
-        Path("/other/path/filename2.txt"),
-    ]
-
-    async def run_dialog(dialog):
-        dialog._impl.simulate_result(opened_files)
-        return await dialog
-
-    assert app._impl.loop.run_until_complete(run_dialog(dialog)) is opened_files
+    assert app._impl.loop.run_until_complete(dialog) is opened_files
 
     assert_action_performed_with(
-        window,
-        "show open file dialog",
+        dialog.dialog,
+        "create OpenFileDialog",
         title="Title",
         initial_directory=None,
         file_types=[".txt", ".pdf"],
         multiple_select=True,
     )
+    assert_action_performed_with(
+        window,
+        "show window OpenFileDialog",
+    )
     on_result_handler.assert_called_once_with(window, opened_files)
 
 
-def test_select_folder_dialog(window, app):
+def test_deprecated_select_folder_dialog(window, app):
     """A select folder dialog can be shown."""
     on_result_handler = Mock()
+
+    # Prime the user's response
+    opened_folder = Path("/opened/path")
+    window._impl.dialog_responses["SelectFolderDialog"] = [opened_folder]
 
     with pytest.warns(
         DeprecationWarning,
         match=r"Synchronous `on_result` handlers have been deprecated;",
+    ), pytest.warns(
+        DeprecationWarning,
+        match=r"select_folder_dialog\(...\) has been deprecated; use dialog\(toga.SelectFolderDialog\(...\)\)",
     ):
         dialog = window.select_folder_dialog(
             "Title",
@@ -879,31 +982,39 @@ def test_select_folder_dialog(window, app):
         # Perform a synchronous comparison; this will raise a runtime error
         dialog == 1
 
-    opened_file = Path("/opened/path/filename.txt")
-
-    async def run_dialog(dialog):
-        dialog._impl.simulate_result(opened_file)
-        return await dialog
-
-    assert app._impl.loop.run_until_complete(run_dialog(dialog)) is opened_file
+    assert app._impl.loop.run_until_complete(dialog) is opened_folder
 
     assert_action_performed_with(
-        window,
-        "show select folder dialog",
+        dialog.dialog,
+        "create SelectFolderDialog",
         title="Title",
         initial_directory=Path("/path/to/folder"),
         multiple_select=False,
     )
-    on_result_handler.assert_called_once_with(window, opened_file)
+    assert_action_performed_with(
+        window,
+        "show window SelectFolderDialog",
+    )
+    on_result_handler.assert_called_once_with(window, opened_folder)
 
 
-def test_select_folder_dialog_default_directory(window, app):
+def test_deprecated_select_folder_dialog_default_directory(window, app):
     """If no path is provided, a select folder dialog will use the default directory."""
     on_result_handler = Mock()
+
+    # Prime the user's response
+    opened_paths = [
+        Path("/opened/path"),
+        Path("/other/path"),
+    ]
+    window._impl.dialog_responses["SelectFolderDialog"] = [opened_paths]
 
     with pytest.warns(
         DeprecationWarning,
         match=r"Synchronous `on_result` handlers have been deprecated;",
+    ), pytest.warns(
+        DeprecationWarning,
+        match=r"select_folder_dialog\(...\) has been deprecated; use dialog\(toga.SelectFolderDialog\(...\)\)",
     ):
         dialog = window.select_folder_dialog(
             "Title",
@@ -921,30 +1032,29 @@ def test_select_folder_dialog_default_directory(window, app):
         # Perform a synchronous comparison; this will raise a runtime error
         dialog == 1
 
-    opened_files = [
-        Path("/opened/path/filename.txt"),
-        Path("/other/path/filename2.txt"),
-    ]
-
-    async def run_dialog(dialog):
-        dialog._impl.simulate_result(opened_files)
-        return await dialog
-
-    assert app._impl.loop.run_until_complete(run_dialog(dialog)) is opened_files
+    assert app._impl.loop.run_until_complete(dialog) is opened_paths
 
     assert_action_performed_with(
-        window,
-        "show select folder dialog",
+        dialog.dialog,
+        "create SelectFolderDialog",
         title="Title",
         initial_directory=None,
         multiple_select=True,
     )
-    on_result_handler.assert_called_once_with(window, opened_files)
+    assert_action_performed_with(
+        window,
+        "show window SelectFolderDialog",
+    )
+    on_result_handler.assert_called_once_with(window, opened_paths)
 
 
 def test_deprecated_names_open_file_dialog(window, app):
     """Deprecated names still work on open file dialogs."""
     on_result_handler = Mock()
+
+    # Prime the user's response
+    opened_files = [Path("/opened/path/filename.txt")]
+    window._impl.dialog_responses["OpenFileDialog"] = [opened_files]
 
     with pytest.warns(
         DeprecationWarning,
@@ -952,6 +1062,9 @@ def test_deprecated_names_open_file_dialog(window, app):
     ), pytest.warns(
         DeprecationWarning,
         match=r"Synchronous `on_result` handlers have been deprecated; use `await` on the asynchronous result",
+    ), pytest.warns(
+        DeprecationWarning,
+        match=r"open_file_dialog\(...\) has been deprecated; use dialog\(toga.OpenFileDialog\(...\)\)",
     ):
         dialog = window.open_file_dialog(
             "Title",
@@ -960,28 +1073,30 @@ def test_deprecated_names_open_file_dialog(window, app):
             on_result=on_result_handler,
         )
 
-    opened_files = [Path("/opened/path/filename.txt")]
-
-    async def run_dialog(dialog):
-        dialog._impl.simulate_result(opened_files)
-        return await dialog
-
-    assert app._impl.loop.run_until_complete(run_dialog(dialog)) is opened_files
+    assert app._impl.loop.run_until_complete(dialog) is opened_files
 
     assert_action_performed_with(
-        window,
-        "show open file dialog",
+        dialog.dialog,
+        "create OpenFileDialog",
         title="Title",
         initial_directory=Path("/path/to/folder"),
         file_types=None,
         multiple_select=True,
     )
+    assert_action_performed_with(
+        window,
+        "show window OpenFileDialog",
+    )
     on_result_handler.assert_called_once_with(window, opened_files)
 
 
 def test_deprecated_names_select_folder_dialog(window, app):
-    """Deprecated names still work on open file dialogs."""
+    """Deprecated names still work on selected folder dialogs."""
     on_result_handler = Mock()
+
+    # Prime the user's response
+    selected_folder = [Path("/opened/path")]
+    window._impl.dialog_responses["SelectFolderDialog"] = [selected_folder]
 
     with pytest.warns(
         DeprecationWarning,
@@ -989,6 +1104,9 @@ def test_deprecated_names_select_folder_dialog(window, app):
     ), pytest.warns(
         DeprecationWarning,
         match=r"Synchronous `on_result` handlers have been deprecated; use `await` on the asynchronous result",
+    ), pytest.warns(
+        DeprecationWarning,
+        match=r"select_folder_dialog\(...\) has been deprecated; use dialog\(toga.SelectFolderDialog\(...\)\)",
     ):
         dialog = window.select_folder_dialog(
             "Title",
@@ -997,22 +1115,20 @@ def test_deprecated_names_select_folder_dialog(window, app):
             on_result=on_result_handler,
         )
 
-    opened_files = [Path("/opened/path")]
-
-    async def run_dialog(dialog):
-        dialog._impl.simulate_result(opened_files)
-        return await dialog
-
-    assert app._impl.loop.run_until_complete(run_dialog(dialog)) is opened_files
+    assert app._impl.loop.run_until_complete(dialog) is selected_folder
 
     assert_action_performed_with(
-        window,
-        "show select folder dialog",
+        dialog.dialog,
+        "create SelectFolderDialog",
         title="Title",
         initial_directory=Path("/path/to/folder"),
         multiple_select=True,
     )
-    on_result_handler.assert_called_once_with(window, opened_files)
+    assert_action_performed_with(
+        window,
+        "show window SelectFolderDialog",
+    )
+    on_result_handler.assert_called_once_with(window, selected_folder)
 
 
 def test_deprecated_names_resizeable():

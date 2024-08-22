@@ -3,12 +3,16 @@ import sys
 import pytest
 
 import toga
+from toga import window as toga_window
 from toga_dummy.utils import EventLog
 
 
 @pytest.fixture(autouse=True)
-def reset_event_log():
+def reset_global_state():
+    # Clear the testing event log
     EventLog.reset()
+    # Reset the global window count
+    toga_window._window_count = -1
 
 
 @pytest.fixture(autouse=True)

@@ -1,0 +1,1 @@
+The APIs on ``Window`` for displaying dialogs (``info_dialog()``, ``question_dialog()``, etc) have been deprecated. They can be replaced with creating an instance of a ``Dialog`` class (e.g., ``InfoDialog``), and passing that instance to ``window.dialog()``.

@@ -105,6 +105,14 @@ async def test_select_tab(
     on_select_handler.assert_called_once_with(widget)
     on_select_handler.reset_mock()
 
+    handler_current_index = -1
+
+    def on_select(widget, **kwargs):
+        nonlocal handler_current_index
+        handler_current_index = widget.current_tab.index
+
+    on_select_handler.side_effect = on_select
+
     # Select item 2 in the GUI
     probe.select_tab(2)
     await probe.redraw("Tab 3 should be selected")
@@ -115,6 +123,8 @@ async def test_select_tab(
     # on_select has been invoked
     on_select_handler.assert_called_once_with(widget)
     on_select_handler.reset_mock()
+    # The current index as evaluated in the handler agrees
+    assert handler_current_index == 2
 
 
 async def test_select_tab_overflow(widget, probe, on_select_handler):
