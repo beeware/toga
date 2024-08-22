@@ -93,6 +93,10 @@ class Document(ABC):
         """Give the document focus in the app."""
         self.app.current_window = self.main_window
 
+    def hide(self) -> None:
+        """Hide the visual representation for this document."""
+        self.main_window.hide()
+
     def open(self, path: str | Path):
         """Open a file as a document.
 

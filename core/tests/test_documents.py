@@ -52,6 +52,10 @@ def test_create_document(app):
     doc.show()
     doc.main_window.show.assert_called_once_with()
 
+    # Document can be hidden
+    doc.hide()
+    doc.main_window.hide.assert_called_once_with()
+
 
 def test_no_description(event_loop):
     """If a document class doesn't define a description, an error is raised."""
