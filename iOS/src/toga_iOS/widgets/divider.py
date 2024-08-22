@@ -21,10 +21,8 @@ class Divider(Widget):
         self._direction = self.interface.HORIZONTAL
 
     def set_background_color(self, value):
-        if value is not None:
-            self.set_background_color_simple(value)
-        else:
-            self.native.backgroundColor = self.system_gray_color
+        # Do nothing, since background color of Divider shouldn't be changed.
+        pass
 
     def rehint(self):
         content_size = self.native.intrinsicContentSize()
