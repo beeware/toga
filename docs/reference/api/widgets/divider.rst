@@ -29,9 +29,11 @@ A separator used to visually distinguish two sections of content in a layout.
        :align: center
        :width: 300px
 
-  .. group-tab:: iOS |no|
+  .. group-tab:: iOS
 
-    Not supported
+    .. figure:: /reference/images/divider-iOS.png
+       :align: center
+       :width: 300px
 
   .. group-tab:: Web |beta|
 
