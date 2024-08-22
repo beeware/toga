@@ -9,7 +9,6 @@ from toga_dummy.utils import assert_action_not_performed, assert_action_performe
 
 def test_create(app):
     """A group can be created with defaults."""
-    breakpoint()
     status_icon = MenuStatusIcon()
 
     # StatusIcon properties
