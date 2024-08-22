@@ -1,0 +1,1 @@
+On WinForms, the rgba colors and TRANSPARENT are now interpreted correctly while setting widgets' background_color.

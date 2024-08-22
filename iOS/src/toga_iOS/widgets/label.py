@@ -38,6 +38,8 @@ class Label(Widget):
         # We shouldn't ever word wrap; if faced with that option, clip.
         self.native.lineBreakMode = NSLineBreakByClipping
 
+        self._default_background_color = TRANSPARENT
+
         # Add the layout constraints
         self.add_constraints()
 
@@ -46,12 +48,6 @@ class Label(Widget):
 
     def set_color(self, value):
         self.native.textColor = native_color(value)
-
-    def set_background_color(self, color):
-        if color == TRANSPARENT or color is None:
-            self.native.backgroundColor = native_color(TRANSPARENT)
-        else:
-            self.native.backgroundColor = native_color(color)
 
     def set_font(self, font):
         self.native.font = font._impl.native

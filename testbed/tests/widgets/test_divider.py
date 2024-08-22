@@ -6,6 +6,9 @@ from toga.style.pack import COLUMN, ROW
 
 from ..conftest import skip_on_platforms
 from .properties import (  # noqa: F401
+    test_background_color,
+    test_background_color_reset,
+    test_background_color_transparent,
     test_enable_noop,
     test_focus_noop,
 )
