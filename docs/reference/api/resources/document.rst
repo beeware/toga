@@ -76,7 +76,7 @@ the app still has no windows, then:
 
 In the following example, the app will be able to manage documents of type
 ``ExampleDocument`` or ``OtherDocument``, with ``ExampleDocument`` being the default
-content type.The app is configured :ref:`to not have a single "main" window
+content type. The app is configured :ref:`to not have a single "main" window
 <assigning-main-window>`, so the life cycle of the app is not tied to a specific window.
 
 .. code-block:: python

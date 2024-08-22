@@ -21,7 +21,7 @@ class Document(ABC):
     #: class variable that subclasses should define.
     description: str
 
-    #: A list of extensions that documents of this type might use (e.g.,
+    #: A list of extensions that documents of this type might use, without leading dots (e.g.,
     #: ``["doc", "txt"]``). The list must have at least one extension; the first is the
     #: default extension for documents of this type. This is a class variable that
     #: subclasses should define.
@@ -29,8 +29,8 @@ class Document(ABC):
 
     def __init__(self, app: App):
         """Create a new Document. Do not call this constructor directly - use
-        :meth:`DocumentSet.new`, :meth:`DocumentSet.open` or
-        :meth:`DocumentSet.request_open` instead.
+        :any:`DocumentSet.new`, :any:`DocumentSet.open` or
+        :any:`DocumentSet.request_open` instead.
 
         :param app: The application the document is associated with.
         """

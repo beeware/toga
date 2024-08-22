@@ -6,7 +6,7 @@ The API for ``Document`` subclasses has also changed:
 
 * A path is no longer provided as an argument to the Document constructor;
 
-* The ``document_type`` is now specified as a class property; and
+* The ``document_type`` is now specified as a class property called ``description``; and
 
 * Extensions are now defined as a class property of the ``Document``; and
 
