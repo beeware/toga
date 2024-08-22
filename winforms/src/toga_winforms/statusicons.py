@@ -66,12 +66,12 @@ class StatusIconSet:
     def create(self):
         # Menu status icons are the only icons that have extra construction needs.
         # Clear existing menus
-        for item in self.interface.menu_status_icons:
+        for item in self.interface._menu_status_icons:
             submenu = WinForms.ContextMenu()
             item._impl.native.ContextMenu = submenu
 
         # Determine the primary status icon.
-        primary_group = self.interface.primary_menu_status_icon
+        primary_group = self.interface._primary_menu_status_icon
         if primary_group is None:  # pragma: no cover
             # If there isn't at least one menu status icon, then there aren't any menus
             # to populate. This can't be replicated in the testbed.
@@ -80,7 +80,7 @@ class StatusIconSet:
         # Add the menu status items to the cache
         group_cache = {
             item: item._impl.native.ContextMenu
-            for item in self.interface.menu_status_icons
+            for item in self.interface._menu_status_icons
         }
         # Map the COMMANDS group to the primary status icon's menu.
         group_cache[Group.COMMANDS] = primary_group._impl.native.ContextMenu

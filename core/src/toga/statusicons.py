@@ -145,18 +145,18 @@ class StatusIconSet(Sequence[StatusIcon], Mapping[str, StatusIcon]):
         self.commands = CommandSet()
 
     @property
-    def menu_status_icons(self):
+    def _menu_status_icons(self):
         """An iterator over the menu status icons that have been registered."""
         return (icon for icon in self if isinstance(icon, MenuStatusIcon))
 
     @property
-    def primary_menu_status_icon(self):
+    def _primary_menu_status_icon(self):
         """The first menu status icon that has been registered.
 
         Returns ``None`` if no menu status icons have been registered.
         """
         try:
-            return next(self.menu_status_icons)
+            return next(self._menu_status_icons)
         except StopIteration:
             # No menu status icons registered.
             return None

@@ -27,8 +27,8 @@ def test_create(app):
 
     assert len(statusiconset) == 0
     assert list(statusiconset) == []
-    assert statusiconset.primary_menu_status_icon is None
-    assert list(statusiconset.menu_status_icons) == []
+    assert statusiconset._primary_menu_status_icon is None
+    assert list(statusiconset._menu_status_icons) == []
 
     assert len(statusiconset.commands) == 0
     assert statusiconset.commands.on_change is None
@@ -244,8 +244,8 @@ def test_clear(statusiconset, change_handler):
 def test_menu_status_items(statusiconset):
     """Menu status items can be differentiated from non-menu items."""
     # There are initially no menu status icons
-    assert list(statusiconset.menu_status_icons) == []
-    assert statusiconset.primary_menu_status_icon is None
+    assert list(statusiconset._menu_status_icons) == []
+    assert statusiconset._primary_menu_status_icon is None
 
     # When the list *only* contains non-menu status icons, nothing is returned
     status_1 = SimpleStatusIcon(id="s1")
@@ -253,8 +253,8 @@ def test_menu_status_items(statusiconset):
     status_3 = SimpleStatusIcon(id="s3")
     statusiconset.add(status_1, status_2, status_3)
 
-    assert list(statusiconset.menu_status_icons) == []
-    assert statusiconset.primary_menu_status_icon is None
+    assert list(statusiconset._menu_status_icons) == []
+    assert statusiconset._primary_menu_status_icon is None
 
     # When there is a menu status item, the can be filtered out.
     menu_status_1 = MenuStatusIcon(id="m1")
@@ -263,15 +263,15 @@ def test_menu_status_items(statusiconset):
     menu_status_3 = MenuStatusIcon(id="m3")
     statusiconset.add(menu_status_1, status_4, menu_status_2, menu_status_3)
 
-    assert list(statusiconset.menu_status_icons) == [
+    assert list(statusiconset._menu_status_icons) == [
         menu_status_1,
         menu_status_2,
         menu_status_3,
     ]
-    assert statusiconset.primary_menu_status_icon is menu_status_1
+    assert statusiconset._primary_menu_status_icon is menu_status_1
 
     # If a menu status item is removed, others take their place.
     statusiconset.remove(menu_status_1)
 
-    assert list(statusiconset.menu_status_icons) == [menu_status_2, menu_status_3]
-    assert statusiconset.primary_menu_status_icon is menu_status_2
+    assert list(statusiconset._menu_status_icons) == [menu_status_2, menu_status_3]
+    assert statusiconset._primary_menu_status_icon is menu_status_2

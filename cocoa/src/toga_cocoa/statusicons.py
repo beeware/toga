@@ -83,7 +83,7 @@ class StatusIconSet:
             cmd._impl.remove_menu_item(menu_item)
 
         # Determine the primary status icon.
-        primary_group = self.interface.primary_menu_status_icon
+        primary_group = self.interface._primary_menu_status_icon
         if primary_group is None:  # pragma: no cover
             # If there isn't at least one menu status icon, then there aren't any menus
             # to populate. This can't happen in the testbed, so it's marked nocover.
@@ -91,7 +91,7 @@ class StatusIconSet:
 
         # Recreate the menus for the menu status icons
         group_cache = {
-            item: item._impl.create_menu() for item in self.interface.menu_status_icons
+            item: item._impl.create_menu() for item in self.interface._menu_status_icons
         }
         # Map the COMMANDS group to the primary status icon's menu.
         group_cache[Group.COMMANDS] = primary_group._impl.native.menu
