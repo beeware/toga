@@ -1,7 +1,7 @@
 from pathlib import Path
 
 import PIL.Image
-from rubicon.objc import NSPoint, ObjCClass, objc_id, send_message
+from rubicon.objc import SEL, NSPoint, ObjCClass, objc_id, send_message
 
 import toga
 from toga_cocoa.keys import cocoa_key, toga_key
@@ -159,6 +159,12 @@ class AppProbe(BaseProbe, DialogsMixin):
         self.assert_menu_item(["*", "Show All"], enabled=True)
         self.assert_menu_item(["*", "Quit Toga Testbed"], enabled=True)
 
+        self.assert_menu_item(["File", "New Example Document"], enabled=True)
+        self.assert_menu_item(["File", "New Read-only Document"], enabled=True)
+        self.assert_menu_item(["File", "Open\u2026"], enabled=True)
+        self.assert_menu_item(["File", "Save"], enabled=True)
+        self.assert_menu_item(["File", "Save As\u2026"], enabled=True)
+        self.assert_menu_item(["File", "Save All"], enabled=True)
         self.assert_menu_item(["File", "Close"], enabled=True)
         self.assert_menu_item(["File", "Close All"], enabled=True)
 
@@ -273,6 +279,40 @@ class AppProbe(BaseProbe, DialogsMixin):
             dialog._impl.completion_handler(result)
 
         dialog._impl.show = automated_show
+
+    async def open_initial_document(self, monkeypatch, document_path):
+        # Mock the async menu item with an implementation that directly opens the doc
+        async def _mock_open():
+            self.app.documents.open(document_path)
+
+        monkeypatch.setattr(self.app.documents, "request_open", _mock_open)
+
+        # Call the APIs that are triggered when the app is activated.
+        nsapp = self.app._impl.native
+
+        # We are running in an async context. Invoking a selector moves
+        # to an sync context, but the handling needs to queue an async
+        # task. By invoking the relevant methods using Objective C's
+        # deferred invocation mechanism, the method is invoked in a
+        # sync context, so it is able to queue the required async task.
+        nsapp.delegate.performSelector(
+            SEL("applicationShouldOpenUntitledFile:"),
+            withObject=nsapp,
+            afterDelay=0.01,
+        )
+        nsapp.delegate.performSelector(
+            SEL("applicationOpenUntitledFile:"),
+            withObject=nsapp,
+            afterDelay=0.02,
+        )
+
+        await self.redraw("Initial document has been triggered", delay=0.1)
+
+    def open_document_by_drag(self, document_path):
+        self.app._impl.native.delegate.application(
+            self.app._impl.native,
+            openFiles=[str(document_path)],
+        )
 
     def has_status_icon(self, status_icon):
         return status_icon._impl.native is not None

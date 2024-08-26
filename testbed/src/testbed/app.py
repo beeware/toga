@@ -3,6 +3,44 @@ from unittest.mock import Mock
 import toga
 
 
+class ExampleDoc(toga.Document):
+    description = "Example Document"
+    extensions = ["testbed", "tbed"]
+
+    def create(self):
+        # Create the main window for the document.
+        self.main_window = toga.DocumentWindow(
+            doc=self,
+            content=toga.Box(),
+        )
+        self._content = Mock()
+
+    def read(self):
+        if self.path.name == "broken.testbed":
+            raise RuntimeError("Unable to load broken document")
+        else:
+            self._content.read(self.path)
+
+    def write(self):
+        self._content.write(self.path)
+
+
+class ReadonlyDoc(toga.Document):
+    description = "Read-only Document"
+    extensions = ["other"]
+
+    def create(self):
+        # Create the main window for the document.
+        self.main_window = toga.DocumentWindow(
+            doc=self,
+            content=toga.Box(),
+        )
+        self._content = Mock()
+
+    def read(self):
+        self._content.read(self.path)
+
+
 class Testbed(toga.App):
     # Objects can be added to this list to avoid them being garbage collected in the
     # middle of the tests running. This is problematic, at least, for WebView (#2648).
@@ -88,6 +126,9 @@ class Testbed(toga.App):
             self.deep_cmd,
             self.cmd5,
             self.cmd6,
+            # Add a default Preferences menu item (with no action)
+            # so that we can verify the command definition is valid.
+            toga.Command.standard(self, toga.Command.PREFERENCES),
         )
 
         # Set up some status icons. This will raise warnings on mobile.
@@ -168,4 +209,7 @@ class Testbed(toga.App):
 
 
 def main():
-    return Testbed(app_name="testbed")
+    return Testbed(
+        app_name="testbed",
+        document_types=[ExampleDoc, ReadonlyDoc],
+    )

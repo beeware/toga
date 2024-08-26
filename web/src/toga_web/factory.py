@@ -4,7 +4,6 @@ from . import dialogs
 from .app import App
 from .command import Command
 
-# from .documents import Document
 # from .fonts import Font
 from .icons import Icon
 
@@ -48,10 +47,8 @@ def not_implemented(feature):
 __all__ = [
     "not_implemented",
     "App",
-    # 'DocumentApp',
     "Command",
-    # 'Document',
-    # # Resources
+    # Resources
     # 'Font',
     "Icon",
     # 'Image',

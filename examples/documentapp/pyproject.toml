@@ -45,3 +45,9 @@ supported = false
 # Web deployment
 [tool.briefcase.app.documentapp.web]
 supported = false
+
+[tool.briefcase.app.documentapp.document_type.exampledoc]
+description = "An example document"
+extension = "exampledoc"
+icon = "icons/exampledoc"
+url = "https://beeware.org"

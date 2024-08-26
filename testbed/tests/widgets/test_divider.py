@@ -4,7 +4,6 @@ import toga
 from toga.constants import Direction
 from toga.style.pack import COLUMN, ROW
 
-from ..conftest import skip_on_platforms
 from .properties import (  # noqa: F401
     test_enable_noop,
     test_focus_noop,
@@ -13,7 +12,6 @@ from .properties import (  # noqa: F401
 
 @pytest.fixture
 async def widget():
-    skip_on_platforms("iOS")
     return toga.Divider()
 
 
