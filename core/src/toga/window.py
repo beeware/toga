@@ -4,12 +4,7 @@ import warnings
 from builtins import id as identifier
 from collections.abc import Coroutine, Iterator
 from pathlib import Path
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Protocol,
-    TypeVar,
-)
+from typing import TYPE_CHECKING, Any, MutableSet, Protocol, TypeVar
 
 import toga
 from toga import dialogs
@@ -21,7 +16,6 @@ from toga.types import Position, Size
 
 if TYPE_CHECKING:
     from toga.app import App
-    from toga.documents import Document
     from toga.images import ImageT
     from toga.screens import Screen
     from toga.types import PositionT, SizeT
@@ -298,21 +292,32 @@ class Window:
         or property on a :class:`~toga.Window` instance after it has been closed is
         undefined, except for :attr:`closed` which can be used to check if the window
         was closed.
+
+        :returns: True if the window was actually closed; False if closing the window
+            triggered ``on_exit`` handling.
         """
         close_window = True
         if self.app.main_window == self:
             # Closing the window marked as the main window is a request to exit.
-            self.app._request_exit()
+            self.app.request_exit()
             close_window = False
         elif self.app.main_window is None:
-            # If this is an app without a main window, this is the last window in the
-            # app, and the platform exits on last window close, request an exit.
-            if len(self.app.windows) == 1 and self.app._impl.CLOSE_ON_LAST_WINDOW:
-                self.app._request_exit()
+            # If this is an app without a main window, the app is running, this
+            # is the last window in the app, and the platform exits on last
+            # window close, request an exit.
+            if (
+                len(self.app.windows) == 1
+                and self.app._impl.CLOSE_ON_LAST_WINDOW
+                and self.app.loop.is_running()
+            ):
+                self.app.request_exit()
                 close_window = False
 
         if close_window:
             self._close()
+
+        # Return whether the window was actually closed
+        return close_window
 
     def _close(self):
         # The actual logic for closing a window. This is abstracted so that the testbed
@@ -845,50 +850,64 @@ class MainWindow(Window):
         return self._toolbar
 
 
-class DocumentMainWindow(Window):
-    _WINDOW_CLASS = "DocumentMainWindow"
+class WindowSet(MutableSet[Window]):
+    def __init__(self, app: App):
+        """A collection of windows managed by an app.
 
-    def __init__(
-        self,
-        doc: Document,
-        id: str | None = None,
-        title: str | None = None,
-        position: PositionT = Position(100, 100),
-        size: SizeT = Size(640, 480),
-        resizable: bool = True,
-        minimizable: bool = True,
-        on_close: OnCloseHandler | None = None,
-    ):
-        """Create a new document Main Window.
-
-        This installs a default on_close handler that honors platform-specific document
-        closing behavior. If you want to control whether a document is allowed to close
-        (e.g., due to having unsaved change), override
-        :meth:`toga.Document.can_close()`, rather than implementing an on_close handler.
-
-        :param doc: The document being managed by this window
-        :param id: The ID of the window.
-        :param title: Title for the window. Defaults to the formal name of the app.
-        :param position: Position of the window, as a :any:`toga.Position` or tuple of
-            ``(x, y)`` coordinates.
-        :param size: Size of the window, as a :any:`toga.Size` or tuple of
-            ``(width, height)``, in pixels.
-        :param resizable: Can the window be manually resized by the user?
-        :param minimizable: Can the window be minimized by the user?
-        :param on_close: The initial :any:`on_close` handler.
+        A window is automatically added to the app when it is created, and removed when
+        it is closed. Adding a window to an App's window set automatically sets the
+        :attr:`~toga.Window.app` property of the Window.
         """
-        self.doc = doc
-        super().__init__(
-            id=id,
-            title=title,
-            position=position,
-            size=size,
-            resizable=resizable,
-            closable=True,
-            minimizable=minimizable,
-            on_close=doc.handle_close if on_close is None else on_close,
-        )
+        self.app = app
+        self.elements: set[Window] = set()
 
-    @property
-    def _default_title(self) -> str:
-        return self.doc.path.name
+    def add(self, window: Window) -> None:
+        if not isinstance(window, Window):
+            raise TypeError("Can only add objects of type toga.Window")
+        # Silently not add if duplicate
+        if window not in self.elements:
+            self.elements.add(window)
+            window.app = self.app
+
+    def discard(self, window: Window) -> None:
+        if not isinstance(window, Window):
+            raise TypeError("Can only discard objects of type toga.Window")
+        if window not in self.elements:
+            raise ValueError(f"{window!r} is not part of this app")
+        self.elements.remove(window)
+
+    ######################################################################
+    # 2023-10: Backwards compatibility
+    ######################################################################
+
+    def __iadd__(self, window: Window) -> WindowSet:
+        # The standard set type does not have a += operator.
+        warnings.warn(
+            "Windows are automatically associated with the app; += is not required",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self
+
+    def __isub__(self, other: Window) -> WindowSet:
+        # The standard set type does have a -= operator, but it takes sets rather than
+        # individual items.
+        warnings.warn(
+            "Windows are automatically removed from the app; -= is not required",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self
+
+    ######################################################################
+    # End backwards compatibility
+    ######################################################################
+
+    def __iter__(self) -> Iterator[Window]:
+        return iter(self.elements)
+
+    def __contains__(self, value: object) -> bool:
+        return value in self.elements
+
+    def __len__(self) -> int:
+        return len(self.elements)

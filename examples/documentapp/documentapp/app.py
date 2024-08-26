@@ -2,38 +2,35 @@ import toga
 
 
 class ExampleDocument(toga.Document):
-    def __init__(self, path, app):
-        super().__init__(path=path, document_type="Example Document", app=app)
-
-    async def can_close(self):
-        return await self.main_window.dialog(
-            toga.QuestionDialog(
-                "Are you sure?",
-                "Do you want to close this document?",
-            )
-        )
+    description = "Example Document"
+    extensions = ["exampledoc"]
 
     def create(self):
-        # Create the main window for the document.
-        self.main_window = toga.DocumentMainWindow(
+        # Create the main window for the document. The window has a single widget;
+        # when that widget changes, the document is modified.
+        self.main_window = toga.DocumentWindow(
             doc=self,
-            title=f"Example: {self.path.name}",
+            content=toga.MultilineTextInput(on_change=self.touch),
         )
-        self.main_window.content = toga.MultilineTextInput()
 
     def read(self):
+        # Read the content of the file represented by the document, and populate the
+        # widgets in the main window with that content.
         with self.path.open() as f:
-            self.content = f.read()
+            self.main_window.content.value = f.read()
 
-        self.main_window.content.value = self.content
+    def write(self):
+        # Save the content currently displayed by the main window.
+        with self.path.open("w") as f:
+            f.write(self.main_window.content.value)
 
 
-class ExampleDocumentApp(toga.DocumentApp):
+class ExampleDocumentApp(toga.App):
     def startup(self):
-        # A document-based app is a session app, so it has no main window. A window (or
-        # windows) will be created from the document(s) specified at the command line;
-        # or if no document is specified, the platform will determine how to create an
-        # empty document.
+        # A document-based app does not have a single main window. A window (or windows)
+        # will be created from the document(s) specified at the command line; or if no
+        # document is specified, the platform will determine how to create an initial
+        # document.
         self.main_window = None
 
 
@@ -41,9 +38,7 @@ def main():
     return ExampleDocumentApp(
         "Document App",
         "org.beeware.toga.examples.documentapp",
-        document_types={
-            "exampledoc": ExampleDocument,
-        },
+        document_types=[ExampleDocument],
     )
 
 

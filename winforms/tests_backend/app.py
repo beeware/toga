@@ -185,6 +185,13 @@ class AppProbe(BaseProbe, DialogsMixin):
                 assert item.Text == title
 
     def assert_system_menus(self):
+        self.assert_menu_item(["File", "New Example Document"], enabled=True)
+        self.assert_menu_item(["File", "New Read-only Document"], enabled=True)
+        self.assert_menu_item(["File", "Open..."], enabled=True)
+        self.assert_menu_item(["File", "Save"], enabled=True)
+        self.assert_menu_item(["File", "Save As..."], enabled=True)
+        self.assert_menu_item(["File", "Save All"], enabled=True)
+        self.assert_menu_item(["File", "Preferences"], enabled=False)
         self.assert_menu_item(["File", "Exit"])
 
         self.assert_menu_item(["Help", "Visit homepage"])
@@ -205,3 +212,9 @@ class AppProbe(BaseProbe, DialogsMixin):
     async def restore_standard_app(self):
         # No special handling needed to restore standard app.
         await self.redraw("Restore to standard app")
+
+    async def open_initial_document(self, monkeypatch, document_path):
+        pytest.xfail("Winforms doesn't require initial document support")
+
+    def open_document_by_drag(self, document_path):
+        pytest.xfail("Winforms doesn't support opening documents by drag")

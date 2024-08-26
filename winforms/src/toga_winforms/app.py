@@ -10,11 +10,6 @@ from System.Media import SystemSounds
 from System.Net import SecurityProtocolType, ServicePointManager
 from System.Windows.Threading import Dispatcher
 
-import toga
-from toga.app import overridden
-from toga.command import Command, Group
-from toga.handlers import simple_handler
-
 from .libs.proactor import WinformsProactorEventLoop
 from .libs.wrapper import WeakrefCallable
 from .screens import Screen as ScreenImpl
@@ -57,6 +52,8 @@ def winforms_thread_exception(sender, winforms_exc):  # pragma: no cover
 class App:
     # Winforms apps exit when the last window is closed
     CLOSE_ON_LAST_WINDOW = True
+    # Winforms apps use default command line handling
+    HANDLES_COMMAND_LINE = False
 
     def __init__(self, interface):
         self.interface = interface
@@ -133,47 +130,8 @@ class App:
     # Commands and menus
     ######################################################################
 
-    def create_app_commands(self):
-        self.interface.commands.add(
-            # ---- File menu -----------------------------------
-            # Quit should always be the last item, in a section on its own. Invoke
-            # `_request_exit` rather than `exit`, because we want to trigger the "OK to
-            # exit?" logic.
-            Command(
-                simple_handler(self.interface._request_exit),
-                "Exit",
-                shortcut=toga.Key.MOD_1 + "q",
-                group=Group.FILE,
-                section=sys.maxsize,
-                id=Command.EXIT,
-            ),
-            # ---- Help menu -----------------------------------
-            Command(
-                simple_handler(self.interface.visit_homepage),
-                "Visit homepage",
-                enabled=self.interface.home_page is not None,
-                group=Group.HELP,
-                id=Command.VISIT_HOMEPAGE,
-            ),
-            Command(
-                simple_handler(self.interface.about),
-                f"About {self.interface.formal_name}",
-                group=Group.HELP,
-                section=sys.maxsize,
-                id=Command.ABOUT,
-            ),
-        )
-
-        # If the user has overridden preferences, provide a menu item.
-        if overridden(self.interface.preferences):
-            self.interface.commands.add(
-                Command(
-                    simple_handler(self.interface.preferences),
-                    "Preferences",
-                    group=Group.FILE,
-                    id=Command.PREFERENCES,
-                ),
-            )  # pragma: no cover
+    def create_standard_commands(self):
+        pass
 
     def create_menus(self):
         # Winforms menus are created on the Window.
@@ -309,17 +267,3 @@ class App:
     def exit_full_screen(self, windows):
         for window in windows:
             window._impl.set_full_screen(False)
-
-
-class DocumentApp(App):  # pragma: no cover
-    def create_app_commands(self):
-        super().create_app_commands()
-        self.interface.commands.add(
-            Command(
-                lambda w: self.open_file,
-                text="Open...",
-                shortcut=toga.Key.MOD_1 + "o",
-                group=Group.FILE,
-                section=0,
-            ),
-        )

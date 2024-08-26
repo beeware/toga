@@ -254,8 +254,3 @@ class MainWindow(Window):
                 padding=0,
             )
             self.native_toolbar.show_all()
-
-
-class DocumentMainWindow(MainWindow):
-    # On GTK, there's no real difference between a DocumentMainWindow and a MainWindow
-    pass

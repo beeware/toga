@@ -2,12 +2,16 @@ from toga import Command as StandardCommand
 
 
 class Command:
+    """Command `native` property is a list of native widgets associated with the
+    command."""
+
     def __init__(self, interface):
         self.interface = interface
         self.native = []
 
     @classmethod
     def standard(cls, app, id):
+        # ---- Non-existent commands ----------------------------------
         if id in {
             StandardCommand.ABOUT,
             StandardCommand.EXIT,
@@ -19,7 +23,7 @@ class Command:
             StandardCommand.SAVE_ALL,
             StandardCommand.VISIT_HOMEPAGE,
         }:
-            # These are valid commands, but they're not defined on iOS.
+            # These commands are valid, but don't exist on textual.
             return None
 
         raise ValueError(f"Unknown standard command {id!r}")
