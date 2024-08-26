@@ -70,14 +70,14 @@ and add it to your app's :attr:`~toga.App.status_icons` set:
 
     # Define a status icon that uses default values for icon and tooltip,
     # and doesn't respond to mouse clicks.
-    status_icon_1 = SimpleStatusIcon()
+    status_icon_1 = toga.SimpleStatusIcon()
 
     # Define a second status icon that provides explicit values for the id, icon and
     # tooltip, and responds to mouse clicks.
     def my_handler(widget, **kwargs):
         print("Second status icon pressed!")
 
-    status_icon_2 = SimpleStatusIcon(
+    status_icon_2 = toga.SimpleStatusIcon(
         id="second",
         text="Hello!",
         icon="icons/red",
@@ -104,7 +104,7 @@ it can be removed from the app:
 Menu status icons
 ~~~~~~~~~~~~~~~~~
 
-A menu-based status icon is define by adding a :class:`toga.MenuStatusIcon` instance. A
+A menu-based status icon is defined by adding a :class:`toga.MenuStatusIcon` instance. A
 :class:`toga.MenuStatusIcon` behaves almost the same as :class:`~toga.SimpleStatusIcon`,
 except that it *cannot* have an ``on_click`` handler - but it *can* be used to register
 Commands that will be displayed in a menu when the icon is clicked.
@@ -119,7 +119,7 @@ a sub-menu that itself has a single menu item:
 .. code-block:: python
 
     # Create a MenuStatusIcon
-    status_icon = MenuStatusIcon(icon="icons/blue")
+    status_icon = toga.MenuStatusIcon(icon="icons/blue")
 
     # Create some commands that are associated with the menu status icon's group.
     def callback(sender, **kwargs):
