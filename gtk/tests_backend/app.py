@@ -236,7 +236,11 @@ class AppProbe(BaseProbe, DialogsMixin):
         menu = status_icon._impl.native.get_primary_menu()
         if menu:
             return [
-                child.get_label() if child.get_label() else "---"
+                {
+                    "": "---",
+                    "About Toga Testbed": "**ABOUT**",
+                    "Quit": "**EXIT**",
+                }.get(child.get_label(), child.get_label())
                 for child in menu.get_children()
             ]
         else:

@@ -225,7 +225,11 @@ class AppProbe(BaseProbe, DialogsMixin):
     def status_menu_items(self, status_icon):
         if status_icon._impl.native.ContextMenu:
             return [
-                "---" if str(item.Text) == "-" else str(item.Text)
+                {
+                    "-": "---",
+                    "About Toga Testbed": "**ABOUT**",
+                    "Exit": "**EXIT**",
+                }.get(str(item.Text), str(item.Text))
                 for item in status_icon._impl.native.ContextMenu.MenuItems
             ]
         else:

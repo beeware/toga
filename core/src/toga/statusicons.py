@@ -170,27 +170,13 @@ class StatusIconSet(Sequence[StatusIcon], Mapping[str, StatusIcon]):
             Command.EXIT,
         ]:
             self.commands.add(
-                # TODO: Re-enable when standard commands are available
-                # Command.standard(
-                #     toga.App.app,
-                #     cmd_id,
-                #     section=sys.maxsize,
-                #     group=Group.COMMANDS,
-                # )
+                Command.standard(
+                    toga.App.app,
+                    cmd_id,
+                    section=sys.maxsize,
+                    group=Group.COMMANDS,
+                )
             )
-
-        # TODO: Remove when standard commands are available
-        from toga.handlers import simple_handler
-
-        self.commands.add(
-            Command(
-                simple_handler(toga.App.app._request_exit),
-                text="Quit",
-                group=Group.COMMANDS,
-                section=sys.maxsize,
-                id=Command.EXIT,
-            )
-        )
 
     def __iter__(self) -> Iterator[StatusIcon]:
         return iter(self.elements.values())

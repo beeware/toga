@@ -13,8 +13,11 @@ async def test_add_remove(app, app_probe):
         "Action 1",
         "Sub Menu",
         "Action 2",
+        # The standard commands come after a separator;
+        # but the text varies depending on the platform.
         "---",
-        "Quit",
+        "**ABOUT**",
+        "**EXIT**",
     ]
 
     assert app_probe.has_status_icon(app.status2)

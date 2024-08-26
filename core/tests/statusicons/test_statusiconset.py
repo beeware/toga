@@ -36,7 +36,8 @@ def test_create(app):
     # Create the standard commands on the StatusIconSet
     statusiconset._create_standard_commands()
 
-    assert len(statusiconset.commands) == 1
+    assert len(statusiconset.commands) == 2
+    assert Command.ABOUT in statusiconset.commands
     assert Command.EXIT in statusiconset.commands
 
 
