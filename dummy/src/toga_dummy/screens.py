@@ -3,7 +3,7 @@ from PIL import Image, ImageDraw
 from toga.screens import Screen as ScreenInterface
 from toga.types import Position, Size
 
-from .utils import LoggedObject  # noqa
+from .utils import LoggedObject
 
 
 class Screen(LoggedObject):

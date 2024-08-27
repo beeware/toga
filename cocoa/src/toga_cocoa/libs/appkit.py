@@ -610,6 +610,13 @@ NSSortDescriptor = ObjCClass("NSSortDescriptor")
 NSSplitView = ObjCClass("NSSplitView")
 
 ######################################################################
+# NSStatusBar.h
+NSStatusBar = ObjCClass("NSStatusBar")
+
+NSVariableStatusItemLength = -1.0
+NSSquareStatusItemLength = -2.0
+
+######################################################################
 # NSStepper.h
 NSStepper = ObjCClass("NSStepper")
 

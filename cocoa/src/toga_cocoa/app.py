@@ -15,7 +15,7 @@ import toga
 from toga.command import Command, Group, Separator
 from toga.handlers import NativeHandler
 
-from .keys import cocoa_key
+from .command import Command as CommandImpl, submenu_for_group
 from .libs import (
     NSAboutPanelOptionApplicationIcon,
     NSAboutPanelOptionApplicationName,
@@ -63,12 +63,12 @@ class AppDelegate(NSObject):
 
     @objc_method
     def selectMenuItem_(self, sender) -> None:
-        cmd = self.impl._menu_items[sender]
+        cmd = CommandImpl.for_menu_item(sender)
         cmd.action()
 
     @objc_method
     def validateMenuItem_(self, sender) -> bool:
-        cmd = self.impl._menu_items[sender]
+        cmd = CommandImpl.for_menu_item(sender)
         return cmd.enabled
 
 
@@ -104,8 +104,7 @@ class App:
         self.appDelegate.native = self.native
         self.native.setDelegate(self.appDelegate)
 
-        # Create the lookup table for menu items
-        self._menu_groups = {}
+        # Create the lookup table for commands and menu items
         self._menu_items = {}
 
         # Call user code to populate the main window
@@ -250,81 +249,30 @@ class App:
             ),
         )
 
-    def _submenu(self, group, menubar):
-        """Obtain the submenu representing the command group.
-
-        This will create the submenu if it doesn't exist. It will call itself
-        recursively to build the full path to menus inside submenus, returning the
-        "leaf" node in the submenu path. Once created, it caches the menu that has been
-        created for future lookup.
-        """
-        try:
-            return self._menu_groups[group]
-        except KeyError:
-            if group is None:
-                submenu = menubar
-            else:
-                parent_menu = self._submenu(group.parent, menubar)
-
-                menu_item = parent_menu.addItemWithTitle(
-                    group.text, action=None, keyEquivalent=""
-                )
-                submenu = NSMenu.alloc().initWithTitle(group.text)
-                parent_menu.setSubmenu(submenu, forItem=menu_item)
-
-            # Install the item in the group cache.
-            self._menu_groups[group] = submenu
-            return submenu
-
     def create_menus(self):
         # Recreate the menu.
         # Remove any native references to the existing menu
         for menu_item, cmd in self._menu_items.items():
-            cmd._impl.native.remove(menu_item)
+            cmd._impl.remove_menu_item(menu_item)
 
         # Create a clean menubar instance.
         menubar = NSMenu.alloc().initWithTitle("MainMenu")
         submenu = None
-        self._menu_groups = {}
+
+        # Warm the menu group cache with the root menubar
+        group_cache = {None: menubar}
         self._menu_items = {}
 
         for cmd in self.interface.commands:
-            submenu = self._submenu(cmd.group, menubar)
+            submenu = submenu_for_group(cmd.group, group_cache)
+
             if isinstance(cmd, Separator):
-                submenu.addItem(NSMenuItem.separatorItem())
+                menu_item = NSMenuItem.separatorItem()
             else:
-                if cmd.shortcut:
-                    key, modifier = cocoa_key(cmd.shortcut)
-                else:
-                    key = ""
-                    modifier = None
+                menu_item = cmd._impl.create_menu_item()
+                self._menu_items[menu_item] = cmd
 
-                # Native handlers can be invoked directly as menu actions.
-                # Standard wrapped menu items have a `_raw` attribute,
-                # and are invoked using the selectMenuItem:
-                if hasattr(cmd.action, "_raw"):
-                    action = SEL("selectMenuItem:")
-                else:
-                    action = cmd.action
-
-                item = NSMenuItem.alloc().initWithTitle(
-                    cmd.text,
-                    action=action,
-                    keyEquivalent=key,
-                )
-
-                if modifier is not None:
-                    item.keyEquivalentModifierMask = modifier
-
-                # Explicit set the initial enabled/disabled state on the menu item
-                item.setEnabled(cmd.enabled)
-
-                # Associated the MenuItem with the command, so that future
-                # changes to enabled etc are reflected.
-                cmd._impl.native.add(item)
-
-                self._menu_items[item] = cmd
-                submenu.addItem(item)
+            submenu.addItem(menu_item)
 
         # Set the menu for the app.
         self.native.mainMenu = menubar

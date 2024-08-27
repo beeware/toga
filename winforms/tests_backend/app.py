@@ -218,3 +218,33 @@ class AppProbe(BaseProbe, DialogsMixin):
 
     def open_document_by_drag(self, document_path):
         pytest.xfail("Winforms doesn't support opening documents by drag")
+
+    def has_status_icon(self, status_icon):
+        return status_icon._impl.native is not None
+
+    def status_menu_items(self, status_icon):
+        if status_icon._impl.native.ContextMenu:
+            return [
+                {
+                    "-": "---",
+                    "About Toga Testbed": "**ABOUT**",
+                    "Exit": "**EXIT**",
+                }.get(str(item.Text), str(item.Text))
+                for item in status_icon._impl.native.ContextMenu.MenuItems
+            ]
+        else:
+            # It's a button status item
+            return None
+
+    def activate_status_icon_button(self, item_id):
+        # Winforms doesn't provide an OnClick to trigger clicks, so we have to fake it
+        # at the level of the impl.
+        self.app.status_icons[item_id]._impl.winforms_click(
+            self.app.status_icons[item_id]._impl.native,
+            EventArgs.Empty,
+        )
+
+    def activate_status_menu_item(self, item_id, title):
+        menu = self.app.status_icons[item_id]._impl.native.ContextMenu
+        item = {item.Text: item for item in menu.MenuItems}[title]
+        item.OnClick(EventArgs.Empty)

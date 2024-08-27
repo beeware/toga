@@ -91,7 +91,7 @@ class Command:
 
         raise ValueError(f"Unknown standard command {id!r}")
 
-    def gtk_activate(self, action, data):
+    def gtk_activate(self, action, data=None):
         self.interface.action()
 
     def gtk_clicked(self, action):

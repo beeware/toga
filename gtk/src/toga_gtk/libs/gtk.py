@@ -56,3 +56,9 @@ try:
     from gi.repository import PangoFc  # noqa: F401
 except (ImportError, ValueError):  # pragma: no cover
     PangoFc = None
+
+try:
+    gi.require_version("XApp", "1.0")
+    from gi.repository import XApp  # noqa: F401
+except (ImportError, ValueError):  # pragma: no cover
+    XApp = None

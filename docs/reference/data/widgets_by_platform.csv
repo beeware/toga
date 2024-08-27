@@ -41,6 +41,7 @@ Icon,Resource,:class:`~toga.Icon`,"A small, square image, used to provide easily
 Image,Resource,:class:`~toga.Image`,Graphical content of arbitrary size.,|y|,|y|,|y|,|y|,|y|,,
 ListSource,Resource,:class:`~toga.sources.ListSource`,A data source describing an ordered list of data.,|y|,|y|,|y|,|y|,|y|,|y|,|y|
 Source,Resource,:class:`~toga.sources.Source`,A base class for data source implementations.,|y|,|y|,|y|,|y|,|y|,|y|,|y|
+StatusIcons,Resource,:ref:`Status Icons <statusicons>`,Icons that appear in the system tray for representing app status while the app isn't visible.,|y|,|y|,|y|,,,,
 TreeSource,Resource,:class:`~toga.sources.TreeSource`,A data source describing an ordered hierarchical tree of data.,|y|,|y|,|y|,|y|,|y|,|y|,|y|
 Validators,Resource,:ref:`Validators <validators>`,A mechanism for validating that input meets a given set of criteria.,|y|,|y|,|y|,|y|,|y|,|y|,|y|
 ValueSource,Resource,:class:`~toga.sources.ValueSource`,A data source describing a single value.,|y|,|y|,|y|,|y|,|y|,|y|,|y|

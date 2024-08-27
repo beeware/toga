@@ -21,6 +21,7 @@ from toga.icons import Icon
 from toga.paths import Paths
 from toga.platform import get_platform_factory
 from toga.screens import Screen
+from toga.statusicons import StatusIconSet
 from toga.widgets.base import Widget
 from toga.window import MainWindow, Window, WindowSet
 
@@ -337,6 +338,7 @@ class App:
         # We need the command set to exist so that startup et al. can add commands;
         # but we don't have an impl yet, so we can't set the on_change handler
         self._commands = CommandSet()
+        self._status_icons = StatusIconSet()
 
         self._startup_method = startup
 
@@ -609,6 +611,10 @@ class App:
         self._create_standard_commands()
         self._impl.create_standard_commands()
 
+        # Install the standard status icon commands. Again, this is done *before* startup
+        # so that the user's code can remove/change the defaults.
+        self.status_icons._create_standard_commands()
+
         # Invoke the user's startup method (or the default implementation)
         self.startup()
 
@@ -625,6 +631,11 @@ class App:
         # on-change handler for menus to respond to any future changes.
         self._impl.create_menus()
         self.commands.on_change = self._impl.create_menus
+
+        # Manifest the initial state of the status icons, then install an on-change
+        # handler so that any future changes will be reflected in the GUI.
+        self.status_icons._impl.create()
+        self.status_icons.commands.on_change = self.status_icons._impl.create
 
         # Manifest the initial state of toolbars (on the windows that have
         # them), then install a change listener so that any future changes to
@@ -703,6 +714,11 @@ class App:
     def screens(self) -> list[Screen]:
         """Returns a list of available screens."""
         return [screen.interface for screen in self._impl.get_screens()]
+
+    @property
+    def status_icons(self) -> StatusIconSet:
+        """The status icons displayed by the app."""
+        return self._status_icons
 
     @property
     def widgets(self) -> WidgetRegistry:

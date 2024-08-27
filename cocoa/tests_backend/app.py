@@ -313,3 +313,33 @@ class AppProbe(BaseProbe, DialogsMixin):
             self.app._impl.native,
             openFiles=[str(document_path)],
         )
+
+    def has_status_icon(self, status_icon):
+        return status_icon._impl.native is not None
+
+    def status_menu_items(self, status_icon):
+        if status_icon._impl.native.menu:
+            return [
+                {
+                    "": "---",
+                    "About Toga Testbed": "**ABOUT**",
+                    "Quit Toga Testbed": "**EXIT**",
+                }.get(str(item.title), str(item.title))
+                for item in status_icon._impl.native.menu.itemArray
+            ]
+        else:
+            # It's a button status item
+            return None
+
+    def activate_status_icon_button(self, item_id):
+        self.app.status_icons[item_id]._impl.native.button.performClick(None)
+
+    def activate_status_menu_item(self, item_id, title):
+        item = self.app.status_icons[item_id]._impl.native.menu.itemWithTitle(title)
+        send_message(
+            self.app._impl.native.delegate,
+            item.action,
+            item,
+            restype=None,
+            argtypes=[objc_id],
+        )

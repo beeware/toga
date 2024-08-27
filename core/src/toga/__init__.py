@@ -21,6 +21,7 @@ from .fonts import Font
 from .icons import Icon
 from .images import Image
 from .keys import Key
+from .statusicons import MenuStatusIcon, SimpleStatusIcon
 from .types import LatLng, Position, Size
 from .widgets.activityindicator import ActivityIndicator
 from .widgets.base import Widget
@@ -91,6 +92,9 @@ __all__ = [
     "Font",
     "Icon",
     "Image",
+    # Status icons
+    "MenuStatusIcon",
+    "SimpleStatusIcon",
     # Types
     "LatLng",
     "Position",

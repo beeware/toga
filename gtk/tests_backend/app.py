@@ -228,3 +228,30 @@ class AppProbe(BaseProbe, DialogsMixin):
 
     def open_document_by_drag(self, document_path):
         pytest.xfail("GTK doesn't support opening documents by drag")
+
+    def has_status_icon(self, status_icon):
+        return status_icon._impl.native is not None
+
+    def status_menu_items(self, status_icon):
+        menu = status_icon._impl.native.get_primary_menu()
+        if menu:
+            return [
+                {
+                    "": "---",
+                    "About Toga Testbed": "**ABOUT**",
+                    "Quit": "**EXIT**",
+                }.get(child.get_label(), child.get_label())
+                for child in menu.get_children()
+            ]
+        else:
+            # It's a button status item
+            return None
+
+    def activate_status_icon_button(self, item_id):
+        self.app.status_icons[item_id]._impl.native.emit("activate", 0, 0)
+
+    def activate_status_menu_item(self, item_id, title):
+        menu = self.app.status_icons[item_id]._impl.native.get_primary_menu()
+        item = {child.get_label(): child for child in menu.get_children()}[title]
+
+        item.emit("activate")
