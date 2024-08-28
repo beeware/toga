@@ -43,7 +43,7 @@ For example:
     def callback(sender, **kwargs):
         print("Command activated")
 
-    stuff_group = Group('Stuff', order=40)
+    stuff_group = toga.Group('Stuff', order=40)
 
     cmd1 = toga.Command(
         callback,
