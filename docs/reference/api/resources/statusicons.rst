@@ -132,7 +132,7 @@ a sub-menu that itself has a single menu item:
     )
 
     # Create a sub-group of the status icon. This will appear as a submenu.
-    stuff_group = Group('Stuff', parent=status_icon)
+    stuff_group = toga.Group('Stuff', parent=status_icon)
 
     cmd2 = toga.Command(
         callback,
@@ -141,7 +141,7 @@ a sub-menu that itself has a single menu item:
     )
 
     # Add the status icon to the app
-    app.status_icons.add(status_icon_1, status_icon_2)
+    app.status_icons.add(status_icon)
 
     # Add the commands to the status icons command set
     app.status_icons.commands.add(cmd1, cmd2)
