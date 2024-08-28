@@ -1,1 +1,0 @@
-Fixed runtime error due to misnamed variables in status icon docs.
