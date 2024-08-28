@@ -1,1 +1,0 @@
-Updated pytest-asyncio from 0.23.8 to 0.24.0 in /testbed.

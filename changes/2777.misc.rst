@@ -1,1 +1,0 @@
-Toga's determination for whether a Linux host is running X11 or Wayland is now more robust.

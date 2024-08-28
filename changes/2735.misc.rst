@@ -1,1 +1,0 @@
-Updated pre-commit from 3.7.1 to 3.8.0 in /core.

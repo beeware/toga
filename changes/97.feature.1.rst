@@ -1,1 +1,0 @@
-Toga can now define apps that persist in the background without having any open windows.
