@@ -9,11 +9,12 @@ import webbrowser
 from collections.abc import Coroutine, Iterator
 from email.message import Message
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, MutableSet, Protocol
+from typing import TYPE_CHECKING, Any, Protocol
 from weakref import WeakValueDictionary
 
-from toga.command import CommandSet
+from toga.command import Command, CommandSet
 from toga.constants import WindowState
+from toga.documents import Document, DocumentSet
 from toga.handlers import simple_handler, wrapped_handler
 from toga.hardware.camera import Camera
 from toga.hardware.location import Location
@@ -21,12 +22,12 @@ from toga.icons import Icon
 from toga.paths import Paths
 from toga.platform import get_platform_factory
 from toga.screens import Screen
+from toga.statusicons import StatusIconSet
 from toga.widgets.base import Widget
-from toga.window import MainWindow, Window
+from toga.window import MainWindow, Window, WindowSet
 
 if TYPE_CHECKING:
     from toga.dialogs import Dialog
-    from toga.documents import Document
     from toga.icons import IconContentT
 
 # Make sure deprecation warnings are shown by default
@@ -81,69 +82,6 @@ class BackgroundTask(Protocol):
         """
 
 
-class WindowSet(MutableSet[Window]):
-    def __init__(self, app: App):
-        """A collection of windows managed by an app.
-
-        A window is automatically added to the app when it is created, and removed when
-        it is closed. Adding a window to an App's window set automatically sets the
-        :attr:`~toga.Window.app` property of the Window.
-        """
-        self.app = app
-        self.elements: set[Window] = set()
-
-    def add(self, window: Window) -> None:
-        if not isinstance(window, Window):
-            raise TypeError("Can only add objects of type toga.Window")
-        # Silently not add if duplicate
-        if window not in self.elements:
-            self.elements.add(window)
-            window.app = self.app
-
-    def discard(self, window: Window) -> None:
-        if not isinstance(window, Window):
-            raise TypeError("Can only discard objects of type toga.Window")
-        if window not in self.elements:
-            raise ValueError(f"{window!r} is not part of this app")
-        self.elements.remove(window)
-
-    ######################################################################
-    # 2023-10: Backwards compatibility
-    ######################################################################
-
-    def __iadd__(self, window: Window) -> WindowSet:
-        # The standard set type does not have a += operator.
-        warnings.warn(
-            "Windows are automatically associated with the app; += is not required",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        return self
-
-    def __isub__(self, other: Window) -> WindowSet:
-        # The standard set type does have a -= operator, but it takes sets rather than
-        # individual items.
-        warnings.warn(
-            "Windows are automatically removed from the app; -= is not required",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        return self
-
-    ######################################################################
-    # End backwards compatibility
-    ######################################################################
-
-    def __iter__(self) -> Iterator[Window]:
-        return iter(self.elements)
-
-    def __contains__(self, value: object) -> bool:
-        return value in self.elements
-
-    def __len__(self) -> int:
-        return len(self.elements)
-
-
 class WidgetRegistry:
     # WidgetRegistry is implemented as a wrapper around a WeakValueDictionary, because
     # it provides a mapping from ID to widget. The mapping is weak so the registry
@@ -195,21 +133,6 @@ class WidgetRegistry:
         del self._registry[id]
 
 
-def overridable(method):
-    """Decorate the method as being user-overridable"""
-    method._overridden = True
-    return method
-
-
-def overridden(coroutine_or_method):
-    """Has the user overridden this method?
-
-    This is based on the method *not* having a ``_overridden`` attribute. Overridable
-    default methods have this attribute; user-defined method will not.
-    """
-    return not hasattr(coroutine_or_method, "_overridden")
-
-
 class App:
     #: The currently running :class:`~toga.App`. Since there can only be one running
     #: Toga app in a process, this is available as a class property via ``toga.App.app``.
@@ -237,6 +160,7 @@ class App:
         home_page: str | None = None,
         description: str | None = None,
         startup: AppStartupMethod | None = None,
+        document_types: list[type[Document]] | None = None,
         on_running: OnRunningHandler | None = None,
         on_exit: OnExitHandler | None = None,
         id: None = None,  # DEPRECATED
@@ -276,6 +200,8 @@ class App:
         :param startup: A callable to run before starting the app.
         :param on_running: The initial :any:`on_running` handler.
         :param on_exit: The initial :any:`on_exit` handler.
+        :param document_types: A list of :any:`Document` classes that this app
+            can manage.
         :param id: **DEPRECATED** - This argument will be ignored. If you need a
             machine-friendly identifier, use ``app_id``.
         :param windows: **DEPRECATED** – Windows are now automatically added to the
@@ -390,6 +316,12 @@ class App:
         else:
             self.icon = icon
 
+        # Set up the document types and collection of documents being managed.
+        self._documents = DocumentSet(
+            self,
+            types=[] if document_types is None else document_types,
+        )
+
         # Install the lifecycle handlers. If passed in as an argument, or assigned using
         # `app.on_event = my_handler`, the event handler will take the app as the first
         # argument. If we're using the default value, or we're subclassing app, the app
@@ -407,6 +339,7 @@ class App:
         # We need the command set to exist so that startup et al. can add commands;
         # but we don't have an impl yet, so we can't set the on_change handler
         self._commands = CommandSet()
+        self._status_icons = StatusIconSet()
 
         self._startup_method = startup
 
@@ -416,9 +349,6 @@ class App:
         self._full_screen_windows: tuple[Window, ...] | None = None
 
         # Create the implementation. This will trigger any startup logic.
-        self._create_impl()
-
-    def _create_impl(self) -> None:
         self.factory.App(interface=self)
 
     ######################################################################
@@ -508,9 +438,14 @@ class App:
     # App lifecycle
     ######################################################################
 
-    def _request_exit(self):
-        # Internal method to request an exit. This triggers on_exit handling, and
-        # will only exit if the user agrees.
+    def request_exit(self):
+        """Request an exit from the application.
+
+        This method will call the :meth:`~toga.App.on_exit` handler to confirm if the
+        app should be allowed to exit; if that handler confirms the action, the app will
+        exit.
+        """
+
         def cleanup(app, should_exit):
             if should_exit:
                 app.exit()
@@ -520,7 +455,7 @@ class App:
         wrapped_handler(self, self.on_exit, cleanup=cleanup)()
 
     def exit(self) -> None:
-        """Exit the application gracefully.
+        """Unconditionally exit the application.
 
         This *does not* invoke the ``on_exit`` handler; the app will be immediately
         and unconditionally closed.
@@ -577,19 +512,109 @@ class App:
         else:
             raise ValueError(f"Don't know how to use {window!r} as a main window.")
 
-    def _create_initial_windows(self):
-        # TODO: Create the initial windows for the app.
+    def _open_initial_document(self, filename: Path) -> bool:
+        """Internal utility method for opening a document provided at the command line.
 
-        # Safety check: Do we have at least one window?
-        if len(self.app.windows) == 0 and self.main_window is None:
-            # macOS document-based apps are allowed to have no open windows.
-            if self.app._impl.CLOSE_ON_LAST_WINDOW:
-                raise ValueError("App doesn't define any initial windows.")
+        This is abstracted so that backends that have their own management of command
+        line arguments can share the same error handling.
+
+        :param filename: The filename passed as an argument, as a string.
+        :returns: ``True`` if a document was successfully loaded; ``False`` otherwise.
+        """
+        try:
+            self.documents.open(filename)
+            return True
+        except FileNotFoundError:
+            print(f"Document {filename} not found")
+            return False
+        except Exception as e:
+            print(f"{filename}: {e}")
+            return False
+
+    def _create_standard_commands(self):
+        """Internal utility method to create the standard commands for the app."""
+        for cmd_id in [
+            Command.ABOUT,
+            Command.EXIT,
+            Command.VISIT_HOMEPAGE,
+        ]:
+            self.commands.add(Command.standard(self, cmd_id))
+
+        if self.documents.types:
+            default_document_type = self.documents.types[0]
+            command = Command.standard(
+                self,
+                Command.NEW,
+                action=simple_handler(self.documents.new, default_document_type),
+            )
+            if command:
+                if len(self.documents.types) == 1:
+                    # There's only 1 document type. The new command can be used as is.
+                    self.commands.add(command)
+                else:
+                    # There's more than one document type. Create a new command for each
+                    # document type, updating the title of the command to disambiguate,
+                    # and modifying the shortcut, order and ID of the document types 2+
+                    for i, document_class in enumerate(self.documents.types):
+                        command = Command.standard(
+                            self,
+                            Command.NEW,
+                            action=simple_handler(self.documents.new, document_class),
+                        )
+                        command.text = command.text + f" {document_class.description}"
+                        if i > 0:
+                            command.shortcut = None
+                            command._id = f"{command.id}:{document_class.extensions[0]}"
+                            command.order = command.order + i
+
+                        self.commands.add(command)
+
+            for cmd_id in [
+                Command.OPEN,
+                Command.SAVE,
+                Command.SAVE_AS,
+                Command.SAVE_ALL,
+            ]:
+                self.commands.add(Command.standard(self, cmd_id))
+
+    def _create_initial_windows(self):
+        """Internal utility method for creating initial windows based on command line
+        arguments. This method is used when the platform doesn't provide it's own
+        command-line handling interface.
+
+        If document types are defined, try to open every argument on the command line as
+        a document (unless the backend manages the command line arguments).
+        """
+        # If the backend handles the command line, don't do any command line processing.
+        if self._impl.HANDLES_COMMAND_LINE:
+            return
+        doc_count = len(self.windows)
+        if self.documents.types:
+            for filename in sys.argv[1:]:
+                if self._open_initial_document(filename):
+                    doc_count += 1
+
+        # Safety check: Do we have at least one document?
+        if self.main_window is None and doc_count == 0:
+            try:
+                # Pass in the first document type as the default
+                default_doc_type = self.documents.types[0]
+                self.documents.new(default_doc_type)
+            except IndexError:
+                # No document types defined.
+                raise RuntimeError(
+                    "App didn't create any windows, or register any document types."
+                )
 
     def _startup(self) -> None:
-        # Install the platform-specific app commands. This is done *before* startup so
-        # the user's code has the opporuntity to remove/change the default commands.
-        self._impl.create_app_commands()
+        # Install the standard commands. This is done *before* startup so the user's
+        # code has the opporuntity to remove/change the default commands.
+        self._create_standard_commands()
+        self._impl.create_standard_commands()
+
+        # Install the standard status icon commands. Again, this is done *before* startup
+        # so that the user's code can remove/change the defaults.
+        self.status_icons._create_standard_commands()
 
         # Invoke the user's startup method (or the default implementation)
         self.startup()
@@ -607,6 +632,11 @@ class App:
         # on-change handler for menus to respond to any future changes.
         self._impl.create_menus()
         self.commands.on_change = self._impl.create_menus
+
+        # Manifest the initial state of the status icons, then install an on-change
+        # handler so that any future changes will be reflected in the GUI.
+        self.status_icons._impl.create()
+        self.status_icons.commands.on_change = self.status_icons._impl.create
 
         # Manifest the initial state of toolbars (on the windows that have
         # them), then install a change listener so that any future changes to
@@ -655,6 +685,11 @@ class App:
         return self._commands
 
     @property
+    def documents(self) -> DocumentSet:
+        """The list of documents associated with this app."""
+        return self._documents
+
+    @property
     def location(self) -> Location:
         """A representation of the device's location service."""
         try:
@@ -680,6 +715,11 @@ class App:
     def screens(self) -> list[Screen]:
         """Returns a list of available screens."""
         return [screen.interface for screen in self._impl.get_screens()]
+
+    @property
+    def status_icons(self) -> StatusIconSet:
+        """The status icons displayed by the app."""
+        return self._status_icons
 
     @property
     def widgets(self) -> WidgetRegistry:
@@ -723,19 +763,6 @@ class App:
         :returns: The result of the dialog.
         """
         return await dialog._show(None)
-
-    @overridable
-    def preferences(self) -> None:
-        """Open a preferences panel for the app.
-
-        By default, this will do nothing, and the Preferences/Settings menu item will
-        not be installed. However, if you override this method in your App class, the
-        :attr:`toga.Command.PREFERENCES` command will be added, and this method will be
-        invoked when the menu item is selected.
-        """
-        # Default implementation won't ever be invoked, because the menu item
-        # isn't enabled unless it's overridden.
-        pass  # pragma: no cover
 
     def visit_homepage(self) -> None:
         """Open the application's :any:`home_page` in the default browser.
@@ -833,7 +860,6 @@ class App:
     # App events
     ######################################################################
 
-    @overridable
     def on_exit(self) -> bool:
         """The event handler that will be invoked when the app is about to exit.
 
@@ -848,7 +874,6 @@ class App:
         # Always allow exit
         return True
 
-    @overridable
     def on_running(self) -> None:
         """The event handler that will be invoked when the app's event loop starts running.
 
@@ -937,88 +962,39 @@ class App:
     ######################################################################
 
 
+######################################################################
+# 2024-08: Backwards compatibility
+######################################################################
+
+
 class DocumentApp(App):
-    def __init__(
-        self,
-        formal_name: str | None = None,
-        app_id: str | None = None,
-        app_name: str | None = None,
-        *,
-        icon: IconContentT | None = None,
-        author: str | None = None,
-        version: str | None = None,
-        home_page: str | None = None,
-        description: str | None = None,
-        startup: AppStartupMethod | None = None,
-        document_types: dict[str, type[Document]] | None = None,
-        on_exit: OnExitHandler | None = None,
-        id: None = None,  # DEPRECATED
-    ):
-        """Create a document-based application.
-
-        A document-based application is the same as a normal application, with the
-        exception that there is no main window. Instead, each document managed by the
-        app will create and manage its own window (or windows).
-
-        :param document_types: Initial :any:`document_types` mapping.
+    def __init__(self, *args, **kwargs):
+        """**DEPRECATED** - :any:`toga.DocumentApp` can be replaced with
+        :any:`toga.App`.
         """
-        if document_types is None:
-            raise ValueError("A document must manage at least one document type.")
-
-        self._document_types = document_types
-        self._documents: list[Document] = []
-
-        super().__init__(
-            formal_name=formal_name,
-            app_id=app_id,
-            app_name=app_name,
-            icon=icon,
-            author=author,
-            version=version,
-            home_page=home_page,
-            description=description,
-            startup=startup,
-            on_exit=on_exit,
-            id=id,
+        warnings.warn(
+            "toga.DocumentApp is no longer required. Use toga.App instead",
+            DeprecationWarning,
+            stacklevel=2,
         )
+        # Convert document types from dictionary format to list format.
+        # The old API guaranteed that document_types was provided
+        kwargs["document_types"] = list(kwargs["document_types"].values())
 
-    def _create_impl(self) -> None:
-        self.factory.DocumentApp(interface=self)
+        super().__init__(*args, **kwargs)
 
     @property
     def document_types(self) -> dict[str, type[Document]]:
-        """The document types this app can manage.
-
-        A dictionary of file extensions, without leading dots, mapping to the
-        :class:`toga.Document` subclass that will be created when a document with that
-        extension is opened. The subclass must take exactly 2 arguments in its
-        constructor: ``path`` and ``app``.
+        """**DEPRECATED** - Use ``documents.types``; extensions can be
+        obtained from the individual document classes itself.
         """
-        return self._document_types
-
-    @property
-    def documents(self) -> list[Document]:
-        """The list of documents associated with this app."""
-        return self._documents
-
-    def startup(self) -> None:
-        """No-op; a DocumentApp has no windows until a document is opened.
-
-        Subclasses can override this method to define customized startup behavior.
-        """
-
-    def _open(self, path: Path) -> None:
-        """Internal utility method; open a new document in this app, and shows the document.
-
-        :param path: The path to the document to be opened.
-        :raises ValueError: If the document is of a type that can't be opened. Backends can
-            suppress this exception if necessary to preserve platform-native behavior.
-        """
-        try:
-            DocType = self.document_types[path.suffix[1:]]
-        except KeyError:
-            raise ValueError(f"Don't know how to open documents of type {path.suffix}")
-        else:
-            document = DocType(path, app=self)
-            self._documents.append(document)
-            document.show()
+        warnings.warn(
+            "App.document_types is deprecated. Use App.documents.types",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return {
+            extension: doc_type
+            for doc_type in self.documents.types
+            for extension in doc_type.extensions
+        }

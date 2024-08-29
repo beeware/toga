@@ -16,11 +16,12 @@ from .dialogs import (
     SelectFolderDialog,
     StackTraceDialog,
 )
-from .documents import Document
+from .documents import Document, DocumentWindow
 from .fonts import Font
 from .icons import Icon
 from .images import Image
 from .keys import Key
+from .statusicons import MenuStatusIcon, SimpleStatusIcon
 from .types import LatLng, Position, Size
 from .widgets.activityindicator import ActivityIndicator
 from .widgets.base import Widget
@@ -48,7 +49,7 @@ from .widgets.textinput import TextInput
 from .widgets.timeinput import TimeInput, TimePicker
 from .widgets.tree import Tree
 from .widgets.webview import WebView
-from .window import DocumentMainWindow, MainWindow, Window
+from .window import MainWindow, Window
 
 
 class NotImplementedWarning(RuntimeWarning):
@@ -71,6 +72,7 @@ __all__ = [
     "Group",
     # Documents
     "Document",
+    "DocumentWindow",
     # Dialogs
     "ConfirmDialog",
     "ErrorDialog",
@@ -90,6 +92,9 @@ __all__ = [
     "Font",
     "Icon",
     "Image",
+    # Status icons
+    "MenuStatusIcon",
+    "SimpleStatusIcon",
     # Types
     "LatLng",
     "Position",
@@ -124,7 +129,6 @@ __all__ = [
     "WebView",
     "Widget",
     # Windows
-    "DocumentMainWindow",
     "MainWindow",
     "Window",
     # Deprecated widget names

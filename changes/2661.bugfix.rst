@@ -1,1 +1,0 @@
-Menu items on macOS are now able to correctly bind to the arrow and home/end/delete keys.

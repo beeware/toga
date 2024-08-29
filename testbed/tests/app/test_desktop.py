@@ -108,78 +108,65 @@ async def test_menu_close_windows(monkeypatch, app, app_probe, mock_app_exit):
     window2 = toga.Window("Test Window 2", position=(400, 150), size=(200, 200))
     window3 = toga.Window("Test Window 3", position=(300, 400), size=(200, 200))
 
-    try:
-        window1.content = toga.Box(style=Pack(background_color=REBECCAPURPLE))
-        window2.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
-        window3.content = toga.Box(style=Pack(background_color=FIREBRICK))
+    window1.content = toga.Box(style=Pack(background_color=REBECCAPURPLE))
+    window2.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
+    window3.content = toga.Box(style=Pack(background_color=FIREBRICK))
 
-        window1.show()
-        window2.show()
-        window3.show()
+    window1.show()
+    window2.show()
+    window3.show()
 
-        app.current_window = window2
+    app.current_window = window2
 
-        await app_probe.redraw("Extra windows added")
+    await app_probe.redraw("Extra windows added")
 
-        app_probe.activate_menu_close_window()
-        await app_probe.redraw("Window 2 closed")
+    app_probe.activate_menu_close_window()
+    await app_probe.redraw("Window 2 closed")
 
-        assert window2 not in app.windows
+    assert window2 not in app.windows
 
-        app_probe.activate_menu_close_all_windows()
-        await app_probe.redraw("All windows closed")
+    app_probe.activate_menu_close_all_windows()
+    await app_probe.redraw("All windows closed")
 
-        # Close all windows will attempt to close the main window as well.
-        # This would be an app exit, but we can't allow that; so, the only
-        # window that *actually* remains will be the main window.
-        mock_app_exit.assert_called_once_with()
-        assert window1 not in app.windows
-        assert window2 not in app.windows
-        assert window3 not in app.windows
+    # Close all windows will attempt to close the main window as well.
+    # This would be an app exit, but we can't allow that; so, the only
+    # window that *actually* remains will be the main window.
+    mock_app_exit.assert_called_once_with()
+    assert window1 not in app.windows
+    assert window2 not in app.windows
+    assert window3 not in app.windows
 
-        await app_probe.redraw("Extra windows closed")
+    await app_probe.redraw("Extra windows closed")
 
-        # Now that we've "closed" all the windows, we're in a state where there
-        # aren't any windows. Patch get_current_window to reflect this.
-        monkeypatch.setattr(
-            app._impl,
-            "get_current_window",
-            Mock(return_value=None),
-        )
-        app_probe.activate_menu_close_window()
-        await app_probe.redraw("No windows; Close Window is a no-op")
+    # Now that we've "closed" all the windows, we're in a state where there
+    # aren't any windows. Patch get_current_window to reflect this.
+    monkeypatch.setattr(
+        app._impl,
+        "get_current_window",
+        Mock(return_value=None),
+    )
+    app_probe.activate_menu_close_window()
+    await app_probe.redraw("No windows; Close Window is a no-op")
 
-        app_probe.activate_menu_minimize()
-        await app_probe.redraw("No windows; Minimize is a no-op")
-
-    finally:
-        if window1 in app.windows:
-            window1.close()
-        if window2 in app.windows:
-            window2.close()
-        if window3 in app.windows:
-            window3.close()
+    app_probe.activate_menu_minimize()
+    await app_probe.redraw("No windows; Minimize is a no-op")
 
 
 async def test_menu_minimize(app, app_probe):
     """Windows can be minimized by a menu item"""
     window1 = toga.Window("Test Window 1", position=(150, 150), size=(200, 200))
+    window1.content = toga.Box(style=Pack(background_color=REBECCAPURPLE))
+    window1.show()
 
-    try:
-        window1.content = toga.Box(style=Pack(background_color=REBECCAPURPLE))
-        window1.show()
+    window1_probe = window_probe(app, window1)
 
-        window1_probe = window_probe(app, window1)
+    app.current_window = window1
+    await app_probe.redraw("Extra window added")
 
-        app.current_window = window1
-        await app_probe.redraw("Extra window added")
+    app_probe.activate_menu_minimize()
 
-        app_probe.activate_menu_minimize()
-
-        await window1_probe.wait_for_window("Extra window minimized", minimize=True)
-        assert window1_probe.is_minimized
-    finally:
-        window1.close()
+    await window1_probe.wait_for_window("Extra window minimized", minimize=True)
+    assert window1_probe.is_minimized
 
 
 async def test_presentation_mode(app, app_probe, main_window, main_window_probe):
@@ -353,7 +340,6 @@ async def test_presentation_mode_exit_on_window_state_change(
         await app_probe.redraw("main_window is now the current window", delay=0.5)
         assert app.current_window == main_window
 
-
 async def test_show_hide_cursor(app, app_probe):
     """The app cursor can be hidden and shown"""
     assert app_probe.is_cursor_visible
@@ -397,36 +383,29 @@ async def test_current_window(app, app_probe, main_window):
     window2 = toga.Window("Test Window 2", position=(400, 150), size=(200, 200))
     window3 = toga.Window("Test Window 3", position=(300, 400), size=(200, 200))
 
-    try:
-        window1.content = toga.Box(style=Pack(background_color=REBECCAPURPLE))
-        window2.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
-        window3.content = toga.Box(style=Pack(background_color=FIREBRICK))
+    window1.content = toga.Box(style=Pack(background_color=REBECCAPURPLE))
+    window2.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
+    window3.content = toga.Box(style=Pack(background_color=FIREBRICK))
 
-        # We don't need to probe anything window specific; we just need
-        # a window probe to enforce appropriate delays.
-        window1_probe = window_probe(app, window1)
+    # We don't need to probe anything window specific; we just need
+    # a window probe to enforce appropriate delays.
+    window1_probe = window_probe(app, window1)
 
-        window1.show()
-        window2.show()
-        window3.show()
+    window1.show()
+    window2.show()
+    window3.show()
 
-        await window1_probe.wait_for_window("Extra windows added")
+    await window1_probe.wait_for_window("Extra windows added")
 
-        app.current_window = window2
-        await window1_probe.wait_for_window("Window 2 is current")
-        if app_probe.supports_current_window_assignment:
-            assert app.current_window == window2
+    app.current_window = window2
+    await window1_probe.wait_for_window("Window 2 is current")
+    if app_probe.supports_current_window_assignment:
+        assert app.current_window == window2
 
-        app.current_window = window3
-        await window1_probe.wait_for_window("Window 3 is current")
-        if app_probe.supports_current_window_assignment:
-            assert app.current_window == window3
-
-        # app_probe.platform tests?
-    finally:
-        window1.close()
-        window2.close()
-        window3.close()
+    app.current_window = window3
+    await window1_probe.wait_for_window("Window 3 is current")
+    if app_probe.supports_current_window_assignment:
+        assert app.current_window == window3
 
 
 async def test_session_based_app(
@@ -499,9 +478,6 @@ async def test_session_based_app(
         app.main_window = main_window
         await app_probe.restore_standard_app()
 
-        if secondary_window:
-            secondary_window.close()
-
 
 async def test_background_app(
     monkeypatch,
@@ -561,6 +537,3 @@ async def test_background_app(
     finally:
         app.main_window = main_window
         await app_probe.restore_standard_app()
-
-        if secondary_window:
-            secondary_window.close()

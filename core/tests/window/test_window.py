@@ -401,7 +401,7 @@ def test_close_direct(window, app):
     assert window in app.windows
 
     # Close the window directly
-    window.close()
+    assert window.close()
 
     # Window has been closed, but the close handler has *not* been invoked.
     assert window.closed
@@ -425,8 +425,8 @@ def test_close_direct_main_window(app):
     assert window.app == app
     assert window in app.windows
 
-    # Close the window directly
-    window.close()
+    # Close the window directly;
+    assert not window.close()
 
     # Window has *not* been closed.
     assert not window.closed

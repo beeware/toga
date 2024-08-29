@@ -1,5 +1,4 @@
 import asyncio
-import sys
 import warnings
 
 from android.content import Context
@@ -11,10 +10,9 @@ from java import dynamic_proxy
 from org.beeware.android import IPythonApp, MainActivity
 
 import toga
-from toga.command import Command, Group, Separator
+from toga.command import Group, Separator
 from toga.constants import WindowState
 from toga.dialogs import InfoDialog
-from toga.handlers import simple_handler
 
 from .libs import events
 from .screens import Screen as ScreenImpl
@@ -187,6 +185,9 @@ class TogaApp(dynamic_proxy(IPythonApp)):
 class App:
     # Android apps exit when the last window is closed
     CLOSE_ON_LAST_WINDOW = True
+    # Android doesn't have command line handling;
+    # but saying it does shortcuts the default handling
+    HANDLES_COMMAND_LINE = True
 
     def __init__(self, interface):
         self.interface = interface
@@ -211,16 +212,8 @@ class App:
     # Commands and menus
     ######################################################################
 
-    def create_app_commands(self):
-        self.interface.commands.add(
-            # About should be the last item in the menu, in a section on its own.
-            Command(
-                simple_handler(self.interface.about),
-                f"About {self.interface.formal_name}",
-                section=sys.maxsize,
-                id=Command.ABOUT,
-            ),
-        )
+    def create_standard_commands(self):
+        pass
 
     def create_menus(self):
         # Menu items are configured as part of onPrepareOptionsMenu; trigger that

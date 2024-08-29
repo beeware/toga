@@ -12,7 +12,7 @@ test = [
     "fonttools==4.53.1 ; sys.platform == 'linux'",
     "pillow==9.2.0",
     "pytest==8.3.2",
-    "pytest-asyncio==0.23.8",
+    "pytest-asyncio==0.24.0",
 ]
 
 [tool.briefcase]

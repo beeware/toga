@@ -1,1 +1,0 @@
-On GTK, the currently selected tab index on an ``OptionContainer`` can now be retrieved inside an ``on_select`` handler.
