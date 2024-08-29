@@ -340,6 +340,7 @@ async def test_presentation_mode_exit_on_window_state_change(
         await app_probe.redraw("main_window is now the current window", delay=0.5)
         assert app.current_window == main_window
 
+
 async def test_show_hide_cursor(app, app_probe):
     """The app cursor can be hidden and shown"""
     assert app_probe.is_cursor_visible

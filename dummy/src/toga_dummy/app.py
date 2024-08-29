@@ -3,6 +3,7 @@ import sys
 from pathlib import Path
 
 from toga.constants import WindowState
+
 from .screens import Screen as ScreenImpl
 from .utils import LoggedObject
 

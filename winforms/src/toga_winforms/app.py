@@ -11,6 +11,7 @@ from System.Net import SecurityProtocolType, ServicePointManager
 from System.Windows.Threading import Dispatcher
 
 from toga.constants import WindowState
+
 from .libs.proactor import WinformsProactorEventLoop
 from .libs.wrapper import WeakrefCallable
 from .screens import Screen as ScreenImpl
