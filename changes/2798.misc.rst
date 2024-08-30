@@ -1,0 +1,1 @@
+Toga CI now uses latest iOS simulator.

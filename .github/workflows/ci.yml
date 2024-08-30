@@ -275,11 +275,7 @@ jobs:
           # As of early April 2024, the XCode 15/iOS 17 simulator had a performance
           # issue that rendered Github Actions testing impossible. The issue didn't
           # impact iOS 16.4, but that required the use of Xcode 14.3.1.
-          #
-          # Refs #2476, actions/runner-images#9591.
-          pre-command: "sudo xcode-select -s /Applications/Xcode_14.3.1.app"
-          briefcase-run-args: "--device 'iPhone SE (3rd generation)::iOS 16.4'"
-          # briefcase-run-args: "--device 'iPhone SE (3rd generation)'"
+          briefcase-run-args: "--device 'iPhone SE (3rd generation)'"
           app-user-data-path: "$(xcrun simctl get_app_container booted org.beeware.toga.testbed data)/Documents"
 
         - backend: "android"
