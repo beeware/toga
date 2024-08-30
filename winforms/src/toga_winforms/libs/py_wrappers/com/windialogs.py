@@ -14,9 +14,9 @@ import comtypes.client  # pyright: ignore[reportMissingTypeStubs]
 from utility.logger_util import RobustRootLogger
 from utility.system.path import WindowsPath
 
-from toga_winforms.libs.win_wrappers.com.com_helpers import HandleCOMCall
-from toga_winforms.libs.win_wrappers.com.com_types import GUID
-from toga_winforms.libs.win_wrappers.com.interfaces import (
+from toga_winforms.libs.py_wrappers.com.com_helpers import HandleCOMCall
+from toga_winforms.libs.py_wrappers.com.com_types import GUID
+from toga_winforms.libs.py_wrappers.com.interfaces import (
     COMDLG_FILTERSPEC,
     SFGAO,
     SIGDN,
@@ -31,13 +31,13 @@ from toga_winforms.libs.win_wrappers.com.interfaces import (
     IID_IFileDialogCustomize,
     IShellItem,
 )
-from toga_winforms.libs.win_wrappers.hresult import HRESULT, S_OK
+from toga_winforms.libs.py_wrappers.hresult import HRESULT, S_OK
 
 if TYPE_CHECKING:
     from ctypes import Array, _FuncPointer, _Pointer
     from ctypes.wintypes import BOOL, DWORD, LPWSTR
 
-    from toga_winforms.libs.win_wrappers.com.interfaces import IFileDialog, IShellItemArray
+    from toga_winforms.libs.py_wrappers.com.interfaces import IFileDialog, IShellItemArray
 
 
 class FileDialogControlEvents(comtypes.COMObject):

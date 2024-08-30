@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING, Iterable, Protocol, cast, runtime_checkable
 import comtypes  # pyright: ignore[reportMissingTypeStubs]
 import comtypes.client  # pyright: ignore[reportMissingTypeStubs]
 
-from toga_winforms.libs.win_wrappers.hwnd import SimplePyHWND
+from toga_winforms.libs.py_wrappers.hwnd import SimplePyHWND
 
 if TYPE_CHECKING:
     import os

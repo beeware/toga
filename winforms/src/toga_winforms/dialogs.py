@@ -21,7 +21,7 @@ import comtypes.client
 from comtypes import GUID
 from comtypes.hresult import S_OK
 
-from toga_winforms.libs.win_wrappers.com.interfaces import (
+from toga_winforms.libs.py_wrappers.com.interfaces import (
     COMDLG_FILTERSPEC,
     CLSID_FileOpenDialog,
     CLSID_FileSaveDialog,
@@ -31,7 +31,7 @@ from toga_winforms.libs.win_wrappers.com.interfaces import (
     IShellItem,
     IShellItemArray,
 )
-from toga_winforms.libs.win_wrappers.hwnd import (
+from toga_winforms.libs.py_wrappers.hwnd import (
     ES_AUTOVSCROLL,
     ES_MULTILINE,
     ES_READONLY,

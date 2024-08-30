@@ -24,7 +24,7 @@ from comtypes import (
     GUID,
 )
 
-from toga_winforms.libs.win_wrappers.hresult import (  # pyright: ignore[reportMissingTypeStubs]
+from toga_winforms.libs.py_wrappers.hresult import (  # pyright: ignore[reportMissingTypeStubs]
     HRESULT,
     S_OK,
 )

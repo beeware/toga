@@ -10,11 +10,11 @@ from comtypes.client import CreateObject
 from comtypes.gen import Shell32
 from utility.logger_util import RobustRootLogger
 
-from toga_winforms.libs.win_wrappers.com.interfaces import (
+from toga_winforms.libs.py_wrappers.com.interfaces import (
     CLSID_FileOperation,
     IFileOperationProgressSink,
 )
-from toga_winforms.libs.win_wrappers.hresult import S_OK
+from toga_winforms.libs.py_wrappers.hresult import S_OK
 
 if TYPE_CHECKING:
     from typing_extensions import Literal

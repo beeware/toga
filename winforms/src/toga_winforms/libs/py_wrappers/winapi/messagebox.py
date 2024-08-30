@@ -3,8 +3,8 @@ from __future__ import annotations
 from ctypes import POINTER, WINFUNCTYPE, Structure, c_int, c_wchar_p, windll
 from ctypes.wintypes import ATOM, BOOL, DWORD, HBRUSH, HICON, HINSTANCE, HMENU, HWND, LPARAM, LPCWSTR, LPVOID, UINT, WPARAM
 
-from toga_winforms.libs.win_wrappers.common import LRESULT
-from toga_winforms.libs.win_wrappers.hwnd import HCURSOR
+from toga_winforms.libs.py_wrappers.common import LRESULT
+from toga_winforms.libs.py_wrappers.hwnd import HCURSOR
 
 
 def windows_message_box(  # noqa: PLR0913

@@ -4,7 +4,7 @@ from __future__ import annotations
 from ctypes import POINTER, WINFUNCTYPE, Structure, c_int, c_wchar_p, windll, c_long, c_uint, c_void_p
 from ctypes.wintypes import ATOM, BOOL, DWORD, HBRUSH, HICON, HINSTANCE, HMENU, HWND, LPARAM, LPCWSTR, LPVOID, UINT, WPARAM
 
-from toga_winforms.libs.win_wrappers.common import LRESULT
+from toga_winforms.libs.py_wrappers.common import LRESULT
 from enum import IntEnum
 from typing import TYPE_CHECKING, Sequence
 

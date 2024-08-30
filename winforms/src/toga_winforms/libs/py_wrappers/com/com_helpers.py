@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 
 from comtypes import COMObject
 
-from toga_winforms.libs.win_wrappers.hresult import HRESULT
+from toga_winforms.libs.py_wrappers.hresult import HRESULT
 
 if TYPE_CHECKING:
     from ctypes import _NamedFuncPointer
@@ -110,8 +110,8 @@ if __name__ == "__main__":
     import comtypes
     from comtypes import GUID
 
-    from toga_winforms.libs.win_wrappers.com.interfaces import SIGDN
-    from toga_winforms.libs.win_wrappers.hresult import S_OK
+    from toga_winforms.libs.py_wrappers.com.interfaces import SIGDN
+    from toga_winforms.libs.py_wrappers.hresult import S_OK
     try:
         from win32com.shell import shell  # pyright: ignore[reportMissingModuleSource]
     except ModuleNotFoundError:
