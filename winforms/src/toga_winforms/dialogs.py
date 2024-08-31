@@ -1,66 +1,271 @@
-from __future__ import annotations
-
 import asyncio
-from ctypes import (
-    HRESULT,
-    POINTER,
-    byref,
-    c_int,
-    c_void_p,
-    c_wchar_p,
-    sizeof,
-    windll,
-)
-from ctypes import cast as cast_with_ctypes
-from ctypes.wintypes import HWND, LPCWSTR
+import os
 from pathlib import Path
-from typing import TYPE_CHECKING
 
 import comtypes
 import comtypes.client
-from comtypes import GUID
+
+from comtypes import COMMETHOD, GUID
 from comtypes.hresult import S_OK
 
-from toga_winforms.libs.py_wrappers.com.interfaces import (
-    COMDLG_FILTERSPEC,
-    CLSID_FileOpenDialog,
-    CLSID_FileSaveDialog,
-    FileOpenOptions,
-    IFileOpenDialog,
-    IFileSaveDialog,
-    IShellItem,
-    IShellItemArray,
-)
-from toga_winforms.libs.py_wrappers.hwnd import (
-    ES_AUTOVSCROLL,
-    ES_MULTILINE,
-    ES_READONLY,
-    IDCANCEL,
-    IDOK,
-    IDYES,
-    MB_ICONASTERISK,
-    MB_ICONEXCLAMATION,
-    MB_ICONHAND,
-    MB_ICONQUESTION,
-    MB_OK,
-    MB_OKCANCEL,
-    MB_YESNO,
-    SW_SHOW,
-    WM_COMMAND,
-    WM_DESTROY,
-    WNDPROC,
-    WS_CHILD,
-    WS_EX_DLGMODALFRAME,
-    WS_OVERLAPPEDWINDOW,
-    WS_VISIBLE,
-    WS_VSCROLL,
-    CursorType,
-    MessageBoxW,
-    ctypesWNDCLASS,
-)
+from ctypes import HRESULT, POINTER, Structure, byref, c_int, c_uint, c_ulong, c_void_p, c_wchar_p, windll
+from ctypes import cast as cast_with_ctypes
+from ctypes.wintypes import BOOL, DWORD, HWND, LPCWSTR, LPWSTR
+from enum import IntFlag
+from typing import Callable, List, Optional, Tuple, Union
 
-if TYPE_CHECKING:
-    import os
+import System.Windows.Forms as WinForms
+from System.Drawing import (
+    ContentAlignment,
+    Font as WinFont,
+    FontFamily,
+    FontStyle,
+    SystemFonts,
+)
+from System.Windows.Forms import DialogResult, MessageBoxButtons, MessageBoxIcon
+
+from .libs.wrapper import WeakrefCallable
+
+
+class COMDLG_FILTERSPEC(Structure):  # noqa: N801
+    _fields_ = [
+        ("pszName", LPCWSTR),
+        ("pszSpec", LPCWSTR)
+    ]
+
+
+class FileOpenOptions(IntFlag):
+    FOS_OVERWRITEPROMPT = 0x00000002
+    FOS_STRICTFILETYPES = 0x00000004
+    FOS_NOCHANGEDIR = 0x00000008
+    FOS_PICKFOLDERS = 0x00000020
+    FOS_FORCEFILESYSTEM = 0x00000040
+    FOS_ALLNONSTORAGEITEMS = 0x00000080
+    FOS_NOVALIDATE = 0x00000100
+    FOS_ALLOWMULTISELECT = 0x00000200
+    FOS_PATHMUSTEXIST = 0x00000800
+    FOS_FILEMUSTEXIST = 0x00001000
+    FOS_CREATEPROMPT = 0x00002000
+    FOS_SHAREAWARE = 0x00004000
+    FOS_NOREADONLYRETURN = 0x00008000
+    FOS_NOTESTFILECREATE = 0x00010000
+    FOS_HIDEMRUPLACES = 0x00020000
+    FOS_HIDEPINNEDPLACES = 0x00040000
+    FOS_NODEREFERENCELINKS = 0x00100000
+    FOS_DONTADDTORECENT = 0x02000000
+    FOS_FORCESHOWHIDDEN = 0x10000000
+    FOS_DEFAULTNOMINIMODE = 0x20000000
+    FOS_FORCEPREVIEWPANEON = 0x40000000
+
+
+IID_IShellItem = GUID("{43826D1E-E718-42EE-BC55-A1E261C37BFE}")
+IID_IShellItemArray = GUID("{B63EA76D-1F85-456F-A19C-48159EFA858B}")
+IID_IShellItemFilter = GUID("{2659B475-EEB8-48B7-8F07-B378810F48CF}")
+IID_IModalWindow = GUID("{B4DB1657-70D7-485E-8E3E-6FCB5A5C1802}")
+IID_IFileDialog = GUID("{42F85136-DB7E-439C-85F1-E4075D135FC8}")
+IID_IFileOpenDialog = GUID("{D57C7288-D4AD-4768-BE02-9D969532D960}")
+IID_IFileSaveDialog = GUID("{84BCCD23-5FDE-4CDB-AEA4-AF64B83D78AB}")
+CLSID_FileOpenDialog = GUID("{DC1C5A9C-E88A-4dde-A5A1-60F82A20AEF7}")
+CLSID_FileSaveDialog = GUID("{C0B4E2F3-BA21-4773-8DBA-335EC946EB8B}")
+
+
+class IShellItem(comtypes.IUnknown):
+    _case_insensitive_: bool = True
+    _iid_: GUID = IID_IShellItem
+    _methods_ = [
+        COMMETHOD([], HRESULT, "BindToHandler",
+                  (["in"], POINTER(comtypes.IUnknown), "pbc"),
+                  (["in"], POINTER(GUID), "bhid"),
+                  (["in"], POINTER(GUID), "riid"),
+                  (["out"], POINTER(c_void_p), "ppv")),
+        COMMETHOD([], HRESULT, "GetParent",
+                  (["out"], POINTER(POINTER(comtypes.IUnknown)), "ppsi")),
+        COMMETHOD([], HRESULT, "GetDisplayName",
+                  (["in"], c_ulong, "sigdnName"),
+                  (["out"], POINTER(LPWSTR), "ppszName")),
+        COMMETHOD([], HRESULT, "GetAttributes",
+                  (["in"], c_ulong, "sfgaoMask"),
+                  (["out"], POINTER(c_ulong), "psfgaoAttribs")),
+        COMMETHOD([], HRESULT, "Compare",
+                  (["in"], POINTER(comtypes.IUnknown), "psi"),
+                  (["in"], c_ulong, "hint"),
+                  (["out"], POINTER(c_int), "piOrder"))
+    ]
+    QueryInterface: Callable[[GUID, comtypes.IUnknown], int]
+    AddRef: Callable[[], int]
+    Release: Callable[[], int]
+    BindToHandler: Callable[[comtypes.IUnknown, GUID, GUID, c_void_p], int]
+    GetParent: Callable[[], comtypes.IUnknown]
+    GetDisplayName: Callable[[Union[c_ulong, int]], str]
+    GetAttributes: Callable[[Union[c_ulong, int]], int]
+    Compare: Callable[[comtypes.IUnknown, c_ulong, c_int], int]
+
+
+class IShellItemArray(comtypes.IUnknown):
+    _case_insensitive_: bool = True
+    _iid_: GUID = IID_IShellItemArray
+    _methods_ = [
+        COMMETHOD([], HRESULT, "BindToHandler",
+                  (["in"], POINTER(comtypes.IUnknown), "pbc"),
+                  (["in"], POINTER(GUID), "bhid"),
+                  (["in"], POINTER(GUID), "riid"),
+                  (["out"], POINTER(c_void_p), "ppv")),
+        COMMETHOD([], HRESULT, "GetPropertyStore",
+                  (["in"], c_ulong, "flags"),
+                  (["in"], POINTER(GUID), "riid"),
+                  (["out"], POINTER(c_void_p), "ppv")),
+        COMMETHOD([], HRESULT, "GetPropertyDescriptionList",
+                  (["in"], POINTER(GUID), "keyType"),
+                  (["in"], POINTER(GUID), "riid"),
+                  (["out"], POINTER(c_void_p), "ppv")),
+        COMMETHOD([], HRESULT, "GetAttributes",
+                  (["in"], c_ulong, "attribFlags"),
+                  (["in"], c_ulong, "sfgaoMask"),
+                  (["out"], POINTER(c_ulong), "psfgaoAttribs")),
+        COMMETHOD([], HRESULT, "GetCount",
+                  (["out"], POINTER(c_uint), "pdwNumItems")),
+        COMMETHOD([], HRESULT, "GetItemAt",
+                  (["in"], c_uint, "dwIndex"),
+                  (["out"], POINTER(POINTER(IShellItem)), "ppsi")),
+        COMMETHOD([], HRESULT, "EnumItems",
+                  (["out"], POINTER(POINTER(comtypes.IUnknown)), "ppenumShellItems"))
+    ]
+    QueryInterface: Callable[[GUID, comtypes.IUnknown], int]
+    AddRef: Callable[[], int]
+    Release: Callable[[], int]
+    BindToHandler: Callable[[comtypes.IUnknown, GUID, GUID], int]
+    GetPropertyStore: Callable[[int, GUID], c_void_p]
+    GetPropertyDescriptionList: Callable[[GUID, GUID], c_void_p]
+    GetAttributes: Callable[[int, int], int]
+    GetCount: Callable[[], int]
+    GetItemAt: Callable[[Union[int, int]], IShellItem]
+    EnumItems: Callable[[], comtypes.IUnknown]
+
+
+class IModalWindow(comtypes.IUnknown):
+    _case_insensitive_: bool = True
+    _iid_: GUID = IID_IModalWindow
+    _methods_ = [
+        COMMETHOD([], HRESULT, "Show",
+                  (["in"], HWND, "hwndParent"))
+    ]
+    Show: Callable[[Union[int, HWND]], int]
+
+
+class IFileDialog(IModalWindow):
+    _iid_: GUID = IID_IFileDialog
+    _methods_ = [
+        COMMETHOD([], HRESULT, "SetFileTypes",
+                  (["in"], c_uint, "cFileTypes"),
+                  (["in"], POINTER(c_void_p), "rgFilterSpec")),
+        COMMETHOD([], HRESULT, "SetFileTypeIndex",
+                  (["in"], c_uint, "iFileType")),
+        COMMETHOD([], HRESULT, "GetFileTypeIndex",
+                  (["out"], POINTER(c_uint), "piFileType")),
+        COMMETHOD([], HRESULT, "Advise",
+                  (["in"], POINTER(comtypes.IUnknown), "pfde"),
+                  (["out"], POINTER(DWORD), "pdwCookie")),
+        COMMETHOD([], HRESULT, "Unadvise",
+                  (["in"], DWORD, "dwCookie")),
+        COMMETHOD([], HRESULT, "SetOptions",
+                  (["in"], c_uint, "fos")),
+        COMMETHOD([], HRESULT, "GetOptions",
+                  (["out"], POINTER(DWORD), "pfos")),
+        COMMETHOD([], HRESULT, "SetDefaultFolder",
+                  (["in"], POINTER(IShellItem), "psi")),
+        COMMETHOD([], HRESULT, "SetFolder",
+                  (["in"], POINTER(IShellItem), "psi")),
+        COMMETHOD([], HRESULT, "GetFolder",
+                  (["out"], POINTER(POINTER(IShellItem)), "ppsi")),
+        COMMETHOD([], HRESULT, "GetCurrentSelection",
+                  (["out"], POINTER(POINTER(IShellItem)), "ppsi")),
+        COMMETHOD([], HRESULT, "SetFileName",
+                  (["in"], LPCWSTR, "pszName")),
+        COMMETHOD([], HRESULT, "GetFileName",
+                  (["out"], POINTER(LPWSTR), "pszName")),
+        COMMETHOD([], HRESULT, "SetTitle",
+                  (["in"], LPCWSTR, "pszTitle")),
+        COMMETHOD([], HRESULT, "SetOkButtonLabel",
+                  (["in"], LPCWSTR, "pszText")),
+        COMMETHOD([], HRESULT, "SetFileNameLabel",
+                  (["in"], LPCWSTR, "pszLabel")),
+        COMMETHOD([], HRESULT, "GetResult",
+                  (["out"], POINTER(POINTER(IShellItem)), "ppsi")),
+        COMMETHOD([], HRESULT, "AddPlace",
+                  (["in"], POINTER(IShellItem), "psi"),
+                  (["in"], c_int, "fdap")),
+        COMMETHOD([], HRESULT, "SetDefaultExtension",
+                  (["in"], LPCWSTR, "pszDefaultExtension")),
+        COMMETHOD([], HRESULT, "Close",
+                  (["in"], HRESULT, "hr")),
+        COMMETHOD([], HRESULT, "SetClientGuid",
+                  (["in"], POINTER(GUID), "guid")),
+        COMMETHOD([], HRESULT, "ClearClientData"),
+        COMMETHOD([], HRESULT, "SetFilter",
+                  (["in"], POINTER(comtypes.IUnknown), "pFilter"))  # IShellItemFilter
+    ]
+    SetFileTypes: Callable[[Union[c_uint, int], c_void_p], int]
+    SetFileTypeIndex: Callable[[c_uint], int]
+    GetFileTypeIndex: Callable[[], int]
+    Advise: Callable[[Union[comtypes.IUnknown, comtypes.COMObject]], int]
+    Unadvise: Callable[[int], int]
+    SetOptions: Callable[[Union[int, int]], int]
+    GetOptions: Callable[[], int]
+    SetDefaultFolder: Callable[[IShellItem], int]
+    SetFolder: Callable[[IShellItem], int]
+    GetFolder: Callable[[], IShellItem]
+    GetCurrentSelection: Callable[[], IShellItem]
+    SetFileName: Callable[[str], int]
+    GetFileName: Callable[[], str]
+    SetTitle: Callable[[str], int]
+    SetOkButtonLabel: Callable[[str], int]
+    SetFileNameLabel: Callable[[str], int]
+    GetResult: Callable[[], IShellItem]
+    AddPlace: Callable[[IShellItem, c_int], int]
+    SetDefaultExtension: Callable[[str], int]
+    Close: Callable[[HRESULT], int]
+    SetClientGuid: Callable[[GUID], int]
+    ClearClientData: Callable[[], int]
+    SetFilter: Callable[[comtypes.IUnknown], int]
+
+
+class IFileOpenDialog(IFileDialog):
+    _case_insensitive_: bool = True
+    _iid_: GUID = IID_IFileOpenDialog
+    _methods_ = [
+        COMMETHOD([], HRESULT, "GetResults",
+                  (["out"], POINTER(POINTER(IShellItemArray)), "ppenum")),
+        COMMETHOD([], HRESULT, "GetSelectedItems",
+                  (["out"], POINTER(POINTER(IShellItemArray)), "ppsai"))
+    ]
+    GetResults: Callable[[], IShellItemArray]
+    GetSelectedItems: Callable[[], IShellItemArray]
+
+
+class IFileSaveDialog(IFileDialog):
+    _case_insensitive_: bool = True
+    _iid_: GUID = IID_IFileSaveDialog
+    _methods_ = [
+        COMMETHOD([], HRESULT, "SetSaveAsItem",
+                  (["in"], POINTER(IShellItem), "psi")),
+        COMMETHOD([], HRESULT, "SetProperties",
+                  (["in"], POINTER(comtypes.IUnknown), "pStore")),
+        COMMETHOD([], HRESULT, "SetCollectedProperties",
+                  (["in"], POINTER(comtypes.IUnknown), "pList"),
+                  (["in"], BOOL, "fAppendDefault")),
+        COMMETHOD([], HRESULT, "GetProperties",
+                  (["out"], POINTER(POINTER(comtypes.IUnknown)), "ppStore")),
+        COMMETHOD([], HRESULT, "ApplyProperties",
+                  (["in"], POINTER(IShellItem), "psi"),
+                  (["in"], POINTER(comtypes.IUnknown), "pStore"),
+                  (["in"], HWND, "hwnd"),
+                  (["in"], POINTER(comtypes.IUnknown), "pSink"))
+    ]
+    SetSaveAsItem: Callable[[IShellItem], int]
+    SetProperties: Callable[[comtypes.IUnknown], int]
+    SetCollectedProperties: Callable[[comtypes.IUnknown, BOOL], int]
+    GetProperties: Callable[[comtypes.IUnknown], int]
+    ApplyProperties: Callable[[IShellItem, comtypes.IUnknown, HWND, comtypes.IUnknown], int]
 
 
 class BaseDialog:
@@ -73,7 +278,14 @@ class BaseDialog:
 
 
 class MessageDialog(BaseDialog):
-    def __init__(self, title, message, buttons, icon, success_result=None):
+    def __init__(
+        self,
+        title,
+        message,
+        buttons,
+        icon,
+        success_result=None,
+    ):
         super().__init__()
         self.message = message
         self.title = title
@@ -82,8 +294,12 @@ class MessageDialog(BaseDialog):
         self.success_result = success_result
 
     def _show(self):
-        style = self.buttons | self.icon
-        return_value = MessageBoxW(0, self.message, self.title, style)
+        return_value = WinForms.MessageBox.Show(
+            self.message,
+            self.title,
+            self.buttons,
+            self.icon,
+        )
         if self.success_result:
             self.future.set_result(return_value == self.success_result)
         else:
@@ -92,150 +308,151 @@ class MessageDialog(BaseDialog):
 
 class InfoDialog(MessageDialog):
     def __init__(self, title, message):
-        super().__init__(title, message, MB_OK, MB_ICONASTERISK)
+        super().__init__(
+            title,
+            message,
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Information,
+        )
 
 
 class QuestionDialog(MessageDialog):
     def __init__(self, title, message):
-        super().__init__(title, message, MB_YESNO, MB_ICONQUESTION, success_result=IDYES)
+        super().__init__(
+            title,
+            message,
+            MessageBoxButtons.YesNo,
+            MessageBoxIcon.Information,
+            success_result=DialogResult.Yes,
+        )
 
 
 class ConfirmDialog(MessageDialog):
     def __init__(self, title, message):
-        super().__init__(title, message, MB_OKCANCEL, MB_ICONEXCLAMATION, success_result=IDOK)
+        super().__init__(
+            title,
+            message,
+            MessageBoxButtons.OKCancel,
+            MessageBoxIcon.Warning,
+            success_result=DialogResult.OK,
+        )
 
 
 class ErrorDialog(MessageDialog):
     def __init__(self, title, message=None):
-        super().__init__(title, message, MB_OK, MB_ICONHAND)
+        super().__init__(
+            title,
+            message,
+            WinForms.MessageBoxButtons.OK,
+            WinForms.MessageBoxIcon.Error,
+        )
 
 
 class StackTraceDialog(BaseDialog):
     def __init__(self, title, message, content, retry):
         super().__init__()
-        self.title = title
-        self.message = message
-        self.content = content
-        self.retry = retry
-        self.hwnd = None
-        self.hInstance = windll.kernel32.GetModuleHandleW(None)
-        self._register_class()
 
-    def _register_class(self):
-        wnd_class = ctypesWNDCLASS()
-        wnd_class.cbSize = sizeof(ctypesWNDCLASS)
-        wnd_class.style = 0
-        wnd_class.lpfnWndProc = WNDPROC(self._wnd_proc)
-        wnd_class.cbClsExtra = 0
-        wnd_class.cbWndExtra = 0
-        wnd_class.hInstance = self.hInstance
-        wnd_class.hIcon = windll.user32.LoadIconW(None, c_wchar_p(CursorType.ARROW.value))  # IDI_APPLICATION
-        wnd_class.hCursor = windll.user32.LoadCursorW(None, c_wchar_p(CursorType.ARROW.value))  # IDC_ARROW
-        wnd_class.hbrBackground = windll.gdi32.GetStockObject(15)  # WHITE_BRUSH
-        wnd_class.lpszClassName = "StackTraceDialogClass"
-        wnd_class.hIconSm = windll.user32.LoadIconW(None, c_wchar_p(CursorType.ARROW.value))  # IDI_APPLICATION
+        self.native = WinForms.Form()
+        self.native.MinimizeBox = False
+        self.native.FormBorderStyle = self.native.FormBorderStyle.FixedSingle
+        self.native.MaximizeBox = False
+        self.native.FormClosing += WeakrefCallable(self.winforms_FormClosing)
+        self.native.Width = 540
+        self.native.Height = 320
+        self.native.Text = title
 
-        self.class_atom = LPCWSTR(windll.user32.RegisterClassExW(byref(wnd_class)))
+        # The top-of-page introductory message
+        textLabel = WinForms.Label()
+        textLabel.Left = 10
+        textLabel.Top = 10
+        textLabel.Width = 520
+        textLabel.Alignment = ContentAlignment.MiddleCenter
+        textLabel.Text = message
 
-    def _create_dialog(self):
-        self.hwnd = windll.user32.CreateWindowExW(
-            WS_EX_DLGMODALFRAME,
-            self.class_atom,
-            self.title,
-            WS_OVERLAPPEDWINDOW | WS_VISIBLE,
-            100, 100, 540, 320,
-            None, None, self.hInstance, None
+        self.native.Controls.Add(textLabel)
+
+        # A scrolling text box for the stack trace.
+        trace = WinForms.RichTextBox()
+        trace.Left = 10
+        trace.Top = 30
+        trace.Width = 504
+        trace.Height = 210
+        trace.Multiline = True
+        trace.ReadOnly = True
+        trace.Font = WinFont(
+            FontFamily.GenericMonospace,
+            float(SystemFonts.DefaultFont.Size),
+            FontStyle.Regular,
         )
-        # SetWindowTextW is used to set the window title
-        windll.user32.SetWindowTextW(self.hwnd, self.title)
+        trace.Text = content
 
-        # Create controls
-        self._create_controls()
+        self.native.Controls.Add(trace)
 
-        windll.user32.ShowWindow(self.hwnd, SW_SHOW)
-        windll.user32.UpdateWindow(self.hwnd)
+        # Add acceptance/close buttons
+        if retry:
+            retry = WinForms.Button()
+            retry.Left = 290
+            retry.Top = 250
+            retry.Width = 100
+            retry.Text = "&Retry"
+            retry.Click += WeakrefCallable(self.winforms_Click_retry)
 
-    def _create_controls(self):
-        # Create the label
-        hLabel = windll.user32.CreateWindowExW(
-            0, "STATIC", self.message,
-            WS_CHILD | WS_VISIBLE,
-            10, 10, 520, 20,
-            self.hwnd, None, self.hInstance, None
-        )
+            self.native.Controls.Add(retry)
 
-        # Create the multiline text box for the stack trace
-        hEdit = windll.user32.CreateWindowExW(
-            0, "EDIT", self.content,
-            WS_CHILD | WS_VISIBLE | ES_MULTILINE | ES_AUTOVSCROLL | ES_READONLY | WS_VSCROLL,
-            10, 30, 504, 210,
-            self.hwnd, None, self.hInstance, None
-        )
+            quit = WinForms.Button()
+            quit.Left = 400
+            quit.Top = 250
+            quit.Width = 100
+            quit.Text = "&Quit"
+            quit.Click += WeakrefCallable(self.winforms_Click_quit)
 
-        # Create buttons based on whether retry is needed
-        if self.retry:
-            hRetry = windll.user32.CreateWindowExW(
-                0, "BUTTON", "&Retry",
-                WS_CHILD | WS_VISIBLE,
-                290, 250, 100, 30,
-                self.hwnd, IDOK, self.hInstance, None
-            )
-            hQuit = windll.user32.CreateWindowExW(
-                0, "BUTTON", "&Quit",
-                WS_CHILD | WS_VISIBLE,
-                400, 250, 100, 30,
-                self.hwnd, IDCANCEL, self.hInstance, None
-            )
+            self.native.Controls.Add(quit)
         else:
-            hOk = windll.user32.CreateWindowExW(
-                0, "BUTTON", "&OK",
-                WS_CHILD | WS_VISIBLE,
-                400, 250, 100, 30,
-                self.hwnd, IDOK, self.hInstance, None
-            )
+            accept = WinForms.Button()
+            accept.Left = 400
+            accept.Top = 250
+            accept.Width = 100
+            accept.Text = "&OK"
+            accept.Click += WeakrefCallable(self.winforms_Click_accept)
 
-    def _wnd_proc(self, hwnd, msg, wparam, lparam):
-        if msg == WM_COMMAND:
-            control_id = wparam & 0xFFFF
-            if control_id == IDOK:
-                self._handle_ok()
-            elif control_id == IDCANCEL:
-                self._handle_cancel()
-            windll.user32.DestroyWindow(hwnd)
-        elif msg == WM_DESTROY:
-            windll.user32.DestroyWindow(hwnd)
-        return windll.user32.DefWindowProcW(hwnd, msg, wparam, lparam)
+            self.native.Controls.Add(accept)
 
     def _show(self):
-        self._create_dialog()
-        # MessageBox to show dialog (optional)
-        windll.user32.MessageBoxW(self.hwnd, self.message, self.title, MB_OK)
-        if self.retry:
-            self.future.set_result(True)
-        else:
-            self.future.set_result(None)
+        self.native.ShowDialog()
 
-    def _handle_ok(self):
-        self.future.set_result(True)
-        windll.user32.DestroyWindow(self.hwnd)
+    def winforms_FormClosing(self, sender, event):
+        # If the close button is pressed, the future won't be done.
+        # We cancel this event to prevent the dialog from closing.
+        # If a button is pressed, the future will be set, and a close
+        # event will be triggered.
+        if not self.future.done():
+            event.Cancel = True  # pragma: no cover
 
-    def _handle_cancel(self):
+    def winforms_Click_quit(self, sender, event):
         self.future.set_result(False)
-        windll.user32.DestroyWindow(self.hwnd)
+        self.native.Close()
+
+    def winforms_Click_retry(self, sender, event):
+        self.future.set_result(True)
+        self.native.Close()
+
+    def winforms_Click_accept(self, sender, event):
+        self.future.set_result(None)
+        self.native.Close()
 
 
 class FileDialog(BaseDialog):
     def __init__(
         self,
-        native: IFileOpenDialog | IFileSaveDialog,
+        native: Union[IFileOpenDialog, IFileSaveDialog],
         title: str,
-        initial_directory: os.PathLike | str,
+        initial_directory: Union[os.PathLike, str],
         *,
-        filename: str | None = None,
-        file_types: list[str] | None = None,
+        filename: Optional[str] = None,
+        file_types: Optional[List[str]] = None,
     ):
         super().__init__()
-        self.native: IFileOpenDialog | IFileSaveDialog = native
+        self.native: Union[IFileOpenDialog, IFileSaveDialog] = native
 
         self._set_title(title)
         if filename is not None:
@@ -245,7 +462,7 @@ class FileDialog(BaseDialog):
             self._set_initial_directory(str(initial_directory))
 
         if file_types is not None:
-            filters: list[tuple[str, str]] = [
+            filters: List[Tuple[str, str]] = [
                 (f"{ext.upper()} files", f"*.{ext}")
                 for ext in file_types
             ]
@@ -266,10 +483,10 @@ class FileDialog(BaseDialog):
         else:
             self.future.set_result(None)
 
-    def _set_title(self, title: str):
+    def _set_title(self, title):
         self.native.SetTitle(title)
 
-    def _set_initial_directory(self, initial_directory: os.PathLike | str | None):
+    def _set_initial_directory(self, initial_directory):
         if initial_directory is None:
             return
         folder_path: Path = Path(initial_directory).resolve()
@@ -293,8 +510,8 @@ class SaveFileDialog(FileDialog):
         self,
         title: str,
         filename: str,
-        initial_directory: os.PathLike | str,
-        file_types: list[str],
+        initial_directory: Union[os.PathLike, str],
+        file_types: List[str],
     ):
         super().__init__(
             comtypes.client.CreateObject(CLSID_FileSaveDialog, interface=IFileSaveDialog),
@@ -314,8 +531,8 @@ class OpenFileDialog(FileDialog):
     def __init__(
         self,
         title: str,
-        initial_directory: os.PathLike | str,
-        file_types: list[str],
+        initial_directory: Union[os.PathLike, str],
+        file_types: List[str],
         multiple_select: bool,
     ):
         super().__init__(
@@ -331,9 +548,9 @@ class OpenFileDialog(FileDialog):
         # This is a stub method; we provide functionality using the COM API
         return self._get_filenames()
 
-    def _get_filenames(self) -> list[Path]:
+    def _get_filenames(self) -> List[Path]:
         assert isinstance(self.native, IFileOpenDialog)
-        results: list[Path] = []
+        results: List[Path] = []
         shell_item_array: IShellItemArray = self.native.GetResults()
         item_count: int = shell_item_array.GetCount()
         for i in range(item_count):
@@ -347,7 +564,7 @@ class SelectFolderDialog(FileDialog):
     def __init__(
         self,
         title: str,
-        initial_directory: os.PathLike | str,
+        initial_directory: Union[os.PathLike, str],
         multiple_select: bool,
     ):
         super().__init__(
@@ -356,9 +573,9 @@ class SelectFolderDialog(FileDialog):
             initial_directory,
         )
         self.native.SetOptions(FileOpenOptions.FOS_PICKFOLDERS)
-        self.multiple_select: bool = multiple_select
+        self.multiple_select = multiple_select
 
-    def _get_filenames(self) -> list[Path] | Path:
+    def _get_filenames(self) -> Union[List[Path], Path]:
         shell_item: IShellItem = self.native.GetResult()
         display_name: str = shell_item.GetDisplayName(0x80058000)  # SIGDN_FILESYSPATH
         return [Path(display_name)] if self.multiple_select else Path(display_name)
