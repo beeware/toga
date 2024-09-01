@@ -139,6 +139,7 @@ jobs:
         name: core-coverage-data-${{ matrix.platform }}-${{ matrix.python-version }}
         path: "core/.coverage.*"
         if-no-files-found: error
+        include-hidden-files: true
 
   core-coverage:
     name: Coverage
