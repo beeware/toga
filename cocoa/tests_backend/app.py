@@ -56,7 +56,7 @@ class AppProbe(BaseProbe, DialogsMixin):
         return self.app._impl._cursor_visible
 
     def is_full_screen(self, window):
-        return window._impl.content_view.isInFullScreenMode()
+        return window._impl.container.native.isInFullScreenMode()
 
     def content_size(self, window):
         return (

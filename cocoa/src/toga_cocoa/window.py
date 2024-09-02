@@ -175,11 +175,6 @@ class Window:
         self.container = Container(on_refresh=self.content_refreshed)
         self.native.contentView = self.container.native
 
-        # In app full-screen mode, window._impl.native.contentView is moved to a
-        # _NSFullScreenWindow, making NSWindow.contentView as None. Hence, retain a
-        # reference to the view before going full-screen.
-        self.content_view = self.native.contentView
-
         # Ensure that the container renders it's background in the same color as the window.
         self.native.wantsLayer = True
         self.container.native.backgroundColor = self.native.backgroundColor

@@ -381,18 +381,14 @@ class App:
         for window, screen in zip(windows, NSScreen.screens):
             # The widgets are actually added to window._impl.container.native, instead of
             # window.content._impl.native. And window._impl.native.contentView is
-            # window._impl.container.native. But, directly using window._impl.container.native
-            # would be more implementation specific and likely to break with any future
-            # implementation changes. Hence, use  window._impl.native.contentView, which is
-            # guaranteed to be present and assigned on a NSWindow.
-            #
-            # Hence, we need to go fullscreen on window._impl.native.contentView instead.
-            window._impl.content_view.enterFullScreenMode(screen, withOptions=opts)
+            # window._impl.container.native. Hence, we need to go fullscreen on
+            # window._impl.container.native instead.
+            window._impl.container.native.enterFullScreenMode(screen, withOptions=opts)
             # Going full screen causes the window content to be re-homed
             # in a NSFullScreenWindow; teach the new parent window
             # about its Toga representations.
-            window._impl.content_view.window._impl = window._impl
-            window._impl.content_view.window.interface = window
+            window._impl.container.native.window._impl = window._impl
+            window._impl.container.native.window.interface = window
             window.content.refresh()
 
     def exit_full_screen(self, windows):
@@ -402,5 +398,5 @@ class App:
         )
 
         for window in windows:
-            window._impl.content_view.exitFullScreenModeWithOptions(opts)
+            window._impl.container.native.exitFullScreenModeWithOptions(opts)
             window.content.refresh()

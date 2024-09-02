@@ -6,6 +6,7 @@ import toga
 from toga.colors import CORNFLOWERBLUE, FIREBRICK, REBECCAPURPLE
 from toga.style.pack import Pack
 
+from ..widgets.probe import get_probe
 from ..window.test_window import window_probe
 
 ####################################################################################
@@ -172,8 +173,17 @@ async def test_full_screen(app, app_probe):
     window1 = toga.Window("Test Window 1", position=(150, 150), size=(200, 200))
     window2 = toga.Window("Test Window 2", position=(400, 150), size=(200, 200))
 
-    window1.content = toga.Box(style=Pack(background_color=REBECCAPURPLE))
-    window2.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
+    window1_widget = toga.Box(style=Pack(flex=1))
+    window2_widget = toga.Box(style=Pack(flex=1))
+    window1_widget_probe = get_probe(window1_widget)
+    window2_widget_probe = get_probe(window2_widget)
+
+    window1.content = toga.Box(
+        children=[window1_widget], style=Pack(background_color=REBECCAPURPLE)
+    )
+    window2.content = toga.Box(
+        children=[window2_widget], style=Pack(background_color=CORNFLOWERBLUE)
+    )
     window1_probe = window_probe(app, window1)
     window2_probe = window_probe(app, window2)
 
@@ -187,6 +197,15 @@ async def test_full_screen(app, app_probe):
     initial_content1_size = app_probe.content_size(window1)
     initial_content2_size = app_probe.content_size(window2)
 
+    initial_window1_widget_size = (
+        window1_widget_probe.width,
+        window1_widget_probe.height,
+    )
+    initial_window2_widget_size = (
+        window2_widget_probe.width,
+        window2_widget_probe.height,
+    )
+
     # Make window 2 full screen via the app
     app.set_full_screen(window2)
     await window2_probe.wait_for_window(
@@ -197,10 +216,18 @@ async def test_full_screen(app, app_probe):
 
     assert not app_probe.is_full_screen(window1)
     assert app_probe.content_size(window1) == initial_content1_size
+    assert (
+        window1_widget_probe.width == initial_window1_widget_size[0]
+        and window1_widget_probe.height == initial_window1_widget_size[1]
+    )
 
     assert app_probe.is_full_screen(window2)
     assert app_probe.content_size(window2)[0] > 1000
     assert app_probe.content_size(window2)[1] > 700
+    assert (
+        window2_widget_probe.width > initial_window2_widget_size[0]
+        and window2_widget_probe.height > initial_window2_widget_size[1]
+    )
 
     # Make window 1 full screen via the app, window 2 no longer full screen
     app.set_full_screen(window1)
@@ -213,9 +240,17 @@ async def test_full_screen(app, app_probe):
     assert app_probe.is_full_screen(window1)
     assert app_probe.content_size(window1)[0] > 1000
     assert app_probe.content_size(window1)[1] > 700
+    assert (
+        window1_widget_probe.width > initial_window1_widget_size[0]
+        and window1_widget_probe.height > initial_window1_widget_size[1]
+    )
 
     assert not app_probe.is_full_screen(window2)
     assert app_probe.content_size(window2) == initial_content2_size
+    assert (
+        window2_widget_probe.width == initial_window2_widget_size[0]
+        and window2_widget_probe.height == initial_window2_widget_size[1]
+    )
 
     # Exit full screen
     app.exit_full_screen()
@@ -228,9 +263,17 @@ async def test_full_screen(app, app_probe):
 
     assert not app_probe.is_full_screen(window1)
     assert app_probe.content_size(window1) == initial_content1_size
+    assert (
+        window1_widget_probe.width == initial_window1_widget_size[0]
+        and window1_widget_probe.height == initial_window1_widget_size[1]
+    )
 
     assert not app_probe.is_full_screen(window2)
     assert app_probe.content_size(window2) == initial_content2_size
+    assert (
+        window2_widget_probe.width == initial_window2_widget_size[0]
+        and window2_widget_probe.height == initial_window2_widget_size[1]
+    )
 
     # Go full screen again on window 1
     app.set_full_screen(window1)
@@ -244,9 +287,17 @@ async def test_full_screen(app, app_probe):
     assert app_probe.is_full_screen(window1)
     assert app_probe.content_size(window1)[0] > 1000
     assert app_probe.content_size(window1)[1] > 700
+    assert (
+        window1_widget_probe.width > initial_window1_widget_size[0]
+        and window1_widget_probe.height > initial_window1_widget_size[1]
+    )
 
     assert not app_probe.is_full_screen(window2)
     assert app_probe.content_size(window2) == initial_content2_size
+    assert (
+        window2_widget_probe.width == initial_window2_widget_size[0]
+        and window2_widget_probe.height == initial_window2_widget_size[1]
+    )
 
     # Exit full screen by passing no windows
     app.set_full_screen()
@@ -259,9 +310,17 @@ async def test_full_screen(app, app_probe):
 
     assert not app_probe.is_full_screen(window1)
     assert app_probe.content_size(window1) == initial_content1_size
+    assert (
+        window1_widget_probe.width == initial_window1_widget_size[0]
+        and window1_widget_probe.height == initial_window1_widget_size[1]
+    )
 
     assert not app_probe.is_full_screen(window2)
     assert app_probe.content_size(window2) == initial_content2_size
+    assert (
+        window2_widget_probe.width == initial_window2_widget_size[0]
+        and window2_widget_probe.height == initial_window2_widget_size[1]
+    )
 
 
 async def test_show_hide_cursor(app, app_probe):
