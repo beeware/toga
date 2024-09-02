@@ -1,1 +1,1 @@
-The children of a window with a ``toga.Box()`` as its content are now visible in app full-screen mode.
+A macOS app in full-screen mode now correctly displays the contents of windows that use a ``toga.Box()`` as the top-level content.
