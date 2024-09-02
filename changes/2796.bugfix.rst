@@ -1,0 +1,1 @@
+A macOS app in full-screen mode now correctly displays the contents of windows that use a ``toga.Box()`` as the top-level content.
