@@ -66,8 +66,7 @@ async def long_running_task(
         try:
             while True:
                 delay = next(generator)
-                if delay:
-                    await asyncio.sleep(delay)
+                await asyncio.sleep(delay if delay else 0)
         except StopIteration as e:
             result = e.value
     except Exception as e:

@@ -1,0 +1,1 @@
+When a handler is a generator, control will always be released to the event loop between iterations now.
