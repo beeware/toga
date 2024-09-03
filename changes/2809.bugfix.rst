@@ -1,0 +1,1 @@
+When Toga creates asyncio Tasks for widget and app handlers, the garbage collector will no longer prematurely destroy these tasks in the unlikely occasions it would occur previously.

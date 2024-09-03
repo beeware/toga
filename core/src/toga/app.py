@@ -854,7 +854,7 @@ class App:
     def on_running(self) -> None:
         """The event handler that will be invoked when the app's event loop starts running.
 
-        If necessary, the overridden method can be defined as as an ``async`` coroutine.
+        If necessary, the overridden method can be defined as an ``async`` coroutine.
         """
 
     ######################################################################
