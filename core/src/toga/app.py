@@ -14,7 +14,7 @@ from weakref import WeakValueDictionary
 
 from toga.command import Command, CommandSet
 from toga.documents import Document, DocumentSet
-from toga.handlers import simple_handler, wrapped_handler
+from toga.handlers import create_task, simple_handler, wrapped_handler
 from toga.hardware.camera import Camera
 from toga.hardware.location import Location
 from toga.icons import Icon
@@ -146,6 +146,8 @@ class App:
     BACKGROUND: str = "background app"
 
     _UNDEFINED: str = "<main window not assigned>"
+
+    _create_task = staticmethod(create_task)
 
     def __init__(
         self,
@@ -578,7 +580,7 @@ class App:
 
     def _create_initial_windows(self):
         """Internal utility method for creating initial windows based on command line
-        arguments. This method is used when the platform doesn't provide it's own
+        arguments. This method is used when the platform doesn't provide its own
         command-line handling interface.
 
         If document types are defined, try to open every argument on the command line as
@@ -607,7 +609,7 @@ class App:
 
     def _startup(self) -> None:
         # Install the standard commands. This is done *before* startup so the user's
-        # code has the opporuntity to remove/change the default commands.
+        # code has the opportunity to remove/change the default commands.
         self._create_standard_commands()
         self._impl.create_standard_commands()
 
@@ -843,7 +845,7 @@ class App:
         The return value of this method controls whether the app is allowed to exit.
         This can be used to prevent the app exiting with unsaved changes, etc.
 
-        If necessary, the overridden method can be defined as as an ``async`` coroutine.
+        If necessary, the overridden method can be defined as an ``async`` coroutine.
 
         :returns: ``True`` if the app is allowed to exit; ``False`` if the app is not
             allowed to exit.
@@ -883,10 +885,16 @@ class App:
 
     def add_background_task(self, handler: BackgroundTask) -> None:
         """**DEPRECATED** – Use :any:`asyncio.create_task`, or override/assign
-        :meth:`~toga.App.on_running`."""
+        :meth:`~toga.App.on_running`.
+
+        Please review the Python docs for :any:`asyncio.create_task` and follow the
+        advice to save a reference to the returned task in your app.
+        """
         warnings.warn(
-            "App.add_background_task is deprecated. Use asyncio.create_task(), "
-            "or set an App.on_running() handler",
+            "App.add_background_task() is deprecated. Use asyncio.create_task(), "
+            "or set an App.on_running() handler. Notice the important note for "
+            "asyncio.create_task() at https://docs.python.org/3/library/asyncio-task.html#asyncio.create_task "
+            "to save a reference to the returned task.",
             DeprecationWarning,
             stacklevel=2,
         )

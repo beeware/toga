@@ -94,7 +94,7 @@ class NSAlertDialog(BaseDialog):
             self.native.window.orderOut(None)
 
         # This needs to be queued as a background task
-        asyncio.create_task(_run_app_modal())
+        toga.App._create_task(_run_app_modal())
 
 
 class InfoDialog(NSAlertDialog):
