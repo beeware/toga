@@ -187,7 +187,7 @@ class App:
     def beep(self):
         Gdk.beep()
 
-    def _close_about(self, dialog, **kwargs):
+    def _close_about(self, dialog, *args, **kwargs):
         self.native_about_dialog.destroy()
         self.native_about_dialog = None
 
