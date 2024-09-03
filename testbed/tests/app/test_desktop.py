@@ -8,6 +8,7 @@ from toga.colors import CORNFLOWERBLUE, FIREBRICK, REBECCAPURPLE
 from toga.constants import WindowState
 from toga.style.pack import Pack
 
+from ..widgets.probe import get_probe
 from ..window.test_window import window_probe
 
 ####################################################################################
@@ -186,8 +187,10 @@ async def test_presentation_mode(app, app_probe, main_window, main_window_probe)
             r = random.randint(0, 255)
             g = random.randint(0, 255)
             b = random.randint(0, 255)
+            window_widget = toga.Box(style=Pack(flex=1))
             window.content = toga.Box(
-                style=Pack(background_color=f"#{r:02X}{g:02X}{b:02X}")
+                children=[window_widget],
+                style=Pack(background_color=f"#{r:02X}{g:02X}{b:02X}"),
             )
             window.show()
             # Add delay to ensure windows are visible after animation.
@@ -199,7 +202,11 @@ async def test_presentation_mode(app, app_probe, main_window, main_window_probe)
             window_information["initial_content_size"] = window_information[
                 "window_probe"
             ].presentation_content_size
-
+            window_information["widget_probe"] = get_probe(window_widget)
+            window_information["initial_widget_size"] = (
+              window_information["widget_probe"].width,
+              window_information["widget_probe"].height,
+            )
             window_information_list.append(window_information)
             windows_list.append(window)
 
@@ -225,6 +232,10 @@ async def test_presentation_mode(app, app_probe, main_window, main_window_probe)
             assert (
                 window_information["window_probe"].presentation_content_size[1] > 700
             ), f"{window_information['window'].title}:"
+            assert (
+                window_information["widget_probe"].width > window_information["initial_widget_size"][0]
+                and window_information["widget_probe"].height > window_information["initial_widget_size"][1]
+            ), f"{window_information['window'].title}:"
 
         # Exit presentation mode
         app.exit_presentation_mode()
@@ -233,8 +244,16 @@ async def test_presentation_mode(app, app_probe, main_window, main_window_probe)
         assert not app.in_presentation_mode
         for window_information in window_information_list:
             assert (
+                window_information["window_probe"].get_window_state()
+                == WindowState.NORMAL
+            ), f"{window_information['window'].title}:"
+            assert (
                 window_information["window_probe"].presentation_content_size
                 == window_information["initial_content_size"]
+            ), f"{window_information['window'].title}:"
+            assert (
+                window_information["widget_probe"].width == window_information["initial_widget_size"][0]
+                and window_information["widget_probe"].height == window_information["initial_widget_size"][1]
             ), f"{window_information['window'].title}:"
 
     finally:

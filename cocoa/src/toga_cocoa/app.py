@@ -378,15 +378,20 @@ class App:
         opts.setObject(
             NSNumber.numberWithBool(True), forKey="NSFullScreenModeAllScreens"
         )
+        
         for screen, window in screen_window_dict.items():
-            window.content._impl.native.enterFullScreenMode(
+            # The widgets are actually added to window._impl.container.native, instead of
+            # window.content._impl.native. And window._impl.native.contentView is
+            # window._impl.container.native. Hence, we need to go fullscreen on
+            # window._impl.container.native instead.            
+            window._impl.container.native.enterFullScreenMode(
                 screen._impl.native, withOptions=opts
             )
             # Going presentation mode causes the window content to be re-homed
             # in a NSFullScreenWindow; teach the new parent window about its
             # Toga representations.
-            window.content._impl.native.window._impl = window._impl
-            window.content._impl.native.window.interface = window
+            window._impl.container.native.window._impl = window._impl
+            window._impl.container.native.window.interface = window
             window.content.refresh()
 
             # Process any pending window state.
@@ -406,7 +411,7 @@ class App:
 
         for window in self.interface.windows:
             if window.state == WindowState.PRESENTATION:
-                window.content._impl.native.exitFullScreenModeWithOptions(opts)
+                window._impl.container.native.exitFullScreenModeWithOptions(opts)
                 window.content.refresh()
 
                 # Process any pending window state.
