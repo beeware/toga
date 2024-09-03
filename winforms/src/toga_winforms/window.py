@@ -200,16 +200,19 @@ class Window(Container, Scalable):
                 return WindowState.MAXIMIZED
         elif window_state == WinForms.FormWindowState.Minimized:
             return WindowState.MINIMIZED
-        elif window_state == WinForms.FormWindowState.Normal:
+        else:  # window_state == WinForms.FormWindowState.Normal:
             return WindowState.NORMAL
-        else:  # pragma: no cover
-            # Marking this as no cover, since the above cases cover all the possible values
-            # of the FormWindowState enum type that can be returned by WinForms.WindowState.
-            return
 
     def set_window_state(self, state):
-        current_state = self.get_window_state()
+        # If the app is in presentation mode, but this window isn't, then
+        # exit app presentation mode before setting the requested state.
+        if any(
+            window.state == WindowState.PRESENTATION and window != self.interface
+            for window in self.interface.app.windows
+        ):
+            self.interface.app.exit_presentation_mode()
 
+        current_state = self.get_window_state()
         if current_state == state:
             return
 
@@ -232,8 +235,7 @@ class Window(Container, Scalable):
 
             self.set_window_state(state)
 
-        # elif current_state == WindowState.NORMAL:
-        else:
+        else:  # current_state == WindowState.NORMAL:
             if state == WindowState.MAXIMIZED:
                 self.native.WindowState = WinForms.FormWindowState.Maximized
 
@@ -244,8 +246,7 @@ class Window(Container, Scalable):
                 self.native.FormBorderStyle = getattr(WinForms.FormBorderStyle, "None")
                 self.native.WindowState = WinForms.FormWindowState.Maximized
 
-            # elif state == WindowState.PRESENTATION:
-            else:
+            else:  # state == WindowState.PRESENTATION:
                 self._before_presentation_mode_screen = self.interface.screen
                 if self.native.MainMenuStrip:
                     self.native.MainMenuStrip.Visible = False

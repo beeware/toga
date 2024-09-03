@@ -477,7 +477,7 @@ def test_change_invalid_creation_main_window(event_loop):
 def test_presentation_mode_with_windows_list(event_loop, windows):
     """The app can enter presentation mode with a windows list."""
     app = toga.App(formal_name="Test App", app_id="org.example.test")
-    windows_list = [toga.Window(content=toga.Box()) for window in windows]
+    windows_list = [toga.Window() for window in windows]
 
     assert not app.in_presentation_mode
 
@@ -518,8 +518,7 @@ def test_presentation_mode_with_screen_window_dict(event_loop, windows):
     """The app can enter presentation mode with a screen-window paired dict."""
     app = toga.App(formal_name="Test App", app_id="org.example.test")
     screen_window_dict = {
-        app.screens[i]: toga.Window(content=toga.Box())
-        for i, window in enumerate(windows)
+        app.screens[i]: toga.Window() for i, window in enumerate(windows)
     }
 
     assert not app.in_presentation_mode
@@ -550,9 +549,9 @@ def test_presentation_mode_with_screen_window_dict(event_loop, windows):
 def test_presentation_mode_with_excess_windows_list(event_loop):
     """Entering presentation mode limits windows to available displays."""
     app = toga.App(formal_name="Test App", app_id="org.example.test")
-    window1 = toga.Window(content=toga.Box())
-    window2 = toga.Window(content=toga.Box())
-    window3 = toga.Window(content=toga.Box())
+    window1 = toga.Window()
+    window2 = toga.Window()
+    window3 = toga.Window()
 
     assert not app.in_presentation_mode
 
@@ -575,6 +574,37 @@ def test_presentation_mode_with_excess_windows_list(event_loop):
     )
 
 
+def test_presentation_mode_with_some_windows(event_loop):
+    """The app can enter presentation mode for some windows while others stay normal."""
+    app = toga.App(formal_name="Test App", app_id="org.example.test")
+    window1 = toga.Window()
+    window2 = toga.Window()
+
+    assert not app.in_presentation_mode
+
+    # Entering presentation mode with one window should not put the other
+    # window into presentation mode.
+    app.enter_presentation_mode([window1])
+    assert app.in_presentation_mode
+    assert_action_performed_with(
+        app,
+        "enter presentation mode",
+        screen_window_dict={app.screens[0]: window1},
+    )
+    assert window1.state == WindowState.PRESENTATION
+    assert window2.state != WindowState.PRESENTATION
+
+    # Exit presentation mode:
+    app.exit_presentation_mode()
+    assert not app.in_presentation_mode
+    assert_action_performed(
+        app,
+        "exit presentation mode",
+    )
+    assert window1.state != WindowState.PRESENTATION
+    assert window2.state != WindowState.PRESENTATION
+
+
 def test_presentation_mode_no_op(event_loop):
     """Entering presentation mode with invalid conditions is a no-op."""
     app = toga.App(formal_name="Test App", app_id="org.example.test")
@@ -592,107 +622,9 @@ def test_presentation_mode_no_op(event_loop):
         ValueError,
         match="Presentation layout should be a list of windows, or a dict mapping windows to screens.",
     ):
-        app.enter_presentation_mode(toga.Window(content=toga.Box()))
+        app.enter_presentation_mode(toga.Window())
         assert_action_not_performed(app, "enter presentation mode")
         assert not app.in_presentation_mode
-
-    # Entering presentation mode with a window having no content is a no-op:
-    no_content_window = toga.Window()
-    # Window passed as a windows list:
-    with pytest.raises(
-        ValueError,
-        match=f"Cannot enter presentation mode on {no_content_window.title} window without a content.",
-    ):
-        app.enter_presentation_mode([no_content_window])
-        assert_action_not_performed(app, "enter presentation mode")
-        assert not app.in_presentation_mode
-    # Window passed as a screen-window dict:
-    with pytest.raises(
-        ValueError,
-        match=f"Cannot enter presentation mode on {no_content_window.title} window without a content.",
-    ):
-        app.enter_presentation_mode({app.screens[0]: no_content_window})
-        assert_action_not_performed(app, "enter presentation mode")
-        assert not app.in_presentation_mode
-
-
-@pytest.mark.parametrize(
-    "new_window_state",
-    [
-        WindowState.MINIMIZED,
-        WindowState.MAXIMIZED,
-        WindowState.FULLSCREEN,
-    ],
-)
-def test_presentation_mode_exit_on_window_state_change(event_loop, new_window_state):
-    """Changing window state exits presentation mode and sets the new state."""
-    app = toga.App(formal_name="Test App", app_id="org.example.test")
-    app.main_window.content = toga.Box()
-    extra_window = toga.Window(content=toga.Box())
-
-    # Enter presentation mode
-    app.enter_presentation_mode([app.main_window])
-    assert_action_performed_with(
-        app,
-        "enter presentation mode",
-        screen_window_dict={app.screens[0]: app.main_window},
-    )
-
-    assert app.in_presentation_mode
-    assert app.main_window.state == WindowState.PRESENTATION
-    assert extra_window.state != WindowState.PRESENTATION
-
-    # Changing window state of main_window should make the app exit presentation mode.
-    app.main_window.state = new_window_state
-    assert_action_performed_with(
-        app.main_window,
-        f"set window state to {new_window_state}",
-        state=new_window_state,
-    )
-
-    assert not app.in_presentation_mode
-    assert_action_performed(
-        app,
-        "exit presentation mode",
-    )
-    assert app.main_window.state != WindowState.PRESENTATION
-    assert app.main_window.state == new_window_state
-
-    # Reset window states
-    app.main_window.state = WindowState.NORMAL
-    extra_window.state = WindowState.NORMAL
-
-    # Enter presentation mode again
-    app.enter_presentation_mode([app.main_window])
-    assert_action_performed_with(
-        app,
-        "enter presentation mode",
-        screen_window_dict={app.screens[0]: app.main_window},
-    )
-
-    assert app.in_presentation_mode
-    assert app.main_window.state == WindowState.PRESENTATION
-    assert extra_window.state != WindowState.PRESENTATION
-
-    # Changing window state of extra window should make the app exit presentation mode.
-    extra_window.state = new_window_state
-    assert_action_performed_with(
-        extra_window,
-        f"set window state to {new_window_state}",
-        state=new_window_state,
-    )
-
-    assert not app.in_presentation_mode
-    assert_action_performed(
-        app,
-        "exit presentation mode",
-    )
-    assert app.main_window.state != WindowState.PRESENTATION
-    assert extra_window.state == new_window_state
-
-    # Reset window states
-    app.main_window.state = WindowState.NORMAL
-    extra_window.state = WindowState.NORMAL
 
 
 def test_show_hide_cursor(app):

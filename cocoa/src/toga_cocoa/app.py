@@ -378,12 +378,12 @@ class App:
         opts.setObject(
             NSNumber.numberWithBool(True), forKey="NSFullScreenModeAllScreens"
         )
-        
+
         for screen, window in screen_window_dict.items():
             # The widgets are actually added to window._impl.container.native, instead of
             # window.content._impl.native. And window._impl.native.contentView is
             # window._impl.container.native. Hence, we need to go fullscreen on
-            # window._impl.container.native instead.            
+            # window._impl.container.native instead.
             window._impl.container.native.enterFullScreenMode(
                 screen._impl.native, withOptions=opts
             )
@@ -393,15 +393,6 @@ class App:
             window._impl.container.native.window._impl = window._impl
             window._impl.container.native.window.interface = window
             window.content.refresh()
-
-            # Process any pending window state.
-            if (
-                window._impl._pending_state_transition
-                and window._impl._pending_state_transition != WindowState.PRESENTATION
-            ):
-                window._impl._apply_state(WindowState.NORMAL)
-            else:
-                window._impl._pending_state_transition = None
 
     def exit_presentation_mode(self):
         opts = NSMutableDictionary.alloc().init()
@@ -413,6 +404,3 @@ class App:
             if window.state == WindowState.PRESENTATION:
                 window._impl.container.native.exitFullScreenModeWithOptions(opts)
                 window.content.refresh()
-
-                # Process any pending window state.
-                window._impl._apply_state(window._impl._pending_state_transition)

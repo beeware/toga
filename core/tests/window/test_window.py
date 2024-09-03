@@ -304,33 +304,53 @@ def test_visibility(window, app):
 
 
 @pytest.mark.parametrize(
-    "state",
+    "initial_state, final_state",
     [
-        WindowState.MAXIMIZED,
-        WindowState.MINIMIZED,
-        WindowState.FULLSCREEN,
-        WindowState.PRESENTATION,
+        # Direct switch from NORMAL:
+        (WindowState.NORMAL, WindowState.MINIMIZED),
+        (WindowState.NORMAL, WindowState.MAXIMIZED),
+        (WindowState.NORMAL, WindowState.FULLSCREEN),
+        (WindowState.NORMAL, WindowState.PRESENTATION),
+        # Direct switch from MINIMIZED:
+        (WindowState.MINIMIZED, WindowState.NORMAL),
+        (WindowState.MINIMIZED, WindowState.MAXIMIZED),
+        (WindowState.MINIMIZED, WindowState.FULLSCREEN),
+        (WindowState.MINIMIZED, WindowState.PRESENTATION),
+        # Direct switch from MAXIMIZED:
+        (WindowState.MAXIMIZED, WindowState.NORMAL),
+        (WindowState.MAXIMIZED, WindowState.MINIMIZED),
+        (WindowState.MAXIMIZED, WindowState.FULLSCREEN),
+        (WindowState.MAXIMIZED, WindowState.PRESENTATION),
+        # Direct switch from FULLSCREEN:
+        (WindowState.FULLSCREEN, WindowState.NORMAL),
+        (WindowState.FULLSCREEN, WindowState.MINIMIZED),
+        (WindowState.FULLSCREEN, WindowState.MAXIMIZED),
+        (WindowState.FULLSCREEN, WindowState.PRESENTATION),
+        # Direct switch from PRESENTATION:
+        (WindowState.PRESENTATION, WindowState.NORMAL),
+        (WindowState.PRESENTATION, WindowState.MINIMIZED),
+        (WindowState.PRESENTATION, WindowState.MAXIMIZED),
+        (WindowState.PRESENTATION, WindowState.FULLSCREEN),
     ],
 )
-def test_window_state(window, state):
+def test_window_state(window, initial_state, final_state):
     """A window can have different states."""
-    window.content = toga.Box()
     assert window.state == WindowState.NORMAL
 
-    window.state = state
-    assert window.state == state
+    window.state = initial_state
+    assert window.state == initial_state
     assert_action_performed_with(
         window,
-        f"set window state to {state}",
-        state=state,
+        f"set window state to {initial_state}",
+        state=initial_state,
     )
 
-    window.state = WindowState.NORMAL
-    assert window.state == WindowState.NORMAL
+    window.state = final_state
+    assert window.state == final_state
     assert_action_performed_with(
         window,
-        "set window state to WindowState.NORMAL",
-        state=WindowState.NORMAL,
+        f"set window state to {final_state}",
+        state=final_state,
     )
 
 
@@ -347,9 +367,8 @@ def test_window_state(window, state):
 def test_non_resizable_window_state(state):
     """Non-resizable window's states other than minimized or normal are no-ops."""
     non_resizable_window = toga.Window(title="Non-Resizable Window", resizable=False)
-    non_resizable_window.content = toga.Box()
-    with pytest.warns(
-        UserWarning,
+    with pytest.raises(
+        RuntimeError,
         match=f"Cannot set window state to {state} of a non-resizable window.",
     ):
         non_resizable_window.state = state
@@ -359,21 +378,8 @@ def test_non_resizable_window_state(state):
     non_resizable_window.close()
 
 
-def test_no_content_window_presentation_state(window):
-    """Setting window states on a window without content is a no-op."""
-    with pytest.warns(
-        UserWarning,
-        match="Cannot enter presentation mode on a window without a content.",
-    ):
-        window.state = WindowState.PRESENTATION
-        assert_action_not_performed(
-            window, "set window state to WindowState.PRESENTATION"
-        )
-
-
 def test_close_direct_in_presentation(window, app):
     """Directly closing a window in presentation mode restores to normal first."""
-    window.content = toga.Box()
     window.state = WindowState.PRESENTATION
     assert window.state == WindowState.PRESENTATION
     assert_action_performed_with(

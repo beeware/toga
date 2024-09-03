@@ -325,9 +325,8 @@ class App:
             window._impl.set_window_state(WindowState.PRESENTATION)
 
     def exit_presentation_mode(self):
-        for window in self.interface.windows:
-            if window.state == WindowState.PRESENTATION:
-                window._impl.set_window_state(WindowState.NORMAL)
+        # There is only a single window on android.
+        self.interface.main_window._impl.set_window_state(WindowState.NORMAL)
 
     ######################################################################
     # Platform-specific APIs

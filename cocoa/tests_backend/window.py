@@ -1,6 +1,5 @@
 from rubicon.objc import objc_id, send_message
 
-from toga.constants import WindowState
 from toga_cocoa.libs import NSWindow, NSWindowStyleMask
 
 from .dialogs import DialogsMixin
@@ -48,21 +47,6 @@ class WindowProbe(BaseProbe, DialogsMixin):
             self.window.content._impl.native.frame.size.height,
         )
 
-    def get_window_state(self):
-        if self.window.content and bool(
-            self.window.content._impl.native.isInFullScreenMode()
-        ):
-            current_state = WindowState.PRESENTATION
-        elif bool(self.native.styleMask & NSWindowStyleMask.FullScreen):
-            current_state = WindowState.FULLSCREEN
-        elif bool(self.native.isZoomed):
-            current_state = WindowState.MAXIMIZED
-        elif bool(self.native.isMiniaturized):
-            current_state = WindowState.MINIMIZED
-        else:
-            current_state = WindowState.NORMAL
-        return current_state
-
     @property
     def is_resizable(self):
         return bool(self.native.styleMask & NSWindowStyleMask.Resizable)
@@ -77,7 +61,7 @@ class WindowProbe(BaseProbe, DialogsMixin):
 
     @property
     def is_minimized(self):
-        return bool(self.get_window_state() == WindowState.MINIMIZED)
+        return bool(self.native.isMiniaturized)
 
     def minimize(self):
         self.native.performMiniaturize(None)

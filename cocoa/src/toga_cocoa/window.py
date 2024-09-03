@@ -45,14 +45,23 @@ class TogaWindow(NSWindow):
         return False
 
     @objc_method
+    def windowWillClose_(self, notification) -> None:
+        # Setting the toolbar and window delegate to None doesn't disconnect
+        # the delegates and still triggers the delegate events.
+
+        # Hence, simply remove the toolbar instead.
+        self.toolbar = None
+
+        # However, window delegate methods, need check guards.
+
+    @objc_method
     def windowDidResize_(self, notification) -> None:
-        if self.interface and self.interface.content:
+        if self.interface and self.interface.content:  # pragma: no branch
             # Set the window to the new size
             self.interface.content.refresh()
 
     @objc_method
     def windowDidMiniaturize_(self, notification) -> None:
-        # Needs a delay on macOS-arm64 testbed, delaying longer on the testbed doesn't work.
         self.performSelector(
             SEL("enteredMiniaturize:"), withObject=None, afterDelay=0.1
         )
@@ -196,6 +205,11 @@ class Window:
         if self.interface.minimizable:
             mask |= NSWindowStyleMask.Miniaturizable
 
+        # The objc callback methods can be called during the initialization
+        # of the NSWindow. So, any objc method referencing impl or interface
+        # will get an Attribute error. Hence, first allocate and assign the
+        # impl & interface to it. Then finally initialize the NSWindow.
+
         # Create the window with a default frame;
         # we'll update size and position later.
         self.native = TogaWindow.alloc().initWithContentRect(
@@ -220,7 +234,7 @@ class Window:
         self.set_size(size)
         self.set_position(position if position is not None else _initial_position())
 
-        self.native.delegate = self.native
+        self.native.setDelegate(self.native)
 
         self.container = Container(on_refresh=self.content_refreshed)
         self.native.contentView = self.container.native
@@ -339,9 +353,7 @@ class Window:
     ######################################################################
 
     def get_window_state(self):
-        if self.interface.content and bool(
-            self.interface.content._impl.native.isInFullScreenMode()
-        ):
+        if bool(self.container.native.isInFullScreenMode()):
             return WindowState.PRESENTATION
         elif bool(self.native.styleMask & NSWindowStyleMask.FullScreen):
             return WindowState.FULLSCREEN
@@ -371,50 +383,66 @@ class Window:
         if self._pending_state_transition:
             self._pending_state_transition = state
         else:
+            # If the app is in presentation mode, but this window isn't, then
+            # exit app presentation mode before setting the requested state.
+            if any(
+                window.state == WindowState.PRESENTATION and window != self.interface
+                for window in self.interface.app.windows
+            ):
+                self.interface.app.exit_presentation_mode()
+
+            current_state = self.get_window_state()
+            if current_state == state:
+                return
             self._pending_state_transition = state
-            if self.get_window_state() != WindowState.NORMAL:
+            if current_state != WindowState.NORMAL:
                 self._apply_state(WindowState.NORMAL)
             else:
                 self._apply_state(state)
 
     def _apply_state(self, target_state):
+        current_state = self.get_window_state()
         if target_state is None:
             return
 
-        elif target_state == self.get_window_state():
+        elif target_state == current_state:
             self._pending_state_transition = None
             return
 
-        elif target_state == WindowState.NORMAL:
-            current_state = self.get_window_state()
-            if current_state == WindowState.MAXIMIZED:
-                self.native.setIsZoomed(False)
-                self._apply_state(self._pending_state_transition)
-            elif current_state == WindowState.MINIMIZED:
-                self.native.setIsMiniaturized(False)
-            elif current_state == WindowState.FULLSCREEN:
-                self.native.toggleFullScreen(self.native)
-            # elif current_state == WindowState.PRESENTATION:
-            else:  # pragma: no cover
-                # Presentation mode is natively supported by cocoa and is app-based.
-                # `exit_presentation_mode()` is called early in `window.state` setter.
-                # Hence, this branch will never be reached.
-                pass
         elif target_state == WindowState.MAXIMIZED:
             self.native.setIsZoomed(True)
-            # No need to check for other pending states, since this is completely
-            # applied here only.
+            # No need to check for other pending states,
+            # since this is fully applied at this point.
             self._pending_state_transition = None
 
         elif target_state == WindowState.MINIMIZED:
             self.native.setIsMiniaturized(True)
+
         elif target_state == WindowState.FULLSCREEN:
             self.native.toggleFullScreen(self.native)
-        # elif target_state == WindowState.PRESENTATION:
-        else:
+
+        elif target_state == WindowState.PRESENTATION:
             self.interface.app.enter_presentation_mode(
                 {self.interface.screen: self.interface}
             )
+            # No need to check for other pending states,
+            # since this is fully applied at this point.
+            self._pending_state_transition = None
+
+        else:  # target_state == WindowState.NORMAL:
+            if current_state == WindowState.MAXIMIZED:
+                self.native.setIsZoomed(False)
+                self._apply_state(self._pending_state_transition)
+
+            elif current_state == WindowState.MINIMIZED:
+                self.native.setIsMiniaturized(False)
+
+            elif current_state == WindowState.FULLSCREEN:
+                self.native.toggleFullScreen(self.native)
+
+            else:  # current_state == WindowState.PRESENTATION:
+                self.interface.app.exit_presentation_mode()
+                self._apply_state(self._pending_state_transition)
 
     ######################################################################
     # Window capabilities

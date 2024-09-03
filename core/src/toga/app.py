@@ -346,8 +346,6 @@ class App:
         self._main_window = App._UNDEFINED
         self._windows = WindowSet(self)
 
-        self._full_screen_windows: tuple[Window, ...] | None = None
-
         # Create the implementation. This will trigger any startup logic.
         self.factory.App(interface=self)
 
@@ -833,18 +831,8 @@ class App:
             screen_window_dict = dict()
             if isinstance(windows, list):
                 for window, screen in zip(windows, self.screens):
-                    if window.content is None:
-                        raise ValueError(
-                            f"Cannot enter presentation mode on {window.title} window without a content."
-                        )
-                    else:
-                        screen_window_dict[screen] = window
+                    screen_window_dict[screen] = window
             elif isinstance(windows, dict):
-                for _, window in windows.items():
-                    if window.content is None:
-                        raise ValueError(
-                            f"Cannot enter presentation mode on {window.title} window without a content."
-                        )
                 screen_window_dict = windows
             else:
                 raise ValueError(

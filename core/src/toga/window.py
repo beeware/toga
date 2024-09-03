@@ -482,22 +482,14 @@ class Window:
             WindowState.FULLSCREEN,
             WindowState.PRESENTATION,
         }:
-            warnings.warn(
+            raise RuntimeError(
                 f"Cannot set window state to {state} of a non-resizable window."
             )
-        elif self.content is None and state == WindowState.PRESENTATION:
-            warnings.warn(
-                "Cannot enter presentation mode on a window without a content."
-            )
         else:
-            # Changing the window state while the app is in presentation mode
-            # can cause rendering glitches. Hence, first exit presentation and
-            # then set the new window state.
-            self.app.exit_presentation_mode()
-
-            # State checks are done at the backend because backends like Cocoa use
-            # non-blocking OS calls. Checking state at the core could occur during
-            # transitions, leading to incorrect assertions and potential glitches.
+            # State checks are handled by the backend (e.g., Cocoa) to
+            # accommodate non-blocking OS calls. Performing these
+            # checks at the core level could interfere with transitions,
+            # resulting in incorrect assertions and potential glitches.
             self._impl.set_window_state(state)
 
     ######################################################################
