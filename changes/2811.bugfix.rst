@@ -1,1 +1,1 @@
-When a handler is a generator, control will always be released to the event loop between iterations now.
+When a handler is a generator, control will now always be released to the event loop between iterations, even if no sleep interval or a sleep interval of 0 is yielded.
