@@ -347,7 +347,7 @@ def test_explicit_app_metadata(monkeypatch, event_loop):
 
 
 @pytest.mark.parametrize("construct", [True, False])
-def test_icon_construction(construct, event_loop):
+def test_icon_construction(app, construct, event_loop):
     """The app icon can be set during construction."""
     if construct:
         icon = toga.Icon("path/to/icon")
