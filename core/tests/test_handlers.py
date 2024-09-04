@@ -3,13 +3,7 @@ from unittest.mock import Mock
 
 import pytest
 
-from toga.handlers import (
-    AsyncResult,
-    NativeHandler,
-    running_tasks,
-    simple_handler,
-    wrapped_handler,
-)
+from toga.handlers import AsyncResult, NativeHandler, simple_handler, wrapped_handler
 
 
 class ExampleAsyncResult(AsyncResult):
@@ -190,10 +184,7 @@ def test_generator_handler(event_loop):
     obj = Mock()
     handler_call = {}
 
-    assert len(running_tasks) == 0
-
     def handler(*args, **kwargs):
-        assert len(running_tasks) == 1  # strong reference to task was made
         handler_call["args"] = args
         handler_call["kwargs"] = kwargs
         yield 0.01  # A short sleep
@@ -212,9 +203,6 @@ def test_generator_handler(event_loop):
         event_loop.run_until_complete(wrapped("arg1", "arg2", kwarg1=3, kwarg2=4)) == 42
     )
 
-    # Task for handler is untracked once complete
-    assert len(running_tasks) == 0
-
     # Handler arguments are as expected.
     assert handler_call == {
         "args": (obj, "arg1", "arg2"),
@@ -229,10 +217,7 @@ def test_generator_handler_error(event_loop, capsys):
     obj = Mock()
     handler_call = {}
 
-    assert len(running_tasks) == 0
-
     def handler(*args, **kwargs):
-        assert len(running_tasks) == 1  # strong reference to task was made
         handler_call["args"] = args
         handler_call["kwargs"] = kwargs
         yield 0.01  # A short sleep
@@ -248,9 +233,6 @@ def test_generator_handler_error(event_loop, capsys):
         event_loop.run_until_complete(wrapped("arg1", "arg2", kwarg1=3, kwarg2=4))
         is None
     )
-
-    # Task for handler is untracked once complete
-    assert len(running_tasks) == 0
 
     # Handler arguments are as expected.
     assert handler_call == {
@@ -271,10 +253,7 @@ def test_generator_handler_with_cleanup(event_loop):
     cleanup = Mock()
     handler_call = {}
 
-    assert len(running_tasks) == 0
-
     def handler(*args, **kwargs):
-        assert len(running_tasks) == 1  # strong reference to task was made
         handler_call["args"] = args
         handler_call["kwargs"] = kwargs
         yield 0.01  # A short sleep
@@ -292,9 +271,6 @@ def test_generator_handler_with_cleanup(event_loop):
     assert (
         event_loop.run_until_complete(wrapped("arg1", "arg2", kwarg1=3, kwarg2=4)) == 42
     )
-
-    # Task for handler is untracked once complete
-    assert len(running_tasks) == 0
 
     # Handler arguments are as expected.
     assert handler_call == {
@@ -314,10 +290,7 @@ def test_generator_handler_with_cleanup_error(event_loop, capsys):
     cleanup = Mock(side_effect=Exception("Problem in cleanup"))
     handler_call = {}
 
-    assert len(running_tasks) == 0
-
     def handler(*args, **kwargs):
-        assert len(running_tasks) == 1  # strong reference to task was made
         handler_call["args"] = args
         handler_call["kwargs"] = kwargs
         yield 0.01  # A short sleep
@@ -335,9 +308,6 @@ def test_generator_handler_with_cleanup_error(event_loop, capsys):
     assert (
         event_loop.run_until_complete(wrapped("arg1", "arg2", kwarg1=3, kwarg2=4)) == 42
     )
-
-    # Task for handler is untracked once complete
-    assert len(running_tasks) == 0
 
     # Handler arguments are as expected.
     assert handler_call == {
@@ -362,10 +332,7 @@ def test_coroutine_handler(event_loop):
     obj = Mock()
     handler_call = {}
 
-    assert len(running_tasks) == 0
-
     async def handler(*args, **kwargs):
-        assert len(running_tasks) == 1  # strong reference to task was made
         handler_call["args"] = args
         handler_call["kwargs"] = kwargs
         await asyncio.sleep(0.01)  # A short sleep
@@ -382,9 +349,6 @@ def test_coroutine_handler(event_loop):
         event_loop.run_until_complete(wrapped("arg1", "arg2", kwarg1=3, kwarg2=4)) == 42
     )
 
-    # Task for handler is untracked once complete
-    assert len(running_tasks) == 0
-
     # Handler arguments are as expected.
     assert handler_call == {
         "args": (obj, "arg1", "arg2"),
@@ -398,10 +362,7 @@ def test_coroutine_handler_error(event_loop, capsys):
     obj = Mock()
     handler_call = {}
 
-    assert len(running_tasks) == 0
-
     async def handler(*args, **kwargs):
-        assert len(running_tasks) == 1  # strong reference to task was made
         handler_call["args"] = args
         handler_call["kwargs"] = kwargs
         await asyncio.sleep(0.01)  # A short sleep
@@ -417,9 +378,6 @@ def test_coroutine_handler_error(event_loop, capsys):
         event_loop.run_until_complete(wrapped("arg1", "arg2", kwarg1=3, kwarg2=4))
         is None
     )
-
-    # Task for handler is untracked once complete
-    assert len(running_tasks) == 0
 
     # Handler arguments are as expected.
     assert handler_call == {
@@ -440,10 +398,7 @@ def test_coroutine_handler_with_cleanup(event_loop):
     cleanup = Mock()
     handler_call = {}
 
-    assert len(running_tasks) == 0
-
     async def handler(*args, **kwargs):
-        assert len(running_tasks) == 1  # strong reference to task was made
         handler_call["args"] = args
         handler_call["kwargs"] = kwargs
         await asyncio.sleep(0.01)  # A short sleep
@@ -459,9 +414,6 @@ def test_coroutine_handler_with_cleanup(event_loop):
     assert (
         event_loop.run_until_complete(wrapped("arg1", "arg2", kwarg1=3, kwarg2=4)) == 42
     )
-
-    # Task for handler is untracked once complete
-    assert len(running_tasks) == 0
 
     # Handler arguments are as expected.
     assert handler_call == {
@@ -480,10 +432,7 @@ def test_coroutine_handler_with_cleanup_error(event_loop, capsys):
     cleanup = Mock(side_effect=Exception("Problem in cleanup"))
     handler_call = {}
 
-    assert len(running_tasks) == 0
-
     async def handler(*args, **kwargs):
-        assert len(running_tasks) == 1  # strong reference to task was made
         handler_call["args"] = args
         handler_call["kwargs"] = kwargs
         await asyncio.sleep(0.01)  # A short sleep
@@ -499,9 +448,6 @@ def test_coroutine_handler_with_cleanup_error(event_loop, capsys):
     assert (
         event_loop.run_until_complete(wrapped("arg1", "arg2", kwarg1=3, kwarg2=4)) == 42
     )
-
-    # Task for handler is untracked once complete
-    assert len(running_tasks) == 0
 
     # Handler arguments are as expected.
     assert handler_call == {
@@ -538,7 +484,7 @@ def test_async_result_non_comparable(event_loop):
     result = ExampleAsyncResult(None)
 
     # repr for the result is useful
-    assert repr(result).startswith("<Async Test result; future=<Future pending")
+    assert repr(result) == "<Async Test result; future=<Future pending>>"
 
     # Result cannot be compared.
 
