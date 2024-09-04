@@ -11,12 +11,15 @@ from typing import (
     Any,
     Awaitable,
     Callable,
+    Coroutine,
     Generator,
     NoReturn,
     Protocol,
     TypeVar,
     Union,
 )
+
+T = TypeVar("T")
 
 if TYPE_CHECKING:
     if sys.version_info < (3, 10):
@@ -35,20 +38,40 @@ if TYPE_CHECKING:
     HandlerT: TypeAlias = Union[HandlerSyncT, HandlerAsyncT, HandlerGeneratorT]
     WrappedHandlerT: TypeAlias = Callable[..., object]
 
+# Holds references to asyncio.Tasks created by Toga; see create_task().
+running_tasks = set()
 
-def overridable(method):
+
+def overridable(method: T) -> T:
     """Decorate the method as being user-overridable"""
     method._overridden = True
     return method
 
 
-def overridden(coroutine_or_method):
+def overridden(coroutine_or_method: Callable) -> bool:
     """Has the user overridden this method?
 
     This is based on the method *not* having a ``_overridden`` attribute. Overridable
     default methods have this attribute; user-defined method will not.
     """
     return not hasattr(coroutine_or_method, "_overridden")
+
+
+def create_task(coro_or_future: Coroutine | Awaitable[object]) -> asyncio.Task:
+    """Add a task for a handler to the event loop.
+
+    When Tasks are created, a strong reference should be maintained for it while it is
+    running. The event loop only keeps weak references for the task; so, tracking each
+    Task here ensures the garbage collector will not destroy it mid-execution.
+    Upstream issue tracking at python/cpython#91887.
+
+    :param coro_or_future: Coroutine or Future for the Task to run
+    :returns: the created Task
+    """
+    task = asyncio.ensure_future(coro_or_future)
+    running_tasks.add(task)
+    task.add_done_callback(running_tasks.discard)
+    return task
 
 
 class NativeHandler:
@@ -60,7 +83,7 @@ async def long_running_task(
     interface: object,
     generator: HandlerGeneratorReturnT[object],
     cleanup: HandlerSyncT | None,
-) -> None:
+) -> object | None:
     """Run a generator as an asynchronous coroutine."""
     try:
         try:
@@ -89,7 +112,7 @@ async def handler_with_cleanup(
     interface: object,
     *args: object,
     **kwargs: object,
-) -> None:
+) -> object | None:
     try:
         result = await handler(interface, *args, **kwargs)
     except Exception as e:
@@ -105,7 +128,7 @@ async def handler_with_cleanup(
         return result
 
 
-def simple_handler(fn, *args, **kwargs):
+def simple_handler(fn: T, *args: object, **kwargs: object) -> T:
     """Wrap a function (with args and kwargs) so it can be used as a command handler.
 
     This essentially accepts and ignores the handler-related arguments (i.e., the
@@ -116,7 +139,6 @@ def simple_handler(fn, *args, **kwargs):
     function/coroutine are provided at the time the wrapper is defined. It is assumed
     that the mechanism invoking the handler will add no additional arguments other than
     the ``command`` that is invoking the handler.
-
 
     :param fn: The callable to invoke as a handler.
     :param args: Positional arguments that should be passed to the invoked handler.
@@ -166,7 +188,7 @@ def wrapped_handler(
 
         def _handler(*args: object, **kwargs: object) -> object:
             if asyncio.iscoroutinefunction(handler):
-                return asyncio.ensure_future(
+                return create_task(
                     handler_with_cleanup(handler, cleanup, interface, *args, **kwargs)
                 )
             else:
@@ -177,7 +199,7 @@ def wrapped_handler(
                     traceback.print_exc()
                 else:
                     if inspect.isgenerator(result):
-                        return asyncio.ensure_future(
+                        return create_task(
                             long_running_task(interface, result, cleanup)
                         )
                     else:
