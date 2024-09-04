@@ -32,8 +32,7 @@ async def wait_for_dialog_to_close(main_window):
             break
 
 
-@pytest.mark.usefixtures("wait_for_dialog_to_close")
-async def test_info_dialog(main_window, main_window_probe):
+async def test_info_dialog(main_window, main_window_probe, wait_for_dialog_to_close):
     """An info dialog can be displayed and acknowledged."""
     dialog = toga.InfoDialog("Info", "Some info")
     assert main_window_probe.is_modal_dialog(dialog)
@@ -47,8 +46,12 @@ async def test_info_dialog(main_window, main_window_probe):
 
 
 @pytest.mark.parametrize("result", [False, True])
-@pytest.mark.usefixtures("wait_for_dialog_to_close")
-async def test_question_dialog(main_window, main_window_probe, result):
+async def test_question_dialog(
+    main_window,
+    main_window_probe,
+    result,
+    wait_for_dialog_to_close,
+):
     """A question dialog can be displayed and acknowledged."""
     dialog = toga.QuestionDialog("Question", "Some question")
     assert main_window_probe.is_modal_dialog(dialog)
@@ -64,8 +67,12 @@ async def test_question_dialog(main_window, main_window_probe, result):
 
 
 @pytest.mark.parametrize("result", [False, True])
-@pytest.mark.usefixtures("wait_for_dialog_to_close")
-async def test_confirm_dialog(main_window, main_window_probe, result):
+async def test_confirm_dialog(
+    main_window,
+    main_window_probe,
+    result,
+    wait_for_dialog_to_close,
+):
     """A confirmation dialog can be displayed and acknowledged."""
     dialog = toga.ConfirmDialog("Confirm", "Some confirmation")
     assert main_window_probe.is_modal_dialog(dialog)
@@ -81,8 +88,7 @@ async def test_confirm_dialog(main_window, main_window_probe, result):
     assert actual == result
 
 
-@pytest.mark.usefixtures("wait_for_dialog_to_close")
-async def test_error_dialog(main_window, main_window_probe):
+async def test_error_dialog(main_window, main_window_probe, wait_for_dialog_to_close):
     """An error dialog can be displayed and acknowledged."""
     dialog = toga.ErrorDialog("Error", "Some error")
     assert main_window_probe.is_modal_dialog(dialog)
@@ -96,8 +102,12 @@ async def test_error_dialog(main_window, main_window_probe):
 
 
 @pytest.mark.parametrize("result", [None, False, True])
-@pytest.mark.usefixtures("wait_for_dialog_to_close")
-async def test_stack_trace_dialog(main_window, main_window_probe, result):
+async def test_stack_trace_dialog(
+    main_window,
+    main_window_probe,
+    result,
+    wait_for_dialog_to_close,
+):
     """A confirmation dialog can be displayed and acknowledged."""
     stack = io.StringIO()
     traceback.print_stack(file=stack)
@@ -130,13 +140,13 @@ async def test_stack_trace_dialog(main_window, main_window_probe, result):
         ("/path/to/file.txt", ["txt", "doc"], None),
     ],
 )
-@pytest.mark.usefixtures("wait_for_dialog_to_close")
 async def test_save_file_dialog(
     main_window,
     main_window_probe,
     filename,
     file_types,
     result,
+    wait_for_dialog_to_close,
 ):
     """A file open dialog can be displayed and acknowledged."""
     dialog = toga.SaveFileDialog(
@@ -196,7 +206,6 @@ async def test_save_file_dialog(
         ),
     ],
 )
-@pytest.mark.usefixtures("wait_for_dialog_to_close")
 async def test_open_file_dialog(
     main_window,
     main_window_probe,
@@ -204,6 +213,7 @@ async def test_open_file_dialog(
     file_types,
     multiple_select,
     result,
+    wait_for_dialog_to_close,
 ):
     """A file open dialog can be displayed and acknowledged."""
     dialog = toga.OpenFileDialog(
@@ -246,13 +256,13 @@ async def test_open_file_dialog(
         (TESTS_DIR, True, None),
     ],
 )
-@pytest.mark.usefixtures("wait_for_dialog_to_close")
 async def test_select_folder_dialog(
     main_window,
     main_window_probe,
     initial_directory,
     multiple_select,
     result,
+    wait_for_dialog_to_close,
 ):
     """A folder selection dialog can be displayed and acknowledged."""
     dialog = toga.SelectFolderDialog(
