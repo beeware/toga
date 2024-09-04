@@ -33,6 +33,15 @@ def xfail_on_platforms(*platforms):
         skip(f"not applicable on {current_platform}")
 
 
+@fixture(autouse=True)
+def no_dangling_tasks():
+    """Ensure any tasks for the test were removed when the test finished."""
+    yield
+    if toga.App.app:
+        tasks = toga.App.app._running_tasks
+        assert not tasks, f"the app has dangling tasks: {tasks}"
+
+
 @fixture(scope="session")
 def app():
     return toga.App.app

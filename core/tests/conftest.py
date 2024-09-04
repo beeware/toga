@@ -16,6 +16,15 @@ def reset_global_state():
 
 
 @pytest.fixture(autouse=True)
+def no_dangling_tasks():
+    """Ensure any tasks for the test were removed when the test finished."""
+    yield
+    if toga.App.app:
+        tasks = toga.App.app._running_tasks
+        assert not tasks, f"the app has dangling tasks: {tasks}"
+
+
+@pytest.fixture(autouse=True)
 def clear_sys_modules(monkeypatch):
     try:
         # App startup is influenced by things like the state of sys.modules, and the
@@ -27,7 +36,20 @@ def clear_sys_modules(monkeypatch):
 
 
 class TestApp(toga.App):
-    pass
+    def startup(self):
+        # Ensure that Toga's task factory is tracking all tasks
+        toga_task_factory = self.loop.get_task_factory()
+
+        def task_factory(loop, coro, context=None):
+            if sys.version_info < (3, 11):
+                task = toga_task_factory(loop, coro)
+            else:
+                task = toga_task_factory(loop, coro, context=context)
+            assert task in self._running_tasks, f"missing task reference for {task}"
+            return task
+
+        self.loop.set_task_factory(task_factory)
+        super().startup()
 
 
 @pytest.fixture

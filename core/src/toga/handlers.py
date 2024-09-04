@@ -11,7 +11,6 @@ from typing import (
     Any,
     Awaitable,
     Callable,
-    Coroutine,
     Generator,
     NoReturn,
     Protocol,
@@ -19,13 +18,13 @@ from typing import (
     Union,
 )
 
-T = TypeVar("T")
-
 if TYPE_CHECKING:
     if sys.version_info < (3, 10):
         from typing_extensions import TypeAlias
     else:
         from typing import TypeAlias
+
+    T = TypeVar("T")
 
     GeneratorReturnT = TypeVar("GeneratorReturnT")
     HandlerGeneratorReturnT: TypeAlias = Generator[
@@ -37,9 +36,6 @@ if TYPE_CHECKING:
     HandlerGeneratorT: TypeAlias = Callable[..., HandlerGeneratorReturnT[object]]
     HandlerT: TypeAlias = Union[HandlerSyncT, HandlerAsyncT, HandlerGeneratorT]
     WrappedHandlerT: TypeAlias = Callable[..., object]
-
-# Holds references to asyncio.Tasks created by Toga; see create_task().
-running_tasks = set()
 
 
 def overridable(method: T) -> T:
@@ -55,23 +51,6 @@ def overridden(coroutine_or_method: Callable) -> bool:
     default methods have this attribute; user-defined method will not.
     """
     return not hasattr(coroutine_or_method, "_overridden")
-
-
-def create_task(coro_or_future: Coroutine | Awaitable[object]) -> asyncio.Task:
-    """Add a task for a handler to the event loop.
-
-    When Tasks are created, a strong reference should be maintained for it while it is
-    running. The event loop only keeps weak references for the task; so, tracking each
-    Task here ensures the garbage collector will not destroy it mid-execution.
-    Upstream issue tracking at python/cpython#91887.
-
-    :param coro_or_future: Coroutine or Future for the Task to run
-    :returns: the created Task
-    """
-    task = asyncio.ensure_future(coro_or_future)
-    running_tasks.add(task)
-    task.add_done_callback(running_tasks.discard)
-    return task
 
 
 class NativeHandler:
@@ -187,7 +166,7 @@ def wrapped_handler(
 
         def _handler(*args: object, **kwargs: object) -> object:
             if asyncio.iscoroutinefunction(handler):
-                return create_task(
+                return asyncio.ensure_future(
                     handler_with_cleanup(handler, cleanup, interface, *args, **kwargs)
                 )
             else:
@@ -198,7 +177,7 @@ def wrapped_handler(
                     traceback.print_exc()
                 else:
                     if inspect.isgenerator(result):
-                        return create_task(
+                        return asyncio.ensure_future(
                             long_running_task(interface, result, cleanup)
                         )
                     else:

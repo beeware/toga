@@ -14,7 +14,7 @@ from weakref import WeakValueDictionary
 
 from toga.command import Command, CommandSet
 from toga.documents import Document, DocumentSet
-from toga.handlers import create_task, simple_handler, wrapped_handler
+from toga.handlers import simple_handler, wrapped_handler
 from toga.hardware.camera import Camera
 from toga.hardware.location import Location
 from toga.icons import Icon
@@ -140,14 +140,13 @@ class App:
     _camera: Camera
     _location: Location
     _main_window: Window | str | None
+    _running_tasks: set[asyncio.Task] = set()
 
     #: A constant that can be used as the main window to indicate that an app will
     #: run in the background without a main window.
     BACKGROUND: str = "background app"
 
     _UNDEFINED: str = "<main window not assigned>"
-
-    _create_task = staticmethod(create_task)
 
     def __init__(
         self,
@@ -481,6 +480,35 @@ class App:
 
         self._impl.main_loop()
 
+    def _install_task_factory_wrapper(self):
+        """Wrap task creation to track pending and running tasks.
+
+        When tasks are created, asyncio only maintains a weak reference to the task.
+        This allows for the possibility that the garbage collector destroys the task
+        in the midst of its execution. To avoid this, a strong reference is stored on
+        the app and a task callback removes the reference after the task completes.
+        Upstream issue tracked at python/cpython#91887.
+        """
+        platform_task_factory = self.loop.get_task_factory()
+
+        def factory(loop, coro, context=None):
+            if platform_task_factory is not None:
+                if sys.version_info < (3, 11):
+                    task = platform_task_factory(loop, coro)
+                else:
+                    task = platform_task_factory(loop, coro, context=context)
+            else:
+                if sys.version_info < (3, 11):
+                    task = asyncio.Task(coro, loop=loop)
+                else:
+                    task = asyncio.Task(coro, loop=loop, context=context)
+
+            self._running_tasks.add(task)
+            task.add_done_callback(self._running_tasks.discard)
+            return task
+
+        self.loop.set_task_factory(factory)
+
     @property
     def main_window(self) -> Window | str | None:
         """The main window for the app.
@@ -513,7 +541,7 @@ class App:
         else:
             raise ValueError(f"Don't know how to use {window!r} as a main window.")
 
-    def _open_initial_document(self, filename: Path) -> bool:
+    def _open_initial_document(self, filename: Path | str) -> bool:
         """Internal utility method for opening a document provided at the command line.
 
         This is abstracted so that backends that have their own management of command
@@ -608,6 +636,9 @@ class App:
                 )
 
     def _startup(self) -> None:
+        # Wrap the platform's event loop's task factory for task tracking
+        self._install_task_factory_wrapper()
+
         # Install the standard commands. This is done *before* startup so the user's
         # code has the opportunity to remove/change the default commands.
         self._create_standard_commands()
@@ -885,16 +916,10 @@ class App:
 
     def add_background_task(self, handler: BackgroundTask) -> None:
         """**DEPRECATED** – Use :any:`asyncio.create_task`, or override/assign
-        :meth:`~toga.App.on_running`.
-
-        Please review the Python docs for :any:`asyncio.create_task` and follow the
-        advice to save a reference to the returned task in your app.
-        """
+        :meth:`~toga.App.on_running`."""
         warnings.warn(
-            "App.add_background_task() is deprecated. Use asyncio.create_task(), "
-            "or set an App.on_running() handler. Notice the important note for "
-            "asyncio.create_task() at https://docs.python.org/3/library/asyncio-task.html#asyncio.create_task "
-            "to save a reference to the returned task.",
+            "App.add_background_task is deprecated. Use asyncio.create_task(), "
+            "or set an App.on_running() handler",
             DeprecationWarning,
             stacklevel=2,
         )

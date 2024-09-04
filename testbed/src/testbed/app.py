@@ -1,3 +1,4 @@
+import sys
 from unittest.mock import Mock
 
 import toga
@@ -47,6 +48,19 @@ class Testbed(toga.App):
     _gc_protector = []
 
     def startup(self):
+        # Ensure that Toga's task factory is tracking all tasks
+        toga_task_factory = self.loop.get_task_factory()
+
+        def task_factory(loop, coro, context=None):
+            if sys.version_info < (3, 11):
+                task = toga_task_factory(loop, coro)
+            else:
+                task = toga_task_factory(loop, coro, context=context)
+            assert task in self._running_tasks, f"missing task reference for {task}"
+            return task
+
+        self.loop.set_task_factory(task_factory)
+
         # Set a default return code for the app, so that a value is
         # available if the app exits for a reason other than the test
         # suite exiting/crashing.
