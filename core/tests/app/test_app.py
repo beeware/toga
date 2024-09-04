@@ -826,7 +826,7 @@ def test_deprecated_background_task(app):
         canary()
 
     with pytest.warns(
-        DeprecationWarning, match=r"App.add_background_task\(\) is deprecated"
+        DeprecationWarning, match="App.add_background_task is deprecated"
     ):
         app.add_background_task(background)
 

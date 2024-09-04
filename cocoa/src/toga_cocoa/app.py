@@ -49,7 +49,7 @@ class AppDelegate(NSObject):
 
     @objc_method
     def applicationOpenUntitledFile_(self, sender) -> bool:
-        self.interface._create_task(self.interface.documents.request_open())
+        asyncio.create_task(self.interface.documents.request_open())
         return True
 
     @objc_method

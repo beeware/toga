@@ -284,7 +284,7 @@ class App:
 
         # Create and show an info dialog as the about dialog.
         # We don't care about the response.
-        self.interface._create_task(
+        asyncio.create_task(
             self.interface.dialog(
                 InfoDialog(
                     f"About {self.interface.formal_name}",
