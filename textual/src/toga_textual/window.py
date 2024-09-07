@@ -147,6 +147,7 @@ class Window:
 
     def set_app(self, app):
         app.native.install_screen(self.native, name=self.interface.id)
+        app.native.mount(self.native)
 
     def show(self):
         pass
