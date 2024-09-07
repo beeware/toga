@@ -51,7 +51,7 @@ class App:
         self.native.exit()
 
     def main_loop(self):
-        self.native.run()
+        self.loop.run_until_complete(self.native.run_async())
 
     def set_icon(self, icon):
         pass
