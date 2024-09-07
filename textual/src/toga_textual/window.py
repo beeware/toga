@@ -146,8 +146,8 @@ class Window:
         self.native.dismiss(None)
 
     def set_app(self, app):
-        app.native.install_screen(self.native, name=self.interface.id)
         app.native.mount(self.native)
+        app.native.install_screen(self.native, name=self.interface.id)
 
     def show(self):
         pass
@@ -161,8 +161,7 @@ class Window:
 
     def set_content(self, widget):
         self.container.content = widget
-
-        self.native.mount(widget.native)
+        widget.install(parent=self)
 
     ######################################################################
     # Window size
