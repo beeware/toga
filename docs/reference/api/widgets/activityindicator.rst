@@ -28,6 +28,10 @@ usually rendered as a "spinner" animation.
 
   .. group-tab:: iOS |no|
 
+    .. figure:: /reference/images/activityindicator-ios.png
+       :align: center
+       :width: 100px
+
     Not supported
 
   .. group-tab:: Web |beta|
