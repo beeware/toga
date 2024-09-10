@@ -17,6 +17,7 @@ from toga_cocoa.libs import (
     NSBackingStoreBuffered,
     NSImage,
     NSMutableArray,
+    NSObject,
     NSScreen,
     NSToolbar,
     NSToolbarItem,
@@ -51,12 +52,16 @@ class TogaWindow(NSWindow):
 
         # Hence, simply remove the toolbar instead.
         self.toolbar = None
+        self.delegate = NSObject.alloc.init()
 
-        # However, window delegate methods, need check guards.
+        # Disconnecting the window delegate doesn't prevent custom
+        # methods like enteredMiniaturize_(which are performed with a
+        # delay i.e., having a delay != 0), from being triggered.
+        # Hence, check guards needs to be used in such custom methods.
 
     @objc_method
     def windowDidResize_(self, notification) -> None:
-        if self.interface and self.interface.content:  # pragma: no branch
+        if self.interface.content:
             # Set the window to the new size
             self.interface.content.refresh()
 
@@ -79,8 +84,7 @@ class TogaWindow(NSWindow):
 
     @objc_method
     def windowDidDeminiaturize_(self, notification) -> None:
-        if self.impl:  # pragma: no branch
-            self.impl._apply_state(self.impl._pending_state_transition)
+        self.impl._apply_state(self.impl._pending_state_transition)
 
     @objc_method
     def windowDidEnterFullScreen_(self, notification) -> None:
@@ -91,19 +95,17 @@ class TogaWindow(NSWindow):
         # Doing the following directly in `windowDidEnterFullScreen_` will result in error:
         # ````2024-08-09 15:46:39.050 python[2646:37395] not in fullscreen state````
         # and any subsequent window state calls to the OS will not work or will be glitchy.
-        if self.impl:  # pragma: no branch
-            if (
-                self.impl._pending_state_transition
-                and self.impl._pending_state_transition != WindowState.FULLSCREEN
-            ):
-                self.impl._apply_state(WindowState.NORMAL)
-            else:
-                self.impl._pending_state_transition = None
+        if (
+            self.impl._pending_state_transition
+            and self.impl._pending_state_transition != WindowState.FULLSCREEN
+        ):
+            self.impl._apply_state(WindowState.NORMAL)
+        else:
+            self.impl._pending_state_transition = None
 
     @objc_method
     def windowDidExitFullScreen_(self, notification) -> None:
-        if self.impl:  # pragma: no branch
-            self.impl._apply_state(self.impl._pending_state_transition)
+        self.impl._apply_state(self.impl._pending_state_transition)
 
     ######################################################################
     # Toolbar delegate methods

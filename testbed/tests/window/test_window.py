@@ -669,6 +669,27 @@ else:
         assert second_window_probe.content_size == (250, 210)
 
     @pytest.mark.parametrize(
+        "state",
+        [
+            WindowState.MINIMIZED,
+            WindowState.MAXIMIZED,
+            WindowState.FULLSCREEN,
+            WindowState.PRESENTATION,
+        ],
+    )
+    @pytest.mark.parametrize(
+        "second_window_class, second_window_kwargs",
+        [
+            (
+                toga.MainWindow,
+                dict(title="Secondary Window", position=(200, 150)),
+            )
+        ],
+    )
+    async def test_timming(app_probe, second_window, second_window_probe, state):
+        pass
+
+    @pytest.mark.parametrize(
         "initial_state, final_state",
         [
             # Direct switch from NORMAL:
