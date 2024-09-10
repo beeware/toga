@@ -1,0 +1,1 @@
+Added implementation of ActivityIndicator for iOS using the UIActivityIndicatorView

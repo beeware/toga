@@ -26,7 +26,7 @@ usually rendered as a "spinner" animation.
 
     Not supported
 
-  .. group-tab:: iOS |no|
+  .. group-tab:: iOS
 
     .. figure:: /reference/images/activityindicator-ios.png
        :align: center
