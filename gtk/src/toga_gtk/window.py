@@ -37,7 +37,6 @@ class Window:
         # Use shadow variables to differentiate between presentation, fullscreen & in-between
         # transition state.
         self._in_presentation = False
-        self._in_fullscreen = False
 
         # Pending Window state transition variable:
         self._pending_state_transition = None
@@ -187,10 +186,8 @@ class Window:
         ):  # pragma: no-cover-if-linux-wayland
             if self._in_presentation:
                 return WindowState.PRESENTATION
-            elif self._in_fullscreen:
-                return WindowState.FULLSCREEN
             else:
-                return None
+                return WindowState.FULLSCREEN
         else:
             return WindowState.NORMAL
 
@@ -249,7 +246,6 @@ class Window:
             target_state == WindowState.FULLSCREEN
         ):  # pragma: no-cover-if-linux-wayland
             self.native.fullscreen()
-            self._in_fullscreen = True
 
         elif (
             target_state == WindowState.PRESENTATION
@@ -276,7 +272,6 @@ class Window:
                 current_state == WindowState.FULLSCREEN
             ):  # pragma: no-cover-if-linux-wayland
                 self.native.unfullscreen()
-                self._in_fullscreen = False
 
             else:  # current_state == WindowState.PRESENTATION: # pragma: no-cover-if-linux-wayland
                 if isinstance(self.native, Gtk.ApplicationWindow):
