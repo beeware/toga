@@ -17,7 +17,6 @@ from toga_cocoa.libs import (
     NSBackingStoreBuffered,
     NSImage,
     NSMutableArray,
-    NSObject,
     NSScreen,
     NSToolbar,
     NSToolbarItem,
@@ -47,12 +46,11 @@ class TogaWindow(NSWindow):
 
     @objc_method
     def windowWillClose_(self, notification) -> None:
-        # Setting the toolbar and window delegate to None doesn't disconnect
-        # the delegates and still triggers the delegate events.
-
+        # Setting the toolbar to None doesn't disconnect the
+        # delegates and still triggers the delegate events.
         # Hence, simply remove the toolbar instead.
         self.toolbar = None
-        self.delegate = NSObject.alloc.init()
+        self.delegate = None
 
         # Disconnecting the window delegate doesn't prevent custom
         # methods like enteredMiniaturize_(which are performed with a
