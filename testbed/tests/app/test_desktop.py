@@ -300,7 +300,7 @@ async def test_presentation_mode_exit_on_window_state_change(
         # Enter presentation mode
         app.enter_presentation_mode([window1])
         # Add delay to ensure windows are visible after animation.
-        await app_probe.redraw("App is in presentation mode", delay=0.75)
+        await app_probe.redraw("App is in presentation mode", delay=0.5)
 
         assert app.in_presentation_mode
         assert window1.state == WindowState.PRESENTATION
@@ -311,7 +311,7 @@ async def test_presentation_mode_exit_on_window_state_change(
         await app_probe.redraw(
             "App is not in presentation mode"
             f"\nTest Window 1 is in {new_window_state}",
-            delay=0.75,
+            delay=0.5,
         )
 
         assert not app.in_presentation_mode
@@ -326,7 +326,7 @@ async def test_presentation_mode_exit_on_window_state_change(
         # Enter presentation mode again
         app.enter_presentation_mode([window1])
         # Add delay to ensure windows are visible after animation.
-        await app_probe.redraw("App is in presentation mode", delay=0.75)
+        await app_probe.redraw("App is in presentation mode", delay=0.5)
         assert app.in_presentation_mode
         assert window1.state == WindowState.PRESENTATION
 
@@ -336,7 +336,7 @@ async def test_presentation_mode_exit_on_window_state_change(
         await app_probe.redraw(
             "App is not in presentation mode"
             f"\nTest Window 1 is in {new_window_state}",
-            delay=0.75,
+            delay=0.5,
         )
 
         assert not app.in_presentation_mode
