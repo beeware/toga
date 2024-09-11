@@ -36,23 +36,17 @@ class Widget(Scalable):
         self.container = None
         self.create()
 
-        self._pending_children: list[Widget] = list()
-
     def install(self, parent):
-        """Add widget and any pending children to the native DOM for the app.
+        """Add widget and its children to the native DOM for the app.
 
         Textual does not allow widgets to be added to the DOM until their parent is
         added. Therefore, when children are added to an unmounted widget, their
         mounting is deferred until their parent is mounted.
         """
-        # Mount widget on to its parent
         parent.native.mount(self.native)
 
-        # Mount any pending children as native children
-        for child in self._pending_children:
-            child.install(parent=self)
-
-        self._pending_children.clear()
+        for child in self.interface.children:
+            child._impl.install(parent=self)
 
     def get_size(self) -> Size:
         return Size(0, 0)
@@ -174,17 +168,12 @@ class Widget(Scalable):
         # So, mounting the child is deferred if the parent is not mounted yet.
         if self.native.is_attached:
             self.native.mount(child.native)
-        else:
-            self._pending_children.append(child)
 
     def insert_child(self, index, child):
         pass
 
     def remove_child(self, child):
-        try:
-            self._pending_children.remove(child)
-        except ValueError:
-            self.native.remove_children([child.native])
+        self.native.remove_children([child.native])
 
     def refresh(self):
         intrinsic = self.interface.intrinsic
