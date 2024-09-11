@@ -1,1 +1,1 @@
-Added implementation of ActivityIndicator for iOS using the UIActivityIndicatorView
+The ActivityIndicator widget is now supported on iOS.
