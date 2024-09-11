@@ -29,6 +29,9 @@ class App:
         self.loop = asyncio.new_event_loop()
         self.native = TogaApp(self)
 
+        # run the app without displaying it
+        self.headless = False
+
     def create(self):
         self.interface._startup()
         self.set_current_window(self.interface.main_window._impl)
@@ -51,7 +54,7 @@ class App:
         self.native.exit()
 
     def main_loop(self):
-        self.loop.run_until_complete(self.native.run_async())
+        self.loop.run_until_complete(self.native.run_async(headless=self.headless))
 
     def set_icon(self, icon):
         pass
