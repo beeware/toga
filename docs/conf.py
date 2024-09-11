@@ -372,3 +372,6 @@ todo_include_todos = True
 
 # If this is True, todolist produce output without file path and line, The default is False.
 # todo_link_only = False
+
+# Hide the class and module name on the right sidebar to prevent wrapping
+toc_object_entries_show_parents = "hide"
