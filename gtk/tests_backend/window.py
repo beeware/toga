@@ -13,8 +13,6 @@ class WindowProbe(BaseProbe, DialogsMixin):
     supports_unminimize = False
     # Wayland mostly prohibits interaction with the larger windowing environment
     supports_minimize = not IS_WAYLAND
-    supports_fullscreen = not IS_WAYLAND
-    supports_presentation = not IS_WAYLAND
     supports_placement = not IS_WAYLAND
 
     def __init__(self, app, window):

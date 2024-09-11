@@ -172,9 +172,6 @@ async def test_menu_minimize(app, app_probe):
 
 async def test_presentation_mode(app, app_probe, main_window, main_window_probe):
     """The app can enter presentation mode."""
-    if not main_window_probe.supports_presentation:
-        pytest.xfail("This backend doesn't reliably support presentation window state.")
-
     try:
         window_information_list = list()
         windows_list = list()
@@ -281,8 +278,10 @@ async def test_presentation_mode_exit_on_window_state_change(
     app, app_probe, main_window, main_window_probe, new_window_state
 ):
     """Changing window state exits presentation mode and sets the new state."""
-    if not main_window_probe.supports_presentation:
-        pytest.xfail("This backend doesn't reliably support presentation window state.")
+    if (new_window_state == WindowState.MINIMIZED) and (
+        not main_window_probe.supports_minimize
+    ):
+        pytest.xfail("This backend doesn't reliably support WindowState.MINIMIZED.")
 
     try:
         window1 = toga.Window(
@@ -301,7 +300,7 @@ async def test_presentation_mode_exit_on_window_state_change(
         # Enter presentation mode
         app.enter_presentation_mode([window1])
         # Add delay to ensure windows are visible after animation.
-        await app_probe.redraw("App is in presentation mode", delay=0.5)
+        await app_probe.redraw("App is in presentation mode", delay=0.75)
 
         assert app.in_presentation_mode
         assert window1.state == WindowState.PRESENTATION
@@ -312,7 +311,7 @@ async def test_presentation_mode_exit_on_window_state_change(
         await app_probe.redraw(
             "App is not in presentation mode"
             f"\nTest Window 1 is in {new_window_state}",
-            delay=0.5,
+            delay=0.75,
         )
 
         assert not app.in_presentation_mode
@@ -327,7 +326,7 @@ async def test_presentation_mode_exit_on_window_state_change(
         # Enter presentation mode again
         app.enter_presentation_mode([window1])
         # Add delay to ensure windows are visible after animation.
-        await app_probe.redraw("App is in presentation mode", delay=0.5)
+        await app_probe.redraw("App is in presentation mode", delay=0.75)
         assert app.in_presentation_mode
         assert window1.state == WindowState.PRESENTATION
 
@@ -337,7 +336,7 @@ async def test_presentation_mode_exit_on_window_state_change(
         await app_probe.redraw(
             "App is not in presentation mode"
             f"\nTest Window 1 is in {new_window_state}",
-            delay=0.5,
+            delay=0.75,
         )
 
         assert not app.in_presentation_mode
