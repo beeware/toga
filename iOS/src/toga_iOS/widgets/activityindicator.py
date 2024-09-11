@@ -6,6 +6,19 @@ from toga_iOS.widgets.base import Widget
 
 class ActivityIndicator(Widget):
     def create(self):
+        """Implements the ActivityIndicator widget for iOS
+
+        Implementation note:
+        ===================
+
+        The UIActivityIndicatorView is added to a parent UIView because
+        there is an issue with the UIActivityIndicatorView's `hidesWhenStopped`
+        behavior - if it is not part of a parent UIView, the indicator
+        is immediately visible even when not animating, even when
+        `hidesWhenStopped` is set to `True`, but it works as expected when
+        it is added as a subview to a parent UIView.
+        """
+
         self._activity_indicator = UIActivityIndicatorView.new()
         self._activity_indicator.hidesWhenStopped = True
         self._activity_indicator.translatesAutoresizingMaskIntoConstraints = False
