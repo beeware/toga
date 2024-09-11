@@ -669,27 +669,6 @@ else:
         assert second_window_probe.content_size == (250, 210)
 
     @pytest.mark.parametrize(
-        "state",
-        [
-            WindowState.MINIMIZED,
-            WindowState.MAXIMIZED,
-            WindowState.FULLSCREEN,
-            WindowState.PRESENTATION,
-        ],
-    )
-    @pytest.mark.parametrize(
-        "second_window_class, second_window_kwargs",
-        [
-            (
-                toga.MainWindow,
-                dict(title="Secondary Window", position=(200, 150)),
-            )
-        ],
-    )
-    async def test_timming(app_probe, second_window, second_window_probe, state):
-        pass
-
-    @pytest.mark.parametrize(
         "initial_state, final_state",
         [
             # Direct switch from NORMAL:
@@ -757,20 +736,6 @@ else:
             pytest.xfail(
                 "This backend doesn't reliably support minimized window state."
             )
-        elif (
-            WindowState.FULLSCREEN in {initial_state, final_state}
-            and not second_window_probe.supports_fullscreen
-        ):
-            pytest.xfail(
-                "This backend doesn't reliably support minimized window state."
-            )
-        elif (
-            WindowState.PRESENTATION in {initial_state, final_state}
-            and not second_window_probe.supports_presentation
-        ):
-            pytest.xfail(
-                "This backend doesn't reliably support minimized window state."
-            )
 
         second_window.toolbar.add(app.cmd1)
         second_window.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
@@ -829,20 +794,6 @@ else:
             pytest.xfail(
                 "This backend doesn't reliably support minimized window state."
             )
-        elif (
-            state == WindowState.FULLSCREEN
-            and not second_window_probe.supports_fullscreen
-        ):
-            pytest.xfail(
-                "This backend doesn't reliably support minimized window state."
-            )
-        elif (
-            state == WindowState.PRESENTATION
-            and not second_window_probe.supports_presentation
-        ):
-            pytest.xfail(
-                "This backend doesn't reliably support minimized window state."
-            )
 
         second_window.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
         second_window.show()
@@ -861,6 +812,7 @@ else:
 
         # Set the window state the same as current:
         second_window.state = state
+        # No need to wait for OS delay as the above operation should be a no-op.
         assert second_window.state == state
 
     @pytest.mark.parametrize(
@@ -967,10 +919,6 @@ else:
     )
     async def test_window_state_full_screen(second_window, second_window_probe):
         """Window can have full screen window state."""
-        if not second_window_probe.supports_fullscreen:
-            pytest.xfail(
-                "This backend doesn't reliably support fullscreen window state."
-            )
         second_window.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
         second_window.show()
         # Add delay to ensure windows are visible after animation.
@@ -1021,10 +969,6 @@ else:
         second_window, second_window_probe, app_probe
     ):
         """Window can have presentation window state."""
-        if not second_window_probe.supports_presentation:
-            pytest.xfail(
-                "This backend doesn't reliably support presentation window state."
-            )
         second_window.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
         second_window.show()
         # Add delay to ensure windows are visible after animation.

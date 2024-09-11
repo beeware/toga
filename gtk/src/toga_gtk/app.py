@@ -238,25 +238,13 @@ class App:
     # Presentation mode controls
     ######################################################################
 
-    def enter_presentation_mode(
-        self, screen_window_dict
-    ):  # pragma: no-cover-if-linux-wayland
-        if IS_WAYLAND:  # pragma: no-cover-if-linux-x
-            # Not implemented on wayland due to wayland security policies.
-            self.interface.factory.not_implemented(
-                "App.enter_presentation_mode() on Wayland"
-            )
+    def enter_presentation_mode(self, screen_window_dict):
         for screen, window in screen_window_dict.items():
             window._impl._before_presentation_mode_screen = window.screen
             window.screen = screen
             window._impl.set_window_state(WindowState.PRESENTATION)
 
-    def exit_presentation_mode(self):  # pragma: no-cover-if-linux-wayland
-        if IS_WAYLAND:  # pragma: no-cover-if-linux-x
-            # Not implemented on wayland due to wayland security policies.
-            self.interface.factory.not_implemented(
-                "App.exit_presentation_mode() on Wayland"
-            )
+    def exit_presentation_mode(self):
         for window in self.interface.windows:
             if window.state == WindowState.PRESENTATION:
                 window._impl.set_window_state(WindowState.NORMAL)
