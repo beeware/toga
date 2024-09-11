@@ -31,9 +31,6 @@ usually rendered as a "spinner" animation.
     .. figure:: /reference/images/activityindicator-ios.png
        :align: center
        :width: 100px
-
-    Not supported
-
   .. group-tab:: Web |beta|
 
     .. .. figure:: /reference/images/activityindicator-web.png
