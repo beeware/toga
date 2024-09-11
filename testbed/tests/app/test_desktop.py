@@ -191,7 +191,9 @@ async def test_presentation_mode(app, app_probe, main_window, main_window_probe)
             )
             window.show()
             # Add delay to ensure windows are visible after animation.
-            await app_probe.redraw(f"Test Window {i} is visible", delay=0.5)
+            await main_window_probe.wait_for_window(
+                f"Test Window {i} is visible", full_screen=True
+            )
 
             window_information = dict()
             window_information["window"] = window
@@ -214,8 +216,9 @@ async def test_presentation_mode(app, app_probe, main_window, main_window_probe)
         # Enter presentation mode with a screen-window dict via the app
         app.enter_presentation_mode(screen_window_dict)
         # Add delay to ensure windows are visible after animation.
-        await app_probe.redraw("App is in presentation mode", delay=0.5)
-
+        await main_window_probe.wait_for_window(
+            f"Test Window {i} is visible", full_screen=True
+        )
         assert app.in_presentation_mode
         # All the windows should be in presentation mode.
         for window_information in window_information_list:
@@ -237,7 +240,9 @@ async def test_presentation_mode(app, app_probe, main_window, main_window_probe)
 
         # Exit presentation mode
         app.exit_presentation_mode()
-        await app_probe.redraw("App is no longer in presentation mode", delay=0.5)
+        await main_window_probe.wait_for_window(
+            f"Test Window {i} is visible", full_screen=True
+        )
 
         assert not app.in_presentation_mode
         for window_information in window_information_list:
@@ -262,7 +267,9 @@ async def test_presentation_mode(app, app_probe, main_window, main_window_probe)
         # Ensure that main_window will be in focus for other tests.
         app.current_window = main_window
         # Add delay to ensure windows are visible after animation.
-        await app_probe.redraw("main_window is now the current window", delay=0.5)
+        await main_window_probe.wait_for_window(
+            f"Test Window {i} is visible", full_screen=True
+        )
         assert app.current_window == main_window
 
 
@@ -295,12 +302,13 @@ async def test_presentation_mode_exit_on_window_state_change(
         window1.show()
         window2.show()
         # Add delay to ensure windows are visible after animation.
-        await app_probe.redraw("Test windows are shown", delay=0.5)
-
+        await main_window_probe.wait_for_window("Test windows are shown")
         # Enter presentation mode
         app.enter_presentation_mode([window1])
         # Add delay to ensure windows are visible after animation.
-        await app_probe.redraw("App is in presentation mode", delay=0.5)
+        await main_window_probe.wait_for_window(
+            "App is in presentation mode", full_screen=True
+        )
 
         assert app.in_presentation_mode
         assert window1.state == WindowState.PRESENTATION
@@ -308,10 +316,11 @@ async def test_presentation_mode_exit_on_window_state_change(
         # Changing window state of main window should make the app exit presentation mode.
         window1.state = new_window_state
         # Add delay to ensure windows are visible after animation.
-        await app_probe.redraw(
+        await main_window_probe.wait_for_window(
             "App is not in presentation mode"
             f"\nTest Window 1 is in {new_window_state}",
-            delay=0.5,
+            minimize=True if new_window_state == WindowState.MINIMIZED else False,
+            full_screen=True if new_window_state == WindowState.FULLSCREEN else False,
         )
 
         assert not app.in_presentation_mode
@@ -321,22 +330,31 @@ async def test_presentation_mode_exit_on_window_state_change(
         window1.state = WindowState.NORMAL
         window2.state = WindowState.NORMAL
         # Add delay to ensure windows are visible after animation.
-        await app_probe.redraw("All test windows are in WindowState.NORMAL", delay=1)
+        await main_window_probe.wait_for_window(
+            "All test windows are in WindowState.NORMAL",
+            minimize=True if new_window_state == WindowState.MINIMIZED else False,
+            full_screen=True if new_window_state == WindowState.FULLSCREEN else False,
+        )
 
         # Enter presentation mode again
         app.enter_presentation_mode([window1])
         # Add delay to ensure windows are visible after animation.
-        await app_probe.redraw("App is in presentation mode", delay=0.5)
+        await main_window_probe.wait_for_window(
+            "App is in presentation mode",
+            minimize=True if new_window_state == WindowState.MINIMIZED else False,
+            full_screen=True if new_window_state == WindowState.FULLSCREEN else False,
+        )
         assert app.in_presentation_mode
         assert window1.state == WindowState.PRESENTATION
 
         # Changing window state of extra window should make the app exit presentation mode.
         window2.state = new_window_state
         # Add delay to ensure windows are visible after animation.
-        await app_probe.redraw(
+        await main_window_probe.wait_for_window(
             "App is not in presentation mode"
-            f"\nTest Window 1 is in {new_window_state}",
-            delay=0.5,
+            f"\nTest Window 2 is in {new_window_state}",
+            minimize=True if new_window_state == WindowState.MINIMIZED else False,
+            full_screen=True if new_window_state == WindowState.FULLSCREEN else False,
         )
 
         assert not app.in_presentation_mode
@@ -346,7 +364,11 @@ async def test_presentation_mode_exit_on_window_state_change(
         window1.state = WindowState.NORMAL
         window2.state = WindowState.NORMAL
         # Add delay for gtk to show the windows
-        await app_probe.redraw("All test windows are in WindowState.NORMAL", delay=0.5)
+        await main_window_probe.wait_for_window(
+            "All test windows are in WindowState.NORMAL",
+            minimize=True if new_window_state == WindowState.MINIMIZED else False,
+            full_screen=True if new_window_state == WindowState.FULLSCREEN else False,
+        )
 
     finally:
         window1.close()
@@ -355,7 +377,9 @@ async def test_presentation_mode_exit_on_window_state_change(
         # Ensure that main_window will be in focus for other tests.
         app.current_window = main_window
         # Add delay to ensure windows are visible after animation.
-        await app_probe.redraw("main_window is now the current window", delay=0.5)
+        await main_window_probe.wait_for_window(
+            "main_window is now the current window", full_screen=True
+        )
         assert app.current_window == main_window
 
 
