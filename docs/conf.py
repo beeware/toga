@@ -123,6 +123,9 @@ intersphinx_mapping = {
     "PIL": ("https://pillow.readthedocs.io/en/stable/", None),
 }
 
+# Hide the class and module name on the right sidebar to prevent wrapping
+toc_object_entries_show_parents = "hide"
+
 # -- Local extensions ----------------------------------------------------------
 
 
@@ -275,6 +278,8 @@ html_css_files = [
     "custom.css",
 ]
 
+html_extra_path = ["extra"]
+
 # -- Options for LaTeX output --------------------------------------------------
 
 latex_elements = {
@@ -372,5 +377,3 @@ todo_include_todos = True
 
 # If this is True, todolist produce output without file path and line, The default is False.
 # todo_link_only = False
-
-html_extra_path = ["extra"]

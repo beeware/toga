@@ -1,0 +1,1 @@
+Right-sidebar only shows the element's name, without any parents, to prevent bad wrapping.
