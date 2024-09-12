@@ -12,7 +12,8 @@ class HandlerApp(toga.App):
     # Button callback functions
     def do_clear(self, widget, **kwargs):
         self.counter = 0
-        self.label.text = "Ready."
+        self.label_1.text = "Ready."
+        self.label_2.text = "Ready."
         self.function_label.text = "Ready."
         self.generator_label.text = "Ready."
         self.async_label.text = "Ready."
@@ -46,12 +47,20 @@ class HandlerApp(toga.App):
         self.async_label.text = "Ready."
         widget.enabled = True
 
-    async def do_background_task(self, widget, **kwargs):
+    async def on_running(self, **kwargs):
+        """A task started when the app is running."""
+        # This task runs in the background, without blocking the main event loop
+        while True:
+            self.counter += 1
+            self.label_1.text = f"On Running: Iteration {self.counter}"
+            await asyncio.sleep(1)
+
+    async def do_background_task(self, **kwargs):
         """A background task."""
         # This task runs in the background, without blocking the main event loop
         while True:
             self.counter += 1
-            self.label.text = f"Background: Iteration {self.counter}"
+            self.label_2.text = f"Background: Iteration {self.counter}"
             await asyncio.sleep(1)
 
     async def do_web_get(self, widget, **kwargs):
@@ -69,7 +78,8 @@ class HandlerApp(toga.App):
         self.main_window = toga.MainWindow()
 
         # Labels to show responses.
-        self.label = toga.Label("Ready.", style=Pack(padding=10))
+        self.label_1 = toga.Label("Ready.", style=Pack(padding=10))
+        self.label_2 = toga.Label("Ready.", style=Pack(padding=10))
         self.function_label = toga.Label("Ready.", style=Pack(padding=10))
         self.generator_label = toga.Label("Ready.", style=Pack(padding=10))
         self.async_label = toga.Label("Ready.", style=Pack(padding=10))
@@ -77,7 +87,7 @@ class HandlerApp(toga.App):
 
         # Add a background task.
         self.counter = 0
-        self.add_background_task(self.do_background_task)
+        asyncio.create_task(self.do_background_task())
 
         # Buttons
         btn_style = Pack(flex=1)
@@ -98,7 +108,8 @@ class HandlerApp(toga.App):
         # Outermost box
         box = toga.Box(
             children=[
-                self.label,
+                self.label_1,
+                self.label_2,
                 btn_function,
                 self.function_label,
                 btn_generator,
