@@ -59,7 +59,6 @@ requires = [
     "../gtk",
 ]
 
-
 [tool.briefcase.app.testbed.windows]
 test_sources = [
     "../winforms/tests_backend",
