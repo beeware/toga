@@ -1,4 +1,5 @@
 import asyncio
+import gc
 import inspect
 from dataclasses import dataclass
 from importlib import import_module
@@ -32,6 +33,15 @@ def xfail_on_platforms(*platforms):
         skip(f"not applicable on {current_platform}")
 
 
+@fixture(autouse=True)
+def no_dangling_tasks():
+    """Ensure any tasks for the test were removed when the test finished."""
+    yield
+    if toga.App.app:
+        tasks = toga.App.app._running_tasks
+        assert not tasks, f"the app has dangling tasks: {tasks}"
+
+
 @fixture(scope="session")
 def app():
     return toga.App.app
@@ -46,10 +56,38 @@ async def app_probe(app):
         print("\nConstructing app probe")
     yield probe
 
+    # Force a GC pass on the main thread. This isn't perfect, but it helps
+    # minimize garbage collection on the test thread.
+    gc.collect()
+
+    # Reset the command action mock
+    app.cmd_action.reset_mock()
+
 
 @fixture(scope="session")
 def main_window(app):
     return app.main_window
+
+
+@fixture(autouse=True)
+async def window_cleanup(app, main_window):
+    # Ensure that at the end of every test, all windows that aren't the
+    # main window have been closed and deleted. This needs to be done in
+    # 2 passes because we can't modify the list while iterating over it.
+    kill_list = []
+    for window in app.windows:
+        if window != main_window:
+            kill_list.append(window)
+
+    # Then purge everything on the kill list.
+    while kill_list:
+        window = kill_list.pop()
+        window.close()
+        del window
+
+    # Force a GC pass on the main thread. This isn't perfect, but it helps
+    # minimize garbage collection on the test thread.
+    gc.collect()
 
 
 @fixture(scope="session")
@@ -69,14 +107,22 @@ async def main_window_probe(app, main_window):
 
 # Controls the event loop used by pytest-asyncio.
 @fixture(scope="session")
-def event_loop(app):
-    loop = ProxyEventLoop(app._impl.loop)
-    yield loop
-    loop.close()
+def event_loop_policy(app):
+    yield ProxyEventLoopPolicy(ProxyEventLoop(app._impl.loop))
 
 
-# Proxy which forwards all tasks to another event loop in a thread-safe manner. It
-# implements only the methods used by pytest-asyncio.
+# Loop policy that ensures proxy loop is always used.
+class ProxyEventLoopPolicy(asyncio.DefaultEventLoopPolicy):
+    def __init__(self, proxy_loop: "ProxyEventLoop"):
+        super().__init__()
+        self._proxy_loop = proxy_loop
+
+    def new_event_loop(self):
+        return self._proxy_loop
+
+
+# Proxy which forwards all tasks to another event loop in a thread-safe manner.
+# It implements only the methods used by pytest-asyncio.
 @dataclass
 class ProxyEventLoop(asyncio.AbstractEventLoop):
     loop: object

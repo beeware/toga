@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Any
 import toga
 
 if TYPE_CHECKING:
-    from toga.images import BytesLike
+    from toga.images import BytesLikeT
 
 
 class CustomImage:
@@ -26,7 +26,7 @@ class CustomImageConverter:
 
     @staticmethod
     def convert_to_format(
-        data: BytesLike,
+        data: BytesLikeT,
         image_class: type[CustomImage],
     ) -> CustomImage:
         image = image_class()
@@ -45,7 +45,7 @@ class DisabledImageConverter:
 
     @staticmethod
     def convert_to_format(
-        data: BytesLike,
+        data: BytesLikeT,
         image_class: type[Any],
     ) -> Any:
         raise Exception("Converter should be disabled")

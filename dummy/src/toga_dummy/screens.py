@@ -1,8 +1,9 @@
 from PIL import Image, ImageDraw
 
 from toga.screens import Screen as ScreenInterface
+from toga.types import Position, Size
 
-from .utils import LoggedObject  # noqa
+from .utils import LoggedObject
 
 
 class Screen(LoggedObject):
@@ -26,11 +27,11 @@ class Screen(LoggedObject):
     def get_name(self):
         return self.native[0]
 
-    def get_origin(self):
-        return self.native[1]
+    def get_origin(self) -> Position:
+        return Position(*self.native[1])
 
-    def get_size(self):
-        return self.native[2]
+    def get_size(self) -> Size:
+        return Size(*self.native[2])
 
     def get_image_data(self):
         self._action("get image data")

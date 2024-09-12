@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import sys
 import warnings
+from collections.abc import Callable, Iterable
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -14,21 +15,18 @@ if TYPE_CHECKING:
     else:
         from typing import TypeAlias
 
-    IconContent: TypeAlias = str | Path | toga.Icon
+    IconContentT: TypeAlias = str | Path | toga.Icon
 
 
 class cachedicon:
-    def __init__(self, f):
+    def __init__(self, f: Callable[..., Icon]):
         self.f = f
         self.__doc__ = f.__doc__
 
-    def __get__(self, obj, owner):
+    def __get__(self, obj: object, owner: type[Icon]) -> Icon:
         # If you ask for Icon.CACHED_ICON, obj is None, and owner is the Icon class
         # If you ask for self.CACHED_ICON, obj is self, from which we can get the class.
-        if obj is None:
-            cls = owner
-        else:
-            cls = obj.__class__
+        cls = owner if obj is None else obj.__class__
 
         try:
             # Look for a __CACHED_ICON attribute on the class
@@ -91,11 +89,12 @@ class Icon:
             path, or a path relative to the module that defines your Toga application
             class. This base filename should *not* contain an extension. If an extension
             is specified, it will be ignored. If the icon cannot be found, the default
-            icon will be :attr:`~toga.Icon.DEFAULT_ICON`.
+            icon will be :attr:`~toga.Icon.DEFAULT_ICON`. If an icon file is found, but
+            it cannot be loaded (due to a file format or permission error), an exception
+            will be raised.
         :param system: **For internal use only**
         """
         self.factory = get_platform_factory()
-
         try:
             # Try to load the icon with the given path snippet. If the request is for the
             # app icon, use ``resources/<app name>`` as the path.
@@ -110,6 +109,7 @@ class Icon:
             else:
                 resource_path = toga.App.app.paths.app
 
+            full_path: dict[str, Path] | Path
             if self.factory.Icon.SIZES:
                 full_path = {}
                 for size in self.factory.Icon.SIZES:
@@ -131,15 +131,11 @@ class Icon:
 
             self._impl = self.factory.Icon(interface=self, path=full_path)
         except FileNotFoundError:
-            # Icon path couldn't be loaded. If the path is the sentinel for the app
+            # Icon path couldn't be found. If the path is the sentinel for the app
             # icon, and this isn't running as a script, fall back to the application
             # binary
             if path is _APP_ICON:
-                if Path(sys.executable).stem not in {
-                    "python",
-                    f"python{sys.version_info.major}",
-                    f"python{sys.version_info.major}.{sys.version_info.minor}",
-                }:
+                if toga.App.app.is_bundled:
                     try:
                         # Use the application binary's icon
                         self._impl = self.factory.Icon(interface=self, path=None)
@@ -157,7 +153,12 @@ class Icon:
                 )
                 self._impl = self.DEFAULT_ICON._impl
 
-    def _full_path(self, size, extensions, resource_path):
+    def _full_path(
+        self,
+        size: str | None,
+        extensions: Iterable[str],
+        resource_path: Path,
+    ) -> Path:
         platform = toga.platform.current_platform
         if size:
             for extension in extensions:
@@ -181,5 +182,5 @@ class Icon:
 
         raise FileNotFoundError(f"Can't find icon {self.path}")
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
         return isinstance(other, Icon) and other._impl.path == self._impl.path

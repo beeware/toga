@@ -11,13 +11,15 @@ from System.Windows.Forms import Application, Cursor, ToolStripSeparator
 import toga
 from toga_winforms.keys import toga_to_winforms_key, winforms_to_toga_key
 
+from .dialogs import DialogsMixin
 from .probe import BaseProbe
 from .window import WindowProbe
 
 
-class AppProbe(BaseProbe):
+class AppProbe(BaseProbe, DialogsMixin):
     supports_key = True
     supports_key_mod3 = False
+    supports_current_window_assignment = True
 
     def __init__(self, app):
         super().__init__()
@@ -150,7 +152,7 @@ class AppProbe(BaseProbe):
         self._activate_menu_item(["Help", "About Toga Testbed"])
 
     async def close_about_dialog(self):
-        await WindowProbe(self.app, self.main_window)._close_dialog("\n")
+        await self.type_character("\n")
 
     def activate_menu_visit_homepage(self):
         self._activate_menu_item(["Help", "Visit homepage"])
@@ -183,6 +185,12 @@ class AppProbe(BaseProbe):
                 assert item.Text == title
 
     def assert_system_menus(self):
+        self.assert_menu_item(["File", "New Example Document"], enabled=True)
+        self.assert_menu_item(["File", "New Read-only Document"], enabled=True)
+        self.assert_menu_item(["File", "Open..."], enabled=True)
+        self.assert_menu_item(["File", "Save"], enabled=True)
+        self.assert_menu_item(["File", "Save As..."], enabled=True)
+        self.assert_menu_item(["File", "Save All"], enabled=True)
         self.assert_menu_item(["File", "Preferences"], enabled=False)
         self.assert_menu_item(["File", "Exit"])
 
@@ -200,3 +208,43 @@ class AppProbe(BaseProbe):
 
     def keystroke(self, combination):
         return winforms_to_toga_key(toga_to_winforms_key(combination))
+
+    async def restore_standard_app(self):
+        # No special handling needed to restore standard app.
+        await self.redraw("Restore to standard app")
+
+    async def open_initial_document(self, monkeypatch, document_path):
+        pytest.xfail("Winforms doesn't require initial document support")
+
+    def open_document_by_drag(self, document_path):
+        pytest.xfail("Winforms doesn't support opening documents by drag")
+
+    def has_status_icon(self, status_icon):
+        return status_icon._impl.native is not None
+
+    def status_menu_items(self, status_icon):
+        if status_icon._impl.native.ContextMenu:
+            return [
+                {
+                    "-": "---",
+                    "About Toga Testbed": "**ABOUT**",
+                    "Exit": "**EXIT**",
+                }.get(str(item.Text), str(item.Text))
+                for item in status_icon._impl.native.ContextMenu.MenuItems
+            ]
+        else:
+            # It's a button status item
+            return None
+
+    def activate_status_icon_button(self, item_id):
+        # Winforms doesn't provide an OnClick to trigger clicks, so we have to fake it
+        # at the level of the impl.
+        self.app.status_icons[item_id]._impl.winforms_click(
+            self.app.status_icons[item_id]._impl.native,
+            EventArgs.Empty,
+        )
+
+    def activate_status_menu_item(self, item_id, title):
+        menu = self.app.status_icons[item_id]._impl.native.ContextMenu
+        item = {item.Text: item for item in menu.MenuItems}[title]
+        item.OnClick(EventArgs.Empty)

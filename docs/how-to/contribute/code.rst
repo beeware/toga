@@ -86,31 +86,7 @@ Next, install any additional dependencies for your operating system:
 
   .. group-tab:: Linux
 
-    Ubuntu 18.04+, Debian 10+
-
-    .. code-block:: console
-
-      (venv) $ sudo apt update
-      (venv) $ sudo apt install pkg-config python3-dev libgirepository1.0-dev libcairo2-dev gir1.2-webkit2-4.0 libcanberra-gtk3-module
-
-    Fedora
-
-    .. code-block:: console
-
-      (venv) $ sudo dnf install pkg-config python3-devel gobject-introspection-devel cairo-gobject-devel webkit2gtk3 libcanberra-gtk3
-
-    Arch / Manjaro
-
-    .. code-block:: console
-
-      (venv) $ sudo pacman -Syu git pkgconf gobject-introspection cairo webkit2gtk libcanberra
-
-    FreeBSD
-
-    .. code-block:: console
-
-      (venv) $ sudo pkg update
-      (venv) $ sudo pkg install gobject-introspection cairo webkit2-gtk3
+    .. include:: /reference/platforms/unix-prerequisites.rst
 
   .. group-tab:: Windows
 
@@ -900,18 +876,18 @@ Commit your changes to this branch, then push to GitHub and create a pull reques
 Add change information for release notes
 ----------------------------------------
 
-Before you submit this change as a pull request, you need to add a *change note*.
-Toga uses `towncrier <https://pypi.org/project/towncrier/>`__ to
-automate building release notes. To support this, every pull request needs to
-have a corresponding file in the ``changes/`` directory that provides a short
-description of the change implemented by the pull request.
+Before you submit this change as a pull request, you need to add a *change
+note*. Toga uses `towncrier <https://pypi.org/project/towncrier/>`__ to automate
+building the release notes for each release. Every pull request must include at
+least one file in the ``changes/`` directory that provides a short description
+of the change implemented by the pull request.
 
 This description should be a high level summary of the change from the
 perspective of the user, not a deep technical description or implementation
-detail. It is distinct from a commit message - a commit message describes
-what has been done so that future developers can follow the reasoning for
-a change; the change note is a "user facing" description. For example, if
-you fix a bug caused by date handling, the commit message might read:
+detail. It is distinct from a commit message - a commit message describes what
+has been done so that future developers can follow the reasoning for a change;
+the change note is a "user facing" description. For example, if you fix a bug
+caused by date handling, the commit message might read:
 
     Modified date validation to accept US-style MM-DD-YYYY format.
 
@@ -919,15 +895,49 @@ The corresponding change note would read something like:
 
     Date widgets can now accept US-style MM-DD-YYYY format.
 
-See `News Fragments
-<https://towncrier.readthedocs.io/en/stable/tutorial.html#creating-news-fragments>`__
-for more details on the types of news fragments you can add. You can also see
-existing examples of news fragments in the ``changes/`` folder. Name the file
-using the number of the issue that your pull request is addressing. When there
-isn't an existing issue, you can create the pull request in two passes: First
-submit it without a change note - this will fail, but will also assign a pull
-request number. You can then push an update to the pull request, adding the
-change note with the assigned number.
+The change note should be in ReST format, in a file that has name of the format
+``<id>.<fragment type>.rst``. If the change you are proposing will fix a bug or
+implement a feature for which there is an existing issue number, the ID will be
+the number of that ticket. If the change has no corresponding issue, the PR
+number can be used as the ID. You won't know this PR number until you push the
+pull request, so the first CI pass will fail the Towncrier check; add the change
+note and push a PR update and CI should then pass.
+
+There are five allowed fragment types:
+
+- ``feature``: The PR adds a new behavior or capability that wasn't previously
+  possible (e.g., adding a new widget, or adding a significant capability to an
+  existing widget);
+- ``bugfix``: The PR fixes a bug in the existing implementation;
+- ``doc``: The PR is an significant improvement to documentation;
+- ``removal``; The PR represents a backwards incompatible change in the Toga
+  API; or
+- ``misc``; A minor or administrative change (e.g., fixing a typo, a minor
+  language clarification, or updating a dependency version) that doesn't need to
+  be announced in the release notes.
+
+Some PRs will introduce multiple features and fix multiple bugs, or introduce
+multiple backwards incompatible changes. In that case, the PR may have multiple
+change note files. If you need to associate two fragment types with the same ID,
+you can append a numerical suffix. For example, if PR 789 added a feature
+described by ticket 123, closed a bug described by ticket 234, and also made two
+backwards incompatible changes, you might have 4 change note files:
+
+* ``123.feature.rst``
+* ``234.bugfix.rst``
+* ``789.removal.1.rst``
+* ``789.removal.2.rst``
+
+For more information about Towncrier and fragment types see `News Fragments
+<https://towncrier.readthedocs.io/en/stable/tutorial.html#creating-news-fragments>`__.
+You can also see existing examples of news fragments in the ``changes``
+directory of the Toga repository. If this folder is empty, it's likely because
+Toga has recently published a new release; change note files are deleted and
+combined to update the :doc:`release notes </background/project/releases>` with
+each release. You can look at that file to see the style of comment that is
+required; you can look at `recently merged PRs
+<https://github.com/beeware/toga/pulls?q=is%3Apr+is%3Amerged>`__ to see how to
+format your change notes.
 
 It's not just about coverage!
 -----------------------------

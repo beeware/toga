@@ -1,7 +1,7 @@
 [build-system]
 requires = [
-    "setuptools==69.5.1",
-    "setuptools_scm==8.0.4",
+    "setuptools==74.1.2",
+    "setuptools_scm==8.1.0",
     "setuptools_dynamic_dependencies @ git+https://github.com/beeware/setuptools_dynamic_dependencies",
 ]
 build-backend = "setuptools.build_meta"
@@ -76,7 +76,7 @@ project_name = "Toga Demo"
 bundle = "org.beeware"
 version = "0.0.1"
 url = "https://beeware.org"
-license = "BSD license"
+license.file = "LICENSE"
 author = "Tiberius Yak"
 author_email = "tiberius@beeware.org"
 
@@ -115,7 +115,10 @@ requires = [
 base_theme = "Theme.MaterialComponents.Light.DarkActionBar"
 
 build_gradle_dependencies = [
-    "androidx.appcompat:appcompat:1.6.1",
     "com.google.android.material:material:1.11.0",
     "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0",
 ]
+
+[tool.check-wheel-contents]
+# WOO2: duplicated files (i.e. resource images)
+ignore = "W002"

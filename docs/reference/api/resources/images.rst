@@ -8,7 +8,7 @@ Graphical content of arbitrary size.
    :header-rows: 1
    :file: ../../data/widgets_by_platform.csv
    :included_cols: 4,5,6,7,8,9,10
-   :exclude: {0: '(?!(Image|Component)$)'}
+   :include: {0: '^Image$'}
 
 Usage
 -----
@@ -30,7 +30,7 @@ Usage
     widget configured to use an Icon (probably :class:`~toga.Button`), *not* an
     ``on_press`` handler on an :class:`~toga.Image` or :class:`~toga.ImageView`.
 
-An image can be constructed from a :any:`wide range of sources <ImageContent>`:
+An image can be constructed from a :any:`wide range of sources <ImageContentT>`:
 
 .. code-block:: python
 
@@ -86,13 +86,13 @@ Notes
 Reference
 ---------
 
-.. c:type:: ImageContent
+.. c:type:: ImageContentT
 
     When specifying content for an :any:`Image`, you can provide:
 
     * a string specifying an absolute or relative path to a file in a :ref:`known image
       format <known-image-formats>`;
-    * an absolute or relative :any:`pathlib.Path` object describing a file in a
+    * an absolute or relative :class:`~pathlib.Path` object describing a file in a
       :ref:`known image format <known-image-formats>`;
     * a "blob of bytes" data type (:any:`bytes`, :any:`bytearray`, or :any:`memoryview`)
       containing raw image data in a :ref:`known image format <known-image-formats>`;

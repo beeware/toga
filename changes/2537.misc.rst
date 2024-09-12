@@ -1,1 +1,0 @@
-Updated dsaltares/fetch-gh-release-asset from 1.1.1 to 1.1.2.

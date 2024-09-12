@@ -1,6 +1,7 @@
 from travertino.size import at_least
 
 from toga.style.pack import ROW
+from toga.types import Size
 
 
 # We assume a terminal is 800x600 pixels, mapping to 80x25 characters.
@@ -35,8 +36,20 @@ class Widget(Scalable):
         self.container = None
         self.create()
 
-    def get_size(self):
-        return (0, 0)
+    def install(self, parent):
+        """Add widget and its children to the native DOM for the app.
+
+        Textual does not allow widgets to be added to the DOM until their parent is
+        added. Therefore, when children are added to an unmounted widget, their
+        mounting is deferred until their parent is mounted.
+        """
+        parent.native.mount(self.native)
+
+        for child in self.interface.children:
+            child._impl.install(parent=self)
+
+    def get_size(self) -> Size:
+        return Size(0, 0)
 
     def create(self):
         pass
@@ -73,7 +86,7 @@ class Widget(Scalable):
 
         # Positions are more complicated. The (x,y) provided as an argument is
         # in absolute coordinates. The `content_left` ad `content_right` values
-        # of the layout are relative coordianate. Textual doesn't allow specifying
+        # of the layout are relative coordinate. Textual doesn't allow specifying
         # either absolute *or* relative - we can only specify margin values within
         # a row/column box. This means we need to reverse engineer the margins from
         # the computed layout.
@@ -151,13 +164,16 @@ class Widget(Scalable):
     ######################################################################
 
     def add_child(self, child):
-        self.native.mount(child.native)
+        # A child can only be added to a widget that is already mounted on the app.
+        # So, mounting the child is deferred if the parent is not mounted yet.
+        if self.native.is_attached:
+            self.native.mount(child.native)
 
     def insert_child(self, index, child):
         pass
 
     def remove_child(self, child):
-        self.native.remove(child.native)
+        self.native.remove_children([child.native])
 
     def refresh(self):
         intrinsic = self.interface.intrinsic

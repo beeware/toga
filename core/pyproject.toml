@@ -1,7 +1,7 @@
 [build-system]
 requires = [
-    "setuptools==69.5.1",
-    "setuptools_scm==8.0.4",
+    "setuptools==74.1.2",
+    "setuptools_scm==8.1.0",
     "setuptools_dynamic_dependencies @ git+https://github.com/beeware/setuptools_dynamic_dependencies",
 ]
 build-backend = "setuptools.build_meta"
@@ -66,36 +66,32 @@ dependencies = [
 # Extras used by developers *of* Toga are pinned to specific versions to
 # ensure environment consistency.
 dev = [
-    "coverage[toml] == 7.5.0",
-    "Pillow == 10.3.0",
+    "coverage[toml] == 7.6.1",
+    "coverage-conditional-plugin == 0.9.0",
+    "Pillow == 10.4.0",
     # Pre-commit 3.6.0 deprecated support for Python 3.8
     "pre-commit == 3.5.0 ; python_version < '3.9'",
-    "pre-commit == 3.7.0 ; python_version >= '3.9'",
-    "pytest == 8.2.0",
-    "pytest-asyncio == 0.23.6",
+    "pre-commit == 3.8.0 ; python_version >= '3.9'",
+    "pytest == 8.3.2",
+    "pytest-asyncio == 0.24.0",
     "pytest-freezer == 0.4.8",
-    "setuptools-scm == 8.0.4",
-    "tox == 4.15.0",
+    "setuptools-scm == 8.1.0",
+    "tox == 4.18.0",
     # typing-extensions needed for TypeAlias added in Py 3.10
     "typing-extensions == 4.9.0 ; python_version < '3.10'",
-    # FIXME: Freezegun 1.4.0 is incompatible with Python 3.13.0a6; use a pre-release
-    "freezegun @ git+https://github.com/spulec/freezegun#c65f4db6ef4824538061978be30954c1c739d380b ; python_version >= '3.13'",
 ]
+# Docs are always built on a specific Python version; see RTD and tox config files,
+# and the docs contribution guide.
 docs = [
-    "furo == 2024.4.27",
-    "Pillow == 10.3.0",
+    "furo == 2024.8.6",
+    "Pillow == 10.4.0",
     "pyenchant == 3.2.2",
-    # Sphinx 7.2 deprecated support for Python 3.8
-    "sphinx == 7.1.2 ; python_version < '3.9'",
-    "sphinx == 7.3.7 ; python_version >= '3.9'",
+    "sphinx == 8.0.2",
     "sphinx_tabs == 3.4.5",
-    # Sphinx 2024.2.4 deprecated support for Python 3.8
-    "sphinx-autobuild == 2021.3.14 ; python_version < '3.9'",
-    "sphinx-autobuild == 2024.4.16 ; python_version >= '3.9'",
-    "sphinx-autodoc-typehints == 2.1.0",
-    "sphinx-csv-filter == 0.4.1",
+    "sphinx-autobuild == 2024.9.3",
+    "sphinx-csv-filter == 0.4.2",
     "sphinx-copybutton == 0.5.2",
-    "sphinx-toolbox == 3.5.0",
+    "sphinx-toolbox == 3.8.0",
     "sphinxcontrib-spelling == 8.0.0",
 ]
 
@@ -130,6 +126,7 @@ source = [
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
 filterwarnings = [
     "error",
 ]

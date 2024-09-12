@@ -1,1 +1,0 @@
-An explicit system requirements section was added to the documentation for widgets that require the installation of additional system components.

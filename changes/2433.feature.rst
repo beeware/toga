@@ -1,1 +1,0 @@
-An action for a Toga command can now be easily modified after initial construction.

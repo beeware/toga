@@ -3,6 +3,7 @@ from unittest.mock import Mock
 import pytest
 
 import toga
+from toga.validators import Number
 from toga_dummy.utils import (
     EventLog,
     assert_action_not_performed,
@@ -111,6 +112,35 @@ def test_value(widget, value, expected, validator):
 
     # change handler was invoked
     on_change_handler.assert_called_once_with(widget)
+
+
+def test_validation_order():
+    """Widget value validation is performed in the correct order."""
+    results = {}
+
+    def on_change(widget):
+        results["valid"] = widget.is_valid
+
+    # Define a validator that only accepts numbers
+    text_input = toga.TextInput(on_change=on_change, validators=[Number()])
+
+    # Widget is initially valid with a number
+    text_input.value = "1234"
+
+    # Change handler was invoked and results are checked
+    assert results["valid"]
+
+    # Widget is invalid with text
+    text_input.value = "hello"
+
+    # Change handler was invoked and results are checked
+    assert not results["valid"]
+
+    # Widget is valid again with a number
+    text_input.value = "1234"
+
+    # Confirm final results are True
+    assert results["valid"]
 
 
 @pytest.mark.parametrize(

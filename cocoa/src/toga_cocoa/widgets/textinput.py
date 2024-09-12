@@ -124,32 +124,32 @@ class TextInput(Widget):
         self.error_label.textColor = NSColor.systemRedColor
         self.native.addSubview(self.error_label)
 
-        leading_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # noqa: E501
+        leading_constraint = NSLayoutConstraint.constraintWithItem(
             self.native,
-            NSLayoutAttributeLeading,
-            NSLayoutRelationEqual,
-            self.error_label,
-            NSLayoutAttributeLeading,
-            1.0,
-            4.0,
+            attribute__1=NSLayoutAttributeLeading,
+            relatedBy=NSLayoutRelationEqual,
+            toItem=self.error_label,
+            attribute__2=NSLayoutAttributeLeading,
+            multiplier=1.0,
+            constant=4.0,
         )
-        trailing_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # noqa: E501
+        trailing_constraint = NSLayoutConstraint.constraintWithItem(
             self.native,
-            NSLayoutAttributeTrailing,
-            NSLayoutRelationEqual,
-            self.error_label,
-            NSLayoutAttributeTrailing,
-            1.0,
-            4.0,
+            attribute__1=NSLayoutAttributeTrailing,
+            relatedBy=NSLayoutRelationEqual,
+            toItem=self.error_label,
+            attribute__2=NSLayoutAttributeTrailing,
+            multiplier=1.0,
+            constant=4.0,
         )
-        center_y_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # noqa: E501
+        center_y_constraint = NSLayoutConstraint.constraintWithItem(
             self.error_label,
-            NSLayoutAttributeCenterY,
-            NSLayoutRelationEqual,
-            self.native,
-            NSLayoutAttributeCenterY,
-            1.0,
-            0.0,
+            attribute__1=NSLayoutAttributeCenterY,
+            relatedBy=NSLayoutRelationEqual,
+            toItem=self.native,
+            attribute__2=NSLayoutAttributeCenterY,
+            multiplier=1.0,
+            constant=0.0,
         )
         self.native.addConstraints(
             [
@@ -213,8 +213,7 @@ class TextInput(Widget):
 
     def set_value(self, value):
         self.native.stringValue = value
-        self.interface.on_change()
-        self.interface._validate()
+        self.interface._value_changed()
 
     def rehint(self):
         # Height of a text input is known and fixed.

@@ -36,33 +36,33 @@ class ExampleOptionContainerApp(toga.App):
         self.optioncontainer.content.insert(index, *self._create_option())
         self._refresh_select()
 
-    def on_enable_option(self, button):
+    async def on_enable_option(self, button):
         index = int(self.select_option.value)
         try:
             self.optioncontainer.content[index].enabled = (
                 not self.optioncontainer.content[index].enabled
             )
         except ValueError as e:
-            self.main_window.info_dialog("Oops", str(e))
+            await self.main_window.dialog(toga.InfoDialog("Oops", str(e)))
 
     def on_change_option_title(self, button):
         index = int(self.select_option.value)
         self.optioncontainer.content[index].text = self.input_change_title.value
 
-    def on_activate_option(self, button):
+    async def on_activate_option(self, button):
         try:
             index = int(self.select_option.value)
             self.optioncontainer.current_tab = index
         except ValueError as e:
-            self.main_window.info_dialog("Oops", str(e))
+            await self.main_window.dialog(toga.InfoDialog("Oops", str(e)))
 
-    def on_remove_option(self, button):
+    async def on_remove_option(self, button):
         try:
             index = int(self.select_option.value)
             del self.optioncontainer.content[index]
             self._refresh_select()
         except ValueError as e:
-            self.main_window.info_dialog("Oops", str(e))
+            await self.main_window.dialog(toga.InfoDialog("Oops", str(e)))
 
     def set_next_tab(self, widget):
         if (

@@ -1,1 +1,0 @@
-Widget IDs can now be reused after the associated widget's window is closed.

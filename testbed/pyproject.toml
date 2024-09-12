@@ -1,10 +1,25 @@
-# This project was generated using template: https://github.com/beeware/briefcase-template and branch: v0.3.12
+[project]
+name = "testbed"
+version = "0.0.1"
+
+[project.optional-dependencies]
+test = [
+    "coverage==7.6.1",
+    "coverage-conditional-plugin == 0.9.0",
+    # fonttools is only needed by Android, but we need to use
+    # sys.platform == 'linux' as there's no dependency identifier
+    # that can target Android exclusively until 3.13 lands.
+    "fonttools==4.53.1 ; sys.platform == 'linux'",
+    "pillow==9.2.0",
+    "pytest==8.3.2",
+    "pytest-asyncio==0.24.0",
+]
+
 [tool.briefcase]
 project_name = "Toga Testbed"
 bundle = "org.beeware.toga"
-version = "0.0.1"
 url = "https://beeware.org"
-license = "BSD license"
+license.file = "LICENSE"
 author = "Tiberius Yak"
 author_email = "tiberius@beeware.org"
 
@@ -20,12 +35,6 @@ test_sources = [
 ]
 requires = [
     "../core",
-]
-test_requires = [
-    "coverage==7.2.0",
-    "pytest==7.2.0",
-    "pytest-asyncio==0.20.3",
-    "pillow==9.2.0",
 ]
 
 permission.camera = "The testbed needs to exercise Camera APIs"
@@ -76,14 +85,10 @@ test_sources = [
 requires = [
     "../android",
 ]
-test_requires = [
-    "fonttools==4.42.1",
-]
 
 base_theme = "Theme.MaterialComponents.Light.DarkActionBar"
 
 build_gradle_dependencies = [
-    "androidx.appcompat:appcompat:1.6.1",
     "com.google.android.material:material:1.11.0",
     "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0",
     "org.osmdroid:osmdroid-android:6.1.0",

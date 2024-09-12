@@ -1,1 +1,0 @@
-Allow running without entry_points metadata

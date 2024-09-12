@@ -274,15 +274,6 @@ NSColor.declare_class_property("yellowColor")
 NSCursor = ObjCClass("NSCursor")
 
 ######################################################################
-# NSDocument.h
-NSDocument = ObjCClass("NSDocument")
-
-######################################################################
-# NSDocumentController.h
-NSDocumentController = ObjCClass("NSDocumentController")
-NSDocumentController.declare_class_property("sharedDocumentController")
-
-######################################################################
 # NSEvent.h
 NSEvent = ObjCClass("NSEvent")
 
@@ -619,6 +610,13 @@ NSSortDescriptor = ObjCClass("NSSortDescriptor")
 NSSplitView = ObjCClass("NSSplitView")
 
 ######################################################################
+# NSStatusBar.h
+NSStatusBar = ObjCClass("NSStatusBar")
+
+NSVariableStatusItemLength = -1.0
+NSSquareStatusItemLength = -2.0
+
+######################################################################
 # NSStepper.h
 NSStepper = ObjCClass("NSStepper")
 
@@ -764,6 +762,7 @@ class NSWindowStyleMask(IntEnum):
 
 NSModalResponseOK = 1
 NSModalResponseCancel = 0
+NSModalResponseContinue = -1002
 
 # NSCompositingOperationXXX is equivalent to NSCompositeXXX
 NSCompositingOperationClear = 0

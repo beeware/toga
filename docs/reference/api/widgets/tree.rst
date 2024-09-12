@@ -152,3 +152,6 @@ Reference
 ---------
 
 .. autoclass:: toga.Tree
+
+.. autoprotocol:: toga.widgets.tree.OnSelectHandler
+.. autoprotocol:: toga.widgets.tree.OnActivateHandler

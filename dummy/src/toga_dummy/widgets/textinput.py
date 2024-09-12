@@ -36,8 +36,7 @@ class TextInput(Widget):
         return self._get_value("valid")
 
     def simulate_change(self):
-        self.interface.on_change()
-        self.interface._validate()
+        self.interface._value_changed()
 
     def simulate_confirm(self):
         self.interface.on_confirm()

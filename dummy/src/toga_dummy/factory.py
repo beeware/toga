@@ -1,15 +1,15 @@
 from toga import NotImplementedWarning
 
 from . import dialogs
-from .app import App, DocumentApp, MainWindow
+from .app import App, DocumentApp
 from .command import Command
-from .documents import Document
 from .fonts import Font
 from .hardware.camera import Camera
 from .hardware.location import Location
 from .icons import Icon
 from .images import Image
 from .paths import Paths
+from .statusicons import MenuStatusIcon, SimpleStatusIcon, StatusIconSet
 from .widgets.activityindicator import ActivityIndicator
 from .widgets.base import Widget
 from .widgets.box import Box
@@ -36,7 +36,7 @@ from .widgets.textinput import TextInput
 from .widgets.timeinput import TimeInput
 from .widgets.tree import Tree
 from .widgets.webview import WebView
-from .window import Window
+from .window import MainWindow, Window
 
 
 def not_implemented(feature):
@@ -47,9 +47,7 @@ __all__ = [
     "not_implemented",
     "App",
     "DocumentApp",
-    "MainWindow",
     "Command",
-    "Document",
     "Font",
     "Icon",
     "Image",
@@ -58,6 +56,10 @@ __all__ = [
     # Hardware
     "Camera",
     "Location",
+    # Status Icons
+    "MenuStatusIcon",
+    "SimpleStatusIcon",
+    "StatusIconSet",
     # Widgets
     "ActivityIndicator",
     "Box",
@@ -84,6 +86,8 @@ __all__ = [
     "TimeInput",
     "Tree",
     "WebView",
+    # Windows
+    "MainWindow",
     "Window",
     # Widget is also required for testing purposes
     # Real backends shouldn't expose Widget.

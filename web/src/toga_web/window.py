@@ -1,3 +1,5 @@
+from toga.command import Group, Separator
+from toga.types import Position, Size
 from toga_web.libs import create_element, js
 
 from .screens import Screen as ScreenImpl
@@ -47,9 +49,6 @@ class Window:
     def close(self):
         self.interface.factory.not_implemented("Window.close()")
 
-    def create_toolbar(self):
-        self.interface.factory.not_implemented("Window.create_toolbar()")
-
     def set_app(self, app):
         pass
 
@@ -77,8 +76,8 @@ class Window:
     # Window size
     ######################################################################
 
-    def get_size(self):
-        return self.native.offsetWidth, self.native.offsetHeight
+    def get_size(self) -> Size:
+        return Size(self.native.offsetWidth, self.native.offsetHeight)
 
     def set_size(self, size):
         # Does nothing on web
@@ -91,8 +90,8 @@ class Window:
     def get_current_screen(self):
         return ScreenImpl(js.document.documentElement)
 
-    def get_position(self):
-        return 0, 0
+    def get_position(self) -> Position:
+        return Position(0, 0)
 
     def set_position(self, position):
         # Does nothing on web
@@ -121,3 +120,99 @@ class Window:
 
     def get_image_data(self):
         self.interface.factory.not_implemented("Window.get_image_data()")
+
+
+class MainWindow(Window):
+    def _create_submenu(self, group, items):
+        submenu = create_element(
+            "sl-dropdown",
+            children=[
+                create_element(
+                    "span",
+                    id=f"menu-{id(group)}",
+                    classes=["menu"],
+                    slot="trigger",
+                    content=group.text,
+                ),
+                create_element(
+                    "sl-menu",
+                    children=items,
+                ),
+            ],
+        )
+        return submenu
+
+    def create_menus(self):
+        self._menu_groups = {}
+        submenu = None
+
+        for cmd in self.interface.app.commands:
+            if isinstance(cmd, Separator):
+                # TODO - add a section break
+                pass
+            else:
+                # TODO - this doesn't handle submenus properly;
+                # all menu items will appear in their root group.
+                submenu = self._menu_groups.setdefault(cmd.group, [])
+
+                menu_item = create_element(
+                    "sl-menu-item",
+                    content=cmd.text,
+                    disabled=not cmd.enabled,
+                )
+                menu_item.onclick = cmd._impl.dom_click
+
+                submenu.append(menu_item)
+
+        menu_container = create_element("nav", classes=["menubar"])
+        help_menu_container = create_element("nav", classes=["menubar"])
+
+        # If there isn't an explicit app menu group, add an inert placeholder
+        if Group.APP not in self._menu_groups:
+            menu_container.appendChild(
+                create_element(
+                    "span",
+                    classes=["app"],
+                    content=self.interface.app.formal_name,
+                )
+            )
+
+        for group, items in self._menu_groups.items():
+            submenu = self._create_submenu(group, items)
+            if group != Group.HELP:
+                menu_container.appendChild(submenu)
+            else:
+                help_menu_container.appendChild(submenu)
+
+        menubar_id = f"{self.interface.id}-header"
+        self.menubar = create_element(
+            "header",
+            id=menubar_id,
+            classes=["toga"],
+            children=[
+                create_element(
+                    "a",
+                    classes=["brand"],
+                    children=[
+                        create_element(
+                            "img",
+                            src="static/logo-32.png",
+                            alt=f"{self.interface.app.formal_name} logo",
+                            loading="lazy",
+                        )
+                    ],
+                ),
+                menu_container,
+                help_menu_container,
+            ],
+        )
+
+        # If there's an existing menubar, replace it.
+        old_menubar = js.document.getElementById(menubar_id)
+        if old_menubar:
+            old_menubar.replaceWith(self.menubar)
+        else:
+            self.native.prepend(self.menubar)
+
+    def create_toolbar(self):
+        self.interface.factory.not_implemented("Window.create_toolbar()")

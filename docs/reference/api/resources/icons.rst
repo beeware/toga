@@ -8,7 +8,7 @@ A small, square image, used to provide easily identifiable visual context to a w
    :header-rows: 1
    :file: ../../data/widgets_by_platform.csv
    :included_cols: 4,5,6,7,8,9,10
-   :exclude: {0: '(?!(Icon|Component))'}
+   :include: {0: '^Icon$'}
 
 Usage
 -----
@@ -71,14 +71,16 @@ icon variants that are not available from the highest resolution provided (e.g.,
 128px variant can be found, one will be created by scaling the highest resolution
 variant that *is* available).
 
-An icon is **guaranteed** to have an implementation, regardless of the path
-specified. If you specify a path and no matching icon can be found, Toga will
-output a warning to the console, and return :attr:`~toga.Icon.DEFAULT_ICON`.
+An icon is **guaranteed** to have an implementation, regardless of the path specified.
+If you specify a path and no matching icon can be found, Toga will output a warning to
+the console, and return :attr:`~toga.Icon.DEFAULT_ICON`. The only exception to this is
+if an icon file is *found*, but it cannot be loaded (e.g., due to a file format or
+permission error). In this case, an error will be raised.
 
 Reference
 ---------
 
-.. c:type:: IconContent
+.. c:type:: IconContentT
 
     When specifying an :any:`Icon`, you can provide:
 

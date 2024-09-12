@@ -1,20 +1,28 @@
+from __future__ import annotations
+
 import warnings
+from pathlib import Path
 
-from .app import App, DocumentApp, DocumentMainWindow, MainWindow
-
-# Resources
+from .app import App, DocumentApp
 from .colors import hsl, hsla, rgb, rgba
 from .command import Command, Group
-from .documents import Document
+from .dialogs import (
+    ConfirmDialog,
+    ErrorDialog,
+    InfoDialog,
+    OpenFileDialog,
+    QuestionDialog,
+    SaveFileDialog,
+    SelectFolderDialog,
+    StackTraceDialog,
+)
+from .documents import Document, DocumentWindow
 from .fonts import Font
 from .icons import Icon
 from .images import Image
 from .keys import Key
-
-# Types
-from .types import LatLng
-
-# Widgets
+from .statusicons import MenuStatusIcon, SimpleStatusIcon
+from .types import LatLng, Position, Size
 from .widgets.activityindicator import ActivityIndicator
 from .widgets.base import Widget
 from .widgets.box import Box
@@ -41,7 +49,7 @@ from .widgets.textinput import TextInput
 from .widgets.timeinput import TimeInput, TimePicker
 from .widgets.tree import Tree
 from .widgets.webview import WebView
-from .window import Window
+from .window import MainWindow, Window
 
 
 class NotImplementedWarning(RuntimeWarning):
@@ -49,7 +57,7 @@ class NotImplementedWarning(RuntimeWarning):
     # single argument (the warning message). Use a factory method to avoid reproducing
     # the message format and the warn invocation.
     @classmethod
-    def warn(self, platform, feature):
+    def warn(cls, platform: str, feature: str) -> None:
         """Raise a warning that a feature isn't implemented on a platform."""
         warnings.warn(NotImplementedWarning(f"[{platform}] Not implemented: {feature}"))
 
@@ -59,13 +67,21 @@ __all__ = [
     # Applications
     "App",
     "DocumentApp",
-    "MainWindow",
-    "DocumentMainWindow",
     # Commands
     "Command",
     "Group",
     # Documents
     "Document",
+    "DocumentWindow",
+    # Dialogs
+    "ConfirmDialog",
+    "ErrorDialog",
+    "InfoDialog",
+    "OpenFileDialog",
+    "QuestionDialog",
+    "SaveFileDialog",
+    "SelectFolderDialog",
+    "StackTraceDialog",
     # Keys
     "Key",
     # Resources
@@ -76,8 +92,13 @@ __all__ = [
     "Font",
     "Icon",
     "Image",
+    # Status icons
+    "MenuStatusIcon",
+    "SimpleStatusIcon",
     # Types
     "LatLng",
+    "Position",
+    "Size",
     # Widgets
     "ActivityIndicator",
     "Box",
@@ -107,6 +128,8 @@ __all__ = [
     "Tree",
     "WebView",
     "Widget",
+    # Windows
+    "MainWindow",
     "Window",
     # Deprecated widget names
     "DatePicker",
@@ -114,7 +137,7 @@ __all__ = [
 ]
 
 
-def _package_version(file, name):
+def _package_version(file: Path | str | None, name: str) -> str:
     try:
         # Read version from SCM metadata
         # This will only exist in a development environment
@@ -123,7 +146,10 @@ def _package_version(file, name):
         # Excluded from coverage because a pure test environment (such as the one
         # used by tox in CI) won't have setuptools_scm
         return get_version(root="../../..", relative_to=file)  # pragma: no cover
-    except (ModuleNotFoundError, LookupError):
+    except (
+        ModuleNotFoundError,
+        LookupError,
+    ):  # pragma: no-cover-if-missing-setuptools_scm
         # If setuptools_scm isn't in the environment, the call to import will fail.
         # If it *is* in the environment, but the code isn't a git checkout (e.g.,
         # it's been pip installed non-editable) the call to get_version() will fail.

@@ -28,7 +28,6 @@ from importlib.metadata import version as metadata_version
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
 extensions = [
     "sphinx.ext.autodoc",
-    "sphinx.ext.napoleon",
     "sphinx.ext.todo",
     "sphinx_tabs.tabs",
     "crate.sphinx.csv",
@@ -123,6 +122,9 @@ intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
     "PIL": ("https://pillow.readthedocs.io/en/stable/", None),
 }
+
+# Hide the class and module name on the right sidebar to prevent wrapping
+toc_object_entries_show_parents = "hide"
 
 # -- Local extensions ----------------------------------------------------------
 
@@ -275,6 +277,8 @@ html_theme = "furo"
 html_css_files = [
     "custom.css",
 ]
+
+html_extra_path = ["extra"]
 
 # -- Options for LaTeX output --------------------------------------------------
 

@@ -34,6 +34,7 @@ class WebView(Widget):
         self.settings = self.native.getSettings()
         self.default_user_agent = self.settings.getUserAgentString()
         self.settings.setJavaScriptEnabled(True)
+        self.settings.setDomStorageEnabled(True)
         # enable pinch-to-zoom without the deprecated on-screen controls
         self.settings.setBuiltInZoomControls(True)
         self.settings.setDisplayZoomControls(False)
