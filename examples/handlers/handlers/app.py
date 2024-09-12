@@ -12,8 +12,8 @@ class HandlerApp(toga.App):
     # Button callback functions
     def do_clear(self, widget, **kwargs):
         self.counter = 0
-        self.label_1.text = "Ready."
-        self.label_2.text = "Ready."
+        self.on_running_label.text = "Ready."
+        self.background_label.text = "Ready."
         self.function_label.text = "Ready."
         self.generator_label.text = "Ready."
         self.async_label.text = "Ready."
@@ -52,7 +52,7 @@ class HandlerApp(toga.App):
         # This task runs in the background, without blocking the main event loop
         while True:
             self.counter += 1
-            self.label_1.text = f"On Running: Iteration {self.counter}"
+            self.on_running_label.text = f"On Running: Iteration {self.counter}"
             await asyncio.sleep(1)
 
     async def do_background_task(self, **kwargs):
@@ -60,7 +60,7 @@ class HandlerApp(toga.App):
         # This task runs in the background, without blocking the main event loop
         while True:
             self.counter += 1
-            self.label_2.text = f"Background: Iteration {self.counter}"
+            self.background_label.text = f"Background: Iteration {self.counter}"
             await asyncio.sleep(1)
 
     async def do_web_get(self, widget, **kwargs):
@@ -78,8 +78,8 @@ class HandlerApp(toga.App):
         self.main_window = toga.MainWindow()
 
         # Labels to show responses.
-        self.label_1 = toga.Label("Ready.", style=Pack(padding=10))
-        self.label_2 = toga.Label("Ready.", style=Pack(padding=10))
+        self.on_running_label = toga.Label("Ready.", style=Pack(padding=10))
+        self.background_label = toga.Label("Ready.", style=Pack(padding=10))
         self.function_label = toga.Label("Ready.", style=Pack(padding=10))
         self.generator_label = toga.Label("Ready.", style=Pack(padding=10))
         self.async_label = toga.Label("Ready.", style=Pack(padding=10))
@@ -108,8 +108,8 @@ class HandlerApp(toga.App):
         # Outermost box
         box = toga.Box(
             children=[
-                self.label_1,
-                self.label_2,
+                self.on_running_label,
+                self.background_label,
                 btn_function,
                 self.function_label,
                 btn_generator,
