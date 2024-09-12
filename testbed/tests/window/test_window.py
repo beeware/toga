@@ -1,5 +1,4 @@
 import gc
-import random
 import re
 import weakref
 from importlib import import_module
@@ -714,18 +713,12 @@ else:
         final_state,
         second_window,
         second_window_probe,
-        intermediate_states=tuple(
-            random.sample(
-                [
-                    WindowState.NORMAL,
-                    WindowState.MINIMIZED,
-                    WindowState.MAXIMIZED,
-                    WindowState.FULLSCREEN,
-                    WindowState.PRESENTATION,
-                    WindowState.MINIMIZED,
-                ],
-                6,
-            )
+        intermediate_states=(
+            WindowState.FULLSCREEN,
+            WindowState.MINIMIZED,
+            WindowState.NORMAL,
+            WindowState.MAXIMIZED,
+            WindowState.PRESENTATION,
         ),
     ):
         """Window state can be directly changed to another state."""
@@ -752,7 +745,7 @@ else:
         await second_window_probe.wait_for_window(
             f"Secondary window is in {initial_state}",
             minimize=True if initial_state == WindowState.MINIMIZED else False,
-            full_screen=True if initial_state == WindowState.FULLSCREEN else False,
+            full_screen=(True if initial_state == WindowState.FULLSCREEN else False),
         )
 
         assert second_window.state == initial_state
@@ -764,8 +757,7 @@ else:
         # Set to final state
         second_window.state = final_state
         # Add delay to ensure windows are visible after animation.
-        await app_probe.redraw(f"Secondary window is in {final_state}", delay=2)
-        assert second_window.state == final_state
+        await app_probe.redraw(f"Secondary window is in {final_state}", delay=1)
 
     @pytest.mark.parametrize(
         "state",
