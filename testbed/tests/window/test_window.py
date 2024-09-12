@@ -744,7 +744,6 @@ else:
         # Add delay to ensure windows are visible after animation.
         await second_window_probe.wait_for_window(
             f"Secondary window is in {initial_state}",
-            minimize=True if initial_state == WindowState.MINIMIZED else False,
             full_screen=(True if initial_state == WindowState.FULLSCREEN else False),
         )
 
