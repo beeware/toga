@@ -29,9 +29,7 @@ class App:
 
         self.policy = GLibEventLoopPolicy()
         asyncio.set_event_loop_policy(self.policy)
-        # GTK is responsible for starting the loop; we can't query that loop
-        # until the application is running. self.loop is set in the `activate`
-        # handler.
+        self.loop = self.policy.get_event_loop_for_context(GLib.MainContext.default())
 
         # Stimulate the build of the app
         self.native = Gtk.Application(
@@ -51,8 +49,6 @@ class App:
         pass
 
     def gtk_startup(self, data=None):
-        self.loop = asyncio.get_running_loop()
-
         self.interface._startup()
 
         # Set any custom styles
