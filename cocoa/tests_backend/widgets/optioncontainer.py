@@ -43,6 +43,9 @@ class OptionContainerProbe(SimpleProbe):
     def select_tab(self, index):
         self.native.selectTabViewItemAtIndex(index)
 
+    async def wait_for_tab(self, message):
+        await self.redraw(message)
+
     def tab_enabled(self, index):
         # _isTabEnabled() is a hidden method, so the naming messes with Rubicon's
         # property lookup mechanism. Invoke it by passing the message directly.

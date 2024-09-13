@@ -3,6 +3,7 @@ import gi
 gi.require_version("Gdk", "3.0")
 gi.require_version("Gtk", "3.0")
 
+from gi.events import GLibEventLoopPolicy  # noqa: E402, F401
 from gi.repository import (  # noqa: E402, F401
     Gdk,
     GdkPixbuf,

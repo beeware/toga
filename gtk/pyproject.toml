@@ -64,12 +64,8 @@ root = ".."
 
 [tool.setuptools_dynamic_dependencies]
 dependencies = [
-    "gbulb >= 0.5.3",
     "pycairo >= 1.17.0",
-    # New asyncio handling introduced in 3.50.0; that code is incompatible
-    # with gbulb, See #2550 for the code that replaces GBulb with the new
-    # asyncio code.
-    "pygobject < 3.50.0",
+    "pygobject >= 3.50.0",
     "toga-core == {version}",
 ]
 
