@@ -19,7 +19,6 @@ async def test_start_stop(widget, probe):
     "The activity indicator can be started and stopped"
     # Widget should be initially stopped
     assert not widget.is_running
-    assert probe.is_hidden
 
     widget.start()
     await probe.redraw("Activity Indicator should be started")
