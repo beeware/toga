@@ -29,7 +29,7 @@ class App:
 
         self.policy = GLibEventLoopPolicy()
         asyncio.set_event_loop_policy(self.policy)
-        self.loop = self.policy.get_event_loop_for_context(GLib.MainContext.default())
+        self.loop = self.policy.get_event_loop()
 
         # Stimulate the build of the app
         self.native = Gtk.Application(
