@@ -34,8 +34,7 @@ class Window:
         self._window_state_flags = None
 
         # Gdk.WindowState.FULLSCREEN is notified before it fully transitions to fullscreen,
-        # Use shadow variables to differentiate between presentation, fullscreen & in-between
-        # transition state.
+        # Use shadow variables to differentiate between the presentation & fullscreen state.
         self._in_presentation = False
 
         # Pending Window state transition variable:

@@ -357,8 +357,6 @@ def test_window_state(window, initial_state, final_state):
 @pytest.mark.parametrize(
     "state",
     [
-        # Setting window state to any of the following when window is
-        # not resizable, is a no-op and should give a UserWarning.
         WindowState.MAXIMIZED,
         WindowState.FULLSCREEN,
         WindowState.PRESENTATION,
