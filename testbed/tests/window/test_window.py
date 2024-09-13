@@ -1,4 +1,6 @@
 import gc
+import itertools
+import random
 import re
 import weakref
 from importlib import import_module
@@ -667,6 +669,13 @@ else:
         assert second_window.size == (250 + extra_width, 210 + extra_height)
         assert second_window_probe.content_size == (250, 210)
 
+    @pytest.fixture(scope="session")
+    def initial_intermediate_state():
+        # Use a iterator cycling fixture to ensure each state
+        # is the initial intermediate state at least once. This
+        # is to ensure full code coverage for all backends.
+        return itertools.cycle(list(WindowState))
+
     @pytest.mark.parametrize(
         "initial_state, final_state",
         [
@@ -713,13 +722,7 @@ else:
         final_state,
         second_window,
         second_window_probe,
-        intermediate_states=(
-            WindowState.FULLSCREEN,
-            WindowState.MINIMIZED,
-            WindowState.NORMAL,
-            WindowState.MAXIMIZED,
-            WindowState.PRESENTATION,
-        ),
+        initial_intermediate_state,
     ):
         """Window state can be directly changed to another state."""
         if (
@@ -729,7 +732,9 @@ else:
             pytest.xfail(
                 "This backend doesn't reliably support minimized window state."
             )
-
+        intermediate_states = [next(initial_intermediate_state)] + random.sample(
+            [state for state in WindowState], len(WindowState)
+        )
         second_window.toolbar.add(app.cmd1)
         second_window.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
         second_window.show()
@@ -744,7 +749,8 @@ else:
         # Add delay to ensure windows are visible after animation.
         await second_window_probe.wait_for_window(
             f"Secondary window is in {initial_state}",
-            full_screen=(True if initial_state == WindowState.FULLSCREEN else False),
+            minimize=True if initial_state == WindowState.MINIMIZED else False,
+            full_screen=True if initial_state == WindowState.FULLSCREEN else False,
         )
 
         assert second_window.state == initial_state

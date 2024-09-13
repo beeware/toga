@@ -46,10 +46,12 @@ class TogaWindow(NSWindow):
 
     @objc_method
     def windowWillClose_(self, notification) -> None:
-        # Setting the toolbar to None doesn't disconnect the
-        # delegates and still triggers the delegate events.
+        # Setting the toolbar delegate to None doesn't disconnect
+        # the delegates and still triggers the delegate events.
         # Hence, simply remove the toolbar instead.
-        self.toolbar = None
+        if self.toolbar:
+            self.toolbar = None
+        # Disconnect the window delegate.
         self.delegate = None
 
         # Disconnecting the window delegate doesn't prevent custom
