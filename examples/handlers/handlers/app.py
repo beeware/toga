@@ -55,7 +55,7 @@ class HandlerApp(toga.App):
             self.on_running_label.text = f"On Running: Iteration {self.counter}"
             await asyncio.sleep(1)
 
-    async def do_background_task(self, **kwargs):
+    async def do_background_task(self):
         """A background task."""
         # This task runs in the background, without blocking the main event loop
         while True:
