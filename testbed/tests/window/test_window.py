@@ -443,6 +443,20 @@ else:
 
             assert not second_window_probe.is_minimized
 
+        second_window.size = (450, 200)
+        second_window_probe.minimize()
+
+        if second_window_probe.supports_unminimize:
+            second_window_probe.unminimize()
+            # Delay is required to account for "genie" animations
+            await second_window_probe.wait_for_window(
+                "Window has been unminimized",
+                minimize=True,
+            )
+
+            assert not second_window_probe.is_minimized
+        assert second_window.size == (450, 200)
+
         second_window_probe.close()
         await second_window_probe.wait_for_window("Secondary window has been closed")
 
