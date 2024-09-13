@@ -44,7 +44,7 @@ class HandlerApp(toga.App):
         self.async_label.text = "Ready."
         widget.enabled = True
 
-    async def do_background_task(self, widget, **kwargs):
+    async def do_background_task(self):
         """A background task."""
         # This task runs in the background, without blocking the main event loop
         while True:
@@ -64,7 +64,7 @@ class HandlerApp(toga.App):
 
         # Add a background task.
         self.counter = 0
-        self.add_background_task(self.do_background_task)
+        asyncio.create_task(self.do_background_task())
 
         # Buttons
         btn_style = Pack(flex=1)
