@@ -65,7 +65,7 @@ root = ".."
 [tool.setuptools_dynamic_dependencies]
 dependencies = [
     "pycairo >= 1.17.0",
-    "pygobject>=3.50.0",
+    "pygobject >= 3.50.0",
     "toga-core == {version}",
 ]
 
