@@ -143,9 +143,6 @@ if toga.platform.current_platform in {"iOS", "android"}:
         finally:
             main_window.content = orig_content
 
-    @pytest.mark.skipif(
-        toga.platform.current_platform == "iOS", reason="Not implemented on iOS"
-    )
     @pytest.mark.parametrize(
         "initial_state, final_state",
         [
@@ -164,6 +161,21 @@ if toga.platform.current_platform in {"iOS", "android"}:
         app, initial_state, final_state, main_window, main_window_probe
     ):
         """Window state can be directly changed to another state."""
+        if not main_window_probe.supports_fullscreen and WindowState.FULLSCREEN in {
+            initial_state,
+            final_state,
+        }:
+            pytest.xfail("This backend doesn't support fullscreen window state.")
+        if (
+            not main_window_probe.supports_presentation
+            and WindowState.PRESENTATION
+            in {
+                initial_state,
+                final_state,
+            }
+        ):
+            pytest.xfail("This backend doesn't support presentation window state.")
+
         try:
             # Set to initial state
             main_window.state = initial_state
@@ -187,9 +199,6 @@ if toga.platform.current_platform in {"iOS", "android"}:
 
             assert main_window.state == WindowState.NORMAL
 
-    @pytest.mark.skipif(
-        toga.platform.current_platform == "iOS", reason="Not implemented on iOS"
-    )
     @pytest.mark.parametrize(
         "state",
         [
@@ -202,6 +211,17 @@ if toga.platform.current_platform in {"iOS", "android"}:
         app, main_window, main_window_probe, state
     ):
         """Setting the window state the same as current is a no-op."""
+        if (
+            not main_window_probe.supports_fullscreen
+            and state == WindowState.FULLSCREEN
+        ):
+            pytest.xfail("This backend doesn't support fullscreen window state.")
+        if (
+            not main_window_probe.supports_presentation
+            and state == WindowState.PRESENTATION
+        ):
+            pytest.xfail("This backend doesn't support presentation window state.")
+
         try:
             # Set the window state:
             main_window.state = state
@@ -218,11 +238,10 @@ if toga.platform.current_platform in {"iOS", "android"}:
             await main_window_probe.wait_for_window("Main window is not full screen")
             assert main_window.state == WindowState.NORMAL
 
-    @pytest.mark.skipif(
-        toga.platform.current_platform == "iOS", reason="Not implemented on iOS"
-    )
     async def test_window_state_fullscreen(main_window, main_window_probe):
         """The window can enter into fullscreen state."""
+        if not main_window_probe.supports_fullscreen:
+            pytest.xfail("This backend doesn't support fullscreen window state.")
         try:
             widget = toga.Box(style=Pack(flex=1))
             widget_probe = get_probe(widget)
@@ -234,7 +253,9 @@ if toga.platform.current_platform in {"iOS", "android"}:
 
             # Make main window full screen
             main_window.state = WindowState.FULLSCREEN
-            await main_window_probe.wait_for_window("Main window is full screen")
+            await main_window_probe.wait_for_window(
+                "Main window is full screen", full_screen=True
+            )
             assert main_window.state == WindowState.FULLSCREEN
             # At least one of the dimensions should have increased.
             assert (
@@ -244,7 +265,9 @@ if toga.platform.current_platform in {"iOS", "android"}:
         finally:
             # Exit full screen
             main_window.state = WindowState.NORMAL
-            await main_window_probe.wait_for_window("Main window is not full screen")
+            await main_window_probe.wait_for_window(
+                "Main window is not full screen", full_screen=True
+            )
             assert main_window.state == WindowState.NORMAL
             # Both dimensions should be the same.
             assert (
@@ -253,11 +276,10 @@ if toga.platform.current_platform in {"iOS", "android"}:
             )
             main_window.content.clear()
 
-    @pytest.mark.skipif(
-        toga.platform.current_platform == "iOS", reason="Not implemented on iOS"
-    )
     async def test_window_state_presentation(main_window, main_window_probe):
         """The window can enter into presentation state."""
+        if not main_window_probe.supports_presentation:
+            pytest.xfail("This backend doesn't support presentation window state.")
         try:
             widget = toga.Box(style=Pack(flex=1))
             widget_probe = get_probe(widget)
@@ -270,7 +292,7 @@ if toga.platform.current_platform in {"iOS", "android"}:
             # Enter presentation mode with main window
             main_window.state = WindowState.PRESENTATION
             await main_window_probe.wait_for_window(
-                "Main window is in presentation mode"
+                "Main window is in presentation mode", full_screen=True
             )
             assert main_window.state == WindowState.PRESENTATION
             # At least one of the dimensions should have increased.
@@ -282,7 +304,7 @@ if toga.platform.current_platform in {"iOS", "android"}:
             # Exit presentation mode
             main_window.state = WindowState.NORMAL
             await main_window_probe.wait_for_window(
-                "Main window is not in presentation mode"
+                "Main window is not in presentation mode", full_screen=True
             )
             assert main_window.state == WindowState.NORMAL
             # Both dimensions should be the same.
@@ -292,9 +314,6 @@ if toga.platform.current_platform in {"iOS", "android"}:
             )
             main_window.content.clear()
 
-    @pytest.mark.skipif(
-        toga.platform.current_platform == "iOS", reason="Not implemented on iOS"
-    )
     @pytest.mark.parametrize(
         "state",
         [

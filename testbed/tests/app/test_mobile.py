@@ -18,11 +18,11 @@ async def test_show_hide_cursor(app):
     app.hide_cursor()
 
 
-@pytest.mark.skipif(
-    toga.platform.current_platform == "iOS", reason="Not implemented on iOS"
-)
 async def test_presentation_mode(app, main_window, main_window_probe):
     """The app can enter into presentation mode"""
+    if not main_window_probe.supports_presentation:
+        pytest.xfail("This backend doesn't support presentation window state.")
+
     assert not app.in_presentation_mode
     assert main_window.state != WindowState.PRESENTATION
 

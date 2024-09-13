@@ -7,6 +7,9 @@ from .probe import BaseProbe
 
 
 class WindowProbe(BaseProbe, DialogsMixin):
+    supports_fullscreen = False
+    supports_presentation = False
+
     def __init__(self, app, window):
         super().__init__()
         self.app = app
