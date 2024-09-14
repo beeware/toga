@@ -1,0 +1,1 @@
+When no content is provided in the Window object, default to empty Box.
