@@ -1,1 +1,0 @@
-Dependency specifications for the testbed were revised to avoid issues with Dependabot.

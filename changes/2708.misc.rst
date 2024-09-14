@@ -1,0 +1,2 @@
+Add a robots.txt to disallow search engines to show unstable docs versions.
+Created a new folder for it and configured Sphinx to find it.

@@ -1,1 +1,0 @@
-The type of SplitContainer's content was modified to be a list, rather than a tuple.

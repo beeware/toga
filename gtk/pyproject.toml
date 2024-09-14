@@ -1,6 +1,6 @@
 [build-system]
 requires = [
-    "setuptools==70.3.0",
+    "setuptools==74.1.2",
     "setuptools_scm==8.1.0",
     "setuptools_dynamic_dependencies @ git+https://github.com/beeware/setuptools_dynamic_dependencies",
 ]
@@ -64,9 +64,8 @@ root = ".."
 
 [tool.setuptools_dynamic_dependencies]
 dependencies = [
-    "gbulb >= 0.5.3",
     "pycairo >= 1.17.0",
-    "pygobject >= 3.46.0",
+    "pygobject >= 3.50.0",
     "toga-core == {version}",
 ]
 

@@ -93,7 +93,7 @@ async def test_select_tab(
 ):
     """Tabs of content can be selected"""
     # Initially selected tab has content that is the full size of the widget
-    await probe.redraw("Tab 1 should be selected")
+    await probe.wait_for_tab("Tab 1 should be selected")
     assert widget.current_tab.index == 0
 
     # The content should be the same size as the container; these dimensions can
@@ -108,7 +108,7 @@ async def test_select_tab(
 
     # Select item 1 programmatically
     widget.current_tab = "Tab 2"
-    await probe.redraw("Tab 2 should be selected")
+    await probe.wait_for_tab("Tab 2 should be selected")
 
     assert widget.current_tab.index == 1
     assert content2_probe.width > probe.width * 0.8
@@ -117,9 +117,17 @@ async def test_select_tab(
     on_select_handler.assert_called_once_with(widget)
     on_select_handler.reset_mock()
 
+    handler_current_index = -1
+
+    def on_select(widget, **kwargs):
+        nonlocal handler_current_index
+        handler_current_index = widget.current_tab.index
+
+    on_select_handler.side_effect = on_select
+
     # Select item 2 in the GUI
     probe.select_tab(2)
-    await probe.redraw("Tab 3 should be selected")
+    await probe.wait_for_tab("Tab 3 should be selected")
 
     assert widget.current_tab.index == 2
     assert content3_probe.width > probe.width * 0.8
@@ -127,6 +135,8 @@ async def test_select_tab(
     # on_select has been invoked
     on_select_handler.assert_called_once_with(widget)
     on_select_handler.reset_mock()
+    # The current index as evaluated in the handler agrees
+    assert handler_current_index == 2
 
 
 async def test_select_tab_overflow(widget, probe, on_select_handler):
@@ -154,7 +164,7 @@ async def test_select_tab_overflow(widget, probe, on_select_handler):
         for i, extra in enumerate(extra_widgets, start=4):
             widget.content.append(f"Tab {i}", extra)
 
-        await probe.redraw("Tab 1 should be selected initially")
+        await probe.wait_for_tab("Tab 1 should be selected initially")
         assert widget.current_tab.index == 0
 
         # Ensure mock call count is clean
@@ -164,7 +174,7 @@ async def test_select_tab_overflow(widget, probe, on_select_handler):
         # `select_more()` doesn't exist, that feature doesn't exist on the platform.
         try:
             probe.select_more()
-            await probe.redraw("More option should be displayed")
+            await probe.wait_for_tab("More option should be displayed")
             # When the "more" menu is visible, the current tab is None.
             assert widget.current_tab.index is None
         except AttributeError:
@@ -175,7 +185,7 @@ async def test_select_tab_overflow(widget, probe, on_select_handler):
 
         # Select the second last tab in the GUI
         probe.select_tab(6)
-        await probe.redraw("Tab 7 should be selected")
+        await probe.wait_for_tab("Tab 7 should be selected")
 
         assert widget.current_tab.index == 6
         assert extra_probes[3].width > probe.width * 0.8
@@ -187,7 +197,7 @@ async def test_select_tab_overflow(widget, probe, on_select_handler):
 
         # Select the last tab programmatically while already on a "more" option
         widget.current_tab = "Tab 8"
-        await probe.redraw("Tab 8 should be selected")
+        await probe.wait_for_tab("Tab 8 should be selected")
 
         assert widget.current_tab.index == 7
         assert extra_probes[4].width > probe.width * 0.8
@@ -198,7 +208,7 @@ async def test_select_tab_overflow(widget, probe, on_select_handler):
 
         # Select the first tab in the GUI
         probe.select_tab(0)
-        await probe.redraw("Tab 0 should be selected")
+        await probe.wait_for_tab("Tab 0 should be selected")
         assert widget.current_tab.index == 0
         # on_select has been invoked
         on_select_handler.assert_called_once_with(widget)
@@ -209,7 +219,7 @@ async def test_select_tab_overflow(widget, probe, on_select_handler):
         try:
             probe.select_more()
             if probe.more_option_is_stateful:
-                await probe.redraw("Previous more option should be displayed")
+                await probe.wait_for_tab("Previous more option should be displayed")
                 assert widget.current_tab.index == 7
                 # more is stateful, so there's a been a select event for the
                 # previously selected "more" option.
@@ -217,9 +227,9 @@ async def test_select_tab_overflow(widget, probe, on_select_handler):
                 on_select_handler.reset_mock()
 
                 probe.reset_more()
-                await probe.redraw("More option should be reset")
+                await probe.wait_for_tab("More option should be reset")
             else:
-                await probe.redraw("More option should be displayed")
+                await probe.wait_for_tab("More option should be displayed")
 
             assert widget.current_tab.index is None
         except AttributeError:
@@ -229,7 +239,7 @@ async def test_select_tab_overflow(widget, probe, on_select_handler):
 
         # Select the second last tab in the GUI
         probe.select_tab(6)
-        await probe.redraw("Tab 7 should be selected")
+        await probe.wait_for_tab("Tab 7 should be selected")
 
         assert widget.current_tab.index == 6
         assert extra_probes[3].width > probe.width * 0.8
@@ -241,7 +251,7 @@ async def test_select_tab_overflow(widget, probe, on_select_handler):
 
         # Select the first tab in the GUI
         probe.select_tab(0)
-        await probe.redraw("Tab 0 should be selected")
+        await probe.wait_for_tab("Tab 0 should be selected")
         assert widget.current_tab.index == 0
         # on_select has been invoked
         on_select_handler.assert_called_once_with(widget)
@@ -249,7 +259,7 @@ async def test_select_tab_overflow(widget, probe, on_select_handler):
 
         # Select the last tab programmatically while on a non-more option
         widget.current_tab = "Tab 8"
-        await probe.redraw("Tab 8 should be selected")
+        await probe.wait_for_tab("Tab 8 should be selected")
 
         assert widget.current_tab.index == 7
         assert extra_probes[4].width > probe.width * 0.8
@@ -265,7 +275,7 @@ async def test_select_tab_overflow(widget, probe, on_select_handler):
             extra_probes.pop(0)
             widget.content.append(f"Tab {i}", extra)
 
-        await probe.redraw("OptionContainer is at capacity")
+        await probe.wait_for_tab("OptionContainer is at capacity")
 
         # Ensure mock call count is clean
         on_select_handler.reset_mock()
@@ -282,7 +292,7 @@ async def test_select_tab_overflow(widget, probe, on_select_handler):
             extra_probes.pop(0)
             widget.content.append("Tab B", extra)
 
-        await probe.redraw("Appended items were ignored")
+        await probe.wait_for_tab("Appended items were ignored")
 
         # Excess tab details can still be read and written
         widget.content[probe.max_tabs].text = "Extra Tab"
@@ -302,7 +312,7 @@ async def test_select_tab_overflow(widget, probe, on_select_handler):
         with pytest.warns(match=r"Tab is outside selectable range"):
             widget.current_tab = probe.max_tabs + 1
 
-        await probe.redraw("Item selection was ignored")
+        await probe.wait_for_tab("Item selection was ignored")
         on_select_handler.assert_not_called()
 
         # Insert a tab at the start. This will bump the last tab into the void
@@ -311,7 +321,7 @@ async def test_select_tab_overflow(widget, probe, on_select_handler):
             extra_probes.pop(0)
             widget.content.insert(2, "Tab C", extra)
 
-        await probe.redraw("Inserted item bumped the last item")
+        await probe.wait_for_tab("Inserted item bumped the last item")
 
         # Assert the properties of the last visible item
         assert widget.content[probe.max_tabs - 1].text == f"Tab {probe.max_tabs - 1}"
@@ -334,7 +344,7 @@ async def test_select_tab_overflow(widget, probe, on_select_handler):
         # the previous insertion back into view.
         widget.content.remove(1)
 
-        await probe.redraw("Deleting an item restores previously bumped item")
+        await probe.wait_for_tab("Deleting an item restores previously bumped item")
 
         assert widget.content[probe.max_tabs - 1].text == f"Tab {probe.max_tabs}"
         probe.assert_tab_icon(probe.max_tabs - 1, None)
@@ -352,7 +362,7 @@ async def test_select_tab_overflow(widget, probe, on_select_handler):
         # was disabled while it wasn't visible.
         widget.content.remove(1)
 
-        await probe.redraw("Deleting an item creates a previously excess item")
+        await probe.wait_for_tab("Deleting an item creates a previously excess item")
 
         assert widget.content[probe.max_tabs - 1].text == "Extra Tab"
         probe.assert_tab_icon(probe.max_tabs - 1, "new-tab")
@@ -378,7 +388,7 @@ async def test_enable_tab(widget, probe, on_select_handler):
 
     # Disable item 1
     widget.content[1].enabled = False
-    await probe.redraw("Tab 2 should be disabled")
+    await probe.wait_for_tab("Tab 2 should be disabled")
 
     assert widget.content[0].enabled
     assert not widget.content[1].enabled
@@ -387,7 +397,7 @@ async def test_enable_tab(widget, probe, on_select_handler):
 
     # Try to select a disabled tab
     probe.select_tab(1)
-    await probe.redraw("Try to select tab 2")
+    await probe.wait_for_tab("Try to select tab 2")
 
     if probe.disabled_tab_selectable:
         assert widget.current_tab.index == 1
@@ -403,7 +413,7 @@ async def test_enable_tab(widget, probe, on_select_handler):
 
     # Disable item 1 again, even though it's disabled
     widget.content[1].enabled = False
-    await probe.redraw("Tab 2 should still be disabled")
+    await probe.wait_for_tab("Tab 2 should still be disabled")
 
     assert widget.content[0].enabled
     assert not widget.content[1].enabled
@@ -412,7 +422,7 @@ async def test_enable_tab(widget, probe, on_select_handler):
     # where disabling a tab means hiding the tab completely, it will be *visual*
     # index 1, but content index 2. Make sure the indices are all correct.
     widget.current_tab = 2
-    await probe.redraw("Tab 3 should be selected")
+    await probe.wait_for_tab("Tab 3 should be selected")
 
     assert widget.current_tab.index == 2
     assert widget.current_tab.text == "Tab 3"
@@ -423,7 +433,7 @@ async def test_enable_tab(widget, probe, on_select_handler):
 
     # Enable item 1
     widget.content[1].enabled = True
-    await probe.redraw("Tab 2 should be enabled")
+    await probe.wait_for_tab("Tab 2 should be enabled")
 
     assert widget.content[0].enabled
     assert widget.content[1].enabled
@@ -432,7 +442,7 @@ async def test_enable_tab(widget, probe, on_select_handler):
 
     # Try to select tab 1
     probe.select_tab(1)
-    await probe.redraw("Tab 1 should be selected")
+    await probe.wait_for_tab("Tab 1 should be selected")
 
     assert widget.current_tab.index == 1
     assert widget.content[0].enabled
@@ -444,7 +454,7 @@ async def test_enable_tab(widget, probe, on_select_handler):
 
     # Enable item 1 again, even though it's enabled
     widget.content[1].enabled = True
-    await probe.redraw("Tab 2 should still be enabled")
+    await probe.wait_for_tab("Tab 2 should still be enabled")
 
     assert widget.content[0].enabled
     assert widget.content[1].enabled
@@ -467,7 +477,7 @@ async def test_change_content(
     new_probe = get_probe(new_box)
 
     widget.content.insert(1, "New tab", new_box, enabled=False)
-    await probe.redraw("New tab has been added disabled")
+    await probe.wait_for_tab("New tab has been added disabled")
 
     assert len(widget.content) == 4
     assert widget.content[1].text == "New tab"
@@ -476,7 +486,7 @@ async def test_change_content(
     # Enable the new content and select it
     widget.content[1].enabled = True
     widget.current_tab = "New tab"
-    await probe.redraw("New tab has been enabled and selected")
+    await probe.wait_for_tab("New tab has been enabled and selected")
 
     assert widget.current_tab.index == 1
     assert widget.current_tab.text == "New tab"
@@ -494,33 +504,33 @@ async def test_change_content(
 
     # Change the title of Tab 2
     widget.content["Tab 2"].text = "New 2"
-    await probe.redraw("Tab 2 has been renamed")
+    await probe.wait_for_tab("Tab 2 has been renamed")
 
     assert widget.content[2].text == "New 2"
 
     # Change the icon of Tab 2
     widget.content["New 2"].icon = "resources/new-tab"
-    await probe.redraw("Tab 2 has a new icon")
+    await probe.wait_for_tab("Tab 2 has a new icon")
 
     probe.assert_tab_icon(2, "new-tab")
 
     # Clear the icon of Tab 2
     widget.content["New 2"].icon = None
-    await probe.redraw("Tab 2 has the default icon")
+    await probe.wait_for_tab("Tab 2 has the default icon")
 
     probe.assert_tab_icon(2, None)
 
     # Remove Tab 2
     widget.content.remove("New 2")
-    await probe.redraw("Tab 2 has been removed")
+    await probe.wait_for_tab("Tab 2 has been removed")
     assert len(widget.content) == 3
 
     # Add tab 2 back in at the end with a new title
     widget.content.append("New Tab 2", content2)
-    await probe.redraw("Tab 2 has been added with a new title")
+    await probe.wait_for_tab("Tab 2 has been added with a new title")
 
     widget.current_tab = "New Tab 2"
-    await probe.redraw("Revised tab 2 has been selected")
+    await probe.wait_for_tab("Revised tab 2 has been selected")
 
     assert widget.current_tab.index == 3
     assert widget.current_tab.text == "New Tab 2"

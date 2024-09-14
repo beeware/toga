@@ -1,0 +1,1 @@
+The ActivityIndicator widget is now supported on iOS.

@@ -7,6 +7,7 @@ from .fonts import Font
 from .icons import Icon
 from .images import Image
 from .paths import Paths
+from .statusicons import MenuStatusIcon, SimpleStatusIcon, StatusIconSet
 from .widgets.box import Box
 from .widgets.button import Button
 from .widgets.canvas import Canvas
@@ -47,6 +48,10 @@ __all__ = [
     "Image",
     "Paths",
     "dialogs",
+    # Status Icons
+    "MenuStatusIcon",
+    "SimpleStatusIcon",
+    "StatusIconSet",
     # Widgets
     "Box",
     "Button",

@@ -127,7 +127,7 @@ async def test_cleanup():
 
 
 async def test_set_url(widget, probe, on_load):
-    "The URL can be set"
+    """The URL can be set."""
     widget.url = "https://github.com/beeware"
 
     # Wait for the content to be loaded
@@ -142,7 +142,7 @@ async def test_set_url(widget, probe, on_load):
 
 
 async def test_clear_url(widget, probe, on_load):
-    "The URL can be cleared"
+    """The URL can be cleared."""
     widget.url = None
 
     # Wait for the content to be cleared
@@ -157,7 +157,7 @@ async def test_clear_url(widget, probe, on_load):
 
 
 async def test_load_empty_url(widget, probe, on_load):
-    "An empty URL can be loaded asynchronously into the view"
+    """An empty URL can be loaded asynchronously into the view."""
     await wait_for(
         widget.load_url(None),
         LOAD_TIMEOUT,
@@ -175,7 +175,7 @@ async def test_load_empty_url(widget, probe, on_load):
 
 
 async def test_load_url(widget, probe, on_load):
-    "A URL can be loaded into the view"
+    """A URL can be loaded into the view."""
     await wait_for(
         widget.load_url("https://github.com/beeware"),
         LOAD_TIMEOUT,
@@ -193,7 +193,7 @@ async def test_load_url(widget, probe, on_load):
 
 
 async def test_static_content(widget, probe, on_load):
-    "Static content can be loaded into the page"
+    """Static content can be loaded into the page."""
     widget.set_content("https://example.com/", "<h1>Nice page</h1>")
 
     # DOM loads aren't instantaneous; wait for the URL to appear
@@ -217,7 +217,7 @@ async def test_user_agent(widget, probe):
 
 
 async def test_evaluate_javascript(widget, probe):
-    "JavaScript can be evaluated"
+    """JavaScript can be evaluated."""
     on_result_handler = Mock()
 
     for expression, expected in [
@@ -244,7 +244,7 @@ async def test_evaluate_javascript(widget, probe):
 
 
 async def test_evaluate_javascript_no_handler(widget, probe):
-    "A handler isn't needed to evaluate JavaScript"
+    """A handler isn't needed to evaluate JavaScript."""
     result = await wait_for(
         widget.evaluate_javascript("37 + 42"),
         JS_TIMEOUT,
@@ -262,7 +262,7 @@ def javascript_error_context(probe):
 
 
 async def test_evaluate_javascript_error(widget, probe):
-    "If JavaScript content raises an error, the error is propagated"
+    """If JavaScript content raises an error, the error is propagated."""
     on_result_handler = Mock()
 
     with javascript_error_context(probe):
@@ -290,7 +290,7 @@ async def test_evaluate_javascript_error(widget, probe):
 
 
 async def test_evaluate_javascript_error_without_handler(widget, probe):
-    "A handler isn't needed to propagate a JavaScript error"
+    """A handler isn't needed to propagate a JavaScript error."""
     with javascript_error_context(probe):
         result = await wait_for(
             widget.evaluate_javascript("not valid js"),
@@ -299,3 +299,30 @@ async def test_evaluate_javascript_error_without_handler(widget, probe):
         # If the backend supports exceptions, the previous line should have raised one.
         assert not probe.javascript_supports_exception
         assert result is None
+
+
+async def test_dom_storage_enabled(widget, probe, on_load):
+    """Ensure DOM storage is enabled."""
+    # a page must be loaded to access local storage
+    await wait_for(
+        widget.load_url("https://example.com/"),
+        LOAD_TIMEOUT,
+    )
+    # small pause to ensure javascript can run without security errors
+    await asyncio.sleep(1)
+
+    expected_value = "Hello World"
+    expression = f"""\
+(function isLocalStorageAvailable(){{
+    var test = 'testkey';
+    try {{
+        localStorage.setItem(test, "{expected_value}");
+        item = localStorage.getItem(test);
+        localStorage.removeItem(test);
+        return item;
+    }} catch(e) {{
+        return String(e);
+    }}
+}})()"""
+    result = await wait_for(widget.evaluate_javascript(expression), JS_TIMEOUT)
+    assert result == expected_value
