@@ -7,7 +7,7 @@ from pytest import fixture
 
 import toga
 
-from ..conftest import skip_on_platforms
+from ..conftest import skip_on_platforms, xfail_on_platforms
 from .properties import (  # noqa: F401
     test_background_color,
     test_background_color_reset,
@@ -86,6 +86,7 @@ async def widget():
 
 async def test_cleanup():
     skip_on_platforms("macOS", "iOS", "linux")
+    xfail_on_platforms("android", reason="Leaks memory")
 
     widget = toga.DateInput()
     ref = weakref.ref(widget)

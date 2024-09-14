@@ -7,7 +7,7 @@ import pytest
 
 import toga
 
-from ..conftest import skip_on_platforms
+from ..conftest import skip_on_platforms, xfail_on_platforms
 from .properties import (  # noqa: F401
     test_alignment,
     test_background_color,
@@ -44,6 +44,8 @@ def verify_focus_handlers():
 
 
 async def test_cleanup():
+    xfail_on_platforms("android", reason="Leaks memory")
+
     widget = toga.NumberInput(value="1.23", step="0.01")
     ref = weakref.ref(widget)
 

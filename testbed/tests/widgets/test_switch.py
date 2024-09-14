@@ -6,6 +6,7 @@ from pytest import fixture
 
 import toga
 
+from ..conftest import xfail_on_platforms
 from ..data import TEXTS
 from .properties import (  # noqa: F401
     test_color,
@@ -30,6 +31,8 @@ async def widget():
 
 
 async def test_cleanup():
+    xfail_on_platforms("android", "iOS", "linux", reason="Leaks memory")
+
     widget = toga.Switch("Hello")
     ref = weakref.ref(widget)
 

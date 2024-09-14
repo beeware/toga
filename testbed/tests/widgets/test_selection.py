@@ -8,6 +8,7 @@ import toga
 from toga.constants import CENTER
 from toga.sources import ListSource
 
+from ..conftest import xfail_on_platforms
 from .properties import (  # noqa: F401
     test_alignment,
     test_background_color,
@@ -54,6 +55,8 @@ def verify_vertical_alignment():
 
 
 async def test_cleanup():
+    xfail_on_platforms("android", "iOS", "windows", reason="Leaks memory")
+
     widget = toga.Selection(items=["first", "second", "third"])
     ref = weakref.ref(widget)
 

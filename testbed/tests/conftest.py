@@ -19,18 +19,18 @@ register_assert_rewrite("tests_backend")
 
 # Use this for widgets or tests which are not supported on some platforms, but could be
 # supported in the future.
-def skip_on_platforms(*platforms):
+def skip_on_platforms(*platforms, reason=None):
     current_platform = toga.platform.current_platform
     if current_platform in platforms:
-        skip(f"not yet implemented on {current_platform}")
+        skip(reason or f"not yet implemented on {current_platform}")
 
 
 # Use this for widgets or tests which are not supported on some platforms, and will not
 # be supported in the foreseeable future.
-def xfail_on_platforms(*platforms):
+def xfail_on_platforms(*platforms, reason=None):
     current_platform = toga.platform.current_platform
     if current_platform in platforms:
-        skip(f"not applicable on {current_platform}")
+        skip(reason or f"not applicable on {current_platform}")
 
 
 @fixture(autouse=True)

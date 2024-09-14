@@ -9,6 +9,7 @@ import toga
 from toga.colors import CORNFLOWERBLUE, REBECCAPURPLE, TRANSPARENT
 from toga.style.pack import COLUMN, ROW, Pack
 
+from ..conftest import xfail_on_platforms
 from .properties import (  # noqa: F401
     test_background_color,
     test_background_color_reset,
@@ -75,6 +76,8 @@ async def widget(content, on_scroll):
 
 
 async def test_cleanup():
+    xfail_on_platforms("android", "iOS", "linux", reason="Leaks memory")
+
     widget = toga.ScrollContainer(content=toga.Box())
     ref = weakref.ref(widget)
 

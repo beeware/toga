@@ -8,6 +8,7 @@ import toga
 from toga.colors import TRANSPARENT
 
 from ..assertions import assert_color
+from ..conftest import xfail_on_platforms
 from ..data import TEXTS
 from .properties import (  # noqa: F401
     test_background_color,
@@ -34,6 +35,8 @@ async def widget():
 
 
 async def test_cleanup():
+    xfail_on_platforms("android", reason="Leaks memory")
+
     widget = toga.Button("Hello")
     ref = weakref.ref(widget)
 

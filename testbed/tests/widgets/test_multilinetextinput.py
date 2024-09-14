@@ -6,6 +6,7 @@ import pytest
 import toga
 from toga.style import Pack
 
+from ..conftest import xfail_on_platforms
 from .properties import (  # noqa: F401
     test_alignment,
     test_background_color,
@@ -46,6 +47,8 @@ def verify_font_sizes():
 
 
 async def test_cleanup():
+    xfail_on_platforms("android", "linux", reason="Leaks memory")
+
     widget = toga.MultilineTextInput(value="Hello")
     ref = weakref.ref(widget)
 

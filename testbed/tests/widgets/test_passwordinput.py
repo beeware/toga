@@ -5,6 +5,7 @@ import pytest
 
 import toga
 
+from ..conftest import xfail_on_platforms
 from .properties import (  # noqa: F401
     test_alignment,
     test_background_color,
@@ -48,6 +49,8 @@ def verify_font_sizes():
 
 
 async def test_cleanup():
+    xfail_on_platforms("android", reason="Leaks memory")
+
     widget = toga.PasswordInput(value="sekrit")
     ref = weakref.ref(widget)
 

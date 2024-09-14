@@ -7,6 +7,7 @@ import pytest
 import toga
 from toga.constants import CENTER
 
+from ..conftest import xfail_on_platforms
 from ..data import TEXTS
 from .properties import (  # noqa: F401
     test_alignment,
@@ -54,6 +55,8 @@ async def placeholder(request, widget):
 
 
 async def test_cleanup():
+    xfail_on_platforms("android", reason="Leaks memory")
+
     widget = toga.TextInput(value="Hello")
     ref = weakref.ref(widget)
 

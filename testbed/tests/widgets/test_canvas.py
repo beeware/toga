@@ -23,6 +23,7 @@ from toga.constants import Baseline, FillRule
 from toga.fonts import BOLD
 from toga.style.pack import SYSTEM, Pack
 
+from ..conftest import xfail_on_platforms
 from .properties import (  # noqa: F401
     test_background_color,
     test_background_color_reset,
@@ -111,6 +112,8 @@ def assert_pixel(image, x, y, color):
 
 
 async def test_cleanup():
+    xfail_on_platforms("android", reason="Leaks memory")
+
     widget = toga.Canvas()
     ref = weakref.ref(widget)
 

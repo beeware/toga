@@ -7,6 +7,7 @@ import toga
 from toga.constants import Direction
 from toga.style.pack import COLUMN, ROW
 
+from ..conftest import xfail_on_platforms
 from .properties import (  # noqa: F401
     test_enable_noop,
     test_focus_noop,
@@ -19,6 +20,7 @@ async def widget():
 
 
 async def test_cleanup():
+    xfail_on_platforms("iOS", reason="Leaks memory")
 
     widget = toga.Divider()
     ref = weakref.ref(widget)

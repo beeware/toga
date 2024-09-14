@@ -10,6 +10,7 @@ import pytest
 import toga
 from toga.style import Pack
 
+from ..conftest import xfail_on_platforms
 from .properties import (  # noqa: F401
     test_flex_widget_size,
 )
@@ -60,6 +61,8 @@ async def widget(on_select):
 
 
 async def test_cleanup():
+    xfail_on_platforms("android", reason="Leaks memory")
+
     widget = toga.MapView()
     ref = weakref.ref(widget)
 

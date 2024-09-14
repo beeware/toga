@@ -9,6 +9,7 @@ from pytest import approx, fixture
 import toga
 
 from ..assertions import assert_set_get
+from ..conftest import xfail_on_platforms
 from .properties import (  # noqa: F401
     test_enabled,
     test_flex_horizontal_widget_size,
@@ -44,6 +45,8 @@ def on_change(widget):
 
 
 async def test_cleanup():
+    xfail_on_platforms("android", reason="Leaks memory")
+
     widget = toga.Slider()
     ref = weakref.ref(widget)
 

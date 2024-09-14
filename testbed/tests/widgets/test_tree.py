@@ -9,7 +9,7 @@ import toga
 from toga.sources import TreeSource
 from toga.style.pack import Pack
 
-from ..conftest import skip_on_platforms
+from ..conftest import skip_on_platforms, xfail_on_platforms
 from .probe import get_probe
 from .properties import (  # noqa: F401
     test_background_color,
@@ -167,6 +167,7 @@ async def multiselect_probe(main_window, multiselect_widget):
 
 
 async def test_cleanup():
+    xfail_on_platforms("linux", reason="Leaks memory")
     skip_on_platforms("iOS", "android", "windows")
 
     widget = toga.Tree(headings=["A", "B", "C"])

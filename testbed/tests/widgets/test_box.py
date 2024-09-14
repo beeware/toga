@@ -6,6 +6,7 @@ import pytest
 import toga
 from toga.style import Pack
 
+from ..conftest import xfail_on_platforms
 from .properties import (  # noqa: F401
     test_background_color,
     test_background_color_reset,
@@ -21,6 +22,8 @@ async def widget():
 
 
 async def test_cleanup():
+    xfail_on_platforms("iOS", reason="Leaks memory")
+
     widget = toga.Box(style=Pack(width=100, height=200))
     ref = weakref.ref(widget)
 

@@ -11,6 +11,7 @@ import pytest
 import toga
 from toga.style import Pack
 
+from ..conftest import xfail_on_platforms
 from .properties import (  # noqa: F401
     test_flex_widget_size,
     test_focus,
@@ -117,6 +118,8 @@ async def widget(on_load):
 
 
 async def test_cleanup():
+    xfail_on_platforms("linux", reason="Leaks memory")
+
     widget = toga.WebView()
     ref = weakref.ref(widget)
 

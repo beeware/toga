@@ -8,6 +8,7 @@ import toga
 from toga.sources import ListSource
 from toga.style.pack import Pack
 
+from ..conftest import xfail_on_platforms
 from .properties import (  # noqa: F401
     test_enable_noop,
     test_flex_widget_size,
@@ -77,6 +78,8 @@ async def widget(
 
 
 async def test_cleanup():
+    xfail_on_platforms("android", "linux", reason="Leaks memory")
+
     widget = toga.DetailedList()
     ref = weakref.ref(widget)
 
