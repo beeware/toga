@@ -39,6 +39,12 @@ async def widget():
     return toga.MultilineTextInput(value="Hello", style=Pack(flex=1))
 
 
+@pytest.fixture
+def verify_font_sizes():
+    # We can't verify font sizes inside the MultilineTextInput
+    return False, False
+
+
 async def test_cleanup():
     widget = toga.MultilineTextInput(value="Hello")
     ref = weakref.ref(widget)
@@ -47,12 +53,6 @@ async def test_cleanup():
     gc.collect()
 
     assert ref() is None
-
-
-@pytest.fixture
-def verify_font_sizes():
-    # We can't verify font sizes inside the MultilineTextInput
-    return False, False
 
 
 async def test_scroll_position(widget, probe):

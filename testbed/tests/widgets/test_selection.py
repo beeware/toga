@@ -42,16 +42,6 @@ async def widget():
     return toga.Selection(items=["first", "second", "third"])
 
 
-async def test_cleanup():
-    widget = toga.Selection(items=["first", "second", "third"])
-    ref = weakref.ref(widget)
-
-    del widget
-    gc.collect()
-
-    assert ref() is None
-
-
 @pytest.fixture
 def verify_font_sizes():
     # Font size does not affect the width of this widget.
@@ -61,6 +51,16 @@ def verify_font_sizes():
 @pytest.fixture
 def verify_vertical_alignment():
     return CENTER
+
+
+async def test_cleanup():
+    widget = toga.Selection(items=["first", "second", "third"])
+    ref = weakref.ref(widget)
+
+    del widget
+    gc.collect()
+
+    assert ref() is None
 
 
 async def test_item_titles(widget, probe):

@@ -19,7 +19,7 @@ async def widget():
 
 
 async def test_cleanup():
-    skip_on_platforms("android", "iOS", "windows")
+    skip_on_platforms("android", "windows")
 
     widget = toga.ActivityIndicator()
     ref = weakref.ref(widget)

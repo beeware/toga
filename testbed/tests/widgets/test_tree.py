@@ -1,4 +1,6 @@
 import contextlib
+import gc
+import weakref
 from unittest.mock import Mock
 
 import pytest
@@ -162,6 +164,18 @@ async def multiselect_probe(main_window, multiselect_widget):
     yield probe
 
     main_window.content = old_content
+
+
+async def test_cleanup():
+    skip_on_platforms("iOS", "android", "windows")
+
+    widget = toga.Tree(headings=["A", "B", "C"])
+    ref = weakref.ref(widget)
+
+    del widget
+    gc.collect()
+
+    assert ref() is None
 
 
 async def test_select(widget, probe, source, on_select_handler):

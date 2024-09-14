@@ -1,5 +1,7 @@
+import gc
 import math
 import os
+import weakref
 from math import pi, radians
 from unittest.mock import Mock, call
 
@@ -106,6 +108,16 @@ async def canvas(widget, probe, on_resize_handler):
 
 def assert_pixel(image, x, y, color):
     assert image.getpixel((x, y)) == color
+
+
+async def test_cleanup():
+    widget = toga.Canvas()
+    ref = weakref.ref(widget)
+
+    del widget
+    gc.collect()
+
+    assert ref() is None
 
 
 async def test_resize(widget, probe, on_resize_handler):

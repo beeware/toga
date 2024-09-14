@@ -32,16 +32,6 @@ async def widget():
     return toga.TextInput(value="Hello")
 
 
-async def test_cleanup():
-    widget = toga.TextInput(value="Hello")
-    ref = weakref.ref(widget)
-
-    del widget
-    gc.collect()
-
-    assert ref() is None
-
-
 @pytest.fixture
 def verify_vertical_alignment():
     return CENTER
@@ -61,6 +51,16 @@ def verify_focus_handlers():
 @pytest.fixture(params=["", "placeholder"])
 async def placeholder(request, widget):
     widget.placeholder = request.param
+
+
+async def test_cleanup():
+    widget = toga.TextInput(value="Hello")
+    ref = weakref.ref(widget)
+
+    del widget
+    gc.collect()
+
+    assert ref() is None
 
 
 async def test_value_not_hidden(widget, probe):

@@ -19,7 +19,6 @@ async def widget():
 
 
 async def test_cleanup():
-    skip_on_platforms("android", "iOS")
 
     widget = toga.Divider()
     ref = weakref.ref(widget)

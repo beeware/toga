@@ -41,6 +41,12 @@ async def widget():
     return toga.PasswordInput(value="sekrit")
 
 
+@pytest.fixture
+def verify_font_sizes():
+    # We can't verify font width inside the TextInput
+    return False, True
+
+
 async def test_cleanup():
     widget = toga.PasswordInput(value="sekrit")
     ref = weakref.ref(widget)
@@ -49,12 +55,6 @@ async def test_cleanup():
     gc.collect()
 
     assert ref() is None
-
-
-@pytest.fixture
-def verify_font_sizes():
-    # We can't verify font width inside the TextInput
-    return False, True
 
 
 async def test_value_hidden(widget, probe):

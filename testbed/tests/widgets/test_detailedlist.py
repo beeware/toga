@@ -1,3 +1,5 @@
+import gc
+import weakref
 from unittest.mock import Mock
 
 import pytest
@@ -72,6 +74,16 @@ async def widget(
         on_secondary_action=on_secondary_action_handler,
         style=Pack(flex=1),
     )
+
+
+async def test_cleanup():
+    widget = toga.DetailedList()
+    ref = weakref.ref(widget)
+
+    del widget
+    gc.collect()
+
+    assert ref() is None
 
 
 async def test_scroll(widget, probe):

@@ -32,16 +32,6 @@ async def widget():
     return toga.NumberInput(value="1.23", step="0.01")
 
 
-async def test_cleanup():
-    widget = toga.NumberInput(value="1.23", step="0.01")
-    ref = weakref.ref(widget)
-
-    del widget
-    gc.collect()
-
-    assert ref() is None
-
-
 @pytest.fixture
 def verify_font_sizes():
     # We can't verify font width inside the TextInput
@@ -51,6 +41,16 @@ def verify_font_sizes():
 @pytest.fixture
 def verify_focus_handlers():
     return False
+
+
+async def test_cleanup():
+    widget = toga.NumberInput(value="1.23", step="0.01")
+    ref = weakref.ref(widget)
+
+    del widget
+    gc.collect()
+
+    assert ref() is None
 
 
 async def test_on_change_handler(widget, probe):

@@ -36,6 +36,13 @@ async def widget():
     return toga.Slider()
 
 
+@fixture
+def on_change(widget):
+    handler = Mock()
+    widget.on_change = handler
+    return handler
+
+
 async def test_cleanup():
     widget = toga.Slider()
     ref = weakref.ref(widget)
@@ -44,13 +51,6 @@ async def test_cleanup():
     gc.collect()
 
     assert ref() is None
-
-
-@fixture
-def on_change(widget):
-    handler = Mock()
-    widget.on_change = handler
-    return handler
 
 
 async def test_init(widget, probe):
