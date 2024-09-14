@@ -213,8 +213,7 @@ class Window:
         App.app.windows.add(self)
 
         # If content has been provided, set it
-        if content:
-            self.content = content
+        self.content = content if content else toga.Box()
 
         self.on_close = on_close
 
