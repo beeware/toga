@@ -442,6 +442,8 @@ else:
             )
 
             assert not second_window_probe.is_minimized
+            # Window size hasn't changed as a result of min/unmin cycle
+            assert second_window.size == (250, 200)
 
         second_window_probe.close()
         await second_window_probe.wait_for_window("Secondary window has been closed")
