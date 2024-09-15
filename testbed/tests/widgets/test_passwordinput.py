@@ -1,11 +1,8 @@
-import gc
-import weakref
-
 import pytest
 
 import toga
 
-from ..conftest import xfail_on_platforms
+from .conftest import build_cleanup_test
 from .properties import (  # noqa: F401
     test_alignment,
     test_background_color,
@@ -48,16 +45,7 @@ def verify_font_sizes():
     return False, True
 
 
-async def test_cleanup():
-    xfail_on_platforms("android", reason="Leaks memory")
-
-    widget = toga.PasswordInput(value="sekrit")
-    ref = weakref.ref(widget)
-
-    del widget
-    gc.collect()
-
-    assert ref() is None
+test_cleanup = build_cleanup_test(toga.PasswordInput, xfail_platforms=("android",))
 
 
 async def test_value_hidden(widget, probe):

@@ -1,12 +1,9 @@
-import gc
-import weakref
-
 import pytest
 
 import toga
 from toga.style import Pack
 
-from ..conftest import xfail_on_platforms
+from .conftest import build_cleanup_test
 from .properties import (  # noqa: F401
     test_alignment,
     test_background_color,
@@ -46,16 +43,9 @@ def verify_font_sizes():
     return False, False
 
 
-async def test_cleanup():
-    xfail_on_platforms("android", "linux", reason="Leaks memory")
-
-    widget = toga.MultilineTextInput(value="Hello")
-    ref = weakref.ref(widget)
-
-    del widget
-    gc.collect()
-
-    assert ref() is None
+test_cleanup = build_cleanup_test(
+    toga.MultilineTextInput, xfail_platforms=("android", "linux")
+)
 
 
 async def test_scroll_position(widget, probe):

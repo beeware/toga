@@ -1,13 +1,11 @@
-import gc
-import weakref
 from unittest.mock import Mock, call
 
 from pytest import fixture
 
 import toga
 
-from ..conftest import xfail_on_platforms
 from ..data import TEXTS
+from .conftest import build_cleanup_test
 from .properties import (  # noqa: F401
     test_color,
     test_color_reset,
@@ -30,16 +28,9 @@ async def widget():
     return toga.Switch("Hello")
 
 
-async def test_cleanup():
-    xfail_on_platforms("android", "iOS", "linux", reason="Leaks memory")
-
-    widget = toga.Switch("Hello")
-    ref = weakref.ref(widget)
-
-    del widget
-    gc.collect()
-
-    assert ref() is None
+test_cleanup = build_cleanup_test(
+    toga.Switch, args=("Hello",), xfail_platforms=("android", "iOS", "linux")
+)
 
 
 async def test_text(widget, probe):

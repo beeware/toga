@@ -1,7 +1,5 @@
-import gc
 import math
 import os
-import weakref
 from math import pi, radians
 from unittest.mock import Mock, call
 
@@ -23,7 +21,7 @@ from toga.constants import Baseline, FillRule
 from toga.fonts import BOLD
 from toga.style.pack import SYSTEM, Pack
 
-from ..conftest import xfail_on_platforms
+from .conftest import build_cleanup_test
 from .properties import (  # noqa: F401
     test_background_color,
     test_background_color_reset,
@@ -111,16 +109,7 @@ def assert_pixel(image, x, y, color):
     assert image.getpixel((x, y)) == color
 
 
-async def test_cleanup():
-    xfail_on_platforms("android", reason="Leaks memory")
-
-    widget = toga.Canvas()
-    ref = weakref.ref(widget)
-
-    del widget
-    gc.collect()
-
-    assert ref() is None
+test_cleanup = build_cleanup_test(toga.Canvas, xfail_platforms=("android",))
 
 
 async def test_resize(widget, probe, on_resize_handler):

@@ -1,5 +1,3 @@
-import gc
-import weakref
 from unittest.mock import Mock
 
 import pytest
@@ -8,7 +6,7 @@ import toga
 from toga.colors import CORNFLOWERBLUE, GOLDENROD, REBECCAPURPLE, SEAGREEN
 from toga.style.pack import Pack
 
-from ..conftest import xfail_on_platforms
+from .conftest import build_cleanup_test
 from .probe import get_probe
 from .properties import (  # noqa: F401
     test_enable_noop,
@@ -74,16 +72,11 @@ async def widget(content1, content2, content3, on_select_handler):
     )
 
 
-async def test_cleanup():
-    xfail_on_platforms("android", "iOS", "linux", reason="Leaks memory")
-
-    widget = toga.OptionContainer(content=[("Tab 1", toga.Box())])
-    ref = weakref.ref(widget)
-
-    del widget
-    gc.collect()
-
-    assert ref() is None
+test_cleanup = build_cleanup_test(
+    toga.OptionContainer,
+    kwargs={"content": [("Tab 1", toga.Box())]},
+    xfail_platforms=("android", "iOS", "linux"),
+)
 
 
 async def test_select_tab(

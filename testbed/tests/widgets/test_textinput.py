@@ -1,5 +1,3 @@
-import gc
-import weakref
 from unittest.mock import Mock, call
 
 import pytest
@@ -7,8 +5,8 @@ import pytest
 import toga
 from toga.constants import CENTER
 
-from ..conftest import xfail_on_platforms
 from ..data import TEXTS
+from .conftest import build_cleanup_test
 from .properties import (  # noqa: F401
     test_alignment,
     test_background_color,
@@ -54,16 +52,7 @@ async def placeholder(request, widget):
     widget.placeholder = request.param
 
 
-async def test_cleanup():
-    xfail_on_platforms("android", reason="Leaks memory")
-
-    widget = toga.TextInput(value="Hello")
-    ref = weakref.ref(widget)
-
-    del widget
-    gc.collect()
-
-    assert ref() is None
+test_cleanup = build_cleanup_test(toga.TextInput, xfail_platforms=("android",))
 
 
 async def test_value_not_hidden(widget, probe):

@@ -1,13 +1,10 @@
-import gc
-import weakref
-
 import pytest
 
 import toga
 from toga.constants import Direction
 from toga.style.pack import COLUMN, ROW
 
-from ..conftest import xfail_on_platforms
+from .conftest import build_cleanup_test
 from .properties import (  # noqa: F401
     test_enable_noop,
     test_focus_noop,
@@ -19,16 +16,7 @@ async def widget():
     return toga.Divider()
 
 
-async def test_cleanup():
-    xfail_on_platforms("iOS", reason="Leaks memory")
-
-    widget = toga.Divider()
-    ref = weakref.ref(widget)
-
-    del widget
-    gc.collect()
-
-    assert ref() is None
+test_cleanup = build_cleanup_test(toga.Divider, xfail_platforms=("iOS",))
 
 
 async def test_directions(widget, probe):

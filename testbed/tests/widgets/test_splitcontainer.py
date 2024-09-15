@@ -1,6 +1,3 @@
-import gc
-import weakref
-
 import pytest
 from pytest import approx
 
@@ -10,6 +7,7 @@ from toga.constants import Direction
 from toga.style.pack import Pack
 
 from ..conftest import skip_on_platforms
+from .conftest import build_cleanup_test
 from .probe import get_probe
 from .properties import (  # noqa: F401
     test_enable_noop,
@@ -63,16 +61,11 @@ async def widget(content1, content2):
     return toga.SplitContainer(content=[content1, content2], style=Pack(flex=1))
 
 
-async def test_cleanup():
-    skip_on_platforms("android", "iOS")
-
-    widget = toga.SplitContainer(content=[toga.Box(), toga.Box()])
-    ref = weakref.ref(widget)
-
-    del widget
-    gc.collect()
-
-    assert ref() is None
+test_cleanup = build_cleanup_test(
+    toga.SplitContainer,
+    kwargs={"content": [toga.Box(), toga.Box()]},
+    skip_platforms=("android", "iOS"),
+)
 
 
 async def test_set_content(

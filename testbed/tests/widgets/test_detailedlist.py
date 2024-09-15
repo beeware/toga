@@ -1,5 +1,3 @@
-import gc
-import weakref
 from unittest.mock import Mock
 
 import pytest
@@ -8,7 +6,7 @@ import toga
 from toga.sources import ListSource
 from toga.style.pack import Pack
 
-from ..conftest import xfail_on_platforms
+from .conftest import build_cleanup_test
 from .properties import (  # noqa: F401
     test_enable_noop,
     test_flex_widget_size,
@@ -77,16 +75,9 @@ async def widget(
     )
 
 
-async def test_cleanup():
-    xfail_on_platforms("android", "linux", reason="Leaks memory")
-
-    widget = toga.DetailedList()
-    ref = weakref.ref(widget)
-
-    del widget
-    gc.collect()
-
-    assert ref() is None
+test_cleanup = build_cleanup_test(
+    toga.DetailedList, xfail_platforms=("android", "linux")
+)
 
 
 async def test_scroll(widget, probe):

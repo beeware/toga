@@ -1,7 +1,5 @@
 import asyncio
-import gc
 import platform
-import weakref
 from time import time
 from unittest.mock import Mock
 
@@ -10,7 +8,7 @@ import pytest
 import toga
 from toga.style import Pack
 
-from ..conftest import xfail_on_platforms
+from .conftest import build_cleanup_test
 from .properties import (  # noqa: F401
     test_flex_widget_size,
 )
@@ -60,16 +58,7 @@ async def widget(on_select):
         toga.App.app._gc_protector.append(widget)
 
 
-async def test_cleanup():
-    xfail_on_platforms("android", reason="Leaks memory")
-
-    widget = toga.MapView()
-    ref = weakref.ref(widget)
-
-    del widget
-    gc.collect()
-
-    assert ref() is None
+test_cleanup = build_cleanup_test(toga.MapView, xfail_platforms=("android",))
 
 
 # The next two tests fail about 75% of the time in the macOS x86_64 CI configuration.

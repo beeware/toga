@@ -1,11 +1,9 @@
-import gc
-import weakref
-
 import pytest
 
 import toga
 
 from ..conftest import skip_on_platforms
+from .conftest import build_cleanup_test
 from .properties import (  # noqa: F401
     test_enable_noop,
     test_focus_noop,
@@ -18,16 +16,9 @@ async def widget():
     return toga.ActivityIndicator()
 
 
-async def test_cleanup():
-    skip_on_platforms("android", "windows")
-
-    widget = toga.ActivityIndicator()
-    ref = weakref.ref(widget)
-
-    del widget
-    gc.collect()
-
-    assert ref() is None
+test_cleanup = build_cleanup_test(
+    toga.ActivityIndicator, skip_platforms=("android", "windows")
+)
 
 
 async def test_start_stop(widget, probe):

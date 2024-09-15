@@ -1,6 +1,4 @@
 import asyncio
-import gc
-import weakref
 from asyncio import wait_for
 from contextlib import nullcontext
 from time import time
@@ -11,7 +9,7 @@ import pytest
 import toga
 from toga.style import Pack
 
-from ..conftest import xfail_on_platforms
+from .conftest import build_cleanup_test
 from .properties import (  # noqa: F401
     test_flex_widget_size,
     test_focus,
@@ -117,16 +115,7 @@ async def widget(on_load):
         toga.App.app._gc_protector.append(widget)
 
 
-async def test_cleanup():
-    xfail_on_platforms("linux", reason="Leaks memory")
-
-    widget = toga.WebView()
-    ref = weakref.ref(widget)
-
-    del widget
-    gc.collect()
-
-    assert ref() is None
+test_cleanup = build_cleanup_test(toga.WebView, xfail_platforms=("linux",))
 
 
 async def test_set_url(widget, probe, on_load):

@@ -1,5 +1,3 @@
-import gc
-import weakref
 from unittest.mock import Mock
 
 import pytest
@@ -8,7 +6,7 @@ import toga
 from toga.constants import CENTER
 from toga.sources import ListSource
 
-from ..conftest import xfail_on_platforms
+from .conftest import build_cleanup_test
 from .properties import (  # noqa: F401
     test_alignment,
     test_background_color,
@@ -54,16 +52,11 @@ def verify_vertical_alignment():
     return CENTER
 
 
-async def test_cleanup():
-    xfail_on_platforms("android", "iOS", "windows", reason="Leaks memory")
-
-    widget = toga.Selection(items=["first", "second", "third"])
-    ref = weakref.ref(widget)
-
-    del widget
-    gc.collect()
-
-    assert ref() is None
+test_cleanup = build_cleanup_test(
+    toga.Selection,
+    kwargs={"items": ["first", "second", "third"]},
+    xfail_platforms=("android", "iOS", "windows"),
+)
 
 
 async def test_item_titles(widget, probe):

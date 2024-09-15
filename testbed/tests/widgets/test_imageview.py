@@ -1,11 +1,9 @@
-import gc
-import weakref
-
 import pytest
 
 import toga
 from toga.style.pack import COLUMN, ROW
 
+from .conftest import build_cleanup_test
 from .properties import (  # noqa: F401
     test_background_color,
     test_background_color_reset,
@@ -20,14 +18,9 @@ async def widget():
     return toga.ImageView(image="resources/sample.png")
 
 
-async def test_cleanup():
-    widget = toga.ImageView(image="resources/sample.png")
-    ref = weakref.ref(widget)
-
-    del widget
-    gc.collect()
-
-    assert ref() is None
+test_cleanup = build_cleanup_test(
+    toga.ImageView, kwargs={"image": "resources/sample.png"}, xfail_platforms=("iOS",)
+)
 
 
 async def test_implicit_size(widget, probe, container_probe):

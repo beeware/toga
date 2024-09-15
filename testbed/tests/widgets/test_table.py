@@ -1,6 +1,4 @@
 import contextlib
-import gc
-import weakref
 from unittest.mock import Mock
 
 import pytest
@@ -9,7 +7,8 @@ import toga
 from toga.sources import ListSource
 from toga.style.pack import Pack
 
-from ..conftest import skip_on_platforms, xfail_on_platforms
+from ..conftest import skip_on_platforms
+from .conftest import build_cleanup_test
 from .probe import get_probe
 from .properties import (  # noqa: F401
     test_background_color,
@@ -113,17 +112,12 @@ async def multiselect_probe(main_window, multiselect_widget):
     main_window.content = old_content
 
 
-async def test_cleanup():
-    skip_on_platforms("iOS")
-    xfail_on_platforms("linux", reason="Leaks memory")
-
-    widget = toga.Table(headings=["A", "B", "C"])
-    ref = weakref.ref(widget)
-
-    del widget
-    gc.collect()
-
-    assert ref() is None
+test_cleanup = build_cleanup_test(
+    toga.Table,
+    kwargs={"headings": ["A", "B", "C"]},
+    skip_platforms=("iOS",),
+    xfail_platforms=("linux",),
+)
 
 
 async def test_scroll(widget, probe):

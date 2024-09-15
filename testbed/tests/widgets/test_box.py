@@ -1,12 +1,9 @@
-import gc
-import weakref
-
 import pytest
 
 import toga
 from toga.style import Pack
 
-from ..conftest import xfail_on_platforms
+from .conftest import build_cleanup_test
 from .properties import (  # noqa: F401
     test_background_color,
     test_background_color_reset,
@@ -21,13 +18,4 @@ async def widget():
     return toga.Box(style=Pack(width=100, height=200))
 
 
-async def test_cleanup():
-    xfail_on_platforms("iOS", reason="Leaks memory")
-
-    widget = toga.Box(style=Pack(width=100, height=200))
-    ref = weakref.ref(widget)
-
-    del widget
-    gc.collect()
-
-    assert ref() is None
+test_cleanup = build_cleanup_test(toga.Box, xfail_platforms=("iOS",))
