@@ -2,6 +2,7 @@ import pytest
 
 import toga
 
+from .conftest import build_cleanup_test
 from .properties import (  # noqa: F401
     test_alignment,
     test_background_color,
@@ -42,6 +43,9 @@ async def widget():
 def verify_font_sizes():
     # We can't verify font width inside the TextInput
     return False, True
+
+
+test_cleanup = build_cleanup_test(toga.PasswordInput, xfail_platforms=("android",))
 
 
 async def test_value_hidden(widget, probe):

@@ -6,6 +6,7 @@ import toga
 from toga.colors import CORNFLOWERBLUE, GOLDENROD, REBECCAPURPLE, SEAGREEN
 from toga.style.pack import Pack
 
+from .conftest import build_cleanup_test
 from .probe import get_probe
 from .properties import (  # noqa: F401
     test_enable_noop,
@@ -69,6 +70,14 @@ async def widget(content1, content2, content3, on_select_handler):
         style=Pack(flex=1),
         on_select=on_select_handler,
     )
+
+
+test_cleanup = build_cleanup_test(
+    # Pass a function here to prevent init of toga.Box() in a different thread than
+    # toga.OptionContainer. This would raise a runtime error on Windows.
+    lambda: toga.OptionContainer(content=[("Tab 1", toga.Box())]),
+    xfail_platforms=("android", "iOS", "linux"),
+)
 
 
 async def test_select_tab(
