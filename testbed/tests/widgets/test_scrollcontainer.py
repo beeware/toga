@@ -74,8 +74,9 @@ async def widget(content, on_scroll):
 
 
 test_cleanup = build_cleanup_test(
-    toga.ScrollContainer,
-    kwargs={"content": toga.Box()},
+    # Pass a function here to prevent init of toga.Box() in a different thread than
+    # toga.ScrollContainer. This would raise a runtime error on Windows.
+    lambda: toga.ScrollContainer(content=toga.Box()),
     xfail_platforms=("android", "iOS", "linux"),
 )
 

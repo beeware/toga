@@ -84,7 +84,7 @@ def verify_vertical_alignment():
 
 
 def build_cleanup_test(
-    widget_class, args=None, kwargs=None, skip_platforms=(), xfail_platforms=()
+    widget_constructor, args=None, kwargs=None, skip_platforms=(), xfail_platforms=()
 ):
     async def test_cleanup():
         nonlocal args, kwargs
@@ -92,10 +92,13 @@ def build_cleanup_test(
         skip_on_platforms(*skip_platforms)
         xfail_on_platforms(*xfail_platforms, reason="Leaks memory")
 
-        widget = widget_class(
-            *(args if args is not None else ()),
-            **(kwargs if kwargs is not None else {}),
-        )
+        if args is None:
+            args = ()
+
+        if kwargs is None:
+            kwargs = {}
+
+        widget = widget_constructor(*args, **kwargs)
         ref = weakref.ref(widget)
 
         # Args or kwargs may hold a backref to the widget itself, for example if they

@@ -73,8 +73,9 @@ async def widget(content1, content2, content3, on_select_handler):
 
 
 test_cleanup = build_cleanup_test(
-    toga.OptionContainer,
-    kwargs={"content": [("Tab 1", toga.Box())]},
+    # Pass a function here to prevent init of toga.Box() in a different thread than
+    # toga.OptionContainer. This would raise a runtime error on Windows.
+    lambda: toga.OptionContainer(content=[("Tab 1", toga.Box())]),
     xfail_platforms=("android", "iOS", "linux"),
 )
 

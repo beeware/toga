@@ -62,8 +62,9 @@ async def widget(content1, content2):
 
 
 test_cleanup = build_cleanup_test(
-    toga.SplitContainer,
-    kwargs={"content": [toga.Box(), toga.Box()]},
+    # Pass a function here to prevent init of toga.Box() in a different thread than
+    # toga.SplitContainer. This would raise a runtime error on Windows.
+    lambda: toga.SplitContainer(content=[toga.Box(), toga.Box()]),
     skip_platforms=("android", "iOS"),
 )
 
