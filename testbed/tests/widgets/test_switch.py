@@ -29,7 +29,7 @@ async def widget():
 
 
 test_cleanup = build_cleanup_test(
-    toga.Switch, args=("Hello",), xfail_platforms=("android", "iOS", "linux")
+    toga.Switch, args=("Hello",), xfail_platforms=("android", "linux")
 )
 
 

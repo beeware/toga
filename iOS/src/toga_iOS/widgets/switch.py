@@ -13,6 +13,11 @@ from toga_iOS.libs import (
 from toga_iOS.widgets.base import Widget
 
 
+class TogaStackView(UIStackView):
+    interface = objc_property(object, weak=True)
+    impl = objc_property(object, weak=True)
+
+
 class TogaSwitch(UISwitch):
     interface = objc_property(object, weak=True)
     impl = objc_property(object, weak=True)
@@ -26,7 +31,7 @@ class Switch(Widget):
     SPACING = 10
 
     def create(self):
-        self.native = UIStackView.alloc().init()
+        self.native = TogaStackView.alloc().init()
         self.native.interface = self.interface
         self.native.impl = self
         self.native.axis = UILayoutConstraintAxis.Horizontal
