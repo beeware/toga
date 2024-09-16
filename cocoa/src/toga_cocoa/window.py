@@ -49,7 +49,7 @@ class TogaWindow(NSWindow):
     @objc_method
     def windowWillClose_(self, notification) -> None:
         # Setting the toolbar delegate to None doesn't disconnect
-        # the delegates and still triggers the delegate events.
+        # the delegate and still triggers the delegate events.
         # Hence, simply remove the toolbar instead.
         if self.toolbar:
             self.toolbar = None
@@ -57,9 +57,9 @@ class TogaWindow(NSWindow):
         self.delegate = None
 
         # Disconnecting the window delegate doesn't prevent custom
-        # methods like enteredMiniaturize_(which are performed with a
-        # delay i.e., having a delay != 0), from being triggered.
-        # Hence, check guards needs to be used in such custom methods.
+        # methods which are performed with a delay i.e., having a
+        # delay != 0), from being triggered. Hence, check guards
+        # needs to be used in such custom methods.
 
     @objc_method
     def windowDidResize_(self, notification) -> None:
@@ -69,13 +69,6 @@ class TogaWindow(NSWindow):
 
     @objc_method
     def windowDidMiniaturize_(self, notification) -> None:
-        #     self.performSelector(
-        #         SEL("enteredMiniaturize:"), withObject=None, afterDelay=0.1
-        #     )
-
-        # @objc_method
-        # def enteredMiniaturize_(self, sender) -> None:
-        #     if self.impl:  # pragma: no branch
         if (
             self.impl._pending_state_transition
             and self.impl._pending_state_transition != WindowState.MINIMIZED
