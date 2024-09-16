@@ -69,20 +69,20 @@ class TogaWindow(NSWindow):
 
     @objc_method
     def windowDidMiniaturize_(self, notification) -> None:
-        self.performSelector(
-            SEL("enteredMiniaturize:"), withObject=None, afterDelay=0.1
-        )
+        #     self.performSelector(
+        #         SEL("enteredMiniaturize:"), withObject=None, afterDelay=0.1
+        #     )
 
-    @objc_method
-    def enteredMiniaturize_(self, sender) -> None:
-        if self.impl:  # pragma: no branch
-            if (
-                self.impl._pending_state_transition
-                and self.impl._pending_state_transition != WindowState.MINIMIZED
-            ):
-                self.impl._apply_state(WindowState.NORMAL)
-            else:
-                self.impl._pending_state_transition = None
+        # @objc_method
+        # def enteredMiniaturize_(self, sender) -> None:
+        #     if self.impl:  # pragma: no branch
+        if (
+            self.impl._pending_state_transition
+            and self.impl._pending_state_transition != WindowState.MINIMIZED
+        ):
+            self.impl._apply_state(WindowState.NORMAL)
+        else:
+            self.impl._pending_state_transition = None
 
     @objc_method
     def windowDidDeminiaturize_(self, notification) -> None:
