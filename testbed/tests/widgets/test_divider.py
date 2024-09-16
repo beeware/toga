@@ -16,7 +16,7 @@ async def widget():
     return toga.Divider()
 
 
-test_cleanup = build_cleanup_test(toga.Divider, xfail_platforms=("iOS",))
+test_cleanup = build_cleanup_test(toga.Divider)
 
 
 async def test_directions(widget, probe):
