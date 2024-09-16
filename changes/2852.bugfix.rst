@@ -1,0 +1,1 @@
+Fix default icon search in standalone/frozen macOS applications that are not built as .app bundles (e.g., POSIX build made with PyInstaller).
