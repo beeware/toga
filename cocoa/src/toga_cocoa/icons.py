@@ -23,6 +23,7 @@ class Icon:
             )
             if bundle_icon is None:
                 # Not an .app bundle (e.g., POSIX build made with PyInstaller)
+                # This can't be tested as the testbed app is bundled by Briefcase.
                 raise FileNotFoundError()  # pragma: no cover
             path = NSBundle.mainBundle.pathForResource(
                 Path(bundle_icon).stem,
