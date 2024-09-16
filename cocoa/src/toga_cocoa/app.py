@@ -30,7 +30,6 @@ from .libs import (
     NSCursor,
     NSMenu,
     NSMenuItem,
-    NSNumber,
     NSScreen,
 )
 from .screens import Screen as ScreenImpl
@@ -374,33 +373,12 @@ class App:
     ######################################################################
 
     def enter_presentation_mode(self, screen_window_dict):
-        opts = NSMutableDictionary.alloc().init()
-        opts.setObject(
-            NSNumber.numberWithBool(True), forKey="NSFullScreenModeAllScreens"
-        )
-
         for screen, window in screen_window_dict.items():
-            # The widgets are actually added to window._impl.container.native, instead of
-            # window.content._impl.native. And window._impl.native.contentView is
-            # window._impl.container.native. Hence, we need to go fullscreen on
-            # window._impl.container.native instead.
-            window._impl.container.native.enterFullScreenMode(
-                screen._impl.native, withOptions=opts
-            )
-            # Going presentation mode causes the window content to be re-homed
-            # in a NSFullScreenWindow; teach the new parent window about its
-            # Toga representations.
-            window._impl.container.native.window._impl = window._impl
-            window._impl.container.native.window.interface = window
-            window.content.refresh()
+            window._impl._before_presentation_mode_screen = window.screen
+            window.screen = screen
+            window._impl.set_window_state(WindowState.PRESENTATION)
 
     def exit_presentation_mode(self):
-        opts = NSMutableDictionary.alloc().init()
-        opts.setObject(
-            NSNumber.numberWithBool(True), forKey="NSFullScreenModeAllScreens"
-        )
-
         for window in self.interface.windows:
             if window.state == WindowState.PRESENTATION:
-                window._impl.container.native.exitFullScreenModeWithOptions(opts)
-                window.content.refresh()
+                window._impl.set_window_state(WindowState.NORMAL)

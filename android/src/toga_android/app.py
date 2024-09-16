@@ -320,8 +320,8 @@ class App:
 
     def enter_presentation_mode(self, screen_window_dict):
         for screen, window in screen_window_dict.items():
-            window._impl._before_presentation_mode_screen = window.screen
-            window.screen = screen
+            # There is only a single window on android and moving between
+            # screens is not supported.
             window._impl.set_window_state(WindowState.PRESENTATION)
 
     def exit_presentation_mode(self):

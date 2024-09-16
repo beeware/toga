@@ -24,9 +24,16 @@ class WindowProbe(BaseProbe, DialogsMixin):
         assert isinstance(self.native, Gtk.Window)
 
     async def wait_for_window(
-        self, message, minimize=False, full_screen=False, rapid_state_switching=False
+        self,
+        message,
+        minimize=False,
+        full_screen=False,
+        rapid_state_switching=False,
     ):
-        await self.redraw(message, delay=(0.5 if (full_screen or minimize) else 0.1))
+        await self.redraw(
+            message,
+            delay=(0.5 if (full_screen or minimize) else 0.1),
+        )
 
     def close(self):
         if self.is_closable:

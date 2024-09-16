@@ -23,7 +23,11 @@ class WindowProbe(BaseProbe, DialogsMixin):
         assert isinstance(self.native, NSWindow)
 
     async def wait_for_window(
-        self, message, minimize=False, full_screen=False, rapid_state_switching=False
+        self,
+        message,
+        minimize=False,
+        full_screen=False,
+        rapid_state_switching=False,
     ):
         await self.redraw(
             message,

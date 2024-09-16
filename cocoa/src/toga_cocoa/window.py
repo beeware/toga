@@ -17,6 +17,8 @@ from toga_cocoa.libs import (
     NSBackingStoreBuffered,
     NSImage,
     NSMutableArray,
+    NSMutableDictionary,
+    NSNumber,
     NSScreen,
     NSToolbar,
     NSToolbarItem,
@@ -88,13 +90,13 @@ class TogaWindow(NSWindow):
 
     @objc_method
     def windowDidEnterFullScreen_(self, notification) -> None:
+        # Directly doing post-fullscreen operations here will result in error:
+        # ````2024-08-09 15:46:39.050 python[2646:37395] not in fullscreen state````
+        # and any subsequent window state calls to the OS will not work or will be glitchy.
         self.performSelector(SEL("enteredFullScreen:"), withObject=None, afterDelay=0)
 
     @objc_method
     def enteredFullScreen_(self, sender) -> None:
-        # Doing the following directly in `windowDidEnterFullScreen_` will result in error:
-        # ````2024-08-09 15:46:39.050 python[2646:37395] not in fullscreen state````
-        # and any subsequent window state calls to the OS will not work or will be glitchy.
         if (
             self.impl._pending_state_transition
             and self.impl._pending_state_transition != WindowState.FULLSCREEN
@@ -236,7 +238,7 @@ class Window:
         self.set_size(size)
         self.set_position(position if position is not None else _initial_position())
 
-        self.native.setDelegate(self.native)
+        self.native.delegate = self.native
 
         self.container = Container(on_refresh=self.content_refreshed)
         self.native.contentView = self.container.native
@@ -424,9 +426,30 @@ class Window:
             self.native.toggleFullScreen(self.native)
 
         elif target_state == WindowState.PRESENTATION:
-            self.interface.app.enter_presentation_mode(
-                {self.interface.screen: self.interface}
+            self._before_presentation_mode_screen = self.interface.screen
+            opts = NSMutableDictionary.alloc().init()
+            opts.setObject(
+                NSNumber.numberWithBool(True),
+                forKey="NSFullScreenModeAllScreens",
             )
+            # The widgets are actually added to
+            # window._impl.container.native, instead of
+            # window.content._impl.native. And
+            # window._impl.native.contentView is
+            # window._impl.container.native. Hence,
+            # we need to go fullscreen on
+            # window._impl.container.native instead.
+            self.container.native.enterFullScreenMode(
+                self.interface.screen._impl.native, withOptions=opts
+            )
+
+            # Going presentation mode causes the window content
+            # to be re-homed in a NSFullScreenWindow; teach the
+            # new parent window about its Toga representations.
+            self.container.native.window._impl = self
+            self.container.native.window.interface = self.interface
+            self.interface.content.refresh()
+
             # No need to check for other pending states,
             # since this is fully applied at this point.
             self._pending_state_transition = None
@@ -443,7 +466,16 @@ class Window:
                 self.native.toggleFullScreen(self.native)
 
             else:  # current_state == WindowState.PRESENTATION:
-                self.interface.app.exit_presentation_mode()
+                opts = NSMutableDictionary.alloc().init()
+                opts.setObject(
+                    NSNumber.numberWithBool(True), forKey="NSFullScreenModeAllScreens"
+                )
+                self.container.native.exitFullScreenModeWithOptions(opts)
+                self.interface.content.refresh()
+
+                self.interface.screen = self._before_presentation_mode_screen
+                del self._before_presentation_mode_screen
+
                 self._apply_state(self._pending_state_transition)
 
     ######################################################################

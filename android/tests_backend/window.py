@@ -1,7 +1,5 @@
 from androidx.appcompat import R as appcompat_R
 
-from toga.constants import WindowState
-
 from .dialogs import DialogsMixin
 from .probe import BaseProbe
 
@@ -16,10 +14,15 @@ class WindowProbe(BaseProbe, DialogsMixin):
         self.window = window
 
     async def wait_for_window(
-        self, message, minimize=False, full_screen=False, rapid_state_switching=False
+        self,
+        message,
+        minimize=False,
+        full_screen=False,
+        rapid_state_switching=False,
     ):
         await self.redraw(
-            message, delay=0.1 if (full_screen or rapid_state_switching) else 0
+            message,
+            delay=(0.1 if (full_screen or rapid_state_switching) else 0),
         )
 
     @property
@@ -28,22 +31,6 @@ class WindowProbe(BaseProbe, DialogsMixin):
             self.root_view.getWidth() / self.scale_factor,
             self.root_view.getHeight() / self.scale_factor,
         )
-
-    def get_window_state(self):
-        decor_view = self.native.getWindow().getDecorView()
-        system_ui_flags = decor_view.getSystemUiVisibility()
-        if system_ui_flags & (
-            decor_view.SYSTEM_UI_FLAG_FULLSCREEN
-            | decor_view.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-            | decor_view.SYSTEM_UI_FLAG_IMMERSIVE
-        ):
-            if self.window._impl._in_presentation_mode:
-                current_state = WindowState.PRESENTATION
-            else:
-                current_state = WindowState.FULLSCREEN
-        else:
-            current_state = WindowState.NORMAL
-        return current_state
 
     def _native_menu(self):
         return self.native.findViewById(appcompat_R.id.action_bar).getMenu()

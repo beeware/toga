@@ -19,7 +19,11 @@ class WindowProbe(BaseProbe, DialogsMixin):
         assert isinstance(self.native, UIWindow)
 
     async def wait_for_window(
-        self, message, minimize=False, full_screen=False, rapid_state_switching=False
+        self,
+        message,
+        minimize=False,
+        full_screen=False,
+        rapid_state_switching=False,
     ):
         await self.redraw(message)
 
@@ -34,9 +38,6 @@ class WindowProbe(BaseProbe, DialogsMixin):
                 + self.native.rootViewController.navigationBar.frame.size.height
             ),
         )
-
-    def get_window_state(self):
-        pytest.skip("Window states are not implemented on iOS")
 
     def has_toolbar(self):
         pytest.skip("Toolbars not implemented on iOS")
