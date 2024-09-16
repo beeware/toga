@@ -1,1 +1,1 @@
-A memory leak when using Divider or Switch widgets on iOS was resolved.
+Widgets on the iOS backend no longer leak memory when destroyed.
