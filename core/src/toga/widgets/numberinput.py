@@ -1,16 +1,23 @@
 from __future__ import annotations
 
 import re
+import sys
 import warnings
 from decimal import ROUND_HALF_UP, Decimal, InvalidOperation
-from typing import Any, Protocol, Union
+from typing import TYPE_CHECKING, Any, Protocol, Union
 
 import toga
 from toga.handlers import wrapped_handler
 
 from .base import StyleT, Widget
 
-NumberInputT = Union[Decimal, int, float, str]
+if TYPE_CHECKING:
+    if sys.version_info < (3, 10):
+        from typing_extensions import TypeAlias
+    else:
+        from typing import TypeAlias
+
+    NumberInputT: TypeAlias = Union[Decimal, int, float, str]
 
 # Implementation notes
 # ====================

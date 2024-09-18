@@ -6,7 +6,7 @@ import sys
 import warnings
 from functools import lru_cache
 from pathlib import Path
-from typing import Any, Protocol, TypeVar, Union
+from typing import TYPE_CHECKING, Any, Protocol, TypeVar
 from warnings import warn
 
 import toga
@@ -22,18 +22,23 @@ else:  # pragma: no-cover-if-gte-py310
 # Make sure deprecation warnings are shown by default
 warnings.filterwarnings("default", category=DeprecationWarning)
 
-# Define the types that can be used as Image content
-PathLikeT = Union[str, os.PathLike]
-BytesLikeT = Union[bytes, bytearray, memoryview]
-ImageLikeT = Any
+if TYPE_CHECKING:
+    if sys.version_info < (3, 10):
+        from typing_extensions import TypeAlias
+    else:
+        from typing import TypeAlias
 
-ImageContentT = Union[PathLikeT, BytesLikeT, ImageLikeT]
+    # Define a type variable for generics where an Image type is required.
+    ImageT = TypeVar("ImageT")
 
-# Define a type variable for generics where an Image type is required.
-ImageT = TypeVar("ImageT")
+    # Define the types that can be used as Image content
+    PathLikeT: TypeAlias = str | os.PathLike
+    BytesLikeT: TypeAlias = bytes | bytearray | memoryview
+    ImageLikeT: TypeAlias = Any
+    ImageContentT: TypeAlias = PathLikeT | BytesLikeT | ImageLikeT
 
-# Define a type variable representing an image of an externally defined type.
-ExternalImageT = TypeVar("ExternalImageT")
+    # Define a type variable representing an image of an externally defined type.
+    ExternalImageT = TypeVar("ExternalImageT")
 
 
 class ImageConverter(Protocol):

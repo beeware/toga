@@ -144,8 +144,6 @@ def setup(app):
 def autodoc_process_signature(
     app, what, name, obj, options, signature, return_annotation
 ):
-    # print(f"{obj=} {signature=}")
-
     if what == "class":
         # Travertino classes are not part of the public API.
         bases = [
@@ -387,49 +385,22 @@ suppress_warnings = ["config.cache"]
 
 always_use_bars_union = True
 
-from collections.abc import Iterable
-from typing import Union  # noqa: E402
+from collections.abc import Iterable  # noqa: E402
+from pathlib import Path  # noqa: E402
+from typing import Optional, TypeVar, Union  # noqa: E402
 
 import toga  # noqa: E402
-from toga.icons import IconContentT
-from toga.widgets.optioncontainer import OptionContainerContentT
-from toga.widgets.splitcontainer import SplitContainerContentT
+
+md_none = ""
 
 
-def typehints_formatter(annotation, config) -> str:
-    """Format override for sphinx_autodoc_typehints.
+def typehints_formatter(annotation, config):
+    print(f"({type(annotation)}) {str(annotation)=}")
 
-    For TypeAliases, this overrides the default behavior of inserting the entire
-    definition of the TypeAlias in to the documentation for the argument.
-
-    For TypeVars, this avoids the opaque `TypeVar("NAME", ..., bound="CONSTRAINTS")`
-    formatting and instead links the name of the TypeVar to its documentation.
-
-    Instead, the user-friendly name of the type is linked to its documentation.
-
-    :param annotation: the resolved annotation for the object
-    :param config: configuration for Sphinx
-    :returns: The ReStructured Text for the type or None for the default formatting
-    """
-    if "OptionItem" in str(annotation):
-        print(f"{OptionContainerContentT=}")
-        print(f"{annotation=}")
     return {
-        IconContentT: ":any:`IconContentT <IconContentT>`",
-        Union[IconContentT, None]: ":any:`IconContentT <IconContentT>`",
-        toga.images.ImageContentT: ":any:`ImageContentT <ImageContentT>`",
-        Union[toga.images.ImageContentT, None]: ":any:`ImageContentT <ImageContentT>`",
-        toga.images.ImageT: "``ImageT``",
-        toga.images.ExternalImageT: "``ExternalImageT``",
-        OptionContainerContentT: "``OptionContainerContentT``",
-        Iterable[OptionContainerContentT]: "``OptionContainerContentT``",
-        Union[Iterable[OptionContainerContentT], None]: "``OptionContainerContentT``",
-        Union[OptionContainerContentT, None]: "``OptionContainerContentT``",
-        SplitContainerContentT: ":any:`SplitContainerContentT <SplitContainerContentT>`",
-        Union[
-            SplitContainerContentT, None
-        ]: ":any:`SplitContainerContentT <SplitContainerContentT>`",
-        toga.widgets.base.StyleT: "``StyleT``",
-        toga.types.PositionT: "``PositionT``",
-        toga.types.SizeT: "``SizeT``",
+        Union[str, Path, toga.Icon, None]: ":any:`IconContentT <IconContentT>`",
+        toga.widgets.base.StyleT: ":any:`StyleT <StyleT>`",
+        Optional[toga.widgets.base.StyleT]: ":any:`StyleT <StyleT>` | :any:`None`",
+        TypeVar("SourceT", bound=toga.sources.Source): "asdf",
+        Union[TypeVar("SourceT", bound=toga.sources.Source), Iterable, None]: "xcvb",
     }.get(annotation, None)

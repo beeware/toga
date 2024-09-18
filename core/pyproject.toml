@@ -94,7 +94,6 @@ docs = [
     "sphinx-copybutton == 0.5.2",
     "sphinx-toolbox == 3.8.0",
     "sphinxcontrib-spelling == 8.0.0",
-    "typing-extensions",
 ]
 
 [project.urls]

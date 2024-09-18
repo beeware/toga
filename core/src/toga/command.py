@@ -9,7 +9,6 @@ from toga.keys import Key
 from toga.platform import get_platform_factory
 
 if TYPE_CHECKING:
-    import toga.icons
     from toga.app import App
     from toga.icons import IconContentT
 
