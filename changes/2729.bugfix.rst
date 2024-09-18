@@ -1,1 +1,0 @@
-Window has the same size after being minimized and unminimized on Windows.

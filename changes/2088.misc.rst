@@ -1,1 +1,0 @@
-Test garbage collection of widgets on all platforms.

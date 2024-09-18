@@ -6,6 +6,37 @@ Release History
 
 .. towncrier release notes start
 
+0.4.7 (2024-09-18)
+==================
+
+Features
+--------
+
+* The GTK backend was modified to use PyGObject's native asyncio handling, instead of GBulb. (`#2550 <https://github.com/beeware/toga/issues/2550>`__)
+* The ActivityIndicator widget is now supported on iOS. (`#2829 <https://github.com/beeware/toga/issues/2829>`__)
+
+Bugfixes
+--------
+
+* Windows retain their original size after being unminimized on Windows. (`#2729 <https://github.com/beeware/toga/issues/2729>`__)
+* DOM storage is now enabled for WebView on Android. (`#2767 <https://github.com/beeware/toga/issues/2767>`__)
+* A macOS app in full-screen mode now correctly displays the contents of windows that use a ``toga.Box()`` as the top-level content. (`#2796 <https://github.com/beeware/toga/issues/2796>`__)
+* Asynchronous tasks are now protected from garbage collection while they are running. This could lead to asynchronous tasks terminating unexpectedly with an error under some conditions. (`#2809 <https://github.com/beeware/toga/issues/2809>`__)
+* When a handler is a generator, control will now always be released to the event loop between iterations, even if no sleep interval or a sleep interval of 0 is yielded. (`#2811 <https://github.com/beeware/toga/issues/2811>`__)
+* When the X button is clicked for the About dialog on GTK, it is now properly destroyed. (`#2812 <https://github.com/beeware/toga/issues/2812>`__)
+* The Textual backend is now compatible with versions of Textual after v0.63.3. (`#2822 <https://github.com/beeware/toga/issues/2822>`__)
+* The event loop is now guaranteed to be running when your app's ``startup()`` method is invoked. This wasn't previously the case on macOS and Windows. (`#2834 <https://github.com/beeware/toga/issues/2834>`__)
+* iOS apps now correctly account for the size of the navigation bar when laying out app content. (`#2836 <https://github.com/beeware/toga/issues/2836>`__)
+* A memory leak when using Divider or Switch widgets on iOS was resolved. (`#2849 <https://github.com/beeware/toga/issues/2849>`__)
+* Apps bundled as standalone frozen binaries (e.g., POSIX builds made with PyInstaller) no longer crash on startup when trying to resolve the app icon. (`#2852 <https://github.com/beeware/toga/issues/2852>`__)
+
+
+Misc
+----
+
+* `#2088 <https://github.com/beeware/toga/issues/2088>`__, `#2708 <https://github.com/beeware/toga/issues/2708>`__, `#2715 <https://github.com/beeware/toga/issues/2715>`__, `#2792 <https://github.com/beeware/toga/issues/2792>`__, `#2799 <https://github.com/beeware/toga/issues/2799>`__, `#2802 <https://github.com/beeware/toga/issues/2802>`__, `#2803 <https://github.com/beeware/toga/issues/2803>`__, `#2804 <https://github.com/beeware/toga/issues/2804>`__, `#2807 <https://github.com/beeware/toga/issues/2807>`__, `#2823 <https://github.com/beeware/toga/issues/2823>`__, `#2824 <https://github.com/beeware/toga/issues/2824>`__, `#2825 <https://github.com/beeware/toga/issues/2825>`__, `#2826 <https://github.com/beeware/toga/issues/2826>`__, `#2846 <https://github.com/beeware/toga/issues/2846>`__, `#2847 <https://github.com/beeware/toga/issues/2847>`__, `#2848 <https://github.com/beeware/toga/issues/2848>`__
+
+
 0.4.6 (2024-08-28)
 ==================
 

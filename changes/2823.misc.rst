@@ -1,1 +1,0 @@
-CI now verifies the testbed app can start with the toga-textual backend.

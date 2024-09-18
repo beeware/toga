@@ -1,1 +1,0 @@
-iOS apps now correctly account for the size of the navigation bar when laying out app content.

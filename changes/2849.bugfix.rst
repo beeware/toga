@@ -1,1 +1,0 @@
-A memory leak when using Divider or Switch widgets on iOS was resolved.
