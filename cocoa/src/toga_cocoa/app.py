@@ -107,8 +107,8 @@ class App:
         # Create the lookup table for commands and menu items
         self._menu_items = {}
 
-        # Call user code to populate the main window
-        self.interface._startup()
+        # Populate the main window as soon as the event loop is running.
+        self.loop.call_soon_threadsafe(self.interface._startup)
 
     ######################################################################
     # Commands and menus

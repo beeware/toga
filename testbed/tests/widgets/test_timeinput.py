@@ -6,6 +6,7 @@ from pytest import fixture
 import toga
 
 from ..conftest import skip_on_platforms
+from .conftest import build_cleanup_test
 from .properties import (  # noqa: F401
     test_background_color,
     test_background_color_reset,
@@ -76,6 +77,13 @@ def normalize(probe):
 async def widget():
     skip_on_platforms("macOS", "iOS", "linux")
     return toga.TimeInput()
+
+
+test_cleanup = build_cleanup_test(
+    toga.TimeInput,
+    skip_platforms=("macOS", "iOS", "linux"),
+    xfail_platforms=("android",),
+)
 
 
 async def test_init(normalize):

@@ -19,6 +19,9 @@ class OptionContainerProbe(SimpleProbe):
         if self.tab_enabled(index):
             self.native.set_current_page(index)
 
+    async def wait_for_tab(self, message):
+        await self.redraw(message, delay=0.1)
+
     def tab_enabled(self, index):
         return self.impl.sub_containers[index].get_visible()
 

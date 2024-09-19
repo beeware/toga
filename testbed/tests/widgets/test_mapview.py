@@ -8,6 +8,7 @@ import pytest
 import toga
 from toga.style import Pack
 
+from .conftest import build_cleanup_test
 from .properties import (  # noqa: F401
     test_flex_widget_size,
 )
@@ -55,6 +56,9 @@ async def widget(on_select):
         # garbage collection for the WebView can run in either thread, just defer GC
         # for it until after the testing thread has joined.
         toga.App.app._gc_protector.append(widget)
+
+
+test_cleanup = build_cleanup_test(toga.MapView, xfail_platforms=("android",))
 
 
 # The next two tests fail about 75% of the time in the macOS x86_64 CI configuration.

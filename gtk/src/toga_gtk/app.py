@@ -1,14 +1,20 @@
 import asyncio
 import signal
 
-import gbulb
-
 from toga.app import App as toga_App
 from toga.command import Separator
 from toga.constants import WindowState
 
 from .keys import gtk_accel
-from .libs import IS_WAYLAND, TOGA_DEFAULT_STYLES, Gdk, Gio, GLib, Gtk
+from .libs import (
+    IS_WAYLAND,
+    TOGA_DEFAULT_STYLES,
+    Gdk,
+    Gio,
+    GLib,
+    GLibEventLoopPolicy,
+    Gtk,
+)
 from .screens import Screen as ScreenImpl
 
 
@@ -22,8 +28,9 @@ class App:
         self.interface = interface
         self.interface._impl = self
 
-        gbulb.install(gtk=True)
-        self.loop = asyncio.new_event_loop()
+        self.policy = GLibEventLoopPolicy()
+        asyncio.set_event_loop_policy(self.policy)
+        self.loop = self.policy.get_event_loop()
 
         # Stimulate the build of the app
         self.native = Gtk.Application(
@@ -147,7 +154,8 @@ class App:
         # Retain a reference to the app so that no-window apps can exist
         self.native.hold()
 
-        self.loop.run_forever(application=self.native)
+        # Start the app event loop
+        self.native.run()
 
         # Release the reference to the app. This can't be invoked by the testbed,
         # because it's after the `run_forever()` that runs the testbed.
@@ -188,7 +196,7 @@ class App:
     def beep(self):
         Gdk.beep()
 
-    def _close_about(self, dialog, **kwargs):
+    def _close_about(self, dialog, *args, **kwargs):
         self.native_about_dialog.destroy()
         self.native_about_dialog = None
 

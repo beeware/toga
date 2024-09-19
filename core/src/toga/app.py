@@ -141,6 +141,7 @@ class App:
     _camera: Camera
     _location: Location
     _main_window: Window | str | None
+    _running_tasks: set[asyncio.Task] = set()
 
     #: A constant that can be used as the main window to indicate that an app will
     #: run in the background without a main window.
@@ -478,6 +479,35 @@ class App:
 
         self._impl.main_loop()
 
+    def _install_task_factory_wrapper(self):
+        """Wrap task creation to track pending and running tasks.
+
+        When tasks are created, asyncio only maintains a weak reference to the task.
+        This allows for the possibility that the garbage collector destroys the task
+        in the midst of its execution. To avoid this, a strong reference is stored on
+        the app and a task callback removes the reference after the task completes.
+        Upstream issue tracked at python/cpython#91887.
+        """
+        platform_task_factory = self.loop.get_task_factory()
+
+        def factory(loop, coro, context=None):
+            if platform_task_factory is not None:
+                if sys.version_info < (3, 11):
+                    task = platform_task_factory(loop, coro)
+                else:
+                    task = platform_task_factory(loop, coro, context=context)
+            else:
+                if sys.version_info < (3, 11):
+                    task = asyncio.Task(coro, loop=loop)
+                else:
+                    task = asyncio.Task(coro, loop=loop, context=context)
+
+            self._running_tasks.add(task)
+            task.add_done_callback(self._running_tasks.discard)
+            return task
+
+        self.loop.set_task_factory(factory)
+
     @property
     def main_window(self) -> Window | str | None:
         """The main window for the app.
@@ -510,7 +540,7 @@ class App:
         else:
             raise ValueError(f"Don't know how to use {window!r} as a main window.")
 
-    def _open_initial_document(self, filename: Path) -> bool:
+    def _open_initial_document(self, filename: Path | str) -> bool:
         """Internal utility method for opening a document provided at the command line.
 
         This is abstracted so that backends that have their own management of command
@@ -577,7 +607,7 @@ class App:
 
     def _create_initial_windows(self):
         """Internal utility method for creating initial windows based on command line
-        arguments. This method is used when the platform doesn't provide it's own
+        arguments. This method is used when the platform doesn't provide its own
         command-line handling interface.
 
         If document types are defined, try to open every argument on the command line as
@@ -605,8 +635,11 @@ class App:
                 )
 
     def _startup(self) -> None:
+        # Wrap the platform's event loop's task factory for task tracking
+        self._install_task_factory_wrapper()
+
         # Install the standard commands. This is done *before* startup so the user's
-        # code has the opporuntity to remove/change the default commands.
+        # code has the opportunity to remove/change the default commands.
         self._create_standard_commands()
         self._impl.create_standard_commands()
 
@@ -854,7 +887,7 @@ class App:
         The return value of this method controls whether the app is allowed to exit.
         This can be used to prevent the app exiting with unsaved changes, etc.
 
-        If necessary, the overridden method can be defined as as an ``async`` coroutine.
+        If necessary, the overridden method can be defined as an ``async`` coroutine.
 
         :returns: ``True`` if the app is allowed to exit; ``False`` if the app is not
             allowed to exit.
@@ -865,7 +898,7 @@ class App:
     def on_running(self) -> None:
         """The event handler that will be invoked when the app's event loop starts running.
 
-        If necessary, the overridden method can be defined as as an ``async`` coroutine.
+        If necessary, the overridden method can be defined as an ``async`` coroutine.
         """
 
     ######################################################################

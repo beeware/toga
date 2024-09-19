@@ -62,7 +62,8 @@ class Window(Container, Scalable):
     ######################################################################
 
     def winforms_Resize(self, sender, event):
-        self.resize_content()
+        if self.native.WindowState != WinForms.FormWindowState.Minimized:
+            self.resize_content()
 
     def winforms_FormClosing(self, sender, event):
         # If the app is exiting, do nothing; we've already approved the exit

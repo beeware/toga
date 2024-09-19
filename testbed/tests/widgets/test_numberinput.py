@@ -6,6 +6,7 @@ import pytest
 import toga
 
 from ..conftest import skip_on_platforms
+from .conftest import build_cleanup_test
 from .properties import (  # noqa: F401
     test_alignment,
     test_background_color,
@@ -39,6 +40,9 @@ def verify_font_sizes():
 @pytest.fixture
 def verify_focus_handlers():
     return False
+
+
+test_cleanup = build_cleanup_test(toga.NumberInput, xfail_platforms=("android",))
 
 
 async def test_on_change_handler(widget, probe):

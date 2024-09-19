@@ -1,13 +1,31 @@
 import pytest
 
 import toga
+from toga.colors import REBECCAPURPLE
 from toga.constants import WindowState
+from toga.style import Pack
 
 ####################################################################################
 # Mobile platform tests
 ####################################################################################
 if toga.platform.current_platform not in {"iOS", "android"}:
     pytest.skip("Test is specific to desktop platforms", allow_module_level=True)
+
+
+async def test_content_size(app, main_window, main_window_probe):
+    """The content size doesn't spill outsize the viewable area."""
+
+    box = toga.Box(style=Pack(background_color=REBECCAPURPLE))
+    main_window.content = box
+
+    await main_window_probe.redraw("Content is a box")
+
+    # The overall layout has both the box, plus the top bar.
+    assert main_window.screen.size.height >= (
+        box.layout.content_height + main_window_probe.top_bar_height
+    )
+    # The box is the same width as the screen.
+    assert main_window.screen.size.width == box.layout.content_width
 
 
 async def test_show_hide_cursor(app):

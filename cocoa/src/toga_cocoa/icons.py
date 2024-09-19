@@ -18,11 +18,15 @@ class Icon:
             # as an indicator that this is the app's default icon.
             # This bundle icon file definition might not contain an extension,
             # even thought the actual file will; so force the .icns extension.
-            bundle_icon = Path(
-                NSBundle.mainBundle.objectForInfoDictionaryKey("CFBundleIconFile")
+            bundle_icon = NSBundle.mainBundle.objectForInfoDictionaryKey(
+                "CFBundleIconFile"
             )
+            if bundle_icon is None:
+                # Not an .app bundle (e.g., POSIX build made with PyInstaller)
+                # This can't be tested as the testbed app is bundled by Briefcase.
+                raise FileNotFoundError()  # pragma: no cover
             path = NSBundle.mainBundle.pathForResource(
-                bundle_icon.stem,
+                Path(bundle_icon).stem,
                 ofType=".icns",
             )
             # If the icon file doesn't exist, raise the problem as FileNotFoundError

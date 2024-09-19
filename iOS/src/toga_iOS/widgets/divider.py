@@ -1,12 +1,14 @@
 from travertino.size import at_least
 
-from toga_iOS.libs import UIColor, UIView
+from toga_iOS.libs import UIColor
 from toga_iOS.widgets.base import Widget
+
+from .box import TogaView
 
 
 class Divider(Widget):
     def create(self):
-        self.native = UIView.alloc().init()
+        self.native = TogaView.alloc().init()
         self.native.interface = self.interface
         self.native.impl = self
 
