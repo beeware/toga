@@ -176,11 +176,7 @@ async def test_presentation_mode(app, app_probe, main_window, main_window_probe)
         window_information_list = list()
         windows_list = list()
         for i in range(len(app.screens)):
-            window = toga.Window(
-                title=f"Test Window {i}",
-                position=(150 + (10 * i), 150 + (10 * i)),
-                size=(200, 200),
-            )
+            window = toga.Window(title=f"Test Window {i}", size=(200, 200))
             r = random.randint(0, 255)
             g = random.randint(0, 255)
             b = random.randint(0, 255)
@@ -291,12 +287,8 @@ async def test_presentation_mode_exit_on_window_state_change(
         pytest.xfail("This backend doesn't reliably support WindowState.MINIMIZED.")
 
     try:
-        window1 = toga.Window(
-            title="Test Window 1", position=(150, 150), size=(200, 200)
-        )
-        window2 = toga.Window(
-            title="Test Window 2", position=(160, 160), size=(200, 200)
-        )
+        window1 = toga.Window(title="Test Window 1", size=(200, 200))
+        window2 = toga.Window(title="Test Window 2", size=(200, 200))
         window1.content = toga.Box(style=Pack(background_color=REBECCAPURPLE))
         window2.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
         window1.show()

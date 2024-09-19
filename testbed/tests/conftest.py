@@ -89,10 +89,6 @@ async def window_cleanup(app, main_window):
     # minimize garbage collection on the test thread.
     gc.collect()
 
-    # After closing the window, the input focus might not be on main_window.
-    # Ensure that main_window will be in focus for other tests.
-    app.current_window = main_window
-
 
 @fixture(scope="session")
 async def main_window_probe(app, main_window):
