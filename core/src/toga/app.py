@@ -659,6 +659,15 @@ class App:
         # Create any initial windows
         self._create_initial_windows()
 
+        # If the app has document types but has no windows, then show an "Open Document"
+        # Dialog for the user to select a document.
+        if (
+            self.main_window is None
+            and len(self.windows) == 0
+            and self.documents.types != []
+        ):
+            asyncio.create_task(self.documents.request_open())
+
         # Manifest the initial state of the menus. This will cascade down to all
         # open windows if the platform has window-based menus. Then install the
         # on-change handler for menus to respond to any future changes.
