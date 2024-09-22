@@ -88,7 +88,7 @@ docs = [
     "pyenchant == 3.2.2",
     "sphinx == 8.0.2",
     "sphinx_tabs == 3.4.5",
-    "sphinx-autobuild == 2024.9.3",
+    "sphinx-autobuild == 2024.9.19",
     "sphinx-csv-filter == 0.4.2",
     "sphinx-copybutton == 0.5.2",
     "sphinx-toolbox == 3.8.0",
