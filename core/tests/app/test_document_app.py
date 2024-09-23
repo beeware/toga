@@ -1,9 +1,10 @@
 import sys
-from unittest.mock import AsyncMock, MagicMock, Mock
+from unittest.mock import AsyncMock, Mock
 
 import pytest
 
 import toga
+from toga.documents import DocumentSet
 from toga_dummy.app import App as DummyApp
 from toga_dummy.command import Command as DummyCommand
 from toga_dummy.utils import (
@@ -170,9 +171,9 @@ def test_create_no_cmdline_default_handling_close_on_last_window(monkeypatch):
 
     assert app.documents.types == [ExampleDocument]
 
-    # No documents or windows exist
-    assert len(app.documents) == 0
-    assert len(app.windows) == 0
+    # A default document has been created
+    assert len(app.documents) == 1
+    assert len(app.windows) == 1
 
 
 def test_create_no_cmdline_default_handling_no_close_on_last_window(monkeypatch):
@@ -190,18 +191,26 @@ def test_create_no_cmdline_default_handling_no_close_on_last_window(monkeypatch)
     # Mock request_open() because OpenFileDialog's response can't be set before the
     # app creation. Since request_open() is called during app initialization, we can't
     # set the dialog response in time, leading to an unexpected dialog response error.
-    monkeypatch.setattr(ExampleDocumentApp, "documents", MagicMock())
     mock_request_open = AsyncMock()
-    monkeypatch.setattr(ExampleDocumentApp.documents, "request_open", mock_request_open)
+    monkeypatch.setattr(DocumentSet, "request_open", mock_request_open)
 
     # Create the app instance
-    _ = ExampleDocumentApp(
+    app = ExampleDocumentApp(
         "Test App",
         "org.beeware.document-app",
         document_types=[ExampleDocument],
     )
 
-    # Check that request_open was called
+    assert app._impl.interface == app
+    assert_action_performed(app, "create App")
+
+    assert app.documents.types == [ExampleDocument]
+
+    # No documents have been created
+    assert len(app.documents) == 0
+    assert len(app.windows) == 0
+
+    # ...but request_open was called
     mock_request_open.assert_called_once()
 
 

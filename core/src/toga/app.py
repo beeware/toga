@@ -608,35 +608,34 @@ class App:
 
     def _create_initial_windows(self):
         """Internal utility method for creating initial windows based on command line
-        arguments. This method is used when the platform doesn't provide its own
-        command-line handling interface.
+        arguments.
 
-        If document types are defined, try to open every argument on the command line as
-        a document (unless the backend manages the command line arguments).
+        If document types are defined, and the backend doesn't have native command line
+        handling, try to open every argument on the command line as a document (unless
+        the backend manages the command line arguments).
+
+        If, after processing all command line arguments, the app doesn't have at least
+        one window, the app's default initial document handling will be triggered.
         """
-
-        if not (self._impl.HANDLES_COMMAND_LINE and self._impl.CLOSE_ON_LAST_WINDOW):
-            doc_count = len(self.windows)
-
-            # Process command line arguments if the backend doesn't handle them
-            if not self._impl.HANDLES_COMMAND_LINE and self.documents.types:
+        # Process command line arguments if the backend doesn't handle them
+        if not self._impl.HANDLES_COMMAND_LINE:
+            if self.documents.types:
                 for filename in sys.argv[1:]:
-                    if self._open_initial_document(filename):
-                        doc_count += 1
+                    self._open_initial_document(filename)
 
-            # Ensure there is at least one document or window
-            if self.main_window is None and doc_count == 0:
-                if self.documents.types:
-                    if self._impl.CLOSE_ON_LAST_WINDOW:
-                        # Pass in the first document type as the default
-                        self.documents.new(self.documents.types[0])
-                    else:
-                        self.loop.run_until_complete(self.documents.request_open())
+        # Ensure there is at least one window
+        if self.main_window is None and len(self.windows) == 0:
+            if self.documents.types:
+                if self._impl.CLOSE_ON_LAST_WINDOW:
+                    # Pass in the first document type as the default
+                    self.documents.new(self.documents.types[0])
                 else:
-                    # No document types defined.
-                    raise RuntimeError(
-                        "App didn't create any windows, or register any document types."
-                    )
+                    self.loop.run_until_complete(self.documents.request_open())
+            else:
+                # No document types defined.
+                raise RuntimeError(
+                    "App didn't create any windows, or register any document types."
+                )
 
     def _startup(self) -> None:
         # Wrap the platform's event loop's task factory for task tracking
