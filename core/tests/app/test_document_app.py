@@ -1,9 +1,10 @@
 import sys
-from unittest.mock import Mock
+from unittest.mock import AsyncMock, Mock
 
 import pytest
 
 import toga
+from toga.documents import DocumentSet
 from toga_dummy.app import App as DummyApp
 from toga_dummy.command import Command as DummyCommand
 from toga_dummy.utils import (
@@ -151,7 +152,7 @@ def test_create_no_cmdline(monkeypatch):
     assert toga.Command.SAVE_ALL in app.commands
 
 
-def test_create_no_cmdline_default_handling(monkeypatch):
+def test_create_no_cmdline_default_handling_close_on_last_window(monkeypatch):
     """If the backend uses the app's command line handling, no error is raised for an
     empty command line."""
     monkeypatch.setattr(sys, "argv", ["app-exe"])
@@ -170,9 +171,47 @@ def test_create_no_cmdline_default_handling(monkeypatch):
 
     assert app.documents.types == [ExampleDocument]
 
-    # No documents or windows exist
+    # A default document has been created
+    assert len(app.documents) == 1
+    assert len(app.windows) == 1
+
+
+def test_create_no_cmdline_default_handling_no_close_on_last_window(monkeypatch):
+    """If the backend handles the app's command line and the app doesn't exit when
+    the last window closes, no error is raised for an empty command line and the
+    app shows a document selection dialog on startup."""
+
+    monkeypatch.setattr(sys, "argv", ["app-exe"])
+
+    # Monkeypatch the property that makes the backend handle command line arguments
+    # and not close the app when the last window closes.
+    monkeypatch.setattr(DummyApp, "HANDLES_COMMAND_LINE", True)
+    monkeypatch.setattr(DummyApp, "CLOSE_ON_LAST_WINDOW", False)
+
+    # Mock request_open() because OpenFileDialog's response can't be set before the
+    # app creation. Since request_open() is called during app initialization, we can't
+    # set the dialog response in time, leading to an unexpected dialog response error.
+    mock_request_open = AsyncMock()
+    monkeypatch.setattr(DocumentSet, "request_open", mock_request_open)
+
+    # Create the app instance
+    app = ExampleDocumentApp(
+        "Test App",
+        "org.beeware.document-app",
+        document_types=[ExampleDocument],
+    )
+
+    assert app._impl.interface == app
+    assert_action_performed(app, "create App")
+
+    assert app.documents.types == [ExampleDocument]
+
+    # No documents have been created
     assert len(app.documents) == 0
     assert len(app.windows) == 0
+
+    # ...but request_open was called
+    mock_request_open.assert_called_once()
 
 
 def test_create_with_cmdline(monkeypatch, example_file):
