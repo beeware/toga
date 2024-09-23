@@ -614,26 +614,29 @@ class App:
         If document types are defined, try to open every argument on the command line as
         a document (unless the backend manages the command line arguments).
         """
-        # If the backend handles the command line, don't do any command line processing.
-        if self._impl.HANDLES_COMMAND_LINE:
-            return
-        doc_count = len(self.windows)
-        if self.documents.types:
-            for filename in sys.argv[1:]:
-                if self._open_initial_document(filename):
-                    doc_count += 1
 
-        # Safety check: Do we have at least one document?
-        if self.main_window is None and doc_count == 0:
-            try:
-                # Pass in the first document type as the default
-                default_doc_type = self.documents.types[0]
-                self.documents.new(default_doc_type)
-            except IndexError:
-                # No document types defined.
-                raise RuntimeError(
-                    "App didn't create any windows, or register any document types."
-                )
+        if not (self._impl.HANDLES_COMMAND_LINE and self._impl.CLOSE_ON_LAST_WINDOW):
+            doc_count = len(self.windows)
+
+            # Process command line arguments if the backend doesn't handle them
+            if not self._impl.HANDLES_COMMAND_LINE and self.documents.types:
+                for filename in sys.argv[1:]:
+                    if self._open_initial_document(filename):
+                        doc_count += 1
+
+            # Ensure there is at least one document or window
+            if self.main_window is None and doc_count == 0:
+                if self.documents.types:
+                    if self._impl.CLOSE_ON_LAST_WINDOW:
+                        # Pass in the first document type as the default
+                        self.documents.new(self.documents.types[0])
+                    else:
+                        self.loop.run_until_complete(self.documents.request_open())
+                else:
+                    # No document types defined.
+                    raise RuntimeError(
+                        "App didn't create any windows, or register any document types."
+                    )
 
     def _startup(self) -> None:
         # Wrap the platform's event loop's task factory for task tracking
@@ -658,15 +661,6 @@ class App:
 
         # Create any initial windows
         self._create_initial_windows()
-
-        # If the app has document types but has no windows, then show an "Open Document"
-        # Dialog for the user to select a document.
-        if (
-            self.main_window is None
-            and len(self.windows) == 0
-            and self.documents.types != []
-        ):
-            asyncio.create_task(self.documents.request_open())
 
         # Manifest the initial state of the menus. This will cascade down to all
         # open windows if the platform has window-based menus. Then install the

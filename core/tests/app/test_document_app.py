@@ -1,5 +1,5 @@
 import sys
-from unittest.mock import Mock
+from unittest.mock import AsyncMock, MagicMock, Mock
 
 import pytest
 
@@ -151,7 +151,7 @@ def test_create_no_cmdline(monkeypatch):
     assert toga.Command.SAVE_ALL in app.commands
 
 
-def test_create_no_cmdline_default_handling(monkeypatch):
+def test_create_no_cmdline_default_handling_close_on_last_window(monkeypatch):
     """If the backend uses the app's command line handling, no error is raised for an
     empty command line."""
     monkeypatch.setattr(sys, "argv", ["app-exe"])
@@ -173,6 +173,36 @@ def test_create_no_cmdline_default_handling(monkeypatch):
     # No documents or windows exist
     assert len(app.documents) == 0
     assert len(app.windows) == 0
+
+
+def test_create_no_cmdline_default_handling_no_close_on_last_window(monkeypatch):
+    """If the backend handles the app's command line and the app doesn't exit when
+    the last window closes, no error is raised for an empty command line and the
+    app shows a document selection dialog on startup."""
+
+    monkeypatch.setattr(sys, "argv", ["app-exe"])
+
+    # Monkeypatch the property that makes the backend handle command line arguments
+    # and not close the app when the last window closes.
+    monkeypatch.setattr(DummyApp, "HANDLES_COMMAND_LINE", True)
+    monkeypatch.setattr(DummyApp, "CLOSE_ON_LAST_WINDOW", False)
+
+    # Mock request_open() because OpenFileDialog's response can't be set before the
+    # app creation. Since request_open() is called during app initialization, we can't
+    # set the dialog response in time, leading to an unexpected dialog response error.
+    monkeypatch.setattr(ExampleDocumentApp, "documents", MagicMock())
+    mock_request_open = AsyncMock()
+    monkeypatch.setattr(ExampleDocumentApp.documents, "request_open", mock_request_open)
+
+    # Create the app instance
+    _ = ExampleDocumentApp(
+        "Test App",
+        "org.beeware.document-app",
+        document_types=[ExampleDocument],
+    )
+
+    # Check that request_open was called
+    mock_request_open.assert_called_once()
 
 
 def test_create_with_cmdline(monkeypatch, example_file):
