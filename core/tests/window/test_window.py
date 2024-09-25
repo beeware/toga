@@ -366,8 +366,8 @@ def test_non_resizable_window_state(state):
     """Non-resizable window's states other than minimized or normal are no-ops."""
     non_resizable_window = toga.Window(title="Non-Resizable Window", resizable=False)
     with pytest.raises(
-        RuntimeError,
-        match=f"Cannot set window state to {state} of a non-resizable window.",
+        ValueError,
+        match=f"A non-resizable window cannot be set to a state of {state}.",
     ):
         non_resizable_window.state = state
         assert_action_not_performed(
