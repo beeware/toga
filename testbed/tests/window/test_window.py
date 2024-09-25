@@ -691,12 +691,13 @@ else:
 
     @pytest.fixture(scope="session")
     def intermediate_states_cycle():
-        # Use a iterator cycling fixture to ensure each state
-        # is the initial intermediate state at least once. This
-        # is to ensure full code coverage for all backends.
+        # Use a iterator cycling fixture to ensure each state is the initial
+        # intermediate state at least once. This is to ensure full code
+        # coverage for all backends.
         intermediate_states = [
             (
                 WindowState.NORMAL,
+                WindowState.MINIMIZED,
                 WindowState.PRESENTATION,
                 WindowState.FULLSCREEN,
                 WindowState.MAXIMIZED,
@@ -707,6 +708,7 @@ else:
                 WindowState.FULLSCREEN,
                 WindowState.PRESENTATION,
                 WindowState.NORMAL,
+                WindowState.FULLSCREEN,
                 WindowState.MAXIMIZED,
             ),
             (
@@ -714,6 +716,7 @@ else:
                 WindowState.MINIMIZED,
                 WindowState.NORMAL,
                 WindowState.FULLSCREEN,
+                WindowState.MINIMIZED,
                 WindowState.PRESENTATION,
             ),
             (
@@ -721,6 +724,7 @@ else:
                 WindowState.MAXIMIZED,
                 WindowState.MINIMIZED,
                 WindowState.PRESENTATION,
+                WindowState.FULLSCREEN,
                 WindowState.NORMAL,
             ),
             (
@@ -729,6 +733,7 @@ else:
                 WindowState.NORMAL,
                 WindowState.MAXIMIZED,
                 WindowState.MINIMIZED,
+                WindowState.FULLSCREEN,
             ),
         ]
         return itertools.cycle(intermediate_states)
@@ -737,26 +742,31 @@ else:
         "initial_state, final_state",
         [
             # Direct switch from NORMAL:
+            (WindowState.NORMAL, WindowState.NORMAL),
             (WindowState.NORMAL, WindowState.MINIMIZED),
             (WindowState.NORMAL, WindowState.MAXIMIZED),
             (WindowState.NORMAL, WindowState.FULLSCREEN),
             (WindowState.NORMAL, WindowState.PRESENTATION),
             # Direct switch from MINIMIZED:
+            (WindowState.MINIMIZED, WindowState.MINIMIZED),
             (WindowState.MINIMIZED, WindowState.NORMAL),
             (WindowState.MINIMIZED, WindowState.MAXIMIZED),
             (WindowState.MINIMIZED, WindowState.FULLSCREEN),
             (WindowState.MINIMIZED, WindowState.PRESENTATION),
             # Direct switch from MAXIMIZED:
+            (WindowState.MAXIMIZED, WindowState.MAXIMIZED),
             (WindowState.MAXIMIZED, WindowState.NORMAL),
             (WindowState.MAXIMIZED, WindowState.MINIMIZED),
             (WindowState.MAXIMIZED, WindowState.FULLSCREEN),
             (WindowState.MAXIMIZED, WindowState.PRESENTATION),
             # Direct switch from FULLSCREEN:
+            (WindowState.FULLSCREEN, WindowState.FULLSCREEN),
             (WindowState.FULLSCREEN, WindowState.NORMAL),
             (WindowState.FULLSCREEN, WindowState.MINIMIZED),
             (WindowState.FULLSCREEN, WindowState.MAXIMIZED),
             (WindowState.FULLSCREEN, WindowState.PRESENTATION),
             # Direct switch from PRESENTATION:
+            (WindowState.PRESENTATION, WindowState.PRESENTATION),
             (WindowState.PRESENTATION, WindowState.NORMAL),
             (WindowState.PRESENTATION, WindowState.MINIMIZED),
             (WindowState.PRESENTATION, WindowState.MAXIMIZED),
@@ -772,7 +782,7 @@ else:
             )
         ],
     )
-    async def test_window_state_direct_change(
+    async def test_window_state_direct_change_with_intermediate_states(
         app,
         app_probe,
         initial_state,
@@ -781,7 +791,8 @@ else:
         second_window_probe,
         intermediate_states_cycle,
     ):
-        """Window state can be directly changed to another state."""
+        """Window state can be directly changed to another state while passing
+        through intermediate states with an expected OS delay."""
         if (
             WindowState.MINIMIZED in {initial_state, final_state}
             and not second_window_probe.supports_minimize
@@ -840,10 +851,11 @@ else:
             )
         ],
     )
-    async def test_window_state_same_as_current(
+    async def test_window_state_same_as_current_without_intermediate_states(
         app_probe, second_window, second_window_probe, state
     ):
-        """Setting window state the same as current is a no-op."""
+        """Setting window state the same as current without any intermediate states is
+        a no-op and there should be no expected delay from the OS."""
         if state == WindowState.MINIMIZED and not second_window_probe.supports_minimize:
             pytest.xfail(
                 "This backend doesn't reliably support minimized window state."
