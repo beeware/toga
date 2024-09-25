@@ -54,7 +54,10 @@ class AppDelegate(NSObject):
 
     @objc_method
     def applicationShouldOpenUntitledFile_(self, sender) -> bool:
-        return bool(self.interface.documents.types)
+        if self.interface._main_window == toga.App._UNDEFINED:
+            return False
+        else:
+            return bool(self.interface.documents.types)
 
     @objc_method
     def application_openFiles_(self, app, filenames) -> None:

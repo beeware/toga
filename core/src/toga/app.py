@@ -492,14 +492,14 @@ class App:
 
         def factory(loop, coro, context=None):
             if platform_task_factory is not None:
-                if sys.version_info < (3, 11):
+                if sys.version_info < (3, 11):  # pragma: no-cover-if-gte-py311
                     task = platform_task_factory(loop, coro)
-                else:
+                else:  # pragma: no-cover-if-lt-py311
                     task = platform_task_factory(loop, coro, context=context)
             else:
-                if sys.version_info < (3, 11):
+                if sys.version_info < (3, 11):  # pragma: no-cover-if-gte-py311
                     task = asyncio.Task(coro, loop=loop)
-                else:
+                else:  # pragma: no-cover-if-lt-py311
                     task = asyncio.Task(coro, loop=loop, context=context)
 
             self._running_tasks.add(task)
@@ -607,28 +607,30 @@ class App:
 
     def _create_initial_windows(self):
         """Internal utility method for creating initial windows based on command line
-        arguments. This method is used when the platform doesn't provide its own
-        command-line handling interface.
+        arguments.
 
-        If document types are defined, try to open every argument on the command line as
-        a document (unless the backend manages the command line arguments).
+        If document types are defined, and the backend doesn't have native command line
+        handling, try to open every argument on the command line as a document (unless
+        the backend manages the command line arguments).
+
+        If, after processing all command line arguments, the app doesn't have at least
+        one window, the app's default initial document handling will be triggered.
         """
-        # If the backend handles the command line, don't do any command line processing.
-        if self._impl.HANDLES_COMMAND_LINE:
-            return
-        doc_count = len(self.windows)
-        if self.documents.types:
-            for filename in sys.argv[1:]:
-                if self._open_initial_document(filename):
-                    doc_count += 1
+        # Process command line arguments if the backend doesn't handle them
+        if not self._impl.HANDLES_COMMAND_LINE:
+            if self.documents.types:
+                for filename in sys.argv[1:]:
+                    self._open_initial_document(filename)
 
-        # Safety check: Do we have at least one document?
-        if self.main_window is None and doc_count == 0:
-            try:
-                # Pass in the first document type as the default
-                default_doc_type = self.documents.types[0]
-                self.documents.new(default_doc_type)
-            except IndexError:
+        # Ensure there is at least one window
+        if self.main_window is None and len(self.windows) == 0:
+            if self.documents.types:
+                if self._impl.CLOSE_ON_LAST_WINDOW:
+                    # Pass in the first document type as the default
+                    self.documents.new(self.documents.types[0])
+                else:
+                    self.loop.run_until_complete(self.documents.request_open())
+            else:
                 # No document types defined.
                 raise RuntimeError(
                     "App didn't create any windows, or register any document types."
