@@ -482,8 +482,8 @@ class Window:
             WindowState.FULLSCREEN,
             WindowState.PRESENTATION,
         }:
-            raise RuntimeError(
-                f"Cannot set window state to {state} of a non-resizable window."
+            raise ValueError(
+                f"A non-resizable window cannot be set to a state of {state}."
             )
         else:
             # State checks are handled by the backend (e.g., Cocoa) to
