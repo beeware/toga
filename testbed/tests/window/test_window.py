@@ -746,26 +746,31 @@ else:
             (WindowState.NORMAL, WindowState.MAXIMIZED),
             (WindowState.NORMAL, WindowState.FULLSCREEN),
             (WindowState.NORMAL, WindowState.PRESENTATION),
+            (WindowState.NORMAL, WindowState.NORMAL),
             # Direct switch from MINIMIZED:
             (WindowState.MINIMIZED, WindowState.NORMAL),
             (WindowState.MINIMIZED, WindowState.MAXIMIZED),
             (WindowState.MINIMIZED, WindowState.FULLSCREEN),
             (WindowState.MINIMIZED, WindowState.PRESENTATION),
+            (WindowState.MINIMIZED, WindowState.MINIMIZED),
             # Direct switch from MAXIMIZED:
             (WindowState.MAXIMIZED, WindowState.NORMAL),
             (WindowState.MAXIMIZED, WindowState.MINIMIZED),
             (WindowState.MAXIMIZED, WindowState.FULLSCREEN),
             (WindowState.MAXIMIZED, WindowState.PRESENTATION),
+            (WindowState.MAXIMIZED, WindowState.MAXIMIZED),
             # Direct switch from FULLSCREEN:
             (WindowState.FULLSCREEN, WindowState.NORMAL),
             (WindowState.FULLSCREEN, WindowState.MINIMIZED),
             (WindowState.FULLSCREEN, WindowState.MAXIMIZED),
             (WindowState.FULLSCREEN, WindowState.PRESENTATION),
+            (WindowState.FULLSCREEN, WindowState.FULLSCREEN),
             # Direct switch from PRESENTATION:
             (WindowState.PRESENTATION, WindowState.NORMAL),
             (WindowState.PRESENTATION, WindowState.MINIMIZED),
             (WindowState.PRESENTATION, WindowState.MAXIMIZED),
             (WindowState.PRESENTATION, WindowState.FULLSCREEN),
+            (WindowState.PRESENTATION, WindowState.PRESENTATION),
         ],
     )
     @pytest.mark.parametrize(
