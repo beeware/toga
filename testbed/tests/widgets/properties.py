@@ -22,7 +22,7 @@ MAX_WIDTH = 2000
 
 
 async def test_enabled(widget, probe):
-    "The widget can be enabled and disabled"
+    """The widget can be enabled and disabled"""
     # Widget is initially enabled
     assert widget.enabled
     assert probe.enabled
@@ -43,7 +43,7 @@ async def test_enabled(widget, probe):
 
 
 async def test_enable_noop(widget, probe):
-    "Changing the enabled status on the widget is a no-op"
+    """Changing the enabled status on the widget is a no-op"""
     # Widget reports as enabled
     assert widget.enabled
 
@@ -56,62 +56,79 @@ async def test_enable_noop(widget, probe):
 
 
 async def test_focus(widget, probe, other, other_probe, verify_focus_handlers):
-    "The widget can be given focus"
+    """The widget can be given focus"""
     if verify_focus_handlers:
         on_gain_handler = Mock()
         on_lose_handler = Mock()
         widget.on_gain_focus = on_gain_handler
         widget.on_lose_focus = on_lose_handler
 
-    other.focus()
-    await probe.redraw("A separate widget should be given focus")
-    assert not probe.has_focus
-    assert other_probe.has_focus
+    exp = None
 
-    widget.focus()
-    await probe.redraw("Widget should be given focus")
-    assert probe.has_focus
-    assert not other_probe.has_focus
+    try:
+        other.focus()
+        await probe.redraw("A separate widget should be given focus")
+        assert not probe.has_focus, f"{type(probe).__name__} should not have focus"
+        assert other_probe.has_focus, "Other widget should have focus"
 
-    if verify_focus_handlers:
-        on_gain_handler.assert_called_once_with(widget)
+        widget.focus()
+        await probe.redraw("Widget should be given focus")
+        assert probe.has_focus, f"{type(probe).__name__} should have focus"
+        assert not other_probe.has_focus, "Other widget should not have focus"
 
-        # Reset the mock so it can be tested again
-        on_gain_handler.reset_mock()
+        if verify_focus_handlers:
+            on_gain_handler.assert_called_once_with(widget)
 
-    widget.focus()
-    await probe.redraw("Widget already has focus")
-    assert probe.has_focus
-    assert not other_probe.has_focus
+            # Reset the mock so it can be tested again
+            on_gain_handler.reset_mock()
 
-    if verify_focus_handlers:
-        on_gain_handler.assert_not_called()
+        widget.focus()
+        await probe.redraw("Widget already has focus")
+        assert probe.has_focus, f"{type(probe).__name__} should still have focus"
+        assert not other_probe.has_focus, "Other widget should not have focus"
 
-    other.focus()
-    await probe.redraw("Focus has been lost")
-    assert not probe.has_focus
-    assert other_probe.has_focus
+        if verify_focus_handlers:
+            on_gain_handler.assert_not_called()
 
-    if verify_focus_handlers:
-        on_lose_handler.assert_called_once_with(widget)
+        other.focus()
+        await probe.redraw("Focus has been lost")
+        assert not probe.has_focus, f"{type(probe).__name__} should have lost focus"
+        assert other_probe.has_focus, "Other widget should now have focus"
+
+        if verify_focus_handlers:
+            on_lose_handler.assert_called_once_with(widget)
+
+    except AssertionError as e:
+        exp = e
+    finally:
+        import toga
+
+        if toga.platform.current_platform == "linux":
+            for w in toga.App.app._widgets.values():
+                print(f"{w}: {w._impl.native.has_focus()}")
+
+        print(f"Error: {exp}")
+
+        if exp:
+            raise exp
 
 
 async def test_focus_noop(widget, probe, other, other_probe):
-    "The widget cannot be given focus"
+    """The widget cannot be given focus"""
     other.focus()
     await probe.redraw("A separate widget should be given focus")
-    assert not probe.has_focus
-    assert other_probe.has_focus
+    assert not probe.has_focus, f"{type(probe).__name__} should not have focus"
+    assert other_probe.has_focus, "Other widget should have focus"
 
     # Widget has *not* taken focus
     widget.focus()
     await probe.redraw("The other widget should still have focus")
-    assert not probe.has_focus
-    assert other_probe.has_focus
+    assert not probe.has_focus, f"{type(probe).__name__} should still not have focus"
+    assert other_probe.has_focus, "Other widget should still have focus"
 
 
 async def test_text(widget, probe):
-    "The text displayed on a widget can be changed"
+    """The text displayed on a widget can be changed"""
     for text in TEXTS:
         widget.text = text
         await probe.redraw(f"Widget text should be {str(text)!r}")
@@ -122,7 +139,7 @@ async def test_text(widget, probe):
 
 
 async def test_text_value(widget, probe):
-    "The text value displayed on a widget can be changed"
+    """The text value displayed on a widget can be changed"""
     for text in TEXTS:
         widget.value = text
         await probe.redraw(f"Widget value should be {str(text)!r}")
@@ -133,7 +150,7 @@ async def test_text_value(widget, probe):
 
 
 async def test_placeholder(widget, probe):
-    "The placeholder displayed by a widget can be changed"
+    """The placeholder displayed by a widget can be changed"""
 
     # Set a value and a placeholder.
     widget.value = "Hello"
@@ -170,7 +187,7 @@ async def test_placeholder(widget, probe):
 
 
 async def test_placeholder_focus(widget, probe, other):
-    "Placeholders interact correctly with focus changes"
+    """Placeholders interact correctly with focus changes"""
     widget.value = ""
     widget.placeholder = "placeholder"
     hides_on_focus = probe.placeholder_hides_on_focus
@@ -248,7 +265,7 @@ async def test_placeholder_focus(widget, probe, other):
 
 
 async def test_placeholder_color(widget, probe):
-    "Placeholders interact correctly with custom colors"
+    """Placeholders interact correctly with custom colors"""
     widget.value = "Hello"
     widget.placeholder = "placeholder"
     widget.style.color = RED
@@ -271,7 +288,7 @@ async def test_placeholder_color(widget, probe):
 
 
 async def test_text_width_change(widget, probe):
-    "If the widget text is changed, the width of the widget changes"
+    """If the widget text is changed, the width of the widget changes"""
     orig_width = probe.width
 
     # Change the text to something long
@@ -283,7 +300,7 @@ async def test_text_width_change(widget, probe):
 
 
 async def test_font(widget, probe, verify_font_sizes):
-    "The font size and family of a widget can be changed."
+    """The font size and family of a widget can be changed."""
     # Capture the original size and font of the widget
     if verify_font_sizes[0]:
         orig_width = probe.width
@@ -336,7 +353,7 @@ async def test_font(widget, probe, verify_font_sizes):
 
 
 async def test_font_attrs(widget, probe):
-    "The font weight and style of a widget can be changed."
+    """The font weight and style of a widget can be changed."""
     probe.assert_font_options(weight=NORMAL, style=NORMAL)
 
     for family in [SYSTEM, SERIF]:
@@ -353,7 +370,7 @@ async def test_font_attrs(widget, probe):
 
 
 async def test_color(widget, probe):
-    "The foreground color of a widget can be changed"
+    """The foreground color of a widget can be changed"""
     for color in COLORS:
         widget.style.color = color
         await probe.redraw("Widget foreground color should be %s" % color)
@@ -361,7 +378,7 @@ async def test_color(widget, probe):
 
 
 async def test_color_reset(widget, probe):
-    "The foreground color of a widget can be reset"
+    """The foreground color of a widget can be reset"""
     # Get the original color
     original = probe.color
 
@@ -377,7 +394,7 @@ async def test_color_reset(widget, probe):
 
 
 async def test_background_color(widget, probe):
-    "The background color of a widget can be set"
+    """The background color of a widget can be set"""
     for color in COLORS:
         widget.style.background_color = color
         await probe.redraw("Widget background color should be %s" % color)
@@ -387,7 +404,7 @@ async def test_background_color(widget, probe):
 
 
 async def test_background_color_reset(widget, probe):
-    "The background color of a widget can be reset"
+    """The background color of a widget can be reset"""
     # Get the original background color
     original = probe.background_color
 
@@ -405,7 +422,7 @@ async def test_background_color_reset(widget, probe):
 
 
 async def test_background_color_transparent(widget, probe):
-    "Background transparency is supported"
+    """Background transparency is supported"""
     original = probe.background_color
     supports_alpha = getattr(probe, "background_supports_alpha", True)
 
@@ -439,7 +456,7 @@ async def test_alignment(widget, probe, verify_vertical_alignment):
     await probe.redraw("Text direction should be RTL")
     probe.assert_alignment(RIGHT)
 
-    # If text direction is expliclty LTR, default alignment is LEFT
+    # If text direction is explicitly LTR, default alignment is LEFT
     widget.style.text_direction = LTR
     await probe.redraw("Text direction should be LTR")
     probe.assert_alignment(LEFT)
@@ -452,7 +469,7 @@ async def test_alignment(widget, probe, verify_vertical_alignment):
 
 
 async def test_readonly(widget, probe):
-    "A widget can be made readonly"
+    """A widget can be made readonly"""
     # Initial value is enabled
     assert not widget.readonly
     assert not probe.readonly
@@ -473,7 +490,7 @@ async def test_readonly(widget, probe):
 
 
 async def test_flex_widget_size(widget, probe):
-    "The widget can expand in either axis."
+    """The widget can expand in either axis."""
     # Container is initially a non-flex row widget of fixed size.
     # Paint the background so we can easily see it against the background.
     widget.style.flex = 0
@@ -521,7 +538,7 @@ async def test_flex_widget_size(widget, probe):
 
 
 async def test_flex_horizontal_widget_size(widget, probe):
-    "Check that a widget that is flexible in the horizontal axis resizes as expected"
+    """Check that a widget that is flexible in the horizontal axis resizes as expected"""
     # Container is initially a non-flex row box.
     # Initial widget size is small (but non-zero), based on content size.
     probe.assert_width(1, 300)
