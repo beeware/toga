@@ -8,6 +8,7 @@ from pytest import fixture, register_assert_rewrite, skip
 
 import toga
 from toga.colors import GOLDENROD
+from toga.constants import WindowState
 from toga.style import Pack
 
 # Ideally, we'd register rewrites for "tests" and get all the submodules
@@ -70,7 +71,18 @@ def main_window(app):
 
 
 @fixture(autouse=True)
-async def window_cleanup(app, main_window):
+async def window_cleanup(app, main_window, main_window_probe):
+    # After closing the window, the input focus might not be on main_window.
+    # Ensure that main_window is in NORMAL state and will be in focus for
+    # other tests.
+    app.current_window = main_window
+    main_window.state = WindowState.NORMAL
+    await main_window_probe.wait_for_window(
+        "main_window is now the current window and is in NORMAL state"
+    )
+    assert app.current_window == main_window
+    assert main_window.state == WindowState.NORMAL
+
     # Ensure that at the end of every test, all windows that aren't the
     # main window have been closed and deleted. This needs to be done in
     # 2 passes because we can't modify the list while iterating over it.
