@@ -487,9 +487,11 @@ class Window:
             )
         else:
             # State checks are handled by the backend (e.g., Cocoa) to
-            # accommodate non-blocking OS calls. Performing these
-            # checks at the core level could interfere with transitions,
-            # resulting in incorrect assertions and potential glitches.
+            # accommodate non-blocking OS calls. Performing these checks
+            # at the core level could result in incorrect inferences, as
+            # non-blocking OS calls may not have completed at the time
+            # the core checks the current state. This could lead to incorrect
+            # assertions and potential glitches.
             self._impl.set_window_state(state)
 
     ######################################################################
