@@ -486,10 +486,10 @@ class Window:
                 f"A non-resizable window cannot be set to a state of {state}."
             )
         else:
-            # State checks are handled by the backend (e.g., Cocoa) to
-            # accommodate non-blocking OS calls. Performing these checks
-            # at the core level could result in incorrect inferences, as
-            # non-blocking OS calls may not have completed at the time
+            # State checks are handled by the backend to accommodate for
+            # non-blocking native OS calls(e.g., Cocoa). Performing these
+            # checks at the core level could result in incorrect inferences,
+            # as non-blocking OS calls may not have completed at the time
             # the core checks the current state. This could lead to incorrect
             # assertions and potential glitches.
             self._impl.set_window_state(state)
