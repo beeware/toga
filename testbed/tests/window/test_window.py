@@ -692,8 +692,8 @@ else:
     @pytest.fixture(scope="session")
     def intermediate_states_cycle():
         # Use a iterator cycling fixture to ensure each state is the initial
-        # intermediate state at least once. This is to ensure full code
-        # coverage for all backends.
+        # intermediate state at least once and to test specific problematic
+        # combinations. This is to ensure full code coverage for all backends.
         intermediate_states = [
             (
                 WindowState.NORMAL,
@@ -731,6 +731,14 @@ else:
                 WindowState.PRESENTATION,
                 WindowState.FULLSCREEN,
                 WindowState.NORMAL,
+                WindowState.MAXIMIZED,
+                WindowState.MINIMIZED,
+                WindowState.FULLSCREEN,
+            ),
+            (
+                WindowState.MINIMIZED,
+                WindowState.FULLSCREEN,
+                WindowState.PRESENTATION,
                 WindowState.MAXIMIZED,
                 WindowState.MINIMIZED,
                 WindowState.FULLSCREEN,
@@ -940,27 +948,6 @@ else:
         assert second_window.state == WindowState.NORMAL
         assert second_window_probe.is_resizable
         assert second_window_probe.content_size == initial_content_size
-
-    @pytest.mark.parametrize(
-        "second_window_class, second_window_kwargs",
-        [
-            (
-                toga.Window,
-                dict(title="Secondary Window", position=(200, 150)),
-            )
-        ],
-    )
-    async def test_coverage(second_window, second_window_probe):
-        second_window.show()
-        await second_window_probe.wait_for_window("Second window is shown")
-        second_window.state = WindowState.MINIMIZED
-        second_window.state = WindowState.FULLSCREEN
-        second_window.state = WindowState.MINIMIZED
-        second_window.state = WindowState.FULLSCREEN
-        # Add delay to ensure windows are visible after animation.
-        await second_window_probe.wait_for_window(
-            "Testing coverage", rapid_state_switching=True
-        )
 
     @pytest.mark.parametrize(
         "second_window_class, second_window_kwargs",

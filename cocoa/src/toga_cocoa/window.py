@@ -73,7 +73,9 @@ class TogaWindow(NSWindow):
             self.impl._pending_state_transition
             and self.impl._pending_state_transition != WindowState.MINIMIZED
         ):
-            self.impl._apply_state(WindowState.NORMAL)
+            # Marking as no cover, since the operation is native OS delay
+            # dependent and this doesn't get covered under macOS CI.
+            self.impl._apply_state(WindowState.NORMAL)  # pragma: no cover
         else:
             self.impl._pending_state_transition = None
 
