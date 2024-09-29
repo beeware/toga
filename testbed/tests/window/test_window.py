@@ -741,31 +741,31 @@ else:
     @pytest.mark.parametrize(
         "initial_state, final_state",
         [
-            # Direct switch from NORMAL:
+            # Switch from NORMAL:
             (WindowState.NORMAL, WindowState.MINIMIZED),
             (WindowState.NORMAL, WindowState.MAXIMIZED),
             (WindowState.NORMAL, WindowState.FULLSCREEN),
             (WindowState.NORMAL, WindowState.PRESENTATION),
             (WindowState.NORMAL, WindowState.NORMAL),
-            # Direct switch from MINIMIZED:
+            # Switch from MINIMIZED:
             (WindowState.MINIMIZED, WindowState.NORMAL),
             (WindowState.MINIMIZED, WindowState.MAXIMIZED),
             (WindowState.MINIMIZED, WindowState.FULLSCREEN),
             (WindowState.MINIMIZED, WindowState.PRESENTATION),
             (WindowState.MINIMIZED, WindowState.MINIMIZED),
-            # Direct switch from MAXIMIZED:
+            # Switch from MAXIMIZED:
             (WindowState.MAXIMIZED, WindowState.NORMAL),
             (WindowState.MAXIMIZED, WindowState.MINIMIZED),
             (WindowState.MAXIMIZED, WindowState.FULLSCREEN),
             (WindowState.MAXIMIZED, WindowState.PRESENTATION),
             (WindowState.MAXIMIZED, WindowState.MAXIMIZED),
-            # Direct switch from FULLSCREEN:
+            # Switch from FULLSCREEN:
             (WindowState.FULLSCREEN, WindowState.NORMAL),
             (WindowState.FULLSCREEN, WindowState.MINIMIZED),
             (WindowState.FULLSCREEN, WindowState.MAXIMIZED),
             (WindowState.FULLSCREEN, WindowState.PRESENTATION),
             (WindowState.FULLSCREEN, WindowState.FULLSCREEN),
-            # Direct switch from PRESENTATION:
+            # Switch from PRESENTATION:
             (WindowState.PRESENTATION, WindowState.NORMAL),
             (WindowState.PRESENTATION, WindowState.MINIMIZED),
             (WindowState.PRESENTATION, WindowState.MAXIMIZED),
@@ -782,7 +782,7 @@ else:
             )
         ],
     )
-    async def test_window_state_direct_change_with_intermediate_states(
+    async def test_window_state_change_with_intermediate_states(
         app,
         app_probe,
         initial_state,
@@ -791,7 +791,7 @@ else:
         second_window_probe,
         intermediate_states_cycle,
     ):
-        """Window state can be directly changed to another state while passing
+        """Window state can be changed to another state while passing
         through intermediate states with an expected OS delay."""
         if (
             WindowState.MINIMIZED in {initial_state, final_state}
@@ -901,8 +901,8 @@ else:
     async def test_window_state_content_size_increase(
         second_window, second_window_probe, state
     ):
-        """The size of window content should increase when the window state is set to
-        maximized, fullscreen or presentation."""
+        """The size of the window content should increase when the window state is set
+        to maximized, fullscreen or presentation."""
         second_window.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
         second_window.show()
         # Add delay to ensure windows are visible after animation.
@@ -940,6 +940,27 @@ else:
         assert second_window.state == WindowState.NORMAL
         assert second_window_probe.is_resizable
         assert second_window_probe.content_size == initial_content_size
+
+    @pytest.mark.parametrize(
+        "second_window_class, second_window_kwargs",
+        [
+            (
+                toga.Window,
+                dict(title="Secondary Window", position=(200, 150)),
+            )
+        ],
+    )
+    async def test_coverage(second_window, second_window_probe):
+        second_window.show()
+        await second_window_probe.wait_for_window("Second window is shown")
+        second_window.state = WindowState.MINIMIZED
+        second_window.state = WindowState.FULLSCREEN
+        second_window.state = WindowState.MINIMIZED
+        second_window.state = WindowState.FULLSCREEN
+        # Add delay to ensure windows are visible after animation.
+        await second_window_probe.wait_for_window(
+            "Testing coverage", rapid_state_switching=True
+        )
 
     @pytest.mark.parametrize(
         "second_window_class, second_window_kwargs",
