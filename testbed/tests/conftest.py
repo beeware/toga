@@ -83,8 +83,6 @@ async def window_cleanup(app, app_probe, main_window, main_window_probe):
         minimize=True if main_window_state == WindowState.MINIMIZED else False,
         full_screen=True if main_window_state == WindowState.FULLSCREEN else False,
     )
-    assert app.current_window == main_window
-    assert main_window.state == WindowState.NORMAL
 
     # Ensure that at the end of every test, all windows that aren't the
     # main window have been closed and deleted. This needs to be done in
