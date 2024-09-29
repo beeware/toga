@@ -1032,7 +1032,7 @@ else:
 
         assert second_window.state == WindowState.NORMAL
         assert second_window_probe.is_resizable
-        initial_content_size = second_window_probe.presentation_content_size
+        initial_content_size = second_window_probe.content_size
 
         second_window.state = WindowState.PRESENTATION
         # Add delay to ensure windows are visible after animation.
@@ -1040,24 +1040,16 @@ else:
             "Secondary window is in presentation mode", full_screen=True
         )
         assert second_window.state == WindowState.PRESENTATION
-        assert (
-            second_window_probe.presentation_content_size[0] > initial_content_size[0]
-        )
-        assert (
-            second_window_probe.presentation_content_size[1] > initial_content_size[1]
-        )
+        assert second_window_probe.content_size[0] > initial_content_size[0]
+        assert second_window_probe.content_size[1] > initial_content_size[1]
 
         second_window.state = WindowState.PRESENTATION
         await second_window_probe.wait_for_window(
             "Secondary window is still in presentation mode", full_screen=True
         )
         assert second_window.state == WindowState.PRESENTATION
-        assert (
-            second_window_probe.presentation_content_size[0] > initial_content_size[0]
-        )
-        assert (
-            second_window_probe.presentation_content_size[1] > initial_content_size[1]
-        )
+        assert second_window_probe.content_size[0] > initial_content_size[0]
+        assert second_window_probe.content_size[1] > initial_content_size[1]
 
         second_window.state = WindowState.NORMAL
         # Add delay to ensure windows are visible after animation.
@@ -1066,7 +1058,7 @@ else:
         )
         assert second_window.state == WindowState.NORMAL
         assert second_window_probe.is_resizable
-        assert second_window_probe.presentation_content_size == initial_content_size
+        assert second_window_probe.content_size == initial_content_size
 
     @pytest.mark.parametrize(
         "second_window_class, second_window_kwargs",

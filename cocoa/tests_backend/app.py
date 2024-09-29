@@ -15,7 +15,6 @@ from toga_cocoa.libs import (
 
 from .dialogs import DialogsMixin
 from .probe import BaseProbe, NSRunLoop
-from .window import WindowProbe
 
 NSPanel = ObjCClass("NSPanel")
 NSDate = ObjCClass("NSDate")
@@ -55,9 +54,6 @@ class AppProbe(BaseProbe, DialogsMixin):
         # There's no API level mechanism to detect cursor visibility;
         # fall back to the implementation's proxy variable.
         return self.app._impl._cursor_visible
-
-    def content_size(self, window):
-        return WindowProbe(self.app, window).presentation_content_size
 
     def assert_app_icon(self, icon):
         # We have no real way to check we've got the right icon; use pixel peeping as a

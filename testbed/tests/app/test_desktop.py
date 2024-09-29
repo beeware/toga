@@ -190,7 +190,7 @@ async def test_presentation_mode(app, app_probe, main_window, main_window_probe)
         window_information["window_probe"] = window_probe(app, window)
         window_information["initial_content_size"] = window_information[
             "window_probe"
-        ].presentation_content_size
+        ].content_size
         window_information["widget_probe"] = get_probe(window_widget)
         window_information["initial_widget_size"] = (
             window_information["widget_probe"].width,
@@ -219,10 +219,10 @@ async def test_presentation_mode(app, app_probe, main_window, main_window_probe)
             window_information["window"].state == WindowState.PRESENTATION
         ), f"{window_information['window'].title}:"
         assert (
-            window_information["window_probe"].presentation_content_size[0] > 1000
+            window_information["window_probe"].content_size[0] > 1000
         ), f"{window_information['window'].title}:"
         assert (
-            window_information["window_probe"].presentation_content_size[1] > 700
+            window_information["window_probe"].content_size[1] > 700
         ), f"{window_information['window'].title}:"
         assert (
             window_information["widget_probe"].width
@@ -243,7 +243,7 @@ async def test_presentation_mode(app, app_probe, main_window, main_window_probe)
             window_information["window"].state == WindowState.NORMAL
         ), f"{window_information['window'].title}:"
         assert (
-            window_information["window_probe"].presentation_content_size
+            window_information["window_probe"].content_size
             == window_information["initial_content_size"]
         ), f"{window_information['window'].title}:"
         assert (

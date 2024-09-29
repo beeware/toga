@@ -46,10 +46,6 @@ class WindowProbe(BaseProbe, DialogsMixin):
         return (content_allocation.width, content_allocation.height)
 
     @property
-    def presentation_content_size(self):
-        return self.content_size
-
-    @property
     def is_resizable(self):
         return self.native.get_resizable()
 

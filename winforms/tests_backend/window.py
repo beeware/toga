@@ -54,10 +54,6 @@ class WindowProbe(BaseProbe, DialogsMixin):
         )
 
     @property
-    def presentation_content_size(self):
-        return self.content_size
-
-    @property
     def is_resizable(self):
         return self.native.FormBorderStyle == FormBorderStyle.Sizable
 

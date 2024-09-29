@@ -13,7 +13,6 @@ from toga_winforms.keys import toga_to_winforms_key, winforms_to_toga_key
 
 from .dialogs import DialogsMixin
 from .probe import BaseProbe
-from .window import WindowProbe
 
 
 class AppProbe(BaseProbe, DialogsMixin):
@@ -100,9 +99,6 @@ class AppProbe(BaseProbe, DialogsMixin):
         # returns 2 ("the system is not drawing the cursor because the user is providing
         # input through touch or pen instead of the mouse"). hCursor is more reliable.
         return info.hCursor is not None
-
-    def content_size(self, window):
-        return WindowProbe(self.app, window).presentation_content_size
 
     def assert_app_icon(self, icon):
         for window in self.app.windows:
