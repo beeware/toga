@@ -6,6 +6,7 @@ import pytest
 import toga
 from toga.constants import WindowState
 from toga_dummy.utils import (
+    EventLog,
     assert_action_not_performed,
     assert_action_performed,
     assert_action_performed_with,
@@ -339,11 +340,16 @@ def test_window_state(window, initial_state, final_state):
 
     window.state = initial_state
     assert window.state == initial_state
-    assert_action_performed_with(
-        window,
-        f"set window state to {initial_state}",
-        state=initial_state,
-    )
+    # A newly created window will always be in NORMAL state.
+    # Since, both the current state and initial_state, would
+    # be the same, hence "set window state to WindowState.NORMAL"
+    # action would not be performed again.
+    if initial_state != WindowState.NORMAL:
+        assert_action_performed_with(
+            window,
+            f"set window state to {initial_state}",
+            state=initial_state,
+        )
 
     window.state = final_state
     assert window.state == final_state
@@ -1282,12 +1288,10 @@ def test_deprecated_full_screen(window, app):
         state=WindowState.NORMAL,
     )
 
-    # Setting full screen to False when window is not in full screen, is a no-op
-    #
-    # We cannot assert that the action was not performed, since the same action
-    # was performed previously and would still be in EventLog. Therefore, we
-    # cannot check if the action was done by the first call or the second call.
-    # Hence, this is just to reach coverage.
+    # Clear the test event log to check that the previous task was not re-performed.
+    EventLog.reset()
+
+    assert window.state == WindowState.NORMAL
     with pytest.warns(
         DeprecationWarning,
         match=full_screen_warning,
@@ -1298,4 +1302,5 @@ def test_deprecated_full_screen(window, app):
         match=full_screen_warning,
     ):
         window.full_screen = False
-    # assert_action_not_performed(window, "set window state to WindowState.NORMAL")
+
+    assert_action_not_performed(window, "set window state to WindowState.NORMAL")

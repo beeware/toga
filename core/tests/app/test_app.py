@@ -469,7 +469,6 @@ def test_change_invalid_creation_main_window(event_loop):
 @pytest.mark.parametrize(
     "windows",
     [
-        [],  # No windows
         [{}],  # One window
         [{}, {}],  # Two windows
     ],
@@ -481,35 +480,28 @@ def test_presentation_mode_with_windows_list(event_loop, windows):
 
     assert not app.in_presentation_mode
 
-    if not windows_list:
-        # Entering presentation mode with an empty windows list, is a no-op:
-        app.enter_presentation_mode(windows_list)
-        assert not app.in_presentation_mode
-        assert_action_not_performed(app, "enter presentation mode")
-    else:
-        # Enter presentation mode with 1 or more windows:
-        app.enter_presentation_mode(windows_list)
-        assert app.in_presentation_mode
-        assert_action_performed_with(
-            app,
-            "enter presentation mode",
-            screen_window_dict={
-                app.screens[i]: window for i, window in enumerate(windows_list)
-            },
-        )
-        # Exit presentation mode:
-        app.exit_presentation_mode()
-        assert not app.in_presentation_mode
-        assert_action_performed(
-            app,
-            "exit presentation mode",
-        )
+    # Enter presentation mode with 1 or more windows:
+    app.enter_presentation_mode(windows_list)
+    assert app.in_presentation_mode
+    assert_action_performed_with(
+        app,
+        "enter presentation mode",
+        screen_window_dict={
+            app.screens[i]: window for i, window in enumerate(windows_list)
+        },
+    )
+    # Exit presentation mode:
+    app.exit_presentation_mode()
+    assert not app.in_presentation_mode
+    assert_action_performed(
+        app,
+        "exit presentation mode",
+    )
 
 
 @pytest.mark.parametrize(
     "windows",
     [
-        [],  # No windows
         [{}],  # One window
         [{}, {}],  # Two windows
     ],
@@ -523,27 +515,21 @@ def test_presentation_mode_with_screen_window_dict(event_loop, windows):
 
     assert not app.in_presentation_mode
 
-    if not screen_window_dict:
-        # Entering presentation mode with an empty dict, is a no-op:
-        app.enter_presentation_mode({})
-        assert not app.in_presentation_mode
-        assert_action_not_performed(app, "enter presentation mode")
-    else:
-        # Enter presentation mode with a 1 or more elements screen-window dict:
-        app.enter_presentation_mode(screen_window_dict)
-        assert app.in_presentation_mode
-        assert_action_performed_with(
-            app,
-            "enter presentation mode",
-            screen_window_dict=screen_window_dict,
-        )
-        # Exit presentation mode:
-        app.exit_presentation_mode()
-        assert not app.in_presentation_mode
-        assert_action_performed(
-            app,
-            "exit presentation mode",
-        )
+    # Enter presentation mode with a 1 or more elements screen-window dict:
+    app.enter_presentation_mode(screen_window_dict)
+    assert app.in_presentation_mode
+    assert_action_performed_with(
+        app,
+        "enter presentation mode",
+        screen_window_dict=screen_window_dict,
+    )
+    # Exit presentation mode:
+    app.exit_presentation_mode()
+    assert not app.in_presentation_mode
+    assert_action_performed(
+        app,
+        "exit presentation mode",
+    )
 
 
 def test_presentation_mode_with_excess_windows_list(event_loop):
@@ -616,6 +602,16 @@ def test_presentation_mode_no_op(event_loop):
         app.enter_presentation_mode()
         assert_action_not_performed(app, "enter presentation mode")
         assert not app.in_presentation_mode
+
+    # Entering presentation mode with an empty dict, is a no-op:
+    app.enter_presentation_mode({})
+    assert not app.in_presentation_mode
+    assert_action_not_performed(app, "enter presentation mode")
+
+    # Entering presentation mode with an empty windows list, is a no-op:
+    app.enter_presentation_mode([])
+    assert not app.in_presentation_mode
+    assert_action_not_performed(app, "enter presentation mode")
 
     # Entering presentation mode without proper type of parameter is a no-op.
     with pytest.raises(

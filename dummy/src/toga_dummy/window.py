@@ -137,8 +137,9 @@ class Window(LoggedObject):
         return self._get_value("state", WindowState.NORMAL)
 
     def set_window_state(self, state):
-        self._action(f"set window state to {state}", state=state)
-        self._set_value("state", state)
+        if state != self.get_window_state():
+            self._action(f"set window state to {state}", state=state)
+            self._set_value("state", state)
 
     ######################################################################
     # Window capabilities
