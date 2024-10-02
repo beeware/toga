@@ -71,7 +71,11 @@ class FlashMode(Enum):
 
 
 class WindowState(Enum):
-    """The possible window states of an app."""
+    """The possible window states of an app.
+
+    NOTE: Some platforms do not fully support all states; see the :any:`toga.Window`'s
+    platform notes for details.
+    """
 
     NORMAL = 0
     """The ``NORMAL`` state represents the default state of the window or app when it is
@@ -80,25 +84,16 @@ class WindowState(Enum):
     MINIMIZED = 1
     """``MINIMIZED`` state is when the window isn't currently visible, although it will
     appear in any operating system's list of active windows.
-
-    Supported Platforms: ``Windows``, ``macOS``, ``Linux-Xorg``
     """
 
     MAXIMIZED = 2
     """The window is the largest size it can be on the screen with title bar and window
     chrome still visible.
-
-    On Mobile Platforms(Like on Android) - The ``MAXIMIZED`` state is the same as the
-    ``NORMAL`` state.
-
-    Supported Platforms: ``Windows``, ``macOS``, ``Linux-Xorg``, ``Linux-Wayland``
     """
 
     FULLSCREEN = 3
     """``FULLSCREEN`` state is when the window title bar and window chrome remain
     **hidden**; But app menu and toolbars remain **visible**.
-
-    Supported Platforms: ``Windows``, ``macOS``, ``Linux-Xorg``
     """
 
     PRESENTATION = 4
@@ -107,8 +102,4 @@ class WindowState(Enum):
 
     A good example is a slideshow app in presentation mode - the only visible content
     is the slide.
-
-    The window must have a content set on it, before entering presentation mode.
-
-    Supported Platforms: ``Windows``, ``macOS``, ``Linux-Xorg``
     """
