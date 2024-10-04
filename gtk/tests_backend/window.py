@@ -1,4 +1,4 @@
-from toga_gtk.libs import Gdk, Gtk
+from toga_gtk.libs import IS_WAYLAND, Gdk, Gtk
 
 from .dialogs import DialogsMixin
 from .probe import BaseProbe
@@ -12,8 +12,8 @@ class WindowProbe(BaseProbe, DialogsMixin):
     supports_move_while_hidden = False
     supports_unminimize = False
     # Wayland mostly prohibits interaction with the larger windowing environment
-    supports_minimize = not BaseProbe.IS_WAYLAND
-    supports_placement = not BaseProbe.IS_WAYLAND
+    supports_minimize = not IS_WAYLAND
+    supports_placement = not IS_WAYLAND
 
     def __init__(self, app, window):
         super().__init__()

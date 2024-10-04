@@ -3,6 +3,7 @@ import pytest
 import toga
 from toga.style import Pack
 
+from .conftest import build_cleanup_test
 from .properties import (  # noqa: F401
     test_alignment,
     test_background_color,
@@ -40,6 +41,11 @@ async def widget():
 def verify_font_sizes():
     # We can't verify font sizes inside the MultilineTextInput
     return False, False
+
+
+test_cleanup = build_cleanup_test(
+    toga.MultilineTextInput, xfail_platforms=("android", "linux")
+)
 
 
 async def test_scroll_position(widget, probe):

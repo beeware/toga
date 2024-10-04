@@ -1,1 +1,0 @@
-The initial position of each newly created window is now different, cascading down the screen as windows are created.

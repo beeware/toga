@@ -107,7 +107,9 @@ different on each platform, reflecting platform differences.
 
 On macOS, the app is allowed to continue running without having any open windows. The
 app can open and close windows as required; the app will keep running until explicitly
-exited.
+exited. If you give the app focus when it has no open windows, a file dialog will be
+displayed prompting you to select a file to open. If the file is already open, the
+existing representation for the document will be given focus.
 
 On Linux and Windows, when an app closes the last window it is managing, the app will
 automatically exit. Attempting to close the last window will trigger any app-level
@@ -152,6 +154,18 @@ When the event handler is set by assigning a value to the event handler, the han
 method must accept an ``app`` argument. This argument is not required when subclassing,
 as the app instance can be implied. Regardless of how they are defined, event handlers
 *can* be defined as ``async`` methods.
+
+Managing documents
+------------------
+
+When you create an App instance, you can declare the type of documents that your app is
+able to manage by providing a value for ``document_types``. When an app declares that it
+can manage document types, the app will automatically create file management menu items
+(such as New, Open and Save), and the app will process command line arguments, creating
+a :class:`toga.Document` instance for each argument matching a registered document type.
+
+For details on how to define and register document types, refer to :doc:`the
+documentation on document handling <./resources/document>`.
 
 Notes
 -----

@@ -1,1 +1,0 @@
-Support for conditional coverage based on the Python version was added for unit testing.

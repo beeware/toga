@@ -3,7 +3,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import System.Windows.Forms as WinForms
-from System.ComponentModel import InvalidEnumArgumentException
 from System.Drawing import Bitmap, Font as WinFont, Graphics, Point, Size as WinSize
 from System.Drawing.Imaging import ImageFormat
 from System.IO import MemoryStream
@@ -12,7 +11,6 @@ from toga.command import Separator
 from toga.types import Position, Size
 
 from .container import Container
-from .keys import toga_to_winforms_key, toga_to_winforms_shortcut
 from .libs.wrapper import WeakrefCallable
 from .screens import Screen as ScreenImpl
 from .widgets.base import Scalable
@@ -68,7 +66,8 @@ class Window(Container, Scalable):
     ######################################################################
 
     def winforms_Resize(self, sender, event):
-        self.resize_content()
+        if self.native.WindowState != WinForms.FormWindowState.Minimized:
+            self.resize_content()
         if self.get_current_screen().dpi_scale == self._dpi_scale:
             return
         else:
@@ -269,24 +268,21 @@ class MainWindow(Window):
             vertical_shift += self.native.MainMenuStrip.Height
         return vertical_shift
 
-    def _submenu(self, group, menubar):
+    def _submenu(self, group, group_cache):
         try:
-            return self._menu_groups[group]
+            return group_cache[group]
         except KeyError:
-            if group is None:
-                submenu = menubar
+            parent_menu = self._submenu(group.parent, group_cache)
+
+            submenu = WinForms.ToolStripMenuItem(group.text)
+
+            # Top level menus are added in a different way to submenus
+            if group.parent is None:
+                parent_menu.Items.Add(submenu)
             else:
-                parent_menu = self._submenu(group.parent, menubar)
+                parent_menu.DropDownItems.Add(submenu)
 
-                submenu = WinForms.ToolStripMenuItem(group.text)
-
-                # Top level menus are added in a different way to submenus
-                if group.parent is None:
-                    parent_menu.Items.Add(submenu)
-                else:
-                    parent_menu.DropDownItems.Add(submenu)
-
-            self._menu_groups[group] = submenu
+            group_cache[group] = submenu
         return submenu
 
     def create_menus(self):
@@ -301,38 +297,17 @@ class MainWindow(Window):
             self.native.MainMenuStrip = menubar
             menubar.SendToBack()  # In a dock, "back" means "top".
 
-        self._menu_groups = {}
+        group_cache = {None: menubar}
 
         submenu = None
         for cmd in self.interface.app.commands:
-            submenu = self._submenu(cmd.group, menubar)
+            submenu = self._submenu(cmd.group, group_cache)
             if isinstance(cmd, Separator):
-                submenu.DropDownItems.Add("-")
+                item = "-"
             else:
-                submenu = self._submenu(cmd.group, menubar)
-                item = WinForms.ToolStripMenuItem(cmd.text)
-                item.Click += WeakrefCallable(cmd._impl.winforms_Click)
-                if cmd.shortcut is not None:
-                    try:
-                        item.ShortcutKeys = toga_to_winforms_key(cmd.shortcut)
-                        # The Winforms key enum is... daft. The "oem" key
-                        # values render as "Oem" or "Oemcomma", so we need to
-                        # *manually* set the display text for the key shortcut.
-                        item.ShortcutKeyDisplayString = toga_to_winforms_shortcut(
-                            cmd.shortcut
-                        )
-                    except (
-                        ValueError,
-                        InvalidEnumArgumentException,
-                    ) as e:  # pragma: no cover
-                        # Make this a non-fatal warning, because different backends may
-                        # accept different shortcuts.
-                        print(f"WARNING: invalid shortcut {cmd.shortcut!r}: {e}")
+                item = cmd._impl.create_menu_item(WinForms.ToolStripMenuItem)
 
-                item.Enabled = cmd.enabled
-
-                cmd._impl.native.append(item)
-                submenu.DropDownItems.Add(item)
+            submenu.DropDownItems.Add(item)
 
         # Required for font scaling on DPI changes
         self.original_menubar_font = menubar.Font

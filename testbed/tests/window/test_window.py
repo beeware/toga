@@ -26,11 +26,7 @@ async def second_window_probe(app, app_probe, second_window):
     second_window.show()
     probe = window_probe(app, second_window)
     await probe.wait_for_window(f"Window ({second_window.title}) has been created")
-    yield probe
-    if second_window in app.windows:
-        second_window.close()
-        del second_window
-        gc.collect()
+    return probe
 
 
 async def test_title(main_window, main_window_probe):
@@ -253,9 +249,6 @@ else:
             assert window_with_content.content == content
         finally:
             window_with_content.close()
-            await window_with_content_probe.redraw("Secondary window has been closed")
-            del window_with_content
-            gc.collect()
 
     async def test_secondary_window_cleanup(app_probe):
         """Memory for windows is cleaned up when windows are deleted."""
@@ -449,6 +442,8 @@ else:
             )
 
             assert not second_window_probe.is_minimized
+            # Window size hasn't changed as a result of min/unmin cycle
+            assert second_window.size == (250, 200)
 
         second_window_probe.close()
         await second_window_probe.wait_for_window("Secondary window has been closed")

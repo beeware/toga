@@ -1,1 +1,0 @@
-The default title of a ``toga.Window`` is now the name of the app, rather than ``"Toga"`.

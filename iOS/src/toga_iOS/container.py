@@ -78,7 +78,7 @@ class Container(BaseContainer):
 
     @property
     def height(self):
-        return self.layout_native.bounds.size.height
+        return self.layout_native.bounds.size.height - self.top_offset
 
     @property
     def top_offset(self):
@@ -148,11 +148,6 @@ class RootContainer(Container):
 
         # Set the controller's view to be the root content widget
         self.controller.view = self.native
-
-    # The testbed app won't instantiate a simple app, so we can't test these properties
-    @property
-    def height(self):  # pragma: no cover
-        return self.layout_native.bounds.size.height - self.top_offset
 
     # The testbed app won't instantiate a simple app, so we can't test these properties
     @property

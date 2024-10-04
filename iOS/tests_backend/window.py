@@ -30,5 +30,12 @@ class WindowProbe(BaseProbe, DialogsMixin):
             ),
         )
 
+    @property
+    def top_bar_height(self):
+        return (
+            UIApplication.sharedApplication.statusBarFrame.size.height
+            + self.native.rootViewController.navigationBar.frame.size.height
+        )
+
     def has_toolbar(self):
         pytest.skip("Toolbars not implemented on iOS")

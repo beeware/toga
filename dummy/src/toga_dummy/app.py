@@ -2,10 +2,6 @@ import asyncio
 import sys
 from pathlib import Path
 
-from toga.app import overridden
-from toga.command import Command, Group
-from toga.handlers import simple_handler
-
 from .screens import Screen as ScreenImpl
 from .utils import LoggedObject
 
@@ -13,6 +9,8 @@ from .utils import LoggedObject
 class App(LoggedObject):
     # Dummy apps close on the last window close
     CLOSE_ON_LAST_WINDOW = True
+    # Dummy backend uses default command line handling
+    HANDLES_COMMAND_LINE = False
 
     def __init__(self, interface):
         super().__init__()
@@ -31,43 +29,8 @@ class App(LoggedObject):
     # Commands and menus
     ######################################################################
 
-    def create_app_commands(self):
+    def create_standard_commands(self):
         self._action("create App commands")
-        self.interface.commands.add(
-            # Invoke `_request_exit` rather than `exit`, because we want to trigger the
-            # "OK to exit?" logic.
-            Command(
-                simple_handler(self.interface._request_exit),
-                "Exit",
-                group=Group.APP,
-                section=sys.maxsize,
-                id=Command.EXIT,
-            ),
-            Command(
-                simple_handler(self.interface.about),
-                f"About {self.interface.formal_name}",
-                group=Group.HELP,
-                id=Command.ABOUT,
-            ),
-            Command(
-                simple_handler(self.interface.visit_homepage),
-                "Visit homepage",
-                enabled=self.interface.home_page is not None,
-                group=Group.HELP,
-                id=Command.VISIT_HOMEPAGE,
-            ),
-        )
-
-        # If the user has overridden preferences, provide a menu item.
-        if overridden(self.interface.preferences):
-            self.interface.commands.add(
-                Command(
-                    simple_handler(self.interface.preferences),
-                    "Preferences",
-                    group=Group.APP,
-                    id=Command.PREFERENCES,
-                ),
-            )  # pragma: no cover
 
     def create_menus(self):
         self._action("create App menus")
@@ -175,13 +138,6 @@ class App(LoggedObject):
 
     def exit_full_screen(self, windows):
         self._action("exit_full_screen", windows=windows)
-
-    ######################################################################
-    # Simulation interface
-    ######################################################################
-
-    def simulate_exit(self):
-        self.interface._request_exit()
 
 
 class DocumentApp(App):

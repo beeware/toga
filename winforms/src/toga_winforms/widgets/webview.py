@@ -76,6 +76,7 @@ class WebView(Widget):
             self.default_user_agent = settings.UserAgent
 
             debug = True
+            settings.AreBrowserAcceleratorKeysEnabled = debug
             settings.AreDefaultContextMenusEnabled = debug
             settings.AreDefaultScriptDialogsEnabled = True
             settings.AreDevToolsEnabled = debug
@@ -83,6 +84,7 @@ class WebView(Widget):
             settings.IsScriptEnabled = True
             settings.IsWebMessageEnabled = True
             settings.IsStatusBarEnabled = debug
+            settings.IsSwipeNavigationEnabled = False
             settings.IsZoomControlEnabled = True
 
             for task in self.pending_tasks:
@@ -108,11 +110,18 @@ class WebView(Widget):
                     WinForms.MessageBoxIcon.Error,
                 )
                 webbrowser.open(
-                    "https://developer.microsoft.com/en-us/microsoft-edge/webview2/#download-section"
+                    "https://developer.microsoft.com/en-us/microsoft-edge/webview2/#download"
                 )
 
         else:  # pragma: nocover
-            raise RuntimeError(args.InitializationException)
+            WinForms.MessageBox.Show(
+                "A critical error has occurred and functionality may be impaired.\n\n"
+                "The WebView2 initialization failed with an exception:\n\n"
+                f"{args.InitializationException}",
+                "Error",
+                WinForms.MessageBoxButtons.OK,
+                WinForms.MessageBoxIcon.Error,
+            )
 
     def winforms_navigation_completed(self, sender, args):
         self.interface.on_webview_load()

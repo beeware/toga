@@ -6,6 +6,104 @@ Release History
 
 .. towncrier release notes start
 
+0.4.7 (2024-09-18)
+==================
+
+Features
+--------
+
+* The GTK backend was modified to use PyGObject's native asyncio handling, instead of GBulb. (`#2550 <https://github.com/beeware/toga/issues/2550>`__)
+* The ActivityIndicator widget is now supported on iOS. (`#2829 <https://github.com/beeware/toga/issues/2829>`__)
+
+Bugfixes
+--------
+
+* Windows retain their original size after being unminimized on Windows. (`#2729 <https://github.com/beeware/toga/issues/2729>`__)
+* DOM storage is now enabled for WebView on Android. (`#2767 <https://github.com/beeware/toga/issues/2767>`__)
+* A macOS app in full-screen mode now correctly displays the contents of windows that use a ``toga.Box()`` as the top-level content. (`#2796 <https://github.com/beeware/toga/issues/2796>`__)
+* Asynchronous tasks are now protected from garbage collection while they are running. This could lead to asynchronous tasks terminating unexpectedly with an error under some conditions. (`#2809 <https://github.com/beeware/toga/issues/2809>`__)
+* When a handler is a generator, control will now always be released to the event loop between iterations, even if no sleep interval or a sleep interval of 0 is yielded. (`#2811 <https://github.com/beeware/toga/issues/2811>`__)
+* When the X button is clicked for the About dialog on GTK, it is now properly destroyed. (`#2812 <https://github.com/beeware/toga/issues/2812>`__)
+* The Textual backend is now compatible with versions of Textual after v0.63.3. (`#2822 <https://github.com/beeware/toga/issues/2822>`__)
+* The event loop is now guaranteed to be running when your app's ``startup()`` method is invoked. This wasn't previously the case on macOS and Windows. (`#2834 <https://github.com/beeware/toga/issues/2834>`__)
+* iOS apps now correctly account for the size of the navigation bar when laying out app content. (`#2836 <https://github.com/beeware/toga/issues/2836>`__)
+* A memory leak when using Divider or Switch widgets on iOS was resolved. (`#2849 <https://github.com/beeware/toga/issues/2849>`__)
+* Apps bundled as standalone frozen binaries (e.g., POSIX builds made with PyInstaller) no longer crash on startup when trying to resolve the app icon. (`#2852 <https://github.com/beeware/toga/issues/2852>`__)
+
+
+Misc
+----
+
+* `#2088 <https://github.com/beeware/toga/issues/2088>`__, `#2708 <https://github.com/beeware/toga/issues/2708>`__, `#2715 <https://github.com/beeware/toga/issues/2715>`__, `#2792 <https://github.com/beeware/toga/issues/2792>`__, `#2799 <https://github.com/beeware/toga/issues/2799>`__, `#2802 <https://github.com/beeware/toga/issues/2802>`__, `#2803 <https://github.com/beeware/toga/issues/2803>`__, `#2804 <https://github.com/beeware/toga/issues/2804>`__, `#2807 <https://github.com/beeware/toga/issues/2807>`__, `#2823 <https://github.com/beeware/toga/issues/2823>`__, `#2824 <https://github.com/beeware/toga/issues/2824>`__, `#2825 <https://github.com/beeware/toga/issues/2825>`__, `#2826 <https://github.com/beeware/toga/issues/2826>`__, `#2846 <https://github.com/beeware/toga/issues/2846>`__, `#2847 <https://github.com/beeware/toga/issues/2847>`__, `#2848 <https://github.com/beeware/toga/issues/2848>`__
+
+
+0.4.6 (2024-08-28)
+==================
+
+Features
+--------
+
+* Toga can now define apps that persist in the background without having any open windows. (`#97 <https://github.com/beeware/toga/issues/97>`__)
+* Apps can now add items to the system tray. (`#97 <https://github.com/beeware/toga/issues/97>`__)
+* It is now possible to use an instance of Window as the main window of an app. This allows the creation of windows that don't have a menu bar or toolbar decoration. (`#1870 <https://github.com/beeware/toga/issues/1870>`__)
+* The initial position of each newly created window is now different, cascading down the screen as windows are created. (`#2023 <https://github.com/beeware/toga/issues/2023>`__)
+* The API for Documents and document types has been finalized. Document handling behavior is now controlled by declaring document types as part of your ``toga.App`` definition. (`#2209 <https://github.com/beeware/toga/issues/2209>`__)
+* Toga can now define an app whose life cycle isn't tied to a single main window. (`#2209 <https://github.com/beeware/toga/issues/2209>`__)
+* The Divider widget was implemented on iOS. (`#2478 <https://github.com/beeware/toga/issues/2478>`__)
+* Commands can now be retrieved by ID. System-installed commands (such as "About" and "Visit Homepage") are installed using a known ID that can be used at runtime to manipulate those commands. (`#2636 <https://github.com/beeware/toga/issues/2636>`__)
+* A ``MainWindow`` can now have an ``on_close`` handler. If a request is made to close the main window, the ``on_close`` handler will be evaluated; app exit handling will only be processed if the close handler allows the close to continue. (`#2643 <https://github.com/beeware/toga/issues/2643>`__)
+* Dialogs can now be displayed relative to an app, in addition to be being modal to a window. (`#2669 <https://github.com/beeware/toga/issues/2669>`__)
+* An ``on_running`` event handler was added to ``toga.App``. This event will be triggered when the app's main loop starts. (`#2678 <https://github.com/beeware/toga/issues/2678>`__)
+* The ``on_exit`` handler for an app can now be defined by overriding the method on the ``toga.App`` subclass. (`#2678 <https://github.com/beeware/toga/issues/2678>`__)
+* CommandSet now exposes a full set and dictionary interface. Commands can be added to a CommandSet using ``[]`` notation and a command ID; they can be removed using set-like ``remove()`` or ``discard()`` calls with a Command instance, or using dictionary-like ``pop()`` or ``del`` calls with the command ID. (`#2701 <https://github.com/beeware/toga/issues/2701>`__)
+* WebView2 on Winforms now uses the v1.0.2592.51 WebView2 runtime DLLs. (`#2764 <https://github.com/beeware/toga/issues/2764>`__)
+
+Bugfixes
+--------
+
+* The order of creation of system-level commands is now consistent between platforms. Menu creation is guaranteed to be deferred until the user's startup method has been invoked. (`#2619 <https://github.com/beeware/toga/issues/2619>`__)
+* The type of SplitContainer's content was modified to be a list, rather than a tuple. (`#2638 <https://github.com/beeware/toga/issues/2638>`__)
+* Programmatically invoking ``close()`` on the main window will now trigger ``on_exit`` handling. Previously ``on_exit`` handling would only be triggered if the close was initiated by a user action. (`#2643 <https://github.com/beeware/toga/issues/2643>`__)
+* GTK apps no longer have extra padding between the menu bar and the window content when the app does not have a toolbar. (`#2646 <https://github.com/beeware/toga/issues/2646>`__)
+* On Winforms, the window of an application that is set as the main window is no longer shown as a result of assigning the window as ``App.main_window``. (`#2653 <https://github.com/beeware/toga/issues/2653>`__)
+* Menu items on macOS are now able to correctly bind to the arrow and home/end/delete keys. (`#2661 <https://github.com/beeware/toga/issues/2661>`__)
+* On GTK, the currently selected tab index on an ``OptionContainer`` can now be retrieved inside an ``on_select`` handler. (`#2703 <https://github.com/beeware/toga/issues/2703>`__)
+* The WebView can now be loaded when using Python from the Windows Store. (`#2752 <https://github.com/beeware/toga/issues/2752>`__)
+* The WebView and MapView widgets now log an error if initialization fails. (`#2779 <https://github.com/beeware/toga/issues/2779>`__)
+
+
+Backward Incompatible Changes
+-----------------------------
+
+* The ``add_background_task()`` API on ``toga.App`` has been deprecated. Background tasks can be implemented using the new ``on_running`` event handler, or by using :any:`asyncio.create_task`. (`#2099 <https://github.com/beeware/toga/issues/2099>`__)
+* The API for Documents and Document-based apps has been significantly modified. Unfortunately, these changes are not backwards compatible; any existing Document-based app will require modification.
+
+  The ``DocumentApp`` base class is no longer required. Apps can subclass ``App`` directly, passing the document types as a ``list`` of ``Document`` classes, rather than a mapping of extension to document type.
+
+  The API for ``Document`` subclasses has also changed:
+
+  * A path is no longer provided as an argument to the Document constructor;
+
+  * The ``document_type`` is now specified as a class property called ``description``; and
+
+  * Extensions are now defined as a class property of the ``Document``; and
+
+  * The ``can_close()`` handler is no longer honored. Documents now track if they are modified, and have a default ``on_close`` handler that uses the modification status of a document to control whether a document can close. Invoking ``touch()`` on document will mark a document as modified. This modification flag is cleared by saving the document. (`#2209 <https://github.com/beeware/toga/issues/2209>`__)
+* It is no longer possible to create a toolbar on a ``Window`` instance. Toolbars can only be added to ``MainWindow`` (or subclass). (`#2646 <https://github.com/beeware/toga/issues/2646>`__)
+* The default title of a ``toga.Window`` is now the name of the app, rather than ``"Toga"``. (`#2646 <https://github.com/beeware/toga/issues/2646>`__)
+* The APIs on ``Window`` for displaying dialogs (``info_dialog()``, ``question_dialog()``, etc) have been deprecated. They can be replaced with creating an instance of a ``Dialog`` class (e.g., ``InfoDialog``), and passing that instance to ``window.dialog()``. (`#2669 <https://github.com/beeware/toga/issues/2669>`__)
+
+Documentation
+-------------
+
+* Building Toga's documentation now requires the use of Python 3.12. (`#2745 <https://github.com/beeware/toga/issues/2745>`__)
+
+Misc
+----
+
+* `#2382 <https://github.com/beeware/toga/issues/2382>`__, `#2635 <https://github.com/beeware/toga/issues/2635>`__, `#2640 <https://github.com/beeware/toga/issues/2640>`__, `#2647 <https://github.com/beeware/toga/issues/2647>`__, `#2648 <https://github.com/beeware/toga/issues/2648>`__, `#2654 <https://github.com/beeware/toga/issues/2654>`__, `#2657 <https://github.com/beeware/toga/issues/2657>`__, `#2660 <https://github.com/beeware/toga/issues/2660>`__, `#2665 <https://github.com/beeware/toga/issues/2665>`__, `#2668 <https://github.com/beeware/toga/issues/2668>`__, `#2675 <https://github.com/beeware/toga/issues/2675>`__, `#2676 <https://github.com/beeware/toga/issues/2676>`__, `#2677 <https://github.com/beeware/toga/issues/2677>`__, `#2682 <https://github.com/beeware/toga/issues/2682>`__, `#2683 <https://github.com/beeware/toga/issues/2683>`__, `#2684 <https://github.com/beeware/toga/issues/2684>`__, `#2689 <https://github.com/beeware/toga/issues/2689>`__, `#2693 <https://github.com/beeware/toga/issues/2693>`__, `#2694 <https://github.com/beeware/toga/issues/2694>`__, `#2695 <https://github.com/beeware/toga/issues/2695>`__, `#2696 <https://github.com/beeware/toga/issues/2696>`__, `#2697 <https://github.com/beeware/toga/issues/2697>`__, `#2698 <https://github.com/beeware/toga/issues/2698>`__, `#2699 <https://github.com/beeware/toga/issues/2699>`__, `#2709 <https://github.com/beeware/toga/issues/2709>`__, `#2710 <https://github.com/beeware/toga/issues/2710>`__, `#2711 <https://github.com/beeware/toga/issues/2711>`__, `#2712 <https://github.com/beeware/toga/issues/2712>`__, `#2722 <https://github.com/beeware/toga/issues/2722>`__, `#2723 <https://github.com/beeware/toga/issues/2723>`__, `#2724 <https://github.com/beeware/toga/issues/2724>`__, `#2726 <https://github.com/beeware/toga/issues/2726>`__, `#2727 <https://github.com/beeware/toga/issues/2727>`__, `#2728 <https://github.com/beeware/toga/issues/2728>`__, `#2733 <https://github.com/beeware/toga/issues/2733>`__, `#2734 <https://github.com/beeware/toga/issues/2734>`__, `#2735 <https://github.com/beeware/toga/issues/2735>`__, `#2736 <https://github.com/beeware/toga/issues/2736>`__, `#2739 <https://github.com/beeware/toga/issues/2739>`__, `#2740 <https://github.com/beeware/toga/issues/2740>`__, `#2742 <https://github.com/beeware/toga/issues/2742>`__, `#2743 <https://github.com/beeware/toga/issues/2743>`__, `#2755 <https://github.com/beeware/toga/issues/2755>`__, `#2756 <https://github.com/beeware/toga/issues/2756>`__, `#2757 <https://github.com/beeware/toga/issues/2757>`__, `#2758 <https://github.com/beeware/toga/issues/2758>`__, `#2760 <https://github.com/beeware/toga/issues/2760>`__, `#2771 <https://github.com/beeware/toga/issues/2771>`__, `#2775 <https://github.com/beeware/toga/issues/2775>`__, `#2776 <https://github.com/beeware/toga/issues/2776>`__, `#2777 <https://github.com/beeware/toga/issues/2777>`__, `#2783 <https://github.com/beeware/toga/issues/2783>`__, `#2788 <https://github.com/beeware/toga/issues/2788>`__, `#2789 <https://github.com/beeware/toga/issues/2789>`__, `#2790 <https://github.com/beeware/toga/issues/2790>`__
+
+
 0.4.5 (2024-06-11)
 ==================
 

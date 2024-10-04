@@ -11,6 +11,9 @@ class OptionContainerProbe(SimpleProbe):
     def select_tab(self, index):
         self.native.SelectedIndex = index
 
+    async def wait_for_tab(self, message):
+        await self.redraw(message)
+
     def tab_enabled(self, index):
         return self.native.TabPages[index].Enabled
 
