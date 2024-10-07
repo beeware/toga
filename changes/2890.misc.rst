@@ -1,1 +1,0 @@
-Android dependencies in the testbed app were bumped to match the Briefcase bootstrap template.
