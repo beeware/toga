@@ -10,13 +10,14 @@ install a backend that implements the core Toga API for that platform:
 * **iOS** `toga-iOS <https://pypi.org/project/toga-iOS>`__
 * **Linux** `toga-gtk <https://pypi.org/project/toga-gtk>`__
 * **macOS** `toga-cocoa <https://pypi.org/project/toga-cocoa>`__
+* **Textual** `toga-textual <https://pypi.org/project/toga-textual>`__
 * **Web** `toga-web <https://pypi.org/project/toga-web>`__
 * **Windows** `toga-winforms <https://pypi.org/project/toga-winforms>`__
 
 Minimum requirements
 --------------------
 
-Toga requires **Python 3.8** or newer. Python 2 is not supported.
+Toga requires **Python 3.9** or newer. Python 2 is not supported.
 
 Each backend also has specific requirements and pre-requisites. See the `platform
 documentation <https://toga.readthedocs.io/en/latest/reference/platforms.html>`__ for
