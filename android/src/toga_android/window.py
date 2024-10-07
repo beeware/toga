@@ -146,7 +146,7 @@ class Window(Container):
     # Window state
     ######################################################################
 
-    def get_window_state(self):
+    def get_window_state(self, actual_state=True):
         # `window.state` is called in `_close()`, which itself is
         # sometimes called during certain stages when the app
         # attribute may not exist. In such cases, return NORMAL.

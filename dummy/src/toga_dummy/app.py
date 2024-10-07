@@ -2,8 +2,6 @@ import asyncio
 import sys
 from pathlib import Path
 
-from toga.constants import WindowState
-
 from .screens import Screen as ScreenImpl
 from .utils import LoggedObject
 
@@ -130,21 +128,6 @@ class App(LoggedObject):
     def set_current_window(self, window):
         self._action("set_current_window", window=window)
         self._set_value("current_window", window._impl)
-
-    ######################################################################
-    # Presentation mode control
-    ######################################################################
-
-    def enter_presentation_mode(self, screen_window_dict):
-        self._action("enter presentation mode", screen_window_dict=screen_window_dict)
-        for screen, window in screen_window_dict.items():
-            window._impl.set_window_state(WindowState.PRESENTATION)
-
-    def exit_presentation_mode(self):
-        self._action("exit presentation mode")
-        for window in self.interface.windows:
-            if window.state == WindowState.PRESENTATION:
-                window._impl.set_window_state(WindowState.NORMAL)
 
 
 class DocumentApp(App):

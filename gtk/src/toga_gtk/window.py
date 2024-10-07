@@ -32,11 +32,7 @@ class Window:
         self.native.connect("window-state-event", self.gtk_window_state_event)
 
         self._window_state_flags = None
-
-        # Gdk.WindowState.FULLSCREEN is notified before it fully transitions to fullscreen,
-        # Use shadow variables to differentiate between the presentation & fullscreen state.
         self._in_presentation = False
-
         # Pending Window state transition variable:
         self._pending_state_transition = None
 
@@ -168,21 +164,22 @@ class Window:
     # Window state
     ######################################################################
 
-    def get_window_state(self):
+    def get_window_state(self, actual_state=True):
+        if not actual_state and self._pending_state_transition:
+            return self._pending_state_transition
         window_state_flags = self._window_state_flags
-        if not window_state_flags:
-            return
-        if window_state_flags & Gdk.WindowState.MAXIMIZED:
-            return WindowState.MAXIMIZED
-        elif window_state_flags & Gdk.WindowState.ICONIFIED:
-            return WindowState.MINIMIZED  # pragma: no-cover-if-linux-wayland
-        elif window_state_flags & Gdk.WindowState.FULLSCREEN:
-            if self._in_presentation:
-                return WindowState.PRESENTATION
-            else:
-                return WindowState.FULLSCREEN
-        else:
-            return WindowState.NORMAL
+        if window_state_flags:
+            if window_state_flags & Gdk.WindowState.MAXIMIZED:
+                return WindowState.MAXIMIZED
+            elif window_state_flags & Gdk.WindowState.ICONIFIED:
+                return WindowState.MINIMIZED  # pragma: no-cover-if-linux-wayland
+            elif window_state_flags & Gdk.WindowState.FULLSCREEN:
+                return (
+                    WindowState.PRESENTATION
+                    if self._in_presentation
+                    else WindowState.FULLSCREEN
+                )
+        return WindowState.NORMAL
 
     def set_window_state(self, state):
         if IS_WAYLAND and (

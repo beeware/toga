@@ -130,16 +130,12 @@ class Window(LoggedObject):
     # Window state
     ######################################################################
 
-    def set_full_screen(self, is_full_screen):
-        self._action("set full screen", full_screen=is_full_screen)
-
-    def get_window_state(self):
+    def get_window_state(self, actual_state=True):
         return self._get_value("state", WindowState.NORMAL)
 
     def set_window_state(self, state):
-        if state != self.get_window_state():
-            self._action(f"set window state to {state}", state=state)
-            self._set_value("state", state)
+        self._action(f"set window state to {state}", state=state)
+        self._set_value("state", state)
 
     ######################################################################
     # Window capabilities
