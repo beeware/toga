@@ -1,11 +1,10 @@
 from __future__ import annotations
 
 import itertools
-import sys
 from abc import ABC, abstractmethod
-from collections.abc import Iterator
+from collections.abc import Iterator, Mapping, Sequence
 from pathlib import Path
-from typing import TYPE_CHECKING, Mapping, Sequence
+from typing import TYPE_CHECKING
 
 import toga
 from toga import dialogs
@@ -225,12 +224,7 @@ class DocumentSet(Sequence[Document], Mapping[Path, Document]):
             return self.elements[path_or_index]
 
         # Look up by path
-        if sys.version_info < (3, 9):  # pragma: no-cover-if-gte-py39
-            # resolve() *should* turn the path into an absolute path;
-            # but on Windows, with Python 3.8, it doesn't.
-            path = Path(path_or_index).absolute().resolve()
-        else:  # pragma: no-cover-if-lt-py39
-            path = Path(path_or_index).resolve()
+        path = Path(path_or_index).resolve()
         for item in self.elements:
             if item.path == path:
                 return item
@@ -320,12 +314,7 @@ class DocumentSet(Sequence[Document], Mapping[Path, Document]):
             match a registered document type.
         """
         try:
-            if sys.version_info < (3, 9):  # pragma: no-cover-if-gte-py39
-                # resolve() *should* turn the path into an absolute path;
-                # but on Windows, with Python 3.8, it doesn't.
-                path = Path(path).absolute().resolve()
-            else:  # pragma: no-cover-if-lt-py39
-                path = Path(path).resolve()
+            path = Path(path).resolve()
             document = self.app.documents[path]
             document.focus()
             return document
