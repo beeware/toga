@@ -41,7 +41,7 @@ class MapView(Widget):
         if OSMMapView is None:  # pragma: no cover
             raise RuntimeError(
                 "Unable to import MapView. Ensure that the OSMDroid Android "
-                "system package (org.osmdroid:osmdroid-android:6.1.0) "
+                "system package (org.osmdroid:osmdroid-android:6.1.20) "
                 "is listed in your app's dependencies."
             )
 
