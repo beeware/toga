@@ -6,12 +6,11 @@ import sys
 import traceback
 import warnings
 from abc import ABC
+from collections.abc import Awaitable, Generator
 from typing import (
     TYPE_CHECKING,
     Any,
-    Awaitable,
     Callable,
-    Generator,
     NoReturn,
     Protocol,
     TypeVar,
