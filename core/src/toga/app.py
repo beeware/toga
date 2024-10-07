@@ -959,7 +959,7 @@ class App:
             stacklevel=2,
         )
         if self.in_presentation_mode:
-            self._impl.exit_presentation_mode()
+            self.exit_presentation_mode()
 
     @property
     def is_full_screen(self) -> bool:
@@ -984,7 +984,7 @@ class App:
         )
         self.exit_presentation_mode()
         if windows:
-            self.enter_presentation_mode([*windows])
+            self.enter_presentation_mode(list(windows))
 
     ######################################################################
     # End backwards compatibility

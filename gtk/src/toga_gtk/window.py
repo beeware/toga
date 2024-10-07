@@ -185,10 +185,9 @@ class Window:
         if IS_WAYLAND and (
             state == WindowState.MINIMIZED
         ):  # pragma: no-cover-if-linux-x
-            # Not implemented on wayland due to wayland security policies.
-            self.interface.factory.not_implemented(
-                "Window.set_window_state(WindowState.MINIMIZED) on Wayland"
-            )
+            # Not implemented on wayland due to wayland interpretation of an app's
+            # responsibility.
+            return
         else:
             if self._pending_state_transition:
                 self._pending_state_transition = state

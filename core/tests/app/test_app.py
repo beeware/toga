@@ -483,20 +483,21 @@ def test_presentation_mode_with_windows_list(event_loop, windows):
     # Enter presentation mode with 1 or more windows:
     app.enter_presentation_mode(windows_list)
     assert app.in_presentation_mode
-    assert_action_performed_with(
-        app,
-        "enter presentation mode",
-        screen_window_dict={
-            app.screens[i]: window for i, window in enumerate(windows_list)
-        },
-    )
+    for window in windows_list:
+        assert_action_performed_with(
+            window,
+            "set window state to WindowState.PRESENTATION",
+            state=WindowState.PRESENTATION,
+        )
     # Exit presentation mode:
     app.exit_presentation_mode()
     assert not app.in_presentation_mode
-    assert_action_performed(
-        app,
-        "exit presentation mode",
-    )
+    for window in windows_list:
+        assert_action_performed_with(
+            window,
+            "set window state to WindowState.NORMAL",
+            state=WindowState.NORMAL,
+        )
 
 
 @pytest.mark.parametrize(
@@ -518,18 +519,22 @@ def test_presentation_mode_with_screen_window_dict(event_loop, windows):
     # Enter presentation mode with a 1 or more elements screen-window dict:
     app.enter_presentation_mode(screen_window_dict)
     assert app.in_presentation_mode
-    assert_action_performed_with(
-        app,
-        "enter presentation mode",
-        screen_window_dict=screen_window_dict,
-    )
+    for screen, window in screen_window_dict.items():
+        assert_action_performed_with(
+            window,
+            "set window state to WindowState.PRESENTATION",
+            state=WindowState.PRESENTATION,
+        )
+
     # Exit presentation mode:
     app.exit_presentation_mode()
     assert not app.in_presentation_mode
-    assert_action_performed(
-        app,
-        "exit presentation mode",
-    )
+    for screen, window in screen_window_dict.items():
+        assert_action_performed_with(
+            window,
+            "set window state to WindowState.NORMAL",
+            state=WindowState.NORMAL,
+        )
 
 
 def test_presentation_mode_with_excess_windows_list(event_loop):
@@ -546,17 +551,36 @@ def test_presentation_mode_with_excess_windows_list(event_loop):
     app.enter_presentation_mode([window1, window2, window3])
     assert app.in_presentation_mode
     assert_action_performed_with(
-        app,
-        "enter presentation mode",
-        screen_window_dict={app.screens[0]: window1, app.screens[1]: window2},
+        window1,
+        "set window state to WindowState.PRESENTATION",
+        state=WindowState.PRESENTATION,
+    )
+    assert_action_performed_with(
+        window2,
+        "set window state to WindowState.PRESENTATION",
+        state=WindowState.PRESENTATION,
+    )
+    assert_action_not_performed(
+        window3,
+        "set window state to WindowState.PRESENTATION",
     )
 
     # Exit presentation mode:
     app.exit_presentation_mode()
     assert not app.in_presentation_mode
-    assert_action_performed(
-        app,
-        "exit presentation mode",
+    assert_action_performed_with(
+        window1,
+        "set window state to WindowState.NORMAL",
+        state=WindowState.NORMAL,
+    )
+    assert_action_performed_with(
+        window2,
+        "set window state to WindowState.NORMAL",
+        state=WindowState.NORMAL,
+    )
+    assert_action_not_performed(
+        window3,
+        "set window state to WindowState.NORMAL",
     )
 
 
@@ -573,9 +597,13 @@ def test_presentation_mode_with_some_windows(event_loop):
     app.enter_presentation_mode([window1])
     assert app.in_presentation_mode
     assert_action_performed_with(
-        app,
-        "enter presentation mode",
-        screen_window_dict={app.screens[0]: window1},
+        window1,
+        "set window state to WindowState.PRESENTATION",
+        state=WindowState.PRESENTATION,
+    )
+    assert_action_not_performed(
+        window2,
+        "set window state to WindowState.PRESENTATION",
     )
     assert window1.state == WindowState.PRESENTATION
     assert window2.state != WindowState.PRESENTATION
@@ -583,9 +611,14 @@ def test_presentation_mode_with_some_windows(event_loop):
     # Exit presentation mode:
     app.exit_presentation_mode()
     assert not app.in_presentation_mode
-    assert_action_performed(
-        app,
-        "exit presentation mode",
+    assert_action_performed_with(
+        window1,
+        "set window state to WindowState.NORMAL",
+        state=WindowState.NORMAL,
+    )
+    assert_action_not_performed(
+        window2,
+        "set window state to WindowState.NORMAL",
     )
     assert window1.state != WindowState.PRESENTATION
     assert window2.state != WindowState.PRESENTATION
@@ -600,18 +633,24 @@ def test_presentation_mode_no_op(event_loop):
     # Entering presentation mode without any window is a no-op.
     with pytest.raises(TypeError):
         app.enter_presentation_mode()
-    assert_action_not_performed(app, "enter presentation mode")
     assert not app.in_presentation_mode
+    assert_action_not_performed(
+        app.main_window, "set window state to WindowState.PRESENTATION"
+    )
 
     # Entering presentation mode with an empty dict, is a no-op:
     app.enter_presentation_mode({})
     assert not app.in_presentation_mode
-    assert_action_not_performed(app, "enter presentation mode")
+    assert_action_not_performed(
+        app.main_window, "set window state to WindowState.PRESENTATION"
+    )
 
     # Entering presentation mode with an empty windows list, is a no-op:
     app.enter_presentation_mode([])
     assert not app.in_presentation_mode
-    assert_action_not_performed(app, "enter presentation mode")
+    assert_action_not_performed(
+        app.main_window, "set window state to WindowState.PRESENTATION"
+    )
 
     # Entering presentation mode without proper type of parameter is a no-op.
     with pytest.raises(
@@ -619,8 +658,10 @@ def test_presentation_mode_no_op(event_loop):
         match="Presentation layout should be a list of windows, or a dict mapping windows to screens.",
     ):
         app.enter_presentation_mode(toga.Window())
-    assert_action_not_performed(app, "enter presentation mode")
     assert not app.in_presentation_mode
+    assert_action_not_performed(
+        app.main_window, "set window state to WindowState.PRESENTATION"
+    )
 
 
 def test_show_hide_cursor(app):
@@ -981,7 +1022,10 @@ def test_deprecated_full_screen(event_loop):
         match=is_full_screen_warning,
     ):
         assert not app.is_full_screen
-    assert_action_not_performed(app, "exit presentation mode")
+    assert_action_not_performed(
+        app.main_window,
+        "set window state to WindowState.NORMAL",
+    )
 
     # Trying to enter full screen with no windows is a no-op
     with pytest.warns(
@@ -995,7 +1039,10 @@ def test_deprecated_full_screen(event_loop):
         match=is_full_screen_warning,
     ):
         assert not app.is_full_screen
-    assert_action_not_performed(app, "enter presentation mode")
+    assert_action_not_performed(
+        app.main_window,
+        "set window state to WindowState.PRESENTATION",
+    )
 
     # Enter full screen with 2 windows
     with pytest.warns(
@@ -1009,9 +1056,14 @@ def test_deprecated_full_screen(event_loop):
     ):
         assert app.is_full_screen
     assert_action_performed_with(
-        app,
-        "enter presentation mode",
-        screen_window_dict={app.screens[0]: window2, app.screens[1]: app.main_window},
+        window2,
+        "set window state to WindowState.PRESENTATION",
+        state=WindowState.PRESENTATION,
+    )
+    assert_action_performed_with(
+        app.main_window,
+        "set window state to WindowState.PRESENTATION",
+        state=WindowState.PRESENTATION,
     )
 
     # Change the screens that are full screen
@@ -1026,11 +1078,20 @@ def test_deprecated_full_screen(event_loop):
     ):
         assert app.is_full_screen
     assert_action_performed_with(
-        app,
-        "enter presentation mode",
-        screen_window_dict={app.screens[0]: window2, app.screens[1]: app.main_window},
+        app.main_window,
+        "set window state to WindowState.PRESENTATION",
+        state=WindowState.PRESENTATION,
     )
-
+    assert_action_performed_with(
+        window1,
+        "set window state to WindowState.PRESENTATION",
+        state=WindowState.PRESENTATION,
+    )
+    assert_action_performed_with(
+        window2,
+        "set window state to WindowState.NORMAL",
+        state=WindowState.NORMAL,
+    )
     # Exit full screen mode
     with pytest.warns(
         DeprecationWarning,
@@ -1042,9 +1103,15 @@ def test_deprecated_full_screen(event_loop):
         match=is_full_screen_warning,
     ):
         assert not app.is_full_screen
-    assert_action_performed(
-        app,
-        "exit presentation mode",
+    assert_action_performed_with(
+        app.main_window,
+        "set window state to WindowState.NORMAL",
+        state=WindowState.NORMAL,
+    )
+    assert_action_performed_with(
+        window1,
+        "set window state to WindowState.NORMAL",
+        state=WindowState.NORMAL,
     )
 
 
@@ -1081,9 +1148,14 @@ def test_deprecated_set_empty_full_screen_window_list(event_loop):
     ):
         assert app.is_full_screen
     assert_action_performed_with(
-        app,
-        "enter presentation mode",
-        screen_window_dict={app.screens[0]: window1, app.screens[1]: window2},
+        window1,
+        "set window state to WindowState.PRESENTATION",
+        state=WindowState.PRESENTATION,
+    )
+    assert_action_performed_with(
+        window2,
+        "set window state to WindowState.PRESENTATION",
+        state=WindowState.PRESENTATION,
     )
     # Exit full screen mode by setting no windows full screen
     with pytest.warns(
@@ -1096,7 +1168,13 @@ def test_deprecated_set_empty_full_screen_window_list(event_loop):
         match=is_full_screen_warning,
     ):
         assert not app.is_full_screen
-    assert_action_performed(
-        app,
-        "exit presentation mode",
+    assert_action_performed_with(
+        window1,
+        "set window state to WindowState.NORMAL",
+        state=WindowState.NORMAL,
+    )
+    assert_action_performed_with(
+        window2,
+        "set window state to WindowState.NORMAL",
+        state=WindowState.NORMAL,
     )
