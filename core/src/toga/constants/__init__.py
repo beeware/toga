@@ -93,12 +93,12 @@ class WindowState(Enum):
 
     FULLSCREEN = 3
     """``FULLSCREEN`` state is when the window title bar and window chrome remain
-    **hidden**; But app menu and toolbars remain **visible**.
+    hidden; But app menu and toolbars remain visible.
     """
 
     PRESENTATION = 4
     """``PRESENTATION`` state is when the window title bar, window chrome, app menu
-    and toolbars all remain **hidden**.
+    and toolbars all remain hidden.
 
     A good example is a slideshow app in presentation mode - the only visible content
     is the slide.

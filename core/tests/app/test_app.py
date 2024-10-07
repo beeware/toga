@@ -600,8 +600,8 @@ def test_presentation_mode_no_op(event_loop):
     # Entering presentation mode without any window is a no-op.
     with pytest.raises(TypeError):
         app.enter_presentation_mode()
-        assert_action_not_performed(app, "enter presentation mode")
-        assert not app.in_presentation_mode
+    assert_action_not_performed(app, "enter presentation mode")
+    assert not app.in_presentation_mode
 
     # Entering presentation mode with an empty dict, is a no-op:
     app.enter_presentation_mode({})
@@ -619,8 +619,8 @@ def test_presentation_mode_no_op(event_loop):
         match="Presentation layout should be a list of windows, or a dict mapping windows to screens.",
     ):
         app.enter_presentation_mode(toga.Window())
-        assert_action_not_performed(app, "enter presentation mode")
-        assert not app.in_presentation_mode
+    assert_action_not_performed(app, "enter presentation mode")
+    assert not app.in_presentation_mode
 
 
 def test_show_hide_cursor(app):
