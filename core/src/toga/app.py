@@ -873,11 +873,17 @@ class App:
                 raise ValueError(
                     "Presentation layout should be a list of windows, or a dict mapping windows to screens."
                 )
-            self._impl.enter_presentation_mode(screen_window_dict)
+
+            for screen, window in screen_window_dict.items():
+                window._impl._before_presentation_mode_screen = window.screen
+                window.screen = screen
+                window._impl.set_window_state(WindowState.PRESENTATION)
 
     def exit_presentation_mode(self) -> None:
         """Exit presentation mode."""
-        self._impl.exit_presentation_mode()
+        for window in self.windows:
+            if window.state == WindowState.PRESENTATION:
+                window._impl.set_window_state(WindowState.NORMAL)
 
     ######################################################################
     # App events

@@ -351,7 +351,9 @@ class Window:
     # Window state
     ######################################################################
 
-    def get_window_state(self):
+    def get_window_state(self, actual_state=True):
+        if not actual_state and self._pending_state_transition:
+            return self._pending_state_transition
         if bool(self.container.native.isInFullScreenMode()):
             return WindowState.PRESENTATION
         elif bool(self.native.styleMask & NSWindowStyleMask.FullScreen):
@@ -390,11 +392,8 @@ class Window:
             ):
                 self.interface.app.exit_presentation_mode()
 
-            current_state = self.get_window_state()
-            if current_state == state:
-                return
             self._pending_state_transition = state
-            if current_state != WindowState.NORMAL:
+            if self.get_window_state() != WindowState.NORMAL:
                 self._apply_state(WindowState.NORMAL)
             else:
                 self._apply_state(state)

@@ -473,7 +473,7 @@ class Window:
     @property
     def state(self) -> WindowState:
         """The current state of the window."""
-        return self._impl.get_window_state()
+        return self._impl.get_window_state(actual_state=False)
 
     @state.setter
     def state(self, state: WindowState) -> None:
@@ -492,7 +492,8 @@ class Window:
             # as non-blocking OS calls may not have completed at the time
             # the core checks the current state. This could lead to incorrect
             # assertions and potential glitches.
-            self._impl.set_window_state(state)
+            if not self.state == state:
+                self._impl.set_window_state(state)
 
     ######################################################################
     # Window capabilities

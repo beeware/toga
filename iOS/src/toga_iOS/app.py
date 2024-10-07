@@ -151,13 +151,3 @@ class App:
     def set_current_window(self, window):
         # iOS only has a main window, so this is a no-op
         pass
-
-    ######################################################################
-    # Presentation mode controls
-    ######################################################################
-
-    def enter_presentation_mode(self, screen_window_dict):
-        self.interface.factory.not_implemented("App.enter_presentation_mode()")
-
-    def exit_presentation_mode(self):
-        self.interface.factory.not_implemented("App.exit_presentation_mode()")

@@ -205,11 +205,8 @@ class Window:
                 ):
                     self.interface.app.exit_presentation_mode()
 
-                current_state = self.get_window_state()
-                if current_state == state:
-                    return
                 self._pending_state_transition = state
-                if current_state != WindowState.NORMAL:
+                if self.get_window_state() != WindowState.NORMAL:
                     self._apply_state(WindowState.NORMAL)
                 else:
                     self._apply_state(state)
