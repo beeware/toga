@@ -105,7 +105,7 @@ Notes
 
 * On Linux, when using Wayland, a request to put a window into a
   :any:`WindowState.MINIMIZED` state, or to restore from the
-  :any:`WindowState.MINIMIZED` state, will be ignored. This is due to 
+  :any:`WindowState.MINIMIZED` state, will be ignored. This is due to
   limitations in window management features that Wayland allows apps to use.
 
 Reference
