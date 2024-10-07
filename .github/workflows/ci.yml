@@ -75,24 +75,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [ "macos-12", "macos-14", "ubuntu-latest", "windows-latest" ]
-        python-version: [ "3.9", "3.12", "3.13-dev" ]
+        platform: [ "macos-latest", "ubuntu-latest", "windows-latest" ]
+        python-version: [ "3.9", "3.10", "3.11", "3.12", "3.13-dev" ]
         include:
         - experimental: false
-        # Test Python 3.10, 3.11 on Ubuntu only
-        - platform: "ubuntu-latest"
-          python-version: "3.10"
-          experimental: false
-        - platform: "ubuntu-latest"
-          python-version: "3.11"
-          experimental: false
         # Allow development Python to fail without failing entire job.
         - python-version: "3.13-dev"
           experimental: true
-        exclude:
-        # Pillow isn't available for Python 3.13 on Windows
-        - platform: "windows-latest"
-          python-version: "3.13-dev"
+
     steps:
     - name: Checkout
       uses: actions/checkout@v4.2.0

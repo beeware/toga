@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import itertools
+import sys
 from abc import ABC, abstractmethod
 from collections.abc import Iterator, Mapping, Sequence
 from pathlib import Path
@@ -224,7 +225,12 @@ class DocumentSet(Sequence[Document], Mapping[Path, Document]):
             return self.elements[path_or_index]
 
         # Look up by path
-        path = Path(path_or_index).resolve()
+        if sys.version_info < (3, 10):  # pragma: no-cover-if-gte-py310
+            # resolve() *should* turn the path into an absolute path;
+            # but on Windows, with Python 3.9, it doesn't.
+            path = Path(path_or_index).absolute().resolve()
+        else:  # pragma: no-cover-if-lt-py310
+            path = Path(path_or_index).resolve()
         for item in self.elements:
             if item.path == path:
                 return item
@@ -314,7 +320,12 @@ class DocumentSet(Sequence[Document], Mapping[Path, Document]):
             match a registered document type.
         """
         try:
-            path = Path(path).resolve()
+            if sys.version_info < (3, 10):  # pragma: no-cover-if-gte-py310
+                # resolve() *should* turn the path into an absolute path;
+                # but on Windows, with Python 3.9, it doesn't.
+                path = Path(path).absolute().resolve()
+            else:  # pragma: no-cover-if-lt-py310
+                path = Path(path).resolve()
             document = self.app.documents[path]
             document.focus()
             return document
