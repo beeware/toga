@@ -65,7 +65,7 @@ async def ensure_initial_focus(widget, probe):
         widget.focus()
         await probe.redraw("A separate widget should be given focus")
 
-        if widget.has_focus:
+        if probe.has_focus:
             return
         else:
             attempt += 1
