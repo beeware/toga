@@ -232,14 +232,15 @@ jobs:
 
         - backend: "linux-wayland"
           platform: "linux"
-          runs-on: "ubuntu-22.04"
+          runs-on: "ubuntu-24.04"
           # The package list should be the same as in tutorial-0.rst, and the BeeWare
-          # tutorial, plus mutter to provide a window manager, and libjpeg-dev for Pillow.
+          # tutorial, plus mutter to provide a window manager.
           pre-command: |
             sudo apt update -y
             sudo apt install -y --no-install-recommends \
               mutter pkg-config python3-dev libgirepository1.0-dev libcairo2-dev \
-              gir1.2-webkit2-4.1 gir1.2-xapp-1.0
+              gir1.2-webkit2-4.1 gir1.2-xapp-1.0 \
+              libjpeg-dev  # remove once the version of Pillow has a wheel on PyPI for Python 3.12
 
             # Start Virtual X Server
             echo "Start X server..."
@@ -333,6 +334,8 @@ jobs:
         python-version: "3.10"
 
     - name: Install Dependencies
+      env:
+        PIP_BREAK_SYSTEM_PACKAGES: "1"
       run: |
         ${{ matrix.pre-command }}
         # Use the development version of Briefcase
