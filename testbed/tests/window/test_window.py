@@ -1,5 +1,4 @@
 import gc
-import itertools
 import re
 import weakref
 from importlib import import_module
@@ -140,63 +139,6 @@ if toga.platform.current_platform in {"iOS", "android"}:
         finally:
             main_window.content = orig_content
 
-    @pytest.fixture(scope="session")
-    def intermediate_states_cycle():
-        # Use a iterator cycling fixture to ensure each state is the initial
-        # intermediate state at least once and to test specific problematic
-        # combinations. This is to ensure full code coverage for all backends.
-        intermediate_states = [
-            (
-                WindowState.NORMAL,
-                WindowState.FULLSCREEN,
-                WindowState.PRESENTATION,
-                WindowState.NORMAL,
-                WindowState.FULLSCREEN,
-                WindowState.PRESENTATION,
-            ),
-            (
-                WindowState.FULLSCREEN,
-                WindowState.NORMAL,
-                WindowState.PRESENTATION,
-                WindowState.FULLSCREEN,
-                WindowState.PRESENTATION,
-                WindowState.NORMAL,
-            ),
-            (
-                WindowState.PRESENTATION,
-                WindowState.FULLSCREEN,
-                WindowState.NORMAL,
-                WindowState.PRESENTATION,
-                WindowState.NORMAL,
-                WindowState.FULLSCREEN,
-            ),
-            (
-                WindowState.NORMAL,
-                WindowState.PRESENTATION,
-                WindowState.FULLSCREEN,
-                WindowState.NORMAL,
-                WindowState.PRESENTATION,
-                WindowState.FULLSCREEN,
-            ),
-            (
-                WindowState.FULLSCREEN,
-                WindowState.PRESENTATION,
-                WindowState.NORMAL,
-                WindowState.FULLSCREEN,
-                WindowState.NORMAL,
-                WindowState.PRESENTATION,
-            ),
-            (
-                WindowState.PRESENTATION,
-                WindowState.NORMAL,
-                WindowState.FULLSCREEN,
-                WindowState.PRESENTATION,
-                WindowState.FULLSCREEN,
-                WindowState.NORMAL,
-            ),
-        ]
-        return itertools.cycle(intermediate_states)
-
     @pytest.mark.parametrize(
         "initial_state, final_state",
         [
@@ -211,13 +153,34 @@ if toga.platform.current_platform in {"iOS", "android"}:
             (WindowState.PRESENTATION, WindowState.FULLSCREEN),
         ],
     )
+    @pytest.mark.parametrize(
+        "intermediate_states",
+        [
+            (
+                WindowState.FULLSCREEN,
+                WindowState.PRESENTATION,
+                WindowState.NORMAL,
+                WindowState.FULLSCREEN,
+                WindowState.NORMAL,
+                WindowState.PRESENTATION,
+            ),
+            (
+                WindowState.PRESENTATION,
+                WindowState.FULLSCREEN,
+                WindowState.NORMAL,
+                WindowState.PRESENTATION,
+                WindowState.NORMAL,
+                WindowState.FULLSCREEN,
+            ),
+        ],
+    )
     async def test_window_state_change_with_intermediate_states(
         app,
         initial_state,
         final_state,
         main_window,
         main_window_probe,
-        intermediate_states_cycle,
+        intermediate_states,
     ):
         """Window state can be directly changed to another state."""
         if not main_window_probe.supports_fullscreen and WindowState.FULLSCREEN in {
@@ -234,7 +197,6 @@ if toga.platform.current_platform in {"iOS", "android"}:
             }
         ):
             pytest.xfail("This backend doesn't support presentation window state.")
-        intermediate_states = next(intermediate_states_cycle)
 
         # Set to initial state
         main_window.state = initial_state
@@ -725,63 +687,6 @@ else:
         assert second_window.size == (250 + extra_width, 210 + extra_height)
         assert second_window_probe.content_size == (250, 210)
 
-    @pytest.fixture(scope="session")
-    def intermediate_states_cycle():
-        # Use a iterator cycling fixture to ensure each state is the initial
-        # intermediate state at least once and to test specific problematic
-        # combinations. This is to ensure full code coverage for all backends.
-        intermediate_states = [
-            (
-                WindowState.NORMAL,
-                WindowState.MINIMIZED,
-                WindowState.PRESENTATION,
-                WindowState.FULLSCREEN,
-                WindowState.MAXIMIZED,
-                WindowState.MINIMIZED,
-            ),
-            (
-                WindowState.MINIMIZED,
-                WindowState.FULLSCREEN,
-                WindowState.PRESENTATION,
-                WindowState.NORMAL,
-                WindowState.FULLSCREEN,
-                WindowState.MAXIMIZED,
-            ),
-            (
-                WindowState.MAXIMIZED,
-                WindowState.MINIMIZED,
-                WindowState.NORMAL,
-                WindowState.FULLSCREEN,
-                WindowState.MINIMIZED,
-                WindowState.PRESENTATION,
-            ),
-            (
-                WindowState.FULLSCREEN,
-                WindowState.MAXIMIZED,
-                WindowState.MINIMIZED,
-                WindowState.PRESENTATION,
-                WindowState.FULLSCREEN,
-                WindowState.NORMAL,
-            ),
-            (
-                WindowState.PRESENTATION,
-                WindowState.FULLSCREEN,
-                WindowState.NORMAL,
-                WindowState.MAXIMIZED,
-                WindowState.MINIMIZED,
-                WindowState.FULLSCREEN,
-            ),
-            (
-                WindowState.MINIMIZED,
-                WindowState.FULLSCREEN,
-                WindowState.PRESENTATION,
-                WindowState.MAXIMIZED,
-                WindowState.MINIMIZED,
-                WindowState.FULLSCREEN,
-            ),
-        ]
-        return itertools.cycle(intermediate_states)
-
     @pytest.mark.parametrize(
         "initial_state, final_state",
         [
@@ -818,6 +723,27 @@ else:
         ],
     )
     @pytest.mark.parametrize(
+        "intermediate_states",
+        [
+            (
+                WindowState.MINIMIZED,
+                WindowState.FULLSCREEN,
+                WindowState.PRESENTATION,
+                WindowState.MAXIMIZED,
+                WindowState.MINIMIZED,
+                WindowState.FULLSCREEN,
+            ),
+            (
+                WindowState.FULLSCREEN,
+                WindowState.MAXIMIZED,
+                WindowState.MINIMIZED,
+                WindowState.PRESENTATION,
+                WindowState.FULLSCREEN,
+                WindowState.MINIMIZED,
+            ),
+        ],
+    )
+    @pytest.mark.parametrize(
         "second_window_class, second_window_kwargs",
         [
             (
@@ -833,7 +759,7 @@ else:
         final_state,
         second_window,
         second_window_probe,
-        intermediate_states_cycle,
+        intermediate_states,
     ):
         """Window state can be changed to another state while passing
         through intermediate states with an expected OS delay."""
@@ -844,7 +770,6 @@ else:
             pytest.xfail(
                 "This backend doesn't reliably support minimized window state."
             )
-        intermediate_states = next(intermediate_states_cycle)
         second_window.toolbar.add(app.cmd1)
         second_window.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
         second_window.show()
