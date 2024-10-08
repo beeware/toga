@@ -100,7 +100,9 @@ class TogaWindow(NSWindow):
 
     @objc_method
     def delayedFullScreenExit(self, sender) -> None:
-        self.impl._apply_state(WindowState.NORMAL)
+        # Marking as no cover, since this method is OS delay dependent and doesn't
+        # get covered in CI. However, it does get covered when testbed is run locally.
+        self.impl._apply_state(WindowState.NORMAL)  # pragma: no cover
 
     @objc_method
     def windowDidExitFullScreen_(self, notification) -> None:
