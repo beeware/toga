@@ -1,10 +1,10 @@
-import random
+import itertools
 from unittest.mock import Mock
 
 import pytest
 
 import toga
-from toga.colors import CORNFLOWERBLUE, FIREBRICK, REBECCAPURPLE
+from toga.colors import CORNFLOWERBLUE, FIREBRICK, GOLDENROD, REBECCAPURPLE
 from toga.constants import WindowState
 from toga.style.pack import Pack
 
@@ -172,22 +172,21 @@ async def test_menu_minimize(app, app_probe):
 
 async def test_presentation_mode(app, app_probe, main_window, main_window_probe):
     """The app can enter presentation mode."""
+    bg_colors = (CORNFLOWERBLUE, FIREBRICK, REBECCAPURPLE, GOLDENROD)
+    color_cycle = itertools.cycle(bg_colors)
     window_information_list = list()
-    windows_list = list()
+    screen_window_dict = dict()
     for i in range(len(app.screens)):
         window = toga.Window(title=f"Test Window {i}", size=(200, 200))
-        r = random.randint(0, 255)
-        g = random.randint(0, 255)
-        b = random.randint(0, 255)
-        window_widget = toga.Box(
-            style=Pack(flex=1, background_color=f"#{r:02X}{g:02X}{b:02X}")
-        )
+        window_widget = toga.Box(style=Pack(flex=1, background_color=next(color_cycle)))
         window.content = window_widget
         window.show()
 
         window_information = dict()
         window_information["window"] = window
         window_information["window_probe"] = window_probe(app, window)
+        window_information["initial_screen"] = window_information["window"].screen
+        window_information["paired_screen"] = app.screens[i]
         window_information["initial_content_size"] = window_information[
             "window_probe"
         ].content_size
@@ -197,14 +196,12 @@ async def test_presentation_mode(app, app_probe, main_window, main_window_probe)
             window_information["widget_probe"].height,
         )
         window_information_list.append(window_information)
-        windows_list.append(window)
+        screen_window_dict[window_information["paired_screen"]] = window_information[
+            "window"
+        ]
 
     # Add delay to ensure windows are visible after animation.
     await main_window_probe.wait_for_window("All Test Windows are visible")
-
-    screen_window_dict = dict()
-    for window, screen in zip(windows_list, app.screens):
-        screen_window_dict[screen] = window
 
     # Enter presentation mode with a screen-window dict via the app
     app.enter_presentation_mode(screen_window_dict)
@@ -218,6 +215,8 @@ async def test_presentation_mode(app, app_probe, main_window, main_window_probe)
         assert (
             window_information["window"].state == WindowState.PRESENTATION
         ), f"{window_information['window'].title}:"
+        # 1000x700 is a size that is bigger that the original
+        # window size, while being smaller than any likely screen.
         assert (
             window_information["window_probe"].content_size[0] > 1000
         ), f"{window_information['window'].title}:"
@@ -229,6 +228,9 @@ async def test_presentation_mode(app, app_probe, main_window, main_window_probe)
             > window_information["initial_widget_size"][0]
             and window_information["widget_probe"].height
             > window_information["initial_widget_size"][1]
+        ), f"{window_information['window'].title}:"
+        assert (
+            window_information["window"].screen == window_information["paired_screen"]
         ), f"{window_information['window'].title}:"
 
     # Exit presentation mode
@@ -251,6 +253,9 @@ async def test_presentation_mode(app, app_probe, main_window, main_window_probe)
             == window_information["initial_widget_size"][0]
             and window_information["widget_probe"].height
             == window_information["initial_widget_size"][1]
+        ), f"{window_information['window'].title}:"
+        assert (
+            window_information["window"].screen == window_information["initial_screen"]
         ), f"{window_information['window'].title}:"
 
 

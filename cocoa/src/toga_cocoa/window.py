@@ -85,20 +85,22 @@ class TogaWindow(NSWindow):
 
     @objc_method
     def windowDidEnterFullScreen_(self, notification) -> None:
-        # Directly doing post-fullscreen operations here will result in error:
-        # ````2024-08-09 15:46:39.050 python[2646:37395] not in fullscreen state````
-        # and any subsequent window state calls to the OS will not work or will be glitchy.
-        self.performSelector(SEL("enteredFullScreen:"), withObject=None, afterDelay=0)
-
-    @objc_method
-    def enteredFullScreen_(self, sender) -> None:
         if (
             self.impl._pending_state_transition
             and self.impl._pending_state_transition != WindowState.FULLSCREEN
         ):
-            self.impl._apply_state(WindowState.NORMAL)
+            # Directly exiting fullscreen without a delay will result in error:
+            # ````2024-08-09 15:46:39.050 python[2646:37395] not in fullscreen state````
+            # and any subsequent window state calls to the OS will not work or will be glitchy.
+            self.performSelector(
+                SEL("delayedFullScreenExit:"), withObject=None, afterDelay=0
+            )
         else:
             self.impl._pending_state_transition = None
+
+    @objc_method
+    def delayedFullScreenExit(self, sender) -> None:
+        self.impl._apply_state(WindowState.NORMAL)
 
     @objc_method
     def windowDidExitFullScreen_(self, notification) -> None:
