@@ -363,6 +363,29 @@ def test_window_state(window, initial_state, final_state):
 @pytest.mark.parametrize(
     "state",
     [
+        WindowState.NORMAL,
+        WindowState.MINIMIZED,
+        WindowState.MAXIMIZED,
+        WindowState.FULLSCREEN,
+        WindowState.PRESENTATION,
+    ],
+)
+def test_window_state_same_as_current(window, state):
+    """Setting window state the same as current is a no-op."""
+    window.state = state
+    assert window.state == state
+
+    # Reset the EventLog to check that the action was not re-performed.
+    EventLog.reset()
+
+    window.state = state
+    assert window.state == state
+    assert_action_not_performed(window, f"set window state to {state}")
+
+
+@pytest.mark.parametrize(
+    "state",
+    [
         WindowState.MAXIMIZED,
         WindowState.FULLSCREEN,
         WindowState.PRESENTATION,

@@ -57,6 +57,8 @@ class Window(LoggedObject):
         self.set_position(position if position is not None else _initial_position())
         self.set_size(size)
 
+        self._state = WindowState.NORMAL
+
     ######################################################################
     # Window properties
     ######################################################################
@@ -131,11 +133,14 @@ class Window(LoggedObject):
     ######################################################################
 
     def get_window_state(self, actual_state=True):
-        return self._get_value("state", WindowState.NORMAL)
+        return self._state
 
     def set_window_state(self, state):
         self._action(f"set window state to {state}", state=state)
-        self._set_value("state", state)
+        # We cannot store the state value on the EventLog, since the state
+        # value would be cleared on EventLog.reset(), thereby preventing us
+        # from testing no-op condition of assigning same state as current.
+        self._state = state
 
     ######################################################################
     # Window capabilities
