@@ -1,0 +1,1 @@
+An intermittent failure in the testbed focus tests under Wayland on Linux was resolved.

@@ -63,6 +63,11 @@ async def test_focus(widget, probe, other, other_probe, verify_focus_handlers):
         widget.on_gain_focus = on_gain_handler
         widget.on_lose_focus = on_lose_handler
 
+    # Wayland seems to have an intermittent issue where focus can't be assigned
+    # immediately (See #2871). The working theory is that the widgets aren't quite
+    # ready to accept focus yet; wait for a moment to ensure the widget is ready.
+    await probe.redraw("Wait for the widgets to be ready", delay=0.1)
+
     other.focus()
     await probe.redraw("A separate widget should be given focus")
     assert not probe.has_focus
@@ -98,6 +103,11 @@ async def test_focus(widget, probe, other, other_probe, verify_focus_handlers):
 
 async def test_focus_noop(widget, probe, other, other_probe):
     "The widget cannot be given focus"
+    # Wayland seems to have an intermittent issue where focus can't be assigned
+    # immediately (See #2871). The working theory is that the widgets aren't quite
+    # ready to accept focus yet; wait for a moment to ensure the widget is ready.
+    await probe.redraw("Wait for the widgets to be ready", delay=0.1)
+
     other.focus()
     await probe.redraw("A separate widget should be given focus")
     assert not probe.has_focus
