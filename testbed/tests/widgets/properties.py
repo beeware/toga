@@ -1,6 +1,6 @@
 from unittest.mock import Mock
 
-from pytest import approx
+from pytest import approx, fail
 
 from toga.colors import CORNFLOWERBLUE, RED, TRANSPARENT, color as named_color
 from toga.fonts import (
@@ -55,6 +55,25 @@ async def test_enable_noop(widget, probe):
     assert widget.enabled
 
 
+async def ensure_initial_focus(widget, probe):
+    # Wayland has an intermittent issue where focus can't be assigned immediately (See
+    # #2871). The working theory is that the widgets aren't quite ready to accept focus
+    # yet, but the delay is unpredictable; wait for up to 2 seconds to ensure the widget
+    # is ready.
+    attempt = 0
+    while attempt < 20:
+        widget.focus()
+        await probe.redraw("A separate widget should be given focus")
+
+        if widget.has_focus:
+            return
+        else:
+            attempt += 1
+            await probe.redraw("Wait for other widget to gain focus", delay=0.1)
+
+    fail("Unable to give initial focus to widget")
+
+
 async def test_focus(widget, probe, other, other_probe, verify_focus_handlers):
     "The widget can be given focus"
     if verify_focus_handlers:
@@ -63,13 +82,7 @@ async def test_focus(widget, probe, other, other_probe, verify_focus_handlers):
         widget.on_gain_focus = on_gain_handler
         widget.on_lose_focus = on_lose_handler
 
-    # Wayland seems to have an intermittent issue where focus can't be assigned
-    # immediately (See #2871). The working theory is that the widgets aren't quite
-    # ready to accept focus yet; wait for a moment to ensure the widget is ready.
-    await probe.redraw("Wait for the widgets to be ready", delay=0.1)
-
-    other.focus()
-    await probe.redraw("A separate widget should be given focus")
+    await ensure_initial_focus(other, other_probe)
     assert not probe.has_focus
     assert other_probe.has_focus
 
@@ -103,13 +116,8 @@ async def test_focus(widget, probe, other, other_probe, verify_focus_handlers):
 
 async def test_focus_noop(widget, probe, other, other_probe):
     "The widget cannot be given focus"
-    # Wayland seems to have an intermittent issue where focus can't be assigned
-    # immediately (See #2871). The working theory is that the widgets aren't quite
-    # ready to accept focus yet; wait for a moment to ensure the widget is ready.
-    await probe.redraw("Wait for the widgets to be ready", delay=0.1)
 
-    other.focus()
-    await probe.redraw("A separate widget should be given focus")
+    await ensure_initial_focus(other, other_probe)
     assert not probe.has_focus
     assert other_probe.has_focus
 
