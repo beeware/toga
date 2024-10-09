@@ -7,6 +7,9 @@ from .probe import BaseProbe
 
 
 class WindowProbe(BaseProbe, DialogsMixin):
+    supports_fullscreen = False
+    supports_presentation = False
+
     def __init__(self, app, window):
         super().__init__()
         self.app = app
@@ -15,7 +18,13 @@ class WindowProbe(BaseProbe, DialogsMixin):
         self.native = window._impl.native
         assert isinstance(self.native, UIWindow)
 
-    async def wait_for_window(self, message, minimize=False, full_screen=False):
+    async def wait_for_window(
+        self,
+        message,
+        minimize=False,
+        full_screen=False,
+        rapid_state_switching=False,
+    ):
         await self.redraw(message)
 
     @property

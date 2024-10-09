@@ -31,7 +31,13 @@ class WindowProbe(BaseProbe, DialogsMixin):
         self.native = window._impl.native
         assert isinstance(self.native, Form)
 
-    async def wait_for_window(self, message, minimize=False, full_screen=False):
+    async def wait_for_window(
+        self,
+        message,
+        minimize=False,
+        full_screen=False,
+        rapid_state_switching=False,
+    ):
         await self.redraw(message)
 
     def close(self):
@@ -45,13 +51,6 @@ class WindowProbe(BaseProbe, DialogsMixin):
                 (self.native.ClientSize.Height - self.impl._top_bars_height())
                 / self.scale_factor
             ),
-        )
-
-    @property
-    def is_full_screen(self):
-        return (
-            self.native.FormBorderStyle == getattr(FormBorderStyle, "None")
-            and self.native.WindowState == FormWindowState.Maximized
         )
 
     @property
