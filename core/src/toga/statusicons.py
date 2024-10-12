@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import sys
 from abc import abstractmethod
-from collections.abc import Iterator
-from typing import TYPE_CHECKING, Mapping, Sequence
+from collections.abc import Iterator, Mapping, Sequence
+from typing import TYPE_CHECKING
 
 import toga
 from toga.command import Command, CommandSet, Group

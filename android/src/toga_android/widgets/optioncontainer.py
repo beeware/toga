@@ -59,7 +59,7 @@ class OptionContainer(Widget, Container):
         if BottomNavigationView is None:  # pragma: no cover
             raise RuntimeError(
                 "Unable to import BottomNavigationView. Ensure that the Material "
-                "system package (com.google.android.material:material:1.11.0) "
+                "system package (com.google.android.material:material:1.12.0) "
                 "is listed in your app's dependencies."
             )
 

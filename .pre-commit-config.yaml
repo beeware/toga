@@ -1,7 +1,7 @@
 exclude: "^(examples/.template)/"
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.6.0
+    rev: v5.0.0
     hooks:
       - id: check-toml
       - id: check-yaml
@@ -13,7 +13,7 @@ repos:
     rev: v3.17.0
     hooks:
       - id: pyupgrade
-        args: [--py38-plus]
+        args: [--py39-plus]
   - repo: https://github.com/PyCQA/isort
     rev: 5.13.2
     hooks:

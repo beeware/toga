@@ -42,9 +42,6 @@ no-cover-if-lt-py311 = "sys_version_info < (3, 11) and os_environ.get('COVERAGE_
 no-cover-if-gte-py311 = "sys_version_info > (3, 11) and os_environ.get('COVERAGE_EXCLUDE_PYTHON_VERSION') != 'disable'"
 no-cover-if-lt-py310 = "sys_version_info < (3, 10) and os_environ.get('COVERAGE_EXCLUDE_PYTHON_VERSION') != 'disable'"
 no-cover-if-gte-py310 = "sys_version_info > (3, 10) and os_environ.get('COVERAGE_EXCLUDE_PYTHON_VERSION') != 'disable'"
-no-cover-if-lt-py39 = "sys_version_info < (3, 9) and os_environ.get('COVERAGE_EXCLUDE_PYTHON_VERSION') != 'disable'"
-no-cover-if-gte-py39 = "sys_version_info > (3, 9) and os_environ.get('COVERAGE_EXCLUDE_PYTHON_VERSION') != 'disable'"
-
 
 [tool.isort]
 profile = "black"
