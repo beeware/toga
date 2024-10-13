@@ -174,7 +174,6 @@ if toga.platform.current_platform in {"iOS", "android"}:
             ),
         ],
     )
-    @pytest.mark.skip
     async def test_window_state_change_with_intermediate_states(
         app,
         initial_state,
@@ -211,7 +210,9 @@ if toga.platform.current_platform in {"iOS", "android"}:
 
         # Set to final state
         main_window.state = final_state
-        await main_window_probe.wait_for_window(f"Main window is in {final_state}")
+        await main_window_probe.wait_for_window(
+            f"Main window is in {final_state}", rapid_state_switching=True
+        )
 
         assert main_window.state == final_state
 
