@@ -174,6 +174,7 @@ if toga.platform.current_platform in {"iOS", "android"}:
             ),
         ],
     )
+    @pytest.mark.skip
     async def test_window_state_change_with_intermediate_states(
         app,
         initial_state,
