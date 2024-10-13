@@ -118,7 +118,7 @@ System requirements
 
 * Using MapView on Android requires the OSMDroid package in your project's Gradle
   dependencies. Ensure your app declares a dependency on
-  ``org.osmdroid:osmdroid-android:6.1.0`` or later.
+  ``org\.osmdroid:osmdroid-android:6.1.20`` or later.
 
 Notes
 -----

@@ -16,7 +16,7 @@ on:
         value: ${{ jobs.package.outputs.artifact-basename }}
 
 env:
-  min_python_version: "3.8"
+  min_python_version: "3.9"
   max_python_version: "3.12"
   FORCE_COLOR: "1"
 
@@ -75,30 +75,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [ "macos-12", "macos-14", "ubuntu-latest", "windows-latest" ]
-        python-version: [ "3.8", "3.12", "3.13-dev" ]
+        platform: [ "macos-latest", "ubuntu-latest", "windows-latest" ]
+        python-version: [ "3.9", "3.10", "3.11", "3.12", "3.13" ]
         include:
         - experimental: false
-        # Test Python 3.9-3.11 on Ubuntu only
-        - platform: "ubuntu-latest"
-          python-version: "3.9"
-          experimental: false
-        - platform: "ubuntu-latest"
-          python-version: "3.10"
-          experimental: false
-        - platform: "ubuntu-latest"
-          python-version: "3.11"
-          experimental: false
-        # Allow development Python to fail without failing entire job.
-        - python-version: "3.13-dev"
-          experimental: true
-        exclude:
-        # macos-14 (i.e. arm64) does not support Python 3.8
-        - platform: "macos-14"
-          python-version: "3.8"
-        # Pillow isn't available for Python 3.13 on Windows
-        - platform: "windows-latest"
-          python-version: "3.13-dev"
+
     steps:
     - name: Checkout
       uses: actions/checkout@v4.2.0
@@ -109,6 +90,7 @@ jobs:
       uses: actions/setup-python@v5.2.0
       with:
         python-version: ${{ matrix.python-version }}
+        allow-prereleases: true
 
     - name: Install Tox
       uses: beeware/.github/.github/actions/install-requirement@main
@@ -250,14 +232,15 @@ jobs:
 
         - backend: "linux-wayland"
           platform: "linux"
-          runs-on: "ubuntu-22.04"
+          runs-on: "ubuntu-24.04"
           # The package list should be the same as in tutorial-0.rst, and the BeeWare
-          # tutorial, plus mutter to provide a window manager, and libjpeg-dev for Pillow.
+          # tutorial, plus mutter to provide a window manager.
           pre-command: |
             sudo apt update -y
             sudo apt install -y --no-install-recommends \
               mutter pkg-config python3-dev libgirepository1.0-dev libcairo2-dev \
-              gir1.2-webkit2-4.1 gir1.2-xapp-1.0
+              gir1.2-webkit2-4.1 gir1.2-xapp-1.0 \
+              libjpeg-dev  # remove once the version of Pillow has a wheel on PyPI for Python 3.12
 
             # Start Virtual X Server
             echo "Start X server..."
@@ -351,6 +334,8 @@ jobs:
         python-version: "3.10"
 
     - name: Install Dependencies
+      env:
+        PIP_BREAK_SYSTEM_PACKAGES: "1"
       run: |
         ${{ matrix.pre-command }}
         # Use the development version of Briefcase
