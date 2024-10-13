@@ -510,6 +510,7 @@ async def test_system_dpi_change(
     dpi_change_event(None, None)
     main_window.content.window = None
     main_window.content = main_window_content_original
+    main_window.show()
     await main_window_probe.redraw("Restored original state of main_window")
 
 
