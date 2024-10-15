@@ -132,7 +132,7 @@ class Window(LoggedObject):
     # Window state
     ######################################################################
 
-    def get_window_state(self, in_progress_state=True):
+    def get_window_state(self, in_progress_state=False):
         return self._state
 
     def set_window_state(self, state):

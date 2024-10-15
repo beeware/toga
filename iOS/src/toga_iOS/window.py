@@ -142,7 +142,7 @@ class Window:
     # Window state
     ######################################################################
 
-    def get_window_state(self, in_progress_state=True):
+    def get_window_state(self, in_progress_state=False):
         # Windows are always in NORMAL state.
         return WindowState.NORMAL
 

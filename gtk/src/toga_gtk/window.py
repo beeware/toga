@@ -164,8 +164,8 @@ class Window:
     # Window state
     ######################################################################
 
-    def get_window_state(self, in_progress_state=True):
-        if not in_progress_state and self._pending_state_transition:
+    def get_window_state(self, in_progress_state=False):
+        if in_progress_state and self._pending_state_transition:
             return self._pending_state_transition
         window_state_flags = self._window_state_flags
         if window_state_flags:
