@@ -213,7 +213,8 @@ async def test_presentation_mode(app, app_probe, main_window, main_window_probe)
     # All the windows should be in presentation mode.
     for window_information in window_information_list:
         assert (
-            window_information["window"].state == WindowState.PRESENTATION
+            window_information["window_probe"].instantaneous_state
+            == WindowState.PRESENTATION
         ), f"{window_information['window'].title}:"
         # 1000x700 is bigger than the original window size,
         # while being smaller than any likely screen.
@@ -242,7 +243,7 @@ async def test_presentation_mode(app, app_probe, main_window, main_window_probe)
     assert not app.in_presentation_mode
     for window_information in window_information_list:
         assert (
-            window_information["window"].state == WindowState.NORMAL
+            window_information["window_probe"].instantaneous_state == WindowState.NORMAL
         ), f"{window_information['window'].title}:"
         assert (
             window_information["window_probe"].content_size
@@ -264,6 +265,8 @@ async def test_window_presentation_exit_on_another_window_presentation(
 ):
     window1 = toga.Window(title="Test Window 1", size=(200, 200))
     window2 = toga.Window(title="Test Window 2", size=(200, 200))
+    window1_probe = window_probe(app, window1)
+    window2_probe = window_probe(app, window2)
     window1.content = toga.Box(style=Pack(background_color=REBECCAPURPLE))
     window2.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
     window1.show()
@@ -272,8 +275,8 @@ async def test_window_presentation_exit_on_another_window_presentation(
     await main_window_probe.wait_for_window("Test windows are shown")
 
     assert not app.in_presentation_mode
-    assert window1.state != WindowState.PRESENTATION
-    assert window2.state != WindowState.PRESENTATION
+    assert window1_probe.instantaneous_state != WindowState.PRESENTATION
+    assert window2_probe.instantaneous_state != WindowState.PRESENTATION
 
     # Enter presentation mode with window2
     app.enter_presentation_mode([window2])
@@ -282,8 +285,8 @@ async def test_window_presentation_exit_on_another_window_presentation(
         "App is in presentation mode", full_screen=True
     )
     assert app.in_presentation_mode
-    assert window2.state == WindowState.PRESENTATION
-    assert window1.state != WindowState.PRESENTATION
+    assert window2_probe.instantaneous_state == WindowState.PRESENTATION
+    assert window1_probe.instantaneous_state != WindowState.PRESENTATION
 
     # Enter presentation mode with window1, window2 no longer in presentation
     app.enter_presentation_mode([window1])
@@ -292,8 +295,8 @@ async def test_window_presentation_exit_on_another_window_presentation(
         "App is in presentation mode", full_screen=True
     )
     assert app.in_presentation_mode
-    assert window1.state == WindowState.PRESENTATION
-    assert window2.state != WindowState.PRESENTATION
+    assert window1_probe.instantaneous_state == WindowState.PRESENTATION
+    assert window2_probe.instantaneous_state != WindowState.PRESENTATION
 
     # Exit presentation mode
     app.exit_presentation_mode()
@@ -301,8 +304,8 @@ async def test_window_presentation_exit_on_another_window_presentation(
         "App is not in presentation mode", full_screen=True
     )
     assert not app.in_presentation_mode
-    assert window1.state != WindowState.PRESENTATION
-    assert window2.state != WindowState.PRESENTATION
+    assert window1_probe.instantaneous_state != WindowState.PRESENTATION
+    assert window2_probe.instantaneous_state != WindowState.PRESENTATION
 
     # Enter presentation mode again with window1
     app.enter_presentation_mode([window1])
@@ -311,8 +314,8 @@ async def test_window_presentation_exit_on_another_window_presentation(
         "App is in presentation mode", full_screen=True
     )
     assert app.in_presentation_mode
-    assert window1.state == WindowState.PRESENTATION
-    assert window2.state != WindowState.PRESENTATION
+    assert window1_probe.instantaneous_state == WindowState.PRESENTATION
+    assert window2_probe.instantaneous_state != WindowState.PRESENTATION
 
     # Exit presentation mode
     app.exit_presentation_mode()
@@ -320,8 +323,8 @@ async def test_window_presentation_exit_on_another_window_presentation(
         "App is not in presentation mode", full_screen=True
     )
     assert not app.in_presentation_mode
-    assert window1.state != WindowState.PRESENTATION
-    assert window2.state != WindowState.PRESENTATION
+    assert window1_probe.instantaneous_state != WindowState.PRESENTATION
+    assert window2_probe.instantaneous_state != WindowState.PRESENTATION
 
 
 @pytest.mark.parametrize(
@@ -343,6 +346,8 @@ async def test_presentation_mode_exit_on_window_state_change(
 
     window1 = toga.Window(title="Test Window 1", size=(200, 200))
     window2 = toga.Window(title="Test Window 2", size=(200, 200))
+    window1_probe = window_probe(app, window1)
+    window2_probe = window_probe(app, window2)
     window1.content = toga.Box(style=Pack(background_color=REBECCAPURPLE))
     window2.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
     window1.show()
@@ -357,7 +362,7 @@ async def test_presentation_mode_exit_on_window_state_change(
     )
 
     assert app.in_presentation_mode
-    assert window1.state == WindowState.PRESENTATION
+    assert window1_probe.instantaneous_state == WindowState.PRESENTATION
 
     # Changing window state of main window should make the app exit presentation mode.
     window1.state = new_window_state
@@ -369,7 +374,7 @@ async def test_presentation_mode_exit_on_window_state_change(
     )
 
     assert not app.in_presentation_mode
-    assert window1.state == new_window_state
+    assert window1_probe.instantaneous_state == new_window_state
 
     # Reset window states
     window1.state = WindowState.NORMAL
@@ -380,8 +385,8 @@ async def test_presentation_mode_exit_on_window_state_change(
         minimize=True if new_window_state == WindowState.MINIMIZED else False,
         full_screen=True if new_window_state == WindowState.FULLSCREEN else False,
     )
-    assert window1.state == WindowState.NORMAL
-    assert window2.state == WindowState.NORMAL
+    assert window1_probe.instantaneous_state == WindowState.NORMAL
+    assert window2_probe.instantaneous_state == WindowState.NORMAL
 
     # Enter presentation mode again
     app.enter_presentation_mode([window1])
@@ -392,7 +397,7 @@ async def test_presentation_mode_exit_on_window_state_change(
         full_screen=True if new_window_state == WindowState.FULLSCREEN else False,
     )
     assert app.in_presentation_mode
-    assert window1.state == WindowState.PRESENTATION
+    assert window1_probe.instantaneous_state == WindowState.PRESENTATION
 
     # Changing window state of extra window should make the app exit presentation mode.
     window2.state = new_window_state
@@ -404,7 +409,7 @@ async def test_presentation_mode_exit_on_window_state_change(
     )
 
     assert not app.in_presentation_mode
-    assert window2.state == new_window_state
+    assert window2_probe.instantaneous_state == new_window_state
 
     # Reset window states
     window1.state = WindowState.NORMAL
@@ -415,8 +420,8 @@ async def test_presentation_mode_exit_on_window_state_change(
         minimize=True if new_window_state == WindowState.MINIMIZED else False,
         full_screen=True if new_window_state == WindowState.FULLSCREEN else False,
     )
-    assert window1.state == WindowState.NORMAL
-    assert window2.state == WindowState.NORMAL
+    assert window1_probe.instantaneous_state == WindowState.NORMAL
+    assert window2_probe.instantaneous_state == WindowState.NORMAL
 
 
 async def test_show_hide_cursor(app, app_probe):

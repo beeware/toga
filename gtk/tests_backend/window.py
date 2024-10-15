@@ -63,6 +63,10 @@ class WindowProbe(BaseProbe, DialogsMixin):
     def unminimize(self):
         self.native.deiconify()
 
+    @property
+    def instantaneous_state(self):
+        return self.impl.get_window_state(in_progress_state=False)
+
     def has_toolbar(self):
         return self.impl.native_toolbar.get_n_items() > 0
 

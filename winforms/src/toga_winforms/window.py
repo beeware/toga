@@ -214,10 +214,7 @@ class Window(Container, Scalable):
             self.interface.app.exit_presentation_mode()
 
         current_state = self.get_window_state()
-        if current_state == state:
-            return
-
-        elif current_state != WindowState.NORMAL:
+        if current_state != WindowState.NORMAL:
             if current_state == WindowState.PRESENTATION:
                 if self.native.MainMenuStrip:
                     self.native.MainMenuStrip.Visible = True

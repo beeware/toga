@@ -72,6 +72,10 @@ class WindowProbe(BaseProbe, DialogsMixin):
     def unminimize(self):
         self.native.WindowState = FormWindowState.Normal
 
+    @property
+    def instantaneous_state(self):
+        return self.impl.get_window_state(in_progress_state=False)
+
     def _native_toolbar(self):
         for control in self.native.Controls:
             if isinstance(control, ToolStrip) and not isinstance(control, MenuStrip):

@@ -473,6 +473,10 @@ class Window:
     @property
     def state(self) -> WindowState:
         """The current state of the window."""
+        # There are 2 types of window states that we can get:
+        # * The instantaneous state -- Used internally on implementation side
+        # * The in-progress state -- Used for same state checking on the core
+        #                            and for the public API.
         return self._impl.get_window_state(in_progress_state=True)
 
     @state.setter
@@ -486,8 +490,8 @@ class Window:
                 f"A non-resizable window cannot be set to a state of {state}."
             )
         else:
-            if self.state != state:
-                self._impl.set_window_state(state)
+            # if self.state != state:
+            self._impl.set_window_state(state)
 
     ######################################################################
     # Window capabilities

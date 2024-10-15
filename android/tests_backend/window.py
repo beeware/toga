@@ -46,6 +46,10 @@ class WindowProbe(BaseProbe, DialogsMixin):
     def _native_menu(self):
         return self.native.findViewById(appcompat_R.id.action_bar).getMenu()
 
+    @property
+    def instantaneous_state(self):
+        return self.impl.get_window_state(in_progress_state=False)
+
     def _toolbar_items(self):
         result = []
         prev_group = None
