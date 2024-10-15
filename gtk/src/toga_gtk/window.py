@@ -164,8 +164,8 @@ class Window:
     # Window state
     ######################################################################
 
-    def get_window_state(self, actual_state=True):
-        if not actual_state and self._pending_state_transition:
+    def get_window_state(self, in_progress_state=True):
+        if not in_progress_state and self._pending_state_transition:
             return self._pending_state_transition
         window_state_flags = self._window_state_flags
         if window_state_flags:
@@ -208,8 +208,6 @@ class Window:
                     self._apply_state(state)
 
     def _apply_state(self, target_state):
-        current_state = self.get_window_state()
-
         if target_state is None:  # pragma: no cover
             # This is OS delay related and is only sometimes triggered
             # when there is a delay in processing the states by the OS.
@@ -217,7 +215,8 @@ class Window:
             # testbed coverage.
             return
 
-        elif target_state == current_state:
+        current_state = self.get_window_state()
+        if target_state == current_state:
             self._pending_state_transition = None
             return
 

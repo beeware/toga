@@ -473,7 +473,7 @@ class Window:
     @property
     def state(self) -> WindowState:
         """The current state of the window."""
-        return self._impl.get_window_state(actual_state=False)
+        return self._impl.get_window_state(in_progress_state=False)
 
     @state.setter
     def state(self, state: WindowState) -> None:
