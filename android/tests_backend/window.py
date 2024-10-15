@@ -13,6 +13,7 @@ class WindowProbe(BaseProbe, DialogsMixin):
         super().__init__(app)
         self.native = self.app._impl.native
         self.window = window
+        self.impl = self.window._impl
 
     async def wait_for_window(
         self,
