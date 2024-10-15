@@ -169,7 +169,10 @@ class Window(Container):
         current_state = self.get_window_state()
         decor_view = self.app.native.getWindow().getDecorView()
 
-        if current_state != WindowState.NORMAL:
+        if current_state == state:
+            return
+
+        elif current_state != WindowState.NORMAL:
             if current_state == WindowState.FULLSCREEN:
                 decor_view.setSystemUiVisibility(0)
 

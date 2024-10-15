@@ -785,13 +785,6 @@ else:
 
         # Set to the intermediate states but don't wait for the OS delay.
         for state in intermediate_states:
-            # If the state is not supported by the backend, then
-            # don't assign it, instead of skipping the whole test.
-            if (
-                state == WindowState.MINIMIZED
-                and not second_window_probe.supports_minimize
-            ):
-                continue
             second_window.state = state
 
         # Set to final state
