@@ -490,8 +490,8 @@ class Window:
                 f"A non-resizable window cannot be set to a state of {state}."
             )
         else:
-            # if self.state != state:
-            self._impl.set_window_state(state)
+            if self.state != state:
+                self._impl.set_window_state(state)
 
     ######################################################################
     # Window capabilities
