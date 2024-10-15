@@ -9,6 +9,8 @@ Objects = java.jclass("java.util.Objects")
 
 
 class HandlerFileDialog(abc.ABC):
+    """Абстрактный класс вызова файлового менеджера"""
+
     def __init__(self, parent, app_toga):
         self.parent = parent
         self.app = app_toga._impl
@@ -16,10 +18,13 @@ class HandlerFileDialog(abc.ABC):
 
     @abc.abstractmethod
     def show(self):
+        """Запуск менеджера"""
         pass
 
 
-class VFile(io.TextIOBase):  # VirtualFile
+class VFile(io.TextIOBase):
+    """Файл для работы с внешнем хранилищем андроида"""
+
     def __init__(self, bufferedReader):
         self._bfr = bufferedReader
 
@@ -29,10 +34,18 @@ class VFile(io.TextIOBase):  # VirtualFile
     def close(self):
         self._bfr.close()
 
-    def readline(self, size=0):
+    def readline(self, size: int = 0) -> str:
+        """Функция для чтения строки
+                :param size: количество строк, которые нужно считать.
+                Если он равен 0, то будет прочтен весь файл
+                :return: Строка"""
         return self._bfr.readLine()
 
-    def read(self, size=0):
+    def read(self, size: int = 0) -> str:
+        """Функция для чтения строки
+                :param size: количество символов, которые нужно считать.
+                Если он равен 0, то будет прочтен весь файл
+                :return: Строка"""
         res = ""
         counter = size if size else "+"
         while counter:
