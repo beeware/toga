@@ -1,0 +1,1 @@
+Use of functools.lru_cache has been replaced with functools.cache, now that Python 3.8 is no longer supported.
