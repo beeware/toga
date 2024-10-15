@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import threading
 from builtins import id as identifier
 from typing import TYPE_CHECKING, Any, TypeVar
 
@@ -10,6 +11,13 @@ from toga.platform import get_platform_factory
 from toga.style import Pack, TogaApplicator
 
 if TYPE_CHECKING:
+    import sys
+
+    if sys.version_info < (3, 11):
+        from typing_extensions import Self
+    else:
+        from typing import Self
+
     from toga.app import App
     from toga.window import Window
 
@@ -19,6 +27,11 @@ StyleT = TypeVar("StyleT", bound=BaseStyle)
 class Widget(Node):
     _MIN_WIDTH = 100
     _MIN_HEIGHT = 100
+
+    # To be overridden by subclasses that implement it
+    _CONTEXT_MANAGER = False
+
+    _thread_local = threading.local()
 
     def __init__(
         self,
@@ -44,6 +57,9 @@ class Widget(Node):
         self._impl: Any = None
 
         self.factory = get_platform_factory()
+
+        if self._widget_context:
+            self._widget_context[-1].append(self)
 
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__}:0x{identifier(self):x}>"
@@ -291,3 +307,22 @@ class Widget(Node):
         keyboard to appear).
         """
         self._impl.focus()
+
+    @property
+    def _widget_context(self) -> list[list[Widget]]:
+        if not hasattr(Widget._thread_local, "context"):
+            Widget._thread_local.context = []
+
+        return Widget._thread_local.context
+
+    def __enter__(self) -> Self:
+        if not self._CONTEXT_MANAGER:
+            raise TypeError(
+                f"'{type(self).__name__}' object does not support the context manager "
+                "protocol"
+            )
+        self._widget_context.append([])
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self._process_context(self._widget_context.pop())

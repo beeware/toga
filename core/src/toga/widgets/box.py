@@ -8,6 +8,7 @@ from .base import StyleT, Widget
 class Box(Widget):
     _MIN_WIDTH = 0
     _MIN_HEIGHT = 0
+    _CONTEXT_MANAGER = True
 
     def __init__(
         self,
@@ -48,3 +49,6 @@ class Box(Widget):
     def focus(self) -> None:
         """No-op; Box cannot accept input focus."""
         pass
+
+    def _process_context(self, context: list[Widget]):
+        self.add(*context)
