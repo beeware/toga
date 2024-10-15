@@ -1,4 +1,5 @@
-import io, abc
+import io
+import abc
 import java
 
 BufferedReader = java.jclass("java.io.BufferedReader")
