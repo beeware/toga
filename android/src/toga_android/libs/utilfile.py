@@ -1,5 +1,6 @@
-import io
 import abc
+import io
+
 import java
 
 BufferedReader = java.jclass("java.io.BufferedReader")
@@ -18,7 +19,7 @@ class HandlerFileDialog(abc.ABC):
         pass
 
 
-class VFile(io.TextIOBase):  #VirtualFile
+class VFile(io.TextIOBase):  # VirtualFile
     def __init__(self, bufferedReader):
         self._bfr = bufferedReader
 
@@ -36,7 +37,8 @@ class VFile(io.TextIOBase):  #VirtualFile
         counter = size if size else "+"
         while counter:
             resp = self._bfr.read()
-            if resp == -1: break
+            if resp == -1:
+                break
             res += chr(resp)
             if isinstance(counter, int):
                 counter -= 1
