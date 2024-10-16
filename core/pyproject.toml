@@ -65,10 +65,10 @@ dependencies = [
 # Extras used by developers *of* Toga are pinned to specific versions to
 # ensure environment consistency.
 dev = [
-    "coverage[toml] == 7.6.1",
+    "coverage[toml] == 7.6.2",
     "coverage-conditional-plugin == 0.9.0",
     "Pillow == 10.4.0",
-    "pre-commit == 4.0.0",
+    "pre-commit == 4.0.1",
     "pytest == 8.3.3",
     "pytest-asyncio == 0.24.0",
     "pytest-freezer == 0.4.8",
@@ -83,12 +83,12 @@ docs = [
     "furo == 2024.8.6",
     "Pillow == 10.4.0",
     "pyenchant == 3.2.2",
-    "sphinx == 8.0.2",
+    "sphinx == 8.1.3",
     "sphinx_tabs == 3.4.5",
     "sphinx-autobuild == 2024.10.3",
     "sphinx-csv-filter == 0.4.2",
     "sphinx-copybutton == 0.5.2",
-    "sphinx-toolbox == 3.8.0",
+    "sphinx-toolbox == 3.8.1",
     "sphinxcontrib-spelling == 8.0.0",
 ]
 

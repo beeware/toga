@@ -4,7 +4,7 @@ import importlib
 import os
 import sys
 import warnings
-from functools import lru_cache
+from functools import cache
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Protocol, TypeVar
 from warnings import warn
@@ -155,7 +155,7 @@ class Image:
             raise TypeError("Unsupported source type for Image")
 
     @classmethod
-    @lru_cache(maxsize=None)
+    @cache
     def _converters(cls) -> list[ImageConverter]:
         """Return list of registered image plugin converters. Only loaded once."""
         converters = []

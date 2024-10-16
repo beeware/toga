@@ -3,7 +3,7 @@ from __future__ import annotations
 import importlib
 import os
 import sys
-from functools import lru_cache
+from functools import cache
 from types import ModuleType
 
 if sys.version_info >= (3, 10):  # pragma: no-cover-if-lt-py310
@@ -51,7 +51,7 @@ def find_backends():
     return sorted(set(entry_points(group="toga.backends")))
 
 
-@lru_cache(maxsize=1)
+@cache
 def get_platform_factory() -> ModuleType:
     """Determine the current host platform and import the platform factory.
 

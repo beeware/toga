@@ -1,1 +1,0 @@
-On macOS, apps that specify both `document_types` and a `main_window` no longer display the document selection dialog on startup.
