@@ -32,7 +32,7 @@ class WindowProbe(BaseProbe, DialogsMixin):
         await self.redraw(
             message,
             delay=(
-                1.5
+                2.5
                 if rapid_state_switching
                 else 0.75 if full_screen else 0.5 if minimize else 0.1
             ),
