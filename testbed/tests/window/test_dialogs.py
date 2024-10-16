@@ -1,6 +1,8 @@
+import asyncio
 import io
 import traceback
 from pathlib import Path
+from time import time
 
 import pytest
 
@@ -9,7 +11,28 @@ import toga
 TESTS_DIR = Path(__file__).parent.parent
 
 
-async def test_info_dialog(main_window, main_window_probe):
+@pytest.fixture
+async def wait_for_dialog_to_close(main_window):
+    """Wait for any asyncio task that is responsible for closing the dialog.
+
+    An automatic fixture verifies tasks are not unintentionally left stranded after
+    the test; so, wait specifically for the task that closes the dialog before leaving.
+    """
+    yield
+    tasks = [
+        t for t in main_window.app._running_tasks if t.get_name() == "close-dialog"
+    ]
+    task = tasks[0] if tasks else None
+    deadline = time() + 1.5
+    while task and not task.done():
+        print("Waiting for dialog to close...")
+        await asyncio.sleep(0.1)
+        if time() > deadline:
+            print("Gave up waiting for dialog to close...")
+            break
+
+
+async def test_info_dialog(main_window, main_window_probe, wait_for_dialog_to_close):
     """An info dialog can be displayed and acknowledged."""
     dialog = toga.InfoDialog("Info", "Some info")
     assert main_window_probe.is_modal_dialog(dialog)
@@ -23,8 +46,13 @@ async def test_info_dialog(main_window, main_window_probe):
 
 
 @pytest.mark.parametrize("result", [False, True])
-async def test_question_dialog(main_window, main_window_probe, result):
-    """An question dialog can be displayed and acknowledged."""
+async def test_question_dialog(
+    main_window,
+    main_window_probe,
+    result,
+    wait_for_dialog_to_close,
+):
+    """A question dialog can be displayed and acknowledged."""
     dialog = toga.QuestionDialog("Question", "Some question")
     assert main_window_probe.is_modal_dialog(dialog)
 
@@ -39,7 +67,12 @@ async def test_question_dialog(main_window, main_window_probe, result):
 
 
 @pytest.mark.parametrize("result", [False, True])
-async def test_confirm_dialog(main_window, main_window_probe, result):
+async def test_confirm_dialog(
+    main_window,
+    main_window_probe,
+    result,
+    wait_for_dialog_to_close,
+):
     """A confirmation dialog can be displayed and acknowledged."""
     dialog = toga.ConfirmDialog("Confirm", "Some confirmation")
     assert main_window_probe.is_modal_dialog(dialog)
@@ -55,7 +88,7 @@ async def test_confirm_dialog(main_window, main_window_probe, result):
     assert actual == result
 
 
-async def test_error_dialog(main_window, main_window_probe):
+async def test_error_dialog(main_window, main_window_probe, wait_for_dialog_to_close):
     """An error dialog can be displayed and acknowledged."""
     dialog = toga.ErrorDialog("Error", "Some error")
     assert main_window_probe.is_modal_dialog(dialog)
@@ -69,7 +102,12 @@ async def test_error_dialog(main_window, main_window_probe):
 
 
 @pytest.mark.parametrize("result", [None, False, True])
-async def test_stack_trace_dialog(main_window, main_window_probe, result):
+async def test_stack_trace_dialog(
+    main_window,
+    main_window_probe,
+    result,
+    wait_for_dialog_to_close,
+):
     """A confirmation dialog can be displayed and acknowledged."""
     stack = io.StringIO()
     traceback.print_stack(file=stack)
@@ -108,6 +146,7 @@ async def test_save_file_dialog(
     filename,
     file_types,
     result,
+    wait_for_dialog_to_close,
 ):
     """A file open dialog can be displayed and acknowledged."""
     dialog = toga.SaveFileDialog(
@@ -174,6 +213,7 @@ async def test_open_file_dialog(
     file_types,
     multiple_select,
     result,
+    wait_for_dialog_to_close,
 ):
     """A file open dialog can be displayed and acknowledged."""
     dialog = toga.OpenFileDialog(
@@ -222,6 +262,7 @@ async def test_select_folder_dialog(
     initial_directory,
     multiple_select,
     result,
+    wait_for_dialog_to_close,
 ):
     """A folder selection dialog can be displayed and acknowledged."""
     dialog = toga.SelectFolderDialog(

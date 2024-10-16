@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from collections.abc import Iterator
-from typing import TYPE_CHECKING, MutableMapping, MutableSet, Protocol
+from collections.abc import Iterator, MutableMapping, MutableSet
+from typing import TYPE_CHECKING, Protocol
 
-from toga.handlers import wrapped_handler
+from toga.handlers import simple_handler, wrapped_handler
 from toga.icons import Icon
 from toga.keys import Key
 from toga.platform import get_platform_factory
@@ -11,6 +11,8 @@ from toga.platform import get_platform_factory
 if TYPE_CHECKING:
     from toga.app import App
     from toga.icons import IconContentT
+
+_py_id = id
 
 
 class Group:
@@ -21,6 +23,7 @@ class Group:
         parent: Group | None = None,
         section: int = 0,
         order: int = 0,
+        id: str | None = None,
     ):
         """
         A collection of commands to display together.
@@ -32,8 +35,10 @@ class Group:
         :param order: The position where the group should appear within its section.
             If multiple items have the same group, section and order, they will be
             sorted alphabetically by their text.
+        :param id: A unique identifier for the group.
         """
-        self.text = text
+        self._id = f"group-{_py_id(self)}" if id is None else id
+        self._text = text
         self.order = order
         if parent is None and section != 0:
             raise ValueError("Section cannot be set without parent group")
@@ -43,6 +48,16 @@ class Group:
         # to work with
         self._parent: Group | None = None
         self.parent = parent
+
+    @property
+    def id(self) -> str:
+        """A unique identifier for the group."""
+        return self._id
+
+    @property
+    def text(self) -> str:
+        """A text label for the group."""
+        return self._text
 
     @property
     def parent(self) -> Group | None:
@@ -160,18 +175,43 @@ class ActionHandler(Protocol):
 
 
 class Command:
-    #: An identifier for the system-installed "About" menu item. This command is
-    #: always installed.
+    #: An identifier for the standard "About" menu item. This command is always
+    #: installed by default. Uses :meth:`toga.App.about` as the default action.
     ABOUT: str = "about"
-    #: An identifier for the system-installed "Exit" menu item. This command is always
-    #: installed.
-    EXIT: str = "on_exit"
-    #: An identifier for the system-installed "Preferences" menu item. A command
-    #: with this identifier will be installed automatically if the app overrides the
-    #: :meth:`~toga.App.preferences` method.
+    #: An identifier for the standard "Exit" menu item. This command may be installed by
+    #: default, depending on platform requirements. Uses :meth:`toga.App.request_exit`
+    #: as the default action.
+    EXIT: str = "request_exit"
+    #: An identifier for the standard "New" menu item. This constant will be used for
+    #: the default document type for your app; if you specify more than one document
+    #: type, the command for the subsequent commands will have a colon and the first
+    #: extension for that data type appended to the ID. Uses
+    #: :meth:`toga.documents.DocumentSet.new` as the default action.
+    NEW: str = "documents.new"
+    #: An identifier for the standard "Open" menu item. This command will be
+    #: automatically installed if your app declares any document types. Uses
+    #: :meth:`toga.documents.DocumentSet.request_open` as the default action.
+    OPEN: str = "documents.request_open"
+    #: An identifier for the standard "Preferences" menu item. The Preferences item is
+    #: not installed by default. If you install it manually, it will attempt to use
+    #: ``toga.App.preferences()`` as the default action; your app will need to define
+    #: this method, or provide an explicit value for the action.
     PREFERENCES: str = "preferences"
-    #: An identifier for the system-installed "Visit Homepage" menu item. This
-    #: command is always installed.
+    #: An identifier for the standard "Save" menu item. This command will be
+    #: automatically installed if your app declares any document types. Uses
+    #: :meth:`toga.documents.DocumentSet.save` as the default action.
+    SAVE: str = "documents.save"
+    #: An identifier for the standard "Save As..." menu item. This command will be
+    #: automatically installed if your app declares any document types. Uses
+    #: :meth:`toga.documents.DocumentSet.save_as` as the default action.
+    SAVE_AS: str = "documents.save_as"
+    #: An identifier for the standard "Save All" menu item. This command will be
+    #: automatically installed if your app declares any document types. Uses
+    #: :meth:`toga.documents.DocumentSet.save_all` as the default action.
+    SAVE_ALL: str = "documents.save_all"
+    #: An identifier for the standard "Visit Homepage" menu item. This command may be
+    #: installed by default, depending on platform requirements. Uses
+    #: :meth:`toga.App.visit_homepage` as the default action.
     VISIT_HOMEPAGE: str = "visit_homepage"
 
     def __init__(
@@ -209,7 +249,7 @@ class Command:
         :param enabled: Is the Command currently enabled?
         :param id: A unique identifier for the command.
         """
-        self._id = f"cmd-{hash(self)}" if id is None else id
+        self._id = f"cmd-{_py_id(self)}" if id is None else id
         self.text = text
 
         self.shortcut = shortcut
@@ -227,6 +267,45 @@ class Command:
 
         self._enabled = True
         self.enabled = enabled
+
+    @classmethod
+    def standard(cls, app: App, id, **kwargs):
+        """Create an instance of a standard command for the provided app.
+
+        The default action for the command will be constructed using the value of the
+        command's ID as an attribute of the app object. If a method or co-routine
+        matching that name doesn't exist, a value of ``None`` will be used as the
+        default action.
+
+        :param app: The app for which the standard command will be created.
+        :param id: The ID of the standard command to create.
+        :param kwargs: Overrides for any default properties of the standard command.
+            Accepts the same arguments as the :class:`~toga.Command` constructor.
+        """
+        # The value of the ID constant is the method on the app instance
+        cmd_kwargs = {"id": id}
+        try:
+            attrs = id.split(".")
+            action = getattr(app, attrs[0])
+            for attr in attrs[1:]:
+                action = getattr(action, attr)
+            cmd_kwargs["action"] = simple_handler(action)
+        except AttributeError:
+            cmd_kwargs["action"] = None
+
+        # Get the platform-specific keyword arguments for the command
+        factory = get_platform_factory()
+        platform_kwargs = factory.Command.standard(app, id)
+
+        if platform_kwargs:
+            cmd_kwargs.update(platform_kwargs)
+            cmd_kwargs.update(kwargs)
+
+            # Return the command instance
+            return Command(**cmd_kwargs)
+        else:
+            # Standard command doesn't exist on the platform.
+            return None
 
     @property
     def id(self) -> str:
@@ -358,14 +437,18 @@ class CommandSet(MutableSet[Command], MutableMapping[str, Command]):
         self._commands: dict[str:Command] = {}
         self.on_change = on_change
 
-    def add(self, *commands: Command):
+    def add(self, *commands: Command | None):
         """Add a collection of commands to the command set.
+
+        A command value of ``None`` will be ignored. This allows you to add standard
+        commands to a command set without first validating that the platform provides an
+        implementation of that command.
 
         :param commands: The commands to add to the command set.
         """
         if self.app:
             self.app.commands.add(*commands)
-        self._commands.update({cmd.id: cmd for cmd in commands})
+        self._commands.update({cmd.id: cmd for cmd in commands if cmd is not None})
         if self.on_change:
             self.on_change()
 

@@ -347,7 +347,7 @@ def test_explicit_app_metadata(monkeypatch, event_loop):
 
 
 @pytest.mark.parametrize("construct", [True, False])
-def test_icon_construction(construct, event_loop):
+def test_icon_construction(app, construct, event_loop):
     """The app icon can be set during construction."""
     if construct:
         icon = toga.Icon("path/to/icon")
@@ -532,7 +532,7 @@ def test_startup_method(event_loop):
 
     def startup_assertions(app):
         # At time startup is invoked, the default commands are installed
-        assert len(app.commands) == 3
+        assert len(app.commands) == 2
         return toga.Box()
 
     startup = Mock(side_effect=startup_assertions)
@@ -549,9 +549,10 @@ def test_startup_method(event_loop):
     assert_action_performed(app, "create App menus")
     assert_action_performed(app.main_window, "create Window menus")
     assert_action_performed(app.main_window, "create toolbar")
+    assert_action_performed(app.status_icons, "create status icons")
 
-    # 3 menu items have been created
-    assert len(app.commands) == 3
+    # 2 menu items have been created
+    assert len(app.commands) == 2
 
     # The app has a main window that is a MainWindow
     assert isinstance(app.main_window, toga.MainWindow)
@@ -565,7 +566,7 @@ def test_startup_subclass(event_loop):
             self.main_window = toga.MainWindow()
 
             # At time startup is invoked, the default commands are installed
-            assert len(self.commands) == 3
+            assert len(self.commands) == 2
 
             # Add an extra user command
             self.commands.add(toga.Command(None, "User command"))
@@ -580,9 +581,10 @@ def test_startup_subclass(event_loop):
     assert_action_performed(app, "create App menus")
     assert_action_performed(app.main_window, "create Window menus")
     assert_action_performed(app.main_window, "create toolbar")
+    assert_action_performed(app.status_icons, "create status icons")
 
-    # 4 menu items have been created
-    assert app._impl.n_menu_items == 4
+    # 3 menu items have been created
+    assert app._impl.n_menu_items == 3
 
 
 def test_startup_subclass_no_main_window(event_loop):
@@ -661,8 +663,8 @@ def test_exit_direct(app):
 
 def test_exit_no_handler(app):
     """An app without an exit handler can be exited."""
-    # Exit the app
-    app._impl.simulate_exit()
+    # Request an app exit
+    app.request_exit()
 
     # Window has been exited, and is no longer in the app's list of windows.
     assert_action_performed(app, "exit")
@@ -682,8 +684,8 @@ def test_exit_subclassed_handler(app):
 
     app = SubclassedApp(formal_name="Test App", app_id="org.example.test")
 
-    # Close the app
-    app._impl.simulate_exit()
+    # Request an app exit
+    app.request_exit()
 
     # The exit method was invoked
     assert exit["called"]
@@ -697,8 +699,8 @@ def test_exit_successful_handler(app):
     on_exit_handler = Mock(return_value=True)
     app.on_exit = on_exit_handler
 
-    # Close the app
-    app._impl.simulate_exit()
+    # Request an app exit
+    app.request_exit()
 
     # App has been exited
     assert_action_performed(app, "exit")
@@ -710,8 +712,8 @@ def test_exit_rejected_handler(app):
     on_exit_handler = Mock(return_value=False)
     app.on_exit = on_exit_handler
 
-    # Close the window
-    app._impl.simulate_exit()
+    # Request an app exit
+    app.request_exit()
 
     # App has been *not* exited
     assert_action_not_performed(app, "exit")

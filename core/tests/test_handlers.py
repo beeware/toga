@@ -484,7 +484,7 @@ def test_async_result_non_comparable(event_loop):
     result = ExampleAsyncResult(None)
 
     # repr for the result is useful
-    assert repr(result) == "<Async Test result; future=<Future pending>>"
+    assert repr(result).startswith("<Async Test result; future=<Future pending")
 
     # Result cannot be compared.
 

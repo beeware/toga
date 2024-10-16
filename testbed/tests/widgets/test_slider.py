@@ -7,6 +7,7 @@ from pytest import approx, fixture
 import toga
 
 from ..assertions import assert_set_get
+from .conftest import build_cleanup_test
 from .properties import (  # noqa: F401
     test_enabled,
     test_flex_horizontal_widget_size,
@@ -39,6 +40,9 @@ def on_change(widget):
     handler = Mock()
     widget.on_change = handler
     return handler
+
+
+test_cleanup = build_cleanup_test(toga.Slider, xfail_platforms=("android",))
 
 
 async def test_init(widget, probe):

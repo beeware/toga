@@ -6,12 +6,11 @@ import sys
 import traceback
 import warnings
 from abc import ABC
+from collections.abc import Awaitable, Generator
 from typing import (
     TYPE_CHECKING,
     Any,
-    Awaitable,
     Callable,
-    Generator,
     NoReturn,
     Protocol,
     TypeVar,
@@ -23,6 +22,8 @@ if TYPE_CHECKING:
         from typing_extensions import TypeAlias
     else:
         from typing import TypeAlias
+
+    T = TypeVar("T")
 
     GeneratorReturnT = TypeVar("GeneratorReturnT")
     HandlerGeneratorReturnT: TypeAlias = Generator[
@@ -36,6 +37,21 @@ if TYPE_CHECKING:
     WrappedHandlerT: TypeAlias = Callable[..., object]
 
 
+def overridable(method: T) -> T:
+    """Decorate the method as being user-overridable"""
+    method._overridden = True
+    return method
+
+
+def overridden(coroutine_or_method: Callable) -> bool:
+    """Has the user overridden this method?
+
+    This is based on the method *not* having a ``_overridden`` attribute. Overridable
+    default methods have this attribute; user-defined method will not.
+    """
+    return not hasattr(coroutine_or_method, "_overridden")
+
+
 class NativeHandler:
     def __init__(self, handler: Callable[..., object]):
         self.native = handler
@@ -45,14 +61,13 @@ async def long_running_task(
     interface: object,
     generator: HandlerGeneratorReturnT[object],
     cleanup: HandlerSyncT | None,
-) -> None:
+) -> object | None:
     """Run a generator as an asynchronous coroutine."""
     try:
         try:
             while True:
                 delay = next(generator)
-                if delay:
-                    await asyncio.sleep(delay)
+                await asyncio.sleep(delay if delay else 0)
         except StopIteration as e:
             result = e.value
     except Exception as e:
@@ -74,7 +89,7 @@ async def handler_with_cleanup(
     interface: object,
     *args: object,
     **kwargs: object,
-) -> None:
+) -> object | None:
     try:
         result = await handler(interface, *args, **kwargs)
     except Exception as e:
@@ -90,18 +105,21 @@ async def handler_with_cleanup(
         return result
 
 
-def simple_handler(fn, *args, **kwargs):
+def simple_handler(fn: T, *args: object, **kwargs: object) -> T:
     """Wrap a function (with args and kwargs) so it can be used as a command handler.
 
     This essentially accepts and ignores the handler-related arguments (i.e., the
     required ``command`` argument passed to handlers), so that you can use a method like
     :meth:`~toga.App.about()` as a command handler.
 
-    It can accept either a function or a coroutine.
+    It can accept either a function or a coroutine. Arguments that will be passed to the
+    function/coroutine are provided at the time the wrapper is defined. It is assumed
+    that the mechanism invoking the handler will add no additional arguments other than
+    the ``command`` that is invoking the handler.
 
     :param fn: The callable to invoke as a handler.
-    :param args: The arguments to pass to the handler when invoked.
-    :param kwargs: The keyword arguments to pass to the handler when invoked.
+    :param args: Positional arguments that should be passed to the invoked handler.
+    :param kwargs: Keyword arguments that should be passed to the invoked handler.
     :returns: A handler that will invoke the callable.
     """
     if inspect.iscoroutinefunction(fn):

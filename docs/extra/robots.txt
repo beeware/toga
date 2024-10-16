@@ -1,0 +1,4 @@
+User-agent: *
+Disallow: /en/latest/
+Disallow: /en/v*
+Allow: /en/stable/

@@ -228,6 +228,7 @@ class SaveFileDialog(FileDialog):
             action=Gtk.FileChooserAction.SAVE,
             ok_icon=Gtk.STOCK_SAVE,
         )
+        self.native.set_do_overwrite_confirmation(True)
 
 
 class OpenFileDialog(FileDialog):

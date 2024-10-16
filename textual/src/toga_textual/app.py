@@ -1,10 +1,7 @@
 import asyncio
-import sys
 
 import toga
 from textual.app import App as TextualApp
-from toga.command import Command
-from toga.handlers import simple_handler
 
 from .screens import Screen as ScreenImpl
 
@@ -22,6 +19,8 @@ class TogaApp(TextualApp):
 class App:
     # Textual apps exit when the last window is closed
     CLOSE_ON_LAST_WINDOW = True
+    # Textual apps use default command line handling
+    HANDLES_COMMAND_LINE = False
 
     def __init__(self, interface):
         self.interface = interface
@@ -29,6 +28,9 @@ class App:
 
         self.loop = asyncio.new_event_loop()
         self.native = TogaApp(self)
+
+        # run the app without displaying it
+        self.headless = False
 
     def create(self):
         self.interface._startup()
@@ -38,15 +40,8 @@ class App:
     # Commands and menus
     ######################################################################
 
-    def create_app_commands(self):
-        self.interface.commands.add(
-            Command(
-                simple_handler(self.interface.about),
-                f"About {self.interface.formal_name}",
-                section=sys.maxsize,
-                id=Command.ABOUT,
-            ),
-        )
+    def create_standard_commands(self):
+        pass
 
     def create_menus(self):
         self.interface.factory.not_implemented("App.create_menus()")
@@ -59,7 +54,7 @@ class App:
         self.native.exit()
 
     def main_loop(self):
-        self.native.run()
+        self.loop.run_until_complete(self.native.run_async(headless=self.headless))
 
     def set_icon(self, icon):
         pass
@@ -120,7 +115,3 @@ class App:
 
     def exit_full_screen(self, windows):
         pass
-
-
-class DocumentApp(App):
-    pass

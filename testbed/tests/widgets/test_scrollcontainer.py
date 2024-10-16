@@ -7,6 +7,7 @@ import toga
 from toga.colors import CORNFLOWERBLUE, REBECCAPURPLE, TRANSPARENT
 from toga.style.pack import COLUMN, ROW, Pack
 
+from .conftest import build_cleanup_test
 from .properties import (  # noqa: F401
     test_background_color,
     test_background_color_reset,
@@ -70,6 +71,14 @@ async def widget(content, on_scroll):
     return toga.ScrollContainer(
         content=content, style=Pack(flex=1), on_scroll=on_scroll
     )
+
+
+test_cleanup = build_cleanup_test(
+    # Pass a function here to prevent init of toga.Box() in a different thread than
+    # toga.ScrollContainer. This would raise a runtime error on Windows.
+    lambda: toga.ScrollContainer(content=toga.Box()),
+    xfail_platforms=("android", "iOS", "linux"),
+)
 
 
 async def test_clear_content(widget, probe, small_content):

@@ -1,1 +1,0 @@
-The ``on_exit`` handler for an app can now be defined by overriding the method on the ``toga.App`` subclass.
