@@ -190,12 +190,12 @@ jobs:
 
         - backend: "macOS-x86_64"
           platform: "macOS"
-          runs-on: "macos-12"
+          runs-on: "macos-13"
           app-user-data-path: "$HOME/Library/Application Support/org.beeware.toga.testbed"
 
         - backend: "macOS-arm64"
           platform: "macOS"
-          runs-on: "macos-14"
+          runs-on: "macos-latest"
           app-user-data-path: "$HOME/Library/Application Support/org.beeware.toga.testbed"
 
         # We use a fixed Ubuntu version rather than `-latest` because at some point,
@@ -260,14 +260,14 @@ jobs:
 
         - backend: "textual-linux"
           platform: "linux"
-          runs-on: "ubuntu-22.04"
+          runs-on: "ubuntu-latest"
           setup-python: false  # Use the system Python packages
           briefcase-run-args: --config 'requires=["../core","../textual"]' --config 'console_app=true'
           app-user-data-path: "$HOME/.local/share/testbed"
 
         - backend: "textual-macOS"
           platform: "macOS"
-          runs-on: "macos-14"
+          runs-on: "macos-latest"
           briefcase-run-args: --config 'requires=["../core","../textual"]' --config 'console_app=true'
           app-user-data-path: "$HOME/Library/Application Support/org.beeware.toga.testbed"
 
@@ -284,7 +284,7 @@ jobs:
 
         - backend: "iOS"
           platform: "iOS"
-          runs-on: "macos-14"
+          runs-on: "macos-latest"
           briefcase-run-args: "--device 'iPhone SE (3rd generation)'"
           app-user-data-path: "$(xcrun simctl get_app_container booted org.beeware.toga.testbed data)/Documents"
 
