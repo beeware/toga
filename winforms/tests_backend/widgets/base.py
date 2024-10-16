@@ -100,8 +100,8 @@ class SimpleProbe(BaseProbe, FontMixin):
         # size and position is as expected.
         assert (self.width, self.height) == approx(size, abs=1)
         assert (
-            self.native.Left / self.scale_factor,
-            self.native.Top / self.scale_factor,
+            round(self.native.Left / self.scale_factor),
+            round(self.native.Top / self.scale_factor),
         ) == approx(position, abs=1)
 
     async def press(self):
