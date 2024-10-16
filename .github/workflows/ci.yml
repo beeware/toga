@@ -204,7 +204,6 @@ jobs:
         - backend: "linux-x11"
           platform: "linux"
           runs-on: "ubuntu-24.04"
-          python-version: "system"
           # The package list should be the same as in tutorial-0.rst, and the BeeWare
           # tutorial, plus blackbox to provide a window manager. We need a window
           # manager that is reasonably lightweight, honors full screen mode, and
@@ -234,7 +233,6 @@ jobs:
         - backend: "linux-wayland"
           platform: "linux"
           runs-on: "ubuntu-24.04"
-          python-version: "system"
           # The package list should be the same as in tutorial-0.rst, and the BeeWare
           # tutorial, plus mutter to provide a window manager.
           pre-command: |
@@ -263,7 +261,6 @@ jobs:
         - backend: "textual-linux"
           platform: "linux"
           runs-on: "ubuntu-latest"
-          python-version: "system"
           setup-python: false  # Use the system Python packages
           briefcase-run-args: --config 'requires=["../core","../textual"]' --config 'console_app=true'
           app-user-data-path: "$HOME/.local/share/testbed"
@@ -294,7 +291,6 @@ jobs:
         - backend: "android"
           platform: "android"
           runs-on: "ubuntu-latest"
-          python-version: "system"
           briefcase-run-prefix: JAVA_HOME=${JAVA_HOME_17_X64}
           briefcase-run-args: >-
             --device '{"avd":"beePhone","skin":"pixel_3a"}'
@@ -324,7 +320,7 @@ jobs:
       uses: actions/setup-python@v5.2.0
       if: matrix.setup-python
       with:
-        python-version: ${{ matrix.python-version || '3.12' }}
+        python-version: "3.12"
 
     - name: Install Dependencies
       env:
