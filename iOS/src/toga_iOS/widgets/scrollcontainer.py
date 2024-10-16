@@ -20,7 +20,7 @@ class TogaScrollView(UIScrollView):
         # the size of the document content (assuming there is a document).
         # We can't reliably trigger the "no content" case in testbed, because it's
         # dependent on specific event timing.
-        if self.interface._content:  # pragma: no-branch
+        if self.interface._content:  # pragma: no branch
             self.interface._content.refresh()
 
 
