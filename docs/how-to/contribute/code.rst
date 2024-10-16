@@ -672,6 +672,12 @@ test mode:
       (venv) C:\...>cd testbed
       (venv) C:\...>briefcase dev --test
 
+.. note::
+
+    To test iOS and Android, you *must* use Python 3.10. The testbed app uses a number
+    of binary packages, and the specific combination of versions that are used are
+    currently only available for Python 3.10.
+
 This will display a Toga app window, which will flash as it performs all the GUI
 tests. You'll then see a coverage report for the code that has been executed.
 
