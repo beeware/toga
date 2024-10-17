@@ -1,9 +1,11 @@
 from android import R
 from android.app import AlertDialog
-from android.content import DialogInterface
+from android.content import DialogInterface, Intent
 from java import dynamic_proxy
 
 import toga
+
+from .libs import utilfile as uf
 
 
 class OnClickListener(dynamic_proxy(DialogInterface.OnClickListener)):
@@ -31,12 +33,12 @@ class BaseDialog:
 
 class TextDialog(BaseDialog):
     def __init__(
-        self,
-        title,
-        message,
-        positive_text,
-        negative_text=None,
-        icon=None,
+            self,
+            title,
+            message,
+            positive_text,
+            negative_text=None,
+            icon=None,
     ):
         super().__init__()
 
@@ -104,10 +106,10 @@ class ErrorDialog(TextDialog):
 
 class StackTraceDialog(BaseDialog):
     def __init__(
-        self,
-        title,
-        message,
-        **kwargs,
+            self,
+            title,
+            message,
+            **kwargs,
     ):
         super().__init__()
 
@@ -117,11 +119,11 @@ class StackTraceDialog(BaseDialog):
 
 class SaveFileDialog(BaseDialog):
     def __init__(
-        self,
-        title,
-        filename,
-        initial_directory,
-        file_types=None,
+            self,
+            title,
+            filename,
+            initial_directory,
+            file_types=None,
     ):
         super().__init__()
 
@@ -130,25 +132,39 @@ class SaveFileDialog(BaseDialog):
 
 
 class OpenFileDialog(BaseDialog):
-    def __init__(
-        self,
-        title,
-        initial_directory,
-        file_types,
-        multiple_select,
-    ):
-        super().__init__()
+    class HandlerOpenDialog(uf.HandlerFileDialog):
+        def show(self):
+            intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
+            intent.addCategory(Intent.CATEGORY_OPENABLE)
+            intent.setType("*/*")
+            self.app.start_activity(intent, on_complete=self.parent.handler)
 
-        toga.App.app.factory.not_implemented("dialogs.OpenFileDialog()")
-        self.native = None
+    def __init__(
+            self,
+            title,
+            initial_directory,
+            file_types,
+            multiple_select,
+    ):
+        self.native = OpenFileDialog.HandlerOpenDialog(self, toga.App.app.current_window)
+        self.mActive = self.native.mActive
+
+    def handler(self, code, indent):
+        self._handler(indent.getData())
+
+    def _handler(self, uri):
+        ist = self.mActive.getContentResolver().openInputStream(uri)
+        isr = uf.InputStreamReader(uf.Objects.requireNonNull(ist))
+        reader = uf.VFile(uf.BufferedReader(isr))
+        self.future.set_result(reader)
 
 
 class SelectFolderDialog(BaseDialog):
     def __init__(
-        self,
-        title,
-        initial_directory,
-        multiple_select,
+            self,
+            title,
+            initial_directory,
+            multiple_select,
     ):
         super().__init__()
 
