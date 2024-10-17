@@ -135,7 +135,7 @@ class WidgetRegistry:
 class App:
     #: The currently running :class:`~toga.App`. Since there can only be one running
     #: Toga app in a process, this is available as a class property via ``toga.App.app``.
-    app: App
+    app: App | None = None
     _impl: Any
     _camera: Camera
     _location: Location
