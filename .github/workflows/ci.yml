@@ -190,12 +190,12 @@ jobs:
 
         - backend: "macOS-x86_64"
           platform: "macOS"
-          runs-on: "macos-12"
+          runs-on: "macos-13"
           app-user-data-path: "$HOME/Library/Application Support/org.beeware.toga.testbed"
 
         - backend: "macOS-arm64"
           platform: "macOS"
-          runs-on: "macos-14"
+          runs-on: "macos-latest"
           app-user-data-path: "$HOME/Library/Application Support/org.beeware.toga.testbed"
 
         # We use a fixed Ubuntu version rather than `-latest` because at some point,
@@ -203,7 +203,7 @@ jobs:
         # the system Python version to become inconsistent from run to run.
         - backend: "linux-x11"
           platform: "linux"
-          runs-on: "ubuntu-22.04"
+          runs-on: "ubuntu-24.04"
           # The package list should be the same as in tutorial-0.rst, and the BeeWare
           # tutorial, plus blackbox to provide a window manager. We need a window
           # manager that is reasonably lightweight, honors full screen mode, and
@@ -260,14 +260,14 @@ jobs:
 
         - backend: "textual-linux"
           platform: "linux"
-          runs-on: "ubuntu-22.04"
+          runs-on: "ubuntu-latest"
           setup-python: false  # Use the system Python packages
           briefcase-run-args: --config 'requires=["../core","../textual"]' --config 'console_app=true'
           app-user-data-path: "$HOME/.local/share/testbed"
 
         - backend: "textual-macOS"
           platform: "macOS"
-          runs-on: "macos-14"
+          runs-on: "macos-latest"
           briefcase-run-args: --config 'requires=["../core","../textual"]' --config 'console_app=true'
           app-user-data-path: "$HOME/Library/Application Support/org.beeware.toga.testbed"
 
@@ -284,15 +284,8 @@ jobs:
 
         - backend: "iOS"
           platform: "iOS"
-          runs-on: "macos-14"
-          # As of early April 2024, the XCode 15/iOS 17 simulator had a performance
-          # issue that rendered GitHub Actions testing impossible. The issue didn't
-          # impact iOS 16.4, but that required the use of Xcode 14.3.1.
-          #
-          # Refs #2476, actions/runner-images#9591.
-          pre-command: "sudo xcode-select -s /Applications/Xcode_14.3.1.app"
-          briefcase-run-args: "--device 'iPhone SE (3rd generation)::iOS 16.4'"
-          # briefcase-run-args: "--device 'iPhone SE (3rd generation)'"
+          runs-on: "macos-latest"
+          briefcase-run-args: "--device 'iPhone SE (3rd generation)'"
           app-user-data-path: "$(xcrun simctl get_app_container booted org.beeware.toga.testbed data)/Documents"
 
         - backend: "android"
@@ -327,11 +320,7 @@ jobs:
       uses: actions/setup-python@v5.2.0
       if: matrix.setup-python
       with:
-        # We're not using Python 3.11 yet, because:
-        # * The testbed's ProxyEventLoop has some problems with it
-        #   (https://github.com/beeware/toga/issues/1982).
-        # * It doesn't have an Android build of Pillow yet.
-        python-version: "3.10"
+        python-version: "3.12"
 
     - name: Install Dependencies
       env:
