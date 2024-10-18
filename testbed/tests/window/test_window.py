@@ -168,10 +168,10 @@ if toga.platform.current_platform in {"iOS", "android"}:
     )
     async def test_window_state_change_with_intermediate_states(
         app,
-        initial_state,
-        final_state,
         main_window,
         main_window_probe,
+        initial_state,
+        final_state,
         intermediate_states,
     ):
         """Window state can be directly changed to another state."""
@@ -198,14 +198,13 @@ if toga.platform.current_platform in {"iOS", "android"}:
 
         # Set to the intermediate states but don't wait for the OS delay.
         for state in intermediate_states:
-            second_window.state = state
+            main_window.state = state
 
         # Set to final state
         main_window.state = final_state
         await main_window_probe.wait_for_window(
             f"Main window is in {final_state}", rapid_state_switching=True
         )
-
         assert main_window_probe.instantaneous_state == final_state
 
     @pytest.mark.parametrize(
@@ -249,7 +248,7 @@ if toga.platform.current_platform in {"iOS", "android"}:
         ],
     )
     async def test_window_state_content_size_increase(
-        main_window, main_window_probe, state
+        app, app_probe, main_window, main_window_probe, state
     ):
         """The size of the window content should increase when the window state is set
         to maximized, fullscreen or presentation."""
@@ -732,8 +731,8 @@ else:
                 WindowState.MAXIMIZED,
                 WindowState.MINIMIZED,
                 WindowState.PRESENTATION,
-                WindowState.MAXIMIZED,
-                WindowState.PRESENTATION,
+                WindowState.FULLSCREEN,
+                WindowState.MINIMIZED,
             ),
         ],
     )
@@ -749,14 +748,18 @@ else:
     async def test_window_state_change_with_intermediate_states(
         app,
         app_probe,
-        initial_state,
-        final_state,
         second_window,
         second_window_probe,
+        initial_state,
+        final_state,
         intermediate_states,
     ):
         """Window state can be changed to another state while passing
         through intermediate states with an expected OS delay."""
+        explicit_slow_mode = app.run_slow
+        if toga.platform.current_platform == "macOS":
+            app.run_slow = True
+
         if (
             WindowState.MINIMIZED in {initial_state, final_state}
             and not second_window_probe.supports_minimize
@@ -794,6 +797,9 @@ else:
             f"Secondary window is in {final_state}", rapid_state_switching=True
         )
         assert second_window_probe.instantaneous_state == final_state
+
+        if toga.platform.current_platform == "macOS" and not explicit_slow_mode:
+            app.run_slow = False
 
     @pytest.mark.parametrize(
         "state",

@@ -323,13 +323,6 @@ class Window:
         # The actual logic for closing a window. This is abstracted so that the testbed
         # can monkeypatch this method, recording the close request without actually
         # closing the app.
-
-        # Restore to normal state if in presentation mode. On some backends (e.g., Cocoa),
-        # the content is in presentation mode, not the window. Closing the window directly
-        # can cause rendering glitches.
-        if self.state == WindowState.PRESENTATION:
-            self.state = WindowState.NORMAL
-
         if self.content:
             self.content.window = None
         self.app.windows.discard(self)
