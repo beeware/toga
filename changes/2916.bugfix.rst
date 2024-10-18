@@ -1,0 +1,1 @@
+Fixed a bug where styles were being applied before the widget's implementation was available.
