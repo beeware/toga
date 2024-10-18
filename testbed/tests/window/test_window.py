@@ -732,8 +732,8 @@ else:
                 WindowState.MAXIMIZED,
                 WindowState.MINIMIZED,
                 WindowState.PRESENTATION,
-                WindowState.MAXIMIZED,
-                WindowState.PRESENTATION,
+                WindowState.FULLSCREEN,
+                WindowState.MINIMIZED,
             ),
         ],
     )

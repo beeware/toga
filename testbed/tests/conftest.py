@@ -8,7 +8,6 @@ from pytest import fixture, register_assert_rewrite, skip
 
 import toga
 from toga.colors import GOLDENROD
-from toga.constants import WindowState
 from toga.style import Pack
 
 # Ideally, we'd register rewrites for "tests" and get all the submodules
@@ -72,18 +71,6 @@ def main_window(app):
 
 @fixture(autouse=True)
 async def window_cleanup(app, app_probe, main_window, main_window_probe):
-    # After closing the window, the input focus might not be on main_window.
-    # Ensure that main_window is in NORMAL state and will be in focus for
-    # other tests.
-    app.current_window = main_window
-    main_window_state = main_window.state
-    main_window.state = WindowState.NORMAL
-    await main_window_probe.wait_for_window(
-        "main_window is now the current window and is in NORMAL state",
-        minimize=True if main_window_state == WindowState.MINIMIZED else False,
-        full_screen=True if main_window_state == WindowState.FULLSCREEN else False,
-    )
-
     # Ensure that at the end of every test, all windows that aren't the
     # main window have been closed and deleted. This needs to be done in
     # 2 passes because we can't modify the list while iterating over it.
@@ -97,7 +84,7 @@ async def window_cleanup(app, app_probe, main_window, main_window_probe):
         window = kill_list.pop()
         window.close()
         del window
-
+        await app_probe.redraw("delay before gc", delay=0.5)
     # Force a GC pass on the main thread. This isn't perfect, but it helps
     # minimize garbage collection on the test thread.
     gc.collect()
