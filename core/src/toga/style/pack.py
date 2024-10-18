@@ -94,7 +94,7 @@ class Pack(BaseStyle):
         return self.visibility == HIDDEN
 
     def apply(self, prop: str, value: object) -> None:
-        if self._applicator:
+        if self._applicator and self._applicator.widget._impl:
             if prop == "text_align":
                 if value is None:
                     if self.text_direction == RTL:

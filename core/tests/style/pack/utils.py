@@ -7,6 +7,8 @@ from toga.style.applicator import TogaApplicator
 
 class ExampleNode(Node):
     def __init__(self, name, style, size=None, children=None):
+        self._impl = None
+
         super().__init__(
             style=style, children=children, applicator=TogaApplicator(self)
         )

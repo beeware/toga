@@ -33,6 +33,8 @@ class Widget(Node):
         :param style: A style object. If no style is provided, a default style
             will be applied to the widget.
         """
+        self._impl: Any = None
+
         super().__init__(
             style=style if style else Pack(),
             applicator=TogaApplicator(self),
@@ -41,7 +43,6 @@ class Widget(Node):
         self._id = str(id if id else identifier(self))
         self._window: Window | None = None
         self._app: App | None = None
-        self._impl: Any = None
 
         self.factory = get_platform_factory()
 
