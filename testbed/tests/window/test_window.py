@@ -748,11 +748,10 @@ else:
     )
     async def test_window_state_change_with_intermediate_states(
         app,
-        app_probe,
-        initial_state,
-        final_state,
         second_window,
         second_window_probe,
+        initial_state,
+        final_state,
         intermediate_states,
     ):
         """Window state can be changed to another state while passing
@@ -794,6 +793,15 @@ else:
             f"Secondary window is in {final_state}", rapid_state_switching=True
         )
         assert second_window_probe.instantaneous_state == final_state
+        second_window.close()
+
+        await second_window_probe.wait_for_window(
+            f"Secondary window is in {initial_state}",
+            minimize=True if final_state == WindowState.MINIMIZED else False,
+            full_screen=True if final_state == WindowState.FULLSCREEN else False,
+        )
+        del second_window
+        gc.collect()
 
     @pytest.mark.parametrize(
         "state",
