@@ -2,10 +2,10 @@ import asyncio
 import re
 import sys
 import threading
-from ctypes import windll
 
 import System.Windows.Forms as WinForms
-from System import Environment, Threading
+from Microsoft.Win32 import SystemEvents
+from System import Threading
 from System.Media import SystemSounds
 from System.Net import SecurityProtocolType, ServicePointManager
 from System.Windows.Threading import Dispatcher
@@ -76,32 +76,10 @@ class App:
         self.app_context = WinForms.ApplicationContext()
         self.app_dispatcher = Dispatcher.CurrentDispatcher
 
-        # Check the version of windows and make sure we are setting the DPI mode
-        # with the most up to date API
-        # Windows Versioning Check Sources : https://www.lifewire.com/windows-version-numbers-2625171
-        # and https://docs.microsoft.com/en-us/windows/release-information/
-        win_version = Environment.OSVersion.Version
-        if win_version.Major >= 6:  # Checks for Windows Vista or later
-            # Represents Windows 8.1 up to Windows 10 before Build 1703 which should use
-            # SetProcessDpiAwareness(True)
-            if (win_version.Major == 6 and win_version.Minor == 3) or (
-                win_version.Major == 10 and win_version.Build < 15063
-            ):  # pragma: no cover
-                windll.shcore.SetProcessDpiAwareness(True)
-                print(
-                    "WARNING: Your Windows version doesn't support DPI-independent rendering.  "
-                    "We recommend you upgrade to at least Windows 10 Build 1703."
-                )
-            # Represents Windows 10 Build 1703 and beyond which should use
-            # SetProcessDpiAwarenessContext(-2)
-            elif win_version.Major == 10 and win_version.Build >= 15063:
-                windll.user32.SetProcessDpiAwarenessContext(-2)
-            # Any other version of windows should use SetProcessDPIAware()
-            else:  # pragma: no cover
-                windll.user32.SetProcessDPIAware()
-
-        self.native.EnableVisualStyles()
-        self.native.SetCompatibleTextRenderingDefault(False)
+        # Register the DisplaySettingsChanged event handler
+        SystemEvents.DisplaySettingsChanged += WeakrefCallable(
+            self.winforms_DisplaySettingsChanged
+        )
 
         # Ensure that TLS1.2 and TLS1.3 are enabled for HTTPS connections.
         # For some reason, some Windows installs have these protocols
@@ -125,6 +103,14 @@ class App:
 
         # Populate the main window as soon as the event loop is running.
         self.loop.call_soon_threadsafe(self.interface._startup)
+
+    ######################################################################
+    # Native event handlers
+    ######################################################################
+
+    def winforms_DisplaySettingsChanged(self, sender, event):
+        for window in self.interface.windows:
+            window._impl.update_dpi()
 
     ######################################################################
     # Commands and menus
