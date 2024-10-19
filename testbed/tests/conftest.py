@@ -70,7 +70,7 @@ def main_window(app):
 
 
 @fixture(autouse=True)
-async def window_cleanup(app, app_probe, main_window):
+async def window_cleanup(app, main_window):
     # Ensure that at the end of every test, all windows that aren't the
     # main window have been closed and deleted. This needs to be done in
     # 2 passes because we can't modify the list while iterating over it.

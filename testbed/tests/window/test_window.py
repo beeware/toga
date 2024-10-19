@@ -793,15 +793,9 @@ else:
             f"Secondary window is in {final_state}", rapid_state_switching=True
         )
         assert second_window_probe.instantaneous_state == final_state
-        second_window.close()
 
-        await second_window_probe.wait_for_window(
-            f"Secondary window is in {initial_state}",
-            minimize=True if final_state == WindowState.MINIMIZED else False,
-            full_screen=True if final_state == WindowState.FULLSCREEN else False,
-        )
-        del second_window
-        gc.collect()
+        app.run_slow = True
+        app.run_slow = False
 
     @pytest.mark.parametrize(
         "state",
