@@ -168,13 +168,15 @@ if toga.platform.current_platform in {"iOS", "android"}:
     )
     async def test_window_state_change_with_intermediate_states(
         app,
-        initial_state,
-        final_state,
         main_window,
         main_window_probe,
+        initial_state,
+        final_state,
         intermediate_states,
     ):
         """Window state can be directly changed to another state."""
+        app.run_slow = True
+
         if not main_window_probe.supports_fullscreen and WindowState.FULLSCREEN in {
             initial_state,
             final_state,
@@ -205,8 +207,9 @@ if toga.platform.current_platform in {"iOS", "android"}:
         await main_window_probe.wait_for_window(
             f"Main window is in {final_state}", rapid_state_switching=True
         )
-
         assert main_window_probe.instantaneous_state == final_state
+
+        app.run_slow = False
 
     @pytest.mark.parametrize(
         "state",
