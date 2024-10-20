@@ -71,6 +71,7 @@ def main_window(app):
 
 @fixture(autouse=True)
 async def window_cleanup(app, main_window):
+    app.run_slow = True
     # Ensure that at the end of every test, all windows that aren't the
     # main window have been closed and deleted. This needs to be done in
     # 2 passes because we can't modify the list while iterating over it.
@@ -88,6 +89,7 @@ async def window_cleanup(app, main_window):
     # Force a GC pass on the main thread. This isn't perfect, but it helps
     # minimize garbage collection on the test thread.
     gc.collect()
+    app.run_slow = False
 
 
 @fixture(scope="session")
