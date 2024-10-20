@@ -794,6 +794,9 @@ else:
             f"Secondary window is in {final_state}", rapid_state_switching=True
         )
         assert second_window_probe.instantaneous_state == final_state
+        await second_window_probe.wait_for_window(
+            f"Secondary window is in {final_state}", rapid_state_switching=True
+        )
 
     @pytest.mark.parametrize(
         "state",
