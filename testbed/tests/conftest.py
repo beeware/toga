@@ -87,9 +87,7 @@ async def window_cleanup(app, main_window):
 
     # Force a GC pass on the main thread. This isn't perfect, but it helps
     # minimize garbage collection on the test thread.
-    app.run_slow = True
     gc.collect()
-    app.run_slow = False
 
 
 @fixture(scope="session")

@@ -757,6 +757,10 @@ else:
     ):
         """Window state can be changed to another state while passing
         through intermediate states with an expected OS delay."""
+        explicit_slow_mode = app.run_slow
+        if toga.platform.current_platform == "macOS":
+            app.run_slow = True
+
         if (
             WindowState.MINIMIZED in {initial_state, final_state}
             and not second_window_probe.supports_minimize
@@ -794,9 +798,9 @@ else:
             f"Secondary window is in {final_state}", rapid_state_switching=True
         )
         assert second_window_probe.instantaneous_state == final_state
-        await second_window_probe.wait_for_window(
-            f"Secondary window is in {final_state}", rapid_state_switching=True
-        )
+
+        if toga.platform.current_platform == "macOS" and not explicit_slow_mode:
+            app.run_slow = False
 
     @pytest.mark.parametrize(
         "state",
