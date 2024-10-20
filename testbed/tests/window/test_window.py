@@ -794,9 +794,6 @@ else:
         )
         assert second_window_probe.instantaneous_state == final_state
 
-        app.run_slow = True
-        app.run_slow = False
-
     @pytest.mark.parametrize(
         "state",
         [
