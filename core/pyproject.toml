@@ -67,7 +67,7 @@ dependencies = [
 dev = [
     "coverage[toml] == 7.6.2",
     "coverage-conditional-plugin == 0.9.0",
-    "Pillow == 10.4.0",
+    "Pillow == 11.0.0",
     "pre-commit == 4.0.1",
     "pytest == 8.3.3",
     "pytest-asyncio == 0.24.0",
@@ -81,7 +81,7 @@ dev = [
 # and the docs contribution guide.
 docs = [
     "furo == 2024.8.6",
-    "Pillow == 10.4.0",
+    "Pillow == 11.0.0",
     "pyenchant == 3.2.2",
     "sphinx == 8.1.3",
     "sphinx_tabs == 3.4.5",
