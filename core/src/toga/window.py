@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING, Any, Protocol, TypeVar
 import toga
 from toga import dialogs
 from toga.command import CommandSet
+from toga.constants import WindowState
 from toga.handlers import AsyncResult, wrapped_handler
 from toga.images import Image
 from toga.platform import get_platform_factory
@@ -188,7 +189,6 @@ class Window:
         self._id = str(id if id else identifier(self))
         self._impl: Any = None
         self._content: Widget | None = None
-        self._is_full_screen = False
         self._closed = False
 
         self._resizable = resizable
@@ -464,21 +464,27 @@ class Window:
     ######################################################################
 
     @property
-    def full_screen(self) -> bool:
-        """Is the window in full screen mode?
+    def state(self) -> WindowState:
+        """The current state of the window."""
+        # There are 2 types of window states that we can get:
+        # * The instantaneous state -- Used internally on implementation side
+        # * The in-progress state -- Used for same state checking on the core
+        #                            and for the public API.
+        return self._impl.get_window_state(in_progress_state=True)
 
-        Full screen mode is *not* the same as "maximized". A full screen window
-        has no title bar, toolbar or window controls; some or all of these
-        items may be visible on a maximized window. A good example of "full screen"
-        mode is a slideshow app in presentation mode - the only visible content is
-        the slide.
-        """
-        return self._is_full_screen
-
-    @full_screen.setter
-    def full_screen(self, is_full_screen: bool) -> None:
-        self._is_full_screen = is_full_screen
-        self._impl.set_full_screen(is_full_screen)
+    @state.setter
+    def state(self, state: WindowState) -> None:
+        if not self.resizable and state in {
+            WindowState.MAXIMIZED,
+            WindowState.FULLSCREEN,
+            WindowState.PRESENTATION,
+        }:
+            raise ValueError(
+                f"A non-resizable window cannot be set to a state of {state}."
+            )
+        else:
+            if self.state != state:
+                self._impl.set_window_state(state)
 
     ######################################################################
     # Window capabilities
@@ -812,6 +818,32 @@ class Window:
             DeprecationWarning,
         )
         return self._closable
+
+    ######################################################################
+    # End Backwards compatibility
+    ######################################################################
+
+    ######################################################################
+    # 2024-07: Backwards compatibility
+    ######################################################################
+    @property
+    def full_screen(self) -> bool:
+        """**DEPRECATED** – Use :any:`Window.state`."""
+        warnings.warn(
+            ("`Window.full_screen` is deprecated. Use `Window.state` instead."),
+            DeprecationWarning,
+        )
+        return bool(self.state == WindowState.FULLSCREEN)
+
+    @full_screen.setter
+    def full_screen(self, is_full_screen: bool) -> None:
+        warnings.warn(
+            ("`Window.full_screen` is deprecated. Use `Window.state` instead."),
+            DeprecationWarning,
+        )
+        target_state = WindowState.FULLSCREEN if is_full_screen else WindowState.NORMAL
+        if self.state != target_state:
+            self._impl.set_window_state(target_state)
 
     ######################################################################
     # End Backwards compatibility
