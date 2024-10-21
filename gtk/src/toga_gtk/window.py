@@ -168,7 +168,7 @@ class Window:
         if in_progress_state and self._pending_state_transition:
             return self._pending_state_transition
         window_state_flags = self._window_state_flags
-        if window_state_flags:
+        if window_state_flags:  # pragma: no branch
             if window_state_flags & Gdk.WindowState.MAXIMIZED:
                 return WindowState.MAXIMIZED
             elif window_state_flags & Gdk.WindowState.ICONIFIED:
