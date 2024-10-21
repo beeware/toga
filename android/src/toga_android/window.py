@@ -147,11 +147,6 @@ class Window(Container):
     ######################################################################
 
     def get_window_state(self, in_progress_state=False):
-        # `window.state` is called in `_close()`, which itself is
-        # sometimes called during certain stages when the app
-        # attribute may not exist. In such cases, return NORMAL.
-        if getattr(self, "app", None) is None:
-            return WindowState.NORMAL
         decor_view = self.app.native.getWindow().getDecorView()
         system_ui_flags = decor_view.getSystemUiVisibility()
         if system_ui_flags & (
