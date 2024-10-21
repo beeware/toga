@@ -175,8 +175,6 @@ if toga.platform.current_platform in {"iOS", "android"}:
         intermediate_states,
     ):
         """Window state can be directly changed to another state."""
-        app.run_slow = True
-
         if not main_window_probe.supports_fullscreen and WindowState.FULLSCREEN in {
             initial_state,
             final_state,
@@ -200,7 +198,7 @@ if toga.platform.current_platform in {"iOS", "android"}:
 
         # Set to the intermediate states but don't wait for the OS delay.
         for state in intermediate_states:
-            second_window.state = state
+            main_window.state = state
 
         # Set to final state
         main_window.state = final_state
@@ -208,8 +206,6 @@ if toga.platform.current_platform in {"iOS", "android"}:
             f"Main window is in {final_state}", rapid_state_switching=True
         )
         assert main_window_probe.instantaneous_state == final_state
-
-        app.run_slow = False
 
     @pytest.mark.parametrize(
         "state",
@@ -252,7 +248,7 @@ if toga.platform.current_platform in {"iOS", "android"}:
         ],
     )
     async def test_window_state_content_size_increase(
-        main_window, main_window_probe, state
+        app, app_probe, main_window, main_window_probe, state
     ):
         """The size of the window content should increase when the window state is set
         to maximized, fullscreen or presentation."""
