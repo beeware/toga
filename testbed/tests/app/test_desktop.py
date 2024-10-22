@@ -380,13 +380,13 @@ async def test_current_window(app, app_probe, main_window, main_window_probe):
     app_probe.setup_info_dialog_result(info_dialog)
 
     # When a window without any dialog is made the current_window,
-    # then app.current_window should return the specified window.
+    # then `app.current_window` should return the specified window.
     app.current_window = window1
     await main_window_probe.wait_for_window("Window 1 is current")
     if app_probe.supports_current_window_assignment:
         assert app.current_window == window1
 
-    # When a dialog is in focus, app.current_window should
+    # When a dialog is in focus, `app.current_window` should
     # return the window from which the dialog was initiated.
     app.current_window = window2
     dialog_task = app.loop.create_task(window2.dialog(info_dialog))
