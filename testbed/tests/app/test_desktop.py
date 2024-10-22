@@ -376,8 +376,7 @@ async def test_current_window(app, app_probe, main_window, main_window_probe):
 
     await main_window_probe.wait_for_window("Extra windows added")
 
-    info_dialog = toga.InfoDialog("Info", "Some info")
-    app_probe.setup_info_dialog_result(info_dialog)
+    
 
     # When a window without any dialog is made the current_window,
     # then `app.current_window` should return the specified window.
@@ -388,23 +387,30 @@ async def test_current_window(app, app_probe, main_window, main_window_probe):
 
     # When a dialog is in focus, `app.current_window` should
     # return the window from which the dialog was initiated.
+
+    window2_info_dialog = toga.InfoDialog("Info", "Some info")
+    app_probe.setup_info_dialog_result(window2_info_dialog)
+
     app.current_window = window2
-    dialog_task = app.loop.create_task(window2.dialog(info_dialog))
+    window2_dialog_task = app.loop.create_task(window2.dialog(window2_info_dialog))
     await main_window_probe.wait_for_window("Window 2 is current")
     if app_probe.supports_current_window_assignment:
         assert app.current_window == window2
-    await app_probe.redraw("select 'OK")
+    await app_probe.redraw("select 'OK'")
     # Cancel the task to avoid dangling
-    dialog_task.cancel()
+    window2_dialog_task.cancel()
+
+    window3_info_dialog = toga.InfoDialog("Info", "Some info")
+    app_probe.setup_info_dialog_result(window3_info_dialog)
 
     app.current_window = window3
-    dialog_task = app.loop.create_task(window3.dialog(info_dialog))
+    window3_dialog_task = app.loop.create_task(window3.dialog(window3_info_dialog))
     await main_window_probe.wait_for_window("Window 3 is current")
     if app_probe.supports_current_window_assignment:
         assert app.current_window == window3
-    await app_probe.redraw("select 'OK")
+    await app_probe.redraw("select 'OK'")
     # Cancel the task to avoid dangling
-    dialog_task.cancel()
+    window3_dialog_task.cancel()
 
 
 async def test_session_based_app(
