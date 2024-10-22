@@ -352,10 +352,8 @@ async def test_current_window(app, app_probe, main_window, main_window_probe):
         if app_probe.supports_current_window_assignment:
             assert app.current_window == main_window
 
-        # When all windows are hidden, WinForms and Cocoa return None, while GTK
-        # returns the last active window.
         main_window.hide()
-        assert app.current_window in [None, main_window]
+        assert app.current_window is None
 
         main_window.show()
         assert app.current_window == main_window
@@ -386,7 +384,7 @@ async def test_current_window(app, app_probe, main_window, main_window_probe):
     # When a dialog is in focus, `app.current_window` should
     # return the window from which the dialog was initiated.
 
-    window2_info_dialog = toga.InfoDialog("Info", "Some info")
+    window2_info_dialog = toga.InfoDialog("Second Window Info", "Some info")
     app_probe.setup_info_dialog_result(window2_info_dialog)
 
     app.current_window = window2
@@ -398,7 +396,7 @@ async def test_current_window(app, app_probe, main_window, main_window_probe):
     # Cancel the task to avoid dangling
     window2_dialog_task.cancel()
 
-    window3_info_dialog = toga.InfoDialog("Info", "Some info")
+    window3_info_dialog = toga.InfoDialog("Third Window Info", "Some info")
     app_probe.setup_info_dialog_result(window3_info_dialog)
 
     app.current_window = window3
