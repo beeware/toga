@@ -6,6 +6,7 @@ from rubicon.objc import (
     SEL,
     NSMutableDictionary,
     NSObject,
+    ObjCClass,
     objc_method,
     objc_property,
 )
@@ -33,6 +34,8 @@ from .libs import (
     NSScreen,
 )
 from .screens import Screen as ScreenImpl
+
+NSPanel = ObjCClass("NSPanel")
 
 
 class AppDelegate(NSObject):
@@ -366,7 +369,12 @@ class App:
     ######################################################################
 
     def get_current_window(self):
-        return self.native.keyWindow
+        focused_window = self.native.keyWindow
+        if isinstance(focused_window, NSPanel):  # If the focus is on a dialog
+            sheet_parent = focused_window.sheetParent
+            return sheet_parent if sheet_parent else self.native.mainWindow
+        else:  # If the focus is on a window
+            return focused_window
 
     def set_current_window(self, window):
         window._impl.native.makeKeyAndOrderFront(window._impl.native)

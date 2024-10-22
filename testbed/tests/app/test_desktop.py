@@ -346,7 +346,7 @@ async def test_show_hide_cursor(app, app_probe):
     assert app_probe.is_cursor_visible
 
 
-async def test_current_window(app, app_probe, main_window):
+async def test_current_window(app, app_probe, main_window, main_window_probe):
     """The current window can be retrieved"""
     try:
         if app_probe.supports_current_window_assignment:
@@ -370,25 +370,41 @@ async def test_current_window(app, app_probe, main_window):
     window2.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
     window3.content = toga.Box(style=Pack(background_color=FIREBRICK))
 
-    # We don't need to probe anything window specific; we just need
-    # a window probe to enforce appropriate delays.
-    window1_probe = window_probe(app, window1)
-
     window1.show()
     window2.show()
     window3.show()
 
-    await window1_probe.wait_for_window("Extra windows added")
+    await main_window_probe.wait_for_window("Extra windows added")
 
+    info_dialog = toga.InfoDialog("Info", "Some info")
+    app_probe.setup_info_dialog_result(info_dialog)
+
+    # When a window without any dialog is made the current_window,
+    # then app.current_window should return the specified window.
+    app.current_window = window1
+    await main_window_probe.wait_for_window("Window 1 is current")
+    if app_probe.supports_current_window_assignment:
+        assert app.current_window == window1
+
+    # When a dialog is in focus, app.current_window should
+    # return the window from which the dialog was initiated.
     app.current_window = window2
-    await window1_probe.wait_for_window("Window 2 is current")
+    dialog_task = app.loop.create_task(window2.dialog(info_dialog))
+    await main_window_probe.wait_for_window("Window 2 is current")
     if app_probe.supports_current_window_assignment:
         assert app.current_window == window2
+    await app_probe.redraw("select 'OK")
+    # Cancel the task to avoid dangling
+    dialog_task.cancel()
 
     app.current_window = window3
-    await window1_probe.wait_for_window("Window 3 is current")
+    dialog_task = app.loop.create_task(window3.dialog(info_dialog))
+    await main_window_probe.wait_for_window("Window 3 is current")
     if app_probe.supports_current_window_assignment:
         assert app.current_window == window3
+    await app_probe.redraw("select 'OK")
+    # Cancel the task to avoid dangling
+    dialog_task.cancel()
 
 
 async def test_session_based_app(
