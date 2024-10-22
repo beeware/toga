@@ -376,8 +376,6 @@ async def test_current_window(app, app_probe, main_window, main_window_probe):
 
     await main_window_probe.wait_for_window("Extra windows added")
 
-    
-
     # When a window without any dialog is made the current_window,
     # then `app.current_window` should return the specified window.
     app.current_window = window1
