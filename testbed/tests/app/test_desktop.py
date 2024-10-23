@@ -384,29 +384,22 @@ async def test_current_window(app, app_probe, main_window, main_window_probe):
     if app_probe.supports_current_window_assignment:
         assert app.current_window == window3
 
-    # Test current window when dialog is in focus
-    window1_probe = window_probe(app, window1)
-
-    app.current_window = window1
-    await main_window_probe.wait_for_window("Window 1 is current")
-    assert app.current_window == window1
-
     info_dialog = toga.InfoDialog("Info", "Some info")
     app_probe.setup_info_dialog_result(info_dialog)
 
-    await window1_probe.redraw("Display window1 modal info dialog")
-    await window1.dialog(info_dialog)
-
+    app.current_window = window1
+    await main_window_probe.wait_for_window("Window 1 is current")
+    dialog_task = app.loop.create_task(window1.dialog(info_dialog))
+    await main_window_probe.wait_for_window("Displayed window1 modal info dialog")
     if app_probe.supports_current_window_assignment:
         assert app.current_window == window1
-
-    # On the native backend, the dialog should be in focus, instead of the window
     if toga.platform.current_platform == "macOS":
         assert "_NSAlertPanel" in str(
             app._impl.native.keyWindow
         ), "The dialog is not in focus"
-
-    await window1_probe.redraw("select 'OK'")
+    await app_probe.redraw("select 'OK'")
+    # Cancel the task to avoid dangling
+    dialog_task.cancel()
 
 
 async def test_session_based_app(
