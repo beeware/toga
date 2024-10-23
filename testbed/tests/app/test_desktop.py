@@ -392,7 +392,7 @@ async def test_current_window(app, app_probe, main_window, main_window_probe):
     assert app.current_window == window1
 
     info_dialog = toga.InfoDialog("Info", "Some info")
-    window1_probe.setup_info_dialog_result(info_dialog)
+    app_probe.setup_info_dialog_result(info_dialog)
 
     await window1_probe.redraw("Display window1 modal info dialog")
     await window1.dialog(info_dialog)
