@@ -374,6 +374,8 @@ async def test_current_window(app, app_probe, main_window, main_window_probe):
 
     await main_window_probe.wait_for_window("Extra windows added")
 
+    # When a window without any dialog is made the current_window,
+    # then `app.current_window` should return the specified window.
     app.current_window = window2
     await main_window_probe.wait_for_window("Window 2 is current")
     if app_probe.supports_current_window_assignment:
@@ -384,6 +386,8 @@ async def test_current_window(app, app_probe, main_window, main_window_probe):
     if app_probe.supports_current_window_assignment:
         assert app.current_window == window3
 
+    # When a dialog is in focus, `app.current_window` should
+    # return the window from which the dialog was initiated.
     info_dialog = toga.InfoDialog("Info", "Some info")
     app_probe.setup_info_dialog_result(info_dialog)
 
@@ -391,8 +395,10 @@ async def test_current_window(app, app_probe, main_window, main_window_probe):
     await main_window_probe.wait_for_window("Window 1 is current")
     dialog_task = app.loop.create_task(window1.dialog(info_dialog))
     await main_window_probe.wait_for_window("Displayed window1 modal info dialog")
+    # The public API should report that current window is the specified window
     if app_probe.supports_current_window_assignment:
         assert app.current_window == window1
+    # But, the backend should be reporting that the current window is the dialog
     if toga.platform.current_platform == "macOS":
         assert "_NSAlertPanel" in str(
             app._impl.native.keyWindow
@@ -400,6 +406,8 @@ async def test_current_window(app, app_probe, main_window, main_window_probe):
     await app_probe.redraw("select 'OK'")
     # Cancel the task to avoid dangling
     dialog_task.cancel()
+
+    assert app.current_window == window1
 
 
 async def test_session_based_app(
