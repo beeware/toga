@@ -71,7 +71,7 @@ def main_window(app):
 
 
 @fixture(autouse=True)
-async def window_cleanup(app, main_window, main_window_probe):
+async def window_cleanup(app, app_probe, main_window, main_window_probe):
     # Ensure that at the end of every test, all windows that aren't the
     # main window have been closed and deleted. This needs to be done in
     # 2 passes because we can't modify the list while iterating over it.
@@ -84,6 +84,7 @@ async def window_cleanup(app, main_window, main_window_probe):
     while kill_list:
         window = kill_list.pop()
         window.close()
+        await main_window_probe.wait_for_window(f"Closing window: {window.title}")
         del window
 
     # Force a GC pass on the main thread. This isn't perfect, but it helps
