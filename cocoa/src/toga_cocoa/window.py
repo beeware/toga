@@ -56,10 +56,11 @@ class TogaWindow(NSWindow):
         # Disconnect the window delegate.
         self.delegate = None
 
-        # Disconnecting the window delegate doesn't prevent custom
-        # methods which are performed with a delay i.e., having a
-        # delay != 0), from being triggered. Hence, check guards
-        # needs to be used in such custom methods.
+        # Disconnecting the window delegate doesn't prevent custom methods
+        # which are performed with a delay (i.e., having a delay != 0),
+        # from being triggered when `impl` & `interface` attributes are empty.
+        # Hence, check guards for empty `impl` and `interface` attributes need
+        # to be used in such custom methods.
 
     @objc_method
     def windowDidResize_(self, notification) -> None:
@@ -207,11 +208,6 @@ class Window:
 
         if self.interface.minimizable:
             mask |= NSWindowStyleMask.Miniaturizable
-
-        # The objc callback methods can be called during the initialization
-        # of the NSWindow. So, any objc method referencing impl or interface
-        # will get an Attribute error. Hence, first allocate and assign the
-        # impl & interface to it. Then finally initialize the NSWindow.
 
         # Create the window with a default frame;
         # we'll update size and position later.

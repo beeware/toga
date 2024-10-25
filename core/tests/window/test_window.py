@@ -405,25 +405,6 @@ def test_non_resizable_window_state(state):
     non_resizable_window.close()
 
 
-# def test_close_direct_in_presentation(window, app):
-#     """Directly closing a window in presentation mode restores to normal first."""
-#     window.state = WindowState.PRESENTATION
-#     assert window.state == WindowState.PRESENTATION
-#     assert_action_performed_with(
-#         window,
-#         "set window state to WindowState.PRESENTATION",
-#         state=WindowState.PRESENTATION,
-#     )
-
-#     window.close()
-#     assert window.state == WindowState.NORMAL
-#     assert_action_performed_with(
-#         window,
-#         "set window state to WindowState.NORMAL",
-#         state=WindowState.NORMAL,
-#     )
-
-
 def test_close_direct(window, app):
     """A window can be closed directly."""
     on_close_handler = Mock(return_value=True)
