@@ -718,14 +718,14 @@ else:
     @pytest.mark.parametrize(
         "intermediate_states",
         [
-            # (
-            #     WindowState.MINIMIZED,
-            #     WindowState.FULLSCREEN,
-            #     WindowState.PRESENTATION,
-            #     WindowState.MAXIMIZED,
-            #     WindowState.MINIMIZED,
-            #     WindowState.FULLSCREEN,
-            # ),
+            (
+                WindowState.MINIMIZED,
+                WindowState.FULLSCREEN,
+                WindowState.PRESENTATION,
+                WindowState.MAXIMIZED,
+                WindowState.MINIMIZED,
+                WindowState.FULLSCREEN,
+            ),
             (
                 WindowState.FULLSCREEN,
                 WindowState.MAXIMIZED,
