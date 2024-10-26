@@ -118,6 +118,10 @@ def NSTextAlignment(alignment):
 UIKeyInput = ObjCProtocol("UIKeyInput")
 
 ######################################################################
+# UIActivityIndicatorView.h
+UIActivityIndicatorView = ObjCClass("UIActivityIndicatorView")
+
+######################################################################
 # UIAlertController.h
 UIAlertController = ObjCClass("UIAlertController")
 UIAlertAction = ObjCClass("UIAlertAction")

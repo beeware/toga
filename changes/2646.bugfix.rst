@@ -1,1 +1,0 @@
-GTK apps no longer have extra padding between the menubar and the window content when the app does not have a toolbar.

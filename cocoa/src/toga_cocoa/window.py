@@ -374,7 +374,3 @@ class MainWindow(Window):
             for item_native in dead_items:
                 cmd._impl.native.remove(item_native)
                 item_native.release()
-
-
-class DocumentMainWindow(Window):
-    pass

@@ -1,1 +1,0 @@
-It is no longer possible to create a toolbar on a ``Window`` instance. Toolbars can only be added to ``MainWindow`` (or subclass).

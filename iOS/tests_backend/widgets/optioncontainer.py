@@ -39,6 +39,9 @@ class OptionContainerProbe(SimpleProbe):
         more = self.impl.native_controller.moreNavigationController
         self.impl.native_controller.selectedViewController = more
 
+    async def wait_for_tab(self, message):
+        await self.redraw(message, delay=0.1)
+
     def reset_more(self):
         more = self.impl.native_controller.moreNavigationController
         more.popToRootViewControllerAnimated(False)

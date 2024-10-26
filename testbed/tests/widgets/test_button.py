@@ -7,6 +7,7 @@ from toga.colors import TRANSPARENT
 
 from ..assertions import assert_color
 from ..data import TEXTS
+from .conftest import build_cleanup_test
 from .properties import (  # noqa: F401
     test_background_color,
     test_background_color_reset,
@@ -29,6 +30,11 @@ else:
 @fixture
 async def widget():
     return toga.Button("Hello")
+
+
+test_cleanup = build_cleanup_test(
+    toga.Button, args=("Hello",), skip_platforms=("android",)
+)
 
 
 async def test_text(widget, probe):

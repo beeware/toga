@@ -28,6 +28,7 @@ toga_core_imports = {
     "StackTraceDialog": "toga.dialogs",
     # toga.documents imports
     "Document": "toga.documents",
+    "DocumentWindow": "toga.documents",
     # toga.fonts imports
     "Font": "toga.fonts",
     # toga.icons imports
@@ -36,6 +37,9 @@ toga_core_imports = {
     "Image": "toga.images",
     # toga.keys imports
     "Key": "toga.keys",
+    # toga.statusicons imports
+    "MenuStatusIcon": "toga.statusicons",
+    "SimpleStatusIcon": "toga.statusicons",
     # toga.types imports
     "LatLng": "toga.types",
     "Position": "toga.types",

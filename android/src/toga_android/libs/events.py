@@ -307,7 +307,8 @@ class AndroidSelector(selectors.SelectSelector):
     def reregister_with_android_soon(self, fileobj):
         def _reregister():
             # If the fileobj got unregistered, exit early.
-            key = self._key_from_fd(fileobj)
+            key = self._fd_to_key.get(fileobj)
+
             if key is None:  # pragma: no cover
                 if self._debug:
                     print(
@@ -344,7 +345,8 @@ class AndroidSelector(selectors.SelectSelector):
         """Accept a FD and the events that it is ready for (read and/or write).
 
         Filter the events to just those that are registered, then notify the loop."""
-        key = self._key_from_fd(fd)
+        key = self._fd_to_key.get(fd)
+
         if key is None:  # pragma: no cover
             print(
                 "Warning: handle_fd_wakeup: wakeup for unregistered fd={fd}".format(

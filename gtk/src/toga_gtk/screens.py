@@ -1,9 +1,7 @@
-import os
-
 from toga.screens import Screen as ScreenInterface
 from toga.types import Position, Size
 
-from .libs import Gdk
+from .libs import IS_WAYLAND, Gdk
 
 
 class Screen:
@@ -31,7 +29,7 @@ class Screen:
         return Size(geometry.width, geometry.height)
 
     def get_image_data(self):
-        if "WAYLAND_DISPLAY" in os.environ:  # pragma: no cover
+        if IS_WAYLAND:  # pragma: no cover
             # Not implemented on wayland due to wayland security policies.
             self.interface.factory.not_implemented("Screen.get_image_data() on Wayland")
         else:  # pragma: no-cover-if-linux-wayland

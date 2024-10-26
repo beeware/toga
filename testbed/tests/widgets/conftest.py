@@ -1,3 +1,5 @@
+import gc
+import weakref
 from unittest.mock import Mock
 
 from pytest import fixture
@@ -5,6 +7,7 @@ from pytest import fixture
 import toga
 from toga.style.pack import TOP
 
+from ..conftest import skip_on_platforms, xfail_on_platforms
 from .probe import get_probe
 
 
@@ -78,3 +81,31 @@ def verify_focus_handlers():
 def verify_vertical_alignment():
     """The widget's default vertical alignment"""
     return TOP
+
+
+def build_cleanup_test(
+    widget_constructor, args=None, kwargs=None, skip_platforms=(), xfail_platforms=()
+):
+    async def test_cleanup():
+        nonlocal args, kwargs
+
+        skip_on_platforms(*skip_platforms)
+        xfail_on_platforms(*xfail_platforms, reason="Leaks memory")
+
+        if args is None:
+            args = ()
+
+        if kwargs is None:
+            kwargs = {}
+
+        widget = widget_constructor(*args, **kwargs)
+        ref = weakref.ref(widget)
+
+        # Args or kwargs may hold a backref to the widget itself, for example if they
+        # are widget content. Ensure that they are deleted before garbage collection.
+        del widget, args, kwargs
+        gc.collect()
+
+        assert ref() is None
+
+    return test_cleanup

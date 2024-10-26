@@ -1,4 +1,5 @@
 import asyncio
+import gc
 import inspect
 from dataclasses import dataclass
 from importlib import import_module
@@ -18,18 +19,27 @@ register_assert_rewrite("tests_backend")
 
 # Use this for widgets or tests which are not supported on some platforms, but could be
 # supported in the future.
-def skip_on_platforms(*platforms):
+def skip_on_platforms(*platforms, reason=None):
     current_platform = toga.platform.current_platform
     if current_platform in platforms:
-        skip(f"not yet implemented on {current_platform}")
+        skip(reason or f"not yet implemented on {current_platform}")
 
 
 # Use this for widgets or tests which are not supported on some platforms, and will not
 # be supported in the foreseeable future.
-def xfail_on_platforms(*platforms):
+def xfail_on_platforms(*platforms, reason=None):
     current_platform = toga.platform.current_platform
     if current_platform in platforms:
-        skip(f"not applicable on {current_platform}")
+        skip(reason or f"not applicable on {current_platform}")
+
+
+@fixture(autouse=True)
+def no_dangling_tasks():
+    """Ensure any tasks for the test were removed when the test finished."""
+    yield
+    if toga.App.app:
+        tasks = toga.App.app._running_tasks
+        assert not tasks, f"the app has dangling tasks: {tasks}"
 
 
 @fixture(scope="session")
@@ -46,10 +56,38 @@ async def app_probe(app):
         print("\nConstructing app probe")
     yield probe
 
+    # Force a GC pass on the main thread. This isn't perfect, but it helps
+    # minimize garbage collection on the test thread.
+    gc.collect()
+
+    # Reset the command action mock
+    app.cmd_action.reset_mock()
+
 
 @fixture(scope="session")
 def main_window(app):
     return app.main_window
+
+
+@fixture(autouse=True)
+async def window_cleanup(app, main_window):
+    # Ensure that at the end of every test, all windows that aren't the
+    # main window have been closed and deleted. This needs to be done in
+    # 2 passes because we can't modify the list while iterating over it.
+    kill_list = []
+    for window in app.windows:
+        if window != main_window:
+            kill_list.append(window)
+
+    # Then purge everything on the kill list.
+    while kill_list:
+        window = kill_list.pop()
+        window.close()
+        del window
+
+    # Force a GC pass on the main thread. This isn't perfect, but it helps
+    # minimize garbage collection on the test thread.
+    gc.collect()
 
 
 @fixture(scope="session")

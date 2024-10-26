@@ -76,3 +76,15 @@ class AppProbe(BaseProbe, DialogsMixin):
     def rotate(self):
         self.native = self.app._impl.native
         self.native.delegate.application(self.native, didChangeStatusBarOrientation=0)
+
+    def has_status_icon(self, status_icon):
+        pytest.xfail("Status icons not implemented on iOS")
+
+    def status_menu_items(self, status_icon):
+        pytest.xfail("Status icons not implemented on iOS")
+
+    def activate_status_icon_button(self, item_id):
+        pytest.xfail("Status icons not implemented on iOS")
+
+    def activate_status_menu_item(self, item_id, title):
+        pytest.xfail("Status icons not implemented on iOS")
