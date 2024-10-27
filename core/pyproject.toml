@@ -73,7 +73,7 @@ dev = [
     "pytest-asyncio == 0.24.0",
     "pytest-freezer == 0.4.8",
     "setuptools-scm == 8.1.0",
-    "tox == 4.23.0",
+    "tox == 4.23.2",
     # typing-extensions needed for TypeAlias added in Py 3.10
     "typing-extensions == 4.12.2 ; python_version < '3.10'",
 ]
