@@ -465,8 +465,12 @@ class Window:
 
     @property
     def state(self) -> WindowState:
-        """The current state of the window."""
-        # There are 2 types of window states that we can get:
+        """The current state of the window.
+
+        When the window is in transition, then this will return the state it
+        is transitioning towards, instead of the actual instantaneous state.
+        """
+        # There are 2 types of window states that we can get from the backend:
         # * The instantaneous state -- Used internally on implementation side
         # * The in-progress state -- Used for same state checking on the core
         #                            and for the public API.
