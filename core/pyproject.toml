@@ -1,6 +1,6 @@
 [build-system]
 requires = [
-    "setuptools==75.1.0",
+    "setuptools==75.2.0",
     "setuptools_scm==8.1.0",
     "setuptools_dynamic_dependencies @ git+https://github.com/beeware/setuptools_dynamic_dependencies",
 ]
@@ -65,15 +65,15 @@ dependencies = [
 # Extras used by developers *of* Toga are pinned to specific versions to
 # ensure environment consistency.
 dev = [
-    "coverage[toml] == 7.6.2",
+    "coverage[toml] == 7.6.4",
     "coverage-conditional-plugin == 0.9.0",
-    "Pillow == 10.4.0",
+    "Pillow == 11.0.0",
     "pre-commit == 4.0.1",
     "pytest == 8.3.3",
     "pytest-asyncio == 0.24.0",
     "pytest-freezer == 0.4.8",
     "setuptools-scm == 8.1.0",
-    "tox == 4.21.2",
+    "tox == 4.23.2",
     # typing-extensions needed for TypeAlias added in Py 3.10
     "typing-extensions == 4.12.2 ; python_version < '3.10'",
 ]
@@ -81,7 +81,7 @@ dev = [
 # and the docs contribution guide.
 docs = [
     "furo == 2024.8.6",
-    "Pillow == 10.4.0",
+    "Pillow == 11.0.0",
     "pyenchant == 3.2.2",
     "sphinx == 8.1.3",
     "sphinx_tabs == 3.4.5",
