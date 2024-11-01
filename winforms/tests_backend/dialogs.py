@@ -32,7 +32,7 @@ class DialogsMixin:
 
         dialog._impl.show = automated_show
 
-    def setup_info_dialog_result(self, dialog):
+    def setup_info_dialog_result(self, dialog, pre_close_test_method=None):
         self._setup_dialog_result(dialog, "\n")
 
     def setup_question_dialog_result(self, dialog, result):
