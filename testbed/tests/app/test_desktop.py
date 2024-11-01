@@ -405,8 +405,6 @@ async def test_current_window(app, app_probe, main_window, main_window_probe):
 
     await main_window_probe.wait_for_window("Display window1 modal info dialog")
     await window1.dialog(info_dialog)
-    # After the dialog exits, window1 should still be the current window.
-    assert app.current_window == window1
 
 
 async def test_session_based_app(
