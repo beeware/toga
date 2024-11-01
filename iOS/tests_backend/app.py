@@ -48,6 +48,9 @@ class AppProbe(BaseProbe, DialogsMixin):
     def assert_app_icon(self, icon):
         pytest.xfail("iOS apps don't have app icons at runtime")
 
+    def assert_dialog_in_focus(self, dialog):
+        pass
+
     def assert_system_menus(self):
         pytest.skip("Menus not implemented on iOS")
 

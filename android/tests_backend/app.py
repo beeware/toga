@@ -42,6 +42,9 @@ class AppProbe(BaseProbe, DialogsMixin):
     def assert_app_icon(self, icon):
         pytest.xfail("Android apps don't have app icons at runtime")
 
+    def assert_dialog_in_focus(self, dialog):
+        pass
+
     def _menu_item(self, path):
         menu = self.main_window_probe._native_menu()
         for i_path, label in enumerate(path):

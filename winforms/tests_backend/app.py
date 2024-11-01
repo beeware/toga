@@ -157,6 +157,9 @@ class AppProbe(BaseProbe, DialogsMixin):
     def activate_menu_visit_homepage(self):
         self._activate_menu_item(["Help", "Visit homepage"])
 
+    def assert_dialog_in_focus(self, dialog):
+        pass
+
     def assert_menu_item(self, path, *, enabled=True):
         item = self._menu_item(path)
         assert item.Enabled == enabled

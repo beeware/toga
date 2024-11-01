@@ -73,6 +73,9 @@ class AppProbe(BaseProbe, DialogsMixin):
                 mid_color = img.getpixel((img.size[0] // 2, img.size[1] // 2))
                 assert mid_color == (149, 119, 73, 255)
 
+    def assert_dialog_in_focus(self, dialog):
+        pass
+
     def _menu_item(self, path):
         main_menu = self.app._impl.native.get_menubar()
         menu = main_menu

@@ -6,7 +6,6 @@ from rubicon.objc import (
     SEL,
     NSMutableDictionary,
     NSObject,
-    ObjCClass,
     objc_method,
     objc_property,
 )
@@ -31,11 +30,10 @@ from .libs import (
     NSMenu,
     NSMenuItem,
     NSNumber,
+    NSPanel,
     NSScreen,
 )
 from .screens import Screen as ScreenImpl
-
-NSPanel = ObjCClass("NSPanel")
 
 
 class AppDelegate(NSObject):

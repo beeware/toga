@@ -386,27 +386,26 @@ async def test_current_window(app, app_probe, main_window, main_window_probe):
     if app_probe.supports_current_window_assignment:
         assert app.current_window == window3
 
-    # When a dialog is in focus, `app.current_window` should
-    # return the window from which the dialog was initiated.
+    # When a dialog is in focus, `app.current_window` should return the window from
+    # which the dialog was initiated.
     info_dialog = toga.InfoDialog("Info", "Some info")
-    app_probe.setup_info_dialog_result(info_dialog)
 
-    app.current_window = window1
-    await main_window_probe.wait_for_window("Window 1 is current")
-    dialog_task = app.loop.create_task(window1.dialog(info_dialog))
-    await main_window_probe.wait_for_window("Displayed window1 modal info dialog")
-    # The public API should report that current window is the specified window
-    if app_probe.supports_current_window_assignment:
-        assert app.current_window == window1
-    # But, the backend should be reporting that the current window is the dialog
-    if toga.platform.current_platform == "macOS":
-        assert "_NSAlertPanel" in str(
-            app._impl.native.keyWindow
-        ), "The dialog is not in focus"
-    await app_probe.redraw("select 'OK'")
-    # Cancel the task to avoid dangling
-    dialog_task.cancel()
+    def test_current_window_in_presence_of_dialog():
+        # The public API should report that current window is the specified window
+        if app_probe.supports_current_window_assignment:
+            assert app.current_window == window1
 
+        # But, the backend should be reporting that the current window is the dialog
+        app_probe.assert_dialog_in_focus(info_dialog)
+
+    main_window_probe.setup_info_dialog_result(
+        info_dialog,
+        pre_close_test_method=test_current_window_in_presence_of_dialog,
+    )
+
+    await main_window_probe.wait_for_window("Display window1 modal info dialog")
+    await window1.dialog(info_dialog)
+    # After the dialog exits, window1 should still be the current window.
     assert app.current_window == window1
 
 
