@@ -827,7 +827,12 @@ class App:
 
     @property
     def current_window(self) -> Window | None:
-        """Return the currently active window."""
+        """The window currently in active focus.
+
+        On macOS, when a :any:`Dialog` is dismissed, the window from which the dialog
+        was initiated becomes the :any:`App.current_window`, regardless of whether the
+        :any:`App.current_window` property was modified.
+        """
         window = self._impl.get_current_window()
         if window is None:
             return None
