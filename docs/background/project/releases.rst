@@ -6,6 +6,30 @@ Release History
 
 .. towncrier release notes start
 
+0.4.8 (2024-10-16)
+==================
+
+Bugfixes
+--------
+
+* On macOS, apps that specify both `document_types` and a `main_window` no longer display the document selection dialog on startup. (`#2860 <https://github.com/beeware/toga/issues/2860>`__)
+* The integration with Android's event loop has been updated to support Python 3.13. (`#2907 <https://github.com/beeware/toga/issues/2907>`__)
+
+
+Backward Incompatible Changes
+-----------------------------
+
+* Toga no longer supports Python 3.8. (`#2888 <https://github.com/beeware/toga/issues/2888>`__)
+* Android applications should update their Gradle requirements to use version 1.12.0 of the Material library (``com.google.android.material:material:1.12.0``). (`#2890 <https://github.com/beeware/toga/issues/2890>`__)
+* Android applications should update their Gradle requirements to use version 6.1.20 of the OSMDroid library (``org.osmdroid:osmdroid-android:6.1.20``). (`#2890 <https://github.com/beeware/toga/issues/2890>`__)
+
+
+Misc
+----
+
+* `#2868 <https://github.com/beeware/toga/issues/2868>`__, `#2869 <https://github.com/beeware/toga/issues/2869>`__, `#2870 <https://github.com/beeware/toga/issues/2870>`__, `#2876 <https://github.com/beeware/toga/issues/2876>`__, `#2877 <https://github.com/beeware/toga/issues/2877>`__, `#2884 <https://github.com/beeware/toga/issues/2884>`__, `#2885 <https://github.com/beeware/toga/issues/2885>`__, `#2886 <https://github.com/beeware/toga/issues/2886>`__, `#2887 <https://github.com/beeware/toga/issues/2887>`__, `#2893 <https://github.com/beeware/toga/issues/2893>`__, `#2897 <https://github.com/beeware/toga/issues/2897>`__, `#2898 <https://github.com/beeware/toga/issues/2898>`__, `#2899 <https://github.com/beeware/toga/issues/2899>`__, `#2900 <https://github.com/beeware/toga/issues/2900>`__, `#2901 <https://github.com/beeware/toga/issues/2901>`__, `#2902 <https://github.com/beeware/toga/issues/2902>`__, `#2903 <https://github.com/beeware/toga/issues/2903>`__, `#2904 <https://github.com/beeware/toga/issues/2904>`__, `#2905 <https://github.com/beeware/toga/issues/2905>`__, `#2906 <https://github.com/beeware/toga/issues/2906>`__, `#2912 <https://github.com/beeware/toga/issues/2912>`__
+
+
 0.4.7 (2024-09-18)
 ==================
 

@@ -1,1 +1,0 @@
-For Wayland, the testbed runs on Ubuntu 24.04 instead of Ubuntu 22.04.
