@@ -68,9 +68,7 @@ class Window(Container, Scalable):
     def winforms_Resize(self, sender, event):
         if self.native.WindowState != WinForms.FormWindowState.Minimized:
             self.resize_content()
-        if self.get_current_screen().dpi_scale == self._dpi_scale:
-            return
-        else:
+        if self.get_current_screen().dpi_scale != self._dpi_scale:
             self.update_dpi()
 
     def winforms_FormClosing(self, sender, event):
@@ -92,9 +90,7 @@ class Window(Container, Scalable):
             event.Cancel = True
 
     def winforms_LocationChanged(self, sender, event):
-        if self.get_current_screen().dpi_scale == self._dpi_scale:
-            return
-        else:
+        if self.get_current_screen().dpi_scale != self._dpi_scale:
             self.update_dpi()
 
     ######################################################################
@@ -250,15 +246,11 @@ class MainWindow(Window):
 
     def update_dpi(self):
         super().update_dpi()
-        if (
-            getattr(self, "original_menubar_font", None) is not None
-        ):  # pragma: no branch
+        if self.native.MainMenuStrip:  # pragma: no branch
             self.native.MainMenuStrip.Font = self.scale_font(self.original_menubar_font)
-
-        if (self.toolbar_native is not None) and (  # pragma: no branch
-            getattr(self, "original_toolbar_font", None) is not None
-        ):
+        if self.toolbar_native:
             self.toolbar_native.Font = self.scale_font(self.original_toolbar_font)
+        self.resize_content()
 
     def _top_bars_height(self):
         vertical_shift = 0
@@ -309,7 +301,6 @@ class MainWindow(Window):
 
             submenu.DropDownItems.Add(item)
 
-        # Required for font scaling on DPI changes
         self.original_menubar_font = menubar.Font
         self.resize_content()
 
@@ -347,6 +338,7 @@ class MainWindow(Window):
                     cmd._impl.native.append(item)
                 self.toolbar_native.Items.Add(item)
             self.original_toolbar_font = self.toolbar_native.Font
+
         elif self.toolbar_native:
             self.native.Controls.Remove(self.toolbar_native)
             self.toolbar_native = None
