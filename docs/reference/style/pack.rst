@@ -29,10 +29,10 @@ Pack style properties
 
 **Initial value:** ``pack``
 
-Used to define the how to display the element. A value of ``pack`` will apply
+Used to define how to display the widget. A value of ``pack`` will apply
 the pack layout algorithm to this node and its descendants. A value of
-``none`` removes the element from the layout entirely. Space will be allocated
-for the element as if it were there, but the element itself will not be
+``none`` removes the widget from the layout entirely. Space will be allocated
+for the widget as if it were there, but the widget itself will not be
 visible.
 
 ``visibility``
@@ -42,13 +42,13 @@ visible.
 
 **Initial value:** ``visible``
 
-Used to define whether the element should be drawn. A value of ``visible`` means
-the element will be displayed. A value of ``hidden`` removes the element from
-view, but allocates space for the element as if it were still in the layout.
+Used to define whether the widget should be drawn. A value of ``visible`` means
+the widget will be displayed. A value of ``hidden`` removes the widget from
+view, but allocates space for the widget as if it were still in the layout.
 
-Any children of a hidden element are implicitly removed from view.
+Any children of a hidden widget are implicitly removed from view.
 
-If a previously hidden element is made visible, any children of the element with
+If a previously hidden widget is made visible, any children of the widget with
 a visibility of ``hidden`` will remain hidden. Any descendants of the hidden
 child will also remain hidden, regardless of their visibility.
 
@@ -309,14 +309,14 @@ The mapping that can be used to establish the reference implementation is:
          <body></body>
       </html>
 
-* The root element of the Pack layout can be mapped to the ``<body>`` element of
+* The root widget of the Pack layout can be mapped to the ``<body>`` element of
   the HTML reference document. The rendering area of the browser window becomes
   the view area that Pack will fill.
 
 * ImageViews map to ``<img>`` elements. The ``<img>`` element has an additional style of
   ``object-fit: contain`` unless *both* ``height`` and ``width`` are defined.
 
-* All other elements in the DOM tree are mapped to ``<div>`` elements.
+* All other widgets are mapped to ``<div>`` elements.
 
 * The following Pack declarations can be mapped to equivalent CSS declarations:
 
