@@ -10,6 +10,8 @@ from .base import StyleT, Widget
 
 
 class MapPin:
+    _IMPL_NAME = "MapPin"
+
     def __init__(
         self,
         location: toga.LatLng | tuple[float, float],
@@ -131,6 +133,8 @@ class OnSelectHandler(Protocol):
 
 
 class MapView(Widget):
+    _IMPL_NAME = "MapView"
+
     def __init__(
         self,
         id: str | None = None,
@@ -154,8 +158,6 @@ class MapView(Widget):
             pin.
         """
         super().__init__(id=id, style=style)
-
-        self._impl: Any = self.factory.MapView(interface=self)
 
         self._pins = MapPinSet(self, pins)
 

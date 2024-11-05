@@ -6,6 +6,8 @@ from .base import StyleT, Widget
 
 
 class ActivityIndicator(Widget):
+    _IMPL_NAME = "ActivityIndicator"
+
     def __init__(
         self,
         id: str | None = None,
@@ -21,8 +23,6 @@ class ActivityIndicator(Widget):
             time it is created.
         """
         super().__init__(id=id, style=style)
-
-        self._impl = self.factory.ActivityIndicator(interface=self)
 
         if running:
             self.start()

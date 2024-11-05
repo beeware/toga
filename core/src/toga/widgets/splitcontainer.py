@@ -20,6 +20,8 @@ if TYPE_CHECKING:
 
 
 class SplitContainer(Widget):
+    _IMPL_NAME = "SplitContainer"
+
     HORIZONTAL = Direction.HORIZONTAL
     VERTICAL = Direction.VERTICAL
 
@@ -44,9 +46,6 @@ class SplitContainer(Widget):
         """
         super().__init__(id=id, style=style)
         self._content: list[SplitContainerContentT] = [None, None]
-
-        # Create a platform specific implementation of a SplitContainer
-        self._impl = self.factory.SplitContainer(interface=self)
 
         if content:
             self.content = content

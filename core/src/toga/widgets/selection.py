@@ -23,6 +23,8 @@ class OnChangeHandler(Protocol):
 
 
 class Selection(Widget):
+    _IMPL_NAME = "Selection"
+
     def __init__(
         self,
         id: str | None = None,
@@ -69,7 +71,6 @@ class Selection(Widget):
         self._items: SourceT | ListSource
 
         self.on_change = None  # needed for _impl initialization
-        self._impl = self.factory.Selection(interface=self)
 
         self._accessor = accessor
         self.items = items

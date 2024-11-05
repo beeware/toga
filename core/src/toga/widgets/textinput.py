@@ -48,6 +48,8 @@ class OnLoseFocusHandler(Protocol):
 class TextInput(Widget):
     """Create a new single-line text input widget."""
 
+    _IMPL_NAME = "TextInput"
+
     def __init__(
         self,
         id: str | None = None,
@@ -81,9 +83,6 @@ class TextInput(Widget):
         """
         super().__init__(id=id, style=style)
 
-        # Create a platform specific implementation of the widget
-        self._create()
-
         self.placeholder = placeholder
         self.readonly = readonly
 
@@ -102,9 +101,6 @@ class TextInput(Widget):
         self.on_confirm = on_confirm
         self.on_lose_focus = on_lose_focus
         self.on_gain_focus = on_gain_focus
-
-    def _create(self) -> None:
-        self._impl = self.factory.TextInput(interface=self)
 
     @property
     def readonly(self) -> bool:

@@ -52,6 +52,8 @@ class OnSelectHandler(Protocol):
 
 
 class DetailedList(Widget):
+    _IMPL_NAME = "DetailedList"
+
     def __init__(
         self,
         id: str | None = None,
@@ -85,6 +87,15 @@ class DetailedList(Widget):
         :param on_refresh: Initial :any:`on_refresh` handler.
         :param on_delete: **DEPRECATED**; use ``on_primary_action``.
         """
+        # Prime the attributes and handlers that need to exist when the widget is created.
+        self._accessors = accessors
+        self._missing_value = missing_value
+        self._primary_action = primary_action
+        self._secondary_action = secondary_action
+        self.on_select = None
+
+        self._data: SourceT | ListSource = None
+
         super().__init__(id=id, style=style)
 
         ######################################################################
@@ -102,17 +113,6 @@ class DetailedList(Widget):
         ######################################################################
         # End backwards compatibility.
         ######################################################################
-
-        # Prime the attributes and handlers that need to exist when the widget is created.
-        self._accessors = accessors
-        self._missing_value = missing_value
-        self._primary_action = primary_action
-        self._secondary_action = secondary_action
-        self.on_select = None
-
-        self._data: SourceT | ListSource = None
-
-        self._impl = self.factory.DetailedList(interface=self)
 
         self.data = data
         self.on_primary_action = on_primary_action

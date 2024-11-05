@@ -20,6 +20,8 @@ class OnChangeHandler(Protocol):
 
 
 class TimeInput(Widget):
+    _IMPL_NAME = "TimeInput"
+
     def __init__(
         self,
         id: str | None = None,
@@ -41,9 +43,6 @@ class TimeInput(Widget):
         :param on_change: A handler that will be invoked when the value changes.
         """
         super().__init__(id=id, style=style)
-
-        # Create a platform specific implementation of a TimeInput
-        self._impl = self.factory.TimeInput(interface=self)
 
         self.on_change = None
         self.min = min

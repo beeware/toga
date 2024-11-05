@@ -18,6 +18,8 @@ class OnChangeHandler(Protocol):
 
 
 class Switch(Widget):
+    _IMPL_NAME = "Switch"
+
     def __init__(
         self,
         text: str,
@@ -40,8 +42,6 @@ class Switch(Widget):
             Optional; by default, switches are created in an enabled state.
         """
         super().__init__(id=id, style=style)
-
-        self._impl = self.factory.Switch(interface=self)
 
         self.text = text
 

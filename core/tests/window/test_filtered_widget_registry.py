@@ -7,7 +7,6 @@ import toga
 class ExampleWidget(toga.Widget):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._impl = self.factory.Widget(self)
 
     def __repr__(self):
         return f"Widget(id={self.id!r})"

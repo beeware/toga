@@ -1204,6 +1204,8 @@ class OnResizeHandler(Protocol):
 
 
 class Canvas(Widget):
+    _IMPL_NAME = "Canvas"
+
     _MIN_WIDTH = 0
     _MIN_HEIGHT = 0
 
@@ -1240,9 +1242,6 @@ class Canvas(Widget):
         super().__init__(id=id, style=style)
 
         self._context = Context(canvas=self)
-
-        # Create a platform specific implementation of Canvas
-        self._impl = self.factory.Canvas(interface=self)
 
         # Set all the properties
         self.on_resize = on_resize

@@ -39,6 +39,8 @@ class OnReleaseHandler(Protocol):
 
 
 class Slider(Widget):
+    _IMPL_NAME = "Slider"
+
     def __init__(
         self,
         id: str | None = None,
@@ -72,7 +74,6 @@ class Slider(Widget):
             :any:`range` of the slider. Defaults to ``(0, 1)``.
         """
         super().__init__(id=id, style=style)
-        self._impl = self.factory.Slider(interface=self)
 
         ######################################################################
         # 2023-06: Backwards compatibility

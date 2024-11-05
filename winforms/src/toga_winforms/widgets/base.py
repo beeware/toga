@@ -44,13 +44,11 @@ class Widget(ABC, Scalable):
 
     def __init__(self, interface):
         self.interface = interface
-        self.interface._impl = self
 
         self._container = None
         self.native = None
         self.create()
         self.init_scale(self.native)
-        self.interface.style.reapply()
 
     @abstractmethod
     def create(self): ...

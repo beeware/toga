@@ -21,6 +21,8 @@ class OnPressHandler(Protocol):
 
 
 class Button(Widget):
+    _IMPL_NAME = "Button"
+
     def __init__(
         self,
         text: str | None = None,
@@ -43,9 +45,6 @@ class Button(Widget):
             default, buttons are created in an enabled state.
         """
         super().__init__(id=id, style=style)
-
-        # Create a platform specific implementation of a Button
-        self._impl = self.factory.Button(interface=self)
 
         # Set a dummy handler before installing the actual on_press, because we do not want
         # on_press triggered by the initial value being set

@@ -6,6 +6,8 @@ from .base import StyleT, Widget
 
 
 class Box(Widget):
+    _IMPL_NAME = "Box"
+
     _MIN_WIDTH = 0
     _MIN_HEIGHT = 0
 
@@ -23,9 +25,6 @@ class Box(Widget):
         :param children: An optional list of children for to add to the Box.
         """
         super().__init__(id=id, style=style)
-
-        # Create a platform specific implementation of a Box
-        self._impl = self.factory.Box(interface=self)
 
         # Children need to be added *after* the impl has been created.
         self._children: list[Widget] = []

@@ -21,6 +21,8 @@ class OnScrollHandler(Protocol):
 
 
 class ScrollContainer(Widget):
+    _IMPL_NAME = "ScrollContainer"
+
     def __init__(
         self,
         id: str | None = None,
@@ -44,9 +46,6 @@ class ScrollContainer(Widget):
 
         self._content: Widget | None = None
         self.on_scroll = None
-
-        # Create a platform specific implementation of a Scroll Container
-        self._impl = self.factory.ScrollContainer(interface=self)
 
         # Set all attributes
         self.vertical = vertical

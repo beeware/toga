@@ -3,6 +3,7 @@ import pytest
 import toga
 from toga.colors import REBECCAPURPLE
 from toga.fonts import FANTASY
+from toga.style import TogaApplicator
 from toga.style.pack import HIDDEN, RIGHT, VISIBLE
 from toga_dummy.utils import assert_action_performed_with
 
@@ -21,7 +22,6 @@ class ExampleWidget(toga.Widget):
 class ExampleLeafWidget(toga.Widget):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._impl = self.factory.Widget(self)
 
 
 @pytest.fixture
@@ -154,3 +154,8 @@ def test_set_background_color(child, widget):
     widget.applicator.set_background_color(REBECCAPURPLE)
 
     assert_action_performed_with(widget, "set background color", color=REBECCAPURPLE)
+
+
+def test_deprecated_widget_argument(widget):
+    with pytest.warns(DeprecationWarning):
+        TogaApplicator(widget)

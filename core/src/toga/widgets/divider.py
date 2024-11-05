@@ -8,6 +8,8 @@ from .base import StyleT, Widget
 
 
 class Divider(Widget):
+    _IMPL_NAME = "Divider"
+
     HORIZONTAL = Direction.HORIZONTAL
     VERTICAL = Direction.VERTICAL
 
@@ -29,8 +31,6 @@ class Divider(Widget):
         """
         super().__init__(id=id, style=style)
 
-        # Create a platform specific implementation of a Divider
-        self._impl = self.factory.Divider(interface=self)
         self.direction = direction
 
     @property

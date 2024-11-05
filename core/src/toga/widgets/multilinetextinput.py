@@ -18,6 +18,8 @@ class OnChangeHandler(Protocol):
 
 
 class MultilineTextInput(Widget):
+    _IMPL_NAME = "MultilineTextInput"
+
     def __init__(
         self,
         id: str | None = None,
@@ -41,9 +43,6 @@ class MultilineTextInput(Widget):
         """
 
         super().__init__(id=id, style=style)
-
-        # Create a platform specific implementation of a MultilineTextInput
-        self._impl = self.factory.MultilineTextInput(interface=self)
 
         # Set a dummy handler before installing the actual on_change, because we do not want
         # on_change triggered by the initial value being set

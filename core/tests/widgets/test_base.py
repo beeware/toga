@@ -1,3 +1,5 @@
+from unittest.mock import Mock
+
 import pytest
 
 import toga
@@ -17,7 +19,6 @@ from toga_dummy.utils import (
 class ExampleWidget(toga.Widget):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._impl = self.factory.Widget(self)
         self._children = []
 
 
@@ -26,7 +27,6 @@ class ExampleWidget(toga.Widget):
 class ExampleLeafWidget(toga.Widget):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._impl = self.factory.Widget(self)
 
 
 @pytest.fixture
@@ -911,6 +911,7 @@ def test_remove_from_non_parent(widget):
     other = ExampleWidget(id="other")
     child = ExampleLeafWidget(id="child_id")
     other.add(child)
+    EventLog.reset()
 
     assert widget.children == []
     assert other.children == [child]
@@ -1237,3 +1238,14 @@ def test_tab_index(widget):
 
     assert widget.tab_index == 8
     assert attribute_value(widget, "tab_index") == tab_index
+
+
+def test_one_reapply_during_init():
+    # The style's reapply() method should be called exactly once during widget
+    # initialization.
+
+    class MockedPack(Pack):
+        reapply = Mock()
+
+    ExampleWidget(style=MockedPack())
+    MockedPack.reapply.assert_called_once()

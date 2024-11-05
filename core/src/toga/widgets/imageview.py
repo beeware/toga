@@ -68,6 +68,8 @@ def rehint_imageview(
 
 
 class ImageView(Widget):
+    _IMPL_NAME = "ImageView"
+
     def __init__(
         self,
         image: ImageContentT | None = None,
@@ -83,10 +85,11 @@ class ImageView(Widget):
         :param style: A style object. If no style is provided, a default style will be
             applied to the widget.
         """
-        super().__init__(id=id, style=style)
         # Prime the image attribute
         self._image = None
-        self._impl = self.factory.ImageView(interface=self)
+
+        super().__init__(id=id, style=style)
+
         self.image = image
 
     @property

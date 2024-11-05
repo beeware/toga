@@ -6,6 +6,8 @@ from .base import StyleT, Widget
 
 
 class ProgressBar(Widget):
+    _IMPL_NAME = "ProgressBar"
+
     _MIN_WIDTH = 100
 
     def __init__(
@@ -31,8 +33,6 @@ class ProgressBar(Widget):
             it is created. Default is False.
         """
         super().__init__(id=id, style=style)
-
-        self._impl = self.factory.ProgressBar(interface=self)
 
         self.max = max
         self.value = value

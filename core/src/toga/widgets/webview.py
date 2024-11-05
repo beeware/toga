@@ -22,6 +22,8 @@ class OnWebViewLoadHandler(Protocol):
 
 
 class WebView(Widget):
+    _IMPL_NAME = "WebView"
+
     def __init__(
         self,
         id: str | None = None,
@@ -44,7 +46,6 @@ class WebView(Widget):
         """
         super().__init__(id=id, style=style)
 
-        self._impl = self.factory.WebView(interface=self)
         self.user_agent = user_agent
 
         # Set the load handler before loading the first URL.

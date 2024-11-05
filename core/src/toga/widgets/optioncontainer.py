@@ -376,6 +376,8 @@ class OptionList:
 
 
 class OptionContainer(Widget):
+    _IMPL_NAME = "OptionContainer"
+
     def __init__(
         self,
         id: str | None = None,
@@ -395,8 +397,6 @@ class OptionContainer(Widget):
         super().__init__(id=id, style=style)
         self._content = OptionList(self)
         self.on_select = None
-
-        self._impl = self.factory.OptionContainer(interface=self)
 
         if content is not None:
             for item in content:

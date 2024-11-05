@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from builtins import id as identifier
-from typing import TYPE_CHECKING, Any, TypeVar
+from typing import TYPE_CHECKING, TypeVar
 
 from travertino.declaration import BaseStyle
 from travertino.node import Node
@@ -17,6 +17,8 @@ StyleT = TypeVar("StyleT", bound=BaseStyle)
 
 
 class Widget(Node):
+    _IMPL_NAME = "Widget"
+
     _MIN_WIDTH = 100
     _MIN_HEIGHT = 100
 
@@ -34,16 +36,31 @@ class Widget(Node):
             will be applied to the widget.
         """
         super().__init__(
-            style=style if style else Pack(),
-            applicator=TogaApplicator(self),
+            style=style if style is not None else Pack(),
+            applicator=None,
         )
 
         self._id = str(id if id else identifier(self))
         self._window: Window | None = None
         self._app: App | None = None
-        self._impl: Any = None
 
         self.factory = get_platform_factory()
+        self._impl = getattr(self.factory, self._IMPL_NAME)(interface=self)
+
+        self.applicator = TogaApplicator()
+
+        ##############################################
+        # Backwards compatibility for Travertino 0.3.0
+        ##############################################
+
+        if not hasattr(self.applicator, "node"):
+            self.applicator.node = self
+            self.style._applicator = self.applicator
+            self.style.reapply()
+
+        #############################
+        # End backwards compatibility
+        #############################
 
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__}:0x{identifier(self):x}>"

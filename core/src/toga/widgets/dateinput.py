@@ -27,6 +27,8 @@ class OnChangeHandler(Protocol):
 
 
 class DateInput(Widget):
+    _IMPL_NAME = "DateInput"
+
     _MIN_WIDTH = 200
 
     def __init__(
@@ -50,9 +52,6 @@ class DateInput(Widget):
         :param on_change: A handler that will be invoked when the value changes.
         """
         super().__init__(id=id, style=style)
-
-        # Create a platform specific implementation of a DateInput
-        self._impl = self.factory.DateInput(interface=self)
 
         self.on_change = None
         self.min = min

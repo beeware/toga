@@ -82,6 +82,8 @@ class OnChangeHandler(Protocol):
 
 
 class NumberInput(Widget):
+    _IMPL_NAME = "NumberInput"
+
     def __init__(
         self,
         id: str | None = None,
@@ -147,7 +149,6 @@ class NumberInput(Widget):
         self._max: Decimal | None = None
 
         self.on_change = None
-        self._impl = self.factory.NumberInput(interface=self)
 
         self.readonly = readonly
         self.step = step

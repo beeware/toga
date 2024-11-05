@@ -4,6 +4,8 @@ from .base import StyleT, Widget
 
 
 class Label(Widget):
+    _IMPL_NAME = "Label"
+
     def __init__(
         self,
         text: str,
@@ -18,9 +20,6 @@ class Label(Widget):
             will be applied to the widget.
         """
         super().__init__(id=id, style=style)
-
-        # Create a platform specific implementation of a Label
-        self._impl = self.factory.Label(interface=self)
 
         self.text = text
 

@@ -7,9 +7,23 @@ from toga.style.applicator import TogaApplicator
 
 class ExampleNode(Node):
     def __init__(self, name, style, size=None, children=None):
-        super().__init__(
-            style=style, children=children, applicator=TogaApplicator(self)
-        )
+        self._impl = Mock()
+        self._children = None
+
+        super().__init__(style=style, children=children, applicator=TogaApplicator())
+
+        ##############################################
+        # Backwards compatibility for Travertino 0.3.0
+        ##############################################
+
+        if not hasattr(self.applicator, "node"):
+            self.applicator.node = self
+            self.style._applicator = self.applicator
+            self.style.reapply()
+
+        #############################
+        # End backwards compatibility
+        #############################
 
         self.name = name
         self._impl = Mock()

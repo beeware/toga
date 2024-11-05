@@ -34,6 +34,8 @@ class OnActivateHandler(Protocol):
 
 
 class Table(Widget):
+    _IMPL_NAME = "Table"
+
     def __init__(
         self,
         headings: Iterable[str] | None = None,
@@ -78,8 +80,6 @@ class Table(Widget):
             defined.
         :param on_double_click: **DEPRECATED**; use :attr:`on_activate`.
         """
-        super().__init__(id=id, style=style)
-
         ######################################################################
         # 2023-06: Backwards compatibility
         ######################################################################
@@ -119,7 +119,8 @@ class Table(Widget):
         self.on_activate = None
         self._data = None
 
-        self._impl = self.factory.Table(interface=self)
+        super().__init__(id=id, style=style)
+
         self.data = data
 
         self.on_select = on_select
