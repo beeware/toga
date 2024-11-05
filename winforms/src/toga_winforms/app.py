@@ -259,7 +259,10 @@ class App:
                 dialog_title = getattr(dialog_impl, "title", None)
                 if active_window_handle == windll.user32.FindWindowW(
                     None, dialog_title if dialog_title else dialog_impl.native.Title
-                ):
+                ):  # pragma: no branch
+                    # Marking as no branch, since a window having dialog_impl
+                    # will have its dialog in focus, as all dialogs are shown
+                    # in modal style.
                     return window._impl
 
         return None
