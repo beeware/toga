@@ -57,6 +57,8 @@ class Widget(Node):
             self.applicator.node = self
             self.style._applicator = self.applicator
             self.style.reapply()
+        else:  # pragma: no cover
+            pass
 
         #############################
         # End backwards compatibility
