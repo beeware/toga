@@ -158,7 +158,17 @@ class AppProbe(BaseProbe, DialogsMixin):
         self._activate_menu_item(["Help", "Visit homepage"])
 
     def assert_dialog_in_focus(self, dialog):
-        pass
+        active_window_handle = ctypes.windll.user32.GetForegroundWindow()
+        # Cannot directly get the handle from the native WinForms object
+        # as the MessageBox dialog doesn't expose a Handle property.
+        # Hence, use user32 to get the hwnd for comparison.
+        dialog_title = getattr(dialog._impl, "title", None)
+        expected_dialog_handle = ctypes.windll.user32.FindWindowW(
+            None, dialog_title if dialog_title else dialog._impl.native.Title
+        )
+        assert (
+            expected_dialog_handle == active_window_handle
+        ), "The dialog is not in focus"
 
     def assert_menu_item(self, path, *, enabled=True):
         item = self._menu_item(path)

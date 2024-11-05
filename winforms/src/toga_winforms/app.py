@@ -251,6 +251,17 @@ class App:
         for window in self.interface.windows:
             if WinForms.Form.ActiveForm == window._impl.native:
                 return window._impl
+
+            # If the focus is on a dialog, then return its host window
+            active_window_handle = windll.user32.GetForegroundWindow()
+            dialog_impl = getattr(window._impl, "dialog_impl", None)
+            if dialog_impl:
+                dialog_title = getattr(dialog_impl, "title", None)
+                if active_window_handle == windll.user32.FindWindowW(
+                    None, dialog_title if dialog_title else dialog_impl.native.Title
+                ):
+                    return window._impl
+
         return None
 
     def set_current_window(self, window):

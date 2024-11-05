@@ -91,7 +91,7 @@ class WindowProbe(BaseProbe, DialogsMixin):
             argtypes=[objc_id],
         )
 
-    def _setup_alert_dialog_result(self, dialog, result, pre_close_test=None):
+    def _setup_alert_dialog_result(self, dialog, result, pre_close_test_method=None):
         # Install an overridden show method that invokes the original,
         # but then closes the open dialog.
         orig_show = dialog._impl.show
@@ -99,8 +99,8 @@ class WindowProbe(BaseProbe, DialogsMixin):
         def automated_show(host_window, future):
             orig_show(host_window, future)
 
-            if pre_close_test:
-                pre_close_test()
+            if pre_close_test_method:
+                pre_close_test_method()
 
             dialog._impl.host_window.endSheet(
                 dialog._impl.host_window.attachedSheet,

@@ -255,7 +255,7 @@ class AppProbe(BaseProbe, DialogsMixin):
         self.app._impl.native.activateIgnoringOtherApps(True)
         await self.redraw("Restore to standard app", delay=0.1)
 
-    def _setup_alert_dialog_result(self, dialog, result, pre_close_test=None):
+    def _setup_alert_dialog_result(self, dialog, result, pre_close_test_method=None):
         # Replace the dialog polling mechanism with an implementation that polls
         # 5 times, then returns the required result.
         _poll_modal_session = dialog._impl._poll_modal_session
@@ -267,8 +267,8 @@ class AppProbe(BaseProbe, DialogsMixin):
                 count += 1
                 return _poll_modal_session(nsapp, session)
 
-            if pre_close_test:
-                pre_close_test()
+            if pre_close_test_method:
+                pre_close_test_method()
 
             return result
 
