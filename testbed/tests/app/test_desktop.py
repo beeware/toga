@@ -2,7 +2,6 @@ from functools import partial
 from unittest.mock import Mock
 
 import pytest
-from System import EventArgs
 
 import toga
 from toga import Position, Size
@@ -395,16 +394,16 @@ async def test_current_window(app, app_probe, main_window):
 
 
 @pytest.mark.parametrize(
-    "event_name",
+    "event_path",
     [
-        # FIXME DpiChangedAfterParent
-        "LocationChanged",
-        "Resize",
+        "SystemEvents.DisplaySettingsChanged",
+        "Form.LocationChanged",
+        "Form.Resize",
     ],
 )
 @pytest.mark.parametrize("mock_scale", [1.0, 1.25, 1.5, 1.75, 2.0])
 async def test_system_dpi_change(
-    main_window, main_window_probe, event_name, mock_scale
+    main_window, main_window_probe, event_path, mock_scale
 ):
     if toga.platform.current_platform != "windows":
         pytest.xfail("This test is winforms backend specific")
@@ -414,9 +413,6 @@ async def test_system_dpi_change(
         pytest.skip("mock scale and real scale are the same")
     scale_change = mock_scale / real_scale
     content_size = main_window_probe.content_size
-
-    # Get the dpi change event from the string
-    dpi_change_event = getattr(main_window_probe.native, f"On{event_name}")
 
     # Setup window for testing
     # Include widgets which are sized in different ways, plus padding and fixed sizes in
@@ -482,7 +478,8 @@ async def test_system_dpi_change(
         shcore.GetScaleFactorForMonitor = GetScaleFactorForMonitor_mock
 
         # Set and Trigger dpi change event with the specified dpi scale
-        dpi_change_event(EventArgs.Empty)
+        dpi_change_event = find_event(event_path, main_window_probe)
+        dpi_change_event(None)
         await main_window_probe.redraw(
             f"Triggered dpi change event with {mock_scale} dpi scale"
         )
@@ -519,9 +516,40 @@ async def test_system_dpi_change(
     finally:
         # Restore original state
         shcore.GetScaleFactorForMonitor = GetScaleFactorForMonitor_original
-        dpi_change_event(EventArgs.Empty)
+        dpi_change_event(None)
         await main_window_probe.redraw("Restored original state of main_window")
         assert get_metrics() == (positions, sizes, font_sizes)
+
+
+def find_event(event_path, main_window_probe):
+    from Microsoft.Win32 import SystemEvents
+    from System import Array, Object
+    from System.Reflection import BindingFlags
+
+    event_class, event_name = event_path.split(".")
+    if event_class == "Form":
+        return getattr(main_window_probe.native, f"On{event_name}")
+
+    elif event_class == "SystemEvents":
+        # There are no "On" methods in this class, so we need to use reflection.
+        SystemEvents_type = SystemEvents().GetType()
+        binding_flags = BindingFlags.Static | BindingFlags.NonPublic
+        RaiseEvent = [
+            method
+            for method in SystemEvents_type.GetMethods(binding_flags)
+            if method.Name == "RaiseEvent" and len(method.GetParameters()) == 2
+        ][0]
+
+        event_key = SystemEvents_type.GetField(
+            f"On{event_name}Event", binding_flags
+        ).GetValue(None)
+
+        return lambda event_args: RaiseEvent.Invoke(
+            None, [event_key, Array[Object]([None, event_args])]
+        )
+
+    else:
+        raise AssertionError(f"unknown event class {event_class}")
 
 
 async def test_session_based_app(

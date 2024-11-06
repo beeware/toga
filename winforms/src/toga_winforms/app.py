@@ -76,7 +76,14 @@ class App:
         self.app_context = WinForms.ApplicationContext()
         self.app_dispatcher = Dispatcher.CurrentDispatcher
 
-        # Register the DisplaySettingsChanged event handler
+        # We would prefer to detect DPI changes directly, using the DpiChanged,
+        # DpiChangedBeforeParent or DpiChangedAfterParent events on the window. But none
+        # of these events ever fire, possibly because we're missing some app metadata
+        # (https://github.com/beeware/toga/pull/2155#issuecomment-2460374101). So
+        # instead we need to listen to all events which could cause a DPI change:
+        #   * DisplaySettingsChanged
+        #   * Form.LocationChanged and Form.Resize, since a window's DPI is determined
+        #     by which screen most of its area is on.
         SystemEvents.DisplaySettingsChanged += WeakrefCallable(
             self.winforms_DisplaySettingsChanged
         )

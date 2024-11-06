@@ -69,6 +69,8 @@ class Window(Container, Scalable):
     def winforms_Resize(self, sender, event):
         if self.native.WindowState != WinForms.FormWindowState.Minimized:
             self.resize_content()
+
+        # See DisplaySettingsChanged in app.py.
         if self.get_current_screen().dpi_scale != self._dpi_scale:
             self.update_dpi()
 
@@ -91,6 +93,7 @@ class Window(Container, Scalable):
             event.Cancel = True
 
     def winforms_LocationChanged(self, sender, event):
+        # See DisplaySettingsChanged in app.py.
         if self.get_current_screen().dpi_scale != self._dpi_scale:
             self.update_dpi()
 
