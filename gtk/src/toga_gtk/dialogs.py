@@ -9,6 +9,8 @@ class BaseDialog:
 
         # If this is a modal dialog, set the window as transient to the host window.
         if host_window:
+            self.host_window = host_window
+            self.host_window._impl.dialog_impl = self
             self.native.set_transient_for(host_window._impl.native)
         else:
             self.native.set_transient_for(None)
@@ -52,6 +54,8 @@ class MessageDialog(BaseDialog):
         self.future.set_result(result)
 
         self.native.destroy()
+        if self.host_window:
+            del self.host_window._impl.dialog_impl
 
 
 class InfoDialog(MessageDialog):
@@ -209,6 +213,8 @@ class FileDialog(BaseDialog):
         self.future.set_result(result)
 
         self.native.destroy()
+        if self.host_window:
+            del self.host_window._impl.dialog_impl
 
 
 class SaveFileDialog(FileDialog):

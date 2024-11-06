@@ -21,13 +21,18 @@ class DialogsMixin:
         dialog._impl.native.response(gtk_result)
         self._wait_for_dialog("Wait for dialog to disappear")
 
-    def _setup_dialog_result(self, dialog, gtk_result, close_handler=None):
+    def _setup_dialog_result(
+        self, dialog, gtk_result, close_handler=None, pre_close_test_method=None
+    ):
         # Install an overridden show method that invokes the original,
         # but then closes the open dialog.
         orig_show = dialog._impl.show
 
         def automated_show(host_window, future):
             orig_show(host_window, future)
+
+            if pre_close_test_method:
+                pre_close_test_method()
 
             if close_handler:
                 close_handler(dialog, gtk_result)
@@ -37,7 +42,9 @@ class DialogsMixin:
         dialog._impl.show = automated_show
 
     def setup_info_dialog_result(self, dialog, pre_close_test_method=None):
-        self._setup_dialog_result(dialog, Gtk.ResponseType.OK)
+        self._setup_dialog_result(
+            dialog, Gtk.ResponseType.OK, pre_close_test_method=pre_close_test_method
+        )
 
     def setup_question_dialog_result(self, dialog, result):
         self._setup_dialog_result(

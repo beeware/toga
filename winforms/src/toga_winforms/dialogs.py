@@ -17,8 +17,8 @@ from .libs.wrapper import WeakrefCallable
 class BaseDialog:
     def show(self, host_window, future):
         self.future = future
-        self.host_window = host_window
         if host_window:
+            self.host_window = host_window
             self.host_window._impl.dialog_impl = self
         # Don't differentiate between app and window modal dialogs
         # Show the dialog using an inner loop.

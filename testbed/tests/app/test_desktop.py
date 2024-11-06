@@ -360,9 +360,9 @@ async def test_current_window(app, app_probe, main_window, main_window_probe):
     finally:
         main_window.show()
 
-    window1 = toga.Window("Test Window 1", position=(150, 150), size=(200, 200))
-    window2 = toga.Window("Test Window 2", position=(400, 150), size=(200, 200))
-    window3 = toga.Window("Test Window 3", position=(300, 400), size=(200, 200))
+    window1 = toga.Window(title="Test Window 1", position=(150, 150), size=(200, 200))
+    window2 = toga.Window(title="Test Window 2", position=(400, 150), size=(200, 200))
+    window3 = toga.Window(title="Test Window 3", position=(300, 400), size=(200, 200))
 
     window1.content = toga.Box(style=Pack(background_color=REBECCAPURPLE))
     window2.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
