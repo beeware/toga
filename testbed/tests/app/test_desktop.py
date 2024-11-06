@@ -1,9 +1,11 @@
-from functools import reduce
+from functools import partial
 from unittest.mock import Mock
 
 import pytest
+from System import EventArgs
 
 import toga
+from toga import Position, Size
 from toga.colors import CORNFLOWERBLUE, FIREBRICK, REBECCAPURPLE
 from toga.style.pack import Pack
 
@@ -392,126 +394,134 @@ async def test_current_window(app, app_probe, main_window):
         assert app.current_window == window3
 
 
-@pytest.mark.parametrize("flex_direction", ["row", "column"])
 @pytest.mark.parametrize(
-    "dpi_change_event_string",
+    "event_name",
     [
-        "app._impl.winforms_DisplaySettingsChanged",
-        "main_window._impl.winforms_LocationChanged",
-        "main_window._impl.winforms_Resize",
+        # FIXME DpiChangedAfterParent
+        "LocationChanged",
+        "Resize",
     ],
 )
-@pytest.mark.parametrize(
-    "initial_dpi_scale,  final_dpi_scale",
-    [
-        (1.0, 1.25),
-        (1.0, 1.5),
-        (1.0, 1.75),
-        (1.0, 2.0),
-        (1.25, 1.5),
-        (1.25, 1.75),
-        (1.25, 2.0),
-        (1.5, 1.75),
-        (1.5, 2.0),
-        (1.75, 2.0),
-    ],
-)
+@pytest.mark.parametrize("mock_scale", [1.0, 1.25, 1.5, 1.75, 2.0])
 async def test_system_dpi_change(
-    monkeypatch,
-    app,
-    app_probe,
-    main_window,
-    main_window_probe,
-    flex_direction,
-    dpi_change_event_string,
-    initial_dpi_scale,
-    final_dpi_scale,
+    main_window, main_window_probe, event_name, mock_scale
 ):
     if toga.platform.current_platform != "windows":
         pytest.xfail("This test is winforms backend specific")
 
+    real_scale = main_window_probe.scale_factor
+    if real_scale == mock_scale:
+        pytest.skip("mock scale and real scale are the same")
+    scale_change = mock_scale / real_scale
+    content_size = main_window_probe.content_size
+
     # Get the dpi change event from the string
-    obj_name, *attr_parts = dpi_change_event_string.split(".")
-    obj = locals()[obj_name]
-    dpi_change_event = reduce(getattr, attr_parts, obj)
-
-    # Patch the internal dpi scale method
-    from toga_winforms.libs import shcore
-
-    GetScaleFactorForMonitor_original = getattr(shcore, "GetScaleFactorForMonitor")
-
-    def set_mock_dpi_scale(value):
-        def GetScaleFactorForMonitor_mock(hMonitor, pScale):
-            pScale.value = int(value * 100)
-
-        monkeypatch.setattr(
-            "toga_winforms.libs.shcore.GetScaleFactorForMonitor",
-            GetScaleFactorForMonitor_mock,
-        )
-
-    # Set initial DPI scale value
-    set_mock_dpi_scale(initial_dpi_scale)
-    dpi_change_event(None, None)
-    await main_window_probe.redraw(
-        f"Initial dpi scale is {initial_dpi_scale} before starting test"
-    )
-
-    # Store original window content
-    main_window_content_original = main_window.content
+    dpi_change_event = getattr(main_window_probe.native, f"On{event_name}")
 
     # Setup window for testing
+    # Include widgets which are sized in different ways, plus padding and fixed sizes in
+    # both dimensions.
     main_window.content = toga.Box(
-        style=Pack(direction=flex_direction),
+        style=Pack(direction="row"),
         children=[
-            toga.Box(style=Pack(flex=1)),
-            toga.Button(text="hello"),
-            toga.Label(text="toga"),
-            toga.Button(text="world"),
-            toga.Box(style=Pack(flex=1)),
+            toga.Label(
+                "fixed",
+                id="fixed",
+                style=Pack(background_color="yellow", padding_left=20, width=100),
+            ),
+            toga.Label(
+                "minimal",  # Shrink to fit content
+                id="minimal",
+                style=Pack(background_color="cyan", font_size=16),
+            ),
+            toga.Label(
+                "flex",
+                id="flex",
+                style=Pack(background_color="pink", flex=1, padding_top=15, height=50),
+            ),
         ],
     )
     await main_window_probe.redraw("main_window is ready for testing")
 
-    widget_dimension_to_compare = "width" if flex_direction == "row" else "height"
+    ids = ["fixed", "minimal", "flex"]
+    probes = {id: get_probe(main_window.widgets[id]) for id in ids}
 
-    # Store original widget dimension
-    original_widget_dimension = dict()
-    for widget in main_window.content.children:
-        widget_probe = get_probe(widget)
-        original_widget_dimension[widget] = getattr(
-            widget_probe, widget_dimension_to_compare
+    def get_metrics():
+        return (
+            {id: Position(probes[id].x, probes[id].y) for id in ids},
+            {id: Size(probes[id].width, probes[id].height) for id in ids},
+            {id: probes[id].font_size for id in ids},
         )
 
-    # Set and Trigger dpi change event with the specified dpi scale
-    set_mock_dpi_scale(final_dpi_scale)
-    dpi_change_event(None, None)
-    await main_window_probe.redraw(
-        f"Triggered dpi change event with {final_dpi_scale} dpi scale"
-    )
+    positions, sizes, font_sizes = get_metrics()
 
-    # Check Widget size DPI scaling
-    for widget in main_window.content.children:
-        if isinstance(widget, toga.Box):
-            # Dimension of spacer boxes should decrease when dpi scale increases
-            getattr(
-                get_probe(widget), widget_dimension_to_compare
-            ) < original_widget_dimension[widget]
-        else:
-            # Dimension of other widgets should increase when dpi scale increases
-            getattr(
-                get_probe(widget), widget_dimension_to_compare
-            ) > original_widget_dimension[widget]
+    # Because of hinting, font size changes can have non-linear effects on pixel sizes.
+    approx_fixed = partial(pytest.approx, abs=1)
+    approx_font = partial(pytest.approx, rel=0.25)
 
-    # Restore original state
-    monkeypatch.setattr(
-        "toga_winforms.libs.shcore.GetScaleFactorForMonitor",
-        GetScaleFactorForMonitor_original,
-    )
-    dpi_change_event(None, None)
-    main_window.content.window = None
-    main_window.content = main_window_content_original
-    main_window.show()
-    await main_window_probe.redraw("Restored original state of main_window")
+    assert font_sizes["fixed"] == 9  # Default font size on Windows
+    assert positions["fixed"] == approx_fixed((20, 0))
+    assert sizes["fixed"].width == approx_fixed(100)
+
+    assert font_sizes["minimal"] == 16
+    assert positions["minimal"] == approx_fixed((120, 0))
+    assert sizes["minimal"].height == approx_font(sizes["fixed"].height * 16 / 9)
+
+    assert font_sizes["flex"] == 9
+    assert positions["flex"] == approx_fixed((120 + sizes["minimal"].width, 15))
+    assert sizes["flex"] == approx_fixed((content_size.width - positions["flex"].x, 50))
+
+    # Mock the function Toga uses to get the scale factor.
+    from toga_winforms.libs import shcore
+
+    def GetScaleFactorForMonitor_mock(hMonitor, pScale):
+        pScale.value = int(mock_scale * 100)
+
+    try:
+        GetScaleFactorForMonitor_original = shcore.GetScaleFactorForMonitor
+        shcore.GetScaleFactorForMonitor = GetScaleFactorForMonitor_mock
+
+        # Set and Trigger dpi change event with the specified dpi scale
+        dpi_change_event(EventArgs.Empty)
+        await main_window_probe.redraw(
+            f"Triggered dpi change event with {mock_scale} dpi scale"
+        )
+
+        # Check Widget size DPI scaling
+        positions_scaled, sizes_scaled, font_sizes_scaled = get_metrics()
+        for id in ids:
+            assert font_sizes_scaled[id] == approx_fixed(font_sizes[id] * scale_change)
+
+        assert positions_scaled["fixed"] == approx_fixed(Position(20, 0) * scale_change)
+        assert sizes_scaled["fixed"] == (
+            approx_fixed(100 * scale_change),
+            approx_font(sizes["fixed"].height * scale_change),
+        )
+
+        assert positions_scaled["minimal"] == approx_fixed(
+            Position(120, 0) * scale_change
+        )
+        assert sizes_scaled["minimal"] == approx_font(sizes["minimal"] * scale_change)
+
+        assert positions_scaled["flex"] == approx_fixed(
+            (
+                positions_scaled["minimal"].x + sizes_scaled["minimal"].width,
+                15 * scale_change,
+            )
+        )
+        assert sizes_scaled["flex"] == approx_fixed(
+            (
+                content_size.width - positions_scaled["flex"].x,
+                50 * scale_change,
+            )
+        )
+
+    finally:
+        # Restore original state
+        shcore.GetScaleFactorForMonitor = GetScaleFactorForMonitor_original
+        dpi_change_event(EventArgs.Empty)
+        await main_window_probe.redraw("Restored original state of main_window")
+        assert get_metrics() == (positions, sizes, font_sizes)
 
 
 async def test_session_based_app(

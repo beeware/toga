@@ -70,6 +70,14 @@ class SimpleProbe(BaseProbe, FontMixin):
         return not self.native.Visible
 
     @property
+    def x(self):
+        return round(self.native.Left / self.scale_factor)
+
+    @property
+    def y(self):
+        return round(self.native.Top / self.scale_factor)
+
+    @property
     def width(self):
         return round(self.native.Width / self.scale_factor)
 
@@ -99,10 +107,7 @@ class SimpleProbe(BaseProbe, FontMixin):
 
         # size and position is as expected.
         assert (self.width, self.height) == approx(size, abs=1)
-        assert (
-            round(self.native.Left / self.scale_factor),
-            round(self.native.Top / self.scale_factor),
-        ) == approx(position, abs=1)
+        assert (self.x, self.y) == approx(position, abs=1)
 
     async def press(self):
         self.native.OnClick(EventArgs.Empty)

@@ -11,6 +11,7 @@ from toga.command import Separator
 from toga.types import Position, Size
 
 from .container import Container
+from .fonts import DEFAULT_FONT
 from .libs.wrapper import WeakrefCallable
 from .screens import Screen as ScreenImpl
 from .widgets.base import Scalable
@@ -28,7 +29,7 @@ class Window(Container, Scalable):
         self._FormClosing_handler = WeakrefCallable(self.winforms_FormClosing)
         self.native.FormClosing += self._FormClosing_handler
         super().__init__(self.native)
-        self._dpi_scale = self._original_dpi_scale = self.get_current_screen().dpi_scale
+        self._dpi_scale = self.get_current_screen().dpi_scale
 
         self.native.MinimizeBox = self.interface.minimizable
         self.native.MaximizeBox = self.interface.resizable
@@ -57,7 +58,7 @@ class Window(Container, Scalable):
     def scale_font(self, native_font):
         return WinFont(
             native_font.FontFamily,
-            native_font.Size * (self.dpi_scale / self._original_dpi_scale),
+            native_font.Size * self.dpi_scale,
             native_font.Style,
         )
 
@@ -301,7 +302,7 @@ class MainWindow(Window):
 
             submenu.DropDownItems.Add(item)
 
-        self.original_menubar_font = menubar.Font
+        self.original_menubar_font = DEFAULT_FONT
         self.resize_content()
 
     def create_toolbar(self):
@@ -337,7 +338,7 @@ class MainWindow(Window):
                     item.Click += WeakrefCallable(cmd._impl.winforms_Click)
                     cmd._impl.native.append(item)
                 self.toolbar_native.Items.Add(item)
-            self.original_toolbar_font = self.toolbar_native.Font
+            self.original_toolbar_font = DEFAULT_FONT
 
         elif self.toolbar_native:
             self.native.Controls.Remove(self.toolbar_native)

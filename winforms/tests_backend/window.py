@@ -8,6 +8,8 @@ from System.Windows.Forms import (
     ToolStripSeparator,
 )
 
+from toga import Size
+
 from .dialogs import DialogsMixin
 from .probe import BaseProbe
 
@@ -39,7 +41,7 @@ class WindowProbe(BaseProbe, DialogsMixin):
 
     @property
     def content_size(self):
-        return (
+        return Size(
             (self.native.ClientSize.Width) / self.scale_factor,
             (
                 (self.native.ClientSize.Height - self.impl._top_bars_height())
