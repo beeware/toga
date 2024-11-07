@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from functools import partial
 from typing import TYPE_CHECKING
 
 from toga.command import Separator
@@ -8,7 +9,7 @@ from toga.types import Position, Size
 from toga.window import _initial_position
 
 from .container import TogaContainer
-from .libs import IS_WAYLAND, Gdk, Gtk
+from .libs import IS_WAYLAND, Gdk, GLib, Gtk
 from .screens import Screen as ScreenImpl
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -75,11 +76,23 @@ class Window:
             current_state = self.get_window_state()
             if current_state != WindowState.NORMAL:
                 if self._pending_state_transition != current_state:
-                    self._apply_state(WindowState.NORMAL)
+                    # Add slight delay to prevent glitching  on wayland during rapid
+                    # state switching.
+                    if IS_WAYLAND:  # pragma: no-cover-if-linux-x
+                        GLib.timeout_add(
+                            10, partial(self._apply_state, WindowState.NORMAL)
+                        )
+                    else:  # pragma: no-cover-if-linux-wayland
+                        self._apply_state(WindowState.NORMAL)
                 else:
                     self._pending_state_transition = None
             else:
-                self._apply_state(self._pending_state_transition)
+                if IS_WAYLAND:  # pragma: no-cover-if-linux-x
+                    GLib.timeout_add(
+                        10, partial(self._apply_state, self._pending_state_transition)
+                    )
+                else:  # pragma: no-cover-if-linux-wayland
+                    self._apply_state(self._pending_state_transition)
 
     def gtk_delete_event(self, widget, data):
         # Return value of the GTK on_close handler indicates whether the event has been
