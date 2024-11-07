@@ -142,3 +142,15 @@ class Location:
     def stop_tracking(self):
         self.native.stopUpdatingLocation()
         self._is_tracking = False
+
+    def start_significant_tracking(self):
+        # Ensure that background processing will occur
+        self.native.allowsBackgroundLocationUpdates = True
+        self.native.pausesLocationUpdatesAutomatically = False
+    
+        self._is_tracking = True
+        self.native.startMonitoringSignificantLocationChanges()
+
+    def stop_significant_tracking(self):
+        self.native.stopMonitoringSignificantLocationChanges()
+        self._is_tracking = False
