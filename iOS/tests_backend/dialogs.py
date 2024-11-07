@@ -8,7 +8,7 @@ class DialogsMixin:
     def dialog_view_controller(self):
         return self.app.current_window._impl.native.rootViewController
 
-    def _setup_alert_dialog(self, dialog, action_index):
+    def _setup_alert_dialog(self, dialog, action_index, pre_close_test_method=None):
         # Install an overridden show method that invokes the original,
         # but then closes the open dialog.
         orig_show = dialog._impl.show
@@ -20,6 +20,10 @@ class DialogsMixin:
             NSRunLoop.currentRunLoop.runUntilDate(
                 NSDate.dateWithTimeIntervalSinceNow(1.0 if self.app.run_slow else 0.2)
             )
+
+            if pre_close_test_method:
+                pre_close_test_method()
+
             # Close the dialog and trigger the completion handler
             self.dialog_view_controller.dismissViewControllerAnimated(
                 False, completion=None
@@ -29,7 +33,7 @@ class DialogsMixin:
         dialog._impl.show = automated_show
 
     def setup_info_dialog_result(self, dialog, pre_close_test_method=None):
-        self._setup_alert_dialog(dialog, 0)
+        self._setup_alert_dialog(dialog, 0, pre_close_test_method=pre_close_test_method)
 
     def setup_question_dialog_result(self, dialog, result):
         self._setup_alert_dialog(dialog, 0 if result else 1)

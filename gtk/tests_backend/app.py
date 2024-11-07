@@ -74,7 +74,7 @@ class AppProbe(BaseProbe, DialogsMixin):
                 assert mid_color == (149, 119, 73, 255)
 
     def assert_dialog_in_focus(self, dialog):
-        pass
+        assert dialog._impl.native.is_visible() is True, "The dialog is not in focus"
 
     def _menu_item(self, path):
         main_menu = self.app._impl.native.get_menubar()
