@@ -136,7 +136,12 @@ class Window:
         return Size(size.width, size.height)
 
     def set_size(self, size: SizeT):
-        self.native.resize(size[0], size[1])
+        if IS_WAYLAND:  # pragma: no-cover-if-linux-x
+            # resize() doesn't work properly on wayland. Example: Doing
+            # resize(200,200) will actually set window size to (200,163).
+            self.native.set_default_size(size[0], size[1])
+        else:  # pragma: no-cover-if-linux-wayland
+            self.native.resize(size[0], size[1])
 
     ######################################################################
     # Window position
