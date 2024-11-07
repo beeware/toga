@@ -22,7 +22,7 @@ class BaseDialog:
 
         if self.native:
             # Show the dialog. Don't differentiate between app and window modal dialogs.
-            self.native.show()
+            self.native_alert_dialog = self.native.show()
         else:
             # Dialog doesn't have an implementation. This can't be covered, as
             # the testbed shortcuts the test before showing the dialog.

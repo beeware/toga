@@ -43,7 +43,7 @@ async def test_full_screen(app):
     app.exit_full_screen()
 
 
-async def test_current_window(app, main_window, main_window_probe):
+async def test_current_window(app, app_probe, main_window, main_window_probe):
     """The current window can be retrieved"""
     assert app.current_window == main_window
 
@@ -51,6 +51,25 @@ async def test_current_window(app, main_window, main_window_probe):
     app.current_window = main_window
     await main_window_probe.wait_for_window("Main window is still current")
     assert app.current_window == main_window
+
+    # When a dialog is in focus, `app.current_window` should return the window from
+    # which the dialog was initiated.
+    info_dialog = toga.InfoDialog("Info", "Some info")
+
+    def test_current_window_in_presence_of_dialog():
+        # The public API should report that current window is the specified window
+        assert app.current_window == main_window
+
+        # But, the backend should be reporting that the focus is on the dialog
+        app_probe.assert_dialog_in_focus(info_dialog)
+
+    main_window_probe.setup_info_dialog_result(
+        info_dialog,
+        pre_close_test_method=test_current_window_in_presence_of_dialog,
+    )
+
+    await main_window_probe.wait_for_window("Display window1 modal info dialog")
+    await main_window.dialog(info_dialog)
 
 
 async def test_app_lifecycle(app, app_probe):
