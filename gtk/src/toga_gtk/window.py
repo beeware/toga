@@ -79,8 +79,6 @@ class Window:
                 else:
                     self._pending_state_transition = None
             else:
-                if IS_WAYLAND:  # pragma: no-cover-if-linux-x
-                    self._normal_state_size = self.get_size()
                 self._apply_state(self._pending_state_transition)
 
     def gtk_delete_event(self, widget, data):
@@ -116,8 +114,6 @@ class Window:
 
     def show(self):
         self.native.show_all()
-        if IS_WAYLAND:  # pragma: no-cover-if-linux-x
-            self._normal_state_size = self.get_size()
 
     ######################################################################
     # Window content and resources
@@ -136,12 +132,7 @@ class Window:
         return Size(size.width, size.height)
 
     def set_size(self, size: SizeT):
-        if IS_WAYLAND:  # pragma: no-cover-if-linux-x
-            # resize() doesn't work properly on wayland. Example: Doing
-            # resize(200,200) will actually set window size to (200,163).
-            self.native.set_default_size(size[0], size[1])
-        else:  # pragma: no-cover-if-linux-wayland
-            self.native.resize(size[0], size[1])
+        self.native.resize(size[0], size[1])
 
     ######################################################################
     # Window position
@@ -269,8 +260,6 @@ class Window:
                 self.interface.screen = self._before_presentation_mode_screen
                 del self._before_presentation_mode_screen
                 self._in_presentation = False
-            if IS_WAYLAND:  # pragma: no-cover-if-linux-x
-                self.set_size(self._normal_state_size)
 
     ######################################################################
     # Window capabilities
