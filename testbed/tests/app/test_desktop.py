@@ -408,77 +408,82 @@ async def test_system_dpi_change(
     if toga.platform.current_platform != "windows":
         pytest.xfail("This test is winforms backend specific")
 
+    from toga_winforms.libs import shcore
+
     real_scale = main_window_probe.scale_factor
     if real_scale == mock_scale:
         pytest.skip("mock scale and real scale are the same")
     scale_change = mock_scale / real_scale
     content_size = main_window_probe.content_size
 
-    # Setup window for testing
-    # Include widgets which are sized in different ways, plus padding and fixed sizes in
-    # both dimensions.
-    main_window.content = toga.Box(
-        style=Pack(direction="row"),
-        children=[
-            toga.Label(
-                "fixed",
-                id="fixed",
-                style=Pack(background_color="yellow", padding_left=20, width=100),
-            ),
-            toga.Label(
-                "minimal",  # Shrink to fit content
-                id="minimal",
-                style=Pack(background_color="cyan", font_size=16),
-            ),
-            toga.Label(
-                "flex",
-                id="flex",
-                style=Pack(background_color="pink", flex=1, padding_top=15, height=50),
-            ),
-        ],
-    )
-    await main_window_probe.redraw("main_window is ready for testing")
-
-    ids = ["fixed", "minimal", "flex"]
-    probes = {id: get_probe(main_window.widgets[id]) for id in ids}
-
-    def get_metrics():
-        return (
-            {id: Position(probes[id].x, probes[id].y) for id in ids},
-            {id: Size(probes[id].width, probes[id].height) for id in ids},
-            {id: probes[id].font_size for id in ids},
-        )
-
-    positions, sizes, font_sizes = get_metrics()
-
-    # Because of hinting, font size changes can have non-linear effects on pixel sizes.
-    approx_fixed = partial(pytest.approx, abs=1)
-    approx_font = partial(pytest.approx, rel=0.25)
-
-    assert font_sizes["fixed"] == 9  # Default font size on Windows
-    assert positions["fixed"] == approx_fixed((20, 0))
-    assert sizes["fixed"].width == approx_fixed(100)
-
-    assert font_sizes["minimal"] == 16
-    assert positions["minimal"] == approx_fixed((120, 0))
-    assert sizes["minimal"].height == approx_font(sizes["fixed"].height * 16 / 9)
-
-    assert font_sizes["flex"] == 9
-    assert positions["flex"] == approx_fixed((120 + sizes["minimal"].width, 15))
-    assert sizes["flex"] == approx_fixed((content_size.width - positions["flex"].x, 50))
-
-    # Mock the function Toga uses to get the scale factor.
-    from toga_winforms.libs import shcore
-
-    def GetScaleFactorForMonitor_mock(hMonitor, pScale):
-        pScale.value = int(mock_scale * 100)
+    original_content = main_window.content
+    GetScaleFactorForMonitor_original = shcore.GetScaleFactorForMonitor
+    dpi_change_event = find_event(event_path, main_window_probe)
 
     try:
-        GetScaleFactorForMonitor_original = shcore.GetScaleFactorForMonitor
-        shcore.GetScaleFactorForMonitor = GetScaleFactorForMonitor_mock
+        # Include widgets which are sized in different ways, with padding and fixed
+        # sizes in both dimensions.
+        main_window.content = toga.Box(
+            style=Pack(direction="row"),
+            children=[
+                toga.Label(
+                    "fixed",
+                    id="fixed",
+                    style=Pack(background_color="yellow", padding_left=20, width=100),
+                ),
+                toga.Label(
+                    "minimal",  # Shrink to fit content
+                    id="minimal",
+                    style=Pack(background_color="cyan", font_size=16),
+                ),
+                toga.Label(
+                    "flex",
+                    id="flex",
+                    style=Pack(
+                        background_color="pink", flex=1, padding_top=15, height=50
+                    ),
+                ),
+            ],
+        )
+        await main_window_probe.redraw("main_window is ready for testing")
+
+        ids = ["fixed", "minimal", "flex"]
+        probes = {id: get_probe(main_window.widgets[id]) for id in ids}
+
+        def get_metrics():
+            return (
+                {id: Position(probes[id].x, probes[id].y) for id in ids},
+                {id: Size(probes[id].width, probes[id].height) for id in ids},
+                {id: probes[id].font_size for id in ids},
+            )
+
+        positions, sizes, font_sizes = get_metrics()
+
+        # Because of hinting, font size changes can have non-linear effects on pixel
+        # sizes.
+        approx_fixed = partial(pytest.approx, abs=1)
+        approx_font = partial(pytest.approx, rel=0.25)
+
+        assert font_sizes["fixed"] == 9  # Default font size on Windows
+        assert positions["fixed"] == approx_fixed((20, 0))
+        assert sizes["fixed"].width == approx_fixed(100)
+
+        assert font_sizes["minimal"] == 16
+        assert positions["minimal"] == approx_fixed((120, 0))
+        assert sizes["minimal"].height == approx_font(sizes["fixed"].height * 16 / 9)
+
+        assert font_sizes["flex"] == 9
+        assert positions["flex"] == approx_fixed((120 + sizes["minimal"].width, 15))
+        assert sizes["flex"] == approx_fixed(
+            (content_size.width - positions["flex"].x, 50)
+        )
+
+        # Mock the function Toga uses to get the scale factor.
+        def GetScaleFactorForMonitor_mock(hMonitor, pScale):
+            pScale.value = int(mock_scale * 100)
 
         # Set and Trigger dpi change event with the specified dpi scale
-        dpi_change_event = find_event(event_path, main_window_probe)
+        shcore.GetScaleFactorForMonitor = GetScaleFactorForMonitor_mock
         dpi_change_event(None)
         await main_window_probe.redraw(
             f"Triggered dpi change event with {mock_scale} dpi scale"
@@ -519,6 +524,7 @@ async def test_system_dpi_change(
         dpi_change_event(None)
         await main_window_probe.redraw("Restored original state of main_window")
         assert get_metrics() == (positions, sizes, font_sizes)
+        main_window.content = original_content
 
 
 def find_event(event_path, main_window_probe):

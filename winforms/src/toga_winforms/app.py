@@ -116,6 +116,11 @@ class App:
     ######################################################################
 
     def winforms_DisplaySettingsChanged(self, sender, event):
+        # This event is NOT called on the UI thread, so it's not safe for it to access
+        # the UI directly.
+        self.interface.loop.call_soon_threadsafe(self.update_dpi)
+
+    def update_dpi(self):
         for window in self.interface.windows:
             window._impl.update_dpi()
 

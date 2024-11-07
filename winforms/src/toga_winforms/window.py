@@ -20,6 +20,12 @@ if TYPE_CHECKING:  # pragma: no cover
     from toga.types import PositionT, SizeT
 
 
+# It looks like something is caching the initial scale of the primary screen, and
+# scaling all font sizes by it. Experiments show that this cache is at the level of the
+# app, not the window.
+initial_dpi_scale = ScreenImpl(WinForms.Screen.PrimaryScreen).dpi_scale
+
+
 class Window(Container, Scalable):
     def __init__(self, interface, title, position, size):
         self.interface = interface
@@ -58,7 +64,7 @@ class Window(Container, Scalable):
     def scale_font(self, native_font):
         return WinFont(
             native_font.FontFamily,
-            native_font.Size * self.dpi_scale,
+            native_font.Size * (self.dpi_scale / initial_dpi_scale),
             native_font.Style,
         )
 
@@ -251,9 +257,9 @@ class MainWindow(Window):
     def update_dpi(self):
         super().update_dpi()
         if self.native.MainMenuStrip:  # pragma: no branch
-            self.native.MainMenuStrip.Font = self.scale_font(self.original_menubar_font)
+            self.native.MainMenuStrip.Font = self.scale_font(DEFAULT_FONT)
         if self.toolbar_native:
-            self.toolbar_native.Font = self.scale_font(self.original_toolbar_font)
+            self.toolbar_native.Font = self.scale_font(DEFAULT_FONT)
         self.resize_content()
 
     def _top_bars_height(self):
@@ -291,6 +297,7 @@ class MainWindow(Window):
             menubar = WinForms.MenuStrip()
             self.native.Controls.Add(menubar)
             self.native.MainMenuStrip = menubar
+            self.native.MainMenuStrip.Font = self.scale_font(DEFAULT_FONT)
             menubar.SendToBack()  # In a dock, "back" means "top".
 
         group_cache = {None: menubar}
@@ -305,7 +312,6 @@ class MainWindow(Window):
 
             submenu.DropDownItems.Add(item)
 
-        self.original_menubar_font = DEFAULT_FONT
         self.resize_content()
 
     def create_toolbar(self):
@@ -317,6 +323,7 @@ class MainWindow(Window):
                 # defaults to `Top`.
                 self.toolbar_native = WinForms.ToolStrip()
                 self.native.Controls.Add(self.toolbar_native)
+                self.toolbar_native.Font = self.scale_font(DEFAULT_FONT)
                 self.toolbar_native.BringToFront()  # In a dock, "front" means "bottom".
 
             prev_group = None
@@ -341,7 +348,6 @@ class MainWindow(Window):
                     item.Click += WeakrefCallable(cmd._impl.winforms_Click)
                     cmd._impl.native.append(item)
                 self.toolbar_native.Items.Add(item)
-            self.original_toolbar_font = DEFAULT_FONT
 
         elif self.toolbar_native:
             self.native.Controls.Remove(self.toolbar_native)

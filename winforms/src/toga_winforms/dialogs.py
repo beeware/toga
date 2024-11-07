@@ -109,8 +109,8 @@ class StackTraceDialog(BaseDialog):
             if not self.prev_dpi_context:  # pragma: no cover
                 print("WARNING: Failed to set DPI Awareness for StackTraceDialog")
 
-        # Changing the DPI awareness re-scales all pre-existing Font objects, including
-        # the system fonts.
+        # Changing the DPI awareness causes confusion around font sizes, so set them
+        # all explicitly.
         font_size = 8.25
         message_font = WinFont(FontFamily.GenericSansSerif, font_size)
         monospace_font = WinFont(FontFamily.GenericMonospace, font_size)

@@ -24,10 +24,12 @@ class BaseProbe:
         # If we're running slow, wait for a second
         if toga.App.app.run_slow:
             delay = max(1, delay)
-
         if delay:
             print("Waiting for redraw" if message is None else message)
-            await asyncio.sleep(delay)
+
+        # Sleep even if the delay is zero: this allows any pending callbacks on the
+        # event loop to run.
+        await asyncio.sleep(delay)
 
     @property
     def scale_factor(self):
