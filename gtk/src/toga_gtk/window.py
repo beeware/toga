@@ -79,6 +79,8 @@ class Window:
                 else:
                     self._pending_state_transition = None
             else:
+                if IS_WAYLAND:  # pragma: no-cover-if-linux-x
+                    self._normal_state_size = self.get_size()
                 self._apply_state(self._pending_state_transition)
 
     def gtk_delete_event(self, widget, data):
@@ -114,6 +116,8 @@ class Window:
 
     def show(self):
         self.native.show_all()
+        if IS_WAYLAND:  # pragma: no-cover-if-linux-x
+            self._normal_state_size = self.get_size()
 
     ######################################################################
     # Window content and resources
@@ -260,6 +264,8 @@ class Window:
                 self.interface.screen = self._before_presentation_mode_screen
                 del self._before_presentation_mode_screen
                 self._in_presentation = False
+            if IS_WAYLAND:  # pragma: no-cover-if-linux-x
+                self.set_size(self._normal_state_size)
 
     ######################################################################
     # Window capabilities

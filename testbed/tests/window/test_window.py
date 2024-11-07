@@ -156,6 +156,10 @@ if toga.platform.current_platform in {"iOS", "android"}:
     @pytest.mark.parametrize(
         "intermediate_states",
         [
+            # This set of intermediate states is randomly chosen and is not intended
+            # to check for specific problematic state transitions. Instead, it is used
+            # to test that rapidly passing new states to the window.state setter does
+            # not cause any unexpected glitches.
             (
                 WindowState.PRESENTATION,
                 WindowState.FULLSCREEN,
@@ -718,6 +722,9 @@ else:
     @pytest.mark.parametrize(
         "intermediate_states",
         [
+            # These sets of intermediate states are specifically chosen to trigger cases that
+            # will cause test failures if the implementation is incorrect on certain backends,
+            # such as macOS.
             (
                 WindowState.MINIMIZED,
                 WindowState.FULLSCREEN,
