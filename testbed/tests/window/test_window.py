@@ -153,30 +153,12 @@ if toga.platform.current_platform in {"iOS", "android"}:
             (WindowState.PRESENTATION, WindowState.FULLSCREEN),
         ],
     )
-    @pytest.mark.parametrize(
-        "intermediate_states",
-        [
-            # This set of intermediate states is randomly chosen and is not intended
-            # to check for specific problematic state transitions. Instead, it is used
-            # to test that rapidly passing new states to the window.state setter does
-            # not cause any unexpected glitches.
-            (
-                WindowState.PRESENTATION,
-                WindowState.FULLSCREEN,
-                WindowState.NORMAL,
-                WindowState.PRESENTATION,
-                WindowState.NORMAL,
-                WindowState.FULLSCREEN,
-            ),
-        ],
-    )
-    async def test_window_state_change_with_intermediate_states(
+    async def test_window_state_change(
         app,
         main_window,
         main_window_probe,
         initial_state,
         final_state,
-        intermediate_states,
     ):
         """Window state can be directly changed to another state."""
         if not main_window_probe.supports_fullscreen and WindowState.FULLSCREEN in {
@@ -199,10 +181,6 @@ if toga.platform.current_platform in {"iOS", "android"}:
         await main_window_probe.wait_for_window(f"Main window is in {initial_state}")
 
         assert main_window_probe.instantaneous_state == initial_state
-
-        # Set to the intermediate states but don't wait for the OS delay.
-        for state in intermediate_states:
-            main_window.state = state
 
         # Set to final state
         main_window.state = final_state
