@@ -4,6 +4,7 @@ from typing import Any, Protocol
 
 import toga
 from toga.handlers import wrapped_handler
+from toga.platform import get_platform_factory
 
 from .base import StyleT, Widget
 
@@ -18,8 +19,6 @@ class OnChangeHandler(Protocol):
 
 
 class Switch(Widget):
-    _IMPL_NAME = "Switch"
-
     def __init__(
         self,
         text: str,
@@ -41,6 +40,9 @@ class Switch(Widget):
         :param enabled: Is the switch enabled (i.e., can it be pressed?).
             Optional; by default, switches are created in an enabled state.
         """
+        self.factory = get_platform_factory()
+        self._impl = self.factory.Switch(interface=self)
+
         super().__init__(id=id, style=style)
 
         self.text = text

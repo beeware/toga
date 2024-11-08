@@ -1,11 +1,11 @@
 from __future__ import annotations
 
+from toga.platform import get_platform_factory
+
 from .base import StyleT, Widget
 
 
 class Label(Widget):
-    _IMPL_NAME = "Label"
-
     def __init__(
         self,
         text: str,
@@ -19,6 +19,9 @@ class Label(Widget):
         :param style: A style object. If no style is provided, a default style
             will be applied to the widget.
         """
+        self.factory = get_platform_factory()
+        self._impl = self.factory.Label(interface=self)
+
         super().__init__(id=id, style=style)
 
         self.text = text

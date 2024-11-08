@@ -2,12 +2,12 @@ from __future__ import annotations
 
 from typing import Literal
 
+from toga.platform import get_platform_factory
+
 from .base import StyleT, Widget
 
 
 class ActivityIndicator(Widget):
-    _IMPL_NAME = "ActivityIndicator"
-
     def __init__(
         self,
         id: str | None = None,
@@ -22,6 +22,9 @@ class ActivityIndicator(Widget):
         :param running: Describes whether the indicator is running at the
             time it is created.
         """
+        self.factory = get_platform_factory()
+        self._impl = self.factory.ActivityIndicator(interface=self)
+
         super().__init__(id=id, style=style)
 
         if running:

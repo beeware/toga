@@ -13,20 +13,7 @@ from toga_dummy.utils import (
     attribute_value,
 )
 
-
-# Create the simplest possible widget with a concrete implementation that will
-# allow children
-class ExampleWidget(toga.Widget):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self._children = []
-
-
-# Create the simplest possible widget with a concrete implementation that cannot
-# have children.
-class ExampleLeafWidget(toga.Widget):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+from ..utils import ExampleLeafWidget, ExampleWidget
 
 
 @pytest.fixture

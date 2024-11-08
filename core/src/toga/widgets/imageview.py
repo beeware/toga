@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Literal
 from travertino.size import at_least
 
 import toga
+from toga.platform import get_platform_factory
 from toga.style.pack import NONE
 from toga.widgets.base import StyleT, Widget
 
@@ -68,8 +69,6 @@ def rehint_imageview(
 
 
 class ImageView(Widget):
-    _IMPL_NAME = "ImageView"
-
     def __init__(
         self,
         image: ImageContentT | None = None,
@@ -87,6 +86,9 @@ class ImageView(Widget):
         """
         # Prime the image attribute
         self._image = None
+
+        self.factory = get_platform_factory()
+        self._impl = self.factory.ImageView(interface=self)
 
         super().__init__(id=id, style=style)
 

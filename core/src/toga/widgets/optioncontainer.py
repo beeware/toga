@@ -376,8 +376,6 @@ class OptionList:
 
 
 class OptionContainer(Widget):
-    _IMPL_NAME = "OptionContainer"
-
     def __init__(
         self,
         id: str | None = None,
@@ -394,6 +392,9 @@ class OptionContainer(Widget):
             <OptionContainerContentT>` to display in the OptionContainer.
         :param on_select: Initial :any:`on_select` handler.
         """
+        self.factory = get_platform_factory()
+        self._impl = self.factory.OptionContainer(interface=self)
+
         super().__init__(id=id, style=style)
         self._content = OptionList(self)
         self.on_select = None

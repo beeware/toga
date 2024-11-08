@@ -7,6 +7,7 @@ from typing import Any, Protocol, SupportsFloat
 
 import toga
 from toga.handlers import wrapped_handler
+from toga.platform import get_platform_factory
 
 from .base import StyleT, Widget
 
@@ -39,8 +40,6 @@ class OnReleaseHandler(Protocol):
 
 
 class Slider(Widget):
-    _IMPL_NAME = "Slider"
-
     def __init__(
         self,
         id: str | None = None,
@@ -73,6 +72,9 @@ class Slider(Widget):
         :param range: **DEPRECATED**; use ``min`` and ``max`` instead. Initial
             :any:`range` of the slider. Defaults to ``(0, 1)``.
         """
+        self.factory = get_platform_factory()
+        self._impl = self.factory.Slider(interface=self)
+
         super().__init__(id=id, style=style)
 
         ######################################################################

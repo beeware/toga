@@ -4,6 +4,7 @@ from typing import Any, Protocol
 
 import toga
 from toga.handlers import wrapped_handler
+from toga.platform import get_platform_factory
 
 from .base import StyleT, Widget
 
@@ -18,8 +19,6 @@ class OnChangeHandler(Protocol):
 
 
 class MultilineTextInput(Widget):
-    _IMPL_NAME = "MultilineTextInput"
-
     def __init__(
         self,
         id: str | None = None,
@@ -41,6 +40,8 @@ class MultilineTextInput(Widget):
         :param on_change: A handler that will be invoked when the value of
             the widget changes.
         """
+        self.factory = get_platform_factory()
+        self._impl = self.factory.MultilineTextInput(interface=self)
 
         super().__init__(id=id, style=style)
 

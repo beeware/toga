@@ -6,6 +6,7 @@ from typing import Any, Literal, Protocol, TypeVar
 
 import toga
 from toga.handlers import wrapped_handler
+from toga.platform import get_platform_factory
 from toga.sources import ListSource, Row, Source
 
 from .base import StyleT, Widget
@@ -52,8 +53,6 @@ class OnSelectHandler(Protocol):
 
 
 class DetailedList(Widget):
-    _IMPL_NAME = "DetailedList"
-
     def __init__(
         self,
         id: str | None = None,
@@ -95,6 +94,9 @@ class DetailedList(Widget):
         self.on_select = None
 
         self._data: SourceT | ListSource = None
+
+        self.factory = get_platform_factory()
+        self._impl = self.factory.DetailedList(interface=self)
 
         super().__init__(id=id, style=style)
 

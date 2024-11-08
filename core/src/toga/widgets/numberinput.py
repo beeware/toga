@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING, Any, Protocol, Union
 
 import toga
 from toga.handlers import wrapped_handler
+from toga.platform import get_platform_factory
 
 from .base import StyleT, Widget
 
@@ -82,8 +83,6 @@ class OnChangeHandler(Protocol):
 
 
 class NumberInput(Widget):
-    _IMPL_NAME = "NumberInput"
-
     def __init__(
         self,
         id: str | None = None,
@@ -115,6 +114,9 @@ class NumberInput(Widget):
         :param min_value: **DEPRECATED**; alias of ``min``.
         :param max_value: **DEPRECATED**; alias of ``max``.
         """
+        self.factory = get_platform_factory()
+        self._impl = self.factory.NumberInput(interface=self)
+
         super().__init__(id=id, style=style)
 
         ######################################################################

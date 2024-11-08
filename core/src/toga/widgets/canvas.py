@@ -25,6 +25,7 @@ from toga.fonts import (
     Font,
 )
 from toga.handlers import wrapped_handler
+from toga.platform import get_platform_factory
 
 from .base import StyleT, Widget
 
@@ -1204,8 +1205,6 @@ class OnResizeHandler(Protocol):
 
 
 class Canvas(Widget):
-    _IMPL_NAME = "Canvas"
-
     _MIN_WIDTH = 0
     _MIN_HEIGHT = 0
 
@@ -1238,6 +1237,8 @@ class Canvas(Widget):
         :param on_alt_release: Initial :any:`on_alt_release` handler.
         :param on_alt_drag: Initial :any:`on_alt_drag` handler.
         """
+        self.factory = get_platform_factory()
+        self._impl = self.factory.Canvas(interface=self)
 
         super().__init__(id=id, style=style)
 

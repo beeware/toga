@@ -4,6 +4,7 @@ import asyncio
 from typing import Any, Protocol
 
 from toga.handlers import AsyncResult, OnResultT, wrapped_handler
+from toga.platform import get_platform_factory
 
 from .base import StyleT, Widget
 
@@ -22,8 +23,6 @@ class OnWebViewLoadHandler(Protocol):
 
 
 class WebView(Widget):
-    _IMPL_NAME = "WebView"
-
     def __init__(
         self,
         id: str | None = None,
@@ -44,6 +43,9 @@ class WebView(Widget):
         :param on_webview_load: A handler that will be invoked when the web view
             finishes loading.
         """
+        self.factory = get_platform_factory()
+        self._impl = self.factory.WebView(interface=self)
+
         super().__init__(id=id, style=style)
 
         self.user_agent = user_agent

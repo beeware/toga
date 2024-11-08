@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, Literal, Protocol, SupportsInt
 
 from toga.handlers import wrapped_handler
+from toga.platform import get_platform_factory
 from toga.types import Position
 
 from .base import StyleT, Widget
@@ -21,8 +22,6 @@ class OnScrollHandler(Protocol):
 
 
 class ScrollContainer(Widget):
-    _IMPL_NAME = "ScrollContainer"
-
     def __init__(
         self,
         id: str | None = None,
@@ -42,6 +41,9 @@ class ScrollContainer(Widget):
         :param on_scroll: Initial :any:`on_scroll` handler.
         :param content: The content to display in the scroll window.
         """
+        self.factory = get_platform_factory()
+        self._impl = self.factory.ScrollContainer(interface=self)
+
         super().__init__(id=id, style=style)
 
         self._content: Widget | None = None

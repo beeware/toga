@@ -3,13 +3,12 @@ from __future__ import annotations
 from typing import Literal
 
 from toga.constants import Direction
+from toga.platform import get_platform_factory
 
 from .base import StyleT, Widget
 
 
 class Divider(Widget):
-    _IMPL_NAME = "Divider"
-
     HORIZONTAL = Direction.HORIZONTAL
     VERTICAL = Direction.VERTICAL
 
@@ -29,6 +28,9 @@ class Divider(Widget):
             :attr:`~toga.constants.Direction.VERTICAL`; defaults to
             :attr:`~toga.constants.Direction.HORIZONTAL`
         """
+        self.factory = get_platform_factory()
+        self._impl = self.factory.Divider(interface=self)
+
         super().__init__(id=id, style=style)
 
         self.direction = direction

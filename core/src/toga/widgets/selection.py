@@ -6,6 +6,7 @@ from typing import Any, Protocol, TypeVar
 
 import toga
 from toga.handlers import wrapped_handler
+from toga.platform import get_platform_factory
 from toga.sources import ListSource, Source
 
 from .base import StyleT, Widget
@@ -23,8 +24,6 @@ class OnChangeHandler(Protocol):
 
 
 class Selection(Widget):
-    _IMPL_NAME = "Selection"
-
     def __init__(
         self,
         id: str | None = None,
@@ -50,6 +49,9 @@ class Selection(Widget):
         :param on_change: Initial :any:`on_change` handler.
         :param enabled: Whether the user can interact with the widget.
         """
+        self.factory = get_platform_factory()
+        self._impl = self.factory.Selection(interface=self)
+
         super().__init__(id=id, style=style)
 
         ######################################################################

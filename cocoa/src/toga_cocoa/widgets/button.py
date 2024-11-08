@@ -32,7 +32,7 @@ class Button(Widget):
         self._icon = None
 
         self.native.buttonType = NSMomentaryPushInButton
-        self._set_button_style()
+        # self._set_button_style()
 
         self.native.target = self.native
         self.native.action = SEL("onPress:")

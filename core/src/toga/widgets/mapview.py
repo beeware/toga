@@ -5,6 +5,7 @@ from typing import Any, Protocol
 
 import toga
 from toga.handlers import wrapped_handler
+from toga.platform import get_platform_factory
 
 from .base import StyleT, Widget
 
@@ -133,8 +134,6 @@ class OnSelectHandler(Protocol):
 
 
 class MapView(Widget):
-    _IMPL_NAME = "MapView"
-
     def __init__(
         self,
         id: str | None = None,
@@ -157,6 +156,9 @@ class MapView(Widget):
         :param on_select: A handler that will be invoked when the user selects a map
             pin.
         """
+        self.factory = get_platform_factory()
+        self._impl = self.factory.MapView(interface=self)
+
         super().__init__(id=id, style=style)
 
         self._pins = MapPinSet(self, pins)

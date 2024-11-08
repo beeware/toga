@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Any, Protocol
 
 import toga
 from toga.handlers import wrapped_handler
+from toga.platform import get_platform_factory
 
 from .base import StyleT, Widget
 
@@ -21,8 +22,6 @@ class OnPressHandler(Protocol):
 
 
 class Button(Widget):
-    _IMPL_NAME = "Button"
-
     def __init__(
         self,
         text: str | None = None,
@@ -44,6 +43,9 @@ class Button(Widget):
         :param enabled: Is the button enabled (i.e., can it be pressed?). Optional; by
             default, buttons are created in an enabled state.
         """
+        self.factory = get_platform_factory()
+        self._impl = self.factory.Button(interface=self)
+
         super().__init__(id=id, style=style)
 
         # Set a dummy handler before installing the actual on_press, because we do not want

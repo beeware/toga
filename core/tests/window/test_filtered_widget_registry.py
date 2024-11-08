@@ -2,14 +2,7 @@ import pytest
 
 import toga
 
-
-# Create the simplest possible widget with a concrete implementation
-class ExampleWidget(toga.Widget):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-    def __repr__(self):
-        return f"Widget(id={self.id!r})"
+from ..utils import ExampleLeafWidget
 
 
 # Create a box subclass with a reproducible repr
@@ -23,8 +16,8 @@ def make_window(win_id):
     win.content = ExampleBox(
         id=f"{win_id}.0",
         children=[
-            ExampleWidget(id=f"{win_id}.1"),
-            ExampleWidget(id=f"{win_id}.2"),
+            ExampleLeafWidget(id=f"{win_id}.1"),
+            ExampleLeafWidget(id=f"{win_id}.2"),
         ],
     )
     return win
@@ -154,7 +147,7 @@ def test_reuse_id(app):
 
     # Create a widget with the magic ID. The widget still isn't in the registry, because
     # it's not part of a window
-    first = ExampleWidget(id="magic")
+    first = ExampleLeafWidget(id="magic")
 
     assert "magic" not in app.widgets
     assert "magic" not in win_1.widgets
@@ -170,7 +163,7 @@ def test_reuse_id(app):
 
     # Create a second widget with the same ID.
     # The widget exists, but the registry is storing `first`.
-    second = ExampleWidget(id="magic")
+    second = ExampleLeafWidget(id="magic")
 
     assert "magic" in app.widgets
     assert "magic" in win_1.widgets

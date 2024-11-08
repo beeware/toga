@@ -6,6 +6,7 @@ from typing import Any, Literal, Protocol, TypeVar
 
 import toga
 from toga.handlers import wrapped_handler
+from toga.platform import get_platform_factory
 from toga.sources import Node, Source, TreeSource
 from toga.sources.accessors import build_accessors, to_accessor
 from toga.style import Pack
@@ -34,8 +35,6 @@ class OnActivateHandler(Protocol):
 
 
 class Tree(Widget):
-    _IMPL_NAME = "Tree"
-
     def __init__(
         self,
         headings: Iterable[str] | None = None,
@@ -116,6 +115,9 @@ class Tree(Widget):
         self.on_select = None
         self.on_activate = None
         self._data = None
+
+        self.factory = get_platform_factory()
+        self._impl = self.factory.Tree(interface=self)
 
         super().__init__(id=id, style=style)
 

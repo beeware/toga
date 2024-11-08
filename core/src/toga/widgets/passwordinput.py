@@ -6,4 +6,5 @@ from .textinput import TextInput
 class PasswordInput(TextInput):
     """Create a new password input widget."""
 
-    _IMPL_NAME = "PasswordInput"
+    def _create(self) -> None:
+        self._impl = self.factory.PasswordInput(interface=self)

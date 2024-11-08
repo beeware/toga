@@ -2,12 +2,12 @@ from __future__ import annotations
 
 from typing import Literal, SupportsFloat
 
+from toga.platform import get_platform_factory
+
 from .base import StyleT, Widget
 
 
 class ProgressBar(Widget):
-    _IMPL_NAME = "ProgressBar"
-
     _MIN_WIDTH = 100
 
     def __init__(
@@ -32,6 +32,9 @@ class ProgressBar(Widget):
         :param running: Describes whether the indicator is running at the time
             it is created. Default is False.
         """
+        self.factory = get_platform_factory()
+        self._impl = self.factory.ProgressBar(interface=self)
+
         super().__init__(id=id, style=style)
 
         self.max = max

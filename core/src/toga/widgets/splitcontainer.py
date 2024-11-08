@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 
 from toga.app import App
 from toga.constants import Direction
+from toga.platform import get_platform_factory
 from toga.window import Window
 
 from .base import StyleT, Widget
@@ -20,8 +21,6 @@ if TYPE_CHECKING:
 
 
 class SplitContainer(Widget):
-    _IMPL_NAME = "SplitContainer"
-
     HORIZONTAL = Direction.HORIZONTAL
     VERTICAL = Direction.VERTICAL
 
@@ -44,6 +43,9 @@ class SplitContainer(Widget):
         :param content: Initial :any:`SplitContainer content <SplitContainerContentT>`
             of the container. Defaults to both panels being empty.
         """
+        self.factory = get_platform_factory()
+        self._impl = self.factory.SplitContainer(interface=self)
+
         super().__init__(id=id, style=style)
         self._content: list[SplitContainerContentT] = [None, None]
 

@@ -6,6 +6,7 @@ from typing import Any, Literal, Protocol, TypeVar
 
 import toga
 from toga.handlers import wrapped_handler
+from toga.platform import get_platform_factory
 from toga.sources import ListSource, Row, Source
 from toga.sources.accessors import build_accessors, to_accessor
 
@@ -34,8 +35,6 @@ class OnActivateHandler(Protocol):
 
 
 class Table(Widget):
-    _IMPL_NAME = "Table"
-
     def __init__(
         self,
         headings: Iterable[str] | None = None,
@@ -118,6 +117,9 @@ class Table(Widget):
         self.on_select = None
         self.on_activate = None
         self._data = None
+
+        self.factory = get_platform_factory()
+        self._impl = self.factory.Table(interface=self)
 
         super().__init__(id=id, style=style)
 
