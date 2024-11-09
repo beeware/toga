@@ -168,9 +168,15 @@ class Window(Container, Scalable):
     def update_dpi(self):
         self._dpi_scale = self.get_current_screen().dpi_scale
 
+        # Update all the native fonts and determine the new preferred sizes.
         for widget in self.interface.widgets:
             widget._impl.scale_font()
-            widget.refresh()
+            widget._impl.refresh()
+
+        # Then do a single layout pass.
+        if self.interface.content is not None:
+            self.interface.content.refresh()
+
         self.resize_content()
 
     ######################################################################
