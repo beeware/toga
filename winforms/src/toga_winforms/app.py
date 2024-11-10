@@ -194,8 +194,11 @@ class App:
     # App resources
     ######################################################################
 
+    def get_primary_screen(self):
+        return ScreenImpl(WinForms.Screen.PrimaryScreen)
+
     def get_screens(self):
-        primary_screen = ScreenImpl(WinForms.Screen.PrimaryScreen)
+        primary_screen = self.get_primary_screen()
         screen_list = [primary_screen] + [
             ScreenImpl(native=screen)
             for screen in WinForms.Screen.AllScreens

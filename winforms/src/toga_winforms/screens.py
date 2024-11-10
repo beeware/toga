@@ -9,6 +9,7 @@ from System.Drawing import (
 )
 from System.IO import MemoryStream
 
+from toga import App
 from toga.screens import Screen as ScreenInterface
 from toga.types import Position, Size
 
@@ -48,11 +49,20 @@ class Screen(Scalable):
         # non-text part to prevent any errors due to non-escaped characters.
         return name.split("\\")[-1]
 
+    # Screen.origin is scaled according to the DPI of the primary screen, because there
+    # is no better choice that could cover screens of multiple DPIs.
     def get_origin(self) -> Position:
-        return Position(self.native.Bounds.X, self.native.Bounds.Y)
+        primary_screen = App.app._impl.get_primary_screen()
+        bounds = self.native.Bounds
+        return Position(
+            primary_screen.scale_out(bounds.X), primary_screen.scale_out(bounds.Y)
+        )
 
+    # Screen.size is scaled according to the screen's own DPI, to be consistent with the
+    # scaling of Window size and content.
     def get_size(self) -> Size:
-        return Size(self.native.Bounds.Width, self.native.Bounds.Height)
+        bounds = self.native.Bounds
+        return Size(self.scale_out(bounds.Width), self.scale_out(bounds.Height))
 
     def get_image_data(self):
         bitmap = Bitmap(*self.get_size())

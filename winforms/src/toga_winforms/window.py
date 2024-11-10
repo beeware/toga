@@ -7,6 +7,7 @@ from System.Drawing import Bitmap, Font as WinFont, Graphics, Point, Size as Win
 from System.Drawing.Imaging import ImageFormat
 from System.IO import MemoryStream
 
+from toga import App
 from toga.command import Separator
 from toga.types import Position, Size
 
@@ -183,6 +184,8 @@ class Window(Container, Scalable):
     # Window size
     ######################################################################
 
+    # Window.size is scaled according to the DPI of the current screen, to be consistent
+    # with the scaling of its content.
     def get_size(self) -> Size:
         size = self.native.Size
         return Size(
@@ -203,12 +206,20 @@ class Window(Container, Scalable):
     def get_current_screen(self):
         return ScreenImpl(WinForms.Screen.FromControl(self.native))
 
+    # Window.position is scaled according to the DPI of the primary screen, because the
+    # interface layer assumes that Screen.origin, Window.position and
+    # Window.screen_position are all in the same coordinate system.
+    #
+    # TODO: remove that assumption, and make Window.position return coordinates relative
+    # to the current screen's origin and DPI.
     def get_position(self) -> Position:
         location = self.native.Location
-        return Position(*map(self.scale_out, (location.X, location.Y)))
+        primary_screen = App.app._impl.get_primary_screen()
+        return Position(*map(primary_screen.scale_out, (location.X, location.Y)))
 
     def set_position(self, position: PositionT):
-        self.native.Location = Point(*map(self.scale_in, position))
+        primary_screen = App.app._impl.get_primary_screen()
+        self.native.Location = Point(*map(primary_screen.scale_in, position))
 
     ######################################################################
     # Window visibility
