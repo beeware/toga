@@ -1,3 +1,4 @@
+import asyncio
 from datetime import datetime, timedelta
 from pathlib import Path
 from unittest.mock import Mock
@@ -31,13 +32,19 @@ class DialogsMixin:
         def automated_show(host_window, future):
             orig_show(host_window, future)
 
-            if pre_close_test_method:
-                pre_close_test_method()
+            async def _close_dialog():
+                # Add a slight delay for the dialog to show up
+                await self.redraw("Running pre-close test", delay=0.05)
 
-            if close_handler:
-                close_handler(dialog, gtk_result)
-            else:
-                self._default_close_handler(dialog, gtk_result)
+                if pre_close_test_method:
+                    pre_close_test_method()
+
+                if close_handler:
+                    close_handler(dialog, gtk_result)
+                else:
+                    self._default_close_handler(dialog, gtk_result)
+
+            asyncio.create_task(_close_dialog(), name="close-dialog")
 
         dialog._impl.show = automated_show
 

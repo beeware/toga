@@ -19,8 +19,6 @@ class BaseDialog:
 
         # Show the dialog.
         self.native.show()
-        while Gtk.events_pending():
-            Gtk.main_iteration_do(False)
 
 
 class MessageDialog(BaseDialog):
