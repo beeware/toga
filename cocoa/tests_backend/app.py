@@ -191,11 +191,8 @@ class AppProbe(BaseProbe, DialogsMixin):
         self._activate_menu_item(["Window", "Minimize"])
 
     def assert_dialog_in_focus(self, dialog):
-        # Cannot directly compare `dialog._impl.native`(`NSAlert`) and
-        # `self.app._impl.native.keyWindow`(`_NSAlertPanel`) objects.
-        # Hence, do a string comparison instead.
-        assert str(dialog._impl.native.objc_class.__name__) in str(
-            self.app._impl.native.keyWindow.objc_class.__name__
+        assert (
+            dialog._impl.native.window == self.app._impl.native.keyWindow
         ), "The dialog is not in focus"
 
     def assert_menu_item(self, path, enabled):

@@ -19,6 +19,7 @@ from .libs.wrapper import WeakrefCallable
 class BaseDialog:
     def show(self, host_window, future):
         self.future = future
+
         self.host_window_impl = getattr(host_window, "_impl", None)
         App.app._impl._current_dialog = self
         # Don't differentiate between app and window modal dialogs
@@ -291,6 +292,7 @@ class SelectFolderDialog(FileDialog):
             title,
             initial_directory,
         )
+
         # The native dialog doesn't support multiple selection, so the only effect
         # this has is to change whether we return a list.
         self.multiple_select = multiple_select
