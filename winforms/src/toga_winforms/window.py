@@ -345,7 +345,8 @@ class MainWindow(Window):
                     else:
                         prev_group = cmd.group
 
-                    item = WinForms.ToolStripMenuItem(cmd.text)
+                    item = WinForms.ToolStripButton(cmd.text)
+                    item.AutoToolTip = False
                     if cmd.tooltip is not None:
                         item.ToolTipText = cmd.tooltip
                     if cmd.icon is not None:

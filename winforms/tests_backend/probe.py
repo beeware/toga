@@ -1,9 +1,12 @@
 import asyncio
 from ctypes import byref, c_void_p, windll, wintypes
 
+from pytest import approx
 from System.Windows.Forms import Screen, SendKeys
 
 import toga
+
+from .fonts import FontMixin
 
 KEY_CODES = {
     f"<{name}>": f"{{{name.upper()}}}"
@@ -16,7 +19,12 @@ KEY_CODES.update(
 )
 
 
-class BaseProbe:
+class BaseProbe(FontMixin):
+    fixed_height = None
+
+    def __init__(self, native=None):
+        self.native = native
+
     async def redraw(self, message=None, delay=0):
         """Request a redraw of the app, waiting until that redraw has completed."""
         # Winforms style changes always take effect immediately.
@@ -30,6 +38,31 @@ class BaseProbe:
         # Sleep even if the delay is zero: this allows any pending callbacks on the
         # event loop to run.
         await asyncio.sleep(delay)
+
+    @property
+    def x(self):
+        return round(self.native.Left / self.scale_factor)
+
+    @property
+    def y(self):
+        return round(self.native.Top / self.scale_factor)
+
+    @property
+    def width(self):
+        return round(self.native.Width / self.scale_factor)
+
+    @property
+    def height(self):
+        return round(self.native.Height / self.scale_factor)
+
+    def assert_width(self, min_width, max_width):
+        assert min_width <= self.width <= max_width
+
+    def assert_height(self, min_height, max_height):
+        if self.fixed_height is not None:
+            assert self.height == approx(self.fixed_height, rel=0.1)
+        else:
+            assert min_height <= self.height <= max_height
 
     @property
     def scale_factor(self):

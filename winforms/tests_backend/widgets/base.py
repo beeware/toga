@@ -7,20 +7,16 @@ from System.Windows.Forms import MouseButtons, MouseEventArgs
 from toga.colors import TRANSPARENT
 from toga.style.pack import JUSTIFY, LEFT
 
-from ..fonts import FontMixin
 from ..probe import BaseProbe
 from .properties import toga_color
 
 
-class SimpleProbe(BaseProbe, FontMixin):
-    fixed_height = None
-
+class SimpleProbe(BaseProbe):
     def __init__(self, widget):
-        super().__init__()
         self.app = widget.app
         self.widget = widget
         self.impl = widget._impl
-        self.native = self.impl.native
+        super().__init__(self.impl.native)
         assert isinstance(self.native, self.native_class)
 
     def assert_container(self, container):
@@ -62,39 +58,8 @@ class SimpleProbe(BaseProbe, FontMixin):
             return toga_color(self.native.BackColor)
 
     @property
-    def font(self):
-        return self.native.Font
-
-    @property
     def hidden(self):
         return not self.native.Visible
-
-    @property
-    def x(self):
-        return round(self.native.Left / self.scale_factor)
-
-    @property
-    def y(self):
-        return round(self.native.Top / self.scale_factor)
-
-    @property
-    def width(self):
-        return round(self.native.Width / self.scale_factor)
-
-    @property
-    def height(self):
-        return round(self.native.Height / self.scale_factor)
-
-    def assert_width(self, min_width, max_width):
-        assert (
-            min_width <= self.width <= max_width
-        ), f"Width ({self.width}) not in range ({min_width}, {max_width})"
-
-    def assert_height(self, min_height, max_height):
-        if self.fixed_height is not None:
-            assert self.height == approx(self.fixed_height, rel=0.1)
-        else:
-            assert min_height <= self.height <= max_height
 
     @property
     def shrink_on_resize(self):
