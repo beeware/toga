@@ -45,6 +45,8 @@ class App:
 
         self.actions = None
 
+        self._app_modal_dialog_shown = False
+
     def gtk_activate(self, data=None):
         pass
 
@@ -236,18 +238,11 @@ class App:
 
     def get_current_window(self):  # pragma: no-cover-if-linux-wayland
         current_window = self.native.get_active_window()._impl
-        if current_window.interface.visible:
-            # If the focus is on a dialog, then return its host window
-            for window in self.interface.windows:
-                dialog_impl = getattr(window._impl, "dialog_impl", None)
-                if dialog_impl:
-                    if dialog_impl.native.is_visible():  # pragma: no branch
-                        # Marking as no branch, since a window having dialog_impl
-                        # will have its dialog visible, as all dialogs are shown
-                        # in modal style.
-                        return window._impl
-            return current_window
-        return None
+        return (
+            current_window
+            if current_window.interface.visible and not self._app_modal_dialog_shown
+            else None
+        )
 
     def set_current_window(self, window):
         window._impl.native.present()
