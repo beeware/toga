@@ -68,6 +68,10 @@ class App:
         # boolean to allow us to avoid building a deep stack.
         self._cursor_visible = True
 
+        # The currently visible dialog. On winforms, all dialogs are modal by nature
+        # and the active focus can't be changed unless the modal dialog is dismissed.
+        self._current_dialog = None
+
         self.loop = WinformsProactorEventLoop()
         asyncio.set_event_loop(self.loop)
 
@@ -248,23 +252,23 @@ class App:
     ######################################################################
 
     def get_current_window(self):
-        for window in self.interface.windows:
-            if WinForms.Form.ActiveForm == window._impl.native:
-                return window._impl
-
-            # If the focus is on a dialog, then return its host window
-            active_window_handle = windll.user32.GetForegroundWindow()
-            dialog_impl = getattr(window._impl, "dialog_impl", None)
-            if dialog_impl:
-                dialog_title = getattr(dialog_impl, "title", None)
-                if active_window_handle == windll.user32.FindWindowW(
-                    None, dialog_title if dialog_title else dialog_impl.native.Title
-                ):  # pragma: no branch
-                    # Marking as no branch, since a window having dialog_impl
-                    # will have its dialog in focus, as all dialogs are shown
-                    # in modal style.
+        # There can be only 1 dialog visible at a time, as all dialogs are modal
+        if self._current_dialog:
+            active_window_hwnd = windll.user32.GetForegroundWindow()
+            # The window class name for dialog boxes is "#32770":
+            # https://learn.microsoft.com/en-us/windows/win32/winauto/dialog-box
+            current_dialog_hwnd = windll.user32.FindWindowW(
+                "#32770", self._current_dialog.title
+            )
+            return (
+                self._current_dialog.host_window_impl
+                if active_window_hwnd == current_dialog_hwnd
+                else None
+            )
+        else:
+            for window in self.interface.windows:
+                if WinForms.Form.ActiveForm == window._impl.native:
                     return window._impl
-
         return None
 
     def set_current_window(self, window):

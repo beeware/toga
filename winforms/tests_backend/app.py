@@ -159,12 +159,10 @@ class AppProbe(BaseProbe, DialogsMixin):
 
     def assert_dialog_in_focus(self, dialog):
         active_window_handle = ctypes.windll.user32.GetForegroundWindow()
-        # Cannot directly get the handle from the native WinForms object
-        # as the MessageBox dialog doesn't expose a Handle property.
-        # Hence, use user32 to get the hwnd for comparison.
-        dialog_title = getattr(dialog._impl, "title", None)
+        # The window class name for dialog boxes is "#32770":
+        # https://learn.microsoft.com/en-us/windows/win32/winauto/dialog-box
         expected_dialog_handle = ctypes.windll.user32.FindWindowW(
-            None, dialog_title if dialog_title else dialog._impl.native.Title
+            "#32770", dialog._impl.title
         )
         assert (
             expected_dialog_handle == active_window_handle

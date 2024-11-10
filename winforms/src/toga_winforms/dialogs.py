@@ -11,15 +11,16 @@ from System.Drawing import (
 )
 from System.Windows.Forms import DialogResult, MessageBoxButtons, MessageBoxIcon
 
+from toga import App
+
 from .libs.wrapper import WeakrefCallable
 
 
 class BaseDialog:
     def show(self, host_window, future):
         self.future = future
-        if host_window:
-            self.host_window = host_window
-            self.host_window._impl.dialog_impl = self
+        self.host_window_impl = getattr(host_window, "_impl", None)
+        App.app._impl._current_dialog = self
         # Don't differentiate between app and window modal dialogs
         # Show the dialog using an inner loop.
         asyncio.get_event_loop().start_inner_loop(self._show)
@@ -52,8 +53,7 @@ class MessageDialog(BaseDialog):
             self.future.set_result(return_value == self.success_result)
         else:
             self.future.set_result(None)
-        if self.host_window:
-            del self.host_window._impl.dialog_impl
+        App.app._impl._current_dialog = None
 
 
 class InfoDialog(MessageDialog):
@@ -102,6 +102,7 @@ class StackTraceDialog(BaseDialog):
     def __init__(self, title, message, content, retry):
         super().__init__()
 
+        self.title = title
         self.native = WinForms.Form()
         self.native.MinimizeBox = False
         self.native.FormBorderStyle = self.native.FormBorderStyle.FixedSingle
@@ -181,20 +182,17 @@ class StackTraceDialog(BaseDialog):
     def winforms_Click_quit(self, sender, event):
         self.future.set_result(False)
         self.native.Close()
-        if self.host_window:
-            del self.host_window._impl.dialog_impl
+        App.app._impl._current_dialog = None
 
     def winforms_Click_retry(self, sender, event):
         self.future.set_result(True)
         self.native.Close()
-        if self.host_window:
-            del self.host_window._impl.dialog_impl
+        App.app._impl._current_dialog = None
 
     def winforms_Click_accept(self, sender, event):
         self.future.set_result(None)
         self.native.Close()
-        if self.host_window:
-            del self.host_window._impl.dialog_impl
+        App.app._impl._current_dialog = None
 
 
 class FileDialog(BaseDialog):
@@ -208,6 +206,7 @@ class FileDialog(BaseDialog):
         file_types=None,
     ):
         super().__init__()
+        self.title = title
         self.native = native
 
         self._set_title(title)
@@ -234,8 +233,7 @@ class FileDialog(BaseDialog):
             self.future.set_result(self._get_filenames())
         else:
             self.future.set_result(None)
-        if self.host_window:
-            del self.host_window._impl.dialog_impl
+        App.app._impl._current_dialog = None
 
     def _set_title(self, title):
         self.native.Title = title
@@ -293,7 +291,6 @@ class SelectFolderDialog(FileDialog):
             title,
             initial_directory,
         )
-
         # The native dialog doesn't support multiple selection, so the only effect
         # this has is to change whether we return a list.
         self.multiple_select = multiple_select
