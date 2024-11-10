@@ -370,7 +370,7 @@ class App:
         focused_window = self.native.keyWindow
         if isinstance(focused_window, NSPanel):  # If the focus is on a dialog
             sheet_parent = focused_window.sheetParent
-            return sheet_parent if sheet_parent else self.native.mainWindow
+            return sheet_parent if sheet_parent else None
         else:  # If the focus is on a window
             return focused_window
 
