@@ -98,14 +98,19 @@ class WindowProbe(BaseProbe, DialogsMixin):
 
         def automated_show(host_window, future):
             orig_show(host_window, future)
-
-            if pre_close_test_method:
-                pre_close_test_method()
-
-            dialog._impl.host_window.endSheet(
-                dialog._impl.host_window.attachedSheet,
-                returnCode=result,
-            )
+            try:
+                if pre_close_test_method:
+                    pre_close_test_method()
+            finally:
+                try:
+                    dialog._impl.host_window.endSheet(
+                        dialog._impl.host_window.attachedSheet,
+                        returnCode=result,
+                    )
+                except Exception as e:
+                    # An error occurred closing the dialog; that means the dialog
+                    # isn't what as expected, so record that in the future.
+                    future.set_exception(e)
 
         dialog._impl.show = automated_show
 

@@ -34,15 +34,21 @@ class DialogsMixin:
 
             async def _close_dialog():
                 # Add a slight delay for the dialog to show up
-                await self.redraw("Running pre-close test", delay=0.05)
-
-                if pre_close_test_method:
-                    pre_close_test_method()
-
-                if close_handler:
-                    close_handler(dialog, gtk_result)
-                else:
-                    self._default_close_handler(dialog, gtk_result)
+                await asyncio.sleep(0.05)
+                try:
+                    if pre_close_test_method:
+                        pre_close_test_method()
+                finally:
+                    # Attempt to close the dialog regardless of any previous exceptions
+                    try:
+                        if close_handler:
+                            close_handler(dialog, gtk_result)
+                        else:
+                            self._default_close_handler(dialog, gtk_result)
+                    except Exception as e:
+                        # An error occurred closing the dialog; that means the dialog
+                        # isn't what as expected, so record that in the future.
+                        future.set_exception(e)
 
             asyncio.create_task(_close_dialog(), name="close-dialog")
 

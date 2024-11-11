@@ -20,15 +20,22 @@ class DialogsMixin:
             NSRunLoop.currentRunLoop.runUntilDate(
                 NSDate.dateWithTimeIntervalSinceNow(1.0 if self.app.run_slow else 0.2)
             )
-
-            if pre_close_test_method:
-                pre_close_test_method()
-
-            # Close the dialog and trigger the completion handler
-            self.dialog_view_controller.dismissViewControllerAnimated(
-                False, completion=None
-            )
-            dialog._impl.native.actions[action_index].handler(dialog._impl.native)
+            try:
+                if pre_close_test_method:
+                    pre_close_test_method()
+            finally:
+                try:
+                    # Close the dialog and trigger the completion handler
+                    self.dialog_view_controller.dismissViewControllerAnimated(
+                        False, completion=None
+                    )
+                    dialog._impl.native.actions[action_index].handler(
+                        dialog._impl.native
+                    )
+                except Exception as e:
+                    # An error occurred closing the dialog; that means the dialog
+                    # isn't what as expected, so record that in the future.
+                    future.set_exception(e)
 
         dialog._impl.show = automated_show
 

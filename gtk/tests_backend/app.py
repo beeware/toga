@@ -75,16 +75,8 @@ class AppProbe(BaseProbe, DialogsMixin):
 
     def assert_dialog_in_focus(self, dialog):
         # Gtk.Dialog's methods - is_active(), has_focus() both return False, even
-        # when the dialog is in focus. Hence,they cannot be used to determine focus.
-        if IS_WAYLAND:
-            assert dialog._impl.native.is_visible(), "The dialog is not in focus"
-        else:
-            # Gtk.Dialog.get_transient_for() doesn't work on wayland and will crash.
-            assert (
-                dialog._impl.native.get_transient_for()
-                == self.app._impl.native.get_active_window()
-                and dialog._impl.native.is_visible()
-            ), "The dialog is not in focus"
+        # when the dialog is in focus. Hence, they cannot be used to determine focus.
+        assert dialog._impl.native.is_visible(), "The dialog is not in focus"
 
     def _menu_item(self, path):
         main_menu = self.app._impl.native.get_menubar()

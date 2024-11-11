@@ -263,11 +263,11 @@ class AppProbe(BaseProbe, DialogsMixin):
             if count < 5:
                 count += 1
                 return _poll_modal_session(nsapp, session)
-
-            if pre_close_test_method:
-                pre_close_test_method()
-
-            return result
+            try:
+                if pre_close_test_method:
+                    pre_close_test_method()
+            finally:
+                return result
 
         dialog._impl._poll_modal_session = auto_poll_modal_session
 

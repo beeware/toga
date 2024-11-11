@@ -30,8 +30,8 @@ from .libs import (
     NSMenu,
     NSMenuItem,
     NSNumber,
-    NSPanel,
     NSScreen,
+    NSWindow,
 )
 from .screens import Screen as ScreenImpl
 
@@ -110,6 +110,7 @@ class App:
 
         # Create the lookup table for commands and menu items
         self._menu_items = {}
+        self._active_window_before_dialog = None
 
         # Populate the main window as soon as the event loop is running.
         self.loop.call_soon_threadsafe(self.interface._startup)
@@ -368,10 +369,13 @@ class App:
 
     def get_current_window(self):
         focused_window = self.native.keyWindow
-        if isinstance(focused_window, NSPanel):  # If the focus is on a dialog
-            sheet_parent = focused_window.sheetParent
-            return sheet_parent if sheet_parent else None
-        else:  # If the focus is on a window
+        if not isinstance(focused_window, NSWindow):
+            return (
+                self._active_window_before_dialog._impl.native
+                if self._active_window_before_dialog
+                else None
+            )
+        else:
             return focused_window
 
     def set_current_window(self, window):

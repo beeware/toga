@@ -1,7 +1,5 @@
 from pathlib import Path
 
-from toga import App
-
 from .libs import Gtk
 
 
@@ -12,10 +10,8 @@ class BaseDialog:
         # If this is a modal dialog, set the window as transient to the host window.
         if host_window:
             self.native.set_transient_for(host_window._impl.native)
-            host_window._impl.native.present()
         else:
             self.native.set_transient_for(None)
-            App.app._impl._app_modal_dialog_shown = True
 
         # Show the dialog.
         self.native.show()
@@ -56,7 +52,6 @@ class MessageDialog(BaseDialog):
         self.future.set_result(result)
 
         self.native.destroy()
-        App.app._impl._app_modal_dialog_shown = False
 
 
 class InfoDialog(MessageDialog):
@@ -214,7 +209,6 @@ class FileDialog(BaseDialog):
         self.future.set_result(result)
 
         self.native.destroy()
-        App.app._impl._app_modal_dialog_shown = False
 
 
 class SaveFileDialog(FileDialog):

@@ -17,17 +17,21 @@ class DialogsMixin:
             async def _close_dialog():
                 # Inject a small pause without blocking the event loop
                 await asyncio.sleep(1.0 if self.app.run_slow else 0.2)
+
                 try:
                     if pre_close_test_method:
                         pre_close_test_method()
-
-                    dialog_view = self.get_dialog_view()
-                    self.assert_dialog_buttons(dialog_view, buttons)
-                    await self.press_dialog_button(dialog_view, buttons[selected_index])
-                except Exception as e:
-                    # An error occurred closing the dialog; that means the dialog
-                    # isn't what as expected, so record that in the future.
-                    future.set_exception(e)
+                finally:
+                    try:
+                        dialog_view = self.get_dialog_view()
+                        self.assert_dialog_buttons(dialog_view, buttons)
+                        await self.press_dialog_button(
+                            dialog_view, buttons[selected_index]
+                        )
+                    except Exception as e:
+                        # An error occurred closing the dialog; that means the dialog
+                        # isn't what as expected, so record that in the future.
+                        future.set_exception(e)
 
             asyncio.create_task(_close_dialog(), name="close-dialog")
 

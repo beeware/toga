@@ -45,8 +45,6 @@ class App:
 
         self.actions = None
 
-        self._app_modal_dialog_shown = False
-
     def gtk_activate(self, data=None):
         pass
 
@@ -238,11 +236,7 @@ class App:
 
     def get_current_window(self):  # pragma: no-cover-if-linux-wayland
         current_window = self.native.get_active_window()._impl
-        return (
-            current_window
-            if current_window.interface.visible and not self._app_modal_dialog_shown
-            else None
-        )
+        return current_window if current_window.interface.visible else None
 
     def set_current_window(self, window):
         window._impl.native.present()

@@ -20,8 +20,7 @@ class BaseDialog:
     def show(self, host_window, future):
         self.future = future
 
-        self.host_window_impl = getattr(host_window, "_impl", None)
-        App.app._impl._current_dialog = self
+        App.app._impl._active_window_before_dialog = App.app.current_window
         # Don't differentiate between app and window modal dialogs
         # Show the dialog using an inner loop.
         asyncio.get_event_loop().start_inner_loop(self._show)
@@ -54,7 +53,7 @@ class MessageDialog(BaseDialog):
             self.future.set_result(return_value == self.success_result)
         else:
             self.future.set_result(None)
-        App.app._impl._current_dialog = None
+        App.app._impl._active_window_before_dialog = None
 
 
 class InfoDialog(MessageDialog):
@@ -183,17 +182,17 @@ class StackTraceDialog(BaseDialog):
     def winforms_Click_quit(self, sender, event):
         self.future.set_result(False)
         self.native.Close()
-        App.app._impl._current_dialog = None
+        App.app._impl._active_window_before_dialog = None
 
     def winforms_Click_retry(self, sender, event):
         self.future.set_result(True)
         self.native.Close()
-        App.app._impl._current_dialog = None
+        App.app._impl._active_window_before_dialog = None
 
     def winforms_Click_accept(self, sender, event):
         self.future.set_result(None)
         self.native.Close()
-        App.app._impl._current_dialog = None
+        App.app._impl._active_window_before_dialog = None
 
 
 class FileDialog(BaseDialog):
@@ -234,7 +233,7 @@ class FileDialog(BaseDialog):
             self.future.set_result(self._get_filenames())
         else:
             self.future.set_result(None)
-        App.app._impl._current_dialog = None
+        App.app._impl._active_window_before_dialog = None
 
     def _set_title(self, title):
         self.native.Title = title

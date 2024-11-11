@@ -16,20 +16,20 @@ class DialogsMixin:
             orig_show(host_window, future)
 
             async def _close_dialog():
-                try:
-                    # Give the inner event loop a chance to start. The MessageBox dialogs work with
-                    # sleep(0), but the file dialogs require it to be positive for some reason.
-                    await asyncio.sleep(0.001)
+                # Give the inner event loop a chance to start. The MessageBox dialogs work with
+                # sleep(0), but the file dialogs require it to be positive for some reason.
+                await asyncio.sleep(0.001)
 
+                try:
                     if pre_close_test_method:
                         pre_close_test_method()
-
-                    await self.type_character(char, alt=alt)
-
-                except Exception as e:
-                    # An error occurred closing the dialog; that means the dialog
-                    # isn't what as expected, so record that in the future.
-                    future.set_exception(e)
+                finally:
+                    try:
+                        await self.type_character(char, alt=alt)
+                    except Exception as e:
+                        # An error occurred closing the dialog; that means the dialog
+                        # isn't what as expected, so record that in the future.
+                        future.set_exception(e)
 
             asyncio.create_task(_close_dialog(), name="close-dialog")
 

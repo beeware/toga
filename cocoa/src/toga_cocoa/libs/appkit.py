@@ -545,7 +545,6 @@ class NSLineBreakMode(Enum):
 
 ######################################################################
 # NSPanel.h
-NSPanel = ObjCClass("NSPanel")
 
 NSUtilityWindowMask = 1 << 4
 

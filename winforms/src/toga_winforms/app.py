@@ -68,9 +68,7 @@ class App:
         # boolean to allow us to avoid building a deep stack.
         self._cursor_visible = True
 
-        # The currently visible dialog. On winforms, all dialogs are
-        # modal in nature. Only one dialog will be visible at a time.
-        self._current_dialog = None
+        self._active_window_before_dialog = None
 
         self.loop = WinformsProactorEventLoop()
         asyncio.set_event_loop(self.loop)
@@ -252,7 +250,7 @@ class App:
     ######################################################################
 
     def get_current_window(self):
-        current_window = next(
+        current_window_impl = next(
             (
                 window._impl
                 for window in self.interface.windows
@@ -261,21 +259,14 @@ class App:
             None,
         )
 
-        if not current_window and self._current_dialog:
-            # There can be only 1 dialog visible at a time, as all dialogs are modal
-            active_window_hwnd = windll.user32.GetForegroundWindow()
-            # The window class name for dialog boxes is "#32770":
-            # https://learn.microsoft.com/en-us/windows/win32/winauto/dialog-box
-            current_dialog_hwnd = windll.user32.FindWindowW(
-                "#32770", self._current_dialog.title
-            )
-            current_window = (
-                self._current_dialog.host_window_impl
-                if active_window_hwnd == current_dialog_hwnd
+        if not current_window_impl:
+            return (
+                self._active_window_before_dialog._impl
+                if self._active_window_before_dialog
                 else None
             )
-
-        return current_window
+        else:
+            return current_window_impl
 
     def set_current_window(self, window):
         window._impl.native.Activate()
