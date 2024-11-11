@@ -4,9 +4,12 @@ from System.Windows.Forms import (
     FormBorderStyle,
     FormWindowState,
     MenuStrip,
+    Panel,
     ToolStrip,
     ToolStripSeparator,
 )
+
+from toga import Size
 
 from .dialogs import DialogsMixin
 from .probe import BaseProbe
@@ -24,11 +27,10 @@ class WindowProbe(BaseProbe, DialogsMixin):
     supports_placement = True
 
     def __init__(self, app, window):
-        super().__init__()
         self.app = app
         self.window = window
         self.impl = window._impl
-        self.native = window._impl.native
+        super().__init__(window._impl.native)
         assert isinstance(self.native, Form)
 
     async def wait_for_window(self, message, minimize=False, full_screen=False):
@@ -39,12 +41,17 @@ class WindowProbe(BaseProbe, DialogsMixin):
 
     @property
     def content_size(self):
-        return (
-            (self.native.ClientSize.Width) / self.scale_factor,
-            (
-                (self.native.ClientSize.Height - self.impl._top_bars_height())
-                / self.scale_factor
-            ),
+        client_size = self.client_size
+        return Size(
+            client_size.width,
+            client_size.height - (self.impl._top_bars_height() / self.scale_factor),
+        )
+
+    @property
+    def client_size(self):
+        return Size(
+            self.native.ClientSize.Width / self.scale_factor,
+            self.native.ClientSize.Height / self.scale_factor,
         )
 
     @property
@@ -72,6 +79,22 @@ class WindowProbe(BaseProbe, DialogsMixin):
 
     def unminimize(self):
         self.native.WindowState = FormWindowState.Normal
+
+    @property
+    def container_probe(self):
+        panels = [
+            control for control in self.native.Controls if isinstance(control, Panel)
+        ]
+        assert len(panels) == 1
+        return BaseProbe(panels[0])
+
+    @property
+    def menubar_probe(self):
+        return BaseProbe(bar) if (bar := self.native.MainMenuStrip) else None
+
+    @property
+    def toolbar_probe(self):
+        return BaseProbe(bar) if (bar := self._native_toolbar()) else None
 
     def _native_toolbar(self):
         for control in self.native.Controls:

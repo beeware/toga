@@ -85,6 +85,11 @@ class ScrollContainer(Widget, Container):
         # `refresh` or `resize_content`.
         self.native_width, self.native_height = full_width, full_height
 
+        # Do this to prevent horizontal scroll bar from becoming permanently visible
+        # on dpi scaling changes.
+        self.native.AutoScroll = False
+        self.native.AutoScroll = True
+
     def get_horizontal(self):
         return self.horizontal
 

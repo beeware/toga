@@ -21,6 +21,10 @@ class FontMixin:
     supports_custom_fonts = True
     supports_custom_variable_fonts = True
 
+    @property
+    def font(self):
+        return self.native.Font
+
     def assert_font_options(self, weight=NORMAL, style=NORMAL, variant=NORMAL):
         assert BOLD if self.font.Bold else NORMAL == weight
 
@@ -35,11 +39,14 @@ class FontMixin:
         else:
             assert NORMAL == variant
 
+    @property
+    def font_size(self):
+        return round(self.font.SizeInPoints / self.scale_factor)
+
     def assert_font_size(self, expected):
         if expected == SYSTEM_DEFAULT_FONT_SIZE:
-            assert int(self.font.SizeInPoints) == 9
-        else:
-            assert int(self.font.SizeInPoints) == expected
+            expected = 9
+        assert self.font_size == expected
 
     def assert_font_family(self, expected):
         assert str(self.font.Name) == {

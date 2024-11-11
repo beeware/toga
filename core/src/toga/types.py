@@ -29,7 +29,7 @@ class LatLng(NamedTuple):
 
 
 class Position(NamedTuple):
-    """A 2D window position."""
+    """A 2D position."""
 
     #: X coordinate, in CSS pixels.
     x: int
@@ -46,15 +46,21 @@ class Position(NamedTuple):
     def __sub__(self, other):
         return Position(self.x - other.x, self.y - other.y)
 
+    def __mul__(self, other):
+        return Position(self.x * other, self.y * other)
+
 
 class Size(NamedTuple):
-    """A 2D window size."""
+    """A 2D size."""
 
-    #: Width
+    #: Width, in CSS pixels.
     width: int
 
-    #: Height
+    #: Height, in CSS pixels.
     height: int
 
     def __str__(self) -> str:
         return f"({self.width} x {self.height})"
+
+    def __mul__(self, other):
+        return Size(self.width * other, self.height * other)
