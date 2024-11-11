@@ -3,7 +3,7 @@ from datetime import datetime
 from functools import partial
 
 import toga
-from toga.constants import COLUMN, RIGHT, WindowState
+from toga.constants import COLUMN, RIGHT, ROW, WindowState
 from toga.style import Pack
 
 
@@ -11,24 +11,71 @@ class WindowDemoApp(toga.App):
     # Button callback functions
     def do_origin(self, widget, **kwargs):
         self.main_window.position = (0, 0)
+        self.do_report()
+
+    def do_up(self, widget, **kwargs):
+        self.main_window.position = (
+            self.main_window.position.x,
+            self.main_window.position.y - 200,
+        )
+        self.do_report()
+
+    def do_down(self, widget, **kwargs):
+        self.main_window.position = (
+            self.main_window.position.x,
+            self.main_window.position.y + 200,
+        )
+        self.do_report()
 
     def do_left(self, widget, **kwargs):
-        self.main_window.position = (-1000, 500)
+        self.main_window.position = (
+            self.main_window.position.x - 200,
+            self.main_window.position.y,
+        )
+        self.do_report()
 
     def do_right(self, widget, **kwargs):
-        self.main_window.position = (2000, 500)
+        self.main_window.position = (
+            self.main_window.position.x + 200,
+            self.main_window.position.y,
+        )
+        self.do_report()
 
-    def do_left_current_screen(self, widget, **kwargs):
-        self.main_window.screen_position = (0, 100)
+    def do_screen_top(self, widget, **kwargs):
+        self.main_window.screen_position = (
+            self.main_window.screen_position.x,
+            0,
+        )
+        self.do_report()
 
-    def do_right_current_screen(self, widget, **kwargs):
-        self.main_window.screen_position = (1080, 100)
+    def do_screen_bottom(self, widget, **kwargs):
+        self.main_window.screen_position = (
+            self.main_window.screen_position.x,
+            self.main_window.screen.size.height - self.main_window.size.height,
+        )
+        self.do_report()
+
+    def do_screen_left(self, widget, **kwargs):
+        self.main_window.screen_position = (
+            0,
+            self.main_window.screen_position.y,
+        )
+        self.do_report()
+
+    def do_screen_right(self, widget, **kwargs):
+        self.main_window.screen_position = (
+            self.main_window.screen.size.width - self.main_window.size.width,
+            self.main_window.screen_position.y,
+        )
+        self.do_report()
 
     def do_small(self, widget, **kwargs):
         self.main_window.size = (400, 300)
+        self.do_report()
 
     def do_large(self, widget, **kwargs):
         self.main_window.size = (1500, 1000)
+        self.do_report()
 
     def do_current_window_state(self, widget, **kwargs):
         self.label.text = f"Current state: {self.main_window.state}"
@@ -104,6 +151,7 @@ class WindowDemoApp(toga.App):
 
     def do_screen_change(self, screen, widget, **kwargs):
         self.current_window.screen = screen
+        self.do_report()
 
     async def do_save_screenshot(self, screen, window, **kwargs):
         screenshot = screen.as_image()
@@ -131,11 +179,14 @@ class WindowDemoApp(toga.App):
         self.show_cursor()
         self.label.text = "Cursor should be back!"
 
-    def do_report(self, widget, **kwargs):
+    def do_report(self, *args, **kwargs):
+        window = self.main_window
+        screen = window.screen
         self.label.text = (
-            f"Window {self.main_window.title!r} "
-            f"has size {self.main_window.size!r} "
-            f"at {self.main_window.position!r}"
+            f"Window: size={tuple(window.size)}, position={tuple(window.position)}, "
+            f"screen_position={tuple(window.screen_position)}\n"
+            f"Screen: name={screen.name!r}, size={tuple(screen.size)}, "
+            f"origin={tuple(screen.origin)}"
         )
 
     def do_next_content(self, widget):
@@ -185,21 +236,30 @@ class WindowDemoApp(toga.App):
 
         # Buttons
         btn_style = Pack(flex=1, padding=5)
-        btn_do_origin = toga.Button(
-            "Go to origin", on_press=self.do_origin, style=btn_style
+
+        row_move = toga.Box(
+            style=Pack(direction=ROW),
+            children=[
+                toga.Label("Move: "),
+                toga.Button("Origin", on_press=self.do_origin, style=btn_style),
+                toga.Button("Up", on_press=self.do_up, style=btn_style),
+                toga.Button("Down", on_press=self.do_down, style=btn_style),
+                toga.Button("Left", on_press=self.do_left, style=btn_style),
+                toga.Button("Right", on_press=self.do_right, style=btn_style),
+            ],
         )
-        btn_do_left = toga.Button("Go left", on_press=self.do_left, style=btn_style)
-        btn_do_right = toga.Button("Go right", on_press=self.do_right, style=btn_style)
-        btn_do_left_current_screen = toga.Button(
-            "Go left on current screen",
-            on_press=self.do_left_current_screen,
-            style=btn_style,
+
+        row_screen_edge = toga.Box(
+            style=Pack(direction=ROW),
+            children=[
+                toga.Label("Screen edge: "),
+                toga.Button("Top", on_press=self.do_screen_top, style=btn_style),
+                toga.Button("Bottom", on_press=self.do_screen_bottom, style=btn_style),
+                toga.Button("Left", on_press=self.do_screen_left, style=btn_style),
+                toga.Button("Right", on_press=self.do_screen_right, style=btn_style),
+            ],
         )
-        btn_do_right_current_screen = toga.Button(
-            "Go right on current screen",
-            on_press=self.do_right_current_screen,
-            style=btn_style,
-        )
+
         btn_do_small = toga.Button(
             "Become small", on_press=self.do_small, style=btn_style
         )
@@ -302,11 +362,9 @@ class WindowDemoApp(toga.App):
         self.inner_box = toga.Box(
             children=[
                 self.label,
-                btn_do_origin,
-                btn_do_left,
-                btn_do_right,
-                btn_do_left_current_screen,
-                btn_do_right_current_screen,
+                row_move,
+                row_screen_edge,
+                btn_do_report,
                 btn_do_small,
                 btn_do_large,
                 btn_do_current_window_state,
@@ -320,7 +378,6 @@ class WindowDemoApp(toga.App):
                 btn_do_new_windows,
                 btn_do_current_window_cycling,
                 btn_do_hide_cursor,
-                btn_do_report,
                 btn_change_content,
                 btn_hide,
                 btn_beep,

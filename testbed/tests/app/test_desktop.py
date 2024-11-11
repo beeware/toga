@@ -1,9 +1,11 @@
 import itertools
+from functools import partial
 from unittest.mock import Mock
 
 import pytest
 
 import toga
+from toga import Position, Size
 from toga.colors import CORNFLOWERBLUE, FIREBRICK, GOLDENROD, REBECCAPURPLE
 from toga.constants import WindowState
 from toga.style.pack import Pack
@@ -490,6 +492,223 @@ async def test_current_window(app, app_probe, main_window):
     await window1_probe.wait_for_window("Window 3 is current")
     if app_probe.supports_current_window_assignment:
         assert app.current_window == window3
+
+
+@pytest.mark.parametrize(
+    "event_path",
+    [
+        "SystemEvents.DisplaySettingsChanged",
+        "Form.LocationChanged",
+        "Form.Resize",
+    ],
+)
+@pytest.mark.parametrize("mock_scale", [1.0, 1.25, 1.5, 1.75, 2.0])
+async def test_system_dpi_change(
+    main_window, main_window_probe, event_path, mock_scale
+):
+    if toga.platform.current_platform != "windows":
+        pytest.xfail("This test is winforms backend specific")
+
+    from toga_winforms.libs import shcore
+
+    real_scale = main_window_probe.scale_factor
+    if real_scale == mock_scale:
+        pytest.skip("mock scale and real scale are the same")
+    scale_change = mock_scale / real_scale
+    client_size = main_window_probe.client_size
+
+    original_content = main_window.content
+    GetScaleFactorForMonitor_original = shcore.GetScaleFactorForMonitor
+    dpi_change_event = find_event(event_path, main_window_probe)
+
+    try:
+        main_window.toolbar.add(toga.Command(None, "Test command"))
+
+        # Include widgets which are sized in different ways, with padding and fixed
+        # sizes in both dimensions.
+        main_window.content = toga.Box(
+            style=Pack(direction="row"),
+            children=[
+                toga.Label(
+                    "fixed",
+                    id="fixed",
+                    style=Pack(background_color="yellow", padding_left=20, width=100),
+                ),
+                toga.Label(
+                    "minimal",  # Shrink to fit content
+                    id="minimal",
+                    style=Pack(background_color="cyan", font_size=16),
+                ),
+                toga.Label(
+                    "flex",
+                    id="flex",
+                    style=Pack(
+                        background_color="pink", flex=1, padding_top=15, height=50
+                    ),
+                ),
+            ],
+        )
+        await main_window_probe.redraw("main_window is ready for testing")
+
+        widget_ids = ["fixed", "minimal", "flex"]
+        probes = {id: get_probe(main_window.widgets[id]) for id in widget_ids}
+
+        decor_ids = ["menubar", "toolbar", "container"]
+        probes.update(
+            {id: getattr(main_window_probe, f"{id}_probe") for id in decor_ids}
+        )
+        ids = widget_ids + decor_ids
+
+        def get_metrics():
+            return (
+                {id: Position(probes[id].x, probes[id].y) for id in ids},
+                {id: Size(probes[id].width, probes[id].height) for id in ids},
+                {id: probes[id].font_size for id in ids},
+            )
+
+        positions, sizes, font_sizes = get_metrics()
+
+        # Because of hinting, font size changes can have non-linear effects on pixel
+        # sizes.
+        approx_fixed = partial(pytest.approx, abs=1)
+        approx_font = partial(pytest.approx, rel=0.25)
+
+        # Positions of the menubar, toolbar and top-level container are relative to the
+        # window client area.
+        assert font_sizes["menubar"] == 9
+        assert positions["menubar"] == approx_fixed((0, 0))
+        assert sizes["menubar"].width == approx_fixed(client_size.width)
+
+        assert font_sizes["toolbar"] == 9
+        assert positions["toolbar"] == approx_fixed((0, sizes["menubar"].height))
+        assert sizes["toolbar"].width == approx_fixed(client_size.width)
+
+        # Container has no text, so its font doesn't matter.
+        assert positions["container"] == approx_fixed(
+            (0, positions["toolbar"].y + sizes["toolbar"].height)
+        )
+        assert sizes["container"] == approx_fixed(
+            (client_size.width, client_size.height - positions["container"].y)
+        )
+
+        # Positions of widgets are relative to the top-level container.
+        assert font_sizes["fixed"] == 9  # Default font size on Windows
+        assert positions["fixed"] == approx_fixed((20, 0))
+        assert sizes["fixed"].width == approx_fixed(100)
+
+        assert font_sizes["minimal"] == 16
+        assert positions["minimal"] == approx_fixed((120, 0))
+        assert sizes["minimal"].height == approx_font(sizes["fixed"].height * 16 / 9)
+
+        assert font_sizes["flex"] == 9
+        assert positions["flex"] == approx_fixed((120 + sizes["minimal"].width, 15))
+        assert sizes["flex"] == approx_fixed(
+            (client_size.width - positions["flex"].x, 50)
+        )
+
+        # Mock the function Toga uses to get the scale factor.
+        def GetScaleFactorForMonitor_mock(hMonitor, pScale):
+            pScale.value = int(mock_scale * 100)
+
+        # Set and Trigger dpi change event with the specified dpi scale
+        shcore.GetScaleFactorForMonitor = GetScaleFactorForMonitor_mock
+        dpi_change_event(None)
+        await main_window_probe.redraw(
+            f"Triggered dpi change event with {mock_scale} dpi scale"
+        )
+
+        # Check Widget size DPI scaling
+        positions_scaled, sizes_scaled, font_sizes_scaled = get_metrics()
+        for id in ids:
+            if id != "container":
+                assert font_sizes_scaled[id] == approx_fixed(
+                    font_sizes[id] * scale_change
+                )
+
+        assert positions_scaled["menubar"] == approx_fixed((0, 0))
+        assert sizes_scaled["menubar"] == (
+            approx_fixed(client_size.width),
+            approx_font(sizes["menubar"].height * scale_change),
+        )
+
+        assert positions_scaled["toolbar"] == approx_fixed(
+            (0, sizes_scaled["menubar"].height)
+        )
+        assert sizes_scaled["toolbar"] == (
+            approx_fixed(client_size.width),
+            approx_font(sizes["toolbar"].height * scale_change),
+        )
+
+        assert positions_scaled["container"] == approx_fixed(
+            (0, positions_scaled["toolbar"].y + sizes_scaled["toolbar"].height)
+        )
+        assert sizes_scaled["container"] == approx_fixed(
+            (client_size.width, client_size.height - positions_scaled["container"].y)
+        )
+
+        assert positions_scaled["fixed"] == approx_fixed(Position(20, 0) * scale_change)
+        assert sizes_scaled["fixed"] == (
+            approx_fixed(100 * scale_change),
+            approx_font(sizes["fixed"].height * scale_change),
+        )
+
+        assert positions_scaled["minimal"] == approx_fixed(
+            Position(120, 0) * scale_change
+        )
+        assert sizes_scaled["minimal"] == approx_font(sizes["minimal"] * scale_change)
+
+        assert positions_scaled["flex"] == approx_fixed(
+            (
+                positions_scaled["minimal"].x + sizes_scaled["minimal"].width,
+                15 * scale_change,
+            )
+        )
+        assert sizes_scaled["flex"] == approx_fixed(
+            (
+                client_size.width - positions_scaled["flex"].x,
+                50 * scale_change,
+            )
+        )
+
+    finally:
+        shcore.GetScaleFactorForMonitor = GetScaleFactorForMonitor_original
+        dpi_change_event(None)
+        await main_window_probe.redraw("Restored original state of main_window")
+        assert get_metrics() == (positions, sizes, font_sizes)
+
+        main_window.toolbar.clear()
+        main_window.content = original_content
+
+
+def find_event(event_path, main_window_probe):
+    from Microsoft.Win32 import SystemEvents
+    from System import Array, Object
+    from System.Reflection import BindingFlags
+
+    event_class, event_name = event_path.split(".")
+    if event_class == "Form":
+        return getattr(main_window_probe.native, f"On{event_name}")
+
+    elif event_class == "SystemEvents":
+        # There are no "On" methods in this class, so we need to use reflection.
+        SystemEvents_type = SystemEvents().GetType()
+        binding_flags = BindingFlags.Static | BindingFlags.NonPublic
+        RaiseEvent = [
+            method
+            for method in SystemEvents_type.GetMethods(binding_flags)
+            if method.Name == "RaiseEvent" and len(method.GetParameters()) == 2
+        ][0]
+
+        event_key = SystemEvents_type.GetField(
+            f"On{event_name}Event", binding_flags
+        ).GetValue(None)
+
+        return lambda event_args: RaiseEvent.Invoke(
+            None, [event_key, Array[Object]([None, event_args])]
+        )
+
+    else:
+        raise AssertionError(f"unknown event class {event_class}")
 
 
 async def test_session_based_app(

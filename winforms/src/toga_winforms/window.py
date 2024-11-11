@@ -3,21 +3,29 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import System.Windows.Forms as WinForms
-from System.Drawing import Bitmap, Graphics, Point, Size as WinSize
+from System.Drawing import Bitmap, Font as WinFont, Graphics, Point, Size as WinSize
 from System.Drawing.Imaging import ImageFormat
 from System.IO import MemoryStream
 
+from toga import App
 from toga.command import Separator
 from toga.constants import WindowState
 from toga.types import Position, Size
 
 from .container import Container
+from .fonts import DEFAULT_FONT
 from .libs.wrapper import WeakrefCallable
 from .screens import Screen as ScreenImpl
 from .widgets.base import Scalable
 
 if TYPE_CHECKING:  # pragma: no cover
     from toga.types import PositionT, SizeT
+
+
+# It looks like something is caching the initial scale of the primary screen, and
+# scaling all font sizes by it. Experiments show that this cache is at the level of the
+# app, not the window.
+initial_dpi_scale = ScreenImpl(WinForms.Screen.PrimaryScreen).dpi_scale
 
 
 class Window(Container, Scalable):
@@ -29,7 +37,7 @@ class Window(Container, Scalable):
         self._FormClosing_handler = WeakrefCallable(self.winforms_FormClosing)
         self.native.FormClosing += self._FormClosing_handler
         super().__init__(self.native)
-        self.init_scale(self.native)
+        self._dpi_scale = self.get_current_screen().dpi_scale
 
         self.native.MinimizeBox = self.interface.minimizable
         self.native.MaximizeBox = self.interface.resizable
@@ -45,6 +53,7 @@ class Window(Container, Scalable):
         if position:
             self.set_position(position)
 
+        self.native.LocationChanged += WeakrefCallable(self.winforms_LocationChanged)
         self.native.Resize += WeakrefCallable(self.winforms_Resize)
         self.resize_content()  # Store initial size
 
@@ -57,6 +66,18 @@ class Window(Container, Scalable):
     def create(self):
         self.native = WinForms.Form()
 
+    # We cache the scale to make sure that it only changes inside update_dpi.
+    @property
+    def dpi_scale(self):
+        return self._dpi_scale
+
+    def scale_font(self, native_font):
+        return WinFont(
+            native_font.FontFamily,
+            native_font.Size * (self.dpi_scale / initial_dpi_scale),
+            native_font.Style,
+        )
+
     ######################################################################
     # Native event handlers
     ######################################################################
@@ -64,6 +85,10 @@ class Window(Container, Scalable):
     def winforms_Resize(self, sender, event):
         if self.native.WindowState != WinForms.FormWindowState.Minimized:
             self.resize_content()
+
+        # See DisplaySettingsChanged in app.py.
+        if self.get_current_screen().dpi_scale != self._dpi_scale:
+            self.update_dpi()
 
     def winforms_FormClosing(self, sender, event):
         # If the app is exiting, do nothing; we've already approved the exit
@@ -82,6 +107,11 @@ class Window(Container, Scalable):
             if self.interface.closable:
                 self.interface.on_close()
             event.Cancel = True
+
+    def winforms_LocationChanged(self, sender, event):
+        # See DisplaySettingsChanged in app.py.
+        if self.get_current_screen().dpi_scale != self._dpi_scale:
+            self.update_dpi()
 
     ######################################################################
     # Window properties
@@ -108,6 +138,7 @@ class Window(Container, Scalable):
     def show(self):
         if self.interface.content is not None:
             self.interface.content.refresh()
+        self.update_dpi()
         self.native.Show()
 
     ######################################################################
@@ -144,10 +175,26 @@ class Window(Container, Scalable):
             self.native.ClientSize.Height - vertical_shift,
         )
 
+    def update_dpi(self):
+        self._dpi_scale = self.get_current_screen().dpi_scale
+
+        # Update all the native fonts and determine the new preferred sizes.
+        for widget in self.interface.widgets:
+            widget._impl.scale_font()
+            widget._impl.refresh()
+
+        # Then do a single layout pass.
+        if self.interface.content is not None:
+            self.interface.content.refresh()
+
+        self.resize_content()
+
     ######################################################################
     # Window size
     ######################################################################
 
+    # Window.size is scaled according to the DPI of the current screen, to be consistent
+    # with the scaling of its content.
     def get_size(self) -> Size:
         size = self.native.Size
         return Size(
@@ -168,12 +215,20 @@ class Window(Container, Scalable):
     def get_current_screen(self):
         return ScreenImpl(WinForms.Screen.FromControl(self.native))
 
+    # Window.position is scaled according to the DPI of the primary screen, because the
+    # interface layer assumes that Screen.origin, Window.position and
+    # Window.screen_position are all in the same coordinate system.
+    #
+    # TODO: remove that assumption, and make Window.position return coordinates relative
+    # to the current screen's origin and DPI.
     def get_position(self) -> Position:
         location = self.native.Location
-        return Position(*map(self.scale_out, (location.X, location.Y)))
+        primary_screen = App.app._impl.get_primary_screen()
+        return Position(*map(primary_screen.scale_out, (location.X, location.Y)))
 
     def set_position(self, position: PositionT):
-        self.native.Location = Point(*map(self.scale_in, position))
+        primary_screen = App.app._impl.get_primary_screen()
+        self.native.Location = Point(*map(primary_screen.scale_in, position))
 
     ######################################################################
     # Window visibility
@@ -282,6 +337,14 @@ class MainWindow(Window):
         super().create()
         self.toolbar_native = None
 
+    def update_dpi(self):
+        super().update_dpi()
+        if self.native.MainMenuStrip:  # pragma: no branch
+            self.native.MainMenuStrip.Font = self.scale_font(DEFAULT_FONT)
+        if self.toolbar_native:
+            self.toolbar_native.Font = self.scale_font(DEFAULT_FONT)
+        self.resize_content()
+
     def _top_bars_height(self):
         vertical_shift = 0
         if self.toolbar_native and self.toolbar_native.Visible:
@@ -317,6 +380,7 @@ class MainWindow(Window):
             menubar = WinForms.MenuStrip()
             self.native.Controls.Add(menubar)
             self.native.MainMenuStrip = menubar
+            self.native.MainMenuStrip.Font = self.scale_font(DEFAULT_FONT)
             menubar.SendToBack()  # In a dock, "back" means "top".
 
         group_cache = {None: menubar}
@@ -342,6 +406,7 @@ class MainWindow(Window):
                 # defaults to `Top`.
                 self.toolbar_native = WinForms.ToolStrip()
                 self.native.Controls.Add(self.toolbar_native)
+                self.toolbar_native.Font = self.scale_font(DEFAULT_FONT)
                 self.toolbar_native.BringToFront()  # In a dock, "front" means "bottom".
 
             prev_group = None
@@ -357,7 +422,8 @@ class MainWindow(Window):
                     else:
                         prev_group = cmd.group
 
-                    item = WinForms.ToolStripMenuItem(cmd.text)
+                    item = WinForms.ToolStripButton(cmd.text)
+                    item.AutoToolTip = False
                     if cmd.tooltip is not None:
                         item.ToolTipText = cmd.tooltip
                     if cmd.icon is not None:

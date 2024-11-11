@@ -2,10 +2,10 @@ import asyncio
 import re
 import sys
 import threading
-from ctypes import windll
 
 import System.Windows.Forms as WinForms
-from System import Environment, Threading
+from Microsoft.Win32 import SystemEvents
+from System import Threading
 from System.Media import SystemSounds
 from System.Net import SecurityProtocolType, ServicePointManager
 from System.Windows.Threading import Dispatcher
@@ -76,32 +76,17 @@ class App:
         self.app_context = WinForms.ApplicationContext()
         self.app_dispatcher = Dispatcher.CurrentDispatcher
 
-        # Check the version of windows and make sure we are setting the DPI mode
-        # with the most up to date API
-        # Windows Versioning Check Sources : https://www.lifewire.com/windows-version-numbers-2625171
-        # and https://docs.microsoft.com/en-us/windows/release-information/
-        win_version = Environment.OSVersion.Version
-        if win_version.Major >= 6:  # Checks for Windows Vista or later
-            # Represents Windows 8.1 up to Windows 10 before Build 1703 which should use
-            # SetProcessDpiAwareness(True)
-            if (win_version.Major == 6 and win_version.Minor == 3) or (
-                win_version.Major == 10 and win_version.Build < 15063
-            ):  # pragma: no cover
-                windll.shcore.SetProcessDpiAwareness(True)
-                print(
-                    "WARNING: Your Windows version doesn't support DPI-independent rendering.  "
-                    "We recommend you upgrade to at least Windows 10 Build 1703."
-                )
-            # Represents Windows 10 Build 1703 and beyond which should use
-            # SetProcessDpiAwarenessContext(-2)
-            elif win_version.Major == 10 and win_version.Build >= 15063:
-                windll.user32.SetProcessDpiAwarenessContext(-2)
-            # Any other version of windows should use SetProcessDPIAware()
-            else:  # pragma: no cover
-                windll.user32.SetProcessDPIAware()
-
-        self.native.EnableVisualStyles()
-        self.native.SetCompatibleTextRenderingDefault(False)
+        # We would prefer to detect DPI changes directly, using the DpiChanged,
+        # DpiChangedBeforeParent or DpiChangedAfterParent events on the window. But none
+        # of these events ever fire, possibly because we're missing some app metadata
+        # (https://github.com/beeware/toga/pull/2155#issuecomment-2460374101). So
+        # instead we need to listen to all events which could cause a DPI change:
+        #   * DisplaySettingsChanged
+        #   * Form.LocationChanged and Form.Resize, since a window's DPI is determined
+        #     by which screen most of its area is on.
+        SystemEvents.DisplaySettingsChanged += WeakrefCallable(
+            self.winforms_DisplaySettingsChanged
+        )
 
         # Ensure that TLS1.2 and TLS1.3 are enabled for HTTPS connections.
         # For some reason, some Windows installs have these protocols
@@ -125,6 +110,19 @@ class App:
 
         # Populate the main window as soon as the event loop is running.
         self.loop.call_soon_threadsafe(self.interface._startup)
+
+    ######################################################################
+    # Native event handlers
+    ######################################################################
+
+    def winforms_DisplaySettingsChanged(self, sender, event):
+        # This event is NOT called on the UI thread, so it's not safe for it to access
+        # the UI directly.
+        self.interface.loop.call_soon_threadsafe(self.update_dpi)
+
+    def update_dpi(self):
+        for window in self.interface.windows:
+            window._impl.update_dpi()
 
     ######################################################################
     # Commands and menus
@@ -196,8 +194,11 @@ class App:
     # App resources
     ######################################################################
 
+    def get_primary_screen(self):
+        return ScreenImpl(WinForms.Screen.PrimaryScreen)
+
     def get_screens(self):
-        primary_screen = ScreenImpl(WinForms.Screen.PrimaryScreen)
+        primary_screen = self.get_primary_screen()
         screen_list = [primary_screen] + [
             ScreenImpl(native=screen)
             for screen in WinForms.Screen.AllScreens
