@@ -68,8 +68,8 @@ class App:
         # boolean to allow us to avoid building a deep stack.
         self._cursor_visible = True
 
-        # The currently visible dialog. On winforms, all dialogs are modal by nature
-        # and the active focus can't be changed unless the modal dialog is dismissed.
+        # The currently visible dialog. On winforms, all dialogs are
+        # modal in nature. Only one dialog will be visible at a time.
         self._current_dialog = None
 
         self.loop = WinformsProactorEventLoop()
@@ -252,24 +252,30 @@ class App:
     ######################################################################
 
     def get_current_window(self):
-        # There can be only 1 dialog visible at a time, as all dialogs are modal
-        if self._current_dialog:
+        current_window = next(
+            (
+                window._impl
+                for window in self.interface.windows
+                if WinForms.Form.ActiveForm == window._impl.native
+            ),
+            None,
+        )
+
+        if not current_window and self._current_dialog:
+            # There can be only 1 dialog visible at a time, as all dialogs are modal
             active_window_hwnd = windll.user32.GetForegroundWindow()
             # The window class name for dialog boxes is "#32770":
             # https://learn.microsoft.com/en-us/windows/win32/winauto/dialog-box
             current_dialog_hwnd = windll.user32.FindWindowW(
                 "#32770", self._current_dialog.title
             )
-            return (
+            current_window = (
                 self._current_dialog.host_window_impl
                 if active_window_hwnd == current_dialog_hwnd
                 else None
             )
-        else:
-            for window in self.interface.windows:
-                if WinForms.Form.ActiveForm == window._impl.native:
-                    return window._impl
-        return None
+
+        return current_window
 
     def set_current_window(self, window):
         window._impl.native.Activate()
