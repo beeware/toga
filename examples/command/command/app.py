@@ -98,10 +98,9 @@ class ExampleTestCommandApp(toga.App):
         cmd5 = toga.Command(
             self.action5,
             text="TB Action 5",
-            tooltip="Perform toolbar action 5",
             order=2,
             group=sub_menu,
-        )  # there is deliberately no icon to show that a toolbar action also works with text
+        )  # there is deliberately no icon or tooltip
         cmd6 = toga.Command(
             self.action6,
             text="Action 6",
