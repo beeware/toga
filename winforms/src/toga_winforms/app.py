@@ -251,23 +251,17 @@ class App:
     ######################################################################
 
     def get_current_window(self):
-        current_window_impl = next(
-            (
-                window._impl
-                for window in self.interface.windows
-                if WinForms.Form.ActiveForm == window._impl.native
-            ),
-            None,
-        )
-
-        if not current_window_impl:
-            return (
-                self._active_window_before_dialog._impl
-                if self._active_window_before_dialog
-                else None
-            )
+        if self._active_window_before_dialog:
+            return self._active_window_before_dialog._impl
         else:
-            return current_window_impl
+            return next(
+                (
+                    window._impl
+                    for window in self.interface.windows
+                    if WinForms.Form.ActiveForm == window._impl.native
+                ),
+                None,
+            )
 
     def set_current_window(self, window):
         window._impl.native.Activate()
