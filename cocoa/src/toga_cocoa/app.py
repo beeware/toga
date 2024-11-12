@@ -31,7 +31,6 @@ from .libs import (
     NSMenuItem,
     NSNumber,
     NSScreen,
-    NSWindow,
 )
 from .screens import Screen as ScreenImpl
 
@@ -368,15 +367,10 @@ class App:
     ######################################################################
 
     def get_current_window(self):
-        focused_window = self.native.keyWindow
-        if not isinstance(focused_window, NSWindow):
-            return (
-                self._active_window_before_dialog._impl.native
-                if self._active_window_before_dialog
-                else None
-            )
+        if self._active_window_before_dialog:
+            return self._active_window_before_dialog._impl.native
         else:
-            return focused_window
+            return self.native.keyWindow
 
     def set_current_window(self, window):
         window._impl.native.makeKeyAndOrderFront(window._impl.native)

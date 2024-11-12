@@ -23,7 +23,7 @@ from .libs import (
 class BaseDialog:
     def show(self, host_window, future):
         self.future = future
-        toga.App.app._impl._active_window_before_dialog = host_window
+        toga.App.app._impl._active_window_before_dialog = toga.App.app.current_window
 
         if host_window:
             # Begin the panel window-modal.
