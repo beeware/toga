@@ -83,9 +83,9 @@ class TitleBar(TextualWidget):
     }
     """
 
-    def __init__(self):
+    def __init__(self, title="Toga"):
         super().__init__()
-        self.title = TitleText("Toga")
+        self.title = TitleText(title)
 
     @property
     def text(self):
