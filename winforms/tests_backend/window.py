@@ -79,6 +79,7 @@ class WindowProbe(BaseProbe, DialogsMixin):
     def unminimize(self):
         self.native.WindowState = FormWindowState.Normal
 
+    @property
     def container_probe(self):
         panels = [
             control for control in self.native.Controls if isinstance(control, Panel)
