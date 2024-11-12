@@ -56,11 +56,13 @@ class TableProbe(SimpleProbe):
             self.native.Items[self.row_count - 1].Bounds.Bottom
             - self.native.Items[0].Bounds.Top
         )
-        return (document_height - self.native.ClientSize.Height) / self.scale_factor
+        return round(
+            (document_height - self.native.ClientSize.Height) / self.scale_factor
+        )
 
     @property
     def scroll_position(self):
-        return -(self.native.Items[0].Bounds.Top) / self.scale_factor
+        return -round((self.native.Items[0].Bounds.Top) / self.scale_factor)
 
     async def wait_for_scroll_completion(self):
         # No animation associated with scroll, so this is a no-op
@@ -75,7 +77,7 @@ class TableProbe(SimpleProbe):
         return [col.Text for col in self.native.Columns]
 
     def column_width(self, index):
-        return self.native.Columns[index].Width / self.scale_factor
+        return round(self.native.Columns[index].Width / self.scale_factor)
 
     async def select_row(self, row, add=False):
         item = self.native.Items[row]
