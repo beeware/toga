@@ -1,0 +1,1 @@
+Some Java idiom was removed from a Python example.
