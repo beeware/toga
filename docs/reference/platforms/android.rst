@@ -55,7 +55,7 @@ completes. For example, to dial a phone number with the ``Intent.ACTION_DIAL`` i
     from android.content import Intent
     from android.net import Uri
 
-    intent = new Intent(Intent.ACTION_DIAL)
+    intent = Intent(Intent.ACTION_DIAL)
     intent.setData(Uri.parse("tel:0123456789"))
 
     def number_dialed(result, data):
