@@ -110,6 +110,15 @@ class Pack(BaseStyle):
             elif prop == "background_color":
                 self._applicator.set_background_color(value)
             elif prop == "visibility":
+                if value == VISIBLE:
+                    # If visibility is being set to VISIBLE, look up the chain to see if
+                    # an ancestor is hidden.
+                    widget = self._applicator.widget
+                    while widget := widget.parent:
+                        if widget.style._hidden:
+                            value = HIDDEN
+                            break
+
                 self._applicator.set_hidden(value == HIDDEN)
             elif prop in (
                 "font_family",
