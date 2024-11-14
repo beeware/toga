@@ -22,7 +22,7 @@ class DialogsMixin:
             )
             try:
                 if pre_close_test_method:
-                    pre_close_test_method()
+                    pre_close_test_method(dialog)
             finally:
                 try:
                     # Close the dialog and trigger the completion handler

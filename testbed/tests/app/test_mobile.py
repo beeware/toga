@@ -1,5 +1,3 @@
-from functools import partial
-
 import pytest
 
 import toga
@@ -56,22 +54,18 @@ async def test_current_window(app, app_probe, main_window, main_window_probe):
 
     # When a dialog is in focus, app.current_window should return the
     # previously active window(main_window on mobile platforms).
-    def test_current_window_in_presence_of_dialog(dialog, previous_active_window):
-        # The public API should report that the previous window is the current window
-        assert app.current_window == previous_active_window
-
+    def test_current_window_in_presence_of_dialog(dialog):
         # But, the backend should be reporting that the dialog is in focus
         app_probe.assert_dialog_in_focus(dialog)
+
+        # Accessing current_window in presence of dialog shouldn't raise any exceptions.
+        _ = app.current_window
 
     # Test in presence of window modal dialog
     window_modal_info_dialog = toga.InfoDialog("Window Modal Dialog Info", "Some info")
     main_window_probe.setup_info_dialog_result(
         window_modal_info_dialog,
-        pre_close_test_method=partial(
-            test_current_window_in_presence_of_dialog,
-            window_modal_info_dialog,
-            main_window,
-        ),
+        pre_close_test_method=test_current_window_in_presence_of_dialog,
     )
     await main_window_probe.wait_for_window("Display window1 modal info dialog")
     await main_window.dialog(window_modal_info_dialog)
@@ -80,11 +74,7 @@ async def test_current_window(app, app_probe, main_window, main_window_probe):
     app_modal_info_dialog = toga.InfoDialog("App Modal Dialog Info", "Some info")
     app_probe.setup_info_dialog_result(
         app_modal_info_dialog,
-        pre_close_test_method=partial(
-            test_current_window_in_presence_of_dialog,
-            app_modal_info_dialog,
-            main_window,
-        ),
+        pre_close_test_method=test_current_window_in_presence_of_dialog,
     )
     await main_window_probe.wait_for_window("Display app modal info dialog")
     await app.dialog(app_modal_info_dialog)

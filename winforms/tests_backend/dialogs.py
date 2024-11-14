@@ -22,7 +22,7 @@ class DialogsMixin:
 
                 try:
                     if pre_close_test_method:
-                        pre_close_test_method()
+                        pre_close_test_method(dialog)
                 finally:
                     try:
                         await self.type_character(char, alt=alt)

@@ -68,8 +68,6 @@ class App:
         # boolean to allow us to avoid building a deep stack.
         self._cursor_visible = True
 
-        self._active_window_before_dialog = None
-
         self.loop = WinformsProactorEventLoop()
         asyncio.set_event_loop(self.loop)
 
@@ -251,17 +249,10 @@ class App:
     ######################################################################
 
     def get_current_window(self):
-        if self._active_window_before_dialog:
-            return self._active_window_before_dialog._impl
-        else:
-            return next(
-                (
-                    window._impl
-                    for window in self.interface.windows
-                    if WinForms.Form.ActiveForm == window._impl.native
-                ),
-                None,
-            )
+        for window in self.interface.windows:
+            if WinForms.Form.ActiveForm == window._impl.native:
+                return window._impl
+        return None
 
     def set_current_window(self, window):
         window._impl.native.Activate()

@@ -37,9 +37,8 @@ class DialogsMixin:
                 await asyncio.sleep(0.05)
                 try:
                     if pre_close_test_method:
-                        pre_close_test_method()
+                        pre_close_test_method(dialog)
                 finally:
-                    # Attempt to close the dialog regardless of any previous exceptions
                     try:
                         if close_handler:
                             close_handler(dialog, gtk_result)

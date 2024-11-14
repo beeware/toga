@@ -100,7 +100,7 @@ class WindowProbe(BaseProbe, DialogsMixin):
             orig_show(host_window, future)
             try:
                 if pre_close_test_method:
-                    pre_close_test_method()
+                    pre_close_test_method(dialog)
             finally:
                 try:
                     dialog._impl.host_window.endSheet(

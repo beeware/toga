@@ -23,7 +23,6 @@ from .libs import (
 class BaseDialog:
     def show(self, host_window, future):
         self.future = future
-        toga.App.app._impl._active_window_before_dialog = toga.App.app.current_window
 
         if host_window:
             # Begin the panel window-modal.
@@ -62,11 +61,9 @@ class NSAlertDialog(BaseDialog):
 
     def completion_handler(self, return_value: int) -> None:
         self.future.set_result(None)
-        toga.App.app._impl._active_window_before_dialog = None
 
     def bool_completion_handler(self, return_value: int) -> None:
         self.future.set_result(return_value == NSAlertFirstButtonReturn)
-        toga.App.app._impl._active_window_before_dialog = None
 
     def _poll_modal_session(self, nsapp, session):
         # This is factored out so it can be mocked for testing purposes.
@@ -233,7 +230,6 @@ class FileDialog(BaseDialog):
             result = None
 
         self.future.set_result(result)
-        toga.App.app._impl._active_window_before_dialog = None
 
     def multi_path_completion_handler(self, return_value: int) -> None:
         if return_value == NSModalResponseOK:
@@ -242,7 +238,6 @@ class FileDialog(BaseDialog):
             result = None
 
         self.future.set_result(result)
-        toga.App.app._impl._active_window_before_dialog = None
 
     def run_app_modal(self):
         self.native.beginWithCompletionHandler(self.completion_handler)

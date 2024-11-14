@@ -265,7 +265,7 @@ class AppProbe(BaseProbe, DialogsMixin):
                 return _poll_modal_session(nsapp, session)
             try:
                 if pre_close_test_method:
-                    pre_close_test_method()
+                    pre_close_test_method(dialog)
             finally:
                 return result
 
