@@ -91,7 +91,11 @@ async def handler_with_cleanup(
     **kwargs: object,
 ) -> object | None:
     try:
-        result = await handler(interface, *args, **kwargs)
+        if hasattr(interface, "window") and interface.window is not None:
+            with interface.window.refresh_lock():
+                result = await handler(interface, *args, **kwargs)
+        else:
+            result = await handler(interface, *args, **kwargs)
     except Exception as e:
         print("Error in async handler:", e, file=sys.stderr)
         traceback.print_exc()
@@ -170,7 +174,11 @@ def wrapped_handler(
                 )
             else:
                 try:
-                    result = handler(interface, *args, **kwargs)
+                    if hasattr(interface, "window") and interface.window is not None:
+                        with interface.window.refresh_lock():
+                            result = handler(interface, *args, **kwargs)
+                    else:
+                        result = handler(interface, *args, **kwargs)
                 except Exception as e:
                     print("Error in handler:", e, file=sys.stderr)
                     traceback.print_exc()

@@ -1,5 +1,5 @@
 import asyncio
-from unittest.mock import Mock
+from unittest.mock import MagicMock, Mock
 
 import pytest
 
@@ -61,8 +61,14 @@ def test_noop_handler_with_cleanup_error(capsys):
 
 
 def test_function_handler():
-    """A function can be used as a handler."""
-    obj = Mock()
+    """A function can be used as a handler"""
+    obj = MagicMock()
+    obj.return_value.window.return_value.refresh_lock.return_value.__enter__.return_value = (
+        None
+    )
+    obj.return_value.window.return_value.refresh_lock.return_value.__exit__.return_value = (
+        None
+    )
     handler_call = {}
 
     def handler(*args, **kwargs):
@@ -86,8 +92,14 @@ def test_function_handler():
 
 
 def test_function_handler_error(capsys):
-    """A function handler can raise an error."""
-    obj = Mock()
+    """A function handler can raise an error"""
+    obj = MagicMock()
+    obj.return_value.window.return_value.refresh_lock.return_value.__enter__.return_value = (
+        None
+    )
+    obj.return_value.window.return_value.refresh_lock.return_value.__exit__.return_value = (
+        None
+    )
     handler_call = {}
 
     def handler(*args, **kwargs):
@@ -116,8 +128,14 @@ def test_function_handler_error(capsys):
 
 
 def test_function_handler_with_cleanup():
-    """A function handler can have a cleanup method."""
-    obj = Mock()
+    """A function handler can have a cleanup method"""
+    obj = MagicMock()
+    obj.return_value.window.return_value.refresh_lock.return_value.__enter__.return_value = (
+        None
+    )
+    obj.return_value.window.return_value.refresh_lock.return_value.__exit__.return_value = (
+        None
+    )
     cleanup = Mock()
     handler_call = {}
 
@@ -146,7 +164,13 @@ def test_function_handler_with_cleanup():
 
 def test_function_handler_with_cleanup_error(capsys):
     """A function handler can have a cleanup method that raises an error."""
-    obj = Mock()
+    obj = MagicMock()
+    obj.return_value.window.return_value.refresh_lock.return_value.__enter__.return_value = (
+        None
+    )
+    obj.return_value.window.return_value.refresh_lock.return_value.__exit__.return_value = (
+        None
+    )
     cleanup = Mock(side_effect=Exception("Problem in cleanup"))
     handler_call = {}
 
@@ -180,8 +204,14 @@ def test_function_handler_with_cleanup_error(capsys):
 
 
 def test_generator_handler(event_loop):
-    """A generator can be used as a handler."""
-    obj = Mock()
+    """A generator can be used as a handler"""
+    obj = MagicMock()
+    obj.return_value.window.return_value.refresh_lock.return_value.__enter__.return_value = (
+        None
+    )
+    obj.return_value.window.return_value.refresh_lock.return_value.__exit__.return_value = (
+        None
+    )
     handler_call = {}
 
     def handler(*args, **kwargs):
@@ -213,8 +243,14 @@ def test_generator_handler(event_loop):
 
 
 def test_generator_handler_error(event_loop, capsys):
-    """A generator can raise an error."""
-    obj = Mock()
+    """A generator can raise an error"""
+    obj = MagicMock()
+    obj.return_value.window.return_value.refresh_lock.return_value.__enter__.return_value = (
+        None
+    )
+    obj.return_value.window.return_value.refresh_lock.return_value.__exit__.return_value = (
+        None
+    )
     handler_call = {}
 
     def handler(*args, **kwargs):
@@ -248,8 +284,14 @@ def test_generator_handler_error(event_loop, capsys):
 
 
 def test_generator_handler_with_cleanup(event_loop):
-    """A generator can have cleanup."""
-    obj = Mock()
+    """A generator can have cleanup"""
+    obj = MagicMock()
+    obj.return_value.window.return_value.refresh_lock.return_value.__enter__.return_value = (
+        None
+    )
+    obj.return_value.window.return_value.refresh_lock.return_value.__exit__.return_value = (
+        None
+    )
     cleanup = Mock()
     handler_call = {}
 
@@ -285,8 +327,14 @@ def test_generator_handler_with_cleanup(event_loop):
 
 
 def test_generator_handler_with_cleanup_error(event_loop, capsys):
-    """A generator can raise an error during cleanup."""
-    obj = Mock()
+    """A generator can raise an error during cleanup"""
+    obj = MagicMock()
+    obj.return_value.window.return_value.refresh_lock.return_value.__enter__.return_value = (
+        None
+    )
+    obj.return_value.window.return_value.refresh_lock.return_value.__exit__.return_value = (
+        None
+    )
     cleanup = Mock(side_effect=Exception("Problem in cleanup"))
     handler_call = {}
 

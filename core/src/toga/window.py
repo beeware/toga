@@ -21,6 +21,7 @@ if TYPE_CHECKING:
     from toga.types import PositionT, SizeT
     from toga.widgets.base import Widget
 
+from contextlib import contextmanager
 
 _window_count = -1
 
@@ -190,6 +191,8 @@ class Window:
         self._content: Widget | None = None
         self._is_full_screen = False
         self._closed = False
+        self._locked = False
+        self._dirty = []
 
         self._resizable = resizable
         self._closable = closable
@@ -353,6 +356,8 @@ class Window:
     def content(self, widget: Widget) -> None:
         # Set window of old content to None
         if self._content:
+            if self._content in self._dirty:
+                self._dirty.remove(self._content)
             self._content.window = None
 
         # Assign the content widget to the same app as the window.
@@ -392,6 +397,39 @@ class Window:
         self._impl.set_size(size)
         if self.content:
             self.content.refresh()
+
+    def dirty(self, widget: Widget | None) -> None:
+        """Mark widget as being 'dirty', so that it gets refreshed
+        when the window lock is lifted
+        """
+        if self.locked and widget is not None and widget not in self._dirty:
+            self._dirty.append(widget)
+
+    @property
+    def locked(self) -> bool:
+        """Is the window locked from refreshes?"""
+        return self._locked
+
+    @locked.setter
+    def locked(self, locked: bool) -> None:
+        """Lock or unlock window refresh.
+        When window is unlocked, refresh the content
+        """
+        self._locked = locked
+        if not locked:
+            for child in self._dirty:
+                child.refresh()
+
+            self._dirty.clear()
+
+    @contextmanager
+    def refresh_lock(self, *args, **kwargs):
+        """Obtain a refresh lock on the window. Unlocks
+        automatically when context manager leaves scope.
+        """
+        self.locked = True
+        yield
+        self.locked = False
 
     ######################################################################
     # Window position

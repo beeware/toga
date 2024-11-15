@@ -268,6 +268,10 @@ class Widget(Node):
         self._impl.set_enabled(bool(value))
 
     def refresh(self) -> None:
+        if self.window is not None and self.window.locked:
+            self.window.dirty(self)
+            return
+
         self._impl.refresh()
 
         # Refresh the layout
