@@ -398,11 +398,11 @@ class Window:
         if self.content:
             self.content.refresh()
 
-    def dirty(self, widget: Widget | None) -> None:
+    def dirty(self, widget: Widget) -> None:
         """Mark widget as being 'dirty', so that it gets refreshed
         when the window lock is lifted
         """
-        if self.locked and widget is not None and widget not in self._dirty:
+        if self.locked and widget not in self._dirty:
             self._dirty.append(widget)
 
     @property
