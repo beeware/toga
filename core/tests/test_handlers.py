@@ -377,7 +377,13 @@ def test_generator_handler_with_cleanup_error(event_loop, capsys):
 
 def test_coroutine_handler(event_loop):
     """A coroutine can be used as a handler."""
-    obj = Mock()
+    obj = MagicMock()
+    obj.return_value.window.return_value.refresh_lock.return_value.__enter__.return_value = (
+        None
+    )
+    obj.return_value.window.return_value.refresh_lock.return_value.__exit__.return_value = (
+        None
+    )
     handler_call = {}
 
     async def handler(*args, **kwargs):
@@ -407,7 +413,13 @@ def test_coroutine_handler(event_loop):
 
 def test_coroutine_handler_error(event_loop, capsys):
     """A coroutine can raise an error."""
-    obj = Mock()
+    obj = MagicMock()
+    obj.return_value.window.return_value.refresh_lock.return_value.__enter__.return_value = (
+        None
+    )
+    obj.return_value.window.return_value.refresh_lock.return_value.__exit__.return_value = (
+        None
+    )
     handler_call = {}
 
     async def handler(*args, **kwargs):
@@ -442,7 +454,13 @@ def test_coroutine_handler_error(event_loop, capsys):
 
 def test_coroutine_handler_with_cleanup(event_loop):
     """A coroutine can have cleanup."""
-    obj = Mock()
+    obj = MagicMock()
+    obj.return_value.window.return_value.refresh_lock.return_value.__enter__.return_value = (
+        None
+    )
+    obj.return_value.window.return_value.refresh_lock.return_value.__exit__.return_value = (
+        None
+    )
     cleanup = Mock()
     handler_call = {}
 
@@ -476,7 +494,13 @@ def test_coroutine_handler_with_cleanup(event_loop):
 
 def test_coroutine_handler_with_cleanup_error(event_loop, capsys):
     """A coroutine can raise an error during cleanup."""
-    obj = Mock()
+    obj = MagicMock()
+    obj.return_value.window.return_value.refresh_lock.return_value.__enter__.return_value = (
+        None
+    )
+    obj.return_value.window.return_value.refresh_lock.return_value.__exit__.return_value = (
+        None
+    )
     cleanup = Mock(side_effect=Exception("Problem in cleanup"))
     handler_call = {}
 
@@ -516,7 +540,13 @@ def test_coroutine_handler_with_cleanup_error(event_loop, capsys):
 
 def test_native_handler():
     """A native function can be used as a handler."""
-    obj = Mock()
+    obj = MagicMock()
+    obj.return_value.window.return_value.refresh_lock.return_value.__enter__.return_value = (
+        None
+    )
+    obj.return_value.window.return_value.refresh_lock.return_value.__exit__.return_value = (
+        None
+    )
     native_method = Mock()
 
     handler = NativeHandler(native_method)
