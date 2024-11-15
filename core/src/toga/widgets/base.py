@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from builtins import id as identifier
 from typing import TYPE_CHECKING, TypeVar
+from warnings import warn
 
 from travertino.declaration import BaseStyle
 from travertino.node import Node
@@ -68,10 +69,12 @@ class Widget(Node):
         #############################
 
     def _create(self) -> None:
-        raise NotImplementedError(
-            "Widget must define a _create method to create and assign its "
-            "implementation."
-        )  # pragma: no cover
+        warn(
+            "Widgets should create their implementation and assign it to self._impl in "
+            "._create(). This will be an exception in a future version.",
+            RuntimeWarning,
+            stacklevel=2,
+        )
 
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__}:0x{identifier(self):x}>"

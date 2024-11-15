@@ -3,6 +3,7 @@ from unittest.mock import Mock
 import pytest
 
 import toga
+from toga.platform import get_platform_factory
 from toga.style import Pack
 from toga_dummy.utils import (
     EventLog,
@@ -14,6 +15,22 @@ from toga_dummy.utils import (
 )
 
 from ..utils import ExampleLeafWidget, ExampleWidget
+
+
+# Represent a hypothetical user-created widget class that does create and assign a valid
+# implementation, but doesn't do so in _create(). This is to assist with migration for
+# existing user code written before #2942 reorganized widget initialization.
+#
+# Right now this only issues a warning. Unfortunately it only works if the _impl is
+# set *before* super().__init__; any existing code that does so afterward will raise an
+# exception.
+class WidgetSubclassWithoutCreate(toga.Widget):
+    def __init__(self, *args, **kwargs):
+
+        self.factory = get_platform_factory()
+        self._impl = self.factory.Widget(interface=self)
+
+        super().__init__(*args, **kwargs)
 
 
 @pytest.fixture
@@ -1228,11 +1245,19 @@ def test_tab_index(widget):
 
 
 def test_one_reapply_during_init():
-    # The style's reapply() method should be called exactly once during widget
-    # initialization.
+    """Style's reapply() should be called exactly once during widget initialization."""
 
     class MockedPack(Pack):
         reapply = Mock()
 
     ExampleWidget(style=MockedPack())
     MockedPack.reapply.assert_called_once()
+
+
+def test_widget_with_no_create():
+    """Creating a widget with no _create() method issues a warning."""
+    with pytest.warns(
+        RuntimeWarning,
+        match=r"Widgets should create their implementation",
+    ):
+        WidgetSubclassWithoutCreate()
