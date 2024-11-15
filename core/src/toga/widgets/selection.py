@@ -49,9 +49,6 @@ class Selection(Widget):
         :param on_change: Initial :any:`on_change` handler.
         :param enabled: Whether the user can interact with the widget.
         """
-        self.factory = get_platform_factory()
-        self._impl = self.factory.Selection(interface=self)
-
         super().__init__(id=id, style=style)
 
         ######################################################################
@@ -81,6 +78,10 @@ class Selection(Widget):
 
         self.on_change = on_change
         self.enabled = enabled
+
+    def _create(self) -> None:
+        self.factory = get_platform_factory()
+        self._impl = self.factory.Selection(interface=self)
 
     @property
     def items(self) -> SourceT | ListSource:

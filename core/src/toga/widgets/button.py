@@ -43,9 +43,6 @@ class Button(Widget):
         :param enabled: Is the button enabled (i.e., can it be pressed?). Optional; by
             default, buttons are created in an enabled state.
         """
-        self.factory = get_platform_factory()
-        self._impl = self.factory.Button(interface=self)
-
         super().__init__(id=id, style=style)
 
         # Set a dummy handler before installing the actual on_press, because we do not want
@@ -63,6 +60,10 @@ class Button(Widget):
 
         self.on_press = on_press
         self.enabled = enabled
+
+    def _create(self) -> None:
+        self.factory = get_platform_factory()
+        self._impl = self.factory.Button(interface=self)
 
     @property
     def text(self) -> str:

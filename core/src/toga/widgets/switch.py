@@ -40,9 +40,6 @@ class Switch(Widget):
         :param enabled: Is the switch enabled (i.e., can it be pressed?).
             Optional; by default, switches are created in an enabled state.
         """
-        self.factory = get_platform_factory()
-        self._impl = self.factory.Switch(interface=self)
-
         super().__init__(id=id, style=style)
 
         self.text = text
@@ -55,6 +52,10 @@ class Switch(Widget):
         self.on_change = on_change
 
         self.enabled = enabled
+
+    def _create(self) -> None:
+        self.factory = get_platform_factory()
+        self._impl = self.factory.Switch(interface=self)
 
     @property
     def text(self) -> str:

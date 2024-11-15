@@ -19,12 +19,13 @@ class Label(Widget):
         :param style: A style object. If no style is provided, a default style
             will be applied to the widget.
         """
-        self.factory = get_platform_factory()
-        self._impl = self.factory.Label(interface=self)
-
         super().__init__(id=id, style=style)
 
         self.text = text
+
+    def _create(self) -> None:
+        self.factory = get_platform_factory()
+        self._impl = self.factory.Label(interface=self)
 
     def focus(self) -> None:
         """No-op; Label cannot accept input focus."""

@@ -116,15 +116,16 @@ class Tree(Widget):
         self.on_activate = None
         self._data = None
 
-        self.factory = get_platform_factory()
-        self._impl = self.factory.Tree(interface=self)
-
         super().__init__(id=id, style=style)
 
         self.data = data
 
         self.on_select = on_select
         self.on_activate = on_activate
+
+    def _create(self) -> None:
+        self.factory = get_platform_factory()
+        self._impl = self.factory.Tree(interface=self)
 
     @property
     def enabled(self) -> Literal[True]:

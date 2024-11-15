@@ -28,12 +28,13 @@ class Divider(Widget):
             :attr:`~toga.constants.Direction.VERTICAL`; defaults to
             :attr:`~toga.constants.Direction.HORIZONTAL`
         """
-        self.factory = get_platform_factory()
-        self._impl = self.factory.Divider(interface=self)
-
         super().__init__(id=id, style=style)
 
         self.direction = direction
+
+    def _create(self) -> None:
+        self.factory = get_platform_factory()
+        self._impl = self.factory.Divider(interface=self)
 
     @property
     def enabled(self) -> Literal[True]:

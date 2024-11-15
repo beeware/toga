@@ -41,9 +41,6 @@ class ScrollContainer(Widget):
         :param on_scroll: Initial :any:`on_scroll` handler.
         :param content: The content to display in the scroll window.
         """
-        self.factory = get_platform_factory()
-        self._impl = self.factory.ScrollContainer(interface=self)
-
         super().__init__(id=id, style=style)
 
         self._content: Widget | None = None
@@ -54,6 +51,10 @@ class ScrollContainer(Widget):
         self.horizontal = horizontal
         self.content = content
         self.on_scroll = on_scroll
+
+    def _create(self) -> None:
+        self.factory = get_platform_factory()
+        self._impl = self.factory.ScrollContainer(interface=self)
 
     @Widget.app.setter
     def app(self, app) -> None:

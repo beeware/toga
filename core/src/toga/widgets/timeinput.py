@@ -41,9 +41,6 @@ class TimeInput(Widget):
         :param max: The latest time (inclusive) that can be selected.
         :param on_change: A handler that will be invoked when the value changes.
         """
-        self.factory = get_platform_factory()
-        self._impl = self.factory.TimeInput(interface=self)
-
         super().__init__(id=id, style=style)
 
         self.on_change = None
@@ -52,6 +49,10 @@ class TimeInput(Widget):
 
         self.value = value
         self.on_change = on_change
+
+    def _create(self) -> None:
+        self.factory = get_platform_factory()
+        self._impl = self.factory.TimeInput(interface=self)
 
     @property
     def value(self) -> datetime.time:

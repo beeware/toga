@@ -40,6 +40,8 @@ class OnReleaseHandler(Protocol):
 
 
 class Slider(Widget):
+    _MIN_WIDTH = 100
+
     def __init__(
         self,
         id: str | None = None,
@@ -72,9 +74,6 @@ class Slider(Widget):
         :param range: **DEPRECATED**; use ``min`` and ``max`` instead. Initial
             :any:`range` of the slider. Defaults to ``(0, 1)``.
         """
-        self.factory = get_platform_factory()
-        self._impl = self.factory.Slider(interface=self)
-
         super().__init__(id=id, style=style)
 
         ######################################################################
@@ -117,7 +116,9 @@ class Slider(Widget):
 
         self.enabled = enabled
 
-    _MIN_WIDTH = 100
+    def _create(self) -> None:
+        self.factory = get_platform_factory()
+        self._impl = self.factory.Slider(interface=self)
 
     # Backends are inconsistent about when they produce events for programmatic changes,
     # so we deal with those in the interface layer.

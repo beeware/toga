@@ -39,6 +39,9 @@ class Widget(Node):
             applicator=None,
         )
 
+        # Create and assign _impl
+        self._create()
+
         self._id = str(id if id else identifier(self))
         self._window: Window | None = None
         self._app: App | None = None
@@ -65,6 +68,12 @@ class Widget(Node):
         #############################
         # End backwards compatibility
         #############################
+
+    def _create(self) -> None:
+        raise NotImplementedError(
+            "Widget must define a _create method to create and assign its "
+            "implementation."
+        )  # pragma: no cover
 
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__}:0x{identifier(self):x}>"

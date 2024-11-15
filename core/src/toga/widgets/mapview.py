@@ -156,9 +156,6 @@ class MapView(Widget):
         :param on_select: A handler that will be invoked when the user selects a map
             pin.
         """
-        self.factory = get_platform_factory()
-        self._impl = self.factory.MapView(interface=self)
-
         super().__init__(id=id, style=style)
 
         self._pins = MapPinSet(self, pins)
@@ -172,6 +169,10 @@ class MapView(Widget):
         self.zoom = zoom
 
         self.on_select = on_select
+
+    def _create(self) -> None:
+        self.factory = get_platform_factory()
+        self._impl = self.factory.MapView(interface=self)
 
     @property
     def location(self) -> toga.LatLng:

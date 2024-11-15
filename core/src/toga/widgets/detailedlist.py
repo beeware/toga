@@ -95,9 +95,6 @@ class DetailedList(Widget):
 
         self._data: SourceT | ListSource = None
 
-        self.factory = get_platform_factory()
-        self._impl = self.factory.DetailedList(interface=self)
-
         super().__init__(id=id, style=style)
 
         ######################################################################
@@ -121,6 +118,10 @@ class DetailedList(Widget):
         self.on_secondary_action = on_secondary_action
         self.on_refresh = on_refresh
         self.on_select = on_select
+
+    def _create(self) -> None:
+        self.factory = get_platform_factory()
+        self._impl = self.factory.DetailedList(interface=self)
 
     @property
     def enabled(self) -> Literal[True]:

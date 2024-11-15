@@ -392,9 +392,6 @@ class OptionContainer(Widget):
             <OptionContainerContentT>` to display in the OptionContainer.
         :param on_select: Initial :any:`on_select` handler.
         """
-        self.factory = get_platform_factory()
-        self._impl = self.factory.OptionContainer(interface=self)
-
         super().__init__(id=id, style=style)
         self._content = OptionList(self)
         self.on_select = None
@@ -423,6 +420,10 @@ class OptionContainer(Widget):
                     self.content.append(text, widget, enabled=enabled, icon=icon)
 
         self.on_select = on_select
+
+    def _create(self) -> None:
+        self.factory = get_platform_factory()
+        self._impl = self.factory.OptionContainer(interface=self)
 
     @property
     def enabled(self) -> bool:

@@ -114,9 +114,6 @@ class NumberInput(Widget):
         :param min_value: **DEPRECATED**; alias of ``min``.
         :param max_value: **DEPRECATED**; alias of ``max``.
         """
-        self.factory = get_platform_factory()
-        self._impl = self.factory.NumberInput(interface=self)
-
         super().__init__(id=id, style=style)
 
         ######################################################################
@@ -159,6 +156,10 @@ class NumberInput(Widget):
         self.value = value
 
         self.on_change = on_change
+
+    def _create(self) -> None:
+        self.factory = get_platform_factory()
+        self._impl = self.factory.NumberInput(interface=self)
 
     @property
     def readonly(self) -> bool:

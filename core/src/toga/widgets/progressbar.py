@@ -32,9 +32,6 @@ class ProgressBar(Widget):
         :param running: Describes whether the indicator is running at the time
             it is created. Default is False.
         """
-        self.factory = get_platform_factory()
-        self._impl = self.factory.ProgressBar(interface=self)
-
         super().__init__(id=id, style=style)
 
         self.max = max
@@ -42,6 +39,10 @@ class ProgressBar(Widget):
 
         if running:
             self.start()
+
+    def _create(self) -> None:
+        self.factory = get_platform_factory()
+        self._impl = self.factory.ProgressBar(interface=self)
 
     @property
     def enabled(self) -> Literal[True]:

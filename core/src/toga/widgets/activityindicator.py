@@ -22,13 +22,14 @@ class ActivityIndicator(Widget):
         :param running: Describes whether the indicator is running at the
             time it is created.
         """
-        self.factory = get_platform_factory()
-        self._impl = self.factory.ActivityIndicator(interface=self)
-
         super().__init__(id=id, style=style)
 
         if running:
             self.start()
+
+    def _create(self) -> None:
+        self.factory = get_platform_factory()
+        self._impl = self.factory.ActivityIndicator(interface=self)
 
     @property
     def enabled(self) -> Literal[True]:

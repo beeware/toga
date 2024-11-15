@@ -43,9 +43,6 @@ class WebView(Widget):
         :param on_webview_load: A handler that will be invoked when the web view
             finishes loading.
         """
-        self.factory = get_platform_factory()
-        self._impl = self.factory.WebView(interface=self)
-
         super().__init__(id=id, style=style)
 
         self.user_agent = user_agent
@@ -53,6 +50,10 @@ class WebView(Widget):
         # Set the load handler before loading the first URL.
         self.on_webview_load = on_webview_load
         self.url = url
+
+    def _create(self) -> None:
+        self.factory = get_platform_factory()
+        self._impl = self.factory.WebView(interface=self)
 
     def _set_url(self, url: str | None, future: asyncio.Future | None) -> None:
         # Utility method for validating and setting the URL with a future.

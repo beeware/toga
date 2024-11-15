@@ -80,12 +80,6 @@ class TextInput(Widget):
             input focus.
         :param validators: A list of validators to run on the value of the input.
         """
-        self.factory = get_platform_factory()
-        self._impl = self.factory.TextInput(interface=self)
-
-        self.factory = get_platform_factory()
-        self._create()
-
         super().__init__(id=id, style=style)
 
         self.placeholder = placeholder
@@ -108,6 +102,7 @@ class TextInput(Widget):
         self.on_gain_focus = on_gain_focus
 
     def _create(self) -> None:
+        self.factory = get_platform_factory()
         self._impl = self.factory.TextInput(interface=self)
 
     @property

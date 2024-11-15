@@ -24,15 +24,16 @@ class Box(Widget):
             will be applied to the widget.
         :param children: An optional list of children for to add to the Box.
         """
-        self.factory = get_platform_factory()
-        self._impl = self.factory.Box(interface=self)
-
         super().__init__(id=id, style=style)
 
         # Children need to be added *after* the impl has been created.
         self._children: list[Widget] = []
         if children is not None:
             self.add(*children)
+
+    def _create(self) -> None:
+        self.factory = get_platform_factory()
+        self._impl = self.factory.Box(interface=self)
 
     @property
     def enabled(self) -> bool:

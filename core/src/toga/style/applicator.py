@@ -30,10 +30,6 @@ class TogaApplicator:
         """
         return self.node
 
-    @widget.setter
-    def widget(self, widget: Widget):
-        self.node = widget
-
     def refresh(self) -> None:
         # print("RE-EVALUATE LAYOUT", self.widget)
         self.widget.refresh()

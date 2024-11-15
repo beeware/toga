@@ -87,12 +87,13 @@ class ImageView(Widget):
         # Prime the image attribute
         self._image = None
 
-        self.factory = get_platform_factory()
-        self._impl = self.factory.ImageView(interface=self)
-
         super().__init__(id=id, style=style)
 
         self.image = image
+
+    def _create(self) -> None:
+        self.factory = get_platform_factory()
+        self._impl = self.factory.ImageView(interface=self)
 
     @property
     def enabled(self) -> Literal[True]:
