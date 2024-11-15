@@ -28,8 +28,6 @@ class OnChangeHandler(Protocol):
 
 
 class DateInput(Widget):
-    _IMPL_NAME = "DateInput"
-
     _MIN_WIDTH = 200
 
     def __init__(

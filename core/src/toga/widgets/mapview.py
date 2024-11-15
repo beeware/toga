@@ -11,8 +11,6 @@ from .base import StyleT, Widget
 
 
 class MapPin:
-    _IMPL_NAME = "MapPin"
-
     def __init__(
         self,
         location: toga.LatLng | tuple[float, float],

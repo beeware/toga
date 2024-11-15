@@ -16,8 +16,6 @@ StyleT = TypeVar("StyleT", bound=BaseStyle)
 
 
 class Widget(Node):
-    _IMPL_NAME = "Widget"
-
     _MIN_WIDTH = 100
     _MIN_HEIGHT = 100
 
@@ -39,12 +37,12 @@ class Widget(Node):
             applicator=None,
         )
 
-        # Create and assign _impl
-        self._create()
-
         self._id = str(id if id else identifier(self))
         self._window: Window | None = None
         self._app: App | None = None
+
+        # Create and assign _impl
+        self._create()
 
         self.applicator = TogaApplicator()
 
