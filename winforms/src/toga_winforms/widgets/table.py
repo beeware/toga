@@ -63,6 +63,9 @@ class Table(Widget):
         self.native.CacheVirtualItems += WeakrefCallable(
             self.winforms_cache_virtual_items
         )
+        self.native.SearchForVirtualItem += WeakrefCallable(
+            self.winforms_search_for_virtual_item
+        )
         self.native.VirtualItemsSelectionRangeChanged += WeakrefCallable(
             self.winforms_item_selection_changed
         )
@@ -107,6 +110,39 @@ class Table(Widget):
         # Fill the cache with the appropriate ListViewItems.
         for i in range(new_length):
             self._cache.append(self._new_item(i + self._first_item))
+
+    def winforms_search_for_virtual_item(self, sender, e):
+        if not e.IsTextSearch or not self._accessors or not self._data:
+            return
+        find_previous = e.Direction in [
+            WinForms.SearchDirectionHint.Up,
+            WinForms.SearchDirectionHint.Left,
+        ]
+        i = e.StartIndex
+        found_item = False
+        while True:
+            # Either winforms might provide a starting index out of bounds if searching at list borders,
+            # or we may travel out of bounds ourself when searching. In either case, wrap around.
+            if i < 0:
+                i = len(self._data) - 1
+            elif i >= len(self._data):
+                i = 0
+            if (
+                self._item_text(self._data[i], self._accessors[0])[
+                    : len(e.Text)
+                ].lower()
+                == e.Text.lower()
+            ):
+                found_item = True
+                break
+            if find_previous:
+                i -= 1
+            else:
+                i += 1
+            if i == e.StartIndex:
+                break
+        if found_item:
+            e.Index = i
 
     def winforms_item_selection_changed(self, sender, e):
         self.interface.on_select()
@@ -156,19 +192,8 @@ class Table(Widget):
 
             return None if icon is None else icon._impl
 
-        def text(attr):
-            val = getattr(item, attr, None)
-            if isinstance(val, toga.Widget):
-                warn("Winforms does not support the use of widgets in cells")
-                val = None
-            if isinstance(val, tuple):
-                val = val[1]
-            if val is None:
-                val = self.interface.missing_value
-            return str(val)
-
         lvi = WinForms.ListViewItem(
-            [text(attr) for attr in self._accessors],
+            [self._item_text(item, attr) for attr in self._accessors],
         )
 
         # If the table has accessors, populate the icons for the table.
@@ -180,6 +205,17 @@ class Table(Widget):
                 lvi.ImageIndex = self._image_index(icon)
 
         return lvi
+
+    def _item_text(self, item, attr):
+        val = getattr(item, attr, None)
+        if isinstance(val, toga.Widget):
+            warn("Winforms does not support the use of widgets in cells")
+            val = None
+        if isinstance(val, tuple):
+            val = val[1]
+        if val is None:
+            val = self.interface.missing_value
+        return str(val)
 
     def _image_index(self, icon):
         images = self.native.SmallImageList.Images
