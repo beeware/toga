@@ -192,7 +192,7 @@ class Window:
         self._is_full_screen = False
         self._closed = False
         self._locked = False
-        self._dirty = []
+        self._dirty = set()
 
         self._resizable = resizable
         self._closable = closable
@@ -402,8 +402,7 @@ class Window:
         """Mark widget as being 'dirty', so that it gets refreshed
         when the window lock is lifted
         """
-        if self.locked and widget not in self._dirty:
-            self._dirty.append(widget)
+        self._dirty.add(widget)
 
     @property
     def locked(self) -> bool:
