@@ -122,7 +122,7 @@ class Table(Widget):
         found_item = False
         while True:
             # Either winforms might provide a starting index out of bounds if searching at list borders,
-            # or we may travel out of bounds ourself when searching. In either case, wrap around.
+            # or this loop may travel out of bounds itself while searching. In either case, wrap around.
             if i < 0:
                 i = len(self._data) - 1
             elif i >= len(self._data):
