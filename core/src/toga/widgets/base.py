@@ -69,6 +69,11 @@ class Widget(Node):
         #############################
 
     def _create(self) -> None:
+        """Create and store a platform-specific implementation of this widget.
+
+        A subclass of Widget should redefine this method to create an implementation
+        and assign it to self._impl.
+        """
         warn(
             "Widgets should create their implementation and assign it to self._impl in "
             "._create(). This will be an exception in a future version.",
