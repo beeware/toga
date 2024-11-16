@@ -40,14 +40,10 @@ def run_tests(app, cov, args, report_coverage, run_slow, running_in_ci):
 
         # Textual backend does not yet support testing.
         # However, this will verify a Textual app can at least start.
-        #
-        # This is temporarily commented out, as of #2942, until Textual is implemented
-        # enough to survive the Pack.reapply() when the label is created.
-        #
-        # if app.factory.__name__.startswith("toga_textual"):
-        #     time.sleep(1)  # wait for the Textual app to start
-        #     app.returncode = 0 if app._impl.native.is_running else 1
-        #     return
+        if app.factory.__name__.startswith("toga_textual"):
+            time.sleep(1)  # wait for the Textual app to start
+            app.returncode = 0 if app._impl.native.is_running else 1
+            return
 
         # Control the run speed of the test app.
         app.run_slow = run_slow
