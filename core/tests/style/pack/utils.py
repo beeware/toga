@@ -63,6 +63,13 @@ class ExampleNode(Node):
         pass
 
 
+class ExampleParentNode(ExampleNode):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self._children = []
+
+
 class ExampleViewport:
     def __init__(self, width, height):
         self.height = height

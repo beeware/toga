@@ -8,10 +8,11 @@ from toga.style.pack import (
     LEFT,
     RIGHT,
     RTL,
+    VISIBLE,
     Pack,
 )
 
-from .utils import ExampleNode
+from .utils import ExampleNode, ExampleParentNode
 
 
 def test_set_default_right_textalign_when_rtl():
@@ -72,3 +73,48 @@ def test_set_visibility_hidden():
     root = ExampleNode("app", style=Pack(visibility=HIDDEN))
     root.style.reapply()
     root._impl.set_hidden.assert_called_once_with(True)
+
+
+def test_set_visibility_inherited():
+    """Nodes should be hidden when an ancestor is hidden."""
+    grandparent = ExampleParentNode("grandparent", style=Pack())
+    parent = ExampleParentNode("parent", style=Pack())
+    child = ExampleNode("child", style=Pack())
+    grandparent.add(parent)
+    parent.add(child)
+
+    def assert_hidden_called(grandparent_value, parent_value, child_value):
+        for node, value in [
+            (grandparent, grandparent_value),
+            (parent, parent_value),
+            (child, child_value),
+        ]:
+            if value is None:
+                node._impl.set_hidden.assert_not_called()
+            else:
+                node._impl.set_hidden.assert_called_once_with(value)
+
+            node._impl.set_hidden.reset_mock()
+
+    # Hiding grandparent should hide all.
+    grandparent.style.visibility = HIDDEN
+    assert_hidden_called(True, True, True)
+
+    # Just setting child or parent to VISIBLE won't trigger an apply, because that's
+    # their default value. So first, set them to hidden.
+    parent.style.visibility = HIDDEN
+    assert_hidden_called(None, True, True)
+
+    child.style.visibility = HIDDEN
+    assert_hidden_called(None, None, True)
+
+    # Then set them to visible. They should still not actually be shown.
+    parent.style.visibility = VISIBLE
+    assert_hidden_called(None, True, True)
+
+    child.style.visibility = VISIBLE
+    assert_hidden_called(None, None, True)
+
+    # Show grandparent again; the other two should reappear.
+    grandparent.style.visibility = VISIBLE
+    assert_hidden_called(False, False, False)
