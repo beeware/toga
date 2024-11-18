@@ -123,8 +123,11 @@ class Table(Widget):
         while True:
             # Either winforms might provide a starting index out of bounds if searching at list borders,
             # or this loop may travel out of bounds itself while searching. In either case, wrap around.
-            if i < 0:
-                i = len(self._data) - 1
+            if i < 0:  # pragma: no cover
+                # This could theoretically happen if this event is fired with a backwards search direction,
+                # however this edgecase should not take place within Toga's intended use of this event.
+                # i = len(self._data) - 1
+                raise NotImplementedError("backwards search unsupported")
             elif i >= len(self._data):
                 i = 0
             if (
@@ -135,8 +138,10 @@ class Table(Widget):
             ):
                 found_item = True
                 break
-            if find_previous:
-                i -= 1
+            if find_previous:  # pragma: no cover
+                # Toga does not currently need backwards searching functionality.
+                # i -= 1
+                raise NotImplementedError("backwards search unsupported")
             else:
                 i += 1
             if i == e.StartIndex:

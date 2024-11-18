@@ -99,3 +99,23 @@ class TableProbe(SimpleProbe):
                 delta=0,
             )
         )
+
+    async def assert_keyboard_navigation(self):
+        # Focus the list by pressing tab.
+        await self.type_character("\t")
+
+        # Navigate 2 items down. In this dataset, all items start with "A".
+        await self.type_character("a")
+        await self.type_character("a")
+        await self.redraw("Third row is selected")
+        assert self.native.Items[2].Selected
+
+        # Select the last item with the end key.
+        await self.type_character("<end>")
+        await self.redraw("Last row is selected")
+        assert self.native.Items[self.row_count - 1].Selected
+
+        # Navigate by 1 item, wrapping around.
+        await self.type_character("a")
+        await self.redraw("First row is selected")
+        assert self.native.Items[0].Selected

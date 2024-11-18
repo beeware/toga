@@ -144,3 +144,29 @@ class TableProbe(SimpleProbe):
             delay=0.1,
             clickCount=2,
         )
+
+    async def assert_keyboard_navigation(self):
+        # Insure that the list has keyboard focus
+        self.native_table.window.makeFirstResponder(self.native_table)
+        await self.redraw(f"Table is focused sel {self.native_table.selectedRow}")
+        # Navigate down then up, with a letter then 2 arrow keys.
+        await self.type_character("a")
+        await self.redraw("First row is selected")
+        assert self.native_table.selectedRow == 0
+        await self.type_character("<down>")
+        await self.redraw("Second row is selected")
+        assert self.native_table.selectedRow == 1
+        await self.type_character("<up>")
+        await self.redraw("First row is selected")
+        assert self.native_table.selectedRow == 0
+
+        # Move down 3 rows, with letter, arrow, then letter.
+        await self.type_character("a")
+        await self.redraw("Second row is selected")
+        assert self.native_table.selectedRow == 1
+        await self.type_character("<down>")
+        await self.redraw("Third row is selected")
+        assert self.native_table.selectedRow == 2
+        await self.type_character("a")
+        await self.redraw("Forth row is selected")
+        assert self.native_table.selectedRow == 3

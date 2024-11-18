@@ -84,3 +84,6 @@ class TableProbe(SimpleProbe):
             Gtk.TreePath(row),
             self.native_table.get_columns()[0],
         )
+
+    async def assert_keyboard_navigation(self):
+        pytest.skip("test not implemented for this platform")

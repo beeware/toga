@@ -161,26 +161,7 @@ async def test_scroll(widget, probe):
 
 async def test_keyboard_navigation(widget, source, probe):
     """The list can be navigated using a keyboard."""
-    if toga.platform.current_platform != "windows":
-        pytest.skip("test only applies on windows at present")
-    # Focus the list by pressing tab.
-    await probe.type_character("\t")
-
-    # Navigate 2 items down. In this dataset, all items start with "A".
-    await probe.type_character("a")
-    await probe.type_character("a")
-    await probe.redraw("Third row is selected")
-    assert widget.selection == source[2]
-
-    # Select the last item with the end key.
-    await probe.type_character("<end>")
-    await probe.redraw("Last row is selected")
-    assert widget.selection == source[-1]
-
-    # Navigate by 1 item, wrapping around.
-    await probe.type_character("a")
-    await probe.redraw("First row is selected")
-    assert widget.selection == source[0]
+    await probe.assert_keyboard_navigation()
 
 
 async def test_select(widget, probe, source, on_select_handler):
