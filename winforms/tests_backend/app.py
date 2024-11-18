@@ -157,6 +157,17 @@ class AppProbe(BaseProbe, DialogsMixin):
     def activate_menu_visit_homepage(self):
         self._activate_menu_item(["Help", "Visit homepage"])
 
+    def assert_dialog_in_focus(self, dialog):
+        active_window_handle = ctypes.windll.user32.GetForegroundWindow()
+        # The window class name for dialog boxes is "#32770":
+        # https://learn.microsoft.com/en-us/windows/win32/winauto/dialog-box
+        expected_dialog_handle = ctypes.windll.user32.FindWindowW(
+            "#32770", dialog._impl.title
+        )
+        assert (
+            expected_dialog_handle == active_window_handle
+        ), "The dialog is not in focus"
+
     def assert_menu_item(self, path, *, enabled=True):
         item = self._menu_item(path)
         assert item.Enabled == enabled
