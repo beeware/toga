@@ -70,7 +70,8 @@ async def test_visibility(widget, probe):
     assert grandchild_probe.is_hidden
 
     # Mark the child style as visible. Mark it as hidden first, so that a change is
-    # registered and the property is applied.
+    # registered and the property is applied. However, regardless, the widget
+    # won't be visible because it has an ancestor that is hidden.
     child.style.visibility = HIDDEN
     child.style.visibility = VISIBLE
     await probe.redraw("Child style of widget should be visible")
