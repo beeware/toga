@@ -119,3 +119,8 @@ class TableProbe(SimpleProbe):
         await self.type_character("a")
         await self.redraw("First row is selected")
         assert self.native.Items[0].Selected
+
+        # Type a letter that no items start with to verify the selection doesn't change.
+        await self.type_character("x")
+        await self.redraw("First row is selected")
+        assert self.native.Items[0].Selected
