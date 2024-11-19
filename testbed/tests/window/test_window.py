@@ -753,25 +753,36 @@ else:
     @pytest.mark.parametrize(
         "states",
         [
-            # These sets of intermediate states are specifically chosen to trigger cases that
-            # will cause test failures if the implementation is incorrect on certain backends,
-            # such as macOS.
-            (
-                WindowState.MINIMIZED,
-                WindowState.FULLSCREEN,
-                WindowState.PRESENTATION,
-                WindowState.MAXIMIZED,
-                WindowState.MINIMIZED,
-                WindowState.FULLSCREEN,
-            ),
-            (
-                WindowState.FULLSCREEN,
-                WindowState.MAXIMIZED,
-                WindowState.MINIMIZED,
-                WindowState.PRESENTATION,
-                WindowState.FULLSCREEN,
-                WindowState.MINIMIZED,
-            ),
+            # Switch from NORMAL:
+            (WindowState.NORMAL, WindowState.MINIMIZED),
+            (WindowState.NORMAL, WindowState.MAXIMIZED),
+            (WindowState.NORMAL, WindowState.FULLSCREEN),
+            (WindowState.NORMAL, WindowState.PRESENTATION),
+            (WindowState.NORMAL, WindowState.NORMAL),
+            # Switch from MINIMIZED:
+            (WindowState.MINIMIZED, WindowState.NORMAL),
+            (WindowState.MINIMIZED, WindowState.MAXIMIZED),
+            (WindowState.MINIMIZED, WindowState.FULLSCREEN),
+            (WindowState.MINIMIZED, WindowState.PRESENTATION),
+            (WindowState.MINIMIZED, WindowState.MINIMIZED),
+            # Switch from MAXIMIZED:
+            (WindowState.MAXIMIZED, WindowState.NORMAL),
+            (WindowState.MAXIMIZED, WindowState.MINIMIZED),
+            (WindowState.MAXIMIZED, WindowState.FULLSCREEN),
+            (WindowState.MAXIMIZED, WindowState.PRESENTATION),
+            (WindowState.MAXIMIZED, WindowState.MAXIMIZED),
+            # Switch from FULLSCREEN:
+            (WindowState.FULLSCREEN, WindowState.NORMAL),
+            (WindowState.FULLSCREEN, WindowState.MINIMIZED),
+            (WindowState.FULLSCREEN, WindowState.MAXIMIZED),
+            (WindowState.FULLSCREEN, WindowState.PRESENTATION),
+            (WindowState.FULLSCREEN, WindowState.FULLSCREEN),
+            # Switch from PRESENTATION:
+            (WindowState.PRESENTATION, WindowState.NORMAL),
+            (WindowState.PRESENTATION, WindowState.MINIMIZED),
+            (WindowState.PRESENTATION, WindowState.MAXIMIZED),
+            (WindowState.PRESENTATION, WindowState.FULLSCREEN),
+            (WindowState.PRESENTATION, WindowState.PRESENTATION),
         ],
     )
     @pytest.mark.parametrize(
@@ -794,14 +805,17 @@ else:
         await second_window_probe.wait_for_window("Secondary window is visible")
         assert second_window_probe.instantaneous_state == WindowState.NORMAL
 
-        # Set to the intermediate states but don't wait for the OS delay.
+        # Assign new states without waiting for each transition to complete,
+        # to test that the backend can handle rapid window state assignments.
         for state in states:
             second_window.state = state
-        # Add delay to ensure windows are visible after animation.
+
+        # Add delay to ensure windows are visible after the final state animation.
         await second_window_probe.wait_for_window(
             f"Secondary window is in {states[-1]}", rapid_state_switching=True
         )
-
+        # Verify that the backend handled rapid assignments by checking if
+        # the window reached the correct final window state.
         assert second_window_probe.instantaneous_state == states[-1]
 
     @pytest.mark.parametrize(
