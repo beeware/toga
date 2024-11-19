@@ -29,6 +29,8 @@ from .libs import (
     NSCursor,
     NSMenu,
     NSMenuItem,
+    NSNumber,
+    NSPanel,
     NSScreen,
 )
 from .screens import Screen as ScreenImpl
@@ -365,7 +367,11 @@ class App:
     ######################################################################
 
     def get_current_window(self):
-        return self.native.keyWindow
+        key_window = self.native.keyWindow
+        if isinstance(key_window, NSPanel):
+            return key_window.sheetParent
+        else:
+            return key_window
 
     def set_current_window(self, window):
         window._impl.native.makeKeyAndOrderFront(window._impl.native)

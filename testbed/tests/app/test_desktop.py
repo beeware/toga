@@ -449,49 +449,71 @@ async def test_show_hide_cursor(app, app_probe):
     assert app_probe.is_cursor_visible
 
 
-async def test_current_window(app, app_probe, main_window):
+async def test_current_window(app, app_probe, main_window, main_window_probe):
     """The current window can be retrieved"""
     try:
         if app_probe.supports_current_window_assignment:
             assert app.current_window == main_window
 
-        # When all windows are hidden, WinForms and Cocoa return None, while GTK
-        # returns the last active window.
         main_window.hide()
-        assert app.current_window in [None, main_window]
+        assert app.current_window is None
 
         main_window.show()
         assert app.current_window == main_window
     finally:
         main_window.show()
 
-    window1 = toga.Window("Test Window 1", position=(150, 150), size=(200, 200))
-    window2 = toga.Window("Test Window 2", position=(400, 150), size=(200, 200))
-    window3 = toga.Window("Test Window 3", position=(300, 400), size=(200, 200))
+    window1 = toga.Window(title="Test Window 1", position=(150, 150), size=(200, 200))
+    window2 = toga.Window(title="Test Window 2", position=(400, 150), size=(200, 200))
+    window3 = toga.Window(title="Test Window 3", position=(300, 400), size=(200, 200))
 
     window1.content = toga.Box(style=Pack(background_color=REBECCAPURPLE))
     window2.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
     window3.content = toga.Box(style=Pack(background_color=FIREBRICK))
 
-    # We don't need to probe anything window specific; we just need
-    # a window probe to enforce appropriate delays.
-    window1_probe = window_probe(app, window1)
-
     window1.show()
     window2.show()
     window3.show()
 
-    await window1_probe.wait_for_window("Extra windows added")
+    await main_window_probe.wait_for_window("Extra windows added")
 
+    # When a window without any dialog is made the current_window,
+    # then `app.current_window` should return the specified window.
     app.current_window = window2
-    await window1_probe.wait_for_window("Window 2 is current")
+    await main_window_probe.wait_for_window("Window 2 is current")
     if app_probe.supports_current_window_assignment:
         assert app.current_window == window2
 
     app.current_window = window3
-    await window1_probe.wait_for_window("Window 3 is current")
+    await main_window_probe.wait_for_window("Window 3 is current")
     if app_probe.supports_current_window_assignment:
         assert app.current_window == window3
+
+    # When a dialog is in focus, app.current_window should return the
+    # previously active window.
+    def test_current_window_in_presence_of_dialog(dialog):
+        app_probe.assert_dialog_in_focus(dialog)
+
+        # Accessing current_window in presence of dialog shouldn't raise any exceptions.
+        _ = app.current_window
+
+    # Test in presence of window modal dialog
+    window_modal_info_dialog = toga.InfoDialog("Window Modal Dialog Info", "Some info")
+    main_window_probe.setup_info_dialog_result(
+        window_modal_info_dialog,
+        pre_close_test_method=test_current_window_in_presence_of_dialog,
+    )
+    await main_window_probe.wait_for_window("Display window1 modal info dialog")
+    await window1.dialog(window_modal_info_dialog)
+
+    # Test in presence of app modal dialog
+    app_modal_info_dialog = toga.InfoDialog("App Modal Dialog Info", "Some info")
+    app_probe.setup_info_dialog_result(
+        app_modal_info_dialog,
+        pre_close_test_method=test_current_window_in_presence_of_dialog,
+    )
+    await main_window_probe.wait_for_window("Display app modal info dialog")
+    await app.dialog(app_modal_info_dialog)
 
 
 @pytest.mark.parametrize(

@@ -27,7 +27,7 @@ Installation
 If ``toga-textual`` is the only Toga backend that is installed, it will be picked up
 automatically on any desktop operating system. If you have another backend installed
 (usually, this will be the default GUI for your operating system), you will need to set
-the ``TOGA_BACKEND`` environment variable to ``toga-textual`` to force the selection of
+the ``TOGA_BACKEND`` environment variable to ``toga_textual`` to force the selection of
 the backend.
 
 Implementation details
