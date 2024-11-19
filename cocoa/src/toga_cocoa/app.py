@@ -29,7 +29,6 @@ from .libs import (
     NSCursor,
     NSMenu,
     NSMenuItem,
-    NSNumber,
     NSPanel,
     NSScreen,
 )
