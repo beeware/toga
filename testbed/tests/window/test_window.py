@@ -713,7 +713,6 @@ else:
         second_window_probe,
         initial_state,
         final_state,
-        intermediate_states,
     ):
         """Window state can be directly changed to another state."""
         if (
