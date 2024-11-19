@@ -149,7 +149,7 @@ class TableProbe(SimpleProbe):
     async def acquire_keyboard_focus(self):
         self.native_table.window.makeFirstResponder(
             self.native_table
-        )  # switch to widget.focus() when possible.
+        )  # switch to widget.focus() when possible (#2972).
         # Insure first row is selected.
         await self.type_character("<down>")
         await self.type_character("<up>")

@@ -124,6 +124,8 @@ class Table(Widget):
         i = e.StartIndex
         found_item = False
         while True:
+            # It is possible for e.StartIndex to be received out-of-range if the user
+            # performs keyboard navigation at it's edge, so check before accessing data
             if i < 0:  # pragma: no cover
                 # This could happen if this event is fired searching backwards,
                 # however this should not happen in Toga's use of it.

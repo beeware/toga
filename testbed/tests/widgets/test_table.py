@@ -196,6 +196,12 @@ async def test_keyboard_navigation(widget, source, probe):
     await probe.redraw("Invalid letter pressed - first row is still selected")
     assert widget.selection == widget.data[0]
 
+    # clear the table and verify with an empty selection.
+    widget.data.clear()
+    await probe.type_character("a")
+    await probe.redraw("Letter pressed - no row selected")
+    assert not widget.selection
+
 
 async def test_select(widget, probe, source, on_select_handler):
     """Rows can be selected"""
