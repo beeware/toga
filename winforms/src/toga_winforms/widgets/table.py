@@ -115,8 +115,7 @@ class Table(Widget):
         if (
             not e.IsTextSearch or not self._accessors or not self._data
         ):  # pragma: no cover
-            # If winforms fires this event as a location based search,
-            # or with any invalid parameters, return gracefully.
+            # The list might be empty, or else winforms fired an unsupported location based search.
             return
         find_previous = e.Direction in [
             WinForms.SearchDirectionHint.Up,
@@ -125,11 +124,9 @@ class Table(Widget):
         i = e.StartIndex
         found_item = False
         while True:
-            # Either winforms might provide a starting index out of bounds if searching at list borders,
-            # or this loop may travel out of bounds itself while searching. In either case, wrap around.
             if i < 0:  # pragma: no cover
-                # This could theoretically happen if this event is fired with a backwards search direction,
-                # however this edgecase should not take place within Toga's intended use of this event.
+                # This could happen if this event is fired searching backwards,
+                # however this should not happen in Toga's use of it.
                 # i = len(self._data) - 1
                 raise NotImplementedError("backwards search unsupported")
             elif i >= len(self._data):
