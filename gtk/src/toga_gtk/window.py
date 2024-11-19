@@ -76,8 +76,14 @@ class Window:
             current_state = self.get_window_state()
             if current_state != WindowState.NORMAL:
                 if self._pending_state_transition != current_state:
-                    # Add slight delay to prevent glitching  on wayland during rapid
-                    # state switching.
+                    # Add a 10ms delay to wait for the native window state operation to
+                    # complete to prevent glitching  on wayland during rapid state switching.
+                    #
+                    # Ideally, we should use a native operation-completion callback event
+                    # or a reliable native signal, but on testing none of the currently
+                    # available gtk APIs or signals work reliably.
+                    # See https://github.com/beeware/toga/pull/2473#discussion_r1833741222
+                    # for a list of native gtk APIs that were tested but didn't work.
                     if IS_WAYLAND:  # pragma: no-cover-if-linux-x
                         GLib.timeout_add(
                             10, partial(self._apply_state, WindowState.NORMAL)
