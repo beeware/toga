@@ -15,6 +15,7 @@ class TableProbe(SimpleProbe):
     background_supports_alpha = False
     supports_icons = 1  # First column only
     supports_keyboard_shortcuts = False
+    supports_keyboard_boundary_shortcuts = True
     supports_widgets = False
 
     @property
@@ -100,27 +101,6 @@ class TableProbe(SimpleProbe):
             )
         )
 
-    async def assert_keyboard_navigation(self):
-        # Focus the list by pressing tab.
+    async def acquire_keyboard_focus(self):
         await self.type_character("\t")
-
-        # Navigate 2 items down. In this dataset, all items start with "A".
-        await self.type_character("a")
-        await self.type_character("a")
-        await self.redraw("Third row is selected")
-        assert self.native.Items[2].Selected
-
-        # Select the last item with the end key.
-        await self.type_character("<end>")
-        await self.redraw("Last row is selected")
-        assert self.native.Items[self.row_count - 1].Selected
-
-        # Navigate by 1 item, wrapping around.
-        await self.type_character("a")
-        await self.redraw("First row is selected")
-        assert self.native.Items[0].Selected
-
-        # Type a letter that no items start with to verify the selection doesn't change.
-        await self.type_character("x")
-        await self.redraw("First row is selected")
-        assert self.native.Items[0].Selected
+        await self.type_character(" ")  # select first row

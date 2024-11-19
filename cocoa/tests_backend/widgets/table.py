@@ -13,6 +13,7 @@ class TableProbe(SimpleProbe):
     native_class = NSScrollView
     supports_icons = 2  # All columns
     supports_keyboard_shortcuts = True
+    supports_keyboard_boundary_shortcuts = False
     supports_widgets = True
 
     def __init__(self, widget):
@@ -145,28 +146,8 @@ class TableProbe(SimpleProbe):
             clickCount=2,
         )
 
-    async def assert_keyboard_navigation(self):
-        # Insure that the list has keyboard focus
+    async def acquire_keyboard_focus(self):
         self.native_table.window.makeFirstResponder(self.native_table)
-        await self.redraw(f"Table is focused sel {self.native_table.selectedRow}")
-        # Navigate down then up, with a letter then 2 arrow keys.
-        await self.type_character("a")
-        await self.redraw("First row is selected")
-        assert self.native_table.selectedRow == 0
+        # Insure first row is selected.
         await self.type_character("<down>")
-        await self.redraw("Second row is selected")
-        assert self.native_table.selectedRow == 1
         await self.type_character("<up>")
-        await self.redraw("First row is selected")
-        assert self.native_table.selectedRow == 0
-
-        # Move down 3 rows, with letter, arrow, then letter.
-        await self.type_character("a")
-        await self.redraw("Second row is selected")
-        assert self.native_table.selectedRow == 1
-        await self.type_character("<down>")
-        await self.redraw("Third row is selected")
-        assert self.native_table.selectedRow == 2
-        await self.type_character("a")
-        await self.redraw("Forth row is selected")
-        assert self.native_table.selectedRow == 3

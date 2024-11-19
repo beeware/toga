@@ -95,5 +95,5 @@ class TableProbe(SimpleProbe):
     def text_size(self):
         return self._row_view(0).getChildAt(0).getTextSize()
 
-    async def assert_keyboard_navigation(self):
+    async def acquire_keyboard_focus(self):
         pytest.skip("test not implemented for this platform")
