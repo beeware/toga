@@ -63,6 +63,9 @@ class Table(Widget):
         self.native.CacheVirtualItems += WeakrefCallable(
             self.winforms_cache_virtual_items
         )
+        self.native.SearchForVirtualItem += WeakrefCallable(
+            self.winforms_search_for_virtual_item
+        )
         self.native.VirtualItemsSelectionRangeChanged += WeakrefCallable(
             self.winforms_item_selection_changed
         )
@@ -107,6 +110,49 @@ class Table(Widget):
         # Fill the cache with the appropriate ListViewItems.
         for i in range(new_length):
             self._cache.append(self._new_item(i + self._first_item))
+
+    def winforms_search_for_virtual_item(self, sender, e):
+        if (
+            not e.IsTextSearch or not self._accessors or not self._data
+        ):  # pragma: no cover
+            # If this list is empty, or has no columns, or it's an unsupported search
+            # type, there's no search to be done. These situation are difficult to
+            # trigger in CI; they're here as a safety catch.
+            return
+        find_previous = e.Direction in [
+            WinForms.SearchDirectionHint.Up,
+            WinForms.SearchDirectionHint.Left,
+        ]
+        i = e.StartIndex
+        found_item = False
+        while True:
+            # It is possible for e.StartIndex to be received out-of-range if the user
+            # performs keyboard navigation at its edge, so check before accessing data
+            if i < 0:  # pragma: no cover
+                # This could happen if this event is fired searching backwards,
+                # however this should not happen in Toga's use of it.
+                # i = len(self._data) - 1
+                raise NotImplementedError("backwards search unsupported")
+            elif i >= len(self._data):
+                i = 0
+            if (
+                self._item_text(self._data[i], self._accessors[0])[
+                    : len(e.Text)
+                ].lower()
+                == e.Text.lower()
+            ):
+                found_item = True
+                break
+            if find_previous:  # pragma: no cover
+                # Toga does not currently need backwards searching functionality.
+                # i -= 1
+                raise NotImplementedError("backwards search unsupported")
+            else:
+                i += 1
+            if i == e.StartIndex:
+                break
+        if found_item:
+            e.Index = i
 
     def winforms_item_selection_changed(self, sender, e):
         self.interface.on_select()
@@ -156,19 +202,8 @@ class Table(Widget):
 
             return None if icon is None else icon._impl
 
-        def text(attr):
-            val = getattr(item, attr, None)
-            if isinstance(val, toga.Widget):
-                warn("Winforms does not support the use of widgets in cells")
-                val = None
-            if isinstance(val, tuple):
-                val = val[1]
-            if val is None:
-                val = self.interface.missing_value
-            return str(val)
-
         lvi = WinForms.ListViewItem(
-            [text(attr) for attr in self._accessors],
+            [self._item_text(item, attr) for attr in self._accessors],
         )
 
         # If the table has accessors, populate the icons for the table.
@@ -180,6 +215,17 @@ class Table(Widget):
                 lvi.ImageIndex = self._image_index(icon)
 
         return lvi
+
+    def _item_text(self, item, attr):
+        val = getattr(item, attr, None)
+        if isinstance(val, toga.Widget):
+            warn("Winforms does not support the use of widgets in cells")
+            val = None
+        if isinstance(val, tuple):
+            val = val[1]
+        if val is None:
+            val = self.interface.missing_value
+        return str(val)
 
     def _image_index(self, icon):
         images = self.native.SmallImageList.Images

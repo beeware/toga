@@ -114,6 +114,8 @@ class SimpleProbe(BaseProbe, FontMixin):
         key_code = {
             "<backspace>": 51,
             "<esc>": 53,
+            "<down>": 125,
+            "<up>": 126,
             " ": 49,
             "\n": 36,
             "a": 0,

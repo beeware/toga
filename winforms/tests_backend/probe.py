@@ -10,7 +10,7 @@ from .fonts import FontMixin
 
 KEY_CODES = {
     f"<{name}>": f"{{{name.upper()}}}"
-    for name in ["esc", "up", "down", "left", "right"]
+    for name in ["esc", "up", "down", "left", "right", "home", "end"]
 }
 KEY_CODES.update(
     {

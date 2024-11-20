@@ -159,6 +159,50 @@ async def test_scroll(widget, probe):
     assert -100 < probe.scroll_position <= 0
 
 
+async def test_keyboard_navigation(widget, source, probe):
+    """The list can be navigated using a keyboard."""
+    await probe.acquire_keyboard_focus()
+    await probe.redraw("First row selected")
+    assert widget.selection == widget.data[0]
+
+    # Navigate down with letter, arrow, letter.
+    await probe.type_character("a")
+    await probe.redraw("Letter pressed - second row selected")
+    assert widget.selection == widget.data[1]
+    await probe.type_character("<down>")
+    await probe.redraw("Down arrow pressed - third row selected")
+    assert widget.selection == widget.data[2]
+    await probe.type_character("a")
+    await probe.redraw("Letter pressed - forth row selected")
+    assert widget.selection == widget.data[3]
+
+    # Select the last item with the end key if supported then wrap around.
+    if probe.supports_keyboard_boundary_shortcuts:
+        await probe.type_character("<end>")
+        await probe.redraw("Last row is selected")
+        assert widget.selection == widget.data[-1]
+        # Navigate by 1 item, wrapping around.
+        await probe.type_character("a")
+        await probe.redraw("Letter pressed - first row is selected")
+    else:
+        await probe.type_character("<up>")
+        await probe.type_character("<up>")
+        await probe.type_character("<up>")
+        await probe.redraw("Up arrow pressed thrice - first row is selected")
+    assert widget.selection == widget.data[0]
+
+    # Type a letter that no items start with to verify the selection doesn't change.
+    await probe.type_character("x")
+    await probe.redraw("Invalid letter pressed - first row is still selected")
+    assert widget.selection == widget.data[0]
+
+    # clear the table and verify with an empty selection.
+    widget.data.clear()
+    await probe.type_character("a")
+    await probe.redraw("Letter pressed - no row selected")
+    assert not widget.selection
+
+
 async def test_select(widget, probe, source, on_select_handler):
     """Rows can be selected"""
     # Initial selection is empty
