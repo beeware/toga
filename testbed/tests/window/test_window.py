@@ -185,7 +185,7 @@ if toga.platform.current_platform in {"iOS", "android"}:
         # Set to final state
         main_window.state = final_state
         await main_window_probe.wait_for_window(
-            f"Main window is in {final_state}", rapid_state_switching=True
+            f"Main window is in {final_state}", state_switch_not_from_normal=True
         )
         assert main_window_probe.instantaneous_state == final_state
 
@@ -744,8 +744,9 @@ else:
         # Add delay to ensure windows are visible after animation.
         await second_window_probe.wait_for_window(
             f"Secondary window is in {final_state}",
-            minimize=True if final_state == WindowState.MINIMIZED else False,
-            full_screen=True if final_state == WindowState.FULLSCREEN else False,
+            state_switch_not_from_normal=(
+                True if initial_state != WindowState.NORMAL else False
+            ),
         )
         assert second_window_probe.instantaneous_state == final_state
 
@@ -811,7 +812,7 @@ else:
 
         # Add delay to ensure windows are visible after the final state animation.
         await second_window_probe.wait_for_window(
-            f"Secondary window is in {states[-1]}", rapid_state_switching=True
+            f"Secondary window is in {states[-1]}", state_switch_not_from_normal=True
         )
         # Verify that the backend handled rapid assignments by checking if
         # the window reached the correct final window state.
