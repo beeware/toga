@@ -798,6 +798,13 @@ else:
         app, second_window, second_window_probe, states
     ):
         """The backends can handle rapid assignment of new window states."""
+        if (
+            WindowState.MINIMIZED in states
+            and not second_window_probe.supports_minimize
+        ):
+            pytest.xfail(
+                "This backend doesn't reliably support minimized window state."
+            )
         second_window.toolbar.add(app.cmd1)
         second_window.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
         second_window.show()
