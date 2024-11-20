@@ -112,9 +112,12 @@ class Table(Widget):
             self._cache.append(self._new_item(i + self._first_item))
 
     def winforms_search_for_virtual_item(self, sender, e):
-        if not e.IsTextSearch or not self._accessors or not self._data:
+        if (
+            not e.IsTextSearch or not self._accessors or not self._data
+        ):  # pragma: no cover
             # If this list is empty, or has no columns, or it's an unsupported search
-            # type, there's no search to be done.
+            # type, there's no search to be done. These situation are difficult to
+            # trigger in CI; they're here as a safety catch.
             return
         find_previous = e.Direction in [
             WinForms.SearchDirectionHint.Up,
