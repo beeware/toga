@@ -798,8 +798,9 @@ else:
         app, second_window, second_window_probe, states
     ):
         """The backends can handle rapid assignment of new window states."""
+        # Check that the state to be asserted is supported by the backend.
         if (
-            WindowState.MINIMIZED in states
+            states[-1] == WindowState.MINIMIZED
             and not second_window_probe.supports_minimize
         ):
             pytest.xfail(

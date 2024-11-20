@@ -74,8 +74,6 @@ class TogaWindow(NSWindow):
             self.impl._pending_state_transition
             and self.impl._pending_state_transition != WindowState.MINIMIZED
         ):
-            # Marking as no cover, since the operation is native OS delay
-            # dependent and this doesn't get consistently covered under macOS CI.
             self.impl._apply_state(WindowState.NORMAL)
         else:
             self.impl._pending_state_transition = None
@@ -101,8 +99,6 @@ class TogaWindow(NSWindow):
 
     @objc_method
     def delayedFullScreenExit_(self, sender) -> None:
-        # Marking as no cover, since the operation is native OS delay
-        # dependent and this doesn't get consistently covered under macOS CI.
         self.impl._apply_state(WindowState.NORMAL)
 
     @objc_method
