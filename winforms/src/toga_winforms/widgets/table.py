@@ -112,10 +112,9 @@ class Table(Widget):
             self._cache.append(self._new_item(i + self._first_item))
 
     def winforms_search_for_virtual_item(self, sender, e):
-        if (
-            not e.IsTextSearch or not self._accessors or not self._data
-        ):  # pragma: no cover
-            # The list might be empty, or else winforms fired an unsupported location based search.
+        if not e.IsTextSearch or not self._accessors or not self._data:
+            # If this list is empty, or has no columns, or it's an unsupported search
+            # type, there's no search to be done.
             return
         find_previous = e.Direction in [
             WinForms.SearchDirectionHint.Up,
@@ -125,7 +124,7 @@ class Table(Widget):
         found_item = False
         while True:
             # It is possible for e.StartIndex to be received out-of-range if the user
-            # performs keyboard navigation at it's edge, so check before accessing data
+            # performs keyboard navigation at its edge, so check before accessing data
             if i < 0:  # pragma: no cover
                 # This could happen if this event is fired searching backwards,
                 # however this should not happen in Toga's use of it.
