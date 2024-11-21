@@ -42,6 +42,38 @@ jobs:
     with:
       tox-source: "./core[dev]"
 
+  micropython:
+    name: MicroPython compatibility check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.2.2
+
+      - name: Build MicroPython
+        run: |
+          cd $RUNNER_TEMP
+          git clone https://github.com/micropython/micropython -b v1.24.0 --depth 1
+
+          # Create a variant with the same set of stdlib modules as the PyScript build.
+          cd micropython/ports/unix
+          cp -a variants/standard variants/pyscript
+          grep require ../webassembly/variants/pyscript/manifest.py \
+              >> variants/pyscript/manifest.py
+          for feature in BTREE FFI SOCKET SSL TERMIOS THREAD; do
+              echo "MICROPY_PY_$feature = 0" >> variants/pyscript/mpconfigvariant.mk
+          done
+
+          export VARIANT=pyscript
+          make submodules
+          make -j $(nproc)
+
+      - name: Test
+        run: |
+          cd core
+          export MICROPYPATH="$(pwd)/src:.frozen"
+          $RUNNER_TEMP/micropython/ports/unix/build-pyscript/micropython \
+              micropython_check.py
+
   package:
     name: Package Toga
     permissions:

@@ -1,8 +1,9 @@
-from __future__ import annotations
+# isort: off
+from . import compat  # noqa: F401
 
+# isort: on
 import importlib
 import warnings
-from pathlib import Path
 
 toga_core_imports = {
     # toga.app imports
@@ -104,7 +105,7 @@ class NotImplementedWarning(RuntimeWarning):
         warnings.warn(NotImplementedWarning(f"[{platform}] Not implemented: {feature}"))
 
 
-def _package_version(file: Path | str | None, name: str) -> str:
+def _package_version(file, name):
     try:
         # Read version from SCM metadata
         # This will only exist in a development environment
