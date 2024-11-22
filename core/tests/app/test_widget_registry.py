@@ -44,6 +44,14 @@ def test_add_widget(widget_registry):
     assert widget_registry["widget-1"] == widget1
     assert widget_registry["widget-2"] == widget2
 
+    # repr should list widgets in ASCII order, not order of addition.
+    widget_registry._add(ExampleWidget(id="widget-0"))
+    assert str(widget_registry) == (
+        "{"
+        + ", ".join(f"'widget-{i}': Widget(id='widget-{i}')" for i in range(3))
+        + "}"
+    )
+
 
 def test_update_widgets(widget_registry):
     """The registry can be bulk updated."""

@@ -106,7 +106,11 @@ class WidgetRegistry:
         return self.values()
 
     def __repr__(self) -> str:
-        return f"{{{', '.join(f'{k!r}: {v!r}' for k, v in sorted(self._registry.items()))}}}"
+        return (
+            "{"
+            + ", ".join(f"{k!r}: {v!r}" for k, v in sorted(self._registry.items()))
+            + "}"
+        )
 
     def items(self) -> Iterator[tuple[str, Widget]]:
         return self._registry.items()
