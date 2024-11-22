@@ -16,7 +16,7 @@ SourceT = TypeVar("SourceT", bound=Source)
 
 
 class OnSelectHandler(Protocol):
-    def __call__(self, widget: Tree, /, **kwargs: Any) -> object:
+    def __call__(self, widget: Tree, **kwargs: Any) -> object:
         """A handler to invoke when the tree is selected.
 
         :param widget: The Tree that was selected.
@@ -25,7 +25,7 @@ class OnSelectHandler(Protocol):
 
 
 class OnActivateHandler(Protocol):
-    def __call__(self, widget: Tree, /, **kwargs: Any) -> object:
+    def __call__(self, widget: Tree, **kwargs: Any) -> object:
         """A handler to invoke when the tree is activated.
 
         :param widget: The Tree that was activated.

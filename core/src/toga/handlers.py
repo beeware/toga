@@ -208,9 +208,7 @@ def wrapped_handler(
 
 
 class OnResultT(Protocol):
-    def __call__(
-        self, result: Any, /, exception: Exception | None = None
-    ) -> object: ...
+    def __call__(self, result: Any, exception: Exception | None = None) -> object: ...
 
 
 class AsyncResult(ABC):
