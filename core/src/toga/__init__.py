@@ -1,3 +1,9 @@
+# Enable the standard library compatibility shims before doing anything else.
+#
+# __future__ imports must be at the very top of the file, and MicroPython doesn't
+# currently include a __future__ module, so this file can't contain any __future__
+# imports. Other modules imported after `compat` can use __future__ as normal.
+#
 # isort: off
 from . import compat  # noqa: F401
 
