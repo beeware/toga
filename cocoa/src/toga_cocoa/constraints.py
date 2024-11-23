@@ -44,11 +44,6 @@ class Constraints:
                 self.container.native.removeConstraint(self.left_constraint)
                 self.container.native.removeConstraint(self.top_constraint)
 
-            self.width_constraint.release()
-            self.height_constraint.release()
-            self.left_constraint.release()
-            self.top_constraint.release()
-
     @property
     def container(self):
         return self._container
@@ -70,7 +65,7 @@ class Constraints:
                 attribute__2=NSLayoutAttributeLeft,
                 multiplier=1.0,
                 constant=10,  # Use a dummy, non-zero value for now
-            ).retain()
+            )
             self.container.native.addConstraint(self.left_constraint)
 
             self.top_constraint = NSLayoutConstraint.constraintWithItem(
@@ -81,7 +76,7 @@ class Constraints:
                 attribute__2=NSLayoutAttributeTop,
                 multiplier=1.0,
                 constant=5,  # Use a dummy, non-zero value for now
-            ).retain()
+            )
             self.container.native.addConstraint(self.top_constraint)
 
             self.width_constraint = NSLayoutConstraint.constraintWithItem(
@@ -92,7 +87,7 @@ class Constraints:
                 attribute__2=NSLayoutAttributeLeft,
                 multiplier=1.0,
                 constant=50,  # Use a dummy, non-zero value for now
-            ).retain()
+            )
             self.container.native.addConstraint(self.width_constraint)
 
             self.height_constraint = NSLayoutConstraint.constraintWithItem(
@@ -103,7 +98,7 @@ class Constraints:
                 attribute__2=NSLayoutAttributeTop,
                 multiplier=1.0,
                 constant=30,  # Use a dummy, non-zero value for now
-            ).retain()
+            )
             self.container.native.addConstraint(self.height_constraint)
 
     def update(self, x, y, width, height):
