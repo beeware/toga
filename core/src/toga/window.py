@@ -107,7 +107,7 @@ class OnCloseHandler(Protocol):
 _DialogResultT = TypeVar("_DialogResultT")
 
 
-class DialogResultHandler(Protocol[_DialogResultT]):
+class DialogResultHandler(Protocol):
     def __call__(self, window: Window, result: _DialogResultT, **kwargs: Any) -> object:
         """A handler to invoke when a dialog is closed.
 

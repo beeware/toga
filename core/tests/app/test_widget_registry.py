@@ -72,8 +72,7 @@ def test_update_widgets(widget_registry):
 
 
 def test_remove_widget(widget_registry):
-    """A widget can be removed from the repository."""
-    "Widgets can be added to the registry"
+    """A widget can be removed from the registry."""
     # Add a widget to the registry
     widget1 = ExampleWidget(id="widget-1")
     widget2 = ExampleWidget(id="widget-2")

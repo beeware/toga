@@ -21,7 +21,7 @@ if TYPE_CHECKING:
 class cachedicon:
     def __init__(self, f: Callable[..., Icon]):
         self.f = f
-        self.__doc__ = f.__doc__
+        self.__doc__ = getattr(f, "__doc__", None)
 
     def __get__(self, obj: object, owner: type[Icon]) -> Icon:
         # If you ask for Icon.CACHED_ICON, obj is None, and owner is the Icon class

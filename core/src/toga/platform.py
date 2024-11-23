@@ -4,14 +4,16 @@ import importlib
 import os
 import sys
 from functools import cache
+from importlib import metadata
 from types import ModuleType
 
-if sys.version_info >= (3, 10):  # pragma: no-cover-if-lt-py310
-    from importlib.metadata import entry_points
-else:  # pragma: no-cover-if-gte-py310
-    # Before Python 3.10, entry_points did not support the group argument;
-    # so, the backport package must be used on older versions.
-    from importlib_metadata import entry_points
+
+# Emulate the Python 3.10+ entry_points API on older Python versions.
+def entry_points(*, group):
+    if sys.version_info < (3, 10):
+        return metadata.entry_points()[group]
+    else:
+        return metadata.entry_points(group=group)
 
 
 # Map python sys.platform with toga platforms names

@@ -2,32 +2,28 @@ from __future__ import annotations
 
 import asyncio
 import importlib.metadata
-import signal
 import sys
 import warnings
-import webbrowser
 from collections.abc import Coroutine, Iterator
-from email.message import Message
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Protocol
-from weakref import WeakValueDictionary
 
 from toga.command import Command, CommandSet
-from toga.documents import Document, DocumentSet
 from toga.handlers import simple_handler, wrapped_handler
-from toga.hardware.camera import Camera
-from toga.hardware.location import Location
 from toga.icons import Icon
 from toga.paths import Paths
 from toga.platform import get_platform_factory
-from toga.screens import Screen
-from toga.statusicons import StatusIconSet
-from toga.widgets.base import Widget
 from toga.window import MainWindow, Window, WindowSet
 
 if TYPE_CHECKING:
     from toga.dialogs import Dialog
+    from toga.documents import Document, DocumentSet
+    from toga.hardware.camera import Camera
+    from toga.hardware.location import Location
     from toga.icons import IconContentT
+    from toga.screens import Screen
+    from toga.statusicons import StatusIconSet
+    from toga.widgets.base import Widget
 
 # Make sure deprecation warnings are shown by default
 warnings.filterwarnings("default", category=DeprecationWarning)
@@ -82,16 +78,13 @@ class BackgroundTask(Protocol):
 
 
 class WidgetRegistry:
-    # WidgetRegistry is implemented as a wrapper around a WeakValueDictionary, because
-    # it provides a mapping from ID to widget. The mapping is weak so the registry
-    # doesn't retain a strong reference to the widget, preventing memory cleanup.
-    #
+    # WidgetRegistry is implemented as a wrapper around a dict.
     # The lookup methods (__getitem__(), __iter__(), __len()__, keys(), items(), and
-    # values()) are all proxied to underlying data store. Private methods exist for
+    # values()) are all proxied to the underlying data store. Mutation methods exist for
     # internal use, but those methods shouldn't be used by end-users.
 
     def __init__(self, *args: Any, **kwargs: Any):
-        self._registry = WeakValueDictionary(*args, **kwargs)
+        self._registry = dict(*args, **kwargs)
 
     def __len__(self) -> int:
         return len(self._registry)
@@ -103,7 +96,7 @@ class WidgetRegistry:
         return key in self._registry
 
     def __iter__(self) -> Iterator[Widget]:
-        return self.values()
+        return iter(self.values())
 
     def __repr__(self) -> str:
         return (
@@ -269,7 +262,7 @@ class App:
         try:
             self.metadata = importlib.metadata.metadata(app_name)
         except importlib.metadata.PackageNotFoundError:
-            self.metadata = Message()
+            self.metadata = {}
 
         # If a formal name has been provided, use it; otherwise, look to
         # the metadata. However, a formal name *must* be provided.
@@ -322,10 +315,7 @@ class App:
             self.icon = icon
 
         # Set up the document types and collection of documents being managed.
-        self._documents = DocumentSet(
-            self,
-            types=[] if document_types is None else document_types,
-        )
+        self._document_types = [] if document_types is None else document_types
 
         # Install the lifecycle handlers. If passed in as an argument, or assigned using
         # `app.on_event = my_handler`, the event handler will take the app as the first
@@ -344,13 +334,11 @@ class App:
         # We need the command set to exist so that startup et al. can add commands;
         # but we don't have an impl yet, so we can't set the on_change handler
         self._commands = CommandSet()
-        self._status_icons = StatusIconSet()
 
         self._startup_method = startup
 
         self._main_window = App._UNDEFINED
         self._windows = WindowSet(self)
-
         self._full_screen_windows: tuple[Window, ...] | None = None
 
         # Create the implementation. This will trigger any startup logic.
@@ -481,7 +469,13 @@ class App:
         On mobile and web platforms, it returns immediately.
         """
         # Modify signal handlers to make sure Ctrl-C is caught and handled.
-        signal.signal(signal.SIGINT, signal.SIG_DFL)
+        try:
+            # This module doesn't exist in MicroPython, so don't import it globally.
+            import signal
+        except ModuleNotFoundError:  # pragma: no cover
+            pass
+        else:
+            signal.signal(signal.SIGINT, signal.SIG_DFL)
 
         self._impl.main_loop()
 
@@ -574,22 +568,22 @@ class App:
         ]:
             self.commands.add(Command.standard(self, cmd_id))
 
-        if self.documents.types:
-            default_document_type = self.documents.types[0]
+        if self._document_types:
+            default_document_type = self._document_types[0]
             command = Command.standard(
                 self,
                 Command.NEW,
                 action=simple_handler(self.documents.new, default_document_type),
             )
             if command:
-                if len(self.documents.types) == 1:
+                if len(self._document_types) == 1:
                     # There's only 1 document type. The new command can be used as is.
                     self.commands.add(command)
                 else:
                     # There's more than one document type. Create a new command for each
                     # document type, updating the title of the command to disambiguate,
                     # and modifying the shortcut, order and ID of the document types 2+
-                    for i, document_class in enumerate(self.documents.types):
+                    for i, document_class in enumerate(self._document_types):
                         command = Command.standard(
                             self,
                             Command.NEW,
@@ -624,16 +618,16 @@ class App:
         """
         # Process command line arguments if the backend doesn't handle them
         if not self._impl.HANDLES_COMMAND_LINE:
-            if self.documents.types:
+            if self._document_types:
                 for filename in sys.argv[1:]:
                     self._open_initial_document(filename)
 
         # Ensure there is at least one window
         if self.main_window is None and len(self.windows) == 0:
-            if self.documents.types:
+            if self._document_types:
                 if self._impl.CLOSE_ON_LAST_WINDOW:
                     # Pass in the first document type as the default
-                    self.documents.new(self.documents.types[0])
+                    self.documents.new(self._document_types[0])
                 else:
                     self.loop.run_until_complete(self.documents.request_open())
             else:
@@ -715,8 +709,10 @@ class App:
             # Instantiate the camera instance for this app on first access
             # This will raise an exception if the platform doesn't implement
             # the Camera API.
+            from .hardware.camera import Camera
+
             self._camera = Camera(self)
-        return self._camera
+            return self._camera
 
     @property
     def commands(self) -> CommandSet:
@@ -726,7 +722,14 @@ class App:
     @property
     def documents(self) -> DocumentSet:
         """The list of documents associated with this app."""
-        return self._documents
+        try:
+            return self._documents
+        except AttributeError:
+            # Initialize on first access.
+            from .documents import DocumentSet
+
+            self._documents = DocumentSet(self, self._document_types)
+            return self._documents
 
     @property
     def location(self) -> Location:
@@ -737,8 +740,10 @@ class App:
             # Instantiate the location service for this app on first access
             # This will raise an exception if the platform doesn't implement
             # the Location API.
+            from .hardware.location import Location
+
             self._location = Location(self)
-        return self._location
+            return self._location
 
     @property
     def paths(self) -> Paths:
@@ -758,7 +763,14 @@ class App:
     @property
     def status_icons(self) -> StatusIconSet:
         """The status icons displayed by the app."""
-        return self._status_icons
+        try:
+            return self._status_icons
+        except AttributeError:
+            # Initialize on first access.
+            from .statusicons import StatusIconSet
+
+            self._status_icons = StatusIconSet()
+            return self._status_icons
 
     @property
     def widgets(self) -> WidgetRegistry:
@@ -811,6 +823,9 @@ class App:
         will be disabled.
         """
         if self.home_page is not None:
+            # This module doesn't exist in MicroPython, so don't import it globally.
+            import webbrowser
+
             webbrowser.open(self.home_page)
 
     ######################################################################
@@ -971,6 +986,6 @@ class DocumentApp(App):
         )
         return {
             extension: doc_type
-            for doc_type in self.documents.types
+            for doc_type in self._document_types
             for extension in doc_type.extensions
         }

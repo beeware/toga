@@ -43,7 +43,7 @@ class Document(ABC):
         self.create()
 
         # Add the document to the list of managed documents.
-        self.app._documents._add(self)
+        self.app.documents._add(self)
 
     ######################################################################
     # Document properties
@@ -442,7 +442,7 @@ class DocumentWindow(MainWindow):
     def _close(self):
         # When then window is closed, remove the document it is managing from the app's
         # list of managed documents.
-        self._app._documents._remove(self.doc)
+        self._app.documents._remove(self.doc)
         super()._close()
 
     async def save(self):

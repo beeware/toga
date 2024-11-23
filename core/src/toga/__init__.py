@@ -8,8 +8,8 @@
 from . import compat  # noqa: F401
 
 # isort: on
-import importlib
 import warnings
+from importlib import import_module
 
 toga_core_imports = {
     # toga.app imports
@@ -90,15 +90,21 @@ __all__ = list(toga_core_imports.keys())
 
 
 def __getattr__(name):
-    try:
-        module_name = toga_core_imports[name]
-    except KeyError:
-        raise AttributeError(f"module '{__name__}' has no attribute '{name}'") from None
-    else:
-        module = importlib.import_module(module_name)
+    if module_name := toga_core_imports.get(name):
+        module = import_module(module_name)
         value = getattr(module, name)
-        globals()[name] = value
-        return value
+    else:
+        # MicroPython apparently doesn't attempt a submodule import when __getattr__
+        # raises AttributeError, so we need to do it manually.
+        try:
+            value = import_module(f"{__name__}.{name}")
+        except ImportError:
+            raise AttributeError(
+                f"module '{__name__}' has no attribute '{name}'"
+            ) from None
+
+    globals()[name] = value
+    return value
 
 
 class NotImplementedWarning(RuntimeWarning):

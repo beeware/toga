@@ -13,6 +13,7 @@ FileNotFoundError = OSError
 ModuleNotFoundError = ImportError
 
 
+# Inherit from the stdlib Warning class if it exists.
 try:
     Warning
 except NameError:

@@ -6,16 +6,8 @@ import sys
 import traceback
 import warnings
 from abc import ABC
-from collections.abc import Awaitable, Generator
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Callable,
-    NoReturn,
-    Protocol,
-    TypeVar,
-    Union,
-)
+from collections.abc import Awaitable, Callable, Generator
+from typing import TYPE_CHECKING, Any, NoReturn, Protocol, TypeVar, Union
 
 if TYPE_CHECKING:
     if sys.version_info < (3, 10):
