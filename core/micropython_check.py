@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 #
-# This script should be run under MicroPython to check that the modules required by
-# Invent can be imported.
+# This script should be run under MicroPython to check that it can import all the Toga
+# modules required by Invent.
 
-# Toga must be imported first to enable the standard library compatibility shims.
+# The top-level Toga module must be imported first, to enable the standard library
+# compatibility shims.
+#
 # isort: off
 import toga
 
@@ -15,7 +17,24 @@ import traceback
 failures = 0
 for name in [
     "App",
-    # TODO: all other names required to support Invent
+    "Font",
+    "Image",
+    "Window",
+    #
+    "Widget",
+    "Box",
+    "Button",
+    "DateInput",
+    "Divider",
+    "ImageView",
+    "Label",
+    "MultilineTextInput",
+    "PasswordInput",
+    "ProgressBar",
+    "Slider",
+    "Switch",
+    "TextInput",
+    "TimeInput",
 ]:
     try:
         getattr(toga, name)

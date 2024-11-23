@@ -112,6 +112,7 @@ relative_files = true
 # See notes in the root pyproject.toml file.
 source = ["src"]
 source_pkgs = ["toga"]
+omit = ["src/toga/compat/**"]  # Only used by MicroPython.
 
 [tool.coverage.paths]
 source = [

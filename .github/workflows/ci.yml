@@ -42,38 +42,6 @@ jobs:
     with:
       tox-source: "./core[dev]"
 
-  micropython:
-    name: MicroPython compatibility check
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4.2.2
-
-      - name: Build MicroPython
-        run: |
-          cd $RUNNER_TEMP
-          git clone https://github.com/micropython/micropython -b v1.24.0 --depth 1
-
-          # Create a variant with the same set of stdlib modules as the PyScript build.
-          cd micropython/ports/unix
-          cp -a variants/standard variants/pyscript
-          grep require ../webassembly/variants/pyscript/manifest.py \
-              >> variants/pyscript/manifest.py
-          for feature in BTREE FFI SOCKET SSL TERMIOS THREAD; do
-              echo "MICROPY_PY_$feature = 0" >> variants/pyscript/mpconfigvariant.mk
-          done
-
-          export VARIANT=pyscript
-          make submodules
-          make -j $(nproc)
-
-      - name: Test
-        run: |
-          cd core
-          export MICROPYPATH="$(pwd)/src:.frozen"
-          $RUNNER_TEMP/micropython/ports/unix/build-pyscript/micropython \
-              micropython_check.py
-
   package:
     name: Package Toga
     permissions:
@@ -154,6 +122,59 @@ jobs:
         path: "core/.coverage.*"
         if-no-files-found: error
         include-hidden-files: true
+
+  micropython:
+    name: MicroPython compatibility
+    runs-on: ubuntu-latest
+    needs: [ pre-commit, towncrier, package ]
+    steps:
+      - name: Build MicroPython
+        run: |
+          # The following script also works on macOS, except that due to a bug,
+          # threading must be enabled, i.e. THREAD must be omitted from the disabled
+          # feature list.
+          cd $RUNNER_TEMP
+          git clone https://github.com/micropython/micropython -b v1.24.0 --depth 1
+
+          # Create a variant with the same set of stdlib modules as the PyScript build.
+          cd micropython/ports/unix
+          cp -a variants/standard variants/pyscript
+          grep require ../webassembly/variants/pyscript/manifest.py \
+              >> variants/pyscript/manifest.py
+          for feature in BTREE FFI SOCKET SSL TERMIOS THREAD; do
+              echo "MICROPY_PY_$feature = 0" >> variants/pyscript/mpconfigvariant.mk
+          done
+
+          export VARIANT=pyscript
+          make submodules
+          make -j $(nproc)
+
+      - name: Checkout
+        uses: actions/checkout@v4.2.2
+
+      - name: Set up Python
+        uses: actions/setup-python@v5.3.0
+        with:
+          python-version: "3.13"
+
+      - name: Get Packages
+        uses: actions/download-artifact@v4.1.8
+        with:
+          name: Packages-toga-core
+          path: dist
+
+      - name: Test
+        run: |
+          pip install dist/toga_core-*.whl
+          site_packages=$(python -c '
+              import sys
+              print([path for path in sys.path if "site-packages" in path][0])
+          ')
+
+          cd core
+          export MICROPYPATH="$site_packages:.frozen"
+          $RUNNER_TEMP/micropython/ports/unix/build-pyscript/micropython \
+              micropython_check.py
 
   core-coverage:
     name: Coverage
