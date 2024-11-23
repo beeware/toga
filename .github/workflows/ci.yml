@@ -167,8 +167,8 @@ jobs:
         run: |
           pip install dist/toga_core-*.whl
           site_packages=$(python -c '
-              import sys
-              print([path for path in sys.path if "site-packages" in path][0])
+          import sys
+          print([path for path in sys.path if "site-packages" in path][0])
           ')
 
           cd core
