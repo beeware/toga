@@ -10,7 +10,7 @@ from .probe import get_probe
 
 @pytest.fixture
 async def location_probe(monkeypatch, app_probe):
-    skip_on_platforms("linux", "windows")
+    skip_on_platforms("linux")
     probe = get_probe(monkeypatch, app_probe, "Location")
     yield probe
     probe.cleanup()
