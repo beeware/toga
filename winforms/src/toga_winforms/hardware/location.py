@@ -24,6 +24,8 @@ def toga_location(location: GeoCoordinate):
 
 
 class Location:
+    _location: Future
+
     def __init__(self, interface):
         self.watcher = GeoCoordinateWatcher(GeoPositionAccuracy.Default)
         self.watcher.add_PositionChanged(
@@ -32,11 +34,12 @@ class Location:
             )
         )
         self.watcher.Start()
+        self._location = Future()
 
     def _position_changed(
         self, sender, event: GeoPositionChangedEventArgs[GeoCoordinate]
     ):
-        self._position = event.Position.Location
+        self._location.set_result(event.Position.Location)
 
     def has_permission(self):
         return True
@@ -51,7 +54,9 @@ class Location:
         future.set_result(True)
 
     def current_location(self, result: Future):
-        result.set_result(toga_location(self._position))
+        self._location.add_done_callback(
+            lambda value: result.set_result(toga_location(value))
+        )
 
     def start_tracking(self):
         self.watcher.Start()

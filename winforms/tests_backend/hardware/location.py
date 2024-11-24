@@ -17,7 +17,7 @@ class LocationProbe(HardwareProbe):
     def reject_permission(self):
         pass
 
-    def add_location(self, loc):
+    def add_location(self, loc, *args):
         pass
 
     def allow_background_permission(self):
