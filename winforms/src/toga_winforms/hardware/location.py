@@ -55,9 +55,7 @@ class Location:
         future.set_result(True)
 
     def current_location(self, result: Future):
-        self._location.add_done_callback(
-            lambda value: result.set_result(toga_location(value))
-        )
+        result.set_result(toga_location(self._location.result(timeout=5)))
 
     def start_tracking(self):
         self.watcher.Start()
