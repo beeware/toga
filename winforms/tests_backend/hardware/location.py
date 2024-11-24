@@ -22,7 +22,7 @@ class LocationProbe(HardwareProbe):
     def reject_permission(self):
         self.app.location._has_permission = False
 
-    def add_location(self, loc, *args):
+    def add_location(self, location, altitude, cached=False):
         pass
 
     def allow_background_permission(self):
@@ -33,3 +33,6 @@ class LocationProbe(HardwareProbe):
 
     async def simulate_current_location(self, loco):
         return await loco
+
+    async def simulate_location_update(self):
+        pass
