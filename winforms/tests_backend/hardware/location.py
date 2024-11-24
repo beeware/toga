@@ -3,7 +3,12 @@ from .hardware import HardwareProbe
 
 class LocationProbe(HardwareProbe):
     def cleanup(self):
-        pass
+        # Delete the location service instance. This ensures that a freshly mocked
+        # LocationManager is installed for each test.
+        try:
+            del self.app._location
+        except AttributeError:
+            pass
 
     def allow_permissions(self):
         pass
@@ -22,3 +27,9 @@ class LocationProbe(HardwareProbe):
 
     def allow_background_permission(self):
         pass
+
+    async def simulate_location_error(self, loco):
+        raise RuntimeError(f"Unable to obtain a location ({loco})")
+
+    async def simulate_current_location(self, loco):
+        return await loco
