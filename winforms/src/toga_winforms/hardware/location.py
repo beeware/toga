@@ -1,17 +1,19 @@
 from __future__ import annotations
+
 from concurrent.futures import Future
 
 import clr
 
 clr.AddReference("System.Device")
 
+from System import EventHandler
 from System.Device.Location import (
+    GeoCoordinate,
     GeoCoordinateWatcher,
     GeoPositionAccuracy,
     GeoPositionChangedEventArgs,
-    GeoCoordinate,
 )
-from System import EventHandler
+
 from toga import LatLng
 
 
