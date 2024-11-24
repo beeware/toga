@@ -3,11 +3,11 @@
 # __future__ imports must be at the very top of the file, and MicroPython doesn't
 # currently include a __future__ module, so this file can't contain any __future__
 # imports. Other modules imported after `compat` can use __future__ as normal.
-#
-# isort: off
-from . import compat  # noqa: F401
+import sys
 
-# isort: on
+if sys.implementation.name != "cpython":  # pragma: no cover
+    from . import compat  # noqa: F401
+
 import warnings
 from importlib import import_module
 

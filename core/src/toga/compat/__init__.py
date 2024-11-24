@@ -1,5 +1,6 @@
-# This package contains compatibility shims for alternative Python implementations,
-# primarily MicroPython. Each of its modules corresponds to a standard library module.
+# This package contains compatibility shims for the Python standard library, primarily
+# on MicroPython. Each of its modules corresponds to the standard library module of the
+# same name.
 
 import os
 import re
@@ -42,5 +43,4 @@ def process_module(mod_name):
                 process_module(f"{package_prefix}{match.group(1)}")
 
 
-if sys.implementation.name != "cpython":
-    process_module(None)
+process_module(None)

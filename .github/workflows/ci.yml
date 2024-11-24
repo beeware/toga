@@ -136,7 +136,7 @@ jobs:
           cd $RUNNER_TEMP
           git clone https://github.com/micropython/micropython -b v1.24.0 --depth 1
 
-          # Create a variant with the same set of stdlib modules as the PyScript build.
+          # Create a variant with the same configuration as the PyScript build.
           cd micropython/ports/unix
           cp -a variants/standard variants/pyscript
           grep require ../webassembly/variants/pyscript/manifest.py \
