@@ -12,10 +12,10 @@ class LocationProbe(HardwareProbe):
         pass
 
     def grant_permission(self):
-        pass
+        self.app.location._has_permission = True
 
     def reject_permission(self):
-        pass
+        self.app.location._has_permission = False
 
     def add_location(self, loc, *args):
         pass

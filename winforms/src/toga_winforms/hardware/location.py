@@ -35,6 +35,7 @@ class Location:
         )
         self.watcher.Start()
         self._location = Future()
+        self._has_permission = True
 
     def _position_changed(
         self, sender, event: GeoPositionChangedEventArgs[GeoCoordinate]
@@ -42,10 +43,10 @@ class Location:
         self._location.set_result(event.Position.Location)
 
     def has_permission(self):
-        return True
+        return self._has_permission
 
     def has_background_permission(self):
-        return True
+        return self._has_permission
 
     def request_permission(self, future: Future):
         future.set_result(True)
