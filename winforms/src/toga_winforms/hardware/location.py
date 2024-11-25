@@ -10,7 +10,8 @@ from System.Device.Location import (
     GeoPositionChangedEventArgs,
 )
 
-from toga import AsyncResult, LatLng
+from toga import LatLng
+from toga.handlers import AsyncResult
 
 
 def toga_location(location: GeoCoordinate):
