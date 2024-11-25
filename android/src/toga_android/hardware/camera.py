@@ -20,7 +20,9 @@ class CameraDevice:
         return self._id
 
     def name(self):
-        return f"Camera {self._id}"
+        characteristics = self._manager.getCameraCharacteristics(self._id)
+        facing = characteristics.get(CameraCharacteristics.LENS_FACING)
+        return f"{facing} camera {self._id}".capitalize()
 
     def has_flash(self):
         characteristics = self._manager.getCameraCharacteristics(self._id)
