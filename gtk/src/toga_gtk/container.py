@@ -158,7 +158,6 @@ class TogaContainer(Gtk.Fixed):
         """
         # print(self._content, f"Container layout "
         # "{allocation.width}x{allocation.height} @ {allocation.x}x{allocation.y}")
-        # # noqa: E501
 
         # The container will occupy the full space it has been allocated.
         resized = (allocation.width, allocation.height) != (self.width, self.height)
