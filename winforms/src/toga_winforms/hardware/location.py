@@ -10,7 +10,7 @@ from System.Device.Location import (
     GeoPositionChangedEventArgs,
 )
 
-from toga import LatLng
+from toga import AsyncResult, LatLng
 
 
 def toga_location(location: GeoCoordinate):
@@ -48,17 +48,17 @@ class Location:
     def has_background_permission(self):
         return self._has_permission
 
-    def request_permission(self, future: Future):
+    def request_permission(self, future: AsyncResult[bool]) -> None:
         future.set_result(True)
 
-    def request_background_permission(self, future: Future):
+    def request_background_permission(self, future: AsyncResult[bool]) -> None:
         future.set_result(True)
 
-    def current_location(self, result: Future):
+    def current_location(self, result: AsyncResult[dict]) -> None:
         result.set_result(toga_location(self._location.result(timeout=5)))
 
-    def start_tracking(self):
+    def start_tracking(self) -> None:
         self.watcher.Start()
 
-    def stop_tracking(self):
+    def stop_tracking(self) -> None:
         self.watcher.Stop()
