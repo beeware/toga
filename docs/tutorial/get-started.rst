@@ -17,7 +17,7 @@ to an application using Toga.
 
 .. note::
 
-   Users of `uv` on MacOS who do a uv workspace install `uv add toga-demo` will need to instead run `uv pip install toga-demo` to install the toga demo app. This is due to an `issue <https://github.com/beeware/beeware/issues/451>`_.
+  Users of `uv` on MacOS who do a uv workspace install `uv add toga-demo` will need to instead run `uv pip install toga-demo` to install the toga demo app. This is due to an `issue <https://github.com/beeware/beeware/issues/451>`_.
 
 If you want to see how to write a Toga app of your own, you can :doc:`start the tutorial
 <tutorial-0>`.
