@@ -796,6 +796,12 @@ def test_async_running_method(event_loop):
     assert running["called"]
 
 
+def test_dark_mode_state(app):
+    """Dark mode settings can be read through the dark_mode property."""
+    # The dummy backend is currently set to always be True
+    assert app.dark_mode
+
+
 def test_deprecated_id(event_loop):
     """The deprecated `id` constructor argument is ignored, and the property of the same
     name is redirected to `app_id`"""
