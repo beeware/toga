@@ -1,3 +1,5 @@
+from pytest import xfail
+
 from .hardware import HardwareProbe
 
 
@@ -20,7 +22,7 @@ class LocationProbe(HardwareProbe):
         self.app.location._has_permission = True
 
     def reject_permission(self):
-        self.app.location._has_permission = False
+        xfail("No support for permissions here")
 
     def add_location(self, location, altitude, cached=False):
         pass
