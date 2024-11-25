@@ -30,7 +30,7 @@ ScrollContainer,Layout Widget,:class:`~toga.ScrollContainer`,A container that ca
 SplitContainer,Layout Widget,:class:`~toga.SplitContainer`,A container that divides an area into two panels with a movable border,|y|,|y|,|y|,,,,
 OptionContainer,Layout Widget,:class:`~toga.OptionContainer`,A container that can display multiple labeled tabs of content,|y|,|y|,|y|,|y|,|y|,,
 Camera,Hardware,:class:`~toga.hardware.camera.Camera`,A sensor that can capture photos and/or video.,|y|,,,|y|,|y|,,
-Location,Hardware,:class:`~toga.hardware.location.Location`,A sensor that can capture the geographical location of the device.,|y|,,,|y|,|y|,,
+Location,Hardware,:class:`~toga.hardware.location.Location`,A sensor that can capture the geographical location of the device.,|y|,,|y|,|y|,|y|,,
 Screen,Hardware,:class:`~toga.screens.Screen`,A representation of a screen attached to a device.,|y|,|y|,|y|,|y|,|y|,|b|,|b|
 App Paths,Resource,:class:`~toga.paths.Paths`,A mechanism for obtaining platform-appropriate filesystem locations for an application.,|y|,|y|,|y|,|y|,|y|,,|b|
 Command,Resource,:class:`~toga.Command`,Command,|y|,|y|,|y|,,|y|,,
