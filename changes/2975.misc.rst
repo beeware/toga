@@ -1,0 +1,1 @@
+Update the flake8 line limit to 88 to match limit for Black, and shorten longer lines.
