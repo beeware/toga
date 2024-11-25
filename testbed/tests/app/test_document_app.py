@@ -90,7 +90,8 @@ async def test_open_initial_document(monkeypatch, app, app_probe):
 
 
 async def test_open_document_by_drag(app, app_probe):
-    """A file can be If an attempt is made to open a file by dragging, an error is raised."""
+    """A file can be If an attempt is made to open a file by dragging,
+    an error is raised."""
     document_path = Path(__file__).parent / "docs/example.testbed"
     app_probe.open_document_by_drag(document_path)
 

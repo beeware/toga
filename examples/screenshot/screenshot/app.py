@@ -380,7 +380,8 @@ class ScreenshotGeneratorApp(toga.App):
                         # image = self.main_window.screen.as_image()
                         # cropped = image.crop(... crop to window size ...)
                         #
-                        # TODO: Crop the desktop image, rather than use a manual screenshot
+                        # TODO: Crop the desktop image,
+                        # rather than use a manual screenshot
                         await self.main_window.dialog(
                             toga.InfoDialog(
                                 "Manual intervention",
@@ -397,7 +398,8 @@ class ScreenshotGeneratorApp(toga.App):
                         # image = self.main_window.screen.as_image()
                         # cropped = image.crop(... crop to window size ...)
                         #
-                        # TODO: Crop the desktop image, rather than use a manual screenshot
+                        # TODO: Crop the desktop image,
+                        # rather than use a manual screenshot
                         await self.main_window.dialog(
                             toga.InfoDialog(
                                 "Manual intervention",
@@ -413,8 +415,8 @@ class ScreenshotGeneratorApp(toga.App):
                         content_type in {"webview", "mapview"}
                         and toga.platform.current_platform == "macOS"
                     ):
-                        # Manual screenshot required on macOS because screenshots don't contain
-                        # all the rendered content.
+                        # Manual screenshot required on macOS because screenshots don't
+                        # contain all the rendered content.
                         await self.main_window.dialog(
                             toga.InfoDialog(
                                 "Manual intervention",

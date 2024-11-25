@@ -100,7 +100,8 @@ class DetailedList(Widget):
     def create(self):
         if SwipeRefreshLayout is None:  # pragma: no cover
             raise RuntimeError(
-                "Unable to import SwipeRefreshLayout. Ensure that the AndroidX Swipe Refresh Layout "
+                "Unable to import SwipeRefreshLayout. "
+                "Ensure that the AndroidX Swipe Refresh Layout "
                 "widget package (androidx.swiperefreshlayout:swiperefreshlayout:1.1.0) "
                 "is listed in your app's dependencies."
             )

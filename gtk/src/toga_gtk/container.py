@@ -156,17 +156,20 @@ class TogaContainer(Gtk.Fixed):
         computed based on this new available size, and that new geometry will be applied
         to all child widgets of the container.
         """
-        # print(self._content, f"Container layout {allocation.width}x{allocation.height} @ {allocation.x}x{allocation.y}")  # noqa: E501
+        # print(self._content, f"Container layout "
+        # "{allocation.width}x{allocation.height} @ {allocation.x}x{allocation.y}")
+        # # noqa: E501
 
         # The container will occupy the full space it has been allocated.
         resized = (allocation.width, allocation.height) != (self.width, self.height)
         self.set_allocation(allocation)
 
         if self._content:
-            # This function may be called in response to irrelevant events like button clicks,
-            # so only refresh if we really need to.
+            # This function may be called in response to irrelevant events like button
+            # clicks, so only refresh if we really need to.
             if resized or self.needs_redraw:
-                # Re-evaluate the layout using the allocation size as the basis for geometry
+                # Re-evaluate the layout using the allocation size as the basis
+                # for geometry
                 # print("REFRESH LAYOUT", allocation.width, allocation.height)
                 self._content.interface.style.layout(self._content.interface, self)
 
@@ -180,7 +183,8 @@ class TogaContainer(Gtk.Fixed):
             for widget in self.get_children():
                 if widget.get_visible():
                     # Set the size of the child widget to the computed layout size.
-                    # print(f"  allocate child {widget.interface}: {widget.interface.layout}")
+                    # print(
+                    # f"  allocate child {widget.interface}: {widget.interface.layout}")
                     widget_allocation = Gdk.Rectangle()
                     widget_allocation.x = (
                         widget.interface.layout.absolute_content_left + allocation.x

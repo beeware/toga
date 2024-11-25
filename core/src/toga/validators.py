@@ -159,7 +159,8 @@ class MaxLength(LengthBetween):
         length: int,
         error_message: str | None = None,
     ):
-        """A validator confirming that the length of input does not exceed a maximum size.
+        """A validator confirming that the length of
+        input does not exceed a maximum size.
 
         :param length: The maximum length of the string (inclusive).
         :param error_message: Optional; the error message to display when the

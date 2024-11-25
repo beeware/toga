@@ -140,7 +140,7 @@ class DetailedListProbe(SimpleProbe):
         path = NSIndexPath.indexPathForRow(row, inSection=0)
         # Need to use the long form of this method because the first argument when used
         # as a selector is ambiguous with a property of the same name on the object.
-        config = self.native.delegate.tableView_trailingSwipeActionsConfigurationForRowAtIndexPath_(
+        config = self.native.delegate.tableView_trailingSwipeActionsConfigurationForRowAtIndexPath_(  # noqa: E501
             self.native, path
         )
 
@@ -159,7 +159,7 @@ class DetailedListProbe(SimpleProbe):
         path = NSIndexPath.indexPathForRow(row, inSection=0)
         # Need to use the long form of this method because the first argument when used
         # as a selector is ambiguous with a property of the same name on the object.
-        config = self.native.delegate.tableView_leadingSwipeActionsConfigurationForRowAtIndexPath_(
+        config = self.native.delegate.tableView_leadingSwipeActionsConfigurationForRowAtIndexPath_(  # noqa: E501
             self.native, path
         )
 

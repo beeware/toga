@@ -30,9 +30,9 @@ class TextViewWidget(Widget):
         )
 
     def set_background_color(self, value):
-        # In the case of EditText, this causes any custom color to hide the bottom border
-        # line, but it's better than set_background_filter, which affects *only* the
-        # bottom border line.
+        # In the case of EditText, this causes any custom color to hide the bottom
+        # border line, but it's better than set_background_filter, which affects *only*
+        # the bottom border line.
         self.set_background_simple(value)
 
     def set_color(self, value):

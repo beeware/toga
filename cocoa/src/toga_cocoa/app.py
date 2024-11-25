@@ -387,8 +387,8 @@ class App:
         )
 
         for window, screen in zip(windows, NSScreen.screens):
-            # The widgets are actually added to window._impl.container.native, instead of
-            # window.content._impl.native. And window._impl.native.contentView is
+            # The widgets are actually added to window._impl.container.native, instead
+            # of window.content._impl.native. And window._impl.native.contentView is
             # window._impl.container.native. Hence, we need to go fullscreen on
             # window._impl.container.native instead.
             window._impl.container.native.enterFullScreenMode(screen, withOptions=opts)

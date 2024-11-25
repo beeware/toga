@@ -5,8 +5,9 @@ from .probe import BaseProbe
 
 
 class WindowProbe(BaseProbe, DialogsMixin):
-    # GTK defers a lot of window behavior to the window manager, which means some features
-    # either don't exist, or we can't guarantee they behave the way Toga would like.
+    # GTK defers a lot of window behavior to the window manager, which means some
+    # features either don't exist, or we can't guarantee they behave the way Toga would
+    # like.
     supports_closable = True
     supports_minimizable = False
     supports_move_while_hidden = False
@@ -72,7 +73,8 @@ class WindowProbe(BaseProbe, DialogsMixin):
         # FIXME: get_tooltip_text() doesn't work. The tooltip can be set, but the
         # API to return the value just doesn't work. If it is ever fixed, this
         # is the test for it:
-        # assert (None if item.get_tooltip_text() is None else item.get_tooltip_text()) == tooltip
+        # assert (None if item.get_tooltip_text() is None
+        # else item.get_tooltip_text()) == tooltip
         assert (item.get_icon_widget() is not None) == has_icon
         assert item.get_sensitive() == enabled
 

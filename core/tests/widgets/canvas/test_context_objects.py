@@ -272,7 +272,8 @@ def test_fill(widget, kwargs, args_repr, has_move, properties):
         # Color
         (
             {"color": REBECCAPURPLE},
-            f"x=None, y=None, color={REBECCA_PURPLE_COLOR}, line_width=2.0, line_dash=None",
+            f"x=None, y=None, color={REBECCA_PURPLE_COLOR}, "
+            f"line_width=2.0, line_dash=None",
             False,
             {
                 "x": None,
@@ -330,7 +331,8 @@ def test_fill(widget, kwargs, args_repr, has_move, properties):
                 "line_width": 4.5,
                 "line_dash": [2, 7],
             },
-            f"x=10, y=20, color={REBECCA_PURPLE_COLOR}, line_width=4.5, line_dash=[2, 7]",
+            f"x=10, y=20, color={REBECCA_PURPLE_COLOR}, "
+            f"line_width=4.5, line_dash=[2, 7]",
             True,
             {
                 "x": 10,

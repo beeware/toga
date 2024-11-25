@@ -15,33 +15,38 @@ from java.lang import Runnable
 # Some methods in this file are based on CPython's implementation.
 # Per https://github.com/python/cpython/blob/master/LICENSE , re-use is permitted
 # via the Python Software Foundation License Version 2, which includes inclusion
-# into this project under its BSD license terms so long as we retain this copyright notice:
-# Copyright (c) 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013,
-# 2014, 2015, 2016, 2017, 2018, 2019, 2020 Python Software Foundation; All Rights Reserved.
+# into this project under its BSD license terms so long as we retain this copyright
+# notice:
+# Copyright (c) 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012,
+# 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Python Software Foundation;
+# All Rights Reserved.
 
 
 class AndroidEventLoop(asyncio.SelectorEventLoop):
-    # `AndroidEventLoop` exists to support starting the Python event loop cooperatively with
-    # the built-in Android event loop. Since it's cooperative, it has a `run_forever_cooperatively()`
-    # method which returns immediately. This is is different from the parent class's `run_forever()`,
-    # which blocks.
+    # `AndroidEventLoop` exists to support starting the Python event loop cooperatively
+    # with the built-in Android event loop. Since it's cooperative,
+    # it has a `run_forever_cooperatively()` method which returns immediately.
+    # This is is different from the parent class's `run_forever()`, which blocks.
     #
-    # In some cases, for simplicity of implementation, this class reaches into the internals of the
-    # parent and grandparent classes.
+    # In some cases, for simplicity of implementation, this class reaches into the
+    # internals of the parent and grandparent classes.
     #
-    # A Python event loop handles two kinds of tasks. It needs to run delayed tasks after waiting
-    # the right amount of time, and it needs to do I/O when file descriptors are ready for I/O.
+    # A Python event loop handles two kinds of tasks. It needs to run delayed tasks
+    # after waiting the right amount of time, and it needs to do I/O when file
+    # descriptors are ready for I/O.
     #
-    # `SelectorEventLoop` uses an approach we **cannot** use: it calls the `select()` method
-    # to block waiting for specific file descriptors to be come ready for I/O, or a timeout
-    # corresponding to the soonest delayed task, whichever occurs sooner.
+    # `SelectorEventLoop` uses an approach we **cannot** use: it calls the `select()`
+    # method to block waiting for specific file descriptors to be come ready for I/O,
+    # or a timeout corresponding to the soonest delayed task, whichever occurs sooner.
     #
-    # To handle delayed tasks, `AndroidEventLoop` asks the Android event loop to wake it up when
-    # its soonest delayed task is ready. To accomplish this, it relies on a `SelectorEventLoop`
-    # implementation detail: `_scheduled` is a collection of tasks sorted by soonest wakeup time.
+    # To handle delayed tasks, `AndroidEventLoop` asks the Android event loop to wake
+    # it up when its soonest delayed task is ready. To accomplish this,
+    # it relies on a `SelectorEventLoop` implementation detail: `_scheduled` is a
+    # collection of tasks sorted by soonest wakeup time.
     #
-    # To handle waking up when it's possible to do I/O, `AndroidEventLoop` will register file descriptors
-    # with the Android event loop so the platform can wake it up accordingly. It does not do this yet.
+    # To handle waking up when it's possible to do I/O, `AndroidEventLoop` will
+    # register file descriptors with the Android event loop so the platform can wake it
+    # up accordingly. It does not do this yet.
     def __init__(self):
         # Tell the parent constructor to use our custom Selector.
         selector = AndroidSelector(self)
@@ -49,22 +54,24 @@ class AndroidEventLoop(asyncio.SelectorEventLoop):
         # Create placeholders for lazily-created objects.
         self.android_interop = AndroidInterop()
 
-    # Override parent `_call_soon()` to ensure Android wakes us up to do the delayed task.
+    # Override parent `_call_soon()` to ensure Android wakes us up to do the delayed
+    # task.
     def _call_soon(self, callback, args, context):
         ret = super()._call_soon(callback, args, context)
         self.enqueue_android_wakeup_for_delayed_tasks()
         return ret
 
-    # Override parent `_add_callback()` to ensure Android wakes us up to do the delayed task.
+    # Override parent `_add_callback()` to ensure Android wakes us up to do the delayed
+    # task.
     def _add_callback(self, handle):
         ret = super()._add_callback(handle)
         self.enqueue_android_wakeup_for_delayed_tasks()
         return ret
 
     def run_forever_cooperatively(self):
-        """Configure the event loop so it is started, doing as little work as possible to
-        ensure that. Most Android interop objects are created lazily so that the cost of
-        event loop interop is not paid by apps that don't use the event loop."""
+        """Configure the event loop so it is started, doing as little work as possible
+        to ensure that. Most Android interop objects are created lazily so that the cost
+        of event loop interop is not paid by apps that don't use the event loop."""
         # Based on `BaseEventLoop.run_forever()` in CPython.
         if self.is_running():
             raise RuntimeError(
@@ -114,20 +121,23 @@ class AndroidEventLoop(asyncio.SelectorEventLoop):
             return
 
         # Ask Android to wake us up to run delayed tasks. Running delayed tasks also
-        # checks for other tasks that require wakeup by calling this method. The fact that
-        # running delayed tasks can trigger the next wakeup is what makes this event loop a "loop."
+        # checks for other tasks that require wakeup by calling this method. The fact
+        # that running delayed tasks can trigger the next wakeup is what makes this
+        # event loop a "loop."
         self.android_interop.call_later(self.run_delayed_tasks, timeout * 1000)
 
     def _set_coroutine_origin_tracking(self, debug):
-        # If running on Python 3.7 or 3.8, integrate with upstream event loop's debug feature, allowing
-        # unawaited coroutines to have some useful info logged. See https://bugs.python.org/issue32591
+        # If running on Python 3.7 or 3.8, integrate with upstream event loop's debug
+        # feature, allowing unawaited coroutines to have some useful info logged.
+        # See https://bugs.python.org/issue32591
         if hasattr(super(), "_set_coroutine_origin_tracking"):  # pragma: no cover
             super()._set_coroutine_origin_tracking(debug)
 
     def _get_next_delayed_task_wakeup(self):
-        """Compute the time to sleep before we should be woken up to handle delayed tasks."""
-        # This is based heavily on the CPython's implementation of `BaseEventLoop._run_once()`
-        # before it blocks on `select()`.
+        """Compute the time to sleep before we should be woken up
+        to handle delayed tasks."""
+        # This is based heavily on the CPython's implementation of
+        # `BaseEventLoop._run_once()` before it blocks on `select()`.
         _MIN_SCHEDULED_TIMER_HANDLES = 100
         _MIN_CANCELLED_TIMER_HANDLES_FRACTION = 0.5
         MAXIMUM_SELECT_TIMEOUT = 24 * 3600
@@ -174,8 +184,8 @@ class AndroidEventLoop(asyncio.SelectorEventLoop):
         check if there are more delayed tasks to execute in the future; if so, schedule
         the next wakeup.
         """
-        # Based heavily on `BaseEventLoop._run_once()` from CPython -- specifically, the part
-        # after blocking on `select()`.
+        # Based heavily on `BaseEventLoop._run_once()` from CPython -- specifically,
+        # the part after blocking on `select()`.
         # Handle 'later' callbacks that are ready.
         end_time = self.time() + self._clock_resolution
         while self._scheduled:
@@ -223,9 +233,10 @@ class AndroidInterop:
     """Encapsulate details of Android event loop cooperation."""
 
     def __init__(self):
-        # `_runnable_by_fn` is a one-to-one mapping from Python callables to Java Runnables.
-        # This allows us to avoid creating more than one Java object per Python callable, which
-        # would prevent removeCallbacks from working.
+        # `_runnable_by_fn` is a one-to-one mapping from Python callables to
+        # Java Runnables.
+        # This allows us to avoid creating more than one Java object per Python
+        # callable, which would prevent removeCallbacks from working.
         self._runnable_by_fn = {}
         # The handler must be created on the Android UI thread.
         self.handler = Handler()
@@ -238,7 +249,8 @@ class AndroidInterop:
         return self._runnable_by_fn[fn]
 
     def call_later(self, fn, timeout_millis):
-        """Enqueue a Python callable `fn` to be run after `timeout_millis` milliseconds."""
+        """Enqueue a Python callable `fn` to be run after
+        `timeout_millis` milliseconds."""
         runnable = self.get_or_create_runnable(fn)
         self.handler.removeCallbacks(runnable)
         self.handler.postDelayed(runnable, int(timeout_millis))
@@ -266,7 +278,8 @@ class AndroidSelector(selectors.SelectSelector):
         self.loop = loop
         # Lazily-created AndroidSelectorFileDescriptorEventsListener.
         self._file_descriptor_event_listener = None
-        # Keep a `_debug` flag so that a developer can modify it for more debug printing.
+        # Keep a `_debug` flag so that a developer can modify it for more debug
+        # printing.
         self._debug = False
 
     @property
@@ -312,7 +325,8 @@ class AndroidSelector(selectors.SelectSelector):
             if key is None:  # pragma: no cover
                 if self._debug:
                     print(
-                        "reregister_with_android_soon reregister_temporarily_ignored_fd exiting early; key=None"
+                        "reregister_with_android_soon "
+                        "reregister_temporarily_ignored_fd exiting early; key=None"
                     )
                 return
             if self._debug:  # pragma: no cover
@@ -323,7 +337,8 @@ class AndroidSelector(selectors.SelectSelector):
                 )
             self.register_with_android(key.fd, key.events)
 
-        # Use `call_later(0, fn)` to ensure the Python event loop runs to completion before re-registering.
+        # Use `call_later(0, fn)` to ensure the Python event loop runs to
+        # completion before re-registering.
         self.loop.call_later(0, _reregister)
 
     def register_with_android(self, fileobj, events):
@@ -333,11 +348,13 @@ class AndroidSelector(selectors.SelectSelector):
                     fileobj=fileobj, events=events
                 )
             )
-        # `events` is a bitset comprised of `selectors.EVENT_READ` and `selectors.EVENT_WRITE`.
+        # `events` is a bitset comprised of `selectors.EVENT_READ` and
+        # `selectors.EVENT_WRITE`.
         # Register this FD for read and/or write events from Android.
         self.message_queue.addOnFileDescriptorEventListener(
             _create_java_fd(fileobj),
-            events,  # Passing `events` as-is because Android and Python use the same values for read & write events.
+            events,  # Passing `events` as-is because Android and Python use
+            # the same values for read & write events.
             self.file_descriptor_event_listener,
         )
 
@@ -362,7 +379,8 @@ class AndroidSelector(selectors.SelectSelector):
         if key_event_pairs:
             if self._debug:  # pragma: no cover
                 print(
-                    "handle_fd_wakeup() calling parent for key_event_pairs={key_event_pairs}".format(
+                    "handle_fd_wakeup() calling parent for "
+                    "key_event_pairs={key_event_pairs}".format(
                         key_event_pairs=key_event_pairs
                     )
                 )
@@ -370,7 +388,8 @@ class AndroidSelector(selectors.SelectSelector):
             self.loop._process_events(key_event_pairs)
         else:  # pragma: no cover
             print(
-                "Warning: handle_fd_wakeup(): unnecessary wakeup fd={fd} events={events} key={key}".format(
+                "Warning: handle_fd_wakeup(): unnecessary wakeup "
+                "fd={fd} events={events} key={key}".format(
                     fd=fd, events=events, key=key
                 )
             )
@@ -389,22 +408,26 @@ class AndroidSelector(selectors.SelectSelector):
 class AndroidSelectorFileDescriptorEventsListener(
     dynamic_proxy(MessageQueue.OnFileDescriptorEventListener)
 ):
-    """Notify an `AndroidSelector` instance when file descriptors become readable/writable."""
+    """Notify an `AndroidSelector` instance when file descriptors
+    become readable/writable."""
 
     def __init__(self, android_selector):
         super().__init__()
         self.android_selector = android_selector
-        # Keep a `_debug` flag so that a developer can modify it for more debug printing.
+        # Keep a `_debug` flag so that a developer can modify it for more debug
+        # printing.
         self._debug = False
 
     def onFileDescriptorEvents(self, fd_obj, events):
-        """Receive a Java FileDescriptor object and notify the Python event loop that the FD
+        """Receive a Java FileDescriptor object and notify the Python event loop that
+        the FD
         is ready for read and/or write.
 
-        As an implementation detail, this relies on the fact that Android EVENT_INPUT and Python
-        selectors.EVENT_READ have the same value (1) and Android EVENT_OUTPUT and Python
-        selectors.EVENT_WRITE have the same value (2)."""
-        # Call hidden (non-private) method to get the numeric FD, so we can pass that to Python.
+        As an implementation detail, this relies on the fact that Android EVENT_INPUT
+        and Python selectors.EVENT_READ have the same value (1) and Android EVENT_OUTPUT
+        and Python selectors.EVENT_WRITE have the same value (2)."""
+        # Call hidden (non-private) method to get the numeric FD, so we can pass that
+        # to Python.
         fd = getattr(fd_obj, "getInt$")()
         if self._debug:  # pragma: no cover
             print(
@@ -414,8 +437,8 @@ class AndroidSelectorFileDescriptorEventsListener(
             )
         # Tell the Python event loop that the FD is ready for read and/or write.
         self.android_selector.handle_fd_wakeup(fd, events)
-        # Tell Android we don't want any more wake-ups from this FD until the event loop runs.
-        # To do that, we return 0.
+        # Tell Android we don't want any more wake-ups from this FD until the event
+        # loop runs. To do that, we return 0.
         #
         # We also need Python to request wake-ups once the event loop has finished.
         self.android_selector.reregister_with_android_soon(fd)
@@ -424,9 +447,12 @@ class AndroidSelectorFileDescriptorEventsListener(
 
 def _create_java_fd(int_fd):
     """Given a numeric file descriptor, create a `java.io.FileDescriptor` object."""
-    # On Android, the class exposes hidden (non-private) methods `getInt$()` and `setInt$()`. Because
-    # they aren't valid Python identifier names, we need to use `getattr()` to grab them.
-    # See e.g. https://android.googlesource.com/platform/prebuilts/fullsdk/sources/android-28/+/refs/heads/master/java/io/FileDescriptor.java#149 # noqa: E501
+    # On Android, the class exposes hidden (non-private) methods `getInt$()` and
+    # `setInt$()`. Because they aren't valid Python identifier names, we need to use
+    # `getattr()` to grab them.
+    # See e.g. https://android.googlesource.com
+    #   /platform/prebuilts/fullsdk/sources/android-28/+/refs/heads/master
+    #   /java/io/FileDescriptor.java#149
     java_fd = FileDescriptor()
     getattr(java_fd, "setInt$")(int_fd)
     return java_fd

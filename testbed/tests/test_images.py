@@ -59,7 +59,8 @@ async def test_buffer_image(app):
 
 
 async def test_pil_raw_and_data_image(app):
-    "An image can be created from PIL, platform's raw representation and `toga.Image` data"
+    "An image can be created from PIL,"
+    "platform's raw representation and `toga.Image` data"
     # Generate an image using pillow
     pil_image = PIL_Image.new("RGBA", size=(110, 30))
     draw_context = PIL_ImageDraw.Draw(pil_image)

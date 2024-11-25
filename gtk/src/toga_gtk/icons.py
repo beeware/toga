@@ -20,13 +20,13 @@ class Icon:
             usr = Path(sys.executable).parent.parent
             path = {
                 size: (
-                    usr
-                    / f"share/icons/hicolor/{size}x{size}/apps/{toga.App.app.app_id}.png"
+                    usr / f"share/icons/hicolor/"
+                    f"{size}x{size}/apps/{toga.App.app.app_id}.png"
                 )
                 for size in self.SIZES
                 if (
-                    usr
-                    / f"share/icons/hicolor/{size}x{size}/apps/{toga.App.app.app_id}.png"
+                    usr / f"share/icons/hicolor/"
+                    f"{size}x{size}/apps/{toga.App.app.app_id}.png"
                 ).is_file()
             }
 

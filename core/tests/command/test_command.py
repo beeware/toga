@@ -58,8 +58,8 @@ def test_create():
     assert cmd.action._raw is None
 
     assert (
-        repr(cmd)
-        == "<Command text='Test command' group=<Group text='Commands' order=30> section=0 order=0>"
+        repr(cmd) == "<Command text='Test command' "
+        "group=<Group text='Commands' order=30> section=0 order=0>"
     )
 
 
@@ -153,8 +153,8 @@ def test_create_explicit(app):
     assert cmd.action._raw == handler
 
     assert (
-        repr(cmd)
-        == "<Command text='Test command' group=<Group text='Test group' order=10> section=3 order=4>"
+        repr(cmd) == "<Command text='Test command' "
+        "group=<Group text='Test group' order=10> section=3 order=4>"
     )
 
 

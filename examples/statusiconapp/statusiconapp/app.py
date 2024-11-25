@@ -35,7 +35,8 @@ class ExampleStatusIconApp(toga.App):
             order=1,
         )
 
-        # Create a submenu on the first status menu; the status icon is the parent group.
+        # Create a submenu on the first status menu; the status icon
+        # is the parent group.
         sub_menu = toga.Group("Sub Menu", parent=status_1, order=3)
         cmd3 = toga.Command(
             self.do_stuff,
@@ -50,7 +51,8 @@ class ExampleStatusIconApp(toga.App):
             group=sub_menu,
         )
 
-        # Two commands for the second status icon. The status icon can be retrieved by ID,
+        # Two commands for the second status icon. The status
+        # icon can be retrieved by ID,
         # and by index.
         cmd5 = toga.Command(
             self.do_stuff,

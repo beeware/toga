@@ -70,7 +70,8 @@ KEYEVENT_KEYS = {
     KeyEvent.KEYCODE_Y: Key.Y,
     KeyEvent.KEYCODE_Z: Key.Z,
     KeyEvent.KEYCODE_TAB: Key.TAB,
-    # KeyEvent.KEYCODE_LEFT_BRACKET: Key.OPEN_BRACKET,TODO Create handling for num row special keys
+    # KeyEvent.KEYCODE_LEFT_BRACKET: Key.OPEN_BRACKET,
+    #   TODO Create handling for num row special keys
     # KeyEvent.KEYCODE_RIGHT_BRACKET: Key.CLOSE_BRACKET,
     # KeyEvent.KEYCODE_BACKSLASH: Key.BACKSLASH,
     # KeyEvent.KEY_braceleft: Key.OPEN_BRACE,

@@ -25,7 +25,8 @@ class _FontConfig:
             self.config = fontconfig.FcConfigGetCurrent()
         else:  # pragma: no cover
             print(
-                "Unable to initialize FontConfig library. Is libfontconfig.so.1 on your LD_LIBRARY_PATH?"
+                "Unable to initialize FontConfig library. "
+                "Is libfontconfig.so.1 on your LD_LIBRARY_PATH?"
             )
             self.config = None
 

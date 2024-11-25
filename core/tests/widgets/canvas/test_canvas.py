@@ -165,31 +165,36 @@ def test_deprecated_drawing_operations(widget):
 
     with pytest.warns(
         DeprecationWarning,
-        match=r"Direct canvas operations have been deprecated; use context.begin_path()",
+        match=r"Direct canvas operations have been deprecated; "
+        r"use context.begin_path()",
     ):
         widget.new_path()
 
     with pytest.warns(
         DeprecationWarning,
-        match=r"Direct canvas operations have been deprecated; use context.move_to()",
+        match=r"Direct canvas operations have been deprecated; "
+        r"use context.move_to()",
     ):
         widget.move_to(10, 20)
 
     with pytest.warns(
         DeprecationWarning,
-        match=r"Direct canvas operations have been deprecated; use context.line_to()",
+        match=r"Direct canvas operations have been deprecated; "
+        r"use context.line_to()",
     ):
         widget.line_to(10, 20)
 
     with pytest.warns(
         DeprecationWarning,
-        match=r"Direct canvas operations have been deprecated; use context.bezier_curve_to()",
+        match=r"Direct canvas operations have been deprecated; "
+        r"use context.bezier_curve_to()",
     ):
         widget.bezier_curve_to(1, 2, 3, 4, 10, 20)
 
     with pytest.warns(
         DeprecationWarning,
-        match=r"Direct canvas operations have been deprecated; use context.quadratic_curve_to()",
+        match=r"Direct canvas operations have been deprecated; "
+        r"use context.quadratic_curve_to()",
     ):
         widget.quadratic_curve_to(1, 2, 10, 20)
 
@@ -213,7 +218,8 @@ def test_deprecated_drawing_operations(widget):
 
     with pytest.warns(
         DeprecationWarning,
-        match=r"Direct canvas operations have been deprecated; use context.write_text()",
+        match=r"Direct canvas operations have been deprecated; "
+        r"use context.write_text()",
     ):
         widget.write_text("Hello World", 10, 20, Font("Cutive", 37))
 
@@ -237,7 +243,8 @@ def test_deprecated_drawing_operations(widget):
 
     with pytest.warns(
         DeprecationWarning,
-        match=r"Direct canvas operations have been deprecated; use context.reset_transform()",
+        match=r"Direct canvas operations have been deprecated; "
+        r"use context.reset_transform()",
     ):
         widget.reset_transform()
 

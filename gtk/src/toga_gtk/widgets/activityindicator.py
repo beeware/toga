@@ -16,7 +16,8 @@ class ActivityIndicator(Widget):
         self.native.stop()
 
     def rehint(self):
-        # print("REHINT", self, self.native.get_preferred_width(), self.native.get_preferred_height())
+        # print("REHINT", self, self.native.get_preferred_width(),
+        # self.native.get_preferred_height())
         width = self.native.get_preferred_width()
         height = self.native.get_preferred_height()
 

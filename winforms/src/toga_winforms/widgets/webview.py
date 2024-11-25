@@ -110,7 +110,8 @@ class WebView(Widget):
                     WinForms.MessageBoxIcon.Error,
                 )
                 webbrowser.open(
-                    "https://developer.microsoft.com/en-us/microsoft-edge/webview2/#download"
+                    "https://developer.microsoft.com"
+                    "/en-us/microsoft-edge/webview2/#download"
                 )
 
         else:  # pragma: nocover

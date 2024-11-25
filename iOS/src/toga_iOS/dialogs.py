@@ -17,7 +17,7 @@ class BaseDialog:
 
         if self.native:
             # Don't differentiate between app and window-modal dialogs.
-            toga.App.app.current_window._impl.native.rootViewController.presentViewController(
+            toga.App.app.current_window._impl.native.rootViewController.presentViewController(  # noqa: E501
                 self.native,
                 animated=False,
                 completion=None,

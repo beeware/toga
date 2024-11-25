@@ -83,7 +83,8 @@ class Camera:
             # `permission.camera` in Briefcase). No-cover because we can't manufacture
             # this condition in testing.
             raise RuntimeError(
-                "Application metadata does not declare that the app will use the camera."
+                "Application metadata does not declare that the "
+                "app will use the camera."
             )
 
     def has_permission(self, allow_unknown=False):
@@ -160,7 +161,7 @@ class Camera:
             self.native.delegate.result = result
 
             # Show the pane
-            toga.App.app.current_window._impl.native.rootViewController.presentViewController(
+            toga.App.app.current_window._impl.native.rootViewController.presentViewController(  # noqa: E501
                 self.native, animated=True, completion=None
             )
         else:

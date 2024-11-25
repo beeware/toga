@@ -40,7 +40,10 @@ class Node(Row[T]):
         if self._children is not None:
             descriptor += f"; {len(self)} children"
 
-        return f"<{'Leaf ' if self._children is None else ''}Node {id(self):x} {descriptor}>"
+        return (
+            f"<{'Leaf ' if self._children is None else ''}Node "
+            f"{id(self):x} {descriptor}>"
+        )
 
     ######################################################################
     # Methods required by the TreeSource interface

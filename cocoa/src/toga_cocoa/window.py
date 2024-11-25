@@ -175,7 +175,8 @@ class Window:
         self.container = Container(on_refresh=self.content_refreshed)
         self.native.contentView = self.container.native
 
-        # Ensure that the container renders it's background in the same color as the window.
+        # Ensure that the container renders it's background in the
+        # same color as the window.
         self.native.wantsLayer = True
         self.container.native.backgroundColor = self.native.backgroundColor
 

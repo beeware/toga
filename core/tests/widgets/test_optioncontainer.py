@@ -126,7 +126,8 @@ def test_widget_create_invalid_content(value):
     with pytest.raises(
         ValueError,
         match=(
-            r"Content items must be an OptionItem instance, or tuples of \(title, widget\), "
+            r"Content items must be an OptionItem instance, "
+            r"or tuples of \(title, widget\), "
             r"\(title, widget, icon\), or \(title, widget, icon, enabled\)"
         ),
     ):

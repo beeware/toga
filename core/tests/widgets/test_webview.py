@@ -193,7 +193,8 @@ def test_evaluate_javascript(widget):
     # Attempting to use or compare the result raises an error
     with pytest.raises(
         RuntimeError,
-        match=r"Can't check JavaScript result directly; use await or an on_result handler",
+        match=r"Can't check JavaScript result directly; "
+        r"use await or an on_result handler",
     ):
         result == 42
 

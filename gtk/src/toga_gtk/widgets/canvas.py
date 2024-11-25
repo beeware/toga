@@ -299,7 +299,8 @@ class Canvas(Widget):
 
     # Rehint
     def rehint(self):
-        # print("REHINT", self, self.native.get_preferred_width(), self.native.get_preferred_height())
+        # print("REHINT", self, self.native.get_preferred_width(),
+        # self.native.get_preferred_height())
         # width = self.native.get_allocation().width
         # height = self.native.get_allocation().height
         width = self.interface._MIN_WIDTH

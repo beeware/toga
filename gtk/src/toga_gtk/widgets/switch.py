@@ -52,7 +52,8 @@ class Switch(Widget):
         self.apply_css("font", get_font_css(font), native=self.native_label)
 
     def rehint(self):
-        # print("REHINT", self, self.native.get_preferred_width(), self.native.get_preferred_height())
+        # print("REHINT", self, self.native.get_preferred_width(),
+        #       self.native.get_preferred_height())
         label_width = self.native_label.get_preferred_width()
         label_height = self.native_label.get_preferred_height()
 

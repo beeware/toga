@@ -93,7 +93,7 @@ class NumberInput(Widget):
         # Add constraints to lay out the input and stepper.
         # Stepper is always top right corner.
         self.native.addConstraint(
-            NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
+            NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # noqa: E501
                 self.native,
                 NSLayoutAttributeTop,
                 NSLayoutRelationEqual,
@@ -104,7 +104,7 @@ class NumberInput(Widget):
             )
         )
         self.native.addConstraint(
-            NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
+            NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # noqa: E501
                 self.native,
                 NSLayoutAttributeRight,
                 NSLayoutRelationEqual,
@@ -117,7 +117,7 @@ class NumberInput(Widget):
 
         # Stepper height matches container box height
         self.native.addConstraint(
-            NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
+            NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # noqa: E501
                 self.native,
                 NSLayoutAttributeBottom,
                 NSLayoutRelationEqual,
@@ -130,7 +130,7 @@ class NumberInput(Widget):
 
         # Input is always left, centred vertically on the stepper
         self.native.addConstraint(
-            NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
+            NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # noqa: E501
                 self.native_stepper,
                 NSLayoutAttributeCenterY,
                 NSLayoutRelationEqual,
@@ -141,7 +141,7 @@ class NumberInput(Widget):
             )
         )
         self.native.addConstraint(
-            NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
+            NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # noqa: E501
                 self.native,
                 NSLayoutAttributeLeft,
                 NSLayoutRelationEqual,
@@ -154,7 +154,7 @@ class NumberInput(Widget):
 
         # Stepper and input meet in the middle with a small gap
         self.native.addConstraint(
-            NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
+            NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # noqa: E501
                 self.native_stepper,
                 NSLayoutAttributeLeft,
                 NSLayoutRelationEqual,
@@ -183,7 +183,8 @@ class NumberInput(Widget):
 
     def has_focus(self):
         # When the NSTextField gets focus, a field editor is created, and that editor
-        # has the original widget as the delegate. The first responder is the Field Editor.
+        # has the original widget as the delegate. The first responder is the
+        # Field Editor.
         return isinstance(self.native.window.firstResponder, NSTextView) and (
             self.native.window.firstResponder.delegate == self.native_input
         )

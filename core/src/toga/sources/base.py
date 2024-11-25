@@ -33,7 +33,8 @@ class Listener(Protocol):
 
 
 class Source:
-    """A base class for data sources, providing an implementation of data notifications."""
+    """A base class for data sources,
+    providing an implementation of data notifications."""
 
     def __init__(self) -> None:
         self._listeners: list[Listener] = []

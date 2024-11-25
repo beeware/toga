@@ -13,7 +13,8 @@ class ScrollContainer(Widget):
         self.native.get_vadjustment().connect("changed", self.gtk_on_changed)
 
         # Set this minimum size of scroll windows because we must reserve space for
-        # scrollbars when splitter resized. See, https://gitlab.gnome.org/GNOME/gtk/-/issues/210
+        # scrollbars when splitter resized. See,
+        # https://gitlab.gnome.org/GNOME/gtk/-/issues/210
         self.native.set_min_content_width(self.interface._MIN_WIDTH)
         self.native.set_min_content_height(self.interface._MIN_HEIGHT)
 

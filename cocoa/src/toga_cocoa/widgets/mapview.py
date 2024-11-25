@@ -131,9 +131,9 @@ class MapView(Widget):
 
     def set_zoom(self, zoom):
         if self.backlog is None:
-            # The zoom level indicates how many degrees of longitude will be displayed in a
-            # 256 pixel horizontal range. Determine how many degrees of longitude that is,
-            # and scale to the size of the visible horizontal space.
+            # The zoom level indicates how many degrees of longitude will be displayed
+            # in a 256 pixel horizontal range. Determine how many degrees of longitude
+            # that is, and scale to the size of the visible horizontal space.
 
             # The horizontal axis can't show more than 360 degrees of longitude, so clip
             # the range to that value. The OSM zoom level is based on 360 degrees of
@@ -144,8 +144,8 @@ class MapView(Widget):
             )
 
             # If we're currently panning to a new location, use the desired *future*
-            # location as the center of the zoom region. Otherwise use the current center
-            # coordinate.
+            # location as the center of the zoom region. Otherwise use the current
+            # center coordinate.
             center = (
                 self.future_location
                 if self.future_location is not None
