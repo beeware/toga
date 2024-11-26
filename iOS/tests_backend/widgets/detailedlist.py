@@ -30,16 +30,14 @@ class DetailedListProbe(SimpleProbe):
     def row_count(self):
         # Need to use the long form of this method because the first argument when used
         # as a selector is ambiguous with a property of the same name on the object.
-        return int(
-            self.native.delegate.tableView_numberOfRowsInSection_(self.native, 0)
-        )
+        return int(self.native.delegate.tableView(self.native, numberOfRowsInSection=0))
 
     def assert_cell_content(self, row, title, subtitle, icon=None):
         # Need to use the long form of this method because the first argument when used
         # as a selector is ambiguous with a property of the same name on the object.
-        cell = self.native.delegate.tableView_cellForRowAtIndexPath_(
+        cell = self.native.delegate.tableView(
             self.native,
-            NSIndexPath.indexPathForRow(row, inSection=0),
+            cellForRowAtIndexPath=NSIndexPath.indexPathForRow(row, inSection=0),
         )
         assert str(cell.textLabel.text) == title
         assert str(cell.detailTextLabel.text) == subtitle
@@ -140,8 +138,9 @@ class DetailedListProbe(SimpleProbe):
         path = NSIndexPath.indexPathForRow(row, inSection=0)
         # Need to use the long form of this method because the first argument when used
         # as a selector is ambiguous with a property of the same name on the object.
-        config = self.native.delegate.tableView_trailingSwipeActionsConfigurationForRowAtIndexPath_(  # noqa: E501
-            self.native, path
+        config = self.native.delegate.tableView(
+            self.native,
+            trailingSwipeActionsConfigurationForRowAtIndexPath=path,
         )
 
         if active:
@@ -159,8 +158,9 @@ class DetailedListProbe(SimpleProbe):
         path = NSIndexPath.indexPathForRow(row, inSection=0)
         # Need to use the long form of this method because the first argument when used
         # as a selector is ambiguous with a property of the same name on the object.
-        config = self.native.delegate.tableView_leadingSwipeActionsConfigurationForRowAtIndexPath_(  # noqa: E501
-            self.native, path
+        config = self.native.delegate.tableView(
+            self.native,
+            leadingSwipeActionsConfigurationForRowAtIndexPath=path,
         )
 
         if active:

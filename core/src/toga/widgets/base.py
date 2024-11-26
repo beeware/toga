@@ -258,8 +258,8 @@ class Widget(Node):
 
     @property
     def enabled(self) -> bool:
-        """Is the widget currently enabled?
-        i.e., can the user interact with the widget?"""
+        """Is the widget currently enabled? i.e., can the user interact with the
+        widget?"""
         return self._impl.get_enabled()
 
     @enabled.setter

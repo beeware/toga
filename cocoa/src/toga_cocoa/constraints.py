@@ -62,7 +62,7 @@ class Constraints:
         self._container = value
         if value is not None:
             # print(f"Add constraints for {self.widget} in {self.container}
-            # {self.widget.interface.layout})
+            # {self.widget.interface.layout}")
             self.left_constraint = NSLayoutConstraint.constraintWithItem(
                 self.widget.native,
                 attribute__1=NSLayoutAttributeLeft,

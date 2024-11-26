@@ -9,8 +9,8 @@ class ExampleWebView(toga.App):
 
     def on_good_js(self, widget, **kwargs):
         self.webview.evaluate_javascript(
-            "document.body.innerHTML = "
-            '"I can invoke JS. User agent is " + navigator.userAgent;'
+            'document.body.innerHTML = "I can invoke JS. User agent is "'
+            "+ navigator.userAgent;"
         )
 
     def on_bad_js(self, widget, **kwargs):
@@ -37,8 +37,10 @@ class ExampleWebView(toga.App):
     def on_set_content(self, widget, **kwargs):
         self.webview.set_content(
             "https://example.com",
-            "<b>I'm feeling very "
-            "<span style='background-color: white;'>content</span></b>",
+            (
+                "<b>I'm feeling very "
+                "<span style='background-color: white;'>content</span></b>"
+            ),
         )
 
     def on_get_agent(self, widget, **kwargs):

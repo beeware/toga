@@ -274,18 +274,17 @@ class Camera:
 
     def has_permission(self, allow_unknown=False):
         # To reset permissions to "factory" status, run:
-        #     tccutil reset Camera
+        #   tccutil reset Camera
         #
         # To reset a single app:
-        #     tccutil reset Camera <bundleID>
+        #   tccutil reset Camera <bundleID>
         #
-        # e.g.
-        #     tccutil reset Camera org.beeware.appname
-        #         # for a bundled app
-        #     tccutil reset Camera com.microsoft.VSCode
-        #         # for code running in Visual Studio
-        #     tccutil reset Camera com.apple.Terminal
-        #         # for code running in the Apple terminal
+        # e.g. For a bundled app:
+        #   tccutil reset Camera org.beeware.appname
+        # For code running in Visual Studio:
+        #   tccutil reset Camera com.microsoft.VSCode
+        # For code running in the Apple terminal:
+        #   tccutil reset Camera com.apple.Terminal
 
         if allow_unknown:
             valid_values = {

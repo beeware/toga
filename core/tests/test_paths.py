@@ -39,22 +39,21 @@ def assert_paths(output, app_path, app_name):
     results = output.splitlines()
     assert f"app.paths.app={app_path.resolve()}" in results
     assert (
-        f"app.paths.config="
-        f"{(Path.home() / 'config' / f'org.testbed.{app_name}').resolve()}" in results
-    )
+        "app.paths.config="
+        f"{(Path.home() / 'config' / f'org.testbed.{app_name}').resolve()}"
+    ) in results
     assert (
-        f"app.paths.data="
+        "app.paths.data="
         f"{(Path.home() / 'user_data' / f'org.testbed.{app_name}').resolve()}"
-        in results
-    )
+    ) in results
     assert (
-        f"app.paths.cache="
-        f"{(Path.home() / 'cache' / f'org.testbed.{app_name}').resolve()}" in results
-    )
+        "app.paths.cache="
+        f"{(Path.home() / 'cache' / f'org.testbed.{app_name}').resolve()}"
+    ) in results
     assert (
-        f"app.paths.logs="
-        f"{(Path.home() / 'logs' / f'org.testbed.{app_name}').resolve()}" in results
-    )
+        "app.paths.logs="
+        f"{(Path.home() / 'logs' / f'org.testbed.{app_name}').resolve()}"
+    ) in results
     assert f"app.paths.toga={Path(toga.__file__).parent.resolve()}" in results
 
 

@@ -33,8 +33,8 @@ class Listener(Protocol):
 
 
 class Source:
-    """A base class for data sources,
-    providing an implementation of data notifications."""
+    """A base class for data sources, providing an implementation of data
+    notifications."""
 
     def __init__(self) -> None:
         self._listeners: list[Listener] = []
@@ -50,8 +50,8 @@ class Source:
     def add_listener(self, listener: Listener) -> None:
         """Add a new listener to this data source.
 
-        If the listener is already registered on this data source, the
-        request to add is ignored.
+        If the listener is already registered on this data source, the request to add is
+        ignored.
 
         :param listener: The listener to add
         """

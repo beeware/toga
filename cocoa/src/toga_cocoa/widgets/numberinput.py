@@ -93,75 +93,75 @@ class NumberInput(Widget):
         # Add constraints to lay out the input and stepper.
         # Stepper is always top right corner.
         self.native.addConstraint(
-            NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # noqa: E501
+            NSLayoutConstraint.constraintWithItem(
                 self.native,
-                NSLayoutAttributeTop,
-                NSLayoutRelationEqual,
-                self.native_stepper,
-                NSLayoutAttributeTop,
-                1.0,
-                0,
+                attribute__from=NSLayoutAttributeTop,
+                relatedBy=NSLayoutRelationEqual,
+                toItem=self.native_stepper,
+                attribute__to=NSLayoutAttributeTop,
+                multiplier=1.0,
+                _constant=0,
             )
         )
         self.native.addConstraint(
-            NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # noqa: E501
+            NSLayoutConstraint.constraintWithItem(
                 self.native,
-                NSLayoutAttributeRight,
-                NSLayoutRelationEqual,
-                self.native_stepper,
-                NSLayoutAttributeRight,
-                1.0,
-                0,
+                attribute__from=NSLayoutAttributeRight,
+                relatedBy=NSLayoutRelationEqual,
+                toItem=self.native_stepper,
+                attribute__to=NSLayoutAttributeRight,
+                multiplier=1.0,
+                _constant=0,
             )
         )
 
         # Stepper height matches container box height
         self.native.addConstraint(
-            NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # noqa: E501
+            NSLayoutConstraint.constraintWithItem(
                 self.native,
-                NSLayoutAttributeBottom,
-                NSLayoutRelationEqual,
-                self.native_stepper,
-                NSLayoutAttributeBottom,
-                1.0,
-                0,
+                attribute__from=NSLayoutAttributeBottom,
+                relatedBy=NSLayoutRelationEqual,
+                toItem=self.native_stepper,
+                attribute__to=NSLayoutAttributeBottom,
+                multiplier=1.0,
+                _constant=0,
             )
         )
 
         # Input is always left, centred vertically on the stepper
         self.native.addConstraint(
-            NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # noqa: E501
+            NSLayoutConstraint.constraintWithItem(
                 self.native_stepper,
-                NSLayoutAttributeCenterY,
-                NSLayoutRelationEqual,
-                self.native_input,
-                NSLayoutAttributeCenterY,
-                1.0,
-                0,
+                attribute__from=NSLayoutAttributeCenterY,
+                relatedBy=NSLayoutRelationEqual,
+                toItem=self.native_input,
+                attribute__to=NSLayoutAttributeCenterY,
+                multiplier=1.0,
+                _constant=0,
             )
         )
         self.native.addConstraint(
-            NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # noqa: E501
+            NSLayoutConstraint.constraintWithItem(
                 self.native,
-                NSLayoutAttributeLeft,
-                NSLayoutRelationEqual,
-                self.native_input,
-                NSLayoutAttributeLeft,
-                1.0,
-                0,
+                attribute__from=NSLayoutAttributeLeft,
+                relatedBy=NSLayoutRelationEqual,
+                toItem=self.native_input,
+                attribute__to=NSLayoutAttributeLeft,
+                multiplier=1.0,
+                _constant=0,
             )
         )
 
         # Stepper and input meet in the middle with a small gap
         self.native.addConstraint(
-            NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # noqa: E501
+            NSLayoutConstraint.constraintWithItem(
                 self.native_stepper,
-                NSLayoutAttributeLeft,
-                NSLayoutRelationEqual,
-                self.native_input,
-                NSLayoutAttributeRight,
-                1.0,
-                2,
+                attribute__from=NSLayoutAttributeLeft,
+                relatedBy=NSLayoutRelationEqual,
+                toItem=self.native_input,
+                attribute__to=NSLayoutAttributeRight,
+                multiplier=1.0,
+                _constant=2,
             )
         )
 

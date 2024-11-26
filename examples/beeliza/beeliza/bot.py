@@ -323,8 +323,10 @@ class Eliza:
                 "Tell me more about your father.",
                 "How did your father make you feel?",
                 "How do you feel about your father?",
-                "Does your relationship with your father "
-                "relate to your feelings today?",
+                (
+                    "Does your relationship with your father "
+                    "relate to your feelings today?"
+                ),
                 "Do you have trouble showing affection with your family?",
             ],
         ],
@@ -335,8 +337,10 @@ class Eliza:
                 "What is your favorite childhood memory?",
                 "Do you remember any dreams or nightmares from childhood?",
                 "Did the other children sometimes tease you?",
-                "How do you think your childhood "
-                "experiences relate to your feelings today?",
+                (
+                    "How do you think your childhood "
+                    "experiences relate to your feelings today?"
+                ),
             ],
         ],
         [

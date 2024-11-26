@@ -24,8 +24,8 @@ def test_create_with_params():
     assert grp.section == 3
     assert grp.parent == parent
 
-    assert (
-        repr(grp) == "<Group text='Group name' order=2 "
+    assert repr(grp) == (
+        "<Group text='Group name' order=2 "
         "parent=<Group text='Parent name' order=0> section=3>"
     )
 

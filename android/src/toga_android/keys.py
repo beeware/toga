@@ -16,7 +16,8 @@ KEYEVENT_KEYS = {
     KeyEvent.KEYCODE_F10: Key.F10,
     KeyEvent.KEYCODE_F11: Key.F11,
     KeyEvent.KEYCODE_F12: Key.F12,
-    # KeyEvent.KEY_quoteleft: Key.BACK_QUOTE, TODO Find matching key
+    # TODO Find matching key
+    # KeyEvent.KEY_quoteleft: Key.BACK_QUOTE,
     KeyEvent.KEYCODE_1: Key._1,
     KeyEvent.KEYCODE_2: Key._2,
     KeyEvent.KEYCODE_3: Key._3,
@@ -27,7 +28,8 @@ KEYEVENT_KEYS = {
     KeyEvent.KEYCODE_8: Key._8,
     KeyEvent.KEYCODE_9: Key._9,
     KeyEvent.KEYCODE_0: Key._0,
-    # KeyEvent.KEYCODE_MINUS: Key.MINUS, TODO Create handling for num row special keys
+    # TODO Create handling for num row special keys
+    # KeyEvent.KEYCODE_MINUS: Key.MINUS,
     # KeyEvent.KEYCODE_EQUALS: Key.EQUAL,
     # KeyEvent.KEYCODE_DEL: Key.BACKSPACE,
     # KeyEvent.KEY_asciitilde: Key.TILDE,
@@ -70,8 +72,8 @@ KEYEVENT_KEYS = {
     KeyEvent.KEYCODE_Y: Key.Y,
     KeyEvent.KEYCODE_Z: Key.Z,
     KeyEvent.KEYCODE_TAB: Key.TAB,
+    # TODO Create handling for num row special keys
     # KeyEvent.KEYCODE_LEFT_BRACKET: Key.OPEN_BRACKET,
-    #   TODO Create handling for num row special keys
     # KeyEvent.KEYCODE_RIGHT_BRACKET: Key.CLOSE_BRACKET,
     # KeyEvent.KEYCODE_BACKSLASH: Key.BACKSLASH,
     # KeyEvent.KEY_braceleft: Key.OPEN_BRACE,
@@ -80,7 +82,8 @@ KEYEVENT_KEYS = {
     # KeyEvent.KEY_semicolon: Key.SEMICOLON,
     # KeyEvent.KEY_apostrophe: Key.QUOTE,
     KeyEvent.KEYCODE_ENTER: Key.ENTER,
-    # KeyEvent.KEY_colon: Key.COLON, TODO Create handling for num row special keys
+    # TODO Create handling for num row special keys
+    # KeyEvent.KEY_colon: Key.COLON,
     # KeyEvent.KEY_quotedbl: Key.DOUBLE_QUOTE,
     # KeyEvent.KEY_comma: Key.COMMA,
     # KeyEvent.KEY_period: Key.FULL_STOP,

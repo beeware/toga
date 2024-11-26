@@ -21,5 +21,5 @@ class ProgressBarProbe(SimpleProbe):
 
     async def wait_for_animation(self):
         # Android ProgressBar has internal animation handling;
-        #   no special handling required.
+        # no special handling required.
         pass

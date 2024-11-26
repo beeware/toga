@@ -547,8 +547,10 @@ async def test_flex_horizontal_widget_size(widget, probe):
     # Widget is still the width of the screen
     # and the height hasn't changed
     await probe.redraw(
-        message="Widget width should be still the width of the screen"
-        "without height change"
+        message=(
+            "Widget width should be still the width of the screen"
+            "without height change"
+        )
     )
     assert probe.width > 350
     probe.assert_width(350, MAX_WIDTH)

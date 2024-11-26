@@ -152,8 +152,9 @@ if __name__ == "__main__":
         "coverage_conditional_plugin:rules",
         {
             "no-cover-if-linux-wayland": "os_environ.get('WAYLAND_DISPLAY', '') != ''",
-            "no-cover-if-linux-x": "os_environ.get"
-            "('WAYLAND_DISPLAY', 'not-set') == 'not-set'",
+            "no-cover-if-linux-x": (
+                "os_environ.get('WAYLAND_DISPLAY', 'not-set') == 'not-set'"
+            ),
         },
     )
     cov.start()

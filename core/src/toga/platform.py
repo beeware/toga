@@ -95,7 +95,7 @@ def get_platform_factory() -> ModuleType:
                 )
                 raise RuntimeError(
                     f"Multiple Toga backends are installed ({toga_backends_string}), "
-                    f"but none of them match your current platform "
+                    "but none of them match your current platform "
                     f"({current_platform!r}). "
                     "Install a backend for your current platform, or use "
                     "TOGA_BACKEND to specify a backend."
@@ -108,7 +108,7 @@ def get_platform_factory() -> ModuleType:
                     ]
                 )
                 raise RuntimeError(
-                    f"Multiple candidate toga backends found: "
+                    "Multiple candidate toga backends found: "
                     f"({toga_backends_string}). "
                     "Uninstall the backends you don't require, or use "
                     "TOGA_BACKEND to specify a backend."

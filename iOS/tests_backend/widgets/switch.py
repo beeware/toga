@@ -42,8 +42,10 @@ class SwitchProbe(SimpleProbe):
             (min_width - MAX_SWITCH_WIDTH)
             <= label_width
             <= (max_width - MAX_SWITCH_WIDTH)
-        ), f"Label width ({label_width}) not in range "
-        f"({min_width - MAX_SWITCH_WIDTH}, {max_width - MAX_SWITCH_WIDTH})"
+        ), (
+            f"Label width ({label_width}) not in range "
+            f"({min_width - MAX_SWITCH_WIDTH}, {max_width - MAX_SWITCH_WIDTH})"
+        )
         assert (
             0 <= switch_width <= MAX_SWITCH_WIDTH
         ), f"Switch width ({switch_width}) not in range (0-60)"

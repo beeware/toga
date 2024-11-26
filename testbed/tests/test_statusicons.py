@@ -109,8 +109,10 @@ async def test_unknown_status_icon(app, app_probe):
     try:
         with pytest.raises(
             ValueError,
-            match=r"Command 'Bad Action' "
-            "does not belong to a current status icon group.",
+            match=(
+                r"Command 'Bad Action' "
+                r"does not belong to a current status icon group."
+            ),
         ):
             app.status_icons.commands.add(bad_cmd)
     finally:

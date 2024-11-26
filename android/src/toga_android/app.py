@@ -68,7 +68,7 @@ class TogaApp(dynamic_proxy(IPythonApp)):
 
     def onRequestPermissionsResult(self, requestCode, permissions, grantResults):
         print(
-            f"Toga app: onRequestPermissionsResult "
+            "Toga app: onRequestPermissionsResult "
             f"{requestCode=} {permissions=} {grantResults=}"
         )
         try:

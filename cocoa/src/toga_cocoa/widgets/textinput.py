@@ -221,7 +221,7 @@ class TextInput(Widget):
         # Width must be > 100
         # print("REHINT TextInput", self,
         #     self._impl.intrinsicContentSize().width,
-        #     self._impl.intrinsicContentSize().height
+        #     self._impl.intrinsicContentSize().height,
         # )
         self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
         self.interface.intrinsic.height = self.native.intrinsicContentSize().height

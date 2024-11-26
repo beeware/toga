@@ -161,8 +161,8 @@ class Camera:
             self.native.delegate.result = result
 
             # Show the pane
-            toga.App.app.current_window._impl.native.rootViewController.presentViewController(  # noqa: E501
-                self.native, animated=True, completion=None
-            )
+            (
+                toga.App.app.current_window._impl.native.rootViewController
+            ).presentViewController(self.native, animated=True, completion=None)
         else:
             raise PermissionError("App does not have permission to take photos")

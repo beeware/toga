@@ -47,7 +47,9 @@ async def test_bad_icon_file(app):
     "If a file isn't a loadable icon, an error is raised"
     with pytest.raises(
         ValueError,
-        match=rf"Unable to load icon from "
-        rf"{re.escape(str(app.paths.app / 'resources' / 'icons' / 'bad'))}",
+        match=(
+            rf"Unable to load icon from "
+            rf"{re.escape(str(app.paths.app / 'resources' / 'icons' / 'bad'))}"
+        ),
     ):
         toga.Icon("resources/icons/bad")

@@ -233,10 +233,9 @@ class AndroidInterop:
     """Encapsulate details of Android event loop cooperation."""
 
     def __init__(self):
-        # `_runnable_by_fn` is a one-to-one mapping from Python callables to
-        # Java Runnables.
-        # This allows us to avoid creating more than one Java object per Python
-        # callable, which would prevent removeCallbacks from working.
+        # `_runnable_by_fn` is a one-to-one mapping from Python callables to Java
+        # Runnables. This allows us to avoid creating more than one Java object per
+        # Python callable, which would prevent removeCallbacks from working.
         self._runnable_by_fn = {}
         # The handler must be created on the Android UI thread.
         self.handler = Handler()
@@ -249,8 +248,8 @@ class AndroidInterop:
         return self._runnable_by_fn[fn]
 
     def call_later(self, fn, timeout_millis):
-        """Enqueue a Python callable `fn` to be run after
-        `timeout_millis` milliseconds."""
+        """Enqueue a Python callable `fn` to be run after `timeout_millis`
+        milliseconds."""
         runnable = self.get_or_create_runnable(fn)
         self.handler.removeCallbacks(runnable)
         self.handler.postDelayed(runnable, int(timeout_millis))
@@ -304,11 +303,7 @@ class AndroidSelector(selectors.SelectSelector):
 
     def register(self, fileobj, events, data=None):
         if self._debug:  # pragma: no cover
-            print(
-                "register() fileobj={fileobj} events={events} data={data}".format(
-                    fileobj=fileobj, events=events, data=data
-                )
-            )
+            print(f"register() fileobj={fileobj} events={events} data={data}")
         ret = super().register(fileobj, events, data=data)
         self.register_with_android(fileobj, events)
         return ret
@@ -330,11 +325,7 @@ class AndroidSelector(selectors.SelectSelector):
                     )
                 return
             if self._debug:  # pragma: no cover
-                print(
-                    "reregister_with_android_soon reregistering key={key}".format(
-                        key=key
-                    )
-                )
+                print(f"reregister_with_android_soon reregistering key={key}")
             self.register_with_android(key.fd, key.events)
 
         # Use `call_later(0, fn)` to ensure the Python event loop runs to
@@ -343,11 +334,7 @@ class AndroidSelector(selectors.SelectSelector):
 
     def register_with_android(self, fileobj, events):
         if self._debug:  # pragma: no cover
-            print(
-                "register_with_android() fileobj={fileobj} events={events}".format(
-                    fileobj=fileobj, events=events
-                )
-            )
+            print(f"register_with_android() fileobj={fileobj} events={events}")
         # `events` is a bitset comprised of `selectors.EVENT_READ` and
         # `selectors.EVENT_WRITE`.
         # Register this FD for read and/or write events from Android.
@@ -365,11 +352,7 @@ class AndroidSelector(selectors.SelectSelector):
         key = self._fd_to_key.get(fd)
 
         if key is None:  # pragma: no cover
-            print(
-                "Warning: handle_fd_wakeup: wakeup for unregistered fd={fd}".format(
-                    fd=fd
-                )
-            )
+            print(f"Warning: handle_fd_wakeup: wakeup for unregistered fd={fd}")
             return
 
         key_event_pairs = []
@@ -380,18 +363,14 @@ class AndroidSelector(selectors.SelectSelector):
             if self._debug:  # pragma: no cover
                 print(
                     "handle_fd_wakeup() calling parent for "
-                    "key_event_pairs={key_event_pairs}".format(
-                        key_event_pairs=key_event_pairs
-                    )
+                    f"key_event_pairs={key_event_pairs}"
                 )
             # Call superclass private method to notify.
             self.loop._process_events(key_event_pairs)
         else:  # pragma: no cover
             print(
                 "Warning: handle_fd_wakeup(): unnecessary wakeup "
-                "fd={fd} events={events} key={key}".format(
-                    fd=fd, events=events, key=key
-                )
+                f"fd={fd} events={events} key={key}"
             )
 
     # This class declines to implement the `select()` method, purely as
@@ -430,11 +409,7 @@ class AndroidSelectorFileDescriptorEventsListener(
         # to Python.
         fd = getattr(fd_obj, "getInt$")()
         if self._debug:  # pragma: no cover
-            print(
-                "onFileDescriptorEvents woke up for fd={fd} events={events}".format(
-                    fd=fd, events=events
-                )
-            )
+            print(f"onFileDescriptorEvents woke up for fd={fd} events={events}")
         # Tell the Python event loop that the FD is ready for read and/or write.
         self.android_selector.handle_fd_wakeup(fd, events)
         # Tell Android we don't want any more wake-ups from this FD until the event

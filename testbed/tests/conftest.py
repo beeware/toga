@@ -39,8 +39,10 @@ def skip_if_unbundled_app(reason=None):
     if not toga.App.app.is_bundled:
         skip(
             reason
-            or "test requires a full application, "
-            "use 'briefcase run' instead of 'briefcase dev'"
+            or (
+                "test requires a full application, "
+                "use 'briefcase run' instead of 'briefcase dev'"
+            )
         )
 
 

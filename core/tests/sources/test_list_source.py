@@ -415,7 +415,9 @@ def test_find(source):
     # An overspecified search will fail
     with pytest.raises(
         ValueError,
-        match=r"No row matching "
-        r"{'val1': 'first', 'val2': 111, 'value': 'overspecified'} in data",
+        match=(
+            r"No row matching "
+            r"{'val1': 'first', 'val2': 111, 'value': 'overspecified'} in data"
+        ),
     ):
         source.find(dict(val1="first", val2=111, value="overspecified"))
