@@ -1,0 +1,24 @@
+[build-system]
+requires = [
+    # keep versions in sync with ../pyproject.toml
+    "setuptools==75.3.0",
+    "setuptools_scm==8.1.0",
+    "setuptools_dynamic_dependencies @ git+https://github.com/beeware/setuptools_dynamic_dependencies",
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "toga-positron"
+description = "A Briefcase plugin for generating Positron apps."
+readme = "README.md"
+license.text = "New BSD"
+dynamic = ["version"]
+dependencies = ["briefcase >= 0.3.21"]
+
+[project.entry-points."briefcase.bootstraps"]
+"Toga Positron (Django server)" = "positron.django:DjangoPositronBootstrap"
+"Toga Positron (Static server)" = "positron.static:StaticPositronBootstrap"
+"Toga Positron (Site-specific browser)" = "positron.sitespecific:SiteSpecificPositronBootstrap"
+
+[tool.setuptools_scm]
+root = "../"
