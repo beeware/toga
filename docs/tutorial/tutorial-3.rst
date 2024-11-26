@@ -21,3 +21,7 @@ than as a build method. You can also see boxes defined in a declarative
 manner - if you don't need to retain a reference to a particular widget, you
 can define a widget inline, and pass it as an argument to a box, and it
 will become a child of that box.
+
+Because this is a primitive web browser URL must start with `http://` or
+`https://`. If you enter an address without one of these supported protocols,
+you will need to restart the application before trying a new URL.
