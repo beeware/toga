@@ -28,7 +28,7 @@ class CameraDevice:
             None: "Unknown",
         }[characteristics.get(CameraCharacteristics.LENS_FACING)]
 
-        return f"{facing} camera {self._id}"
+        return f"Camera {self._id} ({facing})"
 
     def has_flash(self):
         characteristics = self._manager.getCameraCharacteristics(self._id)
