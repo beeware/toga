@@ -3,7 +3,7 @@ from pathlib import Path
 
 from android.content import Context, Intent
 from android.content.pm import PackageManager
-from android.hardware.camera2 import CameraCharacteristics
+from android.hardware.camera2 import CameraCharacteristics, CameraMetadata
 from android.provider import MediaStore
 from androidx.core.content import FileProvider
 from java.io import File
@@ -21,8 +21,14 @@ class CameraDevice:
 
     def name(self):
         characteristics = self._manager.getCameraCharacteristics(self._id)
-        facing = characteristics.get(CameraCharacteristics.LENS_FACING)
-        return f"{facing} camera {self._id}".capitalize()
+        facing = {
+            CameraMetadata.LENS_FACING_FRONT: "Front",
+            CameraMetadata.LENS_FACING_BACK: "Back",
+            CameraMetadata.LENS_FACING_EXTERNAL: "External",
+            None: "Unknown",
+        }[characteristics.get(CameraCharacteristics.LENS_FACING)]
+
+        return f"{facing} camera {self._id}"
 
     def has_flash(self):
         characteristics = self._manager.getCameraCharacteristics(self._id)
