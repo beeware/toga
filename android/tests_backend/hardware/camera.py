@@ -21,7 +21,7 @@ class CameraProbe(HardwareProbe):
         # The Android emulator has a single camera. Physical devices will have other
         # properties, this test result won't be accurate.
         return {
-            "1": ("Camera 1", True),
+            "1": ("Back camera 1", True),
         }
 
     def select_other_camera(self):
