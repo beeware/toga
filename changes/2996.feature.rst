@@ -1,1 +1,1 @@
-Use camera direction in camera name on Android.
+Android cameras now describe themselves in terms of the direction they are facing (if known).
