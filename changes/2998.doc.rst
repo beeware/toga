@@ -1,1 +1,1 @@
-Add a note about limitation of the web browser example in tutorial 3.
+Tutorial 3 was extended to explain limitations of the browser example, and suggest some extension activities.
