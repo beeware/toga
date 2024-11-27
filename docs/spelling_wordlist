@@ -23,6 +23,7 @@ Ctrl
 dialogs
 Django
 draggable
+Flatpak
 Flexbox
 GBulb
 geolocation
@@ -66,6 +67,7 @@ Ren
 resizable
 reStructuredText
 runtime
+sandboxed
 scrollable
 scrollers
 Segoe
