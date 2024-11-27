@@ -395,7 +395,7 @@ class App:
     def dark_mode(self) -> bool | None:
         """Whether the user has dark mode enabled in their environment (read-only).
 
-        :returns: A boolean describing if the app is in dark mode; ``None`` if Toga
+        :returns: A Boolean describing if the app is in dark mode; ``None`` if Toga
         cannot determine if the app is in dark mode.
         """
         return self._impl.get_dark_mode_state()
