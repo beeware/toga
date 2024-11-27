@@ -1,0 +1,1 @@
+Toga GTK now has basic support for the ``Location`` API.
