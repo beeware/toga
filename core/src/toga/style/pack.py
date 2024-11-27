@@ -143,8 +143,9 @@ class Pack(BaseStyle):
 
     def layout(self, node: Node, viewport: Any) -> None:
         # self._debug("=" * 80)
-        # self._debug(f"Layout root {node},
-        #             available {viewport.width}x{viewport.height}")
+        # self._debug(
+        #     f"Layout root {node}, available {viewport.width}x{viewport.height}"
+        # )
         self.__class__._depth = -1
 
         self._layout_node(
@@ -591,8 +592,9 @@ class Pack(BaseStyle):
             elif child.intrinsic.height is not None:
                 if hasattr(child.intrinsic.height, "value"):
                     if child.style.flex:
-                        # self._debug(f"- intrinsic flex height "
-                        #             f"{child.intrinsic.height}")
+                        # self._debug(
+                        #     f"- intrinsic flex height {child.intrinsic.height}"
+                        # )
                         flex_total += child.style.flex
                         # Final child content size will be computed in pass 2, after the
                         # amount of flexible space is known. For now, set an initial

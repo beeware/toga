@@ -32,8 +32,7 @@ from toga_cocoa.libs import (
 
 ########################################################################################
 # This is broadly derived from Alex Zielenski's ScrollToRefresh implementation:
-# https://github.com/
-#   alexzielenski/ScrollToRefresh/blob/master/ScrollToRefresh/src/EQSTRScrollView.m
+#   https://github.com/alexzielenski/ScrollToRefresh/blob/master/ScrollToRefresh/src/EQSTRScrollView.m  # noqa: E501
 # ======================================================================================
 # ScrollToRefresh
 #

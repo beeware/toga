@@ -321,8 +321,10 @@ def test_horizontal_position_when_not_horizontal(scroll_container):
     scroll_container.horizontal = False
     with pytest.raises(
         ValueError,
-        match=r"Cannot set horizontal position "
-        r"when horizontal scrolling is not enabled.",
+        match=(
+            r"Cannot set horizontal position "
+            r"when horizontal scrolling is not enabled."
+        ),
     ):
         scroll_container.horizontal_position = 37
 

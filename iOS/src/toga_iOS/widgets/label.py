@@ -77,7 +77,9 @@ class Label(Widget):
             limitedToNumberOfLines=len(self.interface.text.split("\n")),
         ).size
 
-        # print(f"REHINT label {self} {self.get_text()!r}
-        # {fitting_size.width} {fitting_size.height}")
+        # print(
+        #     f"REHINT label {self} {self.get_text()!r} "
+        #     f"{fitting_size.width} {fitting_size.height}"
+        # )
         self.interface.intrinsic.width = at_least(ceil(fitting_size.width))
         self.interface.intrinsic.height = ceil(fitting_size.height)

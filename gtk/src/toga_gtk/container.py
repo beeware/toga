@@ -156,8 +156,11 @@ class TogaContainer(Gtk.Fixed):
         computed based on this new available size, and that new geometry will be applied
         to all child widgets of the container.
         """
-        # print(self._content, f"Container layout "
-        # "{allocation.width}x{allocation.height} @ {allocation.x}x{allocation.y}")
+        # print(
+        #     self._content,
+        #     f"Container layout {allocation.width}x{allocation.height} "
+        #     f"@ {allocation.x}x{allocation.y}",
+        # )
 
         # The container will occupy the full space it has been allocated.
         resized = (allocation.width, allocation.height) != (self.width, self.height)
@@ -183,7 +186,9 @@ class TogaContainer(Gtk.Fixed):
                 if widget.get_visible():
                     # Set the size of the child widget to the computed layout size.
                     # print(
-                    # f"  allocate child {widget.interface}: {widget.interface.layout}")
+                    #     f"  allocate child {widget.interface}: "
+                    #     f"{widget.interface.layout}"
+                    # )
                     widget_allocation = Gdk.Rectangle()
                     widget_allocation.x = (
                         widget.interface.layout.absolute_content_left + allocation.x

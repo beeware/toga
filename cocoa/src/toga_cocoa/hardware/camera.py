@@ -88,8 +88,8 @@ class TogaCameraWindow(toga.Window):
             style=Pack(width=200),
         )
 
-        # The shutter button. Initially disabled until we know we
-        # have a camera available
+        # The shutter button. Initially disabled until we know we have a camera
+        # available
         self.shutter_button = toga.Button(
             icon=toga.Icon("camera", system=True),
             on_press=self.take_photo,
