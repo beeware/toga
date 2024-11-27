@@ -8,7 +8,6 @@ from weakref import WeakSet
 
 import pytest
 
-from toga_gtk.hardware.location import State as LocationState
 from toga_gtk.libs import Geoclue, GLib
 
 from ..app import AppProbe
@@ -23,6 +22,9 @@ class MockGeoclueSimple:
 
     def set_error(self, domain, code):
         self._mock_error = GLib.Error.new_literal(domain, "whoops", code)
+
+    def clear_error(self):
+        self._mock_error = None
 
     def get_location(self):
         return self.location
@@ -71,15 +73,13 @@ class LocationProbe(AppProbe):
     def __init__(self, monkeypatch, app_probe):
         super().__init__(app_probe.app)
 
-        self.mock_error = None
-        self.mock_geoclue_simple = MockGeoclueSimple()
-        self.mock_geoclue_simple.get_location = Mock(
-            wraps=self.mock_geoclue_simple.get_location
-        )
+        self.mock_native = MockGeoclueSimple()
+        self.mock_native.get_location = Mock(wraps=self.mock_native.get_location)
 
-        monkeypatch.setattr(Geoclue, "Simple", self.mock_geoclue_simple)
+        # Start with a permission-rejecting posture
+        self.reject_permission()
 
-        self.app.location._impl.props.state = LocationState.DENIED
+        monkeypatch.setattr(Geoclue, "Simple", self.mock_native)
 
     def cleanup(self):
         try:
@@ -89,20 +89,21 @@ class LocationProbe(AppProbe):
 
     def grant_permission(self):
         self.allow_permission()
+        self.app.location._impl.permission_requested = True
         self.app.location._impl._start()
 
     def grant_background_permission(self):
         self.allow_background_permission()
-        self.app.location._impl._start()
-
-    def allow_permission(self):
-        self.app.location._impl.permission_requested = True
-
-    def allow_background_permission(self):
         self.app.location._impl.background_permission_requested = True
 
+    def allow_permission(self):
+        self.mock_native.clear_error()
+
+    def allow_background_permission(self):
+        self.mock_native.clear_error()
+
     def reject_permission(self):
-        self.app.location._impl.props.state = LocationState.DENIED
+        self.mock_native.set_error(GLib.quark_from_string("g-io-error-quark"), 0)
 
     def add_location(self, location, altitude, cached=False):
         # Geoclue only deals with a single location, so the
@@ -112,23 +113,23 @@ class LocationProbe(AppProbe):
         geoclue_location.props.longitude = location.lng
         geoclue_location.props.altitude = altitude if altitude is not None else 0
 
-        self.mock_geoclue_simple.location = geoclue_location
+        self.mock_native.location = geoclue_location
 
     async def simulate_current_location(self, location):
         await self.redraw("Wait for current location")
 
-        self.mock_geoclue_simple.get_location.assert_called_once()
-        self.mock_geoclue_simple.get_location.reset_mock()
+        self.mock_native.get_location.assert_called_once()
+        self.mock_native.get_location.reset_mock()
 
         return await location
 
     async def simulate_location_update(self):
         await self.redraw("Wait for location update")
 
-        self.mock_geoclue_simple.notify("location")
+        self.mock_native.notify("location")
 
-        self.mock_geoclue_simple.get_location.assert_called_once()
-        self.mock_geoclue_simple.get_location.reset_mock()
+        self.mock_native.get_location.assert_called_once()
+        self.mock_native.get_location.reset_mock()
 
     async def simulate_location_error(self, _):
         await self.redraw("Wait for location error")

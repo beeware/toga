@@ -126,9 +126,12 @@ class Location(GObject.Object):
             result.set_result(True)
             set_requested()
 
-        elif self.props.state in (State.INITIAL, State.STARTING):
+        elif self.props.state < State.READY:
 
             def wait_for_client(*args):
+                if self.props.state < State.READY:
+                    return
+
                 result.set_result(self.can_get_location)
                 self.disconnect(listener_handle)
 
