@@ -63,3 +63,9 @@ try:
     from gi.repository import XApp  # noqa: F401
 except (ImportError, ValueError):  # pragma: no cover
     XApp = None
+
+try:
+    gi.require_version("Geoclue", "2.0")
+    from gi.repository import Geoclue  # noqa: F401
+except (ImportError, ValueError):  # pragma: no cover
+    Geoclue = None

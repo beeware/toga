@@ -1,17 +1,12 @@
 from enum import IntEnum, auto
 
-import gi
-
 from toga import LatLng
-from toga_gtk.libs import Gio, GLib, GObject
-
-gi.require_version("Geoclue", "2.0")
-from gi.repository import Geoclue  # noqa: E402
+from toga_gtk.libs import Geoclue, Gio, GLib, GObject
 
 
 def toga_location(location):
     """Convert a ``Geoclue.Location`` into ``OnLocationChangeHandler`` kwargs."""
-    latlng = LatLng(*location.get_properties("latitude", "longitude"))
+    latlng = LatLng(location.props.latitude, location.props.longitude)
     altitude = location.get_property("altitude")
 
     return {
@@ -20,9 +15,12 @@ def toga_location(location):
     }
 
 
-class States(IntEnum):
+class State(IntEnum):
+    INITIAL = auto()
+    """Geoclue has not been started."""
+
     STARTING = auto()
-    """Waiting for the Geoclue client to initialise."""
+    """Waiting for the Geoclue client to finish starting."""
 
     READY = auto()
     """Geoclue is ready to connect."""
@@ -39,108 +37,136 @@ class States(IntEnum):
 
 class Location(GObject.Object):
     # Implement as GObject.Object to allow notifying on state changes within the event loop
-    state = GObject.Property(type=int, default=States.STARTING)
+    state = GObject.Property(type=int, default=State.INITIAL)
 
     def __init__(self, interface):
+        if Geoclue is None:
+            raise RuntimeError(
+                "Unable to import Geoclue. Ensure that the system package "
+                "providing Geoclue and its GTK bindings have been installed. "
+                "See https://toga.readthedocs.io/en/stable/reference/api/hardware/location.html#system-requirements "
+                "for details."
+            )
+
         super().__init__()
 
         self.interface = interface
 
-        self.geoclue_simple = None
+        self.native = None
         self.notify_location_handle = None
         self.notify_active_listener = None
         self.in_flatpak = None
+        self.native = None
+        self.permission_requested = False
+        self.background_permission_requested = False
 
-        def new_finish(_, async_result):
-            try:
-                self.geoclue_simple = Geoclue.Simple.new_finish(async_result)
-            except GLib.Error as e:
-                if e.matches(Gio.DBusError, Gio.DBusError.ACCESS_DENIED):
-                    # TODO: In practice, I cannot get this to occur. Maybe it is KDE's portal
-                    # implementation, but when I deny location permissions in the prompt,
-                    # the failure is a generic DBusError.FAILED, not a permission denied
-                    # failure.
-                    self.props.state = States.DENIED
-                else:
-                    self.props.state = States.FAILED
-                    print("Failed to get location", e.message, e.code)
+    def _start(self):
+        """
+        Start ``Geoclue.Simple`` async initialisation.
 
-                return
-            else:
-                self.props.state = States.READY
-
-            client = self.geoclue_simple.get_client()
-            # Geoclue docs indicate a client proxy is not used in Flatpak
-            # https://lazka.github.io/pgi-docs/#Geoclue-2.0/classes/Simple.html#Geoclue.Simple.props.client
-            self.in_flatpak = client is None
-
-            if client:
-
-                def notify_client_active(*args):
-                    if not self.geoclue_simple.get_client().props.active:
-                        # If the client explicitly becomes inactive, this indicates
-                        # a failure to retrieve the location
-                        self.props.state = States.DENIED
-
-                self.notify_active_listener = client.connect(
-                    "notify::active", notify_client_active
-                )
+        The act of initialising ``Geoclue.Simple`` will itself trigger
+        a permission request. As such, delay this until permission is checked.
+        """
+        self.props.state = State.STARTING
 
         Geoclue.Simple.new(
-            self.interface.app.app_id, Geoclue.AccuracyLevel.EXACT, None, new_finish
+            self.interface.app.app_id,
+            Geoclue.AccuracyLevel.EXACT,
+            None,
+            self._new_finish,
         )
+
+    def _new_finish(self, _, async_result):
+        try:
+            self.native = Geoclue.Simple.new_finish(async_result)
+        except GLib.Error as e:
+            if e.matches(Gio.DBusError, Gio.DBusError.ACCESS_DENIED):
+                # TODO: In practice, I cannot get this to occur. Maybe it is KDE's portal
+                # implementation, but when I deny location permissions in the prompt,
+                # the failure is a generic DBusError.FAILED, not a permission denied
+                # failure.
+                self.props.state = State.DENIED
+            else:
+                self.props.state = State.FAILED
+                print("Failed to get location", e.message, e.code)
+
+            return
+        else:
+            self.props.state = State.READY
+
+        client = self.native.get_client()
+        # Geoclue docs indicate a client proxy is not used in Flatpak
+        # https://lazka.github.io/pgi-docs/#Geoclue-2.0/classes/Simple.html#Geoclue.Simple.props.client
+        self.in_flatpak = client is None
+
+        if client:
+
+            def notify_client_active(*args):
+                if not self.native.get_client().props.active:
+                    # If the client explicitly becomes inactive, this indicates
+                    # a failure to retrieve the location
+                    self.props.state = State.DENIED
+
+            self.notify_active_listener = client.connect(
+                "notify::active", notify_client_active
+            )
 
     @property
     def can_get_location(self):
-        return self.props.state in (States.READY, States.MONITORING)
+        return self.props.state in (State.READY, State.MONITORING)
 
     def has_permission(self):
-        # TODO: Think this through a bit more
-        if self.props.state == States.STARTING:
-            # Cannot know whether permission request is needed...
-            # False is safe?
-            return False
+        return self.permission_requested and self.can_get_location
 
-        if self.in_flatpak and not self.can_get_location:
-            # In flatpak, explicit permission required
-            return False
+    def _request_permission(self, result, background=False):
+        def set_requested():
+            if background:
+                self.background_permission_requested = True
+            else:
+                self.permission_requested = True
 
-        # Otherwise, no explicit permission required
-        return True
-
-    def request_permission(self, result):
         if self.can_get_location:
             result.set_result(True)
-        elif self.props.state == States.STARTING:
+            set_requested()
+
+        elif self.props.state in (State.INITIAL, State.STARTING):
 
             def wait_for_client(*args):
                 result.set_result(self.can_get_location)
                 self.disconnect(listener_handle)
 
+                set_requested()
+
             listener_handle = self.connect("notify::state", wait_for_client)
+
+            if self.props.state == State.INITIAL:
+                self._start()
         else:
             result.set_result(False)
 
+    def request_permission(self, result):
+        self._request_permission(result)
+
     def has_background_permission(self):
-        return self.has_permission()
+        return self.background_permission_requested and self.can_get_location
 
     def request_background_permission(self, result):
-        self.request_permission(result)
+        self._request_permission(result, background=True)
 
     def start_tracking(self):
-        self.notify_location_handle = self.geoclue_simple.connect(
+        self.notify_location_handle = self.native.connect(
             "notify::location", self.location_listener
         )
-        self.props.state = States.MONITORING
-        # Manually notify when connecting to get the initial location
-        self.location_listener()
+        self.props.state = State.MONITORING
+        # Manually notify when connecting in order to propagate the initial location
+        self.native.notify("location")
 
     def stop_tracking(self):
-        self.geoclue_simple.disconnect(self.notify_location_handle)
-        self.props.state = States.READY
+        self.native.disconnect(self.notify_location_handle)
+        self.props.state = State.READY
 
     def location_listener(self, *args):
-        self.interface.on_change(**toga_location(self.geoclue_simple.get_location()))
+        self.interface.on_change(**toga_location(self.native.get_location()))
 
     def current_location(self, location):
-        location.set_result(**toga_location(self.geoclue_simple.get_location()))
+        location.set_result(toga_location(self.native.get_location())["location"])

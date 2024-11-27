@@ -10,7 +10,7 @@ from .probe import get_probe
 
 @pytest.fixture
 async def location_probe(monkeypatch, app_probe):
-    skip_on_platforms("linux", "windows")
+    skip_on_platforms("windows")
     probe = get_probe(monkeypatch, app_probe, "Location")
     yield probe
     probe.cleanup()
@@ -124,7 +124,7 @@ async def test_deny_background_permission(app, location_probe):
 
 
 async def test_current_location(app, location_probe):
-    """A user can take a photo with the all the available locations."""
+    """A user can get the current location."""
     # Ensure location has permissions
     location_probe.grant_permission()
 
