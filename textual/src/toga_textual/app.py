@@ -75,6 +75,14 @@ class App:
         return [ScreenImpl(window._impl.native) for window in self.interface.windows]
 
     ######################################################################
+    # App state
+    ######################################################################
+
+    def get_dark_mode_state(self):
+        self.interface.factory.not_implemented("dark mode state")
+        return None
+
+    ######################################################################
     # App capabilities
     ######################################################################
 
