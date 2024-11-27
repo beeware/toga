@@ -91,8 +91,12 @@ Notes
     want to track location while the app is in the background, you must also define the
     permission ``android.permission.ACCESS_BACKGROUND_LOCATION``.
 
-* On macOS, there is no distinction between "background" permissions and "while-running"
-  permissions.
+* On macOS and GTK, there is no distinction between "background" permissions and "while-running"
+  permissions for location tracking.
+
+* There are no permission controls for non-sandboxed GTK applications and location requests
+  are always allowed by the host. Sandboxed applications (e.g., Flatpak apps) request location
+  information via the XDG Portal Location API, which has coarse grained permissions.
 
 * On iOS, if the user has provided "allow once" permission for foreground location
   tracking, requests for background location permission will be rejected.
