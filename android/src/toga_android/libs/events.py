@@ -361,14 +361,14 @@ class AndroidSelector(selectors.SelectSelector):
         if key_event_pairs:
             if self._debug:  # pragma: no cover
                 print(
-                    "handle_fd_wakeup() calling parent for "
+                    f"handle_fd_wakeup() calling parent for "
                     f"key_event_pairs={key_event_pairs}"
                 )
             # Call superclass private method to notify.
             self.loop._process_events(key_event_pairs)
         else:  # pragma: no cover
             print(
-                "Warning: handle_fd_wakeup(): unnecessary wakeup "
+                f"Warning: handle_fd_wakeup(): unnecessary wakeup "
                 f"fd={fd} events={events} key={key}"
             )
 

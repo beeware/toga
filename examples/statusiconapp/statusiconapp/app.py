@@ -51,9 +51,8 @@ class ExampleStatusIconApp(toga.App):
             group=sub_menu,
         )
 
-        # Two commands for the second status icon. The status
-        # icon can be retrieved by ID,
-        # and by index.
+        # Two commands for the second status icon. The status icon can be retrieved by
+        # ID, and by index.
         cmd5 = toga.Command(
             self.do_stuff,
             text="Action 5",

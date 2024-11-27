@@ -262,8 +262,7 @@ class Camera:
             msg = (
                 "Application metadata does not declare that the app will use "
                 "the camera. See "
-                "https://toga.readthedocs.io"
-                "/en/stable/reference/api/hardware/camera.html"
+                "https://toga.readthedocs.io/en/stable/reference/api/hardware/camera.html"  # noqa: E501
             )
             if self.interface.app.is_bundled:
                 raise RuntimeError(msg)

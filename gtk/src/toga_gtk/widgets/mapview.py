@@ -70,10 +70,9 @@ class MapView(Widget):
     def create(self):
         if WebKit2 is None:  # pragma: no cover
             raise RuntimeError(
-                "Unable to import WebKit2. Ensure that the system package "
-                "providing WebKit2 and its GTK bindings have been installed. "
-                "See https://toga.readthedocs.io"
-                "/en/stable/reference/api/widgets/mapview.html#system-requirements "
+                "Unable to import WebKit2. Ensure that the system package providing "
+                "WebKit2 and its GTK bindings have been installed. See "
+                "https://toga.readthedocs.io/en/stable/reference/api/widgets/mapview.html#system-requirements "  # noqa: E501
                 "for details."
             )
 

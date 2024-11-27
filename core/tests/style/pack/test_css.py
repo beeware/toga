@@ -365,7 +365,8 @@ from toga.style.pack import (
             Pack(background_color=REBECCAPURPLE),
             (
                 "flex-direction: row; flex: "
-                "0.0 0 auto; background-color: rgb(102, 51, 153);"
+                "0.0 0 auto; "
+                "background-color: rgb(102, 51, 153);"
             ),
             id="background-color",
         ),
