@@ -100,7 +100,7 @@ class NumberInput(Widget):
                 toItem=self.native_stepper,
                 attribute__to=NSLayoutAttributeTop,
                 multiplier=1.0,
-                _constant=0,
+                constant=0,
             )
         )
         self.native.addConstraint(
@@ -111,7 +111,7 @@ class NumberInput(Widget):
                 toItem=self.native_stepper,
                 attribute__to=NSLayoutAttributeRight,
                 multiplier=1.0,
-                _constant=0,
+                constant=0,
             )
         )
 
@@ -124,7 +124,7 @@ class NumberInput(Widget):
                 toItem=self.native_stepper,
                 attribute__to=NSLayoutAttributeBottom,
                 multiplier=1.0,
-                _constant=0,
+                constant=0,
             )
         )
 
@@ -137,7 +137,7 @@ class NumberInput(Widget):
                 toItem=self.native_input,
                 attribute__to=NSLayoutAttributeCenterY,
                 multiplier=1.0,
-                _constant=0,
+                constant=0,
             )
         )
         self.native.addConstraint(
@@ -148,7 +148,7 @@ class NumberInput(Widget):
                 toItem=self.native_input,
                 attribute__to=NSLayoutAttributeLeft,
                 multiplier=1.0,
-                _constant=0,
+                constant=0,
             )
         )
 
@@ -161,7 +161,7 @@ class NumberInput(Widget):
                 toItem=self.native_input,
                 attribute__to=NSLayoutAttributeRight,
                 multiplier=1.0,
-                _constant=2,
+                constant=2,
             )
         )
 

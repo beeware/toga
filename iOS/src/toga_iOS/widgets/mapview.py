@@ -132,7 +132,7 @@ class MapView(Widget):
     def set_zoom(self, zoom):
         if self.backlog is None:
             # The zoom level indicates how many degrees of longitude will be displayed
-            # in a 56 pixel horizontal range. Determine how many degrees of longitude
+            # in a 256 pixel horizontal range. Determine how many degrees of longitude
             # that is, and scale to the size of the visible horizontal space.
 
             # The horizontal axis can't show more than 360 degrees of longitude, so clip

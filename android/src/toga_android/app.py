@@ -68,7 +68,7 @@ class TogaApp(dynamic_proxy(IPythonApp)):
 
     def onRequestPermissionsResult(self, requestCode, permissions, grantResults):
         print(
-            "Toga app: onRequestPermissionsResult "
+            f"Toga app: onRequestPermissionsResult "
             f"{requestCode=} {permissions=} {grantResults=}"
         )
         try:
@@ -228,13 +228,12 @@ class App:
         pass  # pragma: no cover
 
     def main_loop(self):
-        # In order to support user asyncio code, start the Python/Android
-        # cooperative event loop.
+        # In order to support user asyncio code, start the Python/Android cooperative
+        # event loop.
         self.loop.run_forever_cooperatively()
 
-        # On Android, Toga UI integrates automatically into the main Android event
-        # loop by virtue
-        # of the Android Activity system.
+        # On Android, Toga UI integrates automatically into the main Android event loop
+        # by virtue of the Android Activity system.
         self.create()
 
     def set_icon(self, icon):
