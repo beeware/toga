@@ -55,7 +55,6 @@ class Location(GObject.Object):
         self.native = None
         self.notify_location_handle = None
         self.notify_active_listener = None
-        self.in_flatpak = None
         self.native = None
         self.permission_requested = False
         self.background_permission_requested = False
@@ -95,10 +94,8 @@ class Location(GObject.Object):
             self.props.state = State.READY
 
         client = self.native.get_client()
-        # Geoclue docs indicate a client proxy is not used in Flatpak
+        # Geoclue docs indicate a client proxy is not used in sandboxed environments
         # https://lazka.github.io/pgi-docs/#Geoclue-2.0/classes/Simple.html#Geoclue.Simple.props.client
-        self.in_flatpak = client is None
-
         if client:
 
             def notify_client_active(*args):
