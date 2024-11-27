@@ -36,7 +36,7 @@ class State(IntEnum):
 
 
 class Location(GObject.Object):
-    # Implement as GObject.Object to allow notifying on state changes within the event loop
+    #: State of Geoclue location service initialisation and communication
     state = GObject.Property(type=int, default=State.INITIAL)
 
     def __init__(self, interface):
@@ -52,18 +52,22 @@ class Location(GObject.Object):
 
         self.interface = interface
 
+        #: ``Geoclue.Simple`` instance
         self.native = None
+
+        #: Handle ID for ``Geoclue.Simple`` location listener
         self.notify_location_handle = None
+
+        #: Handle ID for client active notify listener
         self.notify_active_listener = None
-        self.native = None
+
+        #: Whether permissions have been requested
         self.permission_requested = False
-        self.background_permission_requested = False
 
     def _start(self):
-        """
-        Start ``Geoclue.Simple`` async initialisation.
+        """Asynchronously initialize ``Geoclue.Simple``.
 
-        The act of initialising ``Geoclue.Simple`` will itself trigger
+        The act of initializing ``Geoclue.Simple`` will itself trigger
         a permission request. As such, delay this until permission is checked.
         """
         self.props.state = State.STARTING
@@ -110,21 +114,16 @@ class Location(GObject.Object):
 
     @property
     def can_get_location(self):
+        """Whether ``Geoclue.Simple`` is ready to provide a location."""
         return self.props.state in (State.READY, State.MONITORING)
 
     def has_permission(self):
         return self.permission_requested and self.can_get_location
 
-    def _request_permission(self, result, background=False):
-        def set_requested():
-            if background:
-                self.background_permission_requested = True
-            else:
-                self.permission_requested = True
-
+    def request_permission(self, result):
         if self.can_get_location:
             result.set_result(True)
-            set_requested()
+            self.permission_requested = True
 
         elif self.props.state < State.READY:
 
@@ -135,7 +134,7 @@ class Location(GObject.Object):
                 result.set_result(self.can_get_location)
                 self.disconnect(listener_handle)
 
-                set_requested()
+                self.permission_requested = True
 
             listener_handle = self.connect("notify::state", wait_for_client)
 
@@ -144,14 +143,23 @@ class Location(GObject.Object):
         else:
             result.set_result(False)
 
-    def request_permission(self, result):
-        self._request_permission(result)
-
     def has_background_permission(self):
-        return self.background_permission_requested and self.can_get_location
+        """Check for background permission.
+
+        Background location permission has no meaning for Geoclue,
+        as all location access is mediated through the same location
+        tracking APIs. Therefore, background location permission
+        is handled in identical terms to foreground location permission.
+        """
+        return self.has_permission()
 
     def request_background_permission(self, result):
-        self._request_permission(result, background=True)
+        """Request background permission.
+
+        See documentation on :meth:`~toga_gtk.hardware.location.Location.has_background_permission()`
+        for implementation details.
+        """
+        self.request_permission(result)
 
     def start_tracking(self):
         self.notify_location_handle = self.native.connect(

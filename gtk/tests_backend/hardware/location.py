@@ -70,6 +70,8 @@ class MockGeoclueSimple:
 
 
 class LocationProbe(AppProbe):
+    supports_background_permission = False
+
     def __init__(self, monkeypatch, app_probe):
         super().__init__(app_probe.app)
 

@@ -2,6 +2,7 @@ from unittest.mock import Mock
 
 import pytest
 
+import toga
 from toga import LatLng
 
 from ..conftest import skip_on_platforms
@@ -16,7 +17,12 @@ async def location_probe(monkeypatch, app_probe):
     probe.cleanup()
 
 
-async def test_grant_permission(app, location_probe):
+@pytest.fixture
+def supports_background_permission(location_probe):
+    return getattr(location_probe, "supports_background_permission", True)
+
+
+async def test_grant_permission(app, location_probe, supports_background_permission):
     """A user can grant permission to use location."""
     # Prime the permission system to approve permission requests
     location_probe.allow_permission()
@@ -26,14 +32,18 @@ async def test_grant_permission(app, location_probe):
 
     # Permission now exists, but not background permission
     assert app.location.has_permission
-    assert not app.location.has_background_permission
+    assert app.location.has_background_permission == (
+        False if supports_background_permission else True
+    )
 
     # A second request to grant permissions is a no-op
     assert await app.location.request_permission()
 
     # Permission still exists, but not background permission
     assert app.location.has_permission
-    assert not app.location.has_background_permission
+    assert app.location.has_background_permission == (
+        False if supports_background_permission else True
+    )
 
 
 async def test_deny_permission(app, location_probe):
@@ -87,8 +97,15 @@ async def test_grant_background_permission(app, location_probe):
     assert app.location.has_background_permission
 
 
-async def test_deny_background_permission(app, location_probe):
+async def test_deny_background_permission(
+    app, location_probe, supports_background_permission
+):
     """A user can deny background permission to use location."""
+    if not supports_background_permission:
+        return pytest.xfail(
+            f"{toga.platform.current_platform} does not support background location permission"
+        )
+
     # Foreground permissions haven't been approved, so requesting background permissions
     # will raise an error.
     with pytest.raises(
