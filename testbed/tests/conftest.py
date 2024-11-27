@@ -33,6 +33,16 @@ def xfail_on_platforms(*platforms, reason=None):
         skip(reason or f"not applicable on {current_platform}")
 
 
+# Use this for widgets or tests which trip up macOS privacy controls, and requires
+# properties or entitlements defined in Info.plist
+def skip_if_unbundled_app(reason=None):
+    if not toga.App.app.is_bundled:
+        skip(
+            reason
+            or "test requires a full application, use 'briefcase run' instead of 'briefcase dev'"
+        )
+
+
 @fixture(autouse=True)
 def no_dangling_tasks():
     """Ensure any tasks for the test were removed when the test finished."""

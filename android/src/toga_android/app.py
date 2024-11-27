@@ -258,6 +258,14 @@ class App:
         return [ScreenImpl(self, screen) for screen in screen_list]
 
     ######################################################################
+    # App state
+    ######################################################################
+
+    def get_dark_mode_state(self):
+        self.interface.factory.not_implemented("dark mode state")
+        return None
+
+    ######################################################################
     # App capabilities
     ######################################################################
 
