@@ -16,8 +16,9 @@ class DialogsMixin:
             orig_show(host_window, future)
 
             async def _close_dialog():
-                # Give the inner event loop a chance to start. The MessageBox dialogs work with
-                # sleep(0), but the file dialogs require it to be positive for some reason.
+                # Give the inner event loop a chance to start. The MessageBox dialogs
+                # work with sleep(0), but the file dialogs require it to be positive
+                # for some reason.
                 await asyncio.sleep(0.001)
 
                 try:

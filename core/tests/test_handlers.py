@@ -55,8 +55,8 @@ def test_noop_handler_with_cleanup_error(capsys):
 
     # Evidence of the handler cleanup error is in the log.
     assert (
-        "Error in handler cleanup: Problem in cleanup\nTraceback (most recent call last):\n"
-        in capsys.readouterr().err
+        "Error in handler cleanup: Problem in cleanup\n"
+        "Traceback (most recent call last):\n" in capsys.readouterr().err
     )
 
 
@@ -174,8 +174,8 @@ def test_function_handler_with_cleanup_error(capsys):
 
     # Evidence of the handler cleanup error is in the log.
     assert (
-        "Error in handler cleanup: Problem in cleanup\nTraceback (most recent call last):\n"
-        in capsys.readouterr().err
+        "Error in handler cleanup: Problem in cleanup\n"
+        "Traceback (most recent call last):\n" in capsys.readouterr().err
     )
 
 
@@ -242,8 +242,8 @@ def test_generator_handler_error(event_loop, capsys):
 
     # Evidence of the handler cleanup error is in the log.
     assert (
-        "Error in long running handler: Problem in handler\nTraceback (most recent call last):\n"
-        in capsys.readouterr().err
+        "Error in long running handler: Problem in handler\n"
+        "Traceback (most recent call last):\n" in capsys.readouterr().err
     )
 
 
@@ -322,8 +322,8 @@ def test_generator_handler_with_cleanup_error(event_loop, capsys):
 
     # Evidence of the handler cleanup error is in the log.
     assert (
-        "Error in long running handler cleanup: Problem in cleanup\nTraceback (most recent call last):\n"
-        in capsys.readouterr().err
+        "Error in long running handler cleanup: Problem in cleanup\n"
+        "Traceback (most recent call last):\n" in capsys.readouterr().err
     )
 
 
@@ -387,8 +387,8 @@ def test_coroutine_handler_error(event_loop, capsys):
 
     # Evidence of the handler cleanup error is in the log.
     assert (
-        "Error in async handler: Problem in handler\nTraceback (most recent call last):\n"
-        in capsys.readouterr().err
+        "Error in async handler: Problem in handler\n"
+        "Traceback (most recent call last):\n" in capsys.readouterr().err
     )
 
 
@@ -461,8 +461,8 @@ def test_coroutine_handler_with_cleanup_error(event_loop, capsys):
 
     # Evidence of the handler cleanup error is in the log.
     assert (
-        "Error in async handler cleanup: Problem in cleanup\nTraceback (most recent call last):\n"
-        in capsys.readouterr().err
+        "Error in async handler cleanup: Problem in cleanup\n"
+        "Traceback (most recent call last):\n" in capsys.readouterr().err
     )
 
 

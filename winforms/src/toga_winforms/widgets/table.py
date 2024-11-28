@@ -82,7 +82,8 @@ class Table(Widget):
 
     def winforms_retrieve_virtual_item(self, sender, e):
         # Because ListView is in VirtualMode, it's necessary implement
-        # VirtualItemsSelectionRangeChanged event to create ListViewItem when it's needed
+        # VirtualItemsSelectionRangeChanged event to create ListViewItem
+        # when it's needed
         if (
             self._cache
             and e.ItemIndex >= self._first_item
@@ -208,8 +209,8 @@ class Table(Widget):
 
         # If the table has accessors, populate the icons for the table.
         if self._accessors:
-            # TODO: ListView only has built-in support for one icon per row. One possible
-            # workaround is in https://stackoverflow.com/a/46128593.
+            # TODO: ListView only has built-in support for one icon per row. One
+            # possible workaround is in https://stackoverflow.com/a/46128593.
             icon = icon(self._accessors[0])
             if icon is not None:
                 lvi.ImageIndex = self._image_index(icon)

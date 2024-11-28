@@ -209,8 +209,8 @@ class Image:
         """Return the image, converted to the image format specified.
 
         :param format: Format to provide. Defaults to :class:`~toga.images.Image`; also
-             supports :any:`PIL.Image.Image` if Pillow is installed, as well as any image
-             types defined by installed :doc:`image format plugins
+             supports :any:`PIL.Image.Image` if Pillow is installed, as well as any
+             image types defined by installed :doc:`image format plugins
              </reference/plugins/image_formats>`.
         :returns: The image in the requested format
         :raises TypeError: If the format supplied is not recognized.
