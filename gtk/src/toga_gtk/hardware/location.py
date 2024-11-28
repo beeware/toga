@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from enum import IntEnum, auto
 
 from toga import LatLng
@@ -53,16 +55,16 @@ class Location(GObject.Object):
         self.interface = interface
 
         #: ``Geoclue.Simple`` instance
-        self.native = None
+        self.native: Geoclue.Simple = None
 
         #: Handle ID for ``Geoclue.Simple`` location listener
-        self.notify_location_handle = None
+        self.notify_location_handle: None | int = None
 
         #: Handle ID for client active notify listener
-        self.notify_active_listener = None
+        self.notify_active_listener: None | int = None
 
         #: None if permissions are not requested, otherwise, indicates whether permissions are available
-        self.permission_result = None
+        self.permission_result: None | bool = None
 
     def _start(self):
         """Asynchronously initialize ``Geoclue.Simple``.
@@ -118,7 +120,7 @@ class Location(GObject.Object):
         return self.props.state in (State.READY, State.MONITORING)
 
     def has_permission(self):
-        return self.permission_result
+        return bool(self.permission_result)
 
     def request_permission(self, result):
         if self.permission_result is not None:
@@ -190,25 +192,54 @@ class Location(GObject.Object):
     def request_background_permission(self, result):
         """Request background permission.
 
-        See documentation on :meth:`~toga_gtk.hardware.location.Location.has_background_permission()`
+        See documentation on :meth:`~.Location.has_background_permission()`
         for implementation details.
         """
         self.request_permission(result)
 
-    def start_tracking(self):
-        self.notify_location_handle = self.native.connect(
-            "notify::location", self.location_listener
-        )
-        self.props.state = State.MONITORING
-        # Manually notify when connecting in order to propagate the initial location
-        self.native.notify("location")
-
-    def stop_tracking(self):
-        self.native.disconnect(self.notify_location_handle)
-        self.props.state = State.READY
-
     def location_listener(self, *args):
         self.interface.on_change(**toga_location(self.native.get_location()))
 
+    def start_tracking(self):
+        """Start tracking Geoclue location updates.
+
+        If state is anything other than READY, this method is a noop.
+
+        The reason for this, for each other state is:
+        - MONITORING: already monitoring, nothing to do
+        - INITIAL: not possible because the upstream Location interface enforces a
+            permission check, and the permission check starts Geoclue as part of
+            permission checking
+        - STARTING: not possible because permission check only finishes when Geoclue is
+            ready or has reached a failure state
+        - FAILED, DENIED: these are failure states; maybe an exception should be raised
+        """
+        if self.props.state == State.READY:
+            self.notify_location_handle = self.native.connect(
+                "notify::location", self.location_listener
+            )
+            self.props.state = State.MONITORING
+            # Manually notify when connecting in order to propagate the initial location
+            self.native.notify("location")
+
+    def stop_tracking(self):
+        """Stop tracking Geoclue location updates.
+
+        If not currently tracking, this method is a noop.
+        """
+        if self.notify_location_handle is not None:
+            self.native.disconnect(self.notify_location_handle)
+            self.props.state = State.READY
+
     def current_location(self, location):
-        location.set_result(toga_location(self.native.get_location())["location"])
+        """Asynchronously retrieve the current location.
+
+        If state is anything other than READY or MONITORING, this method is a noop.
+
+        See the docstring on :meth:`.Location.start_tracking()` regarding noop cases.
+        All the same cases apply to this method, except for MONITORING, because the
+        current location should be retrieved whenever Geoclue is available, even if the
+        location is also being tracked.
+        """
+        if self.can_get_location:
+            location.set_result(toga_location(self.native.get_location())["location"])

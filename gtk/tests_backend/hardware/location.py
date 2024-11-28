@@ -8,23 +8,16 @@ from weakref import WeakSet
 
 import pytest
 
-from toga_gtk.libs import Geoclue, GLib
+from toga_gtk.libs import Geoclue, Gio
 
 from ..app import AppProbe
 
 
 class MockGeoclueSimple:
     def __init__(self):
-        self._mock_error = None
         self._connected_handlers = defaultdict(dict)
         self._handler_locations = defaultdict(WeakSet)
         self.location = None
-
-    def set_error(self, domain, code):
-        self._mock_error = GLib.Error.new_literal(domain, "whoops", code)
-
-    def clear_error(self):
-        self._mock_error = None
 
     def get_location(self):
         return self.location
@@ -33,9 +26,6 @@ class MockGeoclueSimple:
         callback(None, self)
 
     def new_finish(self, async_result):
-        if self._mock_error is not None:
-            raise self._mock_error
-
         return async_result
 
     def get_client(self): ...
@@ -78,10 +68,25 @@ class LocationProbe(AppProbe):
         self.mock_native = MockGeoclueSimple()
         self.mock_native.get_location = Mock(wraps=self.mock_native.get_location)
 
+        monkeypatch.setattr(Geoclue, "Simple", self.mock_native)
+
+        gio_settings_new = Gio.Settings.new
+
+        self.mock_gsettings_location = Mock(
+            wraps=gio_settings_new("org.gnome.system.location")
+        )
+
+        def mock_gio_settings_new(schema_id):
+            if schema_id == "org.gnome.system.location":
+                return self.mock_gsettings_location
+
+            else:
+                return gio_settings_new(Gio.Settings, schema_id)
+
+        monkeypatch.setattr(Gio.Settings, "new", mock_gio_settings_new)
+
         # Start with a permission-rejecting posture
         self.reject_permission()
-
-        monkeypatch.setattr(Geoclue, "Simple", self.mock_native)
 
     def cleanup(self):
         try:
@@ -92,18 +97,24 @@ class LocationProbe(AppProbe):
     def grant_permission(self):
         self.allow_permission()
         self.app.location._impl.permission_result = True
+        # grant must set up a realistic "already checked and granted" scenario
+        # which for Geoclue necessitates starting Geoclue
+        # In the real Geoclue.Simple, the start process is asynchronous
+        # but ``MockGeoclueSimple.new()`` will be used here, which immediately
+        # executes the callback chain, meaning this finishes synchronously in test
+        self.app.location._impl._start()
 
     def grant_background_permission(self):
         self.grant_permission()
 
     def allow_permission(self):
-        self.mock_native.clear_error()
+        self.mock_gsettings_location.get_boolean.return_value = True
 
     def allow_background_permission(self):
         self.allow_permission()
 
     def reject_permission(self):
-        self.mock_native.set_error(GLib.quark_from_string("g-io-error-quark"), 0)
+        self.mock_gsettings_location.get_boolean.return_value = False
 
     def add_location(self, location, altitude, cached=False):
         # Geoclue only deals with a single location, so the
