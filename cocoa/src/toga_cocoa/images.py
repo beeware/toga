@@ -24,29 +24,17 @@ class Image:
     def __init__(self, interface, path=None, data=None, raw=None):
         self.interface = interface
 
-        # We *should* be able to do a direct NSImage.alloc.init...(), but if the
-        # image file is invalid, the init fails, returns NULL, and releases the
-        # Objective-C object. Since we've created an ObjC instance, when the object
-        # passes out of scope, Rubicon tries to free it, which segfaults.
-        # To avoid this, we retain result of the alloc() (overriding the default
-        # Rubicon behavior of alloc), then release that reference once we're done.
-        # If the image was created successfully, we temporarily have a reference
-        # count that is 1 higher than it needs to be; if it fails, we don't end up
-        # with a stray release.
-        image = NSImage.alloc().retain()
         if path:
-            self.native = image.initWithContentsOfFile(str(path))
+            self.native = NSImage.alloc().initWithContentsOfFile(str(path))
             if self.native is None:
                 raise ValueError(f"Unable to load image from {path}")
         elif data:
             nsdata = NSData.dataWithBytes(data, length=len(data))
-            self.native = image.initWithData(nsdata)
+            self.native = NSImage.alloc().initWithData(nsdata)
             if self.native is None:
                 raise ValueError("Unable to load image from data")
         else:
             self.native = raw
-
-        image.release()
 
     def get_width(self):
         return self.native.size.width
