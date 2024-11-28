@@ -91,18 +91,16 @@ class LocationProbe(AppProbe):
 
     def grant_permission(self):
         self.allow_permission()
-        self.app.location._impl.permission_requested = True
-        self.app.location._impl._start()
+        self.app.location._impl.permission_result = True
 
     def grant_background_permission(self):
-        self.allow_background_permission()
-        self.app.location._impl.background_permission_requested = True
+        self.grant_permission()
 
     def allow_permission(self):
         self.mock_native.clear_error()
 
     def allow_background_permission(self):
-        self.mock_native.clear_error()
+        self.allow_permission()
 
     def reject_permission(self):
         self.mock_native.set_error(GLib.quark_from_string("g-io-error-quark"), 0)

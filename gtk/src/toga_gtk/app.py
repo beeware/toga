@@ -1,5 +1,7 @@
 import asyncio
+import os
 import signal
+from pathlib import Path
 
 from toga.app import App as toga_App
 from toga.command import Separator
@@ -59,6 +61,36 @@ class App:
         context.add_provider_for_screen(
             Gdk.Screen.get_default(), css_provider, Gtk.STYLE_PROVIDER_PRIORITY_USER
         )
+
+    _is_flatpak: None | bool = None
+    _is_snap: None | bool = None
+
+    @property
+    def is_flatpak(self) -> bool:
+        """Whether the app is running as a Flatpak.
+
+        See also :meth:`~.App.is_sandboxed()`."""
+        if self._is_flatpak is None:
+            self._is_flatpak = Path("/.flatpak-info").exists()
+
+        return self._is_flatpak
+
+    @property
+    def is_snap(self) -> bool:
+        """Whether the app is running as a snap.
+
+        See also :meth:`~.App.is_sandboxed()`.
+
+        Note: Briefcase does not yet support a snap build target."""
+        if self._is_snap is None:
+            self._is_snap = os.getenv("SNAP", None) is not None
+
+        return self._is_snap
+
+    @property
+    def is_sandboxed(self):
+        """Whether the app is running under a sandbox, e.g., Flatpak or snap."""
+        return self.is_flatpak or self.is_snap
 
     ######################################################################
     # Commands and menus

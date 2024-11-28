@@ -61,8 +61,8 @@ class Location(GObject.Object):
         #: Handle ID for client active notify listener
         self.notify_active_listener = None
 
-        #: Whether permissions have been requested
-        self.permission_requested = False
+        #: None if permissions are not requested, otherwise, indicates whether permissions are available
+        self.permission_result = None
 
     def _start(self):
         """Asynchronously initialize ``Geoclue.Simple``.
@@ -118,23 +118,33 @@ class Location(GObject.Object):
         return self.props.state in (State.READY, State.MONITORING)
 
     def has_permission(self):
-        return self.permission_requested and self.can_get_location
+        return self.permission_result
 
     def request_permission(self, result):
+        if self.permission_result is not None:
+            result.set_result(self.permission_result)
+            return
+
         if self.can_get_location:
             result.set_result(True)
-            self.permission_requested = True
+            self.permission_result = True
 
         elif self.props.state < State.READY:
+            if (settings := self.gsettings_location) and not settings.get_boolean(
+                "enabled"
+            ):
+                self.props.state = State.DENIED
+                result.set_result(False)
+                self.permission_result = False
+                return
 
             def wait_for_client(*args):
                 if self.props.state < State.READY:
                     return
 
+                self.permission_result = self.can_get_location
                 result.set_result(self.can_get_location)
                 self.disconnect(listener_handle)
-
-                self.permission_requested = True
 
             listener_handle = self.connect("notify::state", wait_for_client)
 
@@ -142,6 +152,30 @@ class Location(GObject.Object):
                 self._start()
         else:
             result.set_result(False)
+            self.permission_result = False
+
+    @property
+    def gsettings_location(self):
+        if self.interface.app._impl.is_sandboxed:
+            # Sandboxed applications can read these settings, but they won't accurately reflect
+            # the system configuration, they'll always be the default values
+            # Instead, sandboxed applications use the XDG Portal to request permissions
+            # which happens automatically when starting ``Geoclue.Simple``
+            return None
+
+        if not hasattr(self, "_gsettings_location"):
+            settings_schema_source = Gio.SettingsSchemaSource.get_default()
+            location_setting_schema_id = "org.gnome.system.location"
+            location_setting_available = settings_schema_source.lookup(
+                location_setting_schema_id, recursive=False
+            )
+
+            if location_setting_available:
+                self._gsettings_location = Gio.Settings.new(location_setting_schema_id)
+            else:
+                self._gsettings_location = None
+
+        return self._gsettings_location
 
     def has_background_permission(self):
         """Check for background permission.
