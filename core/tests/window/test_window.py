@@ -435,6 +435,24 @@ def test_non_resizable_window_state(state):
     non_resizable_window.close()
 
 
+@pytest.mark.parametrize(
+    "state",
+    [
+        WindowState.FULLSCREEN,
+        WindowState.PRESENTATION,
+    ],
+)
+def test_resize_in_window_state(state):
+    """Window size cannot be changed while in fullscreen or presentation state."""
+    window = toga.Window(title="Non-resizing window")
+    window.show()
+    window.state = state
+
+    with pytest.raises(ValueError, match=f"Cannot resize window while in {state}"):
+        window.size = (100, 200)
+    window.close()
+
+
 def test_close_direct(window, app):
     """A window can be closed directly."""
     on_close_handler = Mock(return_value=True)

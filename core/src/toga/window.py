@@ -389,6 +389,8 @@ class Window:
 
     @size.setter
     def size(self, size: SizeT) -> None:
+        if self.state in {WindowState.FULLSCREEN, WindowState.PRESENTATION}:
+            raise ValueError(f"Cannot resize window while in {self.state}")
         self._impl.set_size(size)
         if self.content:
             self.content.refresh()
