@@ -73,11 +73,10 @@ def get_platform_factory() -> ModuleType:
             # (https://github.com/chaquo/chaquopy/issues/890), so include the original
             # exception message in case the backend does exist but throws a
             # ModuleNotFoundError from one of its internal imports.
-            msg = (
+            raise RuntimeError(
                 f"The backend specified by TOGA_BACKEND ({backend_value!r}) could "
                 f"not be loaded ({e}). It should be one of: {toga_backends_values}."
             )
-            raise RuntimeError(msg)
 
     else:
         toga_backends = find_backends()
@@ -95,14 +94,13 @@ def get_platform_factory() -> ModuleType:
                 toga_backends_string = ", ".join(
                     [f"{backend.value!r} ({backend.name})" for backend in toga_backends]
                 )
-                msg = (
+                raise RuntimeError(
                     f"Multiple Toga backends are installed ({toga_backends_string}), "
                     f"but none of them match your current platform "
                     f"({current_platform!r}). "
                     f"Install a backend for your current platform, or use "
                     f"TOGA_BACKEND to specify a backend."
                 )
-                raise RuntimeError(msg)
             if len(matching_backends) > 1:
                 toga_backends_string = ", ".join(
                     [
@@ -110,13 +108,12 @@ def get_platform_factory() -> ModuleType:
                         for backend in matching_backends
                     ]
                 )
-                msg = (
+                raise RuntimeError(
                     f"Multiple candidate toga backends found: "
                     f"({toga_backends_string}). "
                     f"Uninstall the backends you don't require, or use "
                     f"TOGA_BACKEND to specify a backend."
                 )
-                raise RuntimeError(msg)
             backend = matching_backends[0]
         factory = importlib.import_module(f"{backend.value}.factory")
     return factory

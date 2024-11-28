@@ -364,8 +364,7 @@ from toga.style.pack import (
         pytest.param(
             Pack(background_color=REBECCAPURPLE),
             (
-                "flex-direction: row; flex: "
-                "0.0 0 auto; "
+                "flex-direction: row; flex: 0.0 0 auto; "
                 "background-color: rgb(102, 51, 153);"
             ),
             id="background-color",
