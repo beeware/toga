@@ -76,7 +76,7 @@ class Location(GObject.Object):
 
         Geoclue.Simple.new(
             self.interface.app.app_id,
-            Geoclue.AccuracyLevel.EXACT,
+            self.get_max_accuracy_level(),
             None,
             self._new_finish,
         )
@@ -119,6 +119,10 @@ class Location(GObject.Object):
         """Whether ``Geoclue.Simple`` is ready to provide a location."""
         return self.props.state in (State.READY, State.MONITORING)
 
+    @property
+    def is_sandboxed(self):
+        return self.interface.app._impl.is_sandboxed
+
     def has_permission(self):
         return bool(self.permission_result)
 
@@ -132,9 +136,7 @@ class Location(GObject.Object):
             self.permission_result = True
 
         elif self.props.state < State.READY:
-            if (settings := self.gsettings_location) and not settings.get_boolean(
-                "enabled"
-            ):
+            if self.gsettings_disallow_location():
                 self.props.state = State.DENIED
                 result.set_result(False)
                 self.permission_result = False
@@ -158,11 +160,11 @@ class Location(GObject.Object):
 
     @property
     def gsettings_location(self):
-        if self.interface.app._impl.is_sandboxed:
-            # Sandboxed applications can read these settings, but they won't accurately reflect
-            # the system configuration, they'll always be the default values
-            # Instead, sandboxed applications use the XDG Portal to request permissions
-            # which happens automatically when starting ``Geoclue.Simple``
+        if self.is_sandboxed:
+            # Sandboxed applications can read the org.gnome.system.location settings
+            # but they will always be the default values
+            # Therefore, ignore gsettings for sandboxed applications and instead rely
+            # on XDG Portal's location permission handling
             return None
 
         if not hasattr(self, "_gsettings_location"):
@@ -178,6 +180,31 @@ class Location(GObject.Object):
                 self._gsettings_location = None
 
         return self._gsettings_location
+
+    def gsettings_disallow_location(self):
+        return (settings := self.gsettings_location) and not settings.get_boolean(
+            "enabled"
+        )
+
+    def get_max_accuracy_level(self) -> int:
+        # match GSettings' and XDG Portal's default max accuracy levels
+        DEFAULT_MAX_ACCURACY_LEVEL = Geoclue.AccuracyLevel.EXACT
+
+        if settings := self.gsettings_location:
+            # get as a string rather than enum int so we can avoid needing to import GDesktopEnums
+            # and in turn rely on its system dependency
+            gsettings_max_accuracy_level = settings.get_string(
+                "max-accuracy-level"
+            ).upper()
+            return getattr(
+                Geoclue.AccuracyLevel,
+                gsettings_max_accuracy_level,
+                DEFAULT_MAX_ACCURACY_LEVEL,
+            )
+        else:
+            # There's no way to introspect the Portal permissions, so fall back to the default
+            # without further checks
+            return DEFAULT_MAX_ACCURACY_LEVEL
 
     def has_background_permission(self):
         """Check for background permission.
