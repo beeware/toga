@@ -195,6 +195,7 @@ def test_environment_variable_fail(monkeypatch):
     monkeypatch.setenv("TOGA_BACKEND", "fake_platform_module")
     with pytest.raises(
         RuntimeError,
-        match=r"The backend specified by TOGA_BACKEND \('fake_platform_module'\) could not be loaded.",
+        match=r"The backend specified by TOGA_BACKEND "
+        r"\('fake_platform_module'\) could not be loaded.",
     ):
         _get_platform_factory()

@@ -262,7 +262,10 @@ def test_quadratic_curve_to(widget):
         # Defaults
         (
             {"x": 10, "y": 20, "radius": 30},
-            "x=10, y=20, radius=30, startangle=0.000, endangle=6.283, anticlockwise=False",
+            (
+                "x=10, y=20, radius=30, startangle=0.000, "
+                "endangle=6.283, anticlockwise=False"
+            ),
             {
                 "x": 10,
                 "y": 20,
@@ -275,7 +278,10 @@ def test_quadratic_curve_to(widget):
         # Start angle
         (
             {"x": 10, "y": 20, "radius": 30, "startangle": 1.234},
-            "x=10, y=20, radius=30, startangle=1.234, endangle=6.283, anticlockwise=False",
+            (
+                "x=10, y=20, radius=30, startangle=1.234, "
+                "endangle=6.283, anticlockwise=False"
+            ),
             {
                 "x": 10,
                 "y": 20,
@@ -293,7 +299,10 @@ def test_quadratic_curve_to(widget):
                 "radius": 30,
                 "endangle": 2.345,
             },
-            "x=10, y=20, radius=30, startangle=0.000, endangle=2.345, anticlockwise=False",
+            (
+                "x=10, y=20, radius=30, startangle=0.000, "
+                "endangle=2.345, anticlockwise=False"
+            ),
             {
                 "x": 10,
                 "y": 20,
@@ -311,7 +320,10 @@ def test_quadratic_curve_to(widget):
                 "radius": 30,
                 "anticlockwise": False,
             },
-            "x=10, y=20, radius=30, startangle=0.000, endangle=6.283, anticlockwise=False",
+            (
+                "x=10, y=20, radius=30, startangle=0.000, "
+                "endangle=6.283, anticlockwise=False"
+            ),
             {
                 "x": 10,
                 "y": 20,
@@ -329,7 +341,10 @@ def test_quadratic_curve_to(widget):
                 "radius": 30,
                 "anticlockwise": True,
             },
-            "x=10, y=20, radius=30, startangle=0.000, endangle=6.283, anticlockwise=True",
+            (
+                "x=10, y=20, radius=30, startangle=0.000, "
+                "endangle=6.283, anticlockwise=True"
+            ),
             {
                 "x": 10,
                 "y": 20,
@@ -349,7 +364,10 @@ def test_quadratic_curve_to(widget):
                 "endangle": 2.345,
                 "anticlockwise": True,
             },
-            "x=10, y=20, radius=30, startangle=1.234, endangle=2.345, anticlockwise=True",
+            (
+                "x=10, y=20, radius=30, startangle=1.234, "
+                "endangle=2.345, anticlockwise=True"
+            ),
             {
                 "x": 10,
                 "y": 20,

@@ -21,7 +21,8 @@ class Document(ABC):
     #: class variable that subclasses should define.
     description: str
 
-    #: A list of extensions that documents of this type might use, without leading dots (e.g.,
+    #: A list of extensions that documents of this type might use,
+    # without leading dots (e.g.,
     #: ``["doc", "txt"]``). The list must have at least one extension; the first is the
     #: default extension for documents of this type. This is a class variable that
     #: subclasses should define.
@@ -275,9 +276,9 @@ class DocumentSet(Sequence[Document], Mapping[Path, Document]):
         if hasattr(self, "_open_dialog"):
             return
 
-        # CLOSE_ON_LAST_WINDOW is a proxy for the GTK/Windows behavior of loading content
-        # into the existing window. This is actually implemented by creating a new window
-        # and disposing of the old one; mark the current window for cleanup
+        # CLOSE_ON_LAST_WINDOW is a proxy for the GTK/Windows behavior of loading
+        # content into the existing window. This is actually implemented by creating a
+        # new window and disposing of the old one; mark the current window for cleanup
         current_window = self.app.current_window
         if self.app._impl.CLOSE_ON_LAST_WINDOW:
             if hasattr(self.app.current_window, "_commit"):
@@ -311,8 +312,8 @@ class DocumentSet(Sequence[Document], Mapping[Path, Document]):
     def open(self, path: Path | str) -> Document:
         """Open a document in the app, and show the document window.
 
-        If the provided path is already an open document, the existing representation for
-        the document will be given focus.
+        If the provided path is already an open document, the existing representation
+        for the document will be given focus.
 
         :param path: The path to the document to be opened.
         :returns: The document that was opened.
@@ -427,7 +428,10 @@ class DocumentWindow(MainWindow):
             if await self.dialog(
                 toga.QuestionDialog(
                     "Save changes?",
-                    "This document has unsaved changes. Do you want to save these changes?",
+                    (
+                        "This document has unsaved changes. "
+                        "Do you want to save these changes?"
+                    ),
                 )
             ):
                 return await self.save()

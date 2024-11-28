@@ -30,10 +30,10 @@ from toga_cocoa.libs import (
     NSView,
 )
 
-#########################################################################################
+########################################################################################
 # This is broadly derived from Alex Zielenski's ScrollToRefresh implementation:
-# https://github.com/alexzielenski/ScrollToRefresh/blob/master/ScrollToRefresh/src/EQSTRScrollView.m
-# =======================================================================================
+#   https://github.com/alexzielenski/ScrollToRefresh/blob/master/ScrollToRefresh/src/EQSTRScrollView.m  # noqa: E501
+# ======================================================================================
 # ScrollToRefresh
 #
 # Copyright (C) 2011 by Alex Zielenski.
@@ -54,7 +54,7 @@ from toga_cocoa.libs import (
 # HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
 # CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
 # OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-# =======================================================================================
+# ======================================================================================
 #
 # HOW THIS WORKS
 #
@@ -78,7 +78,7 @@ from toga_cocoa.libs import (
 #
 # All of this is also gated by the refreshEnabled flag; when refresh is disabled, it
 # also makes the refresh widget invisible so that it can't be seen in a bounce scroll.
-#########################################################################################
+########################################################################################
 
 # The height of the refresh header; also the minimum pull height to trigger a refresh.
 HEADER_HEIGHT = 45.0

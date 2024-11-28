@@ -140,7 +140,8 @@ class SelectionApp(toga.App):
         print(
             f"Element: {self.selection.value!r}; "
             f"Empty: {self.empty_selection.value!r}; "
-            f"Source: {self.source_selection.value.name} has weight {self.source_selection.value.weight}"
+            f"Source: {self.source_selection.value.name} "
+            f"has weight {self.source_selection.value.weight}"
         )
 
 

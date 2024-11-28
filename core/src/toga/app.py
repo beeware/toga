@@ -384,6 +384,15 @@ class App:
         return self._home_page
 
     @property
+    def dark_mode(self) -> bool | None:
+        """Whether the user has dark mode enabled in their environment (read-only).
+
+        :returns: A Boolean describing if the app is in dark mode; ``None`` if Toga
+            cannot determine if the app is in dark mode.
+        """
+        return self._impl.get_dark_mode_state()
+
+    @property
     def icon(self) -> Icon:
         """The Icon for the app.
 
@@ -420,7 +429,8 @@ class App:
 
     @property
     def is_bundled(self) -> bool:
-        """Has the app been bundled as a standalone binary, or is it running as a Python script?"""
+        """Has the app been bundled as a standalone binary,
+        or is it running as a Python script?"""
         return Path(sys.executable).stem not in {
             "python",
             f"python{sys.version_info.major}",
@@ -645,8 +655,8 @@ class App:
         self._create_standard_commands()
         self._impl.create_standard_commands()
 
-        # Install the standard status icon commands. Again, this is done *before* startup
-        # so that the user's code can remove/change the defaults.
+        # Install the standard status icon commands. Again, this is done *before*
+        # startup so that the user's code can remove/change the defaults.
         self.status_icons._create_standard_commands()
 
         # Invoke the user's startup method (or the default implementation)
@@ -907,7 +917,8 @@ class App:
         return True
 
     def on_running(self) -> None:
-        """The event handler that will be invoked when the app's event loop starts running.
+        """The event handler that will be invoked
+        when the app's event loop starts running.
 
         If necessary, the overridden method can be defined as an ``async`` coroutine.
         """

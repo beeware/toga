@@ -20,5 +20,6 @@ class ProgressBarProbe(SimpleProbe):
         return float(self.native.doubleValue / self.native.maxValue)
 
     async def wait_for_animation(self):
-        # Cocoa ProgressBar has internal animation handling; no special handling required.
+        # Cocoa ProgressBar has internal animation handling;
+        # no special handling required.
         pass

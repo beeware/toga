@@ -168,7 +168,8 @@ class ScrollContainer(Widget):
     def horizontal_position(self, horizontal_position: SupportsInt) -> None:
         if not self.horizontal:
             raise ValueError(
-                "Cannot set horizontal position when horizontal scrolling is not enabled."
+                "Cannot set horizontal position when "
+                "horizontal scrolling is not enabled."
             )
 
         self.position = (horizontal_position, self._impl.get_vertical_position())

@@ -313,6 +313,17 @@ class App:
         return [ScreenImpl(native=screen) for screen in NSScreen.screens]
 
     ######################################################################
+    # App state
+    ######################################################################
+
+    def get_dark_mode_state(self):
+        appearance = self.native.effectiveAppearance
+        # Standard theme names in MacOS
+        # https://developer.apple.com/documentation/appkit/nsappearance/name-swift.struct?language=objc
+        in_dark_mode = "Dark" in str(appearance.name)
+        return in_dark_mode
+
+    ######################################################################
     # App capabilities
     ######################################################################
 
@@ -387,8 +398,8 @@ class App:
         )
 
         for window, screen in zip(windows, NSScreen.screens):
-            # The widgets are actually added to window._impl.container.native, instead of
-            # window.content._impl.native. And window._impl.native.contentView is
+            # The widgets are actually added to window._impl.container.native, instead
+            # of window.content._impl.native. And window._impl.native.contentView is
             # window._impl.container.native. Hence, we need to go fullscreen on
             # window._impl.container.native instead.
             window._impl.container.native.enterFullScreenMode(screen, withOptions=opts)

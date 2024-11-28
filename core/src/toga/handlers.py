@@ -249,7 +249,8 @@ class AsyncResult(ABC):
     # All the comparison dunder methods are disabled
     def __bool__(self, other: object) -> NoReturn:
         raise RuntimeError(
-            f"Can't check {self.RESULT_TYPE} result directly; use await or an on_result handler"
+            f"Can't check {self.RESULT_TYPE} result directly; "
+            "use await or an on_result handler"
         )
 
     __lt__ = __bool__
