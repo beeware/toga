@@ -341,7 +341,10 @@ class Window:
         self.native.orderOut(self.native)
 
     def get_visible(self):
-        return bool(self.native.isVisible)
+        return (
+            bool(self.native.isVisible)
+            or self.get_window_state(in_progress_state=True) == WindowState.MINIMIZED
+        )
 
     ######################################################################
     # Window state

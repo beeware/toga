@@ -478,7 +478,9 @@ class Window:
 
     @state.setter
     def state(self, state: WindowState) -> None:
-        if not self.resizable and state in {
+        if not self.visible:
+            raise ValueError("Window state of a hidden window cannot be changed.")
+        elif not self.resizable and state in {
             WindowState.MAXIMIZED,
             WindowState.FULLSCREEN,
             WindowState.PRESENTATION,

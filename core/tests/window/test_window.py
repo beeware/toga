@@ -336,6 +336,7 @@ def test_visibility(window, app):
 )
 def test_window_state(window, initial_state, final_state):
     """A window can have different states."""
+    window.show()
     assert window.state == WindowState.NORMAL
 
     window.state = initial_state
@@ -372,15 +373,42 @@ def test_window_state(window, initial_state, final_state):
 )
 def test_window_state_same_as_current(window, state):
     """Setting window state the same as current is a no-op."""
+    window.show()
+
     window.state = state
     assert window.state == state
 
     # Reset the EventLog to check that the action was not re-performed.
     EventLog.reset()
+    window.show()
 
     window.state = state
     assert window.state == state
     assert_action_not_performed(window, f"set window state to {state}")
+
+
+@pytest.mark.parametrize(
+    "state",
+    [
+        WindowState.NORMAL,
+        WindowState.MINIMIZED,
+        WindowState.MAXIMIZED,
+        WindowState.FULLSCREEN,
+        WindowState.PRESENTATION,
+    ],
+)
+def test_hidden_window_state(state):
+    """Window state of a hidden window cannot be changed."""
+    hidden_window = toga.Window(title="Hidden Window")
+    hidden_window.hide()
+
+    with pytest.raises(
+        ValueError,
+        match="Window state of a hidden window cannot be changed.",
+    ):
+        hidden_window.state = state
+        assert_action_not_performed(hidden_window, f"set window state to {state}")
+    hidden_window.close()
 
 
 @pytest.mark.parametrize(
@@ -394,6 +422,8 @@ def test_window_state_same_as_current(window, state):
 def test_non_resizable_window_state(state):
     """Non-resizable window's states other than minimized or normal are no-ops."""
     non_resizable_window = toga.Window(title="Non-Resizable Window", resizable=False)
+    non_resizable_window.show()
+
     with pytest.raises(
         ValueError,
         match=f"A non-resizable window cannot be set to a state of {state}.",
