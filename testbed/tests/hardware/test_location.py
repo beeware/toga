@@ -104,7 +104,8 @@ async def test_deny_background_permission(
     """A user can deny background permission to use location."""
     if not supports_background_permission:
         return pytest.xfail(
-            f"{toga.platform.current_platform} does not support background location permission"
+            f"{toga.platform.current_platform} does not support "
+            "background location permission"
         )
 
     # Foreground permissions haven't been approved, so requesting background permissions

@@ -45,8 +45,8 @@ class Location(GObject.Object):
         if Geoclue is None:
             raise RuntimeError(
                 "Unable to import Geoclue. Ensure that the system package "
-                "providing Geoclue and its GTK bindings have been installed. "
-                "See https://toga.readthedocs.io/en/stable/reference/api/hardware/location.html#system-requirements "
+                "providing Geoclue and its GTK bindings have been installed. See "
+                "https://toga.readthedocs.io/en/stable/reference/api/hardware/location.html#system-requirements "  # noqa: E501
                 "for details."
             )
 
@@ -63,7 +63,8 @@ class Location(GObject.Object):
         #: Handle ID for client active notify listener
         self.notify_active_listener: None | int = None
 
-        #: None if permissions are not requested, otherwise, indicates whether permissions are available
+        #: None if permissions are not requested, otherwise, indicates whether
+        #: permissions are available
         self.permission_result: None | bool = None
 
     def _start(self):
@@ -86,10 +87,9 @@ class Location(GObject.Object):
             self.native = Geoclue.Simple.new_finish(async_result)
         except GLib.Error as e:
             if e.matches(Gio.DBusError, Gio.DBusError.ACCESS_DENIED):
-                # TODO: In practice, I cannot get this to occur. Maybe it is KDE's portal
-                # implementation, but when I deny location permissions in the prompt,
-                # the failure is a generic DBusError.FAILED, not a permission denied
-                # failure.
+                # In practice, this denied error is unlikely/impossible to happen
+                # due to a bug in Geoclue.Simple's error handling
+                # https://gitlab.freedesktop.org/geoclue/geoclue/-/issues/205
                 self.props.state = State.DENIED
             else:
                 self.props.state = State.FAILED
@@ -191,8 +191,8 @@ class Location(GObject.Object):
         DEFAULT_MAX_ACCURACY_LEVEL = Geoclue.AccuracyLevel.EXACT
 
         if settings := self.gsettings_location:
-            # get as a string rather than enum int so we can avoid needing to import GDesktopEnums
-            # and in turn rely on its system dependency
+            # get as a string rather than enum int so we can avoid needing to import
+            # GDesktopEnums and in turn rely on its system dependency
             gsettings_max_accuracy_level = settings.get_string(
                 "max-accuracy-level"
             ).upper()
@@ -202,8 +202,8 @@ class Location(GObject.Object):
                 DEFAULT_MAX_ACCURACY_LEVEL,
             )
         else:
-            # There's no way to introspect the Portal permissions, so fall back to the default
-            # without further checks
+            # There's no way to introspect the Portal permissions, so fall back to the
+            # default without further checks
             return DEFAULT_MAX_ACCURACY_LEVEL
 
     def has_background_permission(self):
