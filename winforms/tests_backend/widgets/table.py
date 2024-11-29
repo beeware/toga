@@ -15,6 +15,7 @@ class TableProbe(SimpleProbe):
     background_supports_alpha = False
     supports_icons = 1  # First column only
     supports_keyboard_shortcuts = False
+    supports_keyboard_boundary_shortcuts = True
     supports_widgets = False
 
     @property
@@ -99,3 +100,9 @@ class TableProbe(SimpleProbe):
                 delta=0,
             )
         )
+
+    async def acquire_keyboard_focus(self):
+        await self.type_character(
+            "\t"
+        )  # switch to widget.focus() when possible (#2972)
+        await self.type_character(" ")  # select first row

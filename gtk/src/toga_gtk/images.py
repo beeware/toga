@@ -34,7 +34,8 @@ class Image:
         if success:
             return buffer
         else:  # pragma: nocover
-            # This shouldn't ever happen, and it's difficult to manufacture in test conditions
+            # This shouldn't ever happen, and it's difficult to manufacture
+            # in test conditions
             raise ValueError("Unable to get PNG data for image")
 
     def save(self, path):

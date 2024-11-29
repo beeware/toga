@@ -96,8 +96,8 @@ class Icon:
         """
         self.factory = get_platform_factory()
         try:
-            # Try to load the icon with the given path snippet. If the request is for the
-            # app icon, use ``resources/<app name>`` as the path.
+            # Try to load the icon with the given path snippet. If the request is for
+            # the app icon, use ``resources/<app name>`` as the path.
             if path is _APP_ICON:
                 self.path = Path(f"resources/{toga.App.app.app_name}")
             else:
@@ -149,7 +149,8 @@ class Icon:
                     self._impl = self.DEFAULT_ICON._impl
             else:
                 print(
-                    f"WARNING: Can't find icon {self.path}; falling back to default icon"
+                    f"WARNING: Can't find icon {self.path}; "
+                    f"falling back to default icon"
                 )
                 self._impl = self.DEFAULT_ICON._impl
 

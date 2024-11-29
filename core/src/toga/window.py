@@ -95,7 +95,8 @@ class OnCloseHandler(Protocol):
     def __call__(self, window: Window, /, **kwargs: Any) -> bool:
         """A handler to invoke when a window is about to close.
 
-        The return value of this callback controls whether the window is allowed to close.
+        The return value of this callback controls whether the window
+        is allowed to close.
         This can be used to prevent a window closing with unsaved changes, etc.
 
         :param window: The window instance that is closing.
@@ -575,7 +576,8 @@ class Window:
         # 2024-06: Backwards compatibility
         ######################################################################
         warnings.warn(
-            "question_dialog(...) has been deprecated; use dialog(toga.QuestionDialog(...))",
+            "question_dialog(...) has been deprecated; "
+            "use dialog(toga.QuestionDialog(...))",
             DeprecationWarning,
         )
         ######################################################################
@@ -601,7 +603,8 @@ class Window:
         # 2024-06: Backwards compatibility
         ######################################################################
         warnings.warn(
-            "confirm_dialog(...) has been deprecated; use dialog(toga.ConfirmDialog(...))",
+            "confirm_dialog(...) has been deprecated; "
+            "use dialog(toga.ConfirmDialog(...))",
             DeprecationWarning,
         )
         ######################################################################
@@ -655,7 +658,8 @@ class Window:
         # 2024-06: Backwards compatibility
         ######################################################################
         warnings.warn(
-            "stack_trace_dialog(...) has been deprecated; use dialog(toga.StackTraceDialog(...))",
+            "stack_trace_dialog(...) has been deprecated; "
+            "use dialog(toga.StackTraceDialog(...))",
             DeprecationWarning,
         )
         ######################################################################
@@ -687,7 +691,8 @@ class Window:
         # 2024-06: Backwards compatibility
         ######################################################################
         warnings.warn(
-            "save_file_dialog(...) has been deprecated; use dialog(toga.SaveFileDialog(...))",
+            "save_file_dialog(...) has been deprecated; "
+            "use dialog(toga.SaveFileDialog(...))",
             DeprecationWarning,
         )
         ######################################################################
@@ -724,7 +729,8 @@ class Window:
         # 2024-06: Backwards compatibility
         ######################################################################
         warnings.warn(
-            "open_file_dialog(...) has been deprecated; use dialog(toga.OpenFileDialog(...))",
+            "open_file_dialog(...) has been deprecated; "
+            "use dialog(toga.OpenFileDialog(...))",
             DeprecationWarning,
         )
         ######################################################################
@@ -775,7 +781,8 @@ class Window:
         # 2024-06: Backwards compatibility
         ######################################################################
         warnings.warn(
-            "select_folder_dialog(...) has been deprecated; use dialog(toga.SelectFolderDialog(...))",
+            "select_folder_dialog(...) has been deprecated; "
+            "use dialog(toga.SelectFolderDialog(...))",
             DeprecationWarning,
         )
         ######################################################################

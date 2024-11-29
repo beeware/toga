@@ -114,6 +114,8 @@ class SimpleProbe(BaseProbe, FontMixin):
         key_code = {
             "<backspace>": 51,
             "<esc>": 53,
+            "<down>": 125,
+            "<up>": 126,
             " ": 49,
             "\n": 36,
             "a": 0,
@@ -147,7 +149,8 @@ class SimpleProbe(BaseProbe, FontMixin):
         if modifierFlags:
             char = None
 
-        # This posts a single keyDown followed by a keyUp, matching "normal" keyboard operation.
+        # This posts a single keyDown followed by a keyUp, matching "normal"
+        # keyboard operation.
         await self.post_event(
             NSEvent.keyEventWithType(
                 NSEventType.KeyDown,

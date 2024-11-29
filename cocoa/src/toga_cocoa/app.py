@@ -312,6 +312,17 @@ class App:
         return [ScreenImpl(native=screen) for screen in NSScreen.screens]
 
     ######################################################################
+    # App state
+    ######################################################################
+
+    def get_dark_mode_state(self):
+        appearance = self.native.effectiveAppearance
+        # Standard theme names in MacOS
+        # https://developer.apple.com/documentation/appkit/nsappearance/name-swift.struct?language=objc
+        in_dark_mode = "Dark" in str(appearance.name)
+        return in_dark_mode
+
+    ######################################################################
     # App capabilities
     ######################################################################
 

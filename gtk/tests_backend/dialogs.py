@@ -102,9 +102,9 @@ class DialogsMixin:
             if result is not None:
                 if multiple_select:
                     if result:
-                        # Since we are mocking selected_path(), it's never actually invoked
-                        # under test conditions. Call it just to confirm that it returns the
-                        # type we think it does.
+                        # Since we are mocking selected_path(), it's never actually
+                        # invoked under test conditions. Call it just to confirm that
+                        # it returns the type we think it does.
                         assert isinstance(dialog._impl.selected_paths(), list)
 
                         dialog._impl.selected_paths = Mock(
@@ -144,9 +144,9 @@ class DialogsMixin:
             if result is not None:
                 if multiple_select:
                     if result:
-                        # Since we are mocking selected_path(), it's never actually invoked
-                        # under test conditions. Call it just to confirm that it returns the
-                        # type we think it does.
+                        # Since we are mocking selected_path(), it's never actually
+                        # invoked under test conditions. Call it just to confirm that
+                        # it returns the type we think it does.
                         assert isinstance(dialog._impl.selected_paths(), list)
 
                         dialog._impl.selected_paths = Mock(
@@ -155,11 +155,11 @@ class DialogsMixin:
                 else:
                     dialog._impl.selected_path = Mock(return_value=str(result))
 
-            # GTK's file dialog might open on default location that doesn't have anything
-            # that can be selected, which alters closing behavior. To provide consistent
-            # test conditions, select an arbitrary folder that we know has subfolders. We
-            # don't care which folder it is, as we're mocking the return value of the
-            # dialog.
+            # GTK's file dialog might open on default location that doesn't have
+            # anything that can be selected, which alters closing behavior. To provide
+            # consistent test conditions, select an arbitrary folder that we know has
+            # subfolders. We don't care which folder it is, as we're mocking the return
+            # value of the dialog.
             self._wait_for_dialog("Wait for dialog to appear")
             if result:
                 folder = str(Path(__file__).parent.parent)

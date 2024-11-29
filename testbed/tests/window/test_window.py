@@ -46,7 +46,8 @@ async def test_title(main_window, main_window_probe):
         await main_window_probe.wait_for_window("Window title can be reverted")
 
 
-# Mobile platforms have different windowing characteristics, so they have different tests.
+# Mobile platforms have different windowing characteristics,
+# so they have different tests.
 if toga.platform.current_platform in {"iOS", "android"}:
     ####################################################################################
     # Mobile platform tests
@@ -302,7 +303,8 @@ if toga.platform.current_platform in {"iOS", "android"}:
         assert main_window.state == WindowState.NORMAL
 
     async def test_screen(main_window, main_window_probe):
-        """The window can be relocated to another screen, using both absolute and relative screen positions."""
+        """The window can be relocated to another screen, using both absolute and
+        relative screen positions."""
         assert main_window.screen.origin == (0, 0)
         initial_size = main_window.size
         main_window.position = (150, 50)
@@ -617,7 +619,8 @@ else:
     async def test_move_and_resize(second_window, second_window_probe):
         """A window can be moved and resized."""
 
-        # Determine the extra width consumed by window chrome (e.g., title bars, borders etc)
+        # Determine the extra width consumed by window chrome
+        # (e.g., title bars, borders etc)
         extra_width = second_window.size[0] - second_window_probe.content_size[0]
         extra_height = second_window.size[1] - second_window_probe.content_size[1]
 
@@ -945,7 +948,8 @@ else:
         ],
     )
     async def test_screen(second_window, second_window_probe):
-        """The window can be relocated to another screen, using both absolute and relative screen positions."""
+        """The window can be relocated to another screen, using both absolute and
+        relative screen positions."""
 
         initial_position = second_window.position
 
@@ -955,7 +959,8 @@ else:
         if second_window_probe.supports_placement:
             assert second_window.position != initial_position
 
-        # `position` and `screen_position` will be same as the window will be in primary screen.
+        # `position` and `screen_position` will be same as the window will be in
+        # primary screen.
         if second_window_probe.supports_placement:
             assert second_window.position == (200, 200)
             assert second_window.screen_position == (200, 200)
