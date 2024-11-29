@@ -2,6 +2,7 @@
 TODO
 """
 
+import os
 from collections import defaultdict
 from unittest.mock import Mock
 from weakref import WeakSet
@@ -63,6 +64,7 @@ class LocationProbe(AppProbe):
     supports_background_permission = False
 
     def __init__(self, monkeypatch, app_probe):
+        self._verify_dependencies()
         super().__init__(app_probe.app)
 
         self.mock_native = MockGeoclueSimple()
@@ -87,6 +89,16 @@ class LocationProbe(AppProbe):
 
         # Start with a permission-rejecting posture
         self.reject_permission()
+
+    def _verify_dependencies(self):
+        if os.getenv("CI", None) is not None:
+            assert (
+                Geoclue is not None
+            ), "libgeoclue dependency is required to run location tests on linux"
+        elif Geoclue is None:
+            pytest.xfail(
+                "Linux location tests require libgeoclue, but it was not available"
+            )
 
     def cleanup(self):
         try:
