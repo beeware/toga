@@ -5,7 +5,6 @@ from typing import Any, Protocol
 
 import toga
 from toga.handlers import wrapped_handler
-from toga.platform import get_platform_factory
 
 from .base import StyleT, Widget
 
@@ -168,9 +167,8 @@ class MapView(Widget):
 
         self.on_select = on_select
 
-    def _create(self) -> None:
-        self.factory = get_platform_factory()
-        self._impl = self.factory.MapView(interface=self)
+    def _create(self) -> object:
+        return self.factory.MapView(interface=self)
 
     @property
     def location(self) -> toga.LatLng:

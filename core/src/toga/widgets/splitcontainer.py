@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING
 
 from toga.app import App
 from toga.constants import Direction
-from toga.platform import get_platform_factory
 from toga.window import Window
 
 from .base import StyleT, Widget
@@ -50,9 +49,8 @@ class SplitContainer(Widget):
             self.content = content
         self.direction = direction
 
-    def _create(self) -> None:
-        self.factory = get_platform_factory()
-        self._impl = self.factory.SplitContainer(interface=self)
+    def _create(self) -> object:
+        return self.factory.SplitContainer(interface=self)
 
     @property
     def enabled(self) -> bool:

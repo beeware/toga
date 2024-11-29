@@ -422,9 +422,8 @@ class OptionContainer(Widget):
 
         self.on_select = on_select
 
-    def _create(self) -> None:
-        self.factory = get_platform_factory()
-        self._impl = self.factory.OptionContainer(interface=self)
+    def _create(self) -> object:
+        return self.factory.OptionContainer(interface=self)
 
     @property
     def enabled(self) -> bool:

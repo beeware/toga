@@ -127,22 +127,15 @@ class Pack(BaseStyle):
                 "font_variant",
                 "font_weight",
             ):
-                # For other properties, a backend that doesn't support it will simply do
-                # a no-op when instructed to set it. But for font, we need to know
-                # up-front, because just creating a Font object will fail.
-                try:
-                    font = Font(
+                self._applicator.set_font(
+                    Font(
                         self.font_family,
                         self.font_size,
                         style=self.font_style,
                         variant=self.font_variant,
                         weight=self.font_weight,
                     )
-                except NotImplementedError:  # pragma: no cover
-                    font = None
-
-                if font:  # pragma: no branch
-                    self._applicator.set_font(font)
+                )
             else:
                 # Any other style change will cause a change in layout geometry,
                 # so perform a refresh.

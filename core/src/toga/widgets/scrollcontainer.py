@@ -3,7 +3,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, Literal, Protocol, SupportsInt
 
 from toga.handlers import wrapped_handler
-from toga.platform import get_platform_factory
 from toga.types import Position
 
 from .base import StyleT, Widget
@@ -52,9 +51,8 @@ class ScrollContainer(Widget):
         self.content = content
         self.on_scroll = on_scroll
 
-    def _create(self) -> None:
-        self.factory = get_platform_factory()
-        self._impl = self.factory.ScrollContainer(interface=self)
+    def _create(self) -> object:
+        return self.factory.ScrollContainer(interface=self)
 
     @Widget.app.setter
     def app(self, app) -> None:

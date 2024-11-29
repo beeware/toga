@@ -3,7 +3,6 @@ from __future__ import annotations
 from typing import Literal
 
 from toga.constants import Direction
-from toga.platform import get_platform_factory
 
 from .base import StyleT, Widget
 
@@ -32,9 +31,8 @@ class Divider(Widget):
 
         self.direction = direction
 
-    def _create(self) -> None:
-        self.factory = get_platform_factory()
-        self._impl = self.factory.Divider(interface=self)
+    def _create(self) -> object:
+        return self.factory.Divider(interface=self)
 
     @property
     def enabled(self) -> Literal[True]:

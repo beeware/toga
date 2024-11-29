@@ -4,7 +4,6 @@ from typing import Any, Protocol
 
 import toga
 from toga.handlers import wrapped_handler
-from toga.platform import get_platform_factory
 
 from .base import StyleT, Widget
 
@@ -52,9 +51,8 @@ class MultilineTextInput(Widget):
         self.placeholder = placeholder
         self.on_change = on_change
 
-    def _create(self) -> None:
-        self.factory = get_platform_factory()
-        self._impl = self.factory.MultilineTextInput(interface=self)
+    def _create(self) -> object:
+        return self.factory.MultilineTextInput(interface=self)
 
     @property
     def placeholder(self) -> str:

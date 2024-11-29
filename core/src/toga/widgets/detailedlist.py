@@ -6,7 +6,6 @@ from typing import Any, Literal, Protocol, TypeVar
 
 import toga
 from toga.handlers import wrapped_handler
-from toga.platform import get_platform_factory
 from toga.sources import ListSource, Row, Source
 
 from .base import StyleT, Widget
@@ -121,9 +120,8 @@ class DetailedList(Widget):
         self.on_refresh = on_refresh
         self.on_select = on_select
 
-    def _create(self) -> None:
-        self.factory = get_platform_factory()
-        self._impl = self.factory.DetailedList(interface=self)
+    def _create(self) -> object:
+        return self.factory.DetailedList(interface=self)
 
     @property
     def enabled(self) -> Literal[True]:

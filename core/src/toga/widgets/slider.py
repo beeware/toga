@@ -7,7 +7,6 @@ from typing import Any, Protocol, SupportsFloat
 
 import toga
 from toga.handlers import wrapped_handler
-from toga.platform import get_platform_factory
 
 from .base import StyleT, Widget
 
@@ -117,9 +116,8 @@ class Slider(Widget):
 
         self.enabled = enabled
 
-    def _create(self) -> None:
-        self.factory = get_platform_factory()
-        self._impl = self.factory.Slider(interface=self)
+    def _create(self) -> object:
+        return self.factory.Slider(interface=self)
 
     # Backends are inconsistent about when they produce events for programmatic changes,
     # so we deal with those in the interface layer.

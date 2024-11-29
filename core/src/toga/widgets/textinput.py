@@ -5,7 +5,6 @@ from typing import Any, Protocol
 
 import toga
 from toga.handlers import wrapped_handler
-from toga.platform import get_platform_factory
 
 from .base import StyleT, Widget
 
@@ -101,9 +100,8 @@ class TextInput(Widget):
         self.on_lose_focus = on_lose_focus
         self.on_gain_focus = on_gain_focus
 
-    def _create(self) -> None:
-        self.factory = get_platform_factory()
-        self._impl = self.factory.TextInput(interface=self)
+    def _create(self) -> object:
+        return self.factory.TextInput(interface=self)
 
     @property
     def readonly(self) -> bool:

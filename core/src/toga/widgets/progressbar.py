@@ -2,8 +2,6 @@ from __future__ import annotations
 
 from typing import Literal, SupportsFloat
 
-from toga.platform import get_platform_factory
-
 from .base import StyleT, Widget
 
 
@@ -40,9 +38,8 @@ class ProgressBar(Widget):
         if running:
             self.start()
 
-    def _create(self) -> None:
-        self.factory = get_platform_factory()
-        self._impl = self.factory.ProgressBar(interface=self)
+    def _create(self) -> object:
+        return self.factory.ProgressBar(interface=self)
 
     @property
     def enabled(self) -> Literal[True]:

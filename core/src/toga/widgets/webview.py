@@ -4,7 +4,6 @@ import asyncio
 from typing import Any, Protocol
 
 from toga.handlers import AsyncResult, OnResultT, wrapped_handler
-from toga.platform import get_platform_factory
 
 from .base import StyleT, Widget
 
@@ -51,9 +50,8 @@ class WebView(Widget):
         self.on_webview_load = on_webview_load
         self.url = url
 
-    def _create(self) -> None:
-        self.factory = get_platform_factory()
-        self._impl = self.factory.WebView(interface=self)
+    def _create(self) -> object:
+        return self.factory.WebView(interface=self)
 
     def _set_url(self, url: str | None, future: asyncio.Future | None) -> None:
         # Utility method for validating and setting the URL with a future.

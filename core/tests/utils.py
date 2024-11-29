@@ -1,5 +1,4 @@
 import toga
-from toga.platform import get_platform_factory
 
 
 # Create the simplest possible widget with a concrete implementation that will
@@ -11,8 +10,7 @@ class ExampleWidget(toga.Widget):
         self._children = []
 
     def _create(self):
-        self.factory = get_platform_factory()
-        self._impl = self.factory.Widget(interface=self)
+        return self.factory.Widget(interface=self)
 
     def __repr__(self):
         return f"Widget(id={self.id!r})"
@@ -22,8 +20,7 @@ class ExampleWidget(toga.Widget):
 # have children.
 class ExampleLeafWidget(toga.Widget):
     def _create(self):
-        self.factory = get_platform_factory()
-        self._impl = self.factory.Widget(interface=self)
+        return self.factory.Widget(interface=self)
 
     def __repr__(self):
         return f"Widget(id={self.id!r})"

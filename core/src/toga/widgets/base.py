@@ -7,6 +7,7 @@ from warnings import warn
 from travertino.declaration import BaseStyle
 from travertino.node import Node
 
+from toga.platform import get_platform_factory
 from toga.style import Pack, TogaApplicator
 
 if TYPE_CHECKING:
@@ -33,17 +34,34 @@ class Widget(Node):
         :param style: A style object. If no style is provided, a default style
             will be applied to the widget.
         """
-        super().__init__(
-            style=style if style is not None else Pack(),
-            applicator=None,
-        )
+        super().__init__(style=style if style is not None else Pack())
 
         self._id = str(id if id else identifier(self))
         self._window: Window | None = None
         self._app: App | None = None
 
-        # Create and assign _impl
-        self._create()
+        # Get factory and assign implementation
+        self.factory = get_platform_factory()
+
+        #########################
+        # Backwards compatibility
+        #########################
+
+        # Just in case we're working with a third-party widget created before
+        # the _create() mechanism was added, which has already defined its
+        # implementation. We still want to call _create(), to issue the warning and
+        # inform users about where they should be creating the implementation, but if
+        # there already is one, we don't want to do the assignment and thus replace it
+        # with None.
+
+        impl = self._create()
+
+        if not hasattr(self, "_impl"):
+            self._impl = impl
+
+        #############################
+        # End backwards compatibility
+        #############################
 
         self.applicator = TogaApplicator()
 
@@ -68,15 +86,14 @@ class Widget(Node):
         # End backwards compatibility
         #############################
 
-    def _create(self) -> None:
-        """Create and store a platform-specific implementation of this widget.
+    def _create(self) -> object:
+        """Create a platform-specific implementation of this widget.
 
-        A subclass of Widget should redefine this method to create an implementation
-        and assign it to self._impl.
+        A subclass of Widget should redefine this method to return its implementation.
         """
         warn(
-            "Widgets should create their implementation and assign it to self._impl in "
-            "._create(). This will be an exception in a future version.",
+            "Widgets should create and return their implementation in ._create(). This "
+            "will be an exception in a future version.",
             RuntimeWarning,
             stacklevel=2,
         )

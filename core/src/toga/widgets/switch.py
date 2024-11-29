@@ -4,7 +4,6 @@ from typing import Any, Protocol
 
 import toga
 from toga.handlers import wrapped_handler
-from toga.platform import get_platform_factory
 
 from .base import StyleT, Widget
 
@@ -53,9 +52,8 @@ class Switch(Widget):
 
         self.enabled = enabled
 
-    def _create(self) -> None:
-        self.factory = get_platform_factory()
-        self._impl = self.factory.Switch(interface=self)
+    def _create(self) -> object:
+        return self.factory.Switch(interface=self)
 
     @property
     def text(self) -> str:

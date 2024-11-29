@@ -1258,6 +1258,6 @@ def test_widget_with_no_create():
     """Creating a widget with no _create() method issues a warning."""
     with pytest.warns(
         RuntimeWarning,
-        match=r"Widgets should create their implementation",
+        match=r"Widgets should create and return their implementation",
     ):
         WidgetSubclassWithoutCreate()

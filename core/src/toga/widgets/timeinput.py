@@ -6,7 +6,6 @@ from typing import Any, Protocol
 
 import toga
 from toga.handlers import wrapped_handler
-from toga.platform import get_platform_factory
 
 from .base import StyleT, Widget
 
@@ -50,9 +49,8 @@ class TimeInput(Widget):
         self.value = value
         self.on_change = on_change
 
-    def _create(self) -> None:
-        self.factory = get_platform_factory()
-        self._impl = self.factory.TimeInput(interface=self)
+    def _create(self) -> object:
+        return self.factory.TimeInput(interface=self)
 
     @property
     def value(self) -> datetime.time:

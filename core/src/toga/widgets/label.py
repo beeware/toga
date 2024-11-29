@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from toga.platform import get_platform_factory
-
 from .base import StyleT, Widget
 
 
@@ -23,9 +21,8 @@ class Label(Widget):
 
         self.text = text
 
-    def _create(self) -> None:
-        self.factory = get_platform_factory()
-        self._impl = self.factory.Label(interface=self)
+    def _create(self) -> object:
+        return self.factory.Label(interface=self)
 
     def focus(self) -> None:
         """No-op; Label cannot accept input focus."""

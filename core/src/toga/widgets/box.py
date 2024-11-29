@@ -2,8 +2,6 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 
-from toga.platform import get_platform_factory
-
 from .base import StyleT, Widget
 
 
@@ -31,9 +29,8 @@ class Box(Widget):
         if children is not None:
             self.add(*children)
 
-    def _create(self) -> None:
-        self.factory = get_platform_factory()
-        self._impl = self.factory.Box(interface=self)
+    def _create(self):
+        return self.factory.Box(interface=self)
 
     @property
     def enabled(self) -> bool:

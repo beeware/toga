@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING, Literal
 from travertino.size import at_least
 
 import toga
-from toga.platform import get_platform_factory
 from toga.style.pack import NONE
 from toga.widgets.base import StyleT, Widget
 
@@ -91,9 +90,8 @@ class ImageView(Widget):
 
         self.image = image
 
-    def _create(self) -> None:
-        self.factory = get_platform_factory()
-        self._impl = self.factory.ImageView(interface=self)
+    def _create(self) -> object:
+        return self.factory.ImageView(interface=self)
 
     @property
     def enabled(self) -> Literal[True]:

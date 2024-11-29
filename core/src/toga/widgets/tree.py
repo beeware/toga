@@ -6,7 +6,6 @@ from typing import Any, Literal, Protocol, TypeVar
 
 import toga
 from toga.handlers import wrapped_handler
-from toga.platform import get_platform_factory
 from toga.sources import Node, Source, TreeSource
 from toga.sources.accessors import build_accessors, to_accessor
 from toga.style import Pack
@@ -123,9 +122,8 @@ class Tree(Widget):
         self.on_select = on_select
         self.on_activate = on_activate
 
-    def _create(self) -> None:
-        self.factory = get_platform_factory()
-        self._impl = self.factory.Tree(interface=self)
+    def _create(self):
+        return self.factory.Tree(interface=self)
 
     @property
     def enabled(self) -> Literal[True]:
