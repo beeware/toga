@@ -106,7 +106,11 @@ class WidgetRegistry:
         return self.values()
 
     def __repr__(self) -> str:
-        return f"{{{', '.join(f'{k!r}: {v!r}' for k, v in sorted(self._registry.items()))}}}"
+        return (
+            "{"
+            + ", ".join(f"{k!r}: {v!r}" for k, v in sorted(self._registry.items()))
+            + "}"
+        )
 
     def items(self) -> Iterator[tuple[str, Widget]]:
         return self._registry.items()
@@ -437,7 +441,8 @@ class App:
 
     @property
     def is_bundled(self) -> bool:
-        """Has the app been bundled as a standalone binary, or is it running as a Python script?"""
+        """Has the app been bundled as a standalone binary,
+        or is it running as a Python script?"""
         return Path(sys.executable).stem not in {
             "python",
             f"python{sys.version_info.major}",
@@ -656,8 +661,8 @@ class App:
         self._create_standard_commands()
         self._impl.create_standard_commands()
 
-        # Install the standard status icon commands. Again, this is done *before* startup
-        # so that the user's code can remove/change the defaults.
+        # Install the standard status icon commands. Again, this is done *before*
+        # startup so that the user's code can remove/change the defaults.
         self.status_icons._create_standard_commands()
 
         # Invoke the user's startup method (or the default implementation)
@@ -897,7 +902,8 @@ class App:
         return True
 
     def on_running(self) -> None:
-        """The event handler that will be invoked when the app's event loop starts running.
+        """The event handler that will be invoked
+        when the app's event loop starts running.
 
         If necessary, the overridden method can be defined as an ``async`` coroutine.
         """

@@ -178,7 +178,8 @@ def test_reuse_id(app):
     assert "magic" not in win_2.widgets
     assert app.widgets["magic"] == first
 
-    # The second widget can't be added as content to either window, because of the ID clash.
+    # The second widget can't be added as content to either window,
+    # because of the ID clash.
     with pytest.raises(
         KeyError,
         match=r"There is already a widget with the id 'magic'",
@@ -190,7 +191,8 @@ def test_reuse_id(app):
     assert "magic" not in win_2.widgets
     assert app.widgets["magic"] == first
 
-    # The widget can't be added to a different window, because there's still an app-level conflict.
+    # The widget can't be added to a different window,
+    # because there's still an app-level conflict.
     with pytest.raises(
         KeyError,
         match=r"There is already a widget with the id 'magic'",

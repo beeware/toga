@@ -16,7 +16,8 @@ from gi.repository import (  # noqa: E402, F401
 
 if Gdk.Screen.get_default() is None:  # pragma: no cover
     raise RuntimeError(
-        "Cannot identify an active display. Is the `DISPLAY` environment variable set correctly?"
+        "Cannot identify an active display. Is the `DISPLAY` "
+        "environment variable set correctly?"
     )
 
 IS_WAYLAND = not isinstance(Gdk.Display.get_default(), GdkX11.X11Display)

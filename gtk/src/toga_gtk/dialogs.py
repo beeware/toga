@@ -113,7 +113,8 @@ class StackTraceDialog(MessageDialog):
 
         self.native.format_secondary_text(message)
 
-        # Create a scrolling readonly text area, in monospace font, to contain the stack trace.
+        # Create a scrolling readonly text area, in monospace font,
+        # to contain the stack trace.
         buffer = Gtk.TextBuffer()
         buffer.set_text(content)
 

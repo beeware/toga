@@ -149,7 +149,8 @@ class SimpleProbe(BaseProbe, FontMixin):
         if modifierFlags:
             char = None
 
-        # This posts a single keyDown followed by a keyUp, matching "normal" keyboard operation.
+        # This posts a single keyDown followed by a keyUp, matching "normal"
+        # keyboard operation.
         await self.post_event(
             NSEvent.keyEventWithType(
                 NSEventType.KeyDown,

@@ -488,7 +488,8 @@ def test_widget_id_reusablity(window, app):
     assert CONTENT_WIDGET_ID in app.widgets
     assert LABEL_WIDGET_ID in app.widgets
 
-    # CONTENT_WIDGET_ID is in use, so a widget with that ID can't be assigned to a window.
+    # CONTENT_WIDGET_ID is in use, so a widget with that ID can't be assigned
+    # to a window.
     with pytest.raises(
         KeyError,
         match=r"There is already a widget with the id 'sample_label'",
@@ -554,7 +555,10 @@ def test_deprecated_info_dialog(window, app):
         match=r"Synchronous `on_result` handlers have been deprecated;",
     ), pytest.warns(
         DeprecationWarning,
-        match=r"info_dialog\(...\) has been deprecated; use dialog\(toga.InfoDialog\(...\)\)",
+        match=(
+            r"info_dialog\(...\) has been deprecated; "
+            r"use dialog\(toga.InfoDialog\(...\)\)"
+        ),
     ):
         dialog = window.info_dialog("Title", "Body", on_result=on_result_handler)
 
@@ -595,7 +599,10 @@ def test_deprecated_question_dialog(window, app):
         match=r"Synchronous `on_result` handlers have been deprecated;",
     ), pytest.warns(
         DeprecationWarning,
-        match=r"question_dialog\(...\) has been deprecated; use dialog\(toga.QuestionDialog\(...\)\)",
+        match=(
+            r"question_dialog\(...\) has been deprecated; "
+            r"use dialog\(toga.QuestionDialog\(...\)\)"
+        ),
     ):
         dialog = window.question_dialog("Title", "Body", on_result=on_result_handler)
 
@@ -636,7 +643,10 @@ def test_deprecated_confirm_dialog(window, app):
         match=r"Synchronous `on_result` handlers have been deprecated;",
     ), pytest.warns(
         DeprecationWarning,
-        match=r"confirm_dialog\(...\) has been deprecated; use dialog\(toga.ConfirmDialog\(...\)\)",
+        match=(
+            r"confirm_dialog\(...\) has been deprecated; "
+            r"use dialog\(toga.ConfirmDialog\(...\)\)"
+        ),
     ):
         dialog = window.confirm_dialog("Title", "Body", on_result=on_result_handler)
 
@@ -677,7 +687,10 @@ def test_deprecated_error_dialog(window, app):
         match=r"Synchronous `on_result` handlers have been deprecated;",
     ), pytest.warns(
         DeprecationWarning,
-        match=r"error_dialog\(...\) has been deprecated; use dialog\(toga.ErrorDialog\(...\)\)",
+        match=(
+            r"error_dialog\(...\) has been deprecated; "
+            r"use dialog\(toga.ErrorDialog\(...\)\)"
+        ),
     ):
         dialog = window.error_dialog("Title", "Body", on_result=on_result_handler)
 
@@ -718,7 +731,10 @@ def test_deprecated_stack_trace_dialog(window, app):
         match=r"Synchronous `on_result` handlers have been deprecated;",
     ), pytest.warns(
         DeprecationWarning,
-        match=r"stack_trace_dialog\(...\) has been deprecated; use dialog\(toga.StackTraceDialog\(...\)\)",
+        match=(
+            r"stack_trace_dialog\(...\) has been deprecated; "
+            r"use dialog\(toga.StackTraceDialog\(...\)\)"
+        ),
     ):
         dialog = window.stack_trace_dialog(
             "Title",
@@ -767,7 +783,10 @@ def test_deprecated_save_file_dialog(window, app):
         match=r"Synchronous `on_result` handlers have been deprecated;",
     ), pytest.warns(
         DeprecationWarning,
-        match=r"save_file_dialog\(...\) has been deprecated; use dialog\(toga.SaveFileDialog\(...\)\)",
+        match=(
+            r"save_file_dialog\(...\) has been deprecated; "
+            r"use dialog\(toga.SaveFileDialog\(...\)\)"
+        ),
     ):
         dialog = window.save_file_dialog(
             "Title",
@@ -815,7 +834,10 @@ def test_deprecated_save_file_dialog_default_directory(window, app):
         match=r"Synchronous `on_result` handlers have been deprecated;",
     ), pytest.warns(
         DeprecationWarning,
-        match=r"save_file_dialog\(...\) has been deprecated; use dialog\(toga.SaveFileDialog\(...\)\)",
+        match=(
+            r"save_file_dialog\(...\) has been deprecated; "
+            r"use dialog\(toga.SaveFileDialog\(...\)\)"
+        ),
     ):
         dialog = window.save_file_dialog(
             "Title",
@@ -864,7 +886,10 @@ def test_deprecated_open_file_dialog(window, app):
         match=r"Synchronous `on_result` handlers have been deprecated;",
     ), pytest.warns(
         DeprecationWarning,
-        match=r"open_file_dialog\(...\) has been deprecated; use dialog\(toga.OpenFileDialog\(...\)\)",
+        match=(
+            r"open_file_dialog\(...\) has been deprecated; "
+            r"use dialog\(toga.OpenFileDialog\(...\)\)"
+        ),
     ):
         dialog = window.open_file_dialog(
             "Title",
@@ -915,7 +940,10 @@ def test_deprecated_open_file_dialog_default_directory(window, app):
         match=r"Synchronous `on_result` handlers have been deprecated;",
     ), pytest.warns(
         DeprecationWarning,
-        match=r"open_file_dialog\(...\) has been deprecated; use dialog\(toga.OpenFileDialog\(...\)\)",
+        match=(
+            r"open_file_dialog\(...\) has been deprecated; "
+            r"use dialog\(toga.OpenFileDialog\(...\)\)"
+        ),
     ):
         dialog = window.open_file_dialog(
             "Title",
@@ -964,7 +992,10 @@ def test_deprecated_select_folder_dialog(window, app):
         match=r"Synchronous `on_result` handlers have been deprecated;",
     ), pytest.warns(
         DeprecationWarning,
-        match=r"select_folder_dialog\(...\) has been deprecated; use dialog\(toga.SelectFolderDialog\(...\)\)",
+        match=(
+            r"select_folder_dialog\(...\) has been deprecated; "
+            r"use dialog\(toga.SelectFolderDialog\(...\)\)"
+        ),
     ):
         dialog = window.select_folder_dialog(
             "Title",
@@ -1014,7 +1045,10 @@ def test_deprecated_select_folder_dialog_default_directory(window, app):
         match=r"Synchronous `on_result` handlers have been deprecated;",
     ), pytest.warns(
         DeprecationWarning,
-        match=r"select_folder_dialog\(...\) has been deprecated; use dialog\(toga.SelectFolderDialog\(...\)\)",
+        match=(
+            r"select_folder_dialog\(...\) has been deprecated; "
+            r"use dialog\(toga.SelectFolderDialog\(...\)\)"
+        ),
     ):
         dialog = window.select_folder_dialog(
             "Title",
@@ -1061,10 +1095,16 @@ def test_deprecated_names_open_file_dialog(window, app):
         match=r"open_file_dialog\(multiselect\) has been renamed multiple_select",
     ), pytest.warns(
         DeprecationWarning,
-        match=r"Synchronous `on_result` handlers have been deprecated; use `await` on the asynchronous result",
+        match=(
+            r"Synchronous `on_result` handlers have been deprecated; "
+            r"use `await` on the asynchronous result"
+        ),
     ), pytest.warns(
         DeprecationWarning,
-        match=r"open_file_dialog\(...\) has been deprecated; use dialog\(toga.OpenFileDialog\(...\)\)",
+        match=(
+            r"open_file_dialog\(...\) has been deprecated; "
+            r"use dialog\(toga.OpenFileDialog\(...\)\)"
+        ),
     ):
         dialog = window.open_file_dialog(
             "Title",
@@ -1100,13 +1140,21 @@ def test_deprecated_names_select_folder_dialog(window, app):
 
     with pytest.warns(
         DeprecationWarning,
-        match=r"select_folder_dialog\(multiselect\) has been renamed multiple_select",
+        match=(
+            r"select_folder_dialog\(multiselect\) " r"has been renamed multiple_select"
+        ),
     ), pytest.warns(
         DeprecationWarning,
-        match=r"Synchronous `on_result` handlers have been deprecated; use `await` on the asynchronous result",
+        match=(
+            r"Synchronous `on_result` handlers have been deprecated; "
+            r"use `await` on the asynchronous result"
+        ),
     ), pytest.warns(
         DeprecationWarning,
-        match=r"select_folder_dialog\(...\) has been deprecated; use dialog\(toga.SelectFolderDialog\(...\)\)",
+        match=(
+            r"select_folder_dialog\(...\) has been deprecated; "
+            r"use dialog\(toga.SelectFolderDialog\(...\)\)"
+        ),
     ):
         dialog = window.select_folder_dialog(
             "Title",

@@ -195,7 +195,10 @@ class ExampleHardwareApp(toga.App):
                 await self.main_window.dialog(
                     toga.InfoDialog(
                         "All good!",
-                        "Application has permission to perform background location tracking",
+                        (
+                            "Application has permission to perform background "
+                            "location tracking"
+                        ),
                     )
                 )
             else:
@@ -212,7 +215,10 @@ class ExampleHardwareApp(toga.App):
                     await self.main_window.dialog(
                         toga.InfoDialog(
                             "Oh no!",
-                            "You have not granted permission for background location tracking",
+                            (
+                                "You have not granted permission for background "
+                                "location tracking"
+                            ),
                         )
                     )
         except NotImplementedError:

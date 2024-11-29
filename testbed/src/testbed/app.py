@@ -174,7 +174,8 @@ class Testbed(toga.App):
             tooltip="Perform action 2",
         )
 
-        # Create a submenu on the first status menu; the status icon is the parent group.
+        # Create a submenu on the first status menu;
+        # the status icon is the parent group.
         self.status1_sub_menu = toga.Group("Sub Menu", parent=self.status1, order=3)
         self.status_cmd3 = toga.Command(
             self.cmd_action,

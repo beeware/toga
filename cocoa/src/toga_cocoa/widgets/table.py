@@ -119,7 +119,9 @@ class TogaTable(NSTableView):
     #         value = getattr(data_row, col_identifier, None)
     #         if isinstance(value, toga.Widget):
     #             # if the cell value is a widget, use its height
-    #             heights.append(value._impl.native.intrinsicContentSize().height + margin)
+    #             heights.append(
+    #                 value._impl.native.intrinsicContentSize().height + margin
+    #             )
     #
     #     return max(heights)
 
