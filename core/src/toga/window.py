@@ -385,13 +385,17 @@ class Window:
 
     @property
     def size(self) -> Size:
-        """Size of the window, in :ref:`CSS pixels <css-units>`."""
+        """Size of the window, in :ref:`CSS pixels <css-units>`.
+
+        :raises RuntimeError: If resize is requested while in
+            :any:`WindowState.FULLSCREEN` or :any:`WindowState.PRESENTATION`.
+        """
         return self._impl.get_size()
 
     @size.setter
     def size(self, size: SizeT) -> None:
         if self.state in {WindowState.FULLSCREEN, WindowState.PRESENTATION}:
-            raise ValueError(f"Cannot resize window while in {self.state}")
+            raise RuntimeError(f"Cannot resize window while in {self.state}")
         self._impl.set_size(size)
         if self.content:
             self.content.refresh()
@@ -405,6 +409,9 @@ class Window:
         """Absolute position of the window, in :ref:`CSS pixels <css-units>`.
 
         The origin is the top left corner of the primary screen.
+
+        :raises RuntimeError: If position change is requested while in
+            :any:`WindowState.FULLSCREEN` or :any:`WindowState.PRESENTATION`.
         """
         absolute_origin = self._app.screens[0].origin
         absolute_window_position = self._impl.get_position()
@@ -415,7 +422,7 @@ class Window:
     @position.setter
     def position(self, position: PositionT) -> None:
         if self.state in {WindowState.FULLSCREEN, WindowState.PRESENTATION}:
-            raise ValueError(f"Cannot change window position while in {self.state}")
+            raise RuntimeError(f"Cannot change window position while in {self.state}")
         absolute_origin = self._app.screens[0].origin
         absolute_new_position = Position(*position) + absolute_origin
         self._impl.set_position(absolute_new_position)
@@ -435,13 +442,17 @@ class Window:
     @property
     def screen_position(self) -> Position:
         """Position of the window with respect to current screen, in
-        :ref:`CSS pixels <css-units>`."""
+        :ref:`CSS pixels <css-units>`.
+
+        :raises RuntimeError: If position change is requested while in
+            :any:`WindowState.FULLSCREEN` or :any:`WindowState.PRESENTATION`.
+        """
         return self.position - self.screen.origin
 
     @screen_position.setter
     def screen_position(self, position: PositionT) -> None:
         if self.state in {WindowState.FULLSCREEN, WindowState.PRESENTATION}:
-            raise ValueError(f"Cannot change window position while in {self.state}")
+            raise RuntimeError(f"Cannot change window position while in {self.state}")
         new_relative_position = Position(*position) + self.screen.origin
         self._impl.set_position(new_relative_position)
 
@@ -476,6 +487,12 @@ class Window:
 
         When the window is in transition, then this will return the state it
         is transitioning towards, instead of the actual instantaneous state.
+
+        :raises RuntimeError: If state change is requested while the window is
+            hidden.
+
+        :raises ValueError: If any state other than :any:`WindowState.MINIMIZED`
+            or :any:`WindowState.NORMAL` is requested on a non-resizable window.
         """
         # There are 2 types of window states that we can get from the backend:
         # * The instantaneous state -- Used internally on implementation side
@@ -486,7 +503,7 @@ class Window:
     @state.setter
     def state(self, state: WindowState) -> None:
         if not self.visible:
-            raise ValueError("Window state of a hidden window cannot be changed.")
+            raise RuntimeError("Window state of a hidden window cannot be changed.")
         elif not self.resizable and state in {
             WindowState.MAXIMIZED,
             WindowState.FULLSCREEN,

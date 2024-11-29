@@ -403,7 +403,7 @@ def test_hidden_window_state(state):
     hidden_window.hide()
 
     with pytest.raises(
-        ValueError,
+        RuntimeError,
         match="Window state of a hidden window cannot be changed.",
     ):
         hidden_window.state = state
@@ -448,7 +448,7 @@ def test_resize_in_window_state(state):
     window.show()
     window.state = state
 
-    with pytest.raises(ValueError, match=f"Cannot resize window while in {state}"):
+    with pytest.raises(RuntimeError, match=f"Cannot resize window while in {state}"):
         window.size = (100, 200)
     window.close()
 
@@ -467,12 +467,12 @@ def test_move_in_window_state(state):
     window.state = state
 
     with pytest.raises(
-        ValueError, match=f"Cannot change window position while in {state}"
+        RuntimeError, match=f"Cannot change window position while in {state}"
     ):
         window.position = (100, 200)
 
     with pytest.raises(
-        ValueError, match=f"Cannot change window position while in {state}"
+        RuntimeError, match=f"Cannot change window position while in {state}"
     ):
         window.screen_position = (100, 200)
     window.close()

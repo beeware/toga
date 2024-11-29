@@ -77,7 +77,7 @@ class Window:
             if current_state != WindowState.NORMAL:
                 if self._pending_state_transition != current_state:
                     # Add a 10ms delay to wait for the native window state
-                    # operation to complete to prevent glitching  on wayland
+                    # operation to complete to prevent glitching on wayland
                     # during rapid state switching.
                     #
                     # Ideally, we should use a native operation-completion
