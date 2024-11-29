@@ -81,7 +81,7 @@ class Slider(Widget):
 
     def set_value(self, value):
         self.value = value
-        self.native.setValue_animated_(value, True)
+        self.native.setValue(value, animated=True)
 
     def get_min(self):
         # Use the shadow copy, not the native value, to ensure round tripping.
