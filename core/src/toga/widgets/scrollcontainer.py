@@ -51,7 +51,7 @@ class ScrollContainer(Widget):
         self.content = content
         self.on_scroll = on_scroll
 
-    def _create(self) -> object:
+    def _create(self) -> Any:
         return self.factory.ScrollContainer(interface=self)
 
     @Widget.app.setter

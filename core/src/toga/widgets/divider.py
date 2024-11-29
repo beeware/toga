@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Literal
+from typing import Any, Literal
 
 from toga.constants import Direction
 
@@ -31,7 +31,7 @@ class Divider(Widget):
 
         self.direction = direction
 
-    def _create(self) -> object:
+    def _create(self) -> Any:
         return self.factory.Divider(interface=self)
 
     @property

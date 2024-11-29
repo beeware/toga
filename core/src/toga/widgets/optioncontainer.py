@@ -422,7 +422,7 @@ class OptionContainer(Widget):
 
         self.on_select = on_select
 
-    def _create(self) -> object:
+    def _create(self) -> Any:
         return self.factory.OptionContainer(interface=self)
 
     @property

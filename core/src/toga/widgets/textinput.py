@@ -100,7 +100,7 @@ class TextInput(Widget):
         self.on_lose_focus = on_lose_focus
         self.on_gain_focus = on_gain_focus
 
-    def _create(self) -> object:
+    def _create(self) -> Any:
         return self.factory.TextInput(interface=self)
 
     @property

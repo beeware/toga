@@ -124,7 +124,7 @@ class Table(Widget):
         self.on_select = on_select
         self.on_activate = on_activate
 
-    def _create(self) -> object:
+    def _create(self) -> Any:
         return self.factory.Table(interface=self)
 
     @property

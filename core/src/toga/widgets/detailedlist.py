@@ -120,7 +120,7 @@ class DetailedList(Widget):
         self.on_refresh = on_refresh
         self.on_select = on_select
 
-    def _create(self) -> object:
+    def _create(self) -> Any:
         return self.factory.DetailedList(interface=self)
 
     @property

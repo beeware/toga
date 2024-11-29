@@ -52,7 +52,7 @@ class Switch(Widget):
 
         self.enabled = enabled
 
-    def _create(self) -> object:
+    def _create(self) -> Any:
         return self.factory.Switch(interface=self)
 
     @property

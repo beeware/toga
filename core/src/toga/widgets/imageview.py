@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING, Any, Literal
 
 from travertino.size import at_least
 
@@ -90,7 +90,7 @@ class ImageView(Widget):
 
         self.image = image
 
-    def _create(self) -> object:
+    def _create(self) -> Any:
         return self.factory.ImageView(interface=self)
 
     @property

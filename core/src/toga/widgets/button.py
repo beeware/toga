@@ -60,7 +60,7 @@ class Button(Widget):
         self.on_press = on_press
         self.enabled = enabled
 
-    def _create(self) -> object:
+    def _create(self) -> Any:
         return self.factory.Button(interface=self)
 
     @property

@@ -58,7 +58,7 @@ class DateInput(Widget):
         self.value = value
         self.on_change = on_change
 
-    def _create(self) -> object:
+    def _create(self) -> Any:
         return self.factory.DateInput(interface=self)
 
     @property

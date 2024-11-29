@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import sys
 from collections.abc import Sequence
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from toga.app import App
 from toga.constants import Direction
@@ -49,7 +49,7 @@ class SplitContainer(Widget):
             self.content = content
         self.direction = direction
 
-    def _create(self) -> object:
+    def _create(self) -> Any:
         return self.factory.SplitContainer(interface=self)
 
     @property

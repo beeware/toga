@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Any
+
 from .base import StyleT, Widget
 
 
@@ -21,7 +23,7 @@ class Label(Widget):
 
         self.text = text
 
-    def _create(self) -> object:
+    def _create(self) -> Any:
         return self.factory.Label(interface=self)
 
     def focus(self) -> None:

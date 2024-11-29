@@ -1253,7 +1253,7 @@ class Canvas(Widget):
         self.on_alt_release = on_alt_release
         self.on_alt_drag = on_alt_drag
 
-    def _create(self) -> object:
+    def _create(self) -> Any:
         return self.factory.Canvas(interface=self)
 
     @property

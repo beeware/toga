@@ -156,7 +156,7 @@ class NumberInput(Widget):
 
         self.on_change = on_change
 
-    def _create(self) -> object:
+    def _create(self) -> Any:
         return self.factory.NumberInput(interface=self)
 
     @property

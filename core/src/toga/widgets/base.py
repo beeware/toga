@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from builtins import id as identifier
-from typing import TYPE_CHECKING, TypeVar
+from typing import TYPE_CHECKING, Any, TypeVar
 from warnings import warn
 
 from travertino.declaration import BaseStyle
@@ -86,7 +86,7 @@ class Widget(Node):
         # End backwards compatibility
         #############################
 
-    def _create(self) -> object:
+    def _create(self) -> Any:
         """Create a platform-specific implementation of this widget.
 
         A subclass of Widget should redefine this method to return its implementation.

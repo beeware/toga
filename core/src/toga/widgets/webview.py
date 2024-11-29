@@ -50,7 +50,7 @@ class WebView(Widget):
         self.on_webview_load = on_webview_load
         self.url = url
 
-    def _create(self) -> object:
+    def _create(self) -> Any:
         return self.factory.WebView(interface=self)
 
     def _set_url(self, url: str | None, future: asyncio.Future | None) -> None:

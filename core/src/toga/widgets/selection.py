@@ -78,7 +78,7 @@ class Selection(Widget):
         self.on_change = on_change
         self.enabled = enabled
 
-    def _create(self) -> object:
+    def _create(self) -> Any:
         return self.factory.Selection(interface=self)
 
     @property

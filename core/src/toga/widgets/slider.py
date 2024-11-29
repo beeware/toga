@@ -116,7 +116,7 @@ class Slider(Widget):
 
         self.enabled = enabled
 
-    def _create(self) -> object:
+    def _create(self) -> Any:
         return self.factory.Slider(interface=self)
 
     # Backends are inconsistent about when they produce events for programmatic changes,
