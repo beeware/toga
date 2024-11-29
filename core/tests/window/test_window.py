@@ -453,6 +453,31 @@ def test_resize_in_window_state(state):
     window.close()
 
 
+@pytest.mark.parametrize(
+    "state",
+    [
+        WindowState.FULLSCREEN,
+        WindowState.PRESENTATION,
+    ],
+)
+def test_move_in_window_state(state):
+    """Window position cannot be changed while in fullscreen or presentation state."""
+    window = toga.Window(title="Non-resizing window")
+    window.show()
+    window.state = state
+
+    with pytest.raises(
+        ValueError, match=f"Cannot change window position while in {state}"
+    ):
+        window.position = (100, 200)
+
+    with pytest.raises(
+        ValueError, match=f"Cannot change window position while in {state}"
+    ):
+        window.screen_position = (100, 200)
+    window.close()
+
+
 def test_close_direct(window, app):
     """A window can be closed directly."""
     on_close_handler = Mock(return_value=True)

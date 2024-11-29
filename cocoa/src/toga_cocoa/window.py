@@ -90,7 +90,8 @@ class TogaWindow(NSWindow):
         ):
             # Directly exiting fullscreen without a delay will result in error:
             # ````2024-08-09 15:46:39.050 python[2646:37395] not in fullscreen state````
-            # and any subsequent window state calls to the OS will not work or will be glitchy.
+            # and any subsequent window state calls to the OS will not work or will be
+            # glitchy.
             self.performSelector(
                 SEL("delayedFullScreenExit:"), withObject=None, afterDelay=0
             )

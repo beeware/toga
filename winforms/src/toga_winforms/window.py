@@ -57,7 +57,7 @@ class Window(Container, Scalable):
         self.native.Resize += WeakrefCallable(self.winforms_Resize)
         self.resize_content()  # Store initial size
 
-        # Set window border style based on whether window resizability is enabled or not.
+        # Set window border style based on the window resizability setting at interface.
         self.native.FormBorderStyle = getattr(
             WinForms.FormBorderStyle,
             "Sizable" if self.interface.resizable else "FixedSingle",

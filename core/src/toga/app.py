@@ -866,16 +866,19 @@ class App:
     ) -> None:
         """Enter into presentation mode with one or more windows on different screens.
 
-        Presentation mode is not the same as "Full Screen" mode; presentation mode is when
-        window borders, other window decorations, app menu and toolbars are no longer visible.
+        Presentation mode is not the same as "Full Screen" mode; presentation mode is
+        when window borders, other window decorations, app menu and toolbars are no
+        longer visible.
 
         :param windows: A list of windows, or a dictionary
-            mapping screens to windows, to go into presentation, in order of allocation to
-            screens. If the number of windows exceeds the number of available displays,
-            those windows will not be visible. The windows must have a content set on them.
+            mapping screens to windows, to go into presentation, in order of
+            allocation to screens. If the number of windows exceeds the number
+            of available displays, those windows will not be visible. The windows
+            must have a content set on them.
 
-        :raises ValueError: If the presentation layout supplied is not a list of windows or
-            or a dict mapping windows to screens, or if any window does not have content.
+        :raises ValueError: If the presentation layout supplied is not a list of
+            windows or a dict mapping windows to screens, or if any window does
+            not have content.
         """
         if windows:
             screen_window_dict = dict()
@@ -886,7 +889,8 @@ class App:
                 screen_window_dict = windows
             else:
                 raise ValueError(
-                    "Presentation layout should be a list of windows, or a dict mapping windows to screens."
+                    "Presentation layout should be a list of windows,"
+                    " or a dict mapping windows to screens."
                 )
 
             for screen, window in screen_window_dict.items():
@@ -969,7 +973,8 @@ class App:
         """**DEPRECATED** – Use :any:`App.exit_presentation_mode()`."""
         warnings.warn(
             (
-                "`App.exit_full_screen()` is deprecated. Use `App.exit_presentation_mode()` instead."
+                "`App.exit_full_screen()` is deprecated. "
+                "Use `App.exit_presentation_mode()` instead."
             ),
             DeprecationWarning,
             stacklevel=2,
@@ -982,7 +987,8 @@ class App:
         """**DEPRECATED** – Use :any:`App.in_presentation_mode`."""
         warnings.warn(
             (
-                "`App.is_full_screen` is deprecated. Use `App.in_presentation_mode` instead."
+                "`App.is_full_screen` is deprecated. "
+                "Use `App.in_presentation_mode` instead."
             ),
             DeprecationWarning,
             stacklevel=2,
@@ -990,10 +996,12 @@ class App:
         return self.in_presentation_mode
 
     def set_full_screen(self, *windows: Window) -> None:
-        """**DEPRECATED** – Use :any:`App.enter_presentation_mode()` and :any:`App.exit_presentation_mode()`."""
+        """**DEPRECATED** – Use :any:`App.enter_presentation_mode()` and
+        :any:`App.exit_presentation_mode()`."""
         warnings.warn(
             (
-                "`App.set_full_screen()` is deprecated. Use `App.enter_presentation_mode()` instead."
+                "`App.set_full_screen()` is deprecated. "
+                "Use `App.enter_presentation_mode()` instead."
             ),
             DeprecationWarning,
             stacklevel=2,

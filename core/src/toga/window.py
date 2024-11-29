@@ -414,6 +414,8 @@ class Window:
 
     @position.setter
     def position(self, position: PositionT) -> None:
+        if self.state in {WindowState.FULLSCREEN, WindowState.PRESENTATION}:
+            raise ValueError(f"Cannot change window position while in {self.state}")
         absolute_origin = self._app.screens[0].origin
         absolute_new_position = Position(*position) + absolute_origin
         self._impl.set_position(absolute_new_position)
@@ -438,6 +440,8 @@ class Window:
 
     @screen_position.setter
     def screen_position(self, position: PositionT) -> None:
+        if self.state in {WindowState.FULLSCREEN, WindowState.PRESENTATION}:
+            raise ValueError(f"Cannot change window position while in {self.state}")
         new_relative_position = Position(*position) + self.screen.origin
         self._impl.set_position(new_relative_position)
 
