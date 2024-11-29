@@ -81,8 +81,7 @@ System requirements
   for Geoclue2, plus the GObject Introspection bindings for Geoclue2. The name of
   the system package required is distribution dependent:
 
-  - Ubuntu 20.04; Debian 11: ``gir1.2-geoclue-2.0``
-  - Ubuntu 22.04+; Debian 12+: ``gir1.2-geoclue-2.0``
+  - Ubuntu and Debian: ``gir1.2-geoclue-2.0``
   - Fedora: ``geoclue2-libs``
   - Arch/Manjaro: ``geoclue``
   - OpenSUSE Tumbleweed: ``geoclue2 typelib(geoclue2)``
