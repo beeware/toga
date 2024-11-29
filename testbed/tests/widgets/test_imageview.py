@@ -71,7 +71,8 @@ async def test_implicit_size(widget, probe, container_probe):
 
 
 async def test_explicit_width(widget, probe, container_probe):
-    """If the image width is explicit, the image view will resize preserving aspect ratio."""
+    """If the image width is explicit, the image view will resize preserving
+    aspect ratio."""
     # Explicitly set width; height follows aspect raio
     widget.style.width = 200
 
@@ -113,7 +114,8 @@ async def test_explicit_width(widget, probe, container_probe):
 
 
 async def test_explicit_height(widget, probe, container_probe):
-    """If the image height is explicit, the image view will resize preserving aspect ratio."""
+    """If the image height is explicit, the image view will resize preserving
+    aspect ratio."""
     # Explicitly set height; width follows aspect raio
     widget.style.height = 150
 

@@ -86,7 +86,8 @@ class DetailedList(Widget):
         :param on_refresh: Initial :any:`on_refresh` handler.
         :param on_delete: **DEPRECATED**; use ``on_primary_action``.
         """
-        # Prime the attributes and handlers that need to exist when the widget is created.
+        # Prime the attributes and handlers that need to exist when the widget is
+        # created.
         self._accessors = accessors
         self._missing_value = missing_value
         self._primary_action = primary_action
@@ -105,7 +106,8 @@ class DetailedList(Widget):
                 raise ValueError("Cannot specify both on_delete and on_primary_action")
             else:
                 warnings.warn(
-                    "DetailedList.on_delete has been renamed DetailedList.on_primary_action.",
+                    "DetailedList.on_delete has been renamed "
+                    "DetailedList.on_primary_action.",
                     DeprecationWarning,
                 )
                 on_primary_action = on_delete
@@ -126,8 +128,8 @@ class DetailedList(Widget):
     @property
     def enabled(self) -> Literal[True]:
         """Is the widget currently enabled? i.e., can the user interact with the widget?
-        DetailedList widgets cannot be disabled; this property will always return True; any
-        attempt to modify it will be ignored.
+        DetailedList widgets cannot be disabled; this property will always return True;
+        any attempt to modify it will be ignored.
         """
         return True
 
@@ -265,7 +267,8 @@ class DetailedList(Widget):
 
     @property
     def on_select(self) -> OnSelectHandler:
-        """The callback function that is invoked when a row of the DetailedList is selected."""
+        """The callback function that is invoked
+        when a row of the DetailedList is selected."""
         return self._on_select
 
     @on_select.setter

@@ -77,6 +77,13 @@ class ExampleNode(Node):
         pass
 
 
+class ExampleParentNode(ExampleNode):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self._children = []
+
+
 class ExampleViewport:
     def __init__(self, width, height):
         self.height = height
@@ -88,13 +95,15 @@ def _assert_layout(node, expected_layout):
         node.layout.absolute_content_left,
         node.layout.absolute_content_top,
     ) == expected_layout["origin"], (
-        f"origin of {node} ({node.layout.absolute_content_left}, {node.layout.absolute_content_top}) "
+        f"origin of {node} "
+        f"({node.layout.absolute_content_left}, {node.layout.absolute_content_top}) "
         f"doesn't match expected {expected_layout['origin']}"
     )
     assert (node.layout.content_width, node.layout.content_height) == expected_layout[
         "content"
     ], (
-        f"content size of {node} ({node.layout.content_width}, {node.layout.content_height}) "
+        f"content size of {node} "
+        f"({node.layout.content_width}, {node.layout.content_height}) "
         f"doesn't match expected {expected_layout['content']}"
     )
 

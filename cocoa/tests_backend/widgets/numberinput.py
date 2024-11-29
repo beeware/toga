@@ -104,7 +104,8 @@ class NumberInputProbe(SimpleProbe):
     @property
     def has_focus(self):
         # When the NSTextField gets focus, a field editor is created, and that editor
-        # has the original widget as the delegate. The first responder is the Field Editor.
+        # has the original widget as the delegate. The first responder is
+        # the Field Editor.
         return isinstance(self.native.window.firstResponder, NSTextView) and (
             self.native_input.window.firstResponder.delegate == self.native_input
         )

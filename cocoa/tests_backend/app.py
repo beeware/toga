@@ -10,13 +10,13 @@ from toga_cocoa.libs import (
     NSEvent,
     NSEventModifierFlagShift,
     NSEventType,
+    NSPanel,
     NSWindow,
 )
 
 from .dialogs import DialogsMixin
 from .probe import BaseProbe, NSRunLoop
 
-NSPanel = ObjCClass("NSPanel")
 NSDate = ObjCClass("NSDate")
 
 
@@ -190,6 +190,11 @@ class AppProbe(BaseProbe, DialogsMixin):
     def activate_menu_minimize(self):
         self._activate_menu_item(["Window", "Minimize"])
 
+    def assert_dialog_in_focus(self, dialog):
+        assert (
+            dialog._impl.native.window == self.app._impl.native.keyWindow
+        ), "The dialog is not in focus"
+
     def assert_menu_item(self, path, enabled):
         item = self._menu_item(path)
         assert item.isEnabled() == enabled
@@ -247,7 +252,7 @@ class AppProbe(BaseProbe, DialogsMixin):
         self.app._impl.native.activateIgnoringOtherApps(True)
         await self.redraw("Restore to standard app", delay=0.1)
 
-    def _setup_alert_dialog_result(self, dialog, result):
+    def _setup_alert_dialog_result(self, dialog, result, pre_close_test_method=None):
         # Replace the dialog polling mechanism with an implementation that polls
         # 5 times, then returns the required result.
         _poll_modal_session = dialog._impl._poll_modal_session
@@ -258,7 +263,11 @@ class AppProbe(BaseProbe, DialogsMixin):
             if count < 5:
                 count += 1
                 return _poll_modal_session(nsapp, session)
-            return result
+            try:
+                if pre_close_test_method:
+                    pre_close_test_method(dialog)
+            finally:
+                return result
 
         dialog._impl._poll_modal_session = auto_poll_modal_session
 

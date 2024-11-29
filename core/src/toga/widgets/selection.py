@@ -185,8 +185,8 @@ class Selection(Widget):
 
     @property
     def on_change(self) -> OnChangeHandler:
-        """Handler to invoke when the value of the selection is changed, either by the user
-        or programmatically."""
+        """Handler to invoke when the value of the selection is changed,
+        either by the user or programmatically."""
         return self._on_change
 
     @on_change.setter

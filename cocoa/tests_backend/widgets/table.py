@@ -13,6 +13,7 @@ class TableProbe(SimpleProbe):
     native_class = NSScrollView
     supports_icons = 2  # All columns
     supports_keyboard_shortcuts = True
+    supports_keyboard_boundary_shortcuts = False
     supports_widgets = True
 
     def __init__(self, widget):
@@ -144,3 +145,11 @@ class TableProbe(SimpleProbe):
             delay=0.1,
             clickCount=2,
         )
+
+    async def acquire_keyboard_focus(self):
+        self.native_table.window.makeFirstResponder(
+            self.native_table
+        )  # switch to widget.focus() when possible (#2972).
+        # Insure first row is selected.
+        await self.type_character("<down>")
+        await self.type_character("<up>")

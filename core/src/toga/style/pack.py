@@ -110,6 +110,15 @@ class Pack(BaseStyle):
             elif prop == "background_color":
                 self._applicator.set_background_color(value)
             elif prop == "visibility":
+                if value == VISIBLE:
+                    # If visibility is being set to VISIBLE, look up the chain to see if
+                    # an ancestor is hidden.
+                    widget = self._applicator.widget
+                    while widget := widget.parent:
+                        if widget.style._hidden:
+                            value = HIDDEN
+                            break
+
                 self._applicator.set_hidden(value == HIDDEN)
             elif prop in (
                 "font_family",
@@ -141,7 +150,9 @@ class Pack(BaseStyle):
 
     def layout(self, node: Node, viewport: Any) -> None:
         # self._debug("=" * 80)
-        # self._debug(f"Layout root {node}, available {viewport.width}x{viewport.height}")
+        # self._debug(
+        #     f"Layout root {node}, available {viewport.width}x{viewport.height}"
+        # )
         self.__class__._depth = -1
 
         self._layout_node(
@@ -386,8 +397,8 @@ class Pack(BaseStyle):
             quantum = (remaining_width + min_flex) / flex_total
             # In an ideal flex layout, all flex children will have a width proportional
             # to their flex value. However, if a flex child has a flexible minimum width
-            # constraint that is greater than the ideal width for a balanced flex layout,
-            # they need to be removed from the flex calculation.
+            # constraint that is greater than the ideal width for a balanced flex
+            # layout, they need to be removed from the flex calculation.
             # self._debug(f"PASS 1a; {quantum=}")
             for child in node.children:
                 if child.style.flex and child.intrinsic.width is not None:
@@ -588,7 +599,9 @@ class Pack(BaseStyle):
             elif child.intrinsic.height is not None:
                 if hasattr(child.intrinsic.height, "value"):
                     if child.style.flex:
-                        # self._debug(f"- intrinsic flex height {child.intrinsic.height}")
+                        # self._debug(
+                        #     f"- intrinsic flex height {child.intrinsic.height}"
+                        # )
                         flex_total += child.style.flex
                         # Final child content size will be computed in pass 2, after the
                         # amount of flexible space is known. For now, set an initial

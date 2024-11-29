@@ -256,7 +256,10 @@ class QuadraticCurveTo(DrawingObject):
         self.y = y
 
     def __repr__(self) -> str:
-        return f"{self.__class__.__name__}(cpx={self.cpx}, cpy={self.cpy}, x={self.x}, y={self.y})"
+        return (
+            f"{self.__class__.__name__}"
+            f"(cpx={self.cpx}, cpy={self.cpy}, x={self.x}, y={self.y})"
+        )
 
     def _draw(self, impl: Any, **kwargs: Any) -> None:
         impl.quadratic_curve_to(self.cpx, self.cpy, self.x, self.y, **kwargs)
@@ -1097,8 +1100,8 @@ class StrokeContext(ClosedPathContext):
     within the context.
 
     This is a context manager; it creates a new path, and moves to the start coordinate;
-    when the context exits, the path is drawn with the stroke. For fine-grained control of
-    a path, you can use :class:`~toga.widgets.canvas.Context.begin_path`,
+    when the context exits, the path is drawn with the stroke. For fine-grained control
+    of a path, you can use :class:`~toga.widgets.canvas.Context.begin_path`,
     :class:`~toga.widgets.canvas.Context.move_to`,
     :class:`~toga.widgets.canvas.Context.close_path` and
     :class:`~toga.widgets.canvas.Context.stroke`.
@@ -1106,9 +1109,9 @@ class StrokeContext(ClosedPathContext):
     If both an x and y coordinate is provided, the drawing context will begin with
     a ``move_to`` operation in that context.
 
-    You should not create a :class:`~toga.widgets.canvas.StrokeContext` context directly;
-    instead, you should use the :meth:`~toga.widgets.canvas.Context.Stroke` method on
-    an existing context.
+    You should not create a :class:`~toga.widgets.canvas.StrokeContext` context
+    directly; instead, you should use the :meth:`~toga.widgets.canvas.Context.Stroke`
+    method on an existing context.
     """
 
     def __init__(
@@ -1298,8 +1301,8 @@ class Canvas(Widget):
         x: float | None = None,
         y: float | None = None,
     ) -> ContextManager[ClosedPathContext]:
-        """Construct and yield a new :class:`~toga.widgets.canvas.ClosedPathContext` context in
-        the root context of this canvas.
+        """Construct and yield a new :class:`~toga.widgets.canvas.ClosedPathContext`
+        context in the root context of this canvas.
 
         :param x: The x coordinate of the path's starting point.
         :param y: The y coordinate of the path's starting point.
@@ -1454,7 +1457,8 @@ class Canvas(Widget):
         font: Font | None = None,
         tight: None = None,  # DEPRECATED
     ) -> tuple[float, float]:
-        """Measure the size at which :meth:`~.Context.write_text` would render some text.
+        """Measure the size at which :meth:`~.Context.write_text` would
+        render some text.
 
         :param text: The text to measure. Newlines will cause line breaks, but long
             lines will not be wrapped.
@@ -1522,7 +1526,8 @@ class Canvas(Widget):
         """**DEPRECATED** - Use :meth:`~toga.widgets.canvas.Context.bezier_curve_to` on
         :attr:`context`"""
         warnings.warn(
-            "Direct canvas operations have been deprecated; use context.bezier_curve_to()",
+            "Direct canvas operations have been deprecated; "
+            "use context.bezier_curve_to()",
             DeprecationWarning,
         )
         return self.context.bezier_curve_to(cp1x, cp1y, cp2x, cp2y, x, y)
@@ -1531,7 +1536,8 @@ class Canvas(Widget):
         """**DEPRECATED** - Use :meth:`~toga.widgets.canvas.Context.quadratic_curve_to`
         on :attr:`context`"""
         warnings.warn(
-            "Direct canvas operations have been deprecated; use context.quadratic_curve_to()",
+            "Direct canvas operations have been deprecated; "
+            "use context.quadratic_curve_to()",
             DeprecationWarning,
         )
         return self.context.quadratic_curve_to(cpx, cpy, x, y)
@@ -1601,7 +1607,8 @@ class Canvas(Widget):
         return self.context.rotate(radians)
 
     def scale(self, sx: float, sy: float):
-        """**DEPRECATED** - Use :meth:`~toga.widgets.canvas.Context.scale` on :attr:`context`"""
+        """**DEPRECATED** - Use :meth:`~toga.widgets.canvas.Context.scale`
+        on :attr:`context`"""
         warnings.warn(
             "Direct canvas operations have been deprecated; use context.scale()",
             DeprecationWarning,
@@ -1621,7 +1628,8 @@ class Canvas(Widget):
         """**DEPRECATED** - Use :meth:`~toga.widgets.canvas.Context.reset_transform` on
         :attr:`context`"""
         warnings.warn(
-            "Direct canvas operations have been deprecated; use context.reset_transform()",
+            "Direct canvas operations have been deprecated; "
+            "use context.reset_transform()",
             DeprecationWarning,
         )
         return self.context.reset_transform()

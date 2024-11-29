@@ -179,7 +179,8 @@ class Window:
         if success:
             return buffer
         else:  # pragma: nocover
-            # This shouldn't ever happen, and it's difficult to manufacture in test conditions
+            # This shouldn't ever happen, and it's difficult to manufacture
+            # in test conditions
             raise ValueError(f"Unable to generate screenshot of {self}")
 
 
@@ -201,7 +202,8 @@ class MainWindow(Window):
         # If there's an existing toolbar, hide it until we know we need it.
         self.layout.remove(self.native_toolbar)
 
-        # Deregister any toolbar buttons from their commands, and remove them from the toolbar
+        # Deregister any toolbar buttons from their commands, and remove them
+        # from the toolbar
         for cmd, item_impl in self.toolbar_items.items():
             self.native_toolbar.remove(item_impl)
             cmd._impl.native.remove(item_impl)

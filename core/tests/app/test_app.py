@@ -92,7 +92,8 @@ APP_METADATA = {
             "org.beeware.explicit-app",
             "override-app",
         ),
-        # Explicit app properties, but implied distribution name from app_id, no metadata
+        # Explicit app properties,
+        # but implied distribution name from app_id, no metadata
         (
             EXPLICIT_MIN_APP_KWARGS,
             None,
@@ -172,7 +173,8 @@ APP_METADATA = {
             "org.beeware.explicit-app",
             "override-app",
         ),
-        # Explicit app properties, but implied distribution name from app_id, no metadata
+        # Explicit app properties,
+        # but implied distribution name from app_id, no metadata
         (
             EXPLICIT_MIN_APP_KWARGS,
             None,
@@ -411,8 +413,8 @@ def test_current_window(app):
 
 def test_no_current_window(app):
     """If there's no current window, current_window reflects this."""
-    # If all the windows are deleted, and there's no main window (e.g., if it's a document app)
-    # there might be no current window.
+    # If all the windows are deleted, and there's no main window
+    # (e.g., if it's a document app) there might be no current window.
     app._main_window = None
 
     # The current window evaluates as None
@@ -449,7 +451,8 @@ def test_change_invalid_main_window(app):
 
 
 def test_change_invalid_creation_main_window(event_loop):
-    """If the new main window value provided at creation isn't valid, an exception is raised."""
+    """If the new main window value provided at creation isn't valid,
+    an exception is raised."""
 
     class BadMainWindowApp(toga.App):
         def startup(self):
@@ -794,6 +797,12 @@ def test_async_running_method(event_loop):
 
     # The running coroutine was invoked
     assert running["called"]
+
+
+def test_dark_mode_state(app):
+    """Dark mode settings can be read through the dark_mode property."""
+    # The dummy backend is currently set to always be True
+    assert app.dark_mode
 
 
 def test_deprecated_id(event_loop):

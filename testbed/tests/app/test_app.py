@@ -1,3 +1,4 @@
+from types import NoneType
 from unittest.mock import Mock
 
 import toga
@@ -253,3 +254,7 @@ async def test_app_icon(app, app_probe):
     app.icon = toga.Icon.APP_ICON
     await app_probe.redraw("Revert app icon to default")
     app_probe.assert_app_icon(None)
+
+
+async def test_dark_mode_state_read(app):
+    assert isinstance(app.dark_mode, (NoneType, bool))

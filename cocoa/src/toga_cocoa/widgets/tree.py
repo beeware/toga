@@ -95,7 +95,9 @@ class TogaTree(NSOutlineView):
         tcv = self.makeViewWithIdentifier(identifier, owner=self)
 
         if not tcv:  # there is no existing view to reuse so create a new one
-            # tcv = TogaIconView.alloc().initWithFrame(CGRectMake(0, 0, column.width, 16))
+            # tcv = TogaIconView.alloc().initWithFrame(
+            #     CGRectMake(0, 0, column.width, 16)
+            # )
             tcv = TogaIconView.alloc().init()
             tcv.identifier = identifier
 
@@ -127,7 +129,8 @@ class TogaTree(NSOutlineView):
 
     #     for column in self.tableColumns:
     #         value = getattr(
-    #             item.attrs["node"], str(column.identifier), self.interface.missing_value
+    #             item.attrs["node"], str(column.identifier),
+    #             self.interface.missing_value
     #         )
 
     #         if isinstance(value, toga.Widget):
@@ -144,7 +147,9 @@ class TogaTree(NSOutlineView):
         return None
 
     # @objc_method
-    # def outlineView_sortDescriptorsDidChange_(self, tableView, oldDescriptors) -> None:
+    # def outlineView_sortDescriptorsDidChange_(
+    #     self, tableView, oldDescriptors
+    # ) -> None:
     #
     #     for descriptor in self.sortDescriptors[::-1]:
     #         accessor = descriptor.key

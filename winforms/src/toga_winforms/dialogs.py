@@ -123,6 +123,7 @@ class StackTraceDialog(BaseDialog):
         self.native.Width = 540
         self.native.Height = 320
         self.native.Text = title
+        self.title = title
 
         # The top-of-page introductory message
         textLabel = WinForms.Label()
@@ -226,6 +227,7 @@ class FileDialog(BaseDialog):
         file_types=None,
     ):
         super().__init__()
+        self.title = title
         self.native = native
 
         self._set_title(title)

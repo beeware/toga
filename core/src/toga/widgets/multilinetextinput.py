@@ -42,8 +42,8 @@ class MultilineTextInput(Widget):
         """
         super().__init__(id=id, style=style)
 
-        # Set a dummy handler before installing the actual on_change, because we do not want
-        # on_change triggered by the initial value being set
+        # Set a dummy handler before installing the actual on_change, because we do not
+        # want on_change triggered by the initial value being set
         self.on_change = None
         self.value = value
 
