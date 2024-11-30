@@ -34,6 +34,9 @@ test_sources = [
     "tests",
 ]
 requires = [
+    # install prerelease versions of Toga's dependencies.
+    # this can catch issues with upcoming releases before final release.
+    "--pre",
     "../core",
 ]
 

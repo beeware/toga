@@ -1,0 +1,1 @@
+Toga's testbed Briefcase project now builds with and tests against prerelease versions of dependencies.
