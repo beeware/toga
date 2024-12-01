@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from concurrent.futures import Future
-
 from System import EventHandler
 from System.Device.Location import (
     GeoCoordinate,
@@ -25,8 +23,6 @@ def toga_location(location: GeoCoordinate):
 
 
 class Location:
-    _location: Future
-
     def __init__(self, interface):
         self.watcher = GeoCoordinateWatcher(GeoPositionAccuracy.Default)
         self._handler = EventHandler[GeoPositionChangedEventArgs[GeoCoordinate]](
@@ -34,7 +30,6 @@ class Location:
         )
 
         self.watcher.Start()
-        self._location = Future()
         self._has_permission = True
 
     def _position_changed(
@@ -55,7 +50,7 @@ class Location:
         future.set_result(True)
 
     def current_location(self, result: AsyncResult[dict]) -> None:
-        result.set_result(toga_location(self._location.result(timeout=5)))
+        result.set_result(toga_location(self.watcher.Position.Location))
 
     def start_tracking(self) -> None:
         self.watcher.add_PositionChanged(self._handler)
