@@ -87,9 +87,10 @@ def assert_background_color(actual, expected):
             if (expected == TRANSPARENT) or (
                 expected.a
                 == 0
-                # Since a color having an alpha value of 0 cannot be deblended to get the
-                # exact original color, as deblending in such cases would lead to a division
-                # by zero error. So, just check that widget and parent have the same color.
+                # Since a color having an alpha value of 0 cannot be deblended to
+                # get the exact original color, as deblending in such cases would
+                # lead to a division by zero error. So, just check that widget and
+                # parent have the same color.
             ):
                 assert_color(actual_widget_bg, actual_parent_bg)
             elif expected.a != 1:

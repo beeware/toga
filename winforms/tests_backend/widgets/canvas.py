@@ -47,12 +47,13 @@ class CanvasProbe(SimpleProbe):
     @property
     def background_color(self):
         if self.native.BackColor == Color.Transparent:
-            # When BackColor is set to Color.Transparent then send Color.Transparent as the parent
-            # for asserting background color. This is because unlike other widgets, setting the
-            # canvas widget's background to TRANSPARENT sets the BackColor to Color.Transparent,
-            # instead of setting the canvas widget's BackColor the same as the parent's BackColor.
+            # When BackColor is set to Color.Transparent then send Color.Transparent
+            # as the parent for asserting background color. This is because unlike
+            # other widgets, setting the canvas widget's background to TRANSPARENT
+            # sets the BackColor to Color.Transparent, instead of setting the canvas
+            # widget's BackColor the same as the parent's BackColor.
             #
-            # See toga_winforms/widgets/canvas.py::set_background_color for why this is done so.
+            # See toga_winforms/widgets/canvas.py::set_background_color for the reason.
             return (toga_color(self.native.BackColor), toga_color(Color.Transparent), 1)
         else:
             return super().background_color

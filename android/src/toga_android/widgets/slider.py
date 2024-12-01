@@ -5,10 +5,9 @@ from android.view import View
 from android.widget import SeekBar
 from java import dynamic_proxy
 
-import toga
 from toga.colors import TRANSPARENT
-from toga_android.widgets.base import ContainedWidget
 from toga.widgets.slider import IntSliderImpl
+from toga_android.widgets.base import ContainedWidget
 
 # Implementation notes
 # ====================
