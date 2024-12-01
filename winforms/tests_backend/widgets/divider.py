@@ -4,4 +4,4 @@ from .base import SimpleProbe
 
 
 class DividerProbe(SimpleProbe):
-    native_class = System.Windows.Forms.Panel
+    native_class = System.Windows.Forms.Label

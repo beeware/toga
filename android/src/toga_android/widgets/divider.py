@@ -3,8 +3,6 @@ from android.view import View
 from android.widget import LinearLayout
 from travertino.size import at_least
 
-from toga_android.colors import toga_color
-
 from .base import Widget
 
 
@@ -12,10 +10,14 @@ class Divider(Widget):
     def create(self):
         self.native = View(self._native_activity)
 
+        # Background color needs to be set or else divider will not be visible.
+        self.native.setBackgroundColor(Color.LTGRAY)
+
         self._direction = self.interface.HORIZONTAL
 
-    def set_background_color(self, color):
-        self.set_background_simple(toga_color(Color.LTGRAY) if color is None else color)
+    def set_background_color(self, value):
+        # Do nothing, since background color of Divider shouldn't be changed.
+        pass
 
     def get_direction(self):
         return self._direction
