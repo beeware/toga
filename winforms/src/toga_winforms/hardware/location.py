@@ -29,11 +29,10 @@ class Location:
 
     def __init__(self, interface):
         self.watcher = GeoCoordinateWatcher(GeoPositionAccuracy.Default)
-        self.watcher.add_PositionChanged(
-            EventHandler[GeoPositionChangedEventArgs[GeoCoordinate]](
-                self._position_changed
-            )
+        self._handler = EventHandler[GeoPositionChangedEventArgs[GeoCoordinate]](
+            self._position_changed
         )
+
         self.watcher.Start()
         self._location = Future()
         self._has_permission = True
@@ -59,7 +58,7 @@ class Location:
         result.set_result(toga_location(self._location.result(timeout=5)))
 
     def start_tracking(self) -> None:
-        self.watcher.Start()
+        self.watcher.add_PositionChanged(self._handler)
 
     def stop_tracking(self) -> None:
-        self.watcher.Stop()
+        self.watcher.remove_PositionChanged(self._handler)
