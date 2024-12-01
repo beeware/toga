@@ -34,7 +34,7 @@ class Slider(Widget, IntSliderImpl):
 
         self._default_background_color = TRANSPARENT
 
-    def winforms_value_chaned(self, sender, event):
+    def winforms_value_changed(self, sender, event):
         self.on_change()
 
     def winforms_mouse_down(self, sender, event):
