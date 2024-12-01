@@ -6,7 +6,8 @@ from toga.colors import CORNFLOWERBLUE, GOLDENROD, REBECCAPURPLE
 from toga.constants import Direction
 from toga.style.pack import Pack
 
-from ..conftest import xfail_on_platforms
+from ..conftest import skip_on_platforms
+from .conftest import build_cleanup_test
 from .probe import get_probe
 from .properties import (  # noqa: F401
     test_enable_noop,
@@ -56,8 +57,16 @@ async def content3_probe(content3):
 
 @pytest.fixture
 async def widget(content1, content2):
-    xfail_on_platforms("android", "iOS")
+    skip_on_platforms("android", "iOS")
     return toga.SplitContainer(content=[content1, content2], style=Pack(flex=1))
+
+
+test_cleanup = build_cleanup_test(
+    # Pass a function here to prevent init of toga.Box() in a different thread than
+    # toga.SplitContainer. This would raise a runtime error on Windows.
+    lambda: toga.SplitContainer(content=[toga.Box(), toga.Box()]),
+    skip_platforms=("android", "iOS"),
+)
 
 
 async def test_set_content(

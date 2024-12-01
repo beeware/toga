@@ -54,7 +54,7 @@ MAPVIEW_HTML_CONTENT = """<!DOCTYPE html>
     </script>
 </body>
 </html>
-"""
+"""  # noqa: E501
 
 
 def pin_id(pin):
@@ -81,7 +81,7 @@ class MapView(Widget):
     def create(self):
         self.native = WebView2()
         # WebView has a 2 phase startup; the widget needs to be initialized,
-        # the the content needs to be loaded. We can't actually use the widget
+        # the content needs to be loaded. We can't actually use the widget
         # until the content is fully loaded.
         self.native.CoreWebView2InitializationCompleted += WeakrefCallable(
             self.winforms_initialization_completed
@@ -141,11 +141,18 @@ class MapView(Widget):
                     WinForms.MessageBoxIcon.Error,
                 )
                 webbrowser.open(
-                    "https://developer.microsoft.com/en-us/microsoft-edge/webview2/#download-section"
+                    "https://developer.microsoft.com/en-us/microsoft-edge/webview2/#download"  # noqa: E501
                 )
 
         else:  # pragma: nocover
-            raise RuntimeError(args.InitializationException)
+            WinForms.MessageBox.Show(
+                "A critical error has occurred and functionality may be impaired.\n\n"
+                "The WebView2 initialization failed with an exception:\n\n"
+                f"{args.InitializationException}",
+                "Error",
+                WinForms.MessageBoxButtons.OK,
+                WinForms.MessageBoxIcon.Error,
+            )
 
     def winforms_navigation_completed(self, sender, args):
         # The Toga API allows you to invoke methods on the MapView as soon

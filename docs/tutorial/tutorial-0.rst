@@ -144,9 +144,9 @@ Now we will make the button take up all the available width::
 
        button.style.flex = 1
 
-The ``flex`` attribute specifies how an element is sized with respect to other
-elements along its direction. The default direction is row (horizontal) and
-since the button is the only element here, it will take up the whole width.
+The ``flex`` attribute specifies how a widget is sized with respect to other
+widgets along its direction. The default direction is row (horizontal) and
+since the button is the only widget here, it will take up the whole width.
 Check out `style docs
 <https://toga.readthedocs.io/en/latest/reference/style/pack.html#flex>`_ for
 more information on how to use the ``flex`` attribute.

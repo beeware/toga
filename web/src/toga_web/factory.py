@@ -1,15 +1,15 @@
 from toga import NotImplementedWarning
 
 from . import dialogs
-from .app import App, MainWindow  # DocumentApp
+from .app import App
 from .command import Command
 
-# from .documents import Document
 # from .fonts import Font
 from .icons import Icon
 
 # from .images import Image
 from .paths import Paths
+from .statusicons import MenuStatusIcon, SimpleStatusIcon, StatusIconSet
 from .widgets.activityindicator import ActivityIndicator
 from .widgets.box import Box
 from .widgets.button import Button
@@ -37,7 +37,7 @@ from .widgets.textinput import TextInput
 
 # from .widgets.tree import Tree
 # from .widgets.webview import WebView
-# from .window import Window
+from .window import MainWindow, Window
 
 
 def not_implemented(feature):
@@ -47,16 +47,17 @@ def not_implemented(feature):
 __all__ = [
     "not_implemented",
     "App",
-    "MainWindow",
-    # 'DocumentApp',
     "Command",
-    # 'Document',
-    # # Resources
+    # Resources
     # 'Font',
     "Icon",
     # 'Image',
     "Paths",
     "dialogs",
+    # Status Icons
+    "MenuStatusIcon",
+    "SimpleStatusIcon",
+    "StatusIconSet",
     # # Widgets
     "Box",
     "Button",
@@ -80,7 +81,9 @@ __all__ = [
     "TextInput",
     # 'Tree',
     # 'WebView',
-    # 'Window',
+    # Windows
+    "MainWindow",
+    "Window",
 ]
 
 

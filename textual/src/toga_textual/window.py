@@ -83,7 +83,7 @@ class TitleBar(TextualWidget):
     }
     """
 
-    def __init__(self, title):
+    def __init__(self, title="Toga"):
         super().__init__()
         self.title = TitleText(title)
 
@@ -102,14 +102,10 @@ class TitleBar(TextualWidget):
 
 
 class TogaWindow(TextualScreen):
-    def __init__(self, impl, title):
+    def __init__(self, impl):
         super().__init__()
         self.interface = impl.interface
         self.impl = impl
-        self.titlebar = TitleBar(title)
-
-    def on_mount(self) -> None:
-        self.mount(self.titlebar)
 
     def on_resize(self, event) -> None:
         self.interface.content.refresh()
@@ -118,8 +114,12 @@ class TogaWindow(TextualScreen):
 class Window:
     def __init__(self, interface, title, position, size):
         self.interface = interface
-        self.native = TogaWindow(self, title)
+        self.create()
         self.container = Container(self.native)
+        self.set_title(title)
+
+    def create(self):
+        self.native = TogaWindow(self)
 
     ######################################################################
     # Native event handlers
@@ -133,10 +133,10 @@ class Window:
     ######################################################################
 
     def get_title(self):
-        return self.native.titlebar.text
+        return self.title
 
     def set_title(self, title):
-        self.native.titlebar.text = title
+        self.title = title
 
     ######################################################################
     # Window lifecycle
@@ -145,10 +145,8 @@ class Window:
     def close(self):
         self.native.dismiss(None)
 
-    def create_toolbar(self):
-        pass
-
     def set_app(self, app):
+        app.native.mount(self.native)
         app.native.install_screen(self.native, name=self.interface.id)
 
     def show(self):
@@ -163,8 +161,7 @@ class Window:
 
     def set_content(self, widget):
         self.container.content = widget
-
-        self.native.mount(widget.native)
+        widget.install(parent=self)
 
     ######################################################################
     # Window size
@@ -212,3 +209,33 @@ class Window:
 
     def get_image_data(self):
         self.interface.factory.not_implemented("Window.get_image_data()")
+
+
+class TogaMainWindow(TogaWindow):
+    def __init__(self, impl):
+        super().__init__(impl)
+        self.titlebar = TitleBar()
+
+    def on_mount(self) -> None:
+        self.mount(self.titlebar)
+
+
+class MainWindow(Window):
+    def create(self):
+        self.native = TogaMainWindow(self)
+
+    def create_menus(self):
+        self.interface.factory.not_implemented("Window.create_menus()")
+
+    def create_toolbar(self):
+        self.interface.factory.not_implemented("Window.create_toolbar()")
+
+    ######################################################################
+    # Window properties
+    ######################################################################
+
+    def get_title(self):
+        return self.native.titlebar.text
+
+    def set_title(self, title):
+        self.native.titlebar.text = title

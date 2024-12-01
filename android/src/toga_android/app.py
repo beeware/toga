@@ -1,5 +1,4 @@
 import asyncio
-import sys
 import warnings
 
 from android.content import Context
@@ -10,16 +9,12 @@ from androidx.core.content import ContextCompat
 from java import dynamic_proxy
 from org.beeware.android import IPythonApp, MainActivity
 
-from toga.command import Command, Group, Separator
-from toga.handlers import simple_handler
+import toga
+from toga.command import Group, Separator
+from toga.dialogs import InfoDialog
 
 from .libs import events
 from .screens import Screen as ScreenImpl
-from .window import Window
-
-
-class MainWindow(Window):
-    _is_main_window = True
 
 
 class TogaApp(dynamic_proxy(IPythonApp)):
@@ -73,7 +68,8 @@ class TogaApp(dynamic_proxy(IPythonApp)):
 
     def onRequestPermissionsResult(self, requestCode, permissions, grantResults):
         print(
-            f"Toga app: onRequestPermissionsResult {requestCode=} {permissions=} {grantResults=}"
+            f"Toga app: onRequestPermissionsResult "
+            f"{requestCode=} {permissions=} {grantResults=}"
         )
         try:
             # Retrieve the completion callback and invoke it.
@@ -97,6 +93,12 @@ class TogaApp(dynamic_proxy(IPythonApp)):
             return True
 
     def onPrepareOptionsMenu(self, menu):
+        # If the main window doesn't have a toolbar, there's no preparation required;
+        # this is a simple main window, which can't have commands. This can't be
+        # validated in the testbed, so it's marked no-cover.
+        if not hasattr(self._impl.interface.main_window, "toolbar"):
+            return False  # pragma: no cover
+
         menu.clear()
         itemid = 1  # 0 is the same as Menu.NONE.
         groupid = 1
@@ -181,6 +183,12 @@ class TogaApp(dynamic_proxy(IPythonApp)):
 
 
 class App:
+    # Android apps exit when the last window is closed
+    CLOSE_ON_LAST_WINDOW = True
+    # Android doesn't have command line handling;
+    # but saying it does shortcuts the default handling
+    HANDLES_COMMAND_LINE = True
+
     def __init__(self, interface):
         self.interface = interface
         self.interface._impl = self
@@ -204,19 +212,13 @@ class App:
     # Commands and menus
     ######################################################################
 
-    def create_app_commands(self):
-        self.interface.commands.add(
-            # About should be the last item in the menu, in a section on its own.
-            Command(
-                simple_handler(self.interface.about),
-                f"About {self.interface.formal_name}",
-                section=sys.maxsize,
-                id=Command.ABOUT,
-            ),
-        )
+    def create_standard_commands(self):
+        pass
 
     def create_menus(self):
-        self.native.invalidateOptionsMenu()  # Triggers onPrepareOptionsMenu
+        # Menu items are configured as part of onPrepareOptionsMenu; trigger that
+        # handler.
+        self.native.invalidateOptionsMenu()
 
     ######################################################################
     # App lifecycle
@@ -226,11 +228,12 @@ class App:
         pass  # pragma: no cover
 
     def main_loop(self):
-        # In order to support user asyncio code, start the Python/Android cooperative event loop.
+        # In order to support user asyncio code, start the Python/Android cooperative
+        # event loop.
         self.loop.run_forever_cooperatively()
 
-        # On Android, Toga UI integrates automatically into the main Android event loop by virtue
-        # of the Android Activity system.
+        # On Android, Toga UI integrates automatically into the main Android event loop
+        # by virtue of the Android Activity system.
         self.create()
 
     def set_icon(self, icon):
@@ -238,7 +241,13 @@ class App:
         pass  # pragma: no cover
 
     def set_main_window(self, window):
-        pass
+        if window is None or window == toga.App.BACKGROUND:
+            raise ValueError("Apps without main windows are not supported on Android")
+        else:
+            # The default layout of an Android app includes a titlebar; a simple App
+            # then hides that titlebar. We know what type of app we have when the main
+            # window is set.
+            self.interface.main_window._impl.configure_titlebar()
 
     ######################################################################
     # App resources
@@ -249,6 +258,14 @@ class App:
         display_manager = context.getSystemService(Context.DISPLAY_SERVICE)
         screen_list = display_manager.getDisplays()
         return [ScreenImpl(self, screen) for screen in screen_list]
+
+    ######################################################################
+    # App state
+    ######################################################################
+
+    def get_dark_mode_state(self):
+        self.interface.factory.not_implemented("dark mode state")
+        return None
 
     ######################################################################
     # App capabilities
@@ -274,8 +291,16 @@ class App:
             message_parts.append(f"Author: {self.interface.author}")
         if self.interface.description is not None:
             message_parts.append(f"\n{self.interface.description}")
-        self.interface.main_window.info_dialog(
-            f"About {self.interface.formal_name}", "\n".join(message_parts)
+
+        # Create and show an info dialog as the about dialog.
+        # We don't care about the response.
+        asyncio.create_task(
+            self.interface.dialog(
+                InfoDialog(
+                    f"About {self.interface.formal_name}",
+                    "\n".join(message_parts),
+                )
+            )
         )
 
     ######################################################################

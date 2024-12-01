@@ -26,7 +26,8 @@ class ImageView(Widget):
         # we need to convert all sizes into physical pixels.
         dpi = self.native.getContext().getResources().getDisplayMetrics().densityDpi
         # Toga needs to know how the current DPI compares to the platform default,
-        # which is 160: https://developer.android.com/training/multiscreen/screendensities
+        # which is 160:
+        #   https://developer.android.com/training/multiscreen/screendensities
         scale = float(dpi) / 160
 
         width, height, aspect_ratio = rehint_imageview(

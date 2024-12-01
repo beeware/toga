@@ -1,7 +1,7 @@
 from toga import NotImplementedWarning
 
 from . import dialogs
-from .app import App, MainWindow
+from .app import App
 from .colors import native_color
 from .command import Command
 from .fonts import Font
@@ -10,12 +10,15 @@ from .hardware.location import Location
 from .icons import Icon
 from .images import Image
 from .paths import Paths
+from .statusicons import MenuStatusIcon, SimpleStatusIcon, StatusIconSet
 
 # Widgets
+from .widgets.activityindicator import ActivityIndicator
 from .widgets.box import Box
 from .widgets.button import Button
 from .widgets.canvas import Canvas
 from .widgets.detailedlist import DetailedList
+from .widgets.divider import Divider
 from .widgets.imageview import ImageView
 from .widgets.label import Label
 from .widgets.mapview import MapView
@@ -36,7 +39,7 @@ from .widgets.textinput import TextInput
 
 # from .widgets.tree import Tree
 from .widgets.webview import WebView
-from .window import Window
+from .window import MainWindow, Window
 
 
 def not_implemented(feature):
@@ -45,8 +48,8 @@ def not_implemented(feature):
 
 __all__ = [
     "not_implemented",
+    "ActivityIndicator",
     "App",
-    "MainWindow",
     "Command",
     # Resources
     "native_color",  # colors
@@ -58,11 +61,16 @@ __all__ = [
     # Hardware
     "Camera",
     "Location",
+    # Status icons
+    "MenuStatusIcon",
+    "SimpleStatusIcon",
+    "StatusIconSet",
     # Widgets
     "Box",
     "Button",
     "Canvas",
     "DetailedList",
+    "Divider",
     "ImageView",
     "Label",
     "MapView",
@@ -80,6 +88,8 @@ __all__ = [
     "TextInput",
     # 'Tree',
     "WebView",
+    # Windows
+    "MainWindow",
     "Window",
 ]
 

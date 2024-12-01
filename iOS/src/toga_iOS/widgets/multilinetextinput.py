@@ -76,41 +76,41 @@ class MultilineTextInput(Widget):
         self.add_constraints()
 
     def constrain_placeholder_label(self):
-        leading_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # noqa: E501
+        leading_constraint = NSLayoutConstraint.constraintWithItem(
             self.placeholder_label,
-            NSLayoutAttributeLeading,
-            NSLayoutRelationEqual,
-            self.native,
-            NSLayoutAttributeLeading,
-            1.0,
-            4.0,
+            attribute__1=NSLayoutAttributeLeading,
+            relatedBy=NSLayoutRelationEqual,
+            toItem=self.native,
+            attribute__2=NSLayoutAttributeLeading,
+            multiplier=1.0,
+            constant=4.0,
         )
-        trailing_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # noqa: E501
+        trailing_constraint = NSLayoutConstraint.constraintWithItem(
             self.placeholder_label,
-            NSLayoutAttributeTrailing,
-            NSLayoutRelationEqual,
-            self.native,
-            NSLayoutAttributeTrailing,
-            1.0,
-            0,
+            attribute__1=NSLayoutAttributeTrailing,
+            relatedBy=NSLayoutRelationEqual,
+            toItem=self.native,
+            attribute__2=NSLayoutAttributeTrailing,
+            multiplier=1.0,
+            constant=0,
         )
-        top_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # noqa: E501
+        top_constraint = NSLayoutConstraint.constraintWithItem(
             self.placeholder_label,
-            NSLayoutAttributeTop,
-            NSLayoutRelationEqual,
-            self.native,
-            NSLayoutAttributeTop,
-            1.0,
-            8.0,
+            attribute__1=NSLayoutAttributeTop,
+            relatedBy=NSLayoutRelationEqual,
+            toItem=self.native,
+            attribute__2=NSLayoutAttributeTop,
+            multiplier=1.0,
+            constant=8.0,
         )
-        bottom_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # noqa: E501
+        bottom_constraint = NSLayoutConstraint.constraintWithItem(
             self.placeholder_label,
-            NSLayoutAttributeBottom,
-            NSLayoutRelationEqual,
-            self.native,
-            NSLayoutAttributeBottom,
-            1.0,
-            0,
+            attribute__1=NSLayoutAttributeBottom,
+            relatedBy=NSLayoutRelationEqual,
+            toItem=self.native,
+            attribute__2=NSLayoutAttributeBottom,
+            multiplier=1.0,
+            constant=0,
         )
         self.native.addConstraints(
             [leading_constraint, trailing_constraint, top_constraint, bottom_constraint]

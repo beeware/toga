@@ -3,14 +3,10 @@ import asyncio
 from rubicon.objc import objc_method
 from rubicon.objc.eventloop import EventLoopPolicy, iOSLifecycle
 
+import toga
 from toga_iOS.libs import UIResponder, UIScreen, av_foundation
-from toga_iOS.window import Window
 
 from .screens import Screen as ScreenImpl
-
-
-class MainWindow(Window):
-    _is_main_window = True
 
 
 class PythonAppDelegate(UIResponder):
@@ -53,6 +49,12 @@ class PythonAppDelegate(UIResponder):
 
 
 class App:
+    # iOS apps exit when the last window is closed
+    CLOSE_ON_LAST_WINDOW = True
+    # iOS doesn't have command line handling;
+    # but saying it does shortcuts the default handling
+    HANDLES_COMMAND_LINE = True
+
     def __init__(self, interface):
         self.interface = interface
         self.interface._impl = self
@@ -73,8 +75,7 @@ class App:
     # Commands and menus
     ######################################################################
 
-    def create_app_commands(self):
-        # No menus on an iOS app (for now)
+    def create_standard_commands(self):
         pass
 
     def create_menus(self):
@@ -101,7 +102,8 @@ class App:
         pass  # pragma: no cover
 
     def set_main_window(self, window):
-        pass
+        if window is None or window == toga.App.BACKGROUND:
+            raise ValueError("Apps without main windows are not supported on iOS")
 
     ######################################################################
     # App resources
@@ -109,6 +111,14 @@ class App:
 
     def get_screens(self):
         return [ScreenImpl(UIScreen.mainScreen)]
+
+    ######################################################################
+    # App state
+    ######################################################################
+
+    def get_dark_mode_state(self):
+        self.interface.factory.not_implemented("dark mode state")
+        return None
 
     ######################################################################
     # App capabilities

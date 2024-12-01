@@ -99,9 +99,10 @@ class DetailedList(ContainedWidget):
     def create(self):
         if SwipeRefreshLayout is None:  # pragma: no cover
             raise RuntimeError(
-                "Unable to import SwipeRefreshLayout. Ensure that the AndroidX Swipe Refresh Layout "
-                "widget package (androidx.swiperefreshlayout:swiperefreshlayout:1.1.0) "
-                "is listed in your app's dependencies."
+                "Unable to import SwipeRefreshLayout. Ensure that the AndroidX Swipe "
+                "Refresh Layout widget package "
+                "(androidx.swiperefreshlayout:swiperefreshlayout:1.1.0) is listed in "
+                "your app's dependencies."
             )
         # get the selection color from the current theme
         attrs = [R.attr.colorControlHighlight]

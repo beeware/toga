@@ -5,6 +5,7 @@ from pytest import fixture
 import toga
 
 from ..data import TEXTS
+from .conftest import build_cleanup_test
 from .properties import (  # noqa: F401
     test_background_color,
     test_background_color_reset,
@@ -28,6 +29,11 @@ else:
 @fixture
 async def widget():
     return toga.Switch("Hello")
+
+
+test_cleanup = build_cleanup_test(
+    toga.Switch, args=("Hello",), xfail_platforms=("android", "linux")
+)
 
 
 async def test_text(widget, probe):

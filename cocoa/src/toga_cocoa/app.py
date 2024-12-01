@@ -1,56 +1,39 @@
 import asyncio
-import inspect
-import os
 import sys
 from pathlib import Path
-from urllib.parse import unquote, urlparse
 
+from rubicon.objc import (
+    SEL,
+    NSMutableDictionary,
+    NSObject,
+    objc_method,
+    objc_property,
+)
 from rubicon.objc.eventloop import CocoaLifecycle, EventLoopPolicy
 
 import toga
-from toga.app import overridden
-from toga.command import Command, Separator
-from toga.handlers import NativeHandler, simple_handler
+from toga.command import Command, Group, Separator
+from toga.handlers import NativeHandler
 
-from .keys import cocoa_key
+from .command import Command as CommandImpl, submenu_for_group
 from .libs import (
-    NSURL,
-    SEL,
     NSAboutPanelOptionApplicationIcon,
     NSAboutPanelOptionApplicationName,
     NSAboutPanelOptionApplicationVersion,
     NSAboutPanelOptionVersion,
     NSApplication,
+    NSApplicationActivationPolicyAccessory,
     NSApplicationActivationPolicyRegular,
     NSBeep,
     NSBundle,
     NSCursor,
-    NSDocumentController,
     NSMenu,
     NSMenuItem,
-    NSMutableArray,
-    NSMutableDictionary,
     NSNumber,
-    NSObject,
-    NSOpenPanel,
+    NSPanel,
     NSScreen,
-    NSString,
-    objc_method,
-    objc_property,
 )
 from .screens import Screen as ScreenImpl
-from .window import Window
-
-
-class MainWindow(Window):
-    def cocoa_windowShouldClose(self):
-        # Main Window close is a proxy for "Exit app".
-        # Defer all handling to the app's on_exit handler.
-        # As a result of calling that method, the app will either
-        # exit, or the user will cancel the exit; in which case
-        # the main window shouldn't close, either.
-        self.interface.app.on_exit()
-        return False
 
 
 class AppDelegate(NSObject):
@@ -62,63 +45,43 @@ class AppDelegate(NSObject):
         self.native.activateIgnoringOtherApps(True)
 
     @objc_method
-    def applicationSupportsSecureRestorableState_(
-        self, app
-    ) -> bool:  # pragma: no cover
+    def applicationSupportsSecureRestorableState_(self, app) -> bool:
         return True
 
     @objc_method
-    def applicationOpenUntitledFile_(self, sender) -> bool:  # pragma: no cover
-        self.impl.select_file()
+    def applicationOpenUntitledFile_(self, sender) -> bool:
+        asyncio.create_task(self.interface.documents.request_open())
         return True
 
     @objc_method
-    def addDocument_(self, document) -> None:  # pragma: no cover
-        # print("Add Document", document)
-        super().addDocument_(document)
+    def applicationShouldOpenUntitledFile_(self, sender) -> bool:
+        if self.interface._main_window == toga.App._UNDEFINED:
+            return False
+        else:
+            return bool(self.interface.documents.types)
 
     @objc_method
-    def applicationShouldOpenUntitledFile_(self, sender) -> bool:  # pragma: no cover
-        return True
-
-    @objc_method
-    def application_openFiles_(self, app, filenames) -> None:  # pragma: no cover
-        for i in range(0, len(filenames)):
-            filename = filenames[i]
-            # If you start your Toga application as `python myapp.py` or
-            # `myapp.py`, the name of the Python script is included as a
-            # filename to be processed. Inspect the stack, and ignore any
-            # "document" that matches the file doing the executing
-            if filename == inspect.stack(-1)[-1].filename:
-                continue
-
-            if isinstance(filename, NSString):
-                fileURL = NSURL.fileURLWithPath(filename)
-
-            elif isinstance(filename, NSURL):
-                # This case only exists because we aren't using the
-                # DocumentController to display the file open dialog.
-                # If we were, *all* filenames passed in would be
-                # string paths.
-                fileURL = filename
-            else:
-                return
-
-            self.impl.open_document(str(fileURL.absoluteString))
+    def application_openFiles_(self, app, filenames) -> None:
+        for filename in filenames:
+            self.interface._open_initial_document(str(filename))
 
     @objc_method
     def selectMenuItem_(self, sender) -> None:
-        cmd = self.impl._menu_items[sender]
+        cmd = CommandImpl.for_menu_item(sender)
         cmd.action()
 
     @objc_method
     def validateMenuItem_(self, sender) -> bool:
-        cmd = self.impl._menu_items[sender]
+        cmd = CommandImpl.for_menu_item(sender)
         return cmd.enabled
 
 
 class App:
-    _MAIN_WINDOW_CLASS = MainWindow
+    # macOS apps persist when there are no windows open
+    CLOSE_ON_LAST_WINDOW = False
+    # macOS has handling for command line arguments tied to document handling;
+    # this also allows documents to be opened by dragging an icon onto the app.
+    HANDLES_COMMAND_LINE = True
 
     def __init__(self, interface):
         self.interface = interface
@@ -129,12 +92,7 @@ class App:
         asyncio.set_event_loop_policy(EventLoopPolicy())
         self.loop = asyncio.new_event_loop()
 
-        # Stimulate the build of the app
-        self.create()
-
-    def create(self):
         self.native = NSApplication.sharedApplication
-        self.native.setActivationPolicy(NSApplicationActivationPolicyRegular)
 
         # The app icon been set *before* the app instance is created. However, we only
         # need to set the icon on the app if it has been explicitly defined; the default
@@ -142,22 +100,19 @@ class App:
         if self.interface.icon._impl.path:
             self.set_icon(self.interface.icon)  # pragma: no cover
 
-        self.resource_path = os.path.dirname(
-            os.path.dirname(NSBundle.mainBundle.bundlePath)
-        )
+        self.resource_path = Path(NSBundle.mainBundle.bundlePath).parent.parent
 
         self.appDelegate = AppDelegate.alloc().init()
         self.appDelegate.impl = self
         self.appDelegate.interface = self.interface
         self.appDelegate.native = self.native
-        self.native.setDelegate_(self.appDelegate)
+        self.native.setDelegate(self.appDelegate)
 
-        # Create the lookup table for menu items
-        self._menu_groups = {}
+        # Create the lookup table for commands and menu items
         self._menu_items = {}
 
-        # Call user code to populate the main window
-        self.interface._startup()
+        # Populate the main window as soon as the event loop is running.
+        self.loop.call_soon_threadsafe(self.interface._startup)
 
     ######################################################################
     # Commands and menus
@@ -176,32 +131,17 @@ class App:
         if self.interface.current_window:
             self.interface.current_window._impl.native.miniaturize(None)
 
-    def create_app_commands(self):
-        formal_name = self.interface.formal_name
+    def create_standard_commands(self):
+        # macOS defines some default management commands that aren't
+        # exposed as standard commands.
         self.interface.commands.add(
             # ---- App menu -----------------------------------
-            Command(
-                simple_handler(self.interface.about),
-                "About " + formal_name,
-                group=toga.Group.APP,
-                id=Command.ABOUT,
-            ),
-            # Include a preferences menu item; but only enable it if the user has
-            # overridden it in their App class.
-            Command(
-                simple_handler(self.interface.preferences),
-                "Settings\u2026",
-                shortcut=toga.Key.MOD_1 + ",",
-                group=toga.Group.APP,
-                section=20,
-                enabled=overridden(self.interface.preferences),
-                id=Command.PREFERENCES,
-            ),
+            # App-level window management commands should be in the second last section.
             Command(
                 NativeHandler(SEL("hide:")),
-                "Hide " + formal_name,
+                f"Hide {self.interface.formal_name}",
                 shortcut=toga.Key.MOD_1 + "h",
-                group=toga.Group.APP,
+                group=Group.APP,
                 order=0,
                 section=sys.maxsize - 1,
             ),
@@ -209,27 +149,16 @@ class App:
                 NativeHandler(SEL("hideOtherApplications:")),
                 "Hide Others",
                 shortcut=toga.Key.MOD_1 + toga.Key.MOD_2 + "h",
-                group=toga.Group.APP,
+                group=Group.APP,
                 order=1,
                 section=sys.maxsize - 1,
             ),
             Command(
                 NativeHandler(SEL("unhideAllApplications:")),
                 "Show All",
-                group=toga.Group.APP,
+                group=Group.APP,
                 order=2,
                 section=sys.maxsize - 1,
-            ),
-            # Quit should always be the last item, in a section on its own. Invoke
-            # `on_exit` rather than `exit`, because we want to trigger the "OK to exit?"
-            # logic. It's already a bound handler, so we can use it directly.
-            Command(
-                self.interface.on_exit,
-                f"Quit {formal_name}",
-                shortcut=toga.Key.MOD_1 + "q",
-                group=toga.Group.APP,
-                section=sys.maxsize,
-                id=Command.EXIT,
             ),
             # ---- File menu ----------------------------------
             # This is a bit of an oddity. Apple HIG apps that don't have tabs as
@@ -241,7 +170,7 @@ class App:
                 self._menu_close_window,
                 "Close",
                 shortcut=toga.Key.MOD_1 + "w",
-                group=toga.Group.FILE,
+                group=Group.FILE,
                 order=1,
                 section=50,
             ),
@@ -249,7 +178,7 @@ class App:
                 self._menu_close_all_windows,
                 "Close All",
                 shortcut=toga.Key.MOD_2 + toga.Key.MOD_1 + "w",
-                group=toga.Group.FILE,
+                group=Group.FILE,
                 order=2,
                 section=50,
             ),
@@ -258,21 +187,21 @@ class App:
                 NativeHandler(SEL("undo:")),
                 "Undo",
                 shortcut=toga.Key.MOD_1 + "z",
-                group=toga.Group.EDIT,
+                group=Group.EDIT,
                 order=10,
             ),
             Command(
                 NativeHandler(SEL("redo:")),
                 "Redo",
                 shortcut=toga.Key.SHIFT + toga.Key.MOD_1 + "z",
-                group=toga.Group.EDIT,
+                group=Group.EDIT,
                 order=20,
             ),
             Command(
                 NativeHandler(SEL("cut:")),
                 "Cut",
                 shortcut=toga.Key.MOD_1 + "x",
-                group=toga.Group.EDIT,
+                group=Group.EDIT,
                 section=10,
                 order=10,
             ),
@@ -280,7 +209,7 @@ class App:
                 NativeHandler(SEL("copy:")),
                 "Copy",
                 shortcut=toga.Key.MOD_1 + "c",
-                group=toga.Group.EDIT,
+                group=Group.EDIT,
                 section=10,
                 order=20,
             ),
@@ -288,7 +217,7 @@ class App:
                 NativeHandler(SEL("paste:")),
                 "Paste",
                 shortcut=toga.Key.MOD_1 + "v",
-                group=toga.Group.EDIT,
+                group=Group.EDIT,
                 section=10,
                 order=30,
             ),
@@ -296,14 +225,14 @@ class App:
                 NativeHandler(SEL("pasteAsPlainText:")),
                 "Paste and Match Style",
                 shortcut=toga.Key.MOD_2 + toga.Key.SHIFT + toga.Key.MOD_1 + "v",
-                group=toga.Group.EDIT,
+                group=Group.EDIT,
                 section=10,
                 order=40,
             ),
             Command(
                 NativeHandler(SEL("delete:")),
                 "Delete",
-                group=toga.Group.EDIT,
+                group=Group.EDIT,
                 section=10,
                 order=50,
             ),
@@ -311,7 +240,7 @@ class App:
                 NativeHandler(SEL("selectAll:")),
                 "Select All",
                 shortcut=toga.Key.MOD_1 + "a",
-                group=toga.Group.EDIT,
+                group=Group.EDIT,
                 section=10,
                 order=60,
             ),
@@ -320,93 +249,34 @@ class App:
                 self._menu_minimize,
                 "Minimize",
                 shortcut=toga.Key.MOD_1 + "m",
-                group=toga.Group.WINDOW,
-            ),
-            # ---- Help menu ----------------------------------
-            Command(
-                simple_handler(self.interface.visit_homepage),
-                "Visit homepage",
-                enabled=self.interface.home_page is not None,
-                group=toga.Group.HELP,
-                id=Command.VISIT_HOMEPAGE,
+                group=Group.WINDOW,
             ),
         )
-
-    def _submenu(self, group, menubar):
-        """Obtain the submenu representing the command group.
-
-        This will create the submenu if it doesn't exist. It will call itself
-        recursively to build the full path to menus inside submenus, returning the
-        "leaf" node in the submenu path. Once created, it caches the menu that has been
-        created for future lookup.
-        """
-        try:
-            return self._menu_groups[group]
-        except KeyError:
-            if group is None:
-                submenu = menubar
-            else:
-                parent_menu = self._submenu(group.parent, menubar)
-
-                menu_item = parent_menu.addItemWithTitle(
-                    group.text, action=None, keyEquivalent=""
-                )
-                submenu = NSMenu.alloc().initWithTitle(group.text)
-                parent_menu.setSubmenu(submenu, forItem=menu_item)
-
-            # Install the item in the group cache.
-            self._menu_groups[group] = submenu
-            return submenu
 
     def create_menus(self):
         # Recreate the menu.
         # Remove any native references to the existing menu
         for menu_item, cmd in self._menu_items.items():
-            cmd._impl.native.remove(menu_item)
+            cmd._impl.remove_menu_item(menu_item)
 
         # Create a clean menubar instance.
         menubar = NSMenu.alloc().initWithTitle("MainMenu")
         submenu = None
-        self._menu_groups = {}
+
+        # Warm the menu group cache with the root menubar
+        group_cache = {None: menubar}
         self._menu_items = {}
 
         for cmd in self.interface.commands:
-            submenu = self._submenu(cmd.group, menubar)
+            submenu = submenu_for_group(cmd.group, group_cache)
+
             if isinstance(cmd, Separator):
-                submenu.addItem(NSMenuItem.separatorItem())
+                menu_item = NSMenuItem.separatorItem()
             else:
-                if cmd.shortcut:
-                    key, modifier = cocoa_key(cmd.shortcut)
-                else:
-                    key = ""
-                    modifier = None
+                menu_item = cmd._impl.create_menu_item()
+                self._menu_items[menu_item] = cmd
 
-                # Native handlers can be invoked directly as menu actions.
-                # Standard wrapped menu items have a `_raw` attribute,
-                # and are invoked using the selectMenuItem:
-                if hasattr(cmd.action, "_raw"):
-                    action = SEL("selectMenuItem:")
-                else:
-                    action = cmd.action
-
-                item = NSMenuItem.alloc().initWithTitle(
-                    cmd.text,
-                    action=action,
-                    keyEquivalent=key,
-                )
-
-                if modifier is not None:
-                    item.keyEquivalentModifierMask = modifier
-
-                # Explicit set the initial enabled/disabled state on the menu item
-                item.setEnabled(cmd.enabled)
-
-                # Associated the MenuItem with the command, so that future
-                # changes to enabled etc are reflected.
-                cmd._impl.native.add(item)
-
-                self._menu_items[item] = cmd
-                submenu.addItem(item)
+            submenu.addItem(menu_item)
 
         # Set the menu for the app.
         self.native.mainMenu = menubar
@@ -430,7 +300,10 @@ class App:
             self.native.setApplicationIconImage(None)
 
     def set_main_window(self, window):
-        pass
+        if window == toga.App.BACKGROUND:
+            self.native.setActivationPolicy(NSApplicationActivationPolicyAccessory)
+        else:
+            self.native.setActivationPolicy(NSApplicationActivationPolicyRegular)
 
     ######################################################################
     # App resources
@@ -438,6 +311,17 @@ class App:
 
     def get_screens(self):
         return [ScreenImpl(native=screen) for screen in NSScreen.screens]
+
+    ######################################################################
+    # App state
+    ######################################################################
+
+    def get_dark_mode_state(self):
+        appearance = self.native.effectiveAppearance
+        # Standard theme names in MacOS
+        # https://developer.apple.com/documentation/appkit/nsappearance/name-swift.struct?language=objc
+        in_dark_mode = "Dark" in str(appearance.name)
+        return in_dark_mode
 
     ######################################################################
     # App capabilities
@@ -494,7 +378,11 @@ class App:
     ######################################################################
 
     def get_current_window(self):
-        return self.native.keyWindow
+        key_window = self.native.keyWindow
+        if isinstance(key_window, NSPanel):
+            return key_window.sheetParent
+        else:
+            return key_window
 
     def set_current_window(self, window):
         window._impl.native.makeKeyAndOrderFront(window._impl.native)
@@ -510,12 +398,16 @@ class App:
         )
 
         for window, screen in zip(windows, NSScreen.screens):
-            window.content._impl.native.enterFullScreenMode(screen, withOptions=opts)
+            # The widgets are actually added to window._impl.container.native, instead
+            # of window.content._impl.native. And window._impl.native.contentView is
+            # window._impl.container.native. Hence, we need to go fullscreen on
+            # window._impl.container.native instead.
+            window._impl.container.native.enterFullScreenMode(screen, withOptions=opts)
             # Going full screen causes the window content to be re-homed
             # in a NSFullScreenWindow; teach the new parent window
             # about its Toga representations.
-            window.content._impl.native.window._impl = window._impl
-            window.content._impl.native.window.interface = window
+            window._impl.container.native.window._impl = window._impl
+            window._impl.container.native.window.interface = window
             window.content.refresh()
 
     def exit_full_screen(self, windows):
@@ -525,50 +417,5 @@ class App:
         )
 
         for window in windows:
-            window.content._impl.native.exitFullScreenModeWithOptions(opts)
+            window._impl.container.native.exitFullScreenModeWithOptions(opts)
             window.content.refresh()
-
-
-class DocumentApp(App):  # pragma: no cover
-    def create_app_commands(self):
-        super().create_app_commands()
-        self.interface.commands.add(
-            toga.Command(
-                self._menu_open_file,
-                text="Open\u2026",
-                shortcut=toga.Key.MOD_1 + "o",
-                group=toga.Group.FILE,
-                section=0,
-            ),
-        )
-
-    def _menu_open_file(self, app, **kwargs):
-        self.select_file()
-
-    def select_file(self, **kwargs):
-        # FIXME This should be all we need; but for some reason, application types
-        # aren't being registered correctly..
-        # NSDocumentController.sharedDocumentController().openDocument_(None)
-
-        # ...so we do this instead.
-        panel = NSOpenPanel.openPanel()
-        # print("Open documents of type", NSDocumentController.sharedDocumentController().defaultType)
-
-        fileTypes = NSMutableArray.alloc().init()
-        for filetype in self.interface.document_types:
-            fileTypes.addObject(filetype)
-
-        NSDocumentController.sharedDocumentController.runModalOpenPanel(
-            panel, forTypes=fileTypes
-        )
-
-        # print("Untitled File opened?", panel.URLs)
-        self.appDelegate.application_openFiles_(None, panel.URLs)
-
-    def open_document(self, fileURL):
-        # Convert a cocoa fileURL to a file path.
-        fileURL = fileURL.rstrip("/")
-        path = Path(unquote(urlparse(fileURL).path))
-
-        # Create and show the document instance
-        self.interface._open(path)

@@ -63,7 +63,8 @@ async def test_font_options(widget: toga.Label, font_probe):
                         widget.style.font_variant = font_variant
                         widget.style.font_weight = font_weight
                         await font_probe.redraw(
-                            f"Using a {font_family} {font_size} {font_weight} {font_style} {font_variant} font"
+                            f"Using a {font_family} {font_size} {font_weight} "
+                            f"{font_style} {font_variant} font"
                         )
 
                         font_probe.assert_font_family(font_family)

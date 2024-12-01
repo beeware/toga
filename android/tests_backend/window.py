@@ -1,13 +1,15 @@
-import pytest
+from android.content import Context
 from androidx.appcompat import R as appcompat_R
 
+from .dialogs import DialogsMixin
 from .probe import BaseProbe
 
 
-class WindowProbe(BaseProbe):
+class WindowProbe(BaseProbe, DialogsMixin):
     def __init__(self, app, window):
         super().__init__(app)
         self.native = self.app._impl.native
+        self.window = window
 
     async def wait_for_window(self, message, minimize=False, full_screen=False):
         await self.redraw(message)
@@ -19,37 +21,15 @@ class WindowProbe(BaseProbe):
             self.root_view.getHeight() / self.scale_factor,
         )
 
-    async def close_info_dialog(self, dialog):
-        dialog_view = self.get_dialog_view()
-        self.assert_dialog_buttons(dialog_view, ["OK"])
-        await self.press_dialog_button(dialog_view, "OK")
-
-    async def close_question_dialog(self, dialog, result):
-        dialog_view = self.get_dialog_view()
-        self.assert_dialog_buttons(dialog_view, ["No", "Yes"])
-        await self.press_dialog_button(dialog_view, "Yes" if result else "No")
-
-    async def close_confirm_dialog(self, dialog, result):
-        dialog_view = self.get_dialog_view()
-        self.assert_dialog_buttons(dialog_view, ["Cancel", "OK"])
-        await self.press_dialog_button(dialog_view, "OK" if result else "Cancel")
-
-    async def close_error_dialog(self, dialog):
-        dialog_view = self.get_dialog_view()
-        self.assert_dialog_buttons(dialog_view, ["OK"])
-        await self.press_dialog_button(dialog_view, "OK")
-
-    async def close_stack_trace_dialog(self, dialog, result):
-        pytest.skip("Stack Trace dialog not implemented on Android")
-
-    async def close_save_file_dialog(self, dialog, result):
-        pytest.skip("Save File dialog not implemented on Android")
-
-    async def close_open_file_dialog(self, dialog, result, multiple_select):
-        pytest.skip("Open File dialog not implemented on Android")
-
-    async def close_select_folder_dialog(self, dialog, result, multiple_select):
-        pytest.skip("Select Folder dialog not implemented on Android")
+    @property
+    def top_bar_height(self):
+        # Android doesn't require explicit allowances for the top bar in content layout;
+        # the size of the top bar is the difference between the screen and the root
+        # window content size.
+        context = self.app._impl.native.getApplicationContext()
+        window_manager = context.getSystemService(Context.WINDOW_SERVICE)
+        display = window_manager.getDefaultDisplay()
+        return (display.getHeight() - self.root_view.getHeight()) / self.scale_factor
 
     def _native_menu(self):
         return self.native.findViewById(appcompat_R.id.action_bar).getMenu()
@@ -87,6 +67,3 @@ class WindowProbe(BaseProbe):
 
     def press_toolbar_button(self, index):
         self.native.onOptionsItemSelected(self._toolbar_items()[index])
-
-    def is_modal_dialog(self, dialog):
-        return True

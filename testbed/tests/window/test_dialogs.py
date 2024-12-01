@@ -1,113 +1,134 @@
+import asyncio
 import io
 import traceback
-from asyncio import wait_for
 from pathlib import Path
-from unittest.mock import Mock
+from time import time
 
 import pytest
+
+import toga
 
 TESTS_DIR = Path(__file__).parent.parent
 
 
-async def assert_dialog_result(window, dialog, on_result, expected):
-    actual = await wait_for(dialog, timeout=1)
-    if callable(expected):
-        assert expected(actual)
-    else:
-        assert actual == expected
+@pytest.fixture
+async def wait_for_dialog_to_close(main_window):
+    """Wait for any asyncio task that is responsible for closing the dialog.
 
-    on_result.assert_called_once_with(window, actual)
+    An automatic fixture verifies tasks are not unintentionally left stranded after
+    the test; so, wait specifically for the task that closes the dialog before leaving.
+    """
+    yield
+    tasks = [
+        t for t in main_window.app._running_tasks if t.get_name() == "close-dialog"
+    ]
+    task = tasks[0] if tasks else None
+    deadline = time() + 1.5
+    while task and not task.done():
+        print("Waiting for dialog to close...")
+        await asyncio.sleep(0.1)
+        if time() > deadline:
+            print("Gave up waiting for dialog to close...")
+            break
 
 
-async def test_info_dialog(main_window, main_window_probe):
+async def test_info_dialog(main_window, main_window_probe, wait_for_dialog_to_close):
     """An info dialog can be displayed and acknowledged."""
-    on_result_handler = Mock()
-    with pytest.warns(
-        DeprecationWarning,
-        match=r"Synchronous `on_result` handlers have been deprecated;",
-    ):
-        dialog_result = main_window.info_dialog(
-            "Info", "Some info", on_result=on_result_handler
-        )
-    await main_window_probe.redraw("Info dialog displayed")
-    assert main_window_probe.is_modal_dialog(dialog_result._impl)
-    await main_window_probe.close_info_dialog(dialog_result._impl)
-    await assert_dialog_result(main_window, dialog_result, on_result_handler, None)
+    dialog = toga.InfoDialog("Info", "Some info")
+    assert main_window_probe.is_modal_dialog(dialog)
+
+    main_window_probe.setup_info_dialog_result(dialog)
+
+    await main_window_probe.redraw("Display window modal info dialog")
+    actual = await main_window.dialog(dialog)
+
+    assert actual is None
 
 
 @pytest.mark.parametrize("result", [False, True])
-async def test_question_dialog(main_window, main_window_probe, result):
-    """An question dialog can be displayed and acknowledged."""
-    on_result_handler = Mock()
-    with pytest.warns(
-        DeprecationWarning,
-        match=r"Synchronous `on_result` handlers have been deprecated;",
-    ):
-        dialog_result = main_window.question_dialog(
-            "Question",
-            "Some question",
-            on_result=on_result_handler,
-        )
-    await main_window_probe.redraw("Question dialog displayed")
-    await main_window_probe.close_question_dialog(dialog_result._impl, result)
-    await assert_dialog_result(main_window, dialog_result, on_result_handler, result)
+async def test_question_dialog(
+    main_window,
+    main_window_probe,
+    result,
+    wait_for_dialog_to_close,
+):
+    """A question dialog can be displayed and acknowledged."""
+    dialog = toga.QuestionDialog("Question", "Some question")
+    assert main_window_probe.is_modal_dialog(dialog)
+
+    main_window_probe.setup_question_dialog_result(dialog, result)
+
+    await main_window_probe.redraw(
+        "Display window modal question dialog; " f"respond {'YES' if result else 'NO'}"
+    )
+    actual = await main_window.dialog(dialog)
+
+    assert actual == result
 
 
 @pytest.mark.parametrize("result", [False, True])
-async def test_confirm_dialog(main_window, main_window_probe, result):
+async def test_confirm_dialog(
+    main_window,
+    main_window_probe,
+    result,
+    wait_for_dialog_to_close,
+):
     """A confirmation dialog can be displayed and acknowledged."""
-    on_result_handler = Mock()
-    with pytest.warns(
-        DeprecationWarning,
-        match=r"Synchronous `on_result` handlers have been deprecated;",
-    ):
-        dialog_result = main_window.confirm_dialog(
-            "Confirm",
-            "Some confirmation",
-            on_result=on_result_handler,
-        )
-    await main_window_probe.redraw("Confirmation dialog displayed")
-    await main_window_probe.close_confirm_dialog(dialog_result._impl, result)
-    await assert_dialog_result(main_window, dialog_result, on_result_handler, result)
+    dialog = toga.ConfirmDialog("Confirm", "Some confirmation")
+    assert main_window_probe.is_modal_dialog(dialog)
+
+    main_window_probe.setup_confirm_dialog_result(dialog, result)
+
+    await main_window_probe.redraw(
+        "Display window modal confirm dialog; "
+        f"respond {'OK' if result else 'CANCEL'}"
+    )
+    actual = await main_window.dialog(dialog)
+
+    assert actual == result
 
 
-async def test_error_dialog(main_window, main_window_probe):
+async def test_error_dialog(main_window, main_window_probe, wait_for_dialog_to_close):
     """An error dialog can be displayed and acknowledged."""
-    on_result_handler = Mock()
-    with pytest.warns(
-        DeprecationWarning,
-        match=r"Synchronous `on_result` handlers have been deprecated;",
-    ):
-        dialog_result = main_window.error_dialog(
-            "Error", "Some error", on_result=on_result_handler
-        )
-    await main_window_probe.redraw("Error dialog displayed")
-    await main_window_probe.close_error_dialog(dialog_result._impl)
-    await assert_dialog_result(main_window, dialog_result, on_result_handler, None)
+    dialog = toga.ErrorDialog("Error", "Some error")
+    assert main_window_probe.is_modal_dialog(dialog)
+
+    main_window_probe.setup_error_dialog_result(dialog)
+
+    await main_window_probe.redraw("Display window modal error dialog")
+    actual = await main_window.dialog(dialog)
+
+    assert actual is None
 
 
 @pytest.mark.parametrize("result", [None, False, True])
-async def test_stack_trace_dialog(main_window, main_window_probe, result):
+async def test_stack_trace_dialog(
+    main_window,
+    main_window_probe,
+    result,
+    wait_for_dialog_to_close,
+):
     """A confirmation dialog can be displayed and acknowledged."""
-    on_result_handler = Mock()
     stack = io.StringIO()
     traceback.print_stack(file=stack)
-    with pytest.warns(
-        DeprecationWarning,
-        match=r"Synchronous `on_result` handlers have been deprecated;",
-    ):
-        dialog_result = main_window.stack_trace_dialog(
-            "Stack Trace",
-            "Some stack trace",
-            stack.getvalue(),
-            retry=result is not None,
-            on_result=on_result_handler,
-        )
-    await main_window_probe.redraw(
-        f"Stack trace dialog (with{'out' if result is None else ''} retry) displayed"
+
+    dialog = toga.StackTraceDialog(
+        "Stack Trace",
+        "Some stack trace",
+        stack.getvalue(),
+        retry=result is not None,
     )
-    await main_window_probe.close_stack_trace_dialog(dialog_result._impl, result)
-    await assert_dialog_result(main_window, dialog_result, on_result_handler, result)
+    assert main_window_probe.is_modal_dialog(dialog)
+
+    main_window_probe.setup_stack_trace_dialog_result(dialog, result)
+
+    await main_window_probe.redraw(
+        "Display window modal stack track dialog; "
+        + ("no retry" if result is None else f"with retry={'YES' if result else 'NO'}")
+    )
+    actual = await main_window.dialog(dialog)
+
+    assert actual == result
 
 
 @pytest.mark.parametrize(
@@ -125,30 +146,31 @@ async def test_save_file_dialog(
     filename,
     file_types,
     result,
+    wait_for_dialog_to_close,
 ):
     """A file open dialog can be displayed and acknowledged."""
-    on_result_handler = Mock()
-    with pytest.warns(
-        DeprecationWarning,
-        match=r"Synchronous `on_result` handlers have been deprecated;",
-    ):
-        dialog_result = main_window.save_file_dialog(
-            "Save file",
-            suggested_filename=filename,
-            file_types=file_types,
-            on_result=on_result_handler,
-        )
-    await main_window_probe.redraw("Save File dialog displayed")
-    await main_window_probe.close_save_file_dialog(dialog_result._impl, result)
+    dialog = toga.SaveFileDialog(
+        "Save file",
+        suggested_filename=filename,
+        file_types=file_types,
+    )
+    assert main_window_probe.is_modal_dialog(dialog)
+
+    main_window_probe.setup_save_file_dialog_result(dialog, result)
+
+    await main_window_probe.redraw(
+        "Display window modal save file dialog"
+        f"{', with' if file_types else ', without'} file types; "
+        f"select {'OK' if result else 'CANCEL'}"
+    )
+    actual = await main_window.dialog(dialog)
 
     # The directory where the file dialog is opened can't be 100% predicted
     # so we need to modify the check to only inspect the filename.
-    await assert_dialog_result(
-        main_window,
-        dialog_result,
-        on_result_handler,
-        None if result is None else (lambda actual: actual.name == result.name),
-    )
+    if result is None:
+        assert actual is None
+    else:
+        assert actual.name == result.name
 
 
 @pytest.mark.parametrize(
@@ -191,25 +213,30 @@ async def test_open_file_dialog(
     file_types,
     multiple_select,
     result,
+    wait_for_dialog_to_close,
 ):
     """A file open dialog can be displayed and acknowledged."""
-    on_result_handler = Mock()
-    with pytest.warns(
-        DeprecationWarning,
-        match=r"Synchronous `on_result` handlers have been deprecated;",
-    ):
-        dialog_result = main_window.open_file_dialog(
-            "Open file",
-            initial_directory=initial_directory,
-            file_types=file_types,
-            multiple_select=multiple_select,
-            on_result=on_result_handler,
-        )
-    await main_window_probe.redraw("Open File dialog displayed")
-    await main_window_probe.close_open_file_dialog(
-        dialog_result._impl, result, multiple_select
+    dialog = toga.OpenFileDialog(
+        "Open file",
+        initial_directory=initial_directory,
+        file_types=file_types,
+        multiple_select=multiple_select,
     )
-    await assert_dialog_result(main_window, dialog_result, on_result_handler, result)
+    assert main_window_probe.is_modal_dialog(dialog)
+
+    main_window_probe.setup_open_file_dialog_result(dialog, result, multiple_select)
+
+    await main_window_probe.redraw(
+        "Display window modal"
+        f"{' multiple selection' if multiple_select else ''}"
+        " open file dialog"
+        f"{'' if initial_directory else ', no initial directory'}"
+        f"{', with' if file_types else ', no'} file types; "
+        f"select {'OK' if result else 'CANCEL'}"
+    )
+    actual = await main_window.dialog(dialog)
+
+    assert actual == result
 
 
 @pytest.mark.parametrize(
@@ -235,27 +262,30 @@ async def test_select_folder_dialog(
     initial_directory,
     multiple_select,
     result,
+    wait_for_dialog_to_close,
 ):
     """A folder selection dialog can be displayed and acknowledged."""
-    on_result_handler = Mock()
-    with pytest.warns(
-        DeprecationWarning,
-        match=r"Synchronous `on_result` handlers have been deprecated;",
-    ):
-        dialog_result = main_window.select_folder_dialog(
-            "Select folder",
-            initial_directory=initial_directory,
-            multiple_select=multiple_select,
-            on_result=on_result_handler,
-        )
-    await main_window_probe.redraw("Select Folder dialog displayed")
-    await main_window_probe.close_select_folder_dialog(
-        dialog_result._impl, result, multiple_select
+    dialog = toga.SelectFolderDialog(
+        "Select folder",
+        initial_directory=initial_directory,
+        multiple_select=multiple_select,
     )
+    assert main_window_probe.is_modal_dialog(dialog)
+
+    main_window_probe.setup_select_folder_dialog_result(dialog, result, multiple_select)
+    await main_window_probe.redraw(
+        "Display window modal"
+        f"{' multiple selection' if multiple_select else ''}"
+        " select folder dialog"
+        f"{'' if initial_directory else ', no initial directory'}"
+        f"; select {'OK' if result else 'CANCEL'}"
+    )
+
+    actual = await main_window.dialog(dialog)
 
     if (
         isinstance(result, list)
         and not main_window_probe.supports_multiple_select_folder
     ):
         result = result[-1:]
-    await assert_dialog_result(main_window, dialog_result, on_result_handler, result)
+    assert actual == result

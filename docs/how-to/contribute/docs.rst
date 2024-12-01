@@ -14,8 +14,11 @@ documentation.
 Building Toga's documentation
 =============================
 
-To build Toga's documentation, start by :ref:`setting up a development
-environment <setup-dev-environment>`.
+.. Docs are always built on Python 3.12. See also the RTD and tox config.
+
+To build Toga's documentation, start by :ref:`setting up a development environment
+<setup-dev-environment>`.You **must** have a Python 3.12 interpreter installed and
+available on your path (i.e., ``python3.12`` must start a Python 3.12 interpreter).
 
 You'll also need to install the Enchant spell checking library.
 

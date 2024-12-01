@@ -18,8 +18,10 @@ class TogaScrollView(UIScrollView):
     @objc_method
     def refreshContent(self):
         # Now that we have an updated size for the ScrollContainer, re-evaluate
-        # the size of the document content (assuming there is a document)
-        if self.interface._content:
+        # the size of the document content (assuming there is a document).
+        # We can't reliably trigger the "no content" case in testbed, because it's
+        # dependent on specific event timing.
+        if self.interface._content:  # pragma: no branch
             self.interface._content.refresh()
 
 

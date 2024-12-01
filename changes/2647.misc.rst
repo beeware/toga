@@ -1,1 +1,0 @@
-The "live docs" tox environments were updated to allow a grace period for ``sphinx-autobuild`` to shutdown the HTTP server. Without waiting, the HTTP server may have been left running when tox exited.

@@ -1,14 +1,9 @@
 import asyncio
 
+import toga
 from textual.app import App as TextualApp
 
 from .screens import Screen as ScreenImpl
-from .window import Window
-
-
-class MainWindow(Window):
-    def textual_close(self):
-        self.interface.app.on_exit()
 
 
 class TogaApp(TextualApp):
@@ -22,12 +17,20 @@ class TogaApp(TextualApp):
 
 
 class App:
+    # Textual apps exit when the last window is closed
+    CLOSE_ON_LAST_WINDOW = True
+    # Textual apps use default command line handling
+    HANDLES_COMMAND_LINE = False
+
     def __init__(self, interface):
         self.interface = interface
         self.interface._impl = self
 
         self.loop = asyncio.new_event_loop()
         self.native = TogaApp(self)
+
+        # run the app without displaying it
+        self.headless = False
 
     def create(self):
         self.interface._startup()
@@ -37,11 +40,11 @@ class App:
     # Commands and menus
     ######################################################################
 
-    def create_app_commands(self):
+    def create_standard_commands(self):
         pass
 
     def create_menus(self):
-        pass
+        self.interface.factory.not_implemented("App.create_menus()")
 
     ######################################################################
     # App lifecycle
@@ -51,13 +54,18 @@ class App:
         self.native.exit()
 
     def main_loop(self):
-        self.native.run()
+        self.loop.run_until_complete(self.native.run_async(headless=self.headless))
 
     def set_icon(self, icon):
         pass
 
     def set_main_window(self, window):
-        self.native.push_screen(self.interface.main_window.id)
+        if window is None:
+            raise RuntimeError("Session-based apps are not supported on Textual")
+        elif window == toga.App.BACKGROUND:
+            raise RuntimeError("Background apps are not supported on Textual")
+        else:
+            self.native.push_screen(self.interface.main_window.id)
 
     ######################################################################
     # App resources
@@ -65,6 +73,14 @@ class App:
 
     def get_screens(self):
         return [ScreenImpl(window._impl.native) for window in self.interface.windows]
+
+    ######################################################################
+    # App state
+    ######################################################################
+
+    def get_dark_mode_state(self):
+        self.interface.factory.not_implemented("dark mode state")
+        return None
 
     ######################################################################
     # App capabilities
@@ -91,9 +107,10 @@ class App:
     ######################################################################
 
     def get_current_window(self):
-        pass
+        return self._current_window
 
     def set_current_window(self, window):
+        self._current_window = window
         self.native.switch_screen(window.native)
         self.native.title = window.get_title()
 
@@ -106,7 +123,3 @@ class App:
 
     def exit_full_screen(self, windows):
         pass
-
-
-class DocumentApp(App):
-    pass

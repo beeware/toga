@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from collections.abc import Iterator
-from typing import Iterable, Mapping, TypeVar
+from collections.abc import Iterable, Iterator, Mapping
+from typing import TypeVar
 
 from .base import Source
 from .list_source import Row, _find_item
@@ -40,7 +40,10 @@ class Node(Row[T]):
         if self._children is not None:
             descriptor += f"; {len(self)} children"
 
-        return f"<{'Leaf ' if self._children is None else ''}Node {id(self):x} {descriptor}>"
+        return (
+            f"<{'Leaf ' if self._children is None else ''}Node "
+            f"{id(self):x} {descriptor}>"
+        )
 
     ######################################################################
     # Methods required by the TreeSource interface

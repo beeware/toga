@@ -28,7 +28,7 @@ class Slider(Widget, IntSliderImpl):
 
         # Unlike Scroll, ValueChanged also fires when the value is changed
         # programmatically, such as via the testbed probe.
-        self.native.ValueChanged += WeakrefCallable(self.winforms_value_chaned)
+        self.native.ValueChanged += WeakrefCallable(self.winforms_value_changed)
         self.native.MouseDown += WeakrefCallable(self.winforms_mouse_down)
         self.native.MouseUp += WeakrefCallable(self.winforms_mouse_up)
 

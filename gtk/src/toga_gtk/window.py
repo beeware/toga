@@ -19,14 +19,15 @@ class Window:
         self.interface = interface
         self.interface._impl = self
 
-        self._is_closing = False
-
         self.layout = None
 
         self.create()
         self.native._impl = self
 
-        self.native.connect("delete-event", self.gtk_delete_event)
+        self._delete_handler = self.native.connect(
+            "delete-event",
+            self.gtk_delete_event,
+        )
 
         self.native.set_default_size(size[0], size[1])
 
@@ -45,13 +46,6 @@ class Window:
         # toolbar (if required) will be added at the top of the layout.
         self.layout = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
 
-        self.native_toolbar = Gtk.Toolbar()
-        self.native_toolbar.set_style(Gtk.ToolbarStyle.BOTH)
-        self.native_toolbar.set_visible(False)
-        self.toolbar_items = {}
-        self.toolbar_separators = set()
-        self.layout.pack_start(self.native_toolbar, expand=False, fill=False, padding=0)
-
         # Because expand and fill are True, the container will fill the available
         # space, and will get a size_allocate callback if the window is resized.
         self.container = TogaContainer()
@@ -67,17 +61,12 @@ class Window:
     ######################################################################
 
     def gtk_delete_event(self, widget, data):
-        if self._is_closing:
-            should_close = True
-        else:
-            should_close = self.interface.on_close()
-
-        # Return value of the GTK on_close handler indicates
-        # whether the event has been fully handled. Returning
-        # False indicates the event handling is *not* complete,
-        # so further event processing (including actually
-        # closing the window) should be performed.
-        return not should_close
+        # Return value of the GTK on_close handler indicates whether the event has been
+        # fully handled. Returning True indicates the event has been handled, so further
+        # handling (including actually closing the window) shouldn't be performed. This
+        # handler must be deleted to allow the window to actually close.
+        self.interface.on_close()
+        return True
 
     ######################################################################
     # Window properties
@@ -94,60 +83,9 @@ class Window:
     ######################################################################
 
     def close(self):
-        self._is_closing = True
+        # Disconnect the delete handler so the close will complete
+        self.native.disconnect(self._delete_handler)
         self.native.close()
-
-    def create_toolbar(self):
-        # If there's an existing toolbar, hide it until we know we need it.
-        if self.toolbar_items:
-            self.native_toolbar.set_visible(False)
-
-        # Deregister any toolbar buttons from their commands, and remove them from the toolbar
-        for cmd, item_impl in self.toolbar_items.items():
-            self.native_toolbar.remove(item_impl)
-            cmd._impl.native.remove(item_impl)
-        # Remove any toolbar separators
-        for sep in self.toolbar_separators:
-            self.native_toolbar.remove(sep)
-
-        # Create the new toolbar items
-        self.toolbar_items = {}
-        self.toolbar_separators = set()
-        prev_group = None
-        for cmd in self.interface.toolbar:
-            if isinstance(cmd, Separator):
-                item_impl = Gtk.SeparatorToolItem()
-                item_impl.set_draw(False)
-                self.toolbar_separators.add(item_impl)
-                prev_group = None
-            else:
-                # A change in group requires adding a toolbar separator
-                if prev_group is not None and prev_group != cmd.group:
-                    group_sep = Gtk.SeparatorToolItem()
-                    group_sep.set_draw(True)
-                    self.toolbar_separators.add(group_sep)
-                    self.native_toolbar.insert(group_sep, -1)
-                    prev_group = None
-                else:
-                    prev_group = cmd.group
-
-                item_impl = Gtk.ToolButton()
-                if cmd.icon:
-                    item_impl.set_icon_widget(
-                        Gtk.Image.new_from_pixbuf(cmd.icon._impl.native(32))
-                    )
-                item_impl.set_label(cmd.text)
-                if cmd.tooltip:
-                    item_impl.set_tooltip_text(cmd.tooltip)
-                item_impl.connect("clicked", cmd._impl.gtk_clicked)
-                cmd._impl.native.append(item_impl)
-                self.toolbar_items[cmd] = item_impl
-
-            self.native_toolbar.insert(item_impl, -1)
-
-        if self.toolbar_items:
-            self.native_toolbar.set_visible(True)
-            self.native_toolbar.show_all()
 
     def set_app(self, app):
         app.native.add_window(self.native)
@@ -241,5 +179,80 @@ class Window:
         if success:
             return buffer
         else:  # pragma: nocover
-            # This shouldn't ever happen, and it's difficult to manufacture in test conditions
+            # This shouldn't ever happen, and it's difficult to manufacture
+            # in test conditions
             raise ValueError(f"Unable to generate screenshot of {self}")
+
+
+class MainWindow(Window):
+    def create(self):
+        self.native = Gtk.ApplicationWindow()
+        self.native.set_role("MainWindow")
+
+        self.native_toolbar = Gtk.Toolbar()
+        self.native_toolbar.set_style(Gtk.ToolbarStyle.BOTH)
+        self.toolbar_items = {}
+        self.toolbar_separators = set()
+
+    def create_menus(self):
+        # GTK menus are handled at the app level
+        pass
+
+    def create_toolbar(self):
+        # If there's an existing toolbar, hide it until we know we need it.
+        self.layout.remove(self.native_toolbar)
+
+        # Deregister any toolbar buttons from their commands, and remove them
+        # from the toolbar
+        for cmd, item_impl in self.toolbar_items.items():
+            self.native_toolbar.remove(item_impl)
+            cmd._impl.native.remove(item_impl)
+
+        # Remove any toolbar separators
+        for sep in self.toolbar_separators:
+            self.native_toolbar.remove(sep)
+
+        # Create the new toolbar items
+        self.toolbar_items = {}
+        self.toolbar_separators = set()
+        prev_group = None
+        for cmd in self.interface.toolbar:
+            if isinstance(cmd, Separator):
+                item_impl = Gtk.SeparatorToolItem()
+                item_impl.set_draw(False)
+                self.toolbar_separators.add(item_impl)
+                prev_group = None
+            else:
+                # A change in group requires adding a toolbar separator
+                if prev_group is not None and prev_group != cmd.group:
+                    group_sep = Gtk.SeparatorToolItem()
+                    group_sep.set_draw(True)
+                    self.toolbar_separators.add(group_sep)
+                    self.native_toolbar.insert(group_sep, -1)
+                    prev_group = None
+                else:
+                    prev_group = cmd.group
+
+                item_impl = Gtk.ToolButton()
+                if cmd.icon:
+                    item_impl.set_icon_widget(
+                        Gtk.Image.new_from_pixbuf(cmd.icon._impl.native(32))
+                    )
+                item_impl.set_label(cmd.text)
+                if cmd.tooltip:
+                    item_impl.set_tooltip_text(cmd.tooltip)
+                item_impl.connect("clicked", cmd._impl.gtk_clicked)
+                cmd._impl.native.append(item_impl)
+                self.toolbar_items[cmd] = item_impl
+
+            self.native_toolbar.insert(item_impl, -1)
+
+        if self.toolbar_items:
+            # We have toolbar items; add the toolbar to the top of the layout.
+            self.layout.pack_start(
+                self.native_toolbar,
+                expand=False,
+                fill=False,
+                padding=0,
+            )
+            self.native_toolbar.show_all()

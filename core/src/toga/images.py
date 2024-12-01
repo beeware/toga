@@ -4,7 +4,7 @@ import importlib
 import os
 import sys
 import warnings
-from functools import lru_cache
+from functools import cache
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Protocol, TypeVar
 from warnings import warn
@@ -155,7 +155,7 @@ class Image:
             raise TypeError("Unsupported source type for Image")
 
     @classmethod
-    @lru_cache(maxsize=None)
+    @cache
     def _converters(cls) -> list[ImageConverter]:
         """Return list of registered image plugin converters. Only loaded once."""
         converters = []
@@ -209,8 +209,8 @@ class Image:
         """Return the image, converted to the image format specified.
 
         :param format: Format to provide. Defaults to :class:`~toga.images.Image`; also
-             supports :any:`PIL.Image.Image` if Pillow is installed, as well as any image
-             types defined by installed :doc:`image format plugins
+             supports :any:`PIL.Image.Image` if Pillow is installed, as well as any
+             image types defined by installed :doc:`image format plugins
              </reference/plugins/image_formats>`.
         :returns: The image in the requested format
         :raises TypeError: If the format supplied is not recognized.

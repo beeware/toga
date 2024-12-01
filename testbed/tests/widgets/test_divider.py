@@ -4,7 +4,7 @@ import toga
 from toga.constants import Direction
 from toga.style.pack import COLUMN, ROW
 
-from ..conftest import skip_on_platforms
+from .conftest import build_cleanup_test
 from .properties import (  # noqa: F401
     test_background_color,
     test_background_color_reset,
@@ -16,8 +16,10 @@ from .properties import (  # noqa: F401
 
 @pytest.fixture
 async def widget():
-    skip_on_platforms("iOS")
     return toga.Divider()
+
+
+test_cleanup = build_cleanup_test(toga.Divider)
 
 
 async def test_directions(widget, probe):

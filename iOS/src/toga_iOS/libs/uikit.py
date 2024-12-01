@@ -118,6 +118,10 @@ def NSTextAlignment(alignment):
 UIKeyInput = ObjCProtocol("UIKeyInput")
 
 ######################################################################
+# UIActivityIndicatorView.h
+UIActivityIndicatorView = ObjCClass("UIActivityIndicatorView")
+
+######################################################################
 # UIAlertController.h
 UIAlertController = ObjCClass("UIAlertController")
 UIAlertAction = ObjCClass("UIAlertAction")
@@ -293,7 +297,8 @@ UIImage = ObjCClass("UIImage")
 # Camera
 UIImagePickerController = ObjCClass("UIImagePickerController")
 
-# PhotoLibrary and SavedPhotosAlbumn constants also exist, but they're marked as deprecated
+# PhotoLibrary and SavedPhotosAlbumn constants also exist, but they're
+# marked as deprecated
 UIImagePickerControllerSourceTypeCamera = 1
 
 

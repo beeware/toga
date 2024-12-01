@@ -6,6 +6,7 @@ import toga
 from toga.constants import CENTER
 
 from ..data import TEXTS
+from .conftest import build_cleanup_test
 from .properties import (  # noqa: F401
     test_alignment,
     test_background_color,
@@ -49,6 +50,9 @@ def verify_focus_handlers():
 @pytest.fixture(params=["", "placeholder"])
 async def placeholder(request, widget):
     widget.placeholder = request.param
+
+
+test_cleanup = build_cleanup_test(toga.TextInput, xfail_platforms=("android",))
 
 
 async def test_value_not_hidden(widget, probe):

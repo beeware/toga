@@ -31,18 +31,11 @@ class LayoutListener(dynamic_proxy(ViewTreeObserver.OnGlobalLayoutListener)):
 
 
 class Window(Container):
-    _is_main_window = False
-
     def __init__(self, interface, title, position, size):
         super().__init__()
         self.interface = interface
         self.interface._impl = self
         self._initial_title = title
-
-        if not self._is_main_window:
-            raise RuntimeError(
-                "Secondary windows cannot be created on mobile platforms"
-            )
 
     ######################################################################
     # Window properties
@@ -58,15 +51,22 @@ class Window(Container):
     # Window lifecycle
     ######################################################################
 
-    def close(self):
+    def close(self):  # pragma: no cover
+        # An Android app only ever contains a main window, and that window *can't* be
+        # closed, so the platform-specific close handling is never triggered.
         pass
 
-    def create_toolbar(self):
-        self.app.native.invalidateOptionsMenu()
+    def configure_titlebar(self):  # pragma: no cover
+        # Hide the titlebar on a simple window. The testbed can't create a simple
+        # window, so we can't test this.
+        self.app.native.getSupportActionBar().hide()
 
     def set_app(self, app):
+        if len(app.interface.windows) > 1:
+            raise RuntimeError("Secondary windows cannot be created on Android")
+
         self.app = app
-        native_parent = app.native.findViewById(R.id.content)
+        native_parent = self.app.native.findViewById(R.id.content)
         self.init_container(native_parent)
         native_parent.getViewTreeObserver().addOnGlobalLayoutListener(
             LayoutListener(self)
@@ -157,3 +157,14 @@ class Window(Container):
         stream = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.PNG, 0, stream)
         return bytes(stream.toByteArray())
+
+
+class MainWindow(Window):
+    def configure_titlebar(self):
+        # Display the titlebar on a MainWindow.
+        pass
+
+    def create_toolbar(self):
+        # Toolbar items are configured as part of onPrepareOptionsMenu; trigger that
+        # handler.
+        self.app.native.invalidateOptionsMenu()

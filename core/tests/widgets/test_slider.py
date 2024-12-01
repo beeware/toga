@@ -338,8 +338,8 @@ def test_set_value_with_tick_count(
         slider, on_change, approx(value), tick_value=tick_value, change_count=1
     )
 
-    # Resetting the same value should round to the same result, so on_change should not be
-    # called.
+    # Resetting the same value should round to the same result, so on_change should not
+    # be called.
     on_change.reset_mock()
     slider.value = INITIAL_VALUE
     assert_value(

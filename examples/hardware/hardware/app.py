@@ -103,14 +103,18 @@ class ExampleHardwareApp(toga.App):
             else:
                 self.photo.image = image
         except NotImplementedError:
-            await self.main_window.info_dialog(
-                "Oh no!",
-                "The Camera API is not implemented on this platform",
+            await self.main_window.dialog(
+                toga.InfoDialog(
+                    "Oh no!",
+                    "The Camera API is not implemented on this platform",
+                )
             )
         except PermissionError:
-            await self.main_window.info_dialog(
-                "Oh no!",
-                "You have not granted permission to take photos",
+            await self.main_window.dialog(
+                toga.InfoDialog(
+                    "Oh no!",
+                    "You have not granted permission to take photos",
+                )
             )
 
     def location_changed(self, geo, location, altitude, **kwargs):
@@ -131,14 +135,18 @@ class ExampleHardwareApp(toga.App):
             await self.location.current_location()
 
         except NotImplementedError:
-            await self.main_window.info_dialog(
-                "Oh no!",
-                "The Location API is not implemented on this platform",
+            await self.main_window.dialog(
+                toga.InfoDialog(
+                    "Oh no!",
+                    "The Location API is not implemented on this platform",
+                )
             )
         except PermissionError:
-            await self.main_window.info_dialog(
-                "Oh no!",
-                "You have not granted permission to track location",
+            await self.main_window.dialog(
+                toga.InfoDialog(
+                    "Oh no!",
+                    "You have not granted permission to track location",
+                )
             )
 
     async def start_location_updates(self, widget, **kwargs):
@@ -147,14 +155,18 @@ class ExampleHardwareApp(toga.App):
 
             self.location.start_tracking()
         except NotImplementedError:
-            await self.main_window.info_dialog(
-                "Oh no!",
-                "The Location API is not implemented on this platform",
+            await self.main_window.dialog(
+                toga.InfoDialog(
+                    "Oh no!",
+                    "The Location API is not implemented on this platform",
+                )
             )
         except PermissionError:
-            await self.main_window.info_dialog(
-                "Oh no!",
-                "You have not granted permission to track location",
+            await self.main_window.dialog(
+                toga.InfoDialog(
+                    "Oh no!",
+                    "You have not granted permission to track location",
+                )
             )
 
     async def stop_location_updates(self, widget, **kwargs):
@@ -163,40 +175,58 @@ class ExampleHardwareApp(toga.App):
 
             self.location.stop_tracking()
         except NotImplementedError:
-            await self.main_window.info_dialog(
-                "Oh no!",
-                "The Location API is not implemented on this platform",
+            await self.main_window.dialog(
+                toga.InfoDialog(
+                    "Oh no!",
+                    "The Location API is not implemented on this platform",
+                )
             )
         except PermissionError:
-            await self.main_window.info_dialog(
-                "Oh no!",
-                "You have not granted permission to track location",
+            await self.main_window.dialog(
+                toga.InfoDialog(
+                    "Oh no!",
+                    "You have not granted permission to track location",
+                )
             )
 
     async def request_background_location(self, widget, **kwargs):
         try:
             if self.location.has_background_permission:
-                await self.main_window.info_dialog(
-                    "All good!",
-                    "Application has permission to perform background location tracking",
+                await self.main_window.dialog(
+                    toga.InfoDialog(
+                        "All good!",
+                        (
+                            "Application has permission to perform background "
+                            "location tracking"
+                        ),
+                    )
                 )
             else:
                 if not await self.location.request_permission():
-                    await self.main_window.info_dialog(
-                        "Oh no!",
-                        "You have not granted permission for location tracking",
+                    await self.main_window.dialog(
+                        toga.InfoDialog(
+                            "Oh no!",
+                            "You have not granted permission for location tracking",
+                        )
                     )
                     return
 
                 if not await self.location.request_background_permission():
-                    await self.main_window.info_dialog(
-                        "Oh no!",
-                        "You have not granted permission for background location tracking",
+                    await self.main_window.dialog(
+                        toga.InfoDialog(
+                            "Oh no!",
+                            (
+                                "You have not granted permission for background "
+                                "location tracking"
+                            ),
+                        )
                     )
         except NotImplementedError:
-            await self.main_window.info_dialog(
-                "Oh no!",
-                "The Location API is not implemented on this platform",
+            await self.main_window.dialog(
+                toga.InfoDialog(
+                    "Oh no!",
+                    "The Location API is not implemented on this platform",
+                )
             )
 
 

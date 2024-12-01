@@ -127,6 +127,63 @@ def test_add_clear_with_app(app, change_handler):
     assert list(app.commands) == [cmd_a, cmd1b, cmd2, cmd1a, cmd_b]
 
 
+def test_add_missing_command(app):
+    """Missing commands are ignored by addition."""
+    # Make sure the app commands are clear to start with.
+    app.commands.clear()
+
+    # Put some commands (and some missing commands) into the app
+    cmd_a = toga.Command(None, text="App command a")
+    cmd_b = toga.Command(None, text="App command b", order=10)
+    app.commands.add(cmd_a, None, cmd_b, None)
+    # The missing commands are ignored.
+    assert list(app.commands) == [cmd_a, cmd_b]
+
+
+@pytest.mark.parametrize("change_handler", [(None), (Mock())])
+def test_add_by_existing_id(change_handler):
+    """Commands can be added by ID."""
+    change_handler = Mock()
+    cs = CommandSet(on_change=change_handler)
+
+    # Define a command with an ID
+    cmd_a = toga.Command(None, text="App command a", id="custom-command-a")
+
+    # Install a command without an ID
+    cs["custom-command-a"] = cmd_a
+
+    # The command can be retrieved by ID or instance
+    assert "custom-command-a" in cs
+    assert cmd_a in cs
+    assert cs["custom-command-a"] == cmd_a
+    # Change handler was invoked
+    change_handler.assert_called_once_with()
+
+
+@pytest.mark.parametrize("change_handler", [(None), (Mock())])
+def test_add_by_different_id(change_handler):
+    """If a command is added using a different ID, an error is raised."""
+    change_handler = Mock()
+    cs = CommandSet(on_change=change_handler)
+
+    # Define a command with an ID
+    cmd_a = toga.Command(None, text="App command a", id="custom-command-a")
+
+    # Install a command with a different ID:
+    with pytest.raises(
+        ValueError,
+        match=r"Command has id 'custom-command-a'; can't add as 'new-id'",
+    ):
+        cs["new-id"] = cmd_a
+
+    # The command can be retrieved by ID or instance
+    assert "new-id" not in cs
+    assert "custom-command-a" not in cs
+    assert cmd_a not in cs
+    # Change handler was not invoked
+    change_handler.assert_not_called()
+
+
 def test_retrieve_by_id(app):
     """Commands can be retrieved by ID."""
 
@@ -153,24 +210,161 @@ def test_retrieve_by_id(app):
     assert app.commands[toga.Command.ABOUT].text == "About Test App"
 
 
+@pytest.mark.parametrize("change_handler", [(None), (Mock())])
+def test_delitem(change_handler):
+    """A command can be deleted by ID."""
+    cs = CommandSet(on_change=change_handler)
+
+    # Define some commands
+    cmd_a = toga.Command(None, text="App command a", id="custom-command-a")
+    cmd_b = toga.Command(None, text="App command b", id="custom-command-b")
+    cs.add(cmd_a, cmd_b)
+    if change_handler:
+        change_handler.reset_mock()
+
+    # Delete one of the commands
+    del cs["custom-command-a"]
+
+    # The deleted command is no longer in the command set.
+    assert "custom-command-a" not in cs
+    assert cmd_a not in cs
+    # Change handler was invoked
+    if change_handler:
+        change_handler.assert_called_once_with()
+
+
+@pytest.mark.parametrize("change_handler", [(None), (Mock())])
+def test_delitem_missing(change_handler):
+    """If an ID doesn't exist, delitem raises an error."""
+    cs = CommandSet(on_change=change_handler)
+
+    # Define some commands
+    cmd_a = toga.Command(None, text="App command a", id="custom-command-a")
+    cmd_b = toga.Command(None, text="App command b", id="custom-command-b")
+    cs.add(cmd_a, cmd_b)
+    if change_handler:
+        change_handler.reset_mock()
+
+    # Try to delete a command that doesn't exist
+    with pytest.raises(KeyError, match=r"does-not-exist"):
+        del cs["does-not-exist"]
+
+    # The deleted command is no longer in the command set.
+    assert "custom-command-a" in cs
+    assert cmd_a in cs
+    # Change handler was invoked
+    if change_handler:
+        change_handler.assert_not_called()
+
+
+@pytest.mark.parametrize("change_handler", [(None), (Mock())])
+def test_discard(change_handler):
+    """A command can be discarded."""
+    cs = CommandSet(on_change=change_handler)
+
+    # Define some commands
+    cmd_a = toga.Command(None, text="App command a", id="custom-command-a")
+    cmd_b = toga.Command(None, text="App command b", id="custom-command-b")
+    cs.add(cmd_a, cmd_b)
+    if change_handler:
+        change_handler.reset_mock()
+
+    # discard one of the commands
+    cs.discard(cmd_a)
+
+    # The discarded command is no longer in the command set.
+    assert "custom-command-a" not in cs
+    assert cmd_a not in cs
+    # Change handler was invoked
+    if change_handler:
+        change_handler.assert_called_once_with()
+
+
+@pytest.mark.parametrize("change_handler", [(None), (Mock())])
+def test_discard_missing(change_handler):
+    """If a command doesn't exist, discard is an no-op."""
+    cs = CommandSet(on_change=change_handler)
+
+    # Define some commands
+    cmd_a = toga.Command(None, text="App command a", id="custom-command-a")
+    cmd_b = toga.Command(None, text="App command b", id="custom-command-b")
+    cs.add(cmd_a, cmd_b)
+    if change_handler:
+        change_handler.reset_mock()
+
+    # Define a third command that isn't added.
+    cmd_c = toga.Command(None, text="App command c", id="custom-command-c")
+
+    # Try to discard a command that doesn't exist; this is a no-op
+    cs.discard(cmd_c)
+
+    # Change handler was not invoked
+    if change_handler:
+        change_handler.assert_not_called()
+
+
+@pytest.mark.parametrize("change_handler", [(None), (Mock())])
+def test_remove(change_handler):
+    """A command can be removed from a commandset."""
+    cs = CommandSet(on_change=change_handler)
+
+    # Define some commands
+    cmd_a = toga.Command(None, text="App command a", id="custom-command-a")
+    cmd_b = toga.Command(None, text="App command b", id="custom-command-b")
+    cs.add(cmd_a, cmd_b)
+    if change_handler:
+        change_handler.reset_mock()
+
+    # Remove one of the commands
+    cs.remove(cmd_a)
+
+    # The removed command is no longer in the command set.
+    assert "custom-command-a" not in cs
+    assert cmd_a not in cs
+    # Change handler was invoked
+    if change_handler:
+        change_handler.assert_called_once_with()
+
+
+@pytest.mark.parametrize("change_handler", [(None), (Mock())])
+def test_remove_missing(change_handler):
+    """If a command doesn't exist, remove raises an error."""
+    cs = CommandSet(on_change=change_handler)
+
+    # Define some commands
+    cmd_a = toga.Command(None, text="App command a", id="custom-command-a")
+    cmd_b = toga.Command(None, text="App command b", id="custom-command-b")
+    cs.add(cmd_a, cmd_b)
+    if change_handler:
+        change_handler.reset_mock()
+
+    # Define a third command that isn't added.
+    cmd_c = toga.Command(None, text="App command c", id="custom-command-c")
+
+    # Try to remove a command that doesn't exist
+    with pytest.raises(KeyError, match=str(cmd_c)):
+        cs.remove(cmd_c)
+
+    # Change handler was not invoked
+    if change_handler:
+        change_handler.assert_not_called()
+
+
 def test_default_command_ordering(app):
     """The default app commands are in a known order."""
 
     assert [
         (
-            obj.id
+            (obj.group.text, obj.id)
             if isinstance(obj, toga.Command)
-            else f"---{obj.group.text}---" if isinstance(obj, Separator) else "?"
+            else "---" if isinstance(obj, Separator) else "?"
         )
         for obj in app.commands
     ] == [
         # App menu
-        toga.Command.PREFERENCES,
-        "---*---",
-        toga.Command.EXIT,
+        ("*", toga.Command.EXIT),
         # Help menu
-        toga.Command.ABOUT,
-        toga.Command.VISIT_HOMEPAGE,
+        ("Help", toga.Command.ABOUT),
     ]
 
 

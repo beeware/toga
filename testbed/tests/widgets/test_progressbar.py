@@ -2,6 +2,7 @@ import pytest
 
 import toga
 
+from .conftest import build_cleanup_test
 from .properties import (  # noqa: F401
     test_background_color,
     test_background_color_reset,
@@ -20,6 +21,9 @@ else:
 @pytest.fixture
 async def widget():
     return toga.ProgressBar(max=100, value=5)
+
+
+test_cleanup = build_cleanup_test(toga.ProgressBar)
 
 
 async def test_start_stop_determinate(widget, probe):

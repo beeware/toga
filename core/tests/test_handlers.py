@@ -55,8 +55,8 @@ def test_noop_handler_with_cleanup_error(capsys):
 
     # Evidence of the handler cleanup error is in the log.
     assert (
-        "Error in handler cleanup: Problem in cleanup\nTraceback (most recent call last):\n"
-        in capsys.readouterr().err
+        "Error in handler cleanup: Problem in cleanup\n"
+        "Traceback (most recent call last):\n" in capsys.readouterr().err
     )
 
 
@@ -174,8 +174,8 @@ def test_function_handler_with_cleanup_error(capsys):
 
     # Evidence of the handler cleanup error is in the log.
     assert (
-        "Error in handler cleanup: Problem in cleanup\nTraceback (most recent call last):\n"
-        in capsys.readouterr().err
+        "Error in handler cleanup: Problem in cleanup\n"
+        "Traceback (most recent call last):\n" in capsys.readouterr().err
     )
 
 
@@ -242,8 +242,8 @@ def test_generator_handler_error(event_loop, capsys):
 
     # Evidence of the handler cleanup error is in the log.
     assert (
-        "Error in long running handler: Problem in handler\nTraceback (most recent call last):\n"
-        in capsys.readouterr().err
+        "Error in long running handler: Problem in handler\n"
+        "Traceback (most recent call last):\n" in capsys.readouterr().err
     )
 
 
@@ -322,8 +322,8 @@ def test_generator_handler_with_cleanup_error(event_loop, capsys):
 
     # Evidence of the handler cleanup error is in the log.
     assert (
-        "Error in long running handler cleanup: Problem in cleanup\nTraceback (most recent call last):\n"
-        in capsys.readouterr().err
+        "Error in long running handler cleanup: Problem in cleanup\n"
+        "Traceback (most recent call last):\n" in capsys.readouterr().err
     )
 
 
@@ -387,8 +387,8 @@ def test_coroutine_handler_error(event_loop, capsys):
 
     # Evidence of the handler cleanup error is in the log.
     assert (
-        "Error in async handler: Problem in handler\nTraceback (most recent call last):\n"
-        in capsys.readouterr().err
+        "Error in async handler: Problem in handler\n"
+        "Traceback (most recent call last):\n" in capsys.readouterr().err
     )
 
 
@@ -461,8 +461,8 @@ def test_coroutine_handler_with_cleanup_error(event_loop, capsys):
 
     # Evidence of the handler cleanup error is in the log.
     assert (
-        "Error in async handler cleanup: Problem in cleanup\nTraceback (most recent call last):\n"
-        in capsys.readouterr().err
+        "Error in async handler cleanup: Problem in cleanup\n"
+        "Traceback (most recent call last):\n" in capsys.readouterr().err
     )
 
 
@@ -484,7 +484,7 @@ def test_async_result_non_comparable(event_loop):
     result = ExampleAsyncResult(None)
 
     # repr for the result is useful
-    assert repr(result) == "<Async Test result; future=<Future pending>>"
+    assert repr(result).startswith("<Async Test result; future=<Future pending")
 
     # Result cannot be compared.
 
@@ -586,11 +586,12 @@ def test_simple_handler_function():
         handler_call["kwargs"] = kwargs
         return 42
 
-    wrapped = simple_handler(handler)
+    wrapped = simple_handler(handler, "arg1", "arg2", kwarg1=3, kwarg2=4)
 
     # Invoke the handler as if it were a method handler (i.e., with the extra "widget"
     # argument)
-    assert wrapped("obj", "arg1", "arg2", kwarg1=3, kwarg2=4) == 42
+    assert wrapped("obj") == 42
+    assert wrapped._raw == handler
 
     # The "widget" bound argument has been dropped
     assert handler_call == {
@@ -608,16 +609,12 @@ def test_simple_handler_coroutine(event_loop):
         handler_call["kwargs"] = kwargs
         return 42
 
-    wrapped = simple_handler(handler)
+    wrapped = simple_handler(handler, "arg1", "arg2", kwarg1=3, kwarg2=4)
 
     # Invoke the handler as if it were a coroutine method handler (i.e., with the extra
     # "widget" argument)
-    assert (
-        event_loop.run_until_complete(
-            wrapped("obj", "arg1", "arg2", kwarg1=3, kwarg2=4)
-        )
-        == 42
-    )
+    assert event_loop.run_until_complete(wrapped("obj")) == 42
+    assert wrapped._raw == handler
 
     # The "widget" bound argument has been dropped
     assert handler_call == {

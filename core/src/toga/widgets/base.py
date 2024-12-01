@@ -53,10 +53,7 @@ class Widget(Node):
 
     @property
     def id(self) -> str:
-        """The DOM identifier for the widget.
-
-        This id can be used to target CSS directives.
-        """
+        """A unique identifier for the widget."""
         return self._id
 
     @property
@@ -249,7 +246,8 @@ class Widget(Node):
             # window, remove the widget from the widget registry
             self.window.app.widgets._remove(self.id)
         elif self.window is None and window is not None:
-            # If the widget is being assigned to a window for the first time, add it to the widget registry
+            # If the widget is being assigned to a window for the first time, add it to
+            # the widget registry
             window.app.widgets._add(self)
 
         self._window = window
@@ -260,7 +258,8 @@ class Widget(Node):
 
     @property
     def enabled(self) -> bool:
-        """Is the widget currently enabled? i.e., can the user interact with the widget?"""
+        """Is the widget currently enabled? i.e., can the user interact with the
+        widget?"""
         return self._impl.get_enabled()
 
     @enabled.setter

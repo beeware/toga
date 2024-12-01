@@ -1,0 +1,1 @@
+Apps can now interrogate whether they are in dark mode on some platforms.
