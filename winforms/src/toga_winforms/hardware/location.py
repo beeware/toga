@@ -15,6 +15,9 @@ from toga.handlers import AsyncResult
 def toga_location(location: GeoCoordinate):
     """Convert a GeoCoordinate into a Toga LatLng and altitude."""
 
+    if location.IsUnknown:
+        return None
+
     return {
         "location": LatLng(location.Latitude, location.Longitude),
         "altitude": location.Altitude,
@@ -35,7 +38,9 @@ class Location:
     def _position_changed(
         self, sender, event: GeoPositionChangedEventArgs[GeoCoordinate]
     ):
-        self._location.set_result(event.Position.Location)
+        location = toga_location(event.Position.Location)
+        if location:
+            self.interface.on_change(**location)
 
     def has_permission(self):
         return self._has_permission
