@@ -45,7 +45,9 @@ class LocationProbe(HardwareProbe):
         raise RuntimeError(f"Unable to obtain a location ({loco})")
 
     async def simulate_current_location(self, loco):
-        return await loco
+        res = await loco
+        assert res is not None
+        return res
 
     async def simulate_location_update(self):
         pass
