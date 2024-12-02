@@ -27,6 +27,7 @@ def toga_location(location: GeoCoordinate):
 
 class Location:
     def __init__(self, interface):
+        self.interface = interface
         self.watcher = GeoCoordinateWatcher(GeoPositionAccuracy.Default)
         self._handler = EventHandler[GeoPositionChangedEventArgs[GeoCoordinate]](
             self._position_changed
