@@ -43,6 +43,7 @@ class LocationProbe(HardwareProbe):
         m.Position.Location.Altitude = altitude
 
         self._locations.append(m)
+        self.app.location._impl.watcher.Position = m.Position
 
     def reset_locations(self):
         self._cached_location = None
@@ -57,7 +58,6 @@ class LocationProbe(HardwareProbe):
     async def simulate_current_location(self, location):
         await self.redraw("Wait for current location")
         if not self._cached_location:
-            self.app.location._impl.watcher.Position = self._locations[-1]
             # Trigger the callback
             self.app.location._impl._position_changed(None, self._locations[-1])
 
