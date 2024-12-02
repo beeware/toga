@@ -43,9 +43,9 @@ class Widget(Node):
         # Get factory and assign implementation
         self.factory = get_platform_factory()
 
-        #########################
-        # Backwards compatibility
-        #########################
+        ###########################################
+        # Backwards compatibility for Toga <= 0.4.8
+        ###########################################
 
         # Just in case we're working with a third-party widget created before
         # the _create() mechanism was added, which has already defined its
