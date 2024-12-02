@@ -1,6 +1,9 @@
 from unittest.mock import Mock
 
 from pytest import xfail
+from System.Device.Location import (
+    GeoCoordinate,
+)
 
 from toga.types import LatLng
 
@@ -34,7 +37,7 @@ class LocationProbe(HardwareProbe):
         xfail("No support for permissions here")
 
     def add_location(self, location: LatLng, altitude, cached=False):
-        m = Mock()
+        m = Mock(spec=GeoCoordinate)
         m.Position = Mock()
         m.Position.Location = Mock()
         m.Position.Location.IsUnknown = False
