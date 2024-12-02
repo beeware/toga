@@ -10,7 +10,7 @@ from .hardware import HardwareProbe
 class LocationProbe(HardwareProbe):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._locations = []
+        self.reset_locations()
 
     def cleanup(self):
         # Delete the location service instance. This ensures that a freshly mocked
@@ -43,7 +43,7 @@ class LocationProbe(HardwareProbe):
         self._locations.append(m)
 
     def reset_locations(self):
-        # self._cached_location = None
+        self._cached_location = None
         self._locations = []
 
     def allow_background_permission(self):
