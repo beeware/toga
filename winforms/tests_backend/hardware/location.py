@@ -37,6 +37,7 @@ class LocationProbe(HardwareProbe):
         m = Mock()
         m.Position = Mock()
         m.Position.Location = Mock()
+        m.Position.Location.IsUnknown = False
         m.Position.Location.Latitude = location.lat
         m.Position.Location.Longitude = location.lng
         m.Position.Location.Altitude = altitude
