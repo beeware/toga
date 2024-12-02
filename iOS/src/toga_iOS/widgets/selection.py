@@ -83,9 +83,6 @@ class Selection(Widget):
     def set_color(self, color):
         self.native.textColor = native_color(color)
 
-    def set_background_color(self, color):
-        self.set_background_color_simple(color)
-
     def set_font(self, font):
         self.native.font = font._impl.native
 

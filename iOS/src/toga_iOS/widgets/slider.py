@@ -1,6 +1,7 @@
 from rubicon.objc import SEL, CGSize, objc_method, objc_property
 from travertino.size import at_least
 
+from toga.colors import TRANSPARENT
 from toga_iOS.libs import (
     UIControlEventTouchCancel,
     UIControlEventTouchDown,
@@ -48,6 +49,8 @@ class Slider(Widget):
         self.native = TogaSlider.alloc().init()
         self.native.interface = self.interface
         self.native.impl = self
+
+        self._default_background_color = TRANSPARENT
 
         # Dummy values used during initialization.
         self.value = 0

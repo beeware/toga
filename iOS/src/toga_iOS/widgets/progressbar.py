@@ -2,6 +2,7 @@ import asyncio
 
 from travertino.size import at_least
 
+from toga.colors import TRANSPARENT
 from toga_iOS.libs import CGSize, UIProgressView, UIProgressViewStyle
 from toga_iOS.widgets.base import Widget
 
@@ -41,6 +42,8 @@ class ProgressBar(Widget):
         self.native = UIProgressView.alloc().initWithProgressViewStyle_(
             UIProgressViewStyle.Default
         )
+        self._default_background_color = TRANSPARENT
+
         self.add_constraints()
 
         self._running = False

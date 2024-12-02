@@ -68,10 +68,9 @@ class Button(Widget):
             )
 
     def set_background_color(self, color):
-        if color == TRANSPARENT or color is None:
-            self.native.backgroundColor = None
-        else:
-            self.native.backgroundColor = native_color(color)
+        super().set_background_color(
+            self._default_background_color if color in {None, TRANSPARENT} else color
+        )
 
     def set_font(self, font):
         self.native.titleLabel.font = font._impl.native

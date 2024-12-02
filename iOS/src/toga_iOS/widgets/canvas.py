@@ -15,7 +15,7 @@ from rubicon.objc import (
 )
 from travertino.size import at_least
 
-from toga.colors import BLACK, TRANSPARENT, color
+from toga.colors import BLACK, TRANSPARENT, color as named_color
 from toga.constants import Baseline, FillRule
 from toga_iOS.colors import native_color
 from toga_iOS.images import nsdata_to_bytes
@@ -69,6 +69,8 @@ class Canvas(Widget):
         self.native = TogaCanvas.alloc().init()
         self.native.interface = self.interface
         self.native.impl = self
+
+        self._default_background_color = TRANSPARENT
 
         # Add the layout constraints
         self.add_constraints()
@@ -260,7 +262,7 @@ class Canvas(Widget):
     def measure_text(self, text, font):
         # We need at least a fill color to render, but that won't change the size.
         sizes = [
-            self._render_string(line, font, fill_color=color(BLACK)).size()
+            self._render_string(line, font, fill_color=named_color(BLACK)).size()
             for line in text.splitlines()
         ]
         return (
