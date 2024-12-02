@@ -52,6 +52,8 @@ class Location:
         future.set_result(True)
 
     def request_background_permission(self, future: AsyncResult[bool]) -> None:
+        if not self.has_permission():
+            raise PermissionError()
         future.set_result(True)
 
     def current_location(self, result: AsyncResult[dict]) -> None:
