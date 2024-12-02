@@ -9,7 +9,8 @@ from weakref import WeakSet
 
 import pytest
 
-from toga_gtk.libs import Geoclue, Gio
+from toga_gtk.hardware.location import State as LocationState
+from toga_gtk.libs import Geoclue, Gio, GLib
 
 from ..app import AppProbe
 
@@ -18,6 +19,7 @@ class MockGeoclueSimple:
     def __init__(self):
         self._connected_handlers = defaultdict(dict)
         self._handler_locations = defaultdict(WeakSet)
+        self.creation_error = None
         self.location = None
 
     def get_location(self):
@@ -27,6 +29,9 @@ class MockGeoclueSimple:
         callback(None, self)
 
     def new_finish(self, async_result):
+        if self.creation_error is not None:
+            raise self.creation_error
+
         return async_result
 
     def get_client(self): ...
@@ -60,7 +65,7 @@ class MockGeoclueSimple:
             raise ValueError(f"{handler_id} is not a valid testing handler ID")
 
 
-class LocationProbe(AppProbe):
+class BaseLocationProbe(AppProbe):
     supports_background_permission = False
 
     def __init__(self, monkeypatch, app_probe):
@@ -71,21 +76,6 @@ class LocationProbe(AppProbe):
         self.mock_native.get_location = Mock(wraps=self.mock_native.get_location)
 
         monkeypatch.setattr(Geoclue, "Simple", self.mock_native)
-
-        gio_settings_new = Gio.Settings.new
-
-        self.mock_gsettings_location = Mock(
-            wraps=gio_settings_new("org.gnome.system.location")
-        )
-
-        def mock_gio_settings_new(schema_id):
-            if schema_id == "org.gnome.system.location":
-                return self.mock_gsettings_location
-
-            else:
-                return gio_settings_new(Gio.Settings, schema_id)
-
-        monkeypatch.setattr(Gio.Settings, "new", mock_gio_settings_new)
 
         # Start with a permission-rejecting posture
         self.reject_permission()
@@ -108,25 +98,19 @@ class LocationProbe(AppProbe):
 
     def grant_permission(self):
         self.allow_permission()
-        self.app.location._impl.permission_result = True
         # grant must set up a realistic "already checked and granted" scenario
         # which for Geoclue necessitates starting Geoclue
         # In the real Geoclue.Simple, the start process is asynchronous
         # but ``MockGeoclueSimple.new()`` will be used here, which immediately
         # executes the callback chain, meaning this finishes synchronously in test
         self.app.location._impl._start()
+        self.app.location._impl.props.state = LocationState.READY
 
     def grant_background_permission(self):
         self.grant_permission()
 
-    def allow_permission(self):
-        self.mock_gsettings_location.get_boolean.return_value = True
-
     def allow_background_permission(self):
         self.allow_permission()
-
-    def reject_permission(self):
-        self.mock_gsettings_location.get_boolean.return_value = False
 
     def add_location(self, location, altitude, cached=False):
         # Geoclue only deals with a single location, so the
@@ -158,3 +142,51 @@ class LocationProbe(AppProbe):
         await self.redraw("Wait for location error")
 
         pytest.xfail("Geoclue will not notify if location detection fails.")
+
+
+class UnsandboxedLocationProbe(BaseLocationProbe):
+    def __init__(self, monkeypatch, app_probe):
+        gio_settings_new = Gio.Settings.new
+
+        self.mock_gsettings_location = Mock(
+            wraps=gio_settings_new("org.gnome.system.location")
+        )
+
+        def mock_gio_settings_new(schema_id):
+            if schema_id == "org.gnome.system.location":
+                return self.mock_gsettings_location
+
+            else:
+                return gio_settings_new(Gio.Settings, schema_id)
+
+        monkeypatch.setattr(Gio.Settings, "new", mock_gio_settings_new)
+
+        # The above needs to be complete before super() as base class init calls to
+        # ``reject_permission``, which depends on the setup above for the mock GSettings
+        super().__init__(monkeypatch, app_probe)
+
+    def allow_permission(self):
+        self.mock_gsettings_location.get_boolean.return_value = True
+
+    def reject_permission(self):
+        self.mock_gsettings_location.get_boolean.return_value = False
+
+
+class SandboxedLocationProbe(BaseLocationProbe):
+    def __init__(self, monkeypatch, app_probe):
+        super().__init__(monkeypatch, app_probe)
+
+        monkeypatch.setattr(
+            type(self.app.location._impl), "is_sandboxed", lambda _: True
+        )
+
+    def allow_permission(self):
+        self.mock_native.creation_error = None
+
+    def reject_permission(self):
+        self.mock_native.creation_error = GLib.Error.new_literal(
+            GLib.quark_from_string("g-io-error-quark"), "Start failed", 0
+        )
+
+
+PROBES = BaseLocationProbe.__subclasses__()

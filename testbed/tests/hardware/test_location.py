@@ -5,14 +5,13 @@ import pytest
 import toga
 from toga import LatLng
 
-from ..conftest import skip_on_platforms
-from .probe import get_probe
+from .probe import list_probes
 
 
-@pytest.fixture
-async def location_probe(monkeypatch, app_probe):
-    skip_on_platforms("windows")
-    probe = get_probe(monkeypatch, app_probe, "Location")
+@pytest.fixture(params=list_probes("location", skip_platforms=("windows",)))
+async def location_probe(monkeypatch, app_probe, request):
+    probe_cls = request.param
+    probe = probe_cls(monkeypatch, app_probe)
     yield probe
     probe.cleanup()
 

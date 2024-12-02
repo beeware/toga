@@ -36,6 +36,18 @@ class State(IntEnum):
     DENIED = auto()
     """Permission to read the location was denied."""
 
+    @classmethod
+    def is_available(cls, state):
+        return State.READY <= state <= State.MONITORING
+
+    @classmethod
+    def is_errored(cls, state):
+        return State.FAILED <= state <= State.DENIED
+
+    @classmethod
+    def is_uninitialised(cls, state):
+        return State.INITIAL <= state <= State.STARTING
+
 
 class Location(GObject.Object):
     #: State of Geoclue location service initialisation and communication
@@ -108,7 +120,12 @@ class Location(GObject.Object):
                 if not self.native.get_client().props.active:
                     # If the client explicitly becomes inactive, this indicates
                     # a failure to retrieve the location
+                    # e.g., when the geoclue service is stopped on the host
+                    # Whether that indicates a generic failure or a strict "denial"
                     self.props.state = State.DENIED
+                    self._stop_tracking()
+                else:
+                    self.props.state = State.READY
 
             self.notify_active_listener = client.connect(
                 "notify::active", notify_client_active
@@ -117,50 +134,52 @@ class Location(GObject.Object):
     @property
     def can_get_location(self):
         """Whether ``Geoclue.Simple`` is ready to provide a location."""
-        return self.props.state in (State.READY, State.MONITORING)
+        return State.is_available(self.props.state)
 
-    @property
     def is_sandboxed(self):
         return self.interface.app._impl.is_sandboxed
 
     def has_permission(self):
-        return bool(self.permission_result)
+        # INITIAL and STARTING are unknown permission states,
+        # so return False, as permission should be requested
+        # FAILED and DENIED are known failures, so return False
+        return State.is_available(self.props.state)
 
     def request_permission(self, result):
-        if self.permission_result is not None:
-            result.set_result(self.permission_result)
+        if State.is_errored(self.props.state):
+            result.set_result(False)
             return
 
-        if self.can_get_location:
-            result.set_result(True)
-            self.permission_result = True
-
-        elif self.props.state < State.READY:
+        if State.is_uninitialised(self.props.state):
             if self.gsettings_disallow_location():
                 self.props.state = State.DENIED
                 result.set_result(False)
-                self.permission_result = False
                 return
 
             def wait_for_client(*args):
                 if self.props.state < State.READY:
                     return
 
-                self.permission_result = self.can_get_location
-                result.set_result(self.can_get_location)
+                result.set_result(
+                    self.props.state
+                    not in {
+                        State.FAILED,
+                        State.DENIED,
+                    }
+                )
                 self.disconnect(listener_handle)
 
             listener_handle = self.connect("notify::state", wait_for_client)
 
             if self.props.state == State.INITIAL:
                 self._start()
+
         else:
-            result.set_result(False)
-            self.permission_result = False
+            result.set_result(self.can_get_location)
 
     @property
     def gsettings_location(self):
-        if self.is_sandboxed:
+        if self.is_sandboxed():
             # Sandboxed applications can read the org.gnome.system.location settings
             # but they will always be the default values
             # Therefore, ignore gsettings for sandboxed applications and instead rely
@@ -239,7 +258,9 @@ class Location(GObject.Object):
             permission checking
         - STARTING: not possible because permission check only finishes when Geoclue is
             ready or has reached a failure state
-        - FAILED, DENIED: these are failure states; maybe an exception should be raised
+        - FAILED, DENIED: these are failure states; maybe an exception should be raised.
+            Should not be possible because the upstream Location interface
+            enforces a permission check, which will fail if
         """
         if self.props.state == State.READY:
             self.notify_location_handle = self.native.connect(
@@ -249,13 +270,21 @@ class Location(GObject.Object):
             # Manually notify when connecting in order to propagate the initial location
             self.native.notify("location")
 
+    def _stop_tracking(self) -> bool:
+        """If monitoring, stop tracking.
+
+        :return bool: Whether tracking was stopped"""
+        if self.notify_location_handle is not None:
+            self.native.disconnect(self.notify_location_handle)
+            return True
+        return False
+
     def stop_tracking(self):
         """Stop tracking Geoclue location updates.
 
         If not currently tracking, this method is a noop.
         """
-        if self.notify_location_handle is not None:
-            self.native.disconnect(self.notify_location_handle)
+        if self._stop_tracking():
             self.props.state = State.READY
 
     def current_location(self, location):

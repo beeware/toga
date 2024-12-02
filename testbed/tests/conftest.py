@@ -19,10 +19,13 @@ register_assert_rewrite("tests_backend")
 
 # Use this for widgets or tests which are not supported on some platforms,
 # but could be supported in the future.
-def skip_on_platforms(*platforms, reason=None):
+def skip_on_platforms(*platforms, reason=None, allow_module_level=False):
     current_platform = toga.platform.current_platform
     if current_platform in platforms:
-        skip(reason or f"not yet implemented on {current_platform}")
+        skip(
+            reason or f"not yet implemented on {current_platform}",
+            allow_module_level=allow_module_level,
+        )
 
 
 # Use this for widgets or tests which are not supported on some platforms,
@@ -35,14 +38,15 @@ def xfail_on_platforms(*platforms, reason=None):
 
 # Use this for widgets or tests which trip up macOS privacy controls, and requires
 # properties or entitlements defined in Info.plist
-def skip_if_unbundled_app(reason=None):
+def skip_if_unbundled_app(reason=None, allow_module_level=False):
     if not toga.App.app.is_bundled:
         skip(
             reason
             or (
                 "test requires a full application, "
                 "use 'briefcase run' instead of 'briefcase dev'"
-            )
+            ),
+            allow_module_level=allow_module_level,
         )
 
 

@@ -1,6 +1,18 @@
 from importlib import import_module
 
+from ..conftest import skip_if_unbundled_app, skip_on_platforms
 
-def get_probe(monkeypatch, app_probe, name):
-    module = import_module(f"tests_backend.hardware.{name.lower()}")
-    return getattr(module, f"{name}Probe")(monkeypatch, app_probe)
+
+def list_probes(hardware, skip_platforms=(), skip_unbundled=False):
+    """Retrieve the probe classes for the hardware."""
+    skip_on_platforms(*skip_platforms)
+    if skip_unbundled:
+        skip_if_unbundled_app()
+
+    module = import_module(f"tests_backend.hardware.{hardware.lower()}")
+
+    explicit_probes = getattr(module, "PROBES", None)
+    if explicit_probes:
+        return explicit_probes
+
+    return [getattr(module, f"{hardware.title()}Probe")]
