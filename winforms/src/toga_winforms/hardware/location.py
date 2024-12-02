@@ -21,7 +21,6 @@ def toga_location(location: GeoCoordinate):
     return {
         "location": LatLng(location.Latitude, location.Longitude),
         "altitude": location.Altitude,
-        "speed": location.Speed,
     }
 
 
