@@ -148,11 +148,11 @@ class App:
         self.interface.factory.not_implemented("App.set_current_window()")
 
     ######################################################################
-    # Full screen control
+    # Presentation mode controls
     ######################################################################
 
-    def enter_full_screen(self, windows):
-        self.interface.factory.not_implemented("App.enter_full_screen()")
+    def enter_presentation_mode(self, screen_window_dict):
+        self.interface.factory.not_implemented("App.enter_presentation_mode()")
 
-    def exit_full_screen(self, windows):
-        self.interface.factory.not_implemented("App.exit_full_screen()")
+    def exit_presentation_mode(self):
+        self.interface.factory.not_implemented("App.exit_presentation_mode()")
