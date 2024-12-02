@@ -69,4 +69,4 @@ class LocationProbe(HardwareProbe):
         return await location
 
     async def simulate_location_update(self):
-        pass
+        self.app.location._impl._position_changed(None, self._locations[-1])
