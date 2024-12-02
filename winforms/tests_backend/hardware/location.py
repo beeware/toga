@@ -8,6 +8,10 @@ from .hardware import HardwareProbe
 
 
 class LocationProbe(HardwareProbe):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._locations = []
+
     def cleanup(self):
         # Delete the location service instance. This ensures that a freshly mocked
         # LocationManager is installed for each test.
@@ -36,7 +40,11 @@ class LocationProbe(HardwareProbe):
         m.Position.Location.Longitude = location.lng
         m.Position.Location.Altitude = altitude
 
-        self.app.location._impl._position_changed(None, m)
+        self._locations.append(m)
+
+    def reset_locations(self):
+        # self._cached_location = None
+        self._locations = []
 
     def allow_background_permission(self):
         pass
@@ -44,10 +52,15 @@ class LocationProbe(HardwareProbe):
     async def simulate_location_error(self, loco):
         raise RuntimeError(f"Unable to obtain a location ({loco})")
 
-    async def simulate_current_location(self, loco):
-        res = await loco
-        assert res is not None
-        return res
+    async def simulate_current_location(self, location):
+        await self.redraw("Wait for current location")
+        if not self._cached_location:
+            # Trigger the callback
+            self.app.location._impl._position_changed(None, self._locations[-1])
+
+        self.reset_locations()
+
+        return await location
 
     async def simulate_location_update(self):
         pass
