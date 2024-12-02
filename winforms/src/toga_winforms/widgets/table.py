@@ -9,7 +9,6 @@ from .base import Widget
 
 
 class Table(Widget):
-    _background_supports_alpha = False
 
     # The following methods are overridden in DetailedList.
     @property

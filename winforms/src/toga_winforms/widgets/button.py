@@ -3,12 +3,13 @@ from decimal import ROUND_UP
 import System.Windows.Forms as WinForms
 from travertino.size import at_least
 
+from toga.colors import TRANSPARENT
+
 from ..libs.wrapper import WeakrefCallable
 from .base import Widget
 
 
 class Button(Widget):
-    _background_supports_alpha = False
 
     def create(self):
         self.native = WinForms.Button()
@@ -43,6 +44,11 @@ class Button(Widget):
             self.native.Image = icon._impl.native.ToBitmap()
         else:
             self.native.Image = None
+
+    def set_background_color(self, color):
+        super().set_background_color(
+            self._default_background_color if color in {None, TRANSPARENT} else color
+        )
 
     def rehint(self):
         self.interface.intrinsic.width = self.scale_out(
