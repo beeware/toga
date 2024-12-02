@@ -33,7 +33,13 @@ class WindowProbe(BaseProbe, DialogsMixin):
         super().__init__(window._impl.native)
         assert isinstance(self.native, Form)
 
-    async def wait_for_window(self, message, minimize=False, full_screen=False):
+    async def wait_for_window(
+        self,
+        message,
+        minimize=False,
+        full_screen=False,
+        state_switch_not_from_normal=False,
+    ):
         await self.redraw(message)
 
     def close(self):
@@ -52,13 +58,6 @@ class WindowProbe(BaseProbe, DialogsMixin):
         return Size(
             self.native.ClientSize.Width / self.scale_factor,
             self.native.ClientSize.Height / self.scale_factor,
-        )
-
-    @property
-    def is_full_screen(self):
-        return (
-            self.native.FormBorderStyle == getattr(FormBorderStyle, "None")
-            and self.native.WindowState == FormWindowState.Maximized
         )
 
     @property
@@ -87,6 +86,10 @@ class WindowProbe(BaseProbe, DialogsMixin):
         ]
         assert len(panels) == 1
         return BaseProbe(panels[0])
+
+    @property
+    def instantaneous_state(self):
+        return self.impl.get_window_state(in_progress_state=False)
 
     @property
     def menubar_probe(self):

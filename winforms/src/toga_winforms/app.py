@@ -264,15 +264,3 @@ class App:
 
     def set_current_window(self, window):
         window._impl.native.Activate()
-
-    ######################################################################
-    # Full screen control
-    ######################################################################
-
-    def enter_full_screen(self, windows):
-        for window in windows:
-            window._impl.set_full_screen(True)
-
-    def exit_full_screen(self, windows):
-        for window in windows:
-            window._impl.set_full_screen(False)
