@@ -10,6 +10,7 @@ from .hardware import HardwareProbe
 class LocationProbe(HardwareProbe):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.app.location._impl.watcher = Mock()
         self.reset_locations()
 
     def cleanup(self):
@@ -55,6 +56,7 @@ class LocationProbe(HardwareProbe):
     async def simulate_current_location(self, location):
         await self.redraw("Wait for current location")
         if not self._cached_location:
+            self.app.location._impl.watcher.Position = self._locations[-1]
             # Trigger the callback
             self.app.location._impl._position_changed(None, self._locations[-1])
 
