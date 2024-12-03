@@ -38,6 +38,9 @@ async def test_grant_permission(app, location_probe):
 
 async def test_deny_permission(app, location_probe):
     """A user can deny permission to use location."""
+
+    skip_on_platforms("windows")
+
     # Initiate the permission request. As permissions are not primed,
     # they will be denied.
     assert not await app.location.request_permission()
@@ -90,6 +93,9 @@ async def test_grant_background_permission(app, location_probe):
 
 async def test_deny_background_permission(app, location_probe):
     """A user can deny background permission to use location."""
+
+    skip_on_platforms("windows")
+
     # Foreground permissions haven't been approved, so requesting background permissions
     # will raise an error.
     with pytest.raises(
