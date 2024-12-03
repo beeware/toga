@@ -139,11 +139,15 @@ if __name__ == "__main__":
                 "win32": "toga_winforms",
             }.get(sys.platform)
 
+    if "CI" in os.environ:
+        data_file = "D:\\a\\toga\\toga\\testbed\\logs\\coverage"
+    else:
+        data_file = None
+
     # Start coverage tracking.
     # This needs to happen in the main thread, before the app has been created
     cov = coverage.Coverage(
-        # Don't store any coverage data
-        data_file=None,
+        data_file=data_file,
         branch=True,
         source_pkgs=[toga_backend],
     )
