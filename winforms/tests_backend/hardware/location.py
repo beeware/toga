@@ -3,6 +3,7 @@ from unittest.mock import Mock
 from pytest import xfail
 from System.Device.Location import (
     GeoCoordinate,
+    GeoCoordinateWatcher,
     GeoPositionPermission,
 )
 
@@ -14,7 +15,7 @@ from .hardware import HardwareProbe
 class LocationProbe(HardwareProbe):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.app.location._impl.watcher = Mock()
+        self.app.location._impl.watcher = Mock(spec=GeoCoordinateWatcher)
         self.reset_locations()
 
     def cleanup(self):
