@@ -136,16 +136,6 @@ class App(LoggedObject):
         self._action("set_current_window", window=window)
         self._set_value("current_window", window._impl)
 
-    ######################################################################
-    # Full screen control
-    ######################################################################
-
-    def enter_full_screen(self, windows):
-        self._action("enter_full_screen", windows=windows)
-
-    def exit_full_screen(self, windows):
-        self._action("exit_full_screen", windows=windows)
-
 
 class DocumentApp(App):
     def create(self):
