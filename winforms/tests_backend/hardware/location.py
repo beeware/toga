@@ -3,6 +3,7 @@ from unittest.mock import Mock
 from pytest import xfail
 from System.Device.Location import (
     GeoCoordinate,
+    GeoPositionPermission,
 )
 
 from toga.types import LatLng
@@ -28,13 +29,13 @@ class LocationProbe(HardwareProbe):
         pass
 
     def allow_permission(self):
-        pass
+        self.watcher.Permission = GeoPositionPermission.Granted
 
     def grant_permission(self):
-        self.app.location._impl._has_permission = True
+        self.watcher.Permission = GeoPositionPermission.Granted
 
     def reject_permission(self):
-        xfail("No support for permissions here")
+        self.watcher.Permission = GeoPositionPermission.Denied
 
     def add_location(self, location: LatLng, altitude, cached=False):
         m = Mock(spec=GeoCoordinate)
