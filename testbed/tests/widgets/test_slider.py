@@ -9,6 +9,8 @@ import toga
 from ..assertions import assert_set_get
 from .conftest import build_cleanup_test
 from .properties import (  # noqa: F401
+    test_background_color,
+    test_background_color_reset,
     test_enabled,
     test_flex_horizontal_widget_size,
 )
