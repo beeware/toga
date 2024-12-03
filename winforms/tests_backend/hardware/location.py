@@ -56,7 +56,9 @@ class LocationProbe(HardwareProbe):
         pass
 
     async def simulate_location_error(self, loco):
-        raise RuntimeError(f"Unable to obtain a location ({loco})")
+        await self.redraw("Wait for location error")
+
+        xfail("Winforms's location service doesn't raise errors on failure")
 
     async def simulate_current_location(self, location):
         await self.redraw("Wait for current location")
