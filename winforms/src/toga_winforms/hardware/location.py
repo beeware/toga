@@ -6,6 +6,7 @@ from System.Device.Location import (
     GeoCoordinateWatcher,
     GeoPositionAccuracy,
     GeoPositionChangedEventArgs,
+    GeoPositionPermission,
 )
 
 from toga import LatLng
@@ -31,7 +32,6 @@ class Location:
         self._handler = EventHandler[GeoPositionChangedEventArgs[GeoCoordinate]](
             self._position_changed
         )
-        self._has_permission = False
         self._has_background_permission = False
 
     def _position_changed(
@@ -42,7 +42,7 @@ class Location:
             self.interface.on_change(**location)
 
     def has_permission(self):
-        return self._has_permission
+        return self.watcher.Permission == GeoPositionPermission.Granted
 
     def has_background_permission(self):
         return self._has_background_permission
@@ -50,7 +50,6 @@ class Location:
     def request_permission(self, future: AsyncResult[bool]) -> None:
         self.watcher.Start(False)
         future.set_result(True)
-        self._has_permission = True
 
     def request_background_permission(self, future: AsyncResult[bool]) -> None:
         if not self.has_permission():
