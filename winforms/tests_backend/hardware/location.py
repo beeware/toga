@@ -49,7 +49,6 @@ class LocationProbe(HardwareProbe):
         self.app.location._impl.watcher.Position = m.Position
 
     def reset_locations(self):
-        self._cached_location = None
         self._locations = []
 
     def allow_background_permission(self):
