@@ -3,11 +3,11 @@ from math import ceil
 from rubicon.objc import CGRect, NSInteger, NSMakeRect, objc_method, send_super
 from travertino.size import at_least
 
-from toga.colors import TRANSPARENT
 from toga_iOS.colors import native_color
 from toga_iOS.libs import (
     NSLineBreakByClipping,
     NSTextAlignment,
+    UIColor,
     UILabel,
 )
 from toga_iOS.widgets.base import Widget
@@ -38,7 +38,7 @@ class Label(Widget):
         # We shouldn't ever word wrap; if faced with that option, clip.
         self.native.lineBreakMode = NSLineBreakByClipping
 
-        self._default_background_color = TRANSPARENT
+        self._default_background_color = UIColor.clearColor
 
         # Add the layout constraints
         self.add_constraints()

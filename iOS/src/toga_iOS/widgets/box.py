@@ -1,8 +1,7 @@
 from rubicon.objc import objc_property
 from travertino.size import at_least
 
-from toga.colors import TRANSPARENT
-from toga_iOS.libs import UIView
+from toga_iOS.libs import UIColor, UIView
 from toga_iOS.widgets.base import Widget
 
 
@@ -20,8 +19,7 @@ class Box(Widget):
         self.native.interface = self.interface
         self.native.impl = self
 
-        self._default_background_color = TRANSPARENT
-
+        self._default_background_color = UIColor.clearColor
         # Add the layout constraints
         self.add_constraints()
 

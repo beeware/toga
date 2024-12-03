@@ -38,6 +38,7 @@ class Button(Widget):
 
         self._icon = None
 
+        self._default_background_color = None
         # Add the layout constraints
         self.add_constraints()
 
@@ -69,7 +70,8 @@ class Button(Widget):
 
     def set_background_color(self, color):
         super().set_background_color(
-            self._default_background_color if color in {None, TRANSPARENT} else color
+            (None if color in {None, TRANSPARENT} else native_color(color)),
+            is_native_color=True,
         )
 
     def set_font(self, font):
