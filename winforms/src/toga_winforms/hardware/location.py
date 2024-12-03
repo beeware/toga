@@ -34,6 +34,7 @@ class Location:
 
         self.watcher.Start()
         self._has_permission = False
+        self._has_background_permission = False
 
     def _position_changed(
         self, sender, event: GeoPositionChangedEventArgs[GeoCoordinate]
@@ -46,7 +47,7 @@ class Location:
         return self._has_permission
 
     def has_background_permission(self):
-        return self._has_permission
+        return self._has_background_permission
 
     def request_permission(self, future: AsyncResult[bool]) -> None:
         future.set_result(True)
@@ -56,6 +57,7 @@ class Location:
         if not self.has_permission():
             raise PermissionError()
         future.set_result(True)
+        self._has_background_permission = True
 
     def current_location(self, result: AsyncResult[dict]) -> None:
         result.set_result(toga_location(self.watcher.Position.Location)["location"])
