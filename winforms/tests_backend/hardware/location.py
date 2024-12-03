@@ -60,9 +60,6 @@ class LocationProbe(HardwareProbe):
 
     async def simulate_current_location(self, location):
         await self.redraw("Wait for current location")
-        if not self._cached_location:
-            # Trigger the callback
-            self.app.location._impl._position_changed(None, self._locations[-1])
 
         self.reset_locations()
 
