@@ -25,9 +25,6 @@ class LocationProbe(HardwareProbe):
         except AttributeError:
             pass
 
-    def allow_permissions(self):
-        pass
-
     def allow_permission(self):
         self.watcher.Permission = GeoPositionPermission.Granted
 
