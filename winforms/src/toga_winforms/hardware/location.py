@@ -48,7 +48,7 @@ class Location:
         return self._has_background_permission
 
     def request_permission(self, future: AsyncResult[bool]) -> None:
-        self.watcher.Start(False)
+        self.watcher.Start(False)  # TODO: where can we call stop?
         future.set_result(True)
 
     def request_background_permission(self, future: AsyncResult[bool]) -> None:
