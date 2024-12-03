@@ -31,7 +31,7 @@ class LocationProbe(HardwareProbe):
         pass
 
     def grant_permission(self):
-        self.app.location._has_permission = True
+        self.app.location._impl._has_permission = True
 
     def reject_permission(self):
         xfail("No support for permissions here")
