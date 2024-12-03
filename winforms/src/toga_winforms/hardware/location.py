@@ -57,7 +57,7 @@ class Location:
         future.set_result(True)
 
     def current_location(self, result: AsyncResult[dict]) -> None:
-        result.set_result(toga_location(self.watcher.Position.Location))
+        result.set_result(toga_location(self.watcher.Position.Location)["location"])
 
     def start_tracking(self) -> None:
         self.watcher.add_PositionChanged(self._handler)
