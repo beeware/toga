@@ -52,6 +52,9 @@ class LocationProbe(HardwareProbe):
         self._locations = []
 
     def allow_background_permission(self):
+        """
+        we have access by default with winforms
+        """
         pass
 
     async def simulate_location_error(self, loco):
