@@ -26,13 +26,13 @@ class LocationProbe(HardwareProbe):
             pass
 
     def allow_permission(self):
-        self.watcher.Permission = GeoPositionPermission.Granted
+        self.app.location._impl.watcher.Permission = GeoPositionPermission.Granted
 
     def grant_permission(self):
-        self.watcher.Permission = GeoPositionPermission.Granted
+        self.app.location._impl.watcher.Permission = GeoPositionPermission.Granted
 
     def reject_permission(self):
-        self.watcher.Permission = GeoPositionPermission.Denied
+        self.app.location._impl.watcher.Permission = GeoPositionPermission.Denied
 
     def add_location(self, location: LatLng, altitude, cached=False):
         m = Mock(spec=GeoCoordinate)
