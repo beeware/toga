@@ -51,15 +51,15 @@ class DateInput(Widget):
         """
         super().__init__(id=id, style=style)
 
-        # Create a platform specific implementation of a DateInput
-        self._impl = self.factory.DateInput(interface=self)
-
         self.on_change = None
         self.min = min
         self.max = max
 
         self.value = value
         self.on_change = on_change
+
+    def _create(self) -> Any:
+        return self.factory.DateInput(interface=self)
 
     @property
     def value(self) -> datetime.date:

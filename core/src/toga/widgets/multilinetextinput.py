@@ -39,11 +39,7 @@ class MultilineTextInput(Widget):
         :param on_change: A handler that will be invoked when the value of
             the widget changes.
         """
-
         super().__init__(id=id, style=style)
-
-        # Create a platform specific implementation of a MultilineTextInput
-        self._impl = self.factory.MultilineTextInput(interface=self)
 
         # Set a dummy handler before installing the actual on_change, because we do not
         # want on_change triggered by the initial value being set
@@ -54,6 +50,9 @@ class MultilineTextInput(Widget):
         self.readonly = readonly
         self.placeholder = placeholder
         self.on_change = on_change
+
+    def _create(self) -> Any:
+        return self.factory.MultilineTextInput(interface=self)
 
     @property
     def placeholder(self) -> str:

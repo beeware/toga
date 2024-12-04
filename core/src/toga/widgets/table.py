@@ -78,8 +78,6 @@ class Table(Widget):
             defined.
         :param on_double_click: **DEPRECATED**; use :attr:`on_activate`.
         """
-        super().__init__(id=id, style=style)
-
         ######################################################################
         # 2023-06: Backwards compatibility
         ######################################################################
@@ -119,11 +117,15 @@ class Table(Widget):
         self.on_activate = None
         self._data = None
 
-        self._impl = self.factory.Table(interface=self)
+        super().__init__(id=id, style=style)
+
         self.data = data
 
         self.on_select = on_select
         self.on_activate = on_activate
+
+    def _create(self) -> Any:
+        return self.factory.Table(interface=self)
 
     @property
     def enabled(self) -> Literal[True]:

@@ -32,7 +32,6 @@ class Scalable:
 class Widget(Scalable):
     def __init__(self, interface):
         self.interface = interface
-        self.interface._impl = self
         self.container = None
         self.create()
 

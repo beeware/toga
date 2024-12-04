@@ -69,7 +69,6 @@ class Selection(Widget):
         self._items: SourceT | ListSource
 
         self.on_change = None  # needed for _impl initialization
-        self._impl = self.factory.Selection(interface=self)
 
         self._accessor = accessor
         self.items = items
@@ -78,6 +77,9 @@ class Selection(Widget):
 
         self.on_change = on_change
         self.enabled = enabled
+
+    def _create(self) -> Any:
+        return self.factory.Selection(interface=self)
 
     @property
     def items(self) -> SourceT | ListSource:
