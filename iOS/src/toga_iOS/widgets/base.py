@@ -93,10 +93,9 @@ class Widget:
         if is_native_color:
             self.native.backgroundColor = color
         else:
-            default_background_color = getattr(self, "_default_background_color", None)
-            if default_background_color is None:
-                default_background_color = UIColor.systemBackgroundColor()
-
+            default_background_color = getattr(
+                self, "_default_background_color", UIColor.systemBackgroundColor()
+            )
             self.native.backgroundColor = (
                 default_background_color if color is None else native_color(color)
             )
