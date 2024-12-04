@@ -808,7 +808,11 @@ else:
         # )
         if toga.platform.current_platform == "macOS":
             await app_probe.redraw(f"Secondary window is in {states[-1]}", delay=2)
-
+        else:
+            await second_window_probe.wait_for_window(
+                f"Secondary window is in {states[-1]}",
+                state_switch_not_from_normal=True,
+            )
         # Verify that the backend handled rapid assignments by checking if
         # the window reached the correct final window state.
         assert second_window_probe.instantaneous_state == states[-1]
