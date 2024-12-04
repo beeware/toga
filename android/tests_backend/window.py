@@ -6,13 +6,26 @@ from .probe import BaseProbe
 
 
 class WindowProbe(BaseProbe, DialogsMixin):
+    supports_fullscreen = True
+    supports_presentation = True
+
     def __init__(self, app, window):
         super().__init__(app)
         self.native = self.app._impl.native
         self.window = window
+        self.impl = self.window._impl
 
-    async def wait_for_window(self, message, minimize=False, full_screen=False):
-        await self.redraw(message)
+    async def wait_for_window(
+        self,
+        message,
+        minimize=False,
+        full_screen=False,
+        state_switch_not_from_normal=False,
+    ):
+        await self.redraw(
+            message,
+            delay=(0.5 if (full_screen or state_switch_not_from_normal) else 0.1),
+        )
 
     @property
     def content_size(self):
@@ -33,6 +46,10 @@ class WindowProbe(BaseProbe, DialogsMixin):
 
     def _native_menu(self):
         return self.native.findViewById(appcompat_R.id.action_bar).getMenu()
+
+    @property
+    def instantaneous_state(self):
+        return self.impl.get_window_state(in_progress_state=False)
 
     def _toolbar_items(self):
         result = []
