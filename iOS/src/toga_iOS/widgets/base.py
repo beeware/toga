@@ -89,16 +89,13 @@ class Widget:
         # By default, color can't be changed
         pass
 
-    def set_background_color(self, color, is_native_color=False):
-        if is_native_color:
-            self.native.backgroundColor = color
-        else:
-            default_background_color = getattr(
-                self, "_default_background_color", UIColor.systemBackgroundColor()
-            )
-            self.native.backgroundColor = (
-                default_background_color if color is None else native_color(color)
-            )
+    def set_background_color(self, color):
+        default_background_color = getattr(
+            self, "_default_background_color", UIColor.systemBackgroundColor()
+        )
+        self.native.backgroundColor = (
+            default_background_color if color is None else native_color(color)
+        )
 
     # INTERFACE
     def add_child(self, child):
