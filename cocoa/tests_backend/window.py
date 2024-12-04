@@ -34,7 +34,7 @@ class WindowProbe(BaseProbe, DialogsMixin):
             delay=(
                 1.75
                 if state_switch_not_from_normal
-                else 0.75 if full_screen else 0.5 if minimize else 0.1
+                else 1 if full_screen else 0.5 if minimize else 0.1
             ),
         )
 
