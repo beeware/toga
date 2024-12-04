@@ -779,7 +779,7 @@ else:
         ],
     )
     async def test_window_state_rapid_assignment(
-        app, second_window, second_window_probe, states
+        app, app_probe, second_window, second_window_probe, states
     ):
         """The backends can handle rapid assignment of new window states."""
         # Check that the state to be asserted is supported by the backend.
@@ -803,9 +803,11 @@ else:
             second_window.state = state
 
         # Add delay to ensure windows are visible after the final state animation.
-        await second_window_probe.wait_for_window(
-            f"Secondary window is in {states[-1]}", state_switch_not_from_normal=True
-        )
+        # await second_window_probe.wait_for_window(
+        #     f"Secondary window is in {states[-1]}", state_switch_not_from_normal=True
+        # )
+        if toga.platform.current_platform == "macOS":
+            await app_probe.redraw(f"Secondary window is in {states[-1]}", delay=2)
 
         # Verify that the backend handled rapid assignments by checking if
         # the window reached the correct final window state.
