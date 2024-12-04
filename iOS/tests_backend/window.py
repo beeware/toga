@@ -24,6 +24,7 @@ class WindowProbe(BaseProbe, DialogsMixin):
         minimize=False,
         full_screen=False,
         state_switch_not_from_normal=False,
+        rapid_state_assignment=False,
     ):
         await self.redraw(message)
 
