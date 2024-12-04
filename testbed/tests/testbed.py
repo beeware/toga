@@ -140,7 +140,7 @@ if __name__ == "__main__":
             }.get(sys.platform)
 
     if "CI" in os.environ:
-        data_file = "D:\\a\\toga\\toga\\testbed\\logs\\coverage"
+        data_file = "D:\\a\\toga\\toga\\testbed\\logs\\.coverage"
     else:
         data_file = None
 
