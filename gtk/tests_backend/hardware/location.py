@@ -185,7 +185,8 @@ class SandboxedLocationProbe(LocationProbe):
 
     def setup_location_error(self):
         pytest.xfail(
-            "XDG Location Portal does not provide a means to detect when system location service failed after successful initialisation"
+            "XDG Location Portal does not provide a means to detect when system "
+            "location service failed after successful initialisation"
         )
 
 

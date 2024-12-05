@@ -257,7 +257,7 @@ async def test_location_error(app, location_probe):
     # Set the value that will be returned by the next location request
     location_probe.add_location(LatLng(37, 42), 5)
 
-    # Setup location error, for implementations where the error does not happen asynchronously
+    # Setup location error, for implementations where the error does not happen async
     if hasattr(location_probe, "setup_location_error"):
         location_probe.setup_location_error()
 

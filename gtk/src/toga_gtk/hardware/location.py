@@ -3,7 +3,7 @@ from __future__ import annotations
 from enum import IntEnum, auto
 
 from toga import LatLng
-from toga_gtk.libs import Geoclue, Gio, GLib, GObject, Flatpak
+from toga_gtk.libs import Flatpak, Geoclue, Gio, GLib, GObject
 
 
 def toga_location(location):

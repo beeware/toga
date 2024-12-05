@@ -3,9 +3,11 @@ from importlib import import_module
 from ..conftest import skip_if_unbundled_app, skip_on_platforms
 
 
-def list_probes(hardware: str, skip_platforms: tuple[str] = (), skip_unbundled: bool = False):
+def list_probes(
+    hardware: str, skip_platforms: tuple[str] = (), skip_unbundled: bool = False
+):
     """Retrieve the probe classes for the hardware.
-    
+
     :param hardware: the hardware for which to list the probes,
         matching the module name for (e.g., "location", "camera")
     :param skip_platforms: platforms to skip
