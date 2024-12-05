@@ -1,6 +1,8 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+import abc
+from collections.abc import Iterable
+from typing import TYPE_CHECKING, Protocol
 
 from toga.constants import FlashMode
 from toga.handlers import AsyncResult, PermissionResult
@@ -15,8 +17,27 @@ class PhotoResult(AsyncResult):
     RESULT_TYPE = "photo"
 
 
+class PlatformCameraDevice(abc.ABC):
+    """Interface required for a platform's camera devices."""
+
+    @abc.abstractmethod
+    def id(self) -> str:
+        """Get the unique identifier for the device."""
+        ...
+
+    @abc.abstractmethod
+    def name(self) -> str:
+        """Get a human-readable name for the device."""
+        ...
+
+    @abc.abstractmethod
+    def has_flash(self) -> bool:
+        """Whether the device has flash."""
+        ...
+
+
 class CameraDevice:
-    def __init__(self, impl: Any):
+    def __init__(self, impl: PlatformCameraDevice):
         self._impl = impl
 
     @property
@@ -44,6 +65,54 @@ class CameraDevice:
         return self.name
 
 
+class CameraInterface(Protocol):
+    app: App
+    """The currently running application."""
+
+
+class PlatformCamera(abc.ABC):
+    """Interface required of each platform's ``Camera`` implementation."""
+
+    interface: CameraInterface
+    """Application location interface, containing a change-handler reference."""
+
+    def __init__(self, interface: CameraInterface):
+        self.interface = interface
+
+    @abc.abstractmethod
+    def has_permission(self) -> bool:
+        """Whether the application has permission to use the camera."""
+        ...
+
+    @abc.abstractmethod
+    def request_permission(self, result: PermissionResult) -> None:
+        """Asynchronously request permission to use the camera.
+
+        :param result: a future representing the result of the permission request."""
+        ...
+
+    @abc.abstractmethod
+    def get_devices(self) -> Iterable[PlatformCameraDevice]:
+        """List the available cameras."""
+        ...
+
+    @abc.abstractmethod
+    def take_photo(
+        self, result, *, device: CameraDevice | None, flash: FlashMode
+    ) -> None:
+        """Asynchronously take a photo with the specified device and flash setting.
+
+        If permissions have not been requested, permission should be requested before
+        taking the photo.
+
+        :param result: A future representing the path to the file of the photograph.
+        :param device: A device with which to take the photo. If none is provided, the
+            most appropriate default should be used.
+        :param flash: The flash mode to use when taking the photograph.
+        """
+        ...
+
+
 class Camera:
     def __init__(self, app: App):
         self.factory = get_platform_factory()
@@ -57,7 +126,7 @@ class Camera:
 
     @property
     def has_permission(self) -> bool:
-        """Does the user have permission to use camera devices?
+        """Does the app have permission to use camera devices?
 
         If the platform requires the user to explicitly confirm permission, and
         the user has not yet given permission, this will return ``False``.

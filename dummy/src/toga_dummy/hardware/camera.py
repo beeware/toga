@@ -1,7 +1,9 @@
+from toga.hardware.camera import PlatformCamera, PlatformCameraDevice
+
 from ..utils import LoggedObject
 
 
-class CameraDevice:
+class CameraDevice(PlatformCameraDevice):
     def __init__(self, id, name, has_flash):
         self._id = id
         self._name = name
@@ -17,12 +19,12 @@ class CameraDevice:
         return self._has_flash
 
 
-class Camera(LoggedObject):
+class Camera(LoggedObject, PlatformCamera):
     CAMERA_1 = CameraDevice(id="camera-1", name="Camera 1", has_flash=True)
     CAMERA_2 = CameraDevice(id="camera-2", name="Camera 2", has_flash=False)
 
     def __init__(self, interface):
-        self.interface = interface
+        super().__init__(interface)
 
         # -1: permission *could* be granted, but hasn't been
         # 1: permission has been granted
