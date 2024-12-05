@@ -100,6 +100,7 @@ async def window_cleanup(app, app_probe, main_window, main_window_probe):
         window.close()
         await main_window_probe.wait_for_window(
             "Closing window",
+            minimize=True if window_state == WindowState.MINIMIZED else False,
             full_screen=True if window_state == WindowState.FULLSCREEN else False,
         )
         del window
