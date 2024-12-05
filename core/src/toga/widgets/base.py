@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 from builtins import id as identifier
+from os import environ
+from random import shuffle
 from typing import TYPE_CHECKING, Any, TypeVar
 from warnings import warn
 
@@ -19,9 +21,28 @@ StyleT = TypeVar("StyleT", bound=BaseStyle)
 PackMixin = style_mixin(Pack)
 
 
+# based on colors from https://davidmathlogic.com/colorblind
+debug_background_palette = [
+    "#d0e2ed",  # very light blue
+    "#b8d2e9",  # light blue
+    "#f8ccb0",  # light orange
+    "#f6d3be",  # soft orange
+    "#c7e7b2",  # light green
+    "#f0b2d6",  # light pink
+    "#e5dab0",  # light yellow
+    "#d5c2ea",  # light lavender
+    "#b2e4e5",  # light teal
+    "#e5e4af",  # light cream
+    "#bde2dc",  # soft turquoise
+]
+shuffle(debug_background_palette)
+
+
 class Widget(Node, PackMixin):
     _MIN_WIDTH = 100
     _MIN_HEIGHT = 100
+
+    _debug_color_index = 0
 
     def __init__(
         self,
@@ -38,11 +59,22 @@ class Widget(Node, PackMixin):
             will be applied to the widget.
         :param kwargs: Initial style properties.
         """
-        if style is None:
-            style = Pack(**kwargs)
-        elif kwargs:
-            style = style.copy()
-            style.update(**kwargs)
+        # If the object has _USE_DEBUG_BACKGROUND=True and layout debug mode
+        # is on, change bg color.BufferError
+        if getattr(self, "_USE_DEBUG_BACKGROUND", False):
+            if environ.get("TOGA_DEBUG_LAYOUT") == "1":
+                Widget._debug_color_index += 1
+                if style is None:
+                    style = Pack(**kwargs)
+                elif kwargs:
+                    style = style.copy()
+                    style.update(**kwargs)
+                style.background_color = debug_background_palette[
+                    Widget._debug_color_index % len(debug_background_palette)
+                ]
+        else:
+            self._USE_DEBUG_BACKGROUND = False
+
         super().__init__(style)
 
         self._id = str(id if id else identifier(self))

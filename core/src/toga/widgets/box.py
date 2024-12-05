@@ -24,6 +24,8 @@ class Box(Widget):
         :param children: An optional list of children for to add to the Box.
         :param kwargs: Initial style properties.
         """
+        # enable the debug background functionality
+        self._USE_DEBUG_BACKGROUND = True
         super().__init__(id, style, **kwargs)
 
         # Children need to be added *after* the impl has been created.
