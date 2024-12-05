@@ -52,7 +52,7 @@ class LocationProbe(HardwareProbe):
 
     def allow_background_permission(self):
         """
-        we have access by default with winforms
+        winforms doesn't distinguish between foreground and background access
         """
         pass
 
