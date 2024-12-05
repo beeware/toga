@@ -40,6 +40,8 @@ class ScrollContainer(Widget):
         :param on_scroll: Initial :any:`on_scroll` handler.
         :param content: The content to display in the scroll window.
         """
+        # enable the debug background functionality
+        self._USE_DEBUG_BACKGROUND = True
         super().__init__(id=id, style=style)
 
         self._content: Widget | None = None

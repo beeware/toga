@@ -22,6 +22,8 @@ class Box(Widget):
             will be applied to the widget.
         :param children: An optional list of children for to add to the Box.
         """
+        # enable the debug background functionality
+        self._USE_DEBUG_BACKGROUND = True
         super().__init__(id=id, style=style)
 
         # Children need to be added *after* the impl has been created.
