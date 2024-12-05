@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import abc
 from typing import TYPE_CHECKING, Any, Protocol
 
 import toga
@@ -33,11 +34,85 @@ class OnLocationChangeHandler(Protocol):
         """
 
 
+class LocationInterface(Protocol):
+    app: App
+    """The running application."""
+
+    # Distinct from ``OnLocationChangeHandler`` as this matches the @property
+    # on ``Location``, which is the result of ``OnLocationChangeHandler`` passed
+    # through ``wrapped_handler``, hence missing the ``service`` argument
+    # In other words, ``OnLocationChangeHandler`` is what's used by applications,
+    # whereas ``LocationInterface.on_change`` is what the platform implementations
+    # interact with
+    def on_change(*, location: toga.LatLng, altitude: float | None, **kwargs: Any):
+        """Application location change handler.
+
+        When tracking, this should be called when the location changes."""
+        ...
+
+
+class PlatformLocation(abc.ABC):
+    """Interface required of each platform's ``Location`` implementation."""
+
+    native: Any
+    """The platform's location provider."""
+
+    interface: LocationInterface
+    """Application location interface, containing a change-handler reference."""
+
+    def __init__(self, interface: LocationInterface):
+        self.interface = interface
+
+    @abc.abstractmethod
+    def has_permission(self) -> bool:
+        """Whether the application has permission to read the location."""
+        ...
+
+    @abc.abstractmethod
+    def request_permission(self, result: PermissionResult) -> None:
+        """Asynchronously request permission to retrieve the current location.
+
+        :param result: a future on which to set the result of the permission request."""
+        ...
+
+    @abc.abstractmethod
+    def has_background_permission(self) -> bool:
+        """Whether the application has permission to track the location."""
+        ...
+
+    @abc.abstractmethod
+    def request_background_permission(self, result: PermissionResult) -> None:
+        """Asynchronously request permission to track location changes.
+
+        :param result: a future on which to set the result of the permission request."""
+        ...
+
+    @abc.abstractmethod
+    def start_tracking(self) -> None:
+        """Start tracking the location.
+
+        The implementation should call :ref:`~.PlatformLocation.interface.on_change`
+        each time the location changes.
+        """
+
+    @abc.abstractmethod
+    def stop_tracking(self) -> None:
+        """Stop tracking the location."""
+        ...
+
+    @abc.abstractmethod
+    def current_location(self, result: LocationResult) -> None:
+        """Asynchronously retrieve the current location.
+
+        :param result: a future on which to set the result of the location request."""
+        ...
+
+
 class Location:
     def __init__(self, app: App):
         self.factory = get_platform_factory()
         self._app = app
-        self._impl = self.factory.Location(self)
+        self._impl: PlatformLocation = self.factory.Location(self)
 
         self.on_change = None
 
