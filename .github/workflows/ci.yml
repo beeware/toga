@@ -129,6 +129,7 @@ jobs:
     needs: [ pre-commit, towncrier, package ]
     steps:
       - name: Build MicroPython
+        id: micropython
         run: |
           # The following script also works on macOS, except that due to a bug,
           # threading must be enabled, i.e. THREAD must be omitted from the disabled
@@ -148,6 +149,7 @@ jobs:
           export VARIANT=pyscript
           make submodules
           make -j $(nproc)
+          echo "executable=$(pwd)/build-pyscript/micropython" >> $GITHUB_OUTPUT
 
       - name: Checkout
         uses: actions/checkout@v4.2.2
@@ -173,8 +175,13 @@ jobs:
 
           cd core
           export MICROPYPATH="$site_packages:.frozen"
-          $RUNNER_TEMP/micropython/ports/unix/build-pyscript/micropython \
-              micropython_check.py
+
+          echo "Stable Travertino"
+          ${{ steps.micropython.executable }} micropython_check.py
+
+          echo "Development Travertino"
+          pip install git+https://github.com/beeware/travertino
+          ${{ steps.micropython.executable }} micropython_check.py
 
   core-coverage:
     name: Coverage
