@@ -177,11 +177,11 @@ jobs:
           export MICROPYPATH="$site_packages:.frozen"
 
           echo "Stable Travertino"
-          ${{ steps.micropython.executable }} micropython_check.py
+          ${{ steps.micropython.outputs.executable }} micropython_check.py
 
           echo "Development Travertino"
           pip install git+https://github.com/beeware/travertino
-          ${{ steps.micropython.executable }} micropython_check.py
+          ${{ steps.micropython.outputs.executable }} micropython_check.py
 
   core-coverage:
     name: Coverage
