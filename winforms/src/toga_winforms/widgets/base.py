@@ -46,7 +46,6 @@ class Widget(Scalable, ABC):
 
     def __init__(self, interface):
         self.interface = interface
-        self.interface._impl = self
 
         self._container = None
         self.native = None
@@ -63,8 +62,6 @@ class Widget(Scalable, ABC):
         # Parameter name: index
         #    at System.Windows.Forms.TabControl.GetTabPage(Int32 index)
         self.native.CreateGraphics().Dispose()
-
-        self.interface.style.reapply()
 
     @abstractmethod
     def create(self): ...

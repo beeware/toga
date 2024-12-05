@@ -147,7 +147,6 @@ class NumberInput(Widget):
         self._max: Decimal | None = None
 
         self.on_change = None
-        self._impl = self.factory.NumberInput(interface=self)
 
         self.readonly = readonly
         self.step = step
@@ -156,6 +155,9 @@ class NumberInput(Widget):
         self.value = value
 
         self.on_change = on_change
+
+    def _create(self) -> Any:
+        return self.factory.NumberInput(interface=self)
 
     @property
     def readonly(self) -> bool:

@@ -45,14 +45,14 @@ class ScrollContainer(Widget):
         self._content: Widget | None = None
         self.on_scroll = None
 
-        # Create a platform specific implementation of a Scroll Container
-        self._impl = self.factory.ScrollContainer(interface=self)
-
         # Set all attributes
         self.vertical = vertical
         self.horizontal = horizontal
         self.content = content
         self.on_scroll = on_scroll
+
+    def _create(self) -> Any:
+        return self.factory.ScrollContainer(interface=self)
 
     @Widget.app.setter
     def app(self, app) -> None:
