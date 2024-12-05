@@ -49,7 +49,11 @@ def build(app):
 
 
 def main():
-    return toga.App("Temperature Converter", "org.beeware.toga.tutorial", startup=build)
+    return toga.App(
+        "Temperature Converter",
+        "org.beeware.toga.examples.tutorial",
+        startup=build,
+    )
 
 
 if __name__ == "__main__":
