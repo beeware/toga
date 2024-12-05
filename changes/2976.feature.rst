@@ -1,1 +1,0 @@
-A subset of Toga is now compatible with MicroPython.
