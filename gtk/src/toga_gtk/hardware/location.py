@@ -18,13 +18,17 @@ def toga_location(location):
 
 
 KNOWN_PERMISSION_ERRORS = [
-    (Gio.DBusError, Gio.DBusError.ACCESS_DENIED),
+    (Gio.DBusError.quark(), Gio.DBusError.ACCESS_DENIED),
 ]
 
 if Flatpak is not None:
     KNOWN_PERMISSION_ERRORS.append(
-        (Flatpak.PortalError, Flatpak.PortalError.NOT_ALLOWED),
+        (Flatpak.PortalError.quark(), Flatpak.PortalError.NOT_ALLOWED),
     )
+else:  # pragma: no cover
+    # Non-sandboxed and no Flatpak library installed. That's a valid system
+    # configuration, but there's no meaningful way to test it; it can just be ignored
+    pass
 
 
 def is_permissions_error(error):
@@ -38,8 +42,8 @@ def is_permissions_error(error):
     :returns: whether the error is one of the known permissions errors
     """
     return any(
-        error.matches(error_type, error_code)
-        for error_type, error_code in KNOWN_PERMISSION_ERRORS
+        error.matches(error_domain, error_code)
+        for error_domain, error_code in KNOWN_PERMISSION_ERRORS
     )
 
 
@@ -59,17 +63,16 @@ class State(IntEnum):
     FAILED = auto()
     """``Geoclue`` was unable to retrieve the location due to a generic error."""
 
+    DENIED = auto()
+    """Location access was denied to the application."""
+
     @classmethod
     def is_available(cls, state):
         return State.READY <= state <= State.MONITORING
 
     @classmethod
-    def is_errored(cls, state):
-        return state == State.FAILED
-
-    @classmethod
     def is_uninitialised(cls, state):
-        return State.INITIAL <= state <= State.STARTING
+        return state <= State.STARTING
 
 
 class Location(GObject.Object):
@@ -78,7 +81,9 @@ class Location(GObject.Object):
 
     def __init__(self, interface):
         if Geoclue is None:
-            raise RuntimeError(
+            # CI (where coverage is enforced) must always have Geoclue available
+            # in order to perform the rest of the tests
+            raise RuntimeError(  # pragma: no cover
                 "Unable to import Geoclue. Ensure that the system package "
                 "providing Geoclue and its GTK bindings have been installed. See "
                 "https://toga.readthedocs.io/en/stable/reference/api/hardware/location.html#system-requirements "  # noqa: E501
@@ -120,9 +125,9 @@ class Location(GObject.Object):
             self.native = Geoclue.Simple.new_finish(async_result)
         except GLib.Error as e:
             if is_permissions_error(e):
-                self.permission_result = False
-
-            self.props.state = State.FAILED
+                self.props.state = State.DENIED
+            else:
+                self.props.state = State.FAILED
 
             return
         else:
@@ -140,7 +145,8 @@ class Location(GObject.Object):
                     # e.g., when the geoclue service is stopped on the host
                     self.props.state = State.FAILED
                     self._stop_tracking()
-                else:
+                else:  # pragma: no cover
+                    # Not possible to meaningfully test in a platform agnostic manner
                     self.props.state = State.READY
 
             self.notify_active_listener = client.connect(
@@ -155,23 +161,25 @@ class Location(GObject.Object):
             result.set_result(self.permission_result)
             return
 
-        if State.is_uninitialised(self.props.state):
+        def wait_for_client(*args):
+            if State.is_uninitialised(self.props.state):  # pragma: no cover
+                return
 
-            def wait_for_client(*args):
-                if State.is_uninitialised(self.props.state):  # pragma: no cover
-                    return
+            self.permission_result = State.is_available(self.props.state)
 
-                self.permission_result = State.is_available(self.props.state)
-                result.set_result(self.permission_result)
-                self.disconnect(listener_handle)
+            result.set_result(self.permission_result)
+            self.disconnect(listener_handle)
 
-            listener_handle = self.connect("notify::state", wait_for_client)
+        listener_handle = self.connect("notify::state", wait_for_client)
 
-            if self.props.state == State.INITIAL:
-                self._start()
-
-        else:
-            result.set_result(State.is_available(self.props.state))
+        if self.props.state == State.INITIAL:
+            self._start()
+        else:  # pragma: no cover
+            # This cannot be tested because the test probe runs a sync initialisation
+            # There is no method by which initialisation can be triggered in the test
+            # environment and then permissions requested before initialisation finishes
+            # In other words, there is no situation in test where the status is starting
+            pass
 
     def has_background_permission(self):
         """Check for background permission.
@@ -186,10 +194,13 @@ class Location(GObject.Object):
     def request_background_permission(self, result):
         """Request background permission.
 
-        See documentation on :meth:`~.Location.has_background_permission()`
-        for implementation details.
+        This method should never actually run, because the upstream location
+        API enforces requesting general location permissions first. Once
+        general location permissions are available, background permission
+        will already be available (see :meth:`~.Location.has_background_permission()`),
+        and the upstream location API never has to call this method.
         """
-        self.request_permission(result)
+        raise NotImplementedError("Background permissions are non-existent on Linux")
 
     def location_listener(self, *args):
         self.interface.on_change(**toga_location(self.native.get_location()))

@@ -63,8 +63,16 @@ async def test_deny_permission(app, location_probe):
     assert not app.location.has_background_permission
 
 
-async def test_grant_background_permission(app, location_probe):
+async def test_grant_background_permission(
+    app, location_probe, supports_background_permission
+):
     """A user can grant background permission to use location."""
+    if not supports_background_permission:
+        return pytest.xfail(
+            f"{toga.platform.current_platform} does not support "
+            "background location permission"
+        )
+
     # Prime the permission system to approve permission requests
     location_probe.allow_background_permission()
 
@@ -249,6 +257,16 @@ async def test_track_location_retrack(app, location_probe):
     app.location.start_tracking()
 
 
+async def test_stop_tracking_when_already_stopped(app, location_probe):
+    """If location tracking is stopped when already stopped, it is a noop."""
+    # Ensure location has permissions
+    location_probe.grant_permission()
+
+    # Call stop tracking, never having started it
+    # This should not be an error
+    app.location.stop_tracking()
+
+
 async def test_location_error(app, location_probe):
     """If the location service raises an error, location requests raise an error."""
     # Ensure location has permissions
@@ -267,6 +285,23 @@ async def test_location_error(app, location_probe):
     # Simulate a location update that raises an error
     with pytest.raises(RuntimeError, match=r"Unable to obtain a location \(.*\)"):
         assert await location_probe.simulate_location_error(location)
+
+
+async def test_location_tracking_start_error(app, location_probe):
+    """If location tracking fails to start, location raises an error."""
+    # Ensure location has permissions
+    location_probe.grant_permission()
+
+    # Set the value that will be returned by the next location request
+    location_probe.add_location(LatLng(37, 42), 5)
+
+    # Setup location error, for implementations where the error does not happen async
+    if hasattr(location_probe, "setup_location_error"):
+        location_probe.setup_location_error()
+
+    # Simulate a location update that raises an error
+    with pytest.raises(RuntimeError, match=r"Unable to obtain a location \(.*\)"):
+        app.location.start_tracking()
 
 
 async def test_no_permission(app, location_probe):

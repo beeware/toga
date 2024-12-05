@@ -85,8 +85,11 @@ class LocationProbe(AppProbe):
 
         monkeypatch.setattr(Geoclue, "Simple", self.mock_native)
 
-        # Start with a permission-rejecting posture
-        self.reject_permission()
+        self.mock_native.creation_error = GLib.Error.new_literal(
+            Gio.DBusError.quark(),
+            f"{self.app.app_id} disallowed by configuration for UID 1000",
+            Gio.DBusError.ACCESS_DENIED,
+        )
 
     def _verify_dependencies(self):
         if os.getenv("CI", None) is not None:
@@ -116,6 +119,7 @@ class LocationProbe(AppProbe):
             f"{self.app.app_id} disallowed by configuration for UID 1000",
             Gio.DBusError.ACCESS_DENIED,
         )
+        self.app.location._impl._start()
 
     def grant_permission(self):
         self.allow_permission()
@@ -182,6 +186,7 @@ class SandboxedLocationProbe(LocationProbe):
         self.mock_native.creation_error = GLib.Error.new_literal(
             Gio.io_error_quark(), "Start failed", Gio.IOErrorEnum.FAILED
         )
+        self.app.location._impl._start()
 
     def setup_location_error(self):
         pytest.xfail(
