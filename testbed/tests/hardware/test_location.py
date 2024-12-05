@@ -186,7 +186,7 @@ async def test_current_location(app, location_probe):
 
 
 async def test_track_location(app, location_probe):
-    """If the location service raises an error, location requests raise an error."""
+    """A user can track the current location."""
     # Ensure location has permissions
     location_probe.grant_permission()
 
@@ -237,6 +237,18 @@ async def test_track_location(app, location_probe):
     app.location.stop_tracking()
 
 
+async def test_track_location_retrack(app, location_probe):
+    """If location tracking is requested when already started, it is a noop."""
+    # Ensure location has permissions
+    location_probe.grant_permission()
+
+    # Start location tracking
+    app.location.start_tracking()
+
+    # Call again, should not error
+    app.location.start_tracking()
+
+
 async def test_location_error(app, location_probe):
     """If the location service raises an error, location requests raise an error."""
     # Ensure location has permissions
@@ -244,6 +256,10 @@ async def test_location_error(app, location_probe):
 
     # Set the value that will be returned by the next location request
     location_probe.add_location(LatLng(37, 42), 5)
+
+    # Setup location error, for implementations where the error does not happen asynchronously
+    if hasattr(location_probe, "setup_location_error"):
+        location_probe.setup_location_error()
 
     # Request the current location
     location = app.location.current_location()

@@ -109,9 +109,15 @@ Notes
 * On macOS and GTK, there is no distinction between "background" permissions and "while-running"
   permissions for location tracking.
 
-* There are no permission controls for non-sandboxed GTK applications and location requests
-  are always allowed by the host. Sandboxed applications (e.g., Flatpak apps) request location
-  information via the XDG Portal Location API, which has coarse grained permissions.
+* On Linux, there are no reliable permission controls for non-sandboxed applications.
+  Sandboxed applications (e.g., Flatpak apps) request location information via the XDG
+  Portal Location API, which has coarse grained permissions allowing users to reliably
+  disallow location access on a per-app basis. However, `Linux users should be aware of
+  the limitations of location privacy for non-sandboxed applications
+  <linux-location-privacy_>`_. This applies to all Linux applications, not just ones
+  using Toga GTK's Location implementation.
+
+.. _linux-location-privacy: https://gitlab.freedesktop.org/geoclue/geoclue/-/issues/111
 
 * On iOS, if the user has provided "allow once" permission for foreground location
   tracking, requests for background location permission will be rejected.

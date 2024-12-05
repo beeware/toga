@@ -3,7 +3,7 @@ from __future__ import annotations
 from enum import IntEnum, auto
 
 from toga import LatLng
-from toga_gtk.libs import Geoclue, Gio, GLib, GObject
+from toga_gtk.libs import Geoclue, Gio, GLib, GObject, Flatpak
 
 
 def toga_location(location):
@@ -15,6 +15,32 @@ def toga_location(location):
         "location": latlng,
         "altitude": altitude,
     }
+
+
+KNOWN_PERMISSION_ERRORS = [
+    (Gio.DBusError, Gio.DBusError.ACCESS_DENIED),
+]
+
+if Flatpak is not None:
+    KNOWN_PERMISSION_ERRORS.append(
+        (Flatpak.PortalError, Flatpak.PortalError.NOT_ALLOWED),
+    )
+
+
+def is_permissions_error(error):
+    """Determine if a ``GLib.Error`` is one of the known Geoclue permissions errors.
+
+    In practice, these permissions errors may not occur due to a bug in
+    ``Geoclue.Simple``'s error handling
+    https://gitlab.freedesktop.org/geoclue/geoclue/-/issues/205
+
+    :param error: a GLib.Error instance
+    :returns: whether the error is one of the known permissions errors
+    """
+    return any(
+        error.matches(error_type, error_code)
+        for error_type, error_code in KNOWN_PERMISSION_ERRORS
+    )
 
 
 class State(IntEnum):
@@ -33,16 +59,13 @@ class State(IntEnum):
     FAILED = auto()
     """``Geoclue`` was unable to retrieve the location due to a generic error."""
 
-    DENIED = auto()
-    """Permission to read the location was denied."""
-
     @classmethod
     def is_available(cls, state):
         return State.READY <= state <= State.MONITORING
 
     @classmethod
     def is_errored(cls, state):
-        return State.FAILED <= state <= State.DENIED
+        return state == State.FAILED
 
     @classmethod
     def is_uninitialised(cls, state):
@@ -75,8 +98,6 @@ class Location(GObject.Object):
         #: Handle ID for client active notify listener
         self.notify_active_listener: None | int = None
 
-        #: None if permissions are not requested, otherwise, indicates whether
-        #: permissions are available
         self.permission_result: None | bool = None
 
     def _start(self):
@@ -89,7 +110,7 @@ class Location(GObject.Object):
 
         Geoclue.Simple.new(
             self.interface.app.app_id,
-            self.get_max_accuracy_level(),
+            Geoclue.AccuracyLevel.EXACT,
             None,
             self._new_finish,
         )
@@ -98,14 +119,10 @@ class Location(GObject.Object):
         try:
             self.native = Geoclue.Simple.new_finish(async_result)
         except GLib.Error as e:
-            if e.matches(Gio.DBusError, Gio.DBusError.ACCESS_DENIED):
-                # In practice, this denied error is unlikely/impossible to happen
-                # due to a bug in Geoclue.Simple's error handling
-                # https://gitlab.freedesktop.org/geoclue/geoclue/-/issues/205
-                self.props.state = State.DENIED
-            else:
-                self.props.state = State.FAILED
-                print("Failed to get location", e.message, e.code)
+            if is_permissions_error(e):
+                self.permission_result = False
+
+            self.props.state = State.FAILED
 
             return
         else:
@@ -113,7 +130,7 @@ class Location(GObject.Object):
 
         client = self.native.get_client()
         # Geoclue docs indicate a client proxy is not used in sandboxed environments
-        # https://lazka.github.io/pgi-docs/#Geoclue-2.0/classes/Simple.html#Geoclue.Simple.props.client
+        # https://gitlab.freedesktop.org/geoclue/geoclue/-/blob/master/libgeoclue/gclue-simple.c?ref_type=heads#L978-979
         if client:
 
             def notify_client_active(*args):
@@ -121,8 +138,7 @@ class Location(GObject.Object):
                     # If the client explicitly becomes inactive, this indicates
                     # a failure to retrieve the location
                     # e.g., when the geoclue service is stopped on the host
-                    # Whether that indicates a generic failure or a strict "denial"
-                    self.props.state = State.DENIED
+                    self.props.state = State.FAILED
                     self._stop_tracking()
                 else:
                     self.props.state = State.READY
@@ -131,42 +147,22 @@ class Location(GObject.Object):
                 "notify::active", notify_client_active
             )
 
-    @property
-    def can_get_location(self):
-        """Whether ``Geoclue.Simple`` is ready to provide a location."""
-        return State.is_available(self.props.state)
-
-    def is_sandboxed(self):
-        return self.interface.app._impl.is_sandboxed
-
     def has_permission(self):
-        # INITIAL and STARTING are unknown permission states,
-        # so return False, as permission should be requested
-        # FAILED and DENIED are known failures, so return False
-        return State.is_available(self.props.state)
+        return bool(self.permission_result)
 
     def request_permission(self, result):
-        if State.is_errored(self.props.state):
-            result.set_result(False)
+        if self.permission_result is not None:
+            result.set_result(self.permission_result)
             return
 
         if State.is_uninitialised(self.props.state):
-            if self.gsettings_disallow_location():
-                self.props.state = State.DENIED
-                result.set_result(False)
-                return
 
             def wait_for_client(*args):
-                if self.props.state < State.READY:
+                if State.is_uninitialised(self.props.state):  # pragma: no cover
                     return
 
-                result.set_result(
-                    self.props.state
-                    not in {
-                        State.FAILED,
-                        State.DENIED,
-                    }
-                )
+                self.permission_result = State.is_available(self.props.state)
+                result.set_result(self.permission_result)
                 self.disconnect(listener_handle)
 
             listener_handle = self.connect("notify::state", wait_for_client)
@@ -175,55 +171,7 @@ class Location(GObject.Object):
                 self._start()
 
         else:
-            result.set_result(self.can_get_location)
-
-    @property
-    def gsettings_location(self):
-        if self.is_sandboxed():
-            # Sandboxed applications can read the org.gnome.system.location settings
-            # but they will always be the default values
-            # Therefore, ignore gsettings for sandboxed applications and instead rely
-            # on XDG Portal's location permission handling
-            return None
-
-        if not hasattr(self, "_gsettings_location"):
-            settings_schema_source = Gio.SettingsSchemaSource.get_default()
-            location_setting_schema_id = "org.gnome.system.location"
-            location_setting_available = settings_schema_source.lookup(
-                location_setting_schema_id, recursive=False
-            )
-
-            if location_setting_available:
-                self._gsettings_location = Gio.Settings.new(location_setting_schema_id)
-            else:
-                self._gsettings_location = None
-
-        return self._gsettings_location
-
-    def gsettings_disallow_location(self):
-        return (settings := self.gsettings_location) and not settings.get_boolean(
-            "enabled"
-        )
-
-    def get_max_accuracy_level(self) -> int:
-        # match GSettings' and XDG Portal's default max accuracy levels
-        DEFAULT_MAX_ACCURACY_LEVEL = Geoclue.AccuracyLevel.EXACT
-
-        if settings := self.gsettings_location:
-            # get as a string rather than enum int so we can avoid needing to import
-            # GDesktopEnums and in turn rely on its system dependency
-            gsettings_max_accuracy_level = settings.get_string(
-                "max-accuracy-level"
-            ).upper()
-            return getattr(
-                Geoclue.AccuracyLevel,
-                gsettings_max_accuracy_level,
-                DEFAULT_MAX_ACCURACY_LEVEL,
-            )
-        else:
-            # There's no way to introspect the Portal permissions, so fall back to the
-            # default without further checks
-            return DEFAULT_MAX_ACCURACY_LEVEL
+            result.set_result(State.is_available(self.props.state))
 
     def has_background_permission(self):
         """Check for background permission.
@@ -247,21 +195,7 @@ class Location(GObject.Object):
         self.interface.on_change(**toga_location(self.native.get_location()))
 
     def start_tracking(self):
-        """Start tracking Geoclue location updates.
-
-        If state is anything other than READY, this method is a noop.
-
-        The reason for this, for each other state is:
-        - MONITORING: already monitoring, nothing to do
-        - INITIAL: not possible because the upstream Location interface enforces a
-            permission check, and the permission check starts Geoclue as part of
-            permission checking
-        - STARTING: not possible because permission check only finishes when Geoclue is
-            ready or has reached a failure state
-        - FAILED, DENIED: these are failure states; maybe an exception should be raised.
-            Should not be possible because the upstream Location interface
-            enforces a permission check, which will fail if
-        """
+        """Start tracking Geoclue location updates."""
         if self.props.state == State.READY:
             self.notify_location_handle = self.native.connect(
                 "notify::location", self.location_listener
@@ -269,6 +203,13 @@ class Location(GObject.Object):
             self.props.state = State.MONITORING
             # Manually notify when connecting in order to propagate the initial location
             self.native.notify("location")
+        elif self.props.state == State.MONITORING:
+            # Already monitoring, noop
+            pass
+        else:
+            raise RuntimeError(
+                "Unable to obtain a location (location service is unavailable)"
+            )
 
     def _stop_tracking(self) -> bool:
         """If monitoring, stop tracking.
@@ -288,14 +229,12 @@ class Location(GObject.Object):
             self.props.state = State.READY
 
     def current_location(self, location):
-        """Asynchronously retrieve the current location.
-
-        If state is anything other than READY or MONITORING, this method is a noop.
-
-        See the docstring on :meth:`.Location.start_tracking()` regarding noop cases.
-        All the same cases apply to this method, except for MONITORING, because the
-        current location should be retrieved whenever Geoclue is available, even if the
-        location is also being tracked.
-        """
-        if self.can_get_location:
+        """Asynchronously retrieve the current location."""
+        if State.is_available(self.props.state):
             location.set_result(toga_location(self.native.get_location())["location"])
+        else:
+            location.set_exception(
+                RuntimeError(
+                    "Unable to obtain a location (location service is unavailable)"
+                )
+            )
