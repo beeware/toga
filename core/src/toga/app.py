@@ -10,20 +10,20 @@ from typing import TYPE_CHECKING, Any, Protocol
 
 from toga.command import Command, CommandSet
 from toga.constants import WindowState
+from toga.documents import Document, DocumentSet
 from toga.handlers import simple_handler, wrapped_handler
 from toga.icons import Icon
 from toga.paths import Paths
 from toga.platform import get_platform_factory
+from toga.statusicons import StatusIconSet
 from toga.window import MainWindow, Window, WindowSet
 
 if TYPE_CHECKING:
     from toga.dialogs import Dialog
-    from toga.documents import Document, DocumentSet
     from toga.hardware.camera import Camera
     from toga.hardware.location import Location
     from toga.icons import IconContentT
     from toga.screens import Screen
-    from toga.statusicons import StatusIconSet
     from toga.widgets.base import Widget
 
 # Make sure deprecation warnings are shown by default
@@ -316,7 +316,10 @@ class App:
             self.icon = icon
 
         # Set up the document types and collection of documents being managed.
-        self._document_types = [] if document_types is None else document_types
+        self._documents = DocumentSet(
+            self,
+            types=[] if document_types is None else document_types,
+        )
 
         # Install the lifecycle handlers. If passed in as an argument, or assigned using
         # `app.on_event = my_handler`, the event handler will take the app as the first
@@ -335,6 +338,7 @@ class App:
         # We need the command set to exist so that startup et al. can add commands;
         # but we don't have an impl yet, so we can't set the on_change handler
         self._commands = CommandSet()
+        self._status_icons = StatusIconSet()
 
         self._startup_method = startup
 
@@ -578,22 +582,22 @@ class App:
         ]:
             self.commands.add(Command.standard(self, cmd_id))
 
-        if self._document_types:
-            default_document_type = self._document_types[0]
+        if self.documents.types:
+            default_document_type = self.documents.types[0]
             command = Command.standard(
                 self,
                 Command.NEW,
                 action=simple_handler(self.documents.new, default_document_type),
             )
             if command:
-                if len(self._document_types) == 1:
+                if len(self.documents.types) == 1:
                     # There's only 1 document type. The new command can be used as is.
                     self.commands.add(command)
                 else:
                     # There's more than one document type. Create a new command for each
                     # document type, updating the title of the command to disambiguate,
                     # and modifying the shortcut, order and ID of the document types 2+
-                    for i, document_class in enumerate(self._document_types):
+                    for i, document_class in enumerate(self.documents.types):
                         command = Command.standard(
                             self,
                             Command.NEW,
@@ -628,16 +632,16 @@ class App:
         """
         # Process command line arguments if the backend doesn't handle them
         if not self._impl.HANDLES_COMMAND_LINE:
-            if self._document_types:
+            if self.documents.types:
                 for filename in sys.argv[1:]:
                     self._open_initial_document(filename)
 
         # Ensure there is at least one window
         if self.main_window is None and len(self.windows) == 0:
-            if self._document_types:
+            if self.documents.types:
                 if self._impl.CLOSE_ON_LAST_WINDOW:
                     # Pass in the first document type as the default
-                    self.documents.new(self._document_types[0])
+                    self.documents.new(self.documents.types[0])
                 else:
                     self.loop.run_until_complete(self.documents.request_open())
             else:
@@ -732,14 +736,7 @@ class App:
     @property
     def documents(self) -> DocumentSet:
         """The list of documents associated with this app."""
-        try:
-            return self._documents
-        except AttributeError:
-            # Initialize on first access.
-            from .documents import DocumentSet
-
-            self._documents = DocumentSet(self, self._document_types)
-            return self._documents
+        return self._documents
 
     @property
     def location(self) -> Location:
@@ -773,14 +770,7 @@ class App:
     @property
     def status_icons(self) -> StatusIconSet:
         """The status icons displayed by the app."""
-        try:
-            return self._status_icons
-        except AttributeError:
-            # Initialize on first access.
-            from .statusicons import StatusIconSet
-
-            self._status_icons = StatusIconSet()
-            return self._status_icons
+        return self._status_icons
 
     @property
     def widgets(self) -> WidgetRegistry:
@@ -1064,6 +1054,6 @@ class DocumentApp(App):
         )
         return {
             extension: doc_type
-            for doc_type in self._document_types
+            for doc_type in self.documents.types
             for extension in doc_type.extensions
         }
