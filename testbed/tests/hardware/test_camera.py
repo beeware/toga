@@ -4,15 +4,19 @@ import pytest
 
 from toga.constants import FlashMode
 
-from ..conftest import skip_if_unbundled_app, skip_on_platforms
-from .probe import get_probe
+from .probe import list_probes
 
 
-@pytest.fixture
-async def camera_probe(monkeypatch, app_probe):
-    skip_on_platforms("linux", "windows")
-    skip_if_unbundled_app()
-    probe = get_probe(monkeypatch, app_probe, "Camera")
+@pytest.fixture(
+    params=list_probes(
+        "camera",
+        skip_platforms=("linux", "windows"),
+        skip_unbundled=True,
+    )
+)
+async def camera_probe(monkeypatch, app_probe, request):
+    probe_cls = request.param
+    probe = probe_cls(monkeypatch, app_probe)
     yield probe
     probe.cleanup()
 
