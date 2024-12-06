@@ -124,6 +124,6 @@ class Font:
             else:
                 attributed_font = font
 
-            _FONT_CACHE[self.interface] = attributed_font.retain()
+            _FONT_CACHE[self.interface] = attributed_font
 
         self.native = attributed_font
