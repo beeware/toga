@@ -163,6 +163,9 @@ class LocationProbe(AppProbe):
     def setup_location_error(self):
         self.mock_native.client.props.active = False
 
+    def setup_tracking_error(self):
+        self.mock_native.client.props.active = False
+
     async def simulate_location_error(self, location):
         # No simulation required after setup_location_error, wait for the location
         # future to complete and return the result for the testbed to use
@@ -188,11 +191,17 @@ class SandboxedLocationProbe(LocationProbe):
         )
         self.app.location._impl._start()
 
-    def setup_location_error(self):
+    def _xfail_location_portal_no_post_init_failure(self):
         pytest.xfail(
-            "XDG Location Portal does not provide a means to detect when system "
-            "location service failed after successful initialisation"
+            "XDG Location Portal does not fail after initialisation "
+            "(which occurs during and is required by permissions)"
         )
+
+    def setup_tracking_error(self):
+        self._xfail_location_portal_no_post_init_failure()
+
+    def setup_location_error(self):
+        self._xfail_location_portal_no_post_init_failure()
 
 
 PROBES = (LocationProbe, SandboxedLocationProbe)

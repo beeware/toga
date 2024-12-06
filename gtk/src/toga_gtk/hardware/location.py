@@ -219,7 +219,7 @@ class Location(GObject.Object):
             pass
         else:
             raise RuntimeError(
-                "Unable to obtain a location (location service is unavailable)"
+                "Unable to start tracking (location service is unavailable)"
             )
 
     def _stop_tracking(self) -> bool:

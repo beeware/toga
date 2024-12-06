@@ -289,18 +289,22 @@ async def test_location_error(app, location_probe):
 
 async def test_location_tracking_start_error(app, location_probe):
     """If location tracking fails to start, location raises an error."""
+    if not hasattr(location_probe, "setup_tracking_error"):
+        return pytest.xfail(
+            f"Tracking start cannot fail on {toga.platform.current_platform}"
+        )
+
     # Ensure location has permissions
     location_probe.grant_permission()
 
     # Set the value that will be returned by the next location request
     location_probe.add_location(LatLng(37, 42), 5)
 
-    # Setup location error, for implementations where the error does not happen async
-    if hasattr(location_probe, "setup_location_error"):
-        location_probe.setup_location_error()
+    # Setup tracking error
+    location_probe.setup_tracking_error()
 
-    # Simulate a location update that raises an error
-    with pytest.raises(RuntimeError, match=r"Unable to obtain a location \(.*\)"):
+    # Start tracking, raising an error
+    with pytest.raises(RuntimeError, match=r"Unable to start tracking \(.*\)"):
         app.location.start_tracking()
 
 
