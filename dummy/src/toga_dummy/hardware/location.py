@@ -1,11 +1,12 @@
 from __future__ import annotations
 
 from toga import LatLng
+from toga.hardware.location import PlatformLocation
 
 from ..utils import LoggedObject
 
 
-class Location(LoggedObject):
+class Location(LoggedObject, PlatformLocation):
     def __init__(self, interface):
         self.interface = interface
 
