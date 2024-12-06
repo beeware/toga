@@ -62,7 +62,7 @@ root = ".."
 [tool.setuptools_dynamic_dependencies]
 dependencies = [
     "fonttools >= 4.42.1, < 5.0.0",
-    "rubicon-objc @ git+https://github.com/samschott/rubicon-objc@updated-memory-management",
+    "rubicon-objc @ git+https://github.com/samschott/rubicon-objc@method-loading",
     "toga-core == {version}",
 ]
 
