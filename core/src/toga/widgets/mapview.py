@@ -121,7 +121,7 @@ class MapPinSet:
 
 
 class OnSelectHandler(Protocol):
-    def __call__(self, widget: MapView, /, *, pin: MapPin, **kwargs: Any) -> object:
+    def __call__(self, widget: MapView, *, pin: MapPin, **kwargs: Any) -> object:
         """A handler that will be invoked when the user selects a map pin.
 
         :param widget: The MapView that was selected.

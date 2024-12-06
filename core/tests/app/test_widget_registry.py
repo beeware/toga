@@ -35,6 +35,14 @@ def test_add_widget(widget_registry):
     assert widget_registry["widget-1"] == widget1
     assert widget_registry["widget-2"] == widget2
 
+    # repr should list widgets in ASCII order, not order of addition.
+    widget_registry._add(ExampleLeafWidget(id="widget-0"))
+    assert str(widget_registry) == (
+        "{"
+        + ", ".join(f"'widget-{i}': Widget(id='widget-{i}')" for i in range(3))
+        + "}"
+    )
+
 
 def test_update_widgets(widget_registry):
     """The registry can be bulk updated."""
@@ -55,8 +63,7 @@ def test_update_widgets(widget_registry):
 
 
 def test_remove_widget(widget_registry):
-    """A widget can be removed from the repository."""
-    "Widgets can be added to the registry"
+    """A widget can be removed from the registry."""
     # Add a widget to the registry
     widget1 = ExampleLeafWidget(id="widget-1")
     widget2 = ExampleLeafWidget(id="widget-2")

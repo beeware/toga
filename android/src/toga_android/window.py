@@ -147,17 +147,18 @@ class Window(Container):
     ######################################################################
 
     def get_window_state(self, in_progress_state=False):
-        decor_view = self.app.native.getWindow().getDecorView()
-        system_ui_flags = decor_view.getSystemUiVisibility()
-        if system_ui_flags & (
-            decor_view.SYSTEM_UI_FLAG_FULLSCREEN
-            | decor_view.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-            | decor_view.SYSTEM_UI_FLAG_IMMERSIVE
-        ):
-            if self._in_presentation_mode:
-                return WindowState.PRESENTATION
-            else:
-                return WindowState.FULLSCREEN
+        if getattr(self, "app", None) is not None:
+            decor_view = self.app.native.getWindow().getDecorView()
+            system_ui_flags = decor_view.getSystemUiVisibility()
+            if system_ui_flags & (
+                decor_view.SYSTEM_UI_FLAG_FULLSCREEN
+                | decor_view.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                | decor_view.SYSTEM_UI_FLAG_IMMERSIVE
+            ):
+                if self._in_presentation_mode:
+                    return WindowState.PRESENTATION
+                else:
+                    return WindowState.FULLSCREEN
         return WindowState.NORMAL
 
     def set_window_state(self, state):

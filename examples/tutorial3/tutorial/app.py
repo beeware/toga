@@ -49,7 +49,7 @@ class Graze(toga.App):
 
 
 def main():
-    return Graze("Graze", "org.beeware.tutorial")
+    return Graze("Graze", "org.beeware.toga.examples.tutorial")
 
 
 if __name__ == "__main__":

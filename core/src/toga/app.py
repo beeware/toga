@@ -2,40 +2,36 @@ from __future__ import annotations
 
 import asyncio
 import importlib.metadata
-import signal
 import sys
 import warnings
-import webbrowser
 from collections.abc import Coroutine, Iterator
-from email.message import Message
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Protocol
-from weakref import WeakValueDictionary
 
 from toga.command import Command, CommandSet
 from toga.constants import WindowState
 from toga.documents import Document, DocumentSet
 from toga.handlers import simple_handler, wrapped_handler
-from toga.hardware.camera import Camera
-from toga.hardware.location import Location
 from toga.icons import Icon
 from toga.paths import Paths
 from toga.platform import get_platform_factory
-from toga.screens import Screen
 from toga.statusicons import StatusIconSet
-from toga.widgets.base import Widget
 from toga.window import MainWindow, Window, WindowSet
 
 if TYPE_CHECKING:
     from toga.dialogs import Dialog
+    from toga.hardware.camera import Camera
+    from toga.hardware.location import Location
     from toga.icons import IconContentT
+    from toga.screens import Screen
+    from toga.widgets.base import Widget
 
 # Make sure deprecation warnings are shown by default
 warnings.filterwarnings("default", category=DeprecationWarning)
 
 
 class AppStartupMethod(Protocol):
-    def __call__(self, app: App, /, **kwargs: Any) -> Widget:
+    def __call__(self, app: App, **kwargs: Any) -> Widget:
         """The startup method of the app.
 
         Called during app startup to set the initial main window content.
@@ -48,7 +44,7 @@ class AppStartupMethod(Protocol):
 
 
 class OnRunningHandler(Protocol):
-    def __call__(self, app: App, /, **kwargs: Any) -> None:
+    def __call__(self, app: App, **kwargs: Any) -> None:
         """A handler to invoke when the app event loop is running.
 
         :param app: The app instance that is running.
@@ -58,7 +54,7 @@ class OnRunningHandler(Protocol):
 
 
 class OnExitHandler(Protocol):
-    def __call__(self, app: App, /, **kwargs: Any) -> bool:
+    def __call__(self, app: App, **kwargs: Any) -> bool:
         """A handler to invoke when the app is about to exit.
 
         The return value of this callback controls whether the app is allowed to exit.
@@ -73,7 +69,7 @@ class OnExitHandler(Protocol):
 
 
 class BackgroundTask(Protocol):
-    def __call__(self, app: App, /, **kwargs: Any) -> object:
+    def __call__(self, app: App, **kwargs: Any) -> object:
         """Code that should be executed as a background task.
 
         :param app: The app that is handling the background task.
@@ -83,16 +79,13 @@ class BackgroundTask(Protocol):
 
 
 class WidgetRegistry:
-    # WidgetRegistry is implemented as a wrapper around a WeakValueDictionary, because
-    # it provides a mapping from ID to widget. The mapping is weak so the registry
-    # doesn't retain a strong reference to the widget, preventing memory cleanup.
-    #
+    # WidgetRegistry is implemented as a wrapper around a dict.
     # The lookup methods (__getitem__(), __iter__(), __len()__, keys(), items(), and
-    # values()) are all proxied to underlying data store. Private methods exist for
+    # values()) are all proxied to the underlying data store. Mutation methods exist for
     # internal use, but those methods shouldn't be used by end-users.
 
     def __init__(self, *args: Any, **kwargs: Any):
-        self._registry = WeakValueDictionary(*args, **kwargs)
+        self._registry = dict(*args, **kwargs)
 
     def __len__(self) -> int:
         return len(self._registry)
@@ -104,7 +97,7 @@ class WidgetRegistry:
         return key in self._registry
 
     def __iter__(self) -> Iterator[Widget]:
-        return self.values()
+        return iter(self.values())
 
     def __repr__(self) -> str:
         return (
@@ -270,7 +263,7 @@ class App:
         try:
             self.metadata = importlib.metadata.metadata(app_name)
         except importlib.metadata.PackageNotFoundError:
-            self.metadata = Message()
+            self.metadata = {}
 
         # If a formal name has been provided, use it; otherwise, look to
         # the metadata. However, a formal name *must* be provided.
@@ -490,7 +483,13 @@ class App:
         On mobile and web platforms, it returns immediately.
         """
         # Modify signal handlers to make sure Ctrl-C is caught and handled.
-        signal.signal(signal.SIGINT, signal.SIG_DFL)
+        try:
+            # This module doesn't exist in MicroPython, so don't import it globally.
+            import signal
+        except ModuleNotFoundError:  # pragma: no cover
+            pass
+        else:
+            signal.signal(signal.SIGINT, signal.SIG_DFL)
 
         self._impl.main_loop()
 
@@ -724,8 +723,10 @@ class App:
             # Instantiate the camera instance for this app on first access
             # This will raise an exception if the platform doesn't implement
             # the Camera API.
+            from .hardware.camera import Camera
+
             self._camera = Camera(self)
-        return self._camera
+            return self._camera
 
     @property
     def commands(self) -> CommandSet:
@@ -746,8 +747,10 @@ class App:
             # Instantiate the location service for this app on first access
             # This will raise an exception if the platform doesn't implement
             # the Location API.
+            from .hardware.location import Location
+
             self._location = Location(self)
-        return self._location
+            return self._location
 
     @property
     def paths(self) -> Paths:
@@ -820,6 +823,9 @@ class App:
         will be disabled.
         """
         if self.home_page is not None:
+            # This module doesn't exist in MicroPython, so don't import it globally.
+            import webbrowser
+
             webbrowser.open(self.home_page)
 
     ######################################################################

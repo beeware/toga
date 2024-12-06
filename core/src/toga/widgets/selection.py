@@ -14,7 +14,7 @@ SourceT = TypeVar("SourceT", bound=Source)
 
 
 class OnChangeHandler(Protocol):
-    def __call__(self, widget: Selection, /, **kwargs: Any) -> object:
+    def __call__(self, widget: Selection, **kwargs: Any) -> object:
         """A handler to invoke when the value is changed.
 
         :param widget: The Selection that was changed.
