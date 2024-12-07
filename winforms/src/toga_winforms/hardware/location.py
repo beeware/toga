@@ -58,10 +58,12 @@ class Location:
         self._has_background_permission = True
 
     def current_location(self, result: AsyncResult[dict]) -> None:
+        self.watcher.Start()  # ensure watcher has started
         loco = toga_location(self.watcher.Position.Location)
         result.set_result(loco["location"] if loco else None)
 
     def start_tracking(self) -> None:
+        self.watcher.Start()  # ensure watcher has started
         self.watcher.add_PositionChanged(self._handler)
 
     def stop_tracking(self) -> None:
