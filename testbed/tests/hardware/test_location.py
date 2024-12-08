@@ -10,7 +10,7 @@ from .probe import get_probe
 
 @pytest.fixture
 async def location_probe(monkeypatch, app_probe):
-    skip_on_platforms("linux", "windows")
+    skip_on_platforms("linux")
     probe = get_probe(monkeypatch, app_probe, "Location")
     yield probe
     probe.cleanup()
@@ -90,6 +90,8 @@ async def test_grant_background_permission(app, location_probe):
 
 async def test_deny_background_permission(app, location_probe):
     """A user can deny background permission to use location."""
+    skip_on_platforms("windows")
+
     # Foreground permissions haven't been approved, so requesting background permissions
     # will raise an error.
     with pytest.raises(
