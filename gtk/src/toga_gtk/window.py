@@ -387,6 +387,6 @@ class MainWindow(Window):
                 self.native_toolbar,
                 expand=False,
                 fill=False,
-                margin=0,
+                padding=0,
             )
             self.native_toolbar.show_all()
