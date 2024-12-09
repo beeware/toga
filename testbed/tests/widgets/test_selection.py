@@ -8,7 +8,6 @@ from toga.sources import ListSource
 
 from .conftest import build_cleanup_test
 from .properties import (  # noqa: F401
-    test_alignment,
     test_background_color,
     test_background_color_reset,
     test_background_color_transparent,
@@ -18,6 +17,7 @@ from .properties import (  # noqa: F401
     test_flex_horizontal_widget_size,
     test_font,
     test_font_attrs,
+    test_text_alignment,
 )
 
 # FIXME: 2023-05-31 GTK's focus APIs are completely broken for GTK.ComboBox. The
@@ -48,7 +48,7 @@ def verify_font_sizes():
 
 
 @pytest.fixture
-def verify_vertical_alignment():
+def verify_vertical_text_alignment():
     return CENTER
 
 

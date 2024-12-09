@@ -36,7 +36,7 @@ class WidgetSubclassWithoutCreate(toga.Widget):
 @pytest.fixture
 def widget(app):
     # App fixture is needed to ensure a fresh widget registry is created
-    return ExampleWidget(id="widget_id", style=Pack(padding=666))
+    return ExampleWidget(id="widget_id", style=Pack(margin=666))
 
 
 def test_simple_widget():
@@ -50,7 +50,7 @@ def test_simple_widget():
     # Base properties of the widget have been set
     assert widget.id == str(id(widget))
     assert isinstance(widget.style, Pack)
-    assert widget.style.padding == (0, 0, 0, 0)
+    assert widget.style.margin == (0, 0, 0, 0)
 
 
 def test_widget_created(widget):
@@ -63,7 +63,7 @@ def test_widget_created(widget):
     assert widget.enabled
     assert widget.id == "widget_id"
     assert isinstance(widget.style, Pack)
-    assert widget.style.padding == (666, 666, 666, 666)
+    assert widget.style.margin == (666, 666, 666, 666)
 
 
 def test_add_child_to_leaf():

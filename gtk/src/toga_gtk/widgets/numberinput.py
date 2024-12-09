@@ -5,7 +5,7 @@ from travertino.size import at_least
 
 from toga.widgets.numberinput import _clean_decimal
 
-from ..libs import Gtk, gtk_alignment
+from ..libs import Gtk, gtk_text_alignment
 from .base import Widget
 
 
@@ -59,9 +59,9 @@ class NumberInput(Widget):
         else:
             self.native.set_value(value)
 
-    def set_alignment(self, value):
-        xalign, justify = gtk_alignment(value)
-        self.native.set_alignment(xalign)
+    def set_text_alignment(self, value):
+        xalign, justify = gtk_text_alignment(value)
+        self.native.set_text_alignment(xalign)
 
     def rehint(self):
         width = self.native.get_preferred_width()

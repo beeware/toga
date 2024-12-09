@@ -1,7 +1,7 @@
 from toga_cocoa.libs import NSTextField
 
 from .base import SimpleProbe
-from .properties import toga_alignment, toga_color
+from .properties import toga_color, toga_text_alignment
 
 
 class LabelProbe(SimpleProbe):
@@ -16,8 +16,8 @@ class LabelProbe(SimpleProbe):
         return toga_color(self.native.textColor)
 
     @property
-    def alignment(self):
-        return toga_alignment(self.native.alignment)
+    def text_alignment(self):
+        return toga_text_alignment(self.native.alignment)
 
     def assert_vertical_alignment(self, expected):
         # Vertical alignment isn't configurable on NSTextField

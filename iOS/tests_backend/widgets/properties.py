@@ -33,7 +33,7 @@ def toga_color(color):
         return None
 
 
-def toga_alignment(alignment):
+def toga_text_alignment(alignment):
     return {
         NSLeftTextAlignment: LEFT,
         NSRightTextAlignment: RIGHT,

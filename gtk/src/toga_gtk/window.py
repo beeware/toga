@@ -57,7 +57,7 @@ class Window:
         # Because expand and fill are True, the container will fill the available
         # space, and will get a size_allocate callback if the window is resized.
         self.container = TogaContainer()
-        self.layout.pack_end(self.container, expand=True, fill=True, padding=0)
+        self.layout.pack_end(self.container, expand=True, fill=True, margin=0)
 
         self.native.add(self.layout)
 
@@ -387,6 +387,6 @@ class MainWindow(Window):
                 self.native_toolbar,
                 expand=False,
                 fill=False,
-                padding=0,
+                margin=0,
             )
             self.native_toolbar.show_all()

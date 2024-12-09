@@ -31,8 +31,8 @@ class SimpleProbe(BaseProbe):
         assert self.widget._impl.container is None
         assert self.native.Parent is None
 
-    def assert_alignment(self, expected):
-        # Winforms doesn't have a "Justified" alignment; it falls back to LEFT
+    def assert_text_alignment(self, expected):
+        # Winforms doesn't have a "Justified" text alignment; it falls back to LEFT
         actual = self.alignment
         if expected == JUSTIFY:
             assert actual == LEFT

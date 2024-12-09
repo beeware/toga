@@ -4,7 +4,7 @@ from rubicon.objc import NSRange
 from toga_iOS.libs import UITextField
 
 from .base import SimpleProbe
-from .properties import toga_alignment, toga_color
+from .properties import toga_color, toga_text_alignment
 
 
 class NumberInputProbe(SimpleProbe):
@@ -29,10 +29,10 @@ class NumberInputProbe(SimpleProbe):
         return toga_color(self.native.textColor)
 
     @property
-    def alignment(self):
-        return toga_alignment(self.native.textAlignment)
+    def text_alignment(self):
+        return toga_text_alignment(self.native.textAlignment)
 
-    def assert_vertical_alignment(self, expected):
+    def assert_vertical_text_alignment(self, expected):
         # Vertical alignment isn't configurable on a UITextField
         pass
 

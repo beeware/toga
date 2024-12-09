@@ -11,7 +11,7 @@ from toga_cocoa.libs import (
 )
 
 from .base import SimpleProbe
-from .properties import toga_alignment, toga_color
+from .properties import toga_color, toga_text_alignment
 
 
 class NumberInputProbe(SimpleProbe):
@@ -86,8 +86,8 @@ class NumberInputProbe(SimpleProbe):
         return self.native_input.font
 
     @property
-    def alignment(self):
-        return toga_alignment(self.native_input.alignment)
+    def text_alignment(self):
+        return toga_text_alignment(self.native_input.alignment)
 
     def assert_vertical_alignment(self, expected):
         # Vertical alignment isn't configurable on NSTextField

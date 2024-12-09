@@ -37,8 +37,8 @@ class SimpleProbe(BaseProbe, FontMixin):
         assert self.widget._impl.container is None
         assert self.native.getParent() is None
 
-    def assert_alignment(self, expected):
-        actual = self.alignment
+    def assert_text_alignment(self, expected):
+        actual = self.text_alignment
         if expected == JUSTIFY and (
             Build.VERSION.SDK_INT < 26 or not self.supports_justify
         ):

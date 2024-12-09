@@ -12,12 +12,12 @@ class LabelProbe(SimpleProbe):
         return self.native.get_label()
 
     @property
-    def alignment(self):
+    def text_alignment(self):
         return toga_xalignment(self.native.get_xalign(), self.native.get_justify())
 
     @property
-    def vertical_alignment(self):
+    def vertical_text_alignment(self):
         return
 
-    def assert_vertical_alignment(self, expected):
+    def assert_vertical_text_alignment(self, expected):
         assert toga_yalignment(self.native.get_yalign()) == expected

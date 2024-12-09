@@ -9,7 +9,7 @@ from toga_cocoa.libs import (
 )
 
 from .base import SimpleProbe
-from .properties import toga_alignment, toga_color
+from .properties import toga_color, toga_text_alignment
 
 
 class TextInputProbe(SimpleProbe):
@@ -60,15 +60,15 @@ class TextInputProbe(SimpleProbe):
         return self.native.font
 
     @property
-    def alignment(self):
-        result = toga_alignment(self.native.alignment)
+    def text_alignment(self):
+        result = toga_text_alignment(self.native.alignment)
         if result == RIGHT:
             assert self.impl.error_label.alignment == NSLeftTextAlignment
         else:
             assert self.impl.error_label.alignment == NSRightTextAlignment
         return result
 
-    def assert_vertical_alignment(self, expected):
+    def assert_vertical_text_alignment(self, expected):
         # Vertical alignment isn't configurable on NSTextField
         pass
 

@@ -13,8 +13,8 @@ class SelectionProbe(SimpleProbe):
         xfail("Selection doesn't resize on content changes on this backend")
 
     @property
-    def alignment(self):
-        xfail("Can't change the alignment of Selection on this backend")
+    def text_alignment(self):
+        xfail("Can't change the text alignment of Selection on this backend")
 
     @property
     def titles(self):

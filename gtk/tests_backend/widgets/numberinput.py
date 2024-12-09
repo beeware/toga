@@ -31,10 +31,10 @@ class NumberInputProbe(SimpleProbe):
         )
 
     @property
-    def alignment(self):
+    def text_alignment(self):
         return toga_xalignment(self.native.get_alignment())
 
-    def assert_alignment(self, expected):
+    def assert_text_alignment(self, expected):
         if expected == JUSTIFY:
             assert self.alignment == LEFT
         else:

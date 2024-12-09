@@ -8,7 +8,6 @@ import toga
 from ..conftest import skip_on_platforms
 from .conftest import build_cleanup_test
 from .properties import (  # noqa: F401
-    test_alignment,
     test_background_color,
     test_background_color_reset,
     test_background_color_transparent,
@@ -20,9 +19,10 @@ from .properties import (  # noqa: F401
     test_font,
     test_font_attrs,
     test_readonly,
+    test_text_alignment,
 )
 from .test_textinput import (  # noqa: F401
-    verify_vertical_alignment,
+    verify_vertical_text_alignment,
 )
 
 

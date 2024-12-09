@@ -1,7 +1,7 @@
 import System.Windows.Forms
 from System.Drawing import SystemColors
 
-from .properties import toga_xalignment
+from .properties import toga_x_text_alignment
 from .textinput import TextInputProbe
 
 
@@ -56,6 +56,6 @@ class MultilineTextInputProbe(TextInputProbe):
     # SelectionAlignment.Left when the text selection contains multiple paragraphs with
     # mixed alignment."
     @property
-    def alignment(self):
+    def text_alignment(self):
         self.native.SelectAll()
-        return toga_xalignment(self.native.SelectionAlignment)
+        return toga_x_text_alignment(self.native.SelectionAlignment)

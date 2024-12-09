@@ -2,7 +2,7 @@ from android.os import Build
 from java import jclass
 
 from .base import SimpleProbe
-from .properties import toga_alignment, toga_color
+from .properties import toga_color, toga_text_alignment
 
 
 class LabelProbe(SimpleProbe):
@@ -26,8 +26,8 @@ class LabelProbe(SimpleProbe):
         return self.native.getTextSize()
 
     @property
-    def alignment(self):
+    def text_alignment(self):
         justification_mode = (
             None if Build.VERSION.SDK_INT < 26 else self.native.getJustificationMode()
         )
-        return toga_alignment(self.native.getGravity(), justification_mode)
+        return toga_text_alignment(self.native.getGravity(), justification_mode)
