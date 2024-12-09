@@ -1,6 +1,6 @@
 from rubicon.objc import CGSize
 
-from toga_iOS.libs import UIActivityIndicatorView
+from toga_iOS.libs import UIActivityIndicatorView, UIColor
 from toga_iOS.widgets.base import Widget
 
 
@@ -11,6 +11,7 @@ class ActivityIndicator(Widget):
         self.native.translatesAutoresizingMaskIntoConstraints = False
         self.native.sizeToFit()
 
+        self._default_background_color = UIColor.clearColor
         self.add_constraints()
 
     def set_hidden(self, hidden):
