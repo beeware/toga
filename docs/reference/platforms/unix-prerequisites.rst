@@ -43,4 +43,7 @@ know so we can improve this documentation!)
 
 Some widgets (most notably, the :ref:`WebView <webview-system-requires>` and
 :ref:`MapView <mapview-system-requires>` widgets) have additional system requirements.
-See the documentation of those widgets for details.
+Likewise, certain hardware features (:ref:`Location <location-system-requires>`) have
+system requirements.
+
+See the documentation of those widgets and hardware features for details.
