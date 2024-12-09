@@ -248,3 +248,7 @@ class App:
 
     def set_current_window(self, window):
         window._impl.native.present()
+
+    def focus(self):
+        # GTK doesn't provide a reliable way to bring an app into focus
+        pass

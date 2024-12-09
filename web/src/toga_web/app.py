@@ -90,7 +90,7 @@ class App:
             name_and_version += f" v{self.interface.version}"
 
         if self.interface.author is not None:
-            copyright = f"\n\nCopyright © {self.interface.author}"
+            copyright = f"\n\nCopyright {self.interface.author}"
 
         close_button = create_element(
             "sl-button", slot="footer", variant="primary", content="Ok"
@@ -156,3 +156,6 @@ class App:
 
     def exit_presentation_mode(self):
         self.interface.factory.not_implemented("App.exit_presentation_mode()")
+
+    def focus(self):
+        pass  # No-op on web platform
