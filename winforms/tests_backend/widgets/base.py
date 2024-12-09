@@ -33,7 +33,7 @@ class SimpleProbe(BaseProbe):
 
     def assert_text_alignment(self, expected):
         # Winforms doesn't have a "Justified" text alignment; it falls back to LEFT
-        actual = self.alignment
+        actual = self.text_alignment
         if expected == JUSTIFY:
             assert actual == LEFT
         else:

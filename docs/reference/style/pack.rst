@@ -65,7 +65,7 @@ indicates children will be packed horizontally; left-to-right if
 ``text_direction`` is ``ltr``, or right-to-left if ``text_direction`` is ``rtl``.
 
 ``align_items``
--------------
+---------------
 
 **Values:** ``top`` | ``bottom`` | ``left`` | ``right`` | ``center``
 

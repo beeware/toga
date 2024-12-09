@@ -38,9 +38,9 @@ class TextInputProbe(SimpleProbe):
 
     def assert_text_alignment(self, expected):
         if expected == JUSTIFY:
-            assert self.alignment == LEFT
+            assert self.text_alignment == LEFT
         else:
-            assert self.alignment == expected
+            assert self.text_alignment == expected
 
     def assert_vertical_text_alignment(self, expected):
         # GTK.Entry vertical alignment is non-configurable
