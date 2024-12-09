@@ -4,7 +4,7 @@ from toga.constants import JUSTIFY, LEFT
 from toga_gtk.libs import Gtk
 
 from .base import SimpleProbe
-from .properties import toga_xalignment
+from .properties import toga_x_text_alignment
 
 
 class NumberInputProbe(SimpleProbe):
@@ -32,7 +32,7 @@ class NumberInputProbe(SimpleProbe):
 
     @property
     def text_alignment(self):
-        return toga_xalignment(self.native.get_alignment())
+        return toga_x_text_alignment(self.native.get_alignment())
 
     def assert_text_alignment(self, expected):
         if expected == JUSTIFY:

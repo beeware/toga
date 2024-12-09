@@ -43,7 +43,7 @@ class TextInput(Widget):
 
     def set_text_alignment(self, value):
         xalign, justify = gtk_text_alignment(value)
-        self.native.set_text_alignment(
+        self.native.set_alignment(
             xalign
         )  # Aligns the whole text block within the widget.
 
