@@ -40,7 +40,7 @@ class NumberInputProbe(SimpleProbe):
         else:
             assert self.alignment == expected
 
-    def assert_vertical_alignment(self, expected):
+    def assert_vertical_text_alignment(self, expected):
         # GTK.SpinButton vertical alignment is non-configurable
         pass
 

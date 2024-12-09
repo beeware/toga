@@ -46,7 +46,7 @@ class SimpleProbe(BaseProbe, FontMixin):
         else:
             assert actual == expected
 
-    def assert_vertical_alignment(self, expected):
+    def assert_vertical_text_alignment(self, expected):
         assert toga_vertical_alignment(self.native.getGravity()) == expected
 
     @property

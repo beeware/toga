@@ -19,6 +19,6 @@ class LabelProbe(SimpleProbe):
     def text_alignment(self):
         return toga_text_alignment(self.native.alignment)
 
-    def assert_vertical_alignment(self, expected):
+    def assert_vertical_text_alignment(self, expected):
         # Vertical alignment isn't configurable on NSTextField
         pass

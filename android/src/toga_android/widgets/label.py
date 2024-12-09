@@ -10,7 +10,7 @@ from travertino.size import at_least
 from toga.constants import JUSTIFY
 from toga_android.colors import native_color
 
-from .base import Widget, android_text_align
+from .base import Widget, android_text_alignment
 
 
 def set_textview_font(tv, font, default_typeface, default_size):
@@ -51,7 +51,7 @@ class TextViewWidget(Widget):
                 else Layout.JUSTIFICATION_MODE_NONE
             )
 
-        self.native.setGravity(vertical_gravity | android_text_align(value))
+        self.native.setGravity(vertical_gravity | android_text_alignment(value))
 
 
 class Label(TextViewWidget):
