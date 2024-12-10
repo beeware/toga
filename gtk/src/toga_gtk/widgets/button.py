@@ -36,9 +36,7 @@ class Button(Widget):
 
     def set_background_color(self, color):
         # Buttons interpret TRANSPARENT backgrounds as a reset
-        if color == TRANSPARENT:
-            color = None
-        super().set_background_color(color)
+        super().set_background_color(None if color is TRANSPARENT else color)
 
     def rehint(self):
         # print(

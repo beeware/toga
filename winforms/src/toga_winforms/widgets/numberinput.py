@@ -22,7 +22,6 @@ def native_decimal(value):
 
 
 class NumberInput(Widget):
-    _background_supports_alpha = False
 
     def create(self):
         self.native = WinForms.NumericUpDown()

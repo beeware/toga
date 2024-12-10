@@ -1,11 +1,13 @@
 from decimal import ROUND_UP
 
 from android import R
+from android.graphics.drawable import ColorDrawable
 from android.view import View
 from android.widget import AdapterView, ArrayAdapter, Spinner
 from java import dynamic_proxy
 
-from .base import Widget
+from toga_android.colors import DEFAULT_BACKGROUND_COLOR, native_color
+from toga_android.widgets.base import ContainedWidget
 
 
 class TogaOnItemSelectedListener(dynamic_proxy(AdapterView.OnItemSelectedListener)):
@@ -20,7 +22,7 @@ class TogaOnItemSelectedListener(dynamic_proxy(AdapterView.OnItemSelectedListene
         self.impl.on_change(None)
 
 
-class Selection(Widget):
+class Selection(ContainedWidget):
     focusable = False
 
     def create(self):
@@ -87,4 +89,13 @@ class Selection(Widget):
         self.native.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
         self.interface.intrinsic.height = self.scale_out(
             self.native.getMeasuredHeight(), ROUND_UP
+        )
+
+    def set_background_color(self, color):
+        super().set_background_color(color)
+        # Also set the background color of the dropdown popup.
+        self.native.setPopupBackgroundDrawable(
+            ColorDrawable(
+                DEFAULT_BACKGROUND_COLOR if color is None else native_color(color)
+            )
         )
