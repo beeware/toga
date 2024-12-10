@@ -23,7 +23,7 @@ def toga_color(color):
         return None
 
 
-def toga_xalignment(xalign, justify=None):
+def toga_x_text_alignment(xalign, justify=None):
     try:
         return {
             0.0: JUSTIFY if justify == Gtk.Justification.FILL else LEFT,
@@ -31,10 +31,12 @@ def toga_xalignment(xalign, justify=None):
             0.5: CENTER,
         }[xalign]
     except KeyError:
-        pytest.fail(f"Can't interpret GTK x alignment {xalign} with justify {justify}")
+        pytest.fail(
+            f"Can't interpret GTK x text alignment {xalign} with justify {justify}"
+        )
 
 
-def toga_yalignment(yalign):
+def toga_y_text_alignment(yalign):
     try:
         return {
             0.0: TOP,
@@ -42,10 +44,10 @@ def toga_yalignment(yalign):
             1.0: BOTTOM,
         }[yalign]
     except KeyError:
-        pytest.fail(f"Can't interpret GTK y alignment {yalign}")
+        pytest.fail(f"Can't interpret GTK y text alignment {yalign}")
 
 
-def toga_alignment_from_justification(justify):
+def toga_text_alignment_from_justification(justify):
     return {
         Gtk.Justification.LEFT: LEFT,
         Gtk.Justification.RIGHT: RIGHT,

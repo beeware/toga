@@ -143,7 +143,7 @@ class Widget(Scalable):
             self.scale_in_horizontal(margin_left),
         )
 
-    def set_alignment(self, alignment):
+    def set_text_alignment(self, alignment):
         pass
 
     def set_hidden(self, hidden):

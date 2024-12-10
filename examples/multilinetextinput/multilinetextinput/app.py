@@ -68,14 +68,14 @@ class ExampleMultilineTextInputApp(toga.App):
                 button_toggle_enabled,
                 button_toggle_readonly,
             ],
-            style=Pack(direction=ROW, padding_bottom=10),
+            style=Pack(direction=ROW, margin_bottom=10),
         )
         btn_box2 = toga.Box(
             children=[
                 button_add_content,
                 button_clear,
             ],
-            style=Pack(direction=ROW, padding_bottom=10),
+            style=Pack(direction=ROW, margin_bottom=10),
         )
         btn_box3 = toga.Box(
             children=[
@@ -83,13 +83,13 @@ class ExampleMultilineTextInputApp(toga.App):
                 button_scroll_bottom,
                 toga.TextInput(style=Pack(flex=1)),
             ],
-            style=Pack(direction=ROW, padding_bottom=10),
+            style=Pack(direction=ROW, margin_bottom=10),
         )
         self.label = toga.Label("Nothing has been written yet")
 
         outer_box = toga.Box(
             children=[btn_box1, btn_box2, btn_box3, self.multiline_input, self.label],
-            style=Pack(direction=COLUMN, padding=10),
+            style=Pack(direction=COLUMN, margin=10),
         )
 
         self.main_window.content = outer_box

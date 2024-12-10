@@ -11,7 +11,7 @@ def test_tutorial_0():
         style=Pack(),
         children=[
             ExampleNode(
-                "button", style=Pack(flex=1, padding=50), size=(at_least(120), 30)
+                "button", style=Pack(flex=1, margin=50), size=(at_least(120), 30)
             ),
         ],
     )
@@ -36,7 +36,7 @@ def test_vertical():
         children=[
             # ExampleNode('button', style=Pack(flex=1), size=(30, at_least(120))),
             ExampleNode(
-                "button", style=Pack(flex=1, padding=50), size=(30, at_least(120))
+                "button", style=Pack(flex=1, margin=50), size=(30, at_least(120))
             ),
         ],
     )

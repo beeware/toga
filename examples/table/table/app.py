@@ -101,13 +101,13 @@ class ExampleTableApp(toga.App):
         self.main_window = toga.MainWindow()
 
         # Label to show which row is currently selected.
-        self.label_table1 = toga.Label("Ready.", style=Pack(flex=1, padding_right=5))
+        self.label_table1 = toga.Label("Ready.", style=Pack(flex=1, margin_right=5))
         self.label_table2 = toga.Label(
-            "Try multiple row selection.", style=Pack(flex=1, padding_left=5)
+            "Try multiple row selection.", style=Pack(flex=1, margin_left=5)
         )
         labelbox = toga.Box(
             children=[self.label_table1, self.label_table2],
-            style=Pack(flex=0, padding_top=5),
+            style=Pack(flex=0, margin_top=5),
         )
 
         # Change font size
@@ -146,7 +146,7 @@ class ExampleTableApp(toga.App):
             data=table_data,
             style=Pack(
                 flex=1,
-                padding_right=5,
+                margin_right=5,
                 font_family="monospace",
                 font_size=int(self.lbl_fontsize.text),
                 font_style="italic",
@@ -162,7 +162,7 @@ class ExampleTableApp(toga.App):
             accessors=[h.lower() for h in headings],
             data=self.table1.data,
             multiple_select=True,
-            style=Pack(flex=1, padding_left=5),
+            style=Pack(flex=1, margin_left=5),
             on_select=self.on_select_handler2,
             on_activate=self.on_activate2,
             missing_value="?",
@@ -190,11 +190,11 @@ class ExampleTableApp(toga.App):
 
         controls_1 = toga.Box(
             children=[font_box, btn_insert, btn_delete, btn_clear],
-            style=Pack(direction=ROW, padding_bottom=5),
+            style=Pack(direction=ROW, margin_bottom=5),
         )
         controls_2 = toga.Box(
             children=[btn_reset, btn_toggle, btn_top, btn_bottom],
-            style=Pack(direction=ROW, padding_bottom=5),
+            style=Pack(direction=ROW, margin_bottom=5),
         )
 
         # Most outer box
@@ -203,7 +203,7 @@ class ExampleTableApp(toga.App):
             style=Pack(
                 flex=1,
                 direction=COLUMN,
-                padding=10,
+                margin=10,
             ),
         )
 

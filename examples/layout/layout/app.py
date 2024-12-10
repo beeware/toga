@@ -7,49 +7,49 @@ class ExampleLayoutApp(toga.App):
     def startup(self):
         self.button_hide = toga.Button(
             text="Hide label",
-            style=Pack(padding=10, width=120),
+            style=Pack(margin=10, width=120),
             on_press=self.hide_label,
         )
 
         self.button_add = toga.Button(
             text="Add image",
-            style=Pack(padding=10, width=120),
+            style=Pack(margin=10, width=120),
             on_press=self.add_image,
         )
 
         self.button_remove = toga.Button(
             text="Remove image",
-            style=Pack(padding=10, width=120),
+            style=Pack(margin=10, width=120),
             on_press=self.remove_image,
             enabled=False,
         )
 
         self.button_insert = toga.Button(
             text="Insert image",
-            style=Pack(padding=10, width=120),
+            style=Pack(margin=10, width=120),
             on_press=self.insert_image,
         )
 
         self.button_reparent = toga.Button(
             text="Reparent image",
-            style=Pack(padding=10, width=120),
+            style=Pack(margin=10, width=120),
             on_press=self.reparent_image,
             enabled=False,
         )
 
         self.button_add_to_scroll = toga.Button(
             text="Add new label",
-            style=Pack(padding=10, width=120),
+            style=Pack(margin=10, width=120),
             on_press=self.add_label,
         )
 
         self.content_box = toga.Box(
-            children=[], style=Pack(direction=COLUMN, padding=10, flex=1)
+            children=[], style=Pack(direction=COLUMN, margin=10, flex=1)
         )
 
         image = toga.Image("resources/tiberius.png")
         self.image_view = toga.ImageView(
-            image, style=Pack(padding=10, width=60, height=60)
+            image, style=Pack(margin=10, width=60, height=60)
         )
 
         # this tests adding children during init, before we have an implementation
@@ -66,7 +66,8 @@ class ExampleLayoutApp(toga.App):
         )
 
         self.box = toga.Box(
-            children=[], style=Pack(direction=ROW, padding=10, alignment=CENTER, flex=1)
+            children=[],
+            style=Pack(direction=ROW, margin=10, align_items=CENTER, flex=1),
         )
 
         # this tests adding children when we already have an impl but no window or app
@@ -123,7 +124,7 @@ class ExampleLayoutApp(toga.App):
     def add_label(self, sender=None):
         # this tests adding children when we already have an impl, window and app
         new_label = toga.Label(
-            f"Label {len(self.content_box.children)}", style=Pack(padding=2, width=70)
+            f"Label {len(self.content_box.children)}", style=Pack(margin=2, width=70)
         )
         self.content_box.add(new_label)
         self.labels.append(new_label)

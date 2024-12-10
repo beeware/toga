@@ -46,7 +46,7 @@ class TogaApplicator:
             child.applicator.set_bounds()
 
     def set_text_alignment(self, alignment: str) -> None:
-        self.widget._impl.set_alignment(alignment)
+        self.widget._impl.set_text_alignment(alignment)
 
     def set_hidden(self, hidden: bool) -> None:
         self.widget._impl.set_hidden(hidden)
