@@ -1020,6 +1020,16 @@ class App:
     # End backwards compatibility
     ######################################################################
 
+    def focus(self):
+        """Bring the application into focus.
+
+        This method will attempt to bring the application window into focus. Note that
+        it is generally considered poor practice for applications to steal focus from
+        the user, so use this method sparingly.
+
+        This is a no-op on mobile and console platforms.
+        """
+        self._impl.focus()
 
 ######################################################################
 # 2024-08: Backwards compatibility
