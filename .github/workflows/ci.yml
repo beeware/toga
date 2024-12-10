@@ -403,6 +403,7 @@ jobs:
       with:
         name: testbed-failure-logs-${{ matrix.backend }}
         path: testbed/logs/*
+        include-hidden-files: true
 
     - name: Copy App Generated User Data
       if: failure() && matrix.backend != 'android'
