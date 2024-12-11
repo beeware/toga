@@ -9,7 +9,6 @@ from System.Device.Location import (
     GeoPositionAccuracy,
     GeoPositionChangedEventArgs,
     GeoPositionPermission,
-    GeoPositionStatus,
 )
 
 from toga import LatLng
@@ -35,6 +34,7 @@ class Location:
         self._handler = EventHandler[GeoPositionChangedEventArgs[GeoCoordinate]](
             self._position_changed
         )
+        self._tracking = False
         self._has_background_permission = False
 
     def _position_changed(
@@ -52,12 +52,12 @@ class Location:
 
     @contextmanager
     def context(self):
-        already_started = self.watcher.Status == GeoPositionStatus.Ready
-        self.watcher.Start(False)
+        if not self._tracking:
+            self.watcher.Start(False)
         try:
             yield
         finally:
-            if not already_started:  # don't want to stop if we're tracking
+            if not self._tracking:  # don't want to stop if we're tracking
                 self.watcher.Stop()
 
     def request_permission(self, future: AsyncResult[bool]) -> None:
@@ -79,7 +79,9 @@ class Location:
     def start_tracking(self) -> None:
         self.watcher.Start()
         self.watcher.add_PositionChanged(self._handler)
+        self._tracking = True
 
     def stop_tracking(self) -> None:
         self.watcher.Stop()
         self.watcher.remove_PositionChanged(self._handler)
+        self._tracking = False
