@@ -36,6 +36,12 @@ class Location:
         )
         self._tracking = False
         self._has_background_permission = False
+        self.watcher.OnPropertyChanged = self._property_changed
+
+    def _property_changed(self, property_name: str):
+        if property_name == "Permission":
+            # TODO: handle permission changes
+            print("PERMISSION CHANGED", self.watcher.Permission)
 
     def _position_changed(
         self, sender, event: GeoPositionChangedEventArgs[GeoCoordinate]
