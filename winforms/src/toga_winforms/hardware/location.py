@@ -79,10 +79,24 @@ class Location:
         self._has_background_permission = True
 
     def current_location(self, result: AsyncResult[dict]) -> None:
-        with self.context():
-            loco = toga_location(self.watcher.Position.Location)
-            # TODO: filter by horizontal accuracy?
+        def cb(sender, event):
+            if (
+                event.Position.Location.IsUnknown
+                or event.Position.Location.HorizontalAccuracy > 100
+            ):
+                return
+            self.watcher.remove_PositionChanged(cb)
+            loco = toga_location(event.Position.Location)
             result.set_result(loco["location"] if loco else None)
+            ctx.__exit__()
+
+        ctx = self.context()
+
+        ctx.__enter__()
+
+        self.watcher.add_PositionChanged(
+            EventHandler[GeoPositionChangedEventArgs[GeoCoordinate]](cb)
+        )
 
     def start_tracking(self) -> None:
         self.watcher.Start()
