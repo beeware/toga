@@ -25,7 +25,7 @@ class ContentControls(toga.Box):
         self.sw_flexible.enabled = self.sw_content.value
 
         if self.sw_content.value:
-            box = toga.Box(style=Pack(padding=10, background_color="cyan"))
+            box = toga.Box(style=Pack(margin=10, background_color="cyan"))
             if not self.sw_flexible.value:
                 box.style.update(width=100, height=100)
         else:
@@ -38,7 +38,7 @@ class ContentControls(toga.Box):
 
 class SplitControls(toga.Box):
     def __init__(self, split):
-        super().__init__(style=Pack(direction=COLUMN, alignment=CENTER, flex=1))
+        super().__init__(style=Pack(direction=COLUMN, align_items=CENTER, flex=1))
         self.split = split
 
         self.add(
@@ -73,7 +73,7 @@ class SplitControls(toga.Box):
 
 class SplitContainerApp(toga.App):
     def startup(self):
-        self.split = toga.SplitContainer(style=Pack(padding=10, flex=1))
+        self.split = toga.SplitContainer(style=Pack(margin=10, flex=1))
 
         main_box = toga.Box(
             style=Pack(direction=COLUMN),

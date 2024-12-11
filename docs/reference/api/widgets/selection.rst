@@ -105,7 +105,7 @@ Notes
 * On macOS and Android, you cannot change the font of a Selection.
 
 * On macOS, GTK and Android, you cannot change the text color, background color, or
-  alignment of labels in a Selection.
+  text alignment of labels in a Selection.
 
 * On GTK, a Selection widget with flexible sizing will expand its width (to the
   extent possible possible) to accommodate any changes in content (for example,

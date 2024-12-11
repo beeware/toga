@@ -222,7 +222,7 @@ class ExampleDialogsApp(toga.App):
         self.set_window_label_text(len(self.windows) - 1)
         secondary_label = toga.Label(text="You are in a secondary window!")
         window.content = toga.Box(
-            children=[secondary_label], style=Pack(flex=1, direction=COLUMN, padding=10)
+            children=[secondary_label], style=Pack(flex=1, direction=COLUMN, margin=10)
         )
         window.on_close = self.window_close_handler
         window.show()
@@ -253,8 +253,8 @@ class ExampleDialogsApp(toga.App):
         self.on_exit = self.exit_handler
 
         # Label to show responses.
-        self.label = toga.Label("Ready.", style=Pack(padding_top=20))
-        self.window_label = toga.Label("", style=Pack(padding_top=20))
+        self.label = toga.Label("Ready.", style=Pack(margin_top=20))
+        self.window_label = toga.Label("", style=Pack(margin_top=20))
         self.window_counter = 0
         self.close_attempts = set()
         self.set_window_label_text(0)
@@ -362,7 +362,7 @@ class ExampleDialogsApp(toga.App):
                 self.label,
                 self.window_label,
             ],
-            style=Pack(flex=1, direction=COLUMN, padding=10),
+            style=Pack(flex=1, direction=COLUMN, margin=10),
         )
 
         # Add the content on the main window

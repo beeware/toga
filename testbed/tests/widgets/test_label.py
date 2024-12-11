@@ -4,7 +4,6 @@ import toga
 
 from .conftest import build_cleanup_test
 from .properties import (  # noqa: F401
-    test_alignment,
     test_background_color,
     test_background_color_reset,
     test_background_color_transparent,
@@ -16,6 +15,7 @@ from .properties import (  # noqa: F401
     test_font,
     test_font_attrs,
     test_text,
+    test_text_alignment,
     test_text_width_change,
 )
 

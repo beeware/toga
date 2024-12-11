@@ -10,11 +10,11 @@ def test_row_box_child_layout():
         children=[
             ExampleNode(
                 "widget_a",
-                style=Pack(width=30, height=100, padding_left=32, padding_right=34),
+                style=Pack(width=30, height=100, margin_left=32, margin_right=34),
             ),
             ExampleNode(
                 "widget_b",
-                style=Pack(width=36, height=100, padding_left=38, padding_right=40),
+                style=Pack(width=36, height=100, margin_left=38, margin_right=40),
             ),
         ],
     )
@@ -42,11 +42,11 @@ def test_column_box_child_layout():
         children=[
             ExampleNode(
                 "widget_a",
-                style=Pack(width=100, height=30, padding_top=32, padding_bottom=34),
+                style=Pack(width=100, height=30, margin_top=32, margin_bottom=34),
             ),
             ExampleNode(
                 "widget_b",
-                style=Pack(width=100, height=36, padding_top=38, padding_bottom=40),
+                style=Pack(width=100, height=36, margin_top=38, margin_bottom=40),
             ),
         ],
     )
@@ -68,10 +68,10 @@ def test_column_box_child_layout():
     )
 
 
-def test_alignment_top():
+def test_align_items_top():
     root = ExampleNode(
         "root",
-        style=Pack(text_direction=RTL, direction=ROW, alignment=TOP),
+        style=Pack(text_direction=RTL, direction=ROW, align_items=TOP),
         children=[
             ExampleNode("space_filler", style=Pack(width=30, height=100)),
             ExampleNode("widget", style=Pack(width=30, height=30)),
@@ -94,10 +94,10 @@ def test_alignment_top():
     )
 
 
-def test_alignment_bottom():
+def test_align_items_bottom():
     root = ExampleNode(
         "root",
-        style=Pack(text_direction=RTL, direction=ROW, alignment=BOTTOM),
+        style=Pack(text_direction=RTL, direction=ROW, align_items=BOTTOM),
         children=[
             ExampleNode("space_filler", style=Pack(width=30, height=100)),
             ExampleNode("widget", style=Pack(width=30, height=30)),
@@ -120,10 +120,10 @@ def test_alignment_bottom():
     )
 
 
-def test_alignment_left():
+def test_align_items_left():
     root = ExampleNode(
         "root",
-        style=Pack(text_direction=RTL, direction=COLUMN, alignment=LEFT),
+        style=Pack(text_direction=RTL, direction=COLUMN, align_items=LEFT),
         children=[
             ExampleNode("space_filler", style=Pack(width=100, height=30)),
             ExampleNode("widget", style=Pack(width=30, height=30)),
@@ -146,10 +146,10 @@ def test_alignment_left():
     )
 
 
-def test_alignment_right():
+def test_align_items_right():
     root = ExampleNode(
         "root",
-        style=Pack(text_direction=RTL, direction=COLUMN, alignment=RIGHT),
+        style=Pack(text_direction=RTL, direction=COLUMN, align_items=RIGHT),
         children=[
             ExampleNode("space_filler", style=Pack(width=100, height=30)),
             ExampleNode("widget", style=Pack(width=30, height=30)),

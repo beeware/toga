@@ -4,7 +4,7 @@ from toga.constants import JUSTIFY, LEFT
 from toga_gtk.libs import Gtk
 
 from .base import SimpleProbe
-from .properties import toga_xalignment
+from .properties import toga_x_text_alignment
 
 
 class TextInputProbe(SimpleProbe):
@@ -33,16 +33,16 @@ class TextInputProbe(SimpleProbe):
         return False
 
     @property
-    def alignment(self):
-        return toga_xalignment(self.native.get_alignment())
+    def text_alignment(self):
+        return toga_x_text_alignment(self.native.get_alignment())
 
-    def assert_alignment(self, expected):
+    def assert_text_alignment(self, expected):
         if expected == JUSTIFY:
-            assert self.alignment == LEFT
+            assert self.text_alignment == LEFT
         else:
-            assert self.alignment == expected
+            assert self.text_alignment == expected
 
-    def assert_vertical_alignment(self, expected):
+    def assert_vertical_text_alignment(self, expected):
         # GTK.Entry vertical alignment is non-configurable
         pass
 

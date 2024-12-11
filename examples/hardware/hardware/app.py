@@ -27,18 +27,18 @@ class ExampleHardwareApp(toga.App):
                         toga.Button(
                             "Take Photo",
                             on_press=self.take_photo,
-                            style=Pack(flex=1, padding=5),
+                            style=Pack(flex=1, margin=5),
                         ),
                         # Select a photo from the photo library
                         # toga.Button(
                         #     "Select Photo",
                         #     on_press=self.select_photo,
-                        #     style=Pack(flex=1, padding=5),
+                        #     style=Pack(flex=1, margin=5),
                         # ),
                     ],
                 ),
             ],
-            style=Pack(direction=COLUMN, padding_bottom=20),
+            style=Pack(direction=COLUMN, margin_bottom=20),
         )
 
         #############################################################
@@ -73,7 +73,7 @@ class ExampleHardwareApp(toga.App):
                             style=Pack(flex=1),
                         ),
                     ],
-                    style=Pack(padding=5),
+                    style=Pack(margin=5),
                 ),
             ],
             style=Pack(direction=COLUMN),

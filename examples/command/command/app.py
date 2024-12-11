@@ -157,7 +157,7 @@ class ExampleTestCommandApp(toga.App):
         # Outermost box
         outer_box = toga.Box(
             children=[btn_box, self.textpanel],
-            style=Pack(flex=1, direction=COLUMN, padding=10),
+            style=Pack(flex=1, direction=COLUMN, margin=10),
         )
 
         # Add the content on the main window

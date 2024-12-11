@@ -14,14 +14,14 @@ class SwitchApp(toga.App):
                 # Simple switch with label and callback function called toggled
                 toga.Switch("Change Label", on_change=self.callbackLabel),
                 # Switch with initial state
-                toga.Switch("Initial state", value=True, style=Pack(padding_top=24)),
+                toga.Switch("Initial state", value=True, style=Pack(margin_top=24)),
                 # Switch with label and enable option
-                toga.Switch("Disabled", enabled=False, style=Pack(padding_top=24)),
+                toga.Switch("Disabled", enabled=False, style=Pack(margin_top=24)),
                 # Switch with a big font
                 toga.Switch(
                     "Big and colorful",
                     style=Pack(
-                        padding_top=24,
+                        margin_top=24,
                         font_family="serif",
                         font_size=20,
                         font_weight="bold",
@@ -29,7 +29,7 @@ class SwitchApp(toga.App):
                     ),
                 ),
             ],
-            style=Pack(direction=COLUMN, padding=24),
+            style=Pack(direction=COLUMN, margin=24),
         )
 
         # Show the main window

@@ -1,0 +1,1 @@
+Pack's padding and alignment properties have been renamed to margin and align_items, to match their CSS analogues. The old names are still present, but are deprecated.

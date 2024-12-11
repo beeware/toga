@@ -71,7 +71,7 @@ def test_text_alignment(widget):
     """Text alignment can be set on a widget."""
     widget.applicator.set_text_alignment(RIGHT)
 
-    assert_action_performed_with(widget, "set alignment", alignment=RIGHT)
+    assert_action_performed_with(widget, "set text alignment", alignment=RIGHT)
 
 
 @pytest.mark.parametrize(

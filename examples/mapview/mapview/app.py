@@ -79,7 +79,7 @@ class ExampleMapViewApp(toga.App):
         btn_where = toga.Button("???", on_press=self.where_am_i, style=btn_style)
         location_box = toga.Box(
             children=[btn_perth, btn_london, btn_austin, btn_rio, btn_where],
-            style=Pack(direction=ROW, padding=5),
+            style=Pack(direction=ROW, margin=5),
         )
 
         # Zoom buttons
@@ -88,7 +88,7 @@ class ExampleMapViewApp(toga.App):
                 toga.Button(i, on_press=self.zoom(i), style=btn_style)
                 for i in range(0, 20, 3)
             ],
-            style=Pack(direction=ROW, padding=5),
+            style=Pack(direction=ROW, margin=5),
         )
 
         # Point Of Interest buttons
@@ -98,11 +98,11 @@ class ExampleMapViewApp(toga.App):
         btn_move = toga.Button("Move", on_press=self.move_carmen, style=btn_style)
         pin_box = toga.Box(
             children=[btn_pin_1, btn_pin_2, btn_pin_3, btn_move],
-            style=Pack(direction=ROW, padding=5),
+            style=Pack(direction=ROW, margin=5),
         )
 
         # Label to show responses.
-        self.label = toga.Label("Ready.", style=Pack(padding=5))
+        self.label = toga.Label("Ready.", style=Pack(margin=5))
 
         # Add the content on the main window
         self.main_window.content = toga.Box(

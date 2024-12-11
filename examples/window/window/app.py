@@ -235,7 +235,7 @@ class WindowDemoApp(toga.App):
         self.label = toga.Label("Ready.")
 
         # Buttons
-        btn_style = Pack(flex=1, padding=5)
+        btn_style = Pack(flex=1, margin=5)
 
         row_move = toga.Box(
             style=Pack(direction=ROW),
@@ -331,14 +331,14 @@ class WindowDemoApp(toga.App):
                     style=Pack(width=200, text_align=RIGHT),
                 )
             ],
-            style=Pack(padding=5),
+            style=Pack(margin=5),
         )
         for index, screen in sorted(enumerate(self.screens), key=lambda s: s[1].origin):
             screen_change_btns_box.add(
                 toga.Button(
                     text=f"{index}: {screen.name}",
                     on_press=partial(self.do_screen_change, screen),
-                    style=Pack(padding_left=5),
+                    style=Pack(margin_left=5),
                 )
             )
         screen_as_image_btns_box = toga.Box(
@@ -348,14 +348,14 @@ class WindowDemoApp(toga.App):
                     style=Pack(width=200, text_align=RIGHT),
                 )
             ],
-            style=Pack(padding=5),
+            style=Pack(margin=5),
         )
         for index, screen in sorted(enumerate(self.screens), key=lambda s: s[1].origin):
             screen_as_image_btns_box.add(
                 toga.Button(
                     text=f"{index}: {screen.name}",
                     on_press=partial(self.do_save_screenshot, screen),
-                    style=Pack(padding_left=5),
+                    style=Pack(margin_left=5),
                 )
             )
 

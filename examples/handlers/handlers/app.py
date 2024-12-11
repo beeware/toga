@@ -78,12 +78,12 @@ class HandlerApp(toga.App):
         self.main_window = toga.MainWindow()
 
         # Labels to show responses.
-        self.on_running_label = toga.Label("Ready.", style=Pack(padding=10))
-        self.background_label = toga.Label("Ready.", style=Pack(padding=10))
-        self.function_label = toga.Label("Ready.", style=Pack(padding=10))
-        self.generator_label = toga.Label("Ready.", style=Pack(padding=10))
-        self.async_label = toga.Label("Ready.", style=Pack(padding=10))
-        self.web_label = toga.Label("Ready.", style=Pack(padding=10))
+        self.on_running_label = toga.Label("Ready.", style=Pack(margin=10))
+        self.background_label = toga.Label("Ready.", style=Pack(margin=10))
+        self.function_label = toga.Label("Ready.", style=Pack(margin=10))
+        self.generator_label = toga.Label("Ready.", style=Pack(margin=10))
+        self.async_label = toga.Label("Ready.", style=Pack(margin=10))
+        self.web_label = toga.Label("Ready.", style=Pack(margin=10))
 
         # Add a background task.
         self.counter = 0
@@ -120,7 +120,7 @@ class HandlerApp(toga.App):
                 self.web_label,
                 btn_clear,
             ],
-            style=Pack(flex=1, direction=COLUMN, padding=10),
+            style=Pack(flex=1, direction=COLUMN, margin=10),
         )
 
         # Add the content on the main window

@@ -414,41 +414,41 @@ async def test_background_color_transparent(widget, probe):
     assert_color(probe.background_color, TRANSPARENT if supports_alpha else original)
 
 
-async def test_alignment(widget, probe, verify_vertical_alignment):
+async def test_text_alignment(widget, probe, verify_vertical_text_alignment):
     """Widget honors alignment settings."""
-    # Use column alignment to ensure widget uses all available width
+    # Use column direction to ensure widget uses all available width
     widget.parent.style.direction = COLUMN
 
-    # Initial alignment is LEFT, initial direction is LTR
+    # Initial text alignment is LEFT, initial direction is LTR
     await probe.redraw("Text direction should be LTR")
-    probe.assert_alignment(LEFT)
+    probe.assert_text_alignment(LEFT)
 
-    for alignment in [RIGHT, CENTER, JUSTIFY]:
-        widget.style.text_align = alignment
-        await probe.redraw("Text direction should be %s" % alignment)
-        probe.assert_alignment(alignment)
-        probe.assert_vertical_alignment(verify_vertical_alignment)
+    for text_alignment in [RIGHT, CENTER, JUSTIFY]:
+        widget.style.text_align = text_alignment
+        await probe.redraw("Text alignment should be %s" % text_alignment)
+        probe.assert_text_alignment(text_alignment)
+        probe.assert_vertical_text_alignment(verify_vertical_text_alignment)
 
-    # Clearing the alignment reverts to default alignment of LEFT
+    # Clearing the text alignment reverts to default text alignment of LEFT
     del widget.style.text_align
-    await probe.redraw("Text direction should be reverted to LEFT")
-    probe.assert_alignment(LEFT)
+    await probe.redraw("Text alignment should be reverted to LEFT")
+    probe.assert_text_alignment(LEFT)
 
-    # If text direction is RTL, default alignment is RIGHT
+    # If text direction is RTL, default text alignment is RIGHT
     widget.style.text_direction = RTL
-    await probe.redraw("Text direction should be RTL")
-    probe.assert_alignment(RIGHT)
+    await probe.redraw("Text direction is RTL, so text alignment should be RIGHT")
+    probe.assert_text_alignment(RIGHT)
 
-    # If text direction is expliclty LTR, default alignment is LEFT
+    # If text direction is expliclty LTR, default text alignment is LEFT
     widget.style.text_direction = LTR
-    await probe.redraw("Text direction should be LTR")
-    probe.assert_alignment(LEFT)
+    await probe.redraw("Text direction is LTR, so text alignment should be LEFT")
+    probe.assert_text_alignment(LEFT)
 
-    # If the widget has an explicit height, the vertical alignment of the widget
+    # If the widget has an explicit height, the vertical text alignment of the widget
     # is unchanged.
     widget.style.height = 200
-    await probe.redraw(f"Text should be at the {verify_vertical_alignment}")
-    probe.assert_vertical_alignment(verify_vertical_alignment)
+    await probe.redraw(f"Text should be at the {verify_vertical_text_alignment}")
+    probe.assert_vertical_text_alignment(verify_vertical_text_alignment)
 
 
 async def test_readonly(widget, probe):
