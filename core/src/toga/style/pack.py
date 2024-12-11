@@ -61,6 +61,7 @@ DISPLAY_CHOICES = Choices(PACK, NONE)
 VISIBILITY_CHOICES = Choices(VISIBLE, HIDDEN)
 DIRECTION_CHOICES = Choices(ROW, COLUMN)
 ALIGN_ITEMS_CHOICES = Choices(LEFT, RIGHT, TOP, BOTTOM, CENTER)
+GAP_CHOICES = Choices(integer=True)
 
 SIZE_CHOICES = Choices(NONE, integer=True)
 FLEX_CHOICES = Choices(number=True)
@@ -342,7 +343,8 @@ class Pack(BaseStyle):
         width = 0
         min_width = 0
         remaining_width = available_width
-        for child in node.children:
+
+        for i, child in enumerate(node.children):
             # self._debug(f"PASS 1 {child}")
             if child.style.width != NONE:
                 # self._debug(f"- fixed width {child.style.width}")
@@ -364,7 +366,7 @@ class Pack(BaseStyle):
                         flex_total += child.style.flex
                         # Final child content size will be computed in pass 2, after the
                         # amount of flexible space is known. For now, set an initial
-                        # content height based on the intrinsic size, which will be the
+                        # content width based on the intrinsic size, which will be the
                         # minimum possible allocation.
                         child_content_width = child.intrinsic.width.value
                         min_child_content_width = child.intrinsic.width.value
@@ -420,18 +422,19 @@ class Pack(BaseStyle):
                     child_content_width = child.layout.content_width
                     min_child_content_width = child.layout.min_content_width
 
+            gap = 0 if i == 0 else self.gap
             child_width = (
                 child.style.margin_left + child_content_width + child.style.margin_right
             )
-            width += child_width
-            remaining_width -= child_width
+            width += gap + child_width
+            remaining_width -= gap + child_width
 
             min_child_width = (
                 child.style.margin_left
                 + min_child_content_width
                 + child.style.margin_right
             )
-            min_width += min_child_width
+            min_width += gap + min_child_width
 
             # self._debug(f"  {min_child_width=} {min_width=} {min_flex=}")
             # self._debug(f"  {child_width=} {width=} {remaining_width=}")
@@ -567,6 +570,8 @@ class Pack(BaseStyle):
                 child.layout.content_left = offset
                 offset += child.layout.content_width + child.style.margin_right
 
+            offset += self.gap
+
             child_height = (
                 child.style.margin_top
                 + child.layout.content_height
@@ -624,7 +629,8 @@ class Pack(BaseStyle):
         height = 0
         min_height = 0
         remaining_height = available_height
-        for child in node.children:
+
+        for i, child in enumerate(node.children):
             # self._debug(f"PASS 1 {child}")
             if child.style.height != NONE:
                 # self._debug(f"- fixed height {child.style.height}")
@@ -704,20 +710,21 @@ class Pack(BaseStyle):
                     child_content_height = child.layout.content_height
                     min_child_content_height = child.layout.min_content_height
 
+            gap = 0 if i == 0 else self.gap
             child_height = (
                 child.style.margin_top
                 + child_content_height
                 + child.style.margin_bottom
             )
-            height += child_height
-            remaining_height -= child_height
+            height += gap + child_height
+            remaining_height -= gap + child_height
 
             min_child_height = (
                 child.style.margin_top
                 + min_child_content_height
                 + child.style.margin_bottom
             )
-            min_height += min_child_height
+            min_height += gap + min_child_height
 
             # self._debug(f"  {min_child_height=} {min_height=} {min_flex=}")
             # self._debug(f"  {child_height=} {height=} {remaining_height=}")
@@ -847,6 +854,8 @@ class Pack(BaseStyle):
             offset += child.style.margin_top
             child.layout.content_top = offset
             offset += child.layout.content_height + child.style.margin_bottom
+            offset += self.gap
+
             child_width = (
                 child.layout.content_width
                 + child.style.margin_left
@@ -935,6 +944,10 @@ class Pack(BaseStyle):
                 elif self.align_items == CENTER:
                     css.append("align-items: center;")
 
+        # gap
+        if self.gap:
+            css.append(f"gap: {self.gap}px;")
+
         # margin_*
         if self.margin_top:
             css.append(f"margin-top: {self.margin_top}px;")
@@ -983,6 +996,7 @@ Pack.validated_property("display", choices=DISPLAY_CHOICES, initial=PACK)
 Pack.validated_property("visibility", choices=VISIBILITY_CHOICES, initial=VISIBLE)
 Pack.validated_property("direction", choices=DIRECTION_CHOICES, initial=ROW)
 Pack.validated_property("align_items", choices=ALIGN_ITEMS_CHOICES)
+Pack.validated_property("gap", choices=GAP_CHOICES, initial=0)
 
 Pack.validated_property("width", choices=SIZE_CHOICES, initial=NONE)
 Pack.validated_property("height", choices=SIZE_CHOICES, initial=NONE)

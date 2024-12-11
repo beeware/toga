@@ -298,6 +298,17 @@ from toga.style.pack import (
             "flex-direction: column; flex: 0.0 0 auto; align-items: center;",
             id="column-align_items-center",
         ),
+        # Gap
+        pytest.param(
+            Pack(gap=42),
+            "flex-direction: row; flex: 0.0 0 auto; gap: 42px;",
+            id="gap",
+        ),
+        pytest.param(
+            Pack(gap=0),
+            "flex-direction: row; flex: 0.0 0 auto;",
+            id="gap-0",
+        ),
         # Margin
         pytest.param(
             Pack(margin_top=42),

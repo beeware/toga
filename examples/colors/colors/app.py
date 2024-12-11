@@ -31,24 +31,21 @@ class ColorsApp(toga.App):
         self.main_window = toga.MainWindow(size=(700, 800))
 
         # create widgets to test colors on
-        button = toga.Button("This is a button", style=Pack(margin=5))
-        label = toga.Label("This is a Label", style=Pack(margin=5))
+        button = toga.Button("This is a button")
+        label = toga.Label("This is a Label")
         multiline_text_input = toga.MultilineTextInput(
             value="This is a Multiline Text Input field!",
             placeholder="placeholder",
-            style=Pack(margin=5, flex=1),
+            style=Pack(flex=1),
         )
-        number_input = toga.NumberInput(value=1337, style=Pack(margin=5))
-        password_input = toga.PasswordInput(value="adminadmin", style=Pack(margin=5))
-        progress_bar = toga.ProgressBar(
-            max=100, value=50, running=True, style=Pack(margin=5)
-        )
+        number_input = toga.NumberInput(value=1337)
+        password_input = toga.PasswordInput(value="adminadmin")
+        progress_bar = toga.ProgressBar(max=100, value=50, running=True)
         selection = toga.Selection(
             items=["item 1", "item 2", "item 3", "item 4", "item 5", "item 6"],
-            style=Pack(margin=5),
         )
-        slider = toga.Slider(style=Pack(margin=5))
-        switch = toga.Switch("Switch", style=Pack(margin=5))
+        slider = toga.Slider()
+        switch = toga.Switch("Switch")
         table = toga.Table(
             headings=["Heading 1", "Heading 2"],
             data=[
@@ -60,12 +57,11 @@ class ColorsApp(toga.App):
                 ("value 1", "value 2"),
             ],
             missing_value="none",
-            style=Pack(margin=5, flex=1),
+            style=Pack(flex=1),
         )
         text_input = toga.TextInput(
             value="This is a Text input field!",
             placeholder="placeholder",
-            style=Pack(margin=5),
         )
 
         scroll_container = toga.ScrollContainer(
@@ -81,8 +77,8 @@ class ColorsApp(toga.App):
             temp_box.add(toga.Label(f"Label {x}"))
         scroll_container.content = temp_box
 
-        box_label = toga.Label("This is a Box:", style=Pack(margin=5))
-        box = toga.Box(style=Pack(flex=1, margin=5))
+        box_label = toga.Label("This is a Box:")
+        box = toga.Box(style=Pack(flex=1))
 
         self.widget_box = toga.Box(
             children=[
@@ -106,7 +102,7 @@ class ColorsApp(toga.App):
                     # Stack widgets vertically, and add margin so the
                     # background cyan of the parent is a border around the
                     # widgets
-                    style=Pack(direction=COLUMN, flex=1, margin=10),
+                    style=Pack(direction=COLUMN, flex=1, margin=10, gap=10),
                 )
             ],
             # Use a cyan background so that color changes are obvious

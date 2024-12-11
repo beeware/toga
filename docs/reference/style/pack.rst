@@ -82,6 +82,15 @@ are honored.
 If a value is provided, but the value isn't honored, the alignment
 reverts to the default for the direction.
 
+``gap``
+-------
+
+**Values:** ``<integer>``
+
+**Initial value:** ``0``
+
+The amount of space to allocate between adjacent children, in :ref:`CSS pixels
+<css-units>`.
 
 ``width``
 ---------
