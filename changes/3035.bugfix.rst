@@ -1,0 +1,1 @@
+The web backend now uses the Shoelace default font in all browsers.
