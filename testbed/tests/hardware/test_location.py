@@ -276,8 +276,7 @@ async def test_location_error(app, location_probe):
     location_probe.add_location(LatLng(37, 42), 5)
 
     # Setup location error, for implementations where the error does not happen async
-    if hasattr(location_probe, "setup_location_error"):
-        location_probe.setup_location_error()
+    location_probe.setup_location_error()
 
     # Request the current location
     location = app.location.current_location()
@@ -289,7 +288,7 @@ async def test_location_error(app, location_probe):
 
 async def test_location_tracking_start_error(app, location_probe):
     """If location tracking fails to start, location raises an error."""
-    if not hasattr(location_probe, "setup_tracking_error"):
+    if not location_probe.setup_tracking_start_error():
         return pytest.xfail(
             f"Tracking start cannot fail on {toga.platform.current_platform}"
         )
@@ -301,7 +300,7 @@ async def test_location_tracking_start_error(app, location_probe):
     location_probe.add_location(LatLng(37, 42), 5)
 
     # Setup tracking error
-    location_probe.setup_tracking_error()
+    location_probe.setup_tracking_start_error()
 
     # Start tracking, raising an error
     with pytest.raises(RuntimeError, match=r"Unable to start tracking \(.*\)"):

@@ -100,3 +100,11 @@ class LocationProbe(HardwareProbe):
         await self.redraw("Wait for location error")
 
         pytest.xfail("Android's location service doesn't raise errors on failure")
+
+    def setup_location_error(self):
+        # location error simulation handled by ``simulate_location_error``
+        pass
+
+    def setup_tracking_start_error(self):
+        # errors do not occur when tracking starts on Android
+        pass

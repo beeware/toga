@@ -173,3 +173,11 @@ class LocationProbe(AppProbe):
         )
 
         return await location
+
+    def setup_location_error(self):
+        # location error simulation handled by ``simulate_location_error``
+        pass
+
+    def setup_tracking_start_error(self):
+        # errors do not occur when tracking starts on iOS
+        pass
