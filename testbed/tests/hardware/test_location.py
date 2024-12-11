@@ -288,11 +288,6 @@ async def test_location_error(app, location_probe):
 
 async def test_location_tracking_start_error(app, location_probe):
     """If location tracking fails to start, location raises an error."""
-    if not location_probe.setup_tracking_start_error():
-        return pytest.xfail(
-            f"Tracking start cannot fail on {toga.platform.current_platform}"
-        )
-
     # Ensure location has permissions
     location_probe.grant_permission()
 

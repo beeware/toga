@@ -106,5 +106,4 @@ class LocationProbe(HardwareProbe):
         pass
 
     def setup_tracking_start_error(self):
-        # errors do not occur when tracking starts on Android
-        pass
+        pytest.xfail("Tracking start cannot fail on Android")

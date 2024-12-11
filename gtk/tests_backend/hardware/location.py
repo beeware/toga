@@ -165,8 +165,6 @@ class LocationProbe(AppProbe):
 
     def setup_tracking_start_error(self):
         self.mock_native.client.props.active = False
-        # Return True to indicate tracking start errors are setup
-        return True
 
     async def simulate_location_error(self, location):
         # No simulation required after setup_location_error, wait for the location
@@ -201,8 +199,6 @@ class SandboxedLocationProbe(LocationProbe):
 
     def setup_tracking_start_error(self):
         self._xfail_location_portal_no_post_init_failure()
-        # Return True to indicate tracking start errors are setup
-        return True
 
     def setup_location_error(self):
         self._xfail_location_portal_no_post_init_failure()

@@ -1,5 +1,6 @@
 from unittest.mock import Mock, PropertyMock
 
+import pytest
 from rubicon.objc import ObjCClass
 
 from toga_cocoa import libs as cocoa
@@ -179,5 +180,4 @@ class LocationProbe(AppProbe):
         pass
 
     def setup_tracking_start_error(self):
-        # errors do not occur when tracking starts on macOS
-        pass
+        pytest.xfail("Tracking start cannot fail on macOS")
