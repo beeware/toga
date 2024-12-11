@@ -1,0 +1,1 @@
+Inconsistencies in bundle IDs in the example apps were normalized.

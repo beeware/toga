@@ -56,16 +56,14 @@ classifiers = [
     "Topic :: Software Development :: Widget Sets",
 ]
 dependencies = [
-    "travertino >= 0.3.0",
-    # limited to <=3.9 for the `group` argument for `entry_points()`
-    "importlib_metadata >= 4.4.0; python_version <= '3.9'",
+    "travertino >= 0.3.0, < 0.4.0",
 ]
 
 [project.optional-dependencies]
 # Extras used by developers *of* Toga are pinned to specific versions to
 # ensure environment consistency.
 dev = [
-    "coverage[toml] == 7.6.8",
+    "coverage[toml] == 7.6.9",
     "coverage-conditional-plugin == 0.9.0",
     "Pillow == 11.0.0",
     "pre-commit == 4.0.1",
@@ -114,6 +112,7 @@ relative_files = true
 # See notes in the root pyproject.toml file.
 source = ["src"]
 source_pkgs = ["toga"]
+omit = ["**/toga/compat/**"]  # Only used by MicroPython.
 
 [tool.coverage.paths]
 source = [

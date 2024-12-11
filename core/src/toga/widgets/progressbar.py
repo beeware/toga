@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Literal, SupportsFloat
+from typing import Any, Literal, SupportsFloat
 
 from .base import StyleT, Widget
 
@@ -32,13 +32,14 @@ class ProgressBar(Widget):
         """
         super().__init__(id=id, style=style)
 
-        self._impl = self.factory.ProgressBar(interface=self)
-
         self.max = max
         self.value = value
 
         if running:
             self.start()
+
+    def _create(self) -> Any:
+        return self.factory.ProgressBar(interface=self)
 
     @property
     def enabled(self) -> Literal[True]:

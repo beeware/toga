@@ -13,7 +13,7 @@ class JavaScriptResult(AsyncResult):
 
 
 class OnWebViewLoadHandler(Protocol):
-    def __call__(self, widget: WebView, /, **kwargs: Any) -> object:
+    def __call__(self, widget: WebView, **kwargs: Any) -> object:
         """A handler to invoke when the WebView is loaded.
 
         :param widget: The WebView that was loaded.
@@ -44,12 +44,14 @@ class WebView(Widget):
         """
         super().__init__(id=id, style=style)
 
-        self._impl = self.factory.WebView(interface=self)
         self.user_agent = user_agent
 
         # Set the load handler before loading the first URL.
         self.on_webview_load = on_webview_load
         self.url = url
+
+    def _create(self) -> Any:
+        return self.factory.WebView(interface=self)
 
     def _set_url(self, url: str | None, future: asyncio.Future | None) -> None:
         # Utility method for validating and setting the URL with a future.

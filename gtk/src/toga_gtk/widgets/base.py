@@ -9,7 +9,6 @@ class Widget:
     def __init__(self, interface):
         super().__init__()
         self.interface = interface
-        self.interface._impl = self
         self._container = None
         self.native = None
         self.style_providers = {}
@@ -23,9 +22,6 @@ class Widget:
         # ensure any other widgets are also styled appropriately.
         self.native.set_name(f"toga-{self.interface.id}")
         self.native.get_style_context().add_class("toga")
-
-        # Ensure initial styles are applied.
-        self.interface.style.reapply()
 
     @abstractmethod
     def create(self): ...

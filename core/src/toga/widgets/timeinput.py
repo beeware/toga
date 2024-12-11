@@ -11,7 +11,7 @@ from .base import StyleT, Widget
 
 
 class OnChangeHandler(Protocol):
-    def __call__(self, widget: TimeInput, /, **kwargs: Any) -> object:
+    def __call__(self, widget: TimeInput, **kwargs: Any) -> object:
         """A handler to invoke when the time input is changed.
 
         :param widget: The TimeInput that was changed.
@@ -42,15 +42,15 @@ class TimeInput(Widget):
         """
         super().__init__(id=id, style=style)
 
-        # Create a platform specific implementation of a TimeInput
-        self._impl = self.factory.TimeInput(interface=self)
-
         self.on_change = None
         self.min = min
         self.max = max
 
         self.value = value
         self.on_change = on_change
+
+    def _create(self) -> Any:
+        return self.factory.TimeInput(interface=self)
 
     @property
     def value(self) -> datetime.time:
