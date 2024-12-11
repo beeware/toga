@@ -1,1 +1,1 @@
-Toga GTK now has basic support for the ``Location`` API.
+Toga GTK now supports location services via integration with Geoclue and the XDG Location Portal.
