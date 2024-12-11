@@ -77,9 +77,9 @@ If you no longer wish to receive location updates, call :any:`Location.stop_trac
 System requirements
 -------------------
 
-* Using Location on Linux requires that the user has installed the system packages
-  for Geoclue2, plus the GObject Introspection bindings for Geoclue2. The name of
-  the system package required is distribution dependent:
+* Using location services on Linux requires that the user has installed the system
+  packages for Geoclue2, plus the GObject Introspection bindings for Geoclue2. The name
+  of the system package required is distribution dependent:
 
   - Ubuntu and Debian: ``gir1.2-geoclue-2.0``
   - Fedora: ``geoclue2-libs``
