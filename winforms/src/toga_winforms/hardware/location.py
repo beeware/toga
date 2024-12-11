@@ -44,7 +44,9 @@ class Location:
             print("PERMISSION CHANGED", self.watcher.Permission)
 
     def _position_changed(
-        self, sender, event: GeoPositionChangedEventArgs[GeoCoordinate]
+        self,
+        sender: GeoCoordinateWatcher,
+        event: GeoPositionChangedEventArgs[GeoCoordinate],
     ):
         location = toga_location(event.Position.Location)
         if location:
