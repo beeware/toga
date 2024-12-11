@@ -137,8 +137,8 @@ direction of the parent's layout.
 
 **Initial value:** ``0``
 
-The amount of space to allocate between the edge of the box, and the edge of the content
-in the box, in :ref:`CSS pixels <css-units>`.
+The amount of space to allocate outside the edge of the widget, in :ref:`CSS pixels
+<css-units>`.
 
 ``margin``
 -----------
