@@ -60,8 +60,7 @@ class ColorsApp(toga.App):
             style=Pack(flex=1),
         )
         text_input = toga.TextInput(
-            value="This is a Text input field!",
-            placeholder="placeholder",
+            value="This is a Text input field!", placeholder="placeholder"
         )
 
         scroll_container = toga.ScrollContainer(

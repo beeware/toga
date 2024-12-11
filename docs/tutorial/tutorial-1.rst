@@ -21,5 +21,5 @@ fit the widgets they contain into the available space. The ``TextInput``
 widgets have a style of ``flex=1``, but the ``Label`` widgets have a fixed
 width; as a result, the ``TextInput`` widgets will be stretched to fit the
 available horizontal space. The ``margin_left`` style ensures that the
-``TextInputs`` are aligned, and the ``gap``style adds spacing between
+``TextInputs`` are aligned, and the ``gap`` style adds spacing between
 all the widgets.

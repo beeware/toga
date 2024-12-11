@@ -17,18 +17,9 @@ def test_gap():
         "app",
         style=Pack(direction="row"),
         children=[
-            Box(
-                "fixed",
-                style=Pack(width=100, height=100),
-            ),
-            Box(
-                "flex-1",
-                style=Pack(flex=1, margin=15),
-            ),
-            Box(
-                "flex-3",
-                style=Pack(flex=3),
-            ),
+            Box("fixed", style=Pack(width=100, height=100)),
+            Box("flex-1", style=Pack(flex=1, margin=15)),
+            Box("flex-3", style=Pack(flex=3)),
         ],
     )
 
@@ -42,18 +33,9 @@ def test_gap():
             "origin": (0, 0),
             "content": (640, 480),
             "children": [
-                {
-                    "origin": (0, 0),
-                    "content": (100, 100),
-                },
-                {
-                    "origin": (115, 15),
-                    "content": (105, 450),
-                },
-                {
-                    "origin": (235, 0),
-                    "content": (405, 480),
-                },
+                {"origin": (0, 0), "content": (100, 100)},
+                {"origin": (115, 15), "content": (105, 450)},
+                {"origin": (235, 0), "content": (405, 480)},
             ],
         },
     )
@@ -72,18 +54,9 @@ def test_gap():
             "origin": (0, 0),
             "content": (640, 480),
             "children": [
-                {
-                    "origin": (0, 0),
-                    "content": (100, 100),
-                },
-                {
-                    "origin": (135, 15),
-                    "content": (95, 450),
-                },
-                {
-                    "origin": (265, 0),
-                    "content": (375, 480),
-                },
+                {"origin": (0, 0), "content": (100, 100)},
+                {"origin": (135, 15), "content": (95, 450)},
+                {"origin": (265, 0), "content": (375, 480)},
             ],
         },
     )
@@ -99,18 +72,9 @@ def test_gap():
             "origin": (0, 0),
             "content": (640, 480),
             "children": [
-                {
-                    "origin": (540, 0),
-                    "content": (100, 100),
-                },
-                {
-                    "origin": (410, 15),
-                    "content": (95, 450),
-                },
-                {
-                    "origin": (0, 0),
-                    "content": (375, 480),
-                },
+                {"origin": (540, 0), "content": (100, 100)},
+                {"origin": (410, 15), "content": (95, 450)},
+                {"origin": (0, 0), "content": (375, 480)},
             ],
         },
     )
@@ -126,18 +90,9 @@ def test_gap():
             "origin": (0, 0),
             "content": (640, 480),
             "children": [
-                {
-                    "origin": (0, 0),
-                    "content": (100, 100),
-                },
-                {
-                    "origin": (15, 135),
-                    "content": (610, 55),
-                },
-                {
-                    "origin": (0, 225),
-                    "content": (640, 255),
-                },
+                {"origin": (0, 0), "content": (100, 100)},
+                {"origin": (15, 135), "content": (610, 55)},
+                {"origin": (0, 225), "content": (640, 255)},
             ],
         },
     )
