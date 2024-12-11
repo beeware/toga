@@ -34,9 +34,12 @@ else:  # pragma: no cover
 def is_permissions_error(error):
     """Determine if a ``GLib.Error`` is one of the known Geoclue permissions errors.
 
-    In practice, these permissions errors may not occur due to a bug in
-    ``Geoclue.Simple``'s error handling
+    If Geoclue version <= 2.7.2 is in use, these permissions errors will not surface
+    due to a (now resolved) bug in ``Geoclue.Simple``'s error handling
     https://gitlab.freedesktop.org/geoclue/geoclue/-/issues/205
+
+    In that case, the error will be a generic IO Failure, so permission failures
+    will be indistinguishable from other systemic failures.
 
     :param error: a GLib.Error instance
     :returns: whether the error is one of the known permissions errors
@@ -165,6 +168,11 @@ class Location(GObject.Object):
             if State.is_uninitialised(self.props.state):  # pragma: no cover
                 return
 
+            # See note on :func:`~.is_permission_error` regarding error ambiguity
+            # for some Geoclue versions. Because of this ambiguity any initialisation
+            # failure needs to be communicated as permissions issue, and ``result``
+            # cannot reliably be set to an exception if state is FAILED instead of
+            # DENIED.
             self.permission_result = State.is_available(self.props.state)
 
             result.set_result(self.permission_result)
