@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from contextlib import contextmanager
+
 from System import EventHandler
 from System.Device.Location import (
     GeoCoordinate,
@@ -7,6 +9,7 @@ from System.Device.Location import (
     GeoPositionAccuracy,
     GeoPositionChangedEventArgs,
     GeoPositionPermission,
+    GeoPositionStatus,
 )
 
 from toga import LatLng
@@ -47,9 +50,19 @@ class Location:
     def has_background_permission(self):
         return self._has_background_permission
 
+    @contextmanager
+    def context(self):
+        already_started = self.watcher.Status == GeoPositionStatus.Ready
+        self.watcher.Start(False)
+        try:
+            yield
+        finally:
+            if not already_started:  # don't want to stop if we're tracking
+                self.watcher.Stop()
+
     def request_permission(self, future: AsyncResult[bool]) -> None:
-        self.watcher.Start(False)  # TODO: where can we call stop?
-        future.set_result(self.has_permission())
+        with self.context():
+            future.set_result(self.has_permission())
 
     def request_background_permission(self, future: AsyncResult[bool]) -> None:
         if not self.has_permission():
@@ -58,13 +71,15 @@ class Location:
         self._has_background_permission = True
 
     def current_location(self, result: AsyncResult[dict]) -> None:
-        self.watcher.Start()  # ensure watcher has started
-        loco = toga_location(self.watcher.Position.Location)
-        result.set_result(loco["location"] if loco else None)
+        with self.context():
+            loco = toga_location(self.watcher.Position.Location)
+            # TODO: filter by horizontal accuracy?
+            result.set_result(loco["location"] if loco else None)
 
     def start_tracking(self) -> None:
-        self.watcher.Start()  # ensure watcher has started
+        self.watcher.Start()
         self.watcher.add_PositionChanged(self._handler)
 
     def stop_tracking(self) -> None:
+        self.watcher.Stop()
         self.watcher.remove_PositionChanged(self._handler)
