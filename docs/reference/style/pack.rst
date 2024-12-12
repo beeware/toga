@@ -317,15 +317,6 @@ The mapping that can be used to establish the reference implementation is:
    ============================= ===================================================
    Pack property                 CSS property
    ============================= ===================================================
-   ``align_items: top``          ``align-items: start`` if ``direction == row``;
-                                 otherwise ignored.
-   ``alignment: bottom``         ``align-items: end`` if ``direction == row``;
-                                 otherwise ignored.
-   ``alignment: left``           ``align-items: start`` if ``direction == column``;
-                                 otherwise ignored.
-   ``alignment: right``          ``align-items: end`` if ``direction == column``;
-                                 otherwise ignored.
-   ``alignment: center``         ``align-items: center``
    ``direction: <str>``          ``flex-direction: <str>``
    ``display: pack``             ``display: flex``
    ``flex: <int>``               If ``direction = row`` and ``width`` is set,
