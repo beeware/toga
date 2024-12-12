@@ -142,16 +142,22 @@ class Pack(BaseStyle):
     # Dot lookup
 
     def __getattribute__(self, name):
-        get = super().__getattribute__
+        if name in {
+            "direction",
+            "text_direction",
+            "_warn_deprecated",
+            "_update_property_name",
+        }:
+            return super().__getattribute__(name)
 
         # Align_items and alignment are paired. Both can never be set at the same time;
         # if one is requested, and the other one is set, compute the requested value
         # from the one that is set.
-        if name == ALIGN_ITEMS and (alignment := get(ALIGNMENT)):
+        if name == ALIGN_ITEMS and (alignment := super().__getattribute__(ALIGNMENT)):
             if alignment == CENTER:
                 return CENTER
 
-            if get("direction") == ROW:
+            if self.direction == ROW:
                 if alignment == TOP:
                     return START
                 if alignment == BOTTOM:
@@ -162,32 +168,32 @@ class Pack(BaseStyle):
 
             # direction must be COLUMN
             if alignment == LEFT:
-                return START if get("text_direction") == LTR else END
+                return START if self.text_direction == LTR else END
             if alignment == RIGHT:
-                return START if get("text_direction") == RTL else END
+                return START if self.text_direction == RTL else END
 
             # No remaining valid combinations
             return None
 
         if name == ALIGNMENT:
             # Warn, whether it's set or not.
-            get("_warn_deprecated")(ALIGNMENT, ALIGN_ITEMS)
+            self._warn_deprecated(ALIGNMENT, ALIGN_ITEMS)
 
-            if align_items := get(ALIGN_ITEMS):
+            if align_items := super().__getattribute__(ALIGN_ITEMS):
                 if align_items == START:
-                    if get("direction") == COLUMN:
-                        return LEFT if get("text_direction") == LTR else RIGHT
+                    if self.direction == COLUMN:
+                        return LEFT if self.text_direction == LTR else RIGHT
                     return TOP  # for ROW
 
                 if align_items == END:
-                    if get("direction") == COLUMN:
-                        return RIGHT if get("text_direction") == LTR else LEFT
+                    if self.direction == COLUMN:
+                        return RIGHT if self.text_direction == LTR else LEFT
                     return BOTTOM  # for ROW
 
                 # Only CENTER remains
                 return CENTER
 
-        return get(get("_update_property_name")(name))
+        return super().__getattribute__(self._update_property_name(name))
 
     def __setattr__(self, name, value):
         # Only one of these can be set at a time.
