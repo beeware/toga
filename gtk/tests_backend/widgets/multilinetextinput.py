@@ -3,7 +3,7 @@ import pytest
 from toga_gtk.libs import Gtk
 
 from .base import SimpleProbe
-from .properties import toga_color, toga_text_alignment_from_justification
+from .properties import to_toga_text_align_from_justification, toga_color
 
 
 class MultilineTextInputProbe(SimpleProbe):
@@ -88,12 +88,12 @@ class MultilineTextInputProbe(SimpleProbe):
         return sc.get_property("font", sc.get_state())
 
     @property
-    def text_alignment(self):
-        return toga_text_alignment_from_justification(
+    def text_align(self):
+        return to_toga_text_align_from_justification(
             self.native_textview.get_justification(),
         )
 
-    def assert_vertical_text_alignment(self, expected):
+    def assert_vertical_text_align(self, expected):
         # GTK.TextView vertical alignment is non-configurable
         pass
 

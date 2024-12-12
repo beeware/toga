@@ -184,7 +184,7 @@ class TextInput(Widget):
     def set_placeholder(self, value):
         self.native.cell.placeholderString = value
 
-    def set_text_alignment(self, value):
+    def set_text_align(self, value):
         self.native.alignment = NSTextAlignment(value)
         # The alert label should be on the trailing edge
         if value == RIGHT:

@@ -20,7 +20,7 @@ def test_set_default_right_textalign_when_rtl():
     root.style.reapply()
     # Two calls; one caused by text_align, one because text_direction
     # implies a change to text alignment.
-    assert root._impl.set_text_alignment.mock_calls == [call(RIGHT), call(RIGHT)]
+    assert root._impl.set_text_align.mock_calls == [call(RIGHT), call(RIGHT)]
 
 
 def test_set_default_left_textalign_when_no_rtl():
@@ -28,13 +28,13 @@ def test_set_default_left_textalign_when_no_rtl():
     root.style.reapply()
     # Two calls; one caused by text_align, one because text_direction
     # implies a change to text alignment.
-    assert root._impl.set_text_alignment.mock_calls == [call(LEFT), call(LEFT)]
+    assert root._impl.set_text_align.mock_calls == [call(LEFT), call(LEFT)]
 
 
-def test_set_center_text_alignment():
+def test_set_center_text_align():
     root = ExampleNode("app", style=Pack(text_align="center"))
     root.style.reapply()
-    root._impl.set_text_alignment.assert_called_once_with(CENTER)
+    root._impl.set_text_align.assert_called_once_with(CENTER)
 
 
 def test_set_color():

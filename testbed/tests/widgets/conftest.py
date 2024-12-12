@@ -78,7 +78,7 @@ def verify_focus_handlers():
 
 
 @fixture
-def verify_vertical_text_alignment():
+def verify_vertical_text_align():
     """The widget's default vertical text alignment"""
     return TOP
 

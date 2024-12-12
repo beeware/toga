@@ -18,7 +18,7 @@ from .properties import (  # noqa: F401
     test_placeholder_color,
     test_placeholder_focus,
     test_readonly,
-    test_text_alignment,
+    test_text_align,
 )
 from .test_textinput import (  # noqa: F401
     placeholder,
@@ -30,7 +30,7 @@ from .test_textinput import (  # noqa: F401
     test_undo_redo,
     test_validation,
     verify_focus_handlers,
-    verify_vertical_text_alignment,
+    verify_vertical_text_align,
 )
 
 

@@ -99,7 +99,7 @@ class Widget:
     def set_bounds(self, x, y, width, height):
         self._reapply_style()
 
-    def set_text_alignment(self, alignment):
+    def set_text_align(self, alignment):
         self._reapply_style()
 
     def set_hidden(self, hidden):

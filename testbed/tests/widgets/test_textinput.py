@@ -22,7 +22,7 @@ from .properties import (  # noqa: F401
     test_placeholder_color,
     test_placeholder_focus,
     test_readonly,
-    test_text_alignment,
+    test_text_align,
 )
 
 
@@ -32,7 +32,7 @@ async def widget():
 
 
 @pytest.fixture
-def verify_vertical_text_alignment():
+def verify_vertical_text_align():
     return CENTER
 
 

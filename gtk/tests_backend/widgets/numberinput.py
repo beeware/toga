@@ -4,7 +4,7 @@ from toga.constants import JUSTIFY, LEFT
 from toga_gtk.libs import Gtk
 
 from .base import SimpleProbe
-from .properties import toga_x_text_alignment
+from .properties import to_toga_x_text_align
 
 
 class NumberInputProbe(SimpleProbe):
@@ -31,16 +31,16 @@ class NumberInputProbe(SimpleProbe):
         )
 
     @property
-    def text_alignment(self):
-        return toga_x_text_alignment(self.native.get_alignment())
+    def text_align(self):
+        return to_toga_x_text_align(self.native.get_alignment())
 
-    def assert_text_alignment(self, expected):
+    def assert_text_align(self, expected):
         if expected == JUSTIFY:
-            assert self.text_alignment == LEFT
+            assert self.text_align == LEFT
         else:
-            assert self.text_alignment == expected
+            assert self.text_align == expected
 
-    def assert_vertical_text_alignment(self, expected):
+    def assert_vertical_text_align(self, expected):
         # GTK.SpinButton vertical alignment is non-configurable
         pass
 

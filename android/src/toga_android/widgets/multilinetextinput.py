@@ -23,7 +23,7 @@ class MultilineTextInput(TextInput):
     def _on_lose_focus(self):
         pass  # The interface doesn't support this event.
 
-    def set_text_alignment(self, value):
+    def set_text_align(self, value):
         self.set_textview_alignment(value, Gravity.TOP)
 
     # This method is necessary to override the TextInput base class.

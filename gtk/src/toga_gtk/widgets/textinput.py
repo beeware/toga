@@ -3,7 +3,7 @@ from travertino.size import at_least
 from toga.keys import Key
 from toga_gtk.keys import toga_key
 
-from ..libs import Gtk, gtk_text_alignment
+from ..libs import Gtk, gtk_text_align
 from .base import Widget
 
 
@@ -41,8 +41,8 @@ class TextInput(Widget):
     def set_placeholder(self, value):
         self.native.set_placeholder_text(value)
 
-    def set_text_alignment(self, value):
-        xalign, justify = gtk_text_alignment(value)
+    def set_text_align(self, value):
+        xalign, justify = gtk_text_align(value)
         self.native.set_alignment(
             xalign
         )  # Aligns the whole text block within the widget.

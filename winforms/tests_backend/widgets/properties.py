@@ -9,7 +9,7 @@ def toga_color(color):
     return rgba(color.R, color.G, color.B, color.A / 255)
 
 
-def toga_x_text_alignment(alignment):
+def to_toga_x_text_align(alignment):
     return {
         ContentAlignment.TopLeft: LEFT,
         ContentAlignment.MiddleLeft: LEFT,
@@ -27,7 +27,7 @@ def toga_x_text_alignment(alignment):
     }[alignment]
 
 
-def toga_y_text_alignment(alignment):
+def to_toga_y_text_align(alignment):
     return {
         ContentAlignment.TopLeft: TOP,
         ContentAlignment.TopCenter: TOP,

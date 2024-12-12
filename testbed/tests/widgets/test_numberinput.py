@@ -19,10 +19,10 @@ from .properties import (  # noqa: F401
     test_font,
     test_font_attrs,
     test_readonly,
-    test_text_alignment,
+    test_text_align,
 )
 from .test_textinput import (  # noqa: F401
-    verify_vertical_text_alignment,
+    verify_vertical_text_align,
 )
 
 

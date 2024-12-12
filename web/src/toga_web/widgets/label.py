@@ -11,7 +11,7 @@ class Label(Widget):
     def set_text(self, value):
         self.native.innerHTML = value
 
-    def set_text_alignment(self, value):
+    def set_text_align(self, value):
         pass
 
     def rehint(self):
