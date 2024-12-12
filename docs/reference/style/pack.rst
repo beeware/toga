@@ -67,20 +67,14 @@ indicates children will be packed horizontally; left-to-right if
 ``align_items``
 ---------------
 
-**Values:** ``top`` | ``bottom`` | ``left`` | ``right`` | ``center``
+**Values:** ``start`` | ``center`` | ``end``
 
-**Initial value:** ``top`` if direction is ``row``; ``left`` if direction is ``column``
+**Initial value:** ``start``
 
-The alignment of children relative to the outside of the packed box.
-
-If the box is a ``column`` box, only the values ``left``, ``right`` and
-``center`` are honored.
-
-If the box is a ``row`` box, only the values ``top``, ``bottom`` and ``center``
-are honored.
-
-If a value is provided, but the value isn't honored, the alignment
-reverts to the default for the direction.
+The alignment of children relative to the outside of the packed box, along the cross
+axis. A row's main axis is horizontal, so its cross axis is vertical; ``start`` aligns
+children to the top, while ``end`` aligns them to the bottom. For columns, ``start`` is
+on the left if ``text_direction`` is ``LTR``, and the right if ``RTL``.
 
 
 ``width``
@@ -137,7 +131,7 @@ direction of the parent's layout.
 
 **Initial value:** ``0``
 
-The amount of space to allocate outside the edge of the widget, in :ref:`CSS pixels
+The amount of space to allocate outside the edge of the box, in :ref:`CSS pixels
 <css-units>`.
 
 ``margin``
