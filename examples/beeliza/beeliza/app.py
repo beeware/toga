@@ -63,13 +63,13 @@ class BeelizaApp(toga.App):
 
         # Buttons
         self.text_input = toga.TextInput(
-            style=Pack(flex=1, padding=5),
+            style=Pack(flex=1, margin=5),
             on_confirm=self.handle_input,
         )
         send_button = toga.Button(
             "Send",
             on_press=self.handle_input,
-            style=Pack(padding=5),
+            style=Pack(margin=5),
         )
         input_box = toga.Box(
             children=[self.text_input, send_button],

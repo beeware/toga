@@ -21,11 +21,11 @@ def test_beeliza():
                 children=[
                     ExampleNode(
                         "input",
-                        style=Pack(flex=1, padding=5),
+                        style=Pack(flex=1, margin=5),
                         size=(at_least(100), 15),
                     ),
                     ExampleNode(
-                        "button", style=Pack(padding=5), size=(at_least(40), 10)
+                        "button", style=Pack(margin=5), size=(at_least(40), 10)
                     ),
                 ],
             ),

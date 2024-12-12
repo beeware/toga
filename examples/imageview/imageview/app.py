@@ -12,8 +12,8 @@ class ImageViewApp(toga.App):
 
         box = toga.Box(
             style=Pack(
-                padding=10,
-                alignment=CENTER,
+                margin=10,
+                align_items=CENTER,
                 direction=COLUMN,
             )
         )

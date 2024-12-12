@@ -38,7 +38,7 @@ class Example{{ cookiecutter.widget_name }}App(toga.App):
             style=Pack(
                 flex=1,
                 direction=COLUMN,
-                padding=10,
+                margin=10,
                 width=500,
                 height=300
             )

@@ -67,11 +67,11 @@ def test_set_bounds(widget, child, grandchild):
     assert_action_performed_with(grandchild, "set bounds", x=1, y=2, width=3, height=4)
 
 
-def test_text_alignment(widget):
+def test_text_align(widget):
     """Text alignment can be set on a widget."""
-    widget.applicator.set_text_alignment(RIGHT)
+    widget.applicator.set_text_align(RIGHT)
 
-    assert_action_performed_with(widget, "set alignment", alignment=RIGHT)
+    assert_action_performed_with(widget, "set text alignment", alignment=RIGHT)
 
 
 @pytest.mark.parametrize(

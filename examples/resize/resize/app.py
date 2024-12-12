@@ -24,7 +24,7 @@ class SizePanel(toga.Box):
         )
         self.flex = SizeButton("F", value=0, max=3, on_press=self.on_press)
         super().__init__(
-            style=Pack(direction=COLUMN, alignment="center"),
+            style=Pack(direction=COLUMN, align_items="center"),
             children=[
                 toga.Label(title.upper(), style=Pack(font_weight="bold")),
                 toga.Box(

@@ -11,8 +11,8 @@ class SliderApp(toga.App):
         self.main_window = toga.MainWindow(size=(1000, 500))
 
         # set up common styles
-        label_style = Pack(flex=1, padding_right=24)
-        box_style = Pack(direction=ROW, padding=10)
+        label_style = Pack(flex=1, margin_right=24)
+        box_style = Pack(direction=ROW, margin=10)
         slider_style = Pack(flex=1)
 
         self.continuous_label = toga.Label("Continuous", style=label_style)
@@ -61,7 +61,7 @@ class SliderApp(toga.App):
                     children=[self.scared_label, self.scared_slider],
                 ),
             ],
-            style=Pack(direction=COLUMN, padding=24),
+            style=Pack(direction=COLUMN, margin=24),
         )
 
         self.commands.add(

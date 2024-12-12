@@ -7,8 +7,8 @@ class DividerApp(toga.App):
     def startup(self):
         self.main_window = toga.MainWindow(size=(300, 150))
 
-        style = Pack(padding_top=24)
-        substyle = Pack(padding_right=12, padding_left=12, flex=1)
+        style = Pack(margin_top=24)
+        substyle = Pack(margin_right=12, margin_left=12, flex=1)
 
         # Add the content on the main window
         self.main_window.content = toga.Box(
@@ -24,10 +24,10 @@ class DividerApp(toga.App):
                         toga.Divider(direction=toga.Divider.VERTICAL, style=substyle),
                         toga.TextInput(placeholder="Second textbox"),
                     ],
-                    style=Pack(direction=ROW, padding=24, flex=1),
+                    style=Pack(direction=ROW, margin=24, flex=1),
                 ),
             ],
-            style=Pack(direction=COLUMN, padding=24),
+            style=Pack(direction=COLUMN, margin=24),
         )
 
         # Show the main window

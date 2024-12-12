@@ -141,7 +141,7 @@ class Widget:
         # Any position changes are applied by the container during do_size_allocate.
         self.container.make_dirty()
 
-    def set_alignment(self, alignment):
+    def set_text_align(self, alignment):
         # By default, alignment can't be changed
         pass
 

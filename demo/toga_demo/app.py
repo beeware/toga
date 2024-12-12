@@ -50,7 +50,7 @@ class TogaDemo(toga.App):
                 toga.Button(
                     "Hello world %s" % b,
                     on_press=self.button_handler,
-                    style=Pack(padding=20),
+                    style=Pack(margin=20),
                 )
             )
 

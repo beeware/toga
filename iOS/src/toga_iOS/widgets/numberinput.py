@@ -108,7 +108,7 @@ class NumberInput(Widget):
             self.native.text = str(value)
         self.interface.on_change()
 
-    def set_alignment(self, value):
+    def set_text_align(self, value):
         self.native.textAlignment = NSTextAlignment(value)
 
     def set_font(self, font):

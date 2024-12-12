@@ -63,7 +63,7 @@ class NumberInput(Widget):
         else:
             self.native.Value = native_decimal(value)
 
-    def set_alignment(self, value):
+    def set_text_align(self, value):
         self.native.TextAlign = HorizontalTextAlignment(value)
 
     def rehint(self):

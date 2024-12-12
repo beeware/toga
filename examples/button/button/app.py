@@ -55,7 +55,7 @@ class ExampleButtonApp(toga.App):
         )
 
         # Button with text and margin style
-        button5 = toga.Button("Far from home", style=Pack(padding=50, color=BLUE))
+        button5 = toga.Button("Far from home", style=Pack(margin=50, color=BLUE))
 
         # Button with text and RGB color
         button6 = toga.Button("RGB : Fashion", style=Pack(background_color=RED))

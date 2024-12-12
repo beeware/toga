@@ -92,7 +92,7 @@ class ExampleTreeApp(toga.App):
         self.main_window = toga.MainWindow()
 
         # Label to show responses.
-        self.label = toga.Label("Ready.", style=Pack(padding=10))
+        self.label = toga.Label("Ready.", style=Pack(margin=10))
 
         self.tree = toga.Tree(
             headings=["Year", "Title", "Rating", "Genre"],
@@ -124,7 +124,7 @@ class ExampleTreeApp(toga.App):
         )
 
         # Buttons
-        btn_style = Pack(flex=1, padding=10)
+        btn_style = Pack(flex=1, margin=10)
         self.btn_insert = toga.Button(
             "Insert Row", on_press=self.insert_handler, style=btn_style
         )
