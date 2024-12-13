@@ -1,7 +1,7 @@
 import System.Windows.Forms
 from System.Drawing import SystemColors
 
-from .properties import to_toga_x_text_align
+from .properties import toga_x_text_align
 from .textinput import TextInputProbe
 
 
@@ -58,4 +58,4 @@ class MultilineTextInputProbe(TextInputProbe):
     @property
     def text_align(self):
         self.native.SelectAll()
-        return to_toga_x_text_align(self.native.SelectionAlignment)
+        return toga_x_text_align(self.native.SelectionAlignment)

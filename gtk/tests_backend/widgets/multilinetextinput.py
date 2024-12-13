@@ -3,7 +3,7 @@ import pytest
 from toga_gtk.libs import Gtk
 
 from .base import SimpleProbe
-from .properties import to_toga_text_align_from_justification, toga_color
+from .properties import toga_color, toga_text_align_from_justification
 
 
 class MultilineTextInputProbe(SimpleProbe):
@@ -89,7 +89,7 @@ class MultilineTextInputProbe(SimpleProbe):
 
     @property
     def text_align(self):
-        return to_toga_text_align_from_justification(
+        return toga_text_align_from_justification(
             self.native_textview.get_justification(),
         )
 

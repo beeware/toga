@@ -68,7 +68,8 @@ DISPLAY_CHOICES = Choices(PACK, NONE)
 VISIBILITY_CHOICES = Choices(VISIBLE, HIDDEN)
 DIRECTION_CHOICES = Choices(ROW, COLUMN)
 ALIGN_ITEMS_CHOICES = Choices(START, CENTER, END)
-ALIGNMENT_CHOICES = Choices(TOP, RIGHT, BOTTOM, LEFT, CENTER)
+# Deprecated, but maintained for backwards compatibility with Toga <= 0.4.8
+ALIGNMENT_CHOICES = Choices(LEFT, RIGHT, TOP, BOTTOM, CENTER)
 
 SIZE_CHOICES = Choices(NONE, integer=True)
 FLEX_CHOICES = Choices(number=True)
@@ -1053,9 +1054,9 @@ class Pack(BaseStyle):
 Pack.validated_property("display", choices=DISPLAY_CHOICES, initial=PACK)
 Pack.validated_property("visibility", choices=VISIBILITY_CHOICES, initial=VISIBLE)
 Pack.validated_property("direction", choices=DIRECTION_CHOICES, initial=ROW)
-Pack.validated_property("alignment", choices=ALIGNMENT_CHOICES)
-# Legacy "alias" (ish) of align_items
 Pack.validated_property("align_items", choices=ALIGN_ITEMS_CHOICES)
+# Deprecated, but maintained for backwards compatibility with Toga <= 0.4.8
+Pack.validated_property("alignment", choices=ALIGNMENT_CHOICES)
 
 Pack.validated_property("width", choices=SIZE_CHOICES, initial=NONE)
 Pack.validated_property("height", choices=SIZE_CHOICES, initial=NONE)

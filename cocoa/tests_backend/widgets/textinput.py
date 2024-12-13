@@ -9,7 +9,7 @@ from toga_cocoa.libs import (
 )
 
 from .base import SimpleProbe
-from .properties import to_toga_text_align, toga_color
+from .properties import toga_color, toga_text_align
 
 
 class TextInputProbe(SimpleProbe):
@@ -61,7 +61,7 @@ class TextInputProbe(SimpleProbe):
 
     @property
     def text_align(self):
-        result = to_toga_text_align(self.native.alignment)
+        result = toga_text_align(self.native.alignment)
         if result == RIGHT:
             assert self.impl.error_label.alignment == NSLeftTextAlignment
         else:

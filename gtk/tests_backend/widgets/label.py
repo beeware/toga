@@ -1,7 +1,7 @@
 from toga_gtk.libs import Gtk
 
 from .base import SimpleProbe
-from .properties import to_toga_x_text_align, to_toga_y_text_align
+from .properties import toga_x_text_align, toga_y_text_align
 
 
 class LabelProbe(SimpleProbe):
@@ -13,11 +13,11 @@ class LabelProbe(SimpleProbe):
 
     @property
     def text_align(self):
-        return to_toga_x_text_align(self.native.get_xalign(), self.native.get_justify())
+        return toga_x_text_align(self.native.get_xalign(), self.native.get_justify())
 
     @property
     def vertical_text_align(self):
         return
 
     def assert_vertical_text_align(self, expected):
-        assert to_toga_y_text_align(self.native.get_yalign()) == expected
+        assert toga_y_text_align(self.native.get_yalign()) == expected

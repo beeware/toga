@@ -1,7 +1,7 @@
 import System.Windows.Forms
 
 from .base import SimpleProbe
-from .properties import to_toga_x_text_align, to_toga_y_text_align
+from .properties import toga_x_text_align, toga_y_text_align
 
 
 class LabelProbe(SimpleProbe):
@@ -13,7 +13,7 @@ class LabelProbe(SimpleProbe):
 
     @property
     def text_align(self):
-        return to_toga_x_text_align(self.native.TextAlign)
+        return toga_x_text_align(self.native.TextAlign)
 
     def assert_vertical_text_align(self, expected):
-        assert to_toga_y_text_align(self.native.TextAlign) == expected
+        assert toga_y_text_align(self.native.TextAlign) == expected

@@ -4,7 +4,7 @@ from toga.constants import JUSTIFY, LEFT
 from toga_gtk.libs import Gtk
 
 from .base import SimpleProbe
-from .properties import to_toga_x_text_align
+from .properties import toga_x_text_align
 
 
 class TextInputProbe(SimpleProbe):
@@ -34,7 +34,7 @@ class TextInputProbe(SimpleProbe):
 
     @property
     def text_align(self):
-        return to_toga_x_text_align(self.native.get_alignment())
+        return toga_x_text_align(self.native.get_alignment())
 
     def assert_text_align(self, expected):
         if expected == JUSTIFY:
