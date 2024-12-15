@@ -143,14 +143,6 @@ class Pack(BaseStyle):
     # Dot lookup
 
     def __getattribute__(self, name):
-        if name in {
-            "direction",
-            "text_direction",
-            "_warn_deprecated",
-            "_update_property_name",
-        }:
-            return super().__getattribute__(name)
-
         # Align_items and alignment are paired. Both can never be set at the same time;
         # if one is requested, and the other one is set, compute the requested value
         # from the one that is set.
@@ -194,7 +186,7 @@ class Pack(BaseStyle):
                 # Only CENTER remains
                 return CENTER
 
-        return super().__getattribute__(self._update_property_name(name))
+        return super().__getattribute__(type(self)._update_property_name(name))
 
     def __setattr__(self, name, value):
         # Only one of these can be set at a time.
