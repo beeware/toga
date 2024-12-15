@@ -190,7 +190,7 @@ class Widget(ABC, Scalable):
         pass
 
 
-def to_android_text_align(value):
+def android_text_align(value):
     """Convert toga alignment values into Android alignment values."""
     return {
         LEFT: Gravity.LEFT,
