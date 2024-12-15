@@ -42,14 +42,16 @@ class TextDialog(BaseDialog):
     ):
         super().__init__()
 
-        self.native = AlertDialog.Builder(toga.App.app.current_window._impl.app.native)
-        self.native.setCancelable(False)
-        self.native.setTitle(title)
-        self.native.setMessage(message)
+        self.native_builder = AlertDialog.Builder(
+            toga.App.app.current_window._impl.app.native
+        )
+        self.native_builder.setCancelable(False)
+        self.native_builder.setTitle(title)
+        self.native_builder.setMessage(message)
         if icon is not None:
-            self.native.setIcon(icon)
+            self.native_builder.setIcon(icon)
 
-        self.native.setPositiveButton(
+        self.native_builder.setPositiveButton(
             positive_text,
             OnClickListener(
                 self.completion_handler,
@@ -57,9 +59,10 @@ class TextDialog(BaseDialog):
             ),
         )
         if negative_text is not None:
-            self.native.setNegativeButton(
+            self.native_builder.setNegativeButton(
                 negative_text, OnClickListener(self.completion_handler, False)
             )
+        self.native = self.native_builder.create()
 
     def completion_handler(self, return_value: bool) -> None:
         self.future.set_result(return_value)

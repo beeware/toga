@@ -82,12 +82,12 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v4.2.1
+      uses: actions/checkout@v4.2.2
       with:
         fetch-depth: 0
 
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v5.2.0
+      uses: actions/setup-python@v5.3.0
       with:
         python-version: ${{ matrix.python-version }}
         allow-prereleases: true
@@ -123,18 +123,78 @@ jobs:
         if-no-files-found: error
         include-hidden-files: true
 
+  micropython:
+    name: MicroPython compatibility
+    runs-on: ubuntu-latest
+    needs: [ pre-commit, towncrier, package ]
+    steps:
+      - name: Build MicroPython
+        id: micropython
+        run: |
+          # The following script also works on macOS, except that due to a bug,
+          # threading must be enabled, i.e. THREAD must be omitted from the disabled
+          # feature list.
+          cd $RUNNER_TEMP
+          git clone https://github.com/micropython/micropython -b v1.24.0 --depth 1
+
+          # Create a variant with the same configuration as the PyScript build.
+          cd micropython/ports/unix
+          cp -a variants/standard variants/pyscript
+          grep require ../webassembly/variants/pyscript/manifest.py \
+              >> variants/pyscript/manifest.py
+          for feature in BTREE FFI SOCKET SSL TERMIOS THREAD; do
+              echo "MICROPY_PY_$feature = 0" >> variants/pyscript/mpconfigvariant.mk
+          done
+
+          export VARIANT=pyscript
+          make submodules
+          make -j $(nproc)
+          echo "executable=$(pwd)/build-pyscript/micropython" >> $GITHUB_OUTPUT
+
+      - name: Checkout
+        uses: actions/checkout@v4.2.2
+
+      - name: Set up Python
+        uses: actions/setup-python@v5.3.0
+        with:
+          python-version: "3.13"
+
+      - name: Get Packages
+        uses: actions/download-artifact@v4.1.8
+        with:
+          name: Packages-toga-core
+          path: dist
+
+      - name: Test
+        run: |
+          pip install dist/toga_core-*.whl
+          site_packages=$(python -c '
+          import sys
+          print([path for path in sys.path if "site-packages" in path][0])
+          ')
+
+          cd core
+          export MICROPYPATH="$site_packages:.frozen"
+
+          echo "Stable Travertino"
+          ${{ steps.micropython.outputs.executable }} micropython_check.py
+
+          echo "Development Travertino"
+          pip install git+https://github.com/beeware/travertino
+          ${{ steps.micropython.outputs.executable }} micropython_check.py
+
   core-coverage:
     name: Coverage
     needs: core
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
-      uses: actions/checkout@v4.2.1
+      uses: actions/checkout@v4.2.2
       with:
         fetch-depth: 0
 
     - name: Set up Python ${{ env.min_python_version }}
-      uses: actions/setup-python@v5.2.0
+      uses: actions/setup-python@v5.3.0
       with:
         # Use minimum version of python for coverage to avoid phantom branches
         # https://github.com/nedbat/coveragepy/issues/1572#issuecomment-1522546425
@@ -190,12 +250,12 @@ jobs:
 
         - backend: "macOS-x86_64"
           platform: "macOS"
-          runs-on: "macos-12"
+          runs-on: "macos-13"
           app-user-data-path: "$HOME/Library/Application Support/org.beeware.toga.testbed"
 
         - backend: "macOS-arm64"
           platform: "macOS"
-          runs-on: "macos-14"
+          runs-on: "macos-latest"
           app-user-data-path: "$HOME/Library/Application Support/org.beeware.toga.testbed"
 
         # We use a fixed Ubuntu version rather than `-latest` because at some point,
@@ -203,7 +263,7 @@ jobs:
         # the system Python version to become inconsistent from run to run.
         - backend: "linux-x11"
           platform: "linux"
-          runs-on: "ubuntu-22.04"
+          runs-on: "ubuntu-24.04"
           # The package list should be the same as in tutorial-0.rst, and the BeeWare
           # tutorial, plus blackbox to provide a window manager. We need a window
           # manager that is reasonably lightweight, honors full screen mode, and
@@ -239,8 +299,7 @@ jobs:
             sudo apt update -y
             sudo apt install -y --no-install-recommends \
               mutter pkg-config python3-dev libgirepository1.0-dev libcairo2-dev \
-              gir1.2-webkit2-4.1 gir1.2-xapp-1.0 \
-              libjpeg-dev  # remove once the version of Pillow has a wheel on PyPI for Python 3.12
+              gir1.2-webkit2-4.1 gir1.2-xapp-1.0
 
             # Start Virtual X Server
             echo "Start X server..."
@@ -260,14 +319,14 @@ jobs:
 
         - backend: "textual-linux"
           platform: "linux"
-          runs-on: "ubuntu-22.04"
+          runs-on: "ubuntu-latest"
           setup-python: false  # Use the system Python packages
           briefcase-run-args: --config 'requires=["../core","../textual"]' --config 'console_app=true'
           app-user-data-path: "$HOME/.local/share/testbed"
 
         - backend: "textual-macOS"
           platform: "macOS"
-          runs-on: "macos-14"
+          runs-on: "macos-latest"
           briefcase-run-args: --config 'requires=["../core","../textual"]' --config 'console_app=true'
           app-user-data-path: "$HOME/Library/Application Support/org.beeware.toga.testbed"
 
@@ -284,15 +343,8 @@ jobs:
 
         - backend: "iOS"
           platform: "iOS"
-          runs-on: "macos-14"
-          # As of early April 2024, the XCode 15/iOS 17 simulator had a performance
-          # issue that rendered GitHub Actions testing impossible. The issue didn't
-          # impact iOS 16.4, but that required the use of Xcode 14.3.1.
-          #
-          # Refs #2476, actions/runner-images#9591.
-          pre-command: "sudo xcode-select -s /Applications/Xcode_14.3.1.app"
-          briefcase-run-args: "--device 'iPhone SE (3rd generation)::iOS 16.4'"
-          # briefcase-run-args: "--device 'iPhone SE (3rd generation)'"
+          runs-on: "macos-latest"
+          briefcase-run-args: "--device 'iPhone SE (3rd generation)'"
           app-user-data-path: "$(xcrun simctl get_app_container booted org.beeware.toga.testbed data)/Documents"
 
         - backend: "android"
@@ -319,19 +371,15 @@ jobs:
       uses: smorimoto/tune-github-hosted-runner-network@v1.0.0
 
     - name: Checkout
-      uses: actions/checkout@v4.2.1
+      uses: actions/checkout@v4.2.2
       with:
         fetch-depth: 0
 
     - name: Set up Python
-      uses: actions/setup-python@v5.2.0
+      uses: actions/setup-python@v5.3.0
       if: matrix.setup-python
       with:
-        # We're not using Python 3.11 yet, because:
-        # * The testbed's ProxyEventLoop has some problems with it
-        #   (https://github.com/beeware/toga/issues/1982).
-        # * It doesn't have an Android build of Pillow yet.
-        python-version: "3.10"
+        python-version: "3.12"
 
     - name: Install Dependencies
       env:

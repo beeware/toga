@@ -6,6 +6,7 @@ from rubicon.objc import (
     objc_id,
 )
 
+from toga.constants import WindowState
 from toga.types import Position, Size
 from toga_iOS.container import NavigationContainer, RootContainer
 from toga_iOS.images import nsdata_to_bytes
@@ -91,7 +92,8 @@ class Window:
         if self.container.width < min_width or self.container.height < min_height:
             print(
                 f"Warning: Window content {(min_width, min_height)} "
-                f"exceeds available space {(self.container.width, self.container.height)}"
+                f"exceeds available space "
+                f"{(self.container.width, self.container.height)}"
             )
 
     def set_content(self, widget):
@@ -141,8 +143,12 @@ class Window:
     # Window state
     ######################################################################
 
-    def set_full_screen(self, is_full_screen):
-        # Windows are always full screen
+    def get_window_state(self, in_progress_state=False):
+        # Windows are always in NORMAL state.
+        return WindowState.NORMAL
+
+    def set_window_state(self, state):
+        # Window state setting is not implemented on iOS.
         pass
 
     ######################################################################
@@ -196,7 +202,8 @@ class Window:
             renderer.PNGDataWithActions(Block(render, None, objc_id))
         )
 
-        # Get the size of the actual content (offsetting for the header) in raw coordinates.
+        # Get the size of the actual content (offsetting for the header)
+        # in raw coordinates.
         container_bounds = self.container.content.native.bounds
         image_bounds = NSRect(
             NSPoint(

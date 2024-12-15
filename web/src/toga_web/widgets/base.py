@@ -4,7 +4,6 @@ from toga_web.libs import create_element
 class Widget:
     def __init__(self, interface):
         self.interface = interface
-        self.interface._impl = self
         self._container = None
 
         self.create()
@@ -100,7 +99,7 @@ class Widget:
     def set_bounds(self, x, y, width, height):
         self._reapply_style()
 
-    def set_alignment(self, alignment):
+    def set_text_align(self, alignment):
         self._reapply_style()
 
     def set_hidden(self, hidden):

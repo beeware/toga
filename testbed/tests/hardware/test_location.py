@@ -38,7 +38,8 @@ async def test_grant_permission(app, location_probe):
 
 async def test_deny_permission(app, location_probe):
     """A user can deny permission to use location."""
-    # Initiate the permission request. As permissions are not primed, they will be denied.
+    # Initiate the permission request. As permissions are not primed,
+    # they will be denied.
     assert not await app.location.request_permission()
 
     # Permission has been denied

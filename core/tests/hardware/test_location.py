@@ -13,8 +13,8 @@ from toga_dummy.utils import (
 
 
 def test_no_location(monkeypatch, app):
-    """If there's no location service, and no factory implementation, accessing camera raises an
-    exception."""
+    """If there's no location service, and no factory implementation,
+    accessing camera raises an exception."""
     try:
         monkeypatch.delattr(app, "_location")
     except AttributeError:
@@ -148,7 +148,8 @@ def test_request_background_permission_sync(app):
 
 
 def test_current_location_prior_permission(app):
-    """If permission has been previously requested, the current location can be determined."""
+    """If permission has been previously requested,
+    the current location can be determined."""
     # Set permission
     app.location._impl._has_permission = 1
 

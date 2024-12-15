@@ -1,4 +1,3 @@
-import importlib.util
 import sys
 from pathlib import Path
 
@@ -27,13 +26,14 @@ class Paths:
         This path should be considered read-only. You should not attempt to write
         files into this path.
         """
+        app_module = sys.modules[toga.App.app.__module__]
         try:
-            return Path(importlib.util.find_spec(toga.App.app.__module__).origin).parent
-        except ValueError:
-            # When running a single file `python path/to/myapp.py`, the app
-            # won't have a module because it's the mainline. Default to the
-            # path that contains the myapp.py.
-            return Path(sys.argv[0]).absolute().parent
+            app_file = app_module.__file__
+        except AttributeError:
+            # At an interactive prompt, return the current working directory.
+            return Path.cwd()
+        else:
+            return Path(app_file).parent
 
     @property
     def config(self) -> Path:

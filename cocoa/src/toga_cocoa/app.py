@@ -29,7 +29,7 @@ from .libs import (
     NSCursor,
     NSMenu,
     NSMenuItem,
-    NSNumber,
+    NSPanel,
     NSScreen,
 )
 from .screens import Screen as ScreenImpl
@@ -312,6 +312,17 @@ class App:
         return [ScreenImpl(native=screen) for screen in NSScreen.screens]
 
     ######################################################################
+    # App state
+    ######################################################################
+
+    def get_dark_mode_state(self):
+        appearance = self.native.effectiveAppearance
+        # Standard theme names in MacOS
+        # https://developer.apple.com/documentation/appkit/nsappearance/name-swift.struct?language=objc
+        in_dark_mode = "Dark" in str(appearance.name)
+        return in_dark_mode
+
+    ######################################################################
     # App capabilities
     ######################################################################
 
@@ -366,40 +377,11 @@ class App:
     ######################################################################
 
     def get_current_window(self):
-        return self.native.keyWindow
+        key_window = self.native.keyWindow
+        if isinstance(key_window, NSPanel):
+            return key_window.sheetParent
+        else:
+            return key_window
 
     def set_current_window(self, window):
         window._impl.native.makeKeyAndOrderFront(window._impl.native)
-
-    ######################################################################
-    # Full screen control
-    ######################################################################
-
-    def enter_full_screen(self, windows):
-        opts = NSMutableDictionary.alloc().init()
-        opts.setObject(
-            NSNumber.numberWithBool(True), forKey="NSFullScreenModeAllScreens"
-        )
-
-        for window, screen in zip(windows, NSScreen.screens):
-            # The widgets are actually added to window._impl.container.native, instead of
-            # window.content._impl.native. And window._impl.native.contentView is
-            # window._impl.container.native. Hence, we need to go fullscreen on
-            # window._impl.container.native instead.
-            window._impl.container.native.enterFullScreenMode(screen, withOptions=opts)
-            # Going full screen causes the window content to be re-homed
-            # in a NSFullScreenWindow; teach the new parent window
-            # about its Toga representations.
-            window._impl.container.native.window._impl = window._impl
-            window._impl.container.native.window.interface = window
-            window.content.refresh()
-
-    def exit_full_screen(self, windows):
-        opts = NSMutableDictionary.alloc().init()
-        opts.setObject(
-            NSNumber.numberWithBool(True), forKey="NSFullScreenModeAllScreens"
-        )
-
-        for window in windows:
-            window._impl.container.native.exitFullScreenModeWithOptions(opts)
-            window.content.refresh()

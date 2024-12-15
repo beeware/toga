@@ -16,7 +16,7 @@ SourceT = TypeVar("SourceT", bound=Source)
 
 
 class OnSelectHandler(Protocol):
-    def __call__(self, widget: Tree, /, **kwargs: Any) -> object:
+    def __call__(self, widget: Tree, **kwargs: Any) -> object:
         """A handler to invoke when the tree is selected.
 
         :param widget: The Tree that was selected.
@@ -25,7 +25,7 @@ class OnSelectHandler(Protocol):
 
 
 class OnActivateHandler(Protocol):
-    def __call__(self, widget: Tree, /, **kwargs: Any) -> object:
+    def __call__(self, widget: Tree, **kwargs: Any) -> object:
         """A handler to invoke when the tree is activated.
 
         :param widget: The Tree that was activated.
@@ -78,8 +78,6 @@ class Tree(Widget):
             defined.
         :param on_double_click: **DEPRECATED**; use :attr:`on_activate`.
         """
-        super().__init__(id=id, style=style)
-
         ######################################################################
         # 2023-06: Backwards compatibility
         ######################################################################
@@ -117,11 +115,15 @@ class Tree(Widget):
         self.on_activate = None
         self._data = None
 
-        self._impl = self.factory.Tree(interface=self)
+        super().__init__(id=id, style=style)
+
         self.data = data
 
         self.on_select = on_select
         self.on_activate = on_activate
+
+    def _create(self):
+        return self.factory.Tree(interface=self)
 
     @property
     def enabled(self) -> Literal[True]:

@@ -1,27 +1,12 @@
 import pytest
 
-import toga
 from toga.colors import REBECCAPURPLE
 from toga.fonts import FANTASY
+from toga.style import TogaApplicator
 from toga.style.pack import HIDDEN, RIGHT, VISIBLE
 from toga_dummy.utils import assert_action_performed_with
 
-
-# Create the simplest possible widget with a concrete implementation that will
-# allow children
-class ExampleWidget(toga.Widget):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self._impl = self.factory.Widget(self)
-        self._children = []
-
-
-# Create the simplest possible widget with a concrete implementation that cannot
-# have children.
-class ExampleLeafWidget(toga.Widget):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self._impl = self.factory.Widget(self)
+from ..utils import ExampleLeafWidget, ExampleWidget
 
 
 @pytest.fixture
@@ -82,11 +67,11 @@ def test_set_bounds(widget, child, grandchild):
     assert_action_performed_with(grandchild, "set bounds", x=1, y=2, width=3, height=4)
 
 
-def test_text_alignment(widget):
+def test_text_align(widget):
     """Text alignment can be set on a widget."""
-    widget.applicator.set_text_alignment(RIGHT)
+    widget.applicator.set_text_align(RIGHT)
 
-    assert_action_performed_with(widget, "set alignment", alignment=RIGHT)
+    assert_action_performed_with(widget, "set text alignment", alignment=RIGHT)
 
 
 @pytest.mark.parametrize(
@@ -154,3 +139,17 @@ def test_set_background_color(child, widget):
     widget.applicator.set_background_color(REBECCAPURPLE)
 
     assert_action_performed_with(widget, "set background color", color=REBECCAPURPLE)
+
+
+def test_deprecated_widget_argument(widget):
+    """The widget argument to TogaApplicator is deprecated."""
+    with pytest.warns(DeprecationWarning):
+        TogaApplicator(widget)
+
+
+def test_widget_alias_to_node(widget):
+    """Applicator.widget is an alias to applicator.node."""
+    applicator = widget.applicator
+
+    assert applicator.widget is widget
+    assert applicator.widget is applicator.node

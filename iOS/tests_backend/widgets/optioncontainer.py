@@ -29,7 +29,8 @@ class OptionContainerProbe(SimpleProbe):
 
             self.impl.native_controller.selectedIndex = index - n_disabled
             if self.impl.native_controller.selectedIndex <= 4:
-                # Programmatically selecting a tab doesn't trigger the didSelectItem event.
+                # Programmatically selecting a tab doesn't trigger the didSelectItem
+                # event.
                 self.impl.native_controller.tabBar_didSelectItem_(
                     self.impl.native_controller.tabBar,
                     index - n_disabled,
@@ -40,7 +41,7 @@ class OptionContainerProbe(SimpleProbe):
         self.impl.native_controller.selectedViewController = more
 
     async def wait_for_tab(self, message):
-        await self.redraw(message)
+        await self.redraw(message, delay=0.1)
 
     def reset_more(self):
         more = self.impl.native_controller.moreNavigationController

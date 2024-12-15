@@ -1,4 +1,4 @@
-from toga.style.pack import CENTER, COLUMN, LEFT, RIGHT, ROW, Pack
+from toga.style.pack import CENTER, COLUMN, END, ROW, START, Pack
 
 from ..utils import ExampleNode, ExampleViewport, assert_layout
 
@@ -6,20 +6,20 @@ from ..utils import ExampleNode, ExampleViewport, assert_layout
 def test_left():
     root = ExampleNode(
         "root",
-        style=Pack(direction=COLUMN, alignment=LEFT, height=300),
+        style=Pack(direction=COLUMN, align_items=START, height=300),
         children=[
             ExampleNode("space_filler", style=Pack(width=540, height=100)),
             ExampleNode(
                 "container",
-                style=Pack(direction=ROW, padding_left=110, padding_right=120),
+                style=Pack(direction=ROW, margin_left=110, margin_right=120),
                 children=[
                     ExampleNode(
                         "widget_a",
-                        style=Pack(width=30, padding_left=32, padding_right=34),
+                        style=Pack(width=30, margin_left=32, margin_right=34),
                     ),
                     ExampleNode(
                         "widget_b",
-                        style=Pack(width=36, padding_left=38, padding_right=40),
+                        style=Pack(width=36, margin_left=38, margin_right=40),
                     ),
                 ],
             ),
@@ -52,20 +52,20 @@ def test_left():
 def test_center():
     root = ExampleNode(
         "root",
-        style=Pack(direction=COLUMN, alignment=CENTER, height=300),
+        style=Pack(direction=COLUMN, align_items=CENTER, height=300),
         children=[
             ExampleNode("space_filler", style=Pack(width=540, height=100)),
             ExampleNode(
                 "container",
-                style=Pack(direction=ROW, padding_left=110, padding_right=120),
+                style=Pack(direction=ROW, margin_left=110, margin_right=120),
                 children=[
                     ExampleNode(
                         "widget_a",
-                        style=Pack(width=30, padding_left=32, padding_right=34),
+                        style=Pack(width=30, margin_left=32, margin_right=34),
                     ),
                     ExampleNode(
                         "widget_b",
-                        style=Pack(width=36, padding_left=38, padding_right=40),
+                        style=Pack(width=36, margin_left=38, margin_right=40),
                     ),
                 ],
             ),
@@ -98,20 +98,20 @@ def test_center():
 def test_right():
     root = ExampleNode(
         "root",
-        style=Pack(direction=COLUMN, alignment=RIGHT, height=300),
+        style=Pack(direction=COLUMN, align_items=END, height=300),
         children=[
             ExampleNode("space_filler", style=Pack(width=540, height=100)),
             ExampleNode(
                 "container",
-                style=Pack(direction=ROW, padding_left=110, padding_right=120),
+                style=Pack(direction=ROW, margin_left=110, margin_right=120),
                 children=[
                     ExampleNode(
                         "widget_a",
-                        style=Pack(width=30, padding_left=32, padding_right=34),
+                        style=Pack(width=30, margin_left=32, margin_right=34),
                     ),
                     ExampleNode(
                         "widget_b",
-                        style=Pack(width=36, padding_left=38, padding_right=40),
+                        style=Pack(width=36, margin_left=38, margin_right=40),
                     ),
                 ],
             ),
@@ -141,10 +141,10 @@ def test_right():
     )
 
 
-def test_no_padding():
+def test_no_margin():
     root = ExampleNode(
         "root",
-        style=Pack(direction=COLUMN, alignment=CENTER, height=300),
+        style=Pack(direction=COLUMN, align_items=CENTER, height=300),
         children=[
             ExampleNode("space_filler", style=Pack(width=540, height=100)),
             ExampleNode("widget", style=Pack(width=440)),
@@ -170,23 +170,23 @@ def test_no_padding():
 def test_column_box():
     root = ExampleNode(
         "root",
-        style=Pack(direction=COLUMN, alignment=CENTER),
+        style=Pack(direction=COLUMN, align_items=CENTER),
         children=[
             ExampleNode("space_filler", style=Pack(width=430, height=100)),
             ExampleNode(
                 "container",
-                style=Pack(direction=COLUMN, padding_left=110, padding_right=120),
+                style=Pack(direction=COLUMN, margin_left=110, margin_right=120),
                 children=[
                     ExampleNode(
                         "widget_a",
                         style=Pack(
-                            width=100, height=30, padding_top=32, padding_bottom=34
+                            width=100, height=30, margin_top=32, margin_bottom=34
                         ),
                     ),
                     ExampleNode(
                         "widget_b",
                         style=Pack(
-                            width=100, height=36, padding_top=38, padding_bottom=40
+                            width=100, height=36, margin_top=38, margin_bottom=40
                         ),
                     ),
                 ],

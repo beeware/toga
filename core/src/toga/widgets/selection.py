@@ -14,7 +14,7 @@ SourceT = TypeVar("SourceT", bound=Source)
 
 
 class OnChangeHandler(Protocol):
-    def __call__(self, widget: Selection, /, **kwargs: Any) -> object:
+    def __call__(self, widget: Selection, **kwargs: Any) -> object:
         """A handler to invoke when the value is changed.
 
         :param widget: The Selection that was changed.
@@ -69,7 +69,6 @@ class Selection(Widget):
         self._items: SourceT | ListSource
 
         self.on_change = None  # needed for _impl initialization
-        self._impl = self.factory.Selection(interface=self)
 
         self._accessor = accessor
         self.items = items
@@ -78,6 +77,9 @@ class Selection(Widget):
 
         self.on_change = on_change
         self.enabled = enabled
+
+    def _create(self) -> Any:
+        return self.factory.Selection(interface=self)
 
     @property
     def items(self) -> SourceT | ListSource:
@@ -181,8 +183,8 @@ class Selection(Widget):
 
     @property
     def on_change(self) -> OnChangeHandler:
-        """Handler to invoke when the value of the selection is changed, either by the user
-        or programmatically."""
+        """Handler to invoke when the value of the selection is changed,
+        either by the user or programmatically."""
         return self._on_change
 
     @on_change.setter
