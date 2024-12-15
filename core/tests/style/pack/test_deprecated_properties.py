@@ -31,9 +31,7 @@ def delitem(obj, name):
 @pytest.mark.parametrize(
     "old_name, new_name, value, default",
     [
-        # Travertino 0.3.0 doesn't support accessing a directional property via bracket
-        # notation.
-        # ("padding", "margin", (5, 5, 5, 5), (0, 0, 0, 0)),
+        ("padding", "margin", (5, 5, 5, 5), (0, 0, 0, 0)),
         ("padding_top", "margin_top", 5, 0),
         ("padding_right", "margin_right", 5, 0),
         ("padding_bottom", "margin_bottom", 5, 0),
@@ -68,21 +66,6 @@ def test_deprecated_properties(
     del_fn(style, new_name)
     with pytest.warns(DeprecationWarning):
         assert get_fn(style, old_name) == default
-
-
-def test_padding_margin():
-    """Padding aliases margin (but can't be checked with bracket notation)."""
-    # Set the old name, then check the new name.
-    style = Pack()
-    with pytest.warns(DeprecationWarning):
-        style.padding = (5, 5, 5, 5)
-    assert style.margin == (5, 5, 5, 5)
-
-    # Set the new name, then check the old name.
-    style = Pack()
-    style.margin = (5, 5, 5, 5)
-    with pytest.warns(DeprecationWarning):
-        assert style.padding == (5, 5, 5, 5)
 
 
 @pytest.mark.parametrize(
