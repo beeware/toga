@@ -57,7 +57,7 @@ def test_deprecated_properties(
     old_name, new_name, value, default, set_fn, get_fn, del_fn
 ):
     """Deprecated names alias to new names, and issue deprecation warnings."""
-    # Set the old name, then check the new name.
+    # Set the old name, then check the new name
     style = Pack()
     with pytest.warns(DeprecationWarning):
         set_fn(style, old_name, value)
@@ -68,7 +68,7 @@ def test_deprecated_properties(
         del_fn(style, old_name)
     assert get_fn(style, new_name) == default
 
-    # Set the new name, then check the old name.
+    # Set the new name, then check the old name
     style = Pack()
     set_fn(style, new_name, value)
     with pytest.warns(DeprecationWarning):
@@ -104,6 +104,7 @@ def test_alignment_align_items(
     direction, text_direction, alignment, align_items, set_fn, get_fn, del_fn
 ):
     """Alignment (with deprecation warning) and align_items map to each other."""
+    # Set alignment, check align_items
     with pytest.warns(DeprecationWarning):
         style = Pack(
             direction=direction,
@@ -112,10 +113,12 @@ def test_alignment_align_items(
         set_fn(style, "alignment", alignment)
     assert get_fn(style, "align_items") == align_items
 
+    # Delete alignment, check align_items
     with pytest.warns(DeprecationWarning):
         del_fn(style, "alignment")
     assert get_fn(style, "align_items") is None
 
+    # Set align_items, check alignment
     style = Pack(
         direction=direction,
         text_direction=text_direction,
@@ -124,6 +127,7 @@ def test_alignment_align_items(
     with pytest.warns(DeprecationWarning):
         assert get_fn(style, "alignment") == alignment
 
+    # Delete align_items, check alignment
     del_fn(style, "align_items")
     with pytest.warns(DeprecationWarning):
         assert get_fn(style, "alignment") is None
