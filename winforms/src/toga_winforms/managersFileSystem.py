@@ -29,5 +29,5 @@ class ManagerFile(BaseManager):
         os.remove(path)
 
 
-class ManagerFolder:
+class ManagerFolder(BaseManager):
     pass
