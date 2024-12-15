@@ -89,13 +89,14 @@ class BasePathReader(BasePath, abc.ABC):
 
 class PathReader(BasePathReader):
     """A phalloid object for reading.
-Reads the contents of the Android external storage file"""
+    Reads the contents of the Android external storage file"""
 
     def readline(self, size: int = 0) -> str | bytes:
-        """A function for reading lines from a file separated by new_line
+        """A function for reading lines from a file
         :param size: the number of rows to be counted.
         (Currently not implemented, added for future implementation)
-        :return: Data type str[bytes](Depends on whether the flag and was passed) or the list of str[bytes]
+        :return: Data type str[bytes]
+        (Depends on whether the flag and was passed) or the list of str[bytes]
         """
         self.check_open()
         res = bytearray()
@@ -115,8 +116,10 @@ Reads the contents of the Android external storage file"""
 
     def read(self, size: int = 0) -> bytes | str:
         """A function for reading a string
-        :param size: the number of characters to be counted. If it is equal to 0, the entire file will be read
-        :return: Data type str[bytes](depends on whether the 'b' flag was passed)"""
+        :param size: the number of characters to be counted.
+        If it is equal to 0, the entire file will be read
+        :return: Data type str[bytes]
+        (depends on whether the 'b' flag was passed)"""
         self.check_open()
         res = bytearray()
         counter = size if size else "-1"
@@ -133,8 +136,10 @@ Reads the contents of the Android external storage file"""
 
     async def aread(self, size=0):
         """A function for reading a string
-        :param size: the number of characters to be counted. If it is equal to 0, the entire file will be read
-        :return: Data type str[bytes](depends on whether the 'b' flag was passed)"""
+        :param size: the number of characters to be counted.
+        If it is equal to 0, the entire file will be read
+        :return: Data type str[bytes]
+        (depends on whether the 'b' flag was passed)"""
         self.check_open()
         res = bytearray()
         counter = size if size else "-1"
