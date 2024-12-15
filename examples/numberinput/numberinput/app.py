@@ -42,11 +42,11 @@ class ExampleNumberInputApp(toga.App):
         )
         box1 = toga.Box(
             children=[label1, self.input1],
-            style=Pack(direction=ROW, padding=5),
+            style=Pack(direction=ROW, margin=5),
         )
         box2 = toga.Box(
             children=[label2, self.input2],
-            style=Pack(direction=ROW, padding=5),
+            style=Pack(direction=ROW, margin=5),
         )
         # Buttons
         btn_style = Pack(flex=1)
@@ -59,7 +59,7 @@ class ExampleNumberInputApp(toga.App):
         # Outermost box
         outer_box = toga.Box(
             children=[btn_box, box1, box2, self.label],
-            style=Pack(flex=1, direction=COLUMN, padding=10),
+            style=Pack(flex=1, direction=COLUMN, margin=10),
         )
 
         # Add the content on the main window

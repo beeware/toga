@@ -13,7 +13,7 @@ class Label(Widget):
         self.native = WinForms.Label()
         self.native.AutoSizeMode = WinForms.AutoSizeMode.GrowAndShrink
 
-    def set_alignment(self, value):
+    def set_text_align(self, value):
         self.native.TextAlign = TextAlignment(value)
 
     def get_text(self):

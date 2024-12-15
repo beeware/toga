@@ -33,17 +33,17 @@ def build(app):
     box.add(c_box)
     box.add(button)
 
-    box.style.update(direction=COLUMN, padding=10)
-    f_box.style.update(direction=ROW, padding=5)
-    c_box.style.update(direction=ROW, padding=5)
+    box.style.update(direction=COLUMN, margin=10)
+    f_box.style.update(direction=ROW, margin=5)
+    c_box.style.update(direction=ROW, margin=5)
 
     c_input.style.update(flex=1)
-    f_input.style.update(flex=1, padding_left=210)
-    c_label.style.update(width=100, padding_left=10)
-    f_label.style.update(width=100, padding_left=10)
-    join_label.style.update(width=200, padding_right=10)
+    f_input.style.update(flex=1, margin_left=210)
+    c_label.style.update(width=100, margin_left=10)
+    f_label.style.update(width=100, margin_left=10)
+    join_label.style.update(width=200, margin_right=10)
 
-    button.style.update(padding=15)
+    button.style.update(margin=15)
 
     return box
 

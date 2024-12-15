@@ -25,7 +25,7 @@ async def content():
             toga.Label(
                 f"I am line {i}",
                 style=Pack(
-                    padding=20,
+                    margin=20,
                     height=20,
                     width=160,
                     background_color=CORNFLOWERBLUE if i % 2 else REBECCAPURPLE,
@@ -49,7 +49,7 @@ async def small_content():
             toga.Label(
                 "I am content",
                 style=Pack(
-                    padding=20,
+                    margin=20,
                     height=20,
                     width=160,
                     background_color=CORNFLOWERBLUE,
@@ -96,7 +96,7 @@ async def test_clear_content(widget, probe, small_content):
 
     # Apply a style to guarantee a set_bounds() call has been made
     # when there is no content.
-    widget.style.padding = 10
+    widget.style.margin = 10
     await probe.redraw("Widget has definitely been refreshed")
     assert not probe.has_content
 
@@ -107,22 +107,22 @@ async def test_clear_content(widget, probe, small_content):
     assert probe.document_height == probe.height
 
 
-async def test_padding(widget, probe, content):
-    "Padding works correctly on the root widget"
+async def test_margin(widget, probe, content):
+    "Margin works correctly on the root widget"
     original_width = probe.width
     original_height = probe.height
     original_document_width = probe.document_width
     original_document_height = probe.document_height
 
-    content.style.padding = 21
-    await probe.redraw("Add padding")
+    content.style.margin = 21
+    await probe.redraw("Add margin")
     assert probe.width == original_width
     assert probe.height == original_height
     assert probe.document_width == original_document_width
     assert probe.document_height == original_document_height + 42
 
-    content.style.padding = 0
-    await probe.redraw("Remove padding")
+    content.style.margin = 0
+    await probe.redraw("Remove margin")
     assert probe.width == original_width
     assert probe.height == original_height
     assert probe.document_width == original_document_width
@@ -139,7 +139,7 @@ async def test_enable_horizontal_scrolling(widget, probe, content, on_scroll):
             style=Pack(
                 width=2000,
                 background_color=CORNFLOWERBLUE,
-                padding=20,
+                margin=20,
                 height=20,
             ),
         ),
@@ -207,7 +207,7 @@ async def test_enable_vertical_scrolling(widget, probe, content, on_scroll):
             style=Pack(
                 width=2000,
                 background_color=CORNFLOWERBLUE,
-                padding=20,
+                margin=20,
                 height=20,
             ),
         ),
@@ -412,7 +412,7 @@ async def test_scroll_both(widget, probe, content, on_scroll):
             style=Pack(
                 width=2000,
                 background_color=CORNFLOWERBLUE,
-                padding=20,
+                margin=20,
                 height=20,
             ),
         )
