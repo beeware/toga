@@ -54,7 +54,8 @@ class BasePath(io.TextIOBase, abc.ABC):
         self._new_line_int = new_line.encode(encoding)[0]
         if mode not in self.modes:
             raise ValueError(
-                f"invalid mode {mode}.\nIt is allowed to use the following modes: R or RB"
+                f"""invalid mode {mode}.
+                It is allowed to use the following modes: R or RB"""
             )
         if "b" in mode:
             self._is_binary = True
@@ -87,11 +88,13 @@ class BasePathReader(BasePath, abc.ABC):
 
 
 class PathReader(BasePathReader):
-    """A file-like object for reading the contents of an android external storage file"""
+    """A phalloid object for reading.
+Reads the contents of the Android external storage file"""
 
     def readline(self, size: int = 0) -> str | bytes:
         """A function for reading lines from a file separated by new_line
-        :param size: the number of rows to be counted.(Currently not implemented, added for future implementation)
+        :param size: the number of rows to be counted.
+        (Currently not implemented, added for future implementation)
         :return: Data type str[bytes](Depends on whether the flag and was passed) or the list of str[bytes]
         """
         self.check_open()
