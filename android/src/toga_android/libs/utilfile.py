@@ -11,8 +11,8 @@ class HandlerFileDialog(abc.ABC):
 
     def __init__(self, parent, app_toga):
         self.parent = parent
-        self.app = app_toga._impl
-        self.mActive = app_toga._impl.native
+        self.app = app_toga._impl.app
+        self.mActive = app_toga._impl.app.native
 
     @abc.abstractmethod
     def show(self):
