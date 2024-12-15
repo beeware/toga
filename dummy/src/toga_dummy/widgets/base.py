@@ -44,7 +44,7 @@ class Widget(LoggedObject):
     def set_bounds(self, x, y, width, height):
         self._action("set bounds", x=x, y=y, width=width, height=height)
 
-    def set_text_alignment(self, alignment):
+    def set_text_align(self, alignment):
         self._action("set text alignment", alignment=alignment)
 
     def set_hidden(self, hidden):

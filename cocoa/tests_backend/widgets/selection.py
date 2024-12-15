@@ -13,7 +13,7 @@ class SelectionProbe(SimpleProbe):
         pass
 
     @property
-    def text_alignment(self):
+    def text_align(self):
         xfail("Can't change the text alignment of Selection on macOS")
 
     @property

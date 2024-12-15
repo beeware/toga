@@ -2,7 +2,7 @@ import pytest
 from System.Windows.Forms import NumericUpDown
 
 from .base import SimpleProbe
-from .properties import toga_x_text_alignment
+from .properties import toga_x_text_align
 
 
 class NumberInputProbe(SimpleProbe):
@@ -33,10 +33,10 @@ class NumberInputProbe(SimpleProbe):
         await self.type_character("<down>")
 
     @property
-    def text_alignment(self):
-        return toga_x_text_alignment(self.native.TextAlign)
+    def text_align(self):
+        return toga_x_text_align(self.native.TextAlign)
 
-    def assert_vertical_text_alignment(self, expected):
+    def assert_vertical_text_align(self, expected):
         # Vertical text alignment isn't configurable in this native widget.
         pass
 

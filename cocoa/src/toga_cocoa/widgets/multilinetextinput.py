@@ -95,7 +95,7 @@ class MultilineTextInput(Widget):
             self.native_text.drawsBackground = True
             self.native_text.backgroundColor = native_color(color)
 
-    def set_text_alignment(self, value):
+    def set_text_align(self, value):
         self.native_text.alignment = NSTextAlignment(value)
 
     def set_font(self, font):

@@ -89,7 +89,7 @@ class MultilineTextInput(TextInput):
         if not self._placeholder_visible:
             self.native.ForeColor = self._color
 
-    def set_text_alignment(self, value):
+    def set_text_align(self, value):
         original_selection = (self.native.SelectionStart, self.native.SelectionLength)
         self.native.SelectAll()
         self.native.SelectionAlignment = HorizontalTextAlignment(value)

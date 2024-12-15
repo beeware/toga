@@ -5,7 +5,7 @@ from pytest import xfail
 from toga_iOS.libs import UIPickerView, UITextField
 
 from .base import SimpleProbe
-from .properties import toga_color, toga_text_alignment
+from .properties import toga_color, toga_text_align
 
 
 class SelectionProbe(SimpleProbe):
@@ -20,10 +20,10 @@ class SelectionProbe(SimpleProbe):
         xfail("Selection doesn't resize on content changes")
 
     @property
-    def text_alignment(self):
-        return toga_text_alignment(self.native.textAlignment)
+    def text_align(self):
+        return toga_text_align(self.native.textAlignment)
 
-    def assert_vertical_text_alignment(self, expected):
+    def assert_vertical_text_align(self, expected):
         # Vertical text alignment isn't configurable on UITextField
         pass
 

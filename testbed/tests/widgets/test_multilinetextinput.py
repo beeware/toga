@@ -19,7 +19,7 @@ from .properties import (  # noqa: F401
     test_placeholder_color,
     test_placeholder_focus,
     test_readonly,
-    test_text_alignment,
+    test_text_align,
     test_text_value,
 )
 from .test_textinput import (  # noqa: F401

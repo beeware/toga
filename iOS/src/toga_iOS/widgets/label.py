@@ -41,7 +41,7 @@ class Label(Widget):
         # Add the layout constraints
         self.add_constraints()
 
-    def set_text_alignment(self, value):
+    def set_text_align(self, value):
         self.native.textAlignment = NSTextAlignment(value)
 
     def set_color(self, value):

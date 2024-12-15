@@ -1,4 +1,4 @@
-from toga.style.pack import BOTTOM, COLUMN, LEFT, RIGHT, ROW, RTL, TOP, Pack
+from toga.style.pack import COLUMN, END, ROW, RTL, START, Pack
 
 from ..utils import ExampleNode, ExampleViewport, assert_layout
 
@@ -71,7 +71,7 @@ def test_column_box_child_layout():
 def test_align_items_top():
     root = ExampleNode(
         "root",
-        style=Pack(text_direction=RTL, direction=ROW, align_items=TOP),
+        style=Pack(text_direction=RTL, direction=ROW, align_items=START),
         children=[
             ExampleNode("space_filler", style=Pack(width=30, height=100)),
             ExampleNode("widget", style=Pack(width=30, height=30)),
@@ -97,7 +97,7 @@ def test_align_items_top():
 def test_align_items_bottom():
     root = ExampleNode(
         "root",
-        style=Pack(text_direction=RTL, direction=ROW, align_items=BOTTOM),
+        style=Pack(text_direction=RTL, direction=ROW, align_items=END),
         children=[
             ExampleNode("space_filler", style=Pack(width=30, height=100)),
             ExampleNode("widget", style=Pack(width=30, height=30)),
@@ -123,7 +123,7 @@ def test_align_items_bottom():
 def test_align_items_left():
     root = ExampleNode(
         "root",
-        style=Pack(text_direction=RTL, direction=COLUMN, align_items=LEFT),
+        style=Pack(text_direction=RTL, direction=COLUMN, align_items=END),
         children=[
             ExampleNode("space_filler", style=Pack(width=100, height=30)),
             ExampleNode("widget", style=Pack(width=30, height=30)),
@@ -149,7 +149,7 @@ def test_align_items_left():
 def test_align_items_right():
     root = ExampleNode(
         "root",
-        style=Pack(text_direction=RTL, direction=COLUMN, align_items=RIGHT),
+        style=Pack(text_direction=RTL, direction=COLUMN, align_items=START),
         children=[
             ExampleNode("space_filler", style=Pack(width=100, height=30)),
             ExampleNode("widget", style=Pack(width=30, height=30)),

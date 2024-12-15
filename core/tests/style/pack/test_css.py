@@ -3,9 +3,9 @@ import pytest
 from toga.colors import REBECCAPURPLE
 from toga.style.pack import (
     BOLD,
-    BOTTOM,
     CENTER,
     COLUMN,
+    END,
     HIDDEN,
     ITALIC,
     JUSTIFY,
@@ -18,9 +18,9 @@ from toga.style.pack import (
     ROW,
     RTL,
     SMALL_CAPS,
+    START,
     SYSTEM,
     SYSTEM_DEFAULT_FONT_SIZE,
-    TOP,
     VISIBLE,
     Pack,
 )
@@ -222,24 +222,14 @@ from toga.style.pack import (
         ),
         # Alignment - default layout
         pytest.param(
-            Pack(align_items=LEFT),
+            Pack(align_items=START),
             "flex-direction: row; flex: 0.0 0 auto; align-items: start;",
-            id="align-items-left",
+            id="align-items-start",
         ),
         pytest.param(
-            Pack(align_items=RIGHT),
+            Pack(align_items=END),
             "flex-direction: row; flex: 0.0 0 auto; align-items: end;",
-            id="align-items-right",
-        ),
-        pytest.param(  # align_items is ignored
-            Pack(align_items=TOP),
-            "flex-direction: row; flex: 0.0 0 auto;",
-            id="align-items-top",
-        ),
-        pytest.param(  # align_items is ignored
-            Pack(align_items=BOTTOM),
-            "flex-direction: row; flex: 0.0 0 auto;",
-            id="align-items-bottom",
+            id="align-items-end",
         ),
         pytest.param(
             Pack(align_items=CENTER),
@@ -248,24 +238,14 @@ from toga.style.pack import (
         ),
         # Alignment - row layout
         pytest.param(
-            Pack(direction=ROW, align_items=LEFT),
+            Pack(direction=ROW, align_items=START),
             "flex-direction: row; flex: 0.0 0 auto; align-items: start;",
-            id="row-align_items-left",
+            id="row-align_items-start",
         ),
         pytest.param(
-            Pack(direction=ROW, align_items=RIGHT),
+            Pack(direction=ROW, align_items=END),
             "flex-direction: row; flex: 0.0 0 auto; align-items: end;",
-            id="row-align_items-right",
-        ),
-        pytest.param(  # align_items is ignored
-            Pack(direction=ROW, align_items=TOP),
-            "flex-direction: row; flex: 0.0 0 auto;",
-            id="row-align_items-top",
-        ),
-        pytest.param(  # align_items is ignored
-            Pack(direction=ROW, align_items=BOTTOM),
-            "flex-direction: row; flex: 0.0 0 auto;",
-            id="row-align_items-bottom",
+            id="row-align_items-end",
         ),
         pytest.param(
             Pack(direction=ROW, align_items=CENTER),
@@ -273,25 +253,15 @@ from toga.style.pack import (
             id="row-align_items-center",
         ),
         # Alignment - column layout
-        pytest.param(  # align_items is ignored
-            Pack(direction=COLUMN, align_items=LEFT),
-            "flex-direction: column; flex: 0.0 0 auto;",
-            id="column-align_items-left",
-        ),
-        pytest.param(  # align_items is ignored
-            Pack(direction=COLUMN, align_items=RIGHT),
-            "flex-direction: column; flex: 0.0 0 auto;",
-            id="column-align_items-right",
-        ),
         pytest.param(
-            Pack(direction=COLUMN, align_items=TOP),
+            Pack(direction=COLUMN, align_items=START),
             "flex-direction: column; flex: 0.0 0 auto; align-items: start;",
-            id="column-align_items-top",
+            id="column-align_items-start",
         ),
         pytest.param(
-            Pack(direction=COLUMN, align_items=BOTTOM),
+            Pack(direction=COLUMN, align_items=END),
             "flex-direction: column; flex: 0.0 0 auto; align-items: end;",
-            id="column-align_items-bottom",
+            id="column-align_items-end",
         ),
         pytest.param(
             Pack(direction=COLUMN, align_items=CENTER),

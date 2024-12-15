@@ -17,7 +17,7 @@ from .properties import (  # noqa: F401
     test_flex_horizontal_widget_size,
     test_font,
     test_font_attrs,
-    test_text_alignment,
+    test_text_align,
 )
 
 # FIXME: 2023-05-31 GTK's focus APIs are completely broken for GTK.ComboBox. The
@@ -48,7 +48,7 @@ def verify_font_sizes():
 
 
 @pytest.fixture
-def verify_vertical_text_alignment():
+def verify_vertical_text_align():
     return CENTER
 
 

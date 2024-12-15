@@ -67,20 +67,14 @@ indicates children will be packed horizontally; left-to-right if
 ``align_items``
 ---------------
 
-**Values:** ``top`` | ``bottom`` | ``left`` | ``right`` | ``center``
+**Values:** ``start`` | ``center`` | ``end``
 
-**Initial value:** ``top`` if direction is ``row``; ``left`` if direction is ``column``
+**Initial value:** ``start``
 
-The alignment of children relative to the outside of the packed box.
-
-If the box is a ``column`` box, only the values ``left``, ``right`` and
-``center`` are honored.
-
-If the box is a ``row`` box, only the values ``top``, ``bottom`` and ``center``
-are honored.
-
-If a value is provided, but the value isn't honored, the alignment
-reverts to the default for the direction.
+The alignment of children relative to the outside of the packed box, along the cross
+axis. A row's main axis is horizontal, so its cross axis is vertical; ``start`` aligns
+children to the top, while ``end`` aligns them to the bottom. For columns, ``start`` is
+on the left if ``text_direction`` is ``ltr``, and the right if ``rtl``.
 
 ``gap``
 -------
@@ -146,8 +140,8 @@ direction of the parent's layout.
 
 **Initial value:** ``0``
 
-The amount of space to allocate between the edge of the box, and the edge of the content
-in the box, in :ref:`CSS pixels <css-units>`.
+The amount of space to allocate outside the edge of the box, in :ref:`CSS pixels
+<css-units>`.
 
 ``margin``
 -----------
@@ -332,15 +326,6 @@ The mapping that can be used to establish the reference implementation is:
    ============================= ===================================================
    Pack property                 CSS property
    ============================= ===================================================
-   ``align_items: top``          ``align-items: start`` if ``direction == row``;
-                                 otherwise ignored.
-   ``alignment: bottom``         ``align-items: end`` if ``direction == row``;
-                                 otherwise ignored.
-   ``alignment: left``           ``align-items: start`` if ``direction == column``;
-                                 otherwise ignored.
-   ``alignment: right``          ``align-items: end`` if ``direction == column``;
-                                 otherwise ignored.
-   ``alignment: center``         ``align-items: center``
    ``direction: <str>``          ``flex-direction: <str>``
    ``display: pack``             ``display: flex``
    ``flex: <int>``               If ``direction = row`` and ``width`` is set,

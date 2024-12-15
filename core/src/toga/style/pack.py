@@ -57,10 +57,19 @@ PACK = "pack"
 # Declaration choices
 ######################################################################
 
+# Define here, since they're not available in Travertino 0.3.0
+START = "start"
+END = "end"
+
+# Used in backwards compatibility section below
+ALIGNMENT = "alignment"
+ALIGN_ITEMS = "align_items"
+
 DISPLAY_CHOICES = Choices(PACK, NONE)
 VISIBILITY_CHOICES = Choices(VISIBLE, HIDDEN)
 DIRECTION_CHOICES = Choices(ROW, COLUMN)
-ALIGN_ITEMS_CHOICES = Choices(LEFT, RIGHT, TOP, BOTTOM, CENTER)
+ALIGN_ITEMS_CHOICES = Choices(START, CENTER, END)
+ALIGNMENT_CHOICES = Choices(LEFT, RIGHT, TOP, BOTTOM, CENTER)  # Deprecated
 GAP_CHOICES = Choices(integer=True)
 
 SIZE_CHOICES = Choices(NONE, integer=True)
@@ -102,45 +111,114 @@ class Pack(BaseStyle):
     # Backwards compatibility for Toga <= 0.4.8
     #######################################################
 
+    # Pack.alignment is still an actual property, despite being deprecated, so we need
+    # to suppress deprecation warnings when reapply is called.
+    def reapply(self, *args, **kw):
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", category=DeprecationWarning)
+            super().reapply(*args, **kw)
+
     DEPRECATED_PROPERTIES = {
         # Map each deprecated property name to its replacement.
+        # alignment / align_items is handled separately.
         "padding": "margin",
         "padding_top": "margin_top",
         "padding_right": "margin_right",
         "padding_bottom": "margin_bottom",
         "padding_left": "margin_left",
-        "alignment": "align_items",
     }
 
-    def _dealias_property_name(self, name):
-        if aliased_name := self.DEPRECATED_PROPERTIES.get(name):
-            msg = f"Pack.{name} is deprecated; use {aliased_name} instead"
-            warnings.warn(msg, DeprecationWarning, stacklevel=3)
-            name = aliased_name
+    @classmethod
+    def _update_property_name(cls, name):
+        if new_name := cls.DEPRECATED_PROPERTIES.get(name):
+            cls._warn_deprecated(name, new_name, stacklevel=4)
+            name = new_name
 
         return name
 
+    @staticmethod
+    def _warn_deprecated(old_name, new_name, stacklevel=3):
+        msg = f"Pack.{old_name} is deprecated; use {new_name} instead"
+        warnings.warn(msg, DeprecationWarning, stacklevel=stacklevel)
+
     # Dot lookup
 
-    def __getattr__(self, name):
-        return super().__getattribute__(self._dealias_property_name(name))
+    def __getattribute__(self, name):
+        # Align_items and alignment are paired. Both can never be set at the same time;
+        # if one is requested, and the other one is set, compute the requested value
+        # from the one that is set.
+        if name == ALIGN_ITEMS and (alignment := super().__getattribute__(ALIGNMENT)):
+            if alignment == CENTER:
+                return CENTER
+
+            if self.direction == ROW:
+                if alignment == TOP:
+                    return START
+                if alignment == BOTTOM:
+                    return END
+
+                # No remaining valid combinations
+                return None
+
+            # direction must be COLUMN
+            if alignment == LEFT:
+                return START if self.text_direction == LTR else END
+            if alignment == RIGHT:
+                return START if self.text_direction == RTL else END
+
+            # No remaining valid combinations
+            return None
+
+        if name == ALIGNMENT:
+            # Warn, whether it's set or not.
+            self._warn_deprecated(ALIGNMENT, ALIGN_ITEMS)
+
+            if align_items := super().__getattribute__(ALIGN_ITEMS):
+                if align_items == START:
+                    if self.direction == COLUMN:
+                        return LEFT if self.text_direction == LTR else RIGHT
+                    return TOP  # for ROW
+
+                if align_items == END:
+                    if self.direction == COLUMN:
+                        return RIGHT if self.text_direction == LTR else LEFT
+                    return BOTTOM  # for ROW
+
+                # Only CENTER remains
+                return CENTER
+
+        return super().__getattribute__(type(self)._update_property_name(name))
 
     def __setattr__(self, name, value):
-        super().__setattr__(self._dealias_property_name(name), value)
+        # Only one of these can be set at a time.
+        if name == ALIGN_ITEMS:
+            super().__delattr__(ALIGNMENT)
+        elif name == ALIGNMENT:
+            self._warn_deprecated(ALIGNMENT, ALIGN_ITEMS)
+            super().__delattr__(ALIGN_ITEMS)
+
+        super().__setattr__(self._update_property_name(name), value)
 
     def __delattr__(self, name):
-        super().__delattr__(self._dealias_property_name(name))
+        # If one of the two is being deleted, delete the other also.
+        if name == ALIGN_ITEMS:
+            super().__delattr__(ALIGNMENT)
+        elif name == ALIGNMENT:
+            self._warn_deprecated(ALIGNMENT, ALIGN_ITEMS)
+            super().__delattr__(ALIGN_ITEMS)
+
+        super().__delattr__(self._update_property_name(name))
 
     # Index notation
 
     def __getitem__(self, name):
-        return super().__getitem__(self._dealias_property_name(name.replace("-", "_")))
+        return getattr(self, name.replace("-", "_"))
 
     def __setitem__(self, name, value):
-        super().__setitem__(self._dealias_property_name(name.replace("-", "_")), value)
+        setattr(self, name.replace("-", "_"), value)
 
     def __delitem__(self, name):
-        super().__delattr__(self._dealias_property_name(name.replace("-", "_")))
+        delattr(self, name.replace("-", "_"))
 
     #######################################################
     # End backwards compatibility
@@ -154,10 +232,10 @@ class Pack(BaseStyle):
                         value = RIGHT
                     else:
                         value = LEFT
-                self._applicator.set_text_alignment(value)
+                self._applicator.set_text_align(value)
             elif prop == "text_direction":
                 if self.text_align is None:
-                    self._applicator.set_text_alignment(RIGHT if value == RTL else LEFT)
+                    self._applicator.set_text_align(RIGHT if value == RTL else LEFT)
             elif prop == "color":
                 self._applicator.set_color(value)
             elif prop == "background_color":
@@ -559,7 +637,7 @@ class Pack(BaseStyle):
         min_height = 0
         for child in node.children:
             # self._debug(f"PASS 3: {child} AT HORIZONTAL {offset=}")
-            if node.style.text_direction is RTL:
+            if node.style.text_direction == RTL:
                 # self._debug("- RTL")
                 offset += child.layout.content_width + child.style.margin_right
                 child.layout.content_left = width - offset
@@ -600,10 +678,10 @@ class Pack(BaseStyle):
                 + child.style.margin_bottom
             )
             # self._debug(f"- row extra width {extra}")
-            if self.align_items is BOTTOM:
+            if self.align_items == END:
                 child.layout.content_top = extra + child.style.margin_top
                 # self._debug(f"  align {child} to bottom {child.layout.content_top=}")
-            elif self.align_items is CENTER:
+            elif self.align_items == CENTER:
                 child.layout.content_top = int(extra / 2) + child.style.margin_top
                 # self._debug(f"  align {child} to center {child.layout.content_top=}")
             else:
@@ -884,10 +962,10 @@ class Pack(BaseStyle):
                 + child.style.margin_right
             )
             # self._debug(f"-  row extra width {extra}")
-            if self.align_items is RIGHT:
+            if (self.text_direction, self.align_items) in [(LTR, END), (RTL, START)]:
                 child.layout.content_left = extra + child.style.margin_left
                 # self._debug(f"  align {child} to right {child.layout.content_left=}")
-            elif self.align_items is CENTER:
+            elif self.align_items == CENTER:
                 child.layout.content_left = int(extra / 2) + child.style.margin_left
                 # self._debug(f"  align {child} to center {child.layout.content_left=}")
             else:
@@ -927,22 +1005,8 @@ class Pack(BaseStyle):
             css.append(f"height: {self.height}px;")
 
         # align_items
-        if self.direction == ROW:
-            if self.align_items:
-                if self.align_items == LEFT:
-                    css.append("align-items: start;")
-                elif self.align_items == RIGHT:
-                    css.append("align-items: end;")
-                elif self.align_items == CENTER:
-                    css.append("align-items: center;")
-        else:
-            if self.align_items:
-                if self.align_items == TOP:
-                    css.append("align-items: start;")
-                elif self.align_items == BOTTOM:
-                    css.append("align-items: end;")
-                elif self.align_items == CENTER:
-                    css.append("align-items: center;")
+        if self.align_items:
+            css.append(f"align-items: {self.align_items};")
 
         # gap
         if self.gap:
@@ -996,6 +1060,7 @@ Pack.validated_property("display", choices=DISPLAY_CHOICES, initial=PACK)
 Pack.validated_property("visibility", choices=VISIBILITY_CHOICES, initial=VISIBLE)
 Pack.validated_property("direction", choices=DIRECTION_CHOICES, initial=ROW)
 Pack.validated_property("align_items", choices=ALIGN_ITEMS_CHOICES)
+Pack.validated_property("alignment", choices=ALIGNMENT_CHOICES)  # Deprecated
 Pack.validated_property("gap", choices=GAP_CHOICES, initial=0)
 
 Pack.validated_property("width", choices=SIZE_CHOICES, initial=NONE)

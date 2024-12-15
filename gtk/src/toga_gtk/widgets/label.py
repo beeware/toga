@@ -1,6 +1,6 @@
 from travertino.size import at_least
 
-from ..libs import Gtk, gtk_text_alignment
+from ..libs import Gtk, gtk_text_align
 from .base import Widget
 
 
@@ -9,8 +9,8 @@ class Label(Widget):
         self.native = Gtk.Label()
         self.native.set_line_wrap(False)
 
-    def set_text_alignment(self, value):
-        xalign, justify = gtk_text_alignment(value)
+    def set_text_align(self, value):
+        xalign, justify = gtk_text_align(value)
         self.native.set_xalign(xalign)  # Aligns the whole text block within the widget.
         self.native.set_yalign(0.0)  # Aligns the text block to the top
         self.native.set_justify(

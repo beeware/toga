@@ -1,4 +1,4 @@
-from toga.style.pack import CENTER, COLUMN, LEFT, RIGHT, ROW, Pack
+from toga.style.pack import CENTER, COLUMN, END, ROW, START, Pack
 
 from ..utils import ExampleNode, ExampleViewport, assert_layout
 
@@ -6,7 +6,7 @@ from ..utils import ExampleNode, ExampleViewport, assert_layout
 def test_left():
     root = ExampleNode(
         "root",
-        style=Pack(direction=COLUMN, align_items=LEFT, height=300),
+        style=Pack(direction=COLUMN, align_items=START, height=300),
         children=[
             ExampleNode("space_filler", style=Pack(width=540, height=100)),
             ExampleNode(
@@ -98,7 +98,7 @@ def test_center():
 def test_right():
     root = ExampleNode(
         "root",
-        style=Pack(direction=COLUMN, align_items=RIGHT, height=300),
+        style=Pack(direction=COLUMN, align_items=END, height=300),
         children=[
             ExampleNode("space_filler", style=Pack(width=540, height=100)),
             ExampleNode(
