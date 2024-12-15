@@ -140,17 +140,13 @@ class Pack(BaseStyle):
         msg = f"Pack.{old_name} is deprecated; use {new_name} instead"
         warnings.warn(msg, DeprecationWarning, stacklevel=stacklevel)
 
-    def _alignment_align_items(self, name):
-        """Return the stored or computed value for alignment or align_items."""
+    # Dot lookup
+
+    def __getattribute__(self, name):
         # Align_items and alignment are paired. Both can never be set at the same time;
         # if one is requested, and the other one is set, compute the requested value
         # from the one that is set.
-        if name == ALIGN_ITEMS:
-            # If alignment isn't set, return align_items as-is.
-            if (alignment := super().__getattribute__(ALIGNMENT)) is None:
-                return super().__getattribute__(ALIGN_ITEMS)
-
-            # Otherwise, compute based on stored alignment value.
+        if name == ALIGN_ITEMS and (alignment := super().__getattribute__(ALIGNMENT)):
             if alignment == CENTER:
                 return CENTER
 
@@ -172,33 +168,23 @@ class Pack(BaseStyle):
             # No remaining valid combinations
             return None
 
-        # Name wasn't align_items, so it must be alignment.
-        # Warn, whether it's set or not.
-        self._warn_deprecated(ALIGNMENT, ALIGN_ITEMS)
+        if name == ALIGNMENT:
+            # Warn, whether it's set or not.
+            self._warn_deprecated(ALIGNMENT, ALIGN_ITEMS)
 
-        # If align_items isn't set, return alignment as-is.
-        if (align_items := super().__getattribute__(ALIGN_ITEMS)) is None:
-            return super().__getattribute__(ALIGNMENT)
+            if align_items := super().__getattribute__(ALIGN_ITEMS):
+                if align_items == START:
+                    if self.direction == COLUMN:
+                        return LEFT if self.text_direction == LTR else RIGHT
+                    return TOP  # for ROW
 
-        # Otherwise, compute based on stored align_items value.
-        if align_items == START:
-            if self.direction == COLUMN:
-                return LEFT if self.text_direction == LTR else RIGHT
-            return TOP  # for ROW
+                if align_items == END:
+                    if self.direction == COLUMN:
+                        return RIGHT if self.text_direction == LTR else LEFT
+                    return BOTTOM  # for ROW
 
-        if align_items == END:
-            if self.direction == COLUMN:
-                return RIGHT if self.text_direction == LTR else LEFT
-            return BOTTOM  # for ROW
-
-        # Only CENTER remains
-        return CENTER
-
-    # Dot lookup
-
-    def __getattribute__(self, name):
-        if name in {ALIGN_ITEMS, ALIGNMENT}:
-            return super().__getattribute__("_alignment_align_items")(name)
+                # Only CENTER remains
+                return CENTER
 
         return super().__getattribute__(type(self)._update_property_name(name))
 
@@ -231,12 +217,7 @@ class Pack(BaseStyle):
         if name in {"padding", "margin"}:
             return getattr(self, name)
 
-        name = name.replace("-", "_")
-
-        if name in {ALIGN_ITEMS, ALIGNMENT}:
-            return super().__getattribute__("_alignment_align_items")(name)
-
-        return super().__getitem__(self._update_property_name(name))
+        return super().__getitem__(self._update_property_name(name.replace("-", "_")))
 
     def __setitem__(self, name, value):
         if name in {"padding", "margin"}:
