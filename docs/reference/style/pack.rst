@@ -74,7 +74,7 @@ indicates children will be packed horizontally; left-to-right if
 The alignment of children relative to the outside of the packed box, along the cross
 axis. A row's main axis is horizontal, so its cross axis is vertical; ``start`` aligns
 children to the top, while ``end`` aligns them to the bottom. For columns, ``start`` is
-on the left if ``text_direction`` is ``LTR``, and the right if ``RTL``.
+on the left if ``text_direction`` is ``ltr``, and the right if ``rtl``.
 
 
 ``width``
