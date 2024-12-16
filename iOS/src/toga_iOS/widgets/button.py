@@ -38,7 +38,6 @@ class Button(Widget):
 
         self._icon = None
 
-        self._default_background_color = None
         # Add the layout constraints
         self.add_constraints()
 

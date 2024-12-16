@@ -1,5 +1,5 @@
 from toga.widgets.imageview import rehint_imageview
-from toga_iOS.libs import UIColor, UIImageView, UIViewContentMode
+from toga_iOS.libs import UIImageView, UIViewContentMode
 from toga_iOS.widgets.base import Widget
 
 
@@ -12,8 +12,6 @@ class ImageView(Widget):
         # Disable all autolayout functionality
         self.native.setTranslatesAutoresizingMaskIntoConstraints_(False)
         self.native.setAutoresizesSubviews_(False)
-
-        self._default_background_color = UIColor.clearColor
 
         self.add_constraints()
 

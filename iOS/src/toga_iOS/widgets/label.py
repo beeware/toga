@@ -7,7 +7,6 @@ from toga_iOS.colors import native_color
 from toga_iOS.libs import (
     NSLineBreakByClipping,
     NSTextAlignment,
-    UIColor,
     UILabel,
 )
 from toga_iOS.widgets.base import Widget
@@ -37,8 +36,6 @@ class Label(Widget):
         self.native = TogaLabel.new()
         # We shouldn't ever word wrap; if faced with that option, clip.
         self.native.lineBreakMode = NSLineBreakByClipping
-
-        self._default_background_color = UIColor.clearColor
 
         # Add the layout constraints
         self.add_constraints()

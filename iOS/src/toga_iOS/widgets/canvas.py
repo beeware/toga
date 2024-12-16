@@ -70,8 +70,6 @@ class Canvas(Widget):
         self.native.interface = self.interface
         self.native.impl = self
 
-        self._default_background_color = UIColor.clearColor
-
         # Add the layout constraints
         self.add_constraints()
 

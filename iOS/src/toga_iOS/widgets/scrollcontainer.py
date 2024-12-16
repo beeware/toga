@@ -2,7 +2,7 @@ from rubicon.objc import SEL, NSMakePoint, NSMakeSize, objc_method, objc_propert
 from travertino.size import at_least
 
 from toga_iOS.container import Container
-from toga_iOS.libs import UIColor, UIScrollView
+from toga_iOS.libs import UIScrollView
 from toga_iOS.widgets.base import Widget
 
 
@@ -30,8 +30,6 @@ class ScrollContainer(Widget):
         self.native.interface = self.interface
         self.native.impl = self
         self.native.delegate = self.native
-
-        self._default_background_color = UIColor.clearColor
 
         # UIScrollView doesn't have a native ability to disable a scrolling direction;
         # it's handled by controlling the scrollable area.
