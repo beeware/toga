@@ -119,7 +119,7 @@ fill the entire app window, we can't just put the button into the app window.
 Instead, we need create a box, and put the button in the box.
 
 A box is an object that can be used to hold multiple widgets, and to
-define padding around widgets. So, we define a box::
+define a margin around widgets. So, we define a box::
 
         box = toga.Box()
 
@@ -133,12 +133,12 @@ Now we have to define how the button will appear in the window. By default,
 Toga uses a style algorithm called ``Pack``, which is a bit like "CSS-lite".
 We can set style properties of the button::
 
-        button.style.padding = 50
+        button.style.margin = 50
 
-What we've done here is say that the button will have a padding of 50 pixels
-on all sides. If we wanted to define padding of 20 pixels on top of the
-button, we could have defined ``padding_top = 20``, or we could have specified
-the ``padding = (20, 50, 50, 50)``.
+What we've done here is say that the button will have a margin of 50 pixels
+on all sides. If we wanted to define a margin of 20 pixels on top of the
+button, we could have defined ``margin_top = 20``, or we could have specified
+the ``margin = (20, 50, 50, 50)``.
 
 Now we will make the button take up all the available width::
 

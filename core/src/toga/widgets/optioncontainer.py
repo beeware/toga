@@ -26,7 +26,7 @@ if TYPE_CHECKING:
 
 
 class OnSelectHandler(Protocol):
-    def __call__(self, widget: OptionContainer, /, **kwargs: Any) -> None:
+    def __call__(self, widget: OptionContainer, **kwargs: Any) -> None:
         """A handler that will be invoked when a new tab is selected
         in the OptionContainer.
 
@@ -397,8 +397,6 @@ class OptionContainer(Widget):
         self._content = OptionList(self)
         self.on_select = None
 
-        self._impl = self.factory.OptionContainer(interface=self)
-
         if content is not None:
             for item in content:
                 if isinstance(item, OptionItem):
@@ -423,6 +421,9 @@ class OptionContainer(Widget):
                     self.content.append(text, widget, enabled=enabled, icon=icon)
 
         self.on_select = on_select
+
+    def _create(self) -> Any:
+        return self.factory.OptionContainer(interface=self)
 
     @property
     def enabled(self) -> bool:

@@ -1,7 +1,7 @@
 from toga_iOS.libs import UILabel
 
 from .base import SimpleProbe
-from .properties import toga_alignment, toga_color
+from .properties import toga_color, toga_text_align
 
 
 class LabelProbe(SimpleProbe):
@@ -19,10 +19,10 @@ class LabelProbe(SimpleProbe):
         return toga_color(self.native.textColor)
 
     @property
-    def alignment(self):
-        return toga_alignment(self.native.textAlignment)
+    def text_align(self):
+        return toga_text_align(self.native.textAlignment)
 
-    def assert_vertical_alignment(self, alignment):
+    def assert_vertical_text_align(self, alignment):
         # iOS has a custom draw method that always draw the text at the top;
         # this location isn't configurable
         pass

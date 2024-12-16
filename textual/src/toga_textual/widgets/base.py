@@ -32,7 +32,6 @@ class Scalable:
 class Widget(Scalable):
     def __init__(self, interface):
         self.interface = interface
-        self.interface._impl = self
         self.container = None
         self.create()
 
@@ -144,7 +143,7 @@ class Widget(Scalable):
             self.scale_in_horizontal(margin_left),
         )
 
-    def set_alignment(self, alignment):
+    def set_text_align(self, alignment):
         pass
 
     def set_hidden(self, hidden):

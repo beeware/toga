@@ -13,7 +13,7 @@ class ExampleSimpleApp(toga.App):
         # Outermost box
         outer_box = toga.Box(
             children=[self.label],
-            style=Pack(padding=10),
+            style=Pack(margin=10),
         )
 
         # Add the content on the main window
@@ -24,7 +24,7 @@ class ExampleSimpleApp(toga.App):
 
 
 def main():
-    return ExampleSimpleApp("Simple App", "org.beeware.simpleapp")
+    return ExampleSimpleApp("Simple App", "org.beeware.toga.examples.simpleapp")
 
 
 if __name__ == "__main__":

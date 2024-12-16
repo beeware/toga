@@ -9,7 +9,7 @@ from .base import StyleT, Widget
 
 
 class OnChangeHandler(Protocol):
-    def __call__(self, widget: Switch, /, **kwargs: Any) -> object:
+    def __call__(self, widget: Switch, **kwargs: Any) -> object:
         """A handler to invoke when the value is changed.
 
         :param widget: The Switch that was changed.
@@ -41,8 +41,6 @@ class Switch(Widget):
         """
         super().__init__(id=id, style=style)
 
-        self._impl = self.factory.Switch(interface=self)
-
         self.text = text
 
         # Set a dummy handler before installing the actual on_change, because we do not
@@ -53,6 +51,9 @@ class Switch(Widget):
         self.on_change = on_change
 
         self.enabled = enabled
+
+    def _create(self) -> Any:
+        return self.factory.Switch(interface=self)
 
     @property
     def text(self) -> str:

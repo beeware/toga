@@ -10,7 +10,7 @@ from .base import StyleT, Widget
 
 
 class OnChangeHandler(Protocol):
-    def __call__(self, widget: TextInput, /, **kwargs: Any) -> object:
+    def __call__(self, widget: TextInput, **kwargs: Any) -> object:
         """A handler to invoke when the text input is changed.
 
         :param widget: The TextInput that was changed.
@@ -19,7 +19,7 @@ class OnChangeHandler(Protocol):
 
 
 class OnConfirmHandler(Protocol):
-    def __call__(self, widget: TextInput, /, **kwargs: Any) -> object:
+    def __call__(self, widget: TextInput, **kwargs: Any) -> object:
         """A handler to invoke when the text input is confirmed.
 
         :param widget: The TextInput that was confirmed.
@@ -28,7 +28,7 @@ class OnConfirmHandler(Protocol):
 
 
 class OnGainFocusHandler(Protocol):
-    def __call__(self, widget: TextInput, /, **kwargs: Any) -> object:
+    def __call__(self, widget: TextInput, **kwargs: Any) -> object:
         """A handler to invoke when the text input gains focus.
 
         :param widget: The TextInput that gained focus.
@@ -37,7 +37,7 @@ class OnGainFocusHandler(Protocol):
 
 
 class OnLoseFocusHandler(Protocol):
-    def __call__(self, widget: TextInput, /, **kwargs: Any) -> object:
+    def __call__(self, widget: TextInput, **kwargs: Any) -> object:
         """A handler to invoke when the text input loses focus.
 
         :param widget: The TextInput that lost focus.
@@ -81,9 +81,6 @@ class TextInput(Widget):
         """
         super().__init__(id=id, style=style)
 
-        # Create a platform specific implementation of the widget
-        self._create()
-
         self.placeholder = placeholder
         self.readonly = readonly
 
@@ -103,8 +100,8 @@ class TextInput(Widget):
         self.on_lose_focus = on_lose_focus
         self.on_gain_focus = on_gain_focus
 
-    def _create(self) -> None:
-        self._impl = self.factory.TextInput(interface=self)
+    def _create(self) -> Any:
+        return self.factory.TextInput(interface=self)
 
     @property
     def readonly(self) -> bool:

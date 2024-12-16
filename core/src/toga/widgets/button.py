@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
 
 class OnPressHandler(Protocol):
-    def __call__(self, widget: Button, /, **kwargs: Any) -> object:
+    def __call__(self, widget: Button, **kwargs: Any) -> object:
         """A handler that will be invoked when a button is pressed.
 
         :param widget: The button that was pressed.
@@ -44,9 +44,6 @@ class Button(Widget):
         """
         super().__init__(id=id, style=style)
 
-        # Create a platform specific implementation of a Button
-        self._impl = self.factory.Button(interface=self)
-
         # Set a dummy handler before installing the actual on_press, because we do not
         # want on_press triggered by the initial value being set
         self.on_press = None
@@ -62,6 +59,9 @@ class Button(Widget):
 
         self.on_press = on_press
         self.enabled = enabled
+
+    def _create(self) -> Any:
+        return self.factory.Button(interface=self)
 
     @property
     def text(self) -> str:

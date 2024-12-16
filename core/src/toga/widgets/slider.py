@@ -12,7 +12,7 @@ from .base import StyleT, Widget
 
 
 class OnChangeHandler(Protocol):
-    def __call__(self, widget: Slider, /, **kwargs: Any) -> object:
+    def __call__(self, widget: Slider, **kwargs: Any) -> object:
         """A handler to invoke when the value is changed.
 
         :param widget: The Slider that was changed.
@@ -21,7 +21,7 @@ class OnChangeHandler(Protocol):
 
 
 class OnPressHandler(Protocol):
-    def __call__(self, widget: Slider, /, **kwargs: Any) -> object:
+    def __call__(self, widget: Slider, **kwargs: Any) -> object:
         """A handler to invoke when the slider is pressed.
 
         :param widget: The Slider that was pressed.
@@ -30,7 +30,7 @@ class OnPressHandler(Protocol):
 
 
 class OnReleaseHandler(Protocol):
-    def __call__(self, widget: Slider, /, **kwargs: Any) -> object:
+    def __call__(self, widget: Slider, **kwargs: Any) -> object:
         """A handler to invoke when the slider is pressed.
 
         :param widget: The Slider that was released.
@@ -39,6 +39,8 @@ class OnReleaseHandler(Protocol):
 
 
 class Slider(Widget):
+    _MIN_WIDTH = 100
+
     def __init__(
         self,
         id: str | None = None,
@@ -72,7 +74,6 @@ class Slider(Widget):
             :any:`range` of the slider. Defaults to ``(0, 1)``.
         """
         super().__init__(id=id, style=style)
-        self._impl = self.factory.Slider(interface=self)
 
         ######################################################################
         # 2023-06: Backwards compatibility
@@ -115,7 +116,8 @@ class Slider(Widget):
 
         self.enabled = enabled
 
-    _MIN_WIDTH = 100
+    def _create(self) -> Any:
+        return self.factory.Slider(interface=self)
 
     # Backends are inconsistent about when they produce events for programmatic changes,
     # so we deal with those in the interface layer.
