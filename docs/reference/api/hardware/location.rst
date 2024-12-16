@@ -87,6 +87,16 @@ System requirements
   - OpenSUSE Tumbleweed: ``geoclue2 typelib(geoclue2)``
   - FreeBSD: ``geoclue``
 
+* The GeoClue service must be enabled for Toga GTK location services to work. Some
+  distributions are pre-configured with GeoClue and require no action from users to
+  enable location services. Others, for example, `Ubuntu, have special controls
+  for managing location services, which must be turned on before GeoClue will
+  function <ubuntu-location-services_>`_. Refer to your distribution's documentation
+  on GeoClue and location services for details on how to manage and configure
+  the GeoClue service.
+
+.. _ubuntu-location-services: https://help.ubuntu.com/stable/ubuntu-help/privacy-location.html
+
 Notes
 -----
 
