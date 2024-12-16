@@ -120,8 +120,8 @@ class Widget(Scalable, ABC):
         self.native.Size = Size(*map(self.scale_in, (width, height)))
         self.native.Location = Point(*map(self.scale_in, (x, y)))
 
-    def set_alignment(self, alignment):
-        # By default, alignment can't be changed
+    def set_text_align(self, alignment):
+        # By default, text alignment can't be changed
         pass
 
     def set_hidden(self, hidden):

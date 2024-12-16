@@ -59,7 +59,7 @@ class Widget:
         # print(f"SET BOUNDS ON {self.interface} {width}x{height} @ ({x},{y})")
         self.constraints.update(x, y, width, height)
 
-    def set_alignment(self, alignment):
+    def set_text_align(self, alignment):
         pass
 
     def set_hidden(self, hidden):

@@ -13,7 +13,7 @@ class ExampleSimpleApp(toga.App):
         # Outermost box
         outer_box = toga.Box(
             children=[self.label],
-            style=Pack(padding=10),
+            style=Pack(margin=10),
         )
 
         # Add the content on the main window

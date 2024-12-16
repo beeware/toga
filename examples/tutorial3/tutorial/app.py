@@ -21,13 +21,13 @@ class Graze(toga.App):
                         toga.Button(
                             "Go",
                             on_press=self.load_page,
-                            style=Pack(width=50, padding_left=5),
+                            style=Pack(width=50, margin_left=5),
                         ),
                     ],
                     style=Pack(
                         direction=ROW,
-                        alignment=CENTER,
-                        padding=5,
+                        align_items=CENTER,
+                        margin=5,
                     ),
                 ),
                 self.webview,

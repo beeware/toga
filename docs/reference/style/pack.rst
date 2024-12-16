@@ -64,23 +64,17 @@ children will be stacked vertically, from top to bottom. A value of ``row``
 indicates children will be packed horizontally; left-to-right if
 ``text_direction`` is ``ltr``, or right-to-left if ``text_direction`` is ``rtl``.
 
-``alignment``
--------------
+``align_items``
+---------------
 
-**Values:** ``top`` | ``bottom`` | ``left`` | ``right`` | ``center``
+**Values:** ``start`` | ``center`` | ``end``
 
-**Initial value:** ``top`` if direction is ``row``; ``left`` if direction is ``column``
+**Initial value:** ``start``
 
-The alignment of children relative to the outside of the packed box.
-
-If the box is a ``column`` box, only the values ``left``, ``right`` and
-``center`` are honored.
-
-If the box is a ``row`` box, only the values ``top``, ``bottom`` and ``center``
-are honored.
-
-If a value is provided, but the value isn't honored, the alignment
-reverts to the default for the direction.
+The alignment of children relative to the outside of the packed box, along the cross
+axis. A row's main axis is horizontal, so its cross axis is vertical; ``start`` aligns
+children to the top, while ``end`` aligns them to the bottom. For columns, ``start`` is
+on the left if ``text_direction`` is ``ltr``, and the right if ``rtl``.
 
 
 ``width``
@@ -121,39 +115,39 @@ Once fixed space allocations have been performed, this box will assume ``flex
 / (sum of all flex for all siblings)`` of all remaining available space in the
 direction of the parent's layout.
 
-``padding_top``
+``margin_top``
 ---------------
 
-``padding_right``
+``margin_right``
 -----------------
 
-``padding_bottom``
+``margin_bottom``
 ------------------
 
-``padding_left``
+``margin_left``
 ----------------
 
 **Values:** ``<integer>``
 
 **Initial value:** ``0``
 
-The amount of space to allocate between the edge of the box, and the edge of the content
-in the box, in :ref:`CSS pixels <css-units>`.
+The amount of space to allocate outside the edge of the box, in :ref:`CSS pixels
+<css-units>`.
 
-``padding``
+``margin``
 -----------
 
 **Values:** ``<integer>`` or ``<tuple>`` of length 1-4
 
-A shorthand for setting the top, right, bottom and left padding with a single declaration.
+A shorthand for setting the top, right, bottom and left margin with a single declaration.
 
-If 1 integer is provided, that value will be used as the padding for all sides.
+If 1 integer is provided, that value will be used as the margin for all sides.
 
-If 2 integers are provided, the first value will be used as the padding for the top and bottom; the second will be used as the value for the left and right.
+If 2 integers are provided, the first value will be used as the margin for the top and bottom; the second will be used as the value for the left and right.
 
-If 3 integers are provided, the first value will be used as the top padding, the second for the left and right padding, and the third for the bottom padding.
+If 3 integers are provided, the first value will be used as the top margin, the second for the left and right margin, and the third for the bottom margin.
 
-If 4 integers are provided, they will be used as the top, right, bottom and left padding, respectively.
+If 4 integers are provided, they will be used as the top, right, bottom and left margin, respectively.
 
 ``color``
 ---------
@@ -323,15 +317,6 @@ The mapping that can be used to establish the reference implementation is:
    ============================= ===================================================
    Pack property                 CSS property
    ============================= ===================================================
-   ``alignment: top``            ``align-items: start`` if ``direction == row``;
-                                 otherwise ignored.
-   ``alignment: bottom``         ``align-items: end`` if ``direction == row``;
-                                 otherwise ignored.
-   ``alignment: left``           ``align-items: start`` if ``direction == column``;
-                                 otherwise ignored.
-   ``alignment: right``          ``align-items: end`` if ``direction == column``;
-                                 otherwise ignored.
-   ``alignment: center``         ``align-items: center``
    ``direction: <str>``          ``flex-direction: <str>``
    ``display: pack``             ``display: flex``
    ``flex: <int>``               If ``direction = row`` and ``width`` is set,
@@ -340,10 +325,10 @@ The mapping that can be used to establish the reference implementation is:
    ``font_size: <int>``          ``font-size: <int>pt``
    ``height: <value>``           ``height: <value>px`` if value is an integer;
                                  ``height: auto`` if value is ``none``.
-   ``padding_top: <int>``        ``margin-top: <int>px``
-   ``padding_bottom: <int>``     ``margin-bottom: <int>px``
-   ``padding_left: <int>``       ``margin-left: <int>px``
-   ``padding_right: <int>``      ``margin-right: <int>px``
+   ``margin_top: <int>``         ``margin-top: <int>px``
+   ``margin_bottom: <int>``      ``margin-bottom: <int>px``
+   ``margin_left: <int>``        ``margin-left: <int>px``
+   ``margin_right: <int>``       ``margin-right: <int>px``
    ``text_direction: <str>``     ``direction: <str>``
    ``width: <value>``            ``width: <value>px`` if value is an integer;
                                  ``width: auto`` if value is ``none``.
