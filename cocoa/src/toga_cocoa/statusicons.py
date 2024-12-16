@@ -30,13 +30,12 @@ class StatusIcon:
     def create(self):
         self.native = NSStatusBar.systemStatusBar.statusItemWithLength(
             NSSquareStatusItemLength
-        ).retain()
+        )
         self.native.button.toolTip = self.interface.text
         self.set_icon(self.interface.icon)
 
     def remove(self):
         NSStatusBar.systemStatusBar.removeStatusItem(self.native)
-        self.native.release()
         self.native = None
 
 

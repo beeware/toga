@@ -67,7 +67,7 @@ class Container:
             attribute__2=NSLayoutAttributeLeft,
             multiplier=1.0,
             constant=min_width,
-        ).retain()
+        )
         self.native.addConstraint(self._min_width_constraint)
 
         self._min_height_constraint = NSLayoutConstraint.constraintWithItem(
@@ -78,12 +78,10 @@ class Container:
             attribute__2=NSLayoutAttributeTop,
             multiplier=1.0,
             constant=min_height,
-        ).retain()
+        )
         self.native.addConstraint(self._min_height_constraint)
 
     def __del__(self):
-        self._min_height_constraint.release()
-        self._min_width_constraint.release()
         self.native = None
 
     @property
