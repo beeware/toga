@@ -17,6 +17,8 @@ NSError = ObjCClass("NSError")
 
 
 class LocationProbe(AppProbe):
+    request_background_permission = True
+
     def __init__(self, monkeypatch, app_probe):
         super().__init__(app_probe.app)
 
