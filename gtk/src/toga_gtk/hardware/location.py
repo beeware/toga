@@ -228,13 +228,19 @@ class Location(GObject.Object):
     def request_background_permission(self, result):
         """Request background permission.
 
-        This method should never actually run, because the upstream location
-        API enforces requesting general location permissions first. Once
-        general location permissions are available, background permission
-        will already be available (see :meth:`~.Location.has_background_permission()`),
-        and the upstream location API never has to call this method.
+        Due to the reasons outlined in :meth:`~.Location.has_background_permission()`
+        which mean that GeoClue background permission exactly mirrors the state of
+        foreground permissions, as well Toga core's implementation of
+        ``request_background_permission``, which requires foreground permission to be
+        requested first and never calls this method on the implementation class if
+        background permission is granted, it is impossible for this method to ever
+        actually run in real usage.
+
+        Because of this, it must be marked with a ``no cover`` pragma, as the testbed
+        has no platform agnostic way to exercise this method, and testing it at all
+        be meaningless, as it is not intended to be used anyway.
         """
-        raise NotImplementedError("Background permissions are non-existent on Linux")
+        result.set_result(None)  # pragma: no cover
 
     def location_listener(self, *args):
         self.interface.on_change(**toga_location(self.native.get_location()))
