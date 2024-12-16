@@ -125,8 +125,8 @@ class LocationProbe(AppProbe):
         self.allow_permission()
         self.app.location._impl.permission_result = True
         # grant must set up a realistic "already checked and granted" scenario
-        # which for Geoclue necessitates starting Geoclue
-        # In the real Geoclue.Simple, the start process is asynchronous
+        # which for GeoClue necessitates starting GeoClue
+        # In the real ``Geoclue.Simple``, the start process is asynchronous
         # but ``MockGeoclueSimple.new()`` will be used here, which immediately
         # executes the callback chain, meaning this finishes synchronously in test
         self.app.location._impl._start()
@@ -135,7 +135,7 @@ class LocationProbe(AppProbe):
         self.grant_permission()
 
     def add_location(self, location, altitude, cached=False):
-        # Geoclue only deals with a single location, so the
+        # GeoClue only deals with a single location, so the
         # list-of-locations that other testbeds implement isn't necessary here
         geoclue_location = Geoclue.LocationSkeleton.new()
         geoclue_location.props.latitude = location.lat
@@ -177,15 +177,15 @@ class SandboxedLocationProbe(LocationProbe):
         super().__init__(monkeypatch, app_probe)
 
         # The operative difference for sandboxed applications is the lack of client
-        # proxy usage by Geoclue.Simple
+        # proxy usage by ``Geoclue.Simple``
         self.mock_native.client = None
 
     def reject_permission(self):
-        # Due to a bug in the Geoclue.Simple implementation,
+        # Due to a bug in the ``Geoclue.Simple`` implementation,
         # https://gitlab.freedesktop.org/geoclue/geoclue/-/issues/205,
         # permissions errors in sandboxed contexts are flattened to a generic IO error
         # That provides a convenient place to ensure tests cover the fallback
-        # error case during Geoclue.Simple instantiation
+        # error case during ``Geoclue.Simple`` instantiation
         self.mock_native.creation_error = GLib.Error.new_literal(
             Gio.io_error_quark(), "Start failed", Gio.IOErrorEnum.FAILED
         )

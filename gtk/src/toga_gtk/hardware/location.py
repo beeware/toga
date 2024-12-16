@@ -58,9 +58,9 @@ else:  # pragma: no cover
 
 
 def is_permissions_error(error):
-    """Determine if a ``GLib.Error`` is one of the known Geoclue permissions errors.
+    """Determine if a ``GLib.Error`` is one of the known GeoClue permissions errors.
 
-    If Geoclue version <= 2.7.2 is in use, these permissions errors will not surface
+    If GeoClue version <= 2.7.2 is in use, these permissions errors will not surface
     due to a (now resolved) bug in ``Geoclue.Simple``'s error handling
     https://gitlab.freedesktop.org/geoclue/geoclue/-/issues/205
 
@@ -78,19 +78,19 @@ def is_permissions_error(error):
 
 class State(IntEnum):
     INITIAL = auto()
-    """Geoclue has not been started."""
+    """GeoClue has not been started."""
 
     STARTING = auto()
-    """Waiting for the Geoclue client to finish starting."""
+    """Waiting for the GeoClue client to finish starting."""
 
     READY = auto()
-    """Geoclue is ready to connect."""
+    """GeoClue is ready to retrieve the location."""
 
     MONITORING = auto()
     """Actively monitoring the location."""
 
     FAILED = auto()
-    """``Geoclue`` was unable to retrieve the location due to a generic error."""
+    """GeoClue was unable to retrieve the location due to a generic error."""
 
     DENIED = auto()
     """Location access was denied to the application."""
@@ -105,16 +105,16 @@ class State(IntEnum):
 
 
 class Location(GObject.Object):
-    #: State of Geoclue location service initialisation and communication
+    #: State of GeoClue location service initialisation and communication
     state = GObject.Property(type=int, default=State.INITIAL)
 
     def __init__(self, interface):
         if Geoclue is None:
-            # CI (where coverage is enforced) must always have Geoclue available
+            # CI (where coverage is enforced) must always have GeoClue available
             # in order to perform the rest of the tests
             raise RuntimeError(  # pragma: no cover
-                "Unable to import Geoclue. Ensure that the system package "
-                "providing Geoclue and its GTK bindings have been installed. See "
+                "Unable to import GeoClue. Ensure that the system package "
+                "providing GeoClue and its GTK bindings have been installed. See "
                 "https://toga.readthedocs.io/en/stable/reference/api/hardware/location.html#system-requirements "  # noqa: E501
                 "for details."
             )
@@ -163,7 +163,7 @@ class Location(GObject.Object):
             self.props.state = State.READY
 
         client = self.native.get_client()
-        # Geoclue docs indicate a client proxy is not used in sandboxed environments
+        # GeoClue docs indicate a client proxy is not used in sandboxed environments
         # https://gitlab.freedesktop.org/geoclue/geoclue/-/blob/master/libgeoclue/gclue-simple.c?ref_type=heads#L978-979
         if client:
 
@@ -218,7 +218,7 @@ class Location(GObject.Object):
     def has_background_permission(self):
         """Check for background permission.
 
-        Background location permission has no meaning for Geoclue,
+        Background location permission has no meaning for GeoClue,
         as all location access is mediated through the same location
         tracking APIs. Therefore, background location permission
         is handled in identical terms to foreground location permission.
@@ -240,7 +240,7 @@ class Location(GObject.Object):
         self.interface.on_change(**toga_location(self.native.get_location()))
 
     def start_tracking(self):
-        """Start tracking Geoclue location updates."""
+        """Start tracking GeoClue location updates."""
         if self.props.state == State.READY:
             self.notify_location_handle = self.native.connect(
                 "notify::location", self.location_listener
@@ -266,7 +266,7 @@ class Location(GObject.Object):
         return False
 
     def stop_tracking(self):
-        """Stop tracking Geoclue location updates.
+        """Stop tracking GeoClue location updates.
 
         If not currently tracking, this method is a noop.
         """

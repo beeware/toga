@@ -78,7 +78,7 @@ System requirements
 -------------------
 
 * Using location services on Linux requires that the user has installed the system
-  packages for Geoclue2, plus the GObject Introspection bindings for Geoclue2. The name
+  packages for GeoClue2, plus the GObject Introspection bindings for GeoClue2. The name
   of the system package required is distribution dependent:
 
   - Ubuntu and Debian: ``gir1.2-geoclue-2.0``
