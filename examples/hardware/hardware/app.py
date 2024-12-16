@@ -118,6 +118,9 @@ class ExampleHardwareApp(toga.App):
             )
 
     def location_changed(self, geo, location, altitude, **kwargs):
+        self._set_location(location)
+
+    def _set_location(self, location):
         self.map_view.location = location
 
         if self.pin is None:
@@ -131,8 +134,8 @@ class ExampleHardwareApp(toga.App):
         try:
             await self.location.request_permission()
 
-            # Getting the current location will trigger the on_change handler
-            await self.location.current_location()
+            location = await self.location.current_location()
+            self._set_location(location)
 
         except NotImplementedError:
             await self.main_window.dialog(
