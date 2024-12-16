@@ -14,7 +14,7 @@ class Widget:
         self.native = None
         self.create()
         # Override this attribute to set a different
-        # default background color for a widget.
+        # default background color for a given widget.
         self._default_background_color = self.native.backgroundColor
         self.interface.style.reapply()
 
