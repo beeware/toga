@@ -39,10 +39,8 @@ class TogaTableViewController(UITableViewController):
     def tableView_cellForRowAtIndexPath_(self, tableView, indexPath):
         cell = tableView.dequeueReusableCellWithIdentifier("row")
         if cell is None:
-            cell = (
-                UITableViewCell.alloc()
-                .initWithStyle(UITableViewCellStyleSubtitle, reuseIdentifier="row")
-                .autorelease()
+            cell = UITableViewCell.alloc().initWithStyle(
+                UITableViewCellStyleSubtitle, reuseIdentifier="row"
             )
 
         value = self.interface.data[indexPath.item]
