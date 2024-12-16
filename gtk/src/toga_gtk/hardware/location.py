@@ -1,3 +1,29 @@
+"""
+GeoClue-based GTK location services.
+
+For manually testing locations and location updates over time, consider using
+the GeoClueless utility: https://gitlab.gnome.org/jwestman/geoclueless
+
+Note: this utility must run with root privileges in order to register itself on the
+system D-Bus in place of GeoClue, user discretion is advised!
+
+Refer to repository README for setup instructions and dependencies. Then, from the
+repository root, run the following to use GeoClueless's provided example, which tracks
+location updates in a square around London, with an update every half second::
+
+    sudo ./geoclueless.py --loop csv --rate=2 ./examples/london.csv
+
+If you wish to avoid using GeoClueless, you may also mock location updates using
+GeoClue's ``static`` location provider. Refer to ``man 5 geoclue`` for instructions
+on how to enable the ``static`` location provider, as well as how to configure an
+``/etc/geolocation`` file. The manpage includes example contents.
+
+Changes to the coordinates in ``/etc/geolocation`` will be reflected in connected
+GeoClue clients. That is, you can effectively test tracking location updates by
+modifying the coordinates in the file, and that will propagate to any listening
+process the same way a "real" location update would.
+"""
+
 from __future__ import annotations
 
 from enum import IntEnum, auto
