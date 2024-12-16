@@ -112,10 +112,10 @@ class Pack(BaseStyle):
 
     # Pack.alignment is still an actual property, despite being deprecated, so we need
     # to suppress deprecation warnings when reapply is called.
-    def reapply(self, *args, **kw):
+    def reapply(self, *args, **kwargs):
         with warnings.catch_warnings():
             warnings.filterwarnings("ignore", category=DeprecationWarning)
-            super().reapply(*args, **kw)
+            super().reapply(*args, **kwargs)
 
     DEPRECATED_PROPERTIES = {
         # Map each deprecated property name to its replacement.
@@ -211,13 +211,29 @@ class Pack(BaseStyle):
     # Index notation
 
     def __getitem__(self, name):
-        return getattr(self, name.replace("-", "_"))
+        # As long as we're mucking about with backwards compatibility: Travertino 0.3.0
+        # doesn't support accessing directional properties via bracket notation, so
+        # special-case it here to gain access to the FUTURE.
+        if name in {"padding", "margin"}:
+            return getattr(self, name)
+
+        return super().__getitem__(self._update_property_name(name.replace("-", "_")))
 
     def __setitem__(self, name, value):
-        setattr(self, name.replace("-", "_"), value)
+        if name in {"padding", "margin"}:
+            setattr(self, name, value)
+            return
+
+        return super().__setitem__(
+            self._update_property_name(name.replace("-", "_")), value
+        )
 
     def __delitem__(self, name):
-        delattr(self, name.replace("-", "_"))
+        if name in {"padding", "margin"}:
+            delattr(self, name)
+            return
+
+        return super().__delitem__(self._update_property_name(name.replace("-", "_")))
 
     #######################################################
     # End backwards compatibility
