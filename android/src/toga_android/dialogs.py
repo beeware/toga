@@ -1,9 +1,11 @@
 from android import R
 from android.app import AlertDialog
-from android.content import DialogInterface
+from android.content import DialogInterface, Intent
 from java import dynamic_proxy
 
 import toga
+
+from .libs import utilfile
 
 
 class OnClickListener(dynamic_proxy(DialogInterface.OnClickListener)):
@@ -133,6 +135,13 @@ class SaveFileDialog(BaseDialog):
 
 
 class OpenFileDialog(BaseDialog):
+    class HandlerOpenDialog(utilfile.HandlerFileDialog):
+        def show(self):
+            intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
+            intent.addCategory(Intent.CATEGORY_OPENABLE)
+            intent.setType("*/*")
+            self.app.start_activity(intent, on_complete=self.parent.handler)
+
     def __init__(
         self,
         title,
@@ -140,10 +149,18 @@ class OpenFileDialog(BaseDialog):
         file_types,
         multiple_select,
     ):
-        super().__init__()
+        self.native = OpenFileDialog.HandlerOpenDialog(
+            self, toga.App.app.current_window
+        )
+        self.mActive = self.native.mActive
 
-        toga.App.app.factory.not_implemented("dialogs.OpenFileDialog()")
-        self.native = None
+    def handler(self, code, indent):
+        self._handler(indent.getData())
+
+    def _handler(self, uri):
+        inputStream = self.mActive.getContentResolver().openInputStream(uri)
+        reader = utilfile.PathReader(self.native.app, inputStream)
+        self.future.set_result(reader)
 
 
 class SelectFolderDialog(BaseDialog):
