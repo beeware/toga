@@ -352,7 +352,7 @@ class App:
         if self.interface.author is None:
             options["Copyright"] = ""
         else:
-            options["Copyright"] = f"Copyright © {self.interface.author}"
+            options["Copyright"] = f"Copyright {self.interface.author}"
 
         self.native.orderFrontStandardAboutPanelWithOptions(options)
 
@@ -385,3 +385,6 @@ class App:
 
     def set_current_window(self, window):
         window._impl.native.makeKeyAndOrderFront(window._impl.native)
+
+    def focus(self):
+        self.native.activateIgnoringOtherApps_(True)
