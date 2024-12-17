@@ -245,6 +245,19 @@ class TestStyle(BaseStyle):
 ###############################################################################
 
 
+def performed_actions(_widget, _action):
+    """Retrieve the specified actions executed by the widget
+
+    :param _widget: The interface of the widget to check
+    :param _action: The action.
+    :returns: The events log entries associated with the widget/action pair.
+    """
+    try:
+        return EventLog.performed_actions(_widget, _action)
+    except AttributeError:
+        return ()
+
+
 def attribute_value(_widget, _attr):
     """Retrieve the current value of a widget property.
 
