@@ -1,3 +1,5 @@
+import asyncio
+
 from rubicon.objc import objc_id, send_message
 
 from toga_cocoa.libs import NSWindow, NSWindowStyleMask
@@ -28,6 +30,7 @@ class WindowProbe(BaseProbe, DialogsMixin):
         minimize=False,
         full_screen=False,
         state_switch_not_from_normal=False,
+        assertion_test_method=None,
     ):
         await self.redraw(
             message,
@@ -37,6 +40,19 @@ class WindowProbe(BaseProbe, DialogsMixin):
                 else 0.75 if full_screen else 0.5 if minimize else 0.1
             ),
         )
+        if assertion_test_method:
+            timeout = 5
+            polling_interval = 0.1
+            exception = None
+            start_time = asyncio.get_event_loop().time()
+            while (asyncio.get_event_loop().time() - start_time) < timeout:
+                try:
+                    assertion_test_method()
+                    return
+                except AssertionError as e:
+                    exception = e
+                    await asyncio.sleep(polling_interval)
+                raise exception
 
     def close(self):
         self.native.performClose(None)

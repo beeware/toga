@@ -1,3 +1,5 @@
+import asyncio
+
 import pytest
 
 from toga_iOS.libs import UIApplication, UIWindow
@@ -24,8 +26,22 @@ class WindowProbe(BaseProbe, DialogsMixin):
         minimize=False,
         full_screen=False,
         state_switch_not_from_normal=False,
+        assertion_test_method=None,
     ):
         await self.redraw(message)
+        if assertion_test_method:
+            timeout = 5
+            polling_interval = 0.1
+            exception = None
+            start_time = asyncio.get_event_loop().time()
+            while (asyncio.get_event_loop().time() - start_time) < timeout:
+                try:
+                    assertion_test_method()
+                    return
+                except AssertionError as e:
+                    exception = e
+                    await asyncio.sleep(polling_interval)
+                raise exception
 
     @property
     def content_size(self):

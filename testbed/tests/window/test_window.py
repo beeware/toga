@@ -177,18 +177,24 @@ if toga.platform.current_platform in {"iOS", "android"}:
         ):
             pytest.xfail("This backend doesn't support presentation window state.")
 
+        def assert_instantaneous_state(expected_state):
+            assert main_window_probe.instantaneous_state == expected_state
+
         # Set to initial state
         main_window.state = initial_state
-        await main_window_probe.wait_for_window(f"Main window is in {initial_state}")
-
-        assert main_window_probe.instantaneous_state == initial_state
+        # Wait for window animation before assertion.
+        await main_window_probe.wait_for_window(
+            f"Main window is in {initial_state}",
+            assertion_test_method=lambda: assert_instantaneous_state(initial_state),
+        )
 
         # Set to final state
         main_window.state = final_state
+        # Wait for window animation before assertion.
         await main_window_probe.wait_for_window(
-            f"Main window is in {final_state}", state_switch_not_from_normal=True
+            f"Main window is in {final_state}",
+            assertion_test_method=lambda: assert_instantaneous_state(final_state),
         )
-        assert main_window_probe.instantaneous_state == final_state
 
     @pytest.mark.parametrize(
         "state",
@@ -214,14 +220,21 @@ if toga.platform.current_platform in {"iOS", "android"}:
         ):
             pytest.xfail("This backend doesn't support presentation window state.")
 
+        def assert_instantaneous_state():
+            assert main_window_probe.instantaneous_state == state
+
         # Set the window state:
         main_window.state = state
-        await main_window_probe.wait_for_window(f"Secondary window is in {state}")
-        assert main_window_probe.instantaneous_state == state
+        # Wait for window animation before assertion.
+        await main_window_probe.wait_for_window(
+            f"Secondary window is in {state}",
+            assertion_test_method=assert_instantaneous_state,
+        )
 
         # Set the window state the same as current:
         main_window.state = state
-        assert main_window_probe.instantaneous_state == state
+        # No need to wait for OS delay as the above operation should be a no-op.
+        assert_instantaneous_state()
 
     @pytest.mark.parametrize(
         "state",
@@ -253,39 +266,38 @@ if toga.platform.current_platform in {"iOS", "android"}:
         assert main_window_probe.instantaneous_state == WindowState.NORMAL
         initial_content_size = main_window_probe.content_size
 
+        def assert_increased_content_size():
+            assert main_window_probe.instantaneous_state == state
+            # At least one of the dimension should have increased.
+            assert (
+                main_window_probe.content_size[0] > initial_content_size[0]
+                or main_window_probe.content_size[1] > initial_content_size[1]
+            )
+
+        def assert_original_normal_content_size():
+            assert main_window_probe.instantaneous_state == WindowState.NORMAL
+            assert main_window_probe.content_size == initial_content_size
+
         main_window.state = state
-        # Add delay to ensure windows are visible after animation.
+        # Wait for window animation before assertion.
         await main_window_probe.wait_for_window(
             f"Main window is in {state}",
-            full_screen=True if state == WindowState.FULLSCREEN else False,
-        )
-        assert main_window_probe.instantaneous_state == state
-        # At least one of the dimension should have increased.
-        assert (
-            main_window_probe.content_size[0] > initial_content_size[0]
-            or main_window_probe.content_size[1] > initial_content_size[1]
+            assertion_test_method=assert_increased_content_size,
         )
 
         main_window.state = state
+        # Wait for window animation before assertion.
         await main_window_probe.wait_for_window(
             f"Main window is still in {state}",
-            full_screen=True if state == WindowState.FULLSCREEN else False,
-        )
-        assert main_window_probe.instantaneous_state == state
-        # At least one of the dimension should have increased.
-        assert (
-            main_window_probe.content_size[0] > initial_content_size[0]
-            or main_window_probe.content_size[1] > initial_content_size[1]
+            assertion_test_method=assert_increased_content_size,
         )
 
         main_window.state = WindowState.NORMAL
-        # Add delay to ensure windows are visible after animation.
+        # Wait for window animation before assertion.
         await main_window_probe.wait_for_window(
             f"Main window is not in {state}",
-            full_screen=True if state == WindowState.FULLSCREEN else False,
+            assertion_test_method=assert_original_normal_content_size,
         )
-        assert main_window_probe.instantaneous_state == WindowState.NORMAL
-        assert main_window_probe.content_size == initial_content_size
 
     @pytest.mark.parametrize(
         "state",
@@ -732,26 +744,24 @@ else:
         await second_window_probe.wait_for_window("Secondary window is visible")
         assert second_window_probe.instantaneous_state == WindowState.NORMAL
 
+        def assert_instantaneous_state(expected_state):
+            assert second_window_probe.instantaneous_state == expected_state
+
         # Set to initial state
         second_window.state = initial_state
-        # Add delay to ensure windows are visible after animation.
+        # Wait for window animation before assertion.
         await second_window_probe.wait_for_window(
             f"Secondary window is in {initial_state}",
-            minimize=True if initial_state == WindowState.MINIMIZED else False,
-            full_screen=True if initial_state == WindowState.FULLSCREEN else False,
+            assertion_test_method=lambda: assert_instantaneous_state(initial_state),
         )
-        assert second_window_probe.instantaneous_state == initial_state
 
         # Set to final state
         second_window.state = final_state
-        # Add delay to ensure windows are visible after animation.
+        # Wait for window animation before assertion.
         await second_window_probe.wait_for_window(
             f"Secondary window is in {final_state}",
-            state_switch_not_from_normal=(
-                True if initial_state != WindowState.NORMAL else False
-            ),
+            assertion_test_method=lambda: assert_instantaneous_state(final_state),
         )
-        assert second_window_probe.instantaneous_state == final_state
 
     @pytest.mark.parametrize(
         "states",
@@ -795,21 +805,22 @@ else:
         second_window.show()
         # Add delay to ensure windows are visible after animation.
         await second_window_probe.wait_for_window("Secondary window is visible")
-        assert second_window_probe.instantaneous_state == WindowState.NORMAL
+
+        def assert_final_instantaneous_state():
+            # Verify that the backend handled rapid assignments by checking if
+            # the window reached the correct final window state.
+            assert second_window_probe.instantaneous_state == states[-1]
 
         # Assign new states without waiting for each transition to complete,
         # to test that the backend can handle rapid window state assignments.
         for state in states:
             second_window.state = state
-
-        # Add delay to ensure windows are visible after the final state animation.
+        # Wait for window animation before assertion.
         await second_window_probe.wait_for_window(
-            f"Secondary window is in {states[-1]}", state_switch_not_from_normal=True
+            f"Secondary window is in {states[-1]}",
+            state_switch_not_from_normal=True,
+            assertion_test_method=assert_final_instantaneous_state,
         )
-
-        # Verify that the backend handled rapid assignments by checking if
-        # the window reached the correct final window state.
-        assert second_window_probe.instantaneous_state == states[-1]
 
     @pytest.mark.parametrize(
         "state",
@@ -845,20 +856,21 @@ else:
         # Add delay to ensure windows are visible after animation.
         await second_window_probe.wait_for_window("Secondary window is shown")
 
+        def assert_instantaneous_state():
+            assert second_window_probe.instantaneous_state == state
+
         # Set the window state:
         second_window.state = state
-        # Add delay to ensure windows are visible after animation.
+        # Wait for window animation before assertion.
         await second_window_probe.wait_for_window(
             f"Secondary window is in {state}",
-            minimize=True if state == WindowState.MINIMIZED else False,
-            full_screen=True if state == WindowState.FULLSCREEN else False,
+            assertion_test_method=assert_instantaneous_state,
         )
-        assert second_window_probe.instantaneous_state == state
 
         # Set the window state the same as current:
         second_window.state = state
         # No need to wait for OS delay as the above operation should be a no-op.
-        assert second_window_probe.instantaneous_state == state
+        assert_instantaneous_state()
 
     @pytest.mark.parametrize(
         "state",
@@ -891,34 +903,37 @@ else:
         assert second_window_probe.is_resizable
         initial_content_size = second_window_probe.content_size
 
+        def assert_increased_content_size():
+            assert second_window_probe.instantaneous_state == state
+            assert second_window_probe.content_size[0] > initial_content_size[0]
+            assert second_window_probe.content_size[1] > initial_content_size[1]
+
+        def assert_original_normal_content_size():
+            assert second_window_probe.instantaneous_state == WindowState.NORMAL
+            assert second_window_probe.is_resizable
+            assert second_window_probe.content_size == initial_content_size
+
         second_window.state = state
-        # Add delay to ensure windows are visible after animation.
+        # Wait for window animation before assertion.
         await second_window_probe.wait_for_window(
             f"Secondary window is in {state}",
-            full_screen=True if state == WindowState.FULLSCREEN else False,
+            assertion_test_method=assert_increased_content_size,
         )
-        assert second_window_probe.instantaneous_state == state
-        assert second_window_probe.content_size[0] > initial_content_size[0]
-        assert second_window_probe.content_size[1] > initial_content_size[1]
 
         second_window.state = state
+        # Wait for window animation before assertion.
         await second_window_probe.wait_for_window(
             f"Secondary window is still in {state}",
-            full_screen=True if state == WindowState.FULLSCREEN else False,
+            assertion_test_method=assert_increased_content_size,
         )
-        assert second_window_probe.instantaneous_state == state
-        assert second_window_probe.content_size[0] > initial_content_size[0]
-        assert second_window_probe.content_size[1] > initial_content_size[1]
 
         second_window.state = WindowState.NORMAL
-        # Add delay to ensure windows are visible after animation.
+        # Wait for window animation before assertion.
         await second_window_probe.wait_for_window(
             f"Secondary window is not in {state}",
             full_screen=True if state == WindowState.FULLSCREEN else False,
+            assertion_test_method=assert_original_normal_content_size,
         )
-        assert second_window_probe.instantaneous_state == WindowState.NORMAL
-        assert second_window_probe.is_resizable
-        assert second_window_probe.content_size == initial_content_size
 
     @pytest.mark.parametrize(
         "second_window_class, second_window_kwargs",
