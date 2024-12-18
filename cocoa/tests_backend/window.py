@@ -31,7 +31,7 @@ class WindowProbe(BaseProbe, DialogsMixin):
     ):
         await self.redraw(message, delay=0.1)
         if state:
-            timeout = 5
+            timeout = 3
             polling_interval = 0.1
             exception = None
             loop = asyncio.get_running_loop()
