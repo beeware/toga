@@ -38,6 +38,8 @@ class WindowProbe(BaseProbe, DialogsMixin):
     async def wait_for_window(
         self,
         message,
+        minimize=False,
+        full_screen=False,
         state=None,
     ):
         await self.redraw(message)

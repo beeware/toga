@@ -11,8 +11,6 @@ from toga.colors import GOLDENROD
 from toga.constants import WindowState
 from toga.style import Pack
 
-from .window.test_window import window_probe
-
 # Ideally, we'd register rewrites for "tests" and get all the submodules
 # recursively; however we've already imported "tests", so that raises a warning.
 register_assert_rewrite("tests.assertions")
@@ -92,27 +90,32 @@ async def window_cleanup(app, app_probe, main_window, main_window_probe):
     # 2 passes because we can't modify the list while iterating over it.
     kill_list = []
     for window in app.windows:
-        window.state = WindowState.NORMAL
-        probe = window_probe(app, window)
-        await probe.wait_for_window("Resetting main_window", state=WindowState.NORMAL)
-
         if window != main_window:
             kill_list.append(window)
 
     # Then purge everything on the kill list.
     while kill_list:
         window = kill_list.pop()
+        window_state = window.state
         window.close()
+        await main_window_probe.wait_for_window(
+            "Closing window",
+            minimize=True if window_state == WindowState.MINIMIZED else False,
+            full_screen=True if window_state == WindowState.FULLSCREEN else False,
+        )
         del window
 
     # Force a GC pass on the main thread. This isn't perfect, but it helps
     # minimize garbage collection on the test thread.
     gc.collect()
 
+    main_window_state = main_window.state
     main_window.state = WindowState.NORMAL
     app.current_window = main_window
     await main_window_probe.wait_for_window(
-        "Resetting main_window", state=WindowState.NORMAL
+        "Resetting main_window",
+        minimize=True if main_window_state == WindowState.MINIMIZED else False,
+        full_screen=True if main_window_state == WindowState.FULLSCREEN else False,
     )
 
 
