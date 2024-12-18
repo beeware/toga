@@ -818,7 +818,6 @@ else:
         # Wait for window animation before assertion.
         await second_window_probe.wait_for_window(
             f"Secondary window is in {states[-1]}",
-            state_switch_not_from_normal=True,
             assertion_test_method=assert_final_instantaneous_state,
         )
 
