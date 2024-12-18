@@ -44,29 +44,25 @@ async def test_presentation_mode(app, main_window, main_window_probe):
     assert not app.in_presentation_mode
     assert main_window.state != WindowState.PRESENTATION
 
-    def assert_windows_entered_presentation_mode():
-        assert app.in_presentation_mode
-        assert main_window.state == WindowState.PRESENTATION
-
-    def assert_windows_exited_presentation_mode():
-        assert not app.in_presentation_mode
-        assert main_window.state == WindowState.NORMAL
-
     # Enter presentation mode with main window via the app
     app.enter_presentation_mode({app.screens[0]: main_window})
     # Wait for window animation before assertion.
     await main_window_probe.wait_for_window(
-        "Main window is in presentation mode",
-        assertion_test_method=assert_windows_entered_presentation_mode,
+        "Main window is in presentation mode", state=WindowState.PRESENTATION
     )
+
+    assert app.in_presentation_mode
+    assert main_window.state == WindowState.PRESENTATION
 
     # Exit presentation mode
     app.exit_presentation_mode()
     # Wait for window animation before assertion.
     await main_window_probe.wait_for_window(
-        "Main window is no longer in presentation mode",
-        assertion_test_method=assert_windows_exited_presentation_mode,
+        "Main window is no longer in presentation mode", state=WindowState.NORMAL
     )
+
+    assert not app.in_presentation_mode
+    assert main_window.state == WindowState.NORMAL
 
 
 async def test_current_window(app, app_probe, main_window, main_window_probe):

@@ -167,8 +167,10 @@ async def test_menu_minimize(app, app_probe):
     await app_probe.redraw("Extra window added")
 
     app_probe.activate_menu_minimize()
-
-    await window1_probe.wait_for_window("Extra window minimized", minimize=True)
+    # Wait for window animation before assertion.
+    await window1_probe.wait_for_window(
+        "Extra window minimized", state=WindowState.MINIMIZED
+    )
     assert window1_probe.is_minimized
 
 
@@ -201,73 +203,67 @@ async def test_presentation_mode(app, app_probe, main_window, main_window_probe)
         screen_window_dict[window_information["paired_screen"]] = window_information[
             "window"
         ]
-    # Add delay to ensure windows are visible after animation.
+    # Wait for window animation before assertion.
     await main_window_probe.wait_for_window("All Test Windows are visible")
-
-    def assert_windows_entered_presentation_mode():
-        assert app.in_presentation_mode
-        # All the windows should be in presentation mode.
-        for window_information in window_information_list:
-            assert (
-                window_information["window_probe"].instantaneous_state
-                == WindowState.PRESENTATION
-            ), f"{window_information['window'].title}:"
-            # 1000x700 is bigger than the original window size,
-            # while being smaller than any likely screen.
-            assert (
-                window_information["window_probe"].content_size[0] > 1000
-            ), f"{window_information['window'].title}:"
-            assert (
-                window_information["window_probe"].content_size[1] > 700
-            ), f"{window_information['window'].title}:"
-            assert (
-                window_information["widget_probe"].width
-                > window_information["initial_widget_size"][0]
-                and window_information["widget_probe"].height
-                > window_information["initial_widget_size"][1]
-            ), f"{window_information['window'].title}:"
-            assert (
-                window_information["window"].screen
-                == window_information["paired_screen"]
-            ), f"{window_information['window'].title}:"
-
-    def assert_windows_exited_presentation_mode():
-        assert not app.in_presentation_mode
-        for window_information in window_information_list:
-            assert (
-                window_information["window_probe"].instantaneous_state
-                == WindowState.NORMAL
-            ), f"{window_information['window'].title}:"
-            assert (
-                window_information["window_probe"].content_size
-                == window_information["initial_content_size"]
-            ), f"{window_information['window'].title}:"
-            assert (
-                window_information["widget_probe"].width
-                == window_information["initial_widget_size"][0]
-                and window_information["widget_probe"].height
-                == window_information["initial_widget_size"][1]
-            ), f"{window_information['window'].title}:"
-            assert (
-                window_information["window"].screen
-                == window_information["initial_screen"]
-            ), f"{window_information['window'].title}:"
 
     # Enter presentation mode with a screen-window dict via the app
     app.enter_presentation_mode(screen_window_dict)
-    # Wait for window animation before assertion.
-    await main_window_probe.wait_for_window(
-        "App is in presentation mode",
-        assertion_test_method=assert_windows_entered_presentation_mode,
-    )
+
+    # All the windows should be in presentation mode.
+    for window_information in window_information_list:
+        # Wait for window animation before assertion.
+        await window_information["window_probe"].wait_for_window(
+            "App is in presentation mode", state=WindowState.PRESENTATION
+        )
+        assert app.in_presentation_mode
+        assert (
+            window_information["window_probe"].instantaneous_state
+            == WindowState.PRESENTATION
+        ), f"{window_information['window'].title}:"
+        # 1000x700 is bigger than the original window size,
+        # while being smaller than any likely screen.
+        assert (
+            window_information["window_probe"].content_size[0] > 1000
+        ), f"{window_information['window'].title}:"
+        assert (
+            window_information["window_probe"].content_size[1] > 700
+        ), f"{window_information['window'].title}:"
+        assert (
+            window_information["widget_probe"].width
+            > window_information["initial_widget_size"][0]
+            and window_information["widget_probe"].height
+            > window_information["initial_widget_size"][1]
+        ), f"{window_information['window'].title}:"
+        assert (
+            window_information["window"].screen == window_information["paired_screen"]
+        ), f"{window_information['window'].title}:"
 
     # Exit presentation mode
     app.exit_presentation_mode()
-    # Wait for window animation before assertion.
-    await main_window_probe.wait_for_window(
-        "App is not in presentation mode",
-        assertion_test_method=assert_windows_exited_presentation_mode,
-    )
+
+    # All the windows should have exited presentation mode.
+    for window_information in window_information_list:
+        # Wait for window animation before assertion.
+        await window_information["window_probe"].wait_for_window(
+            "App is not in presentation mode", state=WindowState.NORMAL
+        )
+        assert not app.in_presentation_mode
+        assert (
+            window_information["window_probe"].instantaneous_state == WindowState.NORMAL
+        ), f"{window_information['window'].title}:"
+        assert (
+            window_information["window_probe"].content_size
+            == window_information["initial_content_size"]
+        ), f"{window_information['window'].title}:"
+        assert (
+            window_information["widget_probe"].width
+            == window_information["initial_widget_size"][0]
+            and window_information["widget_probe"].height
+            == window_information["initial_widget_size"][1]
+        ), f"{window_information['window'].title}:"
+        assert (
+            window_information["window"].screen == window_information["initial_screen"]
+        ), f"{window_information['window'].title}:"
 
 
 async def test_window_presentation_exit_on_another_window_presentation(
@@ -281,63 +277,62 @@ async def test_window_presentation_exit_on_another_window_presentation(
     window2.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
     window1.show()
     window2.show()
-    # Add delay to ensure windows are visible after animation.
+    # Wait for window animation before assertion.
     await main_window_probe.wait_for_window("Test windows are shown")
 
-    def assert_window1_not_presentation_window2_presentation():
-        assert app.in_presentation_mode
-        assert window2_probe.instantaneous_state == WindowState.PRESENTATION
-        assert window1_probe.instantaneous_state != WindowState.PRESENTATION
-
-    def assert_window1_presentation_window2_not_presentation():
-        assert app.in_presentation_mode
-        assert window1_probe.instantaneous_state == WindowState.PRESENTATION
-        assert window2_probe.instantaneous_state != WindowState.PRESENTATION
-
-    def assert_both_windows_not_in_presentation_mode():
-        assert not app.in_presentation_mode
-        assert window1_probe.instantaneous_state != WindowState.PRESENTATION
-        assert window2_probe.instantaneous_state != WindowState.PRESENTATION
+    assert not app.in_presentation_mode
+    assert window1_probe.instantaneous_state != WindowState.PRESENTATION
+    assert window2_probe.instantaneous_state != WindowState.PRESENTATION
 
     # Enter presentation mode with window2
     app.enter_presentation_mode([window2])
     # Wait for window animation before assertion.
-    await main_window_probe.wait_for_window(
-        "App is in presentation mode",
-        assertion_test_method=assert_window1_not_presentation_window2_presentation,
+    await window2_probe.wait_for_window(
+        "App is in presentation mode", state=WindowState.PRESENTATION
     )
+    assert app.in_presentation_mode
+    assert window2_probe.instantaneous_state == WindowState.PRESENTATION
+    assert window1_probe.instantaneous_state != WindowState.PRESENTATION
 
     # Enter presentation mode with window1, window2 no longer in presentation
     app.enter_presentation_mode([window1])
     # Wait for window animation before assertion.
-    await main_window_probe.wait_for_window(
-        "App is in presentation mode",
-        assertion_test_method=assert_window1_presentation_window2_not_presentation,
+    await window1_probe.wait_for_window(
+        "App is in presentation mode", state=WindowState.PRESENTATION
     )
+    assert app.in_presentation_mode
+    assert window1_probe.instantaneous_state == WindowState.PRESENTATION
+    assert window2_probe.instantaneous_state != WindowState.PRESENTATION
 
     # Exit presentation mode
     app.exit_presentation_mode()
     # Wait for window animation before assertion.
-    await main_window_probe.wait_for_window(
-        "App is not in presentation mode",
-        assertion_test_method=assert_both_windows_not_in_presentation_mode,
+    await window1_probe.wait_for_window(
+        "App is not in presentation mode", state=WindowState.NORMAL
     )
+    assert not app.in_presentation_mode
+    assert window1_probe.instantaneous_state != WindowState.PRESENTATION
+    assert window2_probe.instantaneous_state != WindowState.PRESENTATION
 
     # Enter presentation mode again with window1
     app.enter_presentation_mode([window1])
     # Wait for window animation before assertion.
-    await main_window_probe.wait_for_window(
-        "App is in presentation mode",
-        assertion_test_method=assert_window1_presentation_window2_not_presentation,
+    await window1_probe.wait_for_window(
+        "App is in presentation mode", state=WindowState.PRESENTATION
     )
+    assert app.in_presentation_mode
+    assert window1_probe.instantaneous_state == WindowState.PRESENTATION
+    assert window2_probe.instantaneous_state != WindowState.PRESENTATION
 
     # Exit presentation mode
     app.exit_presentation_mode()
     # Wait for window animation before assertion.
-    await main_window_probe.wait_for_window(
-        "App is not in presentation mode",
-        assertion_test_method=assert_both_windows_not_in_presentation_mode,
+    await window1_probe.wait_for_window(
+        "App is not in presentation mode", state=WindowState.NORMAL
     )
+    assert not app.in_presentation_mode
+    assert window1_probe.instantaneous_state != WindowState.PRESENTATION
+    assert window2_probe.instantaneous_state != WindowState.PRESENTATION
 
 
 @pytest.mark.parametrize(
@@ -365,75 +360,77 @@ async def test_presentation_mode_exit_on_window_state_change(
     window2.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
     window1.show()
     window2.show()
-    # Add delay to ensure windows are visible after animation.
+    # Wait for window animation before assertion.
     await main_window_probe.wait_for_window("Test windows are shown")
-
-    def assert_app_and_window1_in_presentation_mode():
-        assert app.in_presentation_mode
-        assert window1_probe.instantaneous_state == WindowState.PRESENTATION
-
-    def assert_app_not_presentation_window1_new_window_state():
-        assert not app.in_presentation_mode
-        assert window1_probe.instantaneous_state == new_window_state
-
-    def assert_app_not_presentation_window2_new_window_state():
-        assert not app.in_presentation_mode
-        assert window2_probe.instantaneous_state == new_window_state
-
-    def assert_app_not_presention_both_windows_normal_state():
-        assert not app.in_presentation_mode
-        assert window1_probe.instantaneous_state == WindowState.NORMAL
-        assert window2_probe.instantaneous_state == WindowState.NORMAL
 
     # Enter presentation mode
     app.enter_presentation_mode([window1])
     # Wait for window animation before assertion.
-    await main_window_probe.wait_for_window(
-        "App is in presentation mode",
-        assertion_test_method=assert_app_and_window1_in_presentation_mode,
+    await window1_probe.wait_for_window(
+        "App is in presentation mode", state=WindowState.PRESENTATION
     )
+
+    assert app.in_presentation_mode
+    assert window1_probe.instantaneous_state == WindowState.PRESENTATION
 
     # Changing window state of main window should make the app exit presentation mode.
     window1.state = new_window_state
     # Wait for window animation before assertion.
-    await main_window_probe.wait_for_window(
+    await window1_probe.wait_for_window(
         "App is not in presentation mode" f"\nTest Window 1 is in {new_window_state}",
-        assertion_test_method=assert_app_not_presentation_window1_new_window_state,
+        state=new_window_state,
     )
+
+    assert not app.in_presentation_mode
+    assert window1_probe.instantaneous_state == new_window_state
 
     # Reset window states
     window1.state = WindowState.NORMAL
+    # Wait for window animation before assertion.
+    await window1_probe.wait_for_window(
+        "All test windows are in WindowState.NORMAL", state=WindowState.NORMAL
+    )
     window2.state = WindowState.NORMAL
     # Wait for window animation before assertion.
-    await main_window_probe.wait_for_window(
-        "All test windows are in WindowState.NORMAL",
-        assertion_test_method=assert_app_not_presention_both_windows_normal_state,
+    await window2_probe.wait_for_window(
+        "All test windows are in WindowState.NORMAL", state=WindowState.NORMAL
     )
+    assert window1_probe.instantaneous_state == WindowState.NORMAL
+    assert window2_probe.instantaneous_state == WindowState.NORMAL
 
     # Enter presentation mode again
     app.enter_presentation_mode([window1])
     # Wait for window animation before assertion.
-    await main_window_probe.wait_for_window(
-        "App is in presentation mode",
-        assertion_test_method=assert_app_and_window1_in_presentation_mode,
+    await window1_probe.wait_for_window(
+        "App is in presentation mode", state=WindowState.PRESENTATION
     )
+    assert app.in_presentation_mode
+    assert window1_probe.instantaneous_state == WindowState.PRESENTATION
 
     # Changing window state of extra window should make the app exit presentation mode.
     window2.state = new_window_state
     # Wait for window animation before assertion.
-    await main_window_probe.wait_for_window(
+    await window2_probe.wait_for_window(
         "App is not in presentation mode" f"\nTest Window 2 is in {new_window_state}",
-        assertion_test_method=assert_app_not_presentation_window2_new_window_state,
+        state=new_window_state,
     )
+
+    assert not app.in_presentation_mode
+    assert window2_probe.instantaneous_state == new_window_state
 
     # Reset window states
     window1.state = WindowState.NORMAL
+    # Wait for window animation before assertion.
+    await window1_probe.wait_for_window(
+        "All test windows are in WindowState.NORMAL", state=WindowState.NORMAL
+    )
     window2.state = WindowState.NORMAL
     # Wait for window animation before assertion.
-    await main_window_probe.wait_for_window(
-        "All test windows are in WindowState.NORMAL",
-        assertion_test_method=assert_app_not_presention_both_windows_normal_state,
+    await window2_probe.wait_for_window(
+        "All test windows are in WindowState.NORMAL", state=WindowState.NORMAL
     )
+    assert window1_probe.instantaneous_state == WindowState.NORMAL
+    assert window2_probe.instantaneous_state == WindowState.NORMAL
 
 
 async def test_show_hide_cursor(app, app_probe):

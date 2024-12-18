@@ -87,11 +87,6 @@ def main_window(app):
 
 @fixture(autouse=True)
 async def window_cleanup(app, app_probe, main_window, main_window_probe):
-    def assert_window_state_normal(window):
-        if not window.closed:
-            current_window_probe = window_probe(app, window)
-            current_window_probe.instantaneous_state == WindowState.NORMAL
-
     # Ensure that at the end of every test, all windows that aren't the
     # main window have been closed and deleted. This needs to be done in
     # 2 passes because we can't modify the list while iterating over it.
@@ -103,12 +98,12 @@ async def window_cleanup(app, app_probe, main_window, main_window_probe):
     # Then purge everything on the kill list.
     while kill_list:
         window = kill_list.pop()
-        window.state = WindowState.NORMAL
-        await main_window_probe.wait_for_window(
-            "Closing window",
-            assertion_test_method=lambda: assert_window_state_normal(window),
-        )
-        window.close()
+        if not window.closed:
+            window.state = WindowState.NORMAL
+            await window_probe(app, window).wait_for_window(
+                "Resetting window", state=WindowState.NORMAL
+            )
+            window.close()
         del window
 
     # Force a GC pass on the main thread. This isn't perfect, but it helps
@@ -118,8 +113,7 @@ async def window_cleanup(app, app_probe, main_window, main_window_probe):
     main_window.state = WindowState.NORMAL
     app.current_window = main_window
     await main_window_probe.wait_for_window(
-        "Resetting main_window",
-        assertion_test_method=lambda: assert_window_state_normal(main_window),
+        "Resetting main_window", state=WindowState.NORMAL
     )
 
 
