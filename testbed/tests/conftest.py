@@ -92,20 +92,17 @@ async def window_cleanup(app, app_probe, main_window, main_window_probe):
     # 2 passes because we can't modify the list while iterating over it.
     kill_list = []
     for window in app.windows:
+        window.state = WindowState.NORMAL
+        probe = window_probe(app, window)
+        await probe.wait_for_window("Resetting main_window", state=WindowState.NORMAL)
+
         if window != main_window:
             kill_list.append(window)
 
     # Then purge everything on the kill list.
     while kill_list:
         window = kill_list.pop()
-        if not window.closed:
-            window.state = WindowState.NORMAL
-            await window_probe(app, window).wait_for_window(
-                "Resetting window", state=WindowState.NORMAL
-            )
-            window.close()
-            if toga.platform.current_platform == "macOS":
-                await app_probe.redraw("Closing window", delay=1.5)
+        window.close()
         del window
 
     # Force a GC pass on the main thread. This isn't perfect, but it helps
