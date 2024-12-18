@@ -104,6 +104,8 @@ async def window_cleanup(app, app_probe, main_window, main_window_probe):
                 "Resetting window", state=WindowState.NORMAL
             )
             window.close()
+            if toga.platform.current_platform == "macOS":
+                await app_probe.redraw("Closing window", delay=1.5)
         del window
 
     # Force a GC pass on the main thread. This isn't perfect, but it helps
