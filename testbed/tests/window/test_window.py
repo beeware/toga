@@ -723,7 +723,6 @@ else:
     )
     async def test_window_state_change(
         app,
-        app_probe,
         second_window,
         second_window_probe,
         initial_state,
@@ -820,6 +819,12 @@ else:
             f"Secondary window is in {states[-1]}",
             assertion_test_method=assert_final_instantaneous_state,
         )
+        # Required to ensure complete coverage of fullscreen handling on macOS.
+        if states[-1] == WindowState.FULLSCREEN:
+            await second_window_probe.wait_for_window(
+                "Waiting for completion of fullscreen pending state handling",
+                long_wait=True,
+            )
 
     @pytest.mark.parametrize(
         "state",
