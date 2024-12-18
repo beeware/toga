@@ -935,7 +935,6 @@ else:
         # Wait for window animation before assertion.
         await second_window_probe.wait_for_window(
             f"Secondary window is not in {state}",
-            full_screen=True if state == WindowState.FULLSCREEN else False,
             assertion_test_method=assert_original_normal_content_size,
         )
 
