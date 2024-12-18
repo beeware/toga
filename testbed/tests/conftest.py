@@ -102,11 +102,12 @@ async def window_cleanup(app, app_probe, main_window, main_window_probe):
     # Then purge everything on the kill list.
     while kill_list:
         window = kill_list.pop()
-        window.close()
+        window.state = WindowState.NORMAL
         await main_window_probe.wait_for_window(
             "Closing window",
             assertion_test_method=lambda: assert_window_state_normal(window),
         )
+        window.close()
         del window
 
     # Force a GC pass on the main thread. This isn't perfect, but it helps
