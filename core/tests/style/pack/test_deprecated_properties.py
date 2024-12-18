@@ -77,7 +77,7 @@ def delitem_hyphen(obj, name):
 @pytest.mark.parametrize("get_fn", (getattr, getitem, getitem_hyphen))
 @pytest.mark.parametrize("del_fn", (delattr, delitem, delitem_hyphen))
 def test_padding_margin(old_name, new_name, value, default, style_with, get_fn, del_fn):
-    """Deprecated names alias to new names, and issue deprecation warnings."""
+    """Padding (with deprecation warning) and margin map to each other."""
     # Set the old name, then check the new name
     with pytest.warns(DeprecationWarning):
         style = style_with(old_name, value)
