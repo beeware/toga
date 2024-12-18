@@ -11,7 +11,7 @@ from .hardware import HardwareProbe
 
 
 class LocationProbe(HardwareProbe):
-    request_background_permission = True
+    supports_background_permission = True
 
     def __init__(self, monkeypatch, app_probe):
         super().__init__(monkeypatch, app_probe.app)
