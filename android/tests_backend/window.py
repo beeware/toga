@@ -21,14 +21,10 @@ class WindowProbe(BaseProbe, DialogsMixin):
         self,
         message,
         minimize=False,
-        full_screen=False,
         long_wait=False,
         assertion_test_method=None,
     ):
-        await self.redraw(
-            message,
-            delay=(0.5 if full_screen else 0.1),
-        )
+        await self.redraw(message, delay=0.1)
         if assertion_test_method:
             timeout = 5
             polling_interval = 0.1
