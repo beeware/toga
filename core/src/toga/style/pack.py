@@ -111,6 +111,13 @@ class Pack(BaseStyle):
     # Backwards compatibility for Toga <= 0.4.8
     #######################################################
 
+    def update(self, **properties):
+        properties = {
+            self._update_property_name(name.replace("-", "_")): value
+            for name, value in properties.items()
+        }
+        super().update(**properties)
+
     # Pack.alignment is still an actual property, despite being deprecated, so we need
     # to suppress deprecation warnings when reapply is called.
     def reapply(self, *args, **kwargs):
