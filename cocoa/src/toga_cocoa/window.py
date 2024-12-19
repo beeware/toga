@@ -216,7 +216,7 @@ class Window:
         )
         self.native.interface = self.interface
         self.native.impl = self
-        self.native.isReleasedWhenClosed = False
+        self.native.releasedWhenClosed = False
         # Cocoa releases windows when they are closed; this causes havoc with
         # Toga's widget cleanup because the ObjC runtime thinks there's no
         # references to the object left. Add a reference that can be released
