@@ -216,12 +216,12 @@ class Window:
         )
         self.native.interface = self.interface
         self.native.impl = self
-
+        self.native.isReleasedWhenClosed = False
         # Cocoa releases windows when they are closed; this causes havoc with
         # Toga's widget cleanup because the ObjC runtime thinks there's no
         # references to the object left. Add a reference that can be released
         # in response to the close.
-        self.native.retain()
+        # self.native.retain()
 
         # Pending Window state transition variable:
         self._pending_state_transition = None
@@ -258,7 +258,6 @@ class Window:
     ######################################################################
 
     def close(self):
-        self.native.orderOut(self.native)
         self.native.close()
 
     def set_app(self, app):
