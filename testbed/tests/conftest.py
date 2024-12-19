@@ -96,10 +96,17 @@ async def window_cleanup(app, app_probe, main_window, main_window_probe):
     # Then purge everything on the kill list.
     while kill_list:
         window = kill_list.pop()
+        window_state = window.state
         window.close()
-        if toga.platform.current_platform == "macOS":
-            assert window._impl.native.delegate is None
-        await main_window_probe.wait_for_window("Closing window")
+        # We need to use fixed length delays here as NSWindow.close() is
+        # non-blocking in nature, and NSWindow doesn't provide a reliable
+        # indicator to indicate completion of all operations related to
+        # window closing.
+        await main_window_probe.wait_for_window(
+            "Closing window",
+            minimize=True if window_state == WindowState.MINIMIZED else False,
+            full_screen=True if window_state == WindowState.FULLSCREEN else False,
+        )
         del window
 
     # Force a GC pass on the main thread. This isn't perfect, but it helps

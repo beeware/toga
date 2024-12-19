@@ -61,7 +61,6 @@ class TogaWindow(NSWindow):
         # from being triggered when `impl` & `interface` attributes are empty.
         # Hence, check guards for empty `impl` and `interface` attributes need
         # to be used in such custom methods.
-        self.autorelease()
 
     @objc_method
     def windowDidResize_(self, notification) -> None:
