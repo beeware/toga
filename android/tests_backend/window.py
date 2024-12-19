@@ -1,3 +1,5 @@
+import asyncio
+
 from android.content import Context
 from androidx.appcompat import R as appcompat_R
 
@@ -20,12 +22,24 @@ class WindowProbe(BaseProbe, DialogsMixin):
         message,
         minimize=False,
         full_screen=False,
-        state_switch_not_from_normal=False,
+        expected_state=None,
     ):
-        await self.redraw(
-            message,
-            delay=(0.5 if (full_screen or state_switch_not_from_normal) else 0.1),
-        )
+        await self.redraw(message, delay=(0.5 if full_screen else 0.1))
+        if expected_state:
+            timeout = 5
+            polling_interval = 0.1
+            exception = None
+            loop = asyncio.get_running_loop()
+            start_time = loop.time()
+            while (loop.time() - start_time) < timeout:
+                try:
+                    assert self.instantaneous_state == expected_state
+                    return
+                except AssertionError as e:
+                    exception = e
+                    await asyncio.sleep(polling_interval)
+                    continue
+                raise exception
 
     @property
     def content_size(self):

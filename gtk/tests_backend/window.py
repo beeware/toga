@@ -1,3 +1,5 @@
+import asyncio
+
 from toga_gtk.libs import IS_WAYLAND, Gdk, Gtk
 
 from .dialogs import DialogsMixin
@@ -29,12 +31,24 @@ class WindowProbe(BaseProbe, DialogsMixin):
         message,
         minimize=False,
         full_screen=False,
-        state_switch_not_from_normal=False,
+        expected_state=None,
     ):
-        await self.redraw(
-            message,
-            delay=(0.5 if (full_screen or minimize) else 0.1),
-        )
+        await self.redraw(message, delay=(0.5 if (full_screen or minimize) else 0.1))
+        if expected_state:
+            timeout = 5
+            polling_interval = 0.1
+            exception = None
+            loop = asyncio.get_running_loop()
+            start_time = loop.time()
+            while (loop.time() - start_time) < timeout:
+                try:
+                    assert self.instantaneous_state == expected_state
+                    return
+                except AssertionError as e:
+                    exception = e
+                    await asyncio.sleep(polling_interval)
+                    continue
+                raise exception
 
     def close(self):
         if self.is_closable:
