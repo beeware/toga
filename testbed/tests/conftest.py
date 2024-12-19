@@ -97,6 +97,8 @@ async def window_cleanup(app, app_probe, main_window, main_window_probe):
     while kill_list:
         window = kill_list.pop()
         window.close()
+        if toga.platform.current_platform == "macOS":
+            assert window._impl.native.delegate is None
         await main_window_probe.wait_for_window("Closing window")
         del window
 
