@@ -109,13 +109,10 @@ async def window_cleanup(app, app_probe, main_window, main_window_probe):
     # minimize garbage collection on the test thread.
     gc.collect()
 
-    main_window_state = main_window.state
     main_window.state = WindowState.NORMAL
     app.current_window = main_window
     await main_window_probe.wait_for_window(
-        "Resetting main_window",
-        minimize=True if main_window_state == WindowState.MINIMIZED else False,
-        full_screen=True if main_window_state == WindowState.FULLSCREEN else False,
+        "Resetting main_window", state=WindowState.NORMAL
     )
 
 
