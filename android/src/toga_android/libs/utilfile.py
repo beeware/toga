@@ -1,35 +1,22 @@
 import abc
 import asyncio as aio
 import io
+import os
 
 from java.io import BufferedReader, InputStreamReader, OutputStreamWriter
 from java.util import Objects
 
-
-class HandlerFileDialog(abc.ABC):
-    """An abstract class that handles file manager calls"""
-
-    def __init__(self, parent, app_toga):
-        self.parent = parent
-        self.app = app_toga._impl.app
-        self.mActive = app_toga._impl.app.native
-
-    @abc.abstractmethod
-    def show(self):
-        """Запуск менеджера"""
-        pass
+import toga
 
 
-class BasePath(io.TextIOBase, abc.ABC):
-    modes = []
-
-    def __init__(self, app, stream):
-        self.aloop: aio.AbstractEventLoop = app.loop
+class BaseFile(io.TextIOBase):
+    def __init__(self, stream, binary, encoding, newLineInt):
+        self.aloop: aio.AbstractEventLoop = toga.App.app._impl
         self._stream = stream
         self._buffer = None
-        self._is_binary = False
-        self._new_line_int = 10
-        self._encoding = "utf-8"
+        self._is_binary = binary
+        self._new_line_int = newLineInt
+        self._encoding = encoding
 
     def check_open(self):
         """The defense mechanism on the open is that path"""
@@ -47,26 +34,33 @@ class BasePath(io.TextIOBase, abc.ABC):
         if self._buffer is not None:
             self._buffer.close()
 
+
+class BasePath(os.PathLike):
+    modes = []
+    file_impl = None
+
+    def __init__(self, content, uri):
+        self._uri = uri
+        self._content = content
+        self._stream = None
+
     @abc.abstractmethod
     def open(self, mode, encoding="utf-8", new_line="\n"):
         """Method for opening a file by path"""
-        self._encoding = encoding
-        self._new_line_int = new_line.encode(encoding)[0]
+        _new_line_int = new_line.encode(encoding)[0]
         if mode not in self.modes:
             raise ValueError(
                 f"""invalid mode {mode}.
                 It is allowed to use the following modes: R or RB"""
             )
-        if "b" in mode:
-            self._is_binary = True
+        _is_binary = "b" in mode
+        return self.file_impl(self._stream, _is_binary, encoding, _new_line_int)
 
 
-class BasePathReader(BasePath, abc.ABC):
-    modes = ["r", "rb"]
+class BaseFileReader(BaseFile, abc.ABC):
 
-    def open(self, mode="r", encoding="utf-8", new_line="\n"):
-        """A method for opening a file for reading along the path"""
-        super().open(mode.lower(), encoding, new_line)
+    def __init__(self, stream, binary, encoding, newLineInt):
+        super().__init__(stream, binary, encoding, newLineInt)
         input_stream_reader = InputStreamReader(Objects.requireNonNull(self._stream))
         self._buffer = BufferedReader(input_stream_reader)
 
@@ -87,7 +81,7 @@ class BasePathReader(BasePath, abc.ABC):
         pass
 
 
-class PathReader(BasePathReader):
+class FileReader(BaseFileReader):
     """A phalloid object for reading.
     Reads the contents of the Android external storage file"""
 
@@ -158,12 +152,24 @@ class PathReader(BasePathReader):
         return NotImplemented
 
 
-class BasePathWriter(BasePath, abc.ABC):
-    modes = ["w", "wb"]
+class PathReader(BasePath):
+
+    modes = ["r", "rb"]
+    file_impl = FileReader
 
     def open(self, mode="r", encoding="utf-8", new_line="\n"):
-        """A method for opening a file for writing along the path"""
-        super().open(mode.lower(), encoding, new_line)
+        """A method for opening a file for reading along the path"""
+        self._stream = self._content.openInputStream(self._uri)
+        return super().open(mode.lower(), encoding, new_line)
+
+    def __fspath__(self):
+        return str(self._uri)
+
+
+class BaseFileWriter(BaseFile, abc.ABC):
+
+    def __init__(self, stream, binary, encoding, newLineInt):
+        super().__init__(stream, binary, encoding, newLineInt)
         self._buffer = OutputStreamWriter(self._stream)
 
     def _convertion_type_data(self, data):
@@ -175,13 +181,26 @@ class BasePathWriter(BasePath, abc.ABC):
 
     @abc.abstractmethod
     def write(self, text: str | bytes):
-        data = self._convertion_type_data(text)
-        self._buffer.write(data)
+        pass
 
     @abc.abstractmethod
     def awrite(self, text):
         pass
 
 
-class PathWriter(BasePathReader):
-    pass
+class FileWriter(BaseFileWriter):
+    def write(self, text: str | bytes):
+        data = self._convertion_type_data(text)
+        self._buffer.write(data)
+
+    def awrite(self, text):
+        pass
+
+
+class PathWriter(BasePath, abc.ABC):
+    modes = ["w", "wb"]
+    file_impl = FileWriter
+
+    def open(self, mode="r", encoding="utf-8", new_line="\n"):
+        """A method for opening a file for writing along the path"""
+        return super().open(mode.lower(), encoding, new_line)

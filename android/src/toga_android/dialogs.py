@@ -1,3 +1,5 @@
+import abc
+
 from android import R
 from android.app import AlertDialog
 from android.content import DialogInterface, Intent
@@ -117,6 +119,20 @@ class StackTraceDialog(BaseDialog):
         self.native = None
 
 
+class HandlerFileDialog(abc.ABC):
+    """An abstract class that handles file manager calls"""
+
+    def __init__(self, parent):
+        self.parent = parent
+        self.app = toga.App.app._impl
+        self.mActive = toga.App.app._impl.native
+
+    @abc.abstractmethod
+    def show(self):
+        """Запуск менеджера"""
+        pass
+
+
 class SaveFileDialog(BaseDialog):
     def __init__(
         self,
@@ -131,13 +147,15 @@ class SaveFileDialog(BaseDialog):
         self.native = None
 
 
+class HandlerOpenDialog(HandlerFileDialog):
+    def show(self):
+        intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
+        intent.addCategory(Intent.CATEGORY_OPENABLE)
+        intent.setType("*/*")
+        self.app.start_activity(intent, on_complete=self.parent.handler)
+
+
 class OpenFileDialog(BaseDialog):
-    class HandlerOpenDialog(utilfile.HandlerFileDialog):
-        def show(self):
-            intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
-            intent.addCategory(Intent.CATEGORY_OPENABLE)
-            intent.setType("*/*")
-            self.app.start_activity(intent, on_complete=self.parent.handler)
 
     def __init__(
         self,
@@ -146,17 +164,13 @@ class OpenFileDialog(BaseDialog):
         file_types,
         multiple_select,
     ):
-        self.native = OpenFileDialog.HandlerOpenDialog(
-            self, toga.App.app.current_window
-        )
+        self.native = HandlerOpenDialog(self)
         self.mActive = self.native.mActive
 
     def handler(self, code, indent):
-        self._handler(indent.getData())
-
-    def _handler(self, uri):
-        inputStream = self.mActive.getContentResolver().openInputStream(uri)
-        reader = utilfile.PathReader(self.native.app, inputStream)
+        uri = indent.getData()
+        content = self.mActive.getContentResolver()
+        reader = utilfile.PathReader(content, uri)
         self.future.set_result(reader)
 
 
