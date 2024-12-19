@@ -258,6 +258,7 @@ class Window:
     ######################################################################
 
     def close(self):
+        self.native.orderOut(self.native)
         self.native.close()
 
     def set_app(self, app):
