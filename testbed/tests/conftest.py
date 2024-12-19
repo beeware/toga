@@ -90,6 +90,15 @@ async def window_cleanup(app, app_probe, main_window, main_window_probe):
     # 2 passes because we can't modify the list while iterating over it.
     kill_list = []
     for window in app.windows:
+        # Reset window state to NORMAL, if the window is not closed.
+        if not window.closed:
+            module = import_module("tests_backend.window")
+            probe = module.WindowProbe(app, window)
+            window.state = WindowState.NORMAL
+            probe.wait_for_window(
+                "Resetting window state to NORMAL", state=WindowState.NORMAL
+            )
+
         if window != main_window:
             kill_list.append(window)
 
@@ -99,15 +108,12 @@ async def window_cleanup(app, app_probe, main_window, main_window_probe):
         window.close()
         del window
 
-    app.state = WindowState.NORMAL
-    app.current_window = main_window
-    await main_window_probe.wait_for_window(
-        "Resetting main_window", state=WindowState.NORMAL
-    )
-
     # Force a GC pass on the main thread. This isn't perfect, but it helps
     # minimize garbage collection on the test thread.
     gc.collect()
+
+    app.current_window = main_window
+    await main_window_probe.wait_for_window("Setting main_window as current window")
 
 
 @fixture(scope="session")
