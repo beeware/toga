@@ -95,7 +95,7 @@ async def window_cleanup(app, app_probe, main_window, main_window_probe):
             module = import_module("tests_backend.window")
             probe = module.WindowProbe(app, window)
             window.state = WindowState.NORMAL
-            probe.wait_for_window(
+            await probe.wait_for_window(
                 "Resetting window state to NORMAL", state=WindowState.NORMAL
             )
 
