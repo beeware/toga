@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from contextlib import contextmanager
+
 from System import EventHandler
 from System.Device.Location import (
     GeoCoordinate,
@@ -32,10 +34,19 @@ class Location:
         self._handler = EventHandler[GeoPositionChangedEventArgs[GeoCoordinate]](
             self._position_changed
         )
+        self._tracking = False
         self._has_background_permission = False
+        self.watcher.OnPropertyChanged = self._property_changed
+
+    def _property_changed(self, property_name: str):
+        if property_name == "Permission":
+            # TODO: handle permission changes
+            print("PERMISSION CHANGED", self.watcher.Permission)
 
     def _position_changed(
-        self, sender, event: GeoPositionChangedEventArgs[GeoCoordinate]
+        self,
+        sender: GeoCoordinateWatcher,
+        event: GeoPositionChangedEventArgs[GeoCoordinate],
     ):
         location = toga_location(event.Position.Location)
         if location:
@@ -47,9 +58,19 @@ class Location:
     def has_background_permission(self):
         return self._has_background_permission
 
+    @contextmanager
+    def context(self):
+        if not self._tracking:
+            self.watcher.Start(False)
+        try:
+            yield
+        finally:
+            if not self._tracking:  # don't want to stop if we're tracking
+                self.watcher.Stop()
+
     def request_permission(self, future: AsyncResult[bool]) -> None:
-        self.watcher.Start(False)  # TODO: where can we call stop?
-        future.set_result(self.has_permission())
+        with self.context():
+            future.set_result(self.has_permission())
 
     def request_background_permission(self, future: AsyncResult[bool]) -> None:
         if not self.has_permission():
@@ -58,13 +79,31 @@ class Location:
         self._has_background_permission = True
 
     def current_location(self, result: AsyncResult[dict]) -> None:
-        self.watcher.Start()  # ensure watcher has started
-        loco = toga_location(self.watcher.Position.Location)
-        result.set_result(loco["location"] if loco else None)
+        def cb(sender, event):
+            if (
+                event.Position.Location.IsUnknown
+                or event.Position.Location.HorizontalAccuracy > 100
+            ):
+                return
+            self.watcher.remove_PositionChanged(cb)
+            loco = toga_location(event.Position.Location)
+            result.set_result(loco["location"] if loco else None)
+            ctx.__exit__()
+
+        ctx = self.context()
+
+        ctx.__enter__()
+
+        self.watcher.add_PositionChanged(
+            EventHandler[GeoPositionChangedEventArgs[GeoCoordinate]](cb)
+        )
 
     def start_tracking(self) -> None:
-        self.watcher.Start()  # ensure watcher has started
+        self.watcher.Start()
         self.watcher.add_PositionChanged(self._handler)
+        self._tracking = True
 
     def stop_tracking(self) -> None:
+        self.watcher.Stop()
         self.watcher.remove_PositionChanged(self._handler)
+        self._tracking = False
