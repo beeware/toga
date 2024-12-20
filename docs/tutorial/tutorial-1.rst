@@ -20,5 +20,6 @@ Since there's no width styling on the horizontal boxes, they'll try to
 fit the widgets they contain into the available space. The ``TextInput``
 widgets have a style of ``flex=1``, but the ``Label`` widgets have a fixed
 width; as a result, the ``TextInput`` widgets will be stretched to fit the
-available horizontal space. The margin and padding terms then ensure that the
-widgets will be aligned vertically and horizontally.
+available horizontal space. The ``margin_left`` style ensures that the
+``TextInputs`` are aligned, and the ``gap`` style adds spacing between
+all the widgets.

@@ -161,7 +161,7 @@ class Widget(ABC, Scalable):
             else PorterDuffColorFilter(native_color(value), PorterDuff.Mode.SRC_IN)
         )
 
-    def set_alignment(self, alignment):
+    def set_text_align(self, alignment):
         pass  # If appropriate, a widget subclass will implement this.
 
     def set_color(self, color):
@@ -190,7 +190,7 @@ class Widget(ABC, Scalable):
         pass
 
 
-def align(value):
+def android_text_align(value):
     """Convert toga alignment values into Android alignment values."""
     return {
         LEFT: Gravity.LEFT,

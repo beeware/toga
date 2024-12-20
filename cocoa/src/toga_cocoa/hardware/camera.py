@@ -131,7 +131,7 @@ class TogaCameraWindow(toga.Window):
                             style=Pack(flex=1),
                         ),
                     ],
-                    style=Pack(padding=10),
+                    style=Pack(margin=10),
                 ),
             ],
             style=Pack(direction=COLUMN),

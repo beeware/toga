@@ -43,14 +43,14 @@ class Tutorial2App(toga.App):
 
         left_container = toga.Table(headings=["Hello", "World"], data=data)
 
-        right_content = toga.Box(style=Pack(direction=COLUMN, padding_top=50))
+        right_content = toga.Box(style=Pack(direction=COLUMN, margin_top=50))
 
         for b in range(0, 10):
             right_content.add(
                 toga.Button(
                     "Hello world %s" % b,
                     on_press=button_handler,
-                    style=Pack(width=200, padding=20),
+                    style=Pack(width=200, margin=20),
                 )
             )
 

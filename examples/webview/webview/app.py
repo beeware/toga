@@ -54,7 +54,7 @@ class ExampleWebView(toga.App):
 
     def startup(self):
         self.main_window = toga.MainWindow()
-        self.label = toga.Label("www is loading |", style=Pack(flex=1, padding=5))
+        self.label = toga.Label("www is loading |", style=Pack(flex=1, margin=5))
 
         button_box = toga.Box(
             children=[
@@ -84,7 +84,7 @@ class ExampleWebView(toga.App):
                     ],
                 ),
             ],
-            style=Pack(flex=0, direction=COLUMN, padding=5),
+            style=Pack(flex=0, direction=COLUMN, margin=5),
         )
 
         self.webview = toga.WebView(

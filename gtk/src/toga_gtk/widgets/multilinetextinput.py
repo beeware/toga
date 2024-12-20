@@ -5,7 +5,7 @@ from ..libs import (
     get_background_color_css,
     get_color_css,
     get_font_css,
-    gtk_alignment,
+    gtk_text_align,
 )
 from .base import Widget
 
@@ -113,8 +113,8 @@ class MultilineTextInput(Widget):
             self.placeholder.get_end_iter(),
         )  # make the placeholder text gray.
 
-    def set_alignment(self, value):
-        _, justification = gtk_alignment(value)
+    def set_text_align(self, value):
+        _, justification = gtk_text_align(value)
         self.native_textview.set_justification(justification)
 
     def focus(self):

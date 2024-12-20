@@ -2,16 +2,16 @@ from unittest.mock import Mock
 
 import pytest
 
+import toga
 from toga import LatLng
 
-from ..conftest import skip_on_platforms
-from .probe import get_probe
+from .probe import list_probes
 
 
-@pytest.fixture
-async def location_probe(monkeypatch, app_probe):
-    skip_on_platforms("linux")
-    probe = get_probe(monkeypatch, app_probe, "Location")
+@pytest.fixture(params=list_probes("location"))
+async def location_probe(monkeypatch, app_probe, request):
+    probe_cls = request.param
+    probe = probe_cls(monkeypatch, app_probe)
     yield probe
     probe.cleanup()
 
@@ -26,14 +26,18 @@ async def test_grant_permission(app, location_probe):
 
     # Permission now exists, but not background permission
     assert app.location.has_permission
-    assert not app.location.has_background_permission
+    assert app.location.has_background_permission == (
+        False if location_probe.supports_background_permission else True
+    )
 
     # A second request to grant permissions is a no-op
     assert await app.location.request_permission()
 
     # Permission still exists, but not background permission
     assert app.location.has_permission
-    assert not app.location.has_background_permission
+    assert app.location.has_background_permission == (
+        False if location_probe.supports_background_permission else True
+    )
 
 
 async def test_deny_permission(app, location_probe):
@@ -56,6 +60,12 @@ async def test_deny_permission(app, location_probe):
 
 async def test_grant_background_permission(app, location_probe):
     """A user can grant background permission to use location."""
+    if not location_probe.supports_background_permission:
+        return pytest.xfail(
+            f"{toga.platform.current_platform} does not support "
+            "background location permission"
+        )
+
     # Prime the permission system to approve permission requests
     location_probe.allow_background_permission()
 
@@ -90,7 +100,11 @@ async def test_grant_background_permission(app, location_probe):
 
 async def test_deny_background_permission(app, location_probe):
     """A user can deny background permission to use location."""
-    skip_on_platforms("windows")
+    if not location_probe.supports_background_permission:
+        return pytest.xfail(
+            f"{toga.platform.current_platform} does not support "
+            "background location permission"
+        )
 
     # Foreground permissions haven't been approved, so requesting background permissions
     # will raise an error.
@@ -127,7 +141,7 @@ async def test_deny_background_permission(app, location_probe):
 
 
 async def test_current_location(app, location_probe):
-    """A user can take a photo with the all the available locations."""
+    """A user can get the current location."""
     # Ensure location has permissions
     location_probe.grant_permission()
 
@@ -171,7 +185,7 @@ async def test_current_location(app, location_probe):
 
 
 async def test_track_location(app, location_probe):
-    """If the location service raises an error, location requests raise an error."""
+    """A user can track the current location."""
     # Ensure location has permissions
     location_probe.grant_permission()
 
@@ -222,6 +236,28 @@ async def test_track_location(app, location_probe):
     app.location.stop_tracking()
 
 
+async def test_track_location_retrack(app, location_probe):
+    """If location tracking is requested when already started, it is a noop."""
+    # Ensure location has permissions
+    location_probe.grant_permission()
+
+    # Start location tracking
+    app.location.start_tracking()
+
+    # Call again, should not error
+    app.location.start_tracking()
+
+
+async def test_stop_tracking_when_already_stopped(app, location_probe):
+    """If location tracking is stopped when already stopped, it is a noop."""
+    # Ensure location has permissions
+    location_probe.grant_permission()
+
+    # Call stop tracking, never having started it
+    # This should not be an error
+    app.location.stop_tracking()
+
+
 async def test_location_error(app, location_probe):
     """If the location service raises an error, location requests raise an error."""
     # Ensure location has permissions
@@ -230,12 +266,31 @@ async def test_location_error(app, location_probe):
     # Set the value that will be returned by the next location request
     location_probe.add_location(LatLng(37, 42), 5)
 
+    # Setup location error, for implementations where the error does not happen async
+    location_probe.setup_location_error()
+
     # Request the current location
     location = app.location.current_location()
 
     # Simulate a location update that raises an error
     with pytest.raises(RuntimeError, match=r"Unable to obtain a location \(.*\)"):
         assert await location_probe.simulate_location_error(location)
+
+
+async def test_location_tracking_start_error(app, location_probe):
+    """If location tracking fails to start, location raises an error."""
+    # Ensure location has permissions
+    location_probe.grant_permission()
+
+    # Set the value that will be returned by the next location request
+    location_probe.add_location(LatLng(37, 42), 5)
+
+    # Setup tracking error
+    location_probe.setup_tracking_start_error()
+
+    # Start tracking, raising an error
+    with pytest.raises(RuntimeError, match=r"Unable to start tracking \(.*\)"):
+        app.location.start_tracking()
 
 
 async def test_no_permission(app, location_probe):
