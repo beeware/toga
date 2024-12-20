@@ -76,6 +76,15 @@ axis. A row's main axis is horizontal, so its cross axis is vertical; ``start`` 
 children to the top, while ``end`` aligns them to the bottom. For columns, ``start`` is
 on the left if ``text_direction`` is ``ltr``, and the right if ``rtl``.
 
+``gap``
+-------
+
+**Values:** ``<integer>``
+
+**Initial value:** ``0``
+
+The amount of space to allocate between adjacent children, in :ref:`CSS pixels
+<css-units>`.
 
 ``width``
 ---------
