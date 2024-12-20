@@ -10,7 +10,7 @@ from .probe import list_probes
 @pytest.fixture(
     params=list_probes(
         "camera",
-        skip_platforms=("linux", "windows"),
+        skip_platforms=("windows",),
         skip_unbundled=True,
     )
 )
