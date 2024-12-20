@@ -2,6 +2,7 @@ import abc
 import asyncio as aio
 import io
 import os
+from dataclasses import dataclass
 
 from java.io import BufferedReader, InputStreamReader, OutputStreamWriter
 from java.util import Objects
@@ -11,7 +12,7 @@ import toga
 
 class BaseFile(io.TextIOBase):
     def __init__(self, stream, binary, encoding, newLineInt):
-        self.aloop: aio.AbstractEventLoop = toga.App.app._impl
+        self.aloop: aio.AbstractEventLoop = toga.App.app._impl.loop
         self._stream = stream
         self._buffer = None
         self._is_binary = binary
@@ -35,9 +36,15 @@ class BaseFile(io.TextIOBase):
             self._buffer.close()
 
 
+@dataclass
+class BaseDataOpen:
+    binary: bool
+    encoding: str
+    newLineInt: int
+
+
 class BasePath(os.PathLike):
     modes = []
-    file_impl = None
 
     def __init__(self, content, uri):
         self._uri = uri
@@ -54,7 +61,7 @@ class BasePath(os.PathLike):
                 It is allowed to use the following modes: R or RB"""
             )
         _is_binary = "b" in mode
-        return self.file_impl(self._stream, _is_binary, encoding, _new_line_int)
+        return BaseDataOpen(_is_binary, encoding, _new_line_int)
 
 
 class BaseFileReader(BaseFile, abc.ABC):
@@ -73,11 +80,11 @@ class BaseFileReader(BaseFile, abc.ABC):
         pass
 
     @abc.abstractmethod
-    def aread(self, size=0):
+    async def aread(self, size=0):
         pass
 
     @abc.abstractmethod
-    def areadline(self, size=0):
+    async def areadline(self, size=0):
         pass
 
 
@@ -129,41 +136,21 @@ class FileReader(BaseFileReader):
         return res.decode(self._encoding)
 
     async def aread(self, size=0):
-        """A function for reading a string
-        :param size: the number of characters to be counted.
+        """Asynchronous function for reading a string
+        :parameter size: the number of characters to count.
         If it is equal to 0, the entire file will be read
-        :return: Data type str[bytes]
+        :returns: data type str[bytes]
         (depends on whether the 'b' flag was passed)"""
         self.check_open()
-        res = bytearray()
-        counter = size if size else "-1"
-        while counter:
-            resp: int = await self.aloop.run_in_executor(None, self._buffer.read)
-            if resp == -1:
-                break
-            res.append(resp)
-            if isinstance(counter, int):
-                counter -= 1
-        if self._is_binary:
-            return bytes(res)
-        return res.decode(self._encoding)
+        return await self.aloop.run_in_executor(None, self.read, size)
 
-    def areadline(self, size=0):
-        return NotImplemented
-
-
-class PathReader(BasePath):
-
-    modes = ["r", "rb"]
-    file_impl = FileReader
-
-    def open(self, mode="r", encoding="utf-8", new_line="\n"):
-        """A method for opening a file for reading along the path"""
-        self._stream = self._content.openInputStream(self._uri)
-        return super().open(mode.lower(), encoding, new_line)
-
-    def __fspath__(self):
-        return str(self._uri)
+    async def areadline(self, size=0):
+        """Asynchronous function for reading lines from a file
+        : parameter size: the number of rows to count.
+        (Currently not implemented, added for future implementation)
+        :returns: data type str[byte]
+        (Depends on whether and flag was passed) or the str[byte] list"""
+        return await self.aloop.run_in_executor(None, self.readline, size)
 
 
 class BaseFileWriter(BaseFile, abc.ABC):
@@ -184,7 +171,7 @@ class BaseFileWriter(BaseFile, abc.ABC):
         pass
 
     @abc.abstractmethod
-    def awrite(self, text):
+    async def awrite(self, text):
         pass
 
 
@@ -197,10 +184,22 @@ class FileWriter(BaseFileWriter):
         pass
 
 
-class PathWriter(BasePath, abc.ABC):
-    modes = ["w", "wb"]
-    file_impl = FileWriter
+class Path(BasePath):
+    modes = ["r", "rb", "w", "wb"]
 
     def open(self, mode="r", encoding="utf-8", new_line="\n"):
-        """A method for opening a file for writing along the path"""
-        return super().open(mode.lower(), encoding, new_line)
+        """A method for opening a file for reading along the path"""
+        dataOpen = super().open(mode.lower(), encoding, new_line)
+        if "r" in mode.lower():
+            self._stream = self._content.openInputStream(self._uri)
+            return FileReader(
+                self._stream, dataOpen.binary, dataOpen.encoding, dataOpen.newLineInt
+            )
+        if "w" in mode.lower():
+            self._stream = self._content.openOutputStream(self._uri)
+            return FileWriter(
+                self._stream, dataOpen.binary, dataOpen.encoding, dataOpen.newLineInt
+            )
+
+    def __fspath__(self):
+        return str(self._uri)
