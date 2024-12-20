@@ -553,7 +553,7 @@ async def test_system_dpi_change(
     try:
         main_window.toolbar.add(toga.Command(None, "Test command"))
 
-        # Include widgets which are sized in different ways, with padding and fixed
+        # Include widgets which are sized in different ways, with margin and fixed
         # sizes in both dimensions.
         main_window.content = toga.Box(
             style=Pack(direction="row"),
@@ -561,7 +561,7 @@ async def test_system_dpi_change(
                 toga.Label(
                     "fixed",
                     id="fixed",
-                    style=Pack(background_color="yellow", padding_left=20, width=100),
+                    style=Pack(background_color="yellow", margin_left=20, width=100),
                 ),
                 toga.Label(
                     "minimal",  # Shrink to fit content
@@ -572,7 +572,7 @@ async def test_system_dpi_change(
                     "flex",
                     id="flex",
                     style=Pack(
-                        background_color="pink", flex=1, padding_top=15, height=50
+                        background_color="pink", flex=1, margin_top=15, height=50
                     ),
                 ),
             ],

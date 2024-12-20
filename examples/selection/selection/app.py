@@ -18,8 +18,8 @@ class SelectionApp(toga.App):
         self.main_window = toga.MainWindow(size=(640, 400))
 
         # set up common styles
-        label_style = Pack(flex=1, padding_right=24)
-        box_style = Pack(direction=ROW, padding=10)
+        label_style = Pack(flex=1, margin_right=24)
+        box_style = Pack(direction=ROW, margin=10)
 
         # Add the content on the main window
         self.selection = toga.Selection(items=self.OPTIONS)
@@ -93,7 +93,7 @@ class SelectionApp(toga.App):
                     children=[
                         toga.Label("Use some style!", style=label_style),
                         toga.Selection(
-                            style=Pack(width=200, padding=24),
+                            style=Pack(width=200, margin=24),
                             items=["Curium", "Titanium", "Copernicium"],
                         ),
                     ],
@@ -117,7 +117,7 @@ class SelectionApp(toga.App):
                     ],
                 ),
             ],
-            style=Pack(direction=COLUMN, padding=24),
+            style=Pack(direction=COLUMN, margin=24),
         )
 
         self.main_window.show()

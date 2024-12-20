@@ -9,7 +9,7 @@ def build(app):
     box = toga.Box()
 
     button = toga.Button("Hello world", on_press=button_handler)
-    button.style.padding = 50
+    button.style.margin = 50
     button.style.flex = 1
     box.add(button)
 
