@@ -44,6 +44,7 @@ class WindowProbe(BaseProbe, DialogsMixin):
             while (loop.time() - start_time) < timeout:
                 try:
                     assert self.instantaneous_state == expected_state
+                    assert self.window._impl._pending_state_transition is None
                     return
                 except AssertionError as e:
                     exception = e

@@ -808,13 +808,6 @@ else:
         # the window reached the correct final window state.
         assert second_window_probe.instantaneous_state == states[-1]
 
-        # Required to ensure complete coverage of fullscreen handling on macOS.
-        if states[-1] == WindowState.FULLSCREEN:
-            await second_window_probe.wait_for_window(
-                "Waiting for completion of fullscreen pending state handling",
-                full_screen=True,
-            )
-
     @pytest.mark.parametrize(
         "state",
         [
