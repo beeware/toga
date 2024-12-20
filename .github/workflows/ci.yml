@@ -226,7 +226,7 @@ jobs:
 
   testbed:
     name: Testbed
-    # needs: core
+    needs: core
     runs-on: ${{ matrix.runs-on }}
     strategy:
       fail-fast: false
