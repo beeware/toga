@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Literal
+from typing import Any, Literal
 
 from .base import StyleT, Widget
 
@@ -22,10 +22,11 @@ class ActivityIndicator(Widget):
         """
         super().__init__(id=id, style=style)
 
-        self._impl = self.factory.ActivityIndicator(interface=self)
-
         if running:
             self.start()
+
+    def _create(self) -> Any:
+        return self.factory.ActivityIndicator(interface=self)
 
     @property
     def enabled(self) -> Literal[True]:

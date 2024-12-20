@@ -7,6 +7,9 @@ from .probe import BaseProbe
 
 
 class WindowProbe(BaseProbe, DialogsMixin):
+    supports_fullscreen = False
+    supports_presentation = False
+
     def __init__(self, app, window):
         super().__init__()
         self.app = app
@@ -15,7 +18,13 @@ class WindowProbe(BaseProbe, DialogsMixin):
         self.native = window._impl.native
         assert isinstance(self.native, UIWindow)
 
-    async def wait_for_window(self, message, minimize=False, full_screen=False):
+    async def wait_for_window(
+        self,
+        message,
+        minimize=False,
+        full_screen=False,
+        state_switch_not_from_normal=False,
+    ):
         await self.redraw(message)
 
     @property
@@ -36,6 +45,10 @@ class WindowProbe(BaseProbe, DialogsMixin):
             UIApplication.sharedApplication.statusBarFrame.size.height
             + self.native.rootViewController.navigationBar.frame.size.height
         )
+
+    @property
+    def instantaneous_state(self):
+        return self.impl.get_window_state(in_progress_state=False)
 
     def has_toolbar(self):
         pytest.skip("Toolbars not implemented on iOS")

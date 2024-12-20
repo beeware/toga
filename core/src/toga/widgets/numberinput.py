@@ -73,7 +73,7 @@ def _clean_decimal_str(value: str) -> str:
 
 
 class OnChangeHandler(Protocol):
-    def __call__(self, widget: NumberInput, /, **kwargs: Any) -> object:
+    def __call__(self, widget: NumberInput, **kwargs: Any) -> object:
         """A handler to invoke when the value is changed.
 
         :param widget: The NumberInput that was changed.
@@ -147,7 +147,6 @@ class NumberInput(Widget):
         self._max: Decimal | None = None
 
         self.on_change = None
-        self._impl = self.factory.NumberInput(interface=self)
 
         self.readonly = readonly
         self.step = step
@@ -156,6 +155,9 @@ class NumberInput(Widget):
         self.value = value
 
         self.on_change = on_change
+
+    def _create(self) -> Any:
+        return self.factory.NumberInput(interface=self)
 
     @property
     def readonly(self) -> bool:

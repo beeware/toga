@@ -54,7 +54,7 @@ MAPVIEW_HTML_CONTENT = """<!DOCTYPE html>
     </script>
 </body>
 </html>
-"""
+"""  # noqa: E501
 
 
 def pin_id(pin):
@@ -141,7 +141,7 @@ class MapView(Widget):
                     WinForms.MessageBoxIcon.Error,
                 )
                 webbrowser.open(
-                    "https://developer.microsoft.com/en-us/microsoft-edge/webview2/#download"
+                    "https://developer.microsoft.com/en-us/microsoft-edge/webview2/#download"  # noqa: E501
                 )
 
         else:  # pragma: nocover

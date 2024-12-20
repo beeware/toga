@@ -4,20 +4,13 @@ import importlib
 import os
 import sys
 import warnings
-from functools import lru_cache
+from functools import cache
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Protocol, TypeVar
 from warnings import warn
 
 import toga
-from toga.platform import get_platform_factory
-
-if sys.version_info >= (3, 10):  # pragma: no-cover-if-lt-py310
-    from importlib.metadata import entry_points
-else:  # pragma: no-cover-if-gte-py310
-    # Before Python 3.10, entry_points did not support the group argument;
-    # so, the backport package must be used on older versions.
-    from importlib_metadata import entry_points
+from toga.platform import entry_points, get_platform_factory
 
 # Make sure deprecation warnings are shown by default
 warnings.filterwarnings("default", category=DeprecationWarning)
@@ -155,7 +148,7 @@ class Image:
             raise TypeError("Unsupported source type for Image")
 
     @classmethod
-    @lru_cache(maxsize=None)
+    @cache
     def _converters(cls) -> list[ImageConverter]:
         """Return list of registered image plugin converters. Only loaded once."""
         converters = []
@@ -209,8 +202,8 @@ class Image:
         """Return the image, converted to the image format specified.
 
         :param format: Format to provide. Defaults to :class:`~toga.images.Image`; also
-             supports :any:`PIL.Image.Image` if Pillow is installed, as well as any image
-             types defined by installed :doc:`image format plugins
+             supports :any:`PIL.Image.Image` if Pillow is installed, as well as any
+             image types defined by installed :doc:`image format plugins
              </reference/plugins/image_formats>`.
         :returns: The image in the requested format
         :raises TypeError: If the format supplied is not recognized.

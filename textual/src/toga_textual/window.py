@@ -6,6 +6,7 @@ from textual.screen import Screen as TextualScreen
 from textual.widget import Widget as TextualWidget
 from textual.widgets import Button as TextualButton
 from toga import Position, Size
+from toga.constants import WindowState
 
 from .container import Container
 from .screens import Screen as ScreenImpl
@@ -83,9 +84,9 @@ class TitleBar(TextualWidget):
     }
     """
 
-    def __init__(self):
+    def __init__(self, title="Toga"):
         super().__init__()
-        self.title = TitleText("Toga")
+        self.title = TitleText(title)
 
     @property
     def text(self):
@@ -200,8 +201,12 @@ class Window:
     # Window state
     ######################################################################
 
-    def set_full_screen(self, is_full_screen):
-        pass
+    def get_window_state(self):
+        # Windows are always normal
+        return WindowState.NORMAL
+
+    def set_window_state(self, state):
+        self.interface.factory.not_implemented("Window.set_window_state()")
 
     ######################################################################
     # Window capabilities

@@ -22,10 +22,20 @@ class WindowProbe(BaseProbe, DialogsMixin):
         self.native = window._impl.native
         assert isinstance(self.native, NSWindow)
 
-    async def wait_for_window(self, message, minimize=False, full_screen=False):
+    async def wait_for_window(
+        self,
+        message,
+        minimize=False,
+        full_screen=False,
+        state_switch_not_from_normal=False,
+    ):
         await self.redraw(
             message,
-            delay=0.75 if full_screen else 0.5 if minimize else 0.1,
+            delay=(
+                1.75
+                if state_switch_not_from_normal
+                else 0.75 if full_screen else 0.5 if minimize else 0.1
+            ),
         )
 
     def close(self):
@@ -34,13 +44,9 @@ class WindowProbe(BaseProbe, DialogsMixin):
     @property
     def content_size(self):
         return (
-            self.native.contentView.frame.size.width,
-            self.native.contentView.frame.size.height,
+            self.impl.container.native.frame.size.width,
+            self.impl.container.native.frame.size.height,
         )
-
-    @property
-    def is_full_screen(self):
-        return bool(self.native.styleMask & NSWindowStyleMask.FullScreen)
 
     @property
     def is_resizable(self):
@@ -63,6 +69,10 @@ class WindowProbe(BaseProbe, DialogsMixin):
 
     def unminimize(self):
         self.native.deminiaturize(None)
+
+    @property
+    def instantaneous_state(self):
+        return self.impl.get_window_state(in_progress_state=False)
 
     def has_toolbar(self):
         return self.native.toolbar is not None
@@ -91,18 +101,26 @@ class WindowProbe(BaseProbe, DialogsMixin):
             argtypes=[objc_id],
         )
 
-    def _setup_alert_dialog_result(self, dialog, result):
+    def _setup_alert_dialog_result(self, dialog, result, pre_close_test_method=None):
         # Install an overridden show method that invokes the original,
         # but then closes the open dialog.
         orig_show = dialog._impl.show
 
         def automated_show(host_window, future):
             orig_show(host_window, future)
-
-            dialog._impl.host_window.endSheet(
-                dialog._impl.host_window.attachedSheet,
-                returnCode=result,
-            )
+            try:
+                if pre_close_test_method:
+                    pre_close_test_method(dialog)
+            finally:
+                try:
+                    dialog._impl.host_window.endSheet(
+                        dialog._impl.host_window.attachedSheet,
+                        returnCode=result,
+                    )
+                except Exception as e:
+                    # An error occurred closing the dialog; that means the dialog
+                    # isn't what as expected, so record that in the future.
+                    future.set_exception(e)
 
         dialog._impl.show = automated_show
 

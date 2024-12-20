@@ -29,8 +29,8 @@ class ExampleDocument(toga.Document):
             # If the object has a "read_error" attribute, raise that exception
             raise self.read_error
         else:
-            # We don't actually care about the file or it's contents, but it needs to exist;
-            # so we open it to verify that behavior.
+            # We don't actually care about the file or it's contents, but it
+            # needs to exist; so we open it to verify that behavior.
             with self.path.open():
                 self._mock_read(self.path)
 
@@ -255,7 +255,8 @@ def test_create_with_cmdline(monkeypatch, example_file):
 
 
 def test_create_with_unknown_document_type(monkeypatch, capsys):
-    """If the document specified at the command line is an unknown type, it is ignored."""
+    """If the document specified at the command line is an unknown type,
+    it is ignored."""
     monkeypatch.setattr(sys, "argv", ["app-exe", "/path/to/filename.unknown"])
 
     app = ExampleDocumentApp(
@@ -511,7 +512,8 @@ def test_open_bad_file(monkeypatch, doc_app, other_file):
 
 
 def test_open_existing_file(doc_app, example_file, other_file):
-    """If a document is already open, the existing document instance is returned and focused."""
+    """If a document is already open, the existing document instance
+    is returned and focused."""
     # Only the original document and window exists
     assert len(doc_app.documents) == 1
     assert len(doc_app.windows) == 1
@@ -784,7 +786,8 @@ def test_open_menu_read_fail(monkeypatch, doc_app, example_file, other_file):
 
 
 def test_open_non_document_window(doc_app, example_file, other_file):
-    """If the current window isn't a document window, commit/cleanup behavior isn't used."""
+    """If the current window isn't a document window,
+    commit/cleanup behavior isn't used."""
     # Make a non-document window current.
     non_doc_window = toga.Window(title="Not a Document", content=toga.Box())
     non_doc_window.show()

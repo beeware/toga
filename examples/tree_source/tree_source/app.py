@@ -152,7 +152,7 @@ class ExampleTreeSourceApp(toga.App):
             on_activate=self.activate_handler,
         )
         self.label = toga.Label(
-            "A view of the current directory!", style=Pack(padding=10)
+            "A view of the current directory!", style=Pack(margin=10)
         )
 
         # Outermost box

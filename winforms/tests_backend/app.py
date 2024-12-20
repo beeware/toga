@@ -13,7 +13,6 @@ from toga_winforms.keys import toga_to_winforms_key, winforms_to_toga_key
 
 from .dialogs import DialogsMixin
 from .probe import BaseProbe
-from .window import WindowProbe
 
 
 class AppProbe(BaseProbe, DialogsMixin):
@@ -101,23 +100,17 @@ class AppProbe(BaseProbe, DialogsMixin):
         # input through touch or pen instead of the mouse"). hCursor is more reliable.
         return info.hCursor is not None
 
-    def is_full_screen(self, window):
-        return WindowProbe(self.app, window).is_full_screen
-
-    def content_size(self, window):
-        return WindowProbe(self.app, window).content_size
-
     def assert_app_icon(self, icon):
         for window in self.app.windows:
-            # We have no real way to check we've got the right icon; use pixel peeping as a
-            # guess. Construct a PIL image from the current icon.
+            # We have no real way to check we've got the right icon; use pixel peeping
+            # as a guess. Construct a PIL image from the current icon.
             img = toga.Image(
                 Bitmap.FromHicon(window._impl.native.Icon.Handle)
             ).as_format(PIL.Image.Image)
 
             if icon:
-                # The explicit alt icon has blue background, with green at a point 1/3 into
-                # the image
+                # The explicit alt icon has blue background, with green at a point 1/3
+                # into the image
                 assert img.getpixel((5, 5)) == (211, 230, 245, 255)
                 mid_color = img.getpixel((img.size[0] // 3, img.size[1] // 3))
                 assert mid_color == (0, 204, 9, 255)
@@ -156,6 +149,17 @@ class AppProbe(BaseProbe, DialogsMixin):
 
     def activate_menu_visit_homepage(self):
         self._activate_menu_item(["Help", "Visit homepage"])
+
+    def assert_dialog_in_focus(self, dialog):
+        active_window_handle = ctypes.windll.user32.GetForegroundWindow()
+        # The window class name for dialog boxes is "#32770":
+        # https://learn.microsoft.com/en-us/windows/win32/winauto/dialog-box
+        expected_dialog_handle = ctypes.windll.user32.FindWindowW(
+            "#32770", dialog._impl.title
+        )
+        assert (
+            expected_dialog_handle == active_window_handle
+        ), "The dialog is not in focus"
 
     def assert_menu_item(self, path, *, enabled=True):
         item = self._menu_item(path)

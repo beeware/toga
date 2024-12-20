@@ -12,7 +12,7 @@ from .base import StyleT, Widget
 
 
 class OnChangeHandler(Protocol):
-    def __call__(self, widget: Slider, /, **kwargs: Any) -> object:
+    def __call__(self, widget: Slider, **kwargs: Any) -> object:
         """A handler to invoke when the value is changed.
 
         :param widget: The Slider that was changed.
@@ -21,7 +21,7 @@ class OnChangeHandler(Protocol):
 
 
 class OnPressHandler(Protocol):
-    def __call__(self, widget: Slider, /, **kwargs: Any) -> object:
+    def __call__(self, widget: Slider, **kwargs: Any) -> object:
         """A handler to invoke when the slider is pressed.
 
         :param widget: The Slider that was pressed.
@@ -30,7 +30,7 @@ class OnPressHandler(Protocol):
 
 
 class OnReleaseHandler(Protocol):
-    def __call__(self, widget: Slider, /, **kwargs: Any) -> object:
+    def __call__(self, widget: Slider, **kwargs: Any) -> object:
         """A handler to invoke when the slider is pressed.
 
         :param widget: The Slider that was released.
@@ -39,6 +39,8 @@ class OnReleaseHandler(Protocol):
 
 
 class Slider(Widget):
+    _MIN_WIDTH = 100
+
     def __init__(
         self,
         id: str | None = None,
@@ -72,7 +74,6 @@ class Slider(Widget):
             :any:`range` of the slider. Defaults to ``(0, 1)``.
         """
         super().__init__(id=id, style=style)
-        self._impl = self.factory.Slider(interface=self)
 
         ######################################################################
         # 2023-06: Backwards compatibility
@@ -84,7 +85,8 @@ class Slider(Widget):
                 )
             else:
                 warnings.warn(
-                    "Slider.range has been deprecated in favor of Slider.min and Slider.max",
+                    "Slider.range has been deprecated in favor of "
+                    "Slider.min and Slider.max",
                     DeprecationWarning,
                 )
                 min, max = range
@@ -98,8 +100,8 @@ class Slider(Widget):
         # End backwards compatibility
         ######################################################################
 
-        # Set a dummy handler before installing the actual on_change, because we do not want
-        # on_change triggered by the initial value being set
+        # Set a dummy handler before installing the actual on_change, because we do not
+        # want on_change triggered by the initial value being set
         self.on_change = None
         self.min = min
         self.max = max
@@ -114,7 +116,8 @@ class Slider(Widget):
 
         self.enabled = enabled
 
-    _MIN_WIDTH = 100
+    def _create(self) -> Any:
+        return self.factory.Slider(interface=self)
 
     # Backends are inconsistent about when they produce events for programmatic changes,
     # so we deal with those in the interface layer.
@@ -171,8 +174,8 @@ class Slider(Widget):
     def min(self, value: SupportsFloat) -> None:
         with self._programmatic_change() as old_value:
             # Some backends will clip the current value within the range automatically,
-            # but do it ourselves to be certain. In discrete mode, setting self.value also
-            # rounds to the new positions of the ticks.
+            # but do it ourselves to be certain. In discrete mode, setting self.value
+            # also rounds to the new positions of the ticks.
             _min = float(value)
             _max = self.max
             if _max < _min:
@@ -195,8 +198,8 @@ class Slider(Widget):
     def max(self, value: SupportsFloat) -> None:
         with self._programmatic_change() as old_value:
             # Some backends will clip the current value within the range automatically,
-            # but do it ourselves to be certain. In discrete mode, setting self.value also
-            # rounds to the new positions of the ticks.
+            # but do it ourselves to be certain. In discrete mode, setting self.value
+            # also rounds to the new positions of the ticks.
             _min = self.min
             _max = float(value)
             if _min > _max:
@@ -233,9 +236,9 @@ class Slider(Widget):
             raise ValueError("tick count must be at least 2")
         with self._programmatic_change() as old_value:
             # Some backends will round the current value to the nearest tick
-            # automatically, but do it ourselves to be certain. Some backends also require
-            # the value to be refreshed when moving between discrete and continuous mode,
-            # because this causes a change in the native range.
+            # automatically, but do it ourselves to be certain. Some backends also
+            # require the value to be refreshed when moving between discrete and
+            # continuous mode, because this causes a change in the native range.
             self._impl.set_tick_count(tick_count)
             self.value = old_value
 

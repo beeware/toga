@@ -24,13 +24,13 @@ class Box(Widget):
         """
         super().__init__(id=id, style=style)
 
-        # Create a platform specific implementation of a Box
-        self._impl = self.factory.Box(interface=self)
-
         # Children need to be added *after* the impl has been created.
         self._children: list[Widget] = []
         if children is not None:
             self.add(*children)
+
+    def _create(self):
+        return self.factory.Box(interface=self)
 
     @property
     def enabled(self) -> bool:

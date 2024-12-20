@@ -162,7 +162,8 @@ class TextInput(Widget):
     @property
     def has_focus(self):
         # When the NSTextField gets focus, a field editor is created, and that editor
-        # has the original widget as the delegate. The first responder is the Field Editor.
+        # has the original widget as the delegate. The first responder is
+        # the Field Editor.
         return (
             self.native.window is not None
             and isinstance(self.native.window.firstResponder, NSTextView)
@@ -183,7 +184,7 @@ class TextInput(Widget):
     def set_placeholder(self, value):
         self.native.cell.placeholderString = value
 
-    def set_alignment(self, value):
+    def set_text_align(self, value):
         self.native.alignment = NSTextAlignment(value)
         # The alert label should be on the trailing edge
         if value == RIGHT:
@@ -219,7 +220,8 @@ class TextInput(Widget):
         # Height of a text input is known and fixed.
         # Width must be > 100
         # print("REHINT TextInput", self,
-        #     self._impl.intrinsicContentSize().width, self._impl.intrinsicContentSize().height
+        #     self._impl.intrinsicContentSize().width,
+        #     self._impl.intrinsicContentSize().height,
         # )
         self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
         self.interface.intrinsic.height = self.native.intrinsicContentSize().height

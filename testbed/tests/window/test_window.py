@@ -8,6 +8,7 @@ import pytest
 
 import toga
 from toga.colors import CORNFLOWERBLUE, GOLDENROD, REBECCAPURPLE
+from toga.constants import WindowState
 from toga.style.pack import COLUMN, Pack
 
 
@@ -45,7 +46,8 @@ async def test_title(main_window, main_window_probe):
         await main_window_probe.wait_for_window("Window title can be reverted")
 
 
-# Mobile platforms have different windowing characteristics, so they have different tests.
+# Mobile platforms have different windowing characteristics,
+# so they have different tests.
 if toga.platform.current_platform in {"iOS", "android"}:
     ####################################################################################
     # Mobile platform tests
@@ -138,16 +140,171 @@ if toga.platform.current_platform in {"iOS", "android"}:
         finally:
             main_window.content = orig_content
 
-    async def test_full_screen(main_window, main_window_probe):
-        """Window can be made full screen"""
-        main_window.full_screen = True
-        await main_window_probe.wait_for_window("Full screen is a no-op")
+    @pytest.mark.parametrize(
+        "initial_state, final_state",
+        [
+            # Direct switch from NORMAL:
+            (WindowState.NORMAL, WindowState.FULLSCREEN),
+            (WindowState.NORMAL, WindowState.PRESENTATION),
+            # Direct switch from FULLSCREEN:
+            (WindowState.FULLSCREEN, WindowState.NORMAL),
+            (WindowState.FULLSCREEN, WindowState.PRESENTATION),
+            # Direct switch from PRESENTATION:
+            (WindowState.PRESENTATION, WindowState.NORMAL),
+            (WindowState.PRESENTATION, WindowState.FULLSCREEN),
+        ],
+    )
+    async def test_window_state_change(
+        app,
+        main_window,
+        main_window_probe,
+        initial_state,
+        final_state,
+    ):
+        """Window state can be directly changed to another state."""
+        if not main_window_probe.supports_fullscreen and WindowState.FULLSCREEN in {
+            initial_state,
+            final_state,
+        }:
+            pytest.xfail("This backend doesn't support fullscreen window state.")
+        if (
+            not main_window_probe.supports_presentation
+            and WindowState.PRESENTATION
+            in {
+                initial_state,
+                final_state,
+            }
+        ):
+            pytest.xfail("This backend doesn't support presentation window state.")
 
-        main_window.full_screen = False
-        await main_window_probe.wait_for_window("Full screen is a no-op")
+        # Set to initial state
+        main_window.state = initial_state
+        await main_window_probe.wait_for_window(f"Main window is in {initial_state}")
+
+        assert main_window_probe.instantaneous_state == initial_state
+
+        # Set to final state
+        main_window.state = final_state
+        await main_window_probe.wait_for_window(
+            f"Main window is in {final_state}", state_switch_not_from_normal=True
+        )
+        assert main_window_probe.instantaneous_state == final_state
+
+    @pytest.mark.parametrize(
+        "state",
+        [
+            WindowState.NORMAL,
+            WindowState.FULLSCREEN,
+            WindowState.PRESENTATION,
+        ],
+    )
+    async def test_window_state_same_as_current_without_intermediate_states(
+        app, main_window, main_window_probe, state
+    ):
+        """Setting window state the same as current without any intermediate states is
+        a no-op and there should be no expected delay from the OS."""
+        if (
+            not main_window_probe.supports_fullscreen
+            and state == WindowState.FULLSCREEN
+        ):
+            pytest.xfail("This backend doesn't support fullscreen window state.")
+        if (
+            not main_window_probe.supports_presentation
+            and state == WindowState.PRESENTATION
+        ):
+            pytest.xfail("This backend doesn't support presentation window state.")
+
+        # Set the window state:
+        main_window.state = state
+        await main_window_probe.wait_for_window(f"Secondary window is in {state}")
+        assert main_window_probe.instantaneous_state == state
+
+        # Set the window state the same as current:
+        main_window.state = state
+        assert main_window_probe.instantaneous_state == state
+
+    @pytest.mark.parametrize(
+        "state",
+        [
+            WindowState.FULLSCREEN,
+            WindowState.PRESENTATION,
+        ],
+    )
+    async def test_window_state_content_size_increase(
+        app, app_probe, main_window, main_window_probe, state
+    ):
+        """The size of the window content should increase when the window state is set
+        to maximized, fullscreen or presentation."""
+        if (
+            not main_window_probe.supports_fullscreen
+            and state == WindowState.FULLSCREEN
+        ):
+            pytest.xfail("This backend doesn't support fullscreen window state.")
+        if (
+            not main_window_probe.supports_presentation
+            and state == WindowState.PRESENTATION
+        ):
+            pytest.xfail("This backend doesn't support presentation window state.")
+
+        main_window.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
+        # Add delay to ensure windows are visible after animation.
+        await main_window_probe.wait_for_window("Main window is shown")
+
+        assert main_window_probe.instantaneous_state == WindowState.NORMAL
+        initial_content_size = main_window_probe.content_size
+
+        main_window.state = state
+        # Add delay to ensure windows are visible after animation.
+        await main_window_probe.wait_for_window(
+            f"Main window is in {state}",
+            full_screen=True if state == WindowState.FULLSCREEN else False,
+        )
+        assert main_window_probe.instantaneous_state == state
+        # At least one of the dimension should have increased.
+        assert (
+            main_window_probe.content_size[0] > initial_content_size[0]
+            or main_window_probe.content_size[1] > initial_content_size[1]
+        )
+
+        main_window.state = state
+        await main_window_probe.wait_for_window(
+            f"Main window is still in {state}",
+            full_screen=True if state == WindowState.FULLSCREEN else False,
+        )
+        assert main_window_probe.instantaneous_state == state
+        # At least one of the dimension should have increased.
+        assert (
+            main_window_probe.content_size[0] > initial_content_size[0]
+            or main_window_probe.content_size[1] > initial_content_size[1]
+        )
+
+        main_window.state = WindowState.NORMAL
+        # Add delay to ensure windows are visible after animation.
+        await main_window_probe.wait_for_window(
+            f"Main window is not in {state}",
+            full_screen=True if state == WindowState.FULLSCREEN else False,
+        )
+        assert main_window_probe.instantaneous_state == WindowState.NORMAL
+        assert main_window_probe.content_size == initial_content_size
+
+    @pytest.mark.parametrize(
+        "state",
+        [
+            WindowState.MINIMIZED,
+            WindowState.MAXIMIZED,
+        ],
+    )
+    async def test_window_state_no_op_states(main_window, main_window_probe, state):
+        """MINIMIZED and MAXIMIZED states are no-op on mobile platforms."""
+        assert main_window.state == WindowState.NORMAL
+        # Assign the no-op state.
+        main_window.state = state
+        # The state should still be NORMAL:
+        assert main_window.state == WindowState.NORMAL
 
     async def test_screen(main_window, main_window_probe):
-        """The window can be relocated to another screen, using both absolute and relative screen positions."""
+        """The window can be relocated to another screen, using both absolute and
+        relative screen positions."""
         assert main_window.screen.origin == (0, 0)
         initial_size = main_window.size
         main_window.position = (150, 50)
@@ -462,7 +619,8 @@ else:
     async def test_move_and_resize(second_window, second_window_probe):
         """A window can be moved and resized."""
 
-        # Determine the extra width consumed by window chrome (e.g., title bars, borders etc)
+        # Determine the extra width consumed by window chrome
+        # (e.g., title bars, borders etc)
         extra_width = second_window.size[0] - second_window_probe.content_size[0]
         extra_height = second_window.size[1] - second_window_probe.content_size[1]
 
@@ -508,6 +666,162 @@ else:
         assert second_window_probe.content_size == (250, 210)
 
     @pytest.mark.parametrize(
+        "initial_state, final_state",
+        [
+            # Switch from NORMAL:
+            (WindowState.NORMAL, WindowState.MINIMIZED),
+            (WindowState.NORMAL, WindowState.MAXIMIZED),
+            (WindowState.NORMAL, WindowState.FULLSCREEN),
+            (WindowState.NORMAL, WindowState.PRESENTATION),
+            (WindowState.NORMAL, WindowState.NORMAL),
+            # Switch from MINIMIZED:
+            (WindowState.MINIMIZED, WindowState.NORMAL),
+            (WindowState.MINIMIZED, WindowState.MAXIMIZED),
+            (WindowState.MINIMIZED, WindowState.FULLSCREEN),
+            (WindowState.MINIMIZED, WindowState.PRESENTATION),
+            (WindowState.MINIMIZED, WindowState.MINIMIZED),
+            # Switch from MAXIMIZED:
+            (WindowState.MAXIMIZED, WindowState.NORMAL),
+            (WindowState.MAXIMIZED, WindowState.MINIMIZED),
+            (WindowState.MAXIMIZED, WindowState.FULLSCREEN),
+            (WindowState.MAXIMIZED, WindowState.PRESENTATION),
+            (WindowState.MAXIMIZED, WindowState.MAXIMIZED),
+            # Switch from FULLSCREEN:
+            (WindowState.FULLSCREEN, WindowState.NORMAL),
+            (WindowState.FULLSCREEN, WindowState.MINIMIZED),
+            (WindowState.FULLSCREEN, WindowState.MAXIMIZED),
+            (WindowState.FULLSCREEN, WindowState.PRESENTATION),
+            (WindowState.FULLSCREEN, WindowState.FULLSCREEN),
+            # Switch from PRESENTATION:
+            (WindowState.PRESENTATION, WindowState.NORMAL),
+            (WindowState.PRESENTATION, WindowState.MINIMIZED),
+            (WindowState.PRESENTATION, WindowState.MAXIMIZED),
+            (WindowState.PRESENTATION, WindowState.FULLSCREEN),
+            (WindowState.PRESENTATION, WindowState.PRESENTATION),
+        ],
+    )
+    @pytest.mark.parametrize(
+        "second_window_class, second_window_kwargs",
+        [
+            (
+                toga.MainWindow,
+                dict(title="Secondary Window", position=(200, 150)),
+            )
+        ],
+    )
+    async def test_window_state_change(
+        app,
+        app_probe,
+        second_window,
+        second_window_probe,
+        initial_state,
+        final_state,
+    ):
+        """Window state can be directly changed to another state."""
+        if (
+            WindowState.MINIMIZED in {initial_state, final_state}
+            and not second_window_probe.supports_minimize
+        ):
+            pytest.xfail(
+                "This backend doesn't reliably support minimized window state."
+            )
+        second_window.toolbar.add(app.cmd1)
+        second_window.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
+        second_window.show()
+        # Add delay to ensure windows are visible after animation.
+        await second_window_probe.wait_for_window("Secondary window is visible")
+        assert second_window_probe.instantaneous_state == WindowState.NORMAL
+
+        # Set to initial state
+        second_window.state = initial_state
+        # Add delay to ensure windows are visible after animation.
+        await second_window_probe.wait_for_window(
+            f"Secondary window is in {initial_state}",
+            minimize=True if initial_state == WindowState.MINIMIZED else False,
+            full_screen=True if initial_state == WindowState.FULLSCREEN else False,
+        )
+        assert second_window_probe.instantaneous_state == initial_state
+
+        # Set to final state
+        second_window.state = final_state
+        # Add delay to ensure windows are visible after animation.
+        await second_window_probe.wait_for_window(
+            f"Secondary window is in {final_state}",
+            state_switch_not_from_normal=(
+                True if initial_state != WindowState.NORMAL else False
+            ),
+        )
+        assert second_window_probe.instantaneous_state == final_state
+
+    @pytest.mark.parametrize(
+        "states",
+        [
+            # Testing all possible window state change cases would be ideal,
+            # but doing so would significantly increase the runtime of the
+            # testbed. For practicality we are only testing the most complex
+            # cases to ensure full coverage across all platforms.
+            #
+            # Complex state changes on cocoa:
+            (WindowState.MINIMIZED, WindowState.FULLSCREEN),
+            (WindowState.FULLSCREEN, WindowState.MINIMIZED),
+            # Complex state changes on gtk:
+            (WindowState.FULLSCREEN, WindowState.PRESENTATION),
+            (WindowState.PRESENTATION, WindowState.NORMAL),
+        ],
+    )
+    @pytest.mark.parametrize(
+        "second_window_class, second_window_kwargs",
+        [
+            (
+                toga.MainWindow,
+                dict(title="Secondary Window", position=(200, 150)),
+            )
+        ],
+    )
+    async def test_window_state_rapid_assignment(
+        app, second_window, second_window_probe, states
+    ):
+        """The backends can handle rapid assignment of new window states."""
+        # Check that the state to be asserted is supported by the backend.
+        if (
+            states[-1] == WindowState.MINIMIZED
+            and not second_window_probe.supports_minimize
+        ):
+            pytest.xfail(
+                "This backend doesn't reliably support minimized window state."
+            )
+        second_window.toolbar.add(app.cmd1)
+        second_window.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
+        second_window.show()
+        # Add delay to ensure windows are visible after animation.
+        await second_window_probe.wait_for_window("Secondary window is visible")
+        assert second_window_probe.instantaneous_state == WindowState.NORMAL
+
+        # Assign new states without waiting for each transition to complete,
+        # to test that the backend can handle rapid window state assignments.
+        for state in states:
+            second_window.state = state
+
+        # Add delay to ensure windows are visible after the final state animation.
+        await second_window_probe.wait_for_window(
+            f"Secondary window is in {states[-1]}", state_switch_not_from_normal=True
+        )
+
+        # Verify that the backend handled rapid assignments by checking if
+        # the window reached the correct final window state.
+        assert second_window_probe.instantaneous_state == states[-1]
+
+    @pytest.mark.parametrize(
+        "state",
+        [
+            WindowState.NORMAL,
+            WindowState.MINIMIZED,
+            WindowState.MAXIMIZED,
+            WindowState.FULLSCREEN,
+            WindowState.PRESENTATION,
+        ],
+    )
+    @pytest.mark.parametrize(
         "second_window_class, second_window_kwargs",
         [
             (
@@ -516,45 +830,94 @@ else:
             )
         ],
     )
-    async def test_full_screen(second_window, second_window_probe):
-        """Window can be made full screen"""
-        assert not second_window_probe.is_full_screen
+    async def test_window_state_same_as_current_without_intermediate_states(
+        app_probe, second_window, second_window_probe, state
+    ):
+        """Setting window state the same as current without any intermediate states is
+        a no-op and there should be no expected delay from the OS."""
+        if state == WindowState.MINIMIZED and not second_window_probe.supports_minimize:
+            pytest.xfail(
+                "This backend doesn't reliably support minimized window state."
+            )
+
+        second_window.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
+        second_window.show()
+        # Add delay to ensure windows are visible after animation.
+        await second_window_probe.wait_for_window("Secondary window is shown")
+
+        # Set the window state:
+        second_window.state = state
+        # Add delay to ensure windows are visible after animation.
+        await second_window_probe.wait_for_window(
+            f"Secondary window is in {state}",
+            minimize=True if state == WindowState.MINIMIZED else False,
+            full_screen=True if state == WindowState.FULLSCREEN else False,
+        )
+        assert second_window_probe.instantaneous_state == state
+
+        # Set the window state the same as current:
+        second_window.state = state
+        # No need to wait for OS delay as the above operation should be a no-op.
+        assert second_window_probe.instantaneous_state == state
+
+    @pytest.mark.parametrize(
+        "state",
+        [
+            WindowState.MAXIMIZED,
+            WindowState.FULLSCREEN,
+            WindowState.PRESENTATION,
+        ],
+    )
+    @pytest.mark.parametrize(
+        "second_window_class, second_window_kwargs",
+        [
+            (
+                toga.Window,
+                dict(title="Secondary Window", position=(200, 150)),
+            )
+        ],
+    )
+    async def test_window_state_content_size_increase(
+        second_window, second_window_probe, state
+    ):
+        """The size of the window content should increase when the window state is set
+        to maximized, fullscreen or presentation."""
+        second_window.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
+        second_window.show()
+        # Add delay to ensure windows are visible after animation.
+        await second_window_probe.wait_for_window("Secondary window is shown")
+
+        assert second_window_probe.instantaneous_state == WindowState.NORMAL
         assert second_window_probe.is_resizable
         initial_content_size = second_window_probe.content_size
 
-        second_window.full_screen = True
-        # A longer delay to allow for genie animations
+        second_window.state = state
+        # Add delay to ensure windows are visible after animation.
         await second_window_probe.wait_for_window(
-            "Secondary window is full screen",
-            full_screen=True,
+            f"Secondary window is in {state}",
+            full_screen=True if state == WindowState.FULLSCREEN else False,
         )
-        assert second_window_probe.is_full_screen
+        assert second_window_probe.instantaneous_state == state
         assert second_window_probe.content_size[0] > initial_content_size[0]
         assert second_window_probe.content_size[1] > initial_content_size[1]
 
-        second_window.full_screen = True
+        second_window.state = state
         await second_window_probe.wait_for_window(
-            "Secondary window is still full screen"
+            f"Secondary window is still in {state}",
+            full_screen=True if state == WindowState.FULLSCREEN else False,
         )
-        assert second_window_probe.is_full_screen
+        assert second_window_probe.instantaneous_state == state
         assert second_window_probe.content_size[0] > initial_content_size[0]
         assert second_window_probe.content_size[1] > initial_content_size[1]
 
-        second_window.full_screen = False
-        # A longer delay to allow for genie animations
+        second_window.state = WindowState.NORMAL
+        # Add delay to ensure windows are visible after animation.
         await second_window_probe.wait_for_window(
-            "Secondary window is not full screen",
-            full_screen=True,
+            f"Secondary window is not in {state}",
+            full_screen=True if state == WindowState.FULLSCREEN else False,
         )
-        assert not second_window_probe.is_full_screen
+        assert second_window_probe.instantaneous_state == WindowState.NORMAL
         assert second_window_probe.is_resizable
-        assert second_window_probe.content_size == initial_content_size
-
-        second_window.full_screen = False
-        await second_window_probe.wait_for_window(
-            "Secondary window is still not full screen"
-        )
-        assert not second_window_probe.is_full_screen
         assert second_window_probe.content_size == initial_content_size
 
     @pytest.mark.parametrize(
@@ -567,7 +930,8 @@ else:
         ],
     )
     async def test_screen(second_window, second_window_probe):
-        """The window can be relocated to another screen, using both absolute and relative screen positions."""
+        """The window can be relocated to another screen, using both absolute and
+        relative screen positions."""
 
         initial_position = second_window.position
 
@@ -577,7 +941,8 @@ else:
         if second_window_probe.supports_placement:
             assert second_window.position != initial_position
 
-        # `position` and `screen_position` will be same as the window will be in primary screen.
+        # `position` and `screen_position` will be same as the window will be in
+        # primary screen.
         if second_window_probe.supports_placement:
             assert second_window.position == (200, 200)
             assert second_window.screen_position == (200, 200)

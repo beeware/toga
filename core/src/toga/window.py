@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING, Any, Protocol, TypeVar
 import toga
 from toga import dialogs
 from toga.command import CommandSet
+from toga.constants import WindowState
 from toga.handlers import AsyncResult, wrapped_handler
 from toga.images import Image
 from toga.platform import get_platform_factory
@@ -91,10 +92,11 @@ class FilteredWidgetRegistry:
 
 
 class OnCloseHandler(Protocol):
-    def __call__(self, window: Window, /, **kwargs: Any) -> bool:
+    def __call__(self, window: Window, **kwargs: Any) -> bool:
         """A handler to invoke when a window is about to close.
 
-        The return value of this callback controls whether the window is allowed to close.
+        The return value of this callback controls whether the window
+        is allowed to close.
         This can be used to prevent a window closing with unsaved changes, etc.
 
         :param window: The window instance that is closing.
@@ -107,10 +109,8 @@ class OnCloseHandler(Protocol):
 _DialogResultT = TypeVar("_DialogResultT")
 
 
-class DialogResultHandler(Protocol[_DialogResultT]):
-    def __call__(
-        self, window: Window, result: _DialogResultT, /, **kwargs: Any
-    ) -> object:
+class DialogResultHandler(Protocol):
+    def __call__(self, window: Window, result: _DialogResultT, **kwargs: Any) -> object:
         """A handler to invoke when a dialog is closed.
 
         :param window: The window that opened the dialog.
@@ -188,7 +188,6 @@ class Window:
         self._id = str(id if id else identifier(self))
         self._impl: Any = None
         self._content: Widget | None = None
-        self._is_full_screen = False
         self._closed = False
 
         self._resizable = resizable
@@ -384,11 +383,17 @@ class Window:
 
     @property
     def size(self) -> Size:
-        """Size of the window, in :ref:`CSS pixels <css-units>`."""
+        """Size of the window, in :ref:`CSS pixels <css-units>`.
+
+        :raises RuntimeError: If resize is requested while in
+            :any:`WindowState.FULLSCREEN` or :any:`WindowState.PRESENTATION`.
+        """
         return self._impl.get_size()
 
     @size.setter
     def size(self, size: SizeT) -> None:
+        if self.state in {WindowState.FULLSCREEN, WindowState.PRESENTATION}:
+            raise RuntimeError(f"Cannot resize window while in {self.state}")
         self._impl.set_size(size)
         if self.content:
             self.content.refresh()
@@ -402,6 +407,9 @@ class Window:
         """Absolute position of the window, in :ref:`CSS pixels <css-units>`.
 
         The origin is the top left corner of the primary screen.
+
+        :raises RuntimeError: If position change is requested while in
+            :any:`WindowState.FULLSCREEN` or :any:`WindowState.PRESENTATION`.
         """
         absolute_origin = self._app.screens[0].origin
         absolute_window_position = self._impl.get_position()
@@ -411,6 +419,8 @@ class Window:
 
     @position.setter
     def position(self, position: PositionT) -> None:
+        if self.state in {WindowState.FULLSCREEN, WindowState.PRESENTATION}:
+            raise RuntimeError(f"Cannot change window position while in {self.state}")
         absolute_origin = self._app.screens[0].origin
         absolute_new_position = Position(*position) + absolute_origin
         self._impl.set_position(absolute_new_position)
@@ -430,11 +440,17 @@ class Window:
     @property
     def screen_position(self) -> Position:
         """Position of the window with respect to current screen, in
-        :ref:`CSS pixels <css-units>`."""
+        :ref:`CSS pixels <css-units>`.
+
+        :raises RuntimeError: If position change is requested while in
+            :any:`WindowState.FULLSCREEN` or :any:`WindowState.PRESENTATION`.
+        """
         return self.position - self.screen.origin
 
     @screen_position.setter
     def screen_position(self, position: PositionT) -> None:
+        if self.state in {WindowState.FULLSCREEN, WindowState.PRESENTATION}:
+            raise RuntimeError(f"Cannot change window position while in {self.state}")
         new_relative_position = Position(*position) + self.screen.origin
         self._impl.set_position(new_relative_position)
 
@@ -464,21 +480,39 @@ class Window:
     ######################################################################
 
     @property
-    def full_screen(self) -> bool:
-        """Is the window in full screen mode?
+    def state(self) -> WindowState:
+        """The current state of the window.
 
-        Full screen mode is *not* the same as "maximized". A full screen window
-        has no title bar, toolbar or window controls; some or all of these
-        items may be visible on a maximized window. A good example of "full screen"
-        mode is a slideshow app in presentation mode - the only visible content is
-        the slide.
+        When the window is in transition, then this will return the state it
+        is transitioning towards, instead of the actual instantaneous state.
+
+        :raises RuntimeError: If state change is requested while the window is
+            hidden.
+
+        :raises ValueError: If any state other than :any:`WindowState.MINIMIZED`
+            or :any:`WindowState.NORMAL` is requested on a non-resizable window.
         """
-        return self._is_full_screen
+        # There are 2 types of window states that we can get from the backend:
+        # * The instantaneous state -- Used internally on implementation side
+        # * The in-progress state -- Used for same state checking on the core
+        #                            and for the public API.
+        return self._impl.get_window_state(in_progress_state=True)
 
-    @full_screen.setter
-    def full_screen(self, is_full_screen: bool) -> None:
-        self._is_full_screen = is_full_screen
-        self._impl.set_full_screen(is_full_screen)
+    @state.setter
+    def state(self, state: WindowState) -> None:
+        if not self.visible:
+            raise RuntimeError("Window state of a hidden window cannot be changed.")
+        elif not self.resizable and state in {
+            WindowState.MAXIMIZED,
+            WindowState.FULLSCREEN,
+            WindowState.PRESENTATION,
+        }:
+            raise ValueError(
+                f"A non-resizable window cannot be set to a state of {state}."
+            )
+        else:
+            if self.state != state:
+                self._impl.set_window_state(state)
 
     ######################################################################
     # Window capabilities
@@ -561,7 +595,8 @@ class Window:
         # 2024-06: Backwards compatibility
         ######################################################################
         warnings.warn(
-            "question_dialog(...) has been deprecated; use dialog(toga.QuestionDialog(...))",
+            "question_dialog(...) has been deprecated; "
+            "use dialog(toga.QuestionDialog(...))",
             DeprecationWarning,
         )
         ######################################################################
@@ -587,7 +622,8 @@ class Window:
         # 2024-06: Backwards compatibility
         ######################################################################
         warnings.warn(
-            "confirm_dialog(...) has been deprecated; use dialog(toga.ConfirmDialog(...))",
+            "confirm_dialog(...) has been deprecated; "
+            "use dialog(toga.ConfirmDialog(...))",
             DeprecationWarning,
         )
         ######################################################################
@@ -641,7 +677,8 @@ class Window:
         # 2024-06: Backwards compatibility
         ######################################################################
         warnings.warn(
-            "stack_trace_dialog(...) has been deprecated; use dialog(toga.StackTraceDialog(...))",
+            "stack_trace_dialog(...) has been deprecated; "
+            "use dialog(toga.StackTraceDialog(...))",
             DeprecationWarning,
         )
         ######################################################################
@@ -673,7 +710,8 @@ class Window:
         # 2024-06: Backwards compatibility
         ######################################################################
         warnings.warn(
-            "save_file_dialog(...) has been deprecated; use dialog(toga.SaveFileDialog(...))",
+            "save_file_dialog(...) has been deprecated; "
+            "use dialog(toga.SaveFileDialog(...))",
             DeprecationWarning,
         )
         ######################################################################
@@ -710,7 +748,8 @@ class Window:
         # 2024-06: Backwards compatibility
         ######################################################################
         warnings.warn(
-            "open_file_dialog(...) has been deprecated; use dialog(toga.OpenFileDialog(...))",
+            "open_file_dialog(...) has been deprecated; "
+            "use dialog(toga.OpenFileDialog(...))",
             DeprecationWarning,
         )
         ######################################################################
@@ -761,7 +800,8 @@ class Window:
         # 2024-06: Backwards compatibility
         ######################################################################
         warnings.warn(
-            "select_folder_dialog(...) has been deprecated; use dialog(toga.SelectFolderDialog(...))",
+            "select_folder_dialog(...) has been deprecated; "
+            "use dialog(toga.SelectFolderDialog(...))",
             DeprecationWarning,
         )
         ######################################################################
@@ -812,6 +852,32 @@ class Window:
             DeprecationWarning,
         )
         return self._closable
+
+    ######################################################################
+    # End Backwards compatibility
+    ######################################################################
+
+    ######################################################################
+    # 2024-10: Backwards compatibility
+    ######################################################################
+    @property
+    def full_screen(self) -> bool:
+        """**DEPRECATED** – Use :any:`Window.state`."""
+        warnings.warn(
+            ("`Window.full_screen` is deprecated. Use `Window.state` instead."),
+            DeprecationWarning,
+        )
+        return bool(self.state == WindowState.FULLSCREEN)
+
+    @full_screen.setter
+    def full_screen(self, is_full_screen: bool) -> None:
+        warnings.warn(
+            ("`Window.full_screen` is deprecated. Use `Window.state` instead."),
+            DeprecationWarning,
+        )
+        target_state = WindowState.FULLSCREEN if is_full_screen else WindowState.NORMAL
+        if self.state != target_state:
+            self._impl.set_window_state(target_state)
 
     ######################################################################
     # End Backwards compatibility

@@ -128,7 +128,7 @@ class TextInput(Widget):
         self.native.text = value
         self.interface._value_changed()
 
-    def set_alignment(self, value):
+    def set_text_align(self, value):
         self.native.textAlignment = NSTextAlignment(value)
         if value == RIGHT:
             self.error_label.textAlignment = NSTextAlignment(LEFT)

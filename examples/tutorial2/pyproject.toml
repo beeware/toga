@@ -3,7 +3,7 @@ requires = ["briefcase"]
 
 [tool.briefcase]
 project_name = "Tutorial 2"
-bundle = "org.beeware.toga"
+bundle = "org.beeware.toga.examples"
 version = "0.0.1"
 url = "https://beeware.org"
 license.file = "LICENSE"

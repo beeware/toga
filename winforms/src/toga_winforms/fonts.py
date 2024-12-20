@@ -30,7 +30,9 @@ DEFAULT_FONT = SystemFonts.MessageBoxFont
 
 class Font:
     def __init__(self, interface):
-        self._pfc = None  # this needs to be an instance variable, otherwise we might get Winforms exceptions later
+        # this needs to be an instance variable, otherwise we might get Winforms
+        # exceptions later
+        self._pfc = None
         self.interface = interface
         try:
             font = _FONT_CACHE[self.interface]

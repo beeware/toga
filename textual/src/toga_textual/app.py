@@ -75,6 +75,14 @@ class App:
         return [ScreenImpl(window._impl.native) for window in self.interface.windows]
 
     ######################################################################
+    # App state
+    ######################################################################
+
+    def get_dark_mode_state(self):
+        self.interface.factory.not_implemented("dark mode state")
+        return None
+
+    ######################################################################
     # App capabilities
     ######################################################################
 
@@ -107,11 +115,11 @@ class App:
         self.native.title = window.get_title()
 
     ######################################################################
-    # Full screen control
+    # Presentation mode controls
     ######################################################################
 
-    def enter_full_screen(self, windows):
-        pass
+    def enter_presentation_mode(self, screen_window_dict):
+        self.interface.factory.not_implemented("App.enter_presentation_mode()")
 
-    def exit_full_screen(self, windows):
-        pass
+    def exit_presentation_mode(self):
+        self.interface.factory.not_implemented("App.exit_presentation_mode()")

@@ -6,16 +6,8 @@ import sys
 import traceback
 import warnings
 from abc import ABC
-from collections.abc import Awaitable, Generator
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Callable,
-    NoReturn,
-    Protocol,
-    TypeVar,
-    Union,
-)
+from collections.abc import Awaitable, Callable, Generator
+from typing import TYPE_CHECKING, Any, NoReturn, Protocol, TypeVar, Union
 
 if TYPE_CHECKING:
     if sys.version_info < (3, 10):
@@ -35,21 +27,6 @@ if TYPE_CHECKING:
     HandlerGeneratorT: TypeAlias = Callable[..., HandlerGeneratorReturnT[object]]
     HandlerT: TypeAlias = Union[HandlerSyncT, HandlerAsyncT, HandlerGeneratorT]
     WrappedHandlerT: TypeAlias = Callable[..., object]
-
-
-def overridable(method: T) -> T:
-    """Decorate the method as being user-overridable"""
-    method._overridden = True
-    return method
-
-
-def overridden(coroutine_or_method: Callable) -> bool:
-    """Has the user overridden this method?
-
-    This is based on the method *not* having a ``_overridden`` attribute. Overridable
-    default methods have this attribute; user-defined method will not.
-    """
-    return not hasattr(coroutine_or_method, "_overridden")
 
 
 class NativeHandler:
@@ -208,9 +185,7 @@ def wrapped_handler(
 
 
 class OnResultT(Protocol):
-    def __call__(
-        self, result: Any, /, exception: Exception | None = None
-    ) -> object: ...
+    def __call__(self, result: Any, exception: Exception | None = None) -> object: ...
 
 
 class AsyncResult(ABC):
@@ -259,7 +234,8 @@ class AsyncResult(ABC):
     # All the comparison dunder methods are disabled
     def __bool__(self, other: object) -> NoReturn:
         raise RuntimeError(
-            f"Can't check {self.RESULT_TYPE} result directly; use await or an on_result handler"
+            f"Can't check {self.RESULT_TYPE} result directly; "
+            "use await or an on_result handler"
         )
 
     __lt__ = __bool__

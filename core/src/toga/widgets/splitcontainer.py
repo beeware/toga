@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import sys
 from collections.abc import Sequence
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from toga.app import App
 from toga.constants import Direction
@@ -45,12 +45,12 @@ class SplitContainer(Widget):
         super().__init__(id=id, style=style)
         self._content: list[SplitContainerContentT] = [None, None]
 
-        # Create a platform specific implementation of a SplitContainer
-        self._impl = self.factory.SplitContainer(interface=self)
-
         if content:
             self.content = content
         self.direction = direction
+
+    def _create(self) -> Any:
+        return self.factory.SplitContainer(interface=self)
 
     @property
     def enabled(self) -> bool:

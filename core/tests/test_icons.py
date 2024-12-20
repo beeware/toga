@@ -216,7 +216,8 @@ def test_create_app_icon_non_script(monkeypatch, app, capsys):
 
 
 def test_create_app_icon_missing_non_script(monkeypatch, app, capsys):
-    """If the icon from binary executable cannot be found, the app icon is reset to the default"""
+    """If the icon from binary executable cannot be found, the app icon is reset to the
+    default."""
     # Prime the dummy so the app icon cannot be found
     monkeypatch.setattr(
         DummyIcon,

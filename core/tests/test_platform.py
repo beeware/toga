@@ -1,18 +1,10 @@
+import importlib.metadata
 import sys
 from unittest.mock import Mock
 
 import pytest
 
 import toga_dummy
-
-if sys.version_info >= (3, 10):
-    from importlib.metadata import EntryPoint
-else:
-    # Before Python 3.10, entry_points did not support the group argument;
-    # so, the backport package must be used on older versions.
-    from importlib_metadata import EntryPoint
-
-import toga.platform
 from toga.platform import current_platform, get_current_platform, get_platform_factory
 
 
@@ -38,18 +30,22 @@ def patch_platforms(monkeypatch, platforms):
         {f"{name}_module.factory": factory for name, factory, _ in platforms},
     )
 
+    group = "toga.backends"
+    entry_points = [
+        importlib.metadata.EntryPoint(
+            name=current_platform if is_current else name,
+            value=f"{name}_module",
+            group=group,
+        )
+        for name, _, is_current in platforms
+    ]
     monkeypatch.setattr(
-        toga.platform,
+        importlib.metadata,
         "entry_points",
         Mock(
-            return_value=[
-                EntryPoint(
-                    name=current_platform if is_current else name,
-                    value=f"{name}_module",
-                    group="self.backends",
-                )
-                for name, _, is_current in platforms
-            ]
+            return_value=(
+                {group: entry_points} if sys.version_info < (3, 10) else entry_points
+            )
         ),
     )
 
@@ -199,6 +195,7 @@ def test_environment_variable_fail(monkeypatch):
     monkeypatch.setenv("TOGA_BACKEND", "fake_platform_module")
     with pytest.raises(
         RuntimeError,
-        match=r"The backend specified by TOGA_BACKEND \('fake_platform_module'\) could not be loaded.",
+        match=r"The backend specified by TOGA_BACKEND "
+        r"\('fake_platform_module'\) could not be loaded.",
     ):
         _get_platform_factory()
