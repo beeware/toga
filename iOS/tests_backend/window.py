@@ -44,6 +44,9 @@ class WindowProbe(BaseProbe, DialogsMixin):
                     continue
                 raise exception
 
+    async def wait_for_window_close(self, pre_close_window_state):
+        await self.redraw("Closing window")
+
     @property
     def content_size(self):
         # Content height doesn't include the status bar or navigation bar.

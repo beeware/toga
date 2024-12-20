@@ -102,10 +102,8 @@ async def window_cleanup(app, app_probe, main_window, main_window_probe):
         # non-blocking in nature, and NSWindow doesn't provide a reliable
         # indicator to indicate completion of all operations related to
         # window closing.
-        await main_window_probe.wait_for_window(
-            "Closing window",
-            minimize=True if window_state == WindowState.MINIMIZED else False,
-            full_screen=True if window_state == WindowState.FULLSCREEN else False,
+        await main_window_probe.wait_for_window_close(
+            pre_close_window_state=window_state
         )
         del window
 

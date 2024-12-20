@@ -3,6 +3,8 @@ import asyncio
 from android.content import Context
 from androidx.appcompat import R as appcompat_R
 
+from toga.constants import WindowState
+
 from .dialogs import DialogsMixin
 from .probe import BaseProbe
 
@@ -24,7 +26,7 @@ class WindowProbe(BaseProbe, DialogsMixin):
         full_screen=False,
         expected_state=None,
     ):
-        await self.redraw(message, delay=(0.5 if full_screen else 0.1))
+        await self.redraw(message, delay=0.1)
         if expected_state:
             timeout = 5
             polling_interval = 0.1
@@ -40,6 +42,13 @@ class WindowProbe(BaseProbe, DialogsMixin):
                     await asyncio.sleep(polling_interval)
                     continue
                 raise exception
+
+    async def wait_for_window_close(self, pre_close_window_state):
+        if pre_close_window_state == WindowState.FULLSCREEN:
+            delay = 0.5
+        else:
+            delay = 0.1
+        await self.redraw("Closing window", delay=delay)
 
     @property
     def content_size(self):

@@ -2,6 +2,7 @@ import asyncio
 
 from rubicon.objc import objc_id, send_message
 
+from toga.constants import WindowState
 from toga_cocoa.libs import NSWindow, NSWindowStyleMask
 
 from .dialogs import DialogsMixin
@@ -31,9 +32,7 @@ class WindowProbe(BaseProbe, DialogsMixin):
         full_screen=False,
         expected_state=None,
     ):
-        await self.redraw(
-            message, delay=(1 if full_screen else 0.5 if minimize else 0.1)
-        )
+        await self.redraw(message, delay=0.1)
         if expected_state:
             timeout = 5
             polling_interval = 0.1
@@ -49,6 +48,15 @@ class WindowProbe(BaseProbe, DialogsMixin):
                     await asyncio.sleep(polling_interval)
                     continue
                 raise exception
+
+    async def wait_for_window_close(self, pre_close_window_state):
+        if pre_close_window_state == WindowState.FULLSCREEN:
+            delay = 1
+        elif pre_close_window_state == WindowState.MINIMIZED:
+            delay = 0.5
+        else:
+            delay = 0.1
+        await self.redraw("Closing window", delay=delay)
 
     def close(self):
         self.native.performClose(None)
