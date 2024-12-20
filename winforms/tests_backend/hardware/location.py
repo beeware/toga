@@ -13,6 +13,8 @@ from .hardware import HardwareProbe
 
 
 class LocationProbe(HardwareProbe):
+    supports_background_permission = False
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.app.location._impl.watcher = Mock(spec=GeoCoordinateWatcher)
