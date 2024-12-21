@@ -181,7 +181,7 @@ if toga.platform.current_platform in {"iOS", "android"}:
         main_window.state = initial_state
         # Wait for window animation before assertion.
         await main_window_probe.wait_for_window(
-            f"Main window is in {initial_state}", expected_state=initial_state
+            f"Main window is in {initial_state}", state=initial_state
         )
         assert main_window_probe.instantaneous_state == initial_state
 
@@ -189,7 +189,7 @@ if toga.platform.current_platform in {"iOS", "android"}:
         main_window.state = final_state
         # Wait for window animation before assertion.
         await main_window_probe.wait_for_window(
-            f"Main window is in {final_state}", expected_state=final_state
+            f"Main window is in {final_state}", state=final_state
         )
         assert main_window_probe.instantaneous_state == final_state
 
@@ -221,7 +221,7 @@ if toga.platform.current_platform in {"iOS", "android"}:
         main_window.state = state
         # Wait for window animation before assertion.
         await main_window_probe.wait_for_window(
-            f"Secondary window is in {state}", expected_state=state
+            f"Secondary window is in {state}", state=state
         )
         assert main_window_probe.instantaneous_state == state
 
@@ -262,7 +262,7 @@ if toga.platform.current_platform in {"iOS", "android"}:
         main_window.state = state
         # Wait for window animation before assertion.
         await main_window_probe.wait_for_window(
-            f"Main window is in {state}", expected_state=state
+            f"Main window is in {state}", state=state
         )
         assert main_window_probe.instantaneous_state == state
         # At least one of the dimension should have increased.
@@ -273,7 +273,7 @@ if toga.platform.current_platform in {"iOS", "android"}:
 
         main_window.state = state
         await main_window_probe.wait_for_window(
-            f"Main window is still in {state}", expected_state=state
+            f"Main window is still in {state}", state=state
         )
         assert main_window_probe.instantaneous_state == state
         # At least one of the dimension should have increased.
@@ -285,7 +285,7 @@ if toga.platform.current_platform in {"iOS", "android"}:
         main_window.state = WindowState.NORMAL
         # Wait for window animation before assertion.
         await main_window_probe.wait_for_window(
-            f"Main window is not in {state}", expected_state=WindowState.NORMAL
+            f"Main window is not in {state}", state=WindowState.NORMAL
         )
         assert main_window_probe.instantaneous_state == WindowState.NORMAL
         assert main_window_probe.content_size == initial_content_size
@@ -587,7 +587,7 @@ else:
         # Wait for window animation before assertion.
         await second_window_probe.wait_for_window(
             "Window has been minimized",
-            expected_state=WindowState.MINIMIZED,
+            state=WindowState.MINIMIZED,
         )
 
         if second_window_probe.supports_minimize:
@@ -598,7 +598,7 @@ else:
             # Wait for window animation before assertion.
             await second_window_probe.wait_for_window(
                 "Window has been unminimized",
-                expected_state=WindowState.NORMAL,
+                state=WindowState.NORMAL,
             )
 
             assert not second_window_probe.is_minimized
@@ -739,7 +739,7 @@ else:
         second_window.state = initial_state
         # Wait for window animation before assertion.
         await second_window_probe.wait_for_window(
-            f"Secondary window is in {initial_state}", expected_state=initial_state
+            f"Secondary window is in {initial_state}", state=initial_state
         )
         assert second_window_probe.instantaneous_state == initial_state
 
@@ -747,7 +747,7 @@ else:
         second_window.state = final_state
         # Wait for window animation before assertion.
         await second_window_probe.wait_for_window(
-            f"Secondary window is in {final_state}", expected_state=final_state
+            f"Secondary window is in {final_state}", state=final_state
         )
         assert second_window_probe.instantaneous_state == final_state
 
@@ -801,7 +801,7 @@ else:
             second_window.state = state
         # Wait for window animation before assertion.
         await second_window_probe.wait_for_window(
-            f"Secondary window is in {states[-1]}", expected_state=states[-1]
+            f"Secondary window is in {states[-1]}", state=states[-1]
         )
 
         # Verify that the backend handled rapid assignments by checking if
@@ -846,7 +846,7 @@ else:
         second_window.state = state
         # Wait for window animation before assertion.
         await second_window_probe.wait_for_window(
-            f"Secondary window is in {state}", expected_state=state
+            f"Secondary window is in {state}", state=state
         )
         assert second_window_probe.instantaneous_state == state
 
@@ -889,7 +889,7 @@ else:
         second_window.state = state
         # Wait for window animation before assertion.
         await second_window_probe.wait_for_window(
-            f"Secondary window is in {state}", expected_state=state
+            f"Secondary window is in {state}", state=state
         )
         assert second_window_probe.instantaneous_state == state
         assert second_window_probe.content_size[0] > initial_content_size[0]
@@ -897,7 +897,7 @@ else:
 
         second_window.state = state
         await second_window_probe.wait_for_window(
-            f"Secondary window is still in {state}", expected_state=state
+            f"Secondary window is still in {state}", state=state
         )
         assert second_window_probe.instantaneous_state == state
         assert second_window_probe.content_size[0] > initial_content_size[0]
@@ -906,7 +906,7 @@ else:
         second_window.state = WindowState.NORMAL
         # Wait for window animation before assertion.
         await second_window_probe.wait_for_window(
-            f"Secondary window is not in {state}", expected_state=WindowState.NORMAL
+            f"Secondary window is not in {state}", state=WindowState.NORMAL
         )
         assert second_window_probe.instantaneous_state == WindowState.NORMAL
         assert second_window_probe.is_resizable

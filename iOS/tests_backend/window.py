@@ -23,10 +23,10 @@ class WindowProbe(BaseProbe, DialogsMixin):
     async def wait_for_window(
         self,
         message,
-        expected_state=None,
+        state=None,
     ):
         await self.redraw(message)
-        if expected_state:
+        if state:
             timeout = 5
             polling_interval = 0.1
             exception = None
@@ -34,7 +34,7 @@ class WindowProbe(BaseProbe, DialogsMixin):
             start_time = loop.time()
             while (loop.time() - start_time) < timeout:
                 try:
-                    assert self.instantaneous_state == expected_state
+                    assert self.instantaneous_state == state
                     return
                 except AssertionError as e:
                     exception = e
