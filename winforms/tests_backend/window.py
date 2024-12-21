@@ -57,7 +57,8 @@ class WindowProbe(BaseProbe, DialogsMixin):
                     continue
                 raise exception
 
-    async def wait_for_window_close(self, pre_close_window_state):
+    async def cleanup(self):
+        self.window.close()
         await self.redraw("Closing window")
 
     def close(self):

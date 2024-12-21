@@ -48,7 +48,15 @@ class WindowProbe(BaseProbe, DialogsMixin):
                     continue
                 raise exception
 
-    async def wait_for_window_close(self, pre_close_window_state):
+    async def cleanup(self):
+        # Store the pre closing window state as determination of
+        # window state after closing the window is unreliable.
+        pre_close_window_state = self.window.state
+        self.window.close()
+        # We need to use fixed length delays here as NSWindow.close() is
+        # non-blocking in nature, and NSWindow doesn't provide a reliable
+        # indicator to indicate completion of all operations related to
+        # window closing.
         if pre_close_window_state == WindowState.FULLSCREEN:
             delay = 1
         elif pre_close_window_state == WindowState.MINIMIZED:

@@ -208,7 +208,8 @@ async def test_presentation_mode(app, app_probe, main_window, main_window_probe)
 
     # Enter presentation mode with a screen-window dict via the app
     app.enter_presentation_mode(screen_window_dict)
-
+    # Add delay to ensure windows are visible after animation.
+    await main_window_probe.wait_for_window("App is in presentation mode")
     # All the windows should be in presentation mode.
     for window_information in window_information_list:
         # Wait for window animation before assertion.
