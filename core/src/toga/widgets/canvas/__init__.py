@@ -1,5 +1,3 @@
-from toga.constants import Baseline, FillRule
-
 from .canvas import Canvas, OnResizeHandler, OnTouchHandler
 from .context import ClosedPathContext, Context, FillContext, StrokeContext
 from .drawingobject import (
@@ -53,7 +51,4 @@ __all__ = [
     # Geometry
     "arc_to_bezier",
     "sweepangle",
-    # Constants
-    "Baseline",
-    "FillRule",
 ]
