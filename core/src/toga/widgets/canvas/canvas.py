@@ -293,10 +293,6 @@ class Canvas(Widget):
     def on_alt_drag(self, handler: OnTouchHandler) -> None:
         self._on_alt_drag = wrapped_handler(self, handler)
 
-    ###########################################################################
-    # Text measurement
-    ###########################################################################
-
     def measure_text(
         self,
         text: str,
@@ -321,10 +317,6 @@ class Canvas(Widget):
             font = Font(family=SYSTEM, size=SYSTEM_DEFAULT_FONT_SIZE)
 
         return self._impl.measure_text(str(text), font._impl)
-
-    ###########################################################################
-    # As image
-    ###########################################################################
 
     def as_image(self, format: type[ImageT] = toga.Image) -> ImageT:
         """Render the canvas as an image.
