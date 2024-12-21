@@ -4,10 +4,10 @@ import sys
 from travertino.constants import BLACK, BLUE, BOLD, GREEN, ITALIC, NORMAL, RED, YELLOW
 
 import toga
+from toga.constants import Baseline, FillRule
 from toga.fonts import CURSIVE, FANTASY, MESSAGE, MONOSPACE, SANS_SERIF, SERIF, SYSTEM
 from toga.style import Pack
 from toga.style.pack import COLUMN, ROW
-from toga.widgets.canvas import Baseline, FillRule
 
 MOVE_STEP = 5
 
