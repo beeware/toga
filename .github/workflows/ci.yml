@@ -323,6 +323,8 @@ jobs:
           setup-python: false  # Use the system Python packages
           briefcase-run-args: --config 'requires=["../core","../textual"]' --config 'console_app=true'
           app-user-data-path: "$HOME/.local/share/testbed"
+          # install the meta-package build-essential since Briefcase explicitly checks for it
+          pre-command: sudo apt update -y && sudo apt install -y build-essential
 
         - backend: "textual-macOS"
           platform: "macOS"
