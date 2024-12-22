@@ -43,6 +43,7 @@ class WindowProbe(BaseProbe, DialogsMixin):
                 try:
                     if state:
                         assert self.instantaneous_state == state
+                        assert self.window._impl._pending_state_transition is None
                     if assertion_test_method:
                         assertion_test_method()
                     return
