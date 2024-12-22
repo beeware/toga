@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import sys
-import warnings
 from collections.abc import Callable, Iterable
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -43,16 +42,6 @@ _APP_ICON = "<app icon>"
 
 
 class Icon:
-    @cachedicon
-    def TOGA_ICON(cls) -> Icon:
-        """**DEPRECATED** - Use ``DEFAULT_ICON``, or your own icon."""
-        warnings.warn(
-            "TOGA_ICON has been deprecated; Use DEFAULT_ICON, or your own icon.",
-            DeprecationWarning,
-        )
-
-        return Icon("toga", system=True)
-
     @cachedicon
     def APP_ICON(cls) -> Icon:
         """The application icon.

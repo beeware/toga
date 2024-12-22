@@ -162,8 +162,6 @@ class App:
         document_types: list[type[Document]] | None = None,
         on_running: OnRunningHandler | None = None,
         on_exit: OnExitHandler | None = None,
-        id: None = None,  # DEPRECATED
-        windows: None = None,  # DEPRECATED
     ):
         """Create a new App instance.
 
@@ -201,30 +199,7 @@ class App:
         :param on_exit: The initial :any:`on_exit` handler.
         :param document_types: A list of :any:`Document` classes that this app
             can manage.
-        :param id: **DEPRECATED** - This argument will be ignored. If you need a
-            machine-friendly identifier, use ``app_id``.
-        :param windows: **DEPRECATED** – Windows are now automatically added to the
-            current app. Passing this argument will cause an exception.
         """
-        ######################################################################
-        # 2023-10: Backwards compatibility
-        ######################################################################
-        if id is not None:
-            warnings.warn(
-                "App.id is deprecated and will be ignored. Use app_id instead",
-                DeprecationWarning,
-                stacklevel=2,
-            )
-
-        if windows is not None:
-            raise ValueError(
-                "The `windows` constructor argument of toga.App has been removed. "
-                "Windows are now automatically added to the current app."
-            )
-        ######################################################################
-        # End backwards compatibility
-        ######################################################################
-
         # Initialize empty widgets registry
         self._widgets = WidgetRegistry()
 
@@ -417,14 +392,6 @@ class App:
             # The first time the icon is set, it is *before* the impl has been created,
             # so that the app instance can be instantiated with the correct icon.
             pass
-
-    @property
-    def id(self) -> str:
-        """**DEPRECATED** – Use :any:`app_id`."""
-        warnings.warn(
-            "App.id is deprecated. Use app_id instead", DeprecationWarning, stacklevel=2
-        )
-        return self._app_id
 
     @property
     def version(self) -> str | None:
@@ -936,27 +903,7 @@ class App:
         """
 
     ######################################################################
-    # 2023-10: Backwards compatibility
-    ######################################################################
-
-    @property
-    def name(self) -> str:
-        """**DEPRECATED** – Use :any:`formal_name`."""
-        warnings.warn(
-            "App.name is deprecated. Use formal_name instead",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        return self._formal_name
-
-    # Support WindowSet __iadd__ and __isub__
-    @windows.setter
-    def windows(self, windows: WindowSet) -> None:
-        if windows is not self._windows:
-            raise AttributeError("can't set attribute 'windows'")
-
-    ######################################################################
-    # 2024-06: Backwards compatibility
+    # 2024-06: Backwards compatibility for <= 0.4.5
     ######################################################################
 
     def add_background_task(self, handler: BackgroundTask) -> None:
@@ -972,7 +919,7 @@ class App:
         self.loop.call_soon_threadsafe(wrapped_handler(self, handler))
 
     ######################################################################
-    # 2024-07: Backwards compatibility
+    # 2024-12: Backwards compatibility for <= 0.4.8
     ######################################################################
 
     def exit_full_screen(self) -> None:
@@ -1022,7 +969,7 @@ class App:
 
 
 ######################################################################
-# 2024-08: Backwards compatibility
+# 2024-08: Backwards compatibility for <= 0.4.5
 ######################################################################
 
 

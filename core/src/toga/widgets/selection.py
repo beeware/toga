@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import warnings
 from collections.abc import Iterable
 from typing import Any, Protocol, TypeVar
 
@@ -32,7 +31,6 @@ class Selection(Widget):
         value: object | None = None,
         on_change: toga.widgets.selection.OnChangeHandler | None = None,
         enabled: bool = True,
-        on_select: None = None,  # DEPRECATED
     ):
         """Create a new Selection widget.
 
@@ -49,22 +47,6 @@ class Selection(Widget):
         :param enabled: Whether the user can interact with the widget.
         """
         super().__init__(id=id, style=style)
-
-        ######################################################################
-        # 2023-05: Backwards compatibility
-        ######################################################################
-        if on_select:  # pragma: no cover
-            if on_change:
-                raise ValueError("Cannot specify both on_select and on_change")
-            else:
-                warnings.warn(
-                    "Selection.on_select has been renamed Selection.on_change",
-                    DeprecationWarning,
-                )
-                on_change = on_select
-        ######################################################################
-        # End backwards compatibility.
-        ######################################################################
 
         self._items: SourceT | ListSource
 
@@ -190,24 +172,3 @@ class Selection(Widget):
     @on_change.setter
     def on_change(self, handler: toga.widgets.selection.OnChangeHandler) -> None:
         self._on_change = wrapped_handler(self, handler)
-
-    ######################################################################
-    # 2023-05: Backwards compatibility
-    ######################################################################
-
-    @property
-    def on_select(self) -> OnChangeHandler:
-        """**DEPRECATED**: Use ``on_change``"""
-        warnings.warn(
-            "Selection.on_select has been renamed Selection.on_change.",
-            DeprecationWarning,
-        )
-        return self.on_change
-
-    @on_select.setter
-    def on_select(self, handler: toga.widgets.selection.OnChangeHandler) -> None:
-        warnings.warn(
-            "Selection.on_select has been renamed Selection.on_change.",
-            DeprecationWarning,
-        )
-        self.on_change = handler

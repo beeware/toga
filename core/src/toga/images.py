@@ -92,7 +92,7 @@ class Image:
         :raises ValueError: If the source cannot be loaded as an image.
         """
         ######################################################################
-        # 2023-11: Backwards compatibility
+        # 2023-11: Backwards compatibility for <= 0.4.0
         ######################################################################
         num_provided = sum(arg is not NOT_PROVIDED for arg in (src, path, data))
         if num_provided > 1:

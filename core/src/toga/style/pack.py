@@ -107,9 +107,9 @@ class Pack(BaseStyle):
         """Does this style declaration define an object that should be hidden."""
         return self.visibility == HIDDEN
 
-    #######################################################
-    # Backwards compatibility for Toga <= 0.4.8
-    #######################################################
+    ######################################################################
+    # 2024-12: Backwards compatibility for Toga <= 0.4.8
+    ######################################################################
 
     def update(self, **properties):
         properties = {
@@ -243,9 +243,9 @@ class Pack(BaseStyle):
 
         return super().__delitem__(self._update_property_name(name.replace("-", "_")))
 
-    #######################################################
+    ######################################################################
     # End backwards compatibility
-    #######################################################
+    ######################################################################
 
     def apply(self, prop: str, value: object) -> None:
         if self._applicator:

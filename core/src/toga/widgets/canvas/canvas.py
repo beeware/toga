@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import warnings
-from math import pi
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -297,7 +295,6 @@ class Canvas(Widget):
         self,
         text: str,
         font: Font | None = None,
-        tight: None = None,  # DEPRECATED
     ) -> tuple[float, float]:
         """Measure the size at which :meth:`~.Context.write_text` would
         render some text.
@@ -305,14 +302,8 @@ class Canvas(Widget):
         :param text: The text to measure. Newlines will cause line breaks, but long
             lines will not be wrapped.
         :param font: The font in which to draw the text. The default is the system font.
-        :param tight: **DEPRECATED**: this argument has no effect.
         :returns: A tuple of ``(width, height)``.
         """
-        if tight is not None:
-            warnings.warn(
-                "The `tight` argument on Canvas.measure_text() has been deprecated.",
-                DeprecationWarning,
-            )
         if font is None:
             font = Font(family=SYSTEM, size=SYSTEM_DEFAULT_FONT_SIZE)
 
@@ -328,185 +319,3 @@ class Canvas(Widget):
         :returns: The canvas as an image of the specified type.
         """
         return toga.Image(self._impl.get_image_data()).as_format(format)
-
-    ###########################################################################
-    # 2023-07 Backwards compatibility
-    ###########################################################################
-
-    def new_path(self):
-        """**DEPRECATED** - Use :meth:`~toga.widgets.canvas.Context.begin_path` on
-        :attr:`context`"""
-        warnings.warn(
-            "Direct canvas operations have been deprecated; use context.begin_path()",
-            DeprecationWarning,
-        )
-        return self.context.begin_path()
-
-    def move_to(self, x, y):
-        """**DEPRECATED** - Use :meth:`~toga.widgets.canvas.Context.move_to` on
-        :attr:`context`"""
-        warnings.warn(
-            "Direct canvas operations have been deprecated; use context.move_to()",
-            DeprecationWarning,
-        )
-        return self.context.move_to(x, y)
-
-    def line_to(self, x, y):
-        """**DEPRECATED** - Use :meth:`~toga.widgets.canvas.Context.line_to` on
-        :attr:`context`"""
-        warnings.warn(
-            "Direct canvas operations have been deprecated; use context.line_to()",
-            DeprecationWarning,
-        )
-        return self.context.line_to(x, y)
-
-    def bezier_curve_to(self, cp1x, cp1y, cp2x, cp2y, x, y):
-        """**DEPRECATED** - Use :meth:`~toga.widgets.canvas.Context.bezier_curve_to` on
-        :attr:`context`"""
-        warnings.warn(
-            "Direct canvas operations have been deprecated; "
-            "use context.bezier_curve_to()",
-            DeprecationWarning,
-        )
-        return self.context.bezier_curve_to(cp1x, cp1y, cp2x, cp2y, x, y)
-
-    def quadratic_curve_to(self, cpx: float, cpy: float, x: float, y: float):
-        """**DEPRECATED** - Use :meth:`~toga.widgets.canvas.Context.quadratic_curve_to`
-        on :attr:`context`"""
-        warnings.warn(
-            "Direct canvas operations have been deprecated; "
-            "use context.quadratic_curve_to()",
-            DeprecationWarning,
-        )
-        return self.context.quadratic_curve_to(cpx, cpy, x, y)
-
-    def arc(self, x, y, radius, startangle=0.0, endangle=2 * pi, anticlockwise=False):
-        """**DEPRECATED** - Use :meth:`~toga.widgets.canvas.Context.arc` on
-        :attr:`context`"""
-        warnings.warn(
-            "Direct canvas operations have been deprecated; use context.arc()",
-            DeprecationWarning,
-        )
-        return self.context.arc(x, y, radius, startangle, endangle, anticlockwise)
-
-    def ellipse(
-        self,
-        x: float,
-        y: float,
-        radiusx: float,
-        radiusy: float,
-        rotation: float = 0.0,
-        startangle: float = 0.0,
-        endangle: float = 2 * pi,
-        anticlockwise: bool = False,
-    ):
-        """**DEPRECATED** - Use :meth:`~toga.widgets.canvas.Context.ellipse` on
-        :attr:`context`"""
-        warnings.warn(
-            "Direct canvas operations have been deprecated; use context.ellipse()",
-            DeprecationWarning,
-        )
-        return self.context.ellipse(
-            x,
-            y,
-            radiusx,
-            radiusy,
-            rotation,
-            startangle,
-            endangle,
-            anticlockwise,
-        )
-
-    def rect(self, x: float, y: float, width: float, height: float):
-        """**DEPRECATED** - Use :meth:`~toga.widgets.canvas.Context.rect` on
-        :attr:`context`"""
-        warnings.warn(
-            "Direct canvas operations have been deprecated; use context.rect()",
-            DeprecationWarning,
-        )
-        return self.context.rect(x, y, width, height)
-
-    def write_text(self, text: str, x=0, y=0, font=None):
-        """**DEPRECATED** - Use :meth:`~toga.widgets.canvas.Context.write_text` on
-        :attr:`context`"""
-        warnings.warn(
-            "Direct canvas operations have been deprecated; use context.write_text()",
-            DeprecationWarning,
-        )
-        return self.context.write_text(text, x, y, font)
-
-    def rotate(self, radians: float):
-        """**DEPRECATED** - Use :meth:`~toga.widgets.canvas.Context.rotate` on
-        :attr:`context`"""
-        warnings.warn(
-            "Direct canvas operations have been deprecated; use context.rotate()",
-            DeprecationWarning,
-        )
-        return self.context.rotate(radians)
-
-    def scale(self, sx: float, sy: float):
-        """**DEPRECATED** - Use :meth:`~toga.widgets.canvas.Context.scale`
-        on :attr:`context`"""
-        warnings.warn(
-            "Direct canvas operations have been deprecated; use context.scale()",
-            DeprecationWarning,
-        )
-        return self.context.scale(sx, sy)
-
-    def translate(self, tx: float, ty: float):
-        """**DEPRECATED** - Use :meth:`~toga.widgets.canvas.Context.translate` on
-        :attr:`context`"""
-        warnings.warn(
-            "Direct canvas operations have been deprecated; use context.translate()",
-            DeprecationWarning,
-        )
-        return self.context.translate(tx, ty)
-
-    def reset_transform(self):
-        """**DEPRECATED** - Use :meth:`~toga.widgets.canvas.Context.reset_transform` on
-        :attr:`context`"""
-        warnings.warn(
-            "Direct canvas operations have been deprecated; "
-            "use context.reset_transform()",
-            DeprecationWarning,
-        )
-        return self.context.reset_transform()
-
-    def closed_path(self, x, y):
-        """**DEPRECATED** - use :meth:`~toga.Canvas.ClosedPath`"""
-        warnings.warn(
-            "Canvas.closed_path() has been renamed Canvas.ClosedPath()",
-            DeprecationWarning,
-        )
-        return self.ClosedPath(x, y)
-
-    def fill(
-        self,
-        color: Color | str | None = BLACK,
-        fill_rule: FillRule = FillRule.NONZERO,
-        preserve=None,  # DEPRECATED
-    ):
-        """**DEPRECATED** - use :meth:`~toga.Canvas.Fill`"""
-        warnings.warn(
-            "Canvas.fill() has been renamed Canvas.Fill()",
-            DeprecationWarning,
-        )
-        if preserve is not None:
-            warnings.warn(
-                "The `preserve` argument on fill() has been deprecated.",
-                DeprecationWarning,
-            )
-        return self.Fill(color=color, fill_rule=fill_rule)
-
-    def stroke(
-        self,
-        color: Color | str | None = BLACK,
-        line_width: float = 2.0,
-        line_dash: list[float] | None = None,
-    ):
-        """**DEPRECATED** - use :meth:`~toga.Canvas.Stroke`"""
-        warnings.warn(
-            "Canvas.stroke() has been renamed Canvas.Stroke().",
-            DeprecationWarning,
-        )
-        return self.Stroke(color=color, line_width=line_width, line_dash=line_dash)

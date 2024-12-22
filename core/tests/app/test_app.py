@@ -260,11 +260,6 @@ def test_create(
             RuntimeError,
             "Toga application must have an app ID",
         ),
-        (
-            dict(windows=()),
-            ValueError,
-            "The `windows` constructor argument of toga.App has been removed",
-        ),
     ],
 )
 def test_bad_app_creation(kwargs, exc_type, message):
@@ -950,28 +945,6 @@ def test_dark_mode_state(app):
     """Dark mode settings can be read through the dark_mode property."""
     # The dummy backend is currently set to always be True
     assert app.dark_mode
-
-
-def test_deprecated_id(event_loop):
-    """The deprecated `id` constructor argument is ignored, and the property of the same
-    name is redirected to `app_id`"""
-    id_warning = r"App.id is deprecated.* Use app_id instead"
-    with pytest.warns(DeprecationWarning, match=id_warning):
-        app = toga.App("Test App", "org.example.test", id="test_app_id")
-
-    assert app.app_id == "org.example.test"
-    with pytest.warns(DeprecationWarning, match=id_warning):
-        assert app.id == "org.example.test"
-
-
-def test_deprecated_name(event_loop):
-    """The deprecated `name` property is redirected to `formal_name`"""
-    name_warning = r"App.name is deprecated. Use formal_name instead"
-    app = toga.App("Test App", "org.example.test")
-
-    assert app.formal_name == "Test App"
-    with pytest.warns(DeprecationWarning, match=name_warning):
-        assert app.name == "Test App"
 
 
 def test_deprecated_background_task(app):

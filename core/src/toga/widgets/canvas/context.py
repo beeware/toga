@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import warnings
 from collections.abc import Iterator
 from contextlib import contextmanager
 from math import pi
@@ -303,7 +302,6 @@ class Context(DrawingObject):
         self,
         color: str = BLACK,
         fill_rule: FillRule = FillRule.NONZERO,
-        preserve: None = None,  # DEPRECATED
     ) -> Fill:
         """Fill the current path.
 
@@ -314,15 +312,8 @@ class Context(DrawingObject):
         :param fill_rule: `nonzero` is the non-zero winding rule; `evenodd` is the
             even-odd winding rule.
         :param color: The fill color.
-        :param preserve: **DEPRECATED**: this argument has no effect.
         :returns: The ``Fill`` :any:`DrawingObject` for the operation.
         """
-        if preserve is not None:
-            warnings.warn(
-                "The `preserve` argument on fill() has been deprecated.",
-                DeprecationWarning,
-            )
-
         fill = Fill(color, fill_rule)
         self.append(fill)
         return fill
@@ -538,33 +529,6 @@ class Context(DrawingObject):
         )
         self.append(stroke)
         yield stroke
-
-    ###########################################################################
-    # 2023-07 Backwards incompatibility
-    ###########################################################################
-
-    def new_path(self) -> BeginPath:
-        """**DEPRECATED** - Use :meth:`~toga.widgets.canvas.Context.begin_path`."""
-        warnings.warn(
-            "Context.new_path() has been renamed Context.begin_path()",
-            DeprecationWarning,
-        )
-        return self.begin_path()
-
-    def context(self):
-        """**DEPRECATED** - use :meth:`~toga.widgets.canvas.Context.Context`"""
-        warnings.warn(
-            "Context.context() has been renamed Context.Context()", DeprecationWarning
-        )
-        return self.Context()
-
-    def closed_path(self, x: float, y: float):
-        """**DEPRECATED** - use :meth:`~toga.widgets.canvas.Context.ClosedPath`"""
-        warnings.warn(
-            "Context.closed_path() has been renamed Context.ClosedPath()",
-            DeprecationWarning,
-        )
-        return self.ClosedPath(x, y)
 
 
 class ClosedPathContext(Context):

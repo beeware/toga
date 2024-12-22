@@ -327,6 +327,10 @@ class App:
     # Platform-specific APIs
     ######################################################################
 
+    ######################################################################
+    # 2024-2: Backwards compatibility for < 0.4.1
+    ######################################################################
+
     async def intent_result(self, intent):  # pragma: no cover
         warnings.warn(
             "intent_result has been deprecated; use start_activity",
@@ -344,6 +348,10 @@ class App:
             return result_future.result()
         except AttributeError:
             raise RuntimeError("No appropriate Activity found to handle this intent.")
+
+    ######################################################################
+    # End backwards compatibility
+    ######################################################################
 
     def _native_startActivityForResult(
         self, activity, code, *options

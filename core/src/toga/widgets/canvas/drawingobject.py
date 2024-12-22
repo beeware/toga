@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from math import pi
-from typing import Any, NoReturn
+from typing import Any
 
 from travertino.colors import Color
 
@@ -100,20 +100,6 @@ class Fill(DrawingObject):
         else:
             self._color = parse_color(value)
 
-    ###########################################################################
-    # 2023-07 Backwards incompatibility
-    ###########################################################################
-
-    # `context.fill()` used to be a context manager, but is now a primitive.
-    # If you try to use the Fill drawing object as a context, raise an exception.
-    def __enter__(self) -> NoReturn:
-        raise RuntimeError("Context.fill() has been renamed Context.Fill().")
-
-    def __exit__(self) -> None:  # pragma: no cover
-        # This method is required to make the object a context manager, but as the
-        # __enter__ method raises an exception, the __exit__ can't be called.
-        pass
-
 
 class Stroke(DrawingObject):
     def __init__(
@@ -162,20 +148,6 @@ class Stroke(DrawingObject):
     @line_dash.setter
     def line_dash(self, value: list[float] | None) -> None:
         self._line_dash = value
-
-    ###########################################################################
-    # 2023-07 Backwards incompatibility
-    ###########################################################################
-
-    # `context.stroke()` used to be a context manager, but is now a primitive.
-    # If you try to use the Stroke drawing object as a context, raise an exception.
-    def __enter__(self) -> NoReturn:
-        raise RuntimeError("Context.stroke() has been renamed Context.Stroke().")
-
-    def __exit__(self) -> None:  # pragma: no cover
-        # This method is required to make the object a context manager, but as the
-        # __enter__ method raises an exception, the __exit__ can't be called.
-        pass
 
 
 class MoveTo(DrawingObject):

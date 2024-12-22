@@ -13,6 +13,10 @@ warnings.filterwarnings("default", category=DeprecationWarning)
 class TogaApplicator:
     """Apply styles to a Toga widget."""
 
+    ######################################################################
+    # 2024-12: Backwards compatibility for <= 0.4.8
+    ######################################################################
+
     def __init__(self, widget: None = None):
         if widget is not None:
             warnings.warn(
@@ -21,6 +25,10 @@ class TogaApplicator:
                 DeprecationWarning,
                 stacklevel=2,
             )
+
+    ######################################################################
+    # End backwards compatibility
+    ######################################################################
 
     @property
     def widget(self) -> Widget:
