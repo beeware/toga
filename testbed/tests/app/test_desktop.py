@@ -216,7 +216,6 @@ async def test_presentation_mode(app, app_probe, main_window, main_window_probe)
         await window_information["window_probe"].wait_for_window(
             "App is in presentation mode", state=WindowState.PRESENTATION
         )
-        assert app.in_presentation_mode
         assert (
             window_information["window_probe"].instantaneous_state
             == WindowState.PRESENTATION
@@ -238,6 +237,8 @@ async def test_presentation_mode(app, app_probe, main_window, main_window_probe)
         assert (
             window_information["window"].screen == window_information["paired_screen"]
         ), f"{window_information['window'].title}:"
+
+    assert app.in_presentation_mode
 
     # Exit presentation mode
     app.exit_presentation_mode()
@@ -387,12 +388,11 @@ async def test_presentation_mode_exit_on_window_state_change(
 
     # Reset window states
     window1.state = WindowState.NORMAL
-    # Wait for window animation before assertion.
+    window2.state = WindowState.NORMAL
+    # Wait for windows animation before assertion.
     await window1_probe.wait_for_window(
         "All test windows are in WindowState.NORMAL", state=WindowState.NORMAL
     )
-    window2.state = WindowState.NORMAL
-    # Wait for window animation before assertion.
     await window2_probe.wait_for_window(
         "All test windows are in WindowState.NORMAL", state=WindowState.NORMAL
     )
@@ -421,12 +421,11 @@ async def test_presentation_mode_exit_on_window_state_change(
 
     # Reset window states
     window1.state = WindowState.NORMAL
-    # Wait for window animation before assertion.
+    window2.state = WindowState.NORMAL
+    # Wait for windows animation before assertion.
     await window1_probe.wait_for_window(
         "All test windows are in WindowState.NORMAL", state=WindowState.NORMAL
     )
-    window2.state = WindowState.NORMAL
-    # Wait for window animation before assertion.
     await window2_probe.wait_for_window(
         "All test windows are in WindowState.NORMAL", state=WindowState.NORMAL
     )

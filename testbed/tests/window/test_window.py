@@ -259,36 +259,41 @@ if toga.platform.current_platform in {"iOS", "android"}:
         assert main_window_probe.instantaneous_state == WindowState.NORMAL
         initial_content_size = main_window_probe.content_size
 
+        def assert_content_size_increase():
+            # At least one of the dimension should have increased.
+            assert (
+                main_window_probe.content_size[0] > initial_content_size[0]
+                or main_window_probe.content_size[1] > initial_content_size[1]
+            )
+
+        def assert_content_size_original():
+            assert main_window_probe.content_size == initial_content_size
+
         main_window.state = state
         # Wait for window animation before assertion.
         await main_window_probe.wait_for_window(
-            f"Main window is in {state}", state=state
+            f"Main window is in {state}",
+            state=state,
+            assertion_test_method=assert_content_size_increase,
         )
         assert main_window_probe.instantaneous_state == state
-        # At least one of the dimension should have increased.
-        assert (
-            main_window_probe.content_size[0] > initial_content_size[0]
-            or main_window_probe.content_size[1] > initial_content_size[1]
-        )
 
         main_window.state = state
         await main_window_probe.wait_for_window(
-            f"Main window is still in {state}", state=state
+            f"Main window is still in {state}",
+            state=state,
+            assertion_test_method=assert_content_size_increase,
         )
         assert main_window_probe.instantaneous_state == state
-        # At least one of the dimension should have increased.
-        assert (
-            main_window_probe.content_size[0] > initial_content_size[0]
-            or main_window_probe.content_size[1] > initial_content_size[1]
-        )
 
         main_window.state = WindowState.NORMAL
         # Wait for window animation before assertion.
         await main_window_probe.wait_for_window(
-            f"Main window is not in {state}", state=WindowState.NORMAL
+            f"Main window is not in {state}",
+            state=WindowState.NORMAL,
+            assertion_test_method=assert_content_size_original,
         )
         assert main_window_probe.instantaneous_state == WindowState.NORMAL
-        assert main_window_probe.content_size == initial_content_size
 
     @pytest.mark.parametrize(
         "state",
