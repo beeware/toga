@@ -1,0 +1,1 @@
+Location support is now available on Windows
