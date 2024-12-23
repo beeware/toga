@@ -9,3 +9,4 @@ Want to see examples of Toga in use? Here's some:
 * `pyPlayground <https://www.tanapro.ch/joomla3/index.php/downloads>`_ is a Toga based app for Android and Windows which can be modified to try Toga without additional tool chain.
 * `taAppLister <https://play.google.com/store/apps/details?id=ch.tanapro.taapplister>`_ is a Toga based Android app for listing and exporting all installed apps.
 * `RemoteCommand <https://www.tanapro.ch/joomla3/index.php/downloads>`_ is a Toga based app for synchronizing the clipboard between Windows and MacOS.
+* `ChariotGazer <https://insanesharpness.gitlab.io/ChariotGazer/>`_ is a Toga based app for Android and Windows, which provides detailed information about UK registered vehicles.
