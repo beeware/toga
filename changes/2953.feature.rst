@@ -1,0 +1,1 @@
+Toga now has a layout debugging mode. If you set ``TOGA_DEBUG_LAYOUT=1`` in your app's runtime environment, widgets will be rendered with different background colors, making it easier to identify how space is being allocated by Toga's layout algorithm.
