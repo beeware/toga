@@ -100,26 +100,18 @@ async def window_cleanup(app, app_probe, main_window, main_window_probe):
     # Then purge everything on the kill list.
     while kill_list:
         window = kill_list.pop()
-        window_state = window.state
-        window.close()
-        await main_window_probe.wait_for_window(
-            "Closing window",
-            minimize=True if window_state == WindowState.MINIMIZED else False,
-            full_screen=True if window_state == WindowState.FULLSCREEN else False,
-        )
+        probe = import_module("tests_backend.window").WindowProbe(app, window)
+        await probe.cleanup()
         del window
 
     # Force a GC pass on the main thread. This isn't perfect, but it helps
     # minimize garbage collection on the test thread.
     gc.collect()
 
-    main_window_state = main_window.state
     main_window.state = WindowState.NORMAL
     app.current_window = main_window
     await main_window_probe.wait_for_window(
-        "Resetting main_window",
-        minimize=True if main_window_state == WindowState.MINIMIZED else False,
-        full_screen=True if main_window_state == WindowState.FULLSCREEN else False,
+        "Resetting main_window", state=WindowState.NORMAL
     )
 
 

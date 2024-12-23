@@ -1,5 +1,8 @@
+import asyncio
+
 from rubicon.objc import objc_id, send_message
 
+from toga.constants import WindowState
 from toga_cocoa.libs import NSWindow, NSWindowStyleMask
 
 from .dialogs import DialogsMixin
@@ -25,18 +28,43 @@ class WindowProbe(BaseProbe, DialogsMixin):
     async def wait_for_window(
         self,
         message,
-        minimize=False,
-        full_screen=False,
-        state_switch_not_from_normal=False,
+        state=None,
     ):
-        await self.redraw(
-            message,
-            delay=(
-                1.75
-                if state_switch_not_from_normal
-                else 0.75 if full_screen else 0.5 if minimize else 0.1
-            ),
-        )
+        await self.redraw(message, delay=0.1)
+
+        if state:
+            timeout = 5
+            polling_interval = 0.1
+            exception = None
+            loop = asyncio.get_running_loop()
+            start_time = loop.time()
+            while (loop.time() - start_time) < timeout:
+                try:
+                    assert self.instantaneous_state == state
+                    assert self.window._impl._pending_state_transition is None
+                    return
+                except AssertionError as e:
+                    exception = e
+                    await asyncio.sleep(polling_interval)
+                    continue
+                raise exception
+
+    async def cleanup(self):
+        # Store the pre closing window state as determination of
+        # window state after closing the window is unreliable.
+        pre_close_window_state = self.window.state
+        self.window.close()
+        # We need to use fixed length delays here as NSWindow.close() is
+        # non-blocking in nature, and NSWindow doesn't provide a reliable
+        # indicator to indicate completion of all operations related to
+        # window closing.
+        if pre_close_window_state == WindowState.FULLSCREEN:
+            delay = 1
+        elif pre_close_window_state == WindowState.MINIMIZED:
+            delay = 0.5
+        else:
+            delay = 0.1
+        await self.redraw("Closing window", delay=delay)
 
     def close(self):
         self.native.performClose(None)

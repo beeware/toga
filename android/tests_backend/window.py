@@ -1,5 +1,9 @@
+import asyncio
+
 from android.content import Context
 from androidx.appcompat import R as appcompat_R
+
+from toga.constants import WindowState
 
 from .dialogs import DialogsMixin
 from .probe import BaseProbe
@@ -18,14 +22,39 @@ class WindowProbe(BaseProbe, DialogsMixin):
     async def wait_for_window(
         self,
         message,
-        minimize=False,
-        full_screen=False,
-        state_switch_not_from_normal=False,
+        state=None,
     ):
-        await self.redraw(
-            message,
-            delay=(0.5 if (full_screen or state_switch_not_from_normal) else 0.1),
-        )
+        await self.redraw(message, delay=0.1)
+        if state:
+            timeout = 5
+            polling_interval = 0.1
+            exception = None
+            loop = asyncio.get_running_loop()
+            start_time = loop.time()
+            while (loop.time() - start_time) < timeout:
+                try:
+                    assert self.instantaneous_state == state
+                    if state in {WindowState.FULLSCREEN, WindowState.PRESENTATION}:
+                        # Add a slight delay to ensure window properties like
+                        # `content_size` are updated according to the new state.
+                        await self.redraw(delay=0.1)
+                    return
+                except AssertionError as e:
+                    exception = e
+                    await asyncio.sleep(polling_interval)
+                    continue
+                raise exception
+
+    async def cleanup(self):
+        # Store the pre closing window state as determination of
+        # window state after closing the window is unreliable.
+        pre_close_window_state = self.window.state
+        self.window.close()
+        if pre_close_window_state in {WindowState.FULLSCREEN, WindowState.PRESENTATION}:
+            delay = 0.5
+        else:
+            delay = 0.1
+        await self.redraw("Closing window", delay=delay)
 
     @property
     def content_size(self):
