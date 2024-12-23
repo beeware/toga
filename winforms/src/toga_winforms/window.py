@@ -32,6 +32,8 @@ class Window(Container, Scalable):
     def __init__(self, interface, title, position, size):
         self.interface = interface
 
+        self._is_previously_shown = False
+
         self.create()
 
         self._FormClosing_handler = WeakrefCallable(self.winforms_FormClosing)
@@ -62,6 +64,12 @@ class Window(Container, Scalable):
             WinForms.FormBorderStyle,
             "Sizable" if self.interface.resizable else "FixedSingle",
         )
+
+        self.native.Activated += WeakrefCallable(self.winforms_on_gain_focus)
+        self.native.Deactivate += WeakrefCallable(self.winforms_on_lose_focus)
+
+        self.native.VisibleChanged += WeakrefCallable(self.winforms_on_visible_changed)
+        self.native.SizeChanged += WeakrefCallable(self.winforms_on_size_changed)
 
     def create(self):
         self.native = WinForms.Form()
@@ -112,6 +120,35 @@ class Window(Container, Scalable):
         # See DisplaySettingsChanged in app.py.
         if self.get_current_screen().dpi_scale != self._dpi_scale:
             self.update_dpi()
+
+    def winforms_on_gain_focus(self, sender, event):
+        self.interface.on_gain_focus()
+
+    def winforms_on_lose_focus(self, sender, event):
+        self.interface.on_lose_focus()
+
+    def winforms_on_visible_changed(self, sender, event):
+        if self.native.Visible and not self._is_previously_shown:
+            self._is_previously_shown = True
+            self.interface.on_show()
+        else:
+            self._is_previously_shown = False
+            self.interface.on_hide()
+
+    def winforms_on_size_changed(self, sender, event):  # pragma: no cover
+        if (
+            self.native.WindowState == WinForms.FormWindowState.Minimized
+            and self._is_previously_shown
+        ):
+            self._is_previously_shown = False
+            self.interface.on_hide()
+        elif (
+            self.native.WindowState
+            in (WinForms.FormWindowState.Maximized, WinForms.FormWindowState.Normal)
+            and not self._is_previously_shown
+        ):
+            self._is_previously_shown = True
+            self.interface.on_show()
 
     ######################################################################
     # Window properties

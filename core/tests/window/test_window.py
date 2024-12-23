@@ -584,6 +584,58 @@ def test_close_rejected_handler(window, app):
     on_close_handler.assert_called_once_with(window)
 
 
+def test_on_gain_focus(window):
+    assert window._on_gain_focus._raw is None
+
+    on_gain_focus_handler = Mock()
+    window.on_gain_focus = on_gain_focus_handler
+
+    assert window.on_gain_focus._raw == on_gain_focus_handler
+
+    window._impl.simulate_on_gain_focus()
+
+    on_gain_focus_handler.assert_called_once_with(window)
+
+
+def test_on_lose_focus(window):
+    assert window.on_lose_focus._raw is None
+
+    on_lose_focus_handler = Mock()
+    window.on_lose_focus = on_lose_focus_handler
+
+    assert window.on_lose_focus._raw == on_lose_focus_handler
+
+    window._impl.simulate_on_lose_focus()
+
+    on_lose_focus_handler.assert_called_once_with(window)
+
+
+def test_on_show(window):
+    assert window.on_show._raw is None
+
+    on_show_handler = Mock()
+    window.on_show = on_show_handler
+
+    assert window.on_show._raw == on_show_handler
+
+    window._impl.simulate_on_show()
+
+    on_show_handler.assert_called_once_with(window)
+
+
+def test_on_hide(window):
+    assert window.on_hide._raw is None
+
+    on_hide_handler = Mock()
+    window.on_hide = on_hide_handler
+
+    assert window.on_hide._raw == on_hide_handler
+
+    window._impl.simulate_on_hide()
+
+    on_hide_handler.assert_called_once_with(window)
+
+
 def test_as_image(window):
     """A window can be captured as an image."""
     image = window.as_image()
