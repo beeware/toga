@@ -196,7 +196,7 @@ class AsyncResult(ABC):
         self.future = loop.create_future()
 
         ######################################################################
-        # 2023-12: Backwards compatibility
+        # 2023-12: Backwards compatibility for <= 0.4.0
         ######################################################################
         self.on_result: OnResultT | None
         if on_result:

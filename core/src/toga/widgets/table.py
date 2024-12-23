@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import warnings
 from collections.abc import Iterable
 from typing import Any, Literal, Protocol, TypeVar
 
@@ -45,7 +44,6 @@ class Table(Widget):
         on_select: toga.widgets.table.OnSelectHandler | None = None,
         on_activate: toga.widgets.table.OnActivateHandler | None = None,
         missing_value: str = "",
-        on_double_click: None = None,  # DEPRECATED
     ):
         """Create a new Table widget.
 
@@ -76,24 +74,7 @@ class Table(Widget):
         :param missing_value: The string that will be used to populate a cell when the
             value provided by its accessor is :any:`None`, or the accessor isn't
             defined.
-        :param on_double_click: **DEPRECATED**; use :attr:`on_activate`.
         """
-        ######################################################################
-        # 2023-06: Backwards compatibility
-        ######################################################################
-        if on_double_click:
-            if on_activate:
-                raise ValueError("Cannot specify both on_double_click and on_activate")
-            else:
-                warnings.warn(
-                    "Table.on_double_click has been renamed Table.on_activate.",
-                    DeprecationWarning,
-                )
-                on_activate = on_double_click
-        ######################################################################
-        # End backwards compatibility.
-        ######################################################################
-
         self._headings: list[str] | None
         self._accessors: list[str]
         self._data: SourceT | ListSource
@@ -234,10 +215,6 @@ class Table(Widget):
     def on_activate(self, handler: toga.widgets.table.OnActivateHandler) -> None:
         self._on_activate = wrapped_handler(self, handler)
 
-    def add_column(self, heading: str, accessor: str | None = None) -> None:
-        """**DEPRECATED**: use :meth:`~toga.Table.append_column`"""
-        self.insert_column(len(self._accessors), heading, accessor=accessor)
-
     def append_column(self, heading: str, accessor: str | None = None) -> None:
         """Append a column to the end of the table.
 
@@ -325,24 +302,3 @@ class Table(Widget):
         attribute.
         """
         return self._missing_value
-
-    ######################################################################
-    # 2023-06: Backwards compatibility
-    ######################################################################
-
-    @property
-    def on_double_click(self) -> OnActivateHandler:
-        """**DEPRECATED**: Use ``on_activate``"""
-        warnings.warn(
-            "Table.on_double_click has been renamed Table.on_activate.",
-            DeprecationWarning,
-        )
-        return self.on_activate
-
-    @on_double_click.setter
-    def on_double_click(self, handler: toga.widgets.table.OnActivateHandler) -> None:
-        warnings.warn(
-            "Table.on_double_click has been renamed Table.on_activate.",
-            DeprecationWarning,
-        )
-        self.on_activate = handler

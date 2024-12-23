@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import warnings
 from abc import ABC, abstractmethod
 from contextlib import contextmanager
 from typing import Any, Protocol, SupportsFloat
@@ -46,14 +45,13 @@ class Slider(Widget):
         id: str | None = None,
         style: StyleT | None = None,
         value: float | None = None,
-        min: float | None = None,  # Default to 0.0 when range is removed
-        max: float | None = None,  # Default to 1.0 when range is removed
+        min: float = 0.0,
+        max: float = 1.0,
         tick_count: int | None = None,
         on_change: toga.widgets.slider.OnChangeHandler | None = None,
         on_press: toga.widgets.slider.OnPressHandler | None = None,
         on_release: OnReleaseHandler | None = None,
         enabled: bool = True,
-        range: None = None,  # DEPRECATED
     ):
         """Create a new Slider widget.
 
@@ -70,35 +68,8 @@ class Slider(Widget):
         :param on_press: Initial :any:`on_press` handler.
         :param on_release: Initial :any:`on_release` handler.
         :param enabled: Whether the user can interact with the widget.
-        :param range: **DEPRECATED**; use ``min`` and ``max`` instead. Initial
-            :any:`range` of the slider. Defaults to ``(0, 1)``.
         """
         super().__init__(id=id, style=style)
-
-        ######################################################################
-        # 2023-06: Backwards compatibility
-        ######################################################################
-        if range is not None:
-            if min is not None or max is not None:
-                raise ValueError(
-                    "range cannot be specified if min and max are specified"
-                )
-            else:
-                warnings.warn(
-                    "Slider.range has been deprecated in favor of "
-                    "Slider.min and Slider.max",
-                    DeprecationWarning,
-                )
-                min, max = range
-        else:
-            # This provides defaults values for min/max.
-            if min is None:
-                min = 0.0
-            if max is None:
-                max = 1.0
-        ######################################################################
-        # End backwards compatibility
-        ######################################################################
 
         # Set a dummy handler before installing the actual on_change, because we do not
         # want on_change triggered by the initial value being set
@@ -314,38 +285,6 @@ class Slider(Widget):
     @on_release.setter
     def on_release(self, handler: OnReleaseHandler) -> None:
         self._on_release = wrapped_handler(self, handler)
-
-    ######################################################################
-    # 2023-06: Backwards compatibility
-    ######################################################################
-    @property
-    def range(self) -> tuple[float, float]:
-        """**DEPRECATED**; use :any:`min` and :any:`max` instead.
-
-        Range of allowed values, in the form (min, max).
-
-        If the provided min is greater than the max, both values will assume the value
-        of the max.
-
-        If the current value is less than the provided ``min``, the current value will
-        be clipped to the minimum value. If the current value is greater than the
-        provided ``max``, the current value will be clipped to the maximum value.
-        """
-        warnings.warn(
-            "Slider.range has been deprecated in favor of Slider.min and Slider.max",
-            DeprecationWarning,
-        )
-        return self.min, self.max
-
-    @range.setter
-    def range(self, range: tuple[float, float]) -> None:
-        warnings.warn(
-            "Slider.range has been deprecated in favor of Slider.min and Slider.max",
-            DeprecationWarning,
-        )
-        _min, _max = range
-        self.min = _min
-        self.max = _max
 
 
 class SliderImpl(ABC):

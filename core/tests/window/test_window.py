@@ -1255,9 +1255,6 @@ def test_deprecated_names_open_file_dialog(window, app):
 
     with pytest.warns(
         DeprecationWarning,
-        match=r"open_file_dialog\(multiselect\) has been renamed multiple_select",
-    ), pytest.warns(
-        DeprecationWarning,
         match=(
             r"Synchronous `on_result` handlers have been deprecated; "
             r"use `await` on the asynchronous result"
@@ -1272,7 +1269,7 @@ def test_deprecated_names_open_file_dialog(window, app):
         dialog = window.open_file_dialog(
             "Title",
             "/path/to/folder",
-            multiselect=True,
+            multiple_select=True,
             on_result=on_result_handler,
         )
 
@@ -1304,11 +1301,6 @@ def test_deprecated_names_select_folder_dialog(window, app):
     with pytest.warns(
         DeprecationWarning,
         match=(
-            r"select_folder_dialog\(multiselect\) " r"has been renamed multiple_select"
-        ),
-    ), pytest.warns(
-        DeprecationWarning,
-        match=(
             r"Synchronous `on_result` handlers have been deprecated; "
             r"use `await` on the asynchronous result"
         ),
@@ -1322,7 +1314,7 @@ def test_deprecated_names_select_folder_dialog(window, app):
         dialog = window.select_folder_dialog(
             "Title",
             "/path/to/folder",
-            multiselect=True,
+            multiple_select=True,
             on_result=on_result_handler,
         )
 
@@ -1340,36 +1332,6 @@ def test_deprecated_names_select_folder_dialog(window, app):
         "show window SelectFolderDialog",
     )
     on_result_handler.assert_called_once_with(window, selected_folder)
-
-
-def test_deprecated_names_resizeable():
-    """Deprecated spelling of resizable still works."""
-    with pytest.warns(
-        DeprecationWarning,
-        match=r"Window.resizeable has been renamed Window.resizable",
-    ):
-        window = toga.Window(title="Deprecated", resizeable=True)
-
-    with pytest.warns(
-        DeprecationWarning,
-        match=r"Window.resizeable has been renamed Window.resizable",
-    ):
-        assert window.resizeable
-
-
-def test_deprecated_names_closeable():
-    """Deprecated spelling of closable still works."""
-    with pytest.warns(
-        DeprecationWarning,
-        match=r"Window.closeable has been renamed Window.closable",
-    ):
-        window = toga.Window(title="Deprecated", closeable=True)
-
-    with pytest.warns(
-        DeprecationWarning,
-        match=r"Window.closeable has been renamed Window.closable",
-    ):
-        assert window.closeable
 
 
 def test_deprecated_full_screen(window, app):

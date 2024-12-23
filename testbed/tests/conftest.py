@@ -20,10 +20,13 @@ register_assert_rewrite("tests_backend")
 
 # Use this for widgets or tests which are not supported on some platforms,
 # but could be supported in the future.
-def skip_on_platforms(*platforms, reason=None):
+def skip_on_platforms(*platforms, reason=None, allow_module_level=False):
     current_platform = toga.platform.current_platform
     if current_platform in platforms:
-        skip(reason or f"not yet implemented on {current_platform}")
+        skip(
+            reason or f"not yet implemented on {current_platform}",
+            allow_module_level=allow_module_level,
+        )
 
 
 # Use this for widgets or tests which are not supported on some platforms,
@@ -36,14 +39,15 @@ def xfail_on_platforms(*platforms, reason=None):
 
 # Use this for widgets or tests which trip up macOS privacy controls, and requires
 # properties or entitlements defined in Info.plist
-def skip_if_unbundled_app(reason=None):
+def skip_if_unbundled_app(reason=None, allow_module_level=False):
     if not toga.App.app.is_bundled:
         skip(
             reason
             or (
                 "test requires a full application, "
                 "use 'briefcase run' instead of 'briefcase dev'"
-            )
+            ),
+            allow_module_level=allow_module_level,
         )
 
 
@@ -96,26 +100,18 @@ async def window_cleanup(app, app_probe, main_window, main_window_probe):
     # Then purge everything on the kill list.
     while kill_list:
         window = kill_list.pop()
-        window_state = window.state
-        window.close()
-        await main_window_probe.wait_for_window(
-            "Closing window",
-            minimize=True if window_state == WindowState.MINIMIZED else False,
-            full_screen=True if window_state == WindowState.FULLSCREEN else False,
-        )
+        probe = import_module("tests_backend.window").WindowProbe(app, window)
+        await probe.cleanup()
         del window
 
     # Force a GC pass on the main thread. This isn't perfect, but it helps
     # minimize garbage collection on the test thread.
     gc.collect()
 
-    main_window_state = main_window.state
     main_window.state = WindowState.NORMAL
     app.current_window = main_window
     await main_window_probe.wait_for_window(
-        "Resetting main_window",
-        minimize=True if main_window_state == WindowState.MINIMIZED else False,
-        full_screen=True if main_window_state == WindowState.FULLSCREEN else False,
+        "Resetting main_window", state=WindowState.NORMAL
     )
 
 

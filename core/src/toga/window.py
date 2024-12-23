@@ -142,8 +142,6 @@ class Window:
         minimizable: bool = True,
         on_close: OnCloseHandler | None = None,
         content: Widget | None = None,
-        resizeable: None = None,  # DEPRECATED
-        closeable: None = None,  # DEPRECATED
     ) -> None:
         """Create a new Window.
 
@@ -159,29 +157,7 @@ class Window:
         :param minimizable: Can the window be minimized by the user?
         :param on_close: The initial :any:`on_close` handler.
         :param content: The initial content for the window.
-        :param resizeable: **DEPRECATED** - Use ``resizable``.
-        :param closeable: **DEPRECATED** - Use ``closable``.
         """
-        ######################################################################
-        # 2023-08: Backwards compatibility
-        ######################################################################
-        if resizeable is not None:
-            warnings.warn(
-                "Window.resizeable has been renamed Window.resizable",
-                DeprecationWarning,
-            )
-            resizable = resizeable
-
-        if closeable is not None:
-            warnings.warn(
-                "Window.closeable has been renamed Window.closable",
-                DeprecationWarning,
-            )
-            closable = closeable
-        ######################################################################
-        # End backwards compatibility
-        ######################################################################
-
         # Needs to be a late import to avoid circular dependencies.
         from toga import App
 
@@ -555,7 +531,7 @@ class Window:
         self._on_close = wrapped_handler(self, handler, cleanup=cleanup)
 
     ######################################################################
-    # 2024-06: Backwards compatibility
+    # 2024-06: Backwards compatibility for <= 0.4.5
     ######################################################################
 
     def info_dialog(
@@ -565,16 +541,10 @@ class Window:
         on_result: DialogResultHandler[None] | None = None,
     ) -> Dialog:
         """**DEPRECATED** - await :meth:`dialog` with an :any:`InfoDialog`"""
-        ######################################################################
-        # 2024-06: Backwards compatibility
-        ######################################################################
         warnings.warn(
             "info_dialog(...) has been deprecated; use dialog(toga.InfoDialog(...))",
             DeprecationWarning,
         )
-        ######################################################################
-        # End Backwards compatibility
-        ######################################################################
 
         result = Dialog(
             self,
@@ -591,17 +561,11 @@ class Window:
         on_result: DialogResultHandler[bool] | None = None,
     ) -> Dialog:
         """**DEPRECATED** - await :meth:`dialog` with a :any:`QuestionDialog`"""
-        ######################################################################
-        # 2024-06: Backwards compatibility
-        ######################################################################
         warnings.warn(
             "question_dialog(...) has been deprecated; "
             "use dialog(toga.QuestionDialog(...))",
             DeprecationWarning,
         )
-        ######################################################################
-        # End Backwards compatibility
-        ######################################################################
 
         result = Dialog(
             self,
@@ -618,17 +582,11 @@ class Window:
         on_result: DialogResultHandler[bool] | None = None,
     ) -> Dialog:
         """**DEPRECATED** - await :meth:`dialog` with a :any:`ConfirmDialog`"""
-        ######################################################################
-        # 2024-06: Backwards compatibility
-        ######################################################################
         warnings.warn(
             "confirm_dialog(...) has been deprecated; "
             "use dialog(toga.ConfirmDialog(...))",
             DeprecationWarning,
         )
-        ######################################################################
-        # End Backwards compatibility
-        ######################################################################
 
         result = Dialog(
             self,
@@ -645,16 +603,10 @@ class Window:
         on_result: DialogResultHandler[None] | None = None,
     ) -> Dialog:
         """**DEPRECATED** - await :meth:`dialog` with an :any:`ErrorDialog`"""
-        ######################################################################
-        # 2024-06: Backwards compatibility
-        ######################################################################
         warnings.warn(
             "error_dialog(...) has been deprecated; use dialog(toga.ErrorDialog(...))",
             DeprecationWarning,
         )
-        ######################################################################
-        # End Backwards compatibility
-        ######################################################################
 
         result = Dialog(
             self,
@@ -673,17 +625,11 @@ class Window:
         on_result: DialogResultHandler[bool] | DialogResultHandler[None] | None = None,
     ) -> Dialog:
         """**DEPRECATED** - await :meth:`dialog` with a :any:`StackTraceDialog`"""
-        ######################################################################
-        # 2024-06: Backwards compatibility
-        ######################################################################
         warnings.warn(
             "stack_trace_dialog(...) has been deprecated; "
             "use dialog(toga.StackTraceDialog(...))",
             DeprecationWarning,
         )
-        ######################################################################
-        # End Backwards compatibility
-        ######################################################################
 
         result = Dialog(
             self,
@@ -706,17 +652,11 @@ class Window:
         on_result: DialogResultHandler[Path | None] | None = None,
     ) -> Dialog:
         """**DEPRECATED** - await :meth:`dialog` with a :any:`SaveFileDialog`"""
-        ######################################################################
-        # 2024-06: Backwards compatibility
-        ######################################################################
         warnings.warn(
             "save_file_dialog(...) has been deprecated; "
             "use dialog(toga.SaveFileDialog(...))",
             DeprecationWarning,
         )
-        ######################################################################
-        # End Backwards compatibility
-        ######################################################################
         result = Dialog(
             self,
             on_result=wrapped_handler(self, on_result) if on_result else None,
@@ -741,34 +681,13 @@ class Window:
             | DialogResultHandler[None]
             | None
         ) = None,
-        multiselect: None = None,  # DEPRECATED
     ) -> Dialog:
         """**DEPRECATED** - await :meth:`dialog` with an :any:`OpenFileDialog`"""
-        ######################################################################
-        # 2024-06: Backwards compatibility
-        ######################################################################
         warnings.warn(
             "open_file_dialog(...) has been deprecated; "
             "use dialog(toga.OpenFileDialog(...))",
             DeprecationWarning,
         )
-        ######################################################################
-        # End Backwards compatibility
-        ######################################################################
-
-        ######################################################################
-        # 2023-08: Backwards compatibility
-        ######################################################################
-        if multiselect is not None:
-            warnings.warn(
-                "open_file_dialog(multiselect) has been renamed multiple_select",
-                DeprecationWarning,
-            )
-            multiple_select = multiselect
-        ######################################################################
-        # End Backwards compatibility
-        ######################################################################
-
         result = Dialog(
             self,
             on_result=wrapped_handler(self, on_result) if on_result else None,
@@ -793,33 +712,13 @@ class Window:
             | DialogResultHandler[None]
             | None
         ) = None,
-        multiselect: None = None,  # DEPRECATED
     ) -> Dialog:
         """**DEPRECATED** - await :meth:`dialog` with a :any:`SelectFolderDialog`"""
-        ######################################################################
-        # 2024-06: Backwards compatibility
-        ######################################################################
         warnings.warn(
             "select_folder_dialog(...) has been deprecated; "
             "use dialog(toga.SelectFolderDialog(...))",
             DeprecationWarning,
         )
-        ######################################################################
-        # End Backwards compatibility
-        ######################################################################
-
-        ######################################################################
-        # 2023-08: Backwards compatibility
-        ######################################################################
-        if multiselect is not None:
-            warnings.warn(
-                "select_folder_dialog(multiselect) has been renamed multiple_select",
-                DeprecationWarning,
-            )
-            multiple_select = multiselect
-        ######################################################################
-        # End Backwards compatibility
-        ######################################################################
         result = Dialog(
             self,
             on_result=wrapped_handler(self, on_result) if on_result else None,
@@ -833,32 +732,11 @@ class Window:
         return result
 
     ######################################################################
-    # 2023-08: Backwards compatibility
-    ######################################################################
-    @property
-    def resizeable(self) -> bool:
-        """**DEPRECATED** Use :attr:`resizable`"""
-        warnings.warn(
-            "Window.resizeable has been renamed Window.resizable",
-            DeprecationWarning,
-        )
-        return self._resizable
-
-    @property
-    def closeable(self) -> bool:
-        """**DEPRECATED** Use :attr:`closable`"""
-        warnings.warn(
-            "Window.closeable has been renamed Window.closable",
-            DeprecationWarning,
-        )
-        return self._closable
-
-    ######################################################################
-    # End Backwards compatibility
+    # End backwards compatibility
     ######################################################################
 
     ######################################################################
-    # 2024-10: Backwards compatibility
+    # 2024-10: Backwards compatibility for <= 0.4.8
     ######################################################################
     @property
     def full_screen(self) -> bool:
@@ -941,33 +819,6 @@ class WindowSet(MutableSet[Window]):
         if window not in self.elements:
             raise ValueError(f"{window!r} is not part of this app")
         self.elements.remove(window)
-
-    ######################################################################
-    # 2023-10: Backwards compatibility
-    ######################################################################
-
-    def __iadd__(self, window: Window) -> WindowSet:
-        # The standard set type does not have a += operator.
-        warnings.warn(
-            "Windows are automatically associated with the app; += is not required",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        return self
-
-    def __isub__(self, other: Window) -> WindowSet:
-        # The standard set type does have a -= operator, but it takes sets rather than
-        # individual items.
-        warnings.warn(
-            "Windows are automatically removed from the app; -= is not required",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        return self
-
-    ######################################################################
-    # End backwards compatibility
-    ######################################################################
 
     def __iter__(self) -> Iterator[Window]:
         return iter(self.elements)

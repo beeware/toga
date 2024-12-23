@@ -72,6 +72,31 @@ location is obtained:
 
 If you no longer wish to receive location updates, call :any:`Location.stop_tracking()`.
 
+.. _location-system-requires:
+
+System requirements
+-------------------
+
+* Using location services on Linux requires that the user has installed the system
+  packages for GeoClue2, plus the GObject Introspection bindings for GeoClue2. The name
+  of the system package required is distribution dependent:
+
+  - Ubuntu and Debian: ``gir1.2-geoclue-2.0``
+  - Fedora: ``geoclue2-libs``
+  - Arch/Manjaro: ``geoclue``
+  - OpenSUSE Tumbleweed: ``geoclue2 typelib(geoclue2)``
+  - FreeBSD: ``geoclue``
+
+* The GeoClue service must be enabled for Toga GTK location services to work. Some
+  distributions are pre-configured with GeoClue and require no action from users to
+  enable location services. Others, for example, `Ubuntu, have special controls
+  for managing location services, which must be turned on before GeoClue will
+  function <ubuntu-location-services_>`_. Refer to your distribution's documentation
+  on GeoClue and location services for details on how to manage and configure
+  the GeoClue service.
+
+.. _ubuntu-location-services: https://help.ubuntu.com/stable/ubuntu-help/privacy-location.html
+
 Notes
 -----
 
@@ -91,8 +116,18 @@ Notes
     want to track location while the app is in the background, you must also define the
     permission ``android.permission.ACCESS_BACKGROUND_LOCATION``.
 
-* On macOS, there is no distinction between "background" permissions and "while-running"
-  permissions.
+* On macOS and GTK, there is no distinction between "background" permissions and "while-running"
+  permissions for location tracking.
+
+* On Linux, there are no reliable permission controls for non-sandboxed applications.
+  Sandboxed applications (e.g., Flatpak apps) request location information via the XDG
+  Portal Location API, which has coarse grained permissions allowing users to reliably
+  disallow location access on a per-app basis. However, `Linux users should be aware of
+  the limitations of location privacy for non-sandboxed applications
+  <linux-location-privacy_>`_. This applies to all Linux applications, not just ones
+  using Toga GTK's Location implementation.
+
+.. _linux-location-privacy: https://gitlab.freedesktop.org/geoclue/geoclue/-/issues/111
 
 * On iOS, if the user has provided "allow once" permission for foreground location
   tracking, requests for background location permission will be rejected.

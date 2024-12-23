@@ -1,5 +1,6 @@
 from unittest.mock import Mock, PropertyMock
 
+import pytest
 from rubicon.objc import ObjCClass
 
 from toga_cocoa import libs as cocoa
@@ -16,6 +17,8 @@ NSError = ObjCClass("NSError")
 
 
 class LocationProbe(AppProbe):
+    supports_background_permission = True
+
     def __init__(self, monkeypatch, app_probe):
         super().__init__(app_probe.app)
 
@@ -173,3 +176,10 @@ class LocationProbe(AppProbe):
         )
 
         return await location
+
+    def setup_location_error(self):
+        # location error simulation handled by ``simulate_location_error``
+        pass
+
+    def setup_tracking_start_error(self):
+        pytest.xfail("Tracking start cannot fail on macOS")
