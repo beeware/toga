@@ -71,10 +71,26 @@ indicates children will be packed horizontally; left-to-right if
 
 **Initial value:** ``start``
 
-The alignment of children relative to the outside of the packed box, along the cross
-axis. A row's main axis is horizontal, so its cross axis is vertical; ``start`` aligns
-children to the top, while ``end`` aligns them to the bottom. For columns, ``start`` is
-on the left if ``text_direction`` is ``ltr``, and the right if ``rtl``.
+The alignment of this box's children along the cross axis. A row's cross axis is
+vertical, so ``start`` aligns children to the top, while ``end`` aligns them to the
+bottom. For columns, ``start`` is on the left if ``text_direction`` is ``ltr``, and the
+right if ``rtl``.
+
+``justify_content``
+-------------------
+
+**Values:** ``start`` | ``center`` | ``end``
+
+**Initial value:** ``start``
+
+The alignment of this box's children along the main axis. A column's main axis is
+vertical, so ``start`` aligns children to the top, while ``end`` aligns them to the
+bottom. For rows, ``start`` is on the left if ``text_direction`` is ``ltr``, and the
+right if ``rtl``.
+
+This property only has an effect if there is some free space in the main axis. For
+example, if any children have a non-zero ``flex`` value, then they will consume all
+the available space, and ``justify_content`` will make no difference to the layout.
 
 ``gap``
 -------

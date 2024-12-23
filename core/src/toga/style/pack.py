@@ -70,6 +70,7 @@ VISIBILITY_CHOICES = Choices(VISIBLE, HIDDEN)
 DIRECTION_CHOICES = Choices(ROW, COLUMN)
 ALIGN_ITEMS_CHOICES = Choices(START, CENTER, END)
 ALIGNMENT_CHOICES = Choices(LEFT, RIGHT, TOP, BOTTOM, CENTER)  # Deprecated
+JUSTIFY_CONTENT_CHOICES = Choices(START, CENTER, END)
 GAP_CHOICES = Choices(integer=True)
 
 SIZE_CHOICES = Choices(NONE, integer=True)
@@ -650,12 +651,15 @@ class Pack(BaseStyle):
             # self._debug(f"  {min_width=} {width=}")
 
         # self._debug(f"PASS 2 COMPLETE; USED {width=}")
-        if use_all_width:
-            width = max(width, available_width)
+        if use_all_width or self.width != NONE:
+            extra = max(0, available_width - width)
+            width += extra
+        else:
+            extra = 0
         # self._debug(f"COMPUTED {min_width=} {width=}")
 
         # Pass 3: Set the horizontal position of each child, and establish row height
-        offset = 0
+        offset = self._initial_offset(extra)
         height = 0
         min_height = 0
         for child in node.children:
@@ -942,12 +946,15 @@ class Pack(BaseStyle):
             # self._debug(f"  {min_height=} {height=}")
 
         # self._debug(f"PASS 2 COMPLETE; USED {height=}")
-        if use_all_height:
-            height = max(height, available_height)
+        if use_all_height or self.height != NONE:
+            extra = max(0, available_height - height)
+            height += extra
+        else:
+            extra = 0
         # self._debug(f"COMPUTED {min_height=} {height=}")
 
         # Pass 3: Set the vertical position of each element, and establish column width
-        offset = 0
+        offset = self._initial_offset(extra)
         width = 0
         min_width = 0
         for child in node.children:
@@ -997,6 +1004,14 @@ class Pack(BaseStyle):
 
         return min_width, width, min_height, height
 
+    def _initial_offset(self, extra):
+        if self.justify_content == END:
+            return extra
+        elif self.justify_content == CENTER:
+            return extra / 2
+        else:  # START
+            return 0
+
     def __css__(self) -> str:
         css = []
         # display
@@ -1030,6 +1045,10 @@ class Pack(BaseStyle):
         # align_items
         if self.align_items:
             css.append(f"align-items: {self.align_items};")
+
+        # justify_content
+        if self.justify_content != START:
+            css.append(f"justify-content: {self.justify_content};")
 
         # gap
         if self.gap:
@@ -1084,6 +1103,9 @@ Pack.validated_property("visibility", choices=VISIBILITY_CHOICES, initial=VISIBL
 Pack.validated_property("direction", choices=DIRECTION_CHOICES, initial=ROW)
 Pack.validated_property("align_items", choices=ALIGN_ITEMS_CHOICES)
 Pack.validated_property("alignment", choices=ALIGNMENT_CHOICES)  # Deprecated
+Pack.validated_property(
+    "justify_content", choices=JUSTIFY_CONTENT_CHOICES, initial=START
+)
 Pack.validated_property("gap", choices=GAP_CHOICES, initial=0)
 
 Pack.validated_property("width", choices=SIZE_CHOICES, initial=NONE)
