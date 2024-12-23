@@ -3,6 +3,7 @@ from unittest.mock import Mock
 import pytest
 
 import toga
+from toga.validators import Number
 from toga_dummy.utils import (
     EventLog,
     assert_action_not_performed,
@@ -23,7 +24,7 @@ def widget(validator):
 
 
 def test_widget_created():
-    "A text input can be created"
+    """A text input can be created."""
     widget = toga.TextInput()
     assert widget._impl.interface == widget
     assert_action_performed(widget, "create TextInput")
@@ -39,7 +40,7 @@ def test_widget_created():
 
 
 def test_create_with_values():
-    "A multiline text input can be created with initial values"
+    """A multiline text input can be created with initial values."""
     on_change = Mock()
     on_confirm = Mock()
     on_gain_focus = Mock()
@@ -113,6 +114,35 @@ def test_value(widget, value, expected, validator):
     on_change_handler.assert_called_once_with(widget)
 
 
+def test_validation_order():
+    """Widget value validation is performed in the correct order."""
+    results = {}
+
+    def on_change(widget):
+        results["valid"] = widget.is_valid
+
+    # Define a validator that only accepts numbers
+    text_input = toga.TextInput(on_change=on_change, validators=[Number()])
+
+    # Widget is initially valid with a number
+    text_input.value = "1234"
+
+    # Change handler was invoked and results are checked
+    assert results["valid"]
+
+    # Widget is invalid with text
+    text_input.value = "hello"
+
+    # Change handler was invoked and results are checked
+    assert not results["valid"]
+
+    # Widget is valid again with a number
+    text_input.value = "1234"
+
+    # Confirm final results are True
+    assert results["valid"]
+
+
 @pytest.mark.parametrize(
     "value, expected",
     [
@@ -125,7 +155,7 @@ def test_value(widget, value, expected, validator):
     ],
 )
 def test_readonly(widget, value, expected):
-    "The readonly status of the widget can be changed."
+    """The readonly status of the widget can be changed."""
     # Widget is initially not readonly by default.
     assert not widget.readonly
 
@@ -243,7 +273,7 @@ def test_on_lose_focus(widget):
 
 
 def test_change_validators(widget, validator):
-    "If the validator list is changed, the new validators are invoked"
+    """If the validator list is changed, the new validators are invoked."""
     new_validator1 = Mock(return_value=None)
     new_validator2 = Mock(return_value=None)
 
@@ -263,7 +293,7 @@ def test_change_validators(widget, validator):
 
 
 def test_remove_validators(widget, validator):
-    "The validator list can be cleared"
+    """The validator list can be cleared."""
     widget.value = "Some text"
 
     # Clear the event log and validator mock
@@ -278,7 +308,7 @@ def test_remove_validators(widget, validator):
 
 
 def test_is_valid(widget):
-    "Widget validity can be evaluated"
+    """Widget validity can be evaluated."""
     validator1 = Mock(return_value=None)
     validator2 = Mock(return_value=None)
 

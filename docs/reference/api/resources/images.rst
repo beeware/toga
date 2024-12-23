@@ -8,7 +8,7 @@ Graphical content of arbitrary size.
    :header-rows: 1
    :file: ../../data/widgets_by_platform.csv
    :included_cols: 4,5,6,7,8,9,10
-   :exclude: {0: '(?!(Image|Component)$)'}
+   :include: {0: '^Image$'}
 
 Usage
 -----
@@ -30,7 +30,7 @@ Usage
     widget configured to use an Icon (probably :class:`~toga.Button`), *not* an
     ``on_press`` handler on an :class:`~toga.Image` or :class:`~toga.ImageView`.
 
-An image can be constructed from a :any:`wide range of sources <ImageContent>`:
+An image can be constructed from a :any:`wide range of sources <ImageContentT>`:
 
 .. code-block:: python
 
@@ -51,6 +51,9 @@ An image can be constructed from a :any:`wide range of sources <ImageContent>`:
     import PIL.Image
     my_pil_image = PIL.Image.new("L", (30, 30))
     my_toga_image = toga.Image(my_pil_image)
+
+You can also tell Toga how to convert from (and to) other classes that represent images
+via :doc:`image format plugins </reference/plugins/image_formats>`.
 
 Notes
 -----
@@ -74,22 +77,30 @@ Notes
   - macOS: ``NSImage``
   - Windows: ``System.Drawing.Image``
 
+.. _toga_image_subclassing:
+
+* If you subclass :any:`Image`, you can supply that subclass as the requested format to
+  any ``as_format()`` method in Toga, provided that your subclass has a constructor
+  signature compatible with the base :any:`Image` class.
+
 Reference
 ---------
 
-.. c:type:: ImageContent
+.. c:type:: ImageContentT
 
     When specifying content for an :any:`Image`, you can provide:
 
     * a string specifying an absolute or relative path to a file in a :ref:`known image
       format <known-image-formats>`;
-    * an absolute or relative :any:`pathlib.Path` object describing a file in a
+    * an absolute or relative :class:`~pathlib.Path` object describing a file in a
       :ref:`known image format <known-image-formats>`;
     * a "blob of bytes" data type (:any:`bytes`, :any:`bytearray`, or :any:`memoryview`)
       containing raw image data in a :ref:`known image format <known-image-formats>`;
-    * an instance of :any:`toga.Image`; or
-    * if `Pillow <https://pillow.readthedocs.io/>`__ is installed, an instance of
-      :any:`PIL.Image.Image`; or
+    * an instance of :any:`toga.Image`;
+    * if `Pillow <https://pillow.readthedocs.io/>`_ is installed, an instance of
+      :any:`PIL.Image.Image`;
+    * an image of a class registered via an :doc:`image format plugin
+      </reference/plugins/image_formats>` (or a subclass of such a class); or
     * an instance of the :ref:`native platform image representation <native-image-rep>`.
 
     If a relative path is provided, it will be anchored relative to the module that

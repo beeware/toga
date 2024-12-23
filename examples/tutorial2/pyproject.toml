@@ -3,10 +3,10 @@ requires = ["briefcase"]
 
 [tool.briefcase]
 project_name = "Tutorial 2"
-bundle = "org.beeware.toga"
+bundle = "org.beeware.toga.examples"
 version = "0.0.1"
 url = "https://beeware.org"
-license = "BSD license"
+license.file = "LICENSE"
 author = "Tiberius Yak"
 author_email = "tiberius@beeware.org"
 
@@ -50,9 +50,7 @@ requires = [
 base_theme = "Theme.MaterialComponents.Light.DarkActionBar"
 
 build_gradle_dependencies = [
-    "androidx.appcompat:appcompat:1.6.1",
-    "com.google.android.material:material:1.11.0",
-    "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0",
+    "com.google.android.material:material:1.12.0",
 ]
 
 # Web deployment

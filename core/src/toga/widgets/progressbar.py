@@ -1,6 +1,8 @@
 from __future__ import annotations
 
-from .base import Widget
+from typing import Any, Literal, SupportsFloat
+
+from .base import StyleT, Widget
 
 
 class ProgressBar(Widget):
@@ -8,10 +10,10 @@ class ProgressBar(Widget):
 
     def __init__(
         self,
-        id=None,
-        style=None,
-        max: float = 1.0,
-        value: float = 0.0,
+        id: str | None = None,
+        style: StyleT | None = None,
+        max: str | SupportsFloat = 1.0,
+        value: str | SupportsFloat = 0.0,
         running: bool = False,
     ):
         """Create a new Progress Bar widget.
@@ -30,16 +32,17 @@ class ProgressBar(Widget):
         """
         super().__init__(id=id, style=style)
 
-        self._impl = self.factory.ProgressBar(interface=self)
-
         self.max = max
         self.value = value
 
         if running:
             self.start()
 
+    def _create(self) -> Any:
+        return self.factory.ProgressBar(interface=self)
+
     @property
-    def enabled(self) -> bool:
+    def enabled(self) -> Literal[True]:
         """Is the widget currently enabled? i.e., can the user interact with the widget?
 
         ProgressBar widgets cannot be disabled; this property will always return True;
@@ -48,7 +51,7 @@ class ProgressBar(Widget):
         return True
 
     @enabled.setter
-    def enabled(self, value):
+    def enabled(self, value: object) -> None:
         pass
 
     @property
@@ -69,7 +72,7 @@ class ProgressBar(Widget):
         """
         return self.max is not None
 
-    def start(self):
+    def start(self) -> None:
         """Start the progress bar.
 
         If the progress bar is already started, this is a no-op.
@@ -77,7 +80,7 @@ class ProgressBar(Widget):
         if not self.is_running:
             self._impl.start()
 
-    def stop(self):
+    def stop(self) -> None:
         """Stop the progress bar.
 
         If the progress bar is already stopped, this is a no-op.
@@ -98,7 +101,7 @@ class ProgressBar(Widget):
         return self._impl.get_value()
 
     @value.setter
-    def value(self, value):
+    def value(self, value: str | SupportsFloat) -> None:
         if self.max is not None:
             value = max(0.0, min(self.max, float(value)))
             self._impl.set_value(value)
@@ -112,7 +115,7 @@ class ProgressBar(Widget):
         return self._impl.get_max()
 
     @max.setter
-    def max(self, value):
+    def max(self, value: str | SupportsFloat | None) -> None:
         if value is None:
             self._impl.set_max(None)
         elif float(value) > 0.0:

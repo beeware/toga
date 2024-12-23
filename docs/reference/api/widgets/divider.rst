@@ -29,9 +29,11 @@ A separator used to visually distinguish two sections of content in a layout.
        :align: center
        :width: 300px
 
-  .. group-tab:: iOS |no|
+  .. group-tab:: iOS
 
-    Not supported
+    .. figure:: /reference/images/divider-iOS.png
+       :align: center
+       :width: 300px
 
   .. group-tab:: Web |beta|
 
@@ -61,7 +63,7 @@ To separate two labels stacked vertically with a horizontal line:
             toga.Divider(),
             toga.Label("Second section"),
         ],
-        style=Pack(direction=COLUMN, flex=1, padding=10)
+        style=Pack(direction=COLUMN, flex=1, margin=10)
     )
 
 The direction (horizontal or vertical) can be given as an argument. If not

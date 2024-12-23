@@ -70,7 +70,7 @@ of content can be modified after initial construction:
     icecream = toga.Box()
     container.content.append("Ice Cream", icecream, toga.Icon("icecream"))
 
-OptionContainer content can also be specified by using :any:`OptionItem` instances
+OptionContainer content can also be specified by using :any:`toga.OptionItem` instances
 instead of tuples. This enables you to be explicit when setting an icon or enabled
 status; it also allows you to set the initial enabled status *without* setting an icon:
 
@@ -119,7 +119,7 @@ item, you can specify an item using:
       # Delete tab labeled "Pasta"
       del container.content["Pasta"]
 
-* A reference to an :any:`OptionItem`:
+* A reference to an :any:`toga.OptionItem`:
 
   .. code-block:: python
 
@@ -131,6 +131,13 @@ item, you can specify an item using:
       container.current_tab = pasta_tab
       # Delete the pasta tab
       del container.content[pasta_tab]
+
+System requirements
+-------------------
+
+* Using OptionContainer on Android requires the Material package in your project's
+  Gradle dependencies. Ensure your app declares a dependency on
+  ``com.google.android.material:material:1.12.0`` or later.
 
 Notes
 -----
@@ -167,16 +174,16 @@ Notes
 Reference
 ---------
 
-.. c:type:: OptionContainerContent
+.. c:type:: OptionContainerContentT
 
     An item of :any:`OptionContainer` content can be:
 
     * a 2-tuple, containing the title for the tab, and the content widget;
-    * a 3-tuple, containing the title, content widget, and :any:`icon <IconContent>`
+    * a 3-tuple, containing the title, content widget, and :any:`icon <IconContentT>`
       for the tab;
-    * a 4-tuple, containing the title, content widget, :any:`icon <IconContent>` for
+    * a 4-tuple, containing the title, content widget, :any:`icon <IconContentT>` for
       the tab, and enabled status; or
-    * an :any:`OptionItem` instance.
+    * an :any:`toga.OptionItem` instance.
 
 .. autoclass:: toga.OptionContainer
    :exclude-members: app, window
@@ -185,5 +192,7 @@ Reference
 
 .. autoclass:: toga.widgets.optioncontainer.OptionList
     :special-members: __getitem__, __delitem__
+
+.. autoclass:: toga.widgets.optioncontainer.OptionItem
 
 .. autoprotocol:: toga.widgets.optioncontainer.OnSelectHandler

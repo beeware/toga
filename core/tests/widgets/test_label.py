@@ -15,7 +15,7 @@ def label():
 
 
 def test_label_created(label):
-    "A label can be created."
+    """A label can be created."""
     # Round trip the impl/interface
     assert label._impl.interface == label
     assert_action_performed(label, "create Label")
@@ -48,7 +48,7 @@ def test_update_label_text(label, value, expected):
 
 
 def test_focus_noop(label):
-    "Focus is a no-op."
+    """Focus is a no-op."""
 
     label.focus()
     assert_action_not_performed(label, "focus")

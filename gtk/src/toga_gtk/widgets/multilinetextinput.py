@@ -5,7 +5,7 @@ from ..libs import (
     get_background_color_css,
     get_color_css,
     get_font_css,
-    gtk_alignment,
+    gtk_text_align,
 )
 from .base import Widget
 
@@ -113,8 +113,8 @@ class MultilineTextInput(Widget):
             self.placeholder.get_end_iter(),
         )  # make the placeholder text gray.
 
-    def set_alignment(self, value):
-        _, justification = gtk_alignment(value)
+    def set_text_align(self, value):
+        _, justification = gtk_text_align(value)
         self.native_textview.set_justification(justification)
 
     def focus(self):
@@ -122,7 +122,7 @@ class MultilineTextInput(Widget):
 
     def gtk_on_changed(self, *args):
         # buffer.set_text("foo") generates 2 change signals; one clearing the
-        # buffer, and one setting the new value. We only propegate the second
+        # buffer, and one setting the new value. We only propagate the second
         # signal. To ensure that we also get a signal when the value is
         # deliberately cleared, we add an explicit signal handler to set_value()
         # for the empty value case.

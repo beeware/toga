@@ -25,7 +25,7 @@ class Button(Widget):
     def set_icon(self, icon):
         self._icon = icon
         if icon:
-            self.native.set_image(Gtk.Image.new_from_pixbuf(icon._impl.native_32))
+            self.native.set_image(Gtk.Image.new_from_pixbuf(icon._impl.native(32)))
             self.native.set_always_show_image(True)
         else:
             self.native.set_image(None)
@@ -41,7 +41,12 @@ class Button(Widget):
         super().set_background_color(color)
 
     def rehint(self):
-        # print("REHINT", self, self.native.get_preferred_width(), self.native.get_preferred_height())
+        # print(
+        #     "REHINT",
+        #     self,
+        #     self.native.get_preferred_width(),
+        #     self.native.get_preferred_height(),
+        # )
         width = self.native.get_preferred_width()
         height = self.native.get_preferred_height()
 

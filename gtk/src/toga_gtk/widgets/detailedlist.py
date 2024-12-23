@@ -44,7 +44,8 @@ class DetailedListRow(Gtk.ListBoxRow):
         self.show_all()
 
     def update(self, dl, row):
-        """Update the contents of the rendered row, using data from `row`, and accessors from the detailedList"""
+        """Update the contents of the rendered row, using data from `row`,
+        and accessors from the detailedList"""
 
         # Set the title and subtitle as a block of HTML text.
         try:
@@ -81,7 +82,7 @@ class DetailedListRow(Gtk.ListBoxRow):
             self.content.remove(self.icon)
 
         try:
-            pixbuf = getattr(self.row, dl.accessors[2])._impl.native_32
+            pixbuf = getattr(self.row, dl.accessors[2])._impl.native(32)
         except AttributeError:
             pixbuf = None
 
@@ -237,9 +238,10 @@ class DetailedList(Widget):
             return item_impl.get_index()
 
     def scroll_to_row(self, row: int):
-        # Rows are equally spaced; so the top of row N of M is at N/M of the overall height.
-        # We set the position based on the top of the window, so aim to put the scroller
-        # half the widget height above the start of the selected row, clipping at 0
+        # Rows are equally spaced; so the top of row N of M is at N/M of the overall
+        # height. We set the position based on the top of the window, so aim to put the
+        # scroller half the widget height above the start of the selected row, clipping
+        # at 0
         self.native_vadj.set_value(
             max(
                 row / len(self.store) * self.native_vadj.get_upper()
@@ -278,7 +280,8 @@ class DetailedList(Widget):
 
     def gtk_on_value_changed(self, adj):
         # The vertical scroll value has changed.
-        # Update the refresh button; hide the buttons on the active row (if they're active)
+        # Update the refresh button; hide the buttons on the active row
+        # (if they're active)
         self.update_refresh_button()
         self.hide_actions()
 

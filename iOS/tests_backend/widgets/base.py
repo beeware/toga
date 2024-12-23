@@ -63,10 +63,10 @@ class SimpleProbe(BaseProbe, FontMixin):
         assert self.widget._impl.container is None
         assert self.native.superview() is None
 
-    def assert_alignment(self, expected):
-        assert self.alignment == expected
+    def assert_text_align(self, expected):
+        assert self.text_align == expected
 
-    async def redraw(self, message=None, delay=None):
+    async def redraw(self, message=None, delay=0):
         """Request a redraw of the app, waiting until that redraw has completed."""
         # Force a widget repaint
         self.widget.window.content._impl.native.layer.displayIfNeeded()

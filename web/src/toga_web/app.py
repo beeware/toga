@@ -1,146 +1,87 @@
+import asyncio
+
 import toga
-from toga.command import Separator
 from toga_web.libs import create_element, js
-from toga_web.window import Window
 
-
-class MainWindow(Window):
-    def on_close(self, *args):
-        pass
+from .screens import Screen as ScreenImpl
 
 
 class App:
+    # Web apps exit when the last window is closed
+    CLOSE_ON_LAST_WINDOW = True
+    # Web apps use default command line handling
+    HANDLES_COMMAND_LINE = False
+
     def __init__(self, interface):
         self.interface = interface
         self.interface._impl = self
 
+        self.loop = asyncio.new_event_loop()
+
     def create(self):
-        # self.resource_path = os.path.dirname(os.path.dirname(NSBundle.mainBundle.bundlePath))
         self.native = js.document.getElementById("app-placeholder")
-
-        formal_name = self.interface.formal_name
-
-        self.interface.commands.add(
-            # ---- Help menu ----------------------------------
-            toga.Command(
-                self._menu_about,
-                "About " + formal_name,
-                group=toga.Group.HELP,
-            ),
-            toga.Command(
-                None,
-                "Preferences",
-                group=toga.Group.HELP,
-            ),
-        )
-
-        # Create the menus. This is done before main window content to ensure
-        # the <header> for the menubar is inserted before the <main> for the
-        # main window.
-        self.create_menus()
+        # self.resource_path = ???
 
         # Call user code to populate the main window
         self.interface._startup()
 
-    def _create_submenu(self, group, items):
-        submenu = create_element(
-            "sl-dropdown",
-            children=[
-                create_element(
-                    "span",
-                    id=f"menu-{id(group)}",
-                    classes=["menu"],
-                    slot="trigger",
-                    content=group.text,
-                ),
-                create_element(
-                    "sl-menu",
-                    children=items,
-                ),
-            ],
-        )
-        return submenu
+    ######################################################################
+    # Commands and menus
+    ######################################################################
+
+    def create_standard_commands(self):
+        pass
 
     def create_menus(self):
-        self._menu_groups = {}
-        submenu = None
+        # Web menus are created on the Window.
+        for window in self.interface.windows:
+            # It's difficult to trigger this on a simple window, because we can't easily
+            # modify the set of app-level commands that are registered, and a simple
+            # window doesn't exist when the app starts up. Therefore, no-branch the else
+            # case.
+            if hasattr(window._impl, "create_menus"):  # pragma: no branch
+                window._impl.create_menus()
 
-        for cmd in self.interface.commands:
-            if isinstance(cmd, Separator):
-                # TODO - add a section break
-                pass
-            else:
-                # TODO - this doesn't handle submenus properly;
-                # all menu items will appear in their root group.
-                submenu = self._menu_groups.setdefault(cmd.group, [])
+    ######################################################################
+    # App lifecycle
+    ######################################################################
 
-                menu_item = create_element(
-                    "sl-menu-item",
-                    content=cmd.text,
-                    disabled=not cmd.enabled,
-                )
-                menu_item.onclick = cmd._impl.dom_click
-
-                submenu.append(menu_item)
-
-        menu_container = create_element("nav", classes=["menubar"])
-        help_menu_container = create_element("nav", classes=["menubar"])
-
-        # If there isn't an explicit app menu group, add an inert placeholder
-        if toga.Group.APP not in self._menu_groups:
-            menu_container.appendChild(
-                create_element(
-                    "span",
-                    classes=["app"],
-                    content=self.interface.formal_name,
-                )
-            )
-
-        for group, items in self._menu_groups.items():
-            submenu = self._create_submenu(group, items)
-            if group != toga.Group.HELP:
-                menu_container.appendChild(submenu)
-            else:
-                help_menu_container.appendChild(submenu)
-
-        menubar_id = f"{self.interface.app_id}-header"
-        self.menubar = create_element(
-            "header",
-            id=menubar_id,
-            classes=["toga"],
-            children=[
-                create_element(
-                    "a",
-                    classes=["brand"],
-                    children=[
-                        create_element(
-                            "img",
-                            src="static/logo-32.png",
-                            alt=f"{self.interface.formal_name} logo",
-                            loading="lazy",
-                        )
-                    ],
-                ),
-                menu_container,
-                help_menu_container,
-            ],
-        )
-
-        # If there's an existing menubar, replace it.
-        old_menubar = js.document.getElementById(menubar_id)
-        if old_menubar:
-            old_menubar.replaceWith(self.menubar)
-        else:
-            self.native.append(self.menubar)
-
-    def _menu_about(self, command, **kwargs):
-        self.interface.about()
+    def exit(self):
+        pass
 
     def main_loop(self):
         self.create()
 
-    def set_main_window(self, window):
+    def set_icon(self, icon):
         pass
+
+    def set_main_window(self, window):
+        if window is None:
+            raise RuntimeError("Session-based apps are not supported on Web")
+        elif window == toga.App.BACKGROUND:
+            raise RuntimeError("Background apps are not supported on Web")
+
+    ######################################################################
+    # App resources
+    ######################################################################
+
+    def get_screens(self):
+        return [ScreenImpl(js.document.documentElement)]
+
+    ######################################################################
+    # App state
+    ######################################################################
+
+    def get_dark_mode_state(self):
+        self.interface.factory.not_implemented("dark mode state")
+        return None
+
+    ######################################################################
+    # App capabilities
+    ######################################################################
+
+    def beep(self):
+        self.interface.factory.not_implemented("App.beep()")
 
     def show_about_dialog(self):
         name_and_version = f"{self.interface.formal_name}"
@@ -186,11 +127,19 @@ class App:
 
         js.customElements.whenDefined("sl-dialog").then(show_dialog)
 
-    def beep(self):
-        self.interface.factory.not_implemented("App.beep()")
+    ######################################################################
+    # Cursor control
+    ######################################################################
 
-    def exit(self):
-        pass
+    def show_cursor(self):
+        self.interface.factory.not_implemented("App.show_cursor()")
+
+    def hide_cursor(self):
+        self.interface.factory.not_implemented("App.hide_cursor()")
+
+    ######################################################################
+    # Window control
+    ######################################################################
 
     def get_current_window(self):
         self.interface.factory.not_implemented("App.get_current_window()")
@@ -198,14 +147,12 @@ class App:
     def set_current_window(self):
         self.interface.factory.not_implemented("App.set_current_window()")
 
-    def enter_full_screen(self, windows):
-        self.interface.factory.not_implemented("App.enter_full_screen()")
+    ######################################################################
+    # Presentation mode controls
+    ######################################################################
 
-    def exit_full_screen(self, windows):
-        self.interface.factory.not_implemented("App.exit_full_screen()")
+    def enter_presentation_mode(self, screen_window_dict):
+        self.interface.factory.not_implemented("App.enter_presentation_mode()")
 
-    def show_cursor(self):
-        self.interface.factory.not_implemented("App.show_cursor()")
-
-    def hide_cursor(self):
-        self.interface.factory.not_implemented("App.hide_cursor()")
+    def exit_presentation_mode(self):
+        self.interface.factory.not_implemented("App.exit_presentation_mode()")

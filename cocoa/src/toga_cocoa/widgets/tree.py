@@ -16,6 +16,15 @@ from toga_cocoa.widgets.internal.cells import TogaIconView
 from toga_cocoa.widgets.internal.data import TogaData
 
 
+def node_impl(node):
+    try:
+        return node._impl
+    except AttributeError:
+        node._impl = TogaData.alloc().init()
+        node._impl.attrs = {"node": node}
+        return node._impl
+
+
 class TogaTree(NSOutlineView):
     interface = objc_property(object, weak=True)
     impl = objc_property(object, weak=True)
@@ -32,14 +41,8 @@ class TogaTree(NSOutlineView):
         # Get the Cocoa implementation for the row. If an _impl
         # doesn't exist, create a data object for it, and
         # populate it with initial values for each column.
-        try:
-            node_impl = node._impl
-        except AttributeError:
-            node_impl = TogaData.alloc().init()
-            node_impl.attrs = {"node": node}
-            node._impl = node_impl
 
-        return node_impl
+        return node_impl(node)
 
     @objc_method
     def outlineView_isItemExpandable_(self, tree, item) -> bool:
@@ -92,13 +95,14 @@ class TogaTree(NSOutlineView):
         tcv = self.makeViewWithIdentifier(identifier, owner=self)
 
         if not tcv:  # there is no existing view to reuse so create a new one
-            # tcv = TogaIconView.alloc().initWithFrame(CGRectMake(0, 0, column.width, 16))
+            # tcv = TogaIconView.alloc().initWithFrame(
+            #     CGRectMake(0, 0, column.width, 16)
+            # )
             tcv = TogaIconView.alloc().init()
             tcv.identifier = identifier
 
             # Prevent tcv from being deallocated prematurely when no Python references
             # are left
-            tcv.retain()
             tcv.autorelease()
 
         tcv.setText(str(value))
@@ -125,7 +129,8 @@ class TogaTree(NSOutlineView):
 
     #     for column in self.tableColumns:
     #         value = getattr(
-    #             item.attrs["node"], str(column.identifier), self.interface.missing_value
+    #             item.attrs["node"], str(column.identifier),
+    #             self.interface.missing_value
     #         )
 
     #         if isinstance(value, toga.Widget):
@@ -142,7 +147,9 @@ class TogaTree(NSOutlineView):
         return None
 
     # @objc_method
-    # def outlineView_sortDescriptorsDidChange_(self, tableView, oldDescriptors) -> None:
+    # def outlineView_sortDescriptorsDidChange_(
+    #     self, tableView, oldDescriptors
+    # ) -> None:
     #
     #     for descriptor in self.sortDescriptors[::-1]:
     #         accessor = descriptor.key
@@ -220,22 +227,25 @@ class Tree(Widget):
         index_set = NSIndexSet.indexSetWithIndex(index)
         self.native_tree.insertItemsAtIndexes(
             index_set,
-            inParent=parent._impl if parent else None,
+            inParent=node_impl(parent) if parent else None,
             withAnimation=NSTableViewAnimation.SlideDown.value,
         )
 
     def change(self, item):
-        self.native_tree.reloadItem(item._impl)
+        self.native_tree.reloadItem(node_impl(item))
 
     def remove(self, parent, index, item):
-        index = self.native_tree.childIndexForItem(item._impl)
-        index_set = NSIndexSet.indexSetWithIndex(index)
-        parent = self.native_tree.parentForItem(item._impl)
-        self.native_tree.removeItemsAtIndexes(
-            index_set,
-            inParent=parent,
-            withAnimation=NSTableViewAnimation.SlideUp.value,
-        )
+        try:
+            index = self.native_tree.childIndexForItem(item._impl)
+            index_set = NSIndexSet.indexSetWithIndex(index)
+            parent = self.native_tree.parentForItem(item._impl)
+            self.native_tree.removeItemsAtIndexes(
+                index_set,
+                inParent=parent,
+                withAnimation=NSTableViewAnimation.SlideUp.value,
+            )
+        except AttributeError:
+            pass
 
     def clear(self):
         self.native_tree.reloadData()
@@ -264,13 +274,13 @@ class Tree(Widget):
                 return None
 
     def expand_node(self, node):
-        self.native_tree.expandItem(node._impl, expandChildren=True)
+        self.native_tree.expandItem(node_impl(node), expandChildren=True)
 
     def expand_all(self):
         self.native_tree.expandItem(None, expandChildren=True)
 
     def collapse_node(self, node):
-        self.native_tree.collapseItem(node._impl, collapseChildren=True)
+        self.native_tree.collapseItem(node_impl(node), collapseChildren=True)
 
     def collapse_all(self):
         self.native_tree.collapseItem(None, collapseChildren=True)

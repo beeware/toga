@@ -5,7 +5,7 @@ from toga_dummy.utils import assert_action_performed
 
 
 def test_widget_created():
-    "A text input can be created"
+    """A text input can be created."""
     widget = toga.PasswordInput()
     assert widget._impl.interface == widget
     assert_action_performed(widget, "create PasswordInput")
@@ -21,7 +21,7 @@ def test_widget_created():
 
 
 def test_create_with_values():
-    "A multiline text input can be created with initial values"
+    """A multiline text input can be created with initial values."""
     on_change = Mock()
     on_confirm = Mock()
     on_gain_focus = Mock()

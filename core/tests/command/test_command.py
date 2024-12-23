@@ -22,14 +22,14 @@ def assert_order(*items):
 
 
 def test_separator(parent_group_1):
-    """A separator can be created"""
+    """A separator can be created."""
 
     separator = Separator(group=parent_group_1)
     assert repr(separator) == "<Separator group=P1>"
 
 
 def test_separator_eq(parent_group_1, parent_group_2):
-    """Separator objects can be compared for equality"""
+    """Separator objects can be compared for equality."""
 
     separator_1a = Separator(parent_group_1)
     separator_1b = Separator(parent_group_1)
@@ -46,7 +46,7 @@ def test_separator_eq(parent_group_1, parent_group_2):
 
 
 def test_create():
-    """A command can be created with defaults"""
+    """A command can be created with defaults."""
     cmd = toga.Command(None, "Test command")
 
     assert cmd.text == "Test command"
@@ -57,14 +57,77 @@ def test_create():
     assert cmd.order == 0
     assert cmd.action._raw is None
 
-    assert (
-        repr(cmd)
-        == "<Command text='Test command' group=<Group text='Commands' order=30> section=0 order=0>"
+    assert repr(cmd) == (
+        "<Command text='Test command' "
+        "group=<Group text='Commands' order=30> section=0 order=0>"
     )
 
 
+def test_standard_command(app):
+    """A standard command can be created."""
+    cmd = toga.Command.standard(app, toga.Command.ABOUT)
+
+    assert cmd.text == "About Test App"
+    assert cmd.shortcut is None
+    assert cmd.tooltip is None
+    assert cmd.group == toga.Group.HELP
+    assert cmd.section == 0
+    assert cmd.order == 0
+    assert cmd.id == toga.Command.ABOUT
+    # Connected to the app's about method, as a wrapped simple handler
+    assert cmd.action._raw._raw == app.about
+
+
+def test_standard_command_override(app):
+    """A standard command can be created with overrides."""
+    action = Mock()
+    cmd = toga.Command.standard(app, toga.Command.ABOUT, action=action, section=1)
+
+    assert cmd.text == "About Test App"
+    assert cmd.shortcut is None
+    assert cmd.tooltip is None
+    assert cmd.group == toga.Group.HELP
+    assert cmd.order == 0
+    assert cmd.id == toga.Command.ABOUT
+    # Overrides have been applied
+    assert cmd.action._raw == action
+    assert cmd.section == 1
+
+
+def test_unknown_standard_command(app):
+    """An unknown standard command raises an exception"""
+    with pytest.raises(ValueError, match=r"Unknown standard command 'mystery'"):
+        toga.Command.standard(app, "mystery")
+
+
+def test_change_action():
+    """A command's action can be changed to another handler."""
+    action1 = Mock()
+
+    cmd = toga.Command(action1, "Test command")
+
+    assert cmd.text == "Test command"
+    assert cmd.shortcut is None
+    assert cmd.tooltip is None
+    assert cmd.group == toga.Group.COMMANDS
+    assert cmd.section == 0
+    assert cmd.order == 0
+    assert cmd.id.startswith("cmd-")
+    assert cmd.action._raw == action1
+
+    # Change the action to a something new
+    action2 = Mock()
+    cmd.action = action2
+
+    assert cmd.action._raw == action2
+
+    # Clear the action
+    cmd.action = None
+    assert cmd.action._raw is None
+
+
 def test_create_explicit(app):
-    """A command can be created with explicit arguments"""
+    """A command can be created with explicit arguments."""
     grp = toga.Group("Test group", order=10)
 
     handler = Mock()
@@ -76,6 +139,7 @@ def test_create_explicit(app):
         group=grp,
         section=3,
         order=4,
+        id="slartibartfast",
     )
 
     assert cmd.text == "Test command"
@@ -84,18 +148,19 @@ def test_create_explicit(app):
     assert cmd.group == grp
     assert cmd.section == 3
     assert cmd.order == 4
+    assert cmd.id == "slartibartfast"
 
     assert cmd.action._raw == handler
 
-    assert (
-        repr(cmd)
-        == "<Command text='Test command' group=<Group text='Test group' order=10> section=3 order=4>"
+    assert repr(cmd) == (
+        "<Command text='Test command' "
+        "group=<Group text='Test group' order=10> section=3 order=4>"
     )
 
 
 @pytest.mark.parametrize("construct", [True, False])
 def test_icon_construction(app, construct):
-    """The command icon can be set during construction"""
+    """The command icon can be set during construction."""
     if construct:
         icon = toga.Icon("path/to/icon")
     else:
@@ -108,7 +173,7 @@ def test_icon_construction(app, construct):
 
 @pytest.mark.parametrize("construct", [True, False])
 def test_icon(app, construct):
-    """The command icon can be changed"""
+    """The command icon can be changed."""
     if construct:
         icon = toga.Icon("path/to/icon")
     else:
@@ -159,7 +224,7 @@ def test_enable(action, enabled, initial_state):
 
 
 def test_order_by_text():
-    """Commands are ordered by text when group, section and order match"""
+    """Commands are ordered by text when group, section and order match."""
     assert_order(
         toga.Command(None, "A"),
         toga.Command(None, "B"),
@@ -167,7 +232,7 @@ def test_order_by_text():
 
 
 def test_order_by_number():
-    """Commands are ordered by number when group and section match"""
+    """Commands are ordered by number when group and section match."""
     assert_order(
         toga.Command(None, "B", order=1),
         toga.Command(None, "A", order=2),
@@ -175,7 +240,7 @@ def test_order_by_number():
 
 
 def test_order_by_section(parent_group_1):
-    """Section ordering takes priority over order and text"""
+    """Section ordering takes priority over order and text."""
     assert_order(
         toga.Command(None, "B", group=parent_group_1, section=1, order=2),
         toga.Command(None, "A", group=parent_group_1, section=2, order=1),
@@ -183,7 +248,7 @@ def test_order_by_section(parent_group_1):
 
 
 def test_order_by_groups(parent_group_1, parent_group_2, child_group_1, child_group_2):
-    """Commands are ordered by group over"""
+    """Commands are ordered by group over."""
 
     command_z = toga.Command(None, "Z", group=parent_group_1, order=1)
     command_y = toga.Command(None, "Y", group=child_group_1, order=1)

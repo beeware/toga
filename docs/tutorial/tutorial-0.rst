@@ -85,8 +85,8 @@ After a successful installation of Toga you are ready to get coding.
 Write the app
 =============
 
-Create a new file called ``helloworld.py`` and add the following code for the
-"Hello world" app:
+Create a new file called ``helloworld.py`` in your ``toga-tutorial``
+directory, and add the following code for the "Hello world" app:
 
 .. literalinclude:: /../examples/tutorial0/tutorial/app.py
    :language: python
@@ -119,7 +119,7 @@ fill the entire app window, we can't just put the button into the app window.
 Instead, we need create a box, and put the button in the box.
 
 A box is an object that can be used to hold multiple widgets, and to
-define padding around widgets. So, we define a box::
+define a margin around widgets. So, we define a box::
 
         box = toga.Box()
 
@@ -133,20 +133,20 @@ Now we have to define how the button will appear in the window. By default,
 Toga uses a style algorithm called ``Pack``, which is a bit like "CSS-lite".
 We can set style properties of the button::
 
-        button.style.padding = 50
+        button.style.margin = 50
 
-What we've done here is say that the button will have a padding of 50 pixels
-on all sides. If we wanted to define padding of 20 pixels on top of the
-button, we could have defined ``padding_top = 20``, or we could have specified
-the ``padding = (20, 50, 50, 50)``.
+What we've done here is say that the button will have a margin of 50 pixels
+on all sides. If we wanted to define a margin of 20 pixels on top of the
+button, we could have defined ``margin_top = 20``, or we could have specified
+the ``margin = (20, 50, 50, 50)``.
 
 Now we will make the button take up all the available width::
 
        button.style.flex = 1
 
-The ``flex`` attribute specifies how an element is sized with respect to other
-elements along its direction. The default direction is row (horizontal) and
-since the button is the only element here, it will take up the whole width.
+The ``flex`` attribute specifies how a widget is sized with respect to other
+widgets along its direction. The default direction is row (horizontal) and
+since the button is the only widget here, it will take up the whole width.
 Check out `style docs
 <https://toga.readthedocs.io/en/latest/reference/style/pack.html#flex>`_ for
 more information on how to use the ``flex`` attribute.

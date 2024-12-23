@@ -60,7 +60,7 @@ class ExampleDetailedListApp(toga.App):
         self.main_window = toga.MainWindow()
 
         # Buttons
-        btn_style = Pack(flex=1, padding=10)
+        btn_style = Pack(flex=1, margin=10)
         self.btn_insert = toga.Button(
             "Insert Row", on_press=self.insert_handler, style=btn_style
         )
@@ -72,7 +72,7 @@ class ExampleDetailedListApp(toga.App):
         )
 
         # Switches to enable/disable actions
-        switch_style = Pack(padding=10)
+        switch_style = Pack(margin=10)
         self.switch_box = toga.Box(
             style=Pack(direction=ROW),
             children=[
@@ -130,7 +130,7 @@ class ExampleDetailedListApp(toga.App):
             style=Pack(
                 flex=1,
                 direction=COLUMN,
-                padding=10,
+                margin=10,
             ),
         )
 

@@ -26,7 +26,7 @@ from toga.sources.accessors import build_accessors, to_accessor
     ],
 )
 def test_to_accessor(heading, accessor):
-    "Headings can be converted into accessors"
+    """Headings can be converted into accessors."""
 
     assert to_accessor(heading) == accessor
 
@@ -70,7 +70,7 @@ def test_to_accessor_failures(heading):
     ],
 )
 def test_build_accessors(headings, overrides, accessors):
-    "Accessors can be constructed from headings with overrides"
+    """Accessors can be constructed from headings with overrides."""
     assert build_accessors(headings, overrides) == accessors
 
 
@@ -90,6 +90,6 @@ def test_build_accessors(headings, overrides, accessors):
     ],
 )
 def test_build_accessor_failure(headings, overrides, error):
-    "If an accessor list can't be build, an error is raised"
+    """If an accessor list can't be built, an error is raised."""
     with pytest.raises(ValueError, match=error):
         build_accessors(headings, overrides)

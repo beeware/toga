@@ -1,21 +1,20 @@
 from math import ceil
 
-from rubicon.objc import objc_method, objc_property
+from rubicon.objc import CGSize, objc_method, objc_property
 from travertino.size import at_least
 
 from toga.colors import BLACK, TRANSPARENT, color
-from toga.widgets.canvas import Baseline, FillRule
+from toga.constants import Baseline, FillRule
 from toga_cocoa.colors import native_color
-from toga_cocoa.images import nsdata_to_bytes
 from toga_cocoa.libs import (
     CGFloat,
     CGPathDrawingMode,
     CGRectMake,
     NSAttributedString,
-    NSBitmapImageFileType,
     NSFontAttributeName,
     NSForegroundColorAttributeName,
     NSGraphicsContext,
+    NSImage,
     NSMutableDictionary,
     NSPoint,
     NSRect,
@@ -321,16 +320,19 @@ class Canvas(Widget):
             )
 
     def get_image_data(self):
+
         bitmap = self.native.bitmapImageRepForCachingDisplayInRect(self.native.bounds)
-        bitmap.setSize(self.native.bounds.size)
         self.native.cacheDisplayInRect(self.native.bounds, toBitmapImageRep=bitmap)
 
-        return nsdata_to_bytes(
-            bitmap.representationUsingType(
-                NSBitmapImageFileType.PNG,
-                properties=None,
-            )
+        # Get a reference to the CGImage from the bitmap
+        cg_image = bitmap.CGImage
+
+        target_size = CGSize(
+            core_graphics.CGImageGetWidth(cg_image),
+            core_graphics.CGImageGetHeight(cg_image),
         )
+        ns_image = NSImage.alloc().initWithCGImage(cg_image, size=target_size)
+        return ns_image
 
     # Rehint
     def rehint(self):

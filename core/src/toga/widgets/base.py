@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 from builtins import id as identifier
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, TypeVar
+from warnings import warn
 
+from travertino.declaration import BaseStyle
 from travertino.node import Node
 
 from toga.platform import get_platform_factory
@@ -12,6 +14,8 @@ if TYPE_CHECKING:
     from toga.app import App
     from toga.window import Window
 
+StyleT = TypeVar("StyleT", bound=BaseStyle)
+
 
 class Widget(Node):
     _MIN_WIDTH = 100
@@ -20,7 +24,7 @@ class Widget(Node):
     def __init__(
         self,
         id: str | None = None,
-        style=None,
+        style: StyleT | None = None,
     ):
         """Create a base Toga widget.
 
@@ -30,30 +34,79 @@ class Widget(Node):
         :param style: A style object. If no style is provided, a default style
             will be applied to the widget.
         """
-        super().__init__(
-            style=style if style else Pack(),
-            applicator=TogaApplicator(self),
-        )
+        super().__init__(style=style if style is not None else Pack())
 
         self._id = str(id if id else identifier(self))
-        self._window = None
-        self._app = None
-        self._impl = None
+        self._window: Window | None = None
+        self._app: App | None = None
 
+        # Get factory and assign implementation
         self.factory = get_platform_factory()
+
+        ####################################################
+        # 2024-12: Backwards compatibility for Toga <= 0.4.8
+        ####################################################
+
+        # Just in case we're working with a third-party widget created before
+        # the _create() mechanism was added, which has already defined its
+        # implementation. We still want to call _create(), to issue the warning and
+        # inform users about where they should be creating the implementation, but if
+        # there already is one, we don't want to do the assignment and thus replace it
+        # with None.
+
+        impl = self._create()
+
+        if not hasattr(self, "_impl"):
+            self._impl = impl
+
+        #############################
+        # End backwards compatibility
+        #############################
+
+        self.applicator = TogaApplicator()
+
+        ##############################################
+        # Backwards compatibility for Travertino 0.3.0
+        ##############################################
+
+        # The below if block will execute when using Travertino 0.3.0. For future
+        # versions of Travertino, these assignments (and the reapply) will already have
+        # been handled "automatically" by assigning the applicator above; in that case,
+        # we want to avoid doing a second, redundant style reapplication.
+
+        # This whole section can be removed as soon as there's a newer version of
+        # Travertino to set as Toga's minimum requirement.
+
+        if not hasattr(self.applicator, "node"):  # pragma: no cover
+            self.applicator.node = self
+            self.style._applicator = self.applicator
+            self.style.reapply()
+
+        #############################
+        # End backwards compatibility
+        #############################
+
+    def _create(self) -> Any:
+        """Create a platform-specific implementation of this widget.
+
+        A subclass of Widget should redefine this method to return its implementation.
+        """
+        warn(
+            "Widgets should create and return their implementation in ._create(). This "
+            "will be an exception in a future version.",
+            RuntimeWarning,
+            stacklevel=2,
+        )
 
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__}:0x{identifier(self):x}>"
 
-    def __lt__(self, other) -> bool:
+    def __lt__(self, other: Widget) -> bool:
         return self.id < other.id
 
     @property
     def id(self) -> str:
-        """The DOM identifier for the widget.
-
-        This id can be used to target CSS directives.
-        """
+        """A unique identifier for the widget."""
         return self._id
 
     @property
@@ -62,8 +115,7 @@ class Widget(Node):
 
         .. note::
 
-            This is a beta feature. The ``tab_index`` API may change in
-            future.
+            This is a beta feature. The ``tab_index`` API may change in the future.
         """
         return self._impl.get_tab_index()
 
@@ -71,7 +123,7 @@ class Widget(Node):
     def tab_index(self, tab_index: int) -> None:
         self._impl.set_tab_index(tab_index)
 
-    def _assert_can_have_children(self):
+    def _assert_can_have_children(self) -> None:
         if not self.can_have_children:
             raise ValueError(f"{type(self).__name__} cannot have children")
 
@@ -139,6 +191,30 @@ class Widget(Node):
 
         # Whatever layout we're a part of needs to be refreshed
         self.refresh()
+
+    def index(self, child: Widget) -> int:
+        """Get the index of a widget in the list of children of this widget.
+
+        :param child: The child widget of interest.
+        :raises ValueError: If the specified child widget is not found in the
+            list of children.
+
+        :returns: Index of specified child widget in children list.
+        """
+        for _ind, _child in enumerate(self._children):
+            if child == _child:
+                return _ind
+        raise ValueError(f"{type(child).__name__} not found")
+
+    def replace(self, old_child: Widget, new_child: Widget) -> None:
+        """Replace an existing child widget with a new child widget.
+
+        :param old_child: The existing child widget to be replaced.
+        :param new_child: The new child widget to be included.
+        """
+        old_child_index = self.index(old_child)
+        self.remove(old_child)
+        self.insert(old_child_index, new_child)
 
     def remove(self, *children: Widget) -> None:
         """Remove the provided widgets as children of this node.
@@ -223,7 +299,8 @@ class Widget(Node):
             # window, remove the widget from the widget registry
             self.window.app.widgets._remove(self.id)
         elif self.window is None and window is not None:
-            # If the widget is being assigned to a window for the first time, add it to the widget registry
+            # If the widget is being assigned to a window for the first time, add it to
+            # the widget registry
             window.app.widgets._add(self)
 
         self._window = window
@@ -234,7 +311,8 @@ class Widget(Node):
 
     @property
     def enabled(self) -> bool:
-        """Is the widget currently enabled? i.e., can the user interact with the widget?"""
+        """Is the widget currently enabled? i.e., can the user interact with the
+        widget?"""
         return self._impl.get_enabled()
 
     @enabled.setter

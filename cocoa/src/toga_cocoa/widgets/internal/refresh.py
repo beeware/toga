@@ -30,10 +30,10 @@ from toga_cocoa.libs import (
     NSView,
 )
 
-#########################################################################################
+########################################################################################
 # This is broadly derived from Alex Zielenski's ScrollToRefresh implementation:
-# https://github.com/alexzielenski/ScrollToRefresh/blob/master/ScrollToRefresh/src/EQSTRScrollView.m
-# =======================================================================================
+#   https://github.com/alexzielenski/ScrollToRefresh/blob/master/ScrollToRefresh/src/EQSTRScrollView.m  # noqa: E501
+# ======================================================================================
 # ScrollToRefresh
 #
 # Copyright (C) 2011 by Alex Zielenski.
@@ -54,7 +54,7 @@ from toga_cocoa.libs import (
 # HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
 # CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
 # OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-# =======================================================================================
+# ======================================================================================
 #
 # HOW THIS WORKS
 #
@@ -78,7 +78,7 @@ from toga_cocoa.libs import (
 #
 # All of this is also gated by the refreshEnabled flag; when refresh is disabled, it
 # also makes the refresh widget invisible so that it can't be seen in a bounce scroll.
-#########################################################################################
+########################################################################################
 
 # The height of the refresh header; also the minimum pull height to trigger a refresh.
 HEADER_HEIGHT = 45.0
@@ -99,7 +99,12 @@ class RefreshableClipView(NSClipView):
             argtypes=[NSPoint],
         )
 
-        if self.superview and self.superview.is_refreshing:
+        # FIXME: This has been marked no-cover so that ARM64 testing can be enabled;
+        # ARM64 CI can only run on Sonoma, and it looks like Sonoma has turned off
+        # scroll elasticity by default, which prevents pull-to-refresh from working.
+        # See Toga#2412 for details. If that ticket is closed, it should be possible
+        # to remove this this no-cover.
+        if self.superview and self.superview.is_refreshing:  # pragma: no cover
             return NSMakePoint(
                 constrained.x,
                 max(
@@ -188,58 +193,58 @@ class RefreshableScrollView(NSScrollView):
         self.contentView.addSubview(self.refresh_view)
 
         # set layout constraints
-        indicatorHCenter = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # noqa: E501
+        indicatorHCenter = NSLayoutConstraint.constraintWithItem(
             self.refresh_indicator,
-            NSLayoutAttributeCenterX,
-            NSLayoutRelationEqual,
-            self.refresh_view,
-            NSLayoutAttributeCenterX,
-            1.0,
-            0,
+            attribute__1=NSLayoutAttributeCenterX,
+            relatedBy=NSLayoutRelationEqual,
+            toItem=self.refresh_view,
+            attribute__2=NSLayoutAttributeCenterX,
+            multiplier=1.0,
+            constant=0,
         )
         self.refresh_view.addConstraint(indicatorHCenter)
 
-        indicatorVCenter = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # noqa: E501
+        indicatorVCenter = NSLayoutConstraint.constraintWithItem(
             self.refresh_indicator,
-            NSLayoutAttributeCenterY,
-            NSLayoutRelationEqual,
-            self.refresh_view,
-            NSLayoutAttributeCenterY,
-            1.0,
-            0,
+            attribute__1=NSLayoutAttributeCenterY,
+            relatedBy=NSLayoutRelationEqual,
+            toItem=self.refresh_view,
+            attribute__2=NSLayoutAttributeCenterY,
+            multiplier=1.0,
+            constant=0,
         )
         self.refresh_view.addConstraint(indicatorVCenter)
 
-        refreshWidth = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # noqa: E501
+        refreshWidth = NSLayoutConstraint.constraintWithItem(
             self.refresh_view,
-            NSLayoutAttributeWidth,
-            NSLayoutRelationEqual,
-            self.contentView,
-            NSLayoutAttributeWidth,
-            1.0,
-            0,
+            attribute__1=NSLayoutAttributeWidth,
+            relatedBy=NSLayoutRelationEqual,
+            toItem=self.contentView,
+            attribute__2=NSLayoutAttributeWidth,
+            multiplier=1.0,
+            constant=0,
         )
         self.contentView.addConstraint(refreshWidth)
 
-        refreshHeight = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # noqa: E501
+        refreshHeight = NSLayoutConstraint.constraintWithItem(
             self.refresh_view,
-            NSLayoutAttributeHeight,
-            NSLayoutRelationEqual,
-            None,
-            NSLayoutAttributeNotAnAttribute,
-            1.0,
-            HEADER_HEIGHT,
+            attribute__1=NSLayoutAttributeHeight,
+            relatedBy=NSLayoutRelationEqual,
+            toItem=None,
+            attribute__2=NSLayoutAttributeNotAnAttribute,
+            multiplier=1.0,
+            constant=HEADER_HEIGHT,
         )
         self.contentView.addConstraint(refreshHeight)
 
-        refreshHeight = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # noqa: E501
+        refreshHeight = NSLayoutConstraint.constraintWithItem(
             self.refresh_view,
-            NSLayoutAttributeTop,
-            NSLayoutRelationEqual,
-            self.contentView,
-            NSLayoutAttributeTop,
-            1.0,
-            -HEADER_HEIGHT,
+            attribute__1=NSLayoutAttributeTop,
+            relatedBy=NSLayoutRelationEqual,
+            toItem=self.contentView,
+            attribute__2=NSLayoutAttributeTop,
+            multiplier=1.0,
+            constant=-HEADER_HEIGHT,
         )
         self.contentView.addConstraint(refreshHeight)
 

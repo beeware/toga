@@ -1,9 +1,9 @@
-from abc import ABC
-
 from android import R
 from android.app import AlertDialog
 from android.content import DialogInterface
 from java import dynamic_proxy
+
+import toga
 
 
 class OnClickListener(dynamic_proxy(DialogInterface.OnClickListener)):
@@ -16,32 +16,40 @@ class OnClickListener(dynamic_proxy(DialogInterface.OnClickListener)):
         self._fn(self._value)
 
 
-class BaseDialog(ABC):
-    def __init__(self, interface):
-        self.interface = interface
-        self.interface._impl = self
+class BaseDialog:
+    def show(self, host_window, future):
+        self.future = future
+
+        if self.native:
+            # Show the dialog. Don't differentiate between app and window modal dialogs.
+            self.native.show()
+        else:
+            # Dialog doesn't have an implementation. This can't be covered, as
+            # the testbed shortcuts the test before showing the dialog.
+            self.future.set_result(None)  # pragma: no cover
 
 
 class TextDialog(BaseDialog):
     def __init__(
         self,
-        interface,
         title,
         message,
         positive_text,
         negative_text=None,
         icon=None,
     ):
-        super().__init__(interface=interface)
+        super().__init__()
 
-        self.native = AlertDialog.Builder(interface.window._impl.app.native)
-        self.native.setCancelable(False)
-        self.native.setTitle(title)
-        self.native.setMessage(message)
+        self.native_builder = AlertDialog.Builder(
+            toga.App.app.current_window._impl.app.native
+        )
+        self.native_builder.setCancelable(False)
+        self.native_builder.setTitle(title)
+        self.native_builder.setMessage(message)
         if icon is not None:
-            self.native.setIcon(icon)
+            self.native_builder.setIcon(icon)
 
-        self.native.setPositiveButton(
+        self.native_builder.setPositiveButton(
             positive_text,
             OnClickListener(
                 self.completion_handler,
@@ -49,19 +57,18 @@ class TextDialog(BaseDialog):
             ),
         )
         if negative_text is not None:
-            self.native.setNegativeButton(
+            self.native_builder.setNegativeButton(
                 negative_text, OnClickListener(self.completion_handler, False)
             )
-        self.native.show()
+        self.native = self.native_builder.create()
 
     def completion_handler(self, return_value: bool) -> None:
-        self.interface.set_result(return_value)
+        self.future.set_result(return_value)
 
 
 class InfoDialog(TextDialog):
-    def __init__(self, interface, title, message):
+    def __init__(self, title, message):
         super().__init__(
-            interface=interface,
             title=title,
             message=message,
             positive_text="OK",
@@ -69,9 +76,8 @@ class InfoDialog(TextDialog):
 
 
 class QuestionDialog(TextDialog):
-    def __init__(self, interface, title, message):
+    def __init__(self, title, message):
         super().__init__(
-            interface=interface,
             title=title,
             message=message,
             positive_text="Yes",
@@ -80,9 +86,8 @@ class QuestionDialog(TextDialog):
 
 
 class ConfirmDialog(TextDialog):
-    def __init__(self, interface, title, message):
+    def __init__(self, title, message):
         super().__init__(
-            interface=interface,
             title=title,
             message=message,
             positive_text="OK",
@@ -91,9 +96,8 @@ class ConfirmDialog(TextDialog):
 
 
 class ErrorDialog(TextDialog):
-    def __init__(self, interface, title, message):
+    def __init__(self, title, message):
         super().__init__(
-            interface=interface,
             title=title,
             message=message,
             positive_text="OK",
@@ -104,48 +108,52 @@ class ErrorDialog(TextDialog):
 class StackTraceDialog(BaseDialog):
     def __init__(
         self,
-        interface,
         title,
         message,
         **kwargs,
     ):
-        super().__init__(interface=interface)
-        interface.window.factory.not_implemented("Window.stack_trace_dialog()")
+        super().__init__()
+
+        toga.App.app.factory.not_implemented("dialogs.StackTraceDialog()")
+        self.native = None
 
 
 class SaveFileDialog(BaseDialog):
     def __init__(
         self,
-        interface,
         title,
         filename,
         initial_directory,
         file_types=None,
     ):
-        super().__init__(interface=interface)
-        interface.window.factory.not_implemented("Window.save_file_dialog()")
+        super().__init__()
+
+        toga.App.app.factory.not_implemented("dialogs.SaveFileDialog()")
+        self.native = None
 
 
 class OpenFileDialog(BaseDialog):
     def __init__(
         self,
-        interface,
         title,
         initial_directory,
         file_types,
         multiple_select,
     ):
-        super().__init__(interface=interface)
-        interface.window.factory.not_implemented("Window.open_file_dialog()")
+        super().__init__()
+
+        toga.App.app.factory.not_implemented("dialogs.OpenFileDialog()")
+        self.native = None
 
 
 class SelectFolderDialog(BaseDialog):
     def __init__(
         self,
-        interface,
         title,
         initial_directory,
         multiple_select,
     ):
-        super().__init__(interface=interface)
-        interface.window.factory.not_implemented("Window.select_folder_dialog()")
+        super().__init__()
+
+        toga.App.app.factory.not_implemented("dialogs.SelectFolderDialog()")
+        self.native = None

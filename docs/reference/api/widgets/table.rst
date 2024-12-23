@@ -82,7 +82,7 @@ to control the display order of columns independent of the storage of that data.
         headings=["Name", "Age"],
         data=[
             {"name": "Arthur Dent", "age": 42, "planet": "Earth"},
-            {"name", "Ford Prefect", "age": 37, "planet": "Betelgeuse Five"},
+            {"name": "Ford Prefect", "age": 37, "planet": "Betelgeuse Five"},
             {"name": "Tricia McMillan", "age": 38, "planet": "Earth"},
         ]
     )
@@ -106,7 +106,7 @@ header, but internally, the attribute "character" will be used:
         accessors={"Name", 'character'},
         data=[
             {"character": "Arthur Dent", "age": 42, "planet": "Earth"},
-            {"character", "Ford Prefect", "age": 37, "planet": "Betelgeuse Five"},
+            {"character": "Ford Prefect", "age": 37, "planet": "Betelgeuse Five"},
             {"name": "Tricia McMillan", "age": 38, "planet": "Earth"},
         ]
     )
@@ -135,3 +135,6 @@ Reference
 ---------
 
 .. autoclass:: toga.Table
+
+.. autoprotocol:: toga.widgets.table.OnSelectHandler
+.. autoprotocol:: toga.widgets.table.OnActivateHandler

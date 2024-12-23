@@ -6,8 +6,15 @@ from android.content import DialogInterface
 from android.graphics import Rect
 from android.view import Gravity, View
 from android.widget import ImageView, LinearLayout, RelativeLayout, ScrollView, TextView
-from androidx.swiperefreshlayout.widget import SwipeRefreshLayout
 from java import dynamic_proxy
+
+try:
+    from androidx.swiperefreshlayout.widget import SwipeRefreshLayout
+except ImportError:  # pragma: no cover
+    # Import will fail if SwipeRefreshLayout is not listed in dependencies
+    # No cover due to not being able to test in CI
+    SwipeRefreshLayout = None
+
 
 from .base import Widget
 
@@ -78,17 +85,26 @@ class DetailedListActionListener(dynamic_proxy(DialogInterface.OnClickListener))
         self.actions[which].handler(row=self.row)
 
 
-class OnRefreshListener(dynamic_proxy(SwipeRefreshLayout.OnRefreshListener)):
-    def __init__(self, interface):
-        super().__init__()
-        self._interface = interface
+if SwipeRefreshLayout is not None:  # pragma: no cover
 
-    def onRefresh(self):
-        self._interface.on_refresh()
+    class OnRefreshListener(dynamic_proxy(SwipeRefreshLayout.OnRefreshListener)):
+        def __init__(self, interface):
+            super().__init__()
+            self._interface = interface
+
+        def onRefresh(self):
+            self._interface.on_refresh()
 
 
 class DetailedList(Widget):
     def create(self):
+        if SwipeRefreshLayout is None:  # pragma: no cover
+            raise RuntimeError(
+                "Unable to import SwipeRefreshLayout. Ensure that the AndroidX Swipe "
+                "Refresh Layout widget package "
+                "(androidx.swiperefreshlayout:swiperefreshlayout:1.1.0) is listed in "
+                "your app's dependencies."
+            )
         # get the selection color from the current theme
         attrs = [R.attr.colorBackground, R.attr.colorControlHighlight]
         typed_array = self._native_activity.obtainStyledAttributes(attrs)

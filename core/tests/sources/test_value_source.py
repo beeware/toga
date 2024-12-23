@@ -4,7 +4,7 @@ from toga.sources.value_source import ValueSource
 
 
 def test_empty():
-    """An empty ValueSource can be created"""
+    """An empty ValueSource can be created."""
     source = ValueSource()
 
     assert source.accessor == "value"
@@ -13,7 +13,7 @@ def test_empty():
 
 
 def test_value():
-    """A ValueSource can be created with a value"""
+    """A ValueSource can be created with a value."""
     source = ValueSource(42)
 
     assert source.accessor == "value"
@@ -22,7 +22,7 @@ def test_value():
 
 
 def test_value_with_accessor():
-    """A ValueSource can be created with a custom accessro"""
+    """A ValueSource can be created with a custom accessor."""
     source = ValueSource(42, accessor="something")
 
     assert source.accessor == "something"
@@ -31,7 +31,7 @@ def test_value_with_accessor():
 
 
 def test_listener():
-    """A listener will be notified of ValueSource changes"""
+    """A listener will be notified of ValueSource changes."""
     source = ValueSource(42)
     listener = Mock()
 

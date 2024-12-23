@@ -34,17 +34,17 @@ def splitcontainer(content1, content2):
 
 
 def test_widget_created():
-    "A scroll container can be created with no arguments"
+    """A scroll container can be created with no arguments."""
     splitcontainer = toga.SplitContainer()
     assert splitcontainer._impl.interface == splitcontainer
     assert_action_performed(splitcontainer, "create SplitContainer")
 
-    assert splitcontainer.content == (None, None)
+    assert splitcontainer.content == [None, None]
     assert splitcontainer.direction == toga.SplitContainer.VERTICAL
 
 
 def test_widget_created_with_values(content1, content2):
-    "A split container can be created with arguments"
+    """A split container can be created with arguments."""
     splitcontainer = toga.SplitContainer(
         content=[content1, content2],
         direction=toga.SplitContainer.HORIZONTAL,
@@ -52,14 +52,14 @@ def test_widget_created_with_values(content1, content2):
     assert splitcontainer._impl.interface == splitcontainer
     assert_action_performed(splitcontainer, "create SplitContainer")
 
-    assert splitcontainer.content == (content1, content2)
+    assert splitcontainer.content == [content1, content2]
     assert splitcontainer.direction == toga.SplitContainer.HORIZONTAL
 
     # The content has been assigned to the widget
     assert_action_performed_with(
         splitcontainer,
         "set content",
-        content=(content1._impl, content2._impl),
+        content=[content1._impl, content2._impl],
         flex=[1, 1],
     )
 
@@ -77,7 +77,7 @@ def test_widget_created_with_values(content1, content2):
     ],
 )
 def test_assign_to_app(app, content1, content2, include_left, include_right):
-    """If the widget is assigned to an app, the content is also assigned"""
+    """If the widget is assigned to an app, the content is also assigned."""
     splitcontainer = toga.SplitContainer(
         content=[
             content1 if include_left else None,
@@ -103,7 +103,8 @@ def test_assign_to_app(app, content1, content2, include_left, include_right):
 
 
 def test_assign_to_app_no_content(app):
-    """If the widget is assigned to an app, and there is no content, there's no error"""
+    """If the widget is assigned to an app, and there is no content, there's no
+    error."""
     splitcontainer = toga.SplitContainer()
 
     # Scroll container is initially unassigned
@@ -126,7 +127,7 @@ def test_assign_to_app_no_content(app):
     ],
 )
 def test_assign_to_window(window, content1, content2, include_left, include_right):
-    """If the widget is assigned to a window, the content is also assigned"""
+    """If the widget is assigned to a window, the content is also assigned."""
     splitcontainer = toga.SplitContainer(
         content=[
             content1 if include_left else None,
@@ -152,7 +153,8 @@ def test_assign_to_window(window, content1, content2, include_left, include_righ
 
 
 def test_assign_to_window_no_content(window):
-    """If the widget is assigned to an app, and there is no content, there's no error"""
+    """If the widget is assigned to an app, and there is no content, there's no
+    error."""
     splitcontainer = toga.SplitContainer()
 
     # Scroll container is initially unassigned
@@ -166,7 +168,7 @@ def test_assign_to_window_no_content(window):
 
 
 def test_disable_no_op(splitcontainer):
-    "SplitContainer doesn't have a disabled state"
+    """SplitContainer doesn't have a disabled state."""
     # Enabled by default
     assert splitcontainer.enabled
 
@@ -178,7 +180,7 @@ def test_disable_no_op(splitcontainer):
 
 
 def test_focus_noop(splitcontainer):
-    "Focus is a no-op."
+    """Focus is a no-op."""
 
     splitcontainer.focus()
     assert_action_not_performed(splitcontainer, "focus")
@@ -201,7 +203,7 @@ def test_set_content_widgets(
     include_left,
     include_right,
 ):
-    """Widget content can be set to a list of widgets"""
+    """Widget content can be set to a list of widgets."""
     splitcontainer.content = [
         content2 if include_left else None,
         content3 if include_right else None,
@@ -210,10 +212,10 @@ def test_set_content_widgets(
     assert_action_performed_with(
         splitcontainer,
         "set content",
-        content=(
+        content=[
             content2._impl if include_left else None,
             content3._impl if include_right else None,
-        ),
+        ],
         flex=[1, 1],
     )
 
@@ -237,7 +239,7 @@ def test_set_content_flex(
     include_left,
     include_right,
 ):
-    """Widget content can be set to a list of widgets with flex values"""
+    """Widget content can be set to a list of widgets with flex values."""
     splitcontainer.content = [
         (content2 if include_left else None, 2),
         (content3 if include_right else None, 3),
@@ -246,10 +248,10 @@ def test_set_content_flex(
     assert_action_performed_with(
         splitcontainer,
         "set content",
-        content=(
+        content=[
             content2._impl if include_left else None,
             content3._impl if include_right else None,
-        ),
+        ],
         flex=[2, 3],
     )
 
@@ -273,7 +275,7 @@ def test_set_content_flex_mixed(
     include_left,
     include_right,
 ):
-    """Flex values will be defaulted if missing"""
+    """Flex values will be defaulted if missing."""
     splitcontainer.content = [
         content2 if include_left else None,
         (content3 if include_right else None, 3),
@@ -282,10 +284,10 @@ def test_set_content_flex_mixed(
     assert_action_performed_with(
         splitcontainer,
         "set content",
-        content=(
+        content=[
             content2._impl if include_left else None,
             content3._impl if include_right else None,
-        ),
+        ],
         flex=[1, 3],
     )
 
@@ -333,14 +335,14 @@ def test_set_content_flex_mixed(
     ],
 )
 def test_set_content_invalid(splitcontainer, content, message):
-    """Widget content can only be set to valid values"""
+    """Widget content can only be set to valid values."""
 
     with pytest.raises(ValueError, match=message):
         splitcontainer.content = content
 
 
 def test_direction(splitcontainer):
-    """The direction of the splitcontainer can be changed"""
+    """The direction of the splitcontainer can be changed."""
 
     splitcontainer.direction = toga.SplitContainer.HORIZONTAL
 

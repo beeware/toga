@@ -1,7 +1,7 @@
 [build-system]
 requires = [
-    "setuptools==69.0.0",
-    "setuptools_scm==8.0.4",
+    "setuptools==75.5.0",
+    "setuptools_scm==8.1.0",
     "setuptools_dynamic_dependencies @ git+https://github.com/beeware/setuptools_dynamic_dependencies",
 ]
 build-backend = "setuptools.build_meta"
@@ -11,7 +11,7 @@ dynamic = ["version", "dependencies"]
 name = "toga-demo"
 description = "A demonstration of the capabilities of the Toga widget toolkit."
 readme = "README.rst"
-requires-python = ">= 3.8"
+requires-python = ">= 3.9"
 license.text = "New BSD"
 authors = [
     {name="Russell Keith-Magee", email="russell@keith-magee.com"},
@@ -40,11 +40,11 @@ classifiers = [
     "License :: OSI Approved :: BSD License",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3 :: Only",
     "Topic :: Software Development",
     "Topic :: Software Development :: User Interfaces",
@@ -54,9 +54,10 @@ classifiers = [
 [project.urls]
 Homepage = "https://beeware.org/project/projects/libraries/toga/"
 Funding = "https://beeware.org/contributing/membership/"
-Documentation = "https://toga.readthedocs.io/en/latest/"
+Documentation = "https://toga.readthedocs.io/"
 Tracker = "https://github.com/beeware/toga/issues"
 Source = "https://github.com/beeware/toga"
+Changelog = "https://toga.readthedocs.io/en/stable/background/project/releases.html"
 
 [project.scripts]
 toga-demo = "toga_demo.__main__:run"
@@ -74,7 +75,7 @@ project_name = "Toga Demo"
 bundle = "org.beeware"
 version = "0.0.1"
 url = "https://beeware.org"
-license = "BSD license"
+license.file = "LICENSE"
 author = "Tiberius Yak"
 author_email = "tiberius@beeware.org"
 
@@ -113,7 +114,10 @@ requires = [
 base_theme = "Theme.MaterialComponents.Light.DarkActionBar"
 
 build_gradle_dependencies = [
-    "androidx.appcompat:appcompat:1.6.1",
-    "com.google.android.material:material:1.11.0",
+    "com.google.android.material:material:1.12.0",
     "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0",
 ]
+
+[tool.check-wheel-contents]
+# WOO2: duplicated files (i.e. resource images)
+ignore = "W002"

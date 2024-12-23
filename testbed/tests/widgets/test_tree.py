@@ -8,6 +8,7 @@ from toga.sources import TreeSource
 from toga.style.pack import Pack
 
 from ..conftest import skip_on_platforms
+from .conftest import build_cleanup_test
 from .probe import get_probe
 from .properties import (  # noqa: F401
     test_background_color,
@@ -164,6 +165,18 @@ async def multiselect_probe(main_window, multiselect_widget):
     main_window.content = old_content
 
 
+test_cleanup = build_cleanup_test(
+    toga.Tree,
+    kwargs={"headings": ["A", "B", "C"]},
+    skip_platforms=(
+        "iOS",
+        "android",
+        "windows",
+    ),
+    xfail_platforms=("linux",),
+)
+
+
 async def test_select(widget, probe, source, on_select_handler):
     """Rows can be selected"""
     # Initial selection is empty
@@ -210,6 +223,87 @@ async def test_expand_collapse(widget, probe, source):
     """Nodes can be expanded and collapsed"""
 
     # Initially unexpanded
+    assert not probe.is_expanded(source[0])
+    assert not probe.is_expanded(source[0][2])
+    assert not probe.is_expanded(source[1])
+    assert not probe.is_expanded(source[1][2])
+    assert not probe.is_expanded(source[2])
+    assert not probe.is_expanded(source[2][2])
+
+    # Expanding/collapsing nodes when tree is not expanded
+    # Expand a single root node
+    widget.expand(source[1])
+    await probe.redraw("Root Node 1 has been expanded")
+    assert not probe.is_expanded(source[0])
+    assert not probe.is_expanded(source[0][2])
+    assert probe.is_expanded(source[1])
+    assert probe.is_expanded(source[1][2])
+    assert not probe.is_expanded(source[2])
+    assert not probe.is_expanded(source[2][2])
+
+    # Expand a single root node again
+    widget.expand(source[1])
+    await probe.redraw("Root Node 1 is still expanded")
+    assert not probe.is_expanded(source[0])
+    assert not probe.is_expanded(source[0][2])
+    assert probe.is_expanded(source[1])
+    assert probe.is_expanded(source[1][2])
+    assert not probe.is_expanded(source[2])
+    assert not probe.is_expanded(source[2][2])
+
+    # Expand a single child node
+    widget.expand(source[1][2])
+    await probe.redraw("Child Node 1:2 has been expanded")
+    assert not probe.is_expanded(source[0])
+    assert not probe.is_expanded(source[0][2])
+    assert probe.is_expanded(source[1])
+    assert probe.is_expanded(source[1][2])
+    assert not probe.is_expanded(source[2])
+    assert not probe.is_expanded(source[2][2])
+
+    # Expand the same child node again
+    widget.expand(source[1][2])
+    await probe.redraw("Child Node 1:2 is still expanded")
+    assert not probe.is_expanded(source[0])
+    assert not probe.is_expanded(source[0][2])
+    assert probe.is_expanded(source[1])
+    assert probe.is_expanded(source[1][2])
+    assert not probe.is_expanded(source[2])
+    assert not probe.is_expanded(source[2][2])
+
+    # Attempt to collapse a leaf node
+    widget.collapse(source[1][2][1])
+    await probe.redraw("Leaf node collapse is a no-op")
+    assert not probe.is_expanded(source[0])
+    assert not probe.is_expanded(source[0][2])
+    assert probe.is_expanded(source[1])
+    assert probe.is_expanded(source[1][2])
+    assert not probe.is_expanded(source[2])
+    assert not probe.is_expanded(source[2][2])
+
+    # Attempt to expand a leaf node
+    widget.expand(source[1][2][1])
+    await probe.redraw("Leaf node expansion is a no-op")
+    assert not probe.is_expanded(source[0])
+    assert not probe.is_expanded(source[0][2])
+    assert probe.is_expanded(source[1])
+    assert probe.is_expanded(source[1][2])
+    assert not probe.is_expanded(source[2])
+    assert not probe.is_expanded(source[2][2])
+
+    # Fully collapse the tree
+    widget.collapse()
+    await probe.redraw("All nodes have been collapsed")
+    assert not probe.is_expanded(source[0])
+    assert not probe.is_expanded(source[0][2])
+    assert not probe.is_expanded(source[1])
+    assert not probe.is_expanded(source[1][2])
+    assert not probe.is_expanded(source[2])
+    assert not probe.is_expanded(source[2][2])
+
+    # Fully collapse when already fully collapsed
+    widget.collapse()
+    await probe.redraw("All nodes are still collapsed")
     assert not probe.is_expanded(source[0])
     assert not probe.is_expanded(source[0][2])
     assert not probe.is_expanded(source[1])
@@ -327,7 +421,7 @@ async def test_expand_collapse(widget, probe, source):
     assert probe.is_expanded(source[2])
     assert probe.is_expanded(source[2][2])
 
-    # Attempt to expand a leaf node
+    # Attempt to collapse a leaf node again
     widget.collapse(source[0][2][1])
     await probe.redraw("Leaf node collapse is a no-op")
     assert probe.is_expanded(source[0])
@@ -442,14 +536,14 @@ async def _row_change_test(widget, probe):
     """Meta test for adding and removing data to the table"""
 
     # Change the data source for something smaller
-    widget.data = [
+    small_data = [
         (
             {"a": "A0", "b": "", "c": ""},
             [({"a": f"A{i}", "b": i, "c": MyData(i)}, None) for i in range(0, 5)],
         )
     ]
-    await probe.expand_tree()
-    await probe.redraw("Data source has been changed")
+
+    widget.data = small_data
 
     assert probe.child_count() == 1
     assert probe.child_count((0,)) == 5
@@ -458,6 +552,93 @@ async def _row_change_test(widget, probe):
     probe.assert_cell_content((0, 4), 0, "A4")
     probe.assert_cell_content((0, 4), 1, "4")
     probe.assert_cell_content((0, 4), 2, "<data 4>")
+
+    # Test append/insert/modify/remove prior to tree expansion
+    # Append a child to a non-expanded root
+    widget.data[0].append({"a": "AX", "b": "BX", "c": "CX"})
+    await probe.redraw("Full row has been appended to a non-expanded root")
+
+    assert probe.child_count((0,)) == 6
+    probe.assert_cell_content((0, 4), 0, "A4")
+    probe.assert_cell_content((0, 5), 0, "AX")
+
+    # Append a child to a non-expanded child
+    widget.data[0][5].append({"a": "AXX", "b": "BXX", "c": "CXX"})
+    await probe.redraw("Full row has been appended to a non-expanded child")
+
+    assert probe.child_count((0, 5)) == 1
+    probe.assert_cell_content((0, 5, 0), 0, "AXX")
+    probe.assert_cell_content((0, 5, 0), 1, "BXX")
+    probe.assert_cell_content((0, 5, 0), 2, "CXX")
+
+    # Insert a row into the middle of the table;
+    # Row is missing a B accessor
+    widget.data[0].insert(2, {"a": "AY", "c": "CY"})
+    await probe.redraw("Partial row has been appended to a non-expanded root")
+
+    assert probe.child_count((0,)) == 7
+    probe.assert_cell_content((0, 2), 0, "AY")
+    probe.assert_cell_content((0, 5), 0, "A4")
+    probe.assert_cell_content((0, 6), 0, "AX")
+
+    # Missing value has been populated
+    probe.assert_cell_content((0, 2), 1, "MISSING!")
+
+    # Change content on the partial row
+    widget.data[0][2].a = "ANEW"
+    widget.data[0][2].b = "BNEW"
+    await probe.redraw("Partial non-visible row has been updated")
+
+    assert probe.child_count((0,)) == 7
+    probe.assert_cell_content((0, 2), 0, "ANEW")
+    probe.assert_cell_content((0, 5), 0, "A4")
+    probe.assert_cell_content((0, 6), 0, "AX")
+
+    # Missing value has the default empty string
+    probe.assert_cell_content((0, 2), 1, "BNEW")
+
+    # Delete a row
+    del widget.data[0][3]
+    await probe.redraw("Non-visible row has been removed")
+    assert probe.child_count((0,)) == 6
+    probe.assert_cell_content((0, 2), 0, "ANEW")
+    probe.assert_cell_content((0, 4), 0, "A4")
+    probe.assert_cell_content((0, 5), 0, "AX")
+
+    # Insert a new root
+    widget.data.insert(0, {"a": "A!", "b": "B!", "c": "C!"})
+    await probe.redraw("New root row has been appended")
+
+    assert probe.child_count() == 2
+    assert probe.child_count((0,)) == 0
+    probe.assert_cell_content((0,), 0, "A!")
+
+    # Delete a root
+    del widget.data[1]
+    await probe.redraw("Old root row has been removed")
+
+    assert probe.child_count() == 1
+    assert probe.child_count((0,)) == 0
+    probe.assert_cell_content((0,), 0, "A!")
+
+    # Expand tree and check contents still correct
+    await probe.expand_tree()
+    await probe.redraw("Tree expanded")
+
+    assert probe.child_count() == 1
+    assert probe.child_count((0,)) == 0
+    probe.assert_cell_content((0,), 0, "A!")
+    probe.assert_cell_content((0,), 1, "B!")
+    probe.assert_cell_content((0,), 2, "C!")
+
+    # Clear the table
+    widget.data.clear()
+    await probe.redraw("Data has been cleared")
+    assert probe.child_count() == 0
+
+    # Test append/insert/modify/remove after tree expansion
+    widget.data = small_data
+    await probe.redraw("Data source has been changed")
 
     # Append a row to the table
     widget.data[0].append({"a": "AX", "b": "BX", "c": "CX"})

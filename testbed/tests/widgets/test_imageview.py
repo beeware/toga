@@ -3,6 +3,7 @@ import pytest
 import toga
 from toga.style.pack import COLUMN, ROW
 
+from .conftest import build_cleanup_test
 from .properties import (  # noqa: F401
     test_background_color,
     test_background_color_reset,
@@ -15,6 +16,11 @@ from .properties import (  # noqa: F401
 @pytest.fixture
 async def widget():
     return toga.ImageView(image="resources/sample.png")
+
+
+test_cleanup = build_cleanup_test(
+    toga.ImageView, kwargs={"image": "resources/sample.png"}, xfail_platforms=("iOS",)
+)
 
 
 async def test_implicit_size(widget, probe, container_probe):
@@ -65,7 +71,8 @@ async def test_implicit_size(widget, probe, container_probe):
 
 
 async def test_explicit_width(widget, probe, container_probe):
-    """If the image width is explicit, the image view will resize preserving aspect ratio."""
+    """If the image width is explicit, the image view will resize preserving
+    aspect ratio."""
     # Explicitly set width; height follows aspect raio
     widget.style.width = 200
 
@@ -107,7 +114,8 @@ async def test_explicit_width(widget, probe, container_probe):
 
 
 async def test_explicit_height(widget, probe, container_probe):
-    """If the image height is explicit, the image view will resize preserving aspect ratio."""
+    """If the image height is explicit, the image view will resize preserving
+    aspect ratio."""
     # Explicitly set height; width follows aspect raio
     widget.style.height = 150
 

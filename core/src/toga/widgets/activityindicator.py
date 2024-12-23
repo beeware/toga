@@ -1,15 +1,15 @@
 from __future__ import annotations
 
-from typing import Literal
+from typing import Any, Literal
 
-from .base import Widget
+from .base import StyleT, Widget
 
 
 class ActivityIndicator(Widget):
     def __init__(
         self,
-        id=None,
-        style=None,
+        id: str | None = None,
+        style: StyleT | None = None,
         running: bool = False,
     ):
         """Create a new ActivityIndicator widget.
@@ -22,10 +22,11 @@ class ActivityIndicator(Widget):
         """
         super().__init__(id=id, style=style)
 
-        self._impl = self.factory.ActivityIndicator(interface=self)
-
         if running:
             self.start()
+
+    def _create(self) -> Any:
+        return self.factory.ActivityIndicator(interface=self)
 
     @property
     def enabled(self) -> Literal[True]:
@@ -41,7 +42,7 @@ class ActivityIndicator(Widget):
         pass
 
     def focus(self) -> None:
-        "No-op; ActivityIndicator cannot accept input focus"
+        """No-op; ActivityIndicator cannot accept input focus."""
         pass
 
     @property

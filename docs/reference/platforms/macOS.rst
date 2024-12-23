@@ -27,6 +27,8 @@ Installation
 Implementation details
 ----------------------
 
-``toga-cocoa`` uses the macOS AppKit Objective-C APIs to build apps. It uses `Rubicon
-Objective-C <https://rubicon-objc.readthedocs.org>`__ to provide a bridge to the native
-AppKit libraries from Python.
+The ``toga-cocoa`` backend uses the `AppKit Objective-C API
+<https://developer.apple.com/documentation/appkit/>`__, also known as Cocoa.
+
+The native APIs are accessed using `Rubicon Objective C
+<https://rubicon-objc.readthedocs.io/>`__.

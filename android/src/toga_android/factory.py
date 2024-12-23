@@ -1,11 +1,15 @@
+from toga import NotImplementedWarning
+
 from . import dialogs
-from .app import App, MainWindow
+from .app import App
 from .command import Command
 from .fonts import Font
 from .hardware.camera import Camera
+from .hardware.location import Location
 from .icons import Icon
 from .images import Image
 from .paths import Paths
+from .statusicons import MenuStatusIcon, SimpleStatusIcon, StatusIconSet
 from .widgets.box import Box
 from .widgets.button import Button
 from .widgets.canvas import Canvas
@@ -14,6 +18,7 @@ from .widgets.detailedlist import DetailedList
 from .widgets.divider import Divider
 from .widgets.imageview import ImageView
 from .widgets.label import Label
+from .widgets.mapview import MapView
 from .widgets.multilinetextinput import MultilineTextInput
 from .widgets.numberinput import NumberInput
 from .widgets.optioncontainer import OptionContainer
@@ -27,17 +32,16 @@ from .widgets.table import Table
 from .widgets.textinput import TextInput
 from .widgets.timeinput import TimeInput
 from .widgets.webview import WebView
-from .window import Window
+from .window import MainWindow, Window
 
 
 def not_implemented(feature):
-    print(f"[Android] Not implemented: {feature}")  # pragma: nocover
+    NotImplementedWarning.warn("Android", feature)
 
 
 __all__ = [
     "App",
     "Command",
-    "MainWindow",
     "not_implemented",
     # Resources
     "dialogs",
@@ -47,6 +51,11 @@ __all__ = [
     "Paths",
     # Hardware
     "Camera",
+    "Location",
+    # Status icons
+    "MenuStatusIcon",
+    "SimpleStatusIcon",
+    "StatusIconSet",
     # Widgets
     # ActivityIndicator
     "Box",
@@ -57,6 +66,7 @@ __all__ = [
     "Divider",
     "ImageView",
     "Label",
+    "MapView",
     "MultilineTextInput",
     "NumberInput",
     "OptionContainer",
@@ -72,6 +82,8 @@ __all__ = [
     "TimeInput",
     # "Tree",
     "WebView",
+    # Windows
+    "MainWindow",
     "Window",
 ]
 

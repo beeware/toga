@@ -28,11 +28,11 @@ from importlib.metadata import version as metadata_version
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
 extensions = [
     "sphinx.ext.autodoc",
-    "sphinx.ext.napoleon",
     "sphinx.ext.todo",
     "sphinx_tabs.tabs",
     "crate.sphinx.csv",
     "sphinx_copybutton",
+    "sphinx_toolbox.more_autodoc.autonamedtuple",
     "sphinx_toolbox.more_autodoc.autoprotocol",
     "sphinx.ext.intersphinx",
 ]
@@ -122,6 +122,9 @@ intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
     "PIL": ("https://pillow.readthedocs.io/en/stable/", None),
 }
+
+# Hide the class and module name on the right sidebar to prevent wrapping
+toc_object_entries_show_parents = "hide"
 
 # -- Local extensions ----------------------------------------------------------
 
@@ -275,6 +278,8 @@ html_css_files = [
     "custom.css",
 ]
 
+html_extra_path = ["extra"]
+
 # -- Options for LaTeX output --------------------------------------------------
 
 latex_elements = {
@@ -364,11 +369,13 @@ spelling_word_list_filename = "spelling_wordlist"
 
 # -- Options for Todos -------------------------------------------
 
-# If this is True, todo and todolist produce output, else they produce nothing. The default is False.
+# If this is True, todo and todolist produce output, else they produce nothing.
+# The default is False.
 todo_include_todos = True
 
 # If this is True, todo emits a warning for each TODO entries. The default is False.
 # todo_emit_warnings = False
 
-# If this is True, todolist produce output without file path and line, The default is False.
+# If this is True, todolist produce output without file path and line,
+# The default is False.
 # todo_link_only = False

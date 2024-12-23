@@ -6,6 +6,7 @@ from pytest import fixture
 import toga
 
 from ..conftest import skip_on_platforms
+from .conftest import build_cleanup_test
 from .properties import (  # noqa: F401
     test_background_color,
     test_background_color_reset,
@@ -80,6 +81,13 @@ def assert_none_value(normalize):
 async def widget():
     skip_on_platforms("macOS", "iOS", "linux")
     return toga.DateInput()
+
+
+test_cleanup = build_cleanup_test(
+    toga.DateInput,
+    skip_platforms=("macOS", "iOS", "linux"),
+    xfail_platforms=("android",),
+)
 
 
 async def test_init():

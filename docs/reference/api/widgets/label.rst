@@ -63,7 +63,7 @@ Usage
 Notes
 -----
 
-* Winforms does not support an alignment value of ``JUSTIFIED``. If this
+* Winforms does not support a text alignment value of ``JUSTIFIED``. If this
   alignment value is used, the label will default to left alignment.
 
 Reference

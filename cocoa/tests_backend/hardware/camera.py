@@ -55,6 +55,9 @@ class CameraProbe(AppProbe):
         def _mock_request_access(media_type, completionHandler):
             # Fire completion handler
             try:
+                self._mock_permissions[str(media_type)] = abs(
+                    self._mock_permissions[str(media_type)]
+                )
                 result = bool(self._mock_permissions[str(media_type)])
             except KeyError:
                 # If there's no explicit permission, it's a denial
@@ -114,7 +117,7 @@ class CameraProbe(AppProbe):
     def cleanup(self):
         # Ensure there are no open camrea preview windows at the end of a test.
         for window in self.app.camera._impl.preview_windows:
-            window.cocoa_windowShouldClose()
+            window.interface.close()
 
     def known_cameras(self):
         return {
@@ -134,10 +137,10 @@ class CameraProbe(AppProbe):
         self._mock_permissions = {}
 
     def grant_permission(self):
-        self._mock_permissions[str(AVMediaTypeVideo)] = -1
+        self._mock_permissions[str(AVMediaTypeVideo)] = 1
 
     def allow_permission(self):
-        self._mock_permissions[str(AVMediaTypeVideo)] = 1
+        self._mock_permissions[str(AVMediaTypeVideo)] = -1
 
     def reject_permission(self):
         self._mock_permissions[str(AVMediaTypeVideo)] = 0
@@ -200,8 +203,8 @@ class CameraProbe(AppProbe):
     async def cancel_photo(self, photo):
         window = self.app.camera._impl.preview_windows[0]
 
-        # Close the camera window.
-        window._impl.cocoa_windowShouldClose()
+        # Trigger a user close of the camera window
+        window.on_close()
         await self.redraw("Photo cancelled")
 
         # The window has been closed and the session ended

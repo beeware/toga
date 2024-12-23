@@ -71,6 +71,8 @@ The input can also be provided a list of :ref:`validators <validators>`. A
 validator is a function that will be invoked whenever the content of the input
 changes. The function should return ``None`` if the current value of the input
 is valid; if the current value is invalid, it should return an error message.
+When ``on_change`` is invoked, the field will automatically be validated based on
+specified validators.
 
 Notes
 -----
@@ -92,3 +94,8 @@ Reference
 ---------
 
 .. autoclass:: toga.TextInput
+
+.. autoprotocol:: toga.widgets.textinput.OnChangeHandler
+.. autoprotocol:: toga.widgets.textinput.OnConfirmHandler
+.. autoprotocol:: toga.widgets.textinput.OnGainFocusHandler
+.. autoprotocol:: toga.widgets.textinput.OnLoseFocusHandler

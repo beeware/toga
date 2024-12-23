@@ -9,7 +9,7 @@ from toga_cocoa.libs import (
 )
 
 from .base import SimpleProbe
-from .properties import toga_alignment, toga_color
+from .properties import toga_color, toga_text_align
 
 
 class TextInputProbe(SimpleProbe):
@@ -60,15 +60,15 @@ class TextInputProbe(SimpleProbe):
         return self.native.font
 
     @property
-    def alignment(self):
-        result = toga_alignment(self.native.alignment)
+    def text_align(self):
+        result = toga_text_align(self.native.alignment)
         if result == RIGHT:
             assert self.impl.error_label.alignment == NSLeftTextAlignment
         else:
             assert self.impl.error_label.alignment == NSRightTextAlignment
         return result
 
-    def assert_vertical_alignment(self, expected):
+    def assert_vertical_text_align(self, expected):
         # Vertical alignment isn't configurable on NSTextField
         pass
 
@@ -79,7 +79,8 @@ class TextInputProbe(SimpleProbe):
     @property
     def has_focus(self):
         # When the NSTextField gets focus, a field editor is created, and that editor
-        # has the original widget as the delegate. The first responder is the Field Editor.
+        # has the original widget as the delegate. The first responder is
+        # the Field Editor.
         return isinstance(self.native.window.firstResponder, NSTextView) and (
             self.native.window.firstResponder.delegate == self.native
         )

@@ -1,3 +1,5 @@
+from toga.types import Size
+
 from ..utils import LoggedObject
 
 
@@ -5,12 +7,11 @@ class Widget(LoggedObject):
     def __init__(self, interface):
         super().__init__()
         self.interface = interface
-        self.interface._impl = self
         self.container = None
         self.create()
 
-    def get_size(self):
-        return (37, 42)
+    def get_size(self) -> Size:
+        return Size(37, 42)
 
     def create(self):
         self._action("create Widget")
@@ -43,8 +44,8 @@ class Widget(LoggedObject):
     def set_bounds(self, x, y, width, height):
         self._action("set bounds", x=x, y=y, width=width, height=height)
 
-    def set_alignment(self, alignment):
-        self._action("set alignment", alignment=alignment)
+    def set_text_align(self, alignment):
+        self._action("set text alignment", alignment=alignment)
 
     def set_hidden(self, hidden):
         self._action("set hidden", hidden=hidden)

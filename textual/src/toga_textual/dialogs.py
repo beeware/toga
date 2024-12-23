@@ -1,8 +1,8 @@
-from abc import ABC
 from pathlib import Path
 
 from toga_textual.window import TitleBar
 
+import toga
 from textual.app import ComposeResult
 from textual.containers import Horizontal, Vertical, VerticalScroll
 from textual.screen import ModalScreen
@@ -48,15 +48,19 @@ class TextualDialog(ModalScreen[bool]):
         self.impl.style_content(self)
 
 
-class BaseDialog(ABC):
-    def __init__(self, interface, title, message):
-        self.interface = interface
-        self.interface._impl = self
+class BaseDialog:
+    def __init__(self, title, message):
         self.title = title
         self.message = message
 
         self.native = TextualDialog(self)
-        self.interface.app._impl.native.push_screen(self.native, self.on_close)
+
+    def show(self, host_window, future):
+        self.future = future
+
+        # Add the screen for the dialog. Don't differentiate between app and window
+        # modal dialogs - attack all of them to the app
+        toga.App.app._impl.native.push_screen(self.native, self.on_close)
 
     def compose_content(self, dialog):
         dialog.content = Label(self.message, id="message")
@@ -74,7 +78,7 @@ class BaseDialog(ABC):
         self.native.dismiss(None)
 
     def on_close(self, result: bool):
-        self.interface.set_result(result)
+        self.future.set_result(result)
 
 
 class InfoDialog(BaseDialog):
@@ -116,17 +120,13 @@ class ErrorDialog(BaseDialog):
 class StackTraceDialog(BaseDialog):
     def __init__(
         self,
-        interface,
         title,
         message,
         retry=False,
         content="",
     ):
-        super().__init__(
-            interface=interface,
-            title=title,
-            message=message,
-        )
+        super().__init__(title=title, message=message)
+
         self.retry = retry
         self.content = content
 
@@ -152,11 +152,13 @@ class StackTraceDialog(BaseDialog):
             ]
 
     def style_content(self, dialog):
+        # Textual apps must have a current window, so we can style
+        # relative to that window.
         dialog.content.styles.margin = 1
-        dialog.content.styles.height = self.interface.window.size[1] - 18
+        dialog.content.styles.height = toga.App.app.current_window.size[1] - 18
 
         dialog.container.styles.width = "80%"
-        dialog.container.styles.height = self.interface.window.size[1] - 10
+        dialog.container.styles.height = toga.App.app.current_window.size[1] - 10
 
         dialog.label.styles.margin = (0, 0, 1, 0)
 
@@ -220,17 +222,13 @@ class FilteredDirectoryTree(DirectoryTree):
 class SaveFileDialog(BaseDialog):
     def __init__(
         self,
-        interface,
         title,
         filename,
         initial_directory,
         file_types=None,
     ):
-        super().__init__(
-            interface=interface,
-            title=title,
-            message=None,
-        )
+        super().__init__(title=title, message=None)
+
         self.initial_filename = filename
         self.initial_directory = initial_directory if initial_directory else Path.cwd()
         self.file_types = file_types
@@ -262,14 +260,16 @@ class SaveFileDialog(BaseDialog):
         ]
 
     def style_content(self, dialog):
+        # Textual apps must have a current window, so we can style
+        # relative to that window.
         dialog.content.styles.margin = 1
-        dialog.content.styles.height = self.interface.window.size[1] - 18
+        dialog.content.styles.height = toga.App.app.current_window.size[1] - 18
 
         dialog.filename_label.styles.margin = (1, 0)
-        dialog.scroll.styles.height = self.interface.window.size[1] - 22
+        dialog.scroll.styles.height = toga.App.app.current_window.size[1] - 22
 
         dialog.container.styles.width = "80%"
-        dialog.container.styles.height = self.interface.window.size[1] - 10
+        dialog.container.styles.height = toga.App.app.current_window.size[1] - 10
 
     def on_select_file(self, path):
         if path.is_file():
@@ -288,17 +288,12 @@ class SaveFileDialog(BaseDialog):
 class OpenFileDialog(BaseDialog):
     def __init__(
         self,
-        interface,
         title,
         initial_directory,
         file_types,
         multiple_select,
     ):
-        super().__init__(
-            interface=interface,
-            title=title,
-            message=None,
-        )
+        super().__init__(title=title, message=None)
 
         self.initial_directory = initial_directory if initial_directory else Path.cwd()
         self.file_types = file_types
@@ -325,11 +320,13 @@ class OpenFileDialog(BaseDialog):
         ]
 
     def style_content(self, dialog):
+        # Textual apps must have a current window, so we can style
+        # relative to that window.
         dialog.content.styles.margin = 1
-        dialog.content.styles.height = self.interface.window.size[1] - 18
+        dialog.content.styles.height = toga.App.app.current_window.size[1] - 18
 
         dialog.container.styles.width = "80%"
-        dialog.container.styles.height = self.interface.window.size[1] - 10
+        dialog.container.styles.height = toga.App.app.current_window.size[1] - 10
 
     def on_select_file(self, path):
         ok_button = self.native.buttons[-1]
@@ -378,11 +375,13 @@ class SelectFolderDialog(BaseDialog):
         ]
 
     def style_content(self, dialog):
+        # Textual apps must have a current window, so we can style
+        # relative to that window.
         dialog.content.styles.margin = 1
-        dialog.content.styles.height = self.interface.window.size[1] - 19
+        dialog.content.styles.height = toga.App.app.current_window.size[1] - 19
 
         dialog.container.styles.width = "80%"
-        dialog.container.styles.height = self.interface.window.size[1] - 10
+        dialog.container.styles.height = toga.App.app.current_window.size[1] - 10
 
     def on_select_file(self, path):
         ok_button = self.native.buttons[-1]

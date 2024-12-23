@@ -1,13 +1,18 @@
 from __future__ import annotations
 
-from typing import Any
+from collections.abc import Iterable, Iterator, Mapping
+from typing import TypeVar
 
 from .base import Source
 from .list_source import Row, _find_item
 
+T = TypeVar("T")
 
-class Node(Row):
-    def __init__(self, **data):
+
+class Node(Row[T]):
+    _source: TreeSource
+
+    def __init__(self, **data: T):
         """Create a new Node object.
 
         The keyword arguments specified in the constructor will be converted into
@@ -21,10 +26,10 @@ class Node(Row):
         notified.
         """
         super().__init__(**data)
-        self._children: list[Node] | None = None
-        self._parent: Node | None = None
+        self._children: list[Node[T]] | None = None
+        self._parent: Node[T] | None = None
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         descriptor = " ".join(
             f"{attr}={getattr(self, attr)!r}"
             for attr in sorted(self.__dict__)
@@ -35,26 +40,29 @@ class Node(Row):
         if self._children is not None:
             descriptor += f"; {len(self)} children"
 
-        return f"<{'Leaf ' if self._children is None else ''}Node {id(self):x} {descriptor}>"
+        return (
+            f"<{'Leaf ' if self._children is None else ''}Node "
+            f"{id(self):x} {descriptor}>"
+        )
 
     ######################################################################
     # Methods required by the TreeSource interface
     ######################################################################
 
-    def __getitem__(self, index: int) -> Node:
+    def __getitem__(self, index: int) -> Node[T]:
         if self._children is None:
             raise ValueError(f"{self} is a leaf node")
 
         return self._children[index]
 
-    def __delitem__(self, index: int):
+    def __delitem__(self, index: int) -> None:
         if self._children is None:
             raise ValueError(f"{self} is a leaf node")
 
         child = self._children[index]
         del self._children[index]
 
-        # Child isn't part of this source, or a child of this node any more.
+        # Child isn't part of this source, or a child of this node anymore.
         child._parent = None
         child._source = None
 
@@ -79,10 +87,10 @@ class Node(Row):
     # Utility methods to make TreeSource more list-like
     ######################################################################
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[Node[T]]:
         return iter(self._children or [])
 
-    def __setitem__(self, index: int, data: Any):
+    def __setitem__(self, index: int, data: object) -> None:
         """Set the value of a specific child in the Node.
 
         :param index: The index of the child to change
@@ -100,7 +108,7 @@ class Node(Row):
         self._children[index] = node
         self._source.notify("change", item=node)
 
-    def insert(self, index: int, data: Any, children: Any = None):
+    def insert(self, index: int, data: object, children: object = None) -> Node[T]:
         """Insert a node as a child of this node a specific index.
 
         :param index: The index at which to insert the new child.
@@ -122,7 +130,7 @@ class Node(Row):
         self._source.notify("insert", parent=self, index=index, item=node)
         return node
 
-    def append(self, data: Any, children: Any = None):
+    def append(self, data: object, children: object = None) -> Node[T]:
         """Append a node to the end of the list of children of this node.
 
         :param data: The data to append as a child of this node. This data will be
@@ -132,7 +140,7 @@ class Node(Row):
         """
         return self.insert(len(self), data=data, children=children)
 
-    def remove(self, child: Node):
+    def remove(self, child: Node[T]) -> None:
         """Remove a child node from this node.
 
         :param child: The child node to remove from this node.
@@ -140,7 +148,7 @@ class Node(Row):
         # Index will raise ValueError if the node is a leaf
         del self[self.index(child)]
 
-    def index(self, child: Node):
+    def index(self, child: Node[T]) -> int:
         """The index of a specific node in children of this node.
 
         This search uses Node instances, and searches for an *instance* match.
@@ -157,7 +165,7 @@ class Node(Row):
 
         return self._children.index(child)
 
-    def find(self, data: Any, start: Node = None):
+    def find(self, data: object, start: Node[T] | None = None) -> Node[T]:
         """Find the first item in the child nodes of this node that matches all the
         provided attributes.
 
@@ -189,7 +197,9 @@ class Node(Row):
 
 
 class TreeSource(Source):
-    def __init__(self, accessors: list[str], data: dict | list[tuple] | None = None):
+    _roots: list[Node]
+
+    def __init__(self, accessors: Iterable[str], data: object | None = None):
         super().__init__()
         if isinstance(accessors, str) or not hasattr(accessors, "__iter__"):
             raise ValueError("accessors should be a list of attribute names")
@@ -199,7 +209,7 @@ class TreeSource(Source):
         if len(self._accessors) == 0:
             raise ValueError("TreeSource must be provided a list of accessors")
 
-        if data:
+        if data is not None:
             self._roots = self._create_nodes(parent=None, value=data)
         else:
             self._roots = []
@@ -214,7 +224,7 @@ class TreeSource(Source):
     def __getitem__(self, index: int) -> Node:
         return self._roots[index]
 
-    def __delitem__(self, index: int):
+    def __delitem__(self, index: int) -> None:
         node = self._roots[index]
         del self._roots[index]
         node._source = None
@@ -227,10 +237,10 @@ class TreeSource(Source):
     def _create_node(
         self,
         parent: Node | None,
-        data: Any,
-        children: list | dict | None = None,
-    ):
-        if isinstance(data, dict):
+        data: object,
+        children: object | None = None,
+    ) -> Node:
+        if isinstance(data, Mapping):
             node = Node(**data)
         elif hasattr(data, "__iter__") and not isinstance(data, str):
             node = Node(**dict(zip(self._accessors, data)))
@@ -245,8 +255,8 @@ class TreeSource(Source):
 
         return node
 
-    def _create_nodes(self, parent: Node | None, value: Any):
-        if isinstance(value, dict):
+    def _create_nodes(self, parent: Node | None, value: object) -> list[Node]:
+        if isinstance(value, Mapping):
             return [
                 self._create_node(parent=parent, data=data, children=children)
                 for data, children in value.items()
@@ -263,7 +273,7 @@ class TreeSource(Source):
     # Utility methods to make TreeSources more list-like
     ######################################################################
 
-    def __setitem__(self, index: int, data: Any):
+    def __setitem__(self, index: int, data: object) -> None:
         """Set the value of a specific root item in the data source.
 
         :param index: The root item to change
@@ -278,17 +288,12 @@ class TreeSource(Source):
         self._roots[index] = root
         self.notify("change", item=root)
 
-    def clear(self):
+    def clear(self) -> None:
         """Clear all data from the data source."""
         self._roots = []
         self.notify("clear")
 
-    def insert(
-        self,
-        index: int,
-        data: Any,
-        children: Any = None,
-    ):
+    def insert(self, index: int, data: object, children: object = None) -> Node:
         """Insert a root node into the data source at a specific index.
 
         If the node is a leaf node, it will be converted into a non-leaf node.
@@ -309,9 +314,10 @@ class TreeSource(Source):
         self._roots.insert(index, node)
         node._parent = None
         self.notify("insert", parent=None, index=index, item=node)
+
         return node
 
-    def append(self, data: Any, children: Any = None):
+    def append(self, data: object, children: object | None = None) -> Node:
         """Append a root node at the end of the list of children of this source.
 
         If the node is a leaf node, it will be converted into a non-leaf node.
@@ -324,7 +330,7 @@ class TreeSource(Source):
         """
         return self.insert(len(self), data=data, children=children)
 
-    def remove(self, node: Node):
+    def remove(self, node: Node) -> None:
         """Remove a node from the data source.
 
         This will also remove the node if it is a descendant of a root node.
@@ -353,7 +359,7 @@ class TreeSource(Source):
         """
         return self._roots.index(node)
 
-    def find(self, data: Any, start: Node = None):
+    def find(self, data: object, start: Node | None = None) -> Node:
         """Find the first item in the child nodes of the given node that matches all the
         provided attributes.
 

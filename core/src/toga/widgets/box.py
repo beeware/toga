@@ -1,6 +1,8 @@
 from __future__ import annotations
 
-from .base import Widget
+from collections.abc import Iterable
+
+from .base import StyleT, Widget
 
 
 class Box(Widget):
@@ -10,8 +12,8 @@ class Box(Widget):
     def __init__(
         self,
         id: str | None = None,
-        style=None,
-        children: list[Widget] | None = None,
+        style: StyleT | None = None,
+        children: Iterable[Widget] | None = None,
     ):
         """Create a new Box container widget.
 
@@ -22,13 +24,13 @@ class Box(Widget):
         """
         super().__init__(id=id, style=style)
 
-        # Create a platform specific implementation of a Box
-        self._impl = self.factory.Box(interface=self)
-
         # Children need to be added *after* the impl has been created.
-        self._children = []
-        if children:
+        self._children: list[Widget] = []
+        if children is not None:
             self.add(*children)
+
+    def _create(self):
+        return self.factory.Box(interface=self)
 
     @property
     def enabled(self) -> bool:

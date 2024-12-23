@@ -1,11 +1,14 @@
+from toga import NotImplementedWarning
+
 from . import dialogs
-from .app import App, DocumentApp, MainWindow
+from .app import App
 from .command import Command
-from .documents import Document
 from .fonts import Font
+from .hardware.location import Location
 from .icons import Icon
 from .images import Image
 from .paths import Paths
+from .statusicons import MenuStatusIcon, SimpleStatusIcon, StatusIconSet
 from .widgets.activityindicator import ActivityIndicator
 from .widgets.box import Box
 from .widgets.button import Button
@@ -14,6 +17,7 @@ from .widgets.detailedlist import DetailedList
 from .widgets.divider import Divider
 from .widgets.imageview import ImageView
 from .widgets.label import Label
+from .widgets.mapview import MapView
 from .widgets.multilinetextinput import MultilineTextInput
 from .widgets.numberinput import NumberInput
 from .widgets.optioncontainer import OptionContainer
@@ -28,26 +32,29 @@ from .widgets.table import Table
 from .widgets.textinput import TextInput
 from .widgets.tree import Tree
 from .widgets.webview import WebView
-from .window import Window
+from .window import MainWindow, Window
 
 
 def not_implemented(feature):
-    print(f"[GTK+] Not implemented: {feature}")  # pragma: nocover
+    NotImplementedWarning.warn("GTK", feature)
 
 
 __all__ = [
     "not_implemented",
     "App",
-    "DocumentApp",
-    "MainWindow",
     "Command",
-    "Document",
     # Resources
     "Font",
     "Icon",
     "Image",
     "Paths",
     "dialogs",
+    # Hardware
+    "Location",
+    # Status icons
+    "MenuStatusIcon",
+    "SimpleStatusIcon",
+    "StatusIconSet",
     # Widgets
     "ActivityIndicator",
     "Box",
@@ -57,6 +64,7 @@ __all__ = [
     "Divider",
     "ImageView",
     "Label",
+    "MapView",
     "MultilineTextInput",
     "NumberInput",
     "OptionContainer",
@@ -71,6 +79,8 @@ __all__ = [
     "TextInput",
     "Tree",
     "WebView",
+    # Windows
+    "MainWindow",
     "Window",
 ]
 

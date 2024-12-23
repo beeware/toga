@@ -10,16 +10,17 @@ install a backend that implements the core Toga API for that platform:
 * **iOS** `toga-iOS <https://pypi.org/project/toga-iOS>`__
 * **Linux** `toga-gtk <https://pypi.org/project/toga-gtk>`__
 * **macOS** `toga-cocoa <https://pypi.org/project/toga-cocoa>`__
+* **Textual** `toga-textual <https://pypi.org/project/toga-textual>`__
 * **Web** `toga-web <https://pypi.org/project/toga-web>`__
 * **Windows** `toga-winforms <https://pypi.org/project/toga-winforms>`__
 
 Minimum requirements
 --------------------
 
-Toga requires **Python 3.8** or newer. Python 2 is not supported.
+Toga requires **Python 3.9** or newer.
 
 Each backend also has specific requirements and pre-requisites. See the `platform
-documentation <https://toga.readthedocs.io/en/stable/reference/platforms.html>`__ for
+documentation <https://toga.readthedocs.io/en/latest/reference/platforms.html>`__ for
 details.
 
 Quickstart
@@ -66,7 +67,7 @@ contributors`_ will help you get started.
 If you experience problems with Toga, `log them on GitHub`_. If you want to
 contribute code, please `fork the code`_ and `submit a pull request`_.
 
-.. _guide for first time contributors: https://toga.readthedocs.io/en/latest/how-to/contribute-code.html
+.. _guide for first time contributors: https://toga.readthedocs.io/en/latest/how-to/contribute/index.html
 .. _log them on Github: https://github.com/beeware/toga/issues
 .. _fork the code: https://github.com/beeware/toga
 .. _submit a pull request: https://github.com/beeware/toga/pulls

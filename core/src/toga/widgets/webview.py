@@ -1,24 +1,34 @@
 from __future__ import annotations
 
 import asyncio
+from typing import Any, Protocol
 
-from toga.handlers import AsyncResult, wrapped_handler
+from toga.handlers import AsyncResult, OnResultT, wrapped_handler
 
-from .base import Widget
+from .base import StyleT, Widget
 
 
 class JavaScriptResult(AsyncResult):
     RESULT_TYPE = "JavaScript"
 
 
+class OnWebViewLoadHandler(Protocol):
+    def __call__(self, widget: WebView, **kwargs: Any) -> object:
+        """A handler to invoke when the WebView is loaded.
+
+        :param widget: The WebView that was loaded.
+        :param kwargs: Ensures compatibility with arguments added in future versions.
+        """
+
+
 class WebView(Widget):
     def __init__(
         self,
-        id=None,
-        style=None,
+        id: str | None = None,
+        style: StyleT | None = None,
         url: str | None = None,
         user_agent: str | None = None,
-        on_webview_load: callable | None = None,
+        on_webview_load: OnWebViewLoadHandler | None = None,
     ):
         """Create a new WebView widget.
 
@@ -32,21 +42,20 @@ class WebView(Widget):
         :param on_webview_load: A handler that will be invoked when the web view
             finishes loading.
         """
-
         super().__init__(id=id, style=style)
 
-        self._impl = self.factory.WebView(interface=self)
         self.user_agent = user_agent
 
         # Set the load handler before loading the first URL.
         self.on_webview_load = on_webview_load
         self.url = url
 
-    def _set_url(self, url, future):
+    def _create(self) -> Any:
+        return self.factory.WebView(interface=self)
+
+    def _set_url(self, url: str | None, future: asyncio.Future | None) -> None:
         # Utility method for validating and setting the URL with a future.
-        if (url is not None) and not (
-            url.startswith("https://") or url.startswith("http://")
-        ):
+        if (url is not None) and not url.startswith(("https://", "http://")):
             raise ValueError("WebView can only display http:// and https:// URLs")
 
         self._impl.set_url(url, future=future)
@@ -62,10 +71,10 @@ class WebView(Widget):
         return self._impl.get_url()
 
     @url.setter
-    def url(self, value):
+    def url(self, value: str | None) -> None:
         self._set_url(value, future=None)
 
-    async def load_url(self, url: str):
+    async def load_url(self, url: str) -> asyncio.Future:
         """Load a URL, and wait until the next :any:`on_webview_load` event.
 
         **Note:** On Android, this method will return immediately.
@@ -78,7 +87,7 @@ class WebView(Widget):
         return await loaded_future
 
     @property
-    def on_webview_load(self) -> callable:
+    def on_webview_load(self) -> OnWebViewLoadHandler:
         """The handler to invoke when the web view finishes loading.
 
         Rendering web content is a complex, multi-threaded process. Although a page
@@ -95,7 +104,10 @@ class WebView(Widget):
         return self._on_webview_load
 
     @on_webview_load.setter
-    def on_webview_load(self, handler):
+    def on_webview_load(self, handler: OnWebViewLoadHandler) -> None:
+        if handler and not getattr(self._impl, "SUPPORTS_ON_WEBVIEW_LOAD", True):
+            self.factory.not_implemented("WebView.on_webview_load")
+
         self._on_webview_load = wrapped_handler(self, handler)
 
     @property
@@ -108,10 +120,10 @@ class WebView(Widget):
         return self._impl.get_user_agent()
 
     @user_agent.setter
-    def user_agent(self, value):
+    def user_agent(self, value: str) -> None:
         self._impl.set_user_agent(value)
 
-    def set_content(self, root_url: str, content: str):
+    def set_content(self, root_url: str, content: str) -> None:
         """Set the HTML content of the WebView.
 
         **Note:** On Android and Windows, the ``root_url`` argument is ignored. Calling
@@ -123,7 +135,11 @@ class WebView(Widget):
         """
         self._impl.set_content(root_url, content)
 
-    def evaluate_javascript(self, javascript, on_result=None) -> JavaScriptResult:
+    def evaluate_javascript(
+        self,
+        javascript: str,
+        on_result: OnResultT | None = None,
+    ) -> JavaScriptResult:
         """Evaluate a JavaScript expression.
 
         **This is an asynchronous method**. There is no guarantee that the JavaScript

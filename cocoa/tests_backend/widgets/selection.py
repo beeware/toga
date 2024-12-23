@@ -13,8 +13,8 @@ class SelectionProbe(SimpleProbe):
         pass
 
     @property
-    def alignment(self):
-        xfail("Can't change the alignment of Selection on macOS")
+    def text_align(self):
+        xfail("Can't change the text alignment of Selection on macOS")
 
     @property
     def color(self):
@@ -46,8 +46,5 @@ class SelectionProbe(SimpleProbe):
         # Use a short delaly instead.
         await self.mouse_event(NSEventType.LeftMouseDown, point, delay=0.1)
 
-        # macOS coordinate systems are backwards, so to select the item *above*
-        # the current selection, you need to *add* height.
-        point.y = point.y + self.height
-        await self.mouse_event(NSEventType.LeftMouseDown, point, delay=0.1)
-        await self.mouse_event(NSEventType.LeftMouseUp, point, delay=0.1)
+        self.native.menu.performActionForItemAtIndex(1)
+        self.native.menu.cancelTracking()

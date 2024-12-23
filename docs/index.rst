@@ -6,8 +6,8 @@ Toga is a Python native, OS native, cross platform GUI toolkit. Toga consists of
 library of base components with a shared interface to simplify platform-agnostic GUI
 development.
 
-Toga is available on macOS, Windows, Linux (GTK), Android, iOS, and for
-single-page web apps.
+Toga is available on macOS, Windows, Linux (GTK), Android, iOS, for
+single-page web apps, and console apps.
 
 .. tabs::
 
@@ -29,49 +29,45 @@ single-page web apps.
        :align: center
        :width: 450px
 
+.. raw:: html
 
-.. rst-class::  row
-
-Table of contents
-=================
+  <div class="table">
 
 :ref:`Tutorial <tutorial>`
 --------------------------
 
-Get started with a hands-on introduction to Toga for beginners.
-
-:ref:`How-to guides <how-to>`
------------------------------
-
-Guides and recipes for common problems and tasks.
-
-:ref:`Background <background>`
-------------------------------
-
-Explanation and discussion of key topics and concepts.
+* :doc:`A quick Toga demonstration <tutorial/get-started>`
+* :doc:`A hands-on introduction to Toga </tutorial/index>`
 
 :ref:`Reference <reference>`
 ----------------------------
 
-Technical reference - commands, modules, classes, methods.
+* :doc:`API reference <reference/api/index>`
+* :doc:`Toga's platform support <reference/platforms/index>`
+* :doc:`Widget support by platform <reference/widgets_by_platform>`
+* :doc:`Managing style with Toga <reference/style/index>`
+* :doc:`Toga's plugin interfaces <reference/plugins/index>`
 
-Community
-=========
+:ref:`How-to <how-to>`
+----------------------
 
-Toga is part of the `BeeWare suite`_. You can talk to the community through:
+* :doc:`Topic guides </how-to/topics/index>`
+* :doc:`Contribute to Toga <how-to/contribute/index>`
+* :doc:`Internal Toga processes <how-to/internal/index>`
 
-* `@beeware@fosstodon.org on Mastodon`_
-* `Discord`_
-* The Toga `Github Discussions forum`_
+:ref:`Background <background>`
+------------------------------
 
-We foster a welcoming and respectful community as described in our
-`BeeWare Community Code of Conduct`_.
+* :doc:`Learn more about Toga </background/project/index>`
+* :doc:`Contacting the BeeWare community </background/community>`
+* :doc:`Toga's architecture and other internals </background/internals/index>`
 
-.. _BeeWare suite: https://beeware.org/
-.. _@beeware@fosstodon.org on Mastodon: https://fosstodon.org/@beeware
-.. _Discord: https://beeware.org/bee/chat/
-.. _Github Discussions forum: https://github.com/beeware/toga/discussions
-.. _BeeWare Community Code of Conduct: https://beeware.org/community/behavior/
+
+.. toctree::
+
+.. raw:: html
+
+  </div>
 
 
 .. toctree::
@@ -79,8 +75,7 @@ We foster a welcoming and respectful community as described in our
    :hidden:
    :titlesonly:
 
-
    tutorial/index
-   how-to/index
    reference/index
+   how-to/index
    background/index

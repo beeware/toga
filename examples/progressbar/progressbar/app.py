@@ -15,10 +15,10 @@ class ProgressBarApp(toga.App):
         self.progress_adder = toga.ProgressBar(max=MAX_PROGRESSBAR_VALUE)
 
         # set up common styles
-        label_style = Pack(flex=1, padding_right=5)
-        row_box_style = Pack(direction=ROW, padding=10)
-        col_box_style = Pack(direction=COLUMN, padding=10)
-        pbar_style = Pack(width=150, padding_right=5)
+        label_style = Pack(flex=1, margin_right=5)
+        row_box_style = Pack(direction=ROW, margin=10)
+        col_box_style = Pack(direction=COLUMN, margin=10)
+        pbar_style = Pack(width=150, margin_right=5)
 
         # Add the content on the main window
         self.main_window.content = toga.Box(

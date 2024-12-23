@@ -16,12 +16,12 @@ def test_tutorial_3():
                 children=[
                     ExampleNode(
                         "input",
-                        style=Pack(flex=1, padding=5),
+                        style=Pack(flex=1, margin=5),
                         size=(at_least(100), 15),
                     ),
                     ExampleNode(
                         "button",
-                        style=Pack(width=50, padding=5),
+                        style=Pack(width=50, margin=5),
                         size=(at_least(40), 10),
                     ),
                 ],

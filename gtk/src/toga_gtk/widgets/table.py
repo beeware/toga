@@ -17,11 +17,11 @@ class TogaRow(GObject.Object):
         data = getattr(self.value, attr, None)
         if isinstance(data, tuple):
             if data[0] is not None:
-                return data[0]._impl.native_16
+                return data[0]._impl.native(16)
             return None
         else:
             try:
-                return data.icon._impl.native_16
+                return data.icon._impl.native(16)
             except AttributeError:
                 return None
 

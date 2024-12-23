@@ -16,7 +16,7 @@ class ScreenshotGeneratorApp(toga.App):
         return toga.Box(
             children=[
                 toga.Box(style=Pack(flex=1)),
-                toga.ActivityIndicator(running=True, style=Pack(padding=10)),
+                toga.ActivityIndicator(running=True, style=Pack(margin=10)),
                 toga.Box(style=Pack(flex=1)),
             ],
             style=Pack(width=100),
@@ -27,14 +27,14 @@ class ScreenshotGeneratorApp(toga.App):
             children=[
                 toga.Button(
                     "Launch rocket",
-                    style=Pack(padding=10, flex=1),
+                    style=Pack(margin=10, flex=1),
                 )
             ],
             style=Pack(width=300),
         )
 
     def create_canvas(self):
-        canvas = toga.Canvas(style=Pack(padding=10, width=280, height=290))
+        canvas = toga.Canvas(style=Pack(margin=10, width=280, height=290))
         draw_tiberius(canvas)
 
         return toga.Box(children=[canvas], style=Pack(width=280, height=290))
@@ -43,7 +43,7 @@ class ScreenshotGeneratorApp(toga.App):
         return toga.Box(
             children=[
                 toga.Box(style=Pack(flex=1)),
-                toga.DateInput(value=date(2014, 4, 21), style=Pack(padding=10)),
+                toga.DateInput(value=date(2014, 4, 21), style=Pack(margin=10)),
                 toga.Box(style=Pack(flex=1)),
             ],
             style=Pack(width=300),
@@ -75,18 +75,18 @@ class ScreenshotGeneratorApp(toga.App):
                     "subtitle": "I can quote the fights historical!",
                 },
             ],
-            style=Pack(padding=10, width=self.MAX_WIDTH, height=300),
+            style=Pack(margin=10, width=self.MAX_WIDTH, height=300),
         )
 
     def create_divider(self):
         return toga.Box(
             children=[
                 toga.Label(
-                    "I'm on top", style=Pack(flex=1, padding=5, text_align=CENTER)
+                    "I'm on top", style=Pack(flex=1, margin=5, text_align=CENTER)
                 ),
-                toga.Divider(direction=toga.Divider.HORIZONTAL, style=Pack(padding=5)),
+                toga.Divider(direction=toga.Divider.HORIZONTAL, style=Pack(margin=5)),
                 toga.Label(
-                    "I'm below", style=Pack(flex=1, padding=5, text_align=CENTER)
+                    "I'm below", style=Pack(flex=1, margin=5, text_align=CENTER)
                 ),
             ],
             style=Pack(width=300, direction=COLUMN),
@@ -97,10 +97,17 @@ class ScreenshotGeneratorApp(toga.App):
             children=[
                 toga.Label(
                     "Brutus was here!",
-                    style=Pack(padding=10, text_align=CENTER, flex=1),
+                    style=Pack(margin=10, text_align=CENTER, flex=1),
                 )
             ],
             style=Pack(width=300),
+        )
+
+    def create_mapview(self):
+        return toga.MapView(
+            zoom=3,
+            pins=[toga.MapPin((-31.95064, 115.85889), title="Yagan Square")],
+            style=Pack(margin=10, width=self.MAX_WIDTH, height=300),
         )
 
     def create_multilinetextinput(self):
@@ -122,7 +129,7 @@ class ScreenshotGeneratorApp(toga.App):
                     "I am the very model of a modern Major-General.",
                 ]
             ),
-            style=Pack(padding=10, width=self.MAX_WIDTH, height=200),
+            style=Pack(margin=10, width=self.MAX_WIDTH, height=200),
         )
 
     def create_numberinput(self):
@@ -131,7 +138,7 @@ class ScreenshotGeneratorApp(toga.App):
                 toga.NumberInput(
                     value=2.71818,
                     step=0.00001,
-                    style=Pack(padding=10, flex=1),
+                    style=Pack(margin=10, flex=1),
                 )
             ],
             style=Pack(width=300),
@@ -142,7 +149,7 @@ class ScreenshotGeneratorApp(toga.App):
             children=[
                 toga.PasswordInput(
                     value="secret",
-                    style=Pack(padding=10, flex=1),
+                    style=Pack(margin=10, flex=1),
                 )
             ],
             style=Pack(width=300),
@@ -154,7 +161,7 @@ class ScreenshotGeneratorApp(toga.App):
                 toga.ProgressBar(
                     value=42,
                     max=100,
-                    style=Pack(padding=10, flex=1),
+                    style=Pack(margin=10, flex=1),
                 )
             ],
             style=Pack(width=300),
@@ -165,7 +172,7 @@ class ScreenshotGeneratorApp(toga.App):
             children=[
                 toga.Selection(
                     items=["Titanium", "Yttrium", "Yterbium"],
-                    style=Pack(padding=10, flex=1),
+                    style=Pack(margin=10, flex=1),
                 )
             ],
             style=Pack(width=300),
@@ -177,7 +184,7 @@ class ScreenshotGeneratorApp(toga.App):
                 toga.Slider(
                     value=42,
                     max=100,
-                    style=Pack(padding=10, flex=1),
+                    style=Pack(margin=10, flex=1),
                 )
             ],
             style=Pack(width=300),
@@ -190,7 +197,7 @@ class ScreenshotGeneratorApp(toga.App):
                 toga.Switch(
                     "Turbo",
                     value=True,
-                    style=Pack(padding=10),
+                    style=Pack(margin=10),
                 ),
                 toga.Box(style=Pack(flex=1)),
             ],
@@ -206,7 +213,7 @@ class ScreenshotGeneratorApp(toga.App):
                 ("Tricia McMillan", 38, "Earth"),
                 ("Slartibartfast", 1005, "Magrathea"),
             ],
-            style=Pack(padding=10, width=self.MAX_WIDTH, height=200),
+            style=Pack(margin=10, width=self.MAX_WIDTH, height=200),
         )
 
     def create_textinput(self):
@@ -214,7 +221,7 @@ class ScreenshotGeneratorApp(toga.App):
             children=[
                 toga.TextInput(
                     value="Brutus was here!",
-                    style=Pack(padding=10, flex=1),
+                    style=Pack(margin=10, flex=1),
                 )
             ],
             style=Pack(width=300),
@@ -224,7 +231,7 @@ class ScreenshotGeneratorApp(toga.App):
         return toga.Box(
             children=[
                 toga.Box(style=Pack(flex=1)),
-                toga.TimeInput(value=time(9, 7, 37), style=Pack(padding=10)),
+                toga.TimeInput(value=time(9, 7, 37), style=Pack(margin=10)),
                 toga.Box(style=Pack(flex=1)),
             ],
             style=Pack(width=300),
@@ -245,7 +252,7 @@ class ScreenshotGeneratorApp(toga.App):
                     ("Slartibartfast", 1005, "Annoyed"): None,
                 },
             },
-            style=Pack(padding=10, width=self.MAX_WIDTH, height=200),
+            style=Pack(margin=10, width=self.MAX_WIDTH, height=200),
         )
         tree.expand()
         return tree
@@ -253,7 +260,7 @@ class ScreenshotGeneratorApp(toga.App):
     def create_webview(self):
         return toga.WebView(
             url="https://beeware.org",
-            style=Pack(padding=10, width=self.MAX_WIDTH, height=300),
+            style=Pack(margin=10, width=self.MAX_WIDTH, height=300),
         )
 
     def create_optioncontainer(self):
@@ -267,7 +274,7 @@ class ScreenshotGeneratorApp(toga.App):
                 ("Green", toga.Box(), "resources/landmark"),
                 ("Red", toga.Box()),
             ],
-            style=Pack(padding=10, width=self.MAX_WIDTH, height=300),
+            style=Pack(margin=10, width=self.MAX_WIDTH, height=300),
         )
 
         return container
@@ -284,7 +291,7 @@ class ScreenshotGeneratorApp(toga.App):
                 ],
                 style=Pack(direction=COLUMN),
             ),
-            style=Pack(padding=10, width=self.MAX_WIDTH, height=300),
+            style=Pack(margin=10, width=self.MAX_WIDTH, height=300),
         )
 
         return container
@@ -295,7 +302,7 @@ class ScreenshotGeneratorApp(toga.App):
                 toga.Box(style=Pack(background_color="goldenrod")),
                 toga.Box(style=Pack(background_color="cornflowerblue")),
             ],
-            style=Pack(padding=10, width=self.MAX_WIDTH, height=300),
+            style=Pack(margin=10, width=self.MAX_WIDTH, height=300),
         )
 
         return container
@@ -320,7 +327,7 @@ class ScreenshotGeneratorApp(toga.App):
         proceed_button = toga.Button(
             "Done",
             on_press=proceed,
-            style=Pack(padding=10),
+            style=Pack(margin=10),
         )
 
         if content:
@@ -347,6 +354,7 @@ class ScreenshotGeneratorApp(toga.App):
             "detailedlist",
             "divider",
             "label",
+            "mapview",
             "multilinetextinput",
             "numberinput",
             "passwordinput",
@@ -372,10 +380,13 @@ class ScreenshotGeneratorApp(toga.App):
                         # image = self.main_window.screen.as_image()
                         # cropped = image.crop(... crop to window size ...)
                         #
-                        # TODO: Crop the desktop image, rather than use a manual screenshot
-                        await self.main_window.info_dialog(
-                            "Manual intervention",
-                            "Screenshot the main window, and then quit the app.",
+                        # TODO: Crop the desktop image,
+                        # rather than use a manual screenshot
+                        await self.main_window.dialog(
+                            toga.InfoDialog(
+                                "Manual intervention",
+                                "Screenshot the main window, and then quit the app.",
+                            )
                         )
                         self.main_window.toolbar.add(self.command2, self.command1)
                         self.main_window.content = toga.Box()
@@ -387,10 +398,13 @@ class ScreenshotGeneratorApp(toga.App):
                         # image = self.main_window.screen.as_image()
                         # cropped = image.crop(... crop to window size ...)
                         #
-                        # TODO: Crop the desktop image, rather than use a manual screenshot
-                        await self.main_window.info_dialog(
-                            "Manual intervention",
-                            "Screenshot the secondary window, then press Done.",
+                        # TODO: Crop the desktop image,
+                        # rather than use a manual screenshot
+                        await self.main_window.dialog(
+                            toga.InfoDialog(
+                                "Manual intervention",
+                                "Screenshot the secondary window, then press Done.",
+                            )
                         )
                         await self.manual_screenshot(toga.Box())
                         cropped = None
@@ -398,14 +412,16 @@ class ScreenshotGeneratorApp(toga.App):
                         content.close()
 
                     elif (
-                        content_type == "webview"
+                        content_type in {"webview", "mapview"}
                         and toga.platform.current_platform == "macOS"
                     ):
-                        # Manual screenshot required on macOS because webviews aren't
-                        # rendered directly on the Window.
-                        await self.main_window.info_dialog(
-                            "Manual intervention",
-                            "Screenshot the web widget content, then press Done.",
+                        # Manual screenshot required on macOS because screenshots don't
+                        # contain all the rendered content.
+                        await self.main_window.dialog(
+                            toga.InfoDialog(
+                                "Manual intervention",
+                                "Screenshot the widget content, then press Done.",
+                            )
                         )
                         await self.manual_screenshot(content)
                         cropped = None
@@ -416,8 +432,10 @@ class ScreenshotGeneratorApp(toga.App):
                         )
 
                         await asyncio.sleep(
+                            # Some widgets need a little longer to load content
                             {
                                 "webview": 4,
+                                "mapview": 4,
                             }.get(content_type, 2)
                         )
                         image = Image.open(BytesIO(self.main_window.as_image().data))

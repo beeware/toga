@@ -74,7 +74,8 @@ class Camera:
             ):
                 self.native = iOS.UIImagePickerController.new()
                 self.native.sourceType = UIImagePickerControllerSourceTypeCamera
-                self.native.delegate = TogaImagePickerDelegate.new()
+                self.delegate_link = TogaImagePickerDelegate.new()
+                self.native.delegate = self.delegate_link
             else:
                 self.native = None
         else:  # pragma: no cover
@@ -82,7 +83,8 @@ class Camera:
             # `permission.camera` in Briefcase). No-cover because we can't manufacture
             # this condition in testing.
             raise RuntimeError(
-                "Application metadata does not declare that the app will use the camera."
+                "Application metadata does not declare that the "
+                "app will use the camera."
             )
 
     def has_permission(self, allow_unknown=False):
@@ -159,8 +161,8 @@ class Camera:
             self.native.delegate.result = result
 
             # Show the pane
-            toga.App.app.current_window._impl.native.rootViewController.presentViewController(
-                self.native, animated=True, completion=None
-            )
+            (
+                toga.App.app.current_window._impl.native.rootViewController
+            ).presentViewController(self.native, animated=True, completion=None)
         else:
             raise PermissionError("App does not have permission to take photos")

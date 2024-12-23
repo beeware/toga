@@ -77,7 +77,7 @@ def tree(source, on_select_handler, on_activate_handler):
 
 
 def test_tree_created():
-    "An minimal Tree can be created"
+    """A minimal Tree can be created."""
     tree = toga.Tree(["First", "Second"])
     assert tree._impl.interface is tree
     assert_action_performed(tree, "create Tree")
@@ -92,7 +92,7 @@ def test_tree_created():
 
 
 def test_create_with_values(source, on_select_handler, on_activate_handler):
-    "A Tree can be created with initial values"
+    """A Tree can be created with initial values."""
     tree = toga.Tree(
         ["First", "Second"],
         data=source,
@@ -114,8 +114,8 @@ def test_create_with_values(source, on_select_handler, on_activate_handler):
     assert tree.on_activate._raw == on_activate_handler
 
 
-def test_create_with_acessor_overrides():
-    "A Tree can partially override accessors"
+def test_create_with_accessor_overrides():
+    """A Tree can partially override accessors."""
     tree = toga.Tree(
         ["First", "Second"],
         accessors={"First": "override"},
@@ -129,7 +129,7 @@ def test_create_with_acessor_overrides():
 
 
 def test_create_no_headings():
-    "A Tree can be created with no headings"
+    """A Tree can be created with no headings."""
     tree = toga.Tree(
         headings=None,
         accessors=["primus", "secondus"],
@@ -143,7 +143,7 @@ def test_create_no_headings():
 
 
 def test_create_headings_required():
-    "A Tree requires either headingscan be created with no headings"
+    """A Tree requires either headings can be created with no headings."""
     with pytest.raises(
         ValueError,
         match=r"Cannot create a tree without either headings or accessors",
@@ -152,7 +152,7 @@ def test_create_headings_required():
 
 
 def test_disable_no_op(tree):
-    "Tree doesn't have a disabled state"
+    """Tree doesn't have a disabled state."""
     # Enabled by default
     assert tree.enabled
 
@@ -164,7 +164,7 @@ def test_disable_no_op(tree):
 
 
 def test_focus_noop(tree):
-    "Focus is a no-op."
+    """Focus is a no-op."""
 
     tree.focus()
     assert_action_not_performed(tree, "focus")
@@ -230,7 +230,7 @@ def test_focus_noop(tree):
     ],
 )
 def test_set_data(tree, on_select_handler, data, all_attributes, extra_attributes):
-    "Data can be set from a variety of sources"
+    """Data can be set from a variety of sources."""
 
     # The selection hasn't changed yet.
     on_select_handler.assert_not_called()
@@ -265,7 +265,7 @@ def test_set_data(tree, on_select_handler, data, all_attributes, extra_attribute
 
 
 def test_single_selection(tree, on_select_handler):
-    "The current selection can be retrieved"
+    """The current selection can be retrieved."""
     # Selection is initially empty
     assert tree.selection is None
     on_select_handler.assert_not_called()
@@ -281,7 +281,7 @@ def test_single_selection(tree, on_select_handler):
 
 
 def test_multiple_selection(source, on_select_handler):
-    "A multi-select tree can have the selection retrieved"
+    """A multi-select tree can have the selection retrieved."""
     tree = toga.Tree(
         ["Title", "Value"],
         data=source,
@@ -303,7 +303,7 @@ def test_multiple_selection(source, on_select_handler):
 
 
 def test_expand_collapse(tree):
-    """The rows on a tree can be expanded and collapsed"""
+    """The rows on a tree can be expanded and collapsed."""
 
     # Expand the full tree
     tree.expand()
@@ -331,7 +331,7 @@ def test_expand_collapse(tree):
 
 
 def test_activation(tree, on_activate_handler):
-    """A row can be activated"""
+    """A row can be activated."""
 
     # Activate an item
     tree._impl.simulate_activate((0, 1))
@@ -341,7 +341,7 @@ def test_activation(tree, on_activate_handler):
 
 
 def test_insert_column_accessor(tree):
-    """A column can be inserted at an accessor"""
+    """A column can be inserted at an accessor."""
     tree.insert_column("value", "New Column", accessor="extra")
 
     # The column was added
@@ -357,13 +357,13 @@ def test_insert_column_accessor(tree):
 
 
 def test_insert_column_unknown_accessor(tree):
-    """If the insertion index accessor is unknown, an error is raised"""
+    """If the insertion index accessor is unknown, an error is raised."""
     with pytest.raises(ValueError, match=r"'unknown' is not in list"):
         tree.insert_column("unknown", "New Column", accessor="extra")
 
 
 def test_insert_column_index(tree):
-    """A column can be inserted"""
+    """A column can be inserted."""
 
     tree.insert_column(1, "New Column", accessor="extra")
 
@@ -380,7 +380,7 @@ def test_insert_column_index(tree):
 
 
 def test_insert_column_big_index(tree):
-    """A column can be inserted at an index bigger than the number of columns"""
+    """A column can be inserted at an index bigger than the number of columns."""
 
     tree.insert_column(100, "New Column", accessor="extra")
 
@@ -397,7 +397,7 @@ def test_insert_column_big_index(tree):
 
 
 def test_insert_column_negative_index(tree):
-    """A column can be inserted at a negative index"""
+    """A column can be inserted at a negative index."""
 
     tree.insert_column(-2, "New Column", accessor="extra")
 
@@ -414,7 +414,8 @@ def test_insert_column_negative_index(tree):
 
 
 def test_insert_column_big_negative_index(tree):
-    """A column can be inserted at a negative index larger than the number of columns"""
+    """A column can be inserted at a negative index larger than the number of
+    columns."""
 
     tree.insert_column(-100, "New Column", accessor="extra")
 
@@ -431,7 +432,7 @@ def test_insert_column_big_negative_index(tree):
 
 
 def test_insert_column_no_accessor(tree):
-    """A column can be inserted with a default accessor"""
+    """A column can be inserted with a default accessor."""
 
     tree.insert_column(1, "New Column")
 
@@ -448,7 +449,7 @@ def test_insert_column_no_accessor(tree):
 
 
 def test_insert_column_no_headings(source):
-    """A column can be inserted into a tree with no headings"""
+    """A column can be inserted into a tree with no headings."""
     tree = toga.Tree(headings=None, accessors=["key", "value"], data=source)
 
     tree.insert_column(1, "New Column", accessor="extra")
@@ -466,7 +467,7 @@ def test_insert_column_no_headings(source):
 
 
 def test_insert_column_no_headings_missing_accessor(source):
-    """An accessor is mandatory when adding a column to a tree with no headings"""
+    """An accessor is mandatory when adding a column to a tree with no headings."""
     tree = toga.Tree(headings=None, accessors=["key", "value"], data=source)
 
     with pytest.raises(
@@ -477,7 +478,7 @@ def test_insert_column_no_headings_missing_accessor(source):
 
 
 def test_append_column(tree):
-    """A column can be appended"""
+    """A column can be appended."""
     tree.append_column("New Column", accessor="extra")
 
     # The column was added
@@ -493,7 +494,7 @@ def test_append_column(tree):
 
 
 def test_remove_column_accessor(tree):
-    "A column can be removed by accessor"
+    """A column can be removed by accessor."""
 
     tree.remove_column("value")
 
@@ -508,19 +509,19 @@ def test_remove_column_accessor(tree):
 
 
 def test_remove_column_unknown_accessor(tree):
-    "If the column named for removal doesn't exist, an error is raised"
+    """If the column named for removal doesn't exist, an error is raised."""
     with pytest.raises(ValueError, match=r"'unknown' is not in list"):
         tree.remove_column("unknown")
 
 
 def test_remove_column_invalid_index(tree):
-    "If the index specified doesn't exist, an error is raised"
+    """If the index specified doesn't exist, an error is raised."""
     with pytest.raises(IndexError, match=r"list assignment index out of range"):
         tree.remove_column(100)
 
 
 def test_remove_column_index(tree):
-    "A column can be removed by index"
+    """A column can be removed by index."""
 
     tree.remove_column(1)
 
@@ -535,7 +536,7 @@ def test_remove_column_index(tree):
 
 
 def test_remove_column_negative_index(tree):
-    "A column can be removed by index"
+    """A column can be removed by index."""
 
     tree.remove_column(-2)
 
@@ -550,7 +551,7 @@ def test_remove_column_negative_index(tree):
 
 
 def test_remove_column_no_headings(tree):
-    "A column can be removed when there are no headings"
+    """A column can be removed when there are no headings."""
     tree = toga.Tree(
         headings=None,
         accessors=["primus", "secondus"],
@@ -566,40 +567,3 @@ def test_remove_column_no_headings(tree):
     )
     assert tree.headings is None
     assert tree.accessors == ["primus"]
-
-
-def test_deprecated_names(on_activate_handler):
-    "Deprecated names still work"
-
-    # Can't specify both on_double_click and on_activate
-    with pytest.raises(
-        ValueError,
-        match=r"Cannot specify both on_double_click and on_activate",
-    ):
-        toga.Tree(["First", "Second"], on_double_click=Mock(), on_activate=Mock())
-
-    # on_double_click is redirected at construction
-    with pytest.warns(
-        DeprecationWarning,
-        match="Tree.on_double_click has been renamed Tree.on_activate",
-    ):
-        tree = toga.Tree(["First", "Second"], on_double_click=on_activate_handler)
-
-    # on_double_click accessor is redirected to on_activate
-    with pytest.warns(
-        DeprecationWarning,
-        match="Tree.on_double_click has been renamed Tree.on_activate",
-    ):
-        assert tree.on_double_click._raw == on_activate_handler
-
-    assert tree.on_activate._raw == on_activate_handler
-
-    # on_double_click mutator is redirected to on_activate
-    new_handler = Mock()
-    with pytest.warns(
-        DeprecationWarning,
-        match="Tree.on_double_click has been renamed Tree.on_activate",
-    ):
-        tree.on_double_click = new_handler
-
-    assert tree.on_activate._raw == new_handler

@@ -78,13 +78,13 @@ def test_set_value_to_be_max(slider, on_change):
 
 
 def test_set_value_to_be_too_small(slider, on_change):
-    "Setting the value below the minimum results in clipping"
+    """Setting the value below the minimum results in clipping."""
     slider.value = INITIAL_MIN - 1
     assert_value(slider, on_change, tick_value=1, value=INITIAL_MIN, change_count=1)
 
 
 def test_set_value_to_be_too_big(slider, on_change):
-    "Setting the value above the maximum results in clipping"
+    """Setting the value above the maximum results in clipping."""
     slider.value = INITIAL_MAX + 1
     assert_value(slider, on_change, tick_value=11, value=INITIAL_MAX, change_count=1)
 
@@ -113,13 +113,13 @@ def test_set_tick_value_to_be_max(slider, on_change):
 
 
 def test_set_tick_value_to_be_too_small(slider, on_change):
-    "Setting the tick value to less than the min results in clipping"
+    """Setting the tick value to less than the min results in clipping."""
     slider.tick_value = 0
     assert_value(slider, on_change, tick_value=1, value=INITIAL_MIN, change_count=1)
 
 
 def test_set_tick_value_to_be_too_big(slider, on_change):
-    "Setting the tick value to greater than the max results in clipping"
+    """Setting the tick value to greater than the max results in clipping."""
     slider.tick_value = INITIAL_TICK_COUNT + 1
     assert_value(slider, on_change, tick_value=11, value=INITIAL_MAX, change_count=1)
 
@@ -338,8 +338,8 @@ def test_set_value_with_tick_count(
         slider, on_change, approx(value), tick_value=tick_value, change_count=1
     )
 
-    # Resetting the same value should round to the same result, so on_change should not be
-    # called.
+    # Resetting the same value should round to the same result, so on_change should not
+    # be called.
     on_change.reset_mock()
     slider.value = INITIAL_VALUE
     assert_value(
@@ -544,54 +544,3 @@ def test_int_impl_on_change(tick_count, data):
         impl.on_change()
         assert impl.get_value() == approx(value)
         impl.interface.on_change.assert_called_once_with()
-
-
-def test_deprecated():
-    "Check the deprecated min/max naming"
-    # Can't specify min and range
-    with pytest.raises(
-        ValueError,
-        match=r"range cannot be specified if min and max are specified",
-    ):
-        toga.Slider(min=2, range=(2, 4))
-
-    # Can't specify max and range
-    with pytest.raises(
-        ValueError,
-        match=r"range cannot be specified if min and max are specified",
-    ):
-        toga.Slider(max=4, range=(2, 4))
-
-    # Can't specify min and max and range
-    with pytest.raises(
-        ValueError,
-        match=r"range cannot be specified if min and max are specified",
-    ):
-        toga.Slider(min=2, max=4, range=(2, 4))
-
-    # Range is deprecated
-    with pytest.warns(
-        DeprecationWarning,
-        match="Slider.range has been deprecated in favor of Slider.min and Slider.max",
-    ):
-        widget = toga.Slider(range=(2, 4))
-
-    # range is converted to min/max
-    assert widget.min == pytest.approx(2)
-    assert widget.max == pytest.approx(4)
-
-    with pytest.warns(
-        DeprecationWarning,
-        match="Slider.range has been deprecated in favor of Slider.min and Slider.max",
-    ):
-        assert widget.range == (pytest.approx(2), pytest.approx(4))
-
-    # range is converted to min/max
-    with pytest.warns(
-        DeprecationWarning,
-        match="Slider.range has been deprecated in favor of Slider.min and Slider.max",
-    ):
-        widget.range = (6, 8)
-
-    assert widget.min == pytest.approx(6)
-    assert widget.max == pytest.approx(8)

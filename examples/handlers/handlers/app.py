@@ -1,6 +1,8 @@
 import asyncio
 import random
 
+import httpx
+
 import toga
 from toga.constants import COLUMN
 from toga.style import Pack
@@ -10,7 +12,8 @@ class HandlerApp(toga.App):
     # Button callback functions
     def do_clear(self, widget, **kwargs):
         self.counter = 0
-        self.label.text = "Ready."
+        self.on_running_label.text = "Ready."
+        self.background_label.text = "Ready."
         self.function_label.text = "Ready."
         self.generator_label.text = "Ready."
         self.async_label.text = "Ready."
@@ -44,27 +47,47 @@ class HandlerApp(toga.App):
         self.async_label.text = "Ready."
         widget.enabled = True
 
-    async def do_background_task(self, widget, **kwargs):
+    async def on_running(self, **kwargs):
+        """A task started when the app is running."""
+        # This task runs in the background, without blocking the main event loop
+        while True:
+            self.counter += 1
+            self.on_running_label.text = f"On Running: Iteration {self.counter}"
+            await asyncio.sleep(1)
+
+    async def do_background_task(self):
         """A background task."""
         # This task runs in the background, without blocking the main event loop
         while True:
             self.counter += 1
-            self.label.text = f"Background: Iteration {self.counter}"
+            self.background_label.text = f"Background: Iteration {self.counter}"
             await asyncio.sleep(1)
+
+    async def do_web_get(self, widget, **kwargs):
+        async with httpx.AsyncClient() as client:
+            response = await client.get(
+                f"https://jsonplaceholder.typicode.com/posts/{random.randint(0, 100)}"
+            )
+
+        payload = response.json()
+
+        self.web_label.text = payload["title"]
 
     def startup(self):
         # Set up main window
         self.main_window = toga.MainWindow()
 
         # Labels to show responses.
-        self.label = toga.Label("Ready.", style=Pack(padding=10))
-        self.function_label = toga.Label("Ready.", style=Pack(padding=10))
-        self.generator_label = toga.Label("Ready.", style=Pack(padding=10))
-        self.async_label = toga.Label("Ready.", style=Pack(padding=10))
+        self.on_running_label = toga.Label("Ready.", style=Pack(margin=10))
+        self.background_label = toga.Label("Ready.", style=Pack(margin=10))
+        self.function_label = toga.Label("Ready.", style=Pack(margin=10))
+        self.generator_label = toga.Label("Ready.", style=Pack(margin=10))
+        self.async_label = toga.Label("Ready.", style=Pack(margin=10))
+        self.web_label = toga.Label("Ready.", style=Pack(margin=10))
 
         # Add a background task.
         self.counter = 0
-        self.add_background_task(self.do_background_task)
+        asyncio.create_task(self.do_background_task())
 
         # Buttons
         btn_style = Pack(flex=1)
@@ -78,20 +101,26 @@ class HandlerApp(toga.App):
             "Async callback", on_press=self.do_async, style=btn_style
         )
         btn_clear = toga.Button("Clear", on_press=self.do_clear, style=btn_style)
+        btn_web = toga.Button(
+            "Get web content", on_press=self.do_web_get, style=btn_style
+        )
 
         # Outermost box
         box = toga.Box(
             children=[
-                self.label,
+                self.on_running_label,
+                self.background_label,
                 btn_function,
                 self.function_label,
                 btn_generator,
                 self.generator_label,
                 btn_async,
                 self.async_label,
+                btn_web,
+                self.web_label,
                 btn_clear,
             ],
-            style=Pack(flex=1, direction=COLUMN, padding=10),
+            style=Pack(flex=1, direction=COLUMN, margin=10),
         )
 
         # Add the content on the main window

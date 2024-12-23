@@ -124,32 +124,32 @@ class TextInput(Widget):
         self.error_label.textColor = NSColor.systemRedColor
         self.native.addSubview(self.error_label)
 
-        leading_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # noqa: E501
+        leading_constraint = NSLayoutConstraint.constraintWithItem(
             self.native,
-            NSLayoutAttributeLeading,
-            NSLayoutRelationEqual,
-            self.error_label,
-            NSLayoutAttributeLeading,
-            1.0,
-            4.0,
+            attribute__1=NSLayoutAttributeLeading,
+            relatedBy=NSLayoutRelationEqual,
+            toItem=self.error_label,
+            attribute__2=NSLayoutAttributeLeading,
+            multiplier=1.0,
+            constant=4.0,
         )
-        trailing_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # noqa: E501
+        trailing_constraint = NSLayoutConstraint.constraintWithItem(
             self.native,
-            NSLayoutAttributeTrailing,
-            NSLayoutRelationEqual,
-            self.error_label,
-            NSLayoutAttributeTrailing,
-            1.0,
-            4.0,
+            attribute__1=NSLayoutAttributeTrailing,
+            relatedBy=NSLayoutRelationEqual,
+            toItem=self.error_label,
+            attribute__2=NSLayoutAttributeTrailing,
+            multiplier=1.0,
+            constant=4.0,
         )
-        center_y_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # noqa: E501
+        center_y_constraint = NSLayoutConstraint.constraintWithItem(
             self.error_label,
-            NSLayoutAttributeCenterY,
-            NSLayoutRelationEqual,
-            self.native,
-            NSLayoutAttributeCenterY,
-            1.0,
-            0.0,
+            attribute__1=NSLayoutAttributeCenterY,
+            relatedBy=NSLayoutRelationEqual,
+            toItem=self.native,
+            attribute__2=NSLayoutAttributeCenterY,
+            multiplier=1.0,
+            constant=0.0,
         )
         self.native.addConstraints(
             [
@@ -162,7 +162,8 @@ class TextInput(Widget):
     @property
     def has_focus(self):
         # When the NSTextField gets focus, a field editor is created, and that editor
-        # has the original widget as the delegate. The first responder is the Field Editor.
+        # has the original widget as the delegate. The first responder is
+        # the Field Editor.
         return (
             self.native.window is not None
             and isinstance(self.native.window.firstResponder, NSTextView)
@@ -183,7 +184,7 @@ class TextInput(Widget):
     def set_placeholder(self, value):
         self.native.cell.placeholderString = value
 
-    def set_alignment(self, value):
+    def set_text_align(self, value):
         self.native.alignment = NSTextAlignment(value)
         # The alert label should be on the trailing edge
         if value == RIGHT:
@@ -213,14 +214,14 @@ class TextInput(Widget):
 
     def set_value(self, value):
         self.native.stringValue = value
-        self.interface.on_change()
-        self.interface._validate()
+        self.interface._value_changed()
 
     def rehint(self):
         # Height of a text input is known and fixed.
         # Width must be > 100
         # print("REHINT TextInput", self,
-        #     self._impl.intrinsicContentSize().width, self._impl.intrinsicContentSize().height
+        #     self._impl.intrinsicContentSize().width,
+        #     self._impl.intrinsicContentSize().height,
         # )
         self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
         self.interface.intrinsic.height = self.native.intrinsicContentSize().height

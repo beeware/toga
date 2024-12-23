@@ -3,9 +3,9 @@ import pytest
 from toga.colors import REBECCAPURPLE
 from toga.style.pack import (
     BOLD,
-    BOTTOM,
     CENTER,
     COLUMN,
+    END,
     HIDDEN,
     ITALIC,
     JUSTIFY,
@@ -18,9 +18,9 @@ from toga.style.pack import (
     ROW,
     RTL,
     SMALL_CAPS,
+    START,
     SYSTEM,
     SYSTEM_DEFAULT_FONT_SIZE,
-    TOP,
     VISIBLE,
     Pack,
 )
@@ -222,137 +222,118 @@ from toga.style.pack import (
         ),
         # Alignment - default layout
         pytest.param(
-            Pack(alignment=LEFT),
+            Pack(align_items=START),
             "flex-direction: row; flex: 0.0 0 auto; align-items: start;",
-            id="alignment-left",
+            id="align-items-start",
         ),
         pytest.param(
-            Pack(alignment=RIGHT),
+            Pack(align_items=END),
             "flex-direction: row; flex: 0.0 0 auto; align-items: end;",
-            id="alignment-right",
-        ),
-        pytest.param(  # alignment is ignored
-            Pack(alignment=TOP),
-            "flex-direction: row; flex: 0.0 0 auto;",
-            id="alignment-top",
-        ),
-        pytest.param(  # alignment is ignored
-            Pack(alignment=BOTTOM),
-            "flex-direction: row; flex: 0.0 0 auto;",
-            id="alignment-bottom",
+            id="align-items-end",
         ),
         pytest.param(
-            Pack(alignment=CENTER),
+            Pack(align_items=CENTER),
             "flex-direction: row; flex: 0.0 0 auto; align-items: center;",
-            id="alignment-center",
+            id="align-items-center",
         ),
         # Alignment - row layout
         pytest.param(
-            Pack(direction=ROW, alignment=LEFT),
+            Pack(direction=ROW, align_items=START),
             "flex-direction: row; flex: 0.0 0 auto; align-items: start;",
-            id="row-alignment-left",
+            id="row-align_items-start",
         ),
         pytest.param(
-            Pack(direction=ROW, alignment=RIGHT),
+            Pack(direction=ROW, align_items=END),
             "flex-direction: row; flex: 0.0 0 auto; align-items: end;",
-            id="row-alignment-right",
-        ),
-        pytest.param(  # alignment is ignored
-            Pack(direction=ROW, alignment=TOP),
-            "flex-direction: row; flex: 0.0 0 auto;",
-            id="row-alignment-top",
-        ),
-        pytest.param(  # alignment is ignored
-            Pack(direction=ROW, alignment=BOTTOM),
-            "flex-direction: row; flex: 0.0 0 auto;",
-            id="row-alignment-bottom",
+            id="row-align_items-end",
         ),
         pytest.param(
-            Pack(direction=ROW, alignment=CENTER),
+            Pack(direction=ROW, align_items=CENTER),
             "flex-direction: row; flex: 0.0 0 auto; align-items: center;",
-            id="row-alignment-center",
+            id="row-align_items-center",
         ),
         # Alignment - column layout
-        pytest.param(  # alignment is ignored
-            Pack(direction=COLUMN, alignment=LEFT),
-            "flex-direction: column; flex: 0.0 0 auto;",
-            id="column-alignment-left",
-        ),
-        pytest.param(  # alignment is ignored
-            Pack(direction=COLUMN, alignment=RIGHT),
-            "flex-direction: column; flex: 0.0 0 auto;",
-            id="column-alignment-right",
-        ),
         pytest.param(
-            Pack(direction=COLUMN, alignment=TOP),
+            Pack(direction=COLUMN, align_items=START),
             "flex-direction: column; flex: 0.0 0 auto; align-items: start;",
-            id="column-alignment-top",
+            id="column-align_items-start",
         ),
         pytest.param(
-            Pack(direction=COLUMN, alignment=BOTTOM),
+            Pack(direction=COLUMN, align_items=END),
             "flex-direction: column; flex: 0.0 0 auto; align-items: end;",
-            id="column-alignment-bottom",
+            id="column-align_items-end",
         ),
         pytest.param(
-            Pack(direction=COLUMN, alignment=CENTER),
+            Pack(direction=COLUMN, align_items=CENTER),
             "flex-direction: column; flex: 0.0 0 auto; align-items: center;",
-            id="column-alignment-center",
+            id="column-align_items-center",
         ),
-        # Padding
+        # Gap
         pytest.param(
-            Pack(padding_top=42),
+            Pack(gap=42),
+            "flex-direction: row; flex: 0.0 0 auto; gap: 42px;",
+            id="gap",
+        ),
+        pytest.param(
+            Pack(gap=0),
+            "flex-direction: row; flex: 0.0 0 auto;",
+            id="gap-0",
+        ),
+        # Margin
+        pytest.param(
+            Pack(margin_top=42),
             "flex-direction: row; flex: 0.0 0 auto; margin-top: 42px;",
-            id="padding-top",
+            id="margin-top",
         ),
         pytest.param(
-            Pack(padding_bottom=42),
+            Pack(margin_bottom=42),
             "flex-direction: row; flex: 0.0 0 auto; margin-bottom: 42px;",
-            id="padding-bottom",
+            id="margin-bottom",
         ),
         pytest.param(
-            Pack(padding_left=42),
+            Pack(margin_left=42),
             "flex-direction: row; flex: 0.0 0 auto; margin-left: 42px;",
-            id="padding-left",
+            id="margin-left",
         ),
         pytest.param(
-            Pack(padding_right=42),
+            Pack(margin_right=42),
             "flex-direction: row; flex: 0.0 0 auto; margin-right: 42px;",
-            id="padding-right",
+            id="margin-right",
         ),
         pytest.param(
-            Pack(padding=42),
+            Pack(margin=42),
             (
                 "flex-direction: row; flex: 0.0 0 auto; "
                 "margin-top: 42px; margin-bottom: 42px; "
                 "margin-left: 42px; margin-right: 42px;"
             ),
-            id="padding",
+            id="margin",
         ),
-        # Explicitly 0 padding
+        # Explicitly 0 margin
         pytest.param(
-            Pack(padding_top=0),
+            Pack(margin_top=0),
             "flex-direction: row; flex: 0.0 0 auto;",
-            id="padding-top-0",
-        ),
-        pytest.param(
-            Pack(padding_bottom=0),
-            "flex-direction: row; flex: 0.0 0 auto;",
-            id="padding-bottom-0",
+            id="margin-top-0",
         ),
         pytest.param(
-            Pack(padding_left=0),
+            Pack(margin_bottom=0),
             "flex-direction: row; flex: 0.0 0 auto;",
-            id="padding-left-0",
+            id="margin-bottom-0",
         ),
         pytest.param(
-            Pack(padding_right=0),
+            Pack(margin_left=0),
             "flex-direction: row; flex: 0.0 0 auto;",
-            id="padding-right-0",
+            id="margin-left-0",
         ),
         pytest.param(
-            Pack(padding=0),
+            Pack(margin_right=0),
             "flex-direction: row; flex: 0.0 0 auto;",
-            id="padding-0",
+            id="margin-right-0",
+        ),
+        pytest.param(
+            Pack(margin=0),
+            "flex-direction: row; flex: 0.0 0 auto;",
+            id="margin-0",
         ),
         # Color
         pytest.param(
@@ -363,7 +344,10 @@ from toga.style.pack import (
         # Background Color
         pytest.param(
             Pack(background_color=REBECCAPURPLE),
-            "flex-direction: row; flex: 0.0 0 auto; background-color: rgb(102, 51, 153);",
+            (
+                "flex-direction: row; flex: 0.0 0 auto; "
+                "background-color: rgb(102, 51, 153);"
+            ),
             id="background-color",
         ),
         # Text Alignment
@@ -475,5 +459,5 @@ from toga.style.pack import (
     ],
 )
 def test_rendering(style, expected_css):
-    """An empty style node can be rendered"""
+    """An empty style node can be rendered."""
     assert style.__css__() == expected_css

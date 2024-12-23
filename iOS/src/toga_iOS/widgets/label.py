@@ -41,7 +41,7 @@ class Label(Widget):
         # Add the layout constraints
         self.add_constraints()
 
-    def set_alignment(self, value):
+    def set_text_align(self, value):
         self.native.textAlignment = NSTextAlignment(value)
 
     def set_color(self, value):
@@ -77,6 +77,9 @@ class Label(Widget):
             limitedToNumberOfLines=len(self.interface.text.split("\n")),
         ).size
 
-        # print(f"REHINT label {self} {self.get_text()!r} {fitting_size.width} {fitting_size.height}")
+        # print(
+        #     f"REHINT label {self} {self.get_text()!r} "
+        #     f"{fitting_size.width} {fitting_size.height}"
+        # )
         self.interface.intrinsic.width = at_least(ceil(fitting_size.width))
         self.interface.intrinsic.height = ceil(fitting_size.height)

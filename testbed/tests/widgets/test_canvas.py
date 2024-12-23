@@ -1,4 +1,5 @@
 import math
+import os
 from math import pi, radians
 from unittest.mock import Mock, call
 
@@ -20,6 +21,7 @@ from toga.constants import Baseline, FillRule
 from toga.fonts import BOLD
 from toga.style.pack import SYSTEM, Pack
 
+from .conftest import build_cleanup_test
 from .properties import (  # noqa: F401
     test_background_color,
     test_background_color_reset,
@@ -105,6 +107,9 @@ async def canvas(widget, probe, on_resize_handler):
 
 def assert_pixel(image, x, y, color):
     assert image.getpixel((x, y)) == color
+
+
+test_cleanup = build_cleanup_test(toga.Canvas, xfail_platforms=("android",))
 
 
 async def test_resize(widget, probe, on_resize_handler):
@@ -231,11 +236,16 @@ async def test_image_data(canvas, probe):
 
     # Cloned image is the right size. The platform may do DPI scaling;
     # let the probe determine the correct scaled size.
-    probe.assert_image_size(image.size, (200, 200))
+    probe.assert_image_size(
+        image.size,
+        (200, 200),
+        screen=canvas.window.screen,
+    )
 
 
 def assert_reference(probe, reference, threshold=0.0):
-    """Assert that the canvas currently matches a reference image, within an RMS threshold"""
+    """Assert that the canvas currently matches a reference image, within an
+    RMS threshold"""
     # Get the canvas image.
     image = probe.get_image()
     scaled_image = image.resize((200, 200))
@@ -689,6 +699,10 @@ async def test_write_text(canvas, probe):
     assert_reference(probe, "write_text", threshold=0.07)
 
 
+@pytest.mark.xfail(
+    condition=os.environ.get("RUNNING_IN_CI") != "true",
+    reason="may fail outside of a GitHub runner environment",
+)
 async def test_multiline_text(canvas, probe):
     "Multiline text can be measured and written"
 

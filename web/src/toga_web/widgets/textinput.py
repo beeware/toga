@@ -27,7 +27,7 @@ class TextInput(Widget):
     def set_font(self, font):
         pass
 
-    def set_alignment(self, value):
+    def set_text_align(self, value):
         pass
 
     def rehint(self):

@@ -2,7 +2,7 @@ from toga.keys import Key
 
 
 def test_is_printable():
-    "Key printability can be checked"
+    """Key printability can be checked."""
     assert not Key.is_printable(Key.SHIFT)
     assert Key.is_printable(Key.LESS_THAN)
     assert Key.is_printable(Key.GREATER_THAN)
@@ -10,7 +10,7 @@ def test_is_printable():
 
 
 def test_modifiers():
-    "Keys can be added with modifiers"
+    """Keys can be added with modifiers."""
     # Mod + Key
     assert Key.MOD_1 + Key.A == "<mod 1>a"
 

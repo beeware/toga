@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+from collections.abc import Iterable, Mapping
 
 NON_ACCESSOR_CHARS = re.compile(r"[^\w ]")
 WHITESPACE = re.compile(r"\s+")
@@ -45,8 +46,8 @@ def to_accessor(heading: str) -> str:
 
 
 def build_accessors(
-    headings: list[str],
-    accessors: list[str | None] | dict[str, str] | None,
+    headings: Iterable[str],
+    accessors: Iterable[str | None] | Mapping[str, str] | None,
 ) -> list[str]:
     """Convert a list of headings (with accessor overrides) to a finalised list of
     accessors.
@@ -54,7 +55,7 @@ def build_accessors(
     :param headings: The list of headings.
     :param accessors: The list of accessor overrides. Can be specified as:
 
-        * A list the same length as headings. Each entry in the list is a a string that
+        * A list the same length as headings. Each entry in the list is a string that
           is the override name for the accessor, or :any:`None` if the default accessor
           for the heading at that index should be used.
         * A dictionary mapping heading names to accessor names. If a heading name isn't
@@ -62,13 +63,14 @@ def build_accessors(
 
     :returns: The final list of accessors.
     """
-    if accessors:
-        if isinstance(accessors, dict):
+    if accessors is not None:
+        if isinstance(accessors, Mapping):
             result = [
                 accessors[h] if h in accessors else to_accessor(h) for h in headings
             ]
         else:
-            if len(headings) != len(accessors):
+            # TODO: use zip(..., strict=True) instead once Python 3.9 support is dropped
+            if len(headings := list(headings)) != len(accessors := list(accessors)):
                 raise ValueError("Number of accessors must match number of headings")
 
             result = [

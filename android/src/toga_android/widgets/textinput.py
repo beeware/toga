@@ -98,7 +98,7 @@ class TextInput(TextViewWidget):
     def set_placeholder(self, value):
         self.native.setHint(value)
 
-    def set_alignment(self, value):
+    def set_text_align(self, value):
         self.set_textview_alignment(value, Gravity.CENTER_VERTICAL)
 
     def set_error(self, error_message):
@@ -111,8 +111,7 @@ class TextInput(TextViewWidget):
         return self.native.getError() is None
 
     def _on_change(self):
-        self.interface.on_change()
-        self.interface._validate()
+        self.interface._value_changed()
 
     def _on_confirm(self):
         self.interface.on_confirm()

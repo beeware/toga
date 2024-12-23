@@ -1,17 +1,32 @@
-# This project was generated using template: https://github.com/beeware/briefcase-template and branch: v0.3.12
+[project]
+name = "testbed"
+version = "0.0.1"
+
+[project.optional-dependencies]
+test = [
+    "coverage==7.6.9",
+    "coverage-conditional-plugin == 0.9.0",
+    # fonttools is only needed by Android, but we need to use
+    # sys.platform == 'linux' as there's no dependency identifier
+    # that can target Android exclusively until 3.13 lands.
+    "fonttools==4.55.3 ; sys.platform == 'linux'",
+    "pillow==11.0.0",
+    "pytest==8.3.4",
+    "pytest-asyncio==0.25.0",
+]
+
 [tool.briefcase]
 project_name = "Toga Testbed"
 bundle = "org.beeware.toga"
-version = "0.0.1"
 url = "https://beeware.org"
-license = "BSD license"
+license.file = "LICENSE"
 author = "Tiberius Yak"
 author_email = "tiberius@beeware.org"
 
 [tool.briefcase.app.testbed]
 formal_name = "Toga Testbed"
 description = "A testbed for Toga visual tests"
-icon = "src/testbed/resources/testbed"
+icon = "icons/testbed"
 sources = [
     "src/testbed",
 ]
@@ -21,14 +36,11 @@ test_sources = [
 requires = [
     "../core",
 ]
-test_requires = [
-    "coverage==7.2.0",
-    "pytest==7.2.0",
-    "pytest-asyncio==0.20.3",
-    "pillow==9.2.0",
-]
 
 permission.camera = "The testbed needs to exercise Camera APIs"
+permission.fine_location = "The testbed needs to exercise fine-grained geolocation services."
+permission.coarse_location = "The testbed needs to exercise coarse-grained geolocation services."
+permission.background_location = "The testbed needs to exercise capturing your location while in the background"
 
 [tool.briefcase.app.testbed.macOS]
 requires = [
@@ -46,24 +58,6 @@ test_sources = [
 requires = [
     "../gtk",
 ]
-
-[tool.briefcase.app.testbed.linux.appimage]
-system_requires = [
-    "libcairo2-dev",
-    "libgirepository1.0-dev",
-    "libgtk-3-dev",
-    "libpango1.0-dev",
-    "librsvg2-dev",
-    "libwebkit2gtk-4.0-dev",
-]
-linuxdeploy_plugins = [
-    "DEPLOY_GTK_VERSION=3 gtk",
-]
-
-[tool.briefcase.app.testbed.linux.flatpak]
-flatpak_runtime = "org.gnome.Platform"
-flatpak_runtime_version = "42"
-flatpak_sdk = "org.gnome.Sdk"
 
 [tool.briefcase.app.testbed.windows]
 test_sources = [
@@ -90,16 +84,13 @@ test_sources = [
 requires = [
     "../android",
 ]
-test_requires = [
-    "fonttools==4.42.1",
-]
 
 base_theme = "Theme.MaterialComponents.Light.DarkActionBar"
 
 build_gradle_dependencies = [
-    "androidx.appcompat:appcompat:1.6.1",
-    "com.google.android.material:material:1.11.0",
+    "com.google.android.material:material:1.12.0",
     "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0",
+    "org.osmdroid:osmdroid-android:6.1.20",
 ]
 
 build_gradle_extra_content = """\

@@ -1,39 +1,74 @@
 from __future__ import annotations
 
+import importlib
+import os
 import sys
 import warnings
-from io import BytesIO
+from functools import cache
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Protocol, TypeVar
 from warnings import warn
 
-try:
-    import PIL.Image
-
-    PIL_imported = True
-except ImportError:  # pragma: no cover
-    PIL_imported = False
-
 import toga
-from toga.platform import get_platform_factory
+from toga.platform import entry_points, get_platform_factory
 
 # Make sure deprecation warnings are shown by default
 warnings.filterwarnings("default", category=DeprecationWarning)
 
 if TYPE_CHECKING:
     if sys.version_info < (3, 10):
-        from typing_extensions import TypeAlias, TypeVar
+        from typing_extensions import TypeAlias
     else:
-        from typing import TypeAlias, TypeVar
+        from typing import TypeAlias
 
     # Define a type variable for generics where an Image type is required.
     ImageT = TypeVar("ImageT")
 
     # Define the types that can be used as Image content
-    PathLike: TypeAlias = str | Path
-    BytesLike: TypeAlias = bytes | bytearray | memoryview
-    ImageLike: TypeAlias = Any
-    ImageContent: TypeAlias = PathLike | BytesLike | ImageLike
+    PathLikeT: TypeAlias = str | os.PathLike
+    BytesLikeT: TypeAlias = bytes | bytearray | memoryview
+    ImageLikeT: TypeAlias = Any
+    ImageContentT: TypeAlias = PathLikeT | BytesLikeT | ImageLikeT
+
+    # Define a type variable representing an image of an externally defined type.
+    ExternalImageT = TypeVar("ExternalImageT")
+
+
+class ImageConverter(Protocol):
+    """A class to convert between an externally defined image type and
+    :any:`toga.Image`.
+    """
+
+    #: The base image class this plugin can interpret.
+    image_class: type[ExternalImageT]
+
+    @staticmethod
+    def convert_from_format(image_in_format: ExternalImageT) -> BytesLikeT:
+        """Convert from :any:`image_class` to data in a :ref:`known image format
+        <known-image-formats>`.
+
+        Will accept an instance of :any:`image_class`, or subclass of that class.
+
+        :param image_in_format: An instance of :any:`image_class` (or a subclass).
+        :returns: The image data, in a :ref:`known image format <known-image-formats>`.
+        """
+
+    @staticmethod
+    def convert_to_format(
+        data: BytesLikeT,
+        image_class: type[ExternalImageT],
+    ) -> ExternalImageT:
+        """Convert from data to :any:`image_class` or specified subclass.
+
+        Accepts a bytes-like object representing the image in a
+        :ref:`known image format <known-image-formats>`, and returns an instance of the
+        image class specified. This image class is guaranteed to be either the
+        :any:`image_class` registered by the plugin, or a subclass of that class.
+
+        :param data: Image data in a :ref:`known image format <known-image-formats>`.
+        :param image_class: The class of image to return.
+        :returns: The image, as an instance of the image class specified.
+        """
 
 
 NOT_PROVIDED = object()
@@ -42,26 +77,26 @@ NOT_PROVIDED = object()
 class Image:
     def __init__(
         self,
-        src: ImageContent = NOT_PROVIDED,
+        src: ImageContentT = NOT_PROVIDED,
         *,
-        path=NOT_PROVIDED,  # DEPRECATED
-        data=NOT_PROVIDED,  # DEPRECATED
+        path: object = NOT_PROVIDED,  # DEPRECATED
+        data: object = NOT_PROVIDED,  # DEPRECATED
     ):
         """Create a new image.
 
         :param src: The source from which to load the image. Can be any valid
-            :any:`image content <ImageContent>` type.
+            :any:`image content <ImageContentT>` type.
         :param path: **DEPRECATED** - Use ``src``.
         :param data: **DEPRECATED** - Use ``src``.
         :raises FileNotFoundError: If a path is provided, but that path does not exist.
         :raises ValueError: If the source cannot be loaded as an image.
         """
         ######################################################################
-        # 2023-11: Backwards compatibility
+        # 2023-11: Backwards compatibility for <= 0.4.0
         ######################################################################
         num_provided = sum(arg is not NOT_PROVIDED for arg in (src, path, data))
         if num_provided > 1:
-            raise ValueError("Received multiple arguments to constructor.")
+            raise TypeError("Received multiple arguments to constructor.")
         if num_provided == 0:
             raise TypeError(
                 "Image.__init__() missing 1 required positional argument: 'src'"
@@ -100,21 +135,38 @@ class Image:
         elif isinstance(src, Image):
             self._impl = self.factory.Image(interface=self, data=src.data)
 
-        elif PIL_imported and isinstance(src, PIL.Image.Image):
-            buffer = BytesIO()
-            src.save(buffer, format="png", compress_level=0)
-            self._impl = self.factory.Image(interface=self, data=buffer.getvalue())
-
         elif isinstance(src, self.factory.Image.RAW_TYPE):
             self._impl = self.factory.Image(interface=self, raw=src)
 
         else:
+            for converter in self._converters():
+                if isinstance(src, converter.image_class):
+                    data = converter.convert_from_format(src)
+                    self._impl = self.factory.Image(interface=self, data=data)
+                    return
+
             raise TypeError("Unsupported source type for Image")
 
+    @classmethod
+    @cache
+    def _converters(cls) -> list[ImageConverter]:
+        """Return list of registered image plugin converters. Only loaded once."""
+        converters = []
+
+        for image_plugin in entry_points(group="toga.image_formats"):
+            module_name, class_name = image_plugin.value.rsplit(".", 1)
+            module = importlib.import_module(module_name)
+            converter = getattr(module, class_name)
+
+            if converter.image_class is not None:
+                converters.append(converter)
+
+        return converters
+
     @property
-    def size(self) -> (int, int):
+    def size(self) -> tuple[int, int]:
         """The size of the image, as a (width, height) tuple."""
-        return (self._impl.get_width(), self._impl.get_height())
+        return self._impl.get_width(), self._impl.get_height()
 
     @property
     def width(self) -> int:
@@ -149,18 +201,19 @@ class Image:
     def as_format(self, format: type[ImageT]) -> ImageT:
         """Return the image, converted to the image format specified.
 
-        :param format: The image class to return. Currently supports only :any:`Image`,
-            and :any:`PIL.Image.Image` if Pillow is installed.
+        :param format: Format to provide. Defaults to :class:`~toga.images.Image`; also
+             supports :any:`PIL.Image.Image` if Pillow is installed, as well as any
+             image types defined by installed :doc:`image format plugins
+             </reference/plugins/image_formats>`.
         :returns: The image in the requested format
         :raises TypeError: If the format supplied is not recognized.
         """
-        if isinstance(format, type) and issubclass(format, Image):
-            return format(self.data)
+        if isinstance(format, type):
+            if issubclass(format, Image):
+                return format(self.data)
 
-        if PIL_imported and format is PIL.Image.Image:
-            buffer = BytesIO(self.data)
-            with PIL.Image.open(buffer) as pil_image:
-                pil_image.load()
-            return pil_image
+            for converter in self._converters():
+                if issubclass(format, converter.image_class):
+                    return converter.convert_to_format(self.data, format)
 
         raise TypeError(f"Unknown conversion format for Image: {format}")

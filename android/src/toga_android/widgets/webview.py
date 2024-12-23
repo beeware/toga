@@ -23,6 +23,8 @@ class ReceiveString(dynamic_proxy(ValueCallback)):
 
 
 class WebView(Widget):
+    SUPPORTS_ON_WEBVIEW_LOAD = False
+
     def create(self):
         self.native = A_WebView(self._native_activity)
         # Set a WebViewClient so that new links open in this activity,
@@ -32,6 +34,7 @@ class WebView(Widget):
         self.settings = self.native.getSettings()
         self.default_user_agent = self.settings.getUserAgentString()
         self.settings.setJavaScriptEnabled(True)
+        self.settings.setDomStorageEnabled(True)
         # enable pinch-to-zoom without the deprecated on-screen controls
         self.settings.setBuiltInZoomControls(True)
         self.settings.setDisplayZoomControls(False)

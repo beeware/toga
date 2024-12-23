@@ -98,10 +98,9 @@ class ExampleTestCommandApp(toga.App):
         cmd5 = toga.Command(
             self.action5,
             text="TB Action 5",
-            tooltip="Perform toolbar action 5",
             order=2,
             group=sub_menu,
-        )  # there is deliberately no icon to show that a toolbar action also works with text
+        )  # there is deliberately no icon or tooltip
         cmd6 = toga.Command(
             self.action6,
             text="Action 6",
@@ -158,7 +157,7 @@ class ExampleTestCommandApp(toga.App):
         # Outermost box
         outer_box = toga.Box(
             children=[btn_box, self.textpanel],
-            style=Pack(flex=1, direction=COLUMN, padding=10),
+            style=Pack(flex=1, direction=COLUMN, margin=10),
         )
 
         # Add the content on the main window

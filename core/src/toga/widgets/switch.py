@@ -1,17 +1,29 @@
 from __future__ import annotations
 
+from typing import Any, Protocol
+
+import toga
 from toga.handlers import wrapped_handler
 
-from .base import Widget
+from .base import StyleT, Widget
+
+
+class OnChangeHandler(Protocol):
+    def __call__(self, widget: Switch, **kwargs: Any) -> object:
+        """A handler to invoke when the value is changed.
+
+        :param widget: The Switch that was changed.
+        :param kwargs: Ensures compatibility with arguments added in future versions.
+        """
 
 
 class Switch(Widget):
     def __init__(
         self,
-        text,
-        id=None,
-        style=None,
-        on_change: callable | None = None,
+        text: str,
+        id: str | None = None,
+        style: StyleT | None = None,
+        on_change: toga.widgets.switch.OnChangeHandler | None = None,
         value: bool = False,
         enabled: bool = True,
     ):
@@ -29,18 +41,19 @@ class Switch(Widget):
         """
         super().__init__(id=id, style=style)
 
-        self._impl = self.factory.Switch(interface=self)
-
         self.text = text
 
-        # Set a dummy handler before installing the actual on_change, because we do not want
-        # on_change triggered by the initial value being set
+        # Set a dummy handler before installing the actual on_change, because we do not
+        # want on_change triggered by the initial value being set
         self.on_change = None
         self.value = value
 
         self.on_change = on_change
 
         self.enabled = enabled
+
+    def _create(self) -> Any:
+        return self.factory.Switch(interface=self)
 
     @property
     def text(self) -> str:
@@ -56,7 +69,7 @@ class Switch(Widget):
         return self._impl.get_text()
 
     @text.setter
-    def text(self, value):
+    def text(self, value: object) -> None:
         if value is None or value == "\u200B":
             value = ""
         else:
@@ -68,12 +81,12 @@ class Switch(Widget):
         self.refresh()
 
     @property
-    def on_change(self) -> callable:
+    def on_change(self) -> OnChangeHandler:
         """The handler to invoke when the value of the switch changes."""
         return self._on_change
 
     @on_change.setter
-    def on_change(self, handler):
+    def on_change(self, handler: toga.widgets.switch.OnChangeHandler) -> None:
         self._on_change = wrapped_handler(self, handler)
 
     @property
@@ -85,9 +98,9 @@ class Switch(Widget):
         return self._impl.get_value()
 
     @value.setter
-    def value(self, value):
+    def value(self, value: object) -> None:
         self._impl.set_value(bool(value))
 
-    def toggle(self):
+    def toggle(self) -> None:
         """Reverse the current value of the switch."""
         self.value = not self.value

@@ -3,12 +3,10 @@ import asyncio
 from rubicon.objc import objc_method
 from rubicon.objc.eventloop import EventLoopPolicy, iOSLifecycle
 
-from toga_iOS.libs import UIResponder, av_foundation
-from toga_iOS.window import Window
+import toga
+from toga_iOS.libs import UIResponder, UIScreen, av_foundation
 
-
-class MainWindow(Window):
-    _is_main_window = True
+from .screens import Screen as ScreenImpl
 
 
 class PythonAppDelegate(UIResponder):
@@ -51,6 +49,12 @@ class PythonAppDelegate(UIResponder):
 
 
 class App:
+    # iOS apps exit when the last window is closed
+    CLOSE_ON_LAST_WINDOW = True
+    # iOS doesn't have command line handling;
+    # but saying it does shortcuts the default handling
+    HANDLES_COMMAND_LINE = True
+
     def __init__(self, interface):
         self.interface = interface
         self.interface._impl = self
@@ -67,12 +71,23 @@ class App:
         """Calls the startup method on the interface."""
         self.interface._startup()
 
-    def open_document(self, fileURL):  # pragma: no cover
-        """Add a new document to this app."""
+    ######################################################################
+    # Commands and menus
+    ######################################################################
+
+    def create_standard_commands(self):
         pass
 
     def create_menus(self):
         # No menus on an iOS app (for now)
+        pass
+
+    ######################################################################
+    # App lifecycle
+    ######################################################################
+
+    def exit(self):  # pragma: no cover
+        # Mobile apps can't be exited, but the entry point needs to exist
         pass
 
     def main_loop(self):
@@ -82,36 +97,48 @@ class App:
         # iOS event loop.
         self.loop.run_forever_cooperatively(lifecycle=iOSLifecycle())
 
+    def set_icon(self, icon):
+        # iOS apps don't have runtime icons, so this can't be invoked
+        pass  # pragma: no cover
+
     def set_main_window(self, window):
-        pass
+        if window is None or window == toga.App.BACKGROUND:
+            raise ValueError("Apps without main windows are not supported on iOS")
 
-    def get_current_window(self):
-        # iOS only has a main window.
-        return self.interface.main_window._impl
+    ######################################################################
+    # App resources
+    ######################################################################
 
-    def set_current_window(self, window):
-        # iOS only has a main window, so this is a no-op
-        pass
+    def get_screens(self):
+        return [ScreenImpl(UIScreen.mainScreen)]
 
-    def show_about_dialog(self):
-        self.interface.factory.not_implemented("App.show_about_dialog()")
+    ######################################################################
+    # App state
+    ######################################################################
+
+    def get_dark_mode_state(self):
+        self.interface.factory.not_implemented("dark mode state")
+        return None
+
+    ######################################################################
+    # App capabilities
+    ######################################################################
 
     def beep(self):
         # 1013 is a magic constant that is the "SMS RECEIVED 5" sound,
         # sounding like a single strike of a bell.
         av_foundation.AudioServicesPlayAlertSound(1013)
 
-    def exit(self):  # pragma: no cover
-        # Mobile apps can't be exited, but the entry point needs to exist
+    def open_document(self, fileURL):  # pragma: no cover
+        """Add a new document to this app."""
         pass
 
-    def enter_full_screen(self, windows):
-        # No-op; mobile doesn't support full screen
-        pass
+    def show_about_dialog(self):
+        self.interface.factory.not_implemented("App.show_about_dialog()")
 
-    def exit_full_screen(self, windows):
-        # No-op; mobile doesn't support full screen
-        pass
+    ######################################################################
+    # Cursor control
+    ######################################################################
 
     def hide_cursor(self):
         # No-op; mobile doesn't support cursors
@@ -119,4 +146,16 @@ class App:
 
     def show_cursor(self):
         # No-op; mobile doesn't support cursors
+        pass
+
+    ######################################################################
+    # Window control
+    ######################################################################
+
+    def get_current_window(self):
+        # iOS only has a main window.
+        return self.interface.main_window._impl
+
+    def set_current_window(self, window):
+        # iOS only has a main window, so this is a no-op
         pass

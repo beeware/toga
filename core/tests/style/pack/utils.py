@@ -7,9 +7,23 @@ from toga.style.applicator import TogaApplicator
 
 class ExampleNode(Node):
     def __init__(self, name, style, size=None, children=None):
-        super().__init__(
-            style=style, children=children, applicator=TogaApplicator(self)
-        )
+        self._impl = Mock()
+        self._children = None
+
+        super().__init__(style=style, children=children, applicator=TogaApplicator())
+
+        ##############################################
+        # Backwards compatibility for Travertino 0.3.0
+        ##############################################
+
+        if not hasattr(self.applicator, "node"):
+            self.applicator.node = self
+            self.style._applicator = self.applicator
+            self.style.reapply()
+
+        #############################
+        # End backwards compatibility
+        #############################
 
         self.name = name
         self._impl = Mock()
@@ -23,7 +37,7 @@ class ExampleNode(Node):
         return f"<{self.name}>"
 
     def __html__(self, depth=0):
-        "Debugging helper - output the HTML interpretation of this layout"
+        """Debugging helper - output the HTML interpretation of this layout"""
         if depth:
             tag = "div"
         else:
@@ -63,6 +77,13 @@ class ExampleNode(Node):
         pass
 
 
+class ExampleParentNode(ExampleNode):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self._children = []
+
+
 class ExampleViewport:
     def __init__(self, width, height):
         self.height = height
@@ -74,13 +95,15 @@ def _assert_layout(node, expected_layout):
         node.layout.absolute_content_left,
         node.layout.absolute_content_top,
     ) == expected_layout["origin"], (
-        f"origin of {node} ({node.layout.absolute_content_left}, {node.layout.absolute_content_top}) "
+        f"origin of {node} "
+        f"({node.layout.absolute_content_left}, {node.layout.absolute_content_top}) "
         f"doesn't match expected {expected_layout['origin']}"
     )
     assert (node.layout.content_width, node.layout.content_height) == expected_layout[
         "content"
     ], (
-        f"content size of {node} ({node.layout.content_width}, {node.layout.content_height}) "
+        f"content size of {node} "
+        f"({node.layout.content_width}, {node.layout.content_height}) "
         f"doesn't match expected {expected_layout['content']}"
     )
 

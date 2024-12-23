@@ -6,7 +6,7 @@ from .test_command import assert_order
 
 
 def test_create():
-    """A group can be created with defaults"""
+    """A group can be created with defaults."""
     grp = toga.Group("Group name")
     assert grp.text == "Group name"
     assert grp.order == 0
@@ -15,7 +15,7 @@ def test_create():
 
 
 def test_create_with_params():
-    """A fully specified group can be created"""
+    """A fully specified group can be created."""
     parent = toga.Group("Parent name")
     grp = toga.Group("Group name", order=2, section=3, parent=parent)
 
@@ -24,9 +24,9 @@ def test_create_with_params():
     assert grp.section == 3
     assert grp.parent == parent
 
-    assert (
-        repr(grp)
-        == "<Group text='Group name' order=2 parent=<Group text='Parent name' order=0> section=3>"
+    assert repr(grp) == (
+        "<Group text='Group name' order=2 "
+        "parent=<Group text='Parent name' order=0> section=3>"
     )
 
 
@@ -92,7 +92,7 @@ def test_group_eq():
 
 
 def test_parent_creation():
-    """Parents can be assigned at creation"""
+    """Parents can be assigned at creation."""
     group_a = toga.Group("A")
     group_b = toga.Group("B", parent=group_a)
     group_c = toga.Group("C", parent=group_b)
@@ -131,7 +131,7 @@ def test_parent_creation():
 
 
 def test_parent_assignment():
-    """Parents can be assigned at runtime"""
+    """Parents can be assigned at runtime."""
     # Eventually, we'll end up with A->B->C, D.
     group_a = toga.Group("A")
     group_b = toga.Group("B")
@@ -218,7 +218,7 @@ def test_parent_assignment():
 
 
 def test_parent_loops():
-    """Parent loops are prevented can be assigned at runtime"""
+    """Parent loops are prevented can be assigned at runtime."""
     group_a = toga.Group("A")
     group_b = toga.Group("B", parent=group_a)
     group_c = toga.Group("C", parent=group_b)
@@ -244,12 +244,12 @@ def test_parent_loops():
 
 
 def test_order_by_text():
-    """Groups are ordered by text if order and section are equivalent"""
+    """Groups are ordered by text if order and section are equivalent."""
     assert_order(toga.Group("A"), toga.Group("B"))
 
 
 def test_order_by_number():
-    """Groups are ordered by number"""
+    """Groups are ordered by number."""
     assert_order(toga.Group("B", order=1), toga.Group("A", order=2))
 
 
