@@ -34,6 +34,10 @@ class WindowProbe(BaseProbe, DialogsMixin):
             while (loop.time() - start_time) < timeout:
                 try:
                     assert self.instantaneous_state == state
+                    if state in {WindowState.FULLSCREEN, WindowState.PRESENTATION}:
+                        # Add a slight delay to ensure window properties like
+                        # `content_size` are updated according to the new state.
+                        await self.redraw(delay=0.1)
                     return
                 except AssertionError as e:
                     exception = e
