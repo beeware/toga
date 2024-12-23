@@ -89,54 +89,6 @@ class OnCloseHandler(Protocol):
         ...
 
 
-class OnGainFocusHandler(Protocol):
-    def __call__(self, window: Window, **kwargs: Any) -> None:
-        """A handler to invoke when a window gains input focus.
-
-        :param window: The window instance that gains input focus.
-        :param kwargs: Ensures compatibility with additional arguments introduced in
-            future versions.
-        """
-        ...
-
-
-class OnLoseFocusHandler(Protocol):
-    def __call__(self, window: Window, **kwargs: Any) -> None:
-        """A handler to invoke when a window loses input focus.
-
-        :param window: The window instance that loses input focus.
-        :param kwargs: Ensures compatibility with additional arguments introduced in
-            future ver
-        """
-        ...
-
-
-class OnShowHandler(Protocol):
-    def __call__(self, window: Window, **kwargs: Any) -> None:
-        """A handler to invoke when a window becomes visible to the user from a not visible state.
-
-        Not visible to the user refers to window states like minimized, hidden, etc.
-
-        :param window: The window instance that becomes visible.
-        :param kwargs: Ensures compatibility with additional arguments introduced in
-            future ver
-        """
-        ...
-
-
-class OnHideHandler(Protocol):
-    def __call__(self, window: Window, **kwargs: Any) -> None:
-        """A handler to invoke when a window becomes not visible to the user.
-
-        Not visible to the user refers to window states like minimized, hidden, etc.
-
-        :param window: The window instance that becomes not visible to the user.
-        :param kwargs: Ensures compatibility with additional arguments introduced in
-            future ver
-        """
-        ...
-
-
 T = TypeVar("T")
 
 
@@ -174,10 +126,6 @@ class Window:
         closable: bool = True,
         minimizable: bool = True,
         on_close: OnCloseHandler | None = None,
-        on_gain_focus: OnGainFocusHandler | None = None,
-        on_lose_focus: OnLoseFocusHandler | None = None,
-        on_show: OnShowHandler | None = None,
-        on_hide: OnHideHandler | None = None,
         resizeable=None,  # DEPRECATED
         closeable=None,  # DEPRECATED
     ) -> None:
@@ -248,11 +196,6 @@ class Window:
         self._toolbar = CommandSet(on_change=self._impl.create_toolbar, app=self._app)
 
         self.on_close = on_close
-
-        self.on_gain_focus = on_gain_focus
-        self.on_lose_focus = on_lose_focus
-        self.on_show = on_show
-        self.on_hide = on_hide
 
     @property
     def id(self) -> str:
@@ -451,38 +394,6 @@ class Window:
         :returns: An image containing the window content, in the format requested.
         """
         return Image(self._impl.get_image_data()).as_format(format)
-
-    @property
-    def on_gain_focus(self) -> callable:
-        return self._on_gain_focus
-
-    @on_gain_focus.setter
-    def on_gain_focus(self, handler):
-        self._on_gain_focus = wrapped_handler(self, handler)
-
-    @property
-    def on_lose_focus(self) -> callable:
-        return self._on_lose_focus
-
-    @on_lose_focus.setter
-    def on_lose_focus(self, handler):
-        self._on_lose_focus = wrapped_handler(self, handler)
-
-    @property
-    def on_show(self) -> callable:
-        return self._on_show
-
-    @on_show.setter
-    def on_show(self, handler):
-        self._on_show = wrapped_handler(self, handler)
-
-    @property
-    def on_hide(self) -> callable:
-        return self._on_hide
-
-    @on_hide.setter
-    def on_hide(self, handler):
-        self._on_hide = wrapped_handler(self, handler)
 
     ############################################################
     # Dialogs

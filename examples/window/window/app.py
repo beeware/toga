@@ -122,41 +122,16 @@ class WindowDemoApp(toga.App):
             return False
         return True
 
-    def on_window_gain_focus(self, window, **kwargs):
-        self.window_focus_label.text = "MainWindow is in focus"
-        print("MainWindow is in focus")
-
-    def on_window_lose_focus(self, window, **kwargs):
-        self.window_focus_label.text = "MainWindow is not in focus"
-        print("MainWindow is not in focus")
-
-    def on_window_show(self, window, **kwargs):
-        self.window_visible_label.text = "MainWindow is visible"
-        print("MainWindow is visible")
-
-    def on_window_hide(self, window, **kwargs):
-        self.window_visible_label.text = "MainWindow is not visible"
-        print("MainWindow is not visible")
-
     def startup(self):
         # Track in-app closes
         self.close_count = 0
 
         # Set up main window
-        self.main_window = toga.MainWindow(
-            on_gain_focus=self.on_window_gain_focus,
-            on_lose_focus=self.on_window_lose_focus,
-            on_show=self.on_window_show,
-            on_hide=self.on_window_hide,
-        )
-
+        self.main_window = toga.MainWindow()
         self.on_exit = self.exit_handler
 
         # Label to show responses.
         self.label = toga.Label("Ready.")
-
-        self.window_focus_label = toga.Label("Window focus status")
-        self.window_visible_label = toga.Label("Window visible status")
 
         # Buttons
         btn_style = Pack(flex=1, padding=5)
@@ -205,8 +180,6 @@ class WindowDemoApp(toga.App):
         self.inner_box = toga.Box(
             children=[
                 self.label,
-                self.window_focus_label,
-                self.window_visible_label,
                 btn_do_origin,
                 btn_do_left,
                 btn_do_right,

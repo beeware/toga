@@ -10,7 +10,6 @@ class Window:
         self.interface._impl = self
 
         self._is_closing = False
-        self._is_previously_shown = False
 
         self.layout = None
 
@@ -18,9 +17,6 @@ class Window:
         self.native._impl = self
 
         self.native.connect("delete-event", self.gtk_delete_event)
-        self.native.connect("focus-in-event", self.window_on_gain_focus)
-        self.native.connect("focus-out-event", self.window_on_lose_focus)
-        self.native.connect("window-state-event", self.window_on_state_changed)
 
         self.native.set_default_size(size[0], size[1])
 
@@ -166,37 +162,6 @@ class Window:
             self.native.fullscreen()
         else:
             self.native.unfullscreen()
-
-    def window_on_gain_focus(self, sender, event):
-        self.interface.on_gain_focus()
-
-    def window_on_lose_focus(self, sender, event):
-        self.interface.on_lose_focus()
-
-    def window_on_state_changed(self, sender, event):
-        hide_conditions = (
-            Gdk.WindowState.WITHDRAWN,
-            Gdk.WindowState.ICONIFIED,
-        )
-        show_conditions = (
-            Gdk.WindowState.MAXIMIZED,
-            Gdk.WindowState.FULLSCREEN,
-            Gdk.WindowState.FOCUSED,
-        )
-
-        if any(
-            event.new_window_state & state and self._is_previously_shown
-            for state in hide_conditions
-        ):
-            self._is_previously_shown = False
-            self.interface.on_hide()
-
-        elif any(
-            event.new_window_state & state and not self._is_previously_shown
-            for state in show_conditions
-        ):
-            self._is_previously_shown = True
-            self.interface.on_show()
 
     def get_image_data(self):
         display = self.native.get_display()

@@ -20,7 +20,6 @@ class Window(Container, Scalable):
         # If it does, there will be another FormClosing event, which we need
         # to ignore. The `_is_closing` flag lets us do this.
         self._is_closing = False
-        self._is_previously_shown = False
 
         self.native = WinForms.Form()
         self.native.FormClosing += WeakrefCallable(self.winforms_FormClosing)
@@ -40,12 +39,6 @@ class Window(Container, Scalable):
         self.resize_content()  # Store initial size
 
         self.set_full_screen(self.interface.full_screen)
-
-        self.native.Activated += WeakrefCallable(self.winforms_on_gain_focus)
-        self.native.Deactivate += WeakrefCallable(self.winforms_on_lose_focus)
-
-        self.native.VisibleChanged += WeakrefCallable(self.winforms_on_visible_changed)
-        self.native.SizeChanged += WeakrefCallable(self.winforms_on_size_changed)
 
     def create_toolbar(self):
         if self.interface.toolbar:
@@ -195,35 +188,6 @@ class Window(Container, Scalable):
             self.native.ClientSize.Width,
             self.native.ClientSize.Height - vertical_shift,
         )
-
-    def winforms_on_gain_focus(self, sender, event):
-        self.interface.on_gain_focus()
-
-    def winforms_on_lose_focus(self, sender, event):
-        self.interface.on_lose_focus()
-
-    def winforms_on_visible_changed(self, sender, event):
-        if self.native.Visible and not self._is_previously_shown:
-            self._is_previously_shown = True
-            self.interface.on_show()
-        else:
-            self._is_previously_shown = False
-            self.interface.on_hide()
-
-    def winforms_on_size_changed(self, sender, event):  # pragma: no cover
-        if (
-            self.native.WindowState == WinForms.FormWindowState.Minimized
-            and self._is_previously_shown
-        ):
-            self._is_previously_shown = False
-            self.interface.on_hide()
-        elif (
-            self.native.WindowState
-            in (WinForms.FormWindowState.Maximized, WinForms.FormWindowState.Normal)
-            and not self._is_previously_shown
-        ):
-            self._is_previously_shown = True
-            self.interface.on_show()
 
     def get_image_data(self):
         size = Size(self.native_content.Size.Width, self.native_content.Size.Height)
