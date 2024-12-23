@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import warnings
 from collections.abc import Iterable
 from typing import Any, Literal, Protocol, TypeVar
 
@@ -45,7 +44,6 @@ class Tree(Widget):
         on_select: toga.widgets.tree.OnSelectHandler | None = None,
         on_activate: toga.widgets.tree.OnActivateHandler | None = None,
         missing_value: str = "",
-        on_double_click: None = None,  # DEPRECATED
     ):
         """Create a new Tree widget.
 
@@ -76,24 +74,7 @@ class Tree(Widget):
         :param missing_value: The string that will be used to populate a cell when the
             value provided by its accessor is :any:`None`, or the accessor isn't
             defined.
-        :param on_double_click: **DEPRECATED**; use :attr:`on_activate`.
         """
-        ######################################################################
-        # 2023-06: Backwards compatibility
-        ######################################################################
-        if on_double_click:
-            if on_activate:
-                raise ValueError("Cannot specify both on_double_click and on_activate")
-            else:
-                warnings.warn(
-                    "Tree.on_double_click has been renamed Tree.on_activate.",
-                    DeprecationWarning,
-                )
-                on_activate = on_double_click
-        ######################################################################
-        # End backwards compatibility.
-        ######################################################################
-
         self._headings: list[str] | None
         self._data: SourceT | TreeSource
 
@@ -323,24 +304,3 @@ class Tree(Widget):
     @on_activate.setter
     def on_activate(self, handler: toga.widgets.tree.OnActivateHandler) -> None:
         self._on_activate = wrapped_handler(self, handler)
-
-    ######################################################################
-    # 2023-06: Backwards compatibility
-    ######################################################################
-
-    @property
-    def on_double_click(self) -> OnActivateHandler:
-        """**DEPRECATED**: Use ``on_activate``"""
-        warnings.warn(
-            "Tree.on_double_click has been renamed Tree.on_activate.",
-            DeprecationWarning,
-        )
-        return self.on_activate
-
-    @on_double_click.setter
-    def on_double_click(self, handler: toga.widgets.tree.OnActivateHandler) -> None:
-        warnings.warn(
-            "Tree.on_double_click has been renamed Tree.on_activate.",
-            DeprecationWarning,
-        )
-        self.on_activate = handler

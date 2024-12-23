@@ -697,20 +697,3 @@ def test_reset_transform(widget):
     assert widget._impl.draw_instructions[1:-1] == [
         ("reset transform", {}),
     ]
-
-
-def test_deprecated_usage(widget):
-    """Test that deprecated usage of operations raise errors."""
-    with pytest.raises(
-        RuntimeError,
-        match=r"Context\.fill\(\) has been renamed Context\.Fill\(\)\.",
-    ):
-        with widget.context.fill() as fill:
-            fill.line_to(10, 20)
-
-    with pytest.raises(
-        RuntimeError,
-        match=r"Context\.stroke\(\) has been renamed Context\.Stroke\(\)\.",
-    ):
-        with widget.context.stroke() as stroke:
-            stroke.line_to(10, 20)

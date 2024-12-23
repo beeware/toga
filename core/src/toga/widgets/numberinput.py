@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import re
 import sys
-import warnings
 from decimal import ROUND_HALF_UP, Decimal, InvalidOperation
 from typing import TYPE_CHECKING, Any, Protocol, Union
 
@@ -92,8 +91,6 @@ class NumberInput(Widget):
         value: NumberInputT | None = None,
         readonly: bool = False,
         on_change: toga.widgets.numberinput.OnChangeHandler | None = None,
-        min_value: None = None,  # DEPRECATED
-        max_value: None = None,  # DEPRECATED
     ):
         """Create a new number input widget.
 
@@ -110,35 +107,8 @@ class NumberInput(Widget):
         :param readonly: Can the value of the widget be modified by the user?
         :param on_change: A handler that will be invoked when the value of the widget
             changes.
-        :param min_value: **DEPRECATED**; alias of ``min``.
-        :param max_value: **DEPRECATED**; alias of ``max``.
         """
         super().__init__(id=id, style=style)
-
-        ######################################################################
-        # 2023-06: Backwards compatibility
-        ######################################################################
-        if min_value is not None:
-            if min is not None:
-                raise ValueError("Cannot specify both min and min_value")
-            else:
-                warnings.warn(
-                    "NumberInput.min_value has been renamed NumberInput.min",
-                    DeprecationWarning,
-                )
-                min = min_value
-        if max_value is not None:
-            if max is not None:
-                raise ValueError("Cannot specify both max and max_value")
-            else:
-                warnings.warn(
-                    "NumberInput.max_value has been renamed NumberInput.max",
-                    DeprecationWarning,
-                )
-                max = max_value
-        ######################################################################
-        # End backwards compatibility
-        ######################################################################
 
         # The initial setting of min requires calling get_value(),
         # which in turn interrogates min. Prime those values with
@@ -310,41 +280,3 @@ class NumberInput(Widget):
     @on_change.setter
     def on_change(self, handler: toga.widgets.numberinput.OnChangeHandler) -> None:
         self._on_change = wrapped_handler(self, handler)
-
-    ######################################################################
-    # 2023-06: Backwards compatibility
-    ######################################################################
-
-    @property
-    def min_value(self) -> Decimal | None:
-        """**DEPRECATED**; alias of :attr:`min`."""
-        warnings.warn(
-            "NumberInput.min_value has been renamed NumberInput.min",
-            DeprecationWarning,
-        )
-        return self.min
-
-    @min_value.setter
-    def min_value(self, value: NumberInputT | None) -> None:
-        warnings.warn(
-            "NumberInput.min_value has been renamed NumberInput.min",
-            DeprecationWarning,
-        )
-        self.min = value
-
-    @property
-    def max_value(self) -> Decimal | None:
-        """**DEPRECATED**; alias of :attr:`max`."""
-        warnings.warn(
-            "NumberInput.max_value has been renamed NumberInput.max",
-            DeprecationWarning,
-        )
-        return self.max
-
-    @max_value.setter
-    def max_value(self, value: NumberInputT | None) -> None:
-        warnings.warn(
-            "NumberInput.max_value has been renamed NumberInput.max",
-            DeprecationWarning,
-        )
-        self.max = value

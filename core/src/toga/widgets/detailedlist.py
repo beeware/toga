@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import warnings
 from collections.abc import Iterable
 from typing import Any, Literal, Protocol, TypeVar
 
@@ -65,7 +64,6 @@ class DetailedList(Widget):
         on_secondary_action: OnSecondaryActionHandler | None = None,
         on_refresh: OnRefreshHandler | None = None,
         on_select: toga.widgets.detailedlist.OnSelectHandler | None = None,
-        on_delete: None = None,  # DEPRECATED
     ):
         """Create a new DetailedList widget.
 
@@ -83,7 +81,6 @@ class DetailedList(Widget):
         :param secondary_action: The name for the secondary action.
         :param on_secondary_action: Initial :any:`on_secondary_action` handler.
         :param on_refresh: Initial :any:`on_refresh` handler.
-        :param on_delete: **DEPRECATED**; use ``on_primary_action``.
         """
         # Prime the attributes and handlers that need to exist when the widget is
         # created.
@@ -96,23 +93,6 @@ class DetailedList(Widget):
         self._data: SourceT | ListSource = None
 
         super().__init__(id=id, style=style)
-
-        ######################################################################
-        # 2023-06: Backwards compatibility
-        ######################################################################
-        if on_delete:
-            if on_primary_action:
-                raise ValueError("Cannot specify both on_delete and on_primary_action")
-            else:
-                warnings.warn(
-                    "DetailedList.on_delete has been renamed "
-                    "DetailedList.on_primary_action.",
-                    DeprecationWarning,
-                )
-                on_primary_action = on_delete
-        ######################################################################
-        # End backwards compatibility.
-        ######################################################################
 
         self.data = data
         self.on_primary_action = on_primary_action
@@ -272,24 +252,3 @@ class DetailedList(Widget):
     @on_select.setter
     def on_select(self, handler: toga.widgets.detailedlist.OnSelectHandler) -> None:
         self._on_select = wrapped_handler(self, handler)
-
-    ######################################################################
-    # 2023-06: Backwards compatibility
-    ######################################################################
-
-    @property
-    def on_delete(self) -> OnPrimaryActionHandler:
-        """**DEPRECATED**; Use :any:`on_primary_action`"""
-        warnings.warn(
-            "DetailedList.on_delete has been renamed DetailedList.on_primary_action.",
-            DeprecationWarning,
-        )
-        return self.on_primary_action
-
-    @on_delete.setter
-    def on_delete(self, handler: OnPrimaryActionHandler) -> None:
-        warnings.warn(
-            "DetailedList.on_delete has been renamed DetailedList.on_primary_action.",
-            DeprecationWarning,
-        )
-        self.on_primary_action = handler
