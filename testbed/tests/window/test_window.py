@@ -914,8 +914,13 @@ else:
         assert second_window_probe.content_size == initial_content_size
 
     @pytest.mark.parametrize(
-        "second_window_kwargs",
-        [dict(title="Secondary Window", position=(200, 150))],
+        "second_window_class, second_window_kwargs",
+        [
+            (
+                toga.Window,
+                dict(title="Secondary Window", position=(200, 150)),
+            )
+        ],
     )
     async def test_focus_events(
         main_window, main_window_probe, second_window, second_window_probe
@@ -943,19 +948,28 @@ else:
         main_window_on_lose_focus_handler.assert_called_once_with(main_window)
         second_window_on_gain_focus_handler.assert_called_once_with(second_window)
 
-    async def test_visibility_events(main_window, main_window_probe):
+    @pytest.mark.parametrize(
+        "second_window_class, second_window_kwargs",
+        [
+            (
+                toga.Window,
+                dict(title="Secondary Window", position=(200, 150)),
+            )
+        ],
+    )
+    async def test_visibility_events(second_window, second_window_probe):
         on_show_handler = Mock()
         on_hide_handler = Mock()
-        main_window.on_show = on_show_handler
-        main_window.on_hide = on_hide_handler
+        second_window.on_show = on_show_handler
+        second_window.on_hide = on_hide_handler
 
-        main_window.hide()
-        await main_window_probe.wait_for_window("Hiding the MainWindow")
-        on_hide_handler.assert_called_once_with(main_window)
+        second_window.hide()
+        await second_window_probe.wait_for_window("Hiding the MainWindow")
+        on_hide_handler.assert_called_once_with(second_window)
 
-        main_window.show()
-        await main_window_probe.wait_for_window("Showing the MainWindow")
-        on_show_handler.assert_called_once_with(main_window)
+        second_window.show()
+        await second_window_probe.wait_for_window("Showing the MainWindow")
+        on_show_handler.assert_called_once_with(second_window)
 
     @pytest.mark.parametrize(
         "second_window_class, second_window_kwargs",
