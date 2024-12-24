@@ -106,6 +106,49 @@ class OnCloseHandler(Protocol):
         """
 
 
+class OnGainFocusHandler(Protocol):
+    def __call__(self, window: Window, **kwargs: Any) -> None:
+        """A handler to invoke when a window gains input focus.
+        :param window: The window instance that gains input focus.
+        :param kwargs: Ensures compatibility with additional arguments introduced in
+            future versions.
+        """
+        ...
+
+
+class OnLoseFocusHandler(Protocol):
+    def __call__(self, window: Window, **kwargs: Any) -> None:
+        """A handler to invoke when a window loses input focus.
+        :param window: The window instance that loses input focus.
+        :param kwargs: Ensures compatibility with additional arguments introduced in
+            future ver
+        """
+        ...
+
+
+class OnShowHandler(Protocol):
+    def __call__(self, window: Window, **kwargs: Any) -> None:
+        """A handler to invoke when a window becomes visible to the user from a not
+        visible state. Not visible to the user refers to window states like minimized,
+        hidden, etc.
+        :param window: The window instance that becomes visible.
+        :param kwargs: Ensures compatibility with additional arguments introduced in
+            future ver
+        """
+        ...
+
+
+class OnHideHandler(Protocol):
+    def __call__(self, window: Window, **kwargs: Any) -> None:
+        """A handler to invoke when a window becomes not visible to the user.
+        Not visible to the user refers to window states like minimized, hidden, etc.
+        :param window: The window instance that becomes not visible to the user.
+        :param kwargs: Ensures compatibility with additional arguments introduced in
+            future ver
+        """
+        ...
+
+
 _DialogResultT = TypeVar("_DialogResultT")
 
 
@@ -141,6 +184,10 @@ class Window:
         closable: bool = True,
         minimizable: bool = True,
         on_close: OnCloseHandler | None = None,
+        on_gain_focus: OnGainFocusHandler | None = None,
+        on_lose_focus: OnLoseFocusHandler | None = None,
+        on_show: OnShowHandler | None = None,
+        on_hide: OnHideHandler | None = None,
         content: Widget | None = None,
     ) -> None:
         """Create a new Window.
@@ -192,6 +239,11 @@ class Window:
             self.content = content
 
         self.on_close = on_close
+
+        self.on_gain_focus = on_gain_focus
+        self.on_lose_focus = on_lose_focus
+        self.on_show = on_show
+        self.on_hide = on_hide
 
     def __lt__(self, other: Window) -> bool:
         return self.id < other.id
@@ -529,6 +581,38 @@ class Window:
                 window.close()
 
         self._on_close = wrapped_handler(self, handler, cleanup=cleanup)
+
+    @property
+    def on_gain_focus(self) -> callable:
+        return self._on_gain_focus
+
+    @on_gain_focus.setter
+    def on_gain_focus(self, handler):
+        self._on_gain_focus = wrapped_handler(self, handler)
+
+    @property
+    def on_lose_focus(self) -> callable:
+        return self._on_lose_focus
+
+    @on_lose_focus.setter
+    def on_lose_focus(self, handler):
+        self._on_lose_focus = wrapped_handler(self, handler)
+
+    @property
+    def on_show(self) -> callable:
+        return self._on_show
+
+    @on_show.setter
+    def on_show(self, handler):
+        self._on_show = wrapped_handler(self, handler)
+
+    @property
+    def on_hide(self) -> callable:
+        return self._on_hide
+
+    @on_hide.setter
+    def on_hide(self, handler):
+        self._on_hide = wrapped_handler(self, handler)
 
     ######################################################################
     # 2024-06: Backwards compatibility for <= 0.4.5

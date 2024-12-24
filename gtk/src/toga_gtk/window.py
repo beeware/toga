@@ -21,6 +21,8 @@ class Window:
         self.interface = interface
         self.interface._impl = self
 
+        self._is_previously_shown = False
+
         self.layout = None
 
         self.create()
@@ -31,6 +33,9 @@ class Window:
             self.gtk_delete_event,
         )
         self.native.connect("window-state-event", self.gtk_window_state_event)
+        self.native.connect("focus-in-event", self.window_on_gain_focus)
+        self.native.connect("focus-out-event", self.window_on_lose_focus)
+        self.native.connect("window-state-event", self.window_on_state_changed)
 
         self._window_state_flags = None
         self._in_presentation = False
@@ -110,6 +115,37 @@ class Window:
         # handler must be deleted to allow the window to actually close.
         self.interface.on_close()
         return True
+
+    def window_on_gain_focus(self, sender, event):
+        self.interface.on_gain_focus()
+
+    def window_on_lose_focus(self, sender, event):
+        self.interface.on_lose_focus()
+
+    def window_on_state_changed(self, sender, event):
+        hide_conditions = (
+            Gdk.WindowState.WITHDRAWN,
+            Gdk.WindowState.ICONIFIED,
+        )
+        show_conditions = (
+            Gdk.WindowState.MAXIMIZED,
+            Gdk.WindowState.FULLSCREEN,
+            Gdk.WindowState.FOCUSED,
+        )
+
+        if any(
+            event.new_window_state & state and self._is_previously_shown
+            for state in hide_conditions
+        ):
+            self._is_previously_shown = False
+            self.interface.on_hide()
+
+        elif any(
+            event.new_window_state & state and not self._is_previously_shown
+            for state in show_conditions
+        ):
+            self._is_previously_shown = True
+            self.interface.on_show()
 
     ######################################################################
     # Window properties
