@@ -136,21 +136,21 @@ class TogaWindow(NSWindow):
 
         self.impl._apply_state(self.impl._pending_state_transition)
 
-    # when the user clicks the zoom button to unzoom a window
-    @objc_method
-    def windowWillUseStandardFrame_defaultFrame_(
-        self, window, defaultFrame
-    ):  # pragma: no cover
-        if bool(self.impl.native.isVisible) and not self.impl._is_previously_shown:
-            self.impl._is_previously_shown = True
-            self.impl.interface.on_show()
+    # # when the user clicks the zoom button to unzoom a window
+    # @objc_method
+    # def windowWillUseStandardFrame_defaultFrame_(
+    #     self, window, defaultFrame
+    # ):  # pragma: no cover
+    #     if bool(self.impl.native.isVisible) and not self.impl._is_previously_shown:
+    #         self.impl._is_previously_shown = True
+    #         self.impl.interface.on_show()
 
-    # when the user clicks the zoom button to zoom a window
-    @objc_method
-    def windowShouldZoom_toFrame_(self, window, toFrame):  # pragma: no cover
-        if bool(self.impl.native.isVisible) and not self.impl._is_previously_shown:
-            self.impl._is_previously_shown = True
-            self.impl.interface.on_show()
+    # # when the user clicks the zoom button to zoom a window
+    # @objc_method
+    # def windowShouldZoom_toFrame_(self, window, toFrame):  # pragma: no cover
+    #     if bool(self.impl.native.isVisible) and not self.impl._is_previously_shown:
+    #         self.impl._is_previously_shown = True
+    #         self.impl.interface.on_show()
 
     ######################################################################
     # Toolbar delegate methods
