@@ -104,8 +104,9 @@ class Pack(BaseStyle):
 
     _depth = -1
 
-    def _debug(self, *args: str) -> None:  # pragma: no cover
-        print("    " * self.__class__._depth, *args)
+    @classmethod
+    def _debug(cls, *args: str) -> None:  # pragma: no cover
+        print("    " * cls._depth, *args)
 
     @property
     def _hidden(self) -> bool:
@@ -300,14 +301,15 @@ class Pack(BaseStyle):
                 # so perform a refresh.
                 self._applicator.refresh()
 
-    def layout(self, node: Node, viewport: Any) -> None:
-        # self._debug("=" * 80)
-        # self._debug(
+    @classmethod
+    def layout(cls, node: Node, viewport: Any) -> None:
+        # cls._debug("=" * 80)
+        # cls._debug(
         #     f"Layout root {node}, available {viewport.width}x{viewport.height}"
         # )
-        self.__class__._depth = -1
+        cls._depth = -1
 
-        self._layout_node(
+        cls._layout_node(
             node,
             alloc_width=viewport.width,
             alloc_height=viewport.height,
@@ -320,16 +322,17 @@ class Pack(BaseStyle):
         node.layout.content_left = node.style.margin_left
         node.layout.content_right = node.style.margin_right
 
+    @classmethod
     def _layout_node(
-        self,
+        cls,
         node: Node,
         alloc_width: int,
         alloc_height: int,
         use_all_width: bool,
         use_all_height: bool,
     ) -> None:
-        self.__class__._depth += 1
-        # self._debug(
+        cls._depth += 1
+        # cls._debug(
         #     f"COMPUTE LAYOUT for {node} available "
         #     f"{alloc_width}{'+' if use_all_width else ''}"
         #     " x "
@@ -337,21 +340,21 @@ class Pack(BaseStyle):
         # )
 
         # Establish available width
-        if self.width != NONE:
+        if node.style.width != NONE:
             # If width is specified, use it
-            available_width = self.width
-            min_width = self.width
-            # self._debug(f"SPECIFIED WIDTH {self.width}")
+            available_width = node.style.width
+            min_width = node.style.width
+            # cls._debug(f"SPECIFIED WIDTH {node.style.width}")
         else:
             # If no width is specified, assume we're going to use all
             # the available width. If there is an intrinsic width,
             # use it to make sure the width is at least the amount specified.
             available_width = max(
-                0, (alloc_width - self.margin_left - self.margin_right)
+                0, (alloc_width - node.style.margin_left - node.style.margin_right)
             )
-            # self._debug(f"INITIAL {available_width=}")
+            # cls._debug(f"INITIAL {available_width=}")
             if node.intrinsic.width is not None:
-                # self._debug(f"INTRINSIC WIDTH {node.intrinsic.width}")
+                # cls._debug(f"INTRINSIC WIDTH {node.intrinsic.width}")
                 try:
                     min_width = node.intrinsic.width.value
                     available_width = max(available_width, min_width)
@@ -359,25 +362,25 @@ class Pack(BaseStyle):
                     available_width = node.intrinsic.width
                     min_width = node.intrinsic.width
 
-                # self._debug(f"ADJUSTED {available_width=}")
+                # cls._debug(f"ADJUSTED {available_width=}")
             else:
-                # self._debug(f"AUTO {available_width=}")
+                # cls._debug(f"AUTO {available_width=}")
                 min_width = 0
 
         # Establish available height
-        if self.height != NONE:
+        if node.style.height != NONE:
             # If height is specified, use it.
-            available_height = self.height
-            min_height = self.height
-            # self._debug(f"SPECIFIED HEIGHT {self.height}")
+            available_height = node.style.height
+            min_height = node.style.height
+            # cls._debug(f"SPECIFIED HEIGHT {node.style.height}")
         else:
             available_height = max(
                 0,
-                alloc_height - self.margin_top - self.margin_bottom,
+                alloc_height - node.style.margin_top - node.style.margin_bottom,
             )
-            # self._debug(f"INITIAL {available_height=}")
+            # cls._debug(f"INITIAL {available_height=}")
             if node.intrinsic.height is not None:
-                # self._debug(f"INTRINSIC HEIGHT {node.intrinsic.height}")
+                # cls._debug(f"INTRINSIC HEIGHT {node.intrinsic.height}")
                 try:
                     min_height = node.intrinsic.height.value
                     available_height = max(available_height, min_height)
@@ -385,14 +388,14 @@ class Pack(BaseStyle):
                     available_height = node.intrinsic.height
                     min_height = node.intrinsic.height
 
-                # self._debug(f"ADJUSTED {available_height=}")
+                # cls._debug(f"ADJUSTED {available_height=}")
             else:
-                # self._debug(f"AUTO {available_height=}")
+                # cls._debug(f"AUTO {available_height=}")
                 min_height = 0
 
         if node.children:
-            if self.direction == COLUMN:
-                min_height, height, min_width, width = self._layout_children(
+            if node.style.direction == COLUMN:
+                min_height, height, min_width, width = cls._layout_children(
                     node,
                     direction=COLUMN,
                     available_main=available_height,
@@ -401,7 +404,7 @@ class Pack(BaseStyle):
                     use_all_cross=use_all_width,
                 )
             else:
-                min_width, width, min_height, height = self._layout_children(
+                min_width, width, min_height, height = cls._layout_children(
                     node,
                     direction=ROW,
                     available_main=available_width,
@@ -409,33 +412,34 @@ class Pack(BaseStyle):
                     use_all_main=use_all_width,
                     use_all_cross=use_all_height,
                 )
-            # self._debug(f"HAS CHILDREN {min_width=} {width=} {min_height=} {height=}")
+            # cls._debug(f"HAS CHILDREN {min_width=} {width=} {min_height=} {height=}")
         else:
             width = available_width
             height = available_height
-            # self._debug(f"NO CHILDREN {min_width=} {width=} {min_height=} {height=}")
+            # cls._debug(f"NO CHILDREN {min_width=} {width=} {min_height=} {height=}")
 
         # If an explicit width/height was given, that specification
         # overrides the width/height evaluated by the layout of children
-        if self.width != NONE:
-            width = self.width
+        if node.style.width != NONE:
+            width = node.style.width
             min_width = width
-        if self.height != NONE:
-            height = self.height
+        if node.style.height != NONE:
+            height = node.style.height
             min_height = height
 
-        # self._debug(f"FINAL SIZE {min_width}x{min_height} {width}x{height}")
+        # cls._debug(f"FINAL SIZE {min_width}x{min_height} {width}x{height}")
         node.layout.content_width = int(width)
         node.layout.content_height = int(height)
 
         node.layout.min_content_width = int(min_width)
         node.layout.min_content_height = int(min_height)
 
-        # self._debug("END LAYOUT", node, node.layout)
-        self.__class__._depth -= 1
+        # cls._debug("END LAYOUT", node, node.layout)
+        cls._depth -= 1
 
+    @classmethod
     def _layout_node_in_direction(
-        self,
+        cls,
         node: Node,
         direction: str,  # ROW | COLUMN
         alloc_main: int,
@@ -444,7 +448,7 @@ class Pack(BaseStyle):
         use_all_cross: bool,
     ) -> None:
         if direction == COLUMN:
-            node.style._layout_node(
+            cls._layout_node(
                 node,
                 alloc_height=alloc_main,
                 alloc_width=alloc_cross,
@@ -452,7 +456,7 @@ class Pack(BaseStyle):
                 use_all_width=use_all_cross,
             )
         else:
-            node.style._layout_node(
+            cls._layout_node(
                 node,
                 alloc_width=alloc_main,
                 alloc_height=alloc_cross,
@@ -460,8 +464,9 @@ class Pack(BaseStyle):
                 use_all_height=use_all_cross,
             )
 
+    @classmethod
     def _layout_children(
-        self,
+        cls,
         node: Node,
         direction: str,  # ROW | COLUMN
         available_main: int,
@@ -490,15 +495,15 @@ class Pack(BaseStyle):
             main_start, main_end = horizontal
             cross_start, cross_end = TOP, BOTTOM
 
-        # self._debug(
+        # cls._debug(
         #     f"LAYOUT {direction.upper()} CHILDREN "
         #     f"{main_name=} {available_main=} {available_cross=}"
         # )
 
         for i, child in enumerate(node.children):
-            # self._debug(f"PASS 1 {child}")
+            # cls._debug(f"PASS 1 {child}")
             if child.style[main_name] != NONE:
-                # self._debug(f"- fixed {main_name} {child.style[main_name]}")
+                # cls._debug(f"- fixed {main_name} {child.style[main_name]}")
                 child.style._layout_node_in_direction(
                     child,
                     direction=direction,
@@ -516,7 +521,7 @@ class Pack(BaseStyle):
             elif child.intrinsic.dim(main_name) is not None:
                 if hasattr(child.intrinsic.dim(main_name), "value"):
                     if child.style.flex:
-                        # self._debug(
+                        # cls._debug(
                         #     f"- intrinsic flex {main_name} "
                         #     f"{child.intrinsic.dim(main_name)=}"
                         # )
@@ -533,7 +538,7 @@ class Pack(BaseStyle):
                             + child.style[f"margin_{main_end}"]
                         )
                     else:
-                        # self._debug(
+                        # cls._debug(
                         #     f"- intrinsic non-flex {main_name} "
                         #     f"{child.intrinsic.dim(main_name)=}"
                         # )
@@ -553,7 +558,7 @@ class Pack(BaseStyle):
                         # layout.min_content(main_name)
                         min_child_content_main = child.layout.content(main_name)
                 else:
-                    # self._debug(
+                    # cls._debug(
                     #     f"- intrinsic {main_name} {child.intrinsic.dim(main_name)=}"
                     # )
                     child.style._layout_node_in_direction(
@@ -572,7 +577,7 @@ class Pack(BaseStyle):
                     min_child_content_main = child.layout.content(main_name)
             else:
                 if child.style.flex:
-                    # self._debug(f"- unspecified flex {main_name}")
+                    # cls._debug(f"- unspecified flex {main_name}")
                     flex_total += child.style.flex
                     # Final child content size will be computed in pass 2, after the
                     # amount of flexible space is known. For now, use 0 as the minimum,
@@ -580,7 +585,7 @@ class Pack(BaseStyle):
                     child_content_main = 0
                     min_child_content_main = 0
                 else:
-                    # self._debug(f"- unspecified non-flex {main_name}")
+                    # cls._debug(f"- unspecified non-flex {main_name}")
                     child.style._layout_node_in_direction(
                         child,
                         direction=direction,
@@ -592,7 +597,7 @@ class Pack(BaseStyle):
                     child_content_main = child.layout.content(main_name)
                     min_child_content_main = child.layout.min_content(main_name)
 
-            gap = 0 if i == 0 else self.gap
+            gap = 0 if i == 0 else node.style.gap
             child_main = (
                 child.style[f"margin_{main_start}"]
                 + child_content_main
@@ -608,8 +613,8 @@ class Pack(BaseStyle):
             )
             min_main += gap + min_child_main
 
-            # self._debug(f"  {min_child_main=} {min_main=} {min_flex=}")
-            # self._debug(f"  {child_main=} {main=} {remaining_main=}")
+            # cls._debug(f"  {min_child_main=} {min_main=} {min_flex=}")
+            # cls._debug(f"  {child_main=} {main=} {remaining_main=}")
 
         if flex_total > 0:
             quantum = (remaining_main + min_flex) / flex_total
@@ -619,14 +624,14 @@ class Pack(BaseStyle):
             # main-axis size for a balanced flex layout, they need to be removed from
             # the flex calculation.
 
-            # self._debug(f"PASS 1a; {quantum=}")
+            # cls._debug(f"PASS 1a; {quantum=}")
             for child in node.children:
                 child_intrinsic_main = child.intrinsic.dim(main_name)
                 if child.style.flex and child_intrinsic_main is not None:
                     try:
                         ideal_main = quantum * child.style.flex
                         if child_intrinsic_main.value > ideal_main:
-                            # self._debug(f"- {child} overflows ideal main dimension")
+                            # cls._debug(f"- {child} overflows ideal main dimension")
                             flex_total -= child.style.flex
                             min_flex -= (
                                 child.style[f"margin_{main_start}"]
@@ -644,14 +649,14 @@ class Pack(BaseStyle):
         else:
             quantum = 0
 
-        # self._debug(f"END PASS 1; {min_main=} {main=} {min_flex=} {quantum=}")
+        # cls._debug(f"END PASS 1; {min_main=} {main=} {min_flex=} {quantum=}")
 
         # Pass 2: Lay out children with an intrinsic flexible main-axis size, or no
         # main-axis size specification at all.
         for child in node.children:
-            # self._debug(f"PASS 2 {child}")
+            # cls._debug(f"PASS 2 {child}")
             if child.style[main_name] != NONE:
-                # self._debug(f"- already laid out (explicit {main_name})")
+                # cls._debug(f"- already laid out (explicit {main_name})")
                 pass
             elif child.style.flex:
                 if child.intrinsic.dim(main_name) is not None:
@@ -662,11 +667,11 @@ class Pack(BaseStyle):
                             + child.style[f"margin_{main_end}"]
                         )
                         ideal_main = quantum * child.style.flex
-                        # self._debug(
+                        # cls._debug(
                         #     f"- flexible intrinsic {main_name} {child_alloc_main=}"
                         # )
                         if ideal_main > child_alloc_main:
-                            # self._debug(f"  {ideal_main=}")
+                            # cls._debug(f"  {ideal_main=}")
                             child_alloc_main = ideal_main
 
                         child.style._layout_node_in_direction(
@@ -684,13 +689,13 @@ class Pack(BaseStyle):
                         # itself have children, and those grandchildren have now been
                         # laid out.
 
-                        # self._debug(
+                        # cls._debug(
                         #     f"  sub {child.intrinsic.dim(main_name).value=}"
                         # )
-                        # self._debug(
+                        # cls._debug(
                         #     f"  add {child.layout.content(main_name)=}"
                         # )
-                        # self._debug(
+                        # cls._debug(
                         #     f"  add min {child.layout.min_content(main_name)=}"
                         # )
                         main = (
@@ -704,18 +709,18 @@ class Pack(BaseStyle):
                             + child.layout.min_content(main_name)
                         )
                     except AttributeError:
-                        # self._debug(
+                        # cls._debug(
                         #     "- already laid out (fixed intrinsic main-axis dimension)"
                         # )
                         pass
                 else:
                     if quantum:
-                        # self._debug(
+                        # cls._debug(
                         #     f"- unspecified flex {main_name} with {quantum=}"
                         # )
                         child_alloc_main = quantum * child.style.flex
                     else:
-                        # self._debug(f"- unspecified flex {main_name}")
+                        # cls._debug(f"- unspecified flex {main_name}")
                         child_alloc_main = (
                             child.style[f"margin_{main_start}"]
                             + child.style[f"margin_{main_end}"]
@@ -732,21 +737,21 @@ class Pack(BaseStyle):
                     # We now know the final min_main/main that accounts for flexible
                     # sizing; add that to the overall.
 
-                    # self._debug(f"  add {child.layout.min_content(main_name)=}")
-                    # self._debug(f"  add {child.layout.content(main_name)=}")
+                    # cls._debug(f"  add {child.layout.min_content(main_name)=}")
+                    # cls._debug(f"  add {child.layout.content(main_name)=}")
                     main += child.layout.content(main_name)
                     min_main += child.layout.min_content(main_name)
 
             else:
-                # self._debug(f"- already laid out (intrinsic non-flex {main_name})")
+                # cls._debug(f"- already laid out (intrinsic non-flex {main_name})")
                 pass
 
-            # self._debug(f"{main_name} {min_main=} {main=}")
+            # cls._debug(f"{main_name} {min_main=} {main=}")
 
-        # self._debug(f"PASS 2 COMPLETE; USED {main=} {main_name}")
+        # cls._debug(f"PASS 2 COMPLETE; USED {main=} {main_name}")
         if use_all_main:
             main = max(main, available_main)
-        # self._debug(f"COMPUTED {main_name} {min_main=} {main=}")
+        # cls._debug(f"COMPUTED {main_name} {min_main=} {main=}")
 
         # Pass 3: Set the main-axis position of each element, and establish box's
         # cross-axis dimension
@@ -754,7 +759,7 @@ class Pack(BaseStyle):
         cross = 0
         min_cross = 0
         for child in node.children:
-            # self._debug(f"PASS 3: {child} AT MAIN-AXIS OFFSET {offset}")
+            # cls._debug(f"PASS 3: {child} AT MAIN-AXIS OFFSET {offset}")
             if main_start == RIGHT:
                 # Needs special casing, since it's still ultimately content_left that
                 # needs to be set.
@@ -767,7 +772,7 @@ class Pack(BaseStyle):
                 offset += child.layout.content(main_name)
                 offset += child.style[f"margin_{main_end}"]
 
-            offset += self.gap
+            offset += node.style.gap
 
             child_cross = (
                 child.layout.content(cross_name)
@@ -783,10 +788,10 @@ class Pack(BaseStyle):
             )
             min_cross = max(min_cross, min_child_cross)
 
-        # self._debug(f"{direction.upper()} {min_cross=} {cross=}")
+        # cls._debug(f"{direction.upper()} {min_cross=} {cross=}")
         if use_all_cross:
             cross = max(cross, available_cross)
-        # self._debug(f"FINAL {direction.upper()} {min_width=} {width=}")
+        # cls._debug(f"FINAL {direction.upper()} {min_width=} {width=}")
 
         # Pass 4: Set cross-axis position of each child.
 
@@ -802,30 +807,30 @@ class Pack(BaseStyle):
                 align_items = START
 
         for child in node.children:
-            # self._debug(f"PASS 4: {child}")
+            # cls._debug(f"PASS 4: {child}")
             extra = cross - (
                 child.layout.content(cross_name)
                 + child.style[f"margin_{cross_start}"]
                 + child.style[f"margin_{cross_end}"]
             )
-            # self._debug(f"-  {direction} extra {cross_name} {extra}")
+            # cls._debug(f"-  {direction} extra {cross_name} {extra}")
 
             if align_items == END:
                 cross_start_value = extra + child.style[f"margin_{cross_start}"]
-                # self._debug(f"  align {child} to {cross_end}")
+                # cls._debug(f"  align {child} to {cross_end}")
 
             elif align_items == CENTER:
                 cross_start_value = (
                     int(extra / 2) + child.style[f"margin_{cross_start}"]
                 )
-                # self._debug(f"  align {child} to center")
+                # cls._debug(f"  align {child} to center")
 
             else:
                 cross_start_value = child.style[f"margin_{cross_start}"]
-                # self._debug(f"  align {child} to {cross_start} ")
+                # cls._debug(f"  align {child} to {cross_start} ")
 
             setattr(child.layout, f"content_{cross_start}", cross_start_value)
-            # self._debug(f"  {child.layout.content(cross_start)=}")
+            # cls._debug(f"  {child.layout.content(cross_start)=}")
 
         return min_main, main, min_cross, cross
 
