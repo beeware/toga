@@ -549,7 +549,8 @@ class Pack(BaseStyle):
                         child_content_main = child.layout.content(main_name)
 
                         # It doesn't matter how small the children can be laid out; we
-                        # have an intrinsic size; so don't use layout.min_content(main)
+                        # have an intrinsic size; so don't use
+                        # layout.min_content(main_name)
                         min_child_content_main = child.layout.content(main_name)
                 else:
                     # self._debug(
@@ -567,7 +568,7 @@ class Pack(BaseStyle):
                     child_content_main = child.layout.content(main_name)
 
                     # It doesn't matter how small the children can be laid out; we have
-                    # an intrinsic size; so don't use layout.min_content(main)
+                    # an intrinsic size; so don't use layout.min_content(main_name)
                     min_child_content_main = child.layout.content(main_name)
             else:
                 if child.style.flex:
