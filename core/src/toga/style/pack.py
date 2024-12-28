@@ -792,7 +792,7 @@ class Pack(BaseStyle):
 
         # Translate RTL into left-origin, which effectively flips start/end item
         # alignment.
-        align_items = self.align_items
+        align_items = node.align_items
         if cross_start == RIGHT:
             cross_start = LEFT
 
