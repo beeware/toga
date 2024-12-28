@@ -60,6 +60,8 @@ PACK = "pack"
 # Define here, since they're not available in Travertino 0.3.0
 START = "start"
 END = "end"
+HEIGHT = "height"
+WIDTH = "width"
 
 # Used in backwards compatibility section below
 ALIGNMENT = "alignment"
@@ -394,24 +396,13 @@ class Pack(BaseStyle):
                 min_height = 0
 
         if node.children:
-            if node.style.direction == COLUMN:
-                min_height, height, min_width, width = cls._layout_children(
-                    node,
-                    direction=COLUMN,
-                    available_main=available_height,
-                    available_cross=available_width,
-                    use_all_main=use_all_height,
-                    use_all_cross=use_all_width,
-                )
-            else:
-                min_width, width, min_height, height = cls._layout_children(
-                    node,
-                    direction=ROW,
-                    available_main=available_width,
-                    available_cross=available_height,
-                    use_all_main=use_all_width,
-                    use_all_cross=use_all_height,
-                )
+            min_width, width, min_height, height = cls._layout_children(
+                node,
+                available_width=available_width,
+                available_height=available_height,
+                use_all_width=use_all_width,
+                use_all_height=use_all_height,
+            )
             # cls._debug(f"HAS CHILDREN {min_width=} {width=} {min_height=} {height=}")
         else:
             width = available_width
@@ -468,35 +459,41 @@ class Pack(BaseStyle):
     def _layout_children(
         cls,
         node: Node,
-        direction: str,  # ROW | COLUMN
-        available_main: int,
-        available_cross: int,
-        use_all_main: bool,
-        use_all_cross: bool,
-    ) -> tuple[int, int, int, int]:  # min_main, main, min_cross, cross
-        # Pass 1: Lay out all children with a hard-specified main-axis dimension, or an
-        # intrinsic non-flexible dimension. While iterating, collect the flex
-        # total of remaining elements.
+        available_width: int,
+        available_height: int,
+        use_all_width: bool,
+        use_all_height: bool,
+    ) -> tuple[int, int, int, int]:  # min_width, width, min_height, height
+        # Assign the appropriate dimensions to main and cross axes, depending on row /
+        # column direction.
+        horizontal = (
+            (LEFT, RIGHT) if node.style.text_direction == LTR else (RIGHT, LEFT)
+        )
+        if node.style.direction == COLUMN:
+            available_main, available_cross = available_height, available_width
+            use_all_main, use_all_cross = use_all_height, use_all_width
+            main_name, cross_name = HEIGHT, WIDTH
+            main_start, main_end = TOP, BOTTOM
+            cross_start, cross_end = horizontal
+        else:
+            available_main, available_cross = available_width, available_height
+            use_all_main, use_all_cross = use_all_width, use_all_height
+            main_name, cross_name = WIDTH, HEIGHT
+            main_start, main_end = horizontal
+            cross_start, cross_end = TOP, BOTTOM
+
         flex_total = 0
         min_flex = 0
         main = 0
         min_main = 0
         remaining_main = available_main
 
-        horizontal = (
-            (LEFT, RIGHT) if node.style.text_direction == LTR else (RIGHT, LEFT)
-        )
-        if direction == COLUMN:
-            main_name, cross_name = "height", "width"
-            main_start, main_end = TOP, BOTTOM
-            cross_start, cross_end = horizontal
-        else:
-            main_name, cross_name = "width", "height"
-            main_start, main_end = horizontal
-            cross_start, cross_end = TOP, BOTTOM
+        # Pass 1: Lay out all children with a hard-specified main-axis dimension, or an
+        # intrinsic non-flexible dimension. While iterating, collect the flex
+        # total of remaining elements.
 
         # cls._debug(
-        #     f"LAYOUT {direction.upper()} CHILDREN "
+        #     f"LAYOUT {node.style.direction.upper()} CHILDREN "
         #     f"{main_name=} {available_main=} {available_cross=}"
         # )
 
@@ -506,11 +503,11 @@ class Pack(BaseStyle):
                 # cls._debug(f"- fixed {main_name} {child.style[main_name]}")
                 child.style._layout_node_in_direction(
                     child,
-                    direction=direction,
+                    direction=node.style.direction,
                     alloc_main=remaining_main,
                     alloc_cross=available_cross,
                     use_all_main=False,
-                    use_all_cross=child.style.direction == direction,
+                    use_all_cross=child.style.direction == node.style.direction,
                 )
                 child_content_main = child.layout.content(main_name)
 
@@ -544,11 +541,11 @@ class Pack(BaseStyle):
                         # )
                         child.style._layout_node_in_direction(
                             child,
-                            direction=direction,
+                            direction=node.style.direction,
                             alloc_main=0,
                             alloc_cross=available_cross,
                             use_all_main=False,
-                            use_all_cross=child.style.direction == direction,
+                            use_all_cross=child.style.direction == node.style.direction,
                         )
 
                         child_content_main = child.layout.content(main_name)
@@ -563,11 +560,11 @@ class Pack(BaseStyle):
                     # )
                     child.style._layout_node_in_direction(
                         child,
-                        direction=direction,
+                        direction=node.style.direction,
                         alloc_main=remaining_main,
                         alloc_cross=available_cross,
                         use_all_main=False,
-                        use_all_cross=child.style.direction == direction,
+                        use_all_cross=child.style.direction == node.style.direction,
                     )
 
                     child_content_main = child.layout.content(main_name)
@@ -588,11 +585,11 @@ class Pack(BaseStyle):
                     # cls._debug(f"- unspecified non-flex {main_name}")
                     child.style._layout_node_in_direction(
                         child,
-                        direction=direction,
+                        direction=node.style.direction,
                         alloc_main=remaining_main,
                         alloc_cross=available_cross,
                         use_all_main=False,
-                        use_all_cross=child.style.direction == direction,
+                        use_all_cross=child.style.direction == node.style.direction,
                     )
                     child_content_main = child.layout.content(main_name)
                     min_child_content_main = child.layout.min_content(main_name)
@@ -676,11 +673,11 @@ class Pack(BaseStyle):
 
                         child.style._layout_node_in_direction(
                             child,
-                            direction=direction,
+                            direction=node.style.direction,
                             alloc_main=child_alloc_main,
                             alloc_cross=available_cross,
                             use_all_main=True,
-                            use_all_cross=child.style.direction == direction,
+                            use_all_cross=child.style.direction == node.style.direction,
                         )
                         # Our main-axis dimension calculation already takes into account
                         # the intrinsic size; that has now expanded as a result of
@@ -728,11 +725,11 @@ class Pack(BaseStyle):
 
                     child.style._layout_node_in_direction(
                         child,
-                        direction=direction,
+                        direction=node.style.direction,
                         alloc_main=child_alloc_main,
                         alloc_cross=available_cross,
                         use_all_main=True,
-                        use_all_cross=child.style.direction == direction,
+                        use_all_cross=child.style.direction == node.style.direction,
                     )
                     # We now know the final min_main/main that accounts for flexible
                     # sizing; add that to the overall.
@@ -788,10 +785,10 @@ class Pack(BaseStyle):
             )
             min_cross = max(min_cross, min_child_cross)
 
-        # cls._debug(f"{direction.upper()} {min_cross=} {cross=}")
+        # cls._debug(f"{node.style.direction.upper()} {min_cross=} {cross=}")
         if use_all_cross:
             cross = max(cross, available_cross)
-        # cls._debug(f"FINAL {direction.upper()} {min_width=} {width=}")
+        # cls._debug(f"FINAL {node.style.direction.upper()} {min_width=} {width=}")
 
         # Pass 4: Set cross-axis position of each child.
 
@@ -813,7 +810,7 @@ class Pack(BaseStyle):
                 + child.style[f"margin_{cross_start}"]
                 + child.style[f"margin_{cross_end}"]
             )
-            # cls._debug(f"-  {direction} extra {cross_name} {extra}")
+            # cls._debug(f"-  {node.style.direction} extra {cross_name} {extra}")
 
             if align_items == END:
                 cross_start_value = extra + child.style[f"margin_{cross_start}"]
@@ -832,7 +829,10 @@ class Pack(BaseStyle):
             setattr(child.layout, f"content_{cross_start}", cross_start_value)
             # cls._debug(f"  {child.layout.content(cross_start)=}")
 
-        return min_main, main, min_cross, cross
+        if node.style.direction == COLUMN:
+            return min_cross, cross, min_main, main
+        else:
+            return min_main, main, min_cross, cross
 
     def __css__(self) -> str:
         css = []
