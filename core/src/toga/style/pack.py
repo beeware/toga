@@ -488,14 +488,14 @@ class Pack(BaseStyle):
         min_main = 0
         remaining_main = available_main
 
-        # Pass 1: Lay out all children with a hard-specified main-axis dimension, or an
-        # intrinsic non-flexible dimension. While iterating, collect the flex
-        # total of remaining elements.
-
         # cls._debug(
         #     f"LAYOUT {node.style.direction.upper()} CHILDREN "
         #     f"{main_name=} {available_main=} {available_cross=}"
         # )
+
+        # Pass 1: Lay out all children with a hard-specified main-axis dimension, or an
+        # intrinsic non-flexible dimension. While iterating, collect the flex
+        # total of remaining elements.
 
         for i, child in enumerate(node.children):
             # cls._debug(f"PASS 1 {child}")
