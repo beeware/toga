@@ -232,16 +232,14 @@ class Pack(BaseStyle):
             setattr(self, name, value)
             return
 
-        return super().__setitem__(
-            self._update_property_name(name.replace("-", "_")), value
-        )
+        super().__setitem__(self._update_property_name(name.replace("-", "_")), value)
 
     def __delitem__(self, name):
         if name in {"padding", "margin"}:
             delattr(self, name)
             return
 
-        return super().__delitem__(self._update_property_name(name.replace("-", "_")))
+        super().__delitem__(self._update_property_name(name.replace("-", "_")))
 
     ######################################################################
     # End backwards compatibility
