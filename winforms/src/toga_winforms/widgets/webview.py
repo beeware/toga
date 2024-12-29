@@ -7,12 +7,14 @@ from System import (
     String,
     Uri,
 )
+from System.Collections.Generic import List  # Import List for generics
 from System.Drawing import Color
 from System.Threading.Tasks import Task, TaskScheduler
 
 import toga
 from toga.widgets.webview import JavaScriptResult
 from toga_winforms.libs.extensions import (
+    CoreWebView2Cookie,
     CoreWebView2CreationProperties,
     WebView2,
     WebView2RuntimeNotFoundException,
@@ -74,6 +76,10 @@ class WebView(Widget):
             self.corewebview2_available = True
             settings = self.native.CoreWebView2.Settings
             self.default_user_agent = settings.UserAgent
+
+            # Initialize cookie manager
+            self.cookie_manager = self.native.CoreWebView2.CookieManager
+            print("CookieManager initialized:", self.cookie_manager is not None)
 
             debug = True
             settings.AreBrowserAcceleratorKeysEnabled = debug
@@ -180,3 +186,51 @@ class WebView(Widget):
 
         self.run_after_initialization(execute)
         return result
+
+    def get_cookies(self, on_result):
+        """
+        Retrieve all cookies asynchronously from the WebView.
+
+        :param on_result: Callback to handle the cookies.
+        """
+        if not hasattr(self, "cookie_manager") or self.cookie_manager is None:
+            raise RuntimeError(
+                "CookieManager is not initialized. Ensure the WebView is fully "
+                "loaded before calling get_cookies()."
+            )
+
+        cookies = []
+
+        def handle_cookie(cookie):
+            cookies.append(
+                {
+                    "name": cookie.Name,
+                    "value": cookie.Value,
+                    "domain": cookie.Domain,
+                    "path": cookie.Path,
+                    "secure": cookie.IsSecure,
+                    "http_only": cookie.IsHttpOnly,
+                    "expiration": (
+                        cookie.Expires.ToString("o")
+                        if cookie.IsSession is False
+                        else None
+                    ),
+                }
+            )
+
+        def completion_handler(task):
+            try:
+                # Process the cookies when the task is complete
+                cookie_list = task.Result
+                for cookie in cookie_list:
+                    handle_cookie(cookie)
+                # Call the provided callback with the collected cookies
+                on_result(cookies)
+            except Exception as e:
+                print("Error retrieving cookies:", e)
+
+        # Enumerate all cookies asynchronously
+        task_scheduler = TaskScheduler.FromCurrentSynchronizationContext()
+        self.cookie_manager.GetCookiesAsync(None).ContinueWith(
+            Action[Task[List[CoreWebView2Cookie]]](completion_handler), task_scheduler
+        )
