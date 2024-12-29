@@ -302,12 +302,6 @@ class Pack(BaseStyle):
 
         if _deprecated_usage is not None:
             # Was called with (self, viewport)
-            warnings.warn(
-                "Pack.layout() should be called with the viewport as the only "
-                "argument; the (node, viewport) signature is deprecated.",
-                DeprecationWarning,
-                stacklevel=3,
-            )
             viewport = _deprecated_usage
 
         ######################################################################
