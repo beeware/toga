@@ -69,6 +69,7 @@ VISIBILITY_CHOICES = Choices(VISIBLE, HIDDEN)
 DIRECTION_CHOICES = Choices(ROW, COLUMN)
 ALIGN_ITEMS_CHOICES = Choices(START, CENTER, END)
 ALIGNMENT_CHOICES = Choices(LEFT, RIGHT, TOP, BOTTOM, CENTER)  # Deprecated
+JUSTIFY_CONTENT_CHOICES = Choices(START, CENTER, END)
 GAP_CHOICES = Choices(integer=True)
 
 SIZE_CHOICES = Choices(NONE, integer=True)
@@ -232,16 +233,14 @@ class Pack(BaseStyle):
             setattr(self, name, value)
             return
 
-        return super().__setitem__(
-            self._update_property_name(name.replace("-", "_")), value
-        )
+        super().__setitem__(self._update_property_name(name.replace("-", "_")), value)
 
     def __delitem__(self, name):
         if name in {"padding", "margin"}:
             delattr(self, name)
             return
 
-        return super().__delitem__(self._update_property_name(name.replace("-", "_")))
+        super().__delitem__(self._update_property_name(name.replace("-", "_")))
 
     ######################################################################
     # End backwards compatibility
@@ -748,15 +747,19 @@ class Pack(BaseStyle):
             # self._debug(f"{main_name} {min_main=} {main=}")
 
         # self._debug(f"PASS 2 COMPLETE; USED {main=} {main_name}")
-        if use_all_main:
-            main = max(main, available_main)
+        if use_all_main or self[main_name] != NONE:
+            extra = max(0, available_main - main)
+            main += extra
+        else:
+            extra = 0
         # self._debug(f"COMPUTED {main_name} {min_main=} {main=}")
 
         # Pass 3: Set the main-axis position of each element, and establish box's
         # cross-axis dimension
-        offset = 0
+        offset = self._initial_offset(extra)
         cross = 0
         min_cross = 0
+
         for child in node.children:
             # self._debug(f"PASS 3: {child} AT MAIN-AXIS OFFSET {offset}")
             if main_start == RIGHT:
@@ -836,6 +839,14 @@ class Pack(BaseStyle):
         else:
             return min_main, main, min_cross, cross
 
+    def _initial_offset(self, extra):
+        if self.justify_content == END:
+            return extra
+        elif self.justify_content == CENTER:
+            return extra / 2
+        else:  # START
+            return 0
+
     def __css__(self) -> str:
         css = []
         # display
@@ -869,6 +880,10 @@ class Pack(BaseStyle):
         # align_items
         if self.align_items:
             css.append(f"align-items: {self.align_items};")
+
+        # justify_content
+        if self.justify_content != START:
+            css.append(f"justify-content: {self.justify_content};")
 
         # gap
         if self.gap:
@@ -923,6 +938,9 @@ Pack.validated_property("visibility", choices=VISIBILITY_CHOICES, initial=VISIBL
 Pack.validated_property("direction", choices=DIRECTION_CHOICES, initial=ROW)
 Pack.validated_property("align_items", choices=ALIGN_ITEMS_CHOICES)
 Pack.validated_property("alignment", choices=ALIGNMENT_CHOICES)  # Deprecated
+Pack.validated_property(
+    "justify_content", choices=JUSTIFY_CONTENT_CHOICES, initial=START
+)
 Pack.validated_property("gap", choices=GAP_CHOICES, initial=0)
 
 Pack.validated_property("width", choices=SIZE_CHOICES, initial=NONE)
