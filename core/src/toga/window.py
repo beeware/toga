@@ -423,9 +423,6 @@ class Window:
         widget.refresh()
 
     def _refresh_layouts(self):
-        from pudb import set_trace
-
-        set_trace()
         self._currently_laying_out = True
 
         toga.Widget._level += 1

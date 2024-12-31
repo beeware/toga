@@ -378,9 +378,6 @@ class Widget(Node, PackMixin):
                 self._refresh_layout()
                 return
 
-            from pudb import set_trace
-
-            set_trace()
             print(TAB * self._level + f"Adding {name} to dirty set")
             self.window._dirty_root_widgets.add(self)
 
