@@ -21,8 +21,6 @@ class Window:
         self.interface = interface
         self.interface._impl = self
 
-        self._is_previously_shown = False
-
         self.layout = None
 
         self.create()
@@ -35,7 +33,6 @@ class Window:
         self.native.connect("window-state-event", self.gtk_window_state_event)
         self.native.connect("focus-in-event", self.gtk_focus_in_event)
         self.native.connect("focus-out-event", self.gtk_focus_out_event)
-        self.native.connect("window-state-event", self.window_on_state_changed)
 
         self._window_state_flags = None
         self._in_presentation = False
@@ -74,11 +71,34 @@ class Window:
     ######################################################################
 
     def gtk_window_state_event(self, widget, event):
+        previous_state = self.get_window_state()
         # Get the window state flags
         self._window_state_flags = event.new_window_state
+        current_state = self.get_window_state()
+
+        # Wayland doesn't support detection of WindowState.MINIMIZED, so the
+        # on_show() and on_hide() events won't be triggered on wayland compositor.
+        if previous_state != current_state:  # pragma: no-cover-if-linux-wayland
+            if previous_state == WindowState.MINIMIZED and current_state in {
+                WindowState.NORMAL,
+                WindowState.MAXIMIZED,
+                WindowState.FULLSCREEN,
+                WindowState.PRESENTATION,
+            }:
+                self.interface.on_show()
+            elif (
+                previous_state
+                in {
+                    WindowState.NORMAL,
+                    WindowState.MAXIMIZED,
+                    WindowState.FULLSCREEN,
+                    WindowState.PRESENTATION,
+                }
+                and current_state == WindowState.MINIMIZED
+            ):
+                self.interface.on_hide()
 
         if self._pending_state_transition:
-            current_state = self.get_window_state()
             if current_state != WindowState.NORMAL:
                 if self._pending_state_transition != current_state:
                     # Add a 10ms delay to wait for the native window state
@@ -122,31 +142,6 @@ class Window:
     def gtk_focus_out_event(self, sender, event):
         self.interface.on_lose_focus()
 
-    def window_on_state_changed(self, sender, event):
-        hide_conditions = (
-            Gdk.WindowState.WITHDRAWN,
-            Gdk.WindowState.ICONIFIED,
-        )
-        show_conditions = (
-            Gdk.WindowState.MAXIMIZED,
-            Gdk.WindowState.FULLSCREEN,
-            Gdk.WindowState.FOCUSED,
-        )
-
-        if any(
-            event.new_window_state & state and self._is_previously_shown
-            for state in hide_conditions
-        ):
-            self._is_previously_shown = False
-            self.interface.on_hide()
-
-        elif any(
-            event.new_window_state & state and not self._is_previously_shown
-            for state in show_conditions
-        ):
-            self._is_previously_shown = True
-            self.interface.on_show()
-
     ######################################################################
     # Window properties
     ######################################################################
@@ -172,6 +167,7 @@ class Window:
 
     def show(self):
         self.native.show_all()
+        self.interface.on_show()
 
     ######################################################################
     # Window content and resources
@@ -217,6 +213,7 @@ class Window:
 
     def hide(self):
         self.native.hide()
+        self.interface.on_hide()
 
     ######################################################################
     # Window state

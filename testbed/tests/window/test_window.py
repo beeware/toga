@@ -996,6 +996,10 @@ else:
     async def test_visibility_events_on_window_state_change(
         second_window, second_window_probe, state
     ):
+        if state == WindowState.MINIMIZED and not second_window_probe.supports_minimize:
+            pytest.xfail(
+                "This backend doesn't reliably support minimized window state."
+            )
         second_window.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
         second_window.show()
         on_show_handler = Mock()
