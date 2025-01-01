@@ -1,11 +1,16 @@
 import importlib.metadata
 import sys
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
 import pytest
 
 import toga_dummy
-from toga.platform import current_platform, get_current_platform, get_platform_factory
+from toga.platform import (
+    current_platform,
+    entry_points,
+    get_current_platform,
+    get_platform_factory,
+)
 
 
 @pytest.fixture
@@ -199,3 +204,39 @@ def test_environment_variable_fail(monkeypatch):
         r"\('fake_platform_module'\) could not be loaded.",
     ):
         _get_platform_factory()
+
+
+def test_entry_points_pre_310(monkeypatch):
+    """Test entry_points function for Python < 3.10."""
+    with patch.object(sys, "version_info", (3, 9)):
+        with patch("toga.platform.metadata.entry_points") as mock_entry_points:
+            mock_entry_points.return_value = {"group1": "entry1", "group2": "entry2"}
+            result = entry_points(group="group1")
+            assert result == "entry1"
+            mock_entry_points.assert_called_once_with()
+
+
+def test_entry_points_post_310(monkeypatch):
+    """Test entry_points function for Python >= 3.10."""
+    with patch.object(sys, "version_info", (3, 10, 0)):  # Correctly mock Python >= 3.10
+        # Mock importlib.metadata.entry_points to return the correct format
+        with patch("importlib.metadata.entry_points") as mock_entry_points:
+            mock_entry_points.return_value = [
+                importlib.metadata.EntryPoint(
+                    name="group1", value="entry1", group="group1"
+                ),
+                importlib.metadata.EntryPoint(
+                    name="group2", value="entry2", group="group2"
+                ),
+            ]
+
+            # Test the entry_points function
+            result = entry_points(group="group1")
+            # Extract the value of the entry point with the correct group
+            entry_point_value = next(
+                ep.value
+                for ep in mock_entry_points.return_value
+                if ep.group == "group1"
+            )
+            assert result == entry_point_value  # Expecting the value for group1
+            mock_entry_points.assert_called_once_with(group="group1")

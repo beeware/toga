@@ -12,7 +12,7 @@ from System.Drawing import Color
 from System.Threading.Tasks import Task, TaskScheduler
 
 import toga
-from toga.widgets.webview import JavaScriptResult
+from toga.widgets.webview import CookiesResult, JavaScriptResult
 from toga_winforms.libs.extensions import (
     CoreWebView2Cookie,
     CoreWebView2CreationProperties,
@@ -32,6 +32,39 @@ def requires_initialization(method):
         self.run_after_initialization(task)
 
     return wrapper
+
+
+def cookies_completion_handler(result):
+    """
+    Generalized completion handler for processing cookies.
+    """
+
+    def _completion_handler(task):
+        try:
+            # Retrieve and structure cookies from the task result
+            cookie_list = task.Result
+            structured_cookies = [
+                {
+                    "name": cookie.Name,
+                    "value": cookie.Value,
+                    "domain": cookie.Domain,
+                    "path": cookie.Path,
+                    "secure": cookie.IsSecure,
+                    "http_only": cookie.IsHttpOnly,
+                    "expiration": (
+                        cookie.Expires.ToString("o") if not cookie.IsSession else None
+                    ),
+                }
+                for cookie in cookie_list
+            ]
+
+            # Set the result in the CookiesResult object
+            result.set_result(structured_cookies)
+        except Exception as exc:
+            # Handle exceptions and set them in the CookiesResult object
+            result.set_exception(exc)
+
+    return _completion_handler
 
 
 class WebView(Widget):
@@ -187,50 +220,25 @@ class WebView(Widget):
         self.run_after_initialization(execute)
         return result
 
-    def get_cookies(self, on_result):
+    def get_cookies(self, on_result=None):
         """
         Retrieve all cookies asynchronously from the WebView.
 
-        :param on_result: Callback to handle the cookies.
+        :param on_result: Optional callback to handle the cookies.
+        :return: A CookiesResult object that can be awaited.
         """
-        if not hasattr(self, "cookie_manager") or self.cookie_manager is None:
-            raise RuntimeError(
-                "CookieManager is not initialized. Ensure the WebView is fully "
-                "loaded before calling get_cookies()."
-            )
+        # Create an AsyncResult to manage the cookies
+        result = CookiesResult(on_result)
 
-        cookies = []
+        # Wrap the Python completion handler in a .NET Action delegate
+        completion_handler_delegate = Action[Task[List[CoreWebView2Cookie]]](
+            cookies_completion_handler(result)
+        )
 
-        def handle_cookie(cookie):
-            cookies.append(
-                {
-                    "name": cookie.Name,
-                    "value": cookie.Value,
-                    "domain": cookie.Domain,
-                    "path": cookie.Path,
-                    "secure": cookie.IsSecure,
-                    "http_only": cookie.IsHttpOnly,
-                    "expiration": (
-                        cookie.Expires.ToString("o")
-                        if cookie.IsSession is False
-                        else None
-                    ),
-                }
-            )
-
-        def completion_handler(task):
-            try:
-                # Process the cookies when the task is complete
-                cookie_list = task.Result
-                for cookie in cookie_list:
-                    handle_cookie(cookie)
-                # Call the provided callback with the collected cookies
-                on_result(cookies)
-            except Exception as e:
-                print("Error retrieving cookies:", e)
-
-        # Enumerate all cookies asynchronously
+        # Call the method to retrieve cookies asynchronously
         task_scheduler = TaskScheduler.FromCurrentSynchronizationContext()
         self.cookie_manager.GetCookiesAsync(None).ContinueWith(
-            Action[Task[List[CoreWebView2Cookie]]](completion_handler), task_scheduler
+            completion_handler_delegate, task_scheduler
         )
+
+        return result

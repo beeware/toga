@@ -248,3 +248,31 @@ async def test_evaluate_javascript_sync(widget):
 
     # The async handler was invoked
     on_result_handler.assert_called_once_with(42)
+
+
+async def test_get_cookies_async(widget):
+    """Cookies can be retrieved asynchronously from the WebView."""
+
+    # An async task that simulates retrieval of cookies after a delay
+    async def delayed_cookie_retrieval():
+        await asyncio.sleep(0.1)
+
+        # Simulate cookies being retrieved
+        cookies = {"session_id": "abc123", "user_id": "42"}
+        widget._impl.simulate_cookie_retrieval(cookies)
+
+    asyncio.create_task(delayed_cookie_retrieval())
+
+    on_result_handler = Mock()
+
+    # Call the get_cookies method with the on_result handler
+    widget.get_cookies(on_result_handler)
+
+    # Verify that the action was performed
+    assert_action_performed(widget, "get_cookies")
+
+    # Allow the async delay to complete
+    await asyncio.sleep(0.2)
+
+    # Verify that the callback was invoked with the correct cookies
+    on_result_handler.assert_called_once_with({"session_id": "abc123", "user_id": "42"})

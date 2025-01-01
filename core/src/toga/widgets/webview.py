@@ -12,6 +12,10 @@ class JavaScriptResult(AsyncResult):
     RESULT_TYPE = "JavaScript"
 
 
+class CookiesResult(AsyncResult):
+    RESULT_TYPE = "Cookies"
+
+
 class OnWebViewLoadHandler(Protocol):
     def __call__(self, widget: WebView, **kwargs: Any) -> object:
         """A handler to invoke when the WebView is loaded.
@@ -134,10 +138,10 @@ class WebView(Widget):
         :param content: The HTML content for the WebView
         """
         self._impl.set_content(root_url, content)
-    
+
     def get_cookies(self, on_result: OnResultT):
         """Retrieve cookies from the WebView.
-    
+
         :param on_result: A callback function to process the cookies once retrieved.
         """
         self._impl.get_cookies(on_result)

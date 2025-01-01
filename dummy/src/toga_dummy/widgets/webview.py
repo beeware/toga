@@ -39,3 +39,12 @@ class WebView(Widget):
 
     def simulate_javascript_result(self, value):
         self._js_result.set_result(42)
+
+    def get_cookies(self, on_result=None):
+        """Simulate retrieving cookies."""
+        self._action("get_cookies")
+
+    def simulate_cookie_retrieval(self, cookies):
+        """Simulate completion of cookie retrieval."""
+        if self._on_result:
+            self._on_result(cookies)
