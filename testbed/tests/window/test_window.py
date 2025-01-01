@@ -925,6 +925,8 @@ else:
     async def test_focus_events(
         main_window, main_window_probe, second_window, second_window_probe
     ):
+        """The window can trigger on_gain_focus() and on_lose_focus()
+        event handlers, when the window gains or loses input focus."""
         main_window_on_gain_focus_handler = Mock()
         main_window_on_lose_focus_handler = Mock()
         main_window.on_gain_focus = main_window_on_gain_focus_handler
@@ -960,6 +962,8 @@ else:
         ],
     )
     async def test_visibility_events(second_window, second_window_probe):
+        """The window can trigger on_show() and on_hide() event handlers,
+        when the window is shown or hidden respectively."""
         second_window.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
         second_window.show()
         on_show_handler = Mock()
@@ -996,7 +1000,9 @@ else:
     async def test_visibility_events_on_window_state_change(
         second_window, second_window_probe, state
     ):
-        if state == WindowState.MINIMIZED and not second_window_probe.supports_minimize:
+        """The window can trigger on_hide() and on_show() event handlers,
+        when the window is MINIMIZED and UN-MINIMIZED respectively."""
+        if not second_window_probe.supports_minimize:
             pytest.xfail(
                 "This backend doesn't reliably support minimized window state."
             )

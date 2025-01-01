@@ -637,6 +637,8 @@ def test_on_hide(window):
 
 
 def test_focus_events(app):
+    """The window can trigger on_gain_focus() and on_lose_focus()
+    event handlers, when the window gains or loses input focus."""
     window1 = toga.Window()
     window1.show()
     window1_on_gain_focus_handler = Mock()
@@ -664,6 +666,8 @@ def test_focus_events(app):
 
 
 def test_visibility_events(window):
+    """The window can trigger on_show() and on_hide() event handlers,
+    when the window is shown or hidden respectively."""
     window.show()
     on_show_handler = Mock()
     on_hide_handler = Mock()
@@ -687,6 +691,8 @@ def test_visibility_events(window):
     ],
 )
 def test_visibility_events_on_window_state_change(window, state):
+    """The window can trigger on_hide() and on_show() event handlers,
+    when the window is MINIMIZED and UN-MINIMIZED respectively."""
     window.show()
     on_show_handler = Mock()
     on_hide_handler = Mock()
