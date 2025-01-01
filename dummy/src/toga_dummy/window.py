@@ -83,6 +83,7 @@ class Window(LoggedObject):
     def show(self):
         self._action("show")
         self._set_value("visible", True)
+        self.interface.on_show()
 
     ######################################################################
     # Window content and resources
@@ -127,6 +128,7 @@ class Window(LoggedObject):
     def hide(self):
         self._action("hide")
         self._set_value("visible", False)
+        self.interface.on_hide()
 
     ######################################################################
     # Window state
@@ -136,11 +138,32 @@ class Window(LoggedObject):
         return self._state
 
     def set_window_state(self, state):
+        previous_state = self._state
+
         self._action(f"set window state to {state}", state=state)
         # We cannot store the state value on the EventLog, since the state
         # value would be cleared on EventLog.reset(), thereby preventing us
         # from testing no-op condition of assigning same state as current.
         self._state = state
+
+        if previous_state == WindowState.MINIMIZED and state in {
+            WindowState.NORMAL,
+            WindowState.MAXIMIZED,
+            WindowState.FULLSCREEN,
+            WindowState.PRESENTATION,
+        }:
+            self.interface.on_show()
+        elif (
+            previous_state
+            in {
+                WindowState.NORMAL,
+                WindowState.MAXIMIZED,
+                WindowState.FULLSCREEN,
+                WindowState.PRESENTATION,
+            }
+            and state == WindowState.MINIMIZED
+        ):
+            self.interface.on_hide()
 
     ######################################################################
     # Window capabilities

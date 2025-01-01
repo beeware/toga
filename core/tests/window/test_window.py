@@ -636,6 +636,71 @@ def test_on_hide(window):
     on_hide_handler.assert_called_once_with(window)
 
 
+def test_focus_events(app):
+    window1 = toga.Window()
+    window1.show()
+    window1_on_gain_focus_handler = Mock()
+    window1_on_lose_focus_handler = Mock()
+    window1.on_gain_focus = window1_on_gain_focus_handler
+    window1.on_lose_focus = window1_on_lose_focus_handler
+
+    window2 = toga.Window()
+    window2.show()
+    window2_on_gain_focus_handler = Mock()
+    window2_on_lose_focus_handler = Mock()
+    window2.on_gain_focus = window2_on_gain_focus_handler
+    window2.on_lose_focus = window2_on_lose_focus_handler
+
+    app.current_window = window1
+    window1_on_gain_focus_handler.assert_called_once_with(window1)
+
+    app.current_window = window2
+    window2_on_gain_focus_handler.assert_called_once_with(window2)
+    window1_on_lose_focus_handler.assert_called_once_with(window1)
+
+    app.current_window = window1
+    window1_on_gain_focus_handler.assert_called_with(window1)
+    window2_on_lose_focus_handler.assert_called_once_with(window2)
+
+
+def test_visibility_events(window):
+    window.show()
+    on_show_handler = Mock()
+    on_hide_handler = Mock()
+    window.on_show = on_show_handler
+    window.on_hide = on_hide_handler
+
+    window.hide()
+    on_hide_handler.assert_called_once_with(window)
+
+    window.show()
+    on_show_handler.assert_called_once_with(window)
+
+
+@pytest.mark.parametrize(
+    "state",
+    [
+        WindowState.NORMAL,
+        WindowState.MAXIMIZED,
+        WindowState.FULLSCREEN,
+        WindowState.PRESENTATION,
+    ],
+)
+def test_visibility_events_on_window_state_change(window, state):
+    window.show()
+    on_show_handler = Mock()
+    on_hide_handler = Mock()
+    window.on_show = on_show_handler
+    window.on_hide = on_hide_handler
+    window.state = state
+
+    window.state = WindowState.MINIMIZED
+    on_hide_handler.assert_called_once_with(window)
+
+    window.state = state
+    on_show_handler.assert_called_once_with(window)
+
+
 def test_as_image(window):
     """A window can be captured as an image."""
     image = window.as_image()
