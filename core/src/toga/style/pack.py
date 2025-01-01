@@ -756,7 +756,13 @@ class Pack(BaseStyle):
 
         # Pass 3: Set the main-axis position of each element, and establish box's
         # cross-axis dimension
-        offset = self._initial_offset(extra)
+        if self.justify_content == END:
+            offset = extra
+        elif self.justify_content == CENTER:
+            offset = extra / 2
+        else:  # START
+            offset = 0
+
         cross = 0
         min_cross = 0
 
@@ -838,14 +844,6 @@ class Pack(BaseStyle):
             return min_cross, cross, min_main, main
         else:
             return min_main, main, min_cross, cross
-
-    def _initial_offset(self, extra):
-        if self.justify_content == END:
-            return extra
-        elif self.justify_content == CENTER:
-            return extra / 2
-        else:  # START
-            return 0
 
     def __css__(self) -> str:
         css = []
