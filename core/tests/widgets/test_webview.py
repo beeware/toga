@@ -258,21 +258,43 @@ async def test_get_cookies_async(widget):
         await asyncio.sleep(0.1)
 
         # Simulate cookies being retrieved
-        cookies = {"session_id": "abc123", "user_id": "42"}
+        cookies = {
+            "name": "test",
+            "value": "test",
+            "domain": "example.com",
+            "path": "/",
+            "secure": True,
+            "http_only": True,
+            "expiration": None,
+        }
         widget._impl.simulate_cookie_retrieval(cookies)
 
     asyncio.create_task(delayed_cookie_retrieval())
 
     on_result_handler = Mock()
 
-    # Call the get_cookies method with the on_result handler
-    widget.get_cookies(on_result_handler)
+    # Ensure that the `get_cookies` method raises a DeprecationWarning
+    with pytest.warns(
+        DeprecationWarning,
+        match=r"Synchronous `on_result` handlers have been deprecated;",
+    ):
+        # Correctly pass the on_result handler as a keyword argument
+        result = await widget.get_cookies(on_result=on_result_handler)
 
     # Verify that the action was performed
     assert_action_performed(widget, "get_cookies")
 
-    # Allow the async delay to complete
-    await asyncio.sleep(0.2)
+    # Verify the result and handler invocation
+    expected_cookies = {
+        "name": "test",
+        "value": "test",
+        "domain": "example.com",
+        "path": "/",
+        "secure": True,
+        "http_only": True,
+        "expiration": None,
+    }
 
-    # Verify that the callback was invoked with the correct cookies
-    on_result_handler.assert_called_once_with({"session_id": "abc123", "user_id": "42"})
+    assert result == expected_cookies
+
+    on_result_handler.assert_called_once_with(expected_cookies)

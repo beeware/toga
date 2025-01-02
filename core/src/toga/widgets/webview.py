@@ -139,12 +139,15 @@ class WebView(Widget):
         """
         self._impl.set_content(root_url, content)
 
-    def get_cookies(self, on_result: OnResultT):
+    def get_cookies(
+        self,
+        on_result: OnResultT | None = None,
+    ) -> CookiesResult:
         """Retrieve cookies from the WebView.
 
         :param on_result: A callback function to process the cookies once retrieved.
         """
-        self._impl.get_cookies(on_result)
+        return self._impl.get_cookies(on_result=on_result)
 
     def evaluate_javascript(
         self,

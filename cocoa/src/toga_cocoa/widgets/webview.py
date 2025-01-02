@@ -2,8 +2,9 @@ from rubicon.objc import objc_id, objc_method, objc_property, py_from_ns
 from travertino.size import at_least
 
 from toga.widgets.webview import CookiesResult, JavaScriptResult
-from toga_iOS.libs import NSURL, NSURLRequest, WKWebView
-from toga_iOS.widgets.base import Widget
+
+from ..libs import NSURL, NSURLRequest, WKWebView
+from .base import Widget
 
 
 def js_completion_handler(result):
@@ -64,6 +65,10 @@ class TogaWebView(WKWebView):
             self.impl.loaded_future.set_result(None)
             self.impl.loaded_future = None
 
+    @objc_method
+    def acceptsFirstResponder(self) -> bool:
+        return True
+
 
 class WebView(Widget):
     def create(self):
@@ -71,8 +76,12 @@ class WebView(Widget):
         self.native.interface = self.interface
         self.native.impl = self
 
-        # Enable the content inspector. This was added in iOS 16.4.
-        # It is a no-op on earlier versions.
+        # Enable the content inspector. This was added in macOS 13.3 (Ventura). It will
+        # be a no-op on newer versions of macOS; you need to package the app, then run:
+        #
+        #     defaults write com.example.appname WebKitDeveloperExtras -bool true
+        #
+        # from the command line.
         self.native.inspectable = True
         self.native.navigationDelegate = self.native
 
@@ -103,8 +112,8 @@ class WebView(Widget):
     def set_user_agent(self, value):
         self.native.customUserAgent = value
 
-    def evaluate_javascript(self, javascript, on_result=None):
-        result = JavaScriptResult(on_result)
+    def evaluate_javascript(self, javascript: str, on_result=None) -> str:
+        result = JavaScriptResult(on_result=on_result)
         self.native.evaluateJavaScript(
             javascript,
             completionHandler=js_completion_handler(result),
