@@ -32,6 +32,7 @@ class Window(Container, Scalable):
     def __init__(self, interface, title, position, size):
         self.interface = interface
 
+        # Required for triggering event handlers at appropriate times.
         self._is_previously_shown = False
 
         self.create()
@@ -65,11 +66,11 @@ class Window(Container, Scalable):
             "Sizable" if self.interface.resizable else "FixedSingle",
         )
 
-        self.native.Activated += WeakrefCallable(self.winforms_on_gain_focus)
-        self.native.Deactivate += WeakrefCallable(self.winforms_on_lose_focus)
+        self.native.Activated += WeakrefCallable(self.winforms_Activated)
+        self.native.Deactivate += WeakrefCallable(self.winforms_Deactivate)
 
-        self.native.VisibleChanged += WeakrefCallable(self.winforms_on_visible_changed)
-        self.native.SizeChanged += WeakrefCallable(self.winforms_on_size_changed)
+        self.native.VisibleChanged += WeakrefCallable(self.winforms_VisibleChanged)
+        self.native.SizeChanged += WeakrefCallable(self.winforms_SizeChanged)
 
     def create(self):
         self.native = WinForms.Form()
@@ -121,13 +122,13 @@ class Window(Container, Scalable):
         if self.get_current_screen().dpi_scale != self._dpi_scale:
             self.update_dpi()
 
-    def winforms_on_gain_focus(self, sender, event):
+    def winforms_Activated(self, sender, event):
         self.interface.on_gain_focus()
 
-    def winforms_on_lose_focus(self, sender, event):
+    def winforms_Deactivate(self, sender, event):
         self.interface.on_lose_focus()
 
-    def winforms_on_visible_changed(self, sender, event):
+    def winforms_VisibleChanged(self, sender, event):
         if self.native.Visible and not self._is_previously_shown:
             self._is_previously_shown = True
             self.interface.on_show()
@@ -135,7 +136,7 @@ class Window(Container, Scalable):
             self._is_previously_shown = False
             self.interface.on_hide()
 
-    def winforms_on_size_changed(self, sender, event):  # pragma: no cover
+    def winforms_SizeChanged(self, sender, event):  # pragma: no cover
         if (
             self.native.WindowState == WinForms.FormWindowState.Minimized
             and self._is_previously_shown
