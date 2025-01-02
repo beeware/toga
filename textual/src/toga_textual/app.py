@@ -29,6 +29,8 @@ class App:
         self.loop = asyncio.new_event_loop()
         self.native = TogaApp(self)
 
+        self._current_window = None
+
         # run the app without displaying it
         self.headless = False
 
@@ -114,7 +116,7 @@ class App:
         self._current_window = window
         self.native.switch_screen(window.native)
         self.native.title = window.get_title()
-        if previous_current_window != window:
+        if previous_current_window is not None and previous_current_window != window:
             previous_current_window.interface.on_lose_focus()
             previous_current_window.interface.on_hide()
             window.interface.on_gain_focus()
