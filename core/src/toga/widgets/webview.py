@@ -145,6 +145,12 @@ class WebView(Widget):
     ) -> CookiesResult:
         """Retrieve cookies from the WebView.
 
+        **This is an asynchronous method**. There is no guarantee that the function
+        has finished evaluating when this method returns. The object returned by this
+        method can be awaited to obtain the value of the expression.
+
+        **Note:** This is not yet currently supported on Android or Linux.
+
         :param on_result: A callback function to process the cookies once retrieved.
         """
         return self._impl.get_cookies(on_result=on_result)
