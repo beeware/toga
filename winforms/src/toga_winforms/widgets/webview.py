@@ -112,7 +112,6 @@ class WebView(Widget):
 
             # Initialize cookie manager
             self.cookie_manager = self.native.CoreWebView2.CookieManager
-            print("CookieManager initialized:", self.cookie_manager is not None)
 
             debug = True
             settings.AreBrowserAcceleratorKeysEnabled = debug
