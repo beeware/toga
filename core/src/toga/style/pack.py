@@ -803,31 +803,39 @@ class Pack(BaseStyle):
 
         # Pass 4: Set cross-axis position of each child.
 
-        # Translate RTL into left-origin, which effectively flips start/end item
-        # alignment.
-        align_items = self.align_items
-        if cross_start == RIGHT:
-            cross_start = LEFT
+        # The "effective" start, end, and align-items values are normally their "real"
+        # values. However, if the cross-axis is horizontal and text-direction RTL,
+        # they're flipped. This is necessary because final positioning is always set
+        # using a top-left origin, even if the "real" start is on the right.
+        effective_align_items = self.align_items
 
-            if align_items == START:
-                align_items = END
-            elif align_items == END:
-                align_items = START
+        if cross_start == RIGHT:
+            effective_cross_start = LEFT
+            effective_cross_end = RIGHT
+
+            if self.align_items == START:
+                effective_align_items = END
+            elif self.align_items == END:
+                effective_align_items = START
+
+        else:
+            effective_cross_start = cross_start
+            effective_cross_end = cross_end
 
         for child in node.children:
             # self._debug(f"PASS 4: {child}")
             extra = cross - (
                 getattr(child.layout, f"content_{cross_name}")
-                + child.style[f"margin_{cross_start}"]
-                + child.style[f"margin_{cross_end}"]
+                + child.style[f"margin_{effective_cross_start}"]
+                + child.style[f"margin_{effective_cross_end}"]
             )
             # self._debug(f"-  {self.direction} extra {cross_name} {extra}")
 
-            if align_items == END:
+            if effective_align_items == END:
                 cross_start_value = extra + child.style[f"margin_{cross_start}"]
                 # self._debug(f"  align {child} to {cross_end}")
 
-            elif align_items == CENTER:
+            elif effective_align_items == CENTER:
                 cross_start_value = (
                     int(extra / 2) + child.style[f"margin_{cross_start}"]
                 )
@@ -837,7 +845,7 @@ class Pack(BaseStyle):
                 cross_start_value = child.style[f"margin_{cross_start}"]
                 # self._debug(f"  align {child} to {cross_start} ")
 
-            setattr(child.layout, f"content_{cross_start}", cross_start_value)
+            setattr(child.layout, f"content_{effective_cross_start}", cross_start_value)
             # self._debug(f"  {getattr(child.layout, f'content_{cross_start}')=}")
 
         if self.direction == COLUMN:
