@@ -116,9 +116,10 @@ class App:
         self._current_window = window
         self.native.switch_screen(window.native)
         self.native.title = window.get_title()
-        if previous_current_window is not None and previous_current_window != window:
-            previous_current_window.interface.on_lose_focus()
-            previous_current_window.interface.on_hide()
+        if previous_current_window != window:
+            if previous_current_window is not None:
+                previous_current_window.interface.on_lose_focus()
+                previous_current_window.interface.on_hide()
             window.interface.on_gain_focus()
             window.interface.on_show()
 
