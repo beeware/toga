@@ -584,6 +584,7 @@ class Window:
 
     @property
     def on_gain_focus(self) -> callable:
+        """The handler to invoke if the window gains input focus."""
         return self._on_gain_focus
 
     @on_gain_focus.setter
@@ -592,6 +593,7 @@ class Window:
 
     @property
     def on_lose_focus(self) -> callable:
+        """The handler to invoke if the window loses input focus."""
         return self._on_lose_focus
 
     @on_lose_focus.setter
@@ -600,6 +602,7 @@ class Window:
 
     @property
     def on_show(self) -> callable:
+        """The handler to invoke if the window is shown from a hidden state."""
         return self._on_show
 
     @on_show.setter
@@ -608,6 +611,7 @@ class Window:
 
     @property
     def on_hide(self) -> callable:
+        """The handler to invoke if the window is hidden from a visible state."""
         return self._on_hide
 
     @on_hide.setter
