@@ -19,7 +19,7 @@ def test_row_box_child_layout():
         ],
     )
 
-    root.style.layout(root, ExampleViewport(640, 480))
+    root.style.layout(ExampleViewport(640, 480))
     assert_layout(
         root,
         (210, 100),
@@ -52,7 +52,7 @@ def test_column_box_child_layout():
     )
 
     # Normal size
-    root.style.layout(root, ExampleViewport(640, 480))
+    root.style.layout(ExampleViewport(640, 480))
     assert_layout(
         root,
         (100, 210),
@@ -78,7 +78,7 @@ def test_align_items_top():
         ],
     )
 
-    root.style.layout(root, ExampleViewport(640, 480))
+    root.style.layout(ExampleViewport(640, 480))
     assert_layout(
         root,
         (60, 100),
@@ -104,7 +104,7 @@ def test_align_items_bottom():
         ],
     )
 
-    root.style.layout(root, ExampleViewport(640, 480))
+    root.style.layout(ExampleViewport(640, 480))
     assert_layout(
         root,
         (60, 100),
@@ -130,7 +130,7 @@ def test_align_items_left():
         ],
     )
 
-    root.style.layout(root, ExampleViewport(640, 480))
+    root.style.layout(ExampleViewport(640, 480))
     assert_layout(
         root,
         (100, 60),
@@ -156,7 +156,7 @@ def test_align_items_right():
         ],
     )
 
-    root.style.layout(root, ExampleViewport(640, 480))
+    root.style.layout(ExampleViewport(640, 480))
     assert_layout(
         root,
         (100, 60),

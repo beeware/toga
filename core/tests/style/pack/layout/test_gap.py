@@ -24,7 +24,7 @@ def test_gap():
     )
 
     # No gap
-    root.style.layout(root, viewport)
+    root.style.layout(viewport)
     assert_layout(
         root,
         (130, 100),
@@ -45,7 +45,7 @@ def test_gap():
 
     # Row, LTR
     root.style.update(direction="row", text_direction="ltr")
-    root.style.layout(root, viewport)
+    root.style.layout(viewport)
     assert_layout(
         root,
         (170, 100),
@@ -63,7 +63,7 @@ def test_gap():
 
     # Row, RTL
     root.style.update(direction="row", text_direction="rtl")
-    root.style.layout(root, viewport)
+    root.style.layout(viewport)
     assert_layout(
         root,
         (170, 100),
@@ -81,7 +81,7 @@ def test_gap():
 
     # Column
     root.style.update(direction="column")
-    root.style.layout(root, viewport)
+    root.style.layout(viewport)
     assert_layout(
         root,
         (100, 170),

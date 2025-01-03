@@ -26,7 +26,7 @@ def test_left():
         ],
     )
 
-    root.style.layout(root, ExampleViewport(640, 480))
+    root.style.layout(ExampleViewport(640, 480))
     assert_layout(
         root,
         (540, 300),
@@ -72,7 +72,7 @@ def test_center():
         ],
     )
 
-    root.style.layout(root, ExampleViewport(640, 480))
+    root.style.layout(ExampleViewport(640, 480))
     assert_layout(
         root,
         (540, 300),
@@ -118,7 +118,7 @@ def test_right():
         ],
     )
 
-    root.style.layout(root, ExampleViewport(640, 480))
+    root.style.layout(ExampleViewport(640, 480))
     assert_layout(
         root,
         (540, 300),
@@ -151,7 +151,7 @@ def test_no_margin():
         ],
     )
 
-    root.style.layout(root, ExampleViewport(640, 480))
+    root.style.layout(ExampleViewport(640, 480))
     assert_layout(
         root,
         (540, 300),
@@ -194,7 +194,7 @@ def test_column_box():
         ],
     )
 
-    root.style.layout(root, ExampleViewport(640, 480))
+    root.style.layout(ExampleViewport(640, 480))
     assert_layout(
         root,
         (430, 310),
