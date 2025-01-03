@@ -922,6 +922,122 @@ else:
             )
         ],
     )
+    async def test_focus_events(
+        main_window, main_window_probe, second_window, second_window_probe
+    ):
+        """The window can trigger on_gain_focus() and on_lose_focus()
+        event handlers, when the window gains or loses input focus."""
+        main_window_on_gain_focus_handler = Mock()
+        main_window_on_lose_focus_handler = Mock()
+        main_window.on_gain_focus = main_window_on_gain_focus_handler
+        main_window.on_lose_focus = main_window_on_lose_focus_handler
+
+        second_window.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
+        second_window.show()
+        second_window_on_gain_focus_handler = Mock()
+        second_window_on_lose_focus_handler = Mock()
+        second_window.on_gain_focus = second_window_on_gain_focus_handler
+        second_window.on_lose_focus = second_window_on_lose_focus_handler
+
+        main_window.app.current_window = main_window
+        await main_window_probe.wait_for_window("Setting main window as current window")
+        main_window_on_gain_focus_handler.assert_called_once_with(main_window)
+        second_window_on_lose_focus_handler.assert_called_once_with(second_window)
+
+        main_window.app.current_window = second_window
+        await second_window_probe.wait_for_window(
+            "Setting second window as current window"
+        )
+        assert main_window.app.current_window == second_window
+        main_window_on_lose_focus_handler.assert_called_once_with(main_window)
+        second_window_on_gain_focus_handler.assert_called_once_with(second_window)
+
+    @pytest.mark.parametrize(
+        "second_window_class, second_window_kwargs",
+        [
+            (
+                toga.Window,
+                dict(title="Secondary Window", position=(200, 150)),
+            )
+        ],
+    )
+    async def test_visibility_events(second_window, second_window_probe):
+        """The window can trigger on_show() and on_hide() event handlers,
+        when the window is shown or hidden respectively."""
+        second_window.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
+        second_window.show()
+        on_show_handler = Mock()
+        on_hide_handler = Mock()
+        second_window.on_show = on_show_handler
+        second_window.on_hide = on_hide_handler
+
+        second_window.hide()
+        await second_window_probe.wait_for_window("Hiding the MainWindow")
+        on_hide_handler.assert_called_once_with(second_window)
+
+        second_window.show()
+        await second_window_probe.wait_for_window("Showing the MainWindow")
+        on_show_handler.assert_called_once_with(second_window)
+
+    @pytest.mark.parametrize(
+        "state",
+        [
+            WindowState.NORMAL,
+            WindowState.MAXIMIZED,
+            WindowState.FULLSCREEN,
+            WindowState.PRESENTATION,
+        ],
+    )
+    @pytest.mark.parametrize(
+        "second_window_class, second_window_kwargs",
+        [
+            (
+                toga.Window,
+                dict(title="Secondary Window", position=(200, 150)),
+            )
+        ],
+    )
+    async def test_visibility_events_on_window_state_change(
+        second_window, second_window_probe, state
+    ):
+        """The window can trigger on_hide() and on_show() event handlers,
+        when the window is MINIMIZED and UN-MINIMIZED respectively."""
+        if not second_window_probe.supports_minimize:
+            pytest.xfail(
+                "This backend doesn't reliably support minimized window state."
+            )
+        second_window.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
+        second_window.show()
+        on_show_handler = Mock()
+        on_hide_handler = Mock()
+        second_window.on_show = on_show_handler
+        second_window.on_hide = on_hide_handler
+        second_window.state = state
+        await second_window_probe.wait_for_window(
+            f"Setting to initial state of {state}", state=state
+        )
+
+        second_window.state = WindowState.MINIMIZED
+        await second_window_probe.wait_for_window(
+            "Setting to MINIMIZED state", state=WindowState.MINIMIZED
+        )
+        on_hide_handler.assert_called_once_with(second_window)
+
+        second_window.state = state
+        await second_window_probe.wait_for_window(
+            f"Setting to final state of {state}", state=state
+        )
+        on_show_handler.assert_called_once_with(second_window)
+
+    @pytest.mark.parametrize(
+        "second_window_class, second_window_kwargs",
+        [
+            (
+                toga.Window,
+                dict(title="Secondary Window", position=(200, 150)),
+            )
+        ],
+    )
     async def test_screen(second_window, second_window_probe):
         """The window can be relocated to another screen, using both absolute and
         relative screen positions."""
