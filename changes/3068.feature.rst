@@ -1,1 +1,1 @@
-Added support for cookie retrieval from a webview
+Webviews now support the retrieval of cookies.
