@@ -115,3 +115,6 @@ class WebView(Widget):
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
         self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
+
+    def cookies(self, on_result=None):
+        self.interface.factory.not_implemented("WebView.cookies()")

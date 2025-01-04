@@ -75,3 +75,6 @@ class WebView(Widget):
 
         self.native.evaluateJavascript(javascript, ReceiveString(result))
         return result
+
+    def cookies(self, on_result=None):
+        self.interface.factory.not_implemented("WebView.cookies()")
