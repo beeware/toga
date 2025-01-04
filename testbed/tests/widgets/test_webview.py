@@ -318,3 +318,39 @@ async def test_dom_storage_enabled(widget, probe, on_load):
 }})()"""
     result = await wait_for(widget.evaluate_javascript(expression), JS_TIMEOUT)
     assert result == expected_value
+
+
+async def test_retrieve_cookies_async(widget, probe, on_load):
+    """Cookies can be retrieved asynchronously."""
+    # A page must be loaded to set cookies
+    await wait_for(
+        widget.load_url("https://example.com/"),
+        LOAD_TIMEOUT,
+    )
+    # Small pause to ensure JavaScript can run without security errors
+    await asyncio.sleep(1)
+
+    # JavaScript expression to set a cookie and return the current cookies
+    expression = """
+    (function setCookie() {
+        document.cookie = "test=test_value; path=/; Secure";
+        return document.cookie;
+    })()"""
+
+    await wait_for(widget.evaluate_javascript(expression), JS_TIMEOUT)
+
+    # Retrieve cookies using widget.cookies()
+    result = widget.cookies()  # Call the cookies method
+    cookie_jar = await result.future  # Await the future to get the CookieJar
+
+    # Find the test cookie in the CookieJar
+    cookie = next((c for c in cookie_jar if c.name == "test"), None)
+    assert cookie is not None, "Test cookie not found in CookieJar"
+
+    # Validate the test cookie
+    assert cookie.name == "test"
+    assert cookie.value == "test_value"
+    assert cookie.domain == "example.com"
+    assert cookie.path == "/"
+    assert cookie.secure is True
+    assert cookie.expires is None

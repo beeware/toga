@@ -234,7 +234,7 @@ class WebView(Widget):
         self.run_after_initialization(execute)
         return result
 
-    def get_cookies(self, on_result=None):
+    def cookies(self, on_result=None):
         """
         Retrieve all cookies asynchronously from the WebView.
 

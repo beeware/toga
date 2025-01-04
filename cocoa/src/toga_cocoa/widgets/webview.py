@@ -133,7 +133,7 @@ class WebView(Widget):
         self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
         self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
 
-    def get_cookies(self, on_result=None):
+    def cookies(self, on_result=None):
         """
         Retrieve all cookies asynchronously from the WebView.
 
