@@ -1,3 +1,5 @@
+from http.cookiejar import Cookie, CookieJar
+
 from rubicon.objc import objc_id, objc_method, objc_property, py_from_ns
 from travertino.size import at_least
 
@@ -24,27 +26,40 @@ def cookies_completion_handler(result):
             # Convert cookies from Objective-C to Python objects
             cookies_array = py_from_ns(cookies)
 
-            # Structure the cookies as a list of dictionaries
-            structured_cookies = []
+            # Initialize a CookieJar
+            cookie_jar = CookieJar()
+
+            # Add each cookie from the array into the CookieJar
             for cookie in cookies_array:
-                structured_cookies.append(
-                    {
-                        "name": str(cookie.name),
-                        "value": str(cookie.value),
-                        "domain": str(cookie.domain),
-                        "path": str(cookie.path),
-                        "secure": bool(cookie.isSecure),
-                        "http_only": bool(cookie.isHTTPOnly),
-                        "expiration": (
+                cookie_obj = Cookie(
+                    version=0,
+                    name=str(cookie.name),
+                    value=str(cookie.value),
+                    port=None,
+                    port_specified=False,
+                    domain=str(cookie.domain),
+                    domain_specified=True,
+                    domain_initial_dot=False,
+                    path=str(cookie.path),
+                    path_specified=True,
+                    secure=bool(cookie.isSecure),
+                    expires=None,
+                    discard=cookie.IsSession,
+                    comment=None,
+                    comment_url=None,
+                    rest={
+                        "HttpOnly": bool(cookie.isHTTPOnly),
+                        "Expires": (
                             cookie.expiresDate.description
                             if cookie.expiresDate
                             else None
                         ),
-                    }
+                    },
                 )
+                cookie_jar.set_cookie(cookie_obj)
 
             # Set the result in the AsyncResult
-            result.set_result(structured_cookies)
+            result.set_result(cookie_jar)
         except Exception as exc:
             # Set an exception in the AsyncResult if something goes wrong
             result.set_exception(exc)

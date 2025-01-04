@@ -1,5 +1,6 @@
 import json
 import webbrowser
+from http.cookiejar import Cookie, CookieJar
 
 import System.Windows.Forms as WinForms
 from System import (
@@ -41,25 +42,46 @@ def cookies_completion_handler(result):
 
     def _completion_handler(task):
         try:
-            # Retrieve and structure cookies from the task result
-            cookie_list = task.Result
-            structured_cookies = [
-                {
-                    "name": cookie.Name,
-                    "value": cookie.Value,
-                    "domain": cookie.Domain,
-                    "path": cookie.Path,
-                    "secure": cookie.IsSecure,
-                    "http_only": cookie.IsHttpOnly,
-                    "expiration": (
-                        cookie.Expires.ToString("o") if not cookie.IsSession else None
-                    ),
-                }
-                for cookie in cookie_list
+            # Initialize a CookieJar to store cookies
+            cookie_jar = CookieJar()
+
+            # Use a list comprehension to convert each cookie into a Cookie
+            # object and add it to the CookieJar
+            [
+                cookie_jar.set_cookie(
+                    Cookie(
+                        version=0,
+                        name=cookie.Name,
+                        value=cookie.Value,
+                        port=None,
+                        port_specified=False,
+                        domain=cookie.Domain,
+                        domain_specified=True,
+                        domain_initial_dot=False,
+                        path=cookie.Path,
+                        path_specified=True,
+                        secure=cookie.IsSecure,
+                        expires=None,
+                        discard=cookie.IsSession,
+                        comment=None,
+                        comment_url=None,
+                        rest={
+                            "HttpOnly": cookie.IsHttpOnly,  # Store the HttpOnly flag
+                            "Expires": (
+                                cookie.Expires.ToString("o")
+                                if not cookie.IsSession
+                                else None
+                            ),
+                        },
+                        rfc2109=False,  # Whether the cookie follows RFC 2109
+                    )
+                )
+                for cookie in task.Result
             ]
 
-            # Set the result in the CookiesResult object
-            result.set_result(structured_cookies)
+            # Set the CookieJar in the CookiesResult object
+            result.set_result(cookie_jar)
+
         except Exception as exc:
             # Handle exceptions and set them in the CookiesResult object
             result.set_exception(exc)
