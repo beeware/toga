@@ -22,40 +22,37 @@ def js_completion_handler(result):
 
 def cookies_completion_handler(result):
     def _completion_handler(cookies: objc_id) -> None:
-        try:
-            # Convert cookies from Objective-C to Python objects
-            cookies_array = py_from_ns(cookies)
 
-            # Initialize a CookieJar
-            cookie_jar = CookieJar()
+        # Convert cookies from Objective-C to Python objects
+        cookies_array = py_from_ns(cookies)
 
-            # Add each cookie from the array into the CookieJar
-            for cookie in cookies_array:
-                cookie_obj = Cookie(
-                    version=0,
-                    name=str(cookie.name),
-                    value=str(cookie.value),
-                    port=None,
-                    port_specified=False,
-                    domain=str(cookie.domain),
-                    domain_specified=True,
-                    domain_initial_dot=False,
-                    path=str(cookie.path),
-                    path_specified=True,
-                    secure=bool(cookie.isSecure),
-                    expires=None,
-                    discard=cookie.IsSession,
-                    comment=None,
-                    comment_url=None,
-                    rest={},
-                )
-                cookie_jar.set_cookie(cookie_obj)
+        # Initialize a CookieJar
+        cookie_jar = CookieJar()
 
-            # Set the result in the AsyncResult
-            result.set_result(cookie_jar)
-        except Exception as exc:
-            # Set an exception in the AsyncResult if something goes wrong
-            result.set_exception(exc)
+        # Add each cookie from the array into the CookieJar
+        for cookie in cookies_array:
+            cookie_obj = Cookie(
+                version=0,
+                name=str(cookie.name),
+                value=str(cookie.value),
+                port=None,
+                port_specified=False,
+                domain=str(cookie.domain),
+                domain_specified=True,
+                domain_initial_dot=False,
+                path=str(cookie.path),
+                path_specified=True,
+                secure=bool(cookie.Secure),
+                expires=None,
+                discard=cookie.sessionOnly,
+                comment=None,
+                comment_url=None,
+                rest={},
+            )
+            cookie_jar.set_cookie(cookie_obj)
+
+        # Set the result in the AsyncResult
+        result.set_result(cookie_jar)
 
     return _completion_handler
 
