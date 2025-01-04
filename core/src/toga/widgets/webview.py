@@ -148,7 +148,7 @@ class WebView(Widget):
         **This is an asynchronous method**. There is no guarantee that the function
         has finished evaluating when this method returns. The object returned by this
         method can be awaited to obtain the value of the expression.
-        An http.cookiejar.CookieJar will be returned
+        An CookieJar object will be returned
 
         **Note:** This is not yet currently supported on Android or Linux.
 
