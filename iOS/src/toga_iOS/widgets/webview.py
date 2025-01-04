@@ -47,14 +47,7 @@ def cookies_completion_handler(result):
                     discard=cookie.IsSession,
                     comment=None,
                     comment_url=None,
-                    rest={
-                        "HttpOnly": bool(cookie.isHTTPOnly),
-                        "Expires": (
-                            cookie.expiresDate.description
-                            if cookie.expiresDate
-                            else None
-                        ),
-                    },
+                    rest={},
                 )
                 cookie_jar.set_cookie(cookie_obj)
 

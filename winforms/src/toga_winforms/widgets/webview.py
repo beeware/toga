@@ -65,14 +65,7 @@ def cookies_completion_handler(result):
                         discard=cookie.IsSession,
                         comment=None,
                         comment_url=None,
-                        rest={
-                            "HttpOnly": cookie.IsHttpOnly,  # Store the HttpOnly flag
-                            "Expires": (
-                                cookie.Expires.ToString("o")
-                                if not cookie.IsSession
-                                else None
-                            ),
-                        },
+                        rest={},
                         rfc2109=False,  # Whether the cookie follows RFC 2109
                     )
                 )
