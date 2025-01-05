@@ -85,8 +85,6 @@ class Canvas(Widget):
         :param on_alt_release: Initial :any:`on_alt_release` handler.
         :param on_alt_drag: Initial :any:`on_alt_drag` handler.
         """
-        super().__init__(id=id, style=style)
-
         self._context = Context(canvas=self)
 
         # Set all the properties
@@ -98,6 +96,8 @@ class Canvas(Widget):
         self.on_alt_press = on_alt_press
         self.on_alt_release = on_alt_release
         self.on_alt_drag = on_alt_drag
+
+        super().__init__(id=id, style=style)
 
     def _create(self) -> Any:
         return self.factory.Canvas(interface=self)

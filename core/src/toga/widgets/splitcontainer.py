@@ -42,8 +42,8 @@ class SplitContainer(Widget):
         :param content: Initial :any:`SplitContainer content <SplitContainerContentT>`
             of the container. Defaults to both panels being empty.
         """
-        super().__init__(id=id, style=style)
         self._content: list[SplitContainerContentT] = [None, None]
+        super().__init__(id=id, style=style)
 
         if content:
             self.content = content
