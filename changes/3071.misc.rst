@@ -1,1 +1,1 @@
-An ``AttributeError`` raised by ``ScrollContainer()`` for ``on_scroll`` during initialization is now fixed.
+Essential attributes on the widgets' interface are now primed out before initialization of widgets' impl.
