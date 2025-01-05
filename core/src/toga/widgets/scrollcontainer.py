@@ -40,16 +40,19 @@ class ScrollContainer(Widget):
         :param on_scroll: Initial :any:`on_scroll` handler.
         :param content: The content to display in the scroll window.
         """
+
+        # This event gets called early on during impl initialization,
+        # hence set it up before calling initialization on base class.
+        self.on_scroll = on_scroll
+
         super().__init__(id=id, style=style)
 
         self._content: Widget | None = None
-        self.on_scroll = None
 
         # Set all attributes
         self.vertical = vertical
         self.horizontal = horizontal
         self.content = content
-        self.on_scroll = on_scroll
 
     def _create(self) -> Any:
         return self.factory.ScrollContainer(interface=self)
