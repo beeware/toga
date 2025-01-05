@@ -30,7 +30,7 @@ def test_tutorial_3():
         ],
     )
 
-    root.style.layout(root, ExampleViewport(640, 480))
+    root.style.layout(ExampleViewport(640, 480))
     assert_layout(
         root,
         (170, 125),

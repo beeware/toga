@@ -16,7 +16,7 @@ def test_tutorial_0():
         ],
     )
 
-    root.style.layout(root, ExampleViewport(640, 480))
+    root.style.layout(ExampleViewport(640, 480))
     assert_layout(
         root,
         (220, 130),
@@ -41,7 +41,7 @@ def test_vertical():
         ],
     )
 
-    root.style.layout(root, ExampleViewport(480, 640))
+    root.style.layout(ExampleViewport(480, 640))
     assert_layout(
         root,
         (130, 220),
