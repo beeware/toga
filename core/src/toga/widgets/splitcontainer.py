@@ -42,6 +42,8 @@ class SplitContainer(Widget):
         :param content: Initial :any:`SplitContainer content <SplitContainerContentT>`
             of the container. Defaults to both panels being empty.
         """
+        # enable the debug background functionality
+        self._USE_DEBUG_BACKGROUND = True
         super().__init__(id=id, style=style)
         self._content: list[SplitContainerContentT] = [None, None]
 
