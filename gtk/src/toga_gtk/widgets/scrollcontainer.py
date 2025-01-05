@@ -24,7 +24,16 @@ class ScrollContainer(Widget):
         self.native.add(self.document_container)
 
     def gtk_on_changed(self, *args):
-        self.interface.on_scroll()
+        # This event gets called early on during impl initialization,
+        # even before the interface is initialized completely. Hence,
+        # it raises an Attribute error on `on_scroll` property during
+        # the early stages, so detect it and do a no-op in such cases.
+        try:
+            self.interface.on_scroll
+        except AttributeError:
+            pass
+        else:
+            self.interface.on_scroll()
 
     def set_content(self, widget):
         self.document_container.content = widget
