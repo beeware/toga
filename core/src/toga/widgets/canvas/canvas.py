@@ -87,6 +87,8 @@ class Canvas(Widget):
         """
         self._context = Context(canvas=self)
 
+        super().__init__(id=id, style=style)
+
         # Set all the properties
         self.on_resize = on_resize
         self.on_press = on_press
@@ -96,8 +98,6 @@ class Canvas(Widget):
         self.on_alt_press = on_alt_press
         self.on_alt_release = on_alt_release
         self.on_alt_drag = on_alt_drag
-
-        super().__init__(id=id, style=style)
 
     def _create(self) -> Any:
         return self.factory.Canvas(interface=self)
