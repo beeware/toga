@@ -85,9 +85,9 @@ class Canvas(Widget):
         :param on_alt_release: Initial :any:`on_alt_release` handler.
         :param on_alt_drag: Initial :any:`on_alt_drag` handler.
         """
-        super().__init__(id=id, style=style)
-
         self._context = Context(canvas=self)
+
+        super().__init__(id=id, style=style)
 
         # Set all the properties
         self.on_resize = on_resize

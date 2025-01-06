@@ -40,10 +40,11 @@ class ScrollContainer(Widget):
         :param on_scroll: Initial :any:`on_scroll` handler.
         :param content: The content to display in the scroll window.
         """
-        super().__init__(id=id, style=style)
 
         self._content: Widget | None = None
         self.on_scroll = None
+
+        super().__init__(id=id, style=style)
 
         # Set all attributes
         self.vertical = vertical

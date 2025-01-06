@@ -393,9 +393,10 @@ class OptionContainer(Widget):
             <OptionContainerContentT>` to display in the OptionContainer.
         :param on_select: Initial :any:`on_select` handler.
         """
-        super().__init__(id=id, style=style)
         self._content = OptionList(self)
         self.on_select = None
+
+        super().__init__(id=id, style=style)
 
         if content is not None:
             for item in content:
