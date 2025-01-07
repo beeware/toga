@@ -1,1 +1,1 @@
-Window can now respond to changes in focus and visibility.
+Windows can now respond to changes in focus and visibility.

@@ -109,6 +109,7 @@ class OnCloseHandler(Protocol):
 class OnGainFocusHandler(Protocol):
     def __call__(self, window: Window, **kwargs: Any) -> None:
         """A handler to invoke when a window gains input focus.
+
         :param window: The window instance that gains input focus.
         :param kwargs: Ensures compatibility with additional arguments introduced in
             future versions.
@@ -119,6 +120,7 @@ class OnGainFocusHandler(Protocol):
 class OnLoseFocusHandler(Protocol):
     def __call__(self, window: Window, **kwargs: Any) -> None:
         """A handler to invoke when a window loses input focus.
+
         :param window: The window instance that loses input focus.
         :param kwargs: Ensures compatibility with additional arguments introduced in
             future ver
@@ -131,6 +133,7 @@ class OnShowHandler(Protocol):
         """A handler to invoke when a window becomes visible to the user from a not
         visible state. Not visible to the user refers to window states like minimized,
         hidden, etc.
+
         :param window: The window instance that becomes visible.
         :param kwargs: Ensures compatibility with additional arguments introduced in
             future ver
@@ -142,6 +145,7 @@ class OnHideHandler(Protocol):
     def __call__(self, window: Window, **kwargs: Any) -> None:
         """A handler to invoke when a window becomes not visible to the user.
         Not visible to the user refers to window states like minimized, hidden, etc.
+
         :param window: The window instance that becomes not visible to the user.
         :param kwargs: Ensures compatibility with additional arguments introduced in
             future ver
