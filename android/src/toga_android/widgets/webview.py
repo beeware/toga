@@ -3,7 +3,7 @@ import json
 from android.webkit import ValueCallback, WebView as A_WebView, WebViewClient
 from java import dynamic_proxy
 
-from toga.widgets.webview import JavaScriptResult
+from toga.widgets.webview import CookiesResult, JavaScriptResult
 
 from .base import Widget
 
@@ -77,4 +77,11 @@ class WebView(Widget):
         return result
 
     def cookies(self, on_result=None):
-        self.interface.factory.not_implemented("WebView.cookies()")
+        # Create the result object
+        result = CookiesResult(on_result=on_result)
+        result.set_result(None)
+
+        # Signal that this feature is not implemented on the current platform
+        self.interface.factory.not_implemented("webview.cookies")
+
+        return result

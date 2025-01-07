@@ -1,6 +1,6 @@
 from travertino.size import at_least
 
-from toga.widgets.webview import JavaScriptResult
+from toga.widgets.webview import CookiesResult, JavaScriptResult
 
 from ..libs import GLib, WebKit2
 from .base import Widget
@@ -117,4 +117,11 @@ class WebView(Widget):
         self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
 
     def cookies(self, on_result=None):
-        self.interface.factory.not_implemented("WebView.cookies()")
+        # Create the result object
+        result = CookiesResult(on_result=on_result)
+        result.set_result(None)
+
+        # Signal that this feature is not implemented on the current platform
+        self.interface.factory.not_implemented("webview.cookies")
+
+        return result

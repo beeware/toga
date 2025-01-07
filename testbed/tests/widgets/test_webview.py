@@ -341,16 +341,20 @@ async def test_retrieve_cookies_async(widget, probe, on_load):
 
     # Retrieve cookies using widget.cookies()
     result = widget.cookies()  # Call the cookies method
+
     cookie_jar = await result.future  # Await the future to get the CookieJar
 
-    # Find the test cookie in the CookieJar
-    cookie = next((c for c in cookie_jar if c.name == "test"), None)
-    assert cookie is not None, "Test cookie not found in CookieJar"
+    if toga.platform.current_platform not in {"windows", "iOS", "macOS"}:
+        assert cookie_jar is None
+    else:
+        # Find the test cookie in the CookieJar
+        cookie = next((c for c in cookie_jar if c.name == "test"), None)
+        assert cookie is not None, "Test cookie not found in CookieJar"
 
-    # Validate the test cookie
-    assert cookie.name == "test"
-    assert cookie.value == "test_value"
-    assert cookie.domain == "example.com"
-    assert cookie.path == "/"
-    assert cookie.secure is True
-    assert cookie.expires is None
+        # Validate the test cookie
+        assert cookie.name == "test"
+        assert cookie.value == "test_value"
+        assert cookie.domain == "example.com"
+        assert cookie.path == "/"
+        assert cookie.secure is True
+        assert cookie.expires is None
