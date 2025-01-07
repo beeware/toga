@@ -44,7 +44,7 @@ def cookies_completion_handler(result):
                 path_specified=True,
                 secure=bool(cookie.Secure),
                 expires=None,
-                discard=cookie.sessionOnly,
+                discard=bool(cookie.isSessionOnly()),
                 comment=None,
                 comment_url=None,
                 rest={},
