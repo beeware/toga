@@ -4,10 +4,10 @@ import sys
 from travertino.constants import BLACK, BLUE, BOLD, GREEN, ITALIC, NORMAL, RED, YELLOW
 
 import toga
+from toga.constants import Baseline, FillRule
 from toga.fonts import CURSIVE, FANTASY, MESSAGE, MONOSPACE, SANS_SERIF, SERIF, SYSTEM
 from toga.style import Pack
 from toga.style.pack import COLUMN, ROW
-from toga.widgets.canvas import Baseline, FillRule
 
 MOVE_STEP = 5
 
@@ -103,14 +103,14 @@ class ExampleCanvasApp(toga.App):
         )
         self.italic_switch = toga.Switch(text="italic", on_change=self.refresh_canvas)
         self.bold_switch = toga.Switch(text="bold", on_change=self.refresh_canvas)
-        label_style = Pack(padding=5)
+        label_style = Pack(margin=5)
 
         # Add the content on the main window
         box = toga.Box(
             style=Pack(direction=COLUMN),
             children=[
                 toga.Box(
-                    style=Pack(direction=ROW, padding=5),
+                    style=Pack(direction=ROW, margin=5),
                     children=[
                         self.context_selection,
                         self.shape_selection,
@@ -119,7 +119,7 @@ class ExampleCanvasApp(toga.App):
                     ],
                 ),
                 toga.Box(
-                    style=Pack(direction=ROW, padding=5),
+                    style=Pack(direction=ROW, margin=5),
                     children=[
                         toga.Label("Line Width:", style=label_style),
                         self.line_width_slider,
@@ -127,7 +127,7 @@ class ExampleCanvasApp(toga.App):
                     ],
                 ),
                 toga.Box(
-                    style=Pack(direction=ROW, padding=5),
+                    style=Pack(direction=ROW, margin=5),
                     children=[
                         toga.Label("X Scale:", style=label_style),
                         self.scale_x_slider,
@@ -139,7 +139,7 @@ class ExampleCanvasApp(toga.App):
                     ],
                 ),
                 toga.Box(
-                    style=Pack(direction=ROW, padding=5),
+                    style=Pack(direction=ROW, margin=5),
                     children=[
                         toga.Label("Font Family:", style=label_style),
                         self.font_selection,

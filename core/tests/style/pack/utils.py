@@ -7,9 +7,23 @@ from toga.style.applicator import TogaApplicator
 
 class ExampleNode(Node):
     def __init__(self, name, style, size=None, children=None):
-        super().__init__(
-            style=style, children=children, applicator=TogaApplicator(self)
-        )
+        self._impl = Mock()
+        self._children = None
+
+        super().__init__(style=style, children=children, applicator=TogaApplicator())
+
+        ##############################################
+        # Backwards compatibility for Travertino 0.3.0
+        ##############################################
+
+        if not hasattr(self.applicator, "node"):
+            self.applicator.node = self
+            self.style._applicator = self.applicator
+            self.style.reapply()
+
+        #############################
+        # End backwards compatibility
+        #############################
 
         self.name = name
         self._impl = Mock()
@@ -81,13 +95,15 @@ def _assert_layout(node, expected_layout):
         node.layout.absolute_content_left,
         node.layout.absolute_content_top,
     ) == expected_layout["origin"], (
-        f"origin of {node} ({node.layout.absolute_content_left}, {node.layout.absolute_content_top}) "
+        f"origin of {node} "
+        f"({node.layout.absolute_content_left}, {node.layout.absolute_content_top}) "
         f"doesn't match expected {expected_layout['origin']}"
     )
     assert (node.layout.content_width, node.layout.content_height) == expected_layout[
         "content"
     ], (
-        f"content size of {node} ({node.layout.content_width}, {node.layout.content_height}) "
+        f"content size of {node} "
+        f"({node.layout.content_width}, {node.layout.content_height}) "
         f"doesn't match expected {expected_layout['content']}"
     )
 

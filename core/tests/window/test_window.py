@@ -4,7 +4,9 @@ from unittest.mock import Mock
 import pytest
 
 import toga
+from toga.constants import WindowState
 from toga_dummy.utils import (
+    EventLog,
     assert_action_not_performed,
     assert_action_performed,
     assert_action_performed_with,
@@ -302,17 +304,178 @@ def test_visibility(window, app):
     assert not window.visible
 
 
-def test_full_screen(window, app):
-    """A window can be set full screen."""
-    assert not window.full_screen
+@pytest.mark.parametrize(
+    "initial_state, final_state",
+    [
+        # Direct switch from NORMAL:
+        (WindowState.NORMAL, WindowState.MINIMIZED),
+        (WindowState.NORMAL, WindowState.MAXIMIZED),
+        (WindowState.NORMAL, WindowState.FULLSCREEN),
+        (WindowState.NORMAL, WindowState.PRESENTATION),
+        # Direct switch from MINIMIZED:
+        (WindowState.MINIMIZED, WindowState.NORMAL),
+        (WindowState.MINIMIZED, WindowState.MAXIMIZED),
+        (WindowState.MINIMIZED, WindowState.FULLSCREEN),
+        (WindowState.MINIMIZED, WindowState.PRESENTATION),
+        # Direct switch from MAXIMIZED:
+        (WindowState.MAXIMIZED, WindowState.NORMAL),
+        (WindowState.MAXIMIZED, WindowState.MINIMIZED),
+        (WindowState.MAXIMIZED, WindowState.FULLSCREEN),
+        (WindowState.MAXIMIZED, WindowState.PRESENTATION),
+        # Direct switch from FULLSCREEN:
+        (WindowState.FULLSCREEN, WindowState.NORMAL),
+        (WindowState.FULLSCREEN, WindowState.MINIMIZED),
+        (WindowState.FULLSCREEN, WindowState.MAXIMIZED),
+        (WindowState.FULLSCREEN, WindowState.PRESENTATION),
+        # Direct switch from PRESENTATION:
+        (WindowState.PRESENTATION, WindowState.NORMAL),
+        (WindowState.PRESENTATION, WindowState.MINIMIZED),
+        (WindowState.PRESENTATION, WindowState.MAXIMIZED),
+        (WindowState.PRESENTATION, WindowState.FULLSCREEN),
+    ],
+)
+def test_window_state(window, initial_state, final_state):
+    """A window can have different states."""
+    window.show()
+    assert window.state == WindowState.NORMAL
 
-    window.full_screen = True
-    assert window.full_screen
-    assert_action_performed_with(window, "set full screen", full_screen=True)
+    window.state = initial_state
+    assert window.state == initial_state
+    # A newly created window will always be in NORMAL state.
+    # Since, both the current state and initial_state, would
+    # be the same, hence "set window state to WindowState.NORMAL"
+    # action would not be performed again.
+    if initial_state != WindowState.NORMAL:
+        assert_action_performed_with(
+            window,
+            f"set window state to {initial_state}",
+            state=initial_state,
+        )
 
-    window.full_screen = False
-    assert not window.full_screen
-    assert_action_performed_with(window, "set full screen", full_screen=False)
+    window.state = final_state
+    assert window.state == final_state
+    assert_action_performed_with(
+        window,
+        f"set window state to {final_state}",
+        state=final_state,
+    )
+
+
+@pytest.mark.parametrize(
+    "state",
+    [
+        WindowState.NORMAL,
+        WindowState.MINIMIZED,
+        WindowState.MAXIMIZED,
+        WindowState.FULLSCREEN,
+        WindowState.PRESENTATION,
+    ],
+)
+def test_window_state_same_as_current(window, state):
+    """Setting window state the same as current is a no-op."""
+    window.show()
+
+    window.state = state
+    assert window.state == state
+
+    # Reset the EventLog to check that the action was not re-performed.
+    EventLog.reset()
+    window.show()
+
+    window.state = state
+    assert window.state == state
+    assert_action_not_performed(window, f"set window state to {state}")
+
+
+@pytest.mark.parametrize(
+    "state",
+    [
+        WindowState.NORMAL,
+        WindowState.MINIMIZED,
+        WindowState.MAXIMIZED,
+        WindowState.FULLSCREEN,
+        WindowState.PRESENTATION,
+    ],
+)
+def test_hidden_window_state(state):
+    """Window state of a hidden window cannot be changed."""
+    hidden_window = toga.Window(title="Hidden Window")
+    hidden_window.hide()
+
+    with pytest.raises(
+        RuntimeError,
+        match="Window state of a hidden window cannot be changed.",
+    ):
+        hidden_window.state = state
+        assert_action_not_performed(hidden_window, f"set window state to {state}")
+    hidden_window.close()
+
+
+@pytest.mark.parametrize(
+    "state",
+    [
+        WindowState.MAXIMIZED,
+        WindowState.FULLSCREEN,
+        WindowState.PRESENTATION,
+    ],
+)
+def test_non_resizable_window_state(state):
+    """Non-resizable window's states other than minimized or normal are no-ops."""
+    non_resizable_window = toga.Window(title="Non-Resizable Window", resizable=False)
+    non_resizable_window.show()
+
+    with pytest.raises(
+        ValueError,
+        match=f"A non-resizable window cannot be set to a state of {state}.",
+    ):
+        non_resizable_window.state = state
+        assert_action_not_performed(
+            non_resizable_window, f"set window state to {state}"
+        )
+    non_resizable_window.close()
+
+
+@pytest.mark.parametrize(
+    "state",
+    [
+        WindowState.FULLSCREEN,
+        WindowState.PRESENTATION,
+    ],
+)
+def test_resize_in_window_state(state):
+    """Window size cannot be changed while in fullscreen or presentation state."""
+    window = toga.Window(title="Non-resizing window")
+    window.show()
+    window.state = state
+
+    with pytest.raises(RuntimeError, match=f"Cannot resize window while in {state}"):
+        window.size = (100, 200)
+    window.close()
+
+
+@pytest.mark.parametrize(
+    "state",
+    [
+        WindowState.FULLSCREEN,
+        WindowState.PRESENTATION,
+    ],
+)
+def test_move_in_window_state(state):
+    """Window position cannot be changed while in fullscreen or presentation state."""
+    window = toga.Window(title="Non-resizing window")
+    window.show()
+    window.state = state
+
+    with pytest.raises(
+        RuntimeError, match=f"Cannot change window position while in {state}"
+    ):
+        window.position = (100, 200)
+
+    with pytest.raises(
+        RuntimeError, match=f"Cannot change window position while in {state}"
+    ):
+        window.screen_position = (100, 200)
+    window.close()
 
 
 def test_close_direct(window, app):
@@ -488,7 +651,8 @@ def test_widget_id_reusablity(window, app):
     assert CONTENT_WIDGET_ID in app.widgets
     assert LABEL_WIDGET_ID in app.widgets
 
-    # CONTENT_WIDGET_ID is in use, so a widget with that ID can't be assigned to a window.
+    # CONTENT_WIDGET_ID is in use, so a widget with that ID can't be assigned
+    # to a window.
     with pytest.raises(
         KeyError,
         match=r"There is already a widget with the id 'sample_label'",
@@ -554,7 +718,10 @@ def test_deprecated_info_dialog(window, app):
         match=r"Synchronous `on_result` handlers have been deprecated;",
     ), pytest.warns(
         DeprecationWarning,
-        match=r"info_dialog\(...\) has been deprecated; use dialog\(toga.InfoDialog\(...\)\)",
+        match=(
+            r"info_dialog\(...\) has been deprecated; "
+            r"use dialog\(toga.InfoDialog\(...\)\)"
+        ),
     ):
         dialog = window.info_dialog("Title", "Body", on_result=on_result_handler)
 
@@ -595,7 +762,10 @@ def test_deprecated_question_dialog(window, app):
         match=r"Synchronous `on_result` handlers have been deprecated;",
     ), pytest.warns(
         DeprecationWarning,
-        match=r"question_dialog\(...\) has been deprecated; use dialog\(toga.QuestionDialog\(...\)\)",
+        match=(
+            r"question_dialog\(...\) has been deprecated; "
+            r"use dialog\(toga.QuestionDialog\(...\)\)"
+        ),
     ):
         dialog = window.question_dialog("Title", "Body", on_result=on_result_handler)
 
@@ -636,7 +806,10 @@ def test_deprecated_confirm_dialog(window, app):
         match=r"Synchronous `on_result` handlers have been deprecated;",
     ), pytest.warns(
         DeprecationWarning,
-        match=r"confirm_dialog\(...\) has been deprecated; use dialog\(toga.ConfirmDialog\(...\)\)",
+        match=(
+            r"confirm_dialog\(...\) has been deprecated; "
+            r"use dialog\(toga.ConfirmDialog\(...\)\)"
+        ),
     ):
         dialog = window.confirm_dialog("Title", "Body", on_result=on_result_handler)
 
@@ -677,7 +850,10 @@ def test_deprecated_error_dialog(window, app):
         match=r"Synchronous `on_result` handlers have been deprecated;",
     ), pytest.warns(
         DeprecationWarning,
-        match=r"error_dialog\(...\) has been deprecated; use dialog\(toga.ErrorDialog\(...\)\)",
+        match=(
+            r"error_dialog\(...\) has been deprecated; "
+            r"use dialog\(toga.ErrorDialog\(...\)\)"
+        ),
     ):
         dialog = window.error_dialog("Title", "Body", on_result=on_result_handler)
 
@@ -718,7 +894,10 @@ def test_deprecated_stack_trace_dialog(window, app):
         match=r"Synchronous `on_result` handlers have been deprecated;",
     ), pytest.warns(
         DeprecationWarning,
-        match=r"stack_trace_dialog\(...\) has been deprecated; use dialog\(toga.StackTraceDialog\(...\)\)",
+        match=(
+            r"stack_trace_dialog\(...\) has been deprecated; "
+            r"use dialog\(toga.StackTraceDialog\(...\)\)"
+        ),
     ):
         dialog = window.stack_trace_dialog(
             "Title",
@@ -767,7 +946,10 @@ def test_deprecated_save_file_dialog(window, app):
         match=r"Synchronous `on_result` handlers have been deprecated;",
     ), pytest.warns(
         DeprecationWarning,
-        match=r"save_file_dialog\(...\) has been deprecated; use dialog\(toga.SaveFileDialog\(...\)\)",
+        match=(
+            r"save_file_dialog\(...\) has been deprecated; "
+            r"use dialog\(toga.SaveFileDialog\(...\)\)"
+        ),
     ):
         dialog = window.save_file_dialog(
             "Title",
@@ -815,7 +997,10 @@ def test_deprecated_save_file_dialog_default_directory(window, app):
         match=r"Synchronous `on_result` handlers have been deprecated;",
     ), pytest.warns(
         DeprecationWarning,
-        match=r"save_file_dialog\(...\) has been deprecated; use dialog\(toga.SaveFileDialog\(...\)\)",
+        match=(
+            r"save_file_dialog\(...\) has been deprecated; "
+            r"use dialog\(toga.SaveFileDialog\(...\)\)"
+        ),
     ):
         dialog = window.save_file_dialog(
             "Title",
@@ -864,7 +1049,10 @@ def test_deprecated_open_file_dialog(window, app):
         match=r"Synchronous `on_result` handlers have been deprecated;",
     ), pytest.warns(
         DeprecationWarning,
-        match=r"open_file_dialog\(...\) has been deprecated; use dialog\(toga.OpenFileDialog\(...\)\)",
+        match=(
+            r"open_file_dialog\(...\) has been deprecated; "
+            r"use dialog\(toga.OpenFileDialog\(...\)\)"
+        ),
     ):
         dialog = window.open_file_dialog(
             "Title",
@@ -915,7 +1103,10 @@ def test_deprecated_open_file_dialog_default_directory(window, app):
         match=r"Synchronous `on_result` handlers have been deprecated;",
     ), pytest.warns(
         DeprecationWarning,
-        match=r"open_file_dialog\(...\) has been deprecated; use dialog\(toga.OpenFileDialog\(...\)\)",
+        match=(
+            r"open_file_dialog\(...\) has been deprecated; "
+            r"use dialog\(toga.OpenFileDialog\(...\)\)"
+        ),
     ):
         dialog = window.open_file_dialog(
             "Title",
@@ -964,7 +1155,10 @@ def test_deprecated_select_folder_dialog(window, app):
         match=r"Synchronous `on_result` handlers have been deprecated;",
     ), pytest.warns(
         DeprecationWarning,
-        match=r"select_folder_dialog\(...\) has been deprecated; use dialog\(toga.SelectFolderDialog\(...\)\)",
+        match=(
+            r"select_folder_dialog\(...\) has been deprecated; "
+            r"use dialog\(toga.SelectFolderDialog\(...\)\)"
+        ),
     ):
         dialog = window.select_folder_dialog(
             "Title",
@@ -1014,7 +1208,10 @@ def test_deprecated_select_folder_dialog_default_directory(window, app):
         match=r"Synchronous `on_result` handlers have been deprecated;",
     ), pytest.warns(
         DeprecationWarning,
-        match=r"select_folder_dialog\(...\) has been deprecated; use dialog\(toga.SelectFolderDialog\(...\)\)",
+        match=(
+            r"select_folder_dialog\(...\) has been deprecated; "
+            r"use dialog\(toga.SelectFolderDialog\(...\)\)"
+        ),
     ):
         dialog = window.select_folder_dialog(
             "Title",
@@ -1058,18 +1255,21 @@ def test_deprecated_names_open_file_dialog(window, app):
 
     with pytest.warns(
         DeprecationWarning,
-        match=r"open_file_dialog\(multiselect\) has been renamed multiple_select",
+        match=(
+            r"Synchronous `on_result` handlers have been deprecated; "
+            r"use `await` on the asynchronous result"
+        ),
     ), pytest.warns(
         DeprecationWarning,
-        match=r"Synchronous `on_result` handlers have been deprecated; use `await` on the asynchronous result",
-    ), pytest.warns(
-        DeprecationWarning,
-        match=r"open_file_dialog\(...\) has been deprecated; use dialog\(toga.OpenFileDialog\(...\)\)",
+        match=(
+            r"open_file_dialog\(...\) has been deprecated; "
+            r"use dialog\(toga.OpenFileDialog\(...\)\)"
+        ),
     ):
         dialog = window.open_file_dialog(
             "Title",
             "/path/to/folder",
-            multiselect=True,
+            multiple_select=True,
             on_result=on_result_handler,
         )
 
@@ -1100,18 +1300,21 @@ def test_deprecated_names_select_folder_dialog(window, app):
 
     with pytest.warns(
         DeprecationWarning,
-        match=r"select_folder_dialog\(multiselect\) has been renamed multiple_select",
+        match=(
+            r"Synchronous `on_result` handlers have been deprecated; "
+            r"use `await` on the asynchronous result"
+        ),
     ), pytest.warns(
         DeprecationWarning,
-        match=r"Synchronous `on_result` handlers have been deprecated; use `await` on the asynchronous result",
-    ), pytest.warns(
-        DeprecationWarning,
-        match=r"select_folder_dialog\(...\) has been deprecated; use dialog\(toga.SelectFolderDialog\(...\)\)",
+        match=(
+            r"select_folder_dialog\(...\) has been deprecated; "
+            r"use dialog\(toga.SelectFolderDialog\(...\)\)"
+        ),
     ):
         dialog = window.select_folder_dialog(
             "Title",
             "/path/to/folder",
-            multiselect=True,
+            multiple_select=True,
             on_result=on_result_handler,
         )
 
@@ -1131,31 +1334,60 @@ def test_deprecated_names_select_folder_dialog(window, app):
     on_result_handler.assert_called_once_with(window, selected_folder)
 
 
-def test_deprecated_names_resizeable():
-    """Deprecated spelling of resizable still works."""
+def test_deprecated_full_screen(window, app):
+    """A window can be set full screen using the deprecated API."""
+    full_screen_warning = (
+        "`Window.full_screen` is deprecated. Use `Window.state` instead."
+    )
     with pytest.warns(
         DeprecationWarning,
-        match=r"Window.resizeable has been renamed Window.resizable",
+        match=full_screen_warning,
     ):
-        window = toga.Window(title="Deprecated", resizeable=True)
-
+        assert not window.full_screen
     with pytest.warns(
         DeprecationWarning,
-        match=r"Window.resizeable has been renamed Window.resizable",
+        match=full_screen_warning,
     ):
-        assert window.resizeable
-
-
-def test_deprecated_names_closeable():
-    """Deprecated spelling of closable still works."""
+        window.full_screen = True
     with pytest.warns(
         DeprecationWarning,
-        match=r"Window.closeable has been renamed Window.closable",
+        match=full_screen_warning,
     ):
-        window = toga.Window(title="Deprecated", closeable=True)
-
+        assert window.full_screen
+    assert_action_performed_with(
+        window,
+        "set window state to WindowState.FULLSCREEN",
+        state=WindowState.FULLSCREEN,
+    )
     with pytest.warns(
         DeprecationWarning,
-        match=r"Window.closeable has been renamed Window.closable",
+        match=full_screen_warning,
     ):
-        assert window.closeable
+        window.full_screen = False
+    with pytest.warns(
+        DeprecationWarning,
+        match=full_screen_warning,
+    ):
+        assert not window.full_screen
+    assert_action_performed_with(
+        window,
+        "set window state to WindowState.NORMAL",
+        state=WindowState.NORMAL,
+    )
+
+    # Clear the test event log to check that the previous task was not re-performed.
+    EventLog.reset()
+
+    assert window.state == WindowState.NORMAL
+    with pytest.warns(
+        DeprecationWarning,
+        match=full_screen_warning,
+    ):
+        assert not window.full_screen
+    with pytest.warns(
+        DeprecationWarning,
+        match=full_screen_warning,
+    ):
+        window.full_screen = False
+
+    assert_action_not_performed(window, "set window state to WindowState.NORMAL")

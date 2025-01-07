@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import datetime
-import warnings
 from typing import Any, Protocol
 
 import toga
@@ -18,7 +17,7 @@ MAX_DATE = datetime.date(8999, 12, 31)
 
 
 class OnChangeHandler(Protocol):
-    def __call__(self, widget: DateInput, /, **kwargs: Any) -> object:
+    def __call__(self, widget: DateInput, **kwargs: Any) -> object:
         """A handler that will be invoked when a change occurs.
 
         :param widget: The DateInput that was changed.
@@ -51,15 +50,15 @@ class DateInput(Widget):
         """
         super().__init__(id=id, style=style)
 
-        # Create a platform specific implementation of a DateInput
-        self._impl = self.factory.DateInput(interface=self)
-
         self.on_change = None
         self.min = min
         self.max = max
 
         self.value = value
         self.on_change = on_change
+
+    def _create(self) -> Any:
+        return self.factory.DateInput(interface=self)
 
     @property
     def value(self) -> datetime.date:
@@ -162,54 +161,3 @@ class DateInput(Widget):
     @on_change.setter
     def on_change(self, handler: toga.widgets.dateinput.OnChangeHandler) -> None:
         self._on_change = wrapped_handler(self, handler)
-
-
-# 2023-05: Backwards compatibility
-class DatePicker(DateInput):
-    def __init__(self, *args: Any, **kwargs: Any):
-        warnings.warn("DatePicker has been renamed DateInput.", DeprecationWarning)
-
-        for old_name, new_name in [
-            ("min_date", "min"),
-            ("max_date", "max"),
-        ]:
-            try:
-                value = kwargs.pop(old_name)
-                warnings.warn(
-                    f"DatePicker.{old_name} has been renamed DateInput.{new_name}",
-                    DeprecationWarning,
-                )
-            except KeyError:
-                pass
-            else:
-                kwargs[new_name] = value
-
-        super().__init__(*args, **kwargs)
-
-    @property
-    def min_date(self) -> datetime.date:
-        warnings.warn(
-            "DatePicker.min_date has been renamed DateInput.min", DeprecationWarning
-        )
-        return self.min
-
-    @min_date.setter
-    def min_date(self, value: object) -> None:
-        warnings.warn(
-            "DatePicker.min_date has been renamed DateInput.min", DeprecationWarning
-        )
-        self.min = value
-
-    @property
-    def max_date(self) -> datetime.date:
-        warnings.warn(
-            "DatePicker.max_date has been renamed DateInput.max", DeprecationWarning
-        )
-        return self.max
-
-    @max_date.setter
-    def max_date(self, value: object) -> None:
-        warnings.warn(
-            "DatePicker.max_date has been renamed DateInput.max", DeprecationWarning
-        )
-        self.max = value

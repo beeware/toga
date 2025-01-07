@@ -24,7 +24,7 @@ class SizePanel(toga.Box):
         )
         self.flex = SizeButton("F", value=0, max=3, on_press=self.on_press)
         super().__init__(
-            style=Pack(direction=COLUMN, alignment="center"),
+            style=Pack(direction=COLUMN, align_items="center"),
             children=[
                 toga.Label(title.upper(), style=Pack(font_weight="bold")),
                 toga.Box(
@@ -95,8 +95,8 @@ class Resize(toga.App):
         setattr_if_changed(self.text_label.style, "flex", flex)
 
     def on_change_style(self, panel, width, height, flex):
-        # Increment should be large enough that the minimum window width can be determined
-        # by either the buttons or the labels, depending on the labels' size.
+        # Increment should be large enough that the minimum window width can be
+        # determined by either the buttons or the labels, depending on the labels' size.
         INCREMENT = 70
         setattr_if_changed(self.style_label.style, "width", width * INCREMENT)
         setattr_if_changed(self.style_label.style, "height", height * INCREMENT)

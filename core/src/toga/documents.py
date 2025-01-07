@@ -9,7 +9,6 @@ from typing import TYPE_CHECKING
 
 import toga
 from toga import dialogs
-from toga.handlers import overridable, overridden
 from toga.window import MainWindow, Window
 
 if TYPE_CHECKING:
@@ -21,7 +20,8 @@ class Document(ABC):
     #: class variable that subclasses should define.
     description: str
 
-    #: A list of extensions that documents of this type might use, without leading dots (e.g.,
+    #: A list of extensions that documents of this type might use,
+    # without leading dots (e.g.,
     #: ``["doc", "txt"]``). The list must have at least one extension; the first is the
     #: default extension for documents of this type. This is a class variable that
     #: subclasses should define.
@@ -43,7 +43,7 @@ class Document(ABC):
         self.create()
 
         # Add the document to the list of managed documents.
-        self.app._documents._add(self)
+        self.app.documents._add(self)
 
     ######################################################################
     # Document properties
@@ -116,13 +116,15 @@ class Document(ABC):
     def save(self, path: str | Path | None = None):
         """Save the document as a file.
 
-        If a path is provided, and the :meth:`~toga.Document.write` method has been
-        overwritten, the path for the document will be updated. Otherwise, the existing
-        path will be used.
+        If a path is provided, the path for the document will be updated. Otherwise, the
+        existing path will be used.
+
+        If the :meth:`~toga.Document.write` method has not been implemented, this method
+        is a no-op.
 
         :param path: If provided, the new file name for the document.
         """
-        if overridden(self.write):
+        if self._writable():
             if path:
                 self._path = Path(path).absolute()
                 # Re-set the title of the document with the new path
@@ -130,6 +132,10 @@ class Document(ABC):
             self.write()
             # Clear the modification flag.
             self.modified = False
+
+    # A document is writable if its class overrides the `write` method.
+    def _writable(self):
+        return getattr(type(self), "write") is not Document.write
 
     def show(self) -> None:
         """Show the visual representation for this document."""
@@ -161,7 +167,6 @@ class Document(ABC):
         :attr:`~toga.Document.path`, and populate the document window.
         """
 
-    @overridable
     def write(self) -> None:
         """Persist a representation of the current state of the document.
 
@@ -275,9 +280,9 @@ class DocumentSet(Sequence[Document], Mapping[Path, Document]):
         if hasattr(self, "_open_dialog"):
             return
 
-        # CLOSE_ON_LAST_WINDOW is a proxy for the GTK/Windows behavior of loading content
-        # into the existing window. This is actually implemented by creating a new window
-        # and disposing of the old one; mark the current window for cleanup
+        # CLOSE_ON_LAST_WINDOW is a proxy for the GTK/Windows behavior of loading
+        # content into the existing window. This is actually implemented by creating a
+        # new window and disposing of the old one; mark the current window for cleanup
         current_window = self.app.current_window
         if self.app._impl.CLOSE_ON_LAST_WINDOW:
             if hasattr(self.app.current_window, "_commit"):
@@ -311,8 +316,8 @@ class DocumentSet(Sequence[Document], Mapping[Path, Document]):
     def open(self, path: Path | str) -> Document:
         """Open a document in the app, and show the document window.
 
-        If the provided path is already an open document, the existing representation for
-        the document will be given focus.
+        If the provided path is already an open document, the existing representation
+        for the document will be given focus.
 
         :param path: The path to the document to be opened.
         :returns: The document that was opened.
@@ -427,7 +432,10 @@ class DocumentWindow(MainWindow):
             if await self.dialog(
                 toga.QuestionDialog(
                     "Save changes?",
-                    "This document has unsaved changes. Do you want to save these changes?",
+                    (
+                        "This document has unsaved changes. "
+                        "Do you want to save these changes?"
+                    ),
                 )
             ):
                 return await self.save()
@@ -442,19 +450,19 @@ class DocumentWindow(MainWindow):
     def _close(self):
         # When then window is closed, remove the document it is managing from the app's
         # list of managed documents.
-        self._app._documents._remove(self.doc)
+        self._app.documents._remove(self.doc)
         super()._close()
 
     async def save(self):
         """Save the document associated with this window.
 
-        If the document associated with a window hasn't been saved before, and the
-        document type defines a :meth:`~toga.Document.write` method, the user will be
-        prompted to provide a filename.
+        If the document associated with a window hasn't been saved before, the user will
+        be prompted to provide a filename.
 
-        :returns: True if the save was successful; False if the save was aborted.
+        :returns: True if the save was successful; False if the save was aborted, or the
+            document type doesn't define a :meth:`~toga.Document.write` method.
         """
-        if overridden(self.doc.write):
+        if self.doc._writable():
             if self.doc.path:
                 # Document has been saved previously; save using that filename.
                 self.doc.save()
@@ -467,12 +475,12 @@ class DocumentWindow(MainWindow):
         """Save the document associated with this window under a new filename.
 
         The default implementation will prompt the user for a new filename, then save
-        the document with that new filename. If the document type doesn't define a
-        :meth:`~toga.Document.write` method, the save-as request will be ignored.
+        the document with that new filename.
 
-        :returns: True if the save was successful; False if the save was aborted.
+        :returns: True if the save was successful; False if the save was aborted, or the
+            document type doesn't define a :meth:`~toga.Document.write` method.
         """
-        if overridden(self.doc.write):
+        if self.doc._writable():
             suggested_path = (
                 self.doc.path if self.doc.path else f"Untitled.{self.doc.extensions[0]}"
             )

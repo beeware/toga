@@ -55,15 +55,6 @@ class AppProbe(BaseProbe, DialogsMixin):
         # fall back to the implementation's proxy variable.
         return self.app._impl._cursor_visible
 
-    def is_full_screen(self, window):
-        return window._impl.container.native.isInFullScreenMode()
-
-    def content_size(self, window):
-        return (
-            window.content._impl.native.frame.size.width,
-            window.content._impl.native.frame.size.height,
-        )
-
     def assert_app_icon(self, icon):
         # We have no real way to check we've got the right icon; use pixel peeping as a
         # guess. Construct a PIL image from the current icon.

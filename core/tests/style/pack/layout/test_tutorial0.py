@@ -11,12 +11,12 @@ def test_tutorial_0():
         style=Pack(),
         children=[
             ExampleNode(
-                "button", style=Pack(flex=1, padding=50), size=(at_least(120), 30)
+                "button", style=Pack(flex=1, margin=50), size=(at_least(120), 30)
             ),
         ],
     )
 
-    root.style.layout(root, ExampleViewport(640, 480))
+    root.style.layout(ExampleViewport(640, 480))
     assert_layout(
         root,
         (220, 130),
@@ -36,12 +36,12 @@ def test_vertical():
         children=[
             # ExampleNode('button', style=Pack(flex=1), size=(30, at_least(120))),
             ExampleNode(
-                "button", style=Pack(flex=1, padding=50), size=(30, at_least(120))
+                "button", style=Pack(flex=1, margin=50), size=(30, at_least(120))
             ),
         ],
     )
 
-    root.style.layout(root, ExampleViewport(480, 640))
+    root.style.layout(ExampleViewport(480, 640))
     assert_layout(
         root,
         (130, 220),

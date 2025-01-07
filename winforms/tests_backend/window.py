@@ -1,3 +1,5 @@
+import asyncio
+
 from System import EventArgs
 from System.Windows.Forms import (
     Form,
@@ -33,8 +35,32 @@ class WindowProbe(BaseProbe, DialogsMixin):
         super().__init__(window._impl.native)
         assert isinstance(self.native, Form)
 
-    async def wait_for_window(self, message, minimize=False, full_screen=False):
+    async def wait_for_window(
+        self,
+        message,
+        state=None,
+    ):
         await self.redraw(message)
+
+        if state:
+            timeout = 5
+            polling_interval = 0.1
+            exception = None
+            loop = asyncio.get_running_loop()
+            start_time = loop.time()
+            while (loop.time() - start_time) < timeout:
+                try:
+                    assert self.instantaneous_state == state
+                    return
+                except AssertionError as e:
+                    exception = e
+                    await asyncio.sleep(polling_interval)
+                    continue
+                raise exception
+
+    async def cleanup(self):
+        self.window.close()
+        await self.redraw("Closing window")
 
     def close(self):
         self.native.Close()
@@ -52,13 +78,6 @@ class WindowProbe(BaseProbe, DialogsMixin):
         return Size(
             self.native.ClientSize.Width / self.scale_factor,
             self.native.ClientSize.Height / self.scale_factor,
-        )
-
-    @property
-    def is_full_screen(self):
-        return (
-            self.native.FormBorderStyle == getattr(FormBorderStyle, "None")
-            and self.native.WindowState == FormWindowState.Maximized
         )
 
     @property
@@ -87,6 +106,10 @@ class WindowProbe(BaseProbe, DialogsMixin):
         ]
         assert len(panels) == 1
         return BaseProbe(panels[0])
+
+    @property
+    def instantaneous_state(self):
+        return self.impl.get_window_state(in_progress_state=False)
 
     @property
     def menubar_probe(self):

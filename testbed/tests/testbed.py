@@ -15,8 +15,8 @@ import testbed.app
 
 def run_tests(app, cov, args, report_coverage, run_slow, running_in_ci):
     try:
-        # Wait for the app's main window to be visible. Retrieving the actual main window
-        # will raise an exception until the app is actually initialized.
+        # Wait for the app's main window to be visible. Retrieving the actual
+        # main window will raise an exception until the app is actually initialized.
         print("Waiting for app to be ready for testing... ", end="", flush=True)
         i = 0
         ready = False
@@ -152,7 +152,9 @@ if __name__ == "__main__":
         "coverage_conditional_plugin:rules",
         {
             "no-cover-if-linux-wayland": "os_environ.get('WAYLAND_DISPLAY', '') != ''",
-            "no-cover-if-linux-x": "os_environ.get('WAYLAND_DISPLAY', 'not-set') == 'not-set'",
+            "no-cover-if-linux-x": (
+                "os_environ.get('WAYLAND_DISPLAY', 'not-set') == 'not-set'"
+            ),
         },
     )
     cov.start()

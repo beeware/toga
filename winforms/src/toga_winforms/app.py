@@ -207,6 +207,14 @@ class App:
         return screen_list
 
     ######################################################################
+    # App state
+    ######################################################################
+
+    def get_dark_mode_state(self):
+        self.interface.factory.not_implemented("dark mode state")
+        return None
+
+    ######################################################################
     # App capabilities
     ######################################################################
 
@@ -256,15 +264,3 @@ class App:
 
     def set_current_window(self, window):
         window._impl.native.Activate()
-
-    ######################################################################
-    # Full screen control
-    ######################################################################
-
-    def enter_full_screen(self, windows):
-        for window in windows:
-            window._impl.set_full_screen(True)
-
-    def exit_full_screen(self, windows):
-        for window in windows:
-            window._impl.set_full_screen(False)

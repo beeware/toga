@@ -116,12 +116,72 @@ jobs:
         mv core/.coverage core/.coverage.${{ matrix.platform }}.${{ matrix.python-version }}
 
     - name: Store Coverage Data
-      uses: actions/upload-artifact@v4.4.3
+      uses: actions/upload-artifact@v4.5.0
       with:
         name: core-coverage-data-${{ matrix.platform }}-${{ matrix.python-version }}
         path: "core/.coverage.*"
         if-no-files-found: error
         include-hidden-files: true
+
+  micropython:
+    name: MicroPython compatibility
+    runs-on: ubuntu-latest
+    needs: [ pre-commit, towncrier, package ]
+    steps:
+      - name: Build MicroPython
+        id: micropython
+        run: |
+          # The following script also works on macOS, except that due to a bug,
+          # threading must be enabled, i.e. THREAD must be omitted from the disabled
+          # feature list.
+          cd $RUNNER_TEMP
+          git clone https://github.com/micropython/micropython -b v1.24.0 --depth 1
+
+          # Create a variant with the same configuration as the PyScript build.
+          cd micropython/ports/unix
+          cp -a variants/standard variants/pyscript
+          grep require ../webassembly/variants/pyscript/manifest.py \
+              >> variants/pyscript/manifest.py
+          for feature in BTREE FFI SOCKET SSL TERMIOS THREAD; do
+              echo "MICROPY_PY_$feature = 0" >> variants/pyscript/mpconfigvariant.mk
+          done
+
+          export VARIANT=pyscript
+          make submodules
+          make -j $(nproc)
+          echo "executable=$(pwd)/build-pyscript/micropython" >> $GITHUB_OUTPUT
+
+      - name: Checkout
+        uses: actions/checkout@v4.2.2
+
+      - name: Set up Python
+        uses: actions/setup-python@v5.3.0
+        with:
+          python-version: "3.13"
+
+      - name: Get Packages
+        uses: actions/download-artifact@v4.1.8
+        with:
+          name: Packages-toga-core
+          path: dist
+
+      - name: Test
+        run: |
+          pip install dist/toga_core-*.whl
+          site_packages=$(python -c '
+          import sys
+          print([path for path in sys.path if "site-packages" in path][0])
+          ')
+
+          cd core
+          export MICROPYPATH="$site_packages:.frozen"
+
+          echo "Stable Travertino"
+          ${{ steps.micropython.outputs.executable }} micropython_check.py
+
+          echo "Development Travertino"
+          pip install git+https://github.com/beeware/travertino
+          ${{ steps.micropython.outputs.executable }} micropython_check.py
 
   core-coverage:
     name: Coverage
@@ -158,7 +218,7 @@ jobs:
       run: tox -e coverage-html-fail-platform
 
     - name: Upload HTML Coverage Report
-      uses: actions/upload-artifact@v4.4.3
+      uses: actions/upload-artifact@v4.5.0
       if: failure()
       with:
         name: html-coverage-report
@@ -204,7 +264,7 @@ jobs:
         - backend: "linux-x11"
           platform: "linux"
           runs-on: "ubuntu-24.04"
-          # The package list should be the same as in tutorial-0.rst, and the BeeWare
+          # The package list should be the same as in unix-prerequisites.rst, and the BeeWare
           # tutorial, plus blackbox to provide a window manager. We need a window
           # manager that is reasonably lightweight, honors full screen mode, and
           # treats the window position as the top-left corner of the *window*, not the
@@ -215,7 +275,7 @@ jobs:
             sudo apt update -y
             sudo apt install -y --no-install-recommends \
               blackbox pkg-config python3-dev libgirepository1.0-dev libcairo2-dev \
-              gir1.2-webkit2-4.1 gir1.2-xapp-1.0
+              gir1.2-webkit2-4.1 gir1.2-xapp-1.0 gir1.2-geoclue-2.0 gir1.2-flatpak-1.0
 
             # Start Virtual X Server
             echo "Start X server..."
@@ -233,14 +293,13 @@ jobs:
         - backend: "linux-wayland"
           platform: "linux"
           runs-on: "ubuntu-24.04"
-          # The package list should be the same as in tutorial-0.rst, and the BeeWare
+          # The package list should be the same as in unix-prerequisites.rst, and the BeeWare
           # tutorial, plus mutter to provide a window manager.
           pre-command: |
             sudo apt update -y
             sudo apt install -y --no-install-recommends \
               mutter pkg-config python3-dev libgirepository1.0-dev libcairo2-dev \
-              gir1.2-webkit2-4.1 gir1.2-xapp-1.0 \
-              libjpeg-dev  # remove once the version of Pillow has a wheel on PyPI for Python 3.12
+              gir1.2-webkit2-4.1 gir1.2-xapp-1.0 gir1.2-geoclue-2.0 gir1.2-flatpak-1.0
 
             # Start Virtual X Server
             echo "Start X server..."
@@ -264,6 +323,8 @@ jobs:
           setup-python: false  # Use the system Python packages
           briefcase-run-args: --config 'requires=["../core","../textual"]' --config 'console_app=true'
           app-user-data-path: "$HOME/.local/share/testbed"
+          # install the meta-package build-essential since Briefcase explicitly checks for it
+          pre-command: sudo apt update -y && sudo apt install -y build-essential
 
         - backend: "textual-macOS"
           platform: "macOS"
@@ -339,7 +400,7 @@ jobs:
           briefcase run ${{ matrix.platform }} --log --test ${{ matrix.briefcase-run-args }} -- --ci
 
     - name: Upload Logs
-      uses: actions/upload-artifact@v4.4.3
+      uses: actions/upload-artifact@v4.5.0
       if: failure()
       with:
         name: testbed-failure-logs-${{ matrix.backend }}
@@ -352,7 +413,7 @@ jobs:
         cp -r "${{ matrix.app-user-data-path }}" testbed/app_data/testbed-app_data-${{ matrix.backend }}
 
     - name: Upload App Data
-      uses: actions/upload-artifact@v4.4.3
+      uses: actions/upload-artifact@v4.5.0
       if: failure() && matrix.backend != 'android'
       with:
         name: testbed-failure-app-data-${{ matrix.backend }}

@@ -45,13 +45,16 @@ class Constraints:
 
     @container.setter
     def container(self, value):
-        # This will *always* remove and then add constraints. It relies on the base widget to
-        # *not* invoke this setter unless the container is actually changing.
+        # This will *always* remove and then add constraints. It relies on the base
+        # widget to *not* invoke this setter unless the container is actually changing.
 
         self._remove_constraints()
         self._container = value
         if value is not None:
-            # print(f"Add constraints for {self.widget} in {self.container} {self.widget.interface.layout}")
+            # print(
+            #     f"Add constraints for {self.widget} in {self.container}"
+            #     f"{self.widget.interface.layout}"
+            # )
             self.left_constraint = NSLayoutConstraint.constraintWithItem(
                 self.widget.native,
                 attribute__1=NSLayoutAttributeLeft,
@@ -97,7 +100,10 @@ class Constraints:
             self.container.native.addConstraint(self.height_constraint)
 
     def update(self, x, y, width, height):
-        # print(f"UPDATE CONSTRAINTS {self.widget} in {self.container} {width}x{height}@{x},{y}")
+        # print(
+        #     f"UPDATE CONSTRAINTS {self.widget} in {self.container} "
+        #     f"{width}x{height}@{x},{y}"
+        # )
         self.left_constraint.constant = x
         self.top_constraint.constant = y
 

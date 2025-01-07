@@ -88,7 +88,8 @@ class TogaCameraWindow(toga.Window):
             style=Pack(width=200),
         )
 
-        # The shutter button. Initially disabled until we know we have a camera available
+        # The shutter button. Initially disabled until we know we have a camera
+        # available
         self.shutter_button = toga.Button(
             icon=toga.Icon("camera", system=True),
             on_press=self.take_photo,
@@ -130,7 +131,7 @@ class TogaCameraWindow(toga.Window):
                             style=Pack(flex=1),
                         ),
                     ],
-                    style=Pack(padding=10),
+                    style=Pack(margin=10),
                 ),
             ],
             style=Pack(direction=COLUMN),
@@ -214,7 +215,7 @@ class TogaCameraWindow(toga.Window):
         self._update_flash_mode()
 
     def close_window(self, widget, **kwargs):
-        # If the user actually takes a photo, the window will be programmatically closed.
+        # If the user actually takes a photo the window will be programmatically closed.
         # This handler is only triggered if the user manually closes the window.
         # Stop the camera session
         self.camera_session.stopRunning()
@@ -261,7 +262,7 @@ class Camera:
             msg = (
                 "Application metadata does not declare that the app will use "
                 "the camera. See "
-                "https://toga.readthedocs.io/en/stable/reference/api/hardware/camera.html"
+                "https://toga.readthedocs.io/en/stable/reference/api/hardware/camera.html"  # noqa: E501
             )
             if self.interface.app.is_bundled:
                 raise RuntimeError(msg)
@@ -272,15 +273,17 @@ class Camera:
 
     def has_permission(self, allow_unknown=False):
         # To reset permissions to "factory" status, run:
-        #     tccutil reset Camera
+        #   tccutil reset Camera
         #
         # To reset a single app:
-        #     tccutil reset Camera <bundleID>
+        #   tccutil reset Camera <bundleID>
         #
-        # e.g.
-        #     tccutil reset Camera org.beeware.appname  # for a bundled app
-        #     tccutil reset Camera com.microsoft.VSCode  # for code running in Visual Studio
-        #     tccutil reset Camera com.apple.Terminal  # for code running in the Apple terminal
+        # e.g. For a bundled app:
+        #   tccutil reset Camera org.beeware.appname
+        # For code running in Visual Studio:
+        #   tccutil reset Camera com.microsoft.VSCode
+        # For code running in the Apple terminal:
+        #   tccutil reset Camera com.apple.Terminal
 
         if allow_unknown:
             valid_values = {

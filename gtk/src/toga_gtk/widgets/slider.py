@@ -82,7 +82,12 @@ class Slider(Widget, SliderImpl):
         return self.tick_count
 
     def rehint(self):
-        # print("REHINT", self, self.native.get_preferred_width(), self.native.get_preferred_height())
+        # print(
+        #     "REHINT",
+        #     self,
+        #     self.native.get_preferred_width(),
+        #     self.native.get_preferred_height(),
+        # )
         height = self.native.get_preferred_height()
 
         # Set intrinsic width to at least the minimum width

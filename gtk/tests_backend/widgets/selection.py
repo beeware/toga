@@ -16,8 +16,8 @@ class SelectionProbe(SimpleProbe):
         return False
 
     @property
-    def alignment(self):
-        xfail("Can't change the alignment of Selection on GTK")
+    def text_align(self):
+        xfail("Can't change the text alignment of Selection on GTK")
 
     @property
     def color(self):

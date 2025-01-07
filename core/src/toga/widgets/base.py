@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from builtins import id as identifier
 from typing import TYPE_CHECKING, Any, TypeVar
+from warnings import warn
 
 from travertino.declaration import BaseStyle
 from travertino.node import Node
@@ -33,17 +34,69 @@ class Widget(Node):
         :param style: A style object. If no style is provided, a default style
             will be applied to the widget.
         """
-        super().__init__(
-            style=style if style else Pack(),
-            applicator=TogaApplicator(self),
-        )
+        super().__init__(style=style if style is not None else Pack())
 
         self._id = str(id if id else identifier(self))
         self._window: Window | None = None
         self._app: App | None = None
-        self._impl: Any = None
 
+        # Get factory and assign implementation
         self.factory = get_platform_factory()
+
+        ####################################################
+        # 2024-12: Backwards compatibility for Toga <= 0.4.8
+        ####################################################
+
+        # Just in case we're working with a third-party widget created before
+        # the _create() mechanism was added, which has already defined its
+        # implementation. We still want to call _create(), to issue the warning and
+        # inform users about where they should be creating the implementation, but if
+        # there already is one, we don't want to do the assignment and thus replace it
+        # with None.
+
+        impl = self._create()
+
+        if not hasattr(self, "_impl"):
+            self._impl = impl
+
+        #############################
+        # End backwards compatibility
+        #############################
+
+        self.applicator = TogaApplicator()
+
+        ##############################################
+        # Backwards compatibility for Travertino 0.3.0
+        ##############################################
+
+        # The below if block will execute when using Travertino 0.3.0. For future
+        # versions of Travertino, these assignments (and the reapply) will already have
+        # been handled "automatically" by assigning the applicator above; in that case,
+        # we want to avoid doing a second, redundant style reapplication.
+
+        # This whole section can be removed as soon as there's a newer version of
+        # Travertino to set as Toga's minimum requirement.
+
+        if not hasattr(self.applicator, "node"):  # pragma: no cover
+            self.applicator.node = self
+            self.style._applicator = self.applicator
+            self.style.reapply()
+
+        #############################
+        # End backwards compatibility
+        #############################
+
+    def _create(self) -> Any:
+        """Create a platform-specific implementation of this widget.
+
+        A subclass of Widget should redefine this method to return its implementation.
+        """
+        warn(
+            "Widgets should create and return their implementation in ._create(). This "
+            "will be an exception in a future version.",
+            RuntimeWarning,
+            stacklevel=2,
+        )
 
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__}:0x{identifier(self):x}>"
@@ -246,7 +299,8 @@ class Widget(Node):
             # window, remove the widget from the widget registry
             self.window.app.widgets._remove(self.id)
         elif self.window is None and window is not None:
-            # If the widget is being assigned to a window for the first time, add it to the widget registry
+            # If the widget is being assigned to a window for the first time, add it to
+            # the widget registry
             window.app.widgets._add(self)
 
         self._window = window
@@ -257,7 +311,8 @@ class Widget(Node):
 
     @property
     def enabled(self) -> bool:
-        """Is the widget currently enabled? i.e., can the user interact with the widget?"""
+        """Is the widget currently enabled? i.e., can the user interact with the
+        widget?"""
         return self._impl.get_enabled()
 
     @enabled.setter

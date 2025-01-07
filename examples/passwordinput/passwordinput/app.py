@@ -35,13 +35,13 @@ class PasswordInputApp(toga.App):
         # Label to show responses.
         self.label = toga.Label("Testing Password")
         self.password_content_label = toga.Label(
-            EMPTY_PASSWORD, style=Pack(padding_bottom=PADDING)
+            EMPTY_PASSWORD, style=Pack(margin_bottom=PADDING)
         )
 
         # Padding box only
         self.password_input = toga.PasswordInput(
             placeholder="Password...",
-            style=Pack(padding=PADDING),
+            style=Pack(margin=PADDING),
             on_change=self.on_password_change,
             validators=[
                 validators.MinLength(10),
@@ -60,7 +60,7 @@ class PasswordInputApp(toga.App):
         ]
         outer_box = toga.Box(
             children=children,
-            style=Pack(flex=1, direction=COLUMN, padding=10, width=500, height=300),
+            style=Pack(flex=1, direction=COLUMN, margin=10, width=500, height=300),
         )
 
         # Add the content on the main window

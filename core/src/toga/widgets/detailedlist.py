@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import warnings
 from collections.abc import Iterable
 from typing import Any, Literal, Protocol, TypeVar
 
@@ -14,7 +13,7 @@ SourceT = TypeVar("SourceT", bound=Source)
 
 
 class OnPrimaryActionHandler(Protocol):
-    def __call__(self, widget: DetailedList, row: Any, /, **kwargs: Any) -> object:
+    def __call__(self, widget: DetailedList, row: Any, **kwargs: Any) -> object:
         """A handler to invoke for the primary action.
 
         :param widget: The DetailedList that was invoked.
@@ -24,7 +23,7 @@ class OnPrimaryActionHandler(Protocol):
 
 
 class OnSecondaryActionHandler(Protocol):
-    def __call__(self, widget: DetailedList, row: Any, /, **kwargs: Any) -> object:
+    def __call__(self, widget: DetailedList, row: Any, **kwargs: Any) -> object:
         """A handler to invoke for the secondary action.
 
         :param widget: The DetailedList that was invoked.
@@ -34,7 +33,7 @@ class OnSecondaryActionHandler(Protocol):
 
 
 class OnRefreshHandler(Protocol):
-    def __call__(self, widget: DetailedList, /, **kwargs: Any) -> object:
+    def __call__(self, widget: DetailedList, **kwargs: Any) -> object:
         """A handler to invoke when the detailed list is refreshed.
 
         :param widget: The DetailedList that was refreshed.
@@ -43,7 +42,7 @@ class OnRefreshHandler(Protocol):
 
 
 class OnSelectHandler(Protocol):
-    def __call__(self, widget: DetailedList, /, **kwargs: Any) -> object:
+    def __call__(self, widget: DetailedList, **kwargs: Any) -> object:
         """A handler to invoke when the detailed list is selected.
 
         :param widget: The DetailedList that was selected.
@@ -65,7 +64,6 @@ class DetailedList(Widget):
         on_secondary_action: OnSecondaryActionHandler | None = None,
         on_refresh: OnRefreshHandler | None = None,
         on_select: toga.widgets.detailedlist.OnSelectHandler | None = None,
-        on_delete: None = None,  # DEPRECATED
     ):
         """Create a new DetailedList widget.
 
@@ -83,27 +81,9 @@ class DetailedList(Widget):
         :param secondary_action: The name for the secondary action.
         :param on_secondary_action: Initial :any:`on_secondary_action` handler.
         :param on_refresh: Initial :any:`on_refresh` handler.
-        :param on_delete: **DEPRECATED**; use ``on_primary_action``.
         """
-        super().__init__(id=id, style=style)
-
-        ######################################################################
-        # 2023-06: Backwards compatibility
-        ######################################################################
-        if on_delete:
-            if on_primary_action:
-                raise ValueError("Cannot specify both on_delete and on_primary_action")
-            else:
-                warnings.warn(
-                    "DetailedList.on_delete has been renamed DetailedList.on_primary_action.",
-                    DeprecationWarning,
-                )
-                on_primary_action = on_delete
-        ######################################################################
-        # End backwards compatibility.
-        ######################################################################
-
-        # Prime the attributes and handlers that need to exist when the widget is created.
+        # Prime the attributes and handlers that need to exist when the widget is
+        # created.
         self._accessors = accessors
         self._missing_value = missing_value
         self._primary_action = primary_action
@@ -112,7 +92,7 @@ class DetailedList(Widget):
 
         self._data: SourceT | ListSource = None
 
-        self._impl = self.factory.DetailedList(interface=self)
+        super().__init__(id=id, style=style)
 
         self.data = data
         self.on_primary_action = on_primary_action
@@ -120,11 +100,14 @@ class DetailedList(Widget):
         self.on_refresh = on_refresh
         self.on_select = on_select
 
+    def _create(self) -> Any:
+        return self.factory.DetailedList(interface=self)
+
     @property
     def enabled(self) -> Literal[True]:
         """Is the widget currently enabled? i.e., can the user interact with the widget?
-        DetailedList widgets cannot be disabled; this property will always return True; any
-        attempt to modify it will be ignored.
+        DetailedList widgets cannot be disabled; this property will always return True;
+        any attempt to modify it will be ignored.
         """
         return True
 
@@ -262,30 +245,10 @@ class DetailedList(Widget):
 
     @property
     def on_select(self) -> OnSelectHandler:
-        """The callback function that is invoked when a row of the DetailedList is selected."""
+        """The callback function that is invoked
+        when a row of the DetailedList is selected."""
         return self._on_select
 
     @on_select.setter
     def on_select(self, handler: toga.widgets.detailedlist.OnSelectHandler) -> None:
         self._on_select = wrapped_handler(self, handler)
-
-    ######################################################################
-    # 2023-06: Backwards compatibility
-    ######################################################################
-
-    @property
-    def on_delete(self) -> OnPrimaryActionHandler:
-        """**DEPRECATED**; Use :any:`on_primary_action`"""
-        warnings.warn(
-            "DetailedList.on_delete has been renamed DetailedList.on_primary_action.",
-            DeprecationWarning,
-        )
-        return self.on_primary_action
-
-    @on_delete.setter
-    def on_delete(self, handler: OnPrimaryActionHandler) -> None:
-        warnings.warn(
-            "DetailedList.on_delete has been renamed DetailedList.on_primary_action.",
-            DeprecationWarning,
-        )
-        self.on_primary_action = handler

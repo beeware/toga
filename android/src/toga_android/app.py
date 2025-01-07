@@ -68,7 +68,8 @@ class TogaApp(dynamic_proxy(IPythonApp)):
 
     def onRequestPermissionsResult(self, requestCode, permissions, grantResults):
         print(
-            f"Toga app: onRequestPermissionsResult {requestCode=} {permissions=} {grantResults=}"
+            f"Toga app: onRequestPermissionsResult "
+            f"{requestCode=} {permissions=} {grantResults=}"
         )
         try:
             # Retrieve the completion callback and invoke it.
@@ -227,11 +228,12 @@ class App:
         pass  # pragma: no cover
 
     def main_loop(self):
-        # In order to support user asyncio code, start the Python/Android cooperative event loop.
+        # In order to support user asyncio code, start the Python/Android cooperative
+        # event loop.
         self.loop.run_forever_cooperatively()
 
-        # On Android, Toga UI integrates automatically into the main Android event loop by virtue
-        # of the Android Activity system.
+        # On Android, Toga UI integrates automatically into the main Android event loop
+        # by virtue of the Android Activity system.
         self.create()
 
     def set_icon(self, icon):
@@ -256,6 +258,14 @@ class App:
         display_manager = context.getSystemService(Context.DISPLAY_SERVICE)
         screen_list = display_manager.getDisplays()
         return [ScreenImpl(self, screen) for screen in screen_list]
+
+    ######################################################################
+    # App state
+    ######################################################################
+
+    def get_dark_mode_state(self):
+        self.interface.factory.not_implemented("dark mode state")
+        return None
 
     ######################################################################
     # App capabilities
@@ -314,17 +324,11 @@ class App:
         pass
 
     ######################################################################
-    # Full screen control
-    ######################################################################
-
-    def enter_full_screen(self, windows):
-        pass
-
-    def exit_full_screen(self, windows):
-        pass
-
-    ######################################################################
     # Platform-specific APIs
+    ######################################################################
+
+    ######################################################################
+    # 2024-2: Backwards compatibility for < 0.4.1
     ######################################################################
 
     async def intent_result(self, intent):  # pragma: no cover
@@ -344,6 +348,10 @@ class App:
             return result_future.result()
         except AttributeError:
             raise RuntimeError("No appropriate Activity found to handle this intent.")
+
+    ######################################################################
+    # End backwards compatibility
+    ######################################################################
 
     def _native_startActivityForResult(
         self, activity, code, *options

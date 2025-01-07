@@ -16,7 +16,8 @@ from gi.repository import (  # noqa: E402, F401
 
 if Gdk.Screen.get_default() is None:  # pragma: no cover
     raise RuntimeError(
-        "Cannot identify an active display. Is the `DISPLAY` environment variable set correctly?"
+        "Cannot identify an active display. Is the `DISPLAY` "
+        "environment variable set correctly?"
     )
 
 IS_WAYLAND = not isinstance(Gdk.Display.get_default(), GdkX11.X11Display)
@@ -63,3 +64,15 @@ try:
     from gi.repository import XApp  # noqa: F401
 except (ImportError, ValueError):  # pragma: no cover
     XApp = None
+
+try:
+    gi.require_version("Geoclue", "2.0")
+    from gi.repository import Geoclue  # noqa: F401
+except (ImportError, ValueError):  # pragma: no cover
+    Geoclue = None
+
+try:
+    gi.require_version("Flatpak", "1.0")
+    from gi.repository import Flatpak  # noqa: F401
+except (ImportError, ValueError):  # pragma: no cover
+    Flatpak = None

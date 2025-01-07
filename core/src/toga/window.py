@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING, Any, Protocol, TypeVar
 import toga
 from toga import dialogs
 from toga.command import CommandSet
+from toga.constants import WindowState
 from toga.handlers import AsyncResult, wrapped_handler
 from toga.images import Image
 from toga.platform import get_platform_factory
@@ -91,10 +92,11 @@ class FilteredWidgetRegistry:
 
 
 class OnCloseHandler(Protocol):
-    def __call__(self, window: Window, /, **kwargs: Any) -> bool:
+    def __call__(self, window: Window, **kwargs: Any) -> bool:
         """A handler to invoke when a window is about to close.
 
-        The return value of this callback controls whether the window is allowed to close.
+        The return value of this callback controls whether the window
+        is allowed to close.
         This can be used to prevent a window closing with unsaved changes, etc.
 
         :param window: The window instance that is closing.
@@ -107,10 +109,8 @@ class OnCloseHandler(Protocol):
 _DialogResultT = TypeVar("_DialogResultT")
 
 
-class DialogResultHandler(Protocol[_DialogResultT]):
-    def __call__(
-        self, window: Window, result: _DialogResultT, /, **kwargs: Any
-    ) -> object:
+class DialogResultHandler(Protocol):
+    def __call__(self, window: Window, result: _DialogResultT, **kwargs: Any) -> object:
         """A handler to invoke when a dialog is closed.
 
         :param window: The window that opened the dialog.
@@ -142,8 +142,6 @@ class Window:
         minimizable: bool = True,
         on_close: OnCloseHandler | None = None,
         content: Widget | None = None,
-        resizeable: None = None,  # DEPRECATED
-        closeable: None = None,  # DEPRECATED
     ) -> None:
         """Create a new Window.
 
@@ -159,36 +157,13 @@ class Window:
         :param minimizable: Can the window be minimized by the user?
         :param on_close: The initial :any:`on_close` handler.
         :param content: The initial content for the window.
-        :param resizeable: **DEPRECATED** - Use ``resizable``.
-        :param closeable: **DEPRECATED** - Use ``closable``.
         """
-        ######################################################################
-        # 2023-08: Backwards compatibility
-        ######################################################################
-        if resizeable is not None:
-            warnings.warn(
-                "Window.resizeable has been renamed Window.resizable",
-                DeprecationWarning,
-            )
-            resizable = resizeable
-
-        if closeable is not None:
-            warnings.warn(
-                "Window.closeable has been renamed Window.closable",
-                DeprecationWarning,
-            )
-            closable = closeable
-        ######################################################################
-        # End backwards compatibility
-        ######################################################################
-
         # Needs to be a late import to avoid circular dependencies.
         from toga import App
 
         self._id = str(id if id else identifier(self))
         self._impl: Any = None
         self._content: Widget | None = None
-        self._is_full_screen = False
         self._closed = False
 
         self._resizable = resizable
@@ -384,11 +359,17 @@ class Window:
 
     @property
     def size(self) -> Size:
-        """Size of the window, in :ref:`CSS pixels <css-units>`."""
+        """Size of the window, in :ref:`CSS pixels <css-units>`.
+
+        :raises RuntimeError: If resize is requested while in
+            :any:`WindowState.FULLSCREEN` or :any:`WindowState.PRESENTATION`.
+        """
         return self._impl.get_size()
 
     @size.setter
     def size(self, size: SizeT) -> None:
+        if self.state in {WindowState.FULLSCREEN, WindowState.PRESENTATION}:
+            raise RuntimeError(f"Cannot resize window while in {self.state}")
         self._impl.set_size(size)
         if self.content:
             self.content.refresh()
@@ -402,6 +383,9 @@ class Window:
         """Absolute position of the window, in :ref:`CSS pixels <css-units>`.
 
         The origin is the top left corner of the primary screen.
+
+        :raises RuntimeError: If position change is requested while in
+            :any:`WindowState.FULLSCREEN` or :any:`WindowState.PRESENTATION`.
         """
         absolute_origin = self._app.screens[0].origin
         absolute_window_position = self._impl.get_position()
@@ -411,6 +395,8 @@ class Window:
 
     @position.setter
     def position(self, position: PositionT) -> None:
+        if self.state in {WindowState.FULLSCREEN, WindowState.PRESENTATION}:
+            raise RuntimeError(f"Cannot change window position while in {self.state}")
         absolute_origin = self._app.screens[0].origin
         absolute_new_position = Position(*position) + absolute_origin
         self._impl.set_position(absolute_new_position)
@@ -430,11 +416,17 @@ class Window:
     @property
     def screen_position(self) -> Position:
         """Position of the window with respect to current screen, in
-        :ref:`CSS pixels <css-units>`."""
+        :ref:`CSS pixels <css-units>`.
+
+        :raises RuntimeError: If position change is requested while in
+            :any:`WindowState.FULLSCREEN` or :any:`WindowState.PRESENTATION`.
+        """
         return self.position - self.screen.origin
 
     @screen_position.setter
     def screen_position(self, position: PositionT) -> None:
+        if self.state in {WindowState.FULLSCREEN, WindowState.PRESENTATION}:
+            raise RuntimeError(f"Cannot change window position while in {self.state}")
         new_relative_position = Position(*position) + self.screen.origin
         self._impl.set_position(new_relative_position)
 
@@ -464,21 +456,39 @@ class Window:
     ######################################################################
 
     @property
-    def full_screen(self) -> bool:
-        """Is the window in full screen mode?
+    def state(self) -> WindowState:
+        """The current state of the window.
 
-        Full screen mode is *not* the same as "maximized". A full screen window
-        has no title bar, toolbar or window controls; some or all of these
-        items may be visible on a maximized window. A good example of "full screen"
-        mode is a slideshow app in presentation mode - the only visible content is
-        the slide.
+        When the window is in transition, then this will return the state it
+        is transitioning towards, instead of the actual instantaneous state.
+
+        :raises RuntimeError: If state change is requested while the window is
+            hidden.
+
+        :raises ValueError: If any state other than :any:`WindowState.MINIMIZED`
+            or :any:`WindowState.NORMAL` is requested on a non-resizable window.
         """
-        return self._is_full_screen
+        # There are 2 types of window states that we can get from the backend:
+        # * The instantaneous state -- Used internally on implementation side
+        # * The in-progress state -- Used for same state checking on the core
+        #                            and for the public API.
+        return self._impl.get_window_state(in_progress_state=True)
 
-    @full_screen.setter
-    def full_screen(self, is_full_screen: bool) -> None:
-        self._is_full_screen = is_full_screen
-        self._impl.set_full_screen(is_full_screen)
+    @state.setter
+    def state(self, state: WindowState) -> None:
+        if not self.visible:
+            raise RuntimeError("Window state of a hidden window cannot be changed.")
+        elif not self.resizable and state in {
+            WindowState.MAXIMIZED,
+            WindowState.FULLSCREEN,
+            WindowState.PRESENTATION,
+        }:
+            raise ValueError(
+                f"A non-resizable window cannot be set to a state of {state}."
+            )
+        else:
+            if self.state != state:
+                self._impl.set_window_state(state)
 
     ######################################################################
     # Window capabilities
@@ -521,7 +531,7 @@ class Window:
         self._on_close = wrapped_handler(self, handler, cleanup=cleanup)
 
     ######################################################################
-    # 2024-06: Backwards compatibility
+    # 2024-06: Backwards compatibility for <= 0.4.5
     ######################################################################
 
     def info_dialog(
@@ -531,16 +541,10 @@ class Window:
         on_result: DialogResultHandler[None] | None = None,
     ) -> Dialog:
         """**DEPRECATED** - await :meth:`dialog` with an :any:`InfoDialog`"""
-        ######################################################################
-        # 2024-06: Backwards compatibility
-        ######################################################################
         warnings.warn(
             "info_dialog(...) has been deprecated; use dialog(toga.InfoDialog(...))",
             DeprecationWarning,
         )
-        ######################################################################
-        # End Backwards compatibility
-        ######################################################################
 
         result = Dialog(
             self,
@@ -557,16 +561,11 @@ class Window:
         on_result: DialogResultHandler[bool] | None = None,
     ) -> Dialog:
         """**DEPRECATED** - await :meth:`dialog` with a :any:`QuestionDialog`"""
-        ######################################################################
-        # 2024-06: Backwards compatibility
-        ######################################################################
         warnings.warn(
-            "question_dialog(...) has been deprecated; use dialog(toga.QuestionDialog(...))",
+            "question_dialog(...) has been deprecated; "
+            "use dialog(toga.QuestionDialog(...))",
             DeprecationWarning,
         )
-        ######################################################################
-        # End Backwards compatibility
-        ######################################################################
 
         result = Dialog(
             self,
@@ -583,16 +582,11 @@ class Window:
         on_result: DialogResultHandler[bool] | None = None,
     ) -> Dialog:
         """**DEPRECATED** - await :meth:`dialog` with a :any:`ConfirmDialog`"""
-        ######################################################################
-        # 2024-06: Backwards compatibility
-        ######################################################################
         warnings.warn(
-            "confirm_dialog(...) has been deprecated; use dialog(toga.ConfirmDialog(...))",
+            "confirm_dialog(...) has been deprecated; "
+            "use dialog(toga.ConfirmDialog(...))",
             DeprecationWarning,
         )
-        ######################################################################
-        # End Backwards compatibility
-        ######################################################################
 
         result = Dialog(
             self,
@@ -609,16 +603,10 @@ class Window:
         on_result: DialogResultHandler[None] | None = None,
     ) -> Dialog:
         """**DEPRECATED** - await :meth:`dialog` with an :any:`ErrorDialog`"""
-        ######################################################################
-        # 2024-06: Backwards compatibility
-        ######################################################################
         warnings.warn(
             "error_dialog(...) has been deprecated; use dialog(toga.ErrorDialog(...))",
             DeprecationWarning,
         )
-        ######################################################################
-        # End Backwards compatibility
-        ######################################################################
 
         result = Dialog(
             self,
@@ -637,16 +625,11 @@ class Window:
         on_result: DialogResultHandler[bool] | DialogResultHandler[None] | None = None,
     ) -> Dialog:
         """**DEPRECATED** - await :meth:`dialog` with a :any:`StackTraceDialog`"""
-        ######################################################################
-        # 2024-06: Backwards compatibility
-        ######################################################################
         warnings.warn(
-            "stack_trace_dialog(...) has been deprecated; use dialog(toga.StackTraceDialog(...))",
+            "stack_trace_dialog(...) has been deprecated; "
+            "use dialog(toga.StackTraceDialog(...))",
             DeprecationWarning,
         )
-        ######################################################################
-        # End Backwards compatibility
-        ######################################################################
 
         result = Dialog(
             self,
@@ -669,16 +652,11 @@ class Window:
         on_result: DialogResultHandler[Path | None] | None = None,
     ) -> Dialog:
         """**DEPRECATED** - await :meth:`dialog` with a :any:`SaveFileDialog`"""
-        ######################################################################
-        # 2024-06: Backwards compatibility
-        ######################################################################
         warnings.warn(
-            "save_file_dialog(...) has been deprecated; use dialog(toga.SaveFileDialog(...))",
+            "save_file_dialog(...) has been deprecated; "
+            "use dialog(toga.SaveFileDialog(...))",
             DeprecationWarning,
         )
-        ######################################################################
-        # End Backwards compatibility
-        ######################################################################
         result = Dialog(
             self,
             on_result=wrapped_handler(self, on_result) if on_result else None,
@@ -703,33 +681,13 @@ class Window:
             | DialogResultHandler[None]
             | None
         ) = None,
-        multiselect: None = None,  # DEPRECATED
     ) -> Dialog:
         """**DEPRECATED** - await :meth:`dialog` with an :any:`OpenFileDialog`"""
-        ######################################################################
-        # 2024-06: Backwards compatibility
-        ######################################################################
         warnings.warn(
-            "open_file_dialog(...) has been deprecated; use dialog(toga.OpenFileDialog(...))",
+            "open_file_dialog(...) has been deprecated; "
+            "use dialog(toga.OpenFileDialog(...))",
             DeprecationWarning,
         )
-        ######################################################################
-        # End Backwards compatibility
-        ######################################################################
-
-        ######################################################################
-        # 2023-08: Backwards compatibility
-        ######################################################################
-        if multiselect is not None:
-            warnings.warn(
-                "open_file_dialog(multiselect) has been renamed multiple_select",
-                DeprecationWarning,
-            )
-            multiple_select = multiselect
-        ######################################################################
-        # End Backwards compatibility
-        ######################################################################
-
         result = Dialog(
             self,
             on_result=wrapped_handler(self, on_result) if on_result else None,
@@ -754,32 +712,13 @@ class Window:
             | DialogResultHandler[None]
             | None
         ) = None,
-        multiselect: None = None,  # DEPRECATED
     ) -> Dialog:
         """**DEPRECATED** - await :meth:`dialog` with a :any:`SelectFolderDialog`"""
-        ######################################################################
-        # 2024-06: Backwards compatibility
-        ######################################################################
         warnings.warn(
-            "select_folder_dialog(...) has been deprecated; use dialog(toga.SelectFolderDialog(...))",
+            "select_folder_dialog(...) has been deprecated; "
+            "use dialog(toga.SelectFolderDialog(...))",
             DeprecationWarning,
         )
-        ######################################################################
-        # End Backwards compatibility
-        ######################################################################
-
-        ######################################################################
-        # 2023-08: Backwards compatibility
-        ######################################################################
-        if multiselect is not None:
-            warnings.warn(
-                "select_folder_dialog(multiselect) has been renamed multiple_select",
-                DeprecationWarning,
-            )
-            multiple_select = multiselect
-        ######################################################################
-        # End Backwards compatibility
-        ######################################################################
         result = Dialog(
             self,
             on_result=wrapped_handler(self, on_result) if on_result else None,
@@ -793,25 +732,30 @@ class Window:
         return result
 
     ######################################################################
-    # 2023-08: Backwards compatibility
+    # End backwards compatibility
+    ######################################################################
+
+    ######################################################################
+    # 2024-10: Backwards compatibility for <= 0.4.8
     ######################################################################
     @property
-    def resizeable(self) -> bool:
-        """**DEPRECATED** Use :attr:`resizable`"""
+    def full_screen(self) -> bool:
+        """**DEPRECATED** – Use :any:`Window.state`."""
         warnings.warn(
-            "Window.resizeable has been renamed Window.resizable",
+            ("`Window.full_screen` is deprecated. Use `Window.state` instead."),
             DeprecationWarning,
         )
-        return self._resizable
+        return bool(self.state == WindowState.FULLSCREEN)
 
-    @property
-    def closeable(self) -> bool:
-        """**DEPRECATED** Use :attr:`closable`"""
+    @full_screen.setter
+    def full_screen(self, is_full_screen: bool) -> None:
         warnings.warn(
-            "Window.closeable has been renamed Window.closable",
+            ("`Window.full_screen` is deprecated. Use `Window.state` instead."),
             DeprecationWarning,
         )
-        return self._closable
+        target_state = WindowState.FULLSCREEN if is_full_screen else WindowState.NORMAL
+        if self.state != target_state:
+            self._impl.set_window_state(target_state)
 
     ######################################################################
     # End Backwards compatibility
@@ -875,33 +819,6 @@ class WindowSet(MutableSet[Window]):
         if window not in self.elements:
             raise ValueError(f"{window!r} is not part of this app")
         self.elements.remove(window)
-
-    ######################################################################
-    # 2023-10: Backwards compatibility
-    ######################################################################
-
-    def __iadd__(self, window: Window) -> WindowSet:
-        # The standard set type does not have a += operator.
-        warnings.warn(
-            "Windows are automatically associated with the app; += is not required",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        return self
-
-    def __isub__(self, other: Window) -> WindowSet:
-        # The standard set type does have a -= operator, but it takes sets rather than
-        # individual items.
-        warnings.warn(
-            "Windows are automatically removed from the app; -= is not required",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        return self
-
-    ######################################################################
-    # End backwards compatibility
-    ######################################################################
 
     def __iter__(self) -> Iterator[Window]:
         return iter(self.elements)

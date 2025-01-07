@@ -1,13 +1,15 @@
 from __future__ import annotations
 
+from functools import partial
 from typing import TYPE_CHECKING
 
 from toga.command import Separator
+from toga.constants import WindowState
 from toga.types import Position, Size
 from toga.window import _initial_position
 
 from .container import TogaContainer
-from .libs import Gdk, Gtk
+from .libs import IS_WAYLAND, Gdk, GLib, Gtk
 from .screens import Screen as ScreenImpl
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -28,6 +30,12 @@ class Window:
             "delete-event",
             self.gtk_delete_event,
         )
+        self.native.connect("window-state-event", self.gtk_window_state_event)
+
+        self._window_state_flags = None
+        self._in_presentation = False
+        # Pending Window state transition variable:
+        self._pending_state_transition = None
 
         self.native.set_default_size(size[0], size[1])
 
@@ -59,6 +67,41 @@ class Window:
     ######################################################################
     # Native event handlers
     ######################################################################
+
+    def gtk_window_state_event(self, widget, event):
+        # Get the window state flags
+        self._window_state_flags = event.new_window_state
+
+        if self._pending_state_transition:
+            current_state = self.get_window_state()
+            if current_state != WindowState.NORMAL:
+                if self._pending_state_transition != current_state:
+                    # Add a 10ms delay to wait for the native window state
+                    # operation to complete to prevent glitching on wayland
+                    # during rapid state switching.
+                    #
+                    # Ideally, we should use a native operation-completion
+                    # callback event or a reliable native signal, but on
+                    # testing none of the currently available gtk APIs or
+                    # signals work reliably.
+                    # For a list of native gtk APIs that were tested but didn't work:
+                    # https://github.com/beeware/toga/pull/2473#discussion_r1833741222
+                    #
+                    if IS_WAYLAND:  # pragma: no-cover-if-linux-x
+                        GLib.timeout_add(
+                            10, partial(self._apply_state, WindowState.NORMAL)
+                        )
+                    else:  # pragma: no-cover-if-linux-wayland
+                        self._apply_state(WindowState.NORMAL)
+                else:
+                    self._pending_state_transition = None
+            else:
+                if IS_WAYLAND:  # pragma: no-cover-if-linux-x
+                    GLib.timeout_add(
+                        10, partial(self._apply_state, self._pending_state_transition)
+                    )
+                else:  # pragma: no-cover-if-linux-wayland
+                    self._apply_state(self._pending_state_transition)
 
     def gtk_delete_event(self, widget, data):
         # Return value of the GTK on_close handler indicates whether the event has been
@@ -143,11 +186,102 @@ class Window:
     # Window state
     ######################################################################
 
-    def set_full_screen(self, is_full_screen):
-        if is_full_screen:
-            self.native.fullscreen()
+    def get_window_state(self, in_progress_state=False):
+        if in_progress_state and self._pending_state_transition:
+            return self._pending_state_transition
+        window_state_flags = self._window_state_flags
+        if window_state_flags:  # pragma: no branch
+            if window_state_flags & Gdk.WindowState.MAXIMIZED:
+                return WindowState.MAXIMIZED
+            elif window_state_flags & Gdk.WindowState.ICONIFIED:
+                return WindowState.MINIMIZED  # pragma: no-cover-if-linux-wayland
+            elif window_state_flags & Gdk.WindowState.FULLSCREEN:
+                return (
+                    WindowState.PRESENTATION
+                    if self._in_presentation
+                    else WindowState.FULLSCREEN
+                )
+        return WindowState.NORMAL
+
+    def set_window_state(self, state):
+        if IS_WAYLAND and (
+            state == WindowState.MINIMIZED
+        ):  # pragma: no-cover-if-linux-x
+            # Not implemented on wayland due to wayland interpretation of an app's
+            # responsibility.
+            return
         else:
-            self.native.unfullscreen()
+            if self._pending_state_transition:
+                self._pending_state_transition = state
+            else:
+                # If the app is in presentation mode, but this window isn't, then
+                # exit app presentation mode before setting the requested state.
+                if any(
+                    window.state == WindowState.PRESENTATION
+                    and window != self.interface
+                    for window in self.interface.app.windows
+                ):
+                    self.interface.app.exit_presentation_mode()
+
+                self._pending_state_transition = state
+                if self.get_window_state() != WindowState.NORMAL:
+                    self._apply_state(WindowState.NORMAL)
+                else:
+                    self._apply_state(state)
+
+    def _apply_state(self, target_state):
+        if target_state is None:  # pragma: no cover
+            # This is OS delay related and is only sometimes triggered
+            # when there is a delay in processing the states by the OS.
+            # Hence, this branch cannot be consistently reached by the
+            # testbed coverage.
+            return
+
+        current_state = self.get_window_state()
+        if target_state == current_state:
+            self._pending_state_transition = None
+            return
+
+        elif target_state == WindowState.MAXIMIZED:
+            self.native.maximize()
+
+        elif target_state == WindowState.MINIMIZED:  # pragma: no-cover-if-linux-wayland
+            self.native.iconify()
+
+        elif target_state == WindowState.FULLSCREEN:
+            self.native.fullscreen()
+
+        elif target_state == WindowState.PRESENTATION:
+            self._before_presentation_mode_screen = self.interface.screen
+            if isinstance(self.native, Gtk.ApplicationWindow):
+                self.native.set_show_menubar(False)
+            if getattr(self, "native_toolbar", None):
+                self.native_toolbar.set_visible(False)
+            self.native.fullscreen()
+            self._in_presentation = True
+
+        else:  # target_state == WindowState.NORMAL:
+            if current_state == WindowState.MAXIMIZED:
+                self.native.unmaximize()
+
+            elif (
+                current_state == WindowState.MINIMIZED
+            ):  # pragma: no-cover-if-linux-wayland
+                # deiconify() doesn't work
+                self.native.present()
+
+            elif current_state == WindowState.FULLSCREEN:
+                self.native.unfullscreen()
+
+            else:  # current_state == WindowState.PRESENTATION:
+                if isinstance(self.native, Gtk.ApplicationWindow):
+                    self.native.set_show_menubar(True)
+                if getattr(self, "native_toolbar", None):
+                    self.native_toolbar.set_visible(True)
+                self.native.unfullscreen()
+                self.interface.screen = self._before_presentation_mode_screen
+                del self._before_presentation_mode_screen
+                self._in_presentation = False
 
     ######################################################################
     # Window capabilities
@@ -179,7 +313,8 @@ class Window:
         if success:
             return buffer
         else:  # pragma: nocover
-            # This shouldn't ever happen, and it's difficult to manufacture in test conditions
+            # This shouldn't ever happen, and it's difficult to manufacture
+            # in test conditions
             raise ValueError(f"Unable to generate screenshot of {self}")
 
 
@@ -201,7 +336,8 @@ class MainWindow(Window):
         # If there's an existing toolbar, hide it until we know we need it.
         self.layout.remove(self.native_toolbar)
 
-        # Deregister any toolbar buttons from their commands, and remove them from the toolbar
+        # Deregister any toolbar buttons from their commands, and remove them
+        # from the toolbar
         for cmd, item_impl in self.toolbar_items.items():
             self.native_toolbar.remove(item_impl)
             cmd._impl.native.remove(item_impl)
