@@ -1,5 +1,4 @@
 import asyncio
-import sys
 import warnings
 
 from android.content import Context
@@ -11,9 +10,8 @@ from java import dynamic_proxy
 from org.beeware.android import IPythonApp, MainActivity
 
 import toga
-from toga.command import Command, Group, Separator
+from toga.command import Group, Separator
 from toga.dialogs import InfoDialog
-from toga.handlers import simple_handler
 
 from .libs import events
 from .screens import Screen as ScreenImpl
@@ -70,7 +68,8 @@ class TogaApp(dynamic_proxy(IPythonApp)):
 
     def onRequestPermissionsResult(self, requestCode, permissions, grantResults):
         print(
-            f"Toga app: onRequestPermissionsResult {requestCode=} {permissions=} {grantResults=}"
+            f"Toga app: onRequestPermissionsResult "
+            f"{requestCode=} {permissions=} {grantResults=}"
         )
         try:
             # Retrieve the completion callback and invoke it.
@@ -186,6 +185,9 @@ class TogaApp(dynamic_proxy(IPythonApp)):
 class App:
     # Android apps exit when the last window is closed
     CLOSE_ON_LAST_WINDOW = True
+    # Android doesn't have command line handling;
+    # but saying it does shortcuts the default handling
+    HANDLES_COMMAND_LINE = True
 
     def __init__(self, interface):
         self.interface = interface
@@ -210,16 +212,8 @@ class App:
     # Commands and menus
     ######################################################################
 
-    def create_app_commands(self):
-        self.interface.commands.add(
-            # About should be the last item in the menu, in a section on its own.
-            Command(
-                simple_handler(self.interface.about),
-                f"About {self.interface.formal_name}",
-                section=sys.maxsize,
-                id=Command.ABOUT,
-            ),
-        )
+    def create_standard_commands(self):
+        pass
 
     def create_menus(self):
         # Menu items are configured as part of onPrepareOptionsMenu; trigger that
@@ -234,11 +228,12 @@ class App:
         pass  # pragma: no cover
 
     def main_loop(self):
-        # In order to support user asyncio code, start the Python/Android cooperative event loop.
+        # In order to support user asyncio code, start the Python/Android cooperative
+        # event loop.
         self.loop.run_forever_cooperatively()
 
-        # On Android, Toga UI integrates automatically into the main Android event loop by virtue
-        # of the Android Activity system.
+        # On Android, Toga UI integrates automatically into the main Android event loop
+        # by virtue of the Android Activity system.
         self.create()
 
     def set_icon(self, icon):
@@ -263,6 +258,14 @@ class App:
         display_manager = context.getSystemService(Context.DISPLAY_SERVICE)
         screen_list = display_manager.getDisplays()
         return [ScreenImpl(self, screen) for screen in screen_list]
+
+    ######################################################################
+    # App state
+    ######################################################################
+
+    def get_dark_mode_state(self):
+        self.interface.factory.not_implemented("dark mode state")
+        return None
 
     ######################################################################
     # App capabilities
@@ -321,17 +324,11 @@ class App:
         pass
 
     ######################################################################
-    # Full screen control
-    ######################################################################
-
-    def enter_full_screen(self, windows):
-        pass
-
-    def exit_full_screen(self, windows):
-        pass
-
-    ######################################################################
     # Platform-specific APIs
+    ######################################################################
+
+    ######################################################################
+    # 2024-2: Backwards compatibility for < 0.4.1
     ######################################################################
 
     async def intent_result(self, intent):  # pragma: no cover
@@ -351,6 +348,10 @@ class App:
             return result_future.result()
         except AttributeError:
             raise RuntimeError("No appropriate Activity found to handle this intent.")
+
+    ######################################################################
+    # End backwards compatibility
+    ######################################################################
 
     def _native_startActivityForResult(
         self, activity, code, *options

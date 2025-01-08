@@ -21,6 +21,7 @@ from toga.constants import Baseline, FillRule
 from toga.fonts import BOLD
 from toga.style.pack import SYSTEM, Pack
 
+from .conftest import build_cleanup_test
 from .properties import (  # noqa: F401
     test_background_color,
     test_background_color_reset,
@@ -106,6 +107,9 @@ async def canvas(widget, probe, on_resize_handler):
 
 def assert_pixel(image, x, y, color):
     assert image.getpixel((x, y)) == color
+
+
+test_cleanup = build_cleanup_test(toga.Canvas, xfail_platforms=("android",))
 
 
 async def test_resize(widget, probe, on_resize_handler):
@@ -240,7 +244,8 @@ async def test_image_data(canvas, probe):
 
 
 def assert_reference(probe, reference, threshold=0.0):
-    """Assert that the canvas currently matches a reference image, within an RMS threshold"""
+    """Assert that the canvas currently matches a reference image, within an
+    RMS threshold"""
     # Get the canvas image.
     image = probe.get_image()
     scaled_image = image.resize((200, 200))

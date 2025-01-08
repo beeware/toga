@@ -1,1 +1,0 @@
-The order of creation of system-level commands is now consistent between platforms, and menu creation is deferred until the user's startup method has been invoked.

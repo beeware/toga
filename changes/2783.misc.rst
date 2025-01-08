@@ -1,1 +1,0 @@
-Updated sphinx-csv-filter from 0.4.1 to 0.4.2 in /core.

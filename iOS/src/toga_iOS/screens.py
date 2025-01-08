@@ -9,6 +9,7 @@ class Screen:
     _instances = {}
 
     def __new__(cls, native):
+        # native is an instance of UIScreen
         if native in cls._instances:
             return cls._instances[native]
         else:

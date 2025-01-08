@@ -6,6 +6,7 @@ import toga
 from toga.sources import ListSource
 from toga.style.pack import Pack
 
+from .conftest import build_cleanup_test
 from .properties import (  # noqa: F401
     test_enable_noop,
     test_flex_widget_size,
@@ -72,6 +73,11 @@ async def widget(
         on_secondary_action=on_secondary_action_handler,
         style=Pack(flex=1),
     )
+
+
+test_cleanup = build_cleanup_test(
+    toga.DetailedList, xfail_platforms=("android", "linux")
+)
 
 
 async def test_scroll(widget, probe):

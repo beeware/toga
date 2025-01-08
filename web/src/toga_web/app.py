@@ -1,7 +1,6 @@
+import asyncio
+
 import toga
-from toga.app import overridden
-from toga.command import Command, Group
-from toga.handlers import simple_handler
 from toga_web.libs import create_element, js
 
 from .screens import Screen as ScreenImpl
@@ -10,10 +9,14 @@ from .screens import Screen as ScreenImpl
 class App:
     # Web apps exit when the last window is closed
     CLOSE_ON_LAST_WINDOW = True
+    # Web apps use default command line handling
+    HANDLES_COMMAND_LINE = False
 
     def __init__(self, interface):
         self.interface = interface
         self.interface._impl = self
+
+        self.loop = asyncio.new_event_loop()
 
     def create(self):
         self.native = js.document.getElementById("app-placeholder")
@@ -26,27 +29,8 @@ class App:
     # Commands and menus
     ######################################################################
 
-    def create_app_commands(self):
-        self.interface.commands.add(
-            # ---- Help menu ----------------------------------
-            Command(
-                simple_handler(self.interface.about),
-                f"About {self.interface.formal_name}",
-                group=Group.HELP,
-                id=Command.ABOUT,
-            ),
-        )
-
-        # If the user has overridden preferences, provide a menu item.
-        if overridden(self.interface.preferences):
-            self.interface.commands.add(
-                Command(
-                    simple_handler(self.interface.preferences),
-                    "Preferences",
-                    group=Group.HELP,
-                    id=Command.PREFERENCES,
-                )
-            )  # pragma: no cover
+    def create_standard_commands(self):
+        pass
 
     def create_menus(self):
         # Web menus are created on the Window.
@@ -83,6 +67,14 @@ class App:
 
     def get_screens(self):
         return [ScreenImpl(js.document.documentElement)]
+
+    ######################################################################
+    # App state
+    ######################################################################
+
+    def get_dark_mode_state(self):
+        self.interface.factory.not_implemented("dark mode state")
+        return None
 
     ######################################################################
     # App capabilities
@@ -156,11 +148,11 @@ class App:
         self.interface.factory.not_implemented("App.set_current_window()")
 
     ######################################################################
-    # Full screen control
+    # Presentation mode controls
     ######################################################################
 
-    def enter_full_screen(self, windows):
-        self.interface.factory.not_implemented("App.enter_full_screen()")
+    def enter_presentation_mode(self, screen_window_dict):
+        self.interface.factory.not_implemented("App.enter_presentation_mode()")
 
-    def exit_full_screen(self, windows):
-        self.interface.factory.not_implemented("App.exit_full_screen()")
+    def exit_presentation_mode(self):
+        self.interface.factory.not_implemented("App.exit_presentation_mode()")

@@ -57,10 +57,47 @@ def test_create():
     assert cmd.order == 0
     assert cmd.action._raw is None
 
-    assert (
-        repr(cmd)
-        == "<Command text='Test command' group=<Group text='Commands' order=30> section=0 order=0>"
+    assert repr(cmd) == (
+        "<Command text='Test command' "
+        "group=<Group text='Commands' order=30> section=0 order=0>"
     )
+
+
+def test_standard_command(app):
+    """A standard command can be created."""
+    cmd = toga.Command.standard(app, toga.Command.ABOUT)
+
+    assert cmd.text == "About Test App"
+    assert cmd.shortcut is None
+    assert cmd.tooltip is None
+    assert cmd.group == toga.Group.HELP
+    assert cmd.section == 0
+    assert cmd.order == 0
+    assert cmd.id == toga.Command.ABOUT
+    # Connected to the app's about method, as a wrapped simple handler
+    assert cmd.action._raw._raw == app.about
+
+
+def test_standard_command_override(app):
+    """A standard command can be created with overrides."""
+    action = Mock()
+    cmd = toga.Command.standard(app, toga.Command.ABOUT, action=action, section=1)
+
+    assert cmd.text == "About Test App"
+    assert cmd.shortcut is None
+    assert cmd.tooltip is None
+    assert cmd.group == toga.Group.HELP
+    assert cmd.order == 0
+    assert cmd.id == toga.Command.ABOUT
+    # Overrides have been applied
+    assert cmd.action._raw == action
+    assert cmd.section == 1
+
+
+def test_unknown_standard_command(app):
+    """An unknown standard command raises an exception"""
+    with pytest.raises(ValueError, match=r"Unknown standard command 'mystery'"):
+        toga.Command.standard(app, "mystery")
 
 
 def test_change_action():
@@ -115,9 +152,9 @@ def test_create_explicit(app):
 
     assert cmd.action._raw == handler
 
-    assert (
-        repr(cmd)
-        == "<Command text='Test command' group=<Group text='Test group' order=10> section=3 order=4>"
+    assert repr(cmd) == (
+        "<Command text='Test command' "
+        "group=<Group text='Test group' order=10> section=3 order=4>"
     )
 
 

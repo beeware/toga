@@ -1,7 +1,7 @@
 from pathlib import Path
 
 import PIL.Image
-from rubicon.objc import NSPoint, ObjCClass, objc_id, send_message
+from rubicon.objc import SEL, NSPoint, ObjCClass, objc_id, send_message
 
 import toga
 from toga_cocoa.keys import cocoa_key, toga_key
@@ -10,13 +10,13 @@ from toga_cocoa.libs import (
     NSEvent,
     NSEventModifierFlagShift,
     NSEventType,
+    NSPanel,
     NSWindow,
 )
 
 from .dialogs import DialogsMixin
 from .probe import BaseProbe, NSRunLoop
 
-NSPanel = ObjCClass("NSPanel")
 NSDate = ObjCClass("NSDate")
 
 
@@ -54,15 +54,6 @@ class AppProbe(BaseProbe, DialogsMixin):
         # There's no API level mechanism to detect cursor visibility;
         # fall back to the implementation's proxy variable.
         return self.app._impl._cursor_visible
-
-    def is_full_screen(self, window):
-        return window.content._impl.native.isInFullScreenMode()
-
-    def content_size(self, window):
-        return (
-            window.content._impl.native.frame.size.width,
-            window.content._impl.native.frame.size.height,
-        )
 
     def assert_app_icon(self, icon):
         # We have no real way to check we've got the right icon; use pixel peeping as a
@@ -159,6 +150,12 @@ class AppProbe(BaseProbe, DialogsMixin):
         self.assert_menu_item(["*", "Show All"], enabled=True)
         self.assert_menu_item(["*", "Quit Toga Testbed"], enabled=True)
 
+        self.assert_menu_item(["File", "New Example Document"], enabled=True)
+        self.assert_menu_item(["File", "New Read-only Document"], enabled=True)
+        self.assert_menu_item(["File", "Open\u2026"], enabled=True)
+        self.assert_menu_item(["File", "Save"], enabled=True)
+        self.assert_menu_item(["File", "Save As\u2026"], enabled=True)
+        self.assert_menu_item(["File", "Save All"], enabled=True)
         self.assert_menu_item(["File", "Close"], enabled=True)
         self.assert_menu_item(["File", "Close All"], enabled=True)
 
@@ -183,6 +180,11 @@ class AppProbe(BaseProbe, DialogsMixin):
 
     def activate_menu_minimize(self):
         self._activate_menu_item(["Window", "Minimize"])
+
+    def assert_dialog_in_focus(self, dialog):
+        assert (
+            dialog._impl.native.window == self.app._impl.native.keyWindow
+        ), "The dialog is not in focus"
 
     def assert_menu_item(self, path, enabled):
         item = self._menu_item(path)
@@ -241,7 +243,7 @@ class AppProbe(BaseProbe, DialogsMixin):
         self.app._impl.native.activateIgnoringOtherApps(True)
         await self.redraw("Restore to standard app", delay=0.1)
 
-    def _setup_alert_dialog_result(self, dialog, result):
+    def _setup_alert_dialog_result(self, dialog, result, pre_close_test_method=None):
         # Replace the dialog polling mechanism with an implementation that polls
         # 5 times, then returns the required result.
         _poll_modal_session = dialog._impl._poll_modal_session
@@ -252,7 +254,11 @@ class AppProbe(BaseProbe, DialogsMixin):
             if count < 5:
                 count += 1
                 return _poll_modal_session(nsapp, session)
-            return result
+            try:
+                if pre_close_test_method:
+                    pre_close_test_method(dialog)
+            finally:
+                return result
 
         dialog._impl._poll_modal_session = auto_poll_modal_session
 
@@ -273,3 +279,67 @@ class AppProbe(BaseProbe, DialogsMixin):
             dialog._impl.completion_handler(result)
 
         dialog._impl.show = automated_show
+
+    async def open_initial_document(self, monkeypatch, document_path):
+        # Mock the async menu item with an implementation that directly opens the doc
+        async def _mock_open():
+            self.app.documents.open(document_path)
+
+        monkeypatch.setattr(self.app.documents, "request_open", _mock_open)
+
+        # Call the APIs that are triggered when the app is activated.
+        nsapp = self.app._impl.native
+
+        # We are running in an async context. Invoking a selector moves
+        # to an sync context, but the handling needs to queue an async
+        # task. By invoking the relevant methods using Objective C's
+        # deferred invocation mechanism, the method is invoked in a
+        # sync context, so it is able to queue the required async task.
+        nsapp.delegate.performSelector(
+            SEL("applicationShouldOpenUntitledFile:"),
+            withObject=nsapp,
+            afterDelay=0.01,
+        )
+        nsapp.delegate.performSelector(
+            SEL("applicationOpenUntitledFile:"),
+            withObject=nsapp,
+            afterDelay=0.02,
+        )
+
+        await self.redraw("Initial document has been triggered", delay=0.1)
+
+    def open_document_by_drag(self, document_path):
+        self.app._impl.native.delegate.application(
+            self.app._impl.native,
+            openFiles=[str(document_path)],
+        )
+
+    def has_status_icon(self, status_icon):
+        return status_icon._impl.native is not None
+
+    def status_menu_items(self, status_icon):
+        if status_icon._impl.native.menu:
+            return [
+                {
+                    "": "---",
+                    "About Toga Testbed": "**ABOUT**",
+                    "Quit Toga Testbed": "**EXIT**",
+                }.get(str(item.title), str(item.title))
+                for item in status_icon._impl.native.menu.itemArray
+            ]
+        else:
+            # It's a button status item
+            return None
+
+    def activate_status_icon_button(self, item_id):
+        self.app.status_icons[item_id]._impl.native.button.performClick(None)
+
+    def activate_status_menu_item(self, item_id, title):
+        item = self.app.status_icons[item_id]._impl.native.menu.itemWithTitle(title)
+        send_message(
+            self.app._impl.native.delegate,
+            item.action,
+            item,
+            restype=None,
+            argtypes=[objc_id],
+        )

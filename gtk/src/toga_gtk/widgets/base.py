@@ -9,7 +9,6 @@ class Widget:
     def __init__(self, interface):
         super().__init__()
         self.interface = interface
-        self.interface._impl = self
         self._container = None
         self.native = None
         self.style_providers = {}
@@ -23,9 +22,6 @@ class Widget:
         # ensure any other widgets are also styled appropriately.
         self.native.set_name(f"toga-{self.interface.id}")
         self.native.get_style_context().add_class("toga")
-
-        # Ensure initial styles are applied.
-        self.interface.style.reapply()
 
     @abstractmethod
     def create(self): ...
@@ -145,7 +141,7 @@ class Widget:
         # Any position changes are applied by the container during do_size_allocate.
         self.container.make_dirty()
 
-    def set_alignment(self, alignment):
+    def set_text_align(self, alignment):
         # By default, alignment can't be changed
         pass
 
@@ -185,7 +181,12 @@ class Widget:
 
     def rehint(self):
         # Perform the actual GTK rehint.
-        # print("REHINT", self, self.native.get_preferred_width(), self.native.get_preferred_height())
+        # print(
+        #     "REHINT",
+        #     self,
+        #     self.native.get_preferred_width(),
+        #     self.native.get_preferred_height(),
+        # )
         width = self.native.get_preferred_width()
         height = self.native.get_preferred_height()
 

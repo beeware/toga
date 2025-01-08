@@ -7,6 +7,7 @@ from pytest import approx, fixture
 import toga
 
 from ..assertions import assert_set_get
+from .conftest import build_cleanup_test
 from .properties import (  # noqa: F401
     test_enabled,
     test_flex_horizontal_widget_size,
@@ -22,8 +23,8 @@ else:
 # To ensure less than 1 pixel of error, the slider must be able to distinguish at least
 # 10,000 positions in continuous mode.
 #
-# Pi is irrational, which helps test things which should be accurate to within the limits
-# of a Python float, e.g. setting a value and then immediately getting it.
+# Pi is irrational, which helps test things which should be accurate to within the
+# limits of a Python float, e.g. setting a value and then immediately getting it.
 ACCURACY = 0.0001
 POSITIONS = [0, 0.0001, 1 / pi, 0.5, 0.9, 0.9999, 1]
 SCALES = [0.0001, 0.1, 1, pi, 10000]
@@ -39,6 +40,9 @@ def on_change(widget):
     handler = Mock()
     widget.on_change = handler
     return handler
+
+
+test_cleanup = build_cleanup_test(toga.Slider, xfail_platforms=("android",))
 
 
 async def test_init(widget, probe):

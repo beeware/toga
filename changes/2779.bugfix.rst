@@ -1,1 +1,0 @@
-The WebView and MapView widgets now log an error if initialization fails.

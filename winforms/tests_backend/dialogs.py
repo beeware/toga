@@ -7,7 +7,7 @@ from System import Array as WinArray, String as WinString
 class DialogsMixin:
     supports_multiple_select_folder = False
 
-    def _setup_dialog_result(self, dialog, char, alt=False):
+    def _setup_dialog_result(self, dialog, char, alt=False, pre_close_test_method=None):
         # Install an overridden show method that invokes the original,
         # but then closes the open dialog.
         orig_show = dialog._impl.show
@@ -16,24 +16,30 @@ class DialogsMixin:
             orig_show(host_window, future)
 
             async def _close_dialog():
+                # Give the inner event loop a chance to start. The MessageBox dialogs
+                # work with sleep(0), but the file dialogs require it to be positive
+                # for some reason.
+                await asyncio.sleep(0.001)
+
                 try:
-                    # Give the inner event loop a chance to start. The MessageBox dialogs work with
-                    # sleep(0), but the file dialogs require it to be positive for some reason.
-                    await asyncio.sleep(0.001)
+                    if pre_close_test_method:
+                        pre_close_test_method(dialog)
+                finally:
+                    try:
+                        await self.type_character(char, alt=alt)
+                    except Exception as e:
+                        # An error occurred closing the dialog; that means the dialog
+                        # isn't what as expected, so record that in the future.
+                        future.set_exception(e)
 
-                    await self.type_character(char, alt=alt)
-
-                except Exception as e:
-                    # An error occurred closing the dialog; that means the dialog
-                    # isn't what as expected, so record that in the future.
-                    future.set_exception(e)
-
-            asyncio.ensure_future(_close_dialog())
+            asyncio.create_task(_close_dialog(), name="close-dialog")
 
         dialog._impl.show = automated_show
 
-    def setup_info_dialog_result(self, dialog):
-        self._setup_dialog_result(dialog, "\n")
+    def setup_info_dialog_result(self, dialog, pre_close_test_method=None):
+        self._setup_dialog_result(
+            dialog, "\n", pre_close_test_method=pre_close_test_method
+        )
 
     def setup_question_dialog_result(self, dialog, result):
         self._setup_dialog_result(dialog, "y" if result else "n")

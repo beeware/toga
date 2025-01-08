@@ -4,7 +4,7 @@ from rubicon.objc import CGSize, objc_method, objc_property
 from travertino.size import at_least
 
 from toga.colors import BLACK, TRANSPARENT, color
-from toga.widgets.canvas import Baseline, FillRule
+from toga.constants import Baseline, FillRule
 from toga_cocoa.colors import native_color
 from toga_cocoa.libs import (
     CGFloat,

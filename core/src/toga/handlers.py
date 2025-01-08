@@ -6,23 +6,16 @@ import sys
 import traceback
 import warnings
 from abc import ABC
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Awaitable,
-    Callable,
-    Generator,
-    NoReturn,
-    Protocol,
-    TypeVar,
-    Union,
-)
+from collections.abc import Awaitable, Callable, Generator
+from typing import TYPE_CHECKING, Any, NoReturn, Protocol, TypeVar, Union
 
 if TYPE_CHECKING:
     if sys.version_info < (3, 10):
         from typing_extensions import TypeAlias
     else:
         from typing import TypeAlias
+
+    T = TypeVar("T")
 
     GeneratorReturnT = TypeVar("GeneratorReturnT")
     HandlerGeneratorReturnT: TypeAlias = Generator[
@@ -45,14 +38,13 @@ async def long_running_task(
     interface: object,
     generator: HandlerGeneratorReturnT[object],
     cleanup: HandlerSyncT | None,
-) -> None:
+) -> object | None:
     """Run a generator as an asynchronous coroutine."""
     try:
         try:
             while True:
                 delay = next(generator)
-                if delay:
-                    await asyncio.sleep(delay)
+                await asyncio.sleep(delay if delay else 0)
         except StopIteration as e:
             result = e.value
     except Exception as e:
@@ -74,7 +66,7 @@ async def handler_with_cleanup(
     interface: object,
     *args: object,
     **kwargs: object,
-) -> None:
+) -> object | None:
     try:
         result = await handler(interface, *args, **kwargs)
     except Exception as e:
@@ -90,18 +82,21 @@ async def handler_with_cleanup(
         return result
 
 
-def simple_handler(fn, *args, **kwargs):
+def simple_handler(fn: T, *args: object, **kwargs: object) -> T:
     """Wrap a function (with args and kwargs) so it can be used as a command handler.
 
     This essentially accepts and ignores the handler-related arguments (i.e., the
     required ``command`` argument passed to handlers), so that you can use a method like
     :meth:`~toga.App.about()` as a command handler.
 
-    It can accept either a function or a coroutine.
+    It can accept either a function or a coroutine. Arguments that will be passed to the
+    function/coroutine are provided at the time the wrapper is defined. It is assumed
+    that the mechanism invoking the handler will add no additional arguments other than
+    the ``command`` that is invoking the handler.
 
     :param fn: The callable to invoke as a handler.
-    :param args: The arguments to pass to the handler when invoked.
-    :param kwargs: The keyword arguments to pass to the handler when invoked.
+    :param args: Positional arguments that should be passed to the invoked handler.
+    :param kwargs: Keyword arguments that should be passed to the invoked handler.
     :returns: A handler that will invoke the callable.
     """
     if inspect.iscoroutinefunction(fn):
@@ -190,9 +185,7 @@ def wrapped_handler(
 
 
 class OnResultT(Protocol):
-    def __call__(
-        self, result: Any, /, exception: Exception | None = None
-    ) -> object: ...
+    def __call__(self, result: Any, exception: Exception | None = None) -> object: ...
 
 
 class AsyncResult(ABC):
@@ -203,7 +196,7 @@ class AsyncResult(ABC):
         self.future = loop.create_future()
 
         ######################################################################
-        # 2023-12: Backwards compatibility
+        # 2023-12: Backwards compatibility for <= 0.4.0
         ######################################################################
         self.on_result: OnResultT | None
         if on_result:
@@ -241,7 +234,8 @@ class AsyncResult(ABC):
     # All the comparison dunder methods are disabled
     def __bool__(self, other: object) -> NoReturn:
         raise RuntimeError(
-            f"Can't check {self.RESULT_TYPE} result directly; use await or an on_result handler"
+            f"Can't check {self.RESULT_TYPE} result directly; "
+            "use await or an on_result handler"
         )
 
     __lt__ = __bool__

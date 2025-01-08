@@ -1,12 +1,9 @@
 import asyncio
-import sys
 
 from rubicon.objc import objc_method
 from rubicon.objc.eventloop import EventLoopPolicy, iOSLifecycle
 
 import toga
-from toga.command import Command
-from toga.handlers import simple_handler
 from toga_iOS.libs import UIResponder, UIScreen, av_foundation
 
 from .screens import Screen as ScreenImpl
@@ -54,6 +51,9 @@ class PythonAppDelegate(UIResponder):
 class App:
     # iOS apps exit when the last window is closed
     CLOSE_ON_LAST_WINDOW = True
+    # iOS doesn't have command line handling;
+    # but saying it does shortcuts the default handling
+    HANDLES_COMMAND_LINE = True
 
     def __init__(self, interface):
         self.interface = interface
@@ -75,15 +75,8 @@ class App:
     # Commands and menus
     ######################################################################
 
-    def create_app_commands(self):
-        self.interface.commands.add(
-            Command(
-                simple_handler(self.interface.about),
-                f"About {self.interface.formal_name}",
-                section=sys.maxsize,
-                id=Command.ABOUT,
-            ),
-        )
+    def create_standard_commands(self):
+        pass
 
     def create_menus(self):
         # No menus on an iOS app (for now)
@@ -118,6 +111,14 @@ class App:
 
     def get_screens(self):
         return [ScreenImpl(UIScreen.mainScreen)]
+
+    ######################################################################
+    # App state
+    ######################################################################
+
+    def get_dark_mode_state(self):
+        self.interface.factory.not_implemented("dark mode state")
+        return None
 
     ######################################################################
     # App capabilities
@@ -157,16 +158,4 @@ class App:
 
     def set_current_window(self, window):
         # iOS only has a main window, so this is a no-op
-        pass
-
-    ######################################################################
-    # Full screen control
-    ######################################################################
-
-    def enter_full_screen(self, windows):
-        # No-op; mobile doesn't support full screen
-        pass
-
-    def exit_full_screen(self, windows):
-        # No-op; mobile doesn't support full screen
         pass

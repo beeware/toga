@@ -82,7 +82,8 @@ class Location:
             # via `permission.*_location` in Briefcase). No-cover because we can't
             # manufacture this condition in testing.
             raise RuntimeError(
-                "Application metadata does not declare that the app will use the camera."
+                "Application metadata does not declare that "
+                "the app will use the camera."
             )
 
         # Tracking of futures associated with specific requests.
@@ -118,7 +119,8 @@ class Location:
             # because we can't manufacture this condition in testing.
             future.set_exception(
                 RuntimeError(
-                    "Application metadata does not declare that the app will use the camera."
+                    "Application metadata does not declare that "
+                    "the app will use the camera."
                 )
             )
 

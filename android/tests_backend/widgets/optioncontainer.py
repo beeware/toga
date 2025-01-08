@@ -21,6 +21,9 @@ class OptionContainerProbe(SimpleProbe):
             item.setChecked(True)
             self.impl.onItemSelectedListener(item)
 
+    async def wait_for_tab(self, message):
+        await self.redraw(message)
+
     def tab_enabled(self, index):
         return self.native_navigationview.getMenu().getItem(index).isEnabled()
 

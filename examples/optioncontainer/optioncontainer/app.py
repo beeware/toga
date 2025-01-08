@@ -14,7 +14,7 @@ class ExampleOptionContainerApp(toga.App):
         result = (
             f"Option {self._box_count}",
             toga.Box(
-                style=Pack(background_color="cyan", padding=10),
+                style=Pack(background_color="cyan", margin=10),
                 children=[toga.Label(f"This is Box {self._box_count}")],
             ),
         )
@@ -89,11 +89,11 @@ class ExampleOptionContainerApp(toga.App):
         self.main_window = toga.MainWindow()
 
         # styles
-        style_flex = Pack(flex=1, padding=5)
+        style_flex = Pack(flex=1, margin=5)
 
         # select
         label_select = toga.Label("Select an Option position:", style=style_flex)
-        self.select_option = toga.Selection(style=Pack(padding=5, width=50))
+        self.select_option = toga.Selection(style=Pack(margin=5, width=50))
         # buttons
         btn_activate = toga.Button(
             "Activate", on_press=self.on_activate_option, style=style_flex
@@ -111,7 +111,7 @@ class ExampleOptionContainerApp(toga.App):
         )
 
         box_select = toga.Box(
-            style=Pack(direction=ROW, padding_right=10, width=200),
+            style=Pack(direction=ROW, margin_right=10, width=200),
             children=[label_select, self.select_option],
         )
         box_actions_1 = toga.Box(
@@ -125,20 +125,20 @@ class ExampleOptionContainerApp(toga.App):
 
         self.selected_label = toga.Label("")
         self.optioncontainer = toga.OptionContainer(
-            on_select=self.on_select_tab, style=Pack(padding_bottom=20, flex=1)
+            on_select=self.on_select_tab, style=Pack(margin_bottom=20, flex=1)
         )
         self._create_options()
 
         btn_add = toga.Button(
-            "Append new option", style=Pack(padding=5), on_press=self.on_add_option
+            "Append new option", style=Pack(margin=5), on_press=self.on_add_option
         )
         btn_insert = toga.Button(
             "Insert new option before active option",
-            style=Pack(padding=5),
+            style=Pack(margin=5),
             on_press=self.on_insert_option,
         )
         box_general_actions = toga.Box(
-            style=Pack(padding_bottom=10), children=[btn_add, btn_insert]
+            style=Pack(margin_bottom=10), children=[btn_add, btn_insert]
         )
 
         # Outermost box
@@ -154,7 +154,7 @@ class ExampleOptionContainerApp(toga.App):
             style=Pack(
                 flex=1,
                 direction=COLUMN,
-                padding=10,
+                margin=10,
             ),
         )
 

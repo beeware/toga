@@ -1,3 +1,6 @@
+import asyncio
+
+from toga.constants import WindowState
 from toga_gtk.libs import IS_WAYLAND, Gdk, Gtk
 
 from .dialogs import DialogsMixin
@@ -5,8 +8,9 @@ from .probe import BaseProbe
 
 
 class WindowProbe(BaseProbe, DialogsMixin):
-    # GTK defers a lot of window behavior to the window manager, which means some features
-    # either don't exist, or we can't guarantee they behave the way Toga would like.
+    # GTK defers a lot of window behavior to the window manager, which means some
+    # features either don't exist, or we can't guarantee they behave the way Toga would
+    # like.
     supports_closable = True
     supports_minimizable = False
     supports_move_while_hidden = False
@@ -23,8 +27,39 @@ class WindowProbe(BaseProbe, DialogsMixin):
         self.native = window._impl.native
         assert isinstance(self.native, Gtk.Window)
 
-    async def wait_for_window(self, message, minimize=False, full_screen=False):
-        await self.redraw(message, delay=0.5 if (full_screen or minimize) else 0.1)
+    async def wait_for_window(
+        self,
+        message,
+        state=None,
+    ):
+        await self.redraw(message, delay=0.1)
+        if state:
+            timeout = 5
+            polling_interval = 0.1
+            exception = None
+            loop = asyncio.get_running_loop()
+            start_time = loop.time()
+            while (loop.time() - start_time) < timeout:
+                try:
+                    assert self.instantaneous_state == state
+                    assert self.window._impl._pending_state_transition is None
+                    return
+                except AssertionError as e:
+                    exception = e
+                    await asyncio.sleep(polling_interval)
+                    continue
+                raise exception
+
+    async def cleanup(self):
+        # Store the pre closing window state as determination of
+        # window state after closing the window is unreliable.
+        pre_close_window_state = self.window.state
+        self.window.close()
+        if pre_close_window_state in {WindowState.FULLSCREEN, WindowState.MINIMIZED}:
+            delay = 0.5
+        else:
+            delay = 0.1
+        await self.redraw("Closing window", delay=delay)
 
     def close(self):
         if self.is_closable:
@@ -37,10 +72,6 @@ class WindowProbe(BaseProbe, DialogsMixin):
         return (content_allocation.width, content_allocation.height)
 
     @property
-    def is_full_screen(self):
-        return bool(self.native.get_window().get_state() & Gdk.WindowState.FULLSCREEN)
-
-    @property
     def is_resizable(self):
         return self.native.get_resizable()
 
@@ -50,13 +81,17 @@ class WindowProbe(BaseProbe, DialogsMixin):
 
     @property
     def is_minimized(self):
-        return bool(self.native.get_window().get_state() & Gdk.WindowState.ICONIFIED)
+        return self.impl._window_state_flags & Gdk.WindowState.ICONIFIED
 
     def minimize(self):
         self.native.iconify()
 
     def unminimize(self):
         self.native.deiconify()
+
+    @property
+    def instantaneous_state(self):
+        return self.impl.get_window_state(in_progress_state=False)
 
     def has_toolbar(self):
         return self.impl.native_toolbar.get_n_items() > 0
@@ -72,7 +107,9 @@ class WindowProbe(BaseProbe, DialogsMixin):
         # FIXME: get_tooltip_text() doesn't work. The tooltip can be set, but the
         # API to return the value just doesn't work. If it is ever fixed, this
         # is the test for it:
-        # assert (None if item.get_tooltip_text() is None else item.get_tooltip_text()) == tooltip
+        # assert (
+        #     None if item.get_tooltip_text() is None else item.get_tooltip_text()
+        # ) == tooltip
         assert (item.get_icon_widget() is not None) == has_icon
         assert item.get_sensitive() == enabled
 

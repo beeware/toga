@@ -1,30 +1,35 @@
 import asyncio
 import signal
-import sys
-from pathlib import Path
 
-import gbulb
-
-import toga
-from toga.app import App as toga_App, overridden
-from toga.command import Command, Separator
-from toga.handlers import simple_handler
+from toga.app import App as toga_App
+from toga.command import Separator
 
 from .keys import gtk_accel
-from .libs import IS_WAYLAND, TOGA_DEFAULT_STYLES, Gdk, Gio, GLib, Gtk
+from .libs import (
+    IS_WAYLAND,
+    TOGA_DEFAULT_STYLES,
+    Gdk,
+    Gio,
+    GLib,
+    GLibEventLoopPolicy,
+    Gtk,
+)
 from .screens import Screen as ScreenImpl
 
 
 class App:
     # GTK apps exit when the last window is closed
     CLOSE_ON_LAST_WINDOW = True
+    # GTK apps use default command line handling
+    HANDLES_COMMAND_LINE = False
 
     def __init__(self, interface):
         self.interface = interface
         self.interface._impl = self
 
-        gbulb.install(gtk=True)
-        self.loop = asyncio.new_event_loop()
+        self.policy = GLibEventLoopPolicy()
+        asyncio.set_event_loop_policy(self.policy)
+        self.loop = self.policy.get_event_loop()
 
         # Stimulate the build of the app
         self.native = Gtk.Application(
@@ -59,46 +64,8 @@ class App:
     # Commands and menus
     ######################################################################
 
-    def create_app_commands(self):
-        self.interface.commands.add(
-            # ---- App menu -----------------------------------
-            # Quit should always be the last item, in a section on its own. Invoke
-            # `_request_exit` rather than `exit`, because we want to trigger the "OK to
-            # exit?" logic.
-            Command(
-                simple_handler(self.interface._request_exit),
-                "Quit " + self.interface.formal_name,
-                shortcut=toga.Key.MOD_1 + "q",
-                group=toga.Group.APP,
-                section=sys.maxsize,
-                id=Command.EXIT,
-            ),
-            # ---- Help menu -----------------------------------
-            Command(
-                simple_handler(self.interface.about),
-                "About " + self.interface.formal_name,
-                group=toga.Group.HELP,
-                id=Command.ABOUT,
-            ),
-            Command(
-                simple_handler(self.interface.visit_homepage),
-                "Visit homepage",
-                enabled=self.interface.home_page is not None,
-                group=toga.Group.HELP,
-                id=Command.VISIT_HOMEPAGE,
-            ),
-        )
-
-        # If the user has overridden preferences, provide a menu item.
-        if overridden(self.interface.preferences):
-            self.interface.commands.add(
-                Command(
-                    simple_handler(self.interface.preferences),
-                    "Preferences",
-                    group=toga.Group.APP,
-                    id=Command.PREFERENCES,
-                ),
-            )  # pragma: no cover
+    def create_standard_commands(self):
+        pass
 
     def _submenu(self, group, menubar):
         try:
@@ -186,7 +153,8 @@ class App:
         # Retain a reference to the app so that no-window apps can exist
         self.native.hold()
 
-        self.loop.run_forever(application=self.native)
+        # Start the app event loop
+        self.native.run()
 
         # Release the reference to the app. This can't be invoked by the testbed,
         # because it's after the `run_forever()` that runs the testbed.
@@ -221,13 +189,21 @@ class App:
             return screen_list
 
     ######################################################################
+    # App state
+    ######################################################################
+
+    def get_dark_mode_state(self):
+        self.interface.factory.not_implemented("dark mode state")
+        return None
+
+    ######################################################################
     # App capabilities
     ######################################################################
 
     def beep(self):
         Gdk.beep()
 
-    def _close_about(self, dialog):
+    def _close_about(self, dialog, *args, **kwargs):
         self.native_about_dialog.destroy()
         self.native_about_dialog = None
 
@@ -250,6 +226,7 @@ class App:
 
         self.native_about_dialog.show()
         self.native_about_dialog.connect("close", self._close_about)
+        self.native_about_dialog.connect("response", self._close_about)
 
     ######################################################################
     # Cursor control
@@ -271,56 +248,3 @@ class App:
 
     def set_current_window(self, window):
         window._impl.native.present()
-
-    ######################################################################
-    # Full screen control
-    ######################################################################
-
-    def enter_full_screen(self, windows):
-        for window in windows:
-            window._impl.set_full_screen(True)
-
-    def exit_full_screen(self, windows):
-        for window in windows:
-            window._impl.set_full_screen(False)
-
-
-class DocumentApp(App):  # pragma: no cover
-    def create_app_commands(self):
-        super().create_app_commands()
-        self.interface.commands.add(
-            Command(
-                self.open_file,
-                text="Open...",
-                shortcut=toga.Key.MOD_1 + "o",
-                group=toga.Group.FILE,
-                section=0,
-            ),
-        )
-
-    def gtk_startup(self, data=None):
-        super().gtk_startup(data=data)
-
-        try:
-            # Look for a filename specified on the command line
-            self.interface._open(Path(sys.argv[1]))
-        except IndexError:
-            # Nothing on the command line; open a file dialog instead.
-            # Create a temporary window so we have context for the dialog
-            m = toga.Window()
-            m.open_file_dialog(
-                self.interface.formal_name,
-                file_types=self.interface.document_types.keys(),
-                on_result=lambda dialog, path: (
-                    self.interface._open(path) if path else self.exit()
-                ),
-            )
-
-    def open_file(self, widget, **kwargs):
-        # Create a temporary window so we have context for the dialog
-        m = toga.Window()
-        m.open_file_dialog(
-            self.interface.formal_name,
-            file_types=self.interface.document_types.keys(),
-            on_result=lambda dialog, path: self.interface._open(path) if path else None,
-        )

@@ -51,7 +51,8 @@ class TextInputProbe(LabelProbe):
             # TYPE_TEXT_FLAG_NO_SUGGESTIONS is not set
             if not focusable:
                 raise ValueError(
-                    "TYPE_TEXT_FLAG_NO_SUGGESTIONS has been set when the input is readonly."
+                    "TYPE_TEXT_FLAG_NO_SUGGESTIONS "
+                    "has been set when the input is readonly."
                 )
 
         return not focusable

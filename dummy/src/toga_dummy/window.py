@@ -2,6 +2,7 @@ import asyncio
 from pathlib import Path
 
 import toga_dummy
+from toga.constants import WindowState
 from toga.types import Size
 from toga.window import _initial_position
 
@@ -55,6 +56,8 @@ class Window(LoggedObject):
         self.set_title(title)
         self.set_position(position if position is not None else _initial_position())
         self.set_size(size)
+
+        self._state = WindowState.NORMAL
 
     ######################################################################
     # Window properties
@@ -119,7 +122,7 @@ class Window(LoggedObject):
     ######################################################################
 
     def get_visible(self):
-        return self._get_value("visible")
+        return self._get_value("visible", False)
 
     def hide(self):
         self._action("hide")
@@ -129,8 +132,15 @@ class Window(LoggedObject):
     # Window state
     ######################################################################
 
-    def set_full_screen(self, is_full_screen):
-        self._action("set full screen", full_screen=is_full_screen)
+    def get_window_state(self, in_progress_state=False):
+        return self._state
+
+    def set_window_state(self, state):
+        self._action(f"set window state to {state}", state=state)
+        # We cannot store the state value on the EventLog, since the state
+        # value would be cleared on EventLog.reset(), thereby preventing us
+        # from testing no-op condition of assigning same state as current.
+        self._state = state
 
     ######################################################################
     # Window capabilities
@@ -147,7 +157,7 @@ class Window(LoggedObject):
 
     def simulate_close(self):
         result = self.interface.on_close()
-        if asyncio.iscoroutine(result):
+        if isinstance(result, asyncio.Task):
             self.interface.app.loop.run_until_complete(result)
 
 
@@ -158,7 +168,3 @@ class MainWindow(Window):
 
     def create_toolbar(self):
         self._action("create toolbar")
-
-
-class DocumentMainWindow(Window):
-    pass

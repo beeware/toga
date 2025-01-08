@@ -274,15 +274,6 @@ NSColor.declare_class_property("yellowColor")
 NSCursor = ObjCClass("NSCursor")
 
 ######################################################################
-# NSDocument.h
-NSDocument = ObjCClass("NSDocument")
-
-######################################################################
-# NSDocumentController.h
-NSDocumentController = ObjCClass("NSDocumentController")
-NSDocumentController.declare_class_property("sharedDocumentController")
-
-######################################################################
 # NSEvent.h
 NSEvent = ObjCClass("NSEvent")
 
@@ -554,6 +545,7 @@ class NSLineBreakMode(Enum):
 
 ######################################################################
 # NSPanel.h
+NSPanel = ObjCClass("NSPanel")
 
 NSUtilityWindowMask = 1 << 4
 
@@ -619,6 +611,13 @@ NSSortDescriptor = ObjCClass("NSSortDescriptor")
 NSSplitView = ObjCClass("NSSplitView")
 
 ######################################################################
+# NSStatusBar.h
+NSStatusBar = ObjCClass("NSStatusBar")
+
+NSVariableStatusItemLength = -1.0
+NSSquareStatusItemLength = -2.0
+
+######################################################################
 # NSStepper.h
 NSStepper = ObjCClass("NSStepper")
 
@@ -627,9 +626,7 @@ NSStepper = ObjCClass("NSStepper")
 
 NSStringDrawingUsesLineFragmentOrigin = 1 << 0
 NSStringDrawingUsesFontLeading = 1 << 1
-NSStringDrawingDisableScreenFontSubstitution = 1 << 2  # DEPRECATED
 NSStringDrawingUsesDeviceMetrics = 1 << 3
-NSStringDrawingOneShot = 1 << 4  # DEPRECATED
 NSStringDrawingTruncatesLastVisibleLine = 1 << 5
 
 ######################################################################

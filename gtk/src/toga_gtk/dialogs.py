@@ -113,7 +113,8 @@ class StackTraceDialog(MessageDialog):
 
         self.native.format_secondary_text(message)
 
-        # Create a scrolling readonly text area, in monospace font, to contain the stack trace.
+        # Create a scrolling readonly text area, in monospace font,
+        # to contain the stack trace.
         buffer = Gtk.TextBuffer()
         buffer.set_text(content)
 
@@ -228,6 +229,7 @@ class SaveFileDialog(FileDialog):
             action=Gtk.FileChooserAction.SAVE,
             ok_icon=Gtk.STOCK_SAVE,
         )
+        self.native.set_do_overwrite_confirmation(True)
 
 
 class OpenFileDialog(FileDialog):

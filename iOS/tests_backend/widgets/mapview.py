@@ -19,7 +19,8 @@ class MapViewProbe(SimpleProbe):
         # MKCoordinateRegion
         assert re.match(
             (
-                r"<MKCoordinateRegion\(<CLLocationCoordinate2D\(-?\d+\.\d{4}, -?\d+\.\d{4}\)>, "
+                r"<MKCoordinateRegion"
+                r"\(<CLLocationCoordinate2D\(-?\d+\.\d{4}, -?\d+\.\d{4}\)>, "
                 r"span=<MKCoordinateSpan\(-?\d+\.\d{4}, -?\d+\.\d{4}\)>\)>"
             ),
             repr(self.native.region),

@@ -16,7 +16,7 @@ on:
         value: ${{ jobs.package.outputs.artifact-basename }}
 
 env:
-  min_python_version: "3.8"
+  min_python_version: "3.9"
   max_python_version: "3.12"
   FORCE_COLOR: "1"
 
@@ -75,40 +75,22 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [ "macos-12", "macos-14", "ubuntu-latest", "windows-latest" ]
-        python-version: [ "3.8", "3.12", "3.13-dev" ]
+        platform: [ "macos-latest", "ubuntu-latest", "windows-latest" ]
+        python-version: [ "3.9", "3.10", "3.11", "3.12", "3.13" ]
         include:
         - experimental: false
-        # Test Python 3.9-3.11 on Ubuntu only
-        - platform: "ubuntu-latest"
-          python-version: "3.9"
-          experimental: false
-        - platform: "ubuntu-latest"
-          python-version: "3.10"
-          experimental: false
-        - platform: "ubuntu-latest"
-          python-version: "3.11"
-          experimental: false
-        # Allow development Python to fail without failing entire job.
-        - python-version: "3.13-dev"
-          experimental: true
-        exclude:
-        # macos-14 (i.e. arm64) does not support Python 3.8
-        - platform: "macos-14"
-          python-version: "3.8"
-        # Pillow isn't available for Python 3.13 on Windows
-        - platform: "windows-latest"
-          python-version: "3.13-dev"
+
     steps:
     - name: Checkout
-      uses: actions/checkout@v4.1.7
+      uses: actions/checkout@v4.2.2
       with:
         fetch-depth: 0
 
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v5.1.1
+      uses: actions/setup-python@v5.3.0
       with:
         python-version: ${{ matrix.python-version }}
+        allow-prereleases: true
 
     - name: Install Tox
       uses: beeware/.github/.github/actions/install-requirement@main
@@ -134,11 +116,72 @@ jobs:
         mv core/.coverage core/.coverage.${{ matrix.platform }}.${{ matrix.python-version }}
 
     - name: Store Coverage Data
-      uses: actions/upload-artifact@v4.3.6
+      uses: actions/upload-artifact@v4.5.0
       with:
         name: core-coverage-data-${{ matrix.platform }}-${{ matrix.python-version }}
         path: "core/.coverage.*"
         if-no-files-found: error
+        include-hidden-files: true
+
+  micropython:
+    name: MicroPython compatibility
+    runs-on: ubuntu-latest
+    needs: [ pre-commit, towncrier, package ]
+    steps:
+      - name: Build MicroPython
+        id: micropython
+        run: |
+          # The following script also works on macOS, except that due to a bug,
+          # threading must be enabled, i.e. THREAD must be omitted from the disabled
+          # feature list.
+          cd $RUNNER_TEMP
+          git clone https://github.com/micropython/micropython -b v1.24.0 --depth 1
+
+          # Create a variant with the same configuration as the PyScript build.
+          cd micropython/ports/unix
+          cp -a variants/standard variants/pyscript
+          grep require ../webassembly/variants/pyscript/manifest.py \
+              >> variants/pyscript/manifest.py
+          for feature in BTREE FFI SOCKET SSL TERMIOS THREAD; do
+              echo "MICROPY_PY_$feature = 0" >> variants/pyscript/mpconfigvariant.mk
+          done
+
+          export VARIANT=pyscript
+          make submodules
+          make -j $(nproc)
+          echo "executable=$(pwd)/build-pyscript/micropython" >> $GITHUB_OUTPUT
+
+      - name: Checkout
+        uses: actions/checkout@v4.2.2
+
+      - name: Set up Python
+        uses: actions/setup-python@v5.3.0
+        with:
+          python-version: "3.13"
+
+      - name: Get Packages
+        uses: actions/download-artifact@v4.1.8
+        with:
+          name: Packages-toga-core
+          path: dist
+
+      - name: Test
+        run: |
+          pip install dist/toga_core-*.whl
+          site_packages=$(python -c '
+          import sys
+          print([path for path in sys.path if "site-packages" in path][0])
+          ')
+
+          cd core
+          export MICROPYPATH="$site_packages:.frozen"
+
+          echo "Stable Travertino"
+          ${{ steps.micropython.outputs.executable }} micropython_check.py
+
+          echo "Development Travertino"
+          pip install git+https://github.com/beeware/travertino
+          ${{ steps.micropython.outputs.executable }} micropython_check.py
 
   core-coverage:
     name: Coverage
@@ -146,12 +189,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
-      uses: actions/checkout@v4.1.7
+      uses: actions/checkout@v4.2.2
       with:
         fetch-depth: 0
 
     - name: Set up Python ${{ env.min_python_version }}
-      uses: actions/setup-python@v5.1.1
+      uses: actions/setup-python@v5.3.0
       with:
         # Use minimum version of python for coverage to avoid phantom branches
         # https://github.com/nedbat/coveragepy/issues/1572#issuecomment-1522546425
@@ -175,7 +218,7 @@ jobs:
       run: tox -e coverage-html-fail-platform
 
     - name: Upload HTML Coverage Report
-      uses: actions/upload-artifact@v4.3.6
+      uses: actions/upload-artifact@v4.5.0
       if: failure()
       with:
         name: html-coverage-report
@@ -188,7 +231,17 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        backend: [ "macOS-x86_64", "macOS-arm64", "windows", "linux-x11", "linux-wayland","android", "iOS" ]
+        backend:
+        - "macOS-x86_64"
+        - "macOS-arm64"
+        - "windows"
+        - "linux-x11"
+        - "linux-wayland"
+        - "android"
+        - "iOS"
+        - "textual-linux"
+        - "textual-macOS"
+        - "textual-windows"
         include:
         - pre-command: ""
           briefcase-run-prefix: ""
@@ -197,12 +250,12 @@ jobs:
 
         - backend: "macOS-x86_64"
           platform: "macOS"
-          runs-on: "macos-12"
+          runs-on: "macos-13"
           app-user-data-path: "$HOME/Library/Application Support/org.beeware.toga.testbed"
 
         - backend: "macOS-arm64"
           platform: "macOS"
-          runs-on: "macos-14"
+          runs-on: "macos-latest"
           app-user-data-path: "$HOME/Library/Application Support/org.beeware.toga.testbed"
 
         # We use a fixed Ubuntu version rather than `-latest` because at some point,
@@ -210,8 +263,8 @@ jobs:
         # the system Python version to become inconsistent from run to run.
         - backend: "linux-x11"
           platform: "linux"
-          runs-on: "ubuntu-22.04"
-          # The package list should be the same as in tutorial-0.rst, and the BeeWare
+          runs-on: "ubuntu-24.04"
+          # The package list should be the same as in unix-prerequisites.rst, and the BeeWare
           # tutorial, plus blackbox to provide a window manager. We need a window
           # manager that is reasonably lightweight, honors full screen mode, and
           # treats the window position as the top-left corner of the *window*, not the
@@ -221,7 +274,8 @@ jobs:
           pre-command: |
             sudo apt update -y
             sudo apt install -y --no-install-recommends \
-              blackbox pkg-config python3-dev libgirepository1.0-dev libcairo2-dev gir1.2-webkit2-4.1
+              blackbox pkg-config python3-dev libgirepository1.0-dev libcairo2-dev \
+              gir1.2-webkit2-4.1 gir1.2-xapp-1.0 gir1.2-geoclue-2.0 gir1.2-flatpak-1.0
 
             # Start Virtual X Server
             echo "Start X server..."
@@ -238,13 +292,14 @@ jobs:
 
         - backend: "linux-wayland"
           platform: "linux"
-          runs-on: "ubuntu-22.04"
-          # The package list should be the same as in tutorial-0.rst, and the BeeWare
-          # tutorial, plus mutter to provide a window manager, and libjpeg-dev for Pillow.
+          runs-on: "ubuntu-24.04"
+          # The package list should be the same as in unix-prerequisites.rst, and the BeeWare
+          # tutorial, plus mutter to provide a window manager.
           pre-command: |
             sudo apt update -y
             sudo apt install -y --no-install-recommends \
-              mutter pkg-config python3-dev libgirepository1.0-dev libcairo2-dev gir1.2-webkit2-4.1
+              mutter pkg-config python3-dev libgirepository1.0-dev libcairo2-dev \
+              gir1.2-webkit2-4.1 gir1.2-xapp-1.0 gir1.2-geoclue-2.0 gir1.2-flatpak-1.0
 
             # Start Virtual X Server
             echo "Start X server..."
@@ -262,6 +317,27 @@ jobs:
           setup-python: false  # Use the system Python packages
           app-user-data-path: "$HOME/.local/share/testbed"
 
+        - backend: "textual-linux"
+          platform: "linux"
+          runs-on: "ubuntu-latest"
+          setup-python: false  # Use the system Python packages
+          briefcase-run-args: --config 'requires=["../core","../textual"]' --config 'console_app=true'
+          app-user-data-path: "$HOME/.local/share/testbed"
+          # install the meta-package build-essential since Briefcase explicitly checks for it
+          pre-command: sudo apt update -y && sudo apt install -y build-essential
+
+        - backend: "textual-macOS"
+          platform: "macOS"
+          runs-on: "macos-latest"
+          briefcase-run-args: --config 'requires=["../core","../textual"]' --config 'console_app=true'
+          app-user-data-path: "$HOME/Library/Application Support/org.beeware.toga.testbed"
+
+        - backend: "textual-windows"
+          platform: "windows"
+          runs-on: "windows-latest"
+          briefcase-run-args: --config 'requires=["../core","../textual"]' --config 'console_app=true'
+          app-user-data-path: '$HOME\AppData\Local\Tiberius Yak\Toga Testbed\Data'
+
         - backend: "windows"
           platform: "windows"
           runs-on: "windows-latest"
@@ -269,15 +345,8 @@ jobs:
 
         - backend: "iOS"
           platform: "iOS"
-          runs-on: "macos-14"
-          # As of early April 2024, the XCode 15/iOS 17 simulator had a performance
-          # issue that rendered Github Actions testing impossible. The issue didn't
-          # impact iOS 16.4, but that required the use of Xcode 14.3.1.
-          #
-          # Refs #2476, actions/runner-images#9591.
-          pre-command: "sudo xcode-select -s /Applications/Xcode_14.3.1.app"
-          briefcase-run-args: "--device 'iPhone SE (3rd generation)::iOS 16.4'"
-          # briefcase-run-args: "--device 'iPhone SE (3rd generation)'"
+          runs-on: "macos-latest"
+          briefcase-run-args: "--device 'iPhone SE (3rd generation)'"
           app-user-data-path: "$(xcrun simctl get_app_container booted org.beeware.toga.testbed data)/Documents"
 
         - backend: "android"
@@ -298,34 +367,30 @@ jobs:
             sudo udevadm control --reload-rules
             sudo udevadm trigger --name-match=kvm
     steps:
-    # Github runners seem to have intermittent connectivity issues.
+    # GitHub runners seem to have intermittent connectivity issues.
     # See https://github.com/beeware/toga/issues/2632
     - name: Tune GitHub-hosted runner network
       uses: smorimoto/tune-github-hosted-runner-network@v1.0.0
 
     - name: Checkout
-      uses: actions/checkout@v4.1.7
+      uses: actions/checkout@v4.2.2
       with:
         fetch-depth: 0
 
     - name: Set up Python
-      uses: actions/setup-python@v5.1.1
+      uses: actions/setup-python@v5.3.0
       if: matrix.setup-python
       with:
-        # We're not using Python 3.11 yet, because:
-        # * The testbed's ProxyEventLoop has some problems with it
-        #   (https://github.com/beeware/toga/issues/1982).
-        # * It doesn't have an Android build of Pillow yet.
-        python-version: "3.10"
+        python-version: "3.12"
 
     - name: Install Dependencies
+      env:
+        PIP_BREAK_SYSTEM_PACKAGES: "1"
       run: |
         ${{ matrix.pre-command }}
         # Use the development version of Briefcase
         python -m pip install -U pip
-        # python -m pip install git+https://github.com/beeware/briefcase.git
-        # TODO: Use the stable release of Briefcase so that binary packages are available.
-        python -m pip install briefcase==0.3.19
+        python -m pip install git+https://github.com/beeware/briefcase.git
 
     - name: Test App
       working-directory: testbed
@@ -335,7 +400,7 @@ jobs:
           briefcase run ${{ matrix.platform }} --log --test ${{ matrix.briefcase-run-args }} -- --ci
 
     - name: Upload Logs
-      uses: actions/upload-artifact@v4.3.6
+      uses: actions/upload-artifact@v4.5.0
       if: failure()
       with:
         name: testbed-failure-logs-${{ matrix.backend }}
@@ -348,7 +413,7 @@ jobs:
         cp -r "${{ matrix.app-user-data-path }}" testbed/app_data/testbed-app_data-${{ matrix.backend }}
 
     - name: Upload App Data
-      uses: actions/upload-artifact@v4.3.6
+      uses: actions/upload-artifact@v4.5.0
       if: failure() && matrix.backend != 'android'
       with:
         name: testbed-failure-app-data-${{ matrix.backend }}

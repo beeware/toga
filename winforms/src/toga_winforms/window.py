@@ -3,22 +3,29 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import System.Windows.Forms as WinForms
-from System.ComponentModel import InvalidEnumArgumentException
-from System.Drawing import Bitmap, Graphics, Point, Size as WinSize
+from System.Drawing import Bitmap, Font as WinFont, Graphics, Point, Size as WinSize
 from System.Drawing.Imaging import ImageFormat
 from System.IO import MemoryStream
 
+from toga import App
 from toga.command import Separator
+from toga.constants import WindowState
 from toga.types import Position, Size
 
 from .container import Container
-from .keys import toga_to_winforms_key, toga_to_winforms_shortcut
+from .fonts import DEFAULT_FONT
 from .libs.wrapper import WeakrefCallable
 from .screens import Screen as ScreenImpl
 from .widgets.base import Scalable
 
 if TYPE_CHECKING:  # pragma: no cover
     from toga.types import PositionT, SizeT
+
+
+# It looks like something is caching the initial scale of the primary screen, and
+# scaling all font sizes by it. Experiments show that this cache is at the level of the
+# app, not the window.
+initial_dpi_scale = ScreenImpl(WinForms.Screen.PrimaryScreen).dpi_scale
 
 
 class Window(Container, Scalable):
@@ -30,10 +37,14 @@ class Window(Container, Scalable):
         self._FormClosing_handler = WeakrefCallable(self.winforms_FormClosing)
         self.native.FormClosing += self._FormClosing_handler
         super().__init__(self.native)
-        self.init_scale(self.native)
+        self._dpi_scale = self.get_current_screen().dpi_scale
 
         self.native.MinimizeBox = self.interface.minimizable
         self.native.MaximizeBox = self.interface.resizable
+
+        # Use a shadow variable since a window without any app menu and toolbar
+        # in presentation mode would be indistinguishable from full screen mode.
+        self._in_presentation_mode = False
 
         self.set_title(title)
         self.set_size(size)
@@ -42,20 +53,42 @@ class Window(Container, Scalable):
         if position:
             self.set_position(position)
 
+        self.native.LocationChanged += WeakrefCallable(self.winforms_LocationChanged)
         self.native.Resize += WeakrefCallable(self.winforms_Resize)
         self.resize_content()  # Store initial size
 
-        self.set_full_screen(self.interface.full_screen)
+        # Set window border style based on the window resizability setting at interface.
+        self.native.FormBorderStyle = getattr(
+            WinForms.FormBorderStyle,
+            "Sizable" if self.interface.resizable else "FixedSingle",
+        )
 
     def create(self):
         self.native = WinForms.Form()
+
+    # We cache the scale to make sure that it only changes inside update_dpi.
+    @property
+    def dpi_scale(self):
+        return self._dpi_scale
+
+    def scale_font(self, native_font):
+        return WinFont(
+            native_font.FontFamily,
+            native_font.Size * (self.dpi_scale / initial_dpi_scale),
+            native_font.Style,
+        )
 
     ######################################################################
     # Native event handlers
     ######################################################################
 
     def winforms_Resize(self, sender, event):
-        self.resize_content()
+        if self.native.WindowState != WinForms.FormWindowState.Minimized:
+            self.resize_content()
+
+        # See DisplaySettingsChanged in app.py.
+        if self.get_current_screen().dpi_scale != self._dpi_scale:
+            self.update_dpi()
 
     def winforms_FormClosing(self, sender, event):
         # If the app is exiting, do nothing; we've already approved the exit
@@ -74,6 +107,11 @@ class Window(Container, Scalable):
             if self.interface.closable:
                 self.interface.on_close()
             event.Cancel = True
+
+    def winforms_LocationChanged(self, sender, event):
+        # See DisplaySettingsChanged in app.py.
+        if self.get_current_screen().dpi_scale != self._dpi_scale:
+            self.update_dpi()
 
     ######################################################################
     # Window properties
@@ -100,6 +138,7 @@ class Window(Container, Scalable):
     def show(self):
         if self.interface.content is not None:
             self.interface.content.refresh()
+        self.update_dpi()
         self.native.Show()
 
     ######################################################################
@@ -136,10 +175,26 @@ class Window(Container, Scalable):
             self.native.ClientSize.Height - vertical_shift,
         )
 
+    def update_dpi(self):
+        self._dpi_scale = self.get_current_screen().dpi_scale
+
+        # Update all the native fonts and determine the new preferred sizes.
+        for widget in self.interface.widgets:
+            widget._impl.scale_font()
+            widget._impl.refresh()
+
+        # Then do a single layout pass.
+        if self.interface.content is not None:
+            self.interface.content.refresh()
+
+        self.resize_content()
+
     ######################################################################
     # Window size
     ######################################################################
 
+    # Window.size is scaled according to the DPI of the current screen, to be consistent
+    # with the scaling of its content.
     def get_size(self) -> Size:
         size = self.native.Size
         return Size(
@@ -160,12 +215,20 @@ class Window(Container, Scalable):
     def get_current_screen(self):
         return ScreenImpl(WinForms.Screen.FromControl(self.native))
 
+    # Window.position is scaled according to the DPI of the primary screen, because the
+    # interface layer assumes that Screen.origin, Window.position and
+    # Window.screen_position are all in the same coordinate system.
+    #
+    # TODO: remove that assumption, and make Window.position return coordinates relative
+    # to the current screen's origin and DPI.
     def get_position(self) -> Position:
         location = self.native.Location
-        return Position(*map(self.scale_out, (location.X, location.Y)))
+        primary_screen = App.app._impl.get_primary_screen()
+        return Position(*map(primary_screen.scale_out, (location.X, location.Y)))
 
     def set_position(self, position: PositionT):
-        self.native.Location = Point(*map(self.scale_in, position))
+        primary_screen = App.app._impl.get_primary_screen()
+        self.native.Location = Point(*map(primary_screen.scale_in, position))
 
     ######################################################################
     # Window visibility
@@ -181,16 +244,73 @@ class Window(Container, Scalable):
     # Window state
     ######################################################################
 
-    def set_full_screen(self, is_full_screen):
-        if is_full_screen:
-            self.native.FormBorderStyle = getattr(WinForms.FormBorderStyle, "None")
-            self.native.WindowState = WinForms.FormWindowState.Maximized
-        else:
+    def get_window_state(self, in_progress_state=False):
+        window_state = self.native.WindowState
+        if window_state == WinForms.FormWindowState.Maximized:
+            if self.native.FormBorderStyle == getattr(WinForms.FormBorderStyle, "None"):
+                if self._in_presentation_mode:
+                    return WindowState.PRESENTATION
+                else:
+                    return WindowState.FULLSCREEN
+            else:
+                return WindowState.MAXIMIZED
+        elif window_state == WinForms.FormWindowState.Minimized:
+            return WindowState.MINIMIZED
+        else:  # window_state == WinForms.FormWindowState.Normal:
+            return WindowState.NORMAL
+
+    def set_window_state(self, state):
+        # If the app is in presentation mode, but this window isn't, then
+        # exit app presentation mode before setting the requested state.
+        if any(
+            window.state == WindowState.PRESENTATION and window != self.interface
+            for window in self.interface.app.windows
+        ):
+            self.interface.app.exit_presentation_mode()
+
+        current_state = self.get_window_state()
+        if current_state == state:
+            return
+
+        elif current_state != WindowState.NORMAL:
+            if current_state == WindowState.PRESENTATION:
+                if self.native.MainMenuStrip:
+                    self.native.MainMenuStrip.Visible = True
+                if getattr(self, "toolbar_native", None):
+                    self.toolbar_native.Visible = True
+
+                self.interface.screen = self._before_presentation_mode_screen
+                del self._before_presentation_mode_screen
+                self._in_presentation_mode = False
+
             self.native.FormBorderStyle = getattr(
                 WinForms.FormBorderStyle,
                 "Sizable" if self.interface.resizable else "FixedSingle",
             )
             self.native.WindowState = WinForms.FormWindowState.Normal
+
+            self.set_window_state(state)
+
+        else:  # current_state == WindowState.NORMAL:
+            if state == WindowState.MAXIMIZED:
+                self.native.WindowState = WinForms.FormWindowState.Maximized
+
+            elif state == WindowState.MINIMIZED:
+                self.native.WindowState = WinForms.FormWindowState.Minimized
+
+            elif state == WindowState.FULLSCREEN:
+                self.native.FormBorderStyle = getattr(WinForms.FormBorderStyle, "None")
+                self.native.WindowState = WinForms.FormWindowState.Maximized
+
+            else:  # state == WindowState.PRESENTATION:
+                self._before_presentation_mode_screen = self.interface.screen
+                if self.native.MainMenuStrip:
+                    self.native.MainMenuStrip.Visible = False
+                if getattr(self, "toolbar_native", None):
+                    self.toolbar_native.Visible = False
+                self.native.FormBorderStyle = getattr(WinForms.FormBorderStyle, "None")
+                self.native.WindowState = WinForms.FormWindowState.Maximized
+                self._in_presentation_mode = True
 
     ######################################################################
     # Window capabilities
@@ -217,32 +337,37 @@ class MainWindow(Window):
         super().create()
         self.toolbar_native = None
 
+    def update_dpi(self):
+        super().update_dpi()
+        if self.native.MainMenuStrip:  # pragma: no branch
+            self.native.MainMenuStrip.Font = self.scale_font(DEFAULT_FONT)
+        if self.toolbar_native:
+            self.toolbar_native.Font = self.scale_font(DEFAULT_FONT)
+        self.resize_content()
+
     def _top_bars_height(self):
         vertical_shift = 0
-        if self.toolbar_native:
+        if self.toolbar_native and self.toolbar_native.Visible:
             vertical_shift += self.toolbar_native.Height
-        if self.native.MainMenuStrip:
+        if self.native.MainMenuStrip and self.native.MainMenuStrip.Visible:
             vertical_shift += self.native.MainMenuStrip.Height
         return vertical_shift
 
-    def _submenu(self, group, menubar):
+    def _submenu(self, group, group_cache):
         try:
-            return self._menu_groups[group]
+            return group_cache[group]
         except KeyError:
-            if group is None:
-                submenu = menubar
+            parent_menu = self._submenu(group.parent, group_cache)
+
+            submenu = WinForms.ToolStripMenuItem(group.text)
+
+            # Top level menus are added in a different way to submenus
+            if group.parent is None:
+                parent_menu.Items.Add(submenu)
             else:
-                parent_menu = self._submenu(group.parent, menubar)
+                parent_menu.DropDownItems.Add(submenu)
 
-                submenu = WinForms.ToolStripMenuItem(group.text)
-
-                # Top level menus are added in a different way to submenus
-                if group.parent is None:
-                    parent_menu.Items.Add(submenu)
-                else:
-                    parent_menu.DropDownItems.Add(submenu)
-
-            self._menu_groups[group] = submenu
+            group_cache[group] = submenu
         return submenu
 
     def create_menus(self):
@@ -255,40 +380,20 @@ class MainWindow(Window):
             menubar = WinForms.MenuStrip()
             self.native.Controls.Add(menubar)
             self.native.MainMenuStrip = menubar
+            self.native.MainMenuStrip.Font = self.scale_font(DEFAULT_FONT)
             menubar.SendToBack()  # In a dock, "back" means "top".
 
-        self._menu_groups = {}
+        group_cache = {None: menubar}
 
         submenu = None
         for cmd in self.interface.app.commands:
-            submenu = self._submenu(cmd.group, menubar)
+            submenu = self._submenu(cmd.group, group_cache)
             if isinstance(cmd, Separator):
-                submenu.DropDownItems.Add("-")
+                item = "-"
             else:
-                submenu = self._submenu(cmd.group, menubar)
-                item = WinForms.ToolStripMenuItem(cmd.text)
-                item.Click += WeakrefCallable(cmd._impl.winforms_Click)
-                if cmd.shortcut is not None:
-                    try:
-                        item.ShortcutKeys = toga_to_winforms_key(cmd.shortcut)
-                        # The Winforms key enum is... daft. The "oem" key
-                        # values render as "Oem" or "Oemcomma", so we need to
-                        # *manually* set the display text for the key shortcut.
-                        item.ShortcutKeyDisplayString = toga_to_winforms_shortcut(
-                            cmd.shortcut
-                        )
-                    except (
-                        ValueError,
-                        InvalidEnumArgumentException,
-                    ) as e:  # pragma: no cover
-                        # Make this a non-fatal warning, because different backends may
-                        # accept different shortcuts.
-                        print(f"WARNING: invalid shortcut {cmd.shortcut!r}: {e}")
+                item = cmd._impl.create_menu_item(WinForms.ToolStripMenuItem)
 
-                item.Enabled = cmd.enabled
-
-                cmd._impl.native.append(item)
-                submenu.DropDownItems.Add(item)
+            submenu.DropDownItems.Add(item)
 
         self.resize_content()
 
@@ -301,6 +406,7 @@ class MainWindow(Window):
                 # defaults to `Top`.
                 self.toolbar_native = WinForms.ToolStrip()
                 self.native.Controls.Add(self.toolbar_native)
+                self.toolbar_native.Font = self.scale_font(DEFAULT_FONT)
                 self.toolbar_native.BringToFront()  # In a dock, "front" means "bottom".
 
             prev_group = None
@@ -316,7 +422,8 @@ class MainWindow(Window):
                     else:
                         prev_group = cmd.group
 
-                    item = WinForms.ToolStripMenuItem(cmd.text)
+                    item = WinForms.ToolStripButton(cmd.text)
+                    item.AutoToolTip = False
                     if cmd.tooltip is not None:
                         item.ToolTipText = cmd.tooltip
                     if cmd.icon is not None:

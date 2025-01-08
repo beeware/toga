@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import warnings
 from collections.abc import Iterable
 from typing import Any, Protocol, TypeVar
 
@@ -14,7 +13,7 @@ SourceT = TypeVar("SourceT", bound=Source)
 
 
 class OnChangeHandler(Protocol):
-    def __call__(self, widget: Selection, /, **kwargs: Any) -> object:
+    def __call__(self, widget: Selection, **kwargs: Any) -> object:
         """A handler to invoke when the value is changed.
 
         :param widget: The Selection that was changed.
@@ -32,7 +31,6 @@ class Selection(Widget):
         value: object | None = None,
         on_change: toga.widgets.selection.OnChangeHandler | None = None,
         enabled: bool = True,
-        on_select: None = None,  # DEPRECATED
     ):
         """Create a new Selection widget.
 
@@ -48,36 +46,23 @@ class Selection(Widget):
         :param on_change: Initial :any:`on_change` handler.
         :param enabled: Whether the user can interact with the widget.
         """
-        super().__init__(id=id, style=style)
-
-        ######################################################################
-        # 2023-05: Backwards compatibility
-        ######################################################################
-        if on_select:  # pragma: no cover
-            if on_change:
-                raise ValueError("Cannot specify both on_select and on_change")
-            else:
-                warnings.warn(
-                    "Selection.on_select has been renamed Selection.on_change",
-                    DeprecationWarning,
-                )
-                on_change = on_select
-        ######################################################################
-        # End backwards compatibility.
-        ######################################################################
 
         self._items: SourceT | ListSource
 
         self.on_change = None  # needed for _impl initialization
-        self._impl = self.factory.Selection(interface=self)
 
         self._accessor = accessor
+        super().__init__(id=id, style=style)
+
         self.items = items
         if value:
             self.value = value
 
         self.on_change = on_change
         self.enabled = enabled
+
+    def _create(self) -> Any:
+        return self.factory.Selection(interface=self)
 
     @property
     def items(self) -> SourceT | ListSource:
@@ -181,31 +166,10 @@ class Selection(Widget):
 
     @property
     def on_change(self) -> OnChangeHandler:
-        """Handler to invoke when the value of the selection is changed, either by the user
-        or programmatically."""
+        """Handler to invoke when the value of the selection is changed,
+        either by the user or programmatically."""
         return self._on_change
 
     @on_change.setter
     def on_change(self, handler: toga.widgets.selection.OnChangeHandler) -> None:
         self._on_change = wrapped_handler(self, handler)
-
-    ######################################################################
-    # 2023-05: Backwards compatibility
-    ######################################################################
-
-    @property
-    def on_select(self) -> OnChangeHandler:
-        """**DEPRECATED**: Use ``on_change``"""
-        warnings.warn(
-            "Selection.on_select has been renamed Selection.on_change.",
-            DeprecationWarning,
-        )
-        return self.on_change
-
-    @on_select.setter
-    def on_select(self, handler: toga.widgets.selection.OnChangeHandler) -> None:
-        warnings.warn(
-            "Selection.on_select has been renamed Selection.on_change.",
-            DeprecationWarning,
-        )
-        self.on_change = handler

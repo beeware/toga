@@ -10,8 +10,10 @@ from .hardware.location import Location
 from .icons import Icon
 from .images import Image
 from .paths import Paths
+from .statusicons import MenuStatusIcon, SimpleStatusIcon, StatusIconSet
 
 # Widgets
+from .widgets.activityindicator import ActivityIndicator
 from .widgets.box import Box
 from .widgets.button import Button
 from .widgets.canvas import Canvas
@@ -46,6 +48,7 @@ def not_implemented(feature):
 
 __all__ = [
     "not_implemented",
+    "ActivityIndicator",
     "App",
     "Command",
     # Resources
@@ -58,6 +61,10 @@ __all__ = [
     # Hardware
     "Camera",
     "Location",
+    # Status icons
+    "MenuStatusIcon",
+    "SimpleStatusIcon",
+    "StatusIconSet",
     # Widgets
     "Box",
     "Button",

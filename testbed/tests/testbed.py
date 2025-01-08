@@ -10,13 +10,13 @@ from threading import Thread
 import coverage
 import pytest
 
-from testbed.app import main
+import testbed.app
 
 
 def run_tests(app, cov, args, report_coverage, run_slow, running_in_ci):
     try:
-        # Wait for the app's main window to be visible. Retrieving the actual main window
-        # will raise an exception until the app is actually initialized.
+        # Wait for the app's main window to be visible. Retrieving the actual
+        # main window will raise an exception until the app is actually initialized.
         print("Waiting for app to be ready for testing... ", end="", flush=True)
         i = 0
         ready = False
@@ -37,6 +37,14 @@ def run_tests(app, cov, args, report_coverage, run_slow, running_in_ci):
             return
 
         print("ready.")
+
+        # Textual backend does not yet support testing.
+        # However, this will verify a Textual app can at least start.
+        if app.factory.__name__.startswith("toga_textual"):
+            time.sleep(1)  # wait for the Textual app to start
+            app.returncode = 0 if app._impl.native.is_running else 1
+            return
+
         # Control the run speed of the test app.
         app.run_slow = run_slow
 
@@ -57,8 +65,10 @@ def run_tests(app, cov, args, report_coverage, run_slow, running_in_ci):
                 "-Wignore::toga.NotImplementedWarning",
                 # Run all async tests and fixtures using pytest-asyncio.
                 "--asyncio-mode=auto",
+                "--override-ini",
+                "asyncio_default_fixture_loop_scope=session",
                 # Override the cache directory to be somewhere known writable
-                "-o",
+                "--override-ini",
                 f"cache_dir={tempfile.gettempdir()}/.pytest_cache",
             ]
             + args
@@ -142,13 +152,12 @@ if __name__ == "__main__":
         "coverage_conditional_plugin:rules",
         {
             "no-cover-if-linux-wayland": "os_environ.get('WAYLAND_DISPLAY', '') != ''",
-            "no-cover-if-linux-x": "os_environ.get('WAYLAND_DISPLAY', 'not-set') == 'not-set'",
+            "no-cover-if-linux-x": (
+                "os_environ.get('WAYLAND_DISPLAY', 'not-set') == 'not-set'"
+            ),
         },
     )
     cov.start()
-
-    # Create the test app, starting the test suite as a background task
-    app = main()
 
     # Determine pytest arguments
     args = sys.argv[1:]
@@ -168,6 +177,7 @@ if __name__ == "__main__":
     except ValueError:
         report_coverage = False
 
+    # Use flag for running in CI since some tests will only succeed on the CI platform
     try:
         args.remove("--ci")
         running_in_ci = True
@@ -180,6 +190,9 @@ if __name__ == "__main__":
         args = ["tests"]
         report_coverage = True
 
+    # Create the test app, starting the test suite as a background task
+    app = testbed.app.main()
+
     thread = Thread(
         target=partial(
             run_tests,
@@ -191,10 +204,14 @@ if __name__ == "__main__":
             running_in_ci=running_in_ci,
         )
     )
+
     # Queue a background task to run that will start the main thread. We do this,
     # instead of just starting the thread directly, so that we can make sure the App has
     # been fully initialized, and the event loop is running.
     app.loop.call_soon_threadsafe(thread.start)
 
-    # Start the test app.
+    # Ensure Textual apps start in headless mode
+    app._impl.headless = True
+
+    # Start the test app
     app.main_loop()

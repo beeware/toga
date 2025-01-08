@@ -2,6 +2,7 @@ accessor
 accessors
 acknowledgement
 amongst
+AndroidX
 App
 apps
 Async
@@ -22,7 +23,10 @@ Ctrl
 dialogs
 Django
 draggable
+Flatpak
 Flexbox
+GBulb
+GeoClue
 geolocation
 GMail
 GObject
@@ -30,10 +34,10 @@ Gradle
 GStreamer
 GTK
 Helvetica
+ImageT
 initializer
 instantiation
 iOS
-ImageT
 iterable
 KDE
 linters
@@ -64,6 +68,7 @@ Ren
 resizable
 reStructuredText
 runtime
+sandboxed
 scrollable
 scrollers
 Segoe
@@ -81,16 +86,18 @@ substrings
 Sur
 testbed
 Todo
-Tox
 toolbar
 toolbars
 Toolbars
 toolkits
+tooltip
 Towncrier
+Tox
 triaged
 Triaging
 tvOS
 Ubuntu
+unminimized
 unselectable
 validator
 validators
@@ -104,4 +111,3 @@ whitespace
 Winforms
 Xcode
 zoomable
-AndroidX

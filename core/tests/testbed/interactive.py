@@ -1,8 +1,7 @@
 import sys
 import types
 
-# Before we import toga, check for the --interactive flag
-# If that flag exists, mock the behavior of an interactive shell
+# Mock the behavior of an interactive shell
 # - replace the __main__ module with an in-memory representation.
 sys.modules["__main__"] = types.ModuleType("__main__")
 

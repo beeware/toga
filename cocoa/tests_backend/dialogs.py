@@ -16,8 +16,12 @@ from toga_cocoa.libs import (
 class DialogsMixin:
     supports_multiple_select_folder = True
 
-    def setup_info_dialog_result(self, dialog):
-        self._setup_alert_dialog_result(dialog, NSAlertFirstButtonReturn)
+    def setup_info_dialog_result(self, dialog, pre_close_test_method=None):
+        self._setup_alert_dialog_result(
+            dialog,
+            NSAlertFirstButtonReturn,
+            pre_close_test_method=pre_close_test_method,
+        )
 
     def setup_question_dialog_result(self, dialog, result):
         if result:

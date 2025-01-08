@@ -48,6 +48,12 @@ class AppProbe(BaseProbe, DialogsMixin):
     def assert_app_icon(self, icon):
         pytest.xfail("iOS apps don't have app icons at runtime")
 
+    def assert_dialog_in_focus(self, dialog):
+        root_view_controller = self.native.keyWindow.rootViewController
+        assert (
+            root_view_controller.presentedViewController == dialog._impl.native
+        ), "The dialog is not in focus"
+
     def assert_system_menus(self):
         pytest.skip("Menus not implemented on iOS")
 
@@ -76,3 +82,15 @@ class AppProbe(BaseProbe, DialogsMixin):
     def rotate(self):
         self.native = self.app._impl.native
         self.native.delegate.application(self.native, didChangeStatusBarOrientation=0)
+
+    def has_status_icon(self, status_icon):
+        pytest.xfail("Status icons not implemented on iOS")
+
+    def status_menu_items(self, status_icon):
+        pytest.xfail("Status icons not implemented on iOS")
+
+    def activate_status_icon_button(self, item_id):
+        pytest.xfail("Status icons not implemented on iOS")
+
+    def activate_status_menu_item(self, item_id, title):
+        pytest.xfail("Status icons not implemented on iOS")

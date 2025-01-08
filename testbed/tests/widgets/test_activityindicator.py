@@ -3,6 +3,7 @@ import pytest
 import toga
 
 from ..conftest import skip_on_platforms
+from .conftest import build_cleanup_test
 from .properties import (  # noqa: F401
     test_enable_noop,
     test_focus_noop,
@@ -11,8 +12,13 @@ from .properties import (  # noqa: F401
 
 @pytest.fixture
 async def widget():
-    skip_on_platforms("android", "iOS", "windows")
+    skip_on_platforms("android", "windows")
     return toga.ActivityIndicator()
+
+
+test_cleanup = build_cleanup_test(
+    toga.ActivityIndicator, skip_platforms=("android", "windows")
+)
 
 
 async def test_start_stop(widget, probe):

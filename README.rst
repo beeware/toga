@@ -38,7 +38,7 @@ A Python native, OS native GUI toolkit.
 Minimum requirements
 --------------------
 
-* Toga requires **Python 3.8 or higher**.
+* Toga requires **Python 3.9 or higher**.
 
 * If you're on macOS, you need to be on 11 (Big Sur) or newer.
 
