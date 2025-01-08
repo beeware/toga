@@ -12,10 +12,7 @@ class TogaView(UIView):
 
 class Box(Widget):
     def create(self):
-        # This should be a TogaView - but making it a TogaView causes segfaults when
-        # content is added and removed from containers like OptionContainer and
-        # ScrollContainer.
-        self.native = UIView.alloc().init()
+        self.native = TogaView.alloc().init()
         self.native.interface = self.interface
         self.native.impl = self
 

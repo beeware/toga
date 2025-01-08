@@ -29,7 +29,7 @@ def test_row_flex_no_hints():
         ],
     )
 
-    root.style.layout(root, ExampleViewport(640, 480))
+    root.style.layout(ExampleViewport(640, 480))
     assert_layout(
         root,
         (50, 50),
@@ -104,7 +104,7 @@ def test_row_flex():
         ],
     )
 
-    root.style.layout(root, ExampleViewport(640, 480))
+    root.style.layout(ExampleViewport(640, 480))
     assert_layout(
         root,
         (300, 100),
@@ -184,7 +184,7 @@ def test_row_flex_insufficient_space():
         ],
     )
 
-    root.style.layout(root, ExampleViewport(640, 480))
+    root.style.layout(ExampleViewport(640, 480))
     assert_layout(
         root,
         (200, 100),
@@ -249,7 +249,7 @@ def test_row_flex_insufficient_space_no_flex():
         ],
     )
 
-    root.style.layout(root, ExampleViewport(640, 480))
+    root.style.layout(ExampleViewport(640, 480))
     assert_layout(
         root,
         (220, 100),
@@ -302,7 +302,7 @@ def test_row_flex_grandchild_min_size():
         ],
     )
 
-    root.style.layout(root, ExampleViewport(640, 480))
+    root.style.layout(ExampleViewport(640, 480))
     assert_layout(
         root,
         (120, 100),
@@ -351,7 +351,7 @@ def test_column_flex_no_hints():
         ],
     )
 
-    root.style.layout(root, ExampleViewport(640, 480))
+    root.style.layout(ExampleViewport(640, 480))
     assert_layout(
         root,
         (50, 50),
@@ -426,7 +426,7 @@ def test_column_flex():
         ],
     )
 
-    root.style.layout(root, ExampleViewport(640, 480))
+    root.style.layout(ExampleViewport(640, 480))
     assert_layout(
         root,
         (100, 300),
@@ -507,7 +507,7 @@ def test_column_flex_insufficient_space():
         ],
     )
 
-    root.style.layout(root, ExampleViewport(640, 480))
+    root.style.layout(ExampleViewport(640, 480))
     assert_layout(
         root,
         (100, 200),
@@ -573,7 +573,7 @@ def test_column_flex_insufficient_space_no_flex():
         ],
     )
 
-    root.style.layout(root, ExampleViewport(640, 480))
+    root.style.layout(ExampleViewport(640, 480))
     assert_layout(
         root,
         (100, 220),
@@ -627,7 +627,7 @@ def test_column_flex_grandchild_min_size():
         ],
     )
 
-    root.style.layout(root, ExampleViewport(640, 480))
+    root.style.layout(ExampleViewport(640, 480))
     assert_layout(
         root,
         (100, 120),

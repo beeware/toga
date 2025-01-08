@@ -46,13 +46,14 @@ class Selection(Widget):
         :param on_change: Initial :any:`on_change` handler.
         :param enabled: Whether the user can interact with the widget.
         """
-        super().__init__(id=id, style=style)
 
         self._items: SourceT | ListSource
 
         self.on_change = None  # needed for _impl initialization
 
         self._accessor = accessor
+        super().__init__(id=id, style=style)
+
         self.items = items
         if value:
             self.value = value
