@@ -212,6 +212,28 @@ class WebView(Widget):
             self.default_user_agent if value is None else value
         )
 
+    def get_cookies(self):
+        """
+        Retrieve all cookies asynchronously from the WebView.
+
+        :return: A CookiesResult object that can be awaited.
+        """
+        # Create an AsyncResult to manage the cookies
+        result = CookiesResult()
+
+        # Wrap the Python completion handler in a .NET Action delegate
+        completion_handler_delegate = Action[Task[List[CoreWebView2Cookie]]](
+            cookies_completion_handler(result)
+        )
+
+        # Call the method to retrieve cookies asynchronously
+        task_scheduler = TaskScheduler.FromCurrentSynchronizationContext()
+        self.cookie_manager.GetCookiesAsync(None).ContinueWith(
+            completion_handler_delegate, task_scheduler
+        )
+
+        return result
+
     def evaluate_javascript(self, javascript, on_result=None):
         result = JavaScriptResult(on_result)
         task_scheduler = TaskScheduler.FromCurrentSynchronizationContext()
@@ -228,27 +250,4 @@ class WebView(Widget):
             )
 
         self.run_after_initialization(execute)
-        return result
-
-    def cookies(self, on_result=None):
-        """
-        Retrieve all cookies asynchronously from the WebView.
-
-        :param on_result: Optional callback to handle the cookies.
-        :return: A CookiesResult object that can be awaited.
-        """
-        # Create an AsyncResult to manage the cookies
-        result = CookiesResult(on_result)
-
-        # Wrap the Python completion handler in a .NET Action delegate
-        completion_handler_delegate = Action[Task[List[CoreWebView2Cookie]]](
-            cookies_completion_handler(result)
-        )
-
-        # Call the method to retrieve cookies asynchronously
-        task_scheduler = TaskScheduler.FromCurrentSynchronizationContext()
-        self.cookie_manager.GetCookiesAsync(None).ContinueWith(
-            completion_handler_delegate, task_scheduler
-        )
-
         return result

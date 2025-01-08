@@ -26,6 +26,11 @@ class WebView(Widget):
         self._set_value("url", value)
         self._set_value("loaded_future", future)
 
+    def get_cookies(self):
+        self._action("cookies")
+        self._cookie_result = CookiesResult()
+        return self._cookie_result
+
     def evaluate_javascript(self, javascript, on_result=None):
         self._action("evaluate_javascript", javascript=javascript)
         self._js_result = JavaScriptResult(on_result)
@@ -42,16 +47,8 @@ class WebView(Widget):
     def simulate_javascript_result(self, value):
         self._js_result.set_result(42)
 
-    def cookies(self, on_result=None):
-        """Simulate retrieving cookies asynchronously."""
-        self._action("cookies")
-        self._cookie_result = CookiesResult(on_result)
-        return self._cookie_result
-
     def simulate_cookie_retrieval(self, cookies):
         """Simulate completion of cookie retrieval."""
-        print("kaas")
-        print(cookies)
         cookie_jar = CookieJar()
         for cookie in cookies:
             cookie_jar.set_cookie(cookie)

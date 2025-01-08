@@ -1,3 +1,5 @@
+from http.cookiejar import CookieJar
+
 from travertino.size import at_least
 
 from toga.widgets.webview import CookiesResult, JavaScriptResult
@@ -75,6 +77,16 @@ class WebView(Widget):
     def set_content(self, root_url, content):
         self.native.load_html(content, root_url)
 
+    def get_cookies(self):
+        # Create the result object
+        result = CookiesResult()
+        result.set_result(CookieJar())
+
+        # Signal that this feature is not implemented on the current platform
+        self.interface.factory.not_implemented("webview.cookies")
+
+        return result
+
     def evaluate_javascript(self, javascript, on_result=None):
         # Construct a future on the event loop
         result = JavaScriptResult(on_result)
@@ -115,13 +127,3 @@ class WebView(Widget):
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
         self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
-
-    def cookies(self, on_result=None):
-        # Create the result object
-        result = CookiesResult(on_result=on_result)
-        result.set_result(None)
-
-        # Signal that this feature is not implemented on the current platform
-        self.interface.factory.not_implemented("webview.cookies")
-
-        return result

@@ -139,22 +139,18 @@ class WebView(Widget):
         """
         self._impl.set_content(root_url, content)
 
-    def cookies(
-        self,
-        on_result: OnResultT | None = None,
-    ) -> CookiesResult:
+    @property
+    def cookies(self) -> CookiesResult:
         """Retrieve cookies from the WebView.
 
-        **This is an asynchronous method**. There is no guarantee that the function
-        has finished evaluating when this method returns. The object returned by this
-        method can be awaited to obtain the value of the expression.
-        An CookieJar object will be returned
+        **This is an asynchronous property**. The value returned by this method must be
+        awaited to obtain the cookies that are currently set.
 
-        **Note:** This is not yet currently supported on Android or Linux.
+        **Note:** This property is not currently supported on Android or Linux.
 
-        :param on_result: A callback function to process the cookies once retrieved.
+        :returns: An object that returns a CookieJar when awaited.
         """
-        return self._impl.cookies(on_result=on_result)
+        return self._impl.get_cookies()
 
     def evaluate_javascript(
         self,

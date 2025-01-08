@@ -116,6 +116,23 @@ class WebView(Widget):
     def set_user_agent(self, value):
         self.native.customUserAgent = value
 
+    def get_cookies(self):
+        """
+        Retrieve all cookies asynchronously from the WebView.
+
+        :returns: An AsyncResult object that can be awaited.
+        """
+        # Create an AsyncResult to manage the cookies
+        result = CookiesResult()
+
+        # Retrieve the cookie store from the WebView
+        cookie_store = self.native.configuration.websiteDataStore.httpCookieStore
+
+        # Call the method to retrieve all cookies and pass the completion handler
+        cookie_store.getAllCookies(cookies_completion_handler(result))
+
+        return result
+
     def evaluate_javascript(self, javascript: str, on_result=None) -> str:
         result = JavaScriptResult(on_result=on_result)
         self.native.evaluateJavaScript(
@@ -128,21 +145,3 @@ class WebView(Widget):
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
         self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
-
-    def cookies(self, on_result=None):
-        """
-        Retrieve all cookies asynchronously from the WebView.
-
-        :param on_result: Optional callback to handle the cookies.
-        :return: An AsyncResult object that can be awaited.
-        """
-        # Create an AsyncResult to manage the cookies
-        result = CookiesResult(on_result)
-
-        # Retrieve the cookie store from the WebView
-        cookie_store = self.native.configuration.websiteDataStore.httpCookieStore
-
-        # Call the method to retrieve all cookies and pass the completion handler
-        cookie_store.getAllCookies_(cookies_completion_handler(result))
-
-        return result

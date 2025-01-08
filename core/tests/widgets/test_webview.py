@@ -1,5 +1,5 @@
 import asyncio
-from http.cookiejar import Cookie
+from http.cookiejar import Cookie, CookieJar
 from unittest.mock import Mock
 
 import pytest
@@ -251,8 +251,8 @@ async def test_evaluate_javascript_sync(widget):
     on_result_handler.assert_called_once_with(42)
 
 
-async def test_retrieve_cookies_async(widget):
-    """Cookies can be retrieved asynchronously."""
+async def test_retrieve_cookies(widget):
+    """Cookies can be retrieved."""
 
     # Simulate backend cookie retrieval
     cookies = [
@@ -283,11 +283,11 @@ async def test_retrieve_cookies_async(widget):
 
     asyncio.create_task(delayed_cookie_retrieval())
 
-    # Retrieve the result from widget.cookies
-    result = widget.cookies()
-
     # Get the cookie jar from the future
-    cookie_jar = await result.future  # Await the future to get the CookieJar
+    cookie_jar = await widget.cookies
+
+    # The result returned is a cookiejar
+    assert isinstance(cookie_jar, CookieJar)
 
     # Validate the cookies in the CookieJar
     cookie = next(iter(cookie_jar))  # Get the first (and only) cookie
@@ -297,61 +297,3 @@ async def test_retrieve_cookies_async(widget):
     assert cookie.path == "/"
     assert cookie.secure is True
     assert cookie.expires is None
-
-
-async def test_retrieve_cookies_sync(widget):
-    """Deprecated sync handlers can be used for cookie retrieval."""
-
-    # Simulate backend cookie retrieval
-    cookies = [
-        Cookie(
-            version=0,
-            name="test",
-            value="test_value",
-            port=None,
-            port_specified=False,
-            domain="example.com",
-            domain_specified=True,
-            domain_initial_dot=False,
-            path="/",
-            path_specified=True,
-            secure=True,
-            expires=None,  # Simulating a session cookie
-            discard=True,
-            comment=None,
-            comment_url=None,
-            rest={},
-            rfc2109=False,
-        )
-    ]
-
-    # Simulate the cookie retrieval with a delay
-    async def delayed_cookie_retrieval():
-        await asyncio.sleep(0.1)
-        widget._impl.simulate_cookie_retrieval(cookies)
-
-    asyncio.create_task(delayed_cookie_retrieval())
-
-    # Mock the result handler
-    on_result_handler = Mock()
-
-    with pytest.warns(
-        DeprecationWarning,
-        match=r"Synchronous `on_result` handlers have been deprecated;",
-    ):
-        # Retrieve the cookies with the deprecated synchronous handler
-        result = await widget.cookies(on_result=on_result_handler)
-
-    assert_action_performed(widget, "cookies")
-
-    # Validate the retrieved cookies
-    cookie = next(iter(result))  # Assuming `result` is iterable
-    assert cookie.name == "test"
-    assert cookie.value == "test_value"
-    assert cookie.domain == "example.com"
-    assert cookie.path == "/"
-    assert cookie.secure is True
-    assert cookie.expires is None
-
-    # Verify that the on_result handler was invoked
-    on_result_handler.assert_called_once_with(result)

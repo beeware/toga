@@ -1,6 +1,7 @@
 import asyncio
 from asyncio import wait_for
 from contextlib import nullcontext
+from http.cookiejar import CookieJar
 from time import time
 from unittest.mock import ANY, Mock
 
@@ -320,15 +321,23 @@ async def test_dom_storage_enabled(widget, probe, on_load):
     assert result == expected_value
 
 
-async def test_retrieve_cookies_async(widget, probe, on_load):
-    """Cookies can be retrieved asynchronously."""
+async def test_retrieve_cookies(widget, probe, on_load):
+    """Cookies can be retrieved."""
     # A page must be loaded to set cookies
     await wait_for(
-        widget.load_url("https://example.com/"),
+        widget.load_url("https://github.com/beeware"),
         LOAD_TIMEOUT,
     )
-    # Small pause to ensure JavaScript can run without security errors
-    await asyncio.sleep(1)
+    # DOM loads aren't instantaneous; wait for the URL to appear
+    await assert_content_change(
+        widget,
+        probe,
+        message="Page has been loaded",
+        url="https://github.com/beeware",
+        content=ANY,
+        on_load=on_load,
+    )
+    await probe.redraw("Wait for Javascript completion", delay=0.1)
 
     # JavaScript expression to set a cookie and return the current cookies
     expression = """
@@ -339,22 +348,22 @@ async def test_retrieve_cookies_async(widget, probe, on_load):
 
     await wait_for(widget.evaluate_javascript(expression), JS_TIMEOUT)
 
-    # Retrieve cookies using widget.cookies()
-    result = widget.cookies()  # Call the cookies method
+    # Retrieve cookies.
+    cookie_jar = await widget.cookies
 
-    cookie_jar = await result.future  # Await the future to get the CookieJar
+    assert isinstance(cookie_jar, CookieJar)
 
-    if toga.platform.current_platform not in {"windows", "iOS", "macOS"}:
-        assert cookie_jar is None
-    else:
-        # Find the test cookie in the CookieJar
-        cookie = next((c for c in cookie_jar if c.name == "test"), None)
-        assert cookie is not None, "Test cookie not found in CookieJar"
+    # Cookie retrieval isn't implemented on every backend (yet), so we implement the
+    # retrieval in the probe to provide an opportunity to skip the test.
+    cookie = probe.extract_cookie(cookie_jar, "test")
 
-        # Validate the test cookie
-        assert cookie.name == "test"
-        assert cookie.value == "test_value"
-        assert cookie.domain == "example.com"
-        assert cookie.path == "/"
-        assert cookie.secure is True
-        assert cookie.expires is None
+    # Find the test cookie in the CookieJar
+    assert cookie is not None, "Test cookie not found in CookieJar"
+
+    # Validate the test cookie
+    assert cookie.name == "test"
+    assert cookie.value == "test_value"
+    assert cookie.domain == "github.com"
+    assert cookie.path == "/"
+    assert cookie.secure is True
+    assert cookie.expires is None
