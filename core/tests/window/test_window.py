@@ -611,6 +611,14 @@ def test_focus_events(app):
 
     app.current_window = window1
     window1_on_gain_focus_handler.assert_called_once_with(window1)
+    window1_on_lose_focus_handler.assert_not_called()
+    window2_on_gain_focus_handler.assert_not_called()
+    window2_on_lose_focus_handler.assert_not_called()
+
+    window1_on_gain_focus_handler.reset_mock()
+    window1_on_lose_focus_handler.reset_mock()
+    window2_on_gain_focus_handler.reset_mock()
+    window2_on_lose_focus_handler.reset_mock()
 
     app.current_window = window2
     window2_on_gain_focus_handler.assert_called_once_with(window2)
