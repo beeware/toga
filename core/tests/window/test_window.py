@@ -584,74 +584,30 @@ def test_close_rejected_handler(window, app):
     on_close_handler.assert_called_once_with(window)
 
 
-def test_on_gain_focus(window):
-    assert window._on_gain_focus._raw is None
-
-    on_gain_focus_handler = Mock()
-    window.on_gain_focus = on_gain_focus_handler
-
-    assert window.on_gain_focus._raw == on_gain_focus_handler
-
-    window._impl.simulate_on_gain_focus()
-
-    on_gain_focus_handler.assert_called_once_with(window)
-
-
-def test_on_lose_focus(window):
-    assert window.on_lose_focus._raw is None
-
-    on_lose_focus_handler = Mock()
-    window.on_lose_focus = on_lose_focus_handler
-
-    assert window.on_lose_focus._raw == on_lose_focus_handler
-
-    window._impl.simulate_on_lose_focus()
-
-    on_lose_focus_handler.assert_called_once_with(window)
-
-
-def test_on_show(window):
-    assert window.on_show._raw is None
-
-    on_show_handler = Mock()
-    window.on_show = on_show_handler
-
-    assert window.on_show._raw == on_show_handler
-
-    window._impl.simulate_on_show()
-
-    on_show_handler.assert_called_once_with(window)
-
-
-def test_on_hide(window):
-    assert window.on_hide._raw is None
-
-    on_hide_handler = Mock()
-    window.on_hide = on_hide_handler
-
-    assert window.on_hide._raw == on_hide_handler
-
-    window._impl.simulate_on_hide()
-
-    on_hide_handler.assert_called_once_with(window)
-
-
 def test_focus_events(app):
     """The window can trigger on_gain_focus() and on_lose_focus()
     event handlers, when the window gains or loses input focus."""
     window1 = toga.Window()
     window1.show()
+    assert window1.on_gain_focus._raw is None
+    assert window1.on_lose_focus._raw is None
     window1_on_gain_focus_handler = Mock()
     window1_on_lose_focus_handler = Mock()
     window1.on_gain_focus = window1_on_gain_focus_handler
     window1.on_lose_focus = window1_on_lose_focus_handler
+    assert window1.on_gain_focus._raw == window1_on_gain_focus_handler
+    assert window1.on_lose_focus._raw == window1_on_lose_focus_handler
 
     window2 = toga.Window()
     window2.show()
+    assert window2.on_gain_focus._raw is None
+    assert window2.on_lose_focus._raw is None
     window2_on_gain_focus_handler = Mock()
     window2_on_lose_focus_handler = Mock()
     window2.on_gain_focus = window2_on_gain_focus_handler
     window2.on_lose_focus = window2_on_lose_focus_handler
+    assert window2.on_gain_focus._raw == window2_on_gain_focus_handler
+    assert window2.on_lose_focus._raw == window2_on_lose_focus_handler
 
     app.current_window = window1
     window1_on_gain_focus_handler.assert_called_once_with(window1)
@@ -669,10 +625,14 @@ def test_visibility_events(window):
     """The window can trigger on_show() and on_hide() event handlers,
     when the window is shown or hidden respectively."""
     window.show()
+    assert window.on_show._raw is None
+    assert window.on_hide._raw is None
     on_show_handler = Mock()
     on_hide_handler = Mock()
     window.on_show = on_show_handler
     window.on_hide = on_hide_handler
+    assert window.on_show._raw == on_show_handler
+    assert window.on_hide._raw == on_hide_handler
 
     window.hide()
     on_hide_handler.assert_called_once_with(window)
