@@ -68,9 +68,6 @@ class ScrollContainer(Widget):
 
         self.native.contentSize = NSMakeSize(width, height)
 
-    def set_background_color(self, value):
-        self.set_background_color_simple(value)
-
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
         self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
