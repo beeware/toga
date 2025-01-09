@@ -1,7 +1,10 @@
+import os
+
 import gi
 
-gi.require_version("Gdk", "3.0")
-gi.require_version("Gtk", "3.0")
+gtk_version = "4.0" if os.getenv("TOGA_GTK") == "4" else "3.0"
+gi.require_version("Gdk", gtk_version)
+gi.require_version("Gtk", gtk_version)
 
 from gi.events import GLibEventLoopPolicy  # noqa: E402, F401
 from gi.repository import (  # noqa: E402, F401
@@ -14,7 +17,17 @@ from gi.repository import (  # noqa: E402, F401
     Gtk,
 )
 
-if Gdk.Screen.get_default() is None:  # pragma: no cover
+GTK_VERSION: tuple[int, int, int] = (
+    Gtk.get_major_version(),
+    Gtk.get_minor_version(),
+    Gtk.get_micro_version(),
+)
+
+if GTK_VERSION < (4, 0, 0):
+    default_display = Gdk.Screen.get_default()
+else:
+    default_display = Gdk.Display.get_default()
+if default_display is None:  # pragma: no cover
     raise RuntimeError(
         "Cannot identify an active display. Is the `DISPLAY` "
         "environment variable set correctly?"

@@ -27,6 +27,7 @@ class WindowProbe(BaseProbe, DialogsMixin):
     supports_unminimize = True
     supports_minimize = True
     supports_placement = True
+    supports_as_image = True
 
     def __init__(self, app, window):
         self.app = app

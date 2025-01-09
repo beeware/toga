@@ -1,20 +1,25 @@
 from pathlib import Path
 
-from .libs import Gtk
+import toga
+
+from .libs import GTK_VERSION, Gtk
 
 
 class BaseDialog:
     def show(self, host_window, future):
-        self.future = future
+        if GTK_VERSION < (4, 0, 0):
+            self.future = future
 
-        # If this is a modal dialog, set the window as transient to the host window.
-        if host_window:
-            self.native.set_transient_for(host_window._impl.native)
+            # If this is a modal dialog, set the window as transient to the host window.
+            if host_window:
+                self.native.set_transient_for(host_window._impl.native)
+            else:
+                self.native.set_transient_for(None)
+
+            # Show the dialog.
+            self.native.show()
         else:
-            self.native.set_transient_for(None)
-
-        # Show the dialog.
-        self.native.show()
+            self.interface.factory.not_implemented("BaseDialog.show()")
 
 
 class MessageDialog(BaseDialog):
@@ -27,18 +32,22 @@ class MessageDialog(BaseDialog):
         **kwargs,
     ):
         super().__init__()
-        self.success_result = success_result
+        if GTK_VERSION < (4, 0, 0):
+            self.success_result = success_result
 
-        self.native = Gtk.MessageDialog(
-            flags=0,
-            message_type=message_type,
-            buttons=buttons,
-            text=title,
-        )
-        self.native.set_modal(True)
-        self.build_dialog(**kwargs)
+            self.native = Gtk.MessageDialog(
+                flags=0,
+                message_type=message_type,
+                buttons=buttons,
+                text=title,
+            )
+            self.native.set_modal(True)
+            self.build_dialog(**kwargs)
 
-        self.native.connect("response", self.gtk_response)
+            self.native.connect("response", self.gtk_response)
+
+        else:
+            toga.NotImplementedWarning("Dialog()")
 
     def build_dialog(self, message):
         self.native.format_secondary_text(message)

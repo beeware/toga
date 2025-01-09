@@ -6,7 +6,7 @@ import pytest
 
 import toga
 from toga_gtk.keys import gtk_accel, toga_key
-from toga_gtk.libs import IS_WAYLAND, Gdk, Gtk
+from toga_gtk.libs import GTK_VERSION, IS_WAYLAND, Gdk, Gtk
 
 from .dialogs import DialogsMixin
 from .probe import BaseProbe
@@ -16,9 +16,7 @@ class AppProbe(BaseProbe, DialogsMixin):
     supports_key = True
     supports_key_mod3 = True
     # Gtk 3.24.41 ships with Ubuntu 24.04 where present() works on Wayland
-    supports_current_window_assignment = not (
-        IS_WAYLAND and BaseProbe.GTK_VERSION < (3, 24, 41)
-    )
+    supports_current_window_assignment = not (IS_WAYLAND and GTK_VERSION < (3, 24, 41))
 
     def __init__(self, app):
         super().__init__()
@@ -47,6 +45,8 @@ class AppProbe(BaseProbe, DialogsMixin):
         pytest.skip("Cursor visibility not implemented on GTK")
 
     def assert_app_icon(self, icon):
+        if GTK_VERSION >= (4, 0, 0):
+            pytest.skip("Checking app icon not implemented in GTK4")
         for window in self.app.windows:
             # We have no real way to check we've got the right icon; use pixel peeping
             # as a guess. Construct a PIL image from the current icon.

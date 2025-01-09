@@ -3,7 +3,7 @@ from travertino.size import at_least
 from toga.keys import Key
 from toga_gtk.keys import toga_key
 
-from ..libs import Gtk, gtk_text_align
+from ..libs import GTK_VERSION, Gtk, gtk_text_align
 from .base import Widget
 
 
@@ -11,21 +11,39 @@ class TextInput(Widget):
     def create(self):
         self.native = Gtk.Entry()
         self.native.connect("changed", self.gtk_on_change)
-        self.native.connect("focus-in-event", self.gtk_focus_in_event)
-        self.native.connect("focus-out-event", self.gtk_focus_out_event)
-        self.native.connect("key-press-event", self.gtk_key_press_event)
 
-    def gtk_on_change(self, entry):
-        self.interface._value_changed()
+        if GTK_VERSION < (4, 0, 0):
+            self.native.connect("focus-in-event", self.gtk_focus_in_event)
+            self.native.connect("focus-out-event", self.gtk_focus_out_event)
+            self.native.connect("key-press-event", self.gtk_key_press_event)
+        else:
+            focus_controller = Gtk.EventControllerFocus()
+            focus_controller.connect("enter", self.gtk_focus_in_event)
+            focus_controller.connect("leave", self.gtk_focus_out_event)
 
-    def gtk_focus_in_event(self, entry, user_data):
-        self.interface.on_gain_focus()
+            key_press_controller = Gtk.EventControllerKey()
+            key_press_controller.connect("key-pressed", self.gtk_key_press_event)
 
-    def gtk_focus_out_event(self, entry, user_data):
+            self.native.add_controller(focus_controller)
+            self.native.add_controller(key_press_controller)
+
+    def gtk_on_change(self, *_args):
+        if GTK_VERSION < (4, 0, 0):
+            self.interface._value_changed()
+        else:
+            self.interface._value_changed(self.interface)
+
+    def gtk_focus_in_event(self, *_args):
+        if GTK_VERSION < (4, 0, 0):
+            self.interface.on_gain_focus()
+        else:
+            self.interface.on_gain_focus(self.interface)
+
+    def gtk_focus_out_event(self, *_args):
         self.interface.on_lose_focus()
 
-    def gtk_key_press_event(self, entry, user_data):
-        key_pressed = toga_key(user_data)
+    def gtk_key_press_event(self, _, key_val, *_args):
+        key_pressed = toga_key(key_val)
         if key_pressed and key_pressed["key"] in {Key.ENTER, Key.NUMPAD_ENTER}:
             self.interface.on_confirm()
 
