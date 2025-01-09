@@ -70,15 +70,15 @@ class TogaWindow(NSWindow):
 
     @objc_method
     def windowDidBecomeMain_(self, notification):
-        self.impl.interface.on_gain_focus()
+        self.interface.on_gain_focus()
 
     @objc_method
     def windowDidResignMain_(self, notification):
-        self.impl.interface.on_lose_focus()
+        self.interface.on_lose_focus()
 
     @objc_method
     def windowDidMiniaturize_(self, notification) -> None:
-        self.impl.interface.on_hide()
+        self.interface.on_hide()
         if (
             self.impl._pending_state_transition
             and self.impl._pending_state_transition != WindowState.MINIMIZED
@@ -89,7 +89,7 @@ class TogaWindow(NSWindow):
 
     @objc_method
     def windowDidDeminiaturize_(self, notification) -> None:
-        self.impl.interface.on_show()
+        self.interface.on_show()
         self.impl._apply_state(self.impl._pending_state_transition)
 
     @objc_method
@@ -267,8 +267,14 @@ class Window:
         pass
 
     def show(self):
+        previously_visible = bool(self.native.isVisible)
+        previous_state = self.get_window_state(in_progress_state=True)
         self.native.makeKeyAndOrderFront(None)
-        self.interface.on_show()
+        # Avoid triggering the event here, as makeKeyAndOrderFront() also
+        # deminiaturizes the window, which will trigger windowDidDeminiaturize_.
+        # This could lead to double triggering, so prevent it here.
+        if previously_visible or previous_state != WindowState.MINIMIZED:
+            self.interface.on_show()
 
     ######################################################################
     # Window content and resources
@@ -344,8 +350,13 @@ class Window:
     ######################################################################
 
     def hide(self):
+        previously_visible = bool(self.native.isVisible)
+        previous_state = self.get_window_state(in_progress_state=True)
         self.native.orderOut(self.native)
-        self.interface.on_hide()
+        # Avoid triggering the event if the window is already in a
+        # not-visible-user(minimized or hidden) state.
+        if previously_visible or previous_state != WindowState.MINIMIZED:
+            self.interface.on_hide()
 
     def get_visible(self):
         return (
