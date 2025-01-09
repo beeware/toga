@@ -19,3 +19,6 @@ class WebViewProbe(SimpleProbe):
         # put 2 WKContentViews on the page at once.
         current = self.widget.window._impl.native.firstResponder()
         return current.objc_class.name == "WKContentView"
+
+    def extract_cookie(self, cookie_jar, name):
+        return next((c for c in cookie_jar if c.name == name), None)

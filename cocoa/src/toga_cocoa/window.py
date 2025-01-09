@@ -172,10 +172,6 @@ class TogaWindow(NSWindow):
         except KeyError:  # Separator items
             pass
 
-        # Prevent the toolbar item from being deallocated when
-        # no Python references remain
-        native.retain()
-        native.autorelease()
         return native
 
     @objc_method
@@ -229,9 +225,9 @@ class Window:
 
         # Cocoa releases windows when they are closed; this causes havoc with
         # Toga's widget cleanup because the ObjC runtime thinks there's no
-        # references to the object left. Add a reference that can be released
-        # in response to the close.
-        self.native.retain()
+        # references to the object left. Explicitly prevent this and let Rubicon
+        # manage the release when no Python references are left.
+        self.native.releasedWhenClosed = False
 
         # Pending Window state transition variable:
         self._pending_state_transition = None
@@ -249,9 +245,6 @@ class Window:
         # window.
         self.native.wantsLayer = True
         self.container.native.backgroundColor = self.native.backgroundColor
-
-    def __del__(self):
-        self.native.release()
 
     ######################################################################
     # Window properties
@@ -523,7 +516,6 @@ class MainWindow(Window):
 
     def __del__(self):
         self.purge_toolbar()
-        super().__del__()
 
     def create_menus(self):
         # macOS doesn't have window-level menus
@@ -570,4 +562,3 @@ class MainWindow(Window):
 
             for item_native in dead_items:
                 cmd._impl.native.remove(item_native)
-                item_native.release()

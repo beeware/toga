@@ -28,6 +28,7 @@ clr.AddReference(str(WEBVIEW2_DIR / "Microsoft.Web.WebView2.Core.dll"))
 clr.AddReference(str(WEBVIEW2_DIR / "Microsoft.Web.WebView2.WinForms.dll"))
 
 from Microsoft.Web.WebView2.Core import (  # noqa: F401, E402
+    CoreWebView2Cookie,
     WebView2RuntimeNotFoundException,
 )
 from Microsoft.Web.WebView2.WinForms import (  # noqa: F401, E402

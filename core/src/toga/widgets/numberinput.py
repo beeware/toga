@@ -108,8 +108,6 @@ class NumberInput(Widget):
         :param on_change: A handler that will be invoked when the value of the widget
             changes.
         """
-        super().__init__(id=id, style=style)
-
         # The initial setting of min requires calling get_value(),
         # which in turn interrogates min. Prime those values with
         # an empty starting value
@@ -117,6 +115,8 @@ class NumberInput(Widget):
         self._max: Decimal | None = None
 
         self.on_change = None
+
+        super().__init__(id=id, style=style)
 
         self.readonly = readonly
         self.step = step

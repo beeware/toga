@@ -19,7 +19,7 @@ async def widget():
 
 
 test_cleanup = build_cleanup_test(
-    toga.ImageView, kwargs={"image": "resources/sample.png"}, xfail_platforms=("iOS",)
+    toga.ImageView, kwargs={"image": "resources/sample.png"}
 )
 
 

@@ -12,9 +12,15 @@ from toga_iOS.libs import (
 from toga_iOS.widgets.base import Widget
 
 
+class TogaBaseTextField(UITextField):
+    interface = objc_property(object, weak=True)
+    impl = objc_property(object, weak=True)
+
+
 class TogaPickerView(UIPickerView):
     interface = objc_property(object, weak=True)
     impl = objc_property(object, weak=True)
+    native = objc_property(object, weak=True)
 
     @objc_method
     def numberOfComponentsInPickerView_(self, pickerView) -> int:
@@ -53,7 +59,7 @@ class TogaPickerView(UIPickerView):
 
 class Selection(Widget):
     def create(self):
-        self.native = UITextField.alloc().init()
+        self.native = TogaBaseTextField.alloc().init()
         self.native.interface = self.interface
         self.native.impl = self
         self.native.tintColor = UIColor.clearColor
@@ -82,9 +88,6 @@ class Selection(Widget):
 
     def set_color(self, color):
         self.native.textColor = native_color(color)
-
-    def set_background_color(self, color):
-        self.set_background_color_simple(color)
 
     def set_font(self, font):
         self.native.font = font._impl.native
