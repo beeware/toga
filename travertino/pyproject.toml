@@ -1,0 +1,82 @@
+[build-system]
+requires = [
+    "setuptools==75.6.0",
+    "setuptools_scm==8.1.0",
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+dynamic = ["version"]
+name = "travertino"
+description = "A set of constants and base classes for describing user interface layouts."
+readme = "README.rst"
+requires-python = ">= 3.9"
+license.text = "New BSD"
+authors = [
+    {name="Russell Keith-Magee", email="russell@keith-magee.com"},
+]
+maintainers = [
+    {name="BeeWare Team", email="team@beeware.org"},
+]
+keywords = [
+    "css",
+    "box model",
+    "layout",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: BSD License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: Software Development",
+    "Topic :: Software Development :: User Interfaces",
+]
+
+[project.optional-dependencies]
+# Extras used by developers *of* Travertino are pinned to specific versions to
+# ensure environment consistency.
+dev = [
+    "pre-commit == 4.0.1",
+    "pytest == 8.3.4",
+    "setuptools_scm == 8.1.0",
+    "tox == 4.23.2",
+]
+
+[project.urls]
+Homepage = "https://beeware.org/travertino"
+Funding = "https://beeware.org/contributing/membership/"
+# Documentation = "https://travertino.readthedocs.io/en/latest/"
+Tracker = "https://github.com/beeware/travertino/issues"
+Source = "https://github.com/beeware/travertino"
+
+[tool.isort]
+profile = "black"
+split_on_trailing_comma = true
+combine_as_imports = true
+
+[tool.setuptools_scm]
+# To enable SCM versioning, we need an empty tool configuration for setuptools_scm
+
+[tool.towncrier]
+directory = "changes"
+package = "travertino"
+package_dir = "src"
+filename = "CHANGELOG.rst"
+title_format = "{version} ({project_date})"
+issue_format = "`#{issue} <https://github.com/beeware/travertino/issues/{issue}>`_"
+template = "changes/template.rst"
+type = [
+    { directory = "feature", name = "Features", showcontent = true },
+    { directory = "bugfix", name = "Bugfixes", showcontent = true },
+    { directory = "removal", name = "Backward Incompatible Changes", showcontent = true },
+    { directory = "doc", name = "Documentation", showcontent = true },
+    { directory = "misc", name = "Misc", showcontent = false },
+]
