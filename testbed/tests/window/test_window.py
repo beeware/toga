@@ -11,6 +11,8 @@ from toga.colors import CORNFLOWERBLUE, GOLDENROD, REBECCAPURPLE
 from toga.constants import WindowState
 from toga.style.pack import COLUMN, Pack
 
+from ..assertions import assert_window_event_triggered
+
 
 def window_probe(app, window):
     module = import_module("tests_backend.window")
@@ -923,7 +925,7 @@ else:
         ],
     )
     async def test_focus_events(
-        main_window, main_window_probe, second_window, second_window_probe
+        app, main_window, main_window_probe, second_window, second_window_probe
     ):
         """The window can trigger on_gain_focus() and on_lose_focus()
         event handlers, when the window gains or loses input focus."""
@@ -931,7 +933,6 @@ else:
         main_window_on_lose_focus_handler = Mock()
         main_window.on_gain_focus = main_window_on_gain_focus_handler
         main_window.on_lose_focus = main_window_on_lose_focus_handler
-
         second_window.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
         second_window.show()
         second_window_on_gain_focus_handler = Mock()
@@ -939,18 +940,19 @@ else:
         second_window.on_gain_focus = second_window_on_gain_focus_handler
         second_window.on_lose_focus = second_window_on_lose_focus_handler
 
-        main_window.app.current_window = main_window
+        app.current_window = main_window
         await main_window_probe.wait_for_window("Setting main window as current window")
-        main_window_on_gain_focus_handler.assert_called_once_with(main_window)
-        second_window_on_lose_focus_handler.assert_called_once_with(second_window)
+        assert app.current_window == main_window
+        assert_window_event_triggered(main_window, main_window.on_gain_focus)
+        assert_window_event_triggered(second_window, second_window.on_lose_focus)
 
-        main_window.app.current_window = second_window
+        app.current_window = second_window
         await second_window_probe.wait_for_window(
             "Setting second window as current window"
         )
-        assert main_window.app.current_window == second_window
-        main_window_on_lose_focus_handler.assert_called_once_with(main_window)
-        second_window_on_gain_focus_handler.assert_called_once_with(second_window)
+        assert app.current_window == second_window
+        assert_window_event_triggered(main_window, main_window.on_lose_focus)
+        assert_window_event_triggered(second_window, second_window.on_gain_focus)
 
     @pytest.mark.parametrize(
         "second_window_class, second_window_kwargs",
@@ -973,11 +975,11 @@ else:
 
         second_window.hide()
         await second_window_probe.wait_for_window("Hiding the MainWindow")
-        on_hide_handler.assert_called_once_with(second_window)
+        assert_window_event_triggered(second_window, second_window.on_hide)
 
         second_window.show()
         await second_window_probe.wait_for_window("Showing the MainWindow")
-        on_show_handler.assert_called_once_with(second_window)
+        assert_window_event_triggered(second_window, second_window.on_show)
 
     @pytest.mark.parametrize(
         "state",
@@ -1021,13 +1023,13 @@ else:
         await second_window_probe.wait_for_window(
             "Setting to MINIMIZED state", state=WindowState.MINIMIZED
         )
-        on_hide_handler.assert_called_once_with(second_window)
+        assert_window_event_triggered(second_window, second_window.on_hide)
 
         second_window.state = state
         await second_window_probe.wait_for_window(
             f"Setting to final state of {state}", state=state
         )
-        on_show_handler.assert_called_once_with(second_window)
+        assert_window_event_triggered(second_window, second_window.on_show)
 
     @pytest.mark.parametrize(
         "second_window_class, second_window_kwargs",
