@@ -1,13 +1,17 @@
 from travertino.size import at_least
 
 from ..libs import Gtk, gtk_text_align
+from ..libs.utils import is_gtk3
 from .base import Widget
 
 
 class Label(Widget):
     def create(self):
         self.native = Gtk.Label()
-        self.native.set_line_wrap(False)
+        if is_gtk3():
+            self.native.set_line_wrap(False)
+        else:
+            self.native.set_wrap(False)
 
     def set_text_align(self, value):
         xalign, justify = gtk_text_align(value)

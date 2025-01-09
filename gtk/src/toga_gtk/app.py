@@ -14,6 +14,7 @@ from .libs import (
     GLibEventLoopPolicy,
     Gtk,
 )
+from .libs.utils import is_gtk3
 from .screens import Screen as ScreenImpl
 
 
@@ -34,7 +35,7 @@ class App:
         # Stimulate the build of the app
         self.native = Gtk.Application(
             application_id=self.interface.app_id,
-            flags=Gio.ApplicationFlags.FLAGS_NONE,
+            flags=Gio.ApplicationFlags.DEFAULT_FLAGS,
         )
         self.native_about_dialog = None
 
@@ -53,12 +54,22 @@ class App:
 
         # Set any custom styles
         css_provider = Gtk.CssProvider()
-        css_provider.load_from_data(TOGA_DEFAULT_STYLES)
 
-        context = Gtk.StyleContext()
-        context.add_provider_for_screen(
-            Gdk.Screen.get_default(), css_provider, Gtk.STYLE_PROVIDER_PRIORITY_USER
-        )
+        if is_gtk3():
+            css_provider.load_from_data(TOGA_DEFAULT_STYLES)
+            context = Gtk.StyleContext()
+            context.add_provider_for_screen(
+                Gdk.Screen.get_default(), css_provider, Gtk.STYLE_PROVIDER_PRIORITY_USER
+            )
+        else:
+            if Gtk.get_minor_version() >= 12:
+                css_provider.load_from_string(TOGA_DEFAULT_STYLES)
+            elif Gtk.get_minor_version() > 8:
+                css_provider.load_from_data(
+                    TOGA_DEFAULT_STYLES, len(TOGA_DEFAULT_STYLES)
+                )
+            else:
+                css_provider.load_from_data(TOGA_DEFAULT_STYLES.encode("utf-8"))
 
     ######################################################################
     # Commands and menus

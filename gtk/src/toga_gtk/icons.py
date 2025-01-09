@@ -3,7 +3,8 @@ from pathlib import Path
 
 import toga
 
-from .libs import GdkPixbuf, GLib
+from .libs import Gdk, GdkPixbuf, GLib, Gtk
+from .libs.utils import is_gtk3
 
 
 class Icon:
@@ -32,9 +33,14 @@ class Icon:
         # Preload all the required icon sizes
         try:
             for size, path in self.paths.items():
-                native = GdkPixbuf.Pixbuf.new_from_file(str(path)).scale_simple(
-                    size, size, GdkPixbuf.InterpType.BILINEAR
-                )
+                if is_gtk3():
+                    native = GdkPixbuf.Pixbuf.new_from_file(str(path)).scale_simple(
+                        size, size, GdkPixbuf.InterpType.BILINEAR
+                    )
+                else:
+                    native = Gtk.Image.new_from_paintable(
+                        Gdk.Texture.new_from_filename(str(path))
+                    )
                 self._native[size] = native
         except GLib.GError:
             raise ValueError(f"Unable to load icon from {path}")
@@ -43,11 +49,14 @@ class Icon:
         try:
             return self._native[size]
         except KeyError:
-            # self._native will have at least one entry, and it will have been populated
-            # in reverse size order, so the first value returned will be the largest
-            # size discovered.
-            native = self._native[next(iter(self._native))].scale_simple(
-                size, size, GdkPixbuf.InterpType.BILINEAR
-            )
-            self._native[size] = native
-            return native
+            if is_gtk3():
+                # self._native will have at least one entry, and it will have been
+                # populated in reverse size order, so the first value returned will
+                # be the largest size discovered.
+                native = self._native[next(iter(self._native))].scale_simple(
+                    size, size, GdkPixbuf.InterpType.BILINEAR
+                )
+                self._native[size] = native
+                return native
+            else:
+                return None
