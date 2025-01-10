@@ -3,7 +3,6 @@ from unittest.mock import ANY
 
 import PIL.Image
 import pytest
-from travertino.size import at_least
 
 import toga
 from toga.style.pack import Pack
@@ -13,6 +12,7 @@ from toga_dummy.utils import (
     assert_action_performed,
     assert_action_performed_with,
 )
+from travertino.size import at_least
 
 
 @pytest.fixture

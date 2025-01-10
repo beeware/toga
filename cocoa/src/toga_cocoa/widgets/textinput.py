@@ -1,5 +1,3 @@
-from travertino.size import at_least
-
 from toga.colors import TRANSPARENT
 from toga.constants import LEFT, RIGHT
 from toga_cocoa.colors import native_color
@@ -20,6 +18,7 @@ from toga_cocoa.libs import (
     objc_property,
     send_super,
 )
+from travertino.size import at_least
 
 from .base import Widget
 

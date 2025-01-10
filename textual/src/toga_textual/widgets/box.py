@@ -1,7 +1,6 @@
-from travertino.size import at_least
-
 from textual.containers import Container as TextualContainer
 from toga.style.pack import ROW
+from travertino.size import at_least
 
 from .base import Widget
 

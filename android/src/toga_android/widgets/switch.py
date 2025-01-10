@@ -3,6 +3,7 @@ from decimal import ROUND_UP
 from android.view import View
 from android.widget import CompoundButton, Switch as A_Switch
 from java import dynamic_proxy
+
 from travertino.size import at_least
 
 from .label import TextViewWidget
