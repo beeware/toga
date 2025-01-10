@@ -1025,6 +1025,15 @@ else:
         assert_window_event_triggered(second_window, second_window.on_show)
 
     @pytest.mark.parametrize(
+        "visible_state",
+        [
+            WindowState.NORMAL,
+            WindowState.MAXIMIZED,
+            WindowState.FULLSCREEN,
+            WindowState.PRESENTATION,
+        ],
+    )
+    @pytest.mark.parametrize(
         "second_window_class, second_window_kwargs",
         [
             (
@@ -1034,7 +1043,7 @@ else:
         ],
     )
     async def test_visibility_events_not_double_triggered(
-        second_window, second_window_probe
+        second_window, second_window_probe, visible_state
     ):
         """The window does not double trigger the on_hide() amd on_show() events."""
         if not second_window_probe.supports_minimize:
@@ -1052,8 +1061,8 @@ else:
         )
         assert_window_event_triggered(second_window, second_window.on_hide)
 
-        # The on_hide() event would not be triggered since the window was already in a
-        # not-visible-user(minimized or hidden) state.
+        # The on_hide() event would not be triggered since the window is already in a
+        # not-visible-to-user(i.e., in minimized or hidden) state.
         second_window.hide()
         await second_window_probe.wait_for_window(f"Hiding {second_window.title}")
         assert_window_event_triggered(second_window, expected_event=None)
@@ -1061,6 +1070,14 @@ else:
         second_window.show()
         await second_window_probe.wait_for_window(f"Showing {second_window.title}")
         assert_window_event_triggered(second_window, second_window.on_show)
+
+        # The on_show() event would not be triggered since the window is already in a
+        # visible-to-user(i.e., not in minimized or hidden) state.
+        second_window.state = visible_state
+        await second_window_probe.wait_for_window(
+            f"Setting to {visible_state} state", state=visible_state
+        )
+        assert_window_event_triggered(second_window, expected_event=None)
 
     @pytest.mark.parametrize(
         "second_window_class, second_window_kwargs",

@@ -30,6 +30,8 @@ class Window:
             "delete-event",
             self.gtk_delete_event,
         )
+        self.native.connect("show", self.gtk_show)
+        self.native.connect("hide", self.gtk_hide)
         self.native.connect("window-state-event", self.gtk_window_state_event)
         self.native.connect("focus-in-event", self.gtk_focus_in_event)
         self.native.connect("focus-out-event", self.gtk_focus_out_event)
@@ -38,6 +40,8 @@ class Window:
         self._in_presentation = False
         # Pending Window state transition variable:
         self._pending_state_transition = None
+
+        self._previously_visible = False
 
         self.native.set_default_size(size[0], size[1])
 
@@ -70,15 +74,34 @@ class Window:
     # Native event handlers
     ######################################################################
 
+    def gtk_show(self, widget):
+        if self.get_window_state() != WindowState.MINIMIZED:
+            self.interface.on_show()
+
+    def gtk_hide(self, widget):
+        if self.get_window_state() != WindowState.MINIMIZED:
+            self.interface.on_hide()
+
     def gtk_window_state_event(self, widget, event):
         previous_state = self.get_window_state()
         # Get the window state flags
         self._window_state_flags = event.new_window_state
         current_state = self.get_window_state()
+        currently_visible = self.get_visible()
 
-        # Wayland doesn't support detection of WindowState.MINIMIZED, so the
-        # on_show() and on_hide() events won't be triggered on wayland compositor.
-        if previous_state != current_state:  # pragma: no-cover-if-linux-wayland
+        visibility_change = self._previously_visible != currently_visible
+        state_change = previous_state != current_state
+
+        # Calling GtkWindow.hide() and GtkWindow.show() automatically triggers
+        # the window-state-event along with gtk-show and gtk-hide. To prevent
+        # redundant visibility events, detect visibility changes and ignore
+        # these cases here.
+
+        # Wayland doesn't support detecting WindowState.MINIMIZED, so on_show()
+        # and on_hide() events won't be triggered when the window is minimized
+        # or un-minimized on wayland compositor.
+
+        if state_change and not visibility_change:  # pragma: no-cover-if-linux-wayland
             if previous_state == WindowState.MINIMIZED and current_state in {
                 WindowState.NORMAL,
                 WindowState.MAXIMIZED,
@@ -166,8 +189,8 @@ class Window:
         self.native.set_icon(app.interface.icon._impl.native(72))
 
     def show(self):
+        self._previously_visible = self.get_visible()
         self.native.show_all()
-        self.interface.on_show()
 
     ######################################################################
     # Window content and resources
@@ -212,8 +235,8 @@ class Window:
         return self.native.get_property("visible")
 
     def hide(self):
+        self._previously_visible = self.get_visible()
         self.native.hide()
-        self.interface.on_hide()
 
     ######################################################################
     # Window state
