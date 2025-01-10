@@ -40,16 +40,6 @@ classifiers = [
     "Topic :: Software Development :: User Interfaces",
 ]
 
-[project.optional-dependencies]
-# Extras used by developers *of* Travertino are pinned to specific versions to
-# ensure environment consistency.
-dev = [
-    "pre-commit == 4.0.1",
-    "pytest == 8.3.4",
-    "setuptools_scm == 8.1.0",
-    "tox == 4.23.2",
-]
-
 [project.urls]
 Homepage = "https://beeware.org/travertino"
 Funding = "https://beeware.org/contributing/membership/"
@@ -63,20 +53,19 @@ split_on_trailing_comma = true
 combine_as_imports = true
 
 [tool.setuptools_scm]
-# To enable SCM versioning, we need an empty tool configuration for setuptools_scm
+root = ".."
 
-[tool.towncrier]
-directory = "changes"
-package = "travertino"
-package_dir = "src"
-filename = "CHANGELOG.rst"
-title_format = "{version} ({project_date})"
-issue_format = "`#{issue} <https://github.com/beeware/travertino/issues/{issue}>`_"
-template = "changes/template.rst"
-type = [
-    { directory = "feature", name = "Features", showcontent = true },
-    { directory = "bugfix", name = "Bugfixes", showcontent = true },
-    { directory = "removal", name = "Backward Incompatible Changes", showcontent = true },
-    { directory = "doc", name = "Documentation", showcontent = true },
-    { directory = "misc", name = "Misc", showcontent = false },
+[tool.coverage.run]
+parallel = true
+branch = true
+relative_files = true
+
+# See notes in the root pyproject.toml file.
+source = ["src"]
+source_pkgs = ["travertino"]
+
+[tool.coverage.paths]
+source = [
+    "src/travertino",
+    "**/travertino",
 ]
