@@ -1,8 +1,7 @@
 from unittest.mock import Mock
 
-from travertino.node import Node
-
 from toga.style.applicator import TogaApplicator
+from travertino.node import Node
 
 
 class ExampleNode(Node):
@@ -11,19 +10,6 @@ class ExampleNode(Node):
         self._children = None
 
         super().__init__(style=style, children=children, applicator=TogaApplicator())
-
-        ##############################################
-        # Backwards compatibility for Travertino 0.3.0
-        ##############################################
-
-        if not hasattr(self.applicator, "node"):
-            self.applicator.node = self
-            self.style._applicator = self.applicator
-            self.style.reapply()
-
-        #############################
-        # End backwards compatibility
-        #############################
 
         self.name = name
         self._impl = Mock()

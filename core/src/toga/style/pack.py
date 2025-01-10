@@ -344,19 +344,7 @@ class Pack(BaseStyle):
                 # so perform a refresh.
                 self._applicator.refresh()
 
-    def layout(self, viewport: Any, _deprecated_usage=None) -> None:
-        ######################################################################
-        # 2024-12: Backwards compatibility for Travertino 0.3.0
-        ######################################################################
-
-        if _deprecated_usage is not None:
-            # Was called with (self, viewport)
-            viewport = _deprecated_usage
-
-        ######################################################################
-        # End backwards compatibility
-        ######################################################################
-
+    def layout(self, viewport: Any) -> None:
         # self._debug("=" * 80)
         # self._debug(
         #     f"Layout root {node}, available {viewport.width}x{viewport.height}"

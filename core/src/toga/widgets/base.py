@@ -4,11 +4,10 @@ from builtins import id as identifier
 from typing import TYPE_CHECKING, Any, TypeVar
 from warnings import warn
 
-from travertino.declaration import BaseStyle
-from travertino.node import Node
-
 from toga.platform import get_platform_factory
 from toga.style import Pack, TogaApplicator
+from travertino.declaration import BaseStyle
+from travertino.node import Node
 
 if TYPE_CHECKING:
     from toga.app import App
@@ -64,27 +63,6 @@ class Widget(Node):
         #############################
 
         self.applicator = TogaApplicator()
-
-        ##############################################
-        # Backwards compatibility for Travertino 0.3.0
-        ##############################################
-
-        # The below if block will execute when using Travertino 0.3.0. For future
-        # versions of Travertino, these assignments (and the reapply) will already have
-        # been handled "automatically" by assigning the applicator above; in that case,
-        # we want to avoid doing a second, redundant style reapplication.
-
-        # This whole section can be removed as soon as there's a newer version of
-        # Travertino to set as Toga's minimum requirement.
-
-        if not hasattr(self.applicator, "node"):  # pragma: no cover
-            self.applicator.node = self
-            self.style._applicator = self.applicator
-            self.style.reapply()
-
-        #############################
-        # End backwards compatibility
-        #############################
 
     def _create(self) -> Any:
         """Create a platform-specific implementation of this widget.
