@@ -77,10 +77,18 @@ class Window:
     def gtk_show(self, widget):
         if self.get_window_state() != WindowState.MINIMIZED:
             self.interface.on_show()
+        # Wayland doesn't support detecting WindowState.MINIMIZED, so
+        # this branch will never be reached on wayland.
+        else:  # pragma: no-cover-if-linux-wayland
+            pass
 
     def gtk_hide(self, widget):
         if self.get_window_state() != WindowState.MINIMIZED:
             self.interface.on_hide()
+        # Wayland doesn't support detecting WindowState.MINIMIZED, so
+        # this branch will never be reached on wayland.
+        else:  # pragma: no-cover-if-linux-wayland
+            pass
 
     def gtk_window_state_event(self, widget, event):
         previous_state = self.get_window_state()
