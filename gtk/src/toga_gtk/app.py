@@ -1,6 +1,8 @@
 import asyncio
 import signal
 
+from jeepney.io.asyncio import DBusRouter, open_dbus_router
+
 from toga.app import App as toga_App
 from toga.command import Separator
 
@@ -59,6 +61,20 @@ class App:
         context.add_provider_for_screen(
             Gdk.Screen.get_default(), css_provider, Gtk.STYLE_PROVIDER_PRIORITY_USER
         )
+
+    _dbus_router: None | DBusRouter = None
+
+    async def dbus_router(self):
+        """Retrieve the ``DBusRouter`` to use for D-Bus communication.
+
+        This method caches the ``DBusRouter`` to avoid creating multiple concurrent
+        connections when. The router must be manually closed, which is handled in
+        :ref:`~.App.exit`."""
+        if self._dbus_router is None:
+            self._dbus_router = open_dbus_router()
+            await self._dbus_router.__aenter__()
+
+        return self._dbus_router
 
     ######################################################################
     # Commands and menus
@@ -145,6 +161,10 @@ class App:
     # We can't call this under test conditions, because it would kill the test harness
     def exit(self):  # pragma: no cover
         self.native.quit()
+
+        # Is this the right way to shut down?
+        if self._dbus_router is not None:
+            asyncio.create_task(self._dbus_router.__aexit__(None, None, None))
 
     def main_loop(self):
         # Modify signal handlers to make sure Ctrl-C is caught and handled.
