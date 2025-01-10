@@ -132,7 +132,7 @@ class Window(Container, Scalable):
         if self.native.Visible and not self._is_previously_shown:
             self._is_previously_shown = True
             self.interface.on_show()
-        else:
+        elif not self.native.Visible and self._is_previously_shown:
             self._is_previously_shown = False
             self.interface.on_hide()
 
