@@ -674,6 +674,41 @@ def test_visibility_events_on_window_state_change(window, state):
     assert_window_event_triggered(window, window.on_show)
 
 
+@pytest.mark.parametrize(
+    "visible_state",
+    [
+        WindowState.NORMAL,
+        WindowState.MAXIMIZED,
+        WindowState.FULLSCREEN,
+        WindowState.PRESENTATION,
+    ],
+)
+def test_visibility_events_not_double_triggered(window, visible_state):
+    """The window does not double trigger the on_hide() amd on_show() events."""
+    window.show()
+    window.on_show = Mock()
+    window.on_hide = Mock()
+
+    window.state = WindowState.MINIMIZED
+    assert_window_event_triggered(window, window.on_hide)
+
+    # The on_hide() event would not be triggered since the window is already in a
+    # not-visible-to-user(i.e., in minimized or hidden) state.
+    window.hide()
+    assert_window_event_triggered(window, expected_event=None)
+
+    # The on_show() event would not be triggered since the window is already in a
+    # not-visible-to-user(i.e., in minimized or hidden) state, as on the dummy backend
+    # show() does not change the window state.
+    window.show()
+    assert_window_event_triggered(window, expected_event=None)
+
+    # The on_show() event would  be triggered since the window state is change to a
+    # visible-to-user(i.e., not in minimized or hidden) state.
+    window.state = visible_state
+    assert_window_event_triggered(window, window.on_show)
+
+
 def test_as_image(window):
     """A window can be captured as an image."""
     image = window.as_image()

@@ -1024,18 +1024,6 @@ else:
         )
         assert_window_event_triggered(second_window, second_window.on_show)
 
-        second_window.state = WindowState.MINIMIZED
-        await second_window_probe.wait_for_window(
-            "Setting to MINIMIZED state", state=WindowState.MINIMIZED
-        )
-        assert_window_event_triggered(second_window, second_window.on_hide)
-
-        # The on_show() event would not be triggered since the window is already in a
-        # not-visible-to-user(i.e., in minimized) state.
-        second_window.show()
-        await second_window_probe.wait_for_window(f"Showing {second_window.title}")
-        assert_window_event_triggered(second_window, expected_event=None)
-
     @pytest.mark.parametrize(
         "visible_state",
         [

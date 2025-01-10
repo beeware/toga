@@ -83,7 +83,8 @@ class Window(LoggedObject):
     def show(self):
         self._action("show")
         self._set_value("visible", True)
-        self.interface.on_show()
+        if self.get_window_state() != WindowState.MINIMIZED:
+            self.interface.on_show()
 
     ######################################################################
     # Window content and resources
@@ -128,7 +129,8 @@ class Window(LoggedObject):
     def hide(self):
         self._action("hide")
         self._set_value("visible", False)
-        self.interface.on_hide()
+        if self.get_window_state() != WindowState.MINIMIZED:
+            self.interface.on_hide()
 
     ######################################################################
     # Window state
