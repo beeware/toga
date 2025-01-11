@@ -1055,6 +1055,9 @@ else:
         second_window.on_show = Mock()
         second_window.on_hide = Mock()
 
+        # visible-to-user = not  minimized or not hidden
+        # not-visible-to-user state = minimized or hidden
+
         second_window.state = WindowState.MINIMIZED
         await second_window_probe.wait_for_window(
             "Setting to MINIMIZED state", state=WindowState.MINIMIZED
@@ -1069,15 +1072,68 @@ else:
 
         second_window.show()
         await second_window_probe.wait_for_window(f"Showing {second_window.title}")
-        assert_window_event_triggered(second_window, second_window.on_show)
+        if second_window_probe.show_unminimizes_window:  # For cocoa
+            # Since the window was in minimized and hidden state, i.e., not-visible-
+            # to-user. So, when window.show() is called (which also un-minimizes the
+            # window), the on_show() event would be triggered.
+            assert_window_event_triggered(second_window, second_window.on_show)
+        else:  # For winforms & gtk
+            # Since the window was in minimized and hidden state, i.e., not-visible-
+            # to-user. So, when window.show() is called (which doesn't un-minimize the
+            # window), the on_show() event would not be triggered.
+            assert_window_event_triggered(second_window, expected_event=None)
 
-        # The on_show() event would not be triggered since the window is already in a
-        # visible-to-user(i.e., not in minimized or hidden) state.
         second_window.state = visible_state
         await second_window_probe.wait_for_window(
             f"Setting to {visible_state} state", state=visible_state
         )
-        assert_window_event_triggered(second_window, expected_event=None)
+        if second_window_probe.show_unminimizes_window:  # For cocoa
+            # Since the window was in un-minimized state(as window.show() un-minimizes
+            # the window) i.e., visible-to-user. So, when a visible state is applied,
+            # then on_show() would not be triggered.
+            assert_window_event_triggered(second_window, expected_event=None)
+        else:  # For winforms & gtk
+            # Since the window was in minimized state(as window.show() doesn't
+            # un-minimize the window) i.e., not-visible-to-user. so, when a visible
+            # state is applied, then on_show() would be triggered.
+            assert_window_event_triggered(second_window, second_window.on_show)
+
+    # @pytest.mark.parametrize(
+    #     "second_window_class, second_window_kwargs",
+    #     [
+    #         (
+    #             toga.Window,
+    #             dict(title="Secondary Window", position=(200, 150)),
+    #         )
+    #     ],
+    # )
+    # async def test_ev(second_window, second_window_probe):
+    #     second_window.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
+    #     second_window.show()
+    #     second_window.on_show = Mock()
+    #     second_window.on_hide = Mock()
+
+    #     second_window.state = WindowState.MINIMIZED
+    #     await second_window_probe.wait_for_window(
+    #         "Setting to MINIMIZED state", state=WindowState.MINIMIZED
+    #     )
+    #     assert_window_event_triggered(second_window, second_window.on_hide)
+
+    #     second_window.hide()
+    #     await second_window_probe.redraw("Hiding", delay=0.1)
+    #     assert_window_event_triggered(second_window, expected_event=None)
+
+    #     second_window.show()
+    #     await second_window_probe.redraw("Showing", delay=0.5)
+    #     assert_window_event_triggered(second_window, expected_event=None)
+
+    #     second_window.state = WindowState.MAXIMIZED
+    #     await second_window_probe.wait_for_window(
+    #         "Setting to MAXIMIZED state", state=WindowState.MAXIMIZED
+    #     )
+    #     assert_window_event_triggered(second_window, second_window.on_show)
+
+    #     await second_window_probe.redraw("Waiting", delay=1)
 
     @pytest.mark.parametrize(
         "second_window_class, second_window_kwargs",

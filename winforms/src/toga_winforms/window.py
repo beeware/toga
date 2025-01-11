@@ -32,9 +32,6 @@ class Window(Container, Scalable):
     def __init__(self, interface, title, position, size):
         self.interface = interface
 
-        # Required for triggering event handlers at appropriate times.
-        self._is_previously_shown = False
-
         self.create()
 
         self._FormClosing_handler = WeakrefCallable(self.winforms_FormClosing)
@@ -48,6 +45,8 @@ class Window(Container, Scalable):
         # Use a shadow variable since a window without any app menu and toolbar
         # in presentation mode would be indistinguishable from full screen mode.
         self._in_presentation_mode = False
+        # Required to prevent double triggering of visibility events
+        self._previous_state = WindowState.NORMAL
 
         self.set_title(title)
         self.set_size(size)
@@ -129,27 +128,33 @@ class Window(Container, Scalable):
         self.interface.on_lose_focus()
 
     def winforms_VisibleChanged(self, sender, event):
-        if self.native.Visible and not self._is_previously_shown:
-            self._is_previously_shown = True
+        if (
+            self.native.Visible
+            and self.native.WindowState != WinForms.FormWindowState.Minimized
+        ):
             self.interface.on_show()
-        elif not self.native.Visible and self._is_previously_shown:
-            self._is_previously_shown = False
+        elif (
+            not self.native.Visible
+            and self.native.WindowState != WinForms.FormWindowState.Minimized
+        ):
             self.interface.on_hide()
 
-    def winforms_SizeChanged(self, sender, event):  # pragma: no cover
-        if (
-            self.native.WindowState == WinForms.FormWindowState.Minimized
-            and self._is_previously_shown
-        ):
-            self._is_previously_shown = False
+    def winforms_SizeChanged(self, sender, event):
+        if self.native.WindowState == WinForms.FormWindowState.Minimized:
             self.interface.on_hide()
         elif (
-            self.native.WindowState
-            in (WinForms.FormWindowState.Maximized, WinForms.FormWindowState.Normal)
-            and not self._is_previously_shown
+            self.native.WindowState != WinForms.FormWindowState.Minimized
+            and self._previous_state
+            not in {
+                WindowState.NORMAL,
+                WindowState.MAXIMIZED,
+                WindowState.FULLSCREEN,
+                WindowState.PRESENTATION,
+            }
         ):
-            self._is_previously_shown = True
             self.interface.on_show()
+        if self._previous_state != self.get_window_state():
+            self._previous_state = self.get_window_state()
 
     ######################################################################
     # Window properties
