@@ -1113,26 +1113,30 @@ else:
     #     second_window.on_show = Mock()
     #     second_window.on_hide = Mock()
 
+    #     print("------------Setting to MINIMIZED state")
     #     second_window.state = WindowState.MINIMIZED
-    #     await second_window_probe.wait_for_window(
-    #         "Setting to MINIMIZED state", state=WindowState.MINIMIZED
-    #     )
-    #     assert_window_event_triggered(second_window, second_window.on_hide)
+    #     await second_window_probe.wait_for_window("", state=WindowState.MINIMIZED)
+    #     # assert_window_event_triggered(second_window, second_window.on_hide)
 
+    #     print("-------------Hiding")
     #     second_window.hide()
-    #     await second_window_probe.redraw("Hiding", delay=0.1)
-    #     assert_window_event_triggered(second_window, expected_event=None)
+    #     await second_window_probe.redraw("", delay=1)
+    #     # print(f"*********{second_window._impl._window_state_flags}")
+    #     # print(f"-----------{second_window.state}")
+    #     # assert_window_event_triggered(second_window, expected_event=None)
 
+    #     print("-------------Showing")
     #     second_window.show()
-    #     await second_window_probe.redraw("Showing", delay=0.5)
-    #     assert_window_event_triggered(second_window, expected_event=None)
+    #     await second_window_probe.redraw("", delay=1)
+    #     # print(f"*********{second_window._impl._window_state_flags}")
+    #     # print(f"-----------{second_window.state}")
+    #     # assert_window_event_triggered(second_window, expected_event=None)
 
+    #     print("-------------Setting to MAXIMIZED state")
     #     second_window.state = WindowState.MAXIMIZED
-    #     await second_window_probe.wait_for_window(
-    #         "Setting to MAXIMIZED state", state=WindowState.MAXIMIZED
-    #     )
-    #     assert_window_event_triggered(second_window, second_window.on_show)
-
+    #     await second_window_probe.wait_for_window("", state=WindowState.MAXIMIZED)
+    #     # print(f"-----------{second_window.state}")
+    #     # assert_window_event_triggered(second_window, second_window.on_show)
     #     await second_window_probe.redraw("Waiting", delay=1)
 
     @pytest.mark.parametrize(

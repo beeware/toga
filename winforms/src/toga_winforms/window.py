@@ -140,7 +140,16 @@ class Window(Container, Scalable):
             self.interface.on_hide()
 
     def winforms_SizeChanged(self, sender, event):
-        if self.native.WindowState == WinForms.FormWindowState.Minimized:
+        if (
+            self.native.WindowState == WinForms.FormWindowState.Minimized
+            and self._previous_state
+            in {
+                WindowState.NORMAL,
+                WindowState.MAXIMIZED,
+                WindowState.FULLSCREEN,
+                WindowState.PRESENTATION,
+            }
+        ):
             self.interface.on_hide()
         elif (
             self.native.WindowState != WinForms.FormWindowState.Minimized

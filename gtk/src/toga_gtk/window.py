@@ -30,8 +30,6 @@ class Window:
             "delete-event",
             self.gtk_delete_event,
         )
-        self.native.connect("show", self.gtk_show)
-        self.native.connect("hide", self.gtk_hide)
         self.native.connect("window-state-event", self.gtk_window_state_event)
         self.native.connect("focus-in-event", self.gtk_focus_in_event)
         self.native.connect("focus-out-event", self.gtk_focus_out_event)
@@ -40,8 +38,7 @@ class Window:
         self._in_presentation = False
         # Pending Window state transition variable:
         self._pending_state_transition = None
-
-        self._previously_visible = False
+        self._previous_state = WindowState.NORMAL
 
         self.native.set_default_size(size[0], size[1])
 
@@ -74,23 +71,57 @@ class Window:
     # Native event handlers
     ######################################################################
 
-    def gtk_show(self, widget):
-        if self.get_window_state() != WindowState.MINIMIZED:
-            self.interface.on_show()
-
-    def gtk_hide(self, widget):
-        if self.get_window_state() != WindowState.MINIMIZED:
-            self.interface.on_hide()
-
     def gtk_window_state_event(self, widget, event):
         previous_state = self.get_window_state()
+        previous_window_state_flags = self._window_state_flags
         # Get the window state flags
         self._window_state_flags = event.new_window_state
         current_state = self.get_window_state()
-        currently_visible = self.get_visible()
 
-        visibility_change = self._previously_visible != currently_visible
-        state_change = previous_state != current_state
+        if previous_window_state_flags and (
+            previous_window_state_flags != self._window_state_flags
+        ):
+            visibility_changed = (
+                previous_window_state_flags & Gdk.WindowState.WITHDRAWN
+            ) != (self._window_state_flags & Gdk.WindowState.WITHDRAWN)
+            state_changed = previous_state != current_state
+
+            print(
+                f"~~~~~~Visibility Changed:{visibility_changed}"
+                f"\tState Changed:{state_changed}"
+                f"\tPrevious:{previous_state}"
+                f"\tCurrent:{current_state}"
+                f"\tVisible:{self.get_visible()}"
+            )
+            if visibility_changed and not state_changed:
+                # currently_visible = (
+                #     not self._window_state_flags & Gdk.WindowState.WITHDRAWN
+                # )
+                currently_visible = self.get_visible()
+                if self.get_window_state() != WindowState.MINIMIZED:
+                    if currently_visible:
+                        self.interface.on_show()
+                    elif not currently_visible:
+                        self.interface.on_hide()
+
+            if state_changed and not visibility_changed:
+                if current_state == WindowState.MINIMIZED and previous_state in {
+                    WindowState.NORMAL,
+                    WindowState.MAXIMIZED,
+                    WindowState.FULLSCREEN,
+                    WindowState.PRESENTATION,
+                }:
+                    self.interface.on_hide()
+                elif current_state != WindowState.MINIMIZED and previous_state not in {
+                    WindowState.NORMAL,
+                    WindowState.MAXIMIZED,
+                    WindowState.FULLSCREEN,
+                    WindowState.PRESENTATION,
+                }:
+                    self.interface.on_show()
+
+        if self.get_visible():
+            self._previous_state = current_state
 
         # Calling GtkWindow.hide() and GtkWindow.show() automatically triggers
         # the window-state-event along with gtk-show and gtk-hide. To prevent
@@ -100,26 +131,6 @@ class Window:
         # Wayland doesn't support detecting WindowState.MINIMIZED, so on_show()
         # and on_hide() events won't be triggered when the window is minimized
         # or un-minimized on wayland compositor.
-
-        if state_change and not visibility_change:  # pragma: no-cover-if-linux-wayland
-            if previous_state == WindowState.MINIMIZED and current_state in {
-                WindowState.NORMAL,
-                WindowState.MAXIMIZED,
-                WindowState.FULLSCREEN,
-                WindowState.PRESENTATION,
-            }:
-                self.interface.on_show()
-            elif (
-                previous_state
-                in {
-                    WindowState.NORMAL,
-                    WindowState.MAXIMIZED,
-                    WindowState.FULLSCREEN,
-                    WindowState.PRESENTATION,
-                }
-                and current_state == WindowState.MINIMIZED
-            ):
-                self.interface.on_hide()
 
         if self._pending_state_transition:
             if current_state != WindowState.NORMAL:
@@ -189,7 +200,7 @@ class Window:
         self.native.set_icon(app.interface.icon._impl.native(72))
 
     def show(self):
-        self._previously_visible = self.get_visible()
+        self._previous_state = self.get_window_state()
         self.native.show_all()
 
     ######################################################################
@@ -235,7 +246,7 @@ class Window:
         return self.native.get_property("visible")
 
     def hide(self):
-        self._previously_visible = self.get_visible()
+        self._previous_state = self.get_window_state()
         self.native.hide()
 
     ######################################################################
@@ -247,7 +258,9 @@ class Window:
             return self._pending_state_transition
         window_state_flags = self._window_state_flags
         if window_state_flags:  # pragma: no branch
-            if window_state_flags & Gdk.WindowState.MAXIMIZED:
+            if window_state_flags & Gdk.WindowState.WITHDRAWN:
+                return self._previous_state
+            elif window_state_flags & Gdk.WindowState.MAXIMIZED:
                 return WindowState.MAXIMIZED
             elif window_state_flags & Gdk.WindowState.ICONIFIED:
                 return WindowState.MINIMIZED  # pragma: no-cover-if-linux-wayland
