@@ -3,6 +3,7 @@ from travertino.size import at_least
 from toga.colors import TRANSPARENT
 
 from ..libs import Gtk
+from ..libs.utils import is_gtk3
 from .base import Widget
 
 
@@ -14,7 +15,10 @@ class Button(Widget):
         self._icon = None
 
     def get_text(self):
-        return self.native.get_label()
+        text = self.native.get_label()
+        if is_gtk3():
+            return text
+        return text if text else ""
 
     def set_text(self, text):
         self.native.set_label(text)
@@ -24,12 +28,22 @@ class Button(Widget):
 
     def set_icon(self, icon):
         self._icon = icon
-        if icon:
-            self.native.set_image(Gtk.Image.new_from_pixbuf(icon._impl.native(32)))
-            self.native.set_always_show_image(True)
+        if is_gtk3():
+            if icon:
+                self.native.set_image(Gtk.Image.new_from_pixbuf(icon._impl.native(32)))
+                self.native.set_always_show_image(True)
+            else:
+                self.native.set_image(None)
+                self.native.set_always_show_image(False)
         else:
-            self.native.set_image(None)
-            self.native.set_always_show_image(False)
+            if icon:
+                icon._impl.native.set_icon_size(Gtk.IconSize.LARGE)
+                self.native.set_child(icon._impl.native)
+            else:
+                text = self.native.get_label()
+                if text:
+                    self.native.set_label(text)
+                self.native.set_child(None)
 
     def set_enabled(self, value):
         self.native.set_sensitive(value)

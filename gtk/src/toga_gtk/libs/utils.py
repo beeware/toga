@@ -11,3 +11,7 @@ def gtk_text_align(alignment):
         CENTER: (0.5, Gtk.Justification.CENTER),
         JUSTIFY: (0.0, Gtk.Justification.FILL),
     }[alignment]
+
+
+def is_gtk3():
+    return Gtk.get_major_version() == 3
