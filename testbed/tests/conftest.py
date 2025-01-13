@@ -166,6 +166,9 @@ class ProxyEventLoop(asyncio.AbstractEventLoop):
             raise TypeError(f"Future type {type(future)} is not currently supported")
         return asyncio.run_coroutine_threadsafe(coro, self.loop).result()
 
+    async def shutdown_asyncgens(self):
+        await self.loop.shutdown_asyncgens()
+
     def is_closed(self):
         return self.closed
 
