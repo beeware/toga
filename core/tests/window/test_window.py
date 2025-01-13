@@ -12,6 +12,8 @@ from toga_dummy.utils import (
     assert_action_performed_with,
 )
 
+from ..utils import assert_window_event_triggered
+
 
 def test_window_created(app):
     """A Window can be created with minimal arguments."""
@@ -582,6 +584,129 @@ def test_close_rejected_handler(window, app):
     assert window in app.windows
     assert_action_not_performed(window, "close")
     on_close_handler.assert_called_once_with(window)
+
+
+def test_focus_events(app):
+    """The window can trigger on_gain_focus() and on_lose_focus()
+    event handlers, when the window gains or loses input focus."""
+    window1 = toga.Window()
+    window1.show()
+    assert window1.on_gain_focus._raw is None
+    assert window1.on_lose_focus._raw is None
+    window1_on_gain_focus_handler = Mock()
+    window1_on_lose_focus_handler = Mock()
+    window1.on_gain_focus = window1_on_gain_focus_handler
+    window1.on_lose_focus = window1_on_lose_focus_handler
+    assert window1.on_gain_focus._raw == window1_on_gain_focus_handler
+    assert window1.on_lose_focus._raw == window1_on_lose_focus_handler
+
+    window2 = toga.Window()
+    window2.show()
+    assert window2.on_gain_focus._raw is None
+    assert window2.on_lose_focus._raw is None
+    window2_on_gain_focus_handler = Mock()
+    window2_on_lose_focus_handler = Mock()
+    window2.on_gain_focus = window2_on_gain_focus_handler
+    window2.on_lose_focus = window2_on_lose_focus_handler
+    assert window2.on_gain_focus._raw == window2_on_gain_focus_handler
+    assert window2.on_lose_focus._raw == window2_on_lose_focus_handler
+
+    app.current_window = window1
+    assert_window_event_triggered(window1, window1.on_gain_focus)
+    assert_window_event_triggered(window2, expected_event=None)
+
+    app.current_window = window2
+    assert_window_event_triggered(window2, window2.on_gain_focus)
+    assert_window_event_triggered(window1, window1.on_lose_focus)
+
+    app.current_window = window1
+    assert_window_event_triggered(window1, window1.on_gain_focus)
+    assert_window_event_triggered(window2, window2.on_lose_focus)
+
+
+def test_visibility_events(window):
+    """The window can trigger on_show() and on_hide() event handlers,
+    when the window is shown or hidden respectively."""
+    window.show()
+    assert window.on_show._raw is None
+    assert window.on_hide._raw is None
+    on_show_handler = Mock()
+    on_hide_handler = Mock()
+    window.on_show = on_show_handler
+    window.on_hide = on_hide_handler
+    assert window.on_show._raw == on_show_handler
+    assert window.on_hide._raw == on_hide_handler
+
+    window.hide()
+    assert_window_event_triggered(window, window.on_hide)
+
+    window.show()
+    assert_window_event_triggered(window, window.on_show)
+
+
+@pytest.mark.parametrize(
+    "state",
+    [
+        WindowState.NORMAL,
+        WindowState.MAXIMIZED,
+        WindowState.FULLSCREEN,
+        WindowState.PRESENTATION,
+    ],
+)
+def test_visibility_events_on_window_state_change(window, state):
+    """The window can trigger on_hide() and on_show() event handlers,
+    when the window is MINIMIZED and UN-MINIMIZED respectively."""
+    window.show()
+    assert window.on_show._raw is None
+    assert window.on_hide._raw is None
+    on_show_handler = Mock()
+    on_hide_handler = Mock()
+    window.on_show = on_show_handler
+    window.on_hide = on_hide_handler
+    window.state = state
+    assert window.on_show._raw == on_show_handler
+    assert window.on_hide._raw == on_hide_handler
+
+    window.state = WindowState.MINIMIZED
+    assert_window_event_triggered(window, window.on_hide)
+
+    window.state = state
+    assert_window_event_triggered(window, window.on_show)
+
+
+@pytest.mark.parametrize(
+    "visible_state",
+    [
+        WindowState.NORMAL,
+        WindowState.MAXIMIZED,
+        WindowState.FULLSCREEN,
+        WindowState.PRESENTATION,
+    ],
+)
+def test_visibility_events_not_double_triggered(window, visible_state):
+    """The window does not double trigger the on_hide() amd on_show() events."""
+    window.show()
+    window.on_show = Mock()
+    window.on_hide = Mock()
+
+    window.state = WindowState.MINIMIZED
+    assert_window_event_triggered(window, window.on_hide)
+
+    # The on_hide() event would not be triggered since the window is already in a
+    # not-visible-to-user(i.e., in minimized or hidden) state.
+    window.hide()
+    assert_window_event_triggered(window, expected_event=None)
+
+    # The on_show() event would not be triggered since the window is already in a
+    # not-visible-to-user(i.e., in minimized or hidden) state, as on the dummy backend
+    # show() does not change the window state.
+    window.show()
+    assert_window_event_triggered(window, expected_event=None)
+
+    # The on_show() event would  be triggered since the window state is change to a
+    # visible-to-user(i.e., not in minimized or hidden) state.
+    window.state = visible_state
+    assert_window_event_triggered(window, window.on_show)
 
 
 def test_as_image(window):

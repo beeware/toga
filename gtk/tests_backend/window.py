@@ -18,6 +18,8 @@ class WindowProbe(BaseProbe, DialogsMixin):
     # Wayland mostly prohibits interaction with the larger windowing environment
     supports_minimize = not IS_WAYLAND
     supports_placement = not IS_WAYLAND
+    # Calling window.show() does not un-minimize the window on gtk.
+    show_unminimizes_window = False
 
     def __init__(self, app, window):
         super().__init__()

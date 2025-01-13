@@ -27,6 +27,8 @@ class WindowProbe(BaseProbe, DialogsMixin):
     supports_unminimize = True
     supports_minimize = True
     supports_placement = True
+    # Calling window.show() does not un-minimize the window on winforms.
+    show_unminimizes_window = False
 
     def __init__(self, app, window):
         self.app = app
