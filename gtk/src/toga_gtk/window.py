@@ -71,9 +71,12 @@ class Window:
     def gtk_window_state_event(self, widget, event):
         # Get the window state flags
         self._window_state_flags = event.new_window_state
+        current_state = self.get_window_state()
+
+        if self.get_visible():
+            self._previous_state = current_state
 
         if self._pending_state_transition:
-            current_state = self.get_window_state()
             if current_state != WindowState.NORMAL:
                 if self._pending_state_transition != current_state:
                     # Add a 10ms delay to wait for the native window state
@@ -191,7 +194,9 @@ class Window:
             return self._pending_state_transition
         window_state_flags = self._window_state_flags
         if window_state_flags:  # pragma: no branch
-            if window_state_flags & Gdk.WindowState.MAXIMIZED:
+            if window_state_flags & Gdk.WindowState.WITHDRAWN or not self.get_visible():
+                return self._previous_state
+            elif window_state_flags & Gdk.WindowState.MAXIMIZED:
                 return WindowState.MAXIMIZED
             elif window_state_flags & Gdk.WindowState.ICONIFIED:
                 return WindowState.MINIMIZED  # pragma: no-cover-if-linux-wayland
