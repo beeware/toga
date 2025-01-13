@@ -167,7 +167,9 @@ class ProxyEventLoop(asyncio.AbstractEventLoop):
         return asyncio.run_coroutine_threadsafe(coro, self.loop).result()
 
     async def shutdown_asyncgens(self):
-        await self.loop.shutdown_asyncgens()
+        # The proxy event loop doesn't need to shut anything down; the
+        # underlying event loop will shut down its own async generators.
+        pass
 
     def is_closed(self):
         return self.closed
