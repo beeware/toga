@@ -1,6 +1,7 @@
 from android.graphics import Color
 from android.view import View
 from android.widget import LinearLayout
+
 from travertino.size import at_least
 
 from .base import Widget

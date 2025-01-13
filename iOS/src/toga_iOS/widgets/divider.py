@@ -1,7 +1,6 @@
-from travertino.size import at_least
-
 from toga_iOS.libs import UIColor
 from toga_iOS.widgets.base import Widget
+from travertino.size import at_least
 
 from .box import TogaView
 

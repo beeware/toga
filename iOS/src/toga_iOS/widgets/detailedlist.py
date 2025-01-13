@@ -5,7 +5,6 @@ from rubicon.objc import (
     objc_method,
     objc_property,
 )
-from travertino.size import at_least
 
 from toga_iOS.libs import (
     NSIndexPath,
@@ -21,6 +20,7 @@ from toga_iOS.libs import (
     UITableViewScrollPositionNone,
 )
 from toga_iOS.widgets.base import Widget
+from travertino.size import at_least
 
 
 class TogaTableViewController(UITableViewController):

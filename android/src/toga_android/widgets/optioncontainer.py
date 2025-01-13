@@ -16,9 +16,9 @@ except ImportError:  # pragma: no cover
     NavigationBarView = None
 
 from java import dynamic_proxy
-from travertino.size import at_least
 
 import toga
+from travertino.size import at_least
 
 from ..container import Container
 from .base import Widget

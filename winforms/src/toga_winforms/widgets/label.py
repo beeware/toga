@@ -1,9 +1,9 @@
 from decimal import ROUND_UP
 
 import System.Windows.Forms as WinForms
-from travertino.size import at_least
 
 from toga_winforms.libs.fonts import TextAlignment
+from travertino.size import at_least
 
 from .base import Widget
 

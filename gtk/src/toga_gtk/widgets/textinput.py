@@ -1,7 +1,6 @@
-from travertino.size import at_least
-
 from toga.keys import Key
 from toga_gtk.keys import toga_key
+from travertino.size import at_least
 
 from ..libs import Gtk, gtk_text_align
 from .base import Widget

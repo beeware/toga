@@ -1,9 +1,9 @@
 import math
 
 from rubicon.objc import objc_method, objc_property
-from travertino.size import at_least
 
 from toga.types import LatLng
+from travertino.size import at_least
 
 from ..libs import (
     CLLocationCoordinate2D,

@@ -1,9 +1,9 @@
 from rubicon.objc import SEL, objc_method, objc_property
-from travertino.size import at_least
 
 from toga.constants import Direction
 from toga_cocoa.container import Container
 from toga_cocoa.libs import NSSplitView
+from travertino.size import at_least
 
 from .base import Widget
 

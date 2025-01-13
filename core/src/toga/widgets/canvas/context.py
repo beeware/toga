@@ -5,12 +5,11 @@ from contextlib import contextmanager
 from math import pi
 from typing import TYPE_CHECKING, Any
 
-from travertino.colors import Color
-
 import toga
 from toga.colors import BLACK, color as parse_color
 from toga.constants import Baseline, FillRule
 from toga.fonts import Font
+from travertino.colors import Color
 
 from .drawingobject import (
     Arc,

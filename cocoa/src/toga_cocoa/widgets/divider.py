@@ -1,6 +1,5 @@
-from travertino.size import at_least
-
 from toga_cocoa.libs import NSBox, NSBoxType
+from travertino.size import at_least
 
 from .base import Widget
 

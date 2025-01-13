@@ -1,8 +1,7 @@
 from http.cookiejar import CookieJar
 
-from travertino.size import at_least
-
 from toga.widgets.webview import CookiesResult, JavaScriptResult
+from travertino.size import at_least
 
 from ..libs import GLib, WebKit2
 from .base import Widget

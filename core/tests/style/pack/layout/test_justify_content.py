@@ -1,7 +1,7 @@
 import pytest
-from travertino.size import at_least
 
 from toga.style.pack import Pack
+from travertino.size import at_least
 
 from ..utils import ExampleNode, ExampleViewport, assert_layout
 
@@ -52,7 +52,7 @@ def test_justify_content(
     if text_direction:
         root.style.text_direction = text_direction
 
-    root.style.layout(root, viewport)
+    root.style.layout(viewport)
     assert_layout(
         root,
         (240, 120) if direction == "row" else (120, 240),
@@ -96,7 +96,7 @@ def test_justify_content_flex(
     delattr(child_style, "width" if direction == "row" else "height")
     child_style.flex = 1
 
-    root.style.layout(root, viewport)
+    root.style.layout(viewport)
     assert_layout(
         root,
         (140, 120) if direction == "row" else (120, 140),

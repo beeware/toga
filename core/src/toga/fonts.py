@@ -2,6 +2,9 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import toga
+from toga.platform import get_platform_factory
+
 # Use the Travertino font definitions as-is
 from travertino import constants
 from travertino.constants import (
@@ -19,9 +22,6 @@ from travertino.constants import (
     SYSTEM,
 )
 from travertino.fonts import Font as BaseFont
-
-import toga
-from toga.platform import get_platform_factory
 
 SYSTEM_DEFAULT_FONTS = {SYSTEM, MESSAGE, SERIF, SANS_SERIF, CURSIVE, FANTASY, MONOSPACE}
 SYSTEM_DEFAULT_FONT_SIZE = -1

@@ -8,8 +8,6 @@ from typing import (
     Protocol,
 )
 
-from travertino.colors import Color
-
 import toga
 from toga.colors import BLACK
 from toga.constants import FillRule
@@ -19,6 +17,7 @@ from toga.fonts import (
     Font,
 )
 from toga.handlers import wrapped_handler
+from travertino.colors import Color
 
 from ..base import StyleT, Widget
 from .context import ClosedPathContext, Context, FillContext, StrokeContext

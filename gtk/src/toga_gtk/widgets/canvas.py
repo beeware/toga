@@ -2,13 +2,12 @@ from dataclasses import dataclass
 from io import BytesIO
 from math import ceil
 
-from travertino.size import at_least
-
 from toga import Font
 from toga.constants import Baseline, FillRule
 from toga.fonts import SYSTEM_DEFAULT_FONT_SIZE
 from toga_gtk.colors import native_color
 from toga_gtk.libs import Gdk, Gtk, Pango, PangoCairo, cairo
+from travertino.size import at_least
 
 from .base import Widget
 
