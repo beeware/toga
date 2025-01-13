@@ -962,6 +962,8 @@ else:
     async def test_visibility_events(second_window, second_window_probe):
         """The window can trigger on_show() and on_hide() event handlers,
         when the window is shown or hidden respectively."""
+        if not second_window_probe.supports_visibility_events:
+            pytest.xfail("This backend doesn't support visibility events.")
         second_window.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
         second_window.show()
         second_window.on_show = Mock()
@@ -998,10 +1000,8 @@ else:
     ):
         """The window can trigger on_hide() and on_show() event handlers,
         when the window is MINIMIZED and UN-MINIMIZED respectively."""
-        if not second_window_probe.supports_minimize:
-            pytest.xfail(
-                "This backend doesn't reliably support minimized window state."
-            )
+        if not second_window_probe.supports_visibility_events:
+            pytest.xfail("This backend doesn't support visibility events.")
         second_window.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
         second_window.show()
         second_window.on_show = Mock()
@@ -1051,10 +1051,8 @@ else:
         second_window, second_window_probe, visible_state1, visible_state2
     ):
         """The window does not double trigger the on_hide() amd on_show() events."""
-        if not second_window_probe.supports_minimize:
-            pytest.xfail(
-                "This backend doesn't reliably support minimized window state."
-            )
+        if not second_window_probe.supports_visibility_events:
+            pytest.xfail("This backend doesn't support visibility events.")
         second_window.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
         second_window.show()
         second_window.on_show = Mock()
@@ -1110,47 +1108,6 @@ else:
         # Since the window was already in a visible-to-user state. So, when a visible
         # state is applied, then on_show() would not be triggered.
         assert_window_event_triggered(second_window, expected_event=None)
-
-    # @pytest.mark.parametrize(
-    #     "second_window_class, second_window_kwargs",
-    #     [
-    #         (
-    #             toga.Window,
-    #             dict(title="Secondary Window", position=(200, 150)),
-    #         )
-    #     ],
-    # )
-    # async def test_ev(second_window, second_window_probe):
-    #     second_window.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
-    #     second_window.show()
-    #     second_window.on_show = Mock()
-    #     second_window.on_hide = Mock()
-
-    #     print("------------Setting to MINIMIZED state")
-    #     second_window.state = WindowState.MINIMIZED
-    #     await second_window_probe.wait_for_window("", state=WindowState.MINIMIZED)
-    #     # assert_window_event_triggered(second_window, second_window.on_hide)
-
-    #     print("-------------Hiding")
-    #     second_window.hide()
-    #     await second_window_probe.redraw("", delay=1)
-    #     # print(f"*********{second_window._impl._window_state_flags}")
-    #     # print(f"-----------{second_window.state}")
-    #     # assert_window_event_triggered(second_window, expected_event=None)
-
-    #     print("-------------Showing")
-    #     second_window.show()
-    #     await second_window_probe.redraw("", delay=1)
-    #     # print(f"*********{second_window._impl._window_state_flags}")
-    #     # print(f"-----------{second_window.state}")
-    #     # assert_window_event_triggered(second_window, expected_event=None)
-
-    #     print("-------------Setting to MAXIMIZED state")
-    #     second_window.state = WindowState.MAXIMIZED
-    #     await second_window_probe.wait_for_window("", state=WindowState.MAXIMIZED)
-    #     # print(f"-----------{second_window.state}")
-    #     # assert_window_event_triggered(second_window, second_window.on_show)
-    #     await second_window_probe.redraw("Waiting", delay=1)
 
     @pytest.mark.parametrize(
         "second_window_class, second_window_kwargs",

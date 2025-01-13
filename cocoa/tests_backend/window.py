@@ -18,6 +18,7 @@ class WindowProbe(BaseProbe, DialogsMixin):
     supports_placement = True
     # Calling window.show() un-minimizes the window on cocoa.
     show_unminimizes_window = True
+    supports_visibility_events = True
 
     def __init__(self, app, window):
         super().__init__()
