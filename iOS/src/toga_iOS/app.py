@@ -13,26 +13,22 @@ class PythonAppDelegate(UIResponder):
     @objc_method
     def applicationDidBecomeActive_(self, application) -> None:
         print("App became active.")
-        for window in App.app.interface.windows:
-            window.on_gain_focus()
+        App.app.interface.current_window.on_gain_focus()
 
     @objc_method
     def applicationWillResignActive_(self, application) -> None:
         print("App about to leave foreground.", flush=True)
-        for window in App.app.interface.windows:
-            window.on_lose_focus()
+        App.app.interface.current_window.on_lose_focus()
 
     @objc_method
     def applicationDidEnterBackground_(self, application) -> None:
         print("App entered background.")
-        for window in App.app.interface.windows:
-            window.on_hide()
+        App.app.interface.current_window.on_hide()
 
     @objc_method
     def applicationWillEnterForeground_(self, application) -> None:
         print("App about to enter foreground.")
-        for window in App.app.interface.windows:
-            window.on_show()
+        App.app.interface.current_window.on_show()
 
     @objc_method
     def application_didFinishLaunchingWithOptions_(
@@ -41,8 +37,7 @@ class PythonAppDelegate(UIResponder):
         print("App finished launching.")
         App.app.native = application
         App.app.create()
-        for window in App.app.interface.windows:
-            window.on_show()
+        App.app.interface.current_window.on_show()
         return True
 
     @objc_method

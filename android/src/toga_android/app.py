@@ -36,8 +36,7 @@ class TogaApp(dynamic_proxy(IPythonApp)):
 
     def onStart(self):
         print("Toga app: onStart")
-        for window in self._impl.interface.windows:
-            window.on_show()
+        self._impl.interface.current_window.on_show()
 
     def onResume(self):  # pragma: no cover
         print("Toga app: onResume")
@@ -45,21 +44,18 @@ class TogaApp(dynamic_proxy(IPythonApp)):
         # than Q. onResume is the best indicator for the gain input focus event.
         # https://developer.android.com/reference/android/app/Activity#onWindowFocusChanged(boolean):~:text=If%20the%20intent,the%20best%20indicator.
         if Build.VERSION.SDK_INT < Build.VERSION_CODES.Q:
-            for window in self._impl.interface.windows:
-                window.on_gain_focus()
+            self._impl.interface.current_window.on_gain_focus()
 
     def onPause(self):  # pragma: no cover
         print("Toga app: onPause")
         # onTopResumedActivityChanged is not available on android versions less
         # than Q. onPause is the best indicator for the lost input focus event.
         if Build.VERSION.SDK_INT < Build.VERSION_CODES.Q:
-            for window in self._impl.interface.windows:
-                window.on_lose_focus()
+            self._impl.interface.current_window.on_lose_focus()
 
     def onStop(self):  # pragma: no cover
         print("Toga app: onStop")
-        for window in self._impl.interface.windows:
-            window.on_hide()
+        self._impl.interface.current_window.on_hide()
 
     def onDestroy(self):
         print("Toga app: onDestroy")  # pragma: no cover
@@ -70,11 +66,9 @@ class TogaApp(dynamic_proxy(IPythonApp)):
     def onTopResumedActivityChanged(self, isTopResumedActivity):  # pragma: no cover
         print("Toga app: onTopResumedActivityChanged")
         if isTopResumedActivity:
-            for window in self._impl.interface.windows:
-                window.on_gain_focus()
+            self._impl.interface.current_window.on_gain_focus()
         else:
-            for window in self._impl.interface.windows:
-                window.on_lose_focus()
+            self._impl.interface.current_window.on_lose_focus()
 
     def onActivityResult(self, requestCode, resultCode, resultData):
         print(f"Toga app: onActivityResult {requestCode=} {resultCode=} {resultData=}")

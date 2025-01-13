@@ -45,7 +45,8 @@ class Window(Container, Scalable):
         # Use a shadow variable since a window without any app menu and toolbar
         # in presentation mode would be indistinguishable from full screen mode.
         self._in_presentation_mode = False
-        # Required to prevent double triggering of visibility events
+        # Required to detect if the window has been un-minimized, and to prevent
+        # double triggering of visibility events.
         self._previous_state = WindowState.NORMAL
 
         self.set_title(title)
@@ -67,7 +68,6 @@ class Window(Container, Scalable):
 
         self.native.Activated += WeakrefCallable(self.winforms_Activated)
         self.native.Deactivate += WeakrefCallable(self.winforms_Deactivate)
-
         self.native.VisibleChanged += WeakrefCallable(self.winforms_VisibleChanged)
         self.native.SizeChanged += WeakrefCallable(self.winforms_SizeChanged)
 

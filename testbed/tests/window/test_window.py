@@ -1025,12 +1025,17 @@ else:
         assert_window_event_triggered(second_window, second_window.on_show)
 
     @pytest.mark.parametrize(
-        "visible_state",
+        "visible_state1, visible_state2",
         [
-            WindowState.NORMAL,
-            WindowState.MAXIMIZED,
-            WindowState.FULLSCREEN,
-            WindowState.PRESENTATION,
+            # We just need to test that setting a different visible state
+            # to a window already in visible-to-user(not minimized or not hidden)
+            # window state, doesn't trigger visibility events. Ideally, we would
+            # be testing for every possible pairings of the visible-to-user window
+            # states, but it would increase the runtime of the testbed.
+            (WindowState.NORMAL, WindowState.PRESENTATION),
+            (WindowState.MAXIMIZED, WindowState.FULLSCREEN),
+            (WindowState.FULLSCREEN, WindowState.MAXIMIZED),
+            (WindowState.PRESENTATION, WindowState.NORMAL),
         ],
     )
     @pytest.mark.parametrize(
@@ -1043,7 +1048,7 @@ else:
         ],
     )
     async def test_visibility_events_not_double_triggered(
-        second_window, second_window_probe, visible_state
+        second_window, second_window_probe, visible_state1, visible_state2
     ):
         """The window does not double trigger the on_hide() amd on_show() events."""
         if not second_window_probe.supports_minimize:
@@ -1055,7 +1060,7 @@ else:
         second_window.on_show = Mock()
         second_window.on_hide = Mock()
 
-        # visible-to-user = not  minimized or not hidden
+        # visible-to-user = not minimized or not hidden
         # not-visible-to-user state = minimized or hidden
 
         second_window.state = WindowState.MINIMIZED
@@ -1083,9 +1088,9 @@ else:
             # window), the on_show() event would not be triggered.
             assert_window_event_triggered(second_window, expected_event=None)
 
-        second_window.state = visible_state
+        second_window.state = visible_state1
         await second_window_probe.wait_for_window(
-            f"Setting to {visible_state} state", state=visible_state
+            f"Setting to {visible_state1} state", state=visible_state1
         )
         if second_window_probe.show_unminimizes_window:  # For cocoa
             # Since the window was in un-minimized state(as window.show() un-minimizes
@@ -1097,6 +1102,14 @@ else:
             # un-minimize the window) i.e., not-visible-to-user. so, when a visible
             # state is applied, then on_show() would be triggered.
             assert_window_event_triggered(second_window, second_window.on_show)
+
+        second_window.state = visible_state2
+        await second_window_probe.wait_for_window(
+            f"Setting to {visible_state2} state", state=visible_state2
+        )
+        # Since the window was already in a visible-to-user state. So, when a visible
+        # state is applied, then on_show() would not be triggered.
+        assert_window_event_triggered(second_window, expected_event=None)
 
     # @pytest.mark.parametrize(
     #     "second_window_class, second_window_kwargs",
