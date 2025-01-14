@@ -130,9 +130,11 @@ class OnLoseFocusHandler(Protocol):
 
 class OnShowHandler(Protocol):
     def __call__(self, window: Window, **kwargs: Any) -> None:
-        """A handler to invoke when a window becomes visible to the user from a not
-        visible state. Not visible to the user refers to window states like minimized,
-        hidden, etc.
+        """A handler to invoke when a window becomes visible.
+
+        This event will be triggered when a window is first displayed, and when the
+        window is restored from a minimized or hidden state. On mobile platforms, it is
+        also triggered when an app is made the currently active app.  
 
         :param window: The window instance that becomes visible.
         :param kwargs: Ensures compatibility with additional arguments introduced in
@@ -143,8 +145,11 @@ class OnShowHandler(Protocol):
 
 class OnHideHandler(Protocol):
     def __call__(self, window: Window, **kwargs: Any) -> None:
-        """A handler to invoke when a window becomes not visible to the user.
-        Not visible to the user refers to window states like minimized, hidden, etc.
+        """A handler to invoke when a window stops being visible.
+
+        This event will be triggered when a window moves to a minimized or hidden state.
+        On mobile platforms, it is also triggered when an app is moved to the background
+        and is no longer the currently active app.
 
         :param window: The window instance that becomes not visible to the user.
         :param kwargs: Ensures compatibility with additional arguments introduced in
