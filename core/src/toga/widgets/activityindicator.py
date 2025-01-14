@@ -11,6 +11,7 @@ class ActivityIndicator(Widget):
         id: str | None = None,
         style: StyleT | None = None,
         running: bool = False,
+        **kwargs,
     ):
         """Create a new ActivityIndicator widget.
 
@@ -19,8 +20,9 @@ class ActivityIndicator(Widget):
             will be applied to the widget.
         :param running: Describes whether the indicator is running at the
             time it is created.
+        :param kwargs: Initial style properties.
         """
-        super().__init__(id=id, style=style)
+        super().__init__(id, style, **kwargs)
 
         if running:
             self.start()

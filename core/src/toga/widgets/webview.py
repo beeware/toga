@@ -33,6 +33,7 @@ class WebView(Widget):
         url: str | None = None,
         user_agent: str | None = None,
         on_webview_load: OnWebViewLoadHandler | None = None,
+        **kwargs,
     ):
         """Create a new WebView widget.
 
@@ -45,8 +46,9 @@ class WebView(Widget):
             provided, the default user agent for the platform will be used.
         :param on_webview_load: A handler that will be invoked when the web view
             finishes loading.
+        :param kwargs: Initial style properties.
         """
-        super().__init__(id=id, style=style)
+        super().__init__(id, style, **kwargs)
 
         self.user_agent = user_agent
 

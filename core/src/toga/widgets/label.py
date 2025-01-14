@@ -11,6 +11,7 @@ class Label(Widget):
         text: str,
         id: str | None = None,
         style: StyleT | None = None,
+        **kwargs,
     ):
         """Create a new text label.
 
@@ -18,8 +19,9 @@ class Label(Widget):
         :param id: The ID for the widget.
         :param style: A style object. If no style is provided, a default style
             will be applied to the widget.
+        :param kwargs: Initial style properties.
         """
-        super().__init__(id=id, style=style)
+        super().__init__(id, style, **kwargs)
 
         self.text = text
 

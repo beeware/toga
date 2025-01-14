@@ -29,6 +29,7 @@ class SplitContainer(Widget):
         style: StyleT | None = None,
         direction: Direction = Direction.VERTICAL,
         content: Sequence[SplitContainerContentT] | None = None,
+        **kwargs,
     ):
         """Create a new SplitContainer.
 
@@ -41,9 +42,10 @@ class SplitContainer(Widget):
             :attr:`~toga.constants.Direction.VERTICAL`
         :param content: Initial :any:`SplitContainer content <SplitContainerContentT>`
             of the container. Defaults to both panels being empty.
+        :param kwargs: Initial style properties.
         """
         self._content: list[SplitContainerContentT] = [None, None]
-        super().__init__(id=id, style=style)
+        super().__init__(id, style, **kwargs)
 
         if content:
             self.content = content

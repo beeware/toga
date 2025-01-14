@@ -15,6 +15,7 @@ class ProgressBar(Widget):
         max: str | SupportsFloat = 1.0,
         value: str | SupportsFloat = 0.0,
         running: bool = False,
+        **kwargs,
     ):
         """Create a new Progress Bar widget.
 
@@ -29,8 +30,9 @@ class ProgressBar(Widget):
             clipped. Defaults to 0.0.
         :param running: Describes whether the indicator is running at the time
             it is created. Default is False.
+        :param kwargs: Initial style properties.
         """
-        super().__init__(id=id, style=style)
+        super().__init__(id, style, **kwargs)
 
         self.max = max
         self.value = value
