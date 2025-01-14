@@ -134,7 +134,7 @@ class OnShowHandler(Protocol):
 
         This event will be triggered when a window is first displayed, and when the
         window is restored from a minimized or hidden state. On mobile platforms, it is
-        also triggered when an app is made the currently active app.  
+        also triggered when an app is made the currently active app.
 
         :param window: The window instance that becomes visible.
         :param kwargs: Ensures compatibility with additional arguments introduced in
