@@ -133,7 +133,10 @@ class App(LoggedObject):
         return self._get_value("current_window", main_window)
 
     def set_current_window(self, window):
-        previous_current_window = getattr(self.get_current_window(), "interface", None)
+        try:
+            previous_current_window = self.get_current_window().interface
+        except AttributeError:
+            previous_current_window = None
 
         self._action("set_current_window", window=window)
         self._set_value("current_window", window._impl)

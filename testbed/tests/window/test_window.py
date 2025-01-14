@@ -11,7 +11,12 @@ from toga.colors import CORNFLOWERBLUE, GOLDENROD, REBECCAPURPLE
 from toga.constants import WindowState
 from toga.style.pack import COLUMN, Pack
 
-from ..assertions import assert_window_event_triggered
+from ..assertions import (
+    assert_window_gain_focus,
+    assert_window_lose_focus,
+    assert_window_on_hide,
+    assert_window_on_show,
+)
 
 
 def window_probe(app, window):
@@ -939,16 +944,16 @@ else:
         app.current_window = main_window
         await main_window_probe.wait_for_window("Setting main window as current window")
         assert app.current_window == main_window
-        assert_window_event_triggered(main_window, main_window.on_gain_focus)
-        assert_window_event_triggered(second_window, second_window.on_lose_focus)
+        assert_window_gain_focus(main_window)
+        assert_window_lose_focus(second_window)
 
         app.current_window = second_window
         await second_window_probe.wait_for_window(
             "Setting second window as current window"
         )
         assert app.current_window == second_window
-        assert_window_event_triggered(main_window, main_window.on_lose_focus)
-        assert_window_event_triggered(second_window, second_window.on_gain_focus)
+        assert_window_gain_focus(second_window)
+        assert_window_lose_focus(main_window)
 
     @pytest.mark.parametrize(
         "second_window_class, second_window_kwargs",
@@ -971,11 +976,11 @@ else:
 
         second_window.hide()
         await second_window_probe.wait_for_window(f"Hiding {second_window.title}")
-        assert_window_event_triggered(second_window, second_window.on_hide)
+        assert_window_on_hide(second_window)
 
         second_window.show()
         await second_window_probe.wait_for_window(f"Showing {second_window.title}")
-        assert_window_event_triggered(second_window, second_window.on_show)
+        assert_window_on_show(second_window)
 
     @pytest.mark.parametrize(
         "state",
@@ -1016,13 +1021,13 @@ else:
         await second_window_probe.wait_for_window(
             "Setting to MINIMIZED state", state=WindowState.MINIMIZED
         )
-        assert_window_event_triggered(second_window, second_window.on_hide)
+        assert_window_on_hide(second_window)
 
         second_window.state = state
         await second_window_probe.wait_for_window(
             f"Setting to final state of {state}", state=state
         )
-        assert_window_event_triggered(second_window, second_window.on_show)
+        assert_window_on_show(second_window)
 
     @pytest.mark.parametrize(
         "visible_state1, visible_state2",
@@ -1065,13 +1070,13 @@ else:
         await second_window_probe.wait_for_window(
             "Setting to MINIMIZED state", state=WindowState.MINIMIZED
         )
-        assert_window_event_triggered(second_window, second_window.on_hide)
+        assert_window_on_hide(second_window)
 
         # The on_hide() event would not be triggered since the window is already in a
         # not-visible-to-user(i.e., in minimized or hidden) state.
         second_window.hide()
         await second_window_probe.wait_for_window(f"Hiding {second_window.title}")
-        assert_window_event_triggered(second_window, expected_event=None)
+        assert_window_on_hide(second_window, trigger_expected=False)
 
         second_window.show()
         await second_window_probe.wait_for_window(f"Showing {second_window.title}")
@@ -1079,12 +1084,12 @@ else:
             # Since the window was in minimized and hidden state, i.e., not-visible-
             # to-user. So, when window.show() is called (which also un-minimizes the
             # window), the on_show() event would be triggered.
-            assert_window_event_triggered(second_window, second_window.on_show)
+            assert_window_on_show(second_window)
         else:  # For winforms & gtk
             # Since the window was in minimized and hidden state, i.e., not-visible-
             # to-user. So, when window.show() is called (which doesn't un-minimize the
             # window), the on_show() event would not be triggered.
-            assert_window_event_triggered(second_window, expected_event=None)
+            assert_window_on_show(second_window, trigger_expected=False)
 
         second_window.state = visible_state1
         await second_window_probe.wait_for_window(
@@ -1094,12 +1099,12 @@ else:
             # Since the window was in un-minimized state(as window.show() un-minimizes
             # the window) i.e., visible-to-user. So, when a visible state is applied,
             # then on_show() would not be triggered.
-            assert_window_event_triggered(second_window, expected_event=None)
+            assert_window_on_show(second_window, trigger_expected=False)
         else:  # For winforms & gtk
             # Since the window was in minimized state(as window.show() doesn't
             # un-minimize the window) i.e., not-visible-to-user. so, when a visible
             # state is applied, then on_show() would be triggered.
-            assert_window_event_triggered(second_window, second_window.on_show)
+            assert_window_on_show(second_window)
 
         second_window.state = visible_state2
         await second_window_probe.wait_for_window(
@@ -1107,7 +1112,7 @@ else:
         )
         # Since the window was already in a visible-to-user state. So, when a visible
         # state is applied, then on_show() would not be triggered.
-        assert_window_event_triggered(second_window, expected_event=None)
+        assert_window_on_show(second_window, trigger_expected=False)
 
     @pytest.mark.parametrize(
         "second_window_class, second_window_kwargs",

@@ -26,34 +26,53 @@ class ExampleLeafWidget(toga.Widget):
         return f"Widget(id={self.id!r})"
 
 
-def assert_window_event_triggered(window, expected_event=None):
-    window_events = {
-        window.on_gain_focus: f"{window}.on_gain_focus()",
-        window.on_lose_focus: f"{window}.on_lose_focus()",
-        window.on_show: f"{window}.on_show()",
-        window.on_hide: f"{window}.on_hide()",
-    }
-    unexpected_events = {
-        event for event in window_events.keys() if event != expected_event
-    }
+def assert_window_gain_focus(window, trigger_expected=True):
+    on_gain_focus_handler = window.on_gain_focus._raw
+    on_lose_focus_handler = window.on_lose_focus._raw
+    if trigger_expected:
+        on_gain_focus_handler.assert_called_once_with(window)
+    else:
+        on_gain_focus_handler.assert_not_called()
+    on_lose_focus_handler.assert_not_called()
 
-    if expected_event:
-        try:
-            expected_event._raw.assert_called_once_with(window)
-        except AssertionError as exception:
-            exception.add_note(f"Expected event: {window_events[expected_event]}")
-            raise exception
+    on_gain_focus_handler.reset_mock()
+    on_lose_focus_handler.reset_mock()
 
-    for unexpected_event in unexpected_events:
-        if unexpected_event._raw is not None:
-            try:
-                unexpected_event._raw.assert_not_called()
-            except AssertionError as exception:
-                exception.add_note(
-                    f"Unexpected event: {window_events[unexpected_event]}"
-                )
-                raise exception
 
-    for event in window_events.keys():
-        if event._raw is not None:
-            event._raw.reset_mock()
+def assert_window_lose_focus(window, trigger_expected=True):
+    on_gain_focus_handler = window.on_gain_focus._raw
+    on_lose_focus_handler = window.on_lose_focus._raw
+    if trigger_expected:
+        on_lose_focus_handler.assert_called_once_with(window)
+    else:
+        on_lose_focus_handler.assert_not_called()
+    on_gain_focus_handler.assert_not_called()
+
+    on_gain_focus_handler.reset_mock()
+    on_lose_focus_handler.reset_mock()
+
+
+def assert_window_on_show(window, trigger_expected=True):
+    on_show_handler = window.on_show._raw
+    on_hide_handler = window.on_hide._raw
+    if trigger_expected:
+        on_show_handler.assert_called_once_with(window)
+    else:
+        on_show_handler.assert_not_called()
+    on_hide_handler.assert_not_called()
+
+    on_show_handler.reset_mock()
+    on_hide_handler.reset_mock()
+
+
+def assert_window_on_hide(window, trigger_expected=True):
+    on_show_handler = window.on_show._raw
+    on_hide_handler = window.on_hide._raw
+    if trigger_expected:
+        on_hide_handler.assert_called_once_with(window)
+    else:
+        on_hide_handler.assert_not_called()
+    on_show_handler.assert_not_called()
+
+    on_show_handler.reset_mock()
+    on_hide_handler.reset_mock()

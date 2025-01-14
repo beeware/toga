@@ -12,7 +12,12 @@ from toga_dummy.utils import (
     assert_action_performed_with,
 )
 
-from ..utils import assert_window_event_triggered
+from ..utils import (
+    assert_window_gain_focus,
+    assert_window_lose_focus,
+    assert_window_on_hide,
+    assert_window_on_show,
+)
 
 
 def test_window_created(app):
@@ -612,16 +617,15 @@ def test_focus_events(app):
     assert window2.on_lose_focus._raw == window2_on_lose_focus_handler
 
     app.current_window = window1
-    assert_window_event_triggered(window1, window1.on_gain_focus)
-    assert_window_event_triggered(window2, expected_event=None)
+    assert_window_gain_focus(window1)
 
     app.current_window = window2
-    assert_window_event_triggered(window2, window2.on_gain_focus)
-    assert_window_event_triggered(window1, window1.on_lose_focus)
+    assert_window_gain_focus(window2)
+    assert_window_lose_focus(window1)
 
     app.current_window = window1
-    assert_window_event_triggered(window1, window1.on_gain_focus)
-    assert_window_event_triggered(window2, window2.on_lose_focus)
+    assert_window_gain_focus(window1)
+    assert_window_lose_focus(window2)
 
 
 def test_visibility_events(window):
@@ -638,10 +642,10 @@ def test_visibility_events(window):
     assert window.on_hide._raw == on_hide_handler
 
     window.hide()
-    assert_window_event_triggered(window, window.on_hide)
+    assert_window_on_hide(window)
 
     window.show()
-    assert_window_event_triggered(window, window.on_show)
+    assert_window_on_show(window)
 
 
 @pytest.mark.parametrize(
@@ -668,10 +672,10 @@ def test_visibility_events_on_window_state_change(window, state):
     assert window.on_hide._raw == on_hide_handler
 
     window.state = WindowState.MINIMIZED
-    assert_window_event_triggered(window, window.on_hide)
+    assert_window_on_hide(window)
 
     window.state = state
-    assert_window_event_triggered(window, window.on_show)
+    assert_window_on_show(window)
 
 
 @pytest.mark.parametrize(
@@ -690,23 +694,23 @@ def test_visibility_events_not_double_triggered(window, visible_state):
     window.on_hide = Mock()
 
     window.state = WindowState.MINIMIZED
-    assert_window_event_triggered(window, window.on_hide)
+    assert_window_on_hide(window)
 
     # The on_hide() event would not be triggered since the window is already in a
     # not-visible-to-user(i.e., in minimized or hidden) state.
     window.hide()
-    assert_window_event_triggered(window, expected_event=None)
+    assert_window_on_hide(window, trigger_expected=False)
 
     # The on_show() event would not be triggered since the window is already in a
     # not-visible-to-user(i.e., in minimized or hidden) state, as on the dummy backend
     # show() does not change the window state.
     window.show()
-    assert_window_event_triggered(window, expected_event=None)
+    assert_window_on_show(window, trigger_expected=False)
 
     # The on_show() event would  be triggered since the window state is change to a
     # visible-to-user(i.e., not in minimized or hidden) state.
     window.state = visible_state
-    assert_window_event_triggered(window, window.on_show)
+    assert_window_on_show(window)
 
 
 def test_as_image(window):
