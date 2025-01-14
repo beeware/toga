@@ -36,6 +36,7 @@ class Window:
         self._in_presentation = False
         # Pending Window state transition variable:
         self._pending_state_transition = None
+        self._previous_state = WindowState.NORMAL
 
         self.native.set_default_size(size[0], size[1])
 
@@ -73,6 +74,8 @@ class Window:
         self._window_state_flags = event.new_window_state
         current_state = self.get_window_state()
 
+        # Window state flags are unreliable when window is hidden, so cache the
+        # previous window state when it was visible.
         if self.get_visible():
             self._previous_state = current_state
 
