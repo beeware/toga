@@ -35,12 +35,23 @@ def test_attribute():
     """Style properties can be accessed as widget properties."""
     widget = ExampleWidget()
     assert widget.flex == 0
+    assert widget.style.flex == 0
 
     widget.flex = 1
     assert widget.flex == 1
+    assert widget.style.flex == 1
 
     del widget.flex
     assert widget.flex == 0
+    assert widget.style.flex == 0
+
+    widget.style.flex = 2
+    assert widget.flex == 2
+    assert widget.style.flex == 2
+
+    del widget.flex
+    assert widget.flex == 0
+    assert widget.style.flex == 0
 
     # Check regular attributes still work correctly
     with raises(AttributeError):
