@@ -31,9 +31,44 @@ def slider(on_change):
     )
 
 
-def test_widget_created(slider, on_change):
+def test_widget_create(slider, on_change):
+    """A slider widget can be created."""
     assert slider._impl.interface == slider
     assert_action_performed(slider, "create Slider")
+
+
+def test_widget_create_initial_values(on_change):
+    """A slider widget can be created."""
+    on_press = Mock()
+    on_release = Mock()
+
+    slider = toga.Slider(
+        id="foobar",
+        value=37.0,
+        min=-42.0,
+        max=42.0,
+        tick_count=1234,
+        on_change=on_change,
+        on_press=on_press,
+        on_release=on_release,
+        enabled=False,
+        # A style property
+        width=256,
+    )
+
+    assert slider._impl.interface == slider
+    assert_action_performed(slider, "create Slider")
+
+    assert slider.id == "foobar"
+    assert slider.value == pytest.approx(37.0, abs=0.1)
+    assert slider.min == pytest.approx(-42.0)
+    assert slider.max == pytest.approx(42.0)
+    assert slider.tick_count == 1234
+    assert slider.on_change._raw == on_change
+    assert slider.on_press._raw == on_press
+    assert slider.on_release._raw == on_release
+    assert not slider.enabled
+    assert slider.style.width == 256
 
 
 @pytest.mark.parametrize(

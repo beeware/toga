@@ -36,18 +36,23 @@ def test_widget_created_with_values(on_change_handler):
     """A DateInput can be created with initial values."""
     # Round trip the impl/interface
     widget = toga.DateInput(
+        id="foobar",
         value=date(2015, 6, 15),
         min=date(2013, 5, 14),
         max=date(2017, 7, 16),
         on_change=on_change_handler,
+        # A style property
+        width=256,
     )
     assert widget._impl.interface == widget
     assert_action_performed(widget, "create DateInput")
 
+    assert widget.id == "foobar"
     assert widget.value == date(2015, 6, 15)
     assert widget.min == date(2013, 5, 14)
     assert widget.max == date(2017, 7, 16)
     assert widget.on_change._raw == on_change_handler
+    assert widget.style.width == 256
 
     # The change handler isn't invoked at construction.
     on_change_handler.assert_not_called()

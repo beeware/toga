@@ -20,6 +20,24 @@ def test_widget_created(activity_indicator):
     assert_action_performed(activity_indicator, "create ActivityIndicator")
 
 
+def test_widget_create_with_values():
+    """An activity indicator can be created with initial values."""
+    activity_indicator = toga.ActivityIndicator(
+        id="foobar",
+        running=True,
+        # A style property
+        width=256,
+    )
+
+    # Round trip the impl/interface
+    assert activity_indicator._impl.interface == activity_indicator
+    assert_action_performed(activity_indicator, "create ActivityIndicator")
+
+    assert activity_indicator.id == "foobar"
+    assert activity_indicator.is_running
+    assert activity_indicator.style.width == 256
+
+
 def test_disable_no_op(activity_indicator):
     """ActivityIndicator doesn't have a disabled state."""
     # Enabled by default
