@@ -20,7 +20,12 @@ def test_create_box_with_children():
     """A Box can be created with children."""
     child1 = toga.Box()
     child2 = toga.Box()
-    box = toga.Box(children=[child1, child2])
+    box = toga.Box(
+        id="foobar",
+        children=[child1, child2],
+        # A style property
+        width=256,
+    )
 
     # Round trip the impl/interface
     assert box._impl.interface == box
@@ -31,6 +36,10 @@ def test_create_box_with_children():
 
     # But the box will have children.
     assert box.children == [child1, child2]
+
+    # Other properties are preserved
+    assert box.id == "foobar"
+    assert box.style.width == 256
 
 
 def test_disable_no_op():

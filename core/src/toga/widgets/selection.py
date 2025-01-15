@@ -31,6 +31,7 @@ class Selection(Widget):
         value: object | None = None,
         on_change: toga.widgets.selection.OnChangeHandler | None = None,
         enabled: bool = True,
+        **kwargs,
     ):
         """Create a new Selection widget.
 
@@ -45,6 +46,7 @@ class Selection(Widget):
             ``items`` will be selected.
         :param on_change: Initial :any:`on_change` handler.
         :param enabled: Whether the user can interact with the widget.
+        :param kwargs: Initial style properties.
         """
 
         self._items: SourceT | ListSource
@@ -52,7 +54,7 @@ class Selection(Widget):
         self.on_change = None  # needed for _impl initialization
 
         self._accessor = accessor
-        super().__init__(id=id, style=style)
+        super().__init__(id, style, **kwargs)
 
         self.items = items
         if value:

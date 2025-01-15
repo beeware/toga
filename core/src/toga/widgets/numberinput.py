@@ -91,6 +91,7 @@ class NumberInput(Widget):
         value: NumberInputT | None = None,
         readonly: bool = False,
         on_change: toga.widgets.numberinput.OnChangeHandler | None = None,
+        **kwargs,
     ):
         """Create a new number input widget.
 
@@ -107,6 +108,7 @@ class NumberInput(Widget):
         :param readonly: Can the value of the widget be modified by the user?
         :param on_change: A handler that will be invoked when the value of the widget
             changes.
+        :param kwargs: Initial style properties.
         """
         # The initial setting of min requires calling get_value(),
         # which in turn interrogates min. Prime those values with
@@ -116,7 +118,7 @@ class NumberInput(Widget):
 
         self.on_change = None
 
-        super().__init__(id=id, style=style)
+        super().__init__(id, style, **kwargs)
 
         self.readonly = readonly
         self.step = step

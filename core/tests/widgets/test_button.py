@@ -45,6 +45,30 @@ def test_button_created(value, expected):
     assert button.icon is None
 
 
+def test_button_created_with_values():
+    """A button can be created with initial values."""
+    on_press_handler = Mock()
+    button = toga.Button(
+        id="foobar",
+        text="Button text",
+        on_press=on_press_handler,
+        enabled=False,
+        # A style property
+        width=256,
+    )
+
+    # Round trip the impl/interface
+    assert button._impl.interface == button
+
+    assert_action_performed(button, "create Button")
+    assert button.id == "foobar"
+    assert button.text == "Button text"
+    assert button.icon is None
+    assert button.on_press._raw == on_press_handler
+    assert not button.enabled
+    assert button.style.width == 256
+
+
 def test_icon_button_created(button, sample_icon):
     """A button can be created."""
     button = toga.Button(icon=sample_icon)
