@@ -305,6 +305,38 @@ def test_visibility(window, app):
 
 
 @pytest.mark.parametrize(
+    "state",
+    [
+        WindowState.MINIMIZED,
+        WindowState.FULLSCREEN,
+        WindowState.PRESENTATION,
+    ],
+)
+def test_hide_disallowed_on_window_state(window, app, state):
+    """A window in MINIMIZED, FULLSCREEN or PRESENTATION state cannot be
+    set to hidden."""
+    window.show()
+
+    window.state = state
+    assert window.state == state
+    assert window.visible is True
+
+    with pytest.raises(
+        ValueError,
+        match=f"A window in {state} cannot be set to hidden.",
+    ):
+        window.hide()
+        assert_action_not_performed(window, "hide")
+
+    with pytest.raises(
+        ValueError,
+        match=f"A window in {state} cannot be set to hidden.",
+    ):
+        window.visible = False
+        assert_action_not_performed(window, "hide")
+
+
+@pytest.mark.parametrize(
     "initial_state, final_state",
     [
         # Direct switch from NORMAL:

@@ -437,7 +437,14 @@ class Window:
     def hide(self) -> None:
         """Hide the window. If the window is already hidden, this method has no
         effect."""
-        self._impl.hide()
+        if self.state in {
+            WindowState.MINIMIZED,
+            WindowState.FULLSCREEN,
+            WindowState.PRESENTATION,
+        }:
+            raise ValueError(f"A window in {self.state} cannot be set to hidden.")
+        else:
+            self._impl.hide()
 
     @property
     def visible(self) -> bool:
