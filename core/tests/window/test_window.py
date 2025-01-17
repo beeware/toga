@@ -355,14 +355,14 @@ def test_hide_disallowed_on_window_state(window, app, state):
 
     with pytest.raises(
         ValueError,
-        match=f"A window in {state} cannot be set to hidden.",
+        match=f"A window in {state} state cannot be hidden.",
     ):
         window.hide()
         assert_action_not_performed(window, "hide")
 
     with pytest.raises(
         ValueError,
-        match=f"A window in {state} cannot be set to hidden.",
+        match=f"A window in {state} state cannot be hidden.",
     ):
         window.visible = False
         assert_action_not_performed(window, "hide")

@@ -439,7 +439,7 @@ class Window:
         """Hide the window. If the window is already hidden, this method has no
         effect.
 
-        :raises ValueError: If the window is currently in a minimized, fullscreen or
+        :raises ValueError: If the window is currently in a minimized, full screen or
         presentation state.
         """
         if self.state in {
