@@ -55,6 +55,7 @@ if toga.platform.current_platform in {"iOS", "android"}:
 
     async def test_visibility(main_window, main_window_probe):
         """Hide and close are no-ops on mobile"""
+        main_window.show()
         assert main_window.visible
 
         main_window.hide()
