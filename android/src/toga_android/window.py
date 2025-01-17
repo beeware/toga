@@ -82,7 +82,10 @@ class Window(Container):
         )
         self.set_title(self._initial_title)
 
-    def show(self):
+    def show(self):  # pragma: no cover
+        # The Window on Android is shown by default when the app starts.
+        # Requesting show() on an already shown window is a no-op and is
+        # ignored at the core level. So this method will never be reached.
         pass
 
     ######################################################################
