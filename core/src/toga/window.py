@@ -440,7 +440,7 @@ class Window:
         effect.
 
         :raises ValueError: If the window is currently in a minimized, full screen or
-        presentation state.
+            presentation state.
         """
         if self.state in {
             WindowState.MINIMIZED,
