@@ -312,7 +312,8 @@ class Window:
     def show(self) -> None:
         """Show the window. If the window is already visible, this method has no
         effect."""
-        self._impl.show()
+        if not self.visible:
+            self._impl.show()
 
     ######################################################################
     # Window content and resources
@@ -444,7 +445,8 @@ class Window:
         }:
             raise ValueError(f"A window in {self.state} cannot be set to hidden.")
         else:
-            self._impl.hide()
+            if self.visible:
+                self._impl.hide()
 
     @property
     def visible(self) -> bool:
