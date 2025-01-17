@@ -1,1 +1,1 @@
-Hiding of a window while in `MINIMIZED`, `FULLSCREEN` or `PRESENTATION` state is now disabled, in order to keep the API behavior consistent on all platforms.
+The `show()` and `hide()` APIs can no longer be used on a window while it is in a `MINIMIZED`, `FULLSCREEN` or `PRESENTATION` state.
