@@ -118,7 +118,7 @@ jobs:
         # the value of TOGA_INSTALL_COMMAND will be a literal string without any shell expansions to perform
         TOGA_INSTALL_COMMAND="python -m pip install ../$(ls dist/toga_core-*.whl)[dev] ../$(ls dist/toga_dummy-*.whl) ../$(ls dist/travertino-*.whl)"
         tox -e py-cov${{ matrix.env-suffix }}
-        tox -qe coverage$(tr -dc "0-9" <<< "${{ matrix.python-version }}"){{ matrix.env-suffix }}
+        tox -qe coverage$(tr -dc "0-9" <<< "${{ matrix.python-version }}")${{ matrix.env-suffix }}
         mv ${{ matrix.package }}/.coverage ${{ matrix.package }}/.coverage.${{ matrix.platform }}.${{ matrix.python-version }}
 
     - name: Store Coverage Data
