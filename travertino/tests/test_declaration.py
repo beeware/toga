@@ -4,8 +4,8 @@ from unittest.mock import call
 from warnings import catch_warnings, filterwarnings
 
 import pytest
-from tests.travertino.utils import mock_attr, prep_style_class
 
+from tests.utils import mock_attr, prep_style_class
 from travertino.declaration import (
     BaseStyle,
     Choices,

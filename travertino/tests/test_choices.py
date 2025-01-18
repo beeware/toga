@@ -3,8 +3,8 @@ from __future__ import annotations
 from warnings import catch_warnings, filterwarnings
 
 import pytest
-from tests.travertino.utils import mock_attr, prep_style_class
 
+from tests.utils import mock_attr, prep_style_class
 from travertino.colors import NAMED_COLOR, rgb
 from travertino.constants import GOLDENROD, NONE, REBECCAPURPLE, TOP
 from travertino.declaration import BaseStyle, Choices, validated_property
