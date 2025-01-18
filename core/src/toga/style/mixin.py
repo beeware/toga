@@ -1,3 +1,6 @@
+from travertino.declaration import validated_property
+
+
 class StyleProperty:
     def __set_name__(self, mixin_cls, name):
         self.name = name
@@ -22,7 +25,9 @@ def style_mixin(style_cls):
     }
 
     for name in dir(style_cls):
-        if not name.startswith("_") and isinstance(getattr(style_cls, name), property):
+        if not name.startswith("_") and isinstance(
+            getattr(style_cls, name), validated_property
+        ):
             mixin_dict[name] = StyleProperty()
 
     return type(style_cls.__name__ + "Mixin", (), mixin_dict)

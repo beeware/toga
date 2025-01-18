@@ -341,7 +341,7 @@ class BaseStyle:
         for name, value in styles.items():
             name = name.replace("-", "_")
             if name not in self._ALL_PROPERTIES:
-                raise NameError(f"Unknown style {name}")
+                raise NameError(f"Unknown style '{name}'")
 
             self[name] = value
 

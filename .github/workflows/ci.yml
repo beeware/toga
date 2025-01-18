@@ -69,7 +69,7 @@ jobs:
       attest: ${{ inputs.attest-package }}
 
   core-and-travertino:
-    name: Test ${{ matrix.package }}
+    name: Test ${{ matrix.package }} (${{ matrix.platform }}, ${{ matrix.python-version }})
     runs-on: ${{ matrix.platform }}
     needs: [ pre-commit, towncrier, package ]
     continue-on-error: ${{ matrix.experimental }}
@@ -82,9 +82,9 @@ jobs:
         include:
         - experimental: false
         - package: "core"
-          env_suffix: ""
+          env-suffix: ""
         - package: "travertino"
-          env_suffix: "-trav"
+          env-suffix: "-trav"
 
     steps:
     - name: Checkout
@@ -117,8 +117,8 @@ jobs:
         # The $(ls ...) shell expansion is done in the Github environment;
         # the value of TOGA_INSTALL_COMMAND will be a literal string without any shell expansions to perform
         TOGA_INSTALL_COMMAND="python -m pip install ../$(ls dist/toga_core-*.whl)[dev] ../$(ls dist/toga_dummy-*.whl) ../$(ls dist/travertino-*.whl)"
-        tox -e py-cov${{ matrix.env_suffix }}
-        tox -qe coverage$(tr -dc "0-9" <<< "${{ matrix.python-version }}"){{ matrix.env_suffix }}
+        tox -e py-cov${{ matrix.env-suffix }}
+        tox -qe coverage$(tr -dc "0-9" <<< "${{ matrix.python-version }}"){{ matrix.env-suffix }}
         mv ${{ matrix.package }}/.coverage ${{ matrix.package }}/.coverage.${{ matrix.platform }}.${{ matrix.python-version }}
 
     - name: Store Coverage Data
@@ -199,9 +199,9 @@ jobs:
         package: ["core", "travertino"]
         include:
           - package: "core"
-            env_suffix: ""
+            env-suffix: ""
           - package: "travertino"
-            env_suffix: "-trav"
+            env-suffix: "-trav"
     steps:
     - name: Checkout
       uses: actions/checkout@v4.2.2
@@ -231,7 +231,7 @@ jobs:
 
     - name: Generate Coverage Report
       # Even with "fail" on, Travertino will accept <100%.
-      run: tox -e coverage-html-fail-platform${{ matrix.env_suffix }}
+      run: tox -e coverage-html-fail-platform${{ matrix.env-suffix }}
 
     - name: Upload HTML Coverage Report
       uses: actions/upload-artifact@v4.6.0
