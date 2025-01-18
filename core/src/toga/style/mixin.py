@@ -1,4 +1,4 @@
-from travertino.declaration import validated_property
+from travertino.declaration import directional_property, validated_property
 
 
 class StyleProperty:
@@ -26,7 +26,7 @@ def style_mixin(style_cls):
 
     for name in dir(style_cls):
         if not name.startswith("_") and isinstance(
-            getattr(style_cls, name), validated_property
+            getattr(style_cls, name), (validated_property, directional_property)
         ):
             mixin_dict[name] = StyleProperty()
 

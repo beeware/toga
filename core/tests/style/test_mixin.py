@@ -1,3 +1,4 @@
+import pytest
 from pytest import raises
 
 from toga.style import Pack
@@ -63,7 +64,12 @@ def test_attribute():
         widget.my_attr
 
 
-def test_class_attribute():
+@pytest.mark.parametrize(
+    "prop_name",
+    # Make sure it works for both a plain property and a directional alias.
+    ["flex", "margin"],
+)
+def test_class_attribute(prop_name):
     """Getting a style attribute from the class should return a property object."""
-    prop = ExampleWidget.flex
+    prop = getattr(ExampleWidget, prop_name)
     assert type(prop).__name__ == "StyleProperty"
