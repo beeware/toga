@@ -46,14 +46,19 @@ def test_widget_created():
 def test_widget_created_with_values(content1, content2):
     """A split container can be created with arguments."""
     splitcontainer = toga.SplitContainer(
+        id="foobar",
         content=[content1, content2],
         direction=toga.SplitContainer.HORIZONTAL,
+        # A style property
+        width=256,
     )
     assert splitcontainer._impl.interface == splitcontainer
     assert_action_performed(splitcontainer, "create SplitContainer")
 
+    assert splitcontainer.id == "foobar"
     assert splitcontainer.content == [content1, content2]
     assert splitcontainer.direction == toga.SplitContainer.HORIZONTAL
+    assert splitcontainer.style.width == 256
 
     # The content has been assigned to the widget
     assert_action_performed_with(

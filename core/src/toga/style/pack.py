@@ -98,6 +98,8 @@ FONT_SIZE_CHOICES = Choices(integer=True)
 
 
 class Pack(BaseStyle):
+    _doc_link = ":doc:`style properties </reference/style/pack>`"
+
     class Box(BaseBox):
         pass
 

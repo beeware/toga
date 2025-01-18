@@ -44,6 +44,7 @@ class Tree(Widget):
         on_select: toga.widgets.tree.OnSelectHandler | None = None,
         on_activate: toga.widgets.tree.OnActivateHandler | None = None,
         missing_value: str = "",
+        **kwargs,
     ):
         """Create a new Tree widget.
 
@@ -74,6 +75,7 @@ class Tree(Widget):
         :param missing_value: The string that will be used to populate a cell when the
             value provided by its accessor is :any:`None`, or the accessor isn't
             defined.
+        :param kwargs: Initial style properties.
         """
         self._headings: list[str] | None
         self._data: SourceT | TreeSource
@@ -96,7 +98,7 @@ class Tree(Widget):
         self.on_activate = None
         self._data = None
 
-        super().__init__(id=id, style=style)
+        super().__init__(id, style, **kwargs)
 
         self.data = data
 

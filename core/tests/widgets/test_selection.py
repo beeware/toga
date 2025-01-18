@@ -57,19 +57,24 @@ def test_create_with_value():
     on_change = Mock()
 
     widget = toga.Selection(
+        id="foobar",
         items=["first", "second", "third"],
         value="second",
         on_change=on_change,
         enabled=False,
+        # A style property
+        width=256,
     )
     assert widget._impl.interface == widget
     assert_action_performed(widget, "create Selection")
 
+    assert widget.id == "foobar"
     assert len(widget.items) == 3
     assert widget._accessor is None
     assert widget.value == "second"
     assert widget.on_change._raw == on_change
     assert not widget.enabled
+    assert widget.style.width == 256
 
 
 @pytest.mark.parametrize(

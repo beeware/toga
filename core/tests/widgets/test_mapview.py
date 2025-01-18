@@ -49,16 +49,26 @@ def test_create_with_values(pins):
     """A MapView can be created with all available arguments"""
     on_select = Mock()
 
-    widget = toga.MapView(location=(37.0, 42.0), zoom=4, pins=pins, on_select=on_select)
+    widget = toga.MapView(
+        id="foobar",
+        location=(37.0, 42.0),
+        zoom=4,
+        pins=pins,
+        on_select=on_select,
+        # A style property
+        width=256,
+    )
 
     assert widget._impl.interface == widget
     assert_action_performed(widget, "create MapView")
 
+    assert widget.id == "foobar"
     assert widget.location == toga.LatLng(37.0, 42.0)
     assert widget.zoom == 4
     assert set(widget.pins) == set(pins)
     assert repr(widget.pins) == "<MapPinSet (2 pins)>"
     assert widget._on_select._raw == on_select
+    assert widget.style.width == 256
 
 
 def test_latlng_properties():

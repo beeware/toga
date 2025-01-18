@@ -63,16 +63,20 @@ def test_create_with_values(source, on_select_handler, on_activate_handler):
     """A Table can be created with initial values."""
     table = toga.Table(
         ["First", "Second"],
+        id="foobar",
         data=source,
         accessors=["primus", "secondus"],
         multiple_select=True,
         on_select=on_select_handler,
         on_activate=on_activate_handler,
         missing_value="Boo!",
+        # A style property
+        width=256,
     )
     assert table._impl.interface == table
     assert_action_performed(table, "create Table")
 
+    assert table.id == "foobar"
     assert len(table.data) == 3
     assert table.headings == ["First", "Second"]
     assert table.accessors == ["primus", "secondus"]
@@ -80,6 +84,7 @@ def test_create_with_values(source, on_select_handler, on_activate_handler):
     assert table.missing_value == "Boo!"
     assert table.on_select._raw == on_select_handler
     assert table.on_activate._raw == on_activate_handler
+    assert table.style.width == 256
 
 
 def test_create_with_accessor_overrides():

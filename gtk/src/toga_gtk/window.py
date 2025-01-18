@@ -69,8 +69,24 @@ class Window:
     ######################################################################
 
     def gtk_window_state_event(self, widget, event):
+        previous_window_state_flags = self._window_state_flags
         # Get the window state flags
         self._window_state_flags = event.new_window_state
+
+        # Window state flags are unreliable when window is hidden,
+        # so cache the previous window state flag on to the new
+        # window state flag, so that get_window_state() would work
+        # correctly.
+        if not self.get_visible():
+            restore_flags = {
+                Gdk.WindowState.MAXIMIZED,
+                Gdk.WindowState.ICONIFIED,
+                Gdk.WindowState.FULLSCREEN,
+            }
+            for flag in restore_flags:
+                if previous_window_state_flags & flag:
+                    self._window_state_flags |= flag
+                    break
 
         if self._pending_state_transition:
             current_state = self.get_window_state()

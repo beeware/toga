@@ -139,6 +139,7 @@ class MapView(Widget):
         zoom: int = 11,
         pins: Iterable[MapPin] | None = None,
         on_select: toga.widgets.mapview.OnSelectHandler | None = None,
+        **kwargs,
     ):
         """Create a new MapView widget.
 
@@ -152,8 +153,9 @@ class MapView(Widget):
         :param pins: The initial pins to display on the map.
         :param on_select: A handler that will be invoked when the user selects a map
             pin.
+        :param kwargs: Initial style properties.
         """
-        super().__init__(id=id, style=style)
+        super().__init__(id, style, **kwargs)
 
         self._pins = MapPinSet(self, pins)
 

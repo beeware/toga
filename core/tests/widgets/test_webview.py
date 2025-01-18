@@ -36,16 +36,21 @@ def test_create_with_values():
     on_webview_load = Mock()
 
     widget = toga.WebView(
+        id="foobar",
         url="https://beeware.org",
         user_agent="Custom agent",
         on_webview_load=on_webview_load,
+        # A style property
+        width=256,
     )
     assert widget._impl.interface == widget
     assert_action_performed(widget, "create WebView")
 
+    assert widget.id == "foobar"
     assert widget.url == "https://beeware.org"
     assert widget.user_agent == "Custom agent"
     assert widget.on_webview_load._raw == on_webview_load
+    assert widget.style.width == 256
 
 
 def test_webview_load_disabled(monkeypatch):

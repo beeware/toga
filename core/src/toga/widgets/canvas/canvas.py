@@ -67,6 +67,7 @@ class Canvas(Widget):
         on_alt_press: OnTouchHandler | None = None,
         on_alt_release: OnTouchHandler | None = None,
         on_alt_drag: OnTouchHandler | None = None,
+        **kwargs,
     ):
         """Create a new Canvas widget.
 
@@ -83,10 +84,11 @@ class Canvas(Widget):
         :param on_alt_press: Initial :any:`on_alt_press` handler.
         :param on_alt_release: Initial :any:`on_alt_release` handler.
         :param on_alt_drag: Initial :any:`on_alt_drag` handler.
+        :param kwargs: Initial style properties.
         """
         self._context = Context(canvas=self)
 
-        super().__init__(id=id, style=style)
+        super().__init__(id, style, **kwargs)
 
         # Set all the properties
         self.on_resize = on_resize

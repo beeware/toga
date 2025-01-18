@@ -13,6 +13,10 @@ class Widget:
         self.native = None
         self.create()
 
+        # Override this attribute to set a different default background
+        # color for a given widget.
+        self._default_background_color = self.native.backgroundColor
+
     @abstractmethod
     def create(self): ...
 
@@ -87,7 +91,9 @@ class Widget:
         pass
 
     def set_background_color(self, color):
-        self.native.backgroundColor = None if color is None else native_color(color)
+        self.native.backgroundColor = (
+            self._default_background_color if color is None else native_color(color)
+        )
 
     # INTERFACE
     def add_child(self, child):
