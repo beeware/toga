@@ -91,8 +91,7 @@ Although that document is for a different project, the details about setting up
 your development environment are the same.
 
 .. _BeeWare suite: https://beeware.org
-.. _Read The Docs: https://travertino.readthedocs.io
 .. _BeeWare Community Code of Conduct: https://beeware.org/community/behavior/
-.. _log them on Github: https://github.com/beeware/travertino/issues
-.. _fork the code: https://github.com/beeware/travertino
-.. _submit a pull request: https://github.com/beeware/travertino/pulls
+.. _log them on Github: https://github.com/beeware/toga/issues
+.. _fork the code: https://github.com/beeware/toga
+.. _submit a pull request: https://github.com/beeware/toga/pulls
