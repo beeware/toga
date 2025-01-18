@@ -5,7 +5,6 @@ from warnings import catch_warnings, filterwarnings
 
 import pytest
 
-from tests.utils import mock_attr, prep_style_class
 from travertino.declaration import (
     BaseStyle,
     Choices,
@@ -14,6 +13,8 @@ from travertino.declaration import (
     list_property,
     validated_property,
 )
+
+from .utils import mock_attr, prep_style_class
 
 VALUE1 = "value1"
 VALUE2 = "value2"

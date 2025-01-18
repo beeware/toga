@@ -199,10 +199,8 @@ jobs:
       include:
         - package: "core"
           env_suffix: ""
-          fail: "-fail"
         - package: "travertino"
           env_suffix: "-trav"
-          fail: ""
     steps:
     - name: Checkout
       uses: actions/checkout@v4.2.2
@@ -231,7 +229,8 @@ jobs:
         merge-multiple: true
 
     - name: Generate Coverage Report
-      run: tox -e coverage-html${{ matrix.fail }}platform${{ matrix.env_suffix }}
+      # Even with "fail" on, Travertino will accept <100%.
+      run: tox -e coverage-html-fail-platform${{ matrix.env_suffix }}
 
     - name: Upload HTML Coverage Report
       uses: actions/upload-artifact@v4.6.0

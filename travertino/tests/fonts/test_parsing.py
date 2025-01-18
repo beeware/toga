@@ -1,6 +1,5 @@
 import pytest
 
-from tests.fonts.test_constructor import assert_font
 from travertino.constants import (
     BOLD,
     ITALIC,
@@ -9,6 +8,8 @@ from travertino.constants import (
     SMALL_CAPS,
 )
 from travertino.fonts import Font, font
+
+from .test_constructor import assert_font
 
 
 def test_font_instance():

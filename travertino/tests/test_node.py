@@ -3,11 +3,12 @@ from warnings import catch_warnings, filterwarnings
 
 import pytest
 
-from tests.utils import mock_attr, prep_style_class
 from travertino.declaration import BaseStyle, Choices, validated_property
 from travertino.layout import BaseBox, Viewport
 from travertino.node import Node
 from travertino.size import BaseIntrinsicSize
+
+from .utils import mock_attr, prep_style_class
 
 
 @prep_style_class
