@@ -103,7 +103,7 @@ jobs:
       with:
         requirements: tox
         extra: dev
-        project-root: core
+        project-root: ${{ matrix.package }}
 
     - name: Get Packages
       uses: actions/download-artifact@v4.1.8
@@ -220,7 +220,7 @@ jobs:
       with:
         requirements: tox
         extra: dev
-        project-root: core
+        project-root: ${{ matrix.package }}
 
     - name: Retrieve Coverage Data
       uses: actions/download-artifact@v4.1.8
