@@ -125,7 +125,7 @@ jobs:
       uses: actions/upload-artifact@v4.6.0
       with:
         name: ${{ matrix.package }}-coverage-data-${{ matrix.platform }}-${{ matrix.python-version }}
-        path: "$${{ matrix.package }}/.coverage.*"
+        path: "${{ matrix.package }}/.coverage.*"
         if-no-files-found: error
         include-hidden-files: true
 
