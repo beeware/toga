@@ -1,7 +1,8 @@
 import warnings
 
-import toga
 from travertino.size import at_least
+
+import toga
 
 from ..libs import GdkPixbuf, GObject, Gtk
 from .base import Widget

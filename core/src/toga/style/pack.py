@@ -6,14 +6,6 @@ from typing import TYPE_CHECKING, Any
 if TYPE_CHECKING:
     from travertino.colors import rgb, hsl
 
-from toga.fonts import (
-    FONT_STYLES,
-    FONT_VARIANTS,
-    FONT_WEIGHTS,
-    SYSTEM_DEFAULT_FONT_SIZE,
-    SYSTEM_DEFAULT_FONTS,
-    Font,
-)
 from travertino.constants import (  # noqa: F401
     BOLD,
     BOTTOM,
@@ -49,6 +41,15 @@ from travertino.declaration import (
 )
 from travertino.layout import BaseBox
 from travertino.size import BaseIntrinsicSize
+
+from toga.fonts import (
+    FONT_STYLES,
+    FONT_VARIANTS,
+    FONT_WEIGHTS,
+    SYSTEM_DEFAULT_FONT_SIZE,
+    SYSTEM_DEFAULT_FONTS,
+    Font,
+)
 
 # Make sure deprecation warnings are shown by default
 warnings.filterwarnings("default", category=DeprecationWarning)

@@ -1,9 +1,9 @@
 from http.cookiejar import Cookie, CookieJar
 
 from rubicon.objc import objc_id, objc_method, objc_property, py_from_ns
+from travertino.size import at_least
 
 from toga.widgets.webview import CookiesResult, JavaScriptResult
-from travertino.size import at_least
 
 from ..libs import NSURL, NSURLRequest, WKWebView
 from .base import Widget

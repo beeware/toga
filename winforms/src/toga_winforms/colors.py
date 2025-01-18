@@ -1,5 +1,4 @@
 from System.Drawing import Color
-
 from travertino.colors import TRANSPARENT
 
 CACHE = {TRANSPARENT: Color.Transparent}

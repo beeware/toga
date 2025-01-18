@@ -1,4 +1,5 @@
 from rubicon.objc import SEL, CGSize, objc_method, objc_property
+from travertino.size import at_least
 
 from toga.colors import TRANSPARENT
 from toga_iOS.colors import native_color
@@ -10,7 +11,6 @@ from toga_iOS.libs import (
     UIControlStateNormal,
 )
 from toga_iOS.widgets.base import Widget
-from travertino.size import at_least
 
 
 class TogaButton(UIButton):

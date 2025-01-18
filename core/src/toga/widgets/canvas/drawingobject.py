@@ -4,6 +4,8 @@ from abc import ABC, abstractmethod
 from math import pi
 from typing import Any
 
+from travertino.colors import Color
+
 from toga.colors import BLACK, color as parse_color
 from toga.constants import Baseline, FillRule
 from toga.fonts import (
@@ -11,7 +13,6 @@ from toga.fonts import (
     SYSTEM_DEFAULT_FONT_SIZE,
     Font,
 )
-from travertino.colors import Color
 
 
 class DrawingObject(ABC):

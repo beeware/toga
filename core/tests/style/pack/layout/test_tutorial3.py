@@ -1,5 +1,6 @@
-from toga.style.pack import COLUMN, Pack
 from travertino.size import at_least
+
+from toga.style.pack import COLUMN, Pack
 
 from ..utils import ExampleNode, ExampleViewport, assert_layout
 

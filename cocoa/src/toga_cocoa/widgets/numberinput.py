@@ -2,6 +2,7 @@ import sys
 from decimal import Decimal, InvalidOperation
 
 from rubicon.objc import SEL, objc_method, objc_property
+from travertino.size import at_least
 
 from toga.colors import TRANSPARENT
 from toga.widgets.numberinput import _clean_decimal, _clean_decimal_str
@@ -21,7 +22,6 @@ from toga_cocoa.libs import (
     NSTextView,
     NSView,
 )
-from travertino.size import at_least
 
 from .base import Widget
 

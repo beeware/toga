@@ -1,5 +1,6 @@
-from toga_cocoa.libs import NSProgressIndicator, NSProgressIndicatorBarStyle
 from travertino.size import at_least
+
+from toga_cocoa.libs import NSProgressIndicator, NSProgressIndicatorBarStyle
 
 from .base import Widget
 

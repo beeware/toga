@@ -2,9 +2,9 @@ from decimal import ROUND_DOWN
 
 from System.Drawing import Point
 from System.Windows.Forms import Panel, SystemInformation
+from travertino.node import Node
 
 from toga_winforms.container import Container
-from travertino.node import Node
 
 from ..libs.wrapper import WeakrefCallable
 from .base import Widget

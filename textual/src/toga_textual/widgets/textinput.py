@@ -1,5 +1,6 @@
-from textual.widgets import Input as TextualInput
 from travertino.size import at_least
+
+from textual.widgets import Input as TextualInput
 
 from .base import Widget
 

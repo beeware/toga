@@ -1,10 +1,10 @@
 import warnings
 
 from rubicon.objc import SEL, objc_method
+from travertino.size import at_least
 
 from toga_cocoa.container import Container
 from toga_cocoa.libs import NSTabView, NSTabViewItem
-from travertino.size import at_least
 
 from ..libs import objc_property
 from .base import Widget

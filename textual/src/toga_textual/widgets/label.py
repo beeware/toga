@@ -1,5 +1,6 @@
-from textual.widgets import Label as TextualLabel
 from travertino.size import at_least
+
+from textual.widgets import Label as TextualLabel
 
 from .base import Widget
 

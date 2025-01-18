@@ -1,8 +1,9 @@
 import random
 
+from travertino.constants import COLUMN
+
 import toga
 from toga.style import Pack
-from travertino.constants import COLUMN
 
 WIDGETS_GROUP = toga.Group("Widgets", order=2)
 FOCUS_ORDER_GROUP = toga.Group("Focus Order", order=3)

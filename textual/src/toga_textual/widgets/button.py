@@ -1,5 +1,6 @@
-from textual.widgets import Button as TextualButton
 from travertino.size import at_least
+
+from textual.widgets import Button as TextualButton
 
 from .base import Widget
 

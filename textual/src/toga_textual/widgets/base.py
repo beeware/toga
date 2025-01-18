@@ -1,6 +1,7 @@
+from travertino.size import at_least
+
 from toga.style.pack import ROW
 from toga.types import Size
-from travertino.size import at_least
 
 
 # We assume a terminal is 800x600 pixels, mapping to 80x25 characters.

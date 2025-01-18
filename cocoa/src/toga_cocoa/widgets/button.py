@@ -1,4 +1,5 @@
 from rubicon.objc import SEL, objc_method, objc_property
+from travertino.size import at_least
 
 from toga.colors import TRANSPARENT
 from toga.fonts import SYSTEM_DEFAULT_FONT_SIZE
@@ -9,7 +10,6 @@ from toga_cocoa.libs import (
     NSButton,
     NSMomentaryPushInButton,
 )
-from travertino.size import at_least
 
 from .base import Widget
 

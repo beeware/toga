@@ -1,4 +1,5 @@
 from rubicon.objc import objc_method, objc_property
+from travertino.size import at_least
 
 from toga.colors import TRANSPARENT
 from toga_cocoa.colors import native_color
@@ -10,7 +11,6 @@ from toga_cocoa.libs import (
     NSViewHeightSizable,
     NSViewWidthSizable,
 )
-from travertino.size import at_least
 
 from .base import Widget
 

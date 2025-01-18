@@ -6,9 +6,9 @@ from android.graphics.drawable import ColorDrawable, InsetDrawable
 from android.view import Gravity, View
 from android.widget import RelativeLayout
 from org.beeware.android import MainActivity
+from travertino.size import at_least
 
 from toga.constants import CENTER, JUSTIFY, LEFT, RIGHT, TRANSPARENT
-from travertino.size import at_least
 
 from ..colors import native_color
 

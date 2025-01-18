@@ -7,10 +7,10 @@ from System.Drawing import (
     Size,
     SystemColors,
 )
+from travertino.size import at_least
 
 from toga.colors import TRANSPARENT
 from toga_winforms.colors import native_color
-from travertino.size import at_least
 
 
 class Scalable(ABC):

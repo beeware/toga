@@ -1,8 +1,9 @@
 import asyncio
 
+from travertino.size import at_least
+
 from toga_iOS.libs import CGSize, UIProgressView, UIProgressViewStyle
 from toga_iOS.widgets.base import Widget
-from travertino.size import at_least
 
 # Implementation notes
 # ====================

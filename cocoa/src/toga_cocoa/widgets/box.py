@@ -1,5 +1,6 @@
-from toga_cocoa.container import TogaView
 from travertino.size import at_least
+
+from toga_cocoa.container import TogaView
 
 from .base import Widget
 

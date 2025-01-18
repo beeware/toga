@@ -1,5 +1,6 @@
-from toga.colors import TRANSPARENT
 from travertino.size import at_least
+
+from toga.colors import TRANSPARENT
 
 from ..libs import Gtk
 from .base import Widget
