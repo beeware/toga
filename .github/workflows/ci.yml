@@ -68,7 +68,7 @@ jobs:
       build-subdirectory: ${{ matrix.subdir }}
       attest: ${{ inputs.attest-package }}
 
-  test-core-and-travertino:
+  core-and-travertino:
     name: Test ${{ matrix.package }}
     runs-on: ${{ matrix.platform }}
     needs: [ pre-commit, towncrier, package ]
@@ -192,7 +192,7 @@ jobs:
 
   core-and-travertino-coverage:
     name: "Coverage: ${{ matrix.package }}"
-    needs: core
+    needs: core-and-travertino
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -242,7 +242,7 @@ jobs:
 
   testbed:
     name: Testbed
-    needs: core
+    needs: core-and-travertino
     runs-on: ${{ matrix.runs-on }}
     strategy:
       fail-fast: false
