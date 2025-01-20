@@ -242,46 +242,59 @@ def test_set_size_with_content(window):
 
 
 def test_show_hide(window, app):
-    """The window can be shown and hidden."""
+    """The window can be shown & hidden, but requesting visibility change when
+    the window is already in that requested visibility state is a no-op."""
+    # Window is assigned to the app, but is not visible
     assert window.app == app
+    assert window in app.windows
+    assert not window.visible
+
+    # Show the window
     window.show()
 
     # The window has been assigned to the app, and is visible
     assert window.app == app
     assert window in app.windows
-    assert_action_performed(window, "show")
     assert window.visible
+    assert_action_performed(window, "show")
+    EventLog.reset()
 
-    # Hide with an explicit call
+    # The window is already shown, so this call will be a no-op
+    window.show()
+
+    # The window is still assigned to the app, and is visible
+    assert window.app == app
+    assert window in app.windows
+    assert window.visible
+    assert_action_not_performed(window, "show")
+
+    # Hide the window
     window.hide()
 
     # Window is still assigned to the app, but is not visible
     assert window.app == app
     assert window in app.windows
-    assert_action_performed(window, "hide")
     assert not window.visible
+    assert_action_performed(window, "hide")
+    EventLog.reset()
 
-
-def test_hide_show(window, app):
-    """The window can be hidden then shown."""
-    window.show()
-    assert window.app == app
+    # The window is already hidden, so this call will be a no-op
     window.hide()
-
-    # The window has been assigned to the app, and is not visible
-    assert window.app == app
-    assert window in app.windows
-    assert_action_performed(window, "hide")
-    assert not window.visible
-
-    # Show with an explicit call
-    window.show()
 
     # Window is still assigned to the app, but is not visible
     assert window.app == app
     assert window in app.windows
-    assert_action_performed(window, "show")
+    assert not window.visible
+    assert_action_not_performed(window, "hide")
+
+    # Show the window
+    window.show()
+
+    # The window is still assigned to the app, and is visible
+    assert window.app == app
+    assert window in app.windows
     assert window.visible
+    assert_action_performed(window, "show")
 
 
 def test_visibility(window, app):
@@ -303,37 +316,6 @@ def test_visibility(window, app):
     assert window in app.windows
     assert_action_performed(window, "hide")
     assert not window.visible
-
-
-def test_visibility_no_op(window, app):
-    """Changing visibility when already in that visibility state is a no-op."""
-    # Show the window
-    window.show()
-    assert window.visible
-    assert_action_performed(window, "show")
-    EventLog.reset()
-
-    window.show()
-    assert window.visible
-    assert_action_not_performed(window, "show")
-
-    window.visible = True
-    assert window.visible
-    assert_action_not_performed(window, "show")
-
-    # Hide the window
-    window.hide()
-    assert not window.visible
-    assert_action_performed(window, "hide")
-    EventLog.reset()
-
-    window.hide()
-    assert not window.visible
-    assert_action_not_performed(window, "hide")
-
-    window.visible = False
-    assert not window.visible
-    assert_action_not_performed(window, "hide")
 
 
 @pytest.mark.parametrize(
