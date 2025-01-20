@@ -79,6 +79,11 @@ jobs:
         platform: [ "macos-latest", "ubuntu-latest", "windows-latest" ]
         python-version: [ "3.9", "3.10", "3.11", "3.12", "3.13" ]
         package: ["core", "travertino"]
+        exclude:
+        - package: travertino
+          platform: macos-latest
+        - package: travertino
+          platform: ubuntu-latest
         include:
         - experimental: false
         - package: "core"
