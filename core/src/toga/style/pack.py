@@ -140,17 +140,12 @@ class Pack(BaseStyle):
     )
 
     font_family: str = validated_property(choices=FONT_FAMILY_CHOICES, initial=SYSTEM)
-    # Pack.list_property('font_family', choices=FONT_FAMILY_CHOICES)
     font_style: str = validated_property(choices=FONT_STYLE_CHOICES, initial=NORMAL)
     font_variant: str = validated_property(choices=FONT_VARIANT_CHOICES, initial=NORMAL)
     font_weight: str = validated_property(choices=FONT_WEIGHT_CHOICES, initial=NORMAL)
     font_size: int = validated_property(
         choices=FONT_SIZE_CHOICES, initial=SYSTEM_DEFAULT_FONT_SIZE
     )
-    # Pack.composite_property([
-    #     'font_family', 'font_style', 'font_variant', 'font_weight', 'font_size'
-    #     FONT_CHOICES
-    # ])
 
     @classmethod
     def _debug(cls, *args: str) -> None:  # pragma: no cover
