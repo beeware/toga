@@ -15,11 +15,11 @@
     :alt: Project status
 
 .. |license| image:: https://img.shields.io/pypi/l/travertino.svg
-    :target: https://github.com/beeware/travertino/blob/main/LICENSE
+    :target: https://github.com/beeware/toga/blob/main/travertino/LICENSE
     :alt: BSD License
 
-.. |ci| image:: https://github.com/beeware/travertino/workflows/CI/badge.svg?branch=main
-   :target: https://github.com/beeware/travertino/actions
+.. |ci| image:: https://github.com/beeware/toga/workflows/CI/badge.svg?branch=main
+   :target: https://github.com/beeware/toga/actions
    :alt: Build Status
 
 .. |social| image:: https://img.shields.io/discord/836455665257021440?label=Discord%20Chat&logo=discord&style=plastic
