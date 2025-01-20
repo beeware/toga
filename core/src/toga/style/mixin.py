@@ -23,7 +23,14 @@ def style_mixin(style_cls):
             write ``widget.color``.
             """
     }
-    for name in style_cls._ALL_PROPERTIES[style_cls]:
+
+    try:
+        _all_properties = style_cls._BASE_ALL_PROPERTIES
+    except AttributeError:
+        # Travertino 0.3 compatibility
+        _all_properties = style_cls._ALL_PROPERTIES
+
+    for name in _all_properties[style_cls]:
         mixin_dict[name] = StyleProperty()
 
     return type(style_cls.__name__ + "Mixin", (), mixin_dict)

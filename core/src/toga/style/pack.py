@@ -1001,4 +1001,10 @@ Pack.validated_property(
 #     FONT_CHOICES
 # ])
 
-Pack._ALL_PROPERTIES[Pack].update(Pack._ALIASES)
+try:
+    _all_properties = Pack._BASE_ALL_PROPERTIES
+except AttributeError:
+    # Travertino 0.3 compatibility
+    _all_properties = Pack._ALL_PROPERTIES
+
+_all_properties[Pack].update(Pack._ALIASES)
