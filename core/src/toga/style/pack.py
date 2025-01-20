@@ -115,8 +115,8 @@ class Pack(BaseStyle):
     ######################################################################
 
     def update(self, **properties):
-        # Set direction first, as it may change the interpretation of other properties
-        # in _update_property_name.
+        # Set direction first, as it may change the interpretation of direction-based
+        # property aliases in _update_property_name.
         if direction := properties.pop("direction", None):
             self.direction = direction
 
