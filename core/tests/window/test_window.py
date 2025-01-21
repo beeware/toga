@@ -718,15 +718,17 @@ def test_visibility_events(window):
 
 
 @pytest.mark.parametrize(
-    "state",
+    "visible_state1, visible_state2",
     [
-        WindowState.NORMAL,
-        WindowState.MAXIMIZED,
-        WindowState.FULLSCREEN,
-        WindowState.PRESENTATION,
+        (WindowState.NORMAL, WindowState.PRESENTATION),
+        (WindowState.MAXIMIZED, WindowState.FULLSCREEN),
+        (WindowState.FULLSCREEN, WindowState.MAXIMIZED),
+        (WindowState.PRESENTATION, WindowState.NORMAL),
     ],
 )
-def test_visibility_events_on_window_state_change(window, state):
+def test_visibility_events_on_window_state_change(
+    window, visible_state1, visible_state2
+):
     """The window can trigger on_hide() and on_show() event handlers,
     when the window is MINIMIZED and UN-MINIMIZED respectively."""
     window.show()
@@ -736,50 +738,27 @@ def test_visibility_events_on_window_state_change(window, state):
     on_hide_handler = Mock()
     window.on_show = on_show_handler
     window.on_hide = on_hide_handler
-    window.state = state
     assert window.on_show._raw == on_show_handler
     assert window.on_hide._raw == on_hide_handler
 
-    window.state = WindowState.MINIMIZED
-    assert_window_on_hide(window)
-
-    window.state = state
-    assert_window_on_show(window)
-
-
-@pytest.mark.parametrize(
-    "visible_state",
-    [
-        WindowState.NORMAL,
-        WindowState.MAXIMIZED,
-        WindowState.FULLSCREEN,
-        WindowState.PRESENTATION,
-    ],
-)
-def test_visibility_events_not_double_triggered(window, visible_state):
-    """The window does not double trigger the on_hide() amd on_show() events."""
-    window.show()
-    window.on_show = Mock()
-    window.on_hide = Mock()
-
-    window.state = WindowState.MINIMIZED
-    assert_window_on_hide(window)
-
-    # The on_hide() event would not be triggered since the window is already in a
-    # not-visible-to-user(i.e., in minimized or hidden) state.
-    window.hide()
-    assert_window_on_hide(window, trigger_expected=False)
-
-    # The on_show() event would not be triggered since the window is already in a
-    # not-visible-to-user(i.e., in minimized or hidden) state, as on the dummy backend
-    # show() does not change the window state.
-    window.show()
+    # Set to the first visible state, but on_show() will not be triggered again, as
+    # it is already in a visible-to-user(not hidden) state.
+    window.state = visible_state1
     assert_window_on_show(window, trigger_expected=False)
 
-    # The on_show() event would  be triggered since the window state is change to a
-    # visible-to-user(i.e., not in minimized or hidden) state.
-    window.state = visible_state
+    # Set to a no-visible-to-user(minimized) state, on_hide() will be triggered.
+    window.state = WindowState.MINIMIZED
+    assert_window_on_hide(window)
+
+    # Set to first visible state, on_show() will be triggered, as it was previously
+    # in a no-visible-to-user(minimized) state.
+    window.state = visible_state1
     assert_window_on_show(window)
+
+    # Set to second visible state, but on_show() will not be triggered again, as it
+    # is already in a visible-to-user(not minimized) state.
+    window.state = visible_state2
+    assert_window_on_show(window, trigger_expected=False)
 
 
 def test_as_image(window):

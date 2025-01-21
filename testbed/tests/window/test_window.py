@@ -1052,6 +1052,10 @@ else:
     ):
         """The window can trigger on_hide() and on_show() event handlers,
         when the window is MINIMIZED and UN-MINIMIZED respectively."""
+        if not second_window_probe.supports_minimize:
+            pytest.xfail(
+                "This backend doesn't reliably support minimized window state."
+            )
         second_window.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
         second_window.show()
         second_window.on_show = Mock()

@@ -105,14 +105,14 @@ class Window:
             WindowState.MAXIMIZED,
             WindowState.FULLSCREEN,
             WindowState.PRESENTATION,
-        }:
+        }:  # pragma: no-cover-if-linux-wayland
             self.interface.on_hide()
         elif current_state != WindowState.MINIMIZED and previous_state not in {
             WindowState.NORMAL,
             WindowState.MAXIMIZED,
             WindowState.FULLSCREEN,
             WindowState.PRESENTATION,
-        }:
+        }:  # pragma: no-cover-if-linux-wayland
             self.interface.on_show()
 
         # Handle the pending state transitions
