@@ -1027,60 +1027,11 @@ else:
         assert_window_on_show(second_window)
 
     @pytest.mark.parametrize(
-        "state",
-        [
-            WindowState.NORMAL,
-            WindowState.MAXIMIZED,
-            WindowState.FULLSCREEN,
-            WindowState.PRESENTATION,
-        ],
-    )
-    @pytest.mark.parametrize(
-        "second_window_class, second_window_kwargs",
-        [
-            (
-                toga.Window,
-                dict(title="Secondary Window", position=(200, 150)),
-            )
-        ],
-    )
-    async def test_visibility_events_on_window_state_change(
-        second_window, second_window_probe, state
-    ):
-        """The window can trigger on_hide() and on_show() event handlers,
-        when the window is MINIMIZED and UN-MINIMIZED respectively."""
-        if not second_window_probe.supports_visibility_events:
-            pytest.xfail("This backend doesn't support visibility events.")
-        second_window.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
-        second_window.show()
-        second_window.on_show = Mock()
-        second_window.on_hide = Mock()
-
-        second_window.state = state
-        await second_window_probe.wait_for_window(
-            f"Setting to initial state of {state}", state=state
-        )
-
-        second_window.state = WindowState.MINIMIZED
-        await second_window_probe.wait_for_window(
-            "Setting to MINIMIZED state", state=WindowState.MINIMIZED
-        )
-        assert_window_on_hide(second_window)
-
-        second_window.state = state
-        await second_window_probe.wait_for_window(
-            f"Setting to final state of {state}", state=state
-        )
-        assert_window_on_show(second_window)
-
-    @pytest.mark.parametrize(
         "visible_state1, visible_state2",
         [
-            # We just need to test that setting a different visible state
-            # to a window already in visible-to-user(not minimized or not hidden)
-            # window state, doesn't trigger visibility events. Ideally, we would
-            # be testing for every possible pairings of the visible-to-user window
-            # states, but it would increase the runtime of the testbed.
+            # Ideally, we would be testing for every possible pairings of the
+            # visible-to-user window states, but it would increase the runtime
+            # of the testbed.
             (WindowState.NORMAL, WindowState.PRESENTATION),
             (WindowState.MAXIMIZED, WindowState.FULLSCREEN),
             (WindowState.FULLSCREEN, WindowState.MAXIMIZED),
@@ -1096,66 +1047,45 @@ else:
             )
         ],
     )
-    async def test_visibility_events_not_double_triggered(
+    async def test_visibility_events_on_window_state_change(
         second_window, second_window_probe, visible_state1, visible_state2
     ):
-        """The window does not double trigger the on_hide() amd on_show() events."""
-        if not second_window_probe.supports_visibility_events:
-            pytest.xfail("This backend doesn't support visibility events.")
+        """The window can trigger on_hide() and on_show() event handlers,
+        when the window is MINIMIZED and UN-MINIMIZED respectively."""
         second_window.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
         second_window.show()
         second_window.on_show = Mock()
         second_window.on_hide = Mock()
 
-        # visible-to-user = not minimized or not hidden
-        # not-visible-to-user state = minimized or hidden
+        # Set to the first visible state, but on_show() will not be triggered again, as
+        # it is already in a visible-to-user(not hidden) state.
+        second_window.state = visible_state1
+        await second_window_probe.wait_for_window(
+            f"Window is in {visible_state1}", state=visible_state1
+        )
+        assert_window_on_show(second_window, trigger_expected=False)
 
+        # Set to a no-visible-to-user(minimized) state, on_hide() will be triggered.
         second_window.state = WindowState.MINIMIZED
         await second_window_probe.wait_for_window(
-            "Setting to MINIMIZED state", state=WindowState.MINIMIZED
+            "Window is in MINIMIZED", state=WindowState.MINIMIZED
         )
         assert_window_on_hide(second_window)
 
-        # The on_hide() event would not be triggered since the window is already in a
-        # not-visible-to-user(i.e., in minimized or hidden) state.
-        second_window.hide()
-        await second_window_probe.wait_for_window(f"Hiding {second_window.title}")
-        assert_window_on_hide(second_window, trigger_expected=False)
-
-        second_window.show()
-        await second_window_probe.wait_for_window(f"Showing {second_window.title}")
-        if second_window_probe.show_unminimizes_window:  # For cocoa
-            # Since the window was in minimized and hidden state, i.e., not-visible-
-            # to-user. So, when window.show() is called (which also un-minimizes the
-            # window), the on_show() event would be triggered.
-            assert_window_on_show(second_window)
-        else:  # For winforms & gtk
-            # Since the window was in minimized and hidden state, i.e., not-visible-
-            # to-user. So, when window.show() is called (which doesn't un-minimize the
-            # window), the on_show() event would not be triggered.
-            assert_window_on_show(second_window, trigger_expected=False)
-
+        # Set to first visible state, on_show() will be triggered, as it was previously
+        # in a no-visible-to-user(minimized) state.
         second_window.state = visible_state1
         await second_window_probe.wait_for_window(
-            f"Setting to {visible_state1} state", state=visible_state1
+            f"Window is in {visible_state1}", state=visible_state1
         )
-        if second_window_probe.show_unminimizes_window:  # For cocoa
-            # Since the window was in un-minimized state(as window.show() un-minimizes
-            # the window) i.e., visible-to-user. So, when a visible state is applied,
-            # then on_show() would not be triggered.
-            assert_window_on_show(second_window, trigger_expected=False)
-        else:  # For winforms & gtk
-            # Since the window was in minimized state(as window.show() doesn't
-            # un-minimize the window) i.e., not-visible-to-user. so, when a visible
-            # state is applied, then on_show() would be triggered.
-            assert_window_on_show(second_window)
+        assert_window_on_show(second_window)
 
+        # Set to second visible state, but on_show() will not be triggered again, as it
+        # is already in a visible-to-user(not minimized) state.
         second_window.state = visible_state2
         await second_window_probe.wait_for_window(
-            f"Setting to {visible_state2} state", state=visible_state2
+            f"Window is in {visible_state2}", state=visible_state2
         )
-        # Since the window was already in a visible-to-user state. So, when a visible
-        # state is applied, then on_show() would not be triggered.
         assert_window_on_show(second_window, trigger_expected=False)
 
     @pytest.mark.parametrize(

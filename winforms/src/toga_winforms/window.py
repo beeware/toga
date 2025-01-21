@@ -128,15 +128,9 @@ class Window(Container, Scalable):
         self.interface.on_lose_focus()
 
     def winforms_VisibleChanged(self, sender, event):
-        if (
-            self.native.Visible
-            and self.native.WindowState != WinForms.FormWindowState.Minimized
-        ):
+        if self.native.Visible:
             self.interface.on_show()
-        elif (
-            not self.native.Visible
-            and self.native.WindowState != WinForms.FormWindowState.Minimized
-        ):
+        else:
             self.interface.on_hide()
 
     def winforms_SizeChanged(self, sender, event):

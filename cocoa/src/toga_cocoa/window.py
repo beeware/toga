@@ -267,14 +267,8 @@ class Window:
         pass
 
     def show(self):
-        previously_visible = self.get_visible()
-        previous_state = self.get_window_state(in_progress_state=True)
         self.native.makeKeyAndOrderFront(None)
-        # Avoid triggering the event here, as makeKeyAndOrderFront() also
-        # deminiaturizes the window, which will trigger windowDidDeminiaturize_.
-        # This could lead to double triggering, so prevent it here.
-        if not previously_visible and previous_state != WindowState.MINIMIZED:
-            self.interface.on_show()
+        self.interface.on_show()
 
     ######################################################################
     # Window content and resources
@@ -350,13 +344,8 @@ class Window:
     ######################################################################
 
     def hide(self):
-        previously_visible = self.get_visible()
-        previous_state = self.get_window_state(in_progress_state=True)
         self.native.orderOut(self.native)
-        # Avoid triggering the event if the window was already in a
-        # not-visible-user(minimized or hidden) state.
-        if previously_visible and previous_state != WindowState.MINIMIZED:
-            self.interface.on_hide()
+        self.interface.on_hide()
 
     def get_visible(self):
         return (
