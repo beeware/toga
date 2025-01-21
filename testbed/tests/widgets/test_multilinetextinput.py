@@ -5,7 +5,6 @@ from toga.style import Pack
 
 from .conftest import build_cleanup_test
 from .properties import (  # noqa: F401
-    test_alignment,
     test_background_color,
     test_background_color_reset,
     test_background_color_transparent,
@@ -20,6 +19,7 @@ from .properties import (  # noqa: F401
     test_placeholder_color,
     test_placeholder_focus,
     test_readonly,
+    test_text_align,
     test_text_value,
 )
 from .test_textinput import (  # noqa: F401

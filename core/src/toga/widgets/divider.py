@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Literal
+from typing import Any, Literal
 
 from toga.constants import Direction
 
@@ -16,6 +16,7 @@ class Divider(Widget):
         id: str | None = None,
         style: StyleT | None = None,
         direction: Direction = HORIZONTAL,
+        **kwargs,
     ):
         """Create a new divider line.
 
@@ -26,12 +27,14 @@ class Divider(Widget):
             :attr:`~toga.constants.Direction.HORIZONTAL` or
             :attr:`~toga.constants.Direction.VERTICAL`; defaults to
             :attr:`~toga.constants.Direction.HORIZONTAL`
+        :param kwargs: Initial style properties.
         """
-        super().__init__(id=id, style=style)
+        super().__init__(id, style, **kwargs)
 
-        # Create a platform specific implementation of a Divider
-        self._impl = self.factory.Divider(interface=self)
         self.direction = direction
+
+    def _create(self) -> Any:
+        return self.factory.Divider(interface=self)
 
     @property
     def enabled(self) -> Literal[True]:

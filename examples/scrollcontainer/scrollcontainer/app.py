@@ -5,12 +5,12 @@ from toga.style import Pack
 
 class Item(toga.Box):
     def __init__(self, width, text):
-        super().__init__(style=Pack(direction=ROW, padding=10, background_color="lime"))
+        super().__init__(style=Pack(direction=ROW, margin=10, background_color="lime"))
 
         for x in range(width):
             label = toga.Label(
                 text + "," + str(x),
-                style=Pack(padding_right=10, background_color="cyan"),
+                style=Pack(margin_right=10, background_color="cyan"),
             )
             self.add(label)
 
@@ -47,13 +47,13 @@ class ScrollContainerApp(toga.App):
         )
 
         self.inner_box = toga.Box(
-            style=Pack(direction=COLUMN, padding=10, background_color="yellow")
+            style=Pack(direction=COLUMN, margin=10, background_color="yellow")
         )
         self.scroller = toga.ScrollContainer(
             horizontal=self.hswitch.value,
             vertical=self.vswitch.value,
             on_scroll=self.on_scroll,
-            style=Pack(flex=1, padding=10, background_color="pink"),
+            style=Pack(flex=1, margin=10, background_color="pink"),
         )
         self.update_content()
 

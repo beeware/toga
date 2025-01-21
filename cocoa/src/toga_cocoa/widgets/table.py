@@ -71,10 +71,6 @@ class TogaTable(NSTableView):
             tcv = TogaIconView.alloc().init()
             tcv.identifier = identifier
 
-            # Prevent tcv from being deallocated prematurely when no Python references
-            # are left
-            tcv.autorelease()
-
         tcv.setText(str(value))
         if icon:
             tcv.setImage(icon._impl.native)

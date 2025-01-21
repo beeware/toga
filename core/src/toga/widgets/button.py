@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
 
 class OnPressHandler(Protocol):
-    def __call__(self, widget: Button, /, **kwargs: Any) -> object:
+    def __call__(self, widget: Button, **kwargs: Any) -> object:
         """A handler that will be invoked when a button is pressed.
 
         :param widget: The button that was pressed.
@@ -29,6 +29,7 @@ class Button(Widget):
         style: StyleT | None = None,
         on_press: toga.widgets.button.OnPressHandler | None = None,
         enabled: bool = True,
+        **kwargs,
     ):
         """Create a new button widget.
 
@@ -41,11 +42,9 @@ class Button(Widget):
         :param on_press: A handler that will be invoked when the button is pressed.
         :param enabled: Is the button enabled (i.e., can it be pressed?). Optional; by
             default, buttons are created in an enabled state.
+        :param kwargs: Initial style properties.
         """
-        super().__init__(id=id, style=style)
-
-        # Create a platform specific implementation of a Button
-        self._impl = self.factory.Button(interface=self)
+        super().__init__(id, style, **kwargs)
 
         # Set a dummy handler before installing the actual on_press, because we do not
         # want on_press triggered by the initial value being set
@@ -62,6 +61,9 @@ class Button(Widget):
 
         self.on_press = on_press
         self.enabled = enabled
+
+    def _create(self) -> Any:
+        return self.factory.Button(interface=self)
 
     @property
     def text(self) -> str:

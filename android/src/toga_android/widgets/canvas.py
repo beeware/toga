@@ -14,7 +14,8 @@ from java import dynamic_proxy, jint
 from java.io import ByteArrayOutputStream
 from org.beeware.android import DrawHandlerView, IDrawHandler
 
-from toga.widgets.canvas import Baseline, FillRule, arc_to_bezier, sweepangle
+from toga.constants import Baseline, FillRule
+from toga.widgets.canvas import arc_to_bezier, sweepangle
 
 from ..colors import native_color
 from .base import Widget

@@ -72,6 +72,11 @@ class Container(BaseContainer):
 
         self.layout_native = self.native if layout_native is None else layout_native
 
+    def __del__(self):
+        # Mark the contained native object as explicitly None so that the
+        # constraints know the object has been deleted.
+        self.native = None
+
     @property
     def width(self):
         return self.layout_native.bounds.size.width

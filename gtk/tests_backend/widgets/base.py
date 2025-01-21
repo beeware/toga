@@ -38,8 +38,8 @@ class SimpleProbe(BaseProbe, FontMixin):
         assert self.widget._impl.container is None
         assert self.native.get_parent() is None
 
-    def assert_alignment(self, expected):
-        assert self.alignment == expected
+    def assert_text_align(self, expected):
+        assert self.text_align == expected
 
     def repaint_needed(self):
         return self.impl.container.needs_redraw or super().repaint_needed()

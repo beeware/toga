@@ -37,7 +37,7 @@ def test_row_expanding_intrinsic():
         ],
     )
 
-    root.style.layout(root, ExampleViewport(640, 480))
+    root.style.layout(ExampleViewport(640, 480))
     assert_layout(
         root,
         (200, 100),
@@ -97,7 +97,7 @@ def test_row_fixed_intrinsic():
         ],
     )
 
-    root.style.layout(root, ExampleViewport(640, 480))
+    root.style.layout(ExampleViewport(640, 480))
     assert_layout(
         root,
         (150, 100),
@@ -159,7 +159,7 @@ def test_column_expanding_intrinsic():
     )
 
     # Normal size
-    root.style.layout(root, ExampleViewport(640, 480))
+    root.style.layout(ExampleViewport(640, 480))
     assert_layout(
         root,
         (100, 200),
@@ -216,7 +216,7 @@ def test_column_fixed_intrinsic():
         ],
     )
 
-    root.style.layout(root, ExampleViewport(640, 480))
+    root.style.layout(ExampleViewport(640, 480))
     assert_layout(
         root,
         (100, 150),

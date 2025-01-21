@@ -14,6 +14,7 @@ class Box(Widget):
         id: str | None = None,
         style: StyleT | None = None,
         children: Iterable[Widget] | None = None,
+        **kwargs,
     ):
         """Create a new Box container widget.
 
@@ -21,16 +22,17 @@ class Box(Widget):
         :param style: A style object. If no style is provided, a default style
             will be applied to the widget.
         :param children: An optional list of children for to add to the Box.
+        :param kwargs: Initial style properties.
         """
-        super().__init__(id=id, style=style)
-
-        # Create a platform specific implementation of a Box
-        self._impl = self.factory.Box(interface=self)
+        super().__init__(id, style, **kwargs)
 
         # Children need to be added *after* the impl has been created.
         self._children: list[Widget] = []
         if children is not None:
             self.add(*children)
+
+    def _create(self):
+        return self.factory.Box(interface=self)
 
     @property
     def enabled(self) -> bool:

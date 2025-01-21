@@ -46,8 +46,8 @@ class SimpleProbe(BaseProbe, FontMixin):
         else:
             assert self.native.getParent() is None
 
-    def assert_alignment(self, expected):
-        actual = self.alignment
+    def assert_text_align(self, expected):
+        actual = self.text_align
         if expected == JUSTIFY and (
             Build.VERSION.SDK_INT < 26 or not self.supports_justify
         ):
@@ -55,7 +55,7 @@ class SimpleProbe(BaseProbe, FontMixin):
         else:
             assert actual == expected
 
-    def assert_vertical_alignment(self, expected):
+    def assert_vertical_text_align(self, expected):
         assert toga_vertical_alignment(self.native.getGravity()) == expected
 
     @property

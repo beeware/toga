@@ -34,18 +34,23 @@ def test_widget_created_with_values(on_change_handler):
     """A TimeInput can be created with initial values."""
     # Round trip the impl/interface
     widget = toga.TimeInput(
+        id="foobar",
         value=time(13, 37, 42),
         min=time(6, 1, 2),
         max=time(18, 58, 59),
         on_change=on_change_handler,
+        # A style property
+        width=256,
     )
     assert widget._impl.interface == widget
     assert_action_performed(widget, "create TimeInput")
 
+    assert widget.id == "foobar"
     assert widget.value == time(13, 37, 42)
     assert widget.min == time(6, 1, 2)
     assert widget.max == time(18, 58, 59)
     assert widget.on_change._raw == on_change_handler
+    assert widget.style.width == 256
 
     # The change handler isn't invoked at construction.
     on_change_handler.assert_not_called()
@@ -230,50 +235,3 @@ def test_max_clip(widget, on_change_handler, max, clip_value, clip_min):
         assert widget.min == max
     else:
         assert widget.min == time(3, 42, 37)
-
-
-def test_deprecated_names():
-    MIN = time(8, 30, 59)
-    MAX = time(10, 0, 0)
-
-    with pytest.warns(
-        DeprecationWarning, match="TimePicker has been renamed TimeInput"
-    ), pytest.warns(
-        DeprecationWarning, match="TimePicker.min_time has been renamed TimeInput.min"
-    ), pytest.warns(
-        DeprecationWarning, match="TimePicker.max_time has been renamed TimeInput.max"
-    ):
-        widget = toga.TimePicker(min_time=MIN, max_time=MAX)
-
-    assert widget.min == MIN
-    assert widget.max == MAX
-    widget.min = widget.max = None
-
-    with pytest.warns(
-        DeprecationWarning, match="TimePicker.min_time has been renamed TimeInput.min"
-    ):
-        widget.min_time = MIN
-
-    with pytest.warns(
-        DeprecationWarning, match="TimePicker.min_time has been renamed TimeInput.min"
-    ):
-        assert widget.min_time == MIN
-    assert widget.min == MIN
-
-    with pytest.warns(
-        DeprecationWarning, match="TimePicker.max_time has been renamed TimeInput.max"
-    ):
-        widget.max_time = MAX
-
-    with pytest.warns(
-        DeprecationWarning, match="TimePicker.max_time has been renamed TimeInput.max"
-    ):
-        assert widget.max_time == MAX
-    assert widget.max == MAX
-
-    with pytest.warns(
-        DeprecationWarning, match="TimePicker has been renamed TimeInput"
-    ):
-        widget = toga.TimePicker()
-    assert widget.min == time(0, 0, 0)
-    assert widget.max == time(23, 59, 59)

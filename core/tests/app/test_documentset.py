@@ -4,7 +4,7 @@ from unittest.mock import Mock
 import pytest
 
 import toga
-from toga.app import DocumentSet
+from toga.documents import DocumentSet
 
 
 class ExampleDocument(toga.Document):

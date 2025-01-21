@@ -93,6 +93,7 @@ def test_create_with_values(
 ):
     """A DetailedList can be created with initial values."""
     detailedlist = toga.DetailedList(
+        id="foobar",
         data=source,
         accessors=("key", "value", "icon"),
         missing_value="Boo!",
@@ -102,10 +103,13 @@ def test_create_with_values(
         on_primary_action=on_primary_action_handler,
         secondary_action="Secondary",
         on_secondary_action=on_secondary_action_handler,
+        # A style property
+        width=256,
     )
     assert detailedlist._impl.interface == detailedlist
     assert_action_performed(detailedlist, "create DetailedList")
 
+    assert detailedlist.id == "foobar"
     assert len(detailedlist.data) == 3
     assert detailedlist.accessors == ("key", "value", "icon")
     assert detailedlist.missing_value == "Boo!"
@@ -115,6 +119,7 @@ def test_create_with_values(
     assert detailedlist.on_secondary_action._raw == on_secondary_action_handler
     assert detailedlist._primary_action == "Primary"
     assert detailedlist._secondary_action == "Secondary"
+    assert detailedlist.style.width == 256
 
     assert_action_performed_with(detailedlist, "refresh enabled", enabled=True)
     assert_action_performed_with(detailedlist, "primary action enabled", enabled=True)
@@ -306,43 +311,3 @@ def test_scroll_to_bottom(detailedlist):
     detailedlist.scroll_to_bottom()
 
     assert_action_performed_with(detailedlist, "scroll to row", row=2)
-
-
-######################################################################
-# 2023-07: Backwards compatibility
-######################################################################
-def test_deprecated_names(on_primary_action_handler):
-    """Deprecated names still work."""
-
-    # Can't specify both on_delete and on_primary_action
-    with pytest.raises(
-        ValueError,
-        match=r"Cannot specify both on_delete and on_primary_action",
-    ):
-        toga.DetailedList(on_delete=Mock(), on_primary_action=Mock())
-
-    # on_delete is redirected at construction
-    with pytest.warns(
-        DeprecationWarning,
-        match="DetailedList.on_delete has been renamed DetailedList.on_primary_action",
-    ):
-        select = toga.DetailedList(on_delete=on_primary_action_handler)
-
-    # on_delete accessor is redirected to on_primary_action
-    with pytest.warns(
-        DeprecationWarning,
-        match="DetailedList.on_delete has been renamed DetailedList.on_primary_action",
-    ):
-        assert select.on_delete._raw == on_primary_action_handler
-
-    assert select.on_primary_action._raw == on_primary_action_handler
-
-    # on_delete mutator is redirected to on_primary_action
-    new_handler = Mock()
-    with pytest.warns(
-        DeprecationWarning,
-        match="DetailedList.on_delete has been renamed DetailedList.on_primary_action",
-    ):
-        select.on_delete = new_handler
-
-    assert select.on_primary_action._raw == new_handler

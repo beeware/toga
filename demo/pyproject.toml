@@ -2,7 +2,7 @@
 requires = [
     "setuptools==75.5.0",
     "setuptools_scm==8.1.0",
-    "setuptools_dynamic_dependencies @ git+https://github.com/beeware/setuptools_dynamic_dependencies",
+    "setuptools_dynamic_dependencies==1.0.0",
 ]
 build-backend = "setuptools.build_meta"
 

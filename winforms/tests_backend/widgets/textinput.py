@@ -6,7 +6,7 @@ import pytest
 from System.Windows.Forms import TextBox
 
 from .base import SimpleProbe
-from .properties import toga_xalignment
+from .properties import toga_x_text_align
 
 
 class TextInputProbe(SimpleProbe):
@@ -47,11 +47,11 @@ class TextInputProbe(SimpleProbe):
         return self.native.ReadOnly
 
     @property
-    def alignment(self):
-        return toga_xalignment(self.native.TextAlign)
+    def text_align(self):
+        return toga_x_text_align(self.native.TextAlign)
 
-    def assert_vertical_alignment(self, expected):
-        # Vertical alignment isn't configurable in this native widget.
+    def assert_vertical_text_align(self, expected):
+        # Vertical text alignment isn't configurable in this native widget.
         pass
 
     def set_cursor_at_end(self):

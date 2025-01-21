@@ -159,15 +159,3 @@ class App:
     def set_current_window(self, window):
         # iOS only has a main window, so this is a no-op
         pass
-
-    ######################################################################
-    # Full screen control
-    ######################################################################
-
-    def enter_full_screen(self, windows):
-        # No-op; mobile doesn't support full screen
-        pass
-
-    def exit_full_screen(self, windows):
-        # No-op; mobile doesn't support full screen
-        pass

@@ -11,6 +11,8 @@ from .hardware import HardwareProbe
 
 
 class LocationProbe(HardwareProbe):
+    supports_background_permission = True
+
     def __init__(self, monkeypatch, app_probe):
         super().__init__(monkeypatch, app_probe.app)
 
@@ -100,3 +102,10 @@ class LocationProbe(HardwareProbe):
         await self.redraw("Wait for location error")
 
         pytest.xfail("Android's location service doesn't raise errors on failure")
+
+    def setup_location_error(self):
+        # location error simulation handled by ``simulate_location_error``
+        pass
+
+    def setup_tracking_start_error(self):
+        pytest.xfail("Tracking start cannot fail on Android")

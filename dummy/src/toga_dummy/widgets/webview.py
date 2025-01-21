@@ -1,4 +1,6 @@
-from toga.widgets.webview import JavaScriptResult
+from http.cookiejar import CookieJar
+
+from toga.widgets.webview import CookiesResult, JavaScriptResult
 
 from .base import Widget
 
@@ -24,6 +26,11 @@ class WebView(Widget):
         self._set_value("url", value)
         self._set_value("loaded_future", future)
 
+    def get_cookies(self):
+        self._action("cookies")
+        self._cookie_result = CookiesResult()
+        return self._cookie_result
+
     def evaluate_javascript(self, javascript, on_result=None):
         self._action("evaluate_javascript", javascript=javascript)
         self._js_result = JavaScriptResult(on_result)
@@ -39,3 +46,10 @@ class WebView(Widget):
 
     def simulate_javascript_result(self, value):
         self._js_result.set_result(42)
+
+    def simulate_cookie_retrieval(self, cookies):
+        """Simulate completion of cookie retrieval."""
+        cookie_jar = CookieJar()
+        for cookie in cookies:
+            cookie_jar.set_cookie(cookie)
+        self._cookie_result.set_result(cookie_jar)

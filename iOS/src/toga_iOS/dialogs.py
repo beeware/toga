@@ -36,7 +36,7 @@ class AlertDialog(BaseDialog):
 
         self.native = UIAlertController.alertControllerWithTitle(
             title, message=message, preferredStyle=UIAlertControllerStyle.Alert
-        ).retain()
+        )
 
         self.populate_dialog()
 

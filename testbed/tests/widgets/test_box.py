@@ -19,4 +19,4 @@ async def widget():
     return toga.Box(style=Pack(width=100, height=200))
 
 
-test_cleanup = build_cleanup_test(toga.Box, xfail_platforms=("iOS",))
+test_cleanup = build_cleanup_test(toga.Box)

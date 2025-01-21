@@ -10,6 +10,7 @@ from android.view import ViewTreeObserver
 from java import dynamic_proxy
 from java.io import ByteArrayOutputStream
 
+from toga.constants import WindowState
 from toga.types import Position, Size
 
 from .container import Container
@@ -36,6 +37,9 @@ class Window(Container):
         self.interface = interface
         self.interface._impl = self
         self._initial_title = title
+        # Use a shadow variable since the presence of ActionBar is not
+        # a reliable indicator for confirmation of presentation mode.
+        self._in_presentation_mode = False
 
     ######################################################################
     # Window properties
@@ -46,6 +50,11 @@ class Window(Container):
 
     def set_title(self, title):
         self.app.native.setTitle(title)
+
+    def show_actionbar(self, show):  # pragma: no cover
+        # The testbed can't create a simple window, so we can't test this.
+        # ActionBar is always hidden on Window.
+        pass
 
     ######################################################################
     # Window lifecycle
@@ -73,7 +82,10 @@ class Window(Container):
         )
         self.set_title(self._initial_title)
 
-    def show(self):
+    def show(self):  # pragma: no cover
+        # The Window on Android is shown by default when the app starts.
+        # Requesting show() on an already shown window is a no-op and is
+        # ignored at the core level. So this method will never be reached.
         pass
 
     ######################################################################
@@ -137,8 +149,64 @@ class Window(Container):
     # Window state
     ######################################################################
 
-    def set_full_screen(self, is_full_screen):
-        self.interface.factory.not_implemented("Window.set_full_screen()")
+    def get_window_state(self, in_progress_state=False):
+        if getattr(self, "app", None) is not None:
+            decor_view = self.app.native.getWindow().getDecorView()
+            system_ui_flags = decor_view.getSystemUiVisibility()
+            if system_ui_flags & (
+                decor_view.SYSTEM_UI_FLAG_FULLSCREEN
+                | decor_view.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                | decor_view.SYSTEM_UI_FLAG_IMMERSIVE
+            ):
+                if self._in_presentation_mode:
+                    return WindowState.PRESENTATION
+                else:
+                    return WindowState.FULLSCREEN
+        return WindowState.NORMAL
+
+    def set_window_state(self, state):
+        current_state = self.get_window_state()
+        decor_view = self.app.native.getWindow().getDecorView()
+
+        if current_state == state:
+            return
+
+        elif current_state != WindowState.NORMAL:
+            if current_state == WindowState.FULLSCREEN:
+                decor_view.setSystemUiVisibility(0)
+
+            else:  # current_state == WindowState.PRESENTATION:
+                decor_view.setSystemUiVisibility(0)
+                self.show_actionbar(True)
+                self._in_presentation_mode = False
+
+            self.set_window_state(state)
+
+        else:  # current_state == WindowState.NORMAL:
+            if state == WindowState.MAXIMIZED:
+                # no-op on Android.
+                pass
+
+            elif state == WindowState.MINIMIZED:
+                # no-op on Android.
+                pass
+
+            elif state == WindowState.FULLSCREEN:
+                decor_view.setSystemUiVisibility(
+                    # These constants are all marked as deprecated as of API 30.
+                    decor_view.SYSTEM_UI_FLAG_FULLSCREEN
+                    | decor_view.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                    | decor_view.SYSTEM_UI_FLAG_IMMERSIVE
+                )
+
+            else:  # state == WindowState.PRESENTATION:
+                decor_view.setSystemUiVisibility(
+                    decor_view.SYSTEM_UI_FLAG_FULLSCREEN
+                    | decor_view.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                    | decor_view.SYSTEM_UI_FLAG_IMMERSIVE
+                )
+                self.show_actionbar(False)
+                self._in_presentation_mode = True
 
     ######################################################################
     # Window capabilities
@@ -168,3 +236,10 @@ class MainWindow(Window):
         # Toolbar items are configured as part of onPrepareOptionsMenu; trigger that
         # handler.
         self.app.native.invalidateOptionsMenu()
+
+    def show_actionbar(self, show):
+        actionbar = self.app.native.getSupportActionBar()
+        if show:
+            actionbar.show()
+        else:
+            actionbar.hide()

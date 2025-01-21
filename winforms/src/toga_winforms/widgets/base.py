@@ -44,7 +44,6 @@ class Scalable(ABC):
 class Widget(Scalable, ABC):
     def __init__(self, interface):
         self.interface = interface
-        self.interface._impl = self
 
         self._container = None
         self.native = None
@@ -66,8 +65,6 @@ class Widget(Scalable, ABC):
         # Parameter name: index
         #    at System.Windows.Forms.TabControl.GetTabPage(Int32 index)
         self.native.CreateGraphics().Dispose()
-
-        self.interface.style.reapply()
 
     @abstractmethod
     def create(self): ...
@@ -132,8 +129,8 @@ class Widget(Scalable, ABC):
         self.native.Size = Size(*map(self.scale_in, (width, height)))
         self.native.Location = Point(*map(self.scale_in, (x, y)))
 
-    def set_alignment(self, alignment):
-        # By default, alignment can't be changed
+    def set_text_align(self, alignment):
+        # By default, text alignment can't be changed
         pass
 
     def set_hidden(self, hidden):

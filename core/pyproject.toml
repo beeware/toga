@@ -1,8 +1,8 @@
 [build-system]
 requires = [
-    "setuptools==75.6.0",
+    "setuptools==75.8.0",
     "setuptools_scm==8.1.0",
-    "setuptools_dynamic_dependencies @ git+https://github.com/beeware/setuptools_dynamic_dependencies",
+    "setuptools_dynamic_dependencies==1.0.0",
 ]
 build-backend = "setuptools.build_meta"
 
@@ -56,22 +56,20 @@ classifiers = [
     "Topic :: Software Development :: Widget Sets",
 ]
 dependencies = [
-    "travertino >= 0.3.0",
-    # limited to <=3.9 for the `group` argument for `entry_points()`
-    "importlib_metadata >= 4.4.0; python_version <= '3.9'",
+    "travertino >= 0.3.0, < 0.4.0",
 ]
 
 [project.optional-dependencies]
 # Extras used by developers *of* Toga are pinned to specific versions to
 # ensure environment consistency.
 dev = [
-    "coverage[toml] == 7.6.8",
+    "coverage[toml] == 7.6.10",
     "coverage-conditional-plugin == 0.9.0",
-    "Pillow == 11.0.0",
+    "Pillow == 11.1.0",
     "pre-commit == 4.0.1",
-    "pytest == 8.3.3",
-    "pytest-asyncio == 0.24.0",
-    "pytest-freezer == 0.4.8",
+    "pytest == 8.3.4",
+    "pytest-asyncio == 0.25.2",
+    "pytest-freezer == 0.4.9",
     "setuptools-scm == 8.1.0",
     "tox == 4.23.2",
     # typing-extensions needed for TypeAlias added in Py 3.10
@@ -81,7 +79,7 @@ dev = [
 # and the docs contribution guide.
 docs = [
     "furo == 2024.8.6",
-    "Pillow == 11.0.0",
+    "Pillow == 11.1.0",
     "pyenchant == 3.2.2",
     "sphinx == 8.1.3",
     "sphinx_tabs == 3.4.5",
@@ -89,7 +87,7 @@ docs = [
     "sphinx-csv-filter == 0.4.2",
     "sphinx-copybutton == 0.5.2",
     "sphinx-toolbox == 3.8.1",
-    "sphinxcontrib-spelling == 8.0.0",
+    "sphinxcontrib-spelling == 8.0.1",
 ]
 
 [project.urls]
@@ -114,6 +112,7 @@ relative_files = true
 # See notes in the root pyproject.toml file.
 source = ["src"]
 source_pkgs = ["toga"]
+omit = ["**/toga/compat/**"]  # Only used by MicroPython.
 
 [tool.coverage.paths]
 source = [

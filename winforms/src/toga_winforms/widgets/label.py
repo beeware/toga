@@ -16,7 +16,7 @@ class Label(Widget):
 
         self._default_background_color = TRANSPARENT
 
-    def set_alignment(self, value):
+    def set_text_align(self, value):
         self.native.TextAlign = TextAlignment(value)
 
     def get_text(self):

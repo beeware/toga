@@ -3,7 +3,6 @@ from math import ceil
 from rubicon.objc import CGRect, NSInteger, NSMakeRect, objc_method, send_super
 from travertino.size import at_least
 
-from toga.colors import TRANSPARENT
 from toga_iOS.colors import native_color
 from toga_iOS.libs import (
     NSLineBreakByClipping,
@@ -41,17 +40,11 @@ class Label(Widget):
         # Add the layout constraints
         self.add_constraints()
 
-    def set_alignment(self, value):
+    def set_text_align(self, value):
         self.native.textAlignment = NSTextAlignment(value)
 
     def set_color(self, value):
         self.native.textColor = native_color(value)
-
-    def set_background_color(self, color):
-        if color == TRANSPARENT or color is None:
-            self.native.backgroundColor = native_color(TRANSPARENT)
-        else:
-            self.native.backgroundColor = native_color(color)
 
     def set_font(self, font):
         self.native.font = font._impl.native

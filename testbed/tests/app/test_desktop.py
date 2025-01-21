@@ -1,3 +1,4 @@
+import itertools
 from functools import partial
 from unittest.mock import Mock
 
@@ -5,7 +6,8 @@ import pytest
 
 import toga
 from toga import Position, Size
-from toga.colors import CORNFLOWERBLUE, FIREBRICK, REBECCAPURPLE
+from toga.colors import CORNFLOWERBLUE, FIREBRICK, GOLDENROD, REBECCAPURPLE
+from toga.constants import WindowState
 from toga.style.pack import Pack
 
 from ..widgets.probe import get_probe
@@ -165,164 +167,270 @@ async def test_menu_minimize(app, app_probe):
     await app_probe.redraw("Extra window added")
 
     app_probe.activate_menu_minimize()
-
-    await window1_probe.wait_for_window("Extra window minimized", minimize=True)
+    # Wait for window animation before assertion.
+    await window1_probe.wait_for_window(
+        "Extra window minimized", state=WindowState.MINIMIZED
+    )
     assert window1_probe.is_minimized
 
 
-async def test_full_screen(app, app_probe):
-    """Window can be made full screen"""
-    window1 = toga.Window("Test Window 1", position=(150, 150), size=(200, 200))
-    window2 = toga.Window("Test Window 2", position=(400, 150), size=(200, 200))
+async def test_presentation_mode(app, app_probe, main_window, main_window_probe):
+    """The app can enter presentation mode."""
+    bg_colors = (CORNFLOWERBLUE, FIREBRICK, REBECCAPURPLE, GOLDENROD)
+    color_cycle = itertools.cycle(bg_colors)
+    window_information_list = list()
+    screen_window_dict = dict()
+    for i in range(len(app.screens)):
+        window = toga.Window(title=f"Test Window {i}", size=(200, 200))
+        window_widget = toga.Box(style=Pack(flex=1, background_color=next(color_cycle)))
+        window.content = window_widget
+        window.show()
 
-    window1_widget = toga.Box(style=Pack(flex=1))
-    window2_widget = toga.Box(style=Pack(flex=1))
-    window1_widget_probe = get_probe(window1_widget)
-    window2_widget_probe = get_probe(window2_widget)
+        window_information = dict()
+        window_information["window"] = window
+        window_information["window_probe"] = window_probe(app, window)
+        window_information["initial_screen"] = window_information["window"].screen
+        window_information["paired_screen"] = app.screens[i]
+        window_information["initial_content_size"] = window_information[
+            "window_probe"
+        ].content_size
+        window_information["widget_probe"] = get_probe(window_widget)
+        window_information["initial_widget_size"] = (
+            window_information["widget_probe"].width,
+            window_information["widget_probe"].height,
+        )
+        window_information_list.append(window_information)
+        screen_window_dict[window_information["paired_screen"]] = window_information[
+            "window"
+        ]
+    # Wait for window animation before assertion.
+    await main_window_probe.wait_for_window("All Test Windows are visible")
 
-    window1.content = toga.Box(
-        children=[window1_widget], style=Pack(background_color=REBECCAPURPLE)
-    )
-    window2.content = toga.Box(
-        children=[window2_widget], style=Pack(background_color=CORNFLOWERBLUE)
-    )
+    # Enter presentation mode with a screen-window dict via the app
+    app.enter_presentation_mode(screen_window_dict)
+    # Add delay to ensure windows are visible after animation.
+    await main_window_probe.wait_for_window("App is in presentation mode")
+    # All the windows should be in presentation mode.
+    for window_information in window_information_list:
+        # Wait for window animation before assertion.
+        await window_information["window_probe"].wait_for_window(
+            "App is in presentation mode", state=WindowState.PRESENTATION
+        )
+        assert (
+            window_information["window_probe"].instantaneous_state
+            == WindowState.PRESENTATION
+        ), f"{window_information['window'].title}:"
+        # 1000x700 is bigger than the original window size,
+        # while being smaller than any likely screen.
+        assert (
+            window_information["window_probe"].content_size[0] > 1000
+        ), f"{window_information['window'].title}:"
+        assert (
+            window_information["window_probe"].content_size[1] > 700
+        ), f"{window_information['window'].title}:"
+        assert (
+            window_information["widget_probe"].width
+            > window_information["initial_widget_size"][0]
+            and window_information["widget_probe"].height
+            > window_information["initial_widget_size"][1]
+        ), f"{window_information['window'].title}:"
+        assert (
+            window_information["window"].screen == window_information["paired_screen"]
+        ), f"{window_information['window'].title}:"
+
+    assert app.in_presentation_mode
+
+    # Exit presentation mode
+    app.exit_presentation_mode()
+
+    # All the windows should have exited presentation mode.
+    for window_information in window_information_list:
+        # Wait for window animation before assertion.
+        await window_information["window_probe"].wait_for_window(
+            "App is not in presentation mode", state=WindowState.NORMAL
+        )
+        assert not app.in_presentation_mode
+        assert (
+            window_information["window_probe"].instantaneous_state == WindowState.NORMAL
+        ), f"{window_information['window'].title}:"
+        assert (
+            window_information["window_probe"].content_size
+            == window_information["initial_content_size"]
+        ), f"{window_information['window'].title}:"
+        assert (
+            window_information["widget_probe"].width
+            == window_information["initial_widget_size"][0]
+            and window_information["widget_probe"].height
+            == window_information["initial_widget_size"][1]
+        ), f"{window_information['window'].title}:"
+        assert (
+            window_information["window"].screen == window_information["initial_screen"]
+        ), f"{window_information['window'].title}:"
+
+
+async def test_window_presentation_exit_on_another_window_presentation(
+    app, main_window_probe
+):
+    window1 = toga.Window(title="Test Window 1", size=(200, 200))
+    window2 = toga.Window(title="Test Window 2", size=(200, 200))
     window1_probe = window_probe(app, window1)
     window2_probe = window_probe(app, window2)
-
+    window1.content = toga.Box(style=Pack(background_color=REBECCAPURPLE))
+    window2.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
     window1.show()
     window2.show()
-    await app_probe.redraw("Extra windows are visible")
+    # Wait for window animation before assertion.
+    await main_window_probe.wait_for_window("Test windows are shown")
 
-    assert not app.is_full_screen
-    assert not app_probe.is_full_screen(window1)
-    assert not app_probe.is_full_screen(window2)
-    initial_content1_size = app_probe.content_size(window1)
-    initial_content2_size = app_probe.content_size(window2)
+    assert not app.in_presentation_mode
+    assert window1_probe.instantaneous_state != WindowState.PRESENTATION
+    assert window2_probe.instantaneous_state != WindowState.PRESENTATION
 
-    initial_window1_widget_size = (
-        window1_widget_probe.width,
-        window1_widget_probe.height,
-    )
-    initial_window2_widget_size = (
-        window2_widget_probe.width,
-        window2_widget_probe.height,
-    )
-
-    # Make window 2 full screen via the app
-    app.set_full_screen(window2)
+    # Enter presentation mode with window2
+    app.enter_presentation_mode([window2])
+    # Wait for window animation before assertion.
     await window2_probe.wait_for_window(
-        "Second extra window is full screen",
-        full_screen=True,
+        "App is in presentation mode", state=WindowState.PRESENTATION
     )
-    assert app.is_full_screen
+    assert app.in_presentation_mode
+    assert window2_probe.instantaneous_state == WindowState.PRESENTATION
+    assert window1_probe.instantaneous_state != WindowState.PRESENTATION
 
-    assert not app_probe.is_full_screen(window1)
-    assert app_probe.content_size(window1) == initial_content1_size
-    assert (
-        window1_widget_probe.width == initial_window1_widget_size[0]
-        and window1_widget_probe.height == initial_window1_widget_size[1]
-    )
-
-    assert app_probe.is_full_screen(window2)
-    assert app_probe.content_size(window2)[0] > 1000
-    assert app_probe.content_size(window2)[1] > 700
-    assert (
-        window2_widget_probe.width > initial_window2_widget_size[0]
-        and window2_widget_probe.height > initial_window2_widget_size[1]
-    )
-
-    # Make window 1 full screen via the app, window 2 no longer full screen
-    app.set_full_screen(window1)
+    # Enter presentation mode with window1, window2 no longer in presentation
+    app.enter_presentation_mode([window1])
+    # Wait for window animation before assertion.
     await window1_probe.wait_for_window(
-        "First extra window is full screen",
-        full_screen=True,
+        "App is in presentation mode", state=WindowState.PRESENTATION
     )
-    assert app.is_full_screen
+    assert app.in_presentation_mode
+    assert window1_probe.instantaneous_state == WindowState.PRESENTATION
+    assert window2_probe.instantaneous_state != WindowState.PRESENTATION
 
-    assert app_probe.is_full_screen(window1)
-    assert app_probe.content_size(window1)[0] > 1000
-    assert app_probe.content_size(window1)[1] > 700
-    assert (
-        window1_widget_probe.width > initial_window1_widget_size[0]
-        and window1_widget_probe.height > initial_window1_widget_size[1]
-    )
-
-    assert not app_probe.is_full_screen(window2)
-    assert app_probe.content_size(window2) == initial_content2_size
-    assert (
-        window2_widget_probe.width == initial_window2_widget_size[0]
-        and window2_widget_probe.height == initial_window2_widget_size[1]
-    )
-
-    # Exit full screen
-    app.exit_full_screen()
+    # Exit presentation mode
+    app.exit_presentation_mode()
+    # Wait for window animation before assertion.
     await window1_probe.wait_for_window(
-        "No longer full screen",
-        full_screen=True,
+        "App is not in presentation mode", state=WindowState.NORMAL
     )
+    assert not app.in_presentation_mode
+    assert window1_probe.instantaneous_state != WindowState.PRESENTATION
+    assert window2_probe.instantaneous_state != WindowState.PRESENTATION
 
-    assert not app.is_full_screen
-
-    assert not app_probe.is_full_screen(window1)
-    assert app_probe.content_size(window1) == initial_content1_size
-    assert (
-        window1_widget_probe.width == initial_window1_widget_size[0]
-        and window1_widget_probe.height == initial_window1_widget_size[1]
-    )
-
-    assert not app_probe.is_full_screen(window2)
-    assert app_probe.content_size(window2) == initial_content2_size
-    assert (
-        window2_widget_probe.width == initial_window2_widget_size[0]
-        and window2_widget_probe.height == initial_window2_widget_size[1]
-    )
-
-    # Go full screen again on window 1
-    app.set_full_screen(window1)
-    # A longer delay to allow for genie animations
+    # Enter presentation mode again with window1
+    app.enter_presentation_mode([window1])
+    # Wait for window animation before assertion.
     await window1_probe.wait_for_window(
-        "First extra window is full screen",
-        full_screen=True,
+        "App is in presentation mode", state=WindowState.PRESENTATION
     )
-    assert app.is_full_screen
+    assert app.in_presentation_mode
+    assert window1_probe.instantaneous_state == WindowState.PRESENTATION
+    assert window2_probe.instantaneous_state != WindowState.PRESENTATION
 
-    assert app_probe.is_full_screen(window1)
-    assert app_probe.content_size(window1)[0] > 1000
-    assert app_probe.content_size(window1)[1] > 700
-    assert (
-        window1_widget_probe.width > initial_window1_widget_size[0]
-        and window1_widget_probe.height > initial_window1_widget_size[1]
-    )
-
-    assert not app_probe.is_full_screen(window2)
-    assert app_probe.content_size(window2) == initial_content2_size
-    assert (
-        window2_widget_probe.width == initial_window2_widget_size[0]
-        and window2_widget_probe.height == initial_window2_widget_size[1]
-    )
-
-    # Exit full screen by passing no windows
-    app.set_full_screen()
-
+    # Exit presentation mode
+    app.exit_presentation_mode()
+    # Wait for window animation before assertion.
     await window1_probe.wait_for_window(
-        "No longer full screen",
-        full_screen=True,
+        "App is not in presentation mode", state=WindowState.NORMAL
     )
-    assert not app.is_full_screen
+    assert not app.in_presentation_mode
+    assert window1_probe.instantaneous_state != WindowState.PRESENTATION
+    assert window2_probe.instantaneous_state != WindowState.PRESENTATION
 
-    assert not app_probe.is_full_screen(window1)
-    assert app_probe.content_size(window1) == initial_content1_size
-    assert (
-        window1_widget_probe.width == initial_window1_widget_size[0]
-        and window1_widget_probe.height == initial_window1_widget_size[1]
+
+@pytest.mark.parametrize(
+    "new_window_state",
+    [
+        WindowState.MINIMIZED,
+        WindowState.MAXIMIZED,
+        WindowState.FULLSCREEN,
+    ],
+)
+async def test_presentation_mode_exit_on_window_state_change(
+    app, app_probe, main_window, main_window_probe, new_window_state
+):
+    """Changing window state exits presentation mode and sets the new state."""
+    if (new_window_state == WindowState.MINIMIZED) and (
+        not main_window_probe.supports_minimize
+    ):
+        pytest.xfail("This backend doesn't reliably support WindowState.MINIMIZED.")
+
+    window1 = toga.Window(title="Test Window 1", size=(200, 200))
+    window2 = toga.Window(title="Test Window 2", size=(200, 200))
+    window1_probe = window_probe(app, window1)
+    window2_probe = window_probe(app, window2)
+    window1.content = toga.Box(style=Pack(background_color=REBECCAPURPLE))
+    window2.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
+    window1.show()
+    window2.show()
+    # Wait for window animation before assertion.
+    await main_window_probe.wait_for_window("Test windows are shown")
+
+    # Enter presentation mode
+    app.enter_presentation_mode([window1])
+    # Wait for window animation before assertion.
+    await window1_probe.wait_for_window(
+        "App is in presentation mode", state=WindowState.PRESENTATION
     )
 
-    assert not app_probe.is_full_screen(window2)
-    assert app_probe.content_size(window2) == initial_content2_size
-    assert (
-        window2_widget_probe.width == initial_window2_widget_size[0]
-        and window2_widget_probe.height == initial_window2_widget_size[1]
+    assert app.in_presentation_mode
+    assert window1_probe.instantaneous_state == WindowState.PRESENTATION
+
+    # Changing window state of main window should make the app exit presentation mode.
+    window1.state = new_window_state
+    # Wait for window animation before assertion.
+    await window1_probe.wait_for_window(
+        "App is not in presentation mode" f"\nTest Window 1 is in {new_window_state}",
+        state=new_window_state,
     )
+
+    assert not app.in_presentation_mode
+    assert window1_probe.instantaneous_state == new_window_state
+
+    # Reset window states
+    window1.state = WindowState.NORMAL
+    window2.state = WindowState.NORMAL
+    # Wait for windows animation before assertion.
+    await window1_probe.wait_for_window(
+        "All test windows are in WindowState.NORMAL", state=WindowState.NORMAL
+    )
+    await window2_probe.wait_for_window(
+        "All test windows are in WindowState.NORMAL", state=WindowState.NORMAL
+    )
+    assert window1_probe.instantaneous_state == WindowState.NORMAL
+    assert window2_probe.instantaneous_state == WindowState.NORMAL
+
+    # Enter presentation mode again
+    app.enter_presentation_mode([window1])
+    # Wait for window animation before assertion.
+    await window1_probe.wait_for_window(
+        "App is in presentation mode", state=WindowState.PRESENTATION
+    )
+    assert app.in_presentation_mode
+    assert window1_probe.instantaneous_state == WindowState.PRESENTATION
+
+    # Changing window state of extra window should make the app exit presentation mode.
+    window2.state = new_window_state
+    # Wait for window animation before assertion.
+    await window2_probe.wait_for_window(
+        "App is not in presentation mode" f"\nTest Window 2 is in {new_window_state}",
+        state=new_window_state,
+    )
+
+    assert not app.in_presentation_mode
+    assert window2_probe.instantaneous_state == new_window_state
+
+    # Reset window states
+    window1.state = WindowState.NORMAL
+    window2.state = WindowState.NORMAL
+    # Wait for windows animation before assertion.
+    await window1_probe.wait_for_window(
+        "All test windows are in WindowState.NORMAL", state=WindowState.NORMAL
+    )
+    await window2_probe.wait_for_window(
+        "All test windows are in WindowState.NORMAL", state=WindowState.NORMAL
+    )
+    assert window1_probe.instantaneous_state == WindowState.NORMAL
+    assert window2_probe.instantaneous_state == WindowState.NORMAL
 
 
 async def test_show_hide_cursor(app, app_probe):
@@ -445,7 +553,7 @@ async def test_system_dpi_change(
     try:
         main_window.toolbar.add(toga.Command(None, "Test command"))
 
-        # Include widgets which are sized in different ways, with padding and fixed
+        # Include widgets which are sized in different ways, with margin and fixed
         # sizes in both dimensions.
         main_window.content = toga.Box(
             style=Pack(direction="row"),
@@ -453,7 +561,7 @@ async def test_system_dpi_change(
                 toga.Label(
                     "fixed",
                     id="fixed",
-                    style=Pack(background_color="yellow", padding_left=20, width=100),
+                    style=Pack(background_color="yellow", margin_left=20, width=100),
                 ),
                 toga.Label(
                     "minimal",  # Shrink to fit content
@@ -464,7 +572,7 @@ async def test_system_dpi_change(
                     "flex",
                     id="flex",
                     style=Pack(
-                        background_color="pink", flex=1, padding_top=15, height=50
+                        background_color="pink", flex=1, margin_top=15, height=50
                     ),
                 ),
             ],

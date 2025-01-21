@@ -100,6 +100,14 @@ Notes
   window on a mobile platform. If you try to modify the size, position, or visibility of
   the main window, the request will be ignored.
 
+* On mobile platforms, a window's state cannot be :any:`WindowState.MINIMIZED` or
+  :any:`WindowState.MAXIMIZED`. Any request to move to these states will be ignored.
+
+* On Linux, when using Wayland, a request to put a window into a
+  :any:`WindowState.MINIMIZED` state, or to restore from the
+  :any:`WindowState.MINIMIZED` state, will be ignored. This is due to
+  limitations in window management features that Wayland allows apps to use.
+
 Reference
 ---------
 

@@ -324,17 +324,11 @@ class App:
         pass
 
     ######################################################################
-    # Full screen control
-    ######################################################################
-
-    def enter_full_screen(self, windows):
-        pass
-
-    def exit_full_screen(self, windows):
-        pass
-
-    ######################################################################
     # Platform-specific APIs
+    ######################################################################
+
+    ######################################################################
+    # 2024-2: Backwards compatibility for < 0.4.1
     ######################################################################
 
     async def intent_result(self, intent):  # pragma: no cover
@@ -354,6 +348,10 @@ class App:
             return result_future.result()
         except AttributeError:
             raise RuntimeError("No appropriate Activity found to handle this intent.")
+
+    ######################################################################
+    # End backwards compatibility
+    ######################################################################
 
     def _native_startActivityForResult(
         self, activity, code, *options

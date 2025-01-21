@@ -46,15 +46,6 @@ class AppProbe(BaseProbe, DialogsMixin):
     def is_cursor_visible(self):
         pytest.skip("Cursor visibility not implemented on GTK")
 
-    def is_full_screen(self, window):
-        return bool(
-            window._impl.native.get_window().get_state() & Gdk.WindowState.FULLSCREEN
-        )
-
-    def content_size(self, window):
-        content_allocation = window._impl.container.get_allocation()
-        return (content_allocation.width, content_allocation.height)
-
     def assert_app_icon(self, icon):
         for window in self.app.windows:
             # We have no real way to check we've got the right icon; use pixel peeping

@@ -624,7 +624,7 @@ def test_simple_handler_coroutine(event_loop):
 
 
 ######################################################################
-# 2023-12: Backwards compatibility
+# 2023-12: Backwards compatibility for <= 0.4.0
 ######################################################################
 
 

@@ -10,14 +10,7 @@ from typing import TYPE_CHECKING, Any, Protocol, TypeVar
 from warnings import warn
 
 import toga
-from toga.platform import get_platform_factory
-
-if sys.version_info >= (3, 10):  # pragma: no-cover-if-lt-py310
-    from importlib.metadata import entry_points
-else:  # pragma: no-cover-if-gte-py310
-    # Before Python 3.10, entry_points did not support the group argument;
-    # so, the backport package must be used on older versions.
-    from importlib_metadata import entry_points
+from toga.platform import entry_points, get_platform_factory
 
 # Make sure deprecation warnings are shown by default
 warnings.filterwarnings("default", category=DeprecationWarning)
@@ -99,7 +92,7 @@ class Image:
         :raises ValueError: If the source cannot be loaded as an image.
         """
         ######################################################################
-        # 2023-11: Backwards compatibility
+        # 2023-11: Backwards compatibility for <= 0.4.0
         ######################################################################
         num_provided = sum(arg is not NOT_PROVIDED for arg in (src, path, data))
         if num_provided > 1:

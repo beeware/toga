@@ -56,7 +56,7 @@ class ExampleFontExampleApp(toga.App):
 
         # Buttons
         btn_box1 = toga.Box(
-            style=Pack(direction=ROW, padding_bottom=10),
+            style=Pack(direction=ROW, margin_bottom=10),
             children=[
                 toga.Button("Clear", on_press=self.do_clear),
                 toga.Button("Weight", on_press=self.do_weight),
@@ -89,7 +89,7 @@ class ExampleFontExampleApp(toga.App):
             style=Pack(font_family="awesome-free-solid", font_size=14, width=50),
         )
         btn_box2 = toga.Box(
-            style=Pack(direction=ROW, padding_bottom=10),
+            style=Pack(direction=ROW, margin_bottom=10),
             children=[btn1, btn2, btn3, btn4],
         )
 
@@ -176,7 +176,7 @@ class ExampleFontExampleApp(toga.App):
                 self.labels,
                 self.textpanel,
             ],
-            style=Pack(flex=1, direction=COLUMN, padding=10),
+            style=Pack(flex=1, direction=COLUMN, margin=10),
         )
 
         # Add the content on the main window

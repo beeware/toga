@@ -26,7 +26,7 @@ if TYPE_CHECKING:
 
 
 class OnSelectHandler(Protocol):
-    def __call__(self, widget: OptionContainer, /, **kwargs: Any) -> None:
+    def __call__(self, widget: OptionContainer, **kwargs: Any) -> None:
         """A handler that will be invoked when a new tab is selected
         in the OptionContainer.
 
@@ -383,6 +383,7 @@ class OptionContainer(Widget):
         style: StyleT | None = None,
         content: Iterable[OptionContainerContentT] | None = None,
         on_select: toga.widgets.optioncontainer.OnSelectHandler | None = None,
+        **kwargs,
     ):
         """Create a new OptionContainer.
 
@@ -392,12 +393,12 @@ class OptionContainer(Widget):
         :param content: The initial :any:`OptionContainer content
             <OptionContainerContentT>` to display in the OptionContainer.
         :param on_select: Initial :any:`on_select` handler.
+        :param kwargs: Initial style properties.
         """
-        super().__init__(id=id, style=style)
         self._content = OptionList(self)
         self.on_select = None
 
-        self._impl = self.factory.OptionContainer(interface=self)
+        super().__init__(id, style, **kwargs)
 
         if content is not None:
             for item in content:
@@ -423,6 +424,9 @@ class OptionContainer(Widget):
                     self.content.append(text, widget, enabled=enabled, icon=icon)
 
         self.on_select = on_select
+
+    def _create(self) -> Any:
+        return self.factory.OptionContainer(interface=self)
 
     @property
     def enabled(self) -> bool:

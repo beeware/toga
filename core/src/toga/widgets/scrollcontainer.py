@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
 
 class OnScrollHandler(Protocol):
-    def __call__(self, widget: ScrollContainer, /, **kwargs: Any) -> object:
+    def __call__(self, widget: ScrollContainer, **kwargs: Any) -> object:
         """A handler to invoke when the container is scrolled.
 
         :param widget: The ScrollContainer that was scrolled.
@@ -29,6 +29,7 @@ class ScrollContainer(Widget):
         vertical: bool = True,
         on_scroll: OnScrollHandler | None = None,
         content: Widget | None = None,
+        **kwargs,
     ):
         """Create a new Scroll Container.
 
@@ -39,20 +40,22 @@ class ScrollContainer(Widget):
         :param vertical: Should horizontal scrolling be permitted?
         :param on_scroll: Initial :any:`on_scroll` handler.
         :param content: The content to display in the scroll window.
+        :param kwargs: Initial style properties.
         """
-        super().__init__(id=id, style=style)
 
         self._content: Widget | None = None
         self.on_scroll = None
 
-        # Create a platform specific implementation of a Scroll Container
-        self._impl = self.factory.ScrollContainer(interface=self)
+        super().__init__(id, style, **kwargs)
 
         # Set all attributes
         self.vertical = vertical
         self.horizontal = horizontal
         self.content = content
         self.on_scroll = on_scroll
+
+    def _create(self) -> Any:
+        return self.factory.ScrollContainer(interface=self)
 
     @Widget.app.setter
     def app(self, app) -> None:

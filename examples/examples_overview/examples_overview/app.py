@@ -50,7 +50,7 @@ class ExampleExamplesOverviewApp(toga.App):
         # Label for user instructions
         label = toga.Label(
             "Please select an example to run",
-            style=Pack(padding_bottom=10),
+            style=Pack(margin_bottom=10),
         )
 
         # ==== Table with examples =====================================================
@@ -72,15 +72,15 @@ class ExampleExamplesOverviewApp(toga.App):
             data=self.examples,
             on_activate=self.run,
             on_select=self.on_example_selected,
-            style=Pack(padding_bottom=10, flex=1),
+            style=Pack(margin_bottom=10, flex=1),
         )
 
         # Buttons
         self.btn_run = toga.Button(
-            "Run Example", on_press=self.run, style=Pack(flex=1, padding_right=5)
+            "Run Example", on_press=self.run, style=Pack(flex=1, margin_right=5)
         )
         self.btn_open = toga.Button(
-            "Open folder", on_press=self.open, style=Pack(flex=1, padding_left=5)
+            "Open folder", on_press=self.open, style=Pack(flex=1, margin_left=5)
         )
 
         button_box = toga.Box(children=[self.btn_run, self.btn_open])
@@ -88,7 +88,7 @@ class ExampleExamplesOverviewApp(toga.App):
         # ==== View of example README ==================================================
 
         self.info_view = toga.MultilineTextInput(
-            placeholder="Please select example", readonly=True, style=Pack(padding=1)
+            placeholder="Please select example", readonly=True, style=Pack(margin=1)
         )
 
         # ==== Assemble layout =========================================================
@@ -97,7 +97,7 @@ class ExampleExamplesOverviewApp(toga.App):
             children=[self.table, button_box],
             style=Pack(
                 direction=COLUMN,
-                padding=1,
+                margin=1,
                 flex=1,
             ),
         )
@@ -109,7 +109,7 @@ class ExampleExamplesOverviewApp(toga.App):
 
         outer_box = toga.Box(
             children=[label, split_container],
-            style=Pack(padding=10, direction=COLUMN, flex=1),
+            style=Pack(margin=10, direction=COLUMN, flex=1),
         )
 
         # Add the content on the main window
