@@ -12,6 +12,7 @@ from travertino.constants import (  # noqa: F401
     CENTER,
     COLUMN,
     CURSIVE,
+    END,
     FANTASY,
     HIDDEN,
     ITALIC,
@@ -28,6 +29,7 @@ from travertino.constants import (  # noqa: F401
     SANS_SERIF,
     SERIF,
     SMALL_CAPS,
+    START,
     SYSTEM,
     TOP,
     TRANSPARENT,
@@ -63,10 +65,6 @@ PACK = "pack"
 ######################################################################
 # Declaration choices
 ######################################################################
-
-# Define here, since they're not available in Travertino 0.3.0
-START = "start"
-END = "end"
 
 # Used in backwards compatibility section below
 ALIGNMENT = "alignment"
@@ -268,26 +266,12 @@ class Pack(BaseStyle):
     # Index notation
 
     def __getitem__(self, name):
-        # As long as we're mucking about with backwards compatibility: Travertino 0.3.0
-        # doesn't support accessing directional properties via bracket notation, so
-        # special-case it here to gain access to the FUTURE.
-        if name in {"padding", "margin"}:
-            return getattr(self, name)
-
         return super().__getitem__(self._update_property_name(name.replace("-", "_")))
 
     def __setitem__(self, name, value):
-        if name in {"padding", "margin"}:
-            setattr(self, name, value)
-            return
-
         super().__setitem__(self._update_property_name(name.replace("-", "_")), value)
 
     def __delitem__(self, name):
-        if name in {"padding", "margin"}:
-            delattr(self, name)
-            return
-
         super().__delitem__(self._update_property_name(name.replace("-", "_")))
 
     ######################################################################

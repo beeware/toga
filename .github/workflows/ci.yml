@@ -83,7 +83,7 @@ jobs:
         - package: travertino
           platform: macos-latest
         - package: travertino
-          platform: ubuntu-latest
+          platform: windows-latest
         include:
         - experimental: false
         - package: "core"
