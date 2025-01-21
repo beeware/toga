@@ -58,6 +58,7 @@ class Window(LoggedObject):
         self.set_size(size)
 
         self._state = WindowState.NORMAL
+        self._visible = False
 
     ######################################################################
     # Window properties
@@ -82,7 +83,7 @@ class Window(LoggedObject):
 
     def show(self):
         self._action("show")
-        self._set_value("visible", True)
+        self._visible = True
 
     ######################################################################
     # Window content and resources
@@ -122,11 +123,14 @@ class Window(LoggedObject):
     ######################################################################
 
     def get_visible(self):
-        return self._get_value("visible", False)
+        # We cannot store the visibility value on the EventLog, since the value
+        # would be cleared on EventLog.reset(), thereby preventing us from
+        # testing no-op condition of requesting the same visibility as current.
+        return self._visible
 
     def hide(self):
         self._action("hide")
-        self._set_value("visible", False)
+        self._visible = False
 
     ######################################################################
     # Window state
