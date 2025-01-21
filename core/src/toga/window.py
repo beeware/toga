@@ -311,8 +311,20 @@ class Window:
 
     def show(self) -> None:
         """Show the window. If the window is already visible, this method has no
-        effect."""
-        self._impl.show()
+        effect.
+
+        :raises ValueError: If the window is currently in a minimized, full screen or
+            presentation state.
+        """
+        if not self.visible:
+            if self.state in {
+                WindowState.MINIMIZED,
+                WindowState.FULLSCREEN,
+                WindowState.PRESENTATION,
+            }:
+                raise ValueError(f"A window in {self.state} state cannot be shown.")
+            else:
+                self._impl.show()
 
     ######################################################################
     # Window content and resources
@@ -436,8 +448,20 @@ class Window:
 
     def hide(self) -> None:
         """Hide the window. If the window is already hidden, this method has no
-        effect."""
-        self._impl.hide()
+        effect.
+
+        :raises ValueError: If the window is currently in a minimized, full screen or
+            presentation state.
+        """
+        if self.visible:
+            if self.state in {
+                WindowState.MINIMIZED,
+                WindowState.FULLSCREEN,
+                WindowState.PRESENTATION,
+            }:
+                raise ValueError(f"A window in {self.state} state cannot be hidden.")
+            else:
+                self._impl.hide()
 
     @property
     def visible(self) -> bool:
