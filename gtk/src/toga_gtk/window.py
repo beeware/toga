@@ -30,6 +30,8 @@ class Window:
             "delete-event",
             self.gtk_delete_event,
         )
+        self.native.connect("show", self.gtk_show)
+        self.native.connect("hide", self.gtk_hide)
         self.native.connect("window-state-event", self.gtk_window_state_event)
         self.native.connect("focus-in-event", self.gtk_focus_in_event)
         self.native.connect("focus-out-event", self.gtk_focus_out_event)
@@ -69,11 +71,18 @@ class Window:
     ######################################################################
     # Native event handlers
     ######################################################################
+    def gtk_show(self, widget):
+        self.interface.on_show()
+
+    def gtk_hide(self, widget):
+        self.interface.on_hide()
 
     def gtk_window_state_event(self, widget, event):
         previous_window_state_flags = self._window_state_flags
+        previous_state = self.get_window_state()
         # Get the window state flags
         self._window_state_flags = event.new_window_state
+        current_state = self.get_window_state()
 
         # Window state flags are unreliable when window is hidden,
         # so cache the previous window state flag on to the new
@@ -90,8 +99,24 @@ class Window:
                     self._window_state_flags |= flag
                     break
 
+        # Trigger the appropriate visibility events
+        if current_state == WindowState.MINIMIZED and previous_state in {
+            WindowState.NORMAL,
+            WindowState.MAXIMIZED,
+            WindowState.FULLSCREEN,
+            WindowState.PRESENTATION,
+        }:
+            self.interface.on_hide()
+        elif current_state != WindowState.MINIMIZED and previous_state not in {
+            WindowState.NORMAL,
+            WindowState.MAXIMIZED,
+            WindowState.FULLSCREEN,
+            WindowState.PRESENTATION,
+        }:
+            self.interface.on_show()
+
+        # Handle the pending state transitions
         if self._pending_state_transition:
-            current_state = self.get_window_state()
             if current_state != WindowState.NORMAL:
                 if self._pending_state_transition != current_state:
                     # Add a 10ms delay to wait for the native window state
