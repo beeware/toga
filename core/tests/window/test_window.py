@@ -326,14 +326,15 @@ def test_visibility(window, app):
         WindowState.PRESENTATION,
     ],
 )
-def test_hide_disallowed_on_window_state(window, app, state):
+def test_show_hide_disallowed_on_window_state(window, app, state):
     """A window in MINIMIZED, FULLSCREEN or PRESENTATION state cannot be
-    set to hidden."""
+    shown or hidden."""
     window.show()
 
     window.state = state
     assert window.state == state
     assert window.visible is True
+    EventLog.reset()
 
     with pytest.raises(
         ValueError,
@@ -348,6 +349,28 @@ def test_hide_disallowed_on_window_state(window, app, state):
     ):
         window.visible = False
         assert_action_not_performed(window, "hide")
+
+    # Using only the Toga API, it shouldn't be possible to get a window into a hidden
+    # state while minimized; but if you're poking underlying APIs it might be possible.
+    # It's also good from the point of view of symmetry that the same error conditions
+    # exist. So - fake using "native APIs" to make the window hidden
+    window._impl._visible = False
+    assert window.state == state
+    assert window.visible is False
+
+    with pytest.raises(
+        ValueError,
+        match=f"A window in {state} state cannot be shown.",
+    ):
+        window.show()
+        assert_action_not_performed(window, "show")
+
+    with pytest.raises(
+        ValueError,
+        match=f"A window in {state} state cannot be shown.",
+    ):
+        window.visible = True
+        assert_action_not_performed(window, "show")
 
 
 @pytest.mark.parametrize(
