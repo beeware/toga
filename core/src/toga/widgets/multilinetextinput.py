@@ -26,6 +26,7 @@ class MultilineTextInput(Widget):
         readonly: bool = False,
         placeholder: str | None = None,
         on_change: toga.widgets.multilinetextinput.OnChangeHandler | None = None,
+        **kwargs,
     ):
         """Create a new multi-line text input widget.
 
@@ -38,8 +39,9 @@ class MultilineTextInput(Widget):
             there is no user content to display.
         :param on_change: A handler that will be invoked when the value of
             the widget changes.
+        :param kwargs: Initial style properties.
         """
-        super().__init__(id=id, style=style)
+        super().__init__(id, style, **kwargs)
 
         # Set a dummy handler before installing the actual on_change, because we do not
         # want on_change triggered by the initial value being set

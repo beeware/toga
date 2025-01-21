@@ -36,6 +36,7 @@ class DateInput(Widget):
         min: datetime.date | None = None,
         max: datetime.date | None = None,
         on_change: toga.widgets.dateinput.OnChangeHandler | None = None,
+        **kwargs,
     ):
         """Create a new DateInput widget.
 
@@ -47,8 +48,9 @@ class DateInput(Widget):
         :param min: The earliest date (inclusive) that can be selected.
         :param max: The latest date (inclusive) that can be selected.
         :param on_change: A handler that will be invoked when the value changes.
+        :param kwargs: Initial style properties.
         """
-        super().__init__(id=id, style=style)
+        super().__init__(id, style, **kwargs)
 
         self.on_change = None
         self.min = min

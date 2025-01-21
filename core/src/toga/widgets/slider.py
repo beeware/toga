@@ -52,6 +52,7 @@ class Slider(Widget):
         on_press: toga.widgets.slider.OnPressHandler | None = None,
         on_release: OnReleaseHandler | None = None,
         enabled: bool = True,
+        **kwargs,
     ):
         """Create a new Slider widget.
 
@@ -68,8 +69,9 @@ class Slider(Widget):
         :param on_press: Initial :any:`on_press` handler.
         :param on_release: Initial :any:`on_release` handler.
         :param enabled: Whether the user can interact with the widget.
+        :param kwargs: Initial style properties.
         """
-        super().__init__(id=id, style=style)
+        super().__init__(id, style, **kwargs)
 
         # Set a dummy handler before installing the actual on_change, because we do not
         # want on_change triggered by the initial value being set

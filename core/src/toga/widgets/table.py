@@ -44,6 +44,7 @@ class Table(Widget):
         on_select: toga.widgets.table.OnSelectHandler | None = None,
         on_activate: toga.widgets.table.OnActivateHandler | None = None,
         missing_value: str = "",
+        **kwargs,
     ):
         """Create a new Table widget.
 
@@ -74,6 +75,7 @@ class Table(Widget):
         :param missing_value: The string that will be used to populate a cell when the
             value provided by its accessor is :any:`None`, or the accessor isn't
             defined.
+        :param kwargs: Initial style properties.
         """
         self._headings: list[str] | None
         self._accessors: list[str]
@@ -98,7 +100,7 @@ class Table(Widget):
         self.on_activate = None
         self._data = None
 
-        super().__init__(id=id, style=style)
+        super().__init__(id, style, **kwargs)
 
         self.data = data
 

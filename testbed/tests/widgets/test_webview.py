@@ -337,27 +337,32 @@ async def test_retrieve_cookies(widget, probe, on_load):
         content=ANY,
         on_load=on_load,
     )
-    await probe.redraw("Wait for Javascript completion", delay=0.1)
 
-    # JavaScript expression to set a cookie and return the current cookies
-    expression = """
-    (function setCookie() {
-        document.cookie = "test=test_value; path=/; Secure";
-        return document.cookie;
-    })()"""
+    # On iOS and macOS, setting a cookie can fail if it's done too soon after page load.
+    # Try a couple of times to make sure the cookie is actually set.
+    for i in range(0, 5):
+        # JavaScript expression to set a cookie and return the current cookies
+        expression = """
+        (function setCookie() {
+            document.cookie = "test=test_value; path=/; Secure; SameSite=None";
+            return document.cookie;
+        })()"""
 
-    await wait_for(widget.evaluate_javascript(expression), JS_TIMEOUT)
+        await wait_for(widget.evaluate_javascript(expression), JS_TIMEOUT)
 
-    # Retrieve cookies.
-    cookie_jar = await widget.cookies
+        # Retrieve cookies.
+        cookie_jar = await widget.cookies
 
-    assert isinstance(cookie_jar, CookieJar)
+        assert isinstance(cookie_jar, CookieJar)
 
-    # Cookie retrieval isn't implemented on every backend (yet), so we implement the
-    # retrieval in the probe to provide an opportunity to skip the test.
-    cookie = probe.extract_cookie(cookie_jar, "test")
+        # Cookie retrieval isn't implemented on every backend (yet), so we implement the
+        # retrieval in the probe to provide an opportunity to skip the test.
+        cookie = probe.extract_cookie(cookie_jar, "test")
 
-    # Find the test cookie in the CookieJar
+        if cookie is None:
+            # Cookie wasn't set; wait a little bit before trying again.
+            await probe.redraw("Cookie wasn't set; wait and try again", delay=0.2)
+
     assert cookie is not None, "Test cookie not found in CookieJar"
 
     # Validate the test cookie

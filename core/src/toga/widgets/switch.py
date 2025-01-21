@@ -26,6 +26,7 @@ class Switch(Widget):
         on_change: toga.widgets.switch.OnChangeHandler | None = None,
         value: bool = False,
         enabled: bool = True,
+        **kwargs,
     ):
         """Create a new Switch widget.
 
@@ -38,8 +39,9 @@ class Switch(Widget):
             value.
         :param enabled: Is the switch enabled (i.e., can it be pressed?).
             Optional; by default, switches are created in an enabled state.
+        :param kwargs: Initial style properties.
         """
-        super().__init__(id=id, style=style)
+        super().__init__(id, style, **kwargs)
 
         self.text = text
 

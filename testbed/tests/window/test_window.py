@@ -921,6 +921,50 @@ else:
         assert second_window_probe.content_size == initial_content_size
 
     @pytest.mark.parametrize(
+        "state",
+        [
+            WindowState.NORMAL,
+            WindowState.MAXIMIZED,
+            # Window cannot be hidden while in MINIMIZED, FULLSCREEN or
+            # PRESENTATION. So, those states are excluded from this test.
+        ],
+    )
+    @pytest.mark.parametrize(
+        "second_window_class, second_window_kwargs",
+        [
+            (
+                toga.Window,
+                dict(title="Secondary Window", position=(200, 150)),
+            )
+        ],
+    )
+    async def test_window_state_when_window_hidden(
+        second_window, second_window_probe, state
+    ):
+        """When a window is hidden using hide(), the window.state getter should
+        continue to report the same state as it did when the window was last visible."""
+        if state == WindowState.MINIMIZED and not second_window_probe.supports_minimize:
+            pytest.xfail(
+                "This backend doesn't reliably support minimized window state."
+            )
+        second_window.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
+        second_window.show()
+        # Wait for window animation before assertion.
+        await second_window_probe.wait_for_window("Secondary window is shown")
+
+        second_window.state = state
+        # Wait for window animation before assertion.
+        await second_window_probe.wait_for_window(
+            f"Secondary window is in {state}", state=state
+        )
+        assert second_window_probe.instantaneous_state == state
+        window_state_before_hidden = second_window.state
+
+        second_window.hide()
+        await second_window_probe.wait_for_window("Secondary window is hidden")
+        assert second_window.state == window_state_before_hidden
+
+    @pytest.mark.parametrize(
         "second_window_class, second_window_kwargs",
         [
             (

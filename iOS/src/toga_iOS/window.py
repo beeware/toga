@@ -132,8 +132,12 @@ class Window:
     ######################################################################
 
     def get_visible(self):
-        # The window is always visible
-        return True
+        # The window is hidden as default by the system, unless makeKeyAndVisible
+        # has been called on the UIWindow. Requesting the same visibility as the
+        # current visibility state is a no-op and is ignored at the core level.
+        # So, always check if the window is currently hidden or not, to ensure that
+        # the other APIs that are dependent on get_visible() work correctly.
+        return not bool(self.native.isHidden())
 
     def hide(self):
         # A no-op, as the window cannot be hidden.

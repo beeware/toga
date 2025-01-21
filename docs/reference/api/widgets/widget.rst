@@ -15,4 +15,7 @@ Reference
 ---------
 
 .. autoclass:: toga.Widget
-   :inherited-members:
+   :inherited-members: object, PackMixin
+
+.. autoclass:: toga.widgets.base.PackMixin
+   :no-members:

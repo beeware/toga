@@ -64,6 +64,7 @@ class DetailedList(Widget):
         on_secondary_action: OnSecondaryActionHandler | None = None,
         on_refresh: OnRefreshHandler | None = None,
         on_select: toga.widgets.detailedlist.OnSelectHandler | None = None,
+        **kwargs,
     ):
         """Create a new DetailedList widget.
 
@@ -81,6 +82,7 @@ class DetailedList(Widget):
         :param secondary_action: The name for the secondary action.
         :param on_secondary_action: Initial :any:`on_secondary_action` handler.
         :param on_refresh: Initial :any:`on_refresh` handler.
+        :param kwargs: Initial style properties.
         """
         # Prime the attributes and handlers that need to exist when the widget is
         # created.
@@ -92,7 +94,7 @@ class DetailedList(Widget):
 
         self._data: SourceT | ListSource = None
 
-        super().__init__(id=id, style=style)
+        super().__init__(id, style, **kwargs)
 
         self.data = data
         self.on_primary_action = on_primary_action

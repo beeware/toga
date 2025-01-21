@@ -1,0 +1,1 @@
+The default background color of `toga.Label` on iOS now correctly displays a transparent background, instead of a black background.
