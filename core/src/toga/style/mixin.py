@@ -2,6 +2,9 @@ class StyleProperty:
     def __set_name__(self, mixin_cls, name):
         self.name = name
 
+    def __repr__(self):
+        return f"<StyleProperty {self.name!r}>"
+
     def __get__(self, widget, mixin_cls):
         return self if widget is None else getattr(widget.style, self.name)
 
@@ -21,8 +24,13 @@ def style_mixin(style_cls):
             """
     }
 
-    for name in dir(style_cls):
-        if not name.startswith("_") and isinstance(getattr(style_cls, name), property):
-            mixin_dict[name] = StyleProperty()
+    try:
+        _all_properties = style_cls._BASE_ALL_PROPERTIES
+    except AttributeError:
+        # Travertino 0.3 compatibility
+        _all_properties = style_cls._ALL_PROPERTIES
+
+    for name in _all_properties[style_cls]:
+        mixin_dict[name] = StyleProperty()
 
     return type(style_cls.__name__ + "Mixin", (), mixin_dict)
