@@ -141,6 +141,9 @@ class MultilineTextInput(Widget):
         self.native.textColor = color
         self.placeholder_label.textColor = color
 
+    def set_background_color(self, color):
+        self.set_background_color_simple(color)
+
     def set_alignment(self, value):
         self.native.textAlignment = NSTextAlignment(value)
 

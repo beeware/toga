@@ -1,5 +1,6 @@
 from toga.colors import TRANSPARENT
 from toga.widgets.imageview import rehint_imageview
+from toga_iOS.colors import native_color
 from toga_iOS.libs import UIImageView, UIViewContentMode
 from toga_iOS.widgets.base import Widget
 
@@ -14,9 +15,13 @@ class ImageView(Widget):
         self.native.setTranslatesAutoresizingMaskIntoConstraints_(False)
         self.native.setAutoresizesSubviews_(False)
 
-        self._default_background_color = TRANSPARENT
-
         self.add_constraints()
+
+    def set_background_color(self, color):
+        if color == TRANSPARENT or color is None:
+            self.native.backgroundColor = native_color(TRANSPARENT)
+        else:
+            self.native.backgroundColor = native_color(color)
 
     def set_image(self, image):
         if image:
