@@ -1011,8 +1011,6 @@ else:
     async def test_visibility_events(second_window, second_window_probe):
         """The window can trigger on_show() and on_hide() event handlers,
         when the window is shown or hidden respectively."""
-        if not second_window_probe.supports_visibility_events:
-            pytest.xfail("This backend doesn't support visibility events.")
         second_window.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
         second_window.show()
         second_window.on_show = Mock()
