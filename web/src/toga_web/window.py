@@ -40,17 +40,17 @@ class Window:
         pass
 
     def window_on_gain_focus(self, sender, event):
-        self.interface.on_gain_focus(self.interface)
+        self.interface.on_gain_focus()
 
     def window_on_lose_focus(self, sender, event):
-        self.interface.on_lose_focus(self.interface)
+        self.interface.on_lose_focus()
 
     def window_on_visibility_change(self, sender, event):
         if hasattr(js.document, "hidden"):
             if js.document.visibilityState == "visible":
-                self.interface.on_show(self.interface)
+                self.interface.on_show()
             else:
-                self.interface.on_hide(self.interface)
+                self.interface.on_hide()
 
     ######################################################################
     # Window properties

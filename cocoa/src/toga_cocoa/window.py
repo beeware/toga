@@ -268,6 +268,9 @@ class Window:
 
     def show(self):
         self.native.makeKeyAndOrderFront(None)
+        # Cocoa doesn't provide a native window delegate notification that would
+        # be triggered when makeKeyAndOrderFront_ is called. So, trigger the event
+        # here instead.
         self.interface.on_show()
 
     ######################################################################
@@ -345,6 +348,8 @@ class Window:
 
     def hide(self):
         self.native.orderOut(self.native)
+        # Cocoa doesn't provide a native window delegate notification that would
+        # be triggered when orderOut_ is called. So, trigger the event here instead.
         self.interface.on_hide()
 
     def get_visible(self):

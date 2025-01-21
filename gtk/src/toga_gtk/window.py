@@ -100,6 +100,9 @@ class Window:
                     break
 
         # Trigger the appropriate visibility events
+        # Wayland doesn't allow for the detection of MINIMIZED, so the
+        # visibility events will not be triggered when the window will
+        # be minimized or un-minimized.
         if current_state == WindowState.MINIMIZED and previous_state in {
             WindowState.NORMAL,
             WindowState.MAXIMIZED,
