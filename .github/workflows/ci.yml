@@ -87,9 +87,9 @@ jobs:
         include:
         - experimental: false
         - package: "core"
-          travertino: ""
+          tox-suffix: ""
         - package: "travertino"
-          travertino: "-trav"
+          tox-suffix: "-trav"
 
     steps:
     - name: Checkout
