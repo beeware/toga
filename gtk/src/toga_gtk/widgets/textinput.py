@@ -12,11 +12,11 @@ class TextInput(Widget):
         self.native = Gtk.Entry()
         self.native.connect("changed", self.gtk_on_change)
 
-        if GTK_VERSION < (4, 0, 0):
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             self.native.connect("focus-in-event", self.gtk_focus_in_event)
             self.native.connect("focus-out-event", self.gtk_focus_out_event)
             self.native.connect("key-press-event", self.gtk_key_press_event)
-        else:
+        else:  # pragma: no-cover-if-gtk3
             focus_controller = Gtk.EventControllerFocus()
             focus_controller.connect("enter", self.gtk_focus_in_event)
             focus_controller.connect("leave", self.gtk_focus_out_event)
@@ -28,15 +28,15 @@ class TextInput(Widget):
             self.native.add_controller(key_press_controller)
 
     def gtk_on_change(self, *_args):
-        if GTK_VERSION < (4, 0, 0):
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             self.interface._value_changed()
-        else:
+        else:  # pragma: no-cover-if-gtk3
             self.interface._value_changed(self.interface)
 
     def gtk_focus_in_event(self, *_args):
-        if GTK_VERSION < (4, 0, 0):
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             self.interface.on_gain_focus()
-        else:
+        else:  # pragma: no-cover-if-gtk3
             self.interface.on_gain_focus(self.interface)
 
     def gtk_focus_out_event(self, *_args):

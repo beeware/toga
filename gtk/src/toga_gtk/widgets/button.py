@@ -15,9 +15,9 @@ class Button(Widget):
 
     def get_text(self):
         text = self.native.get_label()
-        if GTK_VERSION < (4, 0, 0):
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             return text
-        return text if text else ""
+        return text if text else ""  # pragma: no-cover-if-gtk3
 
     def set_text(self, text):
         self.native.set_label(text)
@@ -27,14 +27,14 @@ class Button(Widget):
 
     def set_icon(self, icon):
         self._icon = icon
-        if GTK_VERSION < (4, 0, 0):
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             if icon:
                 self.native.set_image(Gtk.Image.new_from_pixbuf(icon._impl.native(32)))
                 self.native.set_always_show_image(True)
             else:
                 self.native.set_image(None)
                 self.native.set_always_show_image(False)
-        else:
+        else:  # pragma: no-cover-if-gtk3
             if icon:
                 icon._impl.native.set_icon_size(Gtk.IconSize.LARGE)
                 self.native.set_child(icon._impl.native)

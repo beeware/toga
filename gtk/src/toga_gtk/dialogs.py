@@ -7,7 +7,7 @@ from .libs import GTK_VERSION, Gtk
 
 class BaseDialog:
     def show(self, host_window, future):
-        if GTK_VERSION < (4, 0, 0):
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             self.future = future
 
             # If this is a modal dialog, set the window as transient to the host window.
@@ -18,7 +18,7 @@ class BaseDialog:
 
             # Show the dialog.
             self.native.show()
-        else:
+        else:  # pragma: no-cover-if-gtk3
             self.interface.factory.not_implemented("BaseDialog.show()")
 
 
@@ -32,7 +32,7 @@ class MessageDialog(BaseDialog):
         **kwargs,
     ):
         super().__init__()
-        if GTK_VERSION < (4, 0, 0):
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             self.success_result = success_result
 
             self.native = Gtk.MessageDialog(
@@ -46,7 +46,7 @@ class MessageDialog(BaseDialog):
 
             self.native.connect("response", self.gtk_response)
 
-        else:
+        else:  # pragma: no-cover-if-gtk3
             toga.NotImplementedWarning("Dialog()")
 
     def build_dialog(self, message):

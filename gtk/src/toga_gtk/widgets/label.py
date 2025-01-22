@@ -7,9 +7,9 @@ from .base import Widget
 class Label(Widget):
     def create(self):
         self.native = Gtk.Label()
-        if GTK_VERSION < (4, 0, 0):
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             self.native.set_line_wrap(False)
-        else:
+        else:  # pragma: no-cover-if-gtk3
             self.native.set_wrap(False)
 
     def set_text_align(self, value):
@@ -27,7 +27,7 @@ class Label(Widget):
         self.native.set_text(value)
 
     def rehint(self):
-        if GTK_VERSION < (4, 0, 0):
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             # print(
             #     "REHINT",
             #     self,
@@ -41,7 +41,7 @@ class Label(Widget):
 
             self.interface.intrinsic.width = at_least(width[0])
             self.interface.intrinsic.height = height[1]
-        else:
+        else:  # pragma: no-cover-if-gtk3
             # print(
             #     "REHINT",
             #     self,

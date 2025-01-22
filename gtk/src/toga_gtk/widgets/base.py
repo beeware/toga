@@ -27,9 +27,9 @@ class Widget:
         # Ensure the native widget has GTK CSS style attributes; create() should
         # ensure any other widgets are also styled appropriately.
         self.native.set_name(f"toga-{self.interface.id}")
-        if GTK_VERSION < (4, 0, 0):
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             self.native.get_style_context().add_class("toga")
-        else:
+        else:  # pragma: no-cover-if-gtk3
             self.native.add_css_class("toga")
 
     @abstractmethod
@@ -61,10 +61,10 @@ class Widget:
         elif container:
             # setting container, adding self to container.native
             self._container = container
-            if GTK_VERSION < (4, 0, 0):
+            if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
                 self._container.add(self.native)
                 self.native.show_all()
-            else:
+            else:  # pragma: no-cover-if-gtk3
                 self._container.append(self.native)
 
         for child in self.interface.children:
@@ -80,9 +80,9 @@ class Widget:
 
     @property
     def has_focus(self):
-        if GTK_VERSION < (4, 0, 0):
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             return self.native.has_focus()
-        else:
+        else:  # pragma: no-cover-if-gtk3
             root = self.native.get_root()
             focus_widget = root.get_focus()
             if focus_widget:
@@ -204,7 +204,7 @@ class Widget:
 
     def rehint(self):
         # Perform the actual GTK rehint.
-        if GTK_VERSION < (4, 0, 0):
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             # print(
             #     "REHINT",
             #     self,
@@ -216,7 +216,7 @@ class Widget:
 
             self.interface.intrinsic.width = at_least(width[0])
             self.interface.intrinsic.height = at_least(height[0])
-        else:
+        else:  # pragma: no-cover-if-gtk3
             min_size, _ = self.native.get_preferred_size()
             # print("REHINT", self, f"{width_info[0]}x{height_info[0]}")
             self.interface.intrinsic.width = at_least(min_size.width)

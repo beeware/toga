@@ -35,6 +35,7 @@ exclude_lines = [
 ]
 
 [tool.coverage.coverage_conditional_plugin.rules]
+# Additional testbed rules are configured in the testbed module
 no-cover-if-missing-setuptools_scm = "not is_installed('setuptools_scm')"
 no-cover-if-missing-PIL = "not is_installed('PIL')"
 no-cover-if-PIL-installed = "is_installed('PIL')"

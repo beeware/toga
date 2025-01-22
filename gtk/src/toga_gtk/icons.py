@@ -32,11 +32,11 @@ class Icon:
         # Preload all the required icon sizes
         try:
             for size, path in self.paths.items():
-                if GTK_VERSION < (4, 0, 0):
+                if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
                     native = GdkPixbuf.Pixbuf.new_from_file(str(path)).scale_simple(
                         size, size, GdkPixbuf.InterpType.BILINEAR
                     )
-                else:
+                else:  # pragma: no-cover-if-gtk3
                     native = Gtk.Image.new_from_paintable(
                         Gdk.Texture.new_from_filename(str(path))
                     )
@@ -48,7 +48,7 @@ class Icon:
         try:
             return self._native[size]
         except KeyError:
-            if GTK_VERSION < (4, 0, 0):
+            if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
                 # self._native will have at least one entry, and it will have been
                 # populated in reverse size order, so the first value returned will
                 # be the largest size discovered.
@@ -57,5 +57,5 @@ class Icon:
                 )
                 self._native[size] = native
                 return native
-            else:
+            else:  # pragma: no-cover-if-gtk3
                 return None

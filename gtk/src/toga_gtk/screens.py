@@ -21,10 +21,10 @@ class Screen:
         return self.native.get_model()
 
     def get_origin(self) -> Position:
-        if GTK_VERSION < (4, 0, 0):
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             geometry = self.native.get_geometry()
             return Position(geometry.x, geometry.y)
-        else:
+        else:  # pragma: no-cover-if-gtk3
             return Position(0, 0)
 
     def get_size(self) -> Size:

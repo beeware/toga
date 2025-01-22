@@ -17,7 +17,7 @@ class StatusIcon:
             self.native.set_icon_name(path)
 
     def create(self):
-        if GTK_VERSION < (4, 0, 0):
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             if XApp is None:  # pragma: no cover
                 # Can't replicate this in testbed
                 raise RuntimeError(
@@ -28,7 +28,7 @@ class StatusIcon:
             self.native = XApp.StatusIcon.new()
             self.native.set_tooltip_text(self.interface.text)
             self.set_icon(self.interface.icon)
-        else:
+        else:  # pragma: no-cover-if-gtk3
             self.interface.factory.not_implemented("StatusIcon")
 
     def remove(self):
@@ -39,7 +39,7 @@ class StatusIcon:
 class SimpleStatusIcon(StatusIcon):
     def create(self):
         super().create()
-        if GTK_VERSION < (4, 0, 0):
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             self.native.connect("activate", self.gtk_activate)
 
     def gtk_activate(self, icon, button, time):
@@ -75,7 +75,7 @@ class StatusIconSet:
         return submenu
 
     def create(self):
-        if GTK_VERSION < (4, 0, 0):
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             # Menu status icons are the only icons that have extra construction needs.
             # Clear existing menus
             for item in self.interface._menu_status_icons:
@@ -116,5 +116,5 @@ class StatusIconSet:
                     submenu.append(menu_item)
                     submenu.show_all()
 
-        else:
+        else:  # pragma: no-cover-if-gtk3
             self.interface.factory.not_implemented("StatusIconSet.create()")

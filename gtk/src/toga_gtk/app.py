@@ -55,13 +55,13 @@ class App:
         # Set any custom styles
         css_provider = Gtk.CssProvider()
 
-        if GTK_VERSION < (4, 0, 0):
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             css_provider.load_from_data(TOGA_DEFAULT_STYLES)
             context = Gtk.StyleContext()
             context.add_provider_for_screen(
                 Gdk.Screen.get_default(), css_provider, Gtk.STYLE_PROVIDER_PRIORITY_USER
             )
-        else:
+        else:  # pragma: no-cover-if-gtk3
             if Gtk.get_minor_version() >= 12:
                 css_provider.load_from_string(TOGA_DEFAULT_STYLES)
             elif Gtk.get_minor_version() > 8:
@@ -184,7 +184,7 @@ class App:
 
     def get_screens(self):
         display = Gdk.Display.get_default()
-        if GTK_VERSION < (4, 0, 0):
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             if IS_WAYLAND:  # pragma: no-cover-if-linux-x
                 # `get_primary_monitor()` doesn't work on wayland, so return as it is.
                 return [
@@ -200,7 +200,7 @@ class App:
                     if display.get_monitor(i) != primary_screen.native
                 ]
                 return screen_list
-        else:
+        else:  # pragma: no-cover-if-gtk3
             return [ScreenImpl(native=monitor) for monitor in display.get_monitors()]
 
     ######################################################################
@@ -216,9 +216,9 @@ class App:
     ######################################################################
 
     def beep(self):
-        if GTK_VERSION < (4, 0, 0):
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             Gdk.beep()
-        else:
+        else:  # pragma: no-cover-if-gtk3
             Gdk.Display.get_default().beep()
 
     def _close_about(self, dialog, *args, **kwargs):

@@ -155,6 +155,8 @@ if __name__ == "__main__":
             "no-cover-if-linux-x": (
                 "os_environ.get('WAYLAND_DISPLAY', 'not-set') == 'not-set'"
             ),
+            "no-cover-if-gtk4": "os_environ.get('TOGA_GTK') == '4'",
+            "no-cover-if-gtk3": "os_environ.get('TOGA_GTK') != '4'",
         },
     )
     cov.start()

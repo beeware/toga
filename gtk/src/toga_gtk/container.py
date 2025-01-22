@@ -8,9 +8,9 @@ from .libs import GTK_VERSION, Gdk, Gtk
 # details.
 #######################################################################################
 
-if GTK_VERSION < (4, 0, 0):
+if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
     LayoutManager = object
-else:
+else:  # pragma: no-cover-if-gtk3
     LayoutManager = Gtk.LayoutManager
 
 
@@ -105,7 +105,7 @@ class TogaContainer(Gtk.Box):
     def __init__(self):
         super().__init__()
 
-        if GTK_VERSION >= (4, 0):
+        if GTK_VERSION >= (4, 0):  # pragma: no-cover-if-gtk3
             # Because we don’t have access to the existing layout manager, we must
             # create our custom layout manager class.
             layout_manager = TogaContainerLayoutManager()
@@ -146,9 +146,9 @@ class TogaContainer(Gtk.Box):
         """
         if self._content is None:
             return 0
-        if GTK_VERSION < (4, 0, 0):
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             return self.get_allocated_width()
-        else:
+        else:  # pragma: no-cover-if-gtk3
             return self.compute_bounds(self)[1].get_width()
 
     @property
@@ -159,9 +159,9 @@ class TogaContainer(Gtk.Box):
         """
         if self._content is None:
             return 0
-        if GTK_VERSION < (4, 0, 0):
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             return self.get_allocated_height()
-        else:
+        else:  # pragma: no-cover-if-gtk3
             return self.compute_bounds(self)[1].get_height()
 
     @property
@@ -218,7 +218,7 @@ class TogaContainer(Gtk.Box):
         If the container does not yet have content, the minimum width is set to
         0.
         """
-        if GTK_VERSION < (4, 0, 0):
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             # print("GET PREFERRED WIDTH", self._content)
             if self._content is None:
                 return 0, 0
@@ -229,7 +229,7 @@ class TogaContainer(Gtk.Box):
             # The container will conform to the size of the allocation it is given,
             # so the min and preferred size are the same.
             return self.min_width, self.min_width
-        else:
+        else:  # pragma: no-cover-if-gtk3
             pass
 
     def do_get_preferred_height(self):
@@ -240,7 +240,7 @@ class TogaContainer(Gtk.Box):
 
         If the container does not yet have content, the minimum height is set to 0.
         """
-        if GTK_VERSION < (4, 0, 0):
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             # print("GET PREFERRED HEIGHT", self._content)
             if self._content is None:
                 return 0, 0
@@ -251,7 +251,7 @@ class TogaContainer(Gtk.Box):
             # The container will conform to the size of the allocation it is given,
             # so the min and preferred size are the same.
             return self.min_height, self.min_height
-        else:
+        else:  # pragma: no-cover-if-gtk3
             pass
 
     def do_size_allocate(self, allocation):
@@ -262,7 +262,7 @@ class TogaContainer(Gtk.Box):
         computed based on this new available size, and that new geometry will be applied
         to all child widgets of the container.
         """
-        if GTK_VERSION < (4, 0, 0):
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             # print(
             #     self._content,
             #     f"Container layout {allocation.width}x{allocation.height} "
@@ -312,5 +312,5 @@ class TogaContainer(Gtk.Box):
 
             # The layout has been redrawn
             self.needs_redraw = False
-        else:
+        else:  # pragma: no-cover-if-gtk3
             pass

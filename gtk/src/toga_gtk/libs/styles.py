@@ -3,7 +3,7 @@ from toga.fonts import SYSTEM_DEFAULT_FONT_SIZE
 
 from ..libs import GTK_VERSION
 
-if GTK_VERSION < (4, 0, 0):
+if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
     TOGA_DEFAULT_STYLES = b"""
     .toga-detailed-list-floating-buttons {
         min-width: 24px;
@@ -15,7 +15,7 @@ if GTK_VERSION < (4, 0, 0):
         opacity: 0.60;
     }
     """
-else:
+else:  # pragma: no-cover-if-gtk3
     TOGA_DEFAULT_STYLES = """
     .toga-detailed-list-floating-buttons {
         min-width: 24px;
