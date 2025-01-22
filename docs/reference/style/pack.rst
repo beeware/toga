@@ -52,6 +52,8 @@ If a previously hidden widget is made visible, any children of the widget with
 a visibility of ``hidden`` will remain hidden. Any descendants of the hidden
 child will also remain hidden, regardless of their visibility.
 
+.. _pack-direction:
+
 ``direction``
 -------------
 
