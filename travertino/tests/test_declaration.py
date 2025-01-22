@@ -592,6 +592,7 @@ def test_list_property_list_like():
     assert isinstance(prop, ImmutableList)
     assert prop == [1, 2, 3, VALUE2]
     assert prop == ImmutableList([1, 2, 3, VALUE2])
+    assert prop[2] == 3
     assert str(prop) == repr(prop) == "[1, 2, 3, 'value2']"
     assert len(prop) == 4
 
@@ -695,6 +696,11 @@ def test_dict(StyleClass):
             ("thing_top", 30),
         ]
     )
+
+    # Style object has a length and is iterable.
+    assert len(style) == 6
+    for name in style:
+        assert name in expected_keys
 
     # Properties that are set are in the keys.
     for name in expected_keys:

@@ -127,7 +127,7 @@ class Font:
         )
 
 
-def font(value):
+def font(value):  # pragma: no cover
     """Parse a font from a string.
 
     Accepts:

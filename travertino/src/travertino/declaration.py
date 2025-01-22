@@ -44,6 +44,10 @@ class Choices:
         number=False,
         color=False,
     ):
+        ######################################################################
+        # 2024-02: Backwards compatibility for code written against <= 0.3.0
+        ######################################################################
+
         if default is not None:
             warn(
                 "The `default` argument to Choices.__init__ is deprecated. "
@@ -51,6 +55,10 @@ class Choices:
                 DeprecationWarning,
                 stacklevel=2,
             )
+
+        ######################################################################
+        # End backwards compatibility
+        ######################################################################
 
         self.constants = set(constants)
 

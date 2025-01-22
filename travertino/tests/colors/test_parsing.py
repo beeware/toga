@@ -117,7 +117,7 @@ def test_hsl(value):
 )
 def test_hsl_invalid(value):
     with pytest.raises(ValueError):
-        color(value)
+        color(f"hsl({value}")
 
 
 @pytest.mark.parametrize(
@@ -169,3 +169,13 @@ def test_named_color(value, expected):
 def test_named_color_invalid():
     with pytest.raises(ValueError):
         color("not a color")
+
+
+@pytest.mark.parametrize(
+    "num_digits",
+    [1, 2, 5, 7, 9, 10],
+)
+def test_hash_mark_invalid(num_digits):
+    """An invalid number of digts after # raises a ValueError."""
+    with pytest.raises(ValueError):
+        color(f"#{'1' * num_digits}")

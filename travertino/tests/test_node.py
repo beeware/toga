@@ -208,6 +208,13 @@ def test_refresh(StyleClass):
     assert child3.applicator.tasks == []
 
 
+def test_refresh_no_op():
+    """Refresh is a no-op if no applicator is set."""
+    node = Node(style=Style())
+    node.refresh(Viewport(width=100, height=100))
+    node.style.reapply.assert_not_called()
+
+
 @pytest.mark.parametrize("StyleClass", [TypeErrorStyle, OldTypeErrorStyle])
 def test_type_error_in_layout(StyleClass):
     """The shim shouldn't hide unrelated TypeErrors."""
@@ -256,6 +263,14 @@ def test_insert():
     assert node.children.index(child4) == index
 
 
+def test_insert_leaf():
+    """Node that can't contain children raises error on insert."""
+    node = Node(style=Style())
+    child = Node(style=Style())
+    with pytest.raises(ValueError, match=r"Cannot insert child"):
+        node.insert(0, child)
+
+
 def test_remove():
     """Children can be removed from node"""
 
@@ -272,8 +287,16 @@ def test_remove():
     assert child1.root == child1
 
 
+def test_remove_leaf():
+    """Node that can't contain children raises error on remove."""
+    node = Node(style=Style())
+    child = Node(style=Style())
+    with pytest.raises(ValueError, match=r"Cannot remove children"):
+        node.remove(child)
+
+
 def test_clear():
-    """Node can be inserted at a specific position as a child"""
+    """Node can be cleared of all children."""
     style = Style()
     children = [Node(style=style), Node(style=style), Node(style=style)]
     node = Node(style=style, children=children)
@@ -291,6 +314,14 @@ def test_clear():
         assert child.parent is None
         assert child.root == child
 
+    assert node.children == []
+
+
+def test_clear_leaf():
+    """For a node that can't have children, remove() is a no-op."""
+    node = Node(style=Style())
+    assert node.children == []
+    node.clear()
     assert node.children == []
 
 
