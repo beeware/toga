@@ -280,10 +280,15 @@ class BaseStyle:
     _BASE_PROPERTIES = defaultdict(set)
     _BASE_ALL_PROPERTIES = defaultdict(set)
 
-    def __init_subclass__(cls):
-        # Give the subclass a direct reference to its properties.
-        cls._PROPERTIES = cls._BASE_PROPERTIES[cls]
-        cls._ALL_PROPERTIES = cls._BASE_ALL_PROPERTIES[cls]
+    # Give instances a direct reference to their properties.
+
+    @property
+    def _PROPERTIES(self):
+        return self._BASE_PROPERTIES[type(self)]
+
+    @property
+    def _ALL_PROPERTIES(self):
+        return self._BASE_ALL_PROPERTIES[type(self)]
 
     # Fallback in case subclass isn't decorated as subclass (probably from using
     # previous API) or for pre-3.10, before kw_only argument existed.

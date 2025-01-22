@@ -980,4 +980,4 @@ class Pack(BaseStyle):
         return " ".join(css)
 
 
-Pack._ALL_PROPERTIES.update(Pack._ALIASES)
+Pack._BASE_ALL_PROPERTIES[Pack].update(Pack._ALIASES)
