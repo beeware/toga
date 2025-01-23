@@ -1,0 +1,1 @@
+On gtk, the decoded toga color is now cached for faster lookup.
