@@ -1,0 +1,1 @@
+On Android, setting widget background_color to TRANSPARENT now correctly sets it to transparent.
