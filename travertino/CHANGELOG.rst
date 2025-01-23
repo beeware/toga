@@ -1,7 +1,7 @@
 Changelog
 =========
 
-Note: As of version 0.5.0, Travertino is now hosted and developed as part of the Toga repository. It's now released along with — and has the same version number as — each [Toga release](https://github.com/beeware/toga/releases).
+Note: As of version 0.5.0, Travertino is now hosted and developed as part of the Toga repository. It's now released along with — and has the same version number as — each `Toga release <https://github.com/beeware/toga/releases>`_.
 
 For all development beyond 0.5.0, any changes made to Travertino will be logged along with Toga's overall list of changes for each new release.
 
