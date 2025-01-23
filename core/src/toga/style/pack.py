@@ -115,6 +115,11 @@ class Pack(BaseStyle):
     ######################################################################
 
     def update(self, **properties):
+        # Set direction first, as it may change the interpretation of direction-based
+        # property aliases in _update_property_name.
+        if direction := properties.pop("direction", None):
+            self.direction = direction
+
         properties = {
             self._update_property_name(name.replace("-", "_")): value
             for name, value in properties.items()
@@ -128,7 +133,7 @@ class Pack(BaseStyle):
             warnings.filterwarnings("ignore", category=DeprecationWarning)
             super().reapply(*args, **kwargs)
 
-    DEPRECATED_PROPERTIES = {
+    _DEPRECATED_PROPERTIES = {
         # Map each deprecated property name to its replacement.
         # alignment / align_items is handled separately.
         "padding": "margin",
@@ -138,22 +143,38 @@ class Pack(BaseStyle):
         "padding_left": "margin_left",
     }
 
-    @classmethod
-    def _update_property_name(cls, name):
-        if new_name := cls.DEPRECATED_PROPERTIES.get(name):
-            cls._warn_deprecated(name, new_name, stacklevel=4)
+    _ALIASES = {
+        "horizontal_align_content": {ROW: "justify_content"},
+        "horizontal_align_items": {COLUMN: "align_items"},
+        "vertical_align_content": {COLUMN: "justify_content"},
+        "vertical_align_items": {ROW: "align_items"},
+    }
+
+    def _update_property_name(self, name):
+        if aliases := self._ALIASES.get(name):
+            try:
+                name = aliases[self.direction]
+            except KeyError:
+                raise AttributeError(
+                    f"{name!r} is not supported on a {self.direction}"
+                ) from None
+
+        if new_name := self._DEPRECATED_PROPERTIES.get(name):
+            self._warn_deprecated(name, new_name, stacklevel=4)
             name = new_name
 
         return name
 
-    @staticmethod
-    def _warn_deprecated(old_name, new_name, stacklevel=3):
+    def _warn_deprecated(self, old_name, new_name, stacklevel=3):
         msg = f"Pack.{old_name} is deprecated; use {new_name} instead"
         warnings.warn(msg, DeprecationWarning, stacklevel=stacklevel)
 
     # Dot lookup
 
     def __getattribute__(self, name):
+        if name.startswith("_"):
+            return super().__getattribute__(name)
+
         # Align_items and alignment are paired. Both can never be set at the same time;
         # if one is requested, and the other one is set, compute the requested value
         # from the one that is set.
@@ -197,7 +218,7 @@ class Pack(BaseStyle):
                 # Only CENTER remains
                 return CENTER
 
-        return super().__getattribute__(type(self)._update_property_name(name))
+        return super().__getattribute__(self._update_property_name(name))
 
     def __setattr__(self, name, value):
         # Only one of these can be set at a time.
@@ -979,3 +1000,11 @@ Pack.validated_property(
 #     'font_family', 'font_style', 'font_variant', 'font_weight', 'font_size'
 #     FONT_CHOICES
 # ])
+
+try:
+    _all_properties = Pack._BASE_ALL_PROPERTIES
+except AttributeError:
+    # Travertino 0.3 compatibility
+    _all_properties = Pack._ALL_PROPERTIES
+
+_all_properties[Pack].update(Pack._ALIASES)

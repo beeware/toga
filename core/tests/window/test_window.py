@@ -242,45 +242,59 @@ def test_set_size_with_content(window):
 
 
 def test_show_hide(window, app):
-    """The window can be shown and hidden."""
+    """The window can be shown & hidden, but requesting visibility change when
+    the window is already in that requested visibility state is a no-op."""
+    # Window is assigned to the app, but is not visible
     assert window.app == app
+    assert window in app.windows
+    assert not window.visible
+
+    # Show the window
     window.show()
 
     # The window has been assigned to the app, and is visible
     assert window.app == app
     assert window in app.windows
-    assert_action_performed(window, "show")
     assert window.visible
+    assert_action_performed(window, "show")
+    EventLog.reset()
 
-    # Hide with an explicit call
-    window.hide()
-
-    # Window is still assigned to the app, but is not visible
-    assert window.app == app
-    assert window in app.windows
-    assert_action_performed(window, "hide")
-    assert not window.visible
-
-
-def test_hide_show(window, app):
-    """The window can be hidden then shown."""
-    assert window.app == app
-    window.hide()
-
-    # The window has been assigned to the app, and is not visible
-    assert window.app == app
-    assert window in app.windows
-    assert_action_performed(window, "hide")
-    assert not window.visible
-
-    # Show with an explicit call
+    # The window is already shown, so this call will be a no-op
     window.show()
 
+    # The window is still assigned to the app, and is visible
+    assert window.app == app
+    assert window in app.windows
+    assert window.visible
+    assert_action_not_performed(window, "show")
+
+    # Hide the window
+    window.hide()
+
     # Window is still assigned to the app, but is not visible
     assert window.app == app
     assert window in app.windows
-    assert_action_performed(window, "show")
+    assert not window.visible
+    assert_action_performed(window, "hide")
+    EventLog.reset()
+
+    # The window is already hidden, so this call will be a no-op
+    window.hide()
+
+    # Window is still assigned to the app, but is not visible
+    assert window.app == app
+    assert window in app.windows
+    assert not window.visible
+    assert_action_not_performed(window, "hide")
+
+    # Show the window
+    window.show()
+
+    # The window is still assigned to the app, and is visible
+    assert window.app == app
+    assert window in app.windows
     assert window.visible
+    assert_action_performed(window, "show")
 
 
 def test_visibility(window, app):
@@ -302,6 +316,61 @@ def test_visibility(window, app):
     assert window in app.windows
     assert_action_performed(window, "hide")
     assert not window.visible
+
+
+@pytest.mark.parametrize(
+    "state",
+    [
+        WindowState.MINIMIZED,
+        WindowState.FULLSCREEN,
+        WindowState.PRESENTATION,
+    ],
+)
+def test_show_hide_disallowed_on_window_state(window, app, state):
+    """A window in MINIMIZED, FULLSCREEN or PRESENTATION state cannot be
+    shown or hidden."""
+    window.show()
+
+    window.state = state
+    assert window.state == state
+    assert window.visible is True
+    EventLog.reset()
+
+    with pytest.raises(
+        ValueError,
+        match=f"A window in {state} state cannot be hidden.",
+    ):
+        window.hide()
+        assert_action_not_performed(window, "hide")
+
+    with pytest.raises(
+        ValueError,
+        match=f"A window in {state} state cannot be hidden.",
+    ):
+        window.visible = False
+        assert_action_not_performed(window, "hide")
+
+    # Using only the Toga API, it shouldn't be possible to get a window into a hidden
+    # state while minimized; but if you're poking underlying APIs it might be possible.
+    # It's also good from the point of view of symmetry that the same error conditions
+    # exist. So - fake using "native APIs" to make the window hidden
+    window._impl._visible = False
+    assert window.state == state
+    assert window.visible is False
+
+    with pytest.raises(
+        ValueError,
+        match=f"A window in {state} state cannot be shown.",
+    ):
+        window.show()
+        assert_action_not_performed(window, "show")
+
+    with pytest.raises(
+        ValueError,
+        match=f"A window in {state} state cannot be shown.",
+    ):
+        window.visible = True
+        assert_action_not_performed(window, "show")
 
 
 @pytest.mark.parametrize(

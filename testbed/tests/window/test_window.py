@@ -917,10 +917,9 @@ else:
         "state",
         [
             WindowState.NORMAL,
-            WindowState.MINIMIZED,
             WindowState.MAXIMIZED,
-            WindowState.FULLSCREEN,
-            WindowState.PRESENTATION,
+            # Window cannot be hidden while in MINIMIZED, FULLSCREEN or
+            # PRESENTATION. So, those states are excluded from this test.
         ],
     )
     @pytest.mark.parametrize(
