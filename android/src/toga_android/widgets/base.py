@@ -1,19 +1,16 @@
 from abc import ABC, abstractmethod
 from decimal import ROUND_HALF_EVEN, Decimal
 
-from android.graphics import Color, PorterDuff, PorterDuffColorFilter
-from android.graphics.drawable import ColorDrawable
+from android.graphics import PorterDuff, PorterDuffColorFilter, Rect
+from android.graphics.drawable import ColorDrawable, InsetDrawable
 from android.view import Gravity, View
 from android.widget import RelativeLayout
 from org.beeware.android import MainActivity
 from travertino.size import at_least
 
-from toga.constants import CENTER, JUSTIFY, LEFT, RIGHT
-from toga_android.colors import (
-    DEFAULT_BACKGROUND_COLOR,
-    native_color,
-    toga_color,
-)
+from toga.constants import CENTER, JUSTIFY, LEFT, RIGHT, TRANSPARENT
+
+from ..colors import native_color
 
 
 class Scalable:
@@ -137,16 +134,31 @@ class Widget(ABC, Scalable):
     def set_background_color(self, color):
         pass
 
-    def set_background_simple(self, color):
-        self.native.setBackground(
-            ColorDrawable(Color.TRANSPARENT if color is None else native_color(color))
-        )
+    def set_background_simple(self, value):
+        if not hasattr(self, "_default_background"):
+            self._default_background = self.native.getBackground()
 
-    def set_background_filter(self, color):
+        if value in (None, TRANSPARENT):
+            self.native.setBackground(self._default_background)
+        else:
+            background = ColorDrawable(native_color(value))
+            if isinstance(self._default_background, InsetDrawable):
+                outer_padding = Rect()
+                inner_padding = Rect()
+                self._default_background.getPadding(outer_padding)
+                self._default_background.getDrawable().getPadding(inner_padding)
+                insets = [
+                    getattr(outer_padding, name) - getattr(inner_padding, name)
+                    for name in ["left", "top", "right", "bottom"]
+                ]
+                background = InsetDrawable(background, *insets)
+            self.native.setBackground(background)
+
+    def set_background_filter(self, value):
         self.native.getBackground().setColorFilter(
             None
-            if color is None
-            else PorterDuffColorFilter(native_color(color), PorterDuff.Mode.SRC_IN)
+            if value in (None, TRANSPARENT)
+            else PorterDuffColorFilter(native_color(value), PorterDuff.Mode.SRC_IN)
         )
 
     def set_text_align(self, alignment):
@@ -186,85 +198,3 @@ def android_text_align(value):
         CENTER: Gravity.CENTER_HORIZONTAL,
         JUSTIFY: Gravity.LEFT,
     }[value]
-
-
-# Most of the Android Widget have different effects applied them which provide
-# the native look and feel of Android. These widgets' background consists of
-# Drawables like ColorDrawable, InsetDrawable and other animation Effect Drawables
-# like RippleDrawable. Often when such Effect Drawables are used, they are stacked
-# along with other Drawables in a LayerDrawable.
-#
-# LayerDrawable once created cannot be modified and attempting to modify it or
-# creating a new LayerDrawable using the elements of the original LayerDrawable
-# stack, will destroy the native look and feel of the widgets. The original
-# LayerDrawable cannot also be properly cloned. Using `getConstantState()` on the
-# Drawable will produce an erroneous version of the original Drawable.
-#
-# These widgets are also affected by the background color of the parent inside which
-# they are present. Directly, setting background color also destroys the native look
-# and feel of these widgets. Moreover, these effects also serve the purpose of
-# providing visual aid for the action of these widgets.
-#
-# Hence, the best option to preserve the native look and feel of the these widgets is
-# to contain them in a `RelativeLayout` and set the background color to the layout
-# instead of the widget itself.
-#
-# ContainedWidget should act as a drop-in replacement against the Widget class for
-# such widgets, without requiring the widgets to do anything extra on their part.
-# It should be used for widgets that have an animated Effect Drawable as background
-# and their native look and feel needs to be preserved.
-class ContainedWidget(Widget):
-    def __init__(self, interface):
-
-        self._native_activity = MainActivity.singletonThis
-
-        self.interface = interface
-        self.interface._impl = self
-        self._container = None
-        self.native_widget_container = RelativeLayout(self._native_activity)
-        self.native = None
-        super().__init__(interface)
-
-        self.create()
-
-        self.native_widget_container.addView(self.native)
-
-        self.native.setLayoutParams(
-            RelativeLayout.LayoutParams(
-                RelativeLayout.LayoutParams.MATCH_PARENT,
-                RelativeLayout.LayoutParams.MATCH_PARENT,  # width  # height
-            )
-        )
-        # Immediately re-apply styles. Some widgets may defer style application until
-        # they have been added to a container.
-        self.interface.style.reapply()
-
-    def get_enabled(self):
-        return self.native.isEnabled() and self.native_widget_container.isEnabled()
-
-    def set_enabled(self, value):
-        self.native_widget_container.setEnabled(value)
-        self.native.setEnabled(value)
-
-    def focus(self):
-        if self.focusable:
-            self.native_widget_container.requestFocus()
-            self.native.requestFocus()
-
-    def set_hidden(self, hidden):
-        if hidden:  # pragma: no cover
-            self.native_widget_container.setVisibility(View.INVISIBLE)
-            self.native.setVisibility(View.INVISIBLE)
-        else:
-            self.native_widget_container.setVisibility(View.VISIBLE)
-            self.native.setVisibility(View.VISIBLE)
-
-    def set_background_simple(self, color):
-        self.native_widget_container.setBackground(ColorDrawable(native_color(color)))
-
-    # Widgets that need to set a different default background_color should
-    # override this method and set a background color for the None case.
-    def set_background_color(self, color):
-        self.set_background_simple(
-            toga_color(DEFAULT_BACKGROUND_COLOR) if color is None else color
-        )

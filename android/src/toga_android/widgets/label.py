@@ -7,7 +7,6 @@ from android.view import Gravity, View
 from android.widget import TextView
 from travertino.size import at_least
 
-from toga.colors import TRANSPARENT
 from toga.constants import JUSTIFY
 from toga_android.colors import native_color
 
@@ -29,6 +28,12 @@ class TextViewWidget(Widget):
         set_textview_font(
             self.native, font._impl, self._default_typeface, self._default_text_size
         )
+
+    def set_background_color(self, value):
+        # In the case of EditText, this causes any custom color to hide the bottom
+        # border line, but it's better than set_background_filter, which affects *only*
+        # the bottom border line.
+        self.set_background_simple(value)
 
     def set_color(self, value):
         if value is None:
@@ -77,6 +82,3 @@ class Label(TextViewWidget):
 
     def set_text_align(self, value):
         self.set_textview_alignment(value, Gravity.TOP)
-
-    def set_background_color(self, color):
-        self.set_background_simple(TRANSPARENT if color is None else color)

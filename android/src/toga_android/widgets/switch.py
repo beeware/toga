@@ -5,8 +5,6 @@ from android.widget import CompoundButton, Switch as A_Switch
 from java import dynamic_proxy
 from travertino.size import at_least
 
-from toga_android.widgets.base import ContainedWidget
-
 from .label import TextViewWidget
 
 
@@ -19,7 +17,7 @@ class OnCheckedChangeListener(dynamic_proxy(CompoundButton.OnCheckedChangeListen
         self._impl.interface.on_change()
 
 
-class Switch(TextViewWidget, ContainedWidget):
+class Switch(TextViewWidget):
     focusable = False
 
     def create(self):

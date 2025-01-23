@@ -12,8 +12,8 @@ class ImageView(Widget):
         self.native = A_ImageView(self._native_activity)
         self.native.setAdjustViewBounds(True)
 
-    def set_background_color(self, color):
-        self.set_background_simple(color)
+    def set_background_color(self, value):
+        self.set_background_simple(value)
 
     def set_image(self, image):
         if image:

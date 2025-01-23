@@ -5,9 +5,9 @@ from android.view import View
 from android.widget import SeekBar
 from java import dynamic_proxy
 
-from toga.colors import TRANSPARENT
 from toga.widgets.slider import IntSliderImpl
-from toga_android.widgets.base import ContainedWidget
+
+from .base import Widget
 
 # Implementation notes
 # ====================
@@ -31,7 +31,7 @@ class TogaOnSeekBarChangeListener(dynamic_proxy(SeekBar.OnSeekBarChangeListener)
         self.impl.interface.on_release()
 
 
-class Slider(ContainedWidget, IntSliderImpl):
+class Slider(Widget, IntSliderImpl):
     focusable = False
     TICK_DRAWABLE = None
 
@@ -71,6 +71,3 @@ class Slider(ContainedWidget, IntSliderImpl):
         self.interface.intrinsic.height = self.scale_out(
             self.native.getMeasuredHeight(), ROUND_UP
         )
-
-    def set_background_color(self, color):
-        self.set_background_simple(TRANSPARENT if color is None else color)
