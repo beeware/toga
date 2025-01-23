@@ -145,21 +145,21 @@ source packages, so we have to manually install each package:
     .. code-block:: console
 
       (venv) $ cd toga
-      (venv) $ pip install -e "./core[dev]" -e ./dummy -e ./cocoa
+      (venv) $ pip install -e "./core[dev]" -e ./dummy -e ./cocoa -e ./travertino
 
   .. group-tab:: Linux
 
     .. code-block:: console
 
       (venv) $ cd toga
-      (venv) $ pip install -e ./core[dev] -e ./dummy -e ./gtk
+      (venv) $ pip install -e ./core[dev] -e ./dummy -e ./gtk -e ./travertino
 
   .. group-tab:: Windows
 
     .. code-block:: doscon
 
       (venv) C:\...>cd toga
-      (venv) C:\...>pip install -e ./core[dev] -e ./dummy -e ./winforms
+      (venv) C:\...>pip install -e ./core[dev] -e ./dummy -e ./winforms -e ./travertino
 
 Pre-commit automatically runs during the commit
 -----------------------------------------------
@@ -488,10 +488,14 @@ app.
 
 .. _run-core-test-suite:
 
-Running the core test suite
-===========================
+Running the test suites
+=======================
 
 Toga uses `tox <https://tox.wiki/en/latest/>`__ to manage the testing process.
+
+Testing Core
+------------
+
 To run the core test suite:
 
 .. tabs::
@@ -500,19 +504,19 @@ To run the core test suite:
 
     .. code-block:: console
 
-      (venv) $ tox -m test
+      (venv) $ tox -m test-core
 
   .. group-tab:: Linux
 
     .. code-block:: console
 
-      (venv) $ tox -m test
+      (venv) $ tox -m test-core
 
   .. group-tab:: Windows
 
     .. code-block:: doscon
 
-      (venv) C:\...>tox -m test
+      (venv) C:\...>tox -m test-core
 
 You should get some output indicating that tests have been run. You may see
 ``SKIPPED`` tests, but shouldn't ever get any ``FAIL`` or ``ERROR`` test
@@ -547,6 +551,61 @@ This tells us that line 211, and lines 238-240 are not being executed by the tes
 suite. You'll need to add new tests (or modify an existing test) to restore this
 coverage.
 
+Testing Travertino
+------------------
+
+In addition to the core library, the Toga repository also includes Travertino, a package
+that defines the lower-level layout mechanisms which core then builds on. Its test suite
+can be run just like that of core:
+
+.. tabs::
+
+  .. group-tab:: macOS
+
+    .. code-block:: console
+
+      (venv) $ tox -m test-trav
+
+  .. group-tab:: Linux
+
+    .. code-block:: console
+
+      (venv) $ tox -m test-trav
+
+  .. group-tab:: Windows
+
+    .. code-block:: doscon
+
+      (venv) C:\...>tox -m test-trav
+
+Just as with core, this should report 100% test coverage.
+
+You can run both the core and Travertino tests with one command:
+
+
+.. tabs::
+
+  .. group-tab:: macOS
+
+    .. code-block:: console
+
+      (venv) $ tox -m test
+
+  .. group-tab:: Linux
+
+    .. code-block:: console
+
+      (venv) $ tox -m test
+
+  .. group-tab:: Windows
+
+    .. code-block:: doscon
+
+      (venv) C:\...>tox -m test
+
+This will run both test suites, and report the two coverage results one after the other.
+
+
 Run a subset of tests
 ---------------------
 
@@ -575,15 +634,38 @@ specific test, using `pytest specifiers
 
       (venv) C:\...>tox -e py -- tests/path_to_test_file/test_some_test.py
 
-These test paths are relative to the ``core`` directory. You'll still get a
-coverage report when running a part of the test suite - but the coverage results
-will only report the lines of code that were executed by the specific tests you
-ran.
+These test paths are relative to the ``core`` directory. To run a Travertino test
+instead, add ``-trav``:
 
-Running the test suite for multiple Python versions
----------------------------------------------------
+.. tabs::
 
-Tox can also run the test suite for all supported version of Python. This
+  .. group-tab:: macOS
+
+    .. code-block:: console
+
+      (venv) $ tox -e py-trav -- tests/path_to_test_file/test_some_test.py
+
+  .. group-tab:: Linux
+
+    .. code-block:: console
+
+      (venv) $ tox -e py-trav -- tests/path_to_test_file/test_some_test.py
+
+  .. group-tab:: Windows
+
+    .. code-block:: doscon
+
+      (venv) C:\...>tox -e py-trav -- tests/path_to_test_file/test_some_test.py
+
+
+Either way, you'll still get a coverage report when running a part of the test suite -
+but the coverage results will only report the lines of code that were executed by the
+specific tests you ran.
+
+Running the test suites for multiple Python versions
+----------------------------------------------------
+
+Tox can also run the test suites for all supported version of Python. This
 requires that each version of Python is available from ``Path``.
 
 .. tabs::
@@ -637,10 +719,10 @@ most useful prior to committing and pushing your changes.
 Running the testbed
 ===================
 
-The core API tests exercise ``toga-core`` - but what about the backends? To verify
-the behavior of the backends, Toga has a testbed app. This app uses the core API
-to exercise all the behaviors that the backend APIs need to perform - but uses
-an actual platform backend to implement that behavior.
+The above test suites exercise ``toga-core`` and ``travertino`` - but what about the
+backends? To verify the behavior of the backends, Toga has a testbed app. This app uses
+the core API to exercise all the behaviors that the backend APIs need to perform - but
+uses an actual platform backend to implement that behavior.
 
 To run the testbed app, install `Briefcase
 <https://briefcase.readthedocs.io/en/latest/>`__, and run the app in developer
