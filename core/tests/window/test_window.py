@@ -413,6 +413,8 @@ def test_show_hide_disallowed_on_window_state(window, app, state):
 def test_window_state(window, initial_state, final_state):
     """A window can have different states."""
     window.show()
+    window.on_show = Mock()
+    window.on_hide = Mock()
     assert window.state == WindowState.NORMAL
 
     window.state = initial_state
@@ -428,6 +430,17 @@ def test_window_state(window, initial_state, final_state):
             state=initial_state,
         )
 
+    # Check for visibility event notification
+    if initial_state == WindowState.MINIMIZED:
+        # on_hide() will be triggered, as it was set to a
+        # not-visible-to-user(minimized) state.
+        assert_window_on_hide(window)
+    else:
+        # on_show() will not be triggered again, as it was
+        # already in a visible-to-user(not hidden) state, and
+        # was set to a visible-to-user(not minimized) state.
+        assert_window_on_show(window, trigger_expected=False)
+
     window.state = final_state
     assert window.state == final_state
     assert_action_performed_with(
@@ -435,6 +448,26 @@ def test_window_state(window, initial_state, final_state):
         f"set window state to {final_state}",
         state=final_state,
     )
+
+    # Check for visibility event notification
+    if initial_state == WindowState.MINIMIZED:
+        if final_state == WindowState.MINIMIZED:
+            # on_hide() will not be triggered again, as it was
+            # already in a not-visible-to-user(minimized) state.
+            assert_window_on_hide(window, trigger_expected=False)
+        else:
+            # on_show() will be triggered, as it was previously
+            # in a not-visible-to-user(minimized) state.
+            assert_window_on_show(window)
+    else:
+        if final_state == WindowState.MINIMIZED:
+            # on_hide() will be triggered, as it was previously
+            # in a visible-to-user(not minimized) state.
+            assert_window_on_hide(window)
+        else:
+            # on_show() will not be triggered again, as it was
+            # already in a visible-to-user(not minimized) state.
+            assert_window_on_show(window, trigger_expected=False)
 
 
 @pytest.mark.parametrize(
@@ -715,50 +748,6 @@ def test_visibility_events(window):
 
     window.show()
     assert_window_on_show(window)
-
-
-@pytest.mark.parametrize(
-    "visible_state1, visible_state2",
-    [
-        (WindowState.NORMAL, WindowState.PRESENTATION),
-        (WindowState.MAXIMIZED, WindowState.FULLSCREEN),
-        (WindowState.FULLSCREEN, WindowState.MAXIMIZED),
-        (WindowState.PRESENTATION, WindowState.NORMAL),
-    ],
-)
-def test_visibility_events_on_window_state_change(
-    window, visible_state1, visible_state2
-):
-    """The window can trigger on_hide() and on_show() event handlers,
-    when the window is MINIMIZED and UN-MINIMIZED respectively."""
-    window.show()
-    assert window.on_show._raw is None
-    assert window.on_hide._raw is None
-    on_show_handler = Mock()
-    on_hide_handler = Mock()
-    window.on_show = on_show_handler
-    window.on_hide = on_hide_handler
-    assert window.on_show._raw == on_show_handler
-    assert window.on_hide._raw == on_hide_handler
-
-    # Set to the first visible state, but on_show() will not be triggered again, as
-    # it is already in a visible-to-user(not hidden) state.
-    window.state = visible_state1
-    assert_window_on_show(window, trigger_expected=False)
-
-    # Set to a no-visible-to-user(minimized) state, on_hide() will be triggered.
-    window.state = WindowState.MINIMIZED
-    assert_window_on_hide(window)
-
-    # Set to first visible state, on_show() will be triggered, as it was previously
-    # in a no-visible-to-user(minimized) state.
-    window.state = visible_state1
-    assert_window_on_show(window)
-
-    # Set to second visible state, but on_show() will not be triggered again, as it
-    # is already in a visible-to-user(not minimized) state.
-    window.state = visible_state2
-    assert_window_on_show(window, trigger_expected=False)
 
 
 def test_as_image(window):
