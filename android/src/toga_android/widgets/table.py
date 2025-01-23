@@ -214,8 +214,8 @@ class Table(Widget):
     def remove_column(self, index):
         self.change_source(self.interface.data)
 
-    def set_background_color(self, value):
-        self.set_background_simple(value)
+    def set_background_color(self, color):
+        self.set_background_simple(color)
 
     def set_font(self, font):
         self._font_impl = font._impl
