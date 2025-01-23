@@ -49,3 +49,5 @@ Reference
 ---------
 
 .. autoclass:: toga.Box
+.. autofunction:: toga.Row
+.. autofunction:: toga.Column

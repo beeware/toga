@@ -1,5 +1,5 @@
 import toga
-from toga.style.pack import COLUMN, ROW
+from toga.style.pack import COLUMN
 
 
 class SizeButton(toga.Button):
@@ -27,8 +27,7 @@ class SizePanel(toga.Box):
             align_items="center",
             children=[
                 toga.Label(title.upper(), font_weight="bold"),
-                toga.Box(
-                    direction=ROW,
+                toga.Row(
                     children=[self.width_button, self.height_button, self.flex_button],
                 ),
             ],
@@ -49,19 +48,16 @@ class Resize(toga.App):
         self.text_label, self.style_label = (
             toga.Label("", background_color="cyan") for i in range(2)
         )
-        main_box = toga.Box(
-            direction=COLUMN,
+        main_box = toga.Column(
             children=[
-                toga.Box(
-                    direction=ROW,
+                toga.Row(
                     children=[
                         SizePanel("Text", on_change=self.on_change_text),
                         toga.Box(flex=1),
                         SizePanel("Style", on_change=self.on_change_style),
                     ],
                 ),
-                toga.Box(
-                    direction=ROW,
+                toga.Row(
                     children=[
                         self.text_label,
                         toga.Label(

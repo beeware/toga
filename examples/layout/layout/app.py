@@ -1,5 +1,5 @@
 import toga
-from toga.constants import CENTER, COLUMN, HIDDEN, ROW, VISIBLE
+from toga.constants import CENTER, HIDDEN, VISIBLE
 
 
 class ExampleLayoutApp(toga.App):
@@ -19,13 +19,13 @@ class ExampleLayoutApp(toga.App):
             text="Add new label", on_press=self.add_label
         )
 
-        self.content_box = toga.Box(children=[], direction=COLUMN, gap=4)
+        self.content_box = toga.Column(children=[], gap=4)
 
         image = toga.Image("resources/tiberius.png")
         self.image_view = toga.ImageView(image, width=60, height=60)
 
         # this tests adding children during init, before we have an implementation
-        self.button_box = toga.Box(
+        self.button_box = toga.Column(
             children=[
                 self.button_hide,
                 self.button_add,
@@ -34,14 +34,12 @@ class ExampleLayoutApp(toga.App):
                 self.button_remove,
                 self.button_add_to_scroll,
             ],
-            direction=COLUMN,
             width=120,
             gap=20,
         )
 
-        self.box = toga.Box(
+        self.box = toga.Row(
             children=[],
-            direction=ROW,
             margin=20,
             gap=20,
             align_items=CENTER,
