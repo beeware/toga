@@ -1,7 +1,7 @@
 Changelog
 =========
 
-Note: As of version 0.5.0, Travertino is now hosted and developed as part of the Toga repository. It's now released along with — and has the same version number as — each `Toga release <https://github.com/beeware/toga/releases>`_.
+**Note:** As of version 0.5.0, Travertino is now hosted and developed as part of the Toga repository. It's now released along with — and has the same version number as — each `Toga release <https://github.com/beeware/toga/releases>`_.
 
 For all development beyond 0.5.0, any changes made to Travertino will be logged along with Toga's overall list of changes for each new release.
 
@@ -14,7 +14,7 @@ Features
 --------
 
 * Validated properties of styles can now be defined as dataclass class attributes. (`#141 <https://github.com/beeware/travertino/issues/141>`_)
-* BaseStyle now supports |, |=, and 'in' operators. (`#143 <https://github.com/beeware/travertino/issues/143>`_)
+* BaseStyle now supports \|, \|=, and 'in' operators. (`#143 <https://github.com/beeware/travertino/issues/143>`_)
 * Added a ``list_property`` for storing multi-valued elements. (`#148 <https://github.com/beeware/travertino/issues/148>`_)
 * Support for Python 3.13 was added. (`#149 <https://github.com/beeware/travertino/issues/149>`_)
 * Support for Python 3.14 was added. (`#223 <https://github.com/beeware/travertino/issues/223>`_)
