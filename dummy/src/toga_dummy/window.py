@@ -84,8 +84,7 @@ class Window(LoggedObject):
     def show(self):
         self._action("show")
         self._visible = True
-        if self.get_window_state() != WindowState.MINIMIZED:
-            self.interface.on_show()
+        self.interface.on_show()
 
     ######################################################################
     # Window content and resources
@@ -133,8 +132,7 @@ class Window(LoggedObject):
     def hide(self):
         self._action("hide")
         self._visible = False
-        if self.get_window_state() != WindowState.MINIMIZED:
-            self.interface.on_hide()
+        self.interface.on_hide()
 
     ######################################################################
     # Window state
@@ -151,25 +149,12 @@ class Window(LoggedObject):
         # value would be cleared on EventLog.reset(), thereby preventing us
         # from testing no-op condition of assigning same state as current.
         self._state = state
-
-        if previous_state == WindowState.MINIMIZED and state in {
-            WindowState.NORMAL,
-            WindowState.MAXIMIZED,
-            WindowState.FULLSCREEN,
-            WindowState.PRESENTATION,
-        }:
-            self.interface.on_show()
-        elif (
-            previous_state
-            in {
-                WindowState.NORMAL,
-                WindowState.MAXIMIZED,
-                WindowState.FULLSCREEN,
-                WindowState.PRESENTATION,
-            }
-            and state == WindowState.MINIMIZED
-        ):
-            self.interface.on_hide()
+        current_state = self._state
+        if previous_state != current_state:
+            if previous_state == WindowState.MINIMIZED:
+                self.interface.on_show()
+            elif current_state == WindowState.MINIMIZED:
+                self.interface.on_hide()
 
     ######################################################################
     # Window capabilities

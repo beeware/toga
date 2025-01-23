@@ -103,20 +103,15 @@ class Window:
         # Wayland doesn't allow for the detection of MINIMIZED, so the
         # visibility events will not be triggered when the window will
         # be minimized or un-minimized.
-        if current_state == WindowState.MINIMIZED and previous_state in {
-            WindowState.NORMAL,
-            WindowState.MAXIMIZED,
-            WindowState.FULLSCREEN,
-            WindowState.PRESENTATION,
-        }:  # pragma: no-cover-if-linux-wayland
-            self.interface.on_hide()
-        elif current_state != WindowState.MINIMIZED and previous_state not in {
-            WindowState.NORMAL,
-            WindowState.MAXIMIZED,
-            WindowState.FULLSCREEN,
-            WindowState.PRESENTATION,
-        }:  # pragma: no-cover-if-linux-wayland
-            self.interface.on_show()
+        if previous_state != current_state:
+            if (
+                previous_state == WindowState.MINIMIZED
+            ):  # pragma: no-cover-if-linux-wayland
+                self.interface.on_show()
+            elif (
+                current_state == WindowState.MINIMIZED
+            ):  # pragma: no-cover-if-linux-wayland
+                self.interface.on_hide()
 
         # Handle the pending state transitions
         if self._pending_state_transition:
