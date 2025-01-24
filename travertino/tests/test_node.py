@@ -3,7 +3,7 @@ from warnings import catch_warnings, filterwarnings
 
 import pytest
 
-from travertino.declaration import BaseStyle, Choices, validated_property
+from travertino.declaration import BaseStyle, validated_property
 from travertino.layout import BaseBox, Viewport
 from travertino.node import Node
 from travertino.size import BaseIntrinsicSize
@@ -14,7 +14,7 @@ from .utils import mock_attr, prep_style_class
 @prep_style_class
 @mock_attr("reapply")
 class Style(BaseStyle):
-    int_prop: int = validated_property(Choices(integer=True))
+    int_prop: int = validated_property(integer=True)
 
     class IntrinsicSize(BaseIntrinsicSize):
         pass

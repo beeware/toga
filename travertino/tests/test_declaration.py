@@ -19,35 +19,38 @@ from .utils import mock_attr, prep_style_class
 VALUE1 = "value1"
 VALUE2 = "value2"
 VALUE3 = "value3"
-VALUE_CHOICES = Choices(VALUE1, VALUE2, VALUE3, None, integer=True)
-DEFAULT_VALUE_CHOICES = Choices(VALUE1, VALUE2, VALUE3, integer=True)
+VALUES = [VALUE1, VALUE2, VALUE3, None]
 
 
 @prep_style_class
 class Style(BaseStyle):
     # Some properties with explicit initial values
     explicit_const: str | int = validated_property(
-        choices=VALUE_CHOICES, initial=VALUE1
+        *VALUES, integer=True, initial=VALUE1
     )
-    explicit_value: str | int = validated_property(choices=VALUE_CHOICES, initial=0)
+    explicit_value: str | int = validated_property(*VALUES, integer=True, initial=0)
     explicit_none: str | int | None = validated_property(
-        choices=VALUE_CHOICES, initial=None
+        *VALUES, integer=True, initial=None
     )
 
     # A property with an implicit default value.
     # This usually means the default is platform specific.
-    implicit: str | int | None = validated_property(choices=DEFAULT_VALUE_CHOICES)
+    implicit: str | int | None = validated_property(
+        VALUE1, VALUE2, VALUE3, integer=True
+    )
 
     # A set of directional properties
     thing: tuple[str | int] | str | int = directional_property("thing{}")
-    thing_top: str | int = validated_property(choices=VALUE_CHOICES, initial=0)
-    thing_right: str | int = validated_property(choices=VALUE_CHOICES, initial=0)
-    thing_bottom: str | int = validated_property(choices=VALUE_CHOICES, initial=0)
-    thing_left: str | int = validated_property(choices=VALUE_CHOICES, initial=0)
+    thing_top: str | int = validated_property(*VALUES, integer=True, initial=0)
+    thing_right: str | int = validated_property(*VALUES, integer=True, initial=0)
+    thing_bottom: str | int = validated_property(*VALUES, integer=True, initial=0)
+    thing_left: str | int = validated_property(*VALUES, integer=True, initial=0)
 
     # Doesn't need to be tested in deprecated API:
-    list_prop: list[str] = list_property(choices=VALUE_CHOICES, initial=(VALUE2,))
+    list_prop: list[str] = list_property(*VALUES, integer=True, initial=(VALUE2,))
 
+
+VALUE_CHOICES = Choices(*VALUES, integer=True)
 
 with catch_warnings():
     filterwarnings("ignore", category=DeprecationWarning)
@@ -69,7 +72,9 @@ with catch_warnings():
 
     # A property with an implicit default value.
     # This usually means the default is platform specific.
-    DeprecatedStyle.validated_property("implicit", choices=DEFAULT_VALUE_CHOICES)
+    DeprecatedStyle.validated_property(
+        "implicit", choices=Choices(VALUE1, VALUE2, VALUE3, integer=True)
+    )
 
     # A set of directional properties
     DeprecatedStyle.validated_property("thing_top", choices=VALUE_CHOICES, initial=0)
@@ -100,11 +105,11 @@ class MockedReapplyStyle(BaseStyle):
 def test_invalid_style():
     with pytest.raises(ValueError):
         # Define an invalid initial value on a validated property
-        validated_property(choices=VALUE_CHOICES, initial="something")
+        validated_property(*VALUES, integer=True, initial="something")
 
     with pytest.raises(ValueError):
         # Same for list property
-        list_property(choices=VALUE_CHOICES, initial=["something"])
+        list_property(*VALUES, integer=True, initial=["something"])
 
 
 @pytest.mark.parametrize("StyleClass", [Style, DeprecatedStyle])
@@ -831,7 +836,9 @@ def test_deprecated_class_methods():
         pass
 
     with pytest.warns(DeprecationWarning):
-        OldStyle.validated_property("implicit", choices=DEFAULT_VALUE_CHOICES)
+        OldStyle.validated_property(
+            "implicit", Choices(*VALUES, integer=True), initial=VALUE1
+        )
 
     with pytest.warns(DeprecationWarning):
         OldStyle.directional_property("thing%s")

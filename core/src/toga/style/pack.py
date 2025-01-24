@@ -35,12 +35,7 @@ from travertino.constants import (  # noqa: F401
     TRANSPARENT,
     VISIBLE,
 )
-from travertino.declaration import (
-    BaseStyle,
-    Choices,
-    directional_property,
-    validated_property,
-)
+from travertino.declaration import BaseStyle, directional_property, validated_property
 from travertino.layout import BaseBox
 from travertino.size import BaseIntrinsicSize
 
@@ -74,45 +69,41 @@ class Pack(BaseStyle):
 
     _depth = -1
 
-    display: str = validated_property(Choices(PACK, NONE), initial=PACK)
-    visibility: str = validated_property(Choices(VISIBLE, HIDDEN), initial=VISIBLE)
-    direction: str = validated_property(Choices(ROW, COLUMN), initial=ROW)
-    align_items: str | None = validated_property(Choices(START, CENTER, END))
+    display: str = validated_property(PACK, NONE, initial=PACK)
+    visibility: str = validated_property(VISIBLE, HIDDEN, initial=VISIBLE)
+    direction: str = validated_property(ROW, COLUMN, initial=ROW)
+    align_items: str | None = validated_property(START, CENTER, END)
     alignment: str | None = validated_property(
-        Choices(LEFT, RIGHT, TOP, BOTTOM, CENTER)
+        LEFT, RIGHT, TOP, BOTTOM, CENTER
     )  # Deprecated
-    justify_content: str | None = validated_property(
-        Choices(START, CENTER, END), initial=START
-    )
-    gap: int = validated_property(Choices(integer=True), initial=0)
+    justify_content: str | None = validated_property(START, CENTER, END, initial=START)
+    gap: int = validated_property(integer=True, initial=0)
 
-    width: str | int = validated_property(Choices(NONE, integer=True), initial=NONE)
-    height: str | int = validated_property(Choices(NONE, integer=True), initial=NONE)
-    flex: float = validated_property(Choices(number=True), initial=0)
+    width: str | int = validated_property(NONE, integer=True, initial=NONE)
+    height: str | int = validated_property(NONE, integer=True, initial=NONE)
+    flex: float = validated_property(number=True, initial=0)
 
     margin: int | tuple[int] = directional_property("margin{}")
-    margin_top: int = validated_property(choices=Choices(integer=True), initial=0)
-    margin_right: int = validated_property(choices=Choices(integer=True), initial=0)
-    margin_bottom: int = validated_property(choices=Choices(integer=True), initial=0)
-    margin_left: int = validated_property(choices=Choices(integer=True), initial=0)
+    margin_top: int = validated_property(integer=True, initial=0)
+    margin_right: int = validated_property(integer=True, initial=0)
+    margin_bottom: int = validated_property(integer=True, initial=0)
+    margin_left: int = validated_property(integer=True, initial=0)
 
-    color: rgb | hsl | str | None = validated_property(Choices(color=True))
+    color: rgb | hsl | str | None = validated_property(color=True)
     background_color: rgb | hsl | str | None = validated_property(
-        Choices(TRANSPARENT, color=True)
+        TRANSPARENT, color=True
     )
 
-    text_align: str | None = validated_property(Choices(LEFT, RIGHT, CENTER, JUSTIFY))
-    text_direction: str | None = validated_property(Choices(RTL, LTR), initial=LTR)
+    text_align: str | None = validated_property(LEFT, RIGHT, CENTER, JUSTIFY)
+    text_direction: str | None = validated_property(RTL, LTR, initial=LTR)
 
     font_family: str = validated_property(
-        Choices(*SYSTEM_DEFAULT_FONTS, string=True), initial=SYSTEM
+        *SYSTEM_DEFAULT_FONTS, string=True, initial=SYSTEM
     )
-    font_style: str = validated_property(Choices(*FONT_STYLES), initial=NORMAL)
-    font_variant: str = validated_property(Choices(*FONT_VARIANTS), initial=NORMAL)
-    font_weight: str = validated_property(Choices(*FONT_WEIGHTS), initial=NORMAL)
-    font_size: int = validated_property(
-        Choices(integer=True), initial=SYSTEM_DEFAULT_FONT_SIZE
-    )
+    font_style: str = validated_property(*FONT_STYLES, initial=NORMAL)
+    font_variant: str = validated_property(*FONT_VARIANTS, initial=NORMAL)
+    font_weight: str = validated_property(*FONT_WEIGHTS, initial=NORMAL)
+    font_size: int = validated_property(integer=True, initial=SYSTEM_DEFAULT_FONT_SIZE)
 
     @classmethod
     def _debug(cls, *args: str) -> None:  # pragma: no cover
