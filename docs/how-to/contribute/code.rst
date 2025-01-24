@@ -488,8 +488,8 @@ app.
 
 .. _run-core-test-suite:
 
-Running the test suites
-=======================
+Running the core test suites
+============================
 
 Toga uses `tox <https://tox.wiki/en/latest/>`__ to manage the testing process.
 
@@ -555,8 +555,8 @@ Testing Travertino
 ------------------
 
 In addition to the core library, the Toga repository also includes Travertino, a package
-that defines the lower-level layout mechanisms which core then builds on. Its test suite
-can be run just like that of core:
+that defines the lower-level layout mechanisms and style definitions which core then
+builds on. Its test suite can be run just like that of core:
 
 .. tabs::
 
@@ -582,7 +582,6 @@ Just as with core, this should report 100% test coverage.
 
 You can run both the core and Travertino tests with one command:
 
-
 .. tabs::
 
   .. group-tab:: macOS
@@ -604,7 +603,6 @@ You can run both the core and Travertino tests with one command:
       (venv) C:\...>tox -m test
 
 This will run both test suites, and report the two coverage results one after the other.
-
 
 Run a subset of tests
 ---------------------
@@ -656,7 +654,6 @@ instead, add ``-trav``:
     .. code-block:: doscon
 
       (venv) C:\...>tox -e py-trav -- tests/path_to_test_file/test_some_test.py
-
 
 Either way, you'll still get a coverage report when running a part of the test suite -
 but the coverage results will only report the lines of code that were executed by the
