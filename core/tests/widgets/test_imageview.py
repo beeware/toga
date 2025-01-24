@@ -37,7 +37,12 @@ ABSOLUTE_FILE_PATH = Path(__file__).parent.parent / "resources/toga.png"
 def test_create_from_toga_image(app):
     """An ImageView can be created from a Toga image."""
     image = toga.Image(ABSOLUTE_FILE_PATH)
-    widget = toga.ImageView(image=image)
+    widget = toga.ImageView(
+        id="foobar",
+        image=image,
+        # A style property
+        width=256,
+    )
 
     # Interface/impl round trips
     assert widget._impl.interface is widget
@@ -45,8 +50,10 @@ def test_create_from_toga_image(app):
     assert_action_performed_with(widget, "set image", image=image)
     assert_action_performed(widget, "refresh")
 
-    # Image attribute is set
+    # Image attributes are set
+    assert widget.id == "foobar"
     assert widget.image == image
+    assert widget.style.width == 256
 
 
 def test_create_from_pil():

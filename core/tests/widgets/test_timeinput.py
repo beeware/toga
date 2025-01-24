@@ -34,18 +34,23 @@ def test_widget_created_with_values(on_change_handler):
     """A TimeInput can be created with initial values."""
     # Round trip the impl/interface
     widget = toga.TimeInput(
+        id="foobar",
         value=time(13, 37, 42),
         min=time(6, 1, 2),
         max=time(18, 58, 59),
         on_change=on_change_handler,
+        # A style property
+        width=256,
     )
     assert widget._impl.interface == widget
     assert_action_performed(widget, "create TimeInput")
 
+    assert widget.id == "foobar"
     assert widget.value == time(13, 37, 42)
     assert widget.min == time(6, 1, 2)
     assert widget.max == time(18, 58, 59)
     assert widget.on_change._raw == on_change_handler
+    assert widget.style.width == 256
 
     # The change handler isn't invoked at construction.
     on_change_handler.assert_not_called()

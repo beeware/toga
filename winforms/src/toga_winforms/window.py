@@ -45,6 +45,9 @@ class Window(Container, Scalable):
         # Use a shadow variable since a window without any app menu and toolbar
         # in presentation mode would be indistinguishable from full screen mode.
         self._in_presentation_mode = False
+        # Required to detect if the window has been un-minimized, and to prevent
+        # double triggering of visibility events.
+        self._previous_state = WindowState.NORMAL
 
         self.set_title(title)
         self.set_size(size)
@@ -62,6 +65,11 @@ class Window(Container, Scalable):
             WinForms.FormBorderStyle,
             "Sizable" if self.interface.resizable else "FixedSingle",
         )
+
+        self.native.Activated += WeakrefCallable(self.winforms_Activated)
+        self.native.Deactivate += WeakrefCallable(self.winforms_Deactivate)
+        self.native.VisibleChanged += WeakrefCallable(self.winforms_VisibleChanged)
+        self.native.SizeChanged += WeakrefCallable(self.winforms_SizeChanged)
 
     def create(self):
         self.native = WinForms.Form()
@@ -112,6 +120,27 @@ class Window(Container, Scalable):
         # See DisplaySettingsChanged in app.py.
         if self.get_current_screen().dpi_scale != self._dpi_scale:
             self.update_dpi()
+
+    def winforms_Activated(self, sender, event):
+        self.interface.on_gain_focus()
+
+    def winforms_Deactivate(self, sender, event):
+        self.interface.on_lose_focus()
+
+    def winforms_VisibleChanged(self, sender, event):
+        if self.native.Visible:
+            self.interface.on_show()
+        else:
+            self.interface.on_hide()
+
+    def winforms_SizeChanged(self, sender, event):
+        current_state = self.get_window_state()
+        if self._previous_state != current_state:
+            if self._previous_state == WindowState.MINIMIZED:
+                self.interface.on_show()
+            elif current_state == WindowState.MINIMIZED:
+                self.interface.on_hide()
+            self._previous_state = current_state
 
     ######################################################################
     # Window properties

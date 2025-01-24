@@ -16,6 +16,7 @@ class Divider(Widget):
         id: str | None = None,
         style: StyleT | None = None,
         direction: Direction = HORIZONTAL,
+        **kwargs,
     ):
         """Create a new divider line.
 
@@ -26,8 +27,9 @@ class Divider(Widget):
             :attr:`~toga.constants.Direction.HORIZONTAL` or
             :attr:`~toga.constants.Direction.VERTICAL`; defaults to
             :attr:`~toga.constants.Direction.HORIZONTAL`
+        :param kwargs: Initial style properties.
         """
-        super().__init__(id=id, style=style)
+        super().__init__(id, style, **kwargs)
 
         self.direction = direction
 

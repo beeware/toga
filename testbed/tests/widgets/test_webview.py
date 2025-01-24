@@ -1,6 +1,7 @@
 import asyncio
 from asyncio import wait_for
 from contextlib import nullcontext
+from http.cookiejar import CookieJar
 from time import time
 from unittest.mock import ANY, Mock
 
@@ -318,3 +319,56 @@ async def test_dom_storage_enabled(widget, probe, on_load):
 }})()"""
     result = await wait_for(widget.evaluate_javascript(expression), JS_TIMEOUT)
     assert result == expected_value
+
+
+async def test_retrieve_cookies(widget, probe, on_load):
+    """Cookies can be retrieved."""
+    # A page must be loaded to set cookies
+    await wait_for(
+        widget.load_url("https://github.com/beeware"),
+        LOAD_TIMEOUT,
+    )
+    # DOM loads aren't instantaneous; wait for the URL to appear
+    await assert_content_change(
+        widget,
+        probe,
+        message="Page has been loaded",
+        url="https://github.com/beeware",
+        content=ANY,
+        on_load=on_load,
+    )
+
+    # On iOS and macOS, setting a cookie can fail if it's done too soon after page load.
+    # Try a couple of times to make sure the cookie is actually set.
+    for i in range(0, 5):
+        # JavaScript expression to set a cookie and return the current cookies
+        expression = """
+        (function setCookie() {
+            document.cookie = "test=test_value; path=/; Secure; SameSite=None";
+            return document.cookie;
+        })()"""
+
+        await wait_for(widget.evaluate_javascript(expression), JS_TIMEOUT)
+
+        # Retrieve cookies.
+        cookie_jar = await widget.cookies
+
+        assert isinstance(cookie_jar, CookieJar)
+
+        # Cookie retrieval isn't implemented on every backend (yet), so we implement the
+        # retrieval in the probe to provide an opportunity to skip the test.
+        cookie = probe.extract_cookie(cookie_jar, "test")
+
+        if cookie is None:
+            # Cookie wasn't set; wait a little bit before trying again.
+            await probe.redraw("Cookie wasn't set; wait and try again", delay=0.2)
+
+    assert cookie is not None, "Test cookie not found in CookieJar"
+
+    # Validate the test cookie
+    assert cookie.name == "test"
+    assert cookie.value == "test_value"
+    assert cookie.domain == "github.com"
+    assert cookie.path == "/"
+    assert cookie.secure is True
+    assert cookie.expires is None

@@ -1,9 +1,10 @@
 import json
+from http.cookiejar import CookieJar
 
 from android.webkit import ValueCallback, WebView as A_WebView, WebViewClient
 from java import dynamic_proxy
 
-from toga.widgets.webview import JavaScriptResult
+from toga.widgets.webview import CookiesResult, JavaScriptResult
 
 from .base import Widget
 
@@ -69,6 +70,16 @@ class WebView(Widget):
         self.settings.setUserAgentString(
             self.default_user_agent if value is None else value
         )
+
+    def get_cookies(self):
+        # Create the result object
+        result = CookiesResult()
+        result.set_result(CookieJar())
+
+        # Signal that this feature is not implemented on the current platform
+        self.interface.factory.not_implemented("webview.cookies")
+
+        return result
 
     def evaluate_javascript(self, javascript, on_result=None):
         result = JavaScriptResult(on_result)

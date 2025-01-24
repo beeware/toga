@@ -49,6 +49,7 @@ def test_create_with_values():
     validator2 = Mock(return_value=None)
 
     widget = toga.TextInput(
+        id="foobar",
         value="Some text",
         placeholder="A placeholder",
         readonly=True,
@@ -57,10 +58,13 @@ def test_create_with_values():
         on_gain_focus=on_gain_focus,
         on_lose_focus=on_lose_focus,
         validators=[validator1, validator2],
+        # A style property
+        width=256,
     )
     assert widget._impl.interface == widget
     assert_action_performed(widget, "create TextInput")
 
+    assert widget.id == "foobar"
     assert widget.readonly
     assert widget.placeholder == "A placeholder"
     assert widget.value == "Some text"
@@ -69,6 +73,7 @@ def test_create_with_values():
     assert widget._on_gain_focus._raw == on_gain_focus
     assert widget._on_lose_focus._raw == on_lose_focus
     assert widget.validators == [validator1, validator2]
+    assert widget.style.width == 256
 
     # Validators have been invoked with the initial text
     validator1.assert_called_once_with("Some text")

@@ -106,6 +106,58 @@ class OnCloseHandler(Protocol):
         """
 
 
+class OnGainFocusHandler(Protocol):
+    def __call__(self, window: Window, **kwargs: Any) -> None:
+        """A handler to invoke when a window gains input focus.
+
+        :param window: The window instance that gains input focus.
+        :param kwargs: Ensures compatibility with additional arguments introduced in
+            future versions.
+        """
+        ...
+
+
+class OnLoseFocusHandler(Protocol):
+    def __call__(self, window: Window, **kwargs: Any) -> None:
+        """A handler to invoke when a window loses input focus.
+
+        :param window: The window instance that loses input focus.
+        :param kwargs: Ensures compatibility with additional arguments introduced in
+            future ver
+        """
+        ...
+
+
+class OnShowHandler(Protocol):
+    def __call__(self, window: Window, **kwargs: Any) -> None:
+        """A handler to invoke when a window becomes visible.
+
+        This event will be triggered when a window is first displayed, and when the
+        window is restored from a minimized or hidden state. On mobile platforms, it is
+        also triggered when an app is made the currently active app.
+
+        :param window: The window instance that becomes visible.
+        :param kwargs: Ensures compatibility with additional arguments introduced in
+            future ver
+        """
+        ...
+
+
+class OnHideHandler(Protocol):
+    def __call__(self, window: Window, **kwargs: Any) -> None:
+        """A handler to invoke when a window stops being visible.
+
+        This event will be triggered when a window moves to a minimized or hidden state.
+        On mobile platforms, it is also triggered when an app is moved to the background
+        and is no longer the currently active app.
+
+        :param window: The window instance that becomes not visible to the user.
+        :param kwargs: Ensures compatibility with additional arguments introduced in
+            future ver
+        """
+        ...
+
+
 _DialogResultT = TypeVar("_DialogResultT")
 
 
@@ -141,6 +193,10 @@ class Window:
         closable: bool = True,
         minimizable: bool = True,
         on_close: OnCloseHandler | None = None,
+        on_gain_focus: OnGainFocusHandler | None = None,
+        on_lose_focus: OnLoseFocusHandler | None = None,
+        on_show: OnShowHandler | None = None,
+        on_hide: OnHideHandler | None = None,
         content: Widget | None = None,
     ) -> None:
         """Create a new Window.
@@ -192,6 +248,11 @@ class Window:
             self.content = content
 
         self.on_close = on_close
+
+        self.on_gain_focus = on_gain_focus
+        self.on_lose_focus = on_lose_focus
+        self.on_show = on_show
+        self.on_hide = on_hide
 
     def __lt__(self, other: Window) -> bool:
         return self.id < other.id
@@ -311,8 +372,20 @@ class Window:
 
     def show(self) -> None:
         """Show the window. If the window is already visible, this method has no
-        effect."""
-        self._impl.show()
+        effect.
+
+        :raises ValueError: If the window is currently in a minimized, full screen or
+            presentation state.
+        """
+        if not self.visible:
+            if self.state in {
+                WindowState.MINIMIZED,
+                WindowState.FULLSCREEN,
+                WindowState.PRESENTATION,
+            }:
+                raise ValueError(f"A window in {self.state} state cannot be shown.")
+            else:
+                self._impl.show()
 
     ######################################################################
     # Window content and resources
@@ -436,8 +509,20 @@ class Window:
 
     def hide(self) -> None:
         """Hide the window. If the window is already hidden, this method has no
-        effect."""
-        self._impl.hide()
+        effect.
+
+        :raises ValueError: If the window is currently in a minimized, full screen or
+            presentation state.
+        """
+        if self.visible:
+            if self.state in {
+                WindowState.MINIMIZED,
+                WindowState.FULLSCREEN,
+                WindowState.PRESENTATION,
+            }:
+                raise ValueError(f"A window in {self.state} state cannot be hidden.")
+            else:
+                self._impl.hide()
 
     @property
     def visible(self) -> bool:
@@ -529,6 +614,42 @@ class Window:
                 window.close()
 
         self._on_close = wrapped_handler(self, handler, cleanup=cleanup)
+
+    @property
+    def on_gain_focus(self) -> callable:
+        """The handler to invoke if the window gains input focus."""
+        return self._on_gain_focus
+
+    @on_gain_focus.setter
+    def on_gain_focus(self, handler):
+        self._on_gain_focus = wrapped_handler(self, handler)
+
+    @property
+    def on_lose_focus(self) -> callable:
+        """The handler to invoke if the window loses input focus."""
+        return self._on_lose_focus
+
+    @on_lose_focus.setter
+    def on_lose_focus(self, handler):
+        self._on_lose_focus = wrapped_handler(self, handler)
+
+    @property
+    def on_show(self) -> callable:
+        """The handler to invoke if the window is shown from a hidden state."""
+        return self._on_show
+
+    @on_show.setter
+    def on_show(self, handler):
+        self._on_show = wrapped_handler(self, handler)
+
+    @property
+    def on_hide(self) -> callable:
+        """The handler to invoke if the window is hidden from a visible state."""
+        return self._on_hide
+
+    @on_hide.setter
+    def on_hide(self, handler):
+        self._on_hide = wrapped_handler(self, handler)
 
     ######################################################################
     # 2024-06: Backwards compatibility for <= 0.4.5

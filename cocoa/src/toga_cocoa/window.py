@@ -69,7 +69,16 @@ class TogaWindow(NSWindow):
             self.interface.content.refresh()
 
     @objc_method
+    def windowDidBecomeMain_(self, notification):
+        self.interface.on_gain_focus()
+
+    @objc_method
+    def windowDidResignMain_(self, notification):
+        self.interface.on_lose_focus()
+
+    @objc_method
     def windowDidMiniaturize_(self, notification) -> None:
+        self.interface.on_hide()
         if (
             self.impl._pending_state_transition
             and self.impl._pending_state_transition != WindowState.MINIMIZED
@@ -80,6 +89,7 @@ class TogaWindow(NSWindow):
 
     @objc_method
     def windowDidDeminiaturize_(self, notification) -> None:
+        self.interface.on_show()
         self.impl._apply_state(self.impl._pending_state_transition)
 
     @objc_method
@@ -258,6 +268,10 @@ class Window:
 
     def show(self):
         self.native.makeKeyAndOrderFront(None)
+        # Cocoa doesn't provide a native window delegate notification that would
+        # be triggered when makeKeyAndOrderFront_ is called. So, trigger the event
+        # here instead.
+        self.interface.on_show()
 
     ######################################################################
     # Window content and resources
@@ -334,6 +348,9 @@ class Window:
 
     def hide(self):
         self.native.orderOut(self.native)
+        # Cocoa doesn't provide a native window delegate notification that would
+        # be triggered when orderOut_ is called. So, trigger the event here instead.
+        self.interface.on_hide()
 
     def get_visible(self):
         return (

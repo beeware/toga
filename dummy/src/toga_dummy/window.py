@@ -58,6 +58,7 @@ class Window(LoggedObject):
         self.set_size(size)
 
         self._state = WindowState.NORMAL
+        self._visible = False
 
     ######################################################################
     # Window properties
@@ -82,7 +83,8 @@ class Window(LoggedObject):
 
     def show(self):
         self._action("show")
-        self._set_value("visible", True)
+        self._visible = True
+        self.interface.on_show()
 
     ######################################################################
     # Window content and resources
@@ -122,11 +124,15 @@ class Window(LoggedObject):
     ######################################################################
 
     def get_visible(self):
-        return self._get_value("visible", False)
+        # We cannot store the visibility value on the EventLog, since the value
+        # would be cleared on EventLog.reset(), thereby preventing us from
+        # testing no-op condition of requesting the same visibility as current.
+        return self._visible
 
     def hide(self):
         self._action("hide")
-        self._set_value("visible", False)
+        self._visible = False
+        self.interface.on_hide()
 
     ######################################################################
     # Window state
@@ -136,11 +142,19 @@ class Window(LoggedObject):
         return self._state
 
     def set_window_state(self, state):
+        previous_state = self._state
+
         self._action(f"set window state to {state}", state=state)
         # We cannot store the state value on the EventLog, since the state
         # value would be cleared on EventLog.reset(), thereby preventing us
         # from testing no-op condition of assigning same state as current.
         self._state = state
+        current_state = self._state
+        if previous_state != current_state:
+            if previous_state == WindowState.MINIMIZED:
+                self.interface.on_show()
+            elif current_state == WindowState.MINIMIZED:
+                self.interface.on_hide()
 
     ######################################################################
     # Window capabilities

@@ -383,6 +383,7 @@ class OptionContainer(Widget):
         style: StyleT | None = None,
         content: Iterable[OptionContainerContentT] | None = None,
         on_select: toga.widgets.optioncontainer.OnSelectHandler | None = None,
+        **kwargs,
     ):
         """Create a new OptionContainer.
 
@@ -392,11 +393,12 @@ class OptionContainer(Widget):
         :param content: The initial :any:`OptionContainer content
             <OptionContainerContentT>` to display in the OptionContainer.
         :param on_select: Initial :any:`on_select` handler.
+        :param kwargs: Initial style properties.
         """
         self._content = OptionList(self)
         self.on_select = None
 
-        super().__init__(id=id, style=style)
+        super().__init__(id, style, **kwargs)
 
         if content is not None:
             for item in content:

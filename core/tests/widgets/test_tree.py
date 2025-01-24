@@ -95,16 +95,20 @@ def test_create_with_values(source, on_select_handler, on_activate_handler):
     """A Tree can be created with initial values."""
     tree = toga.Tree(
         ["First", "Second"],
+        id="foobar",
         data=source,
         accessors=["primus", "secondus"],
         multiple_select=True,
         on_select=on_select_handler,
         on_activate=on_activate_handler,
         missing_value="Boo!",
+        # A style property
+        width=256,
     )
     assert tree._impl.interface == tree
     assert_action_performed(tree, "create Tree")
 
+    assert tree.id == "foobar"
     assert len(tree.data) == 2
     assert tree.headings == ["First", "Second"]
     assert tree.accessors == ["primus", "secondus"]
@@ -112,6 +116,7 @@ def test_create_with_values(source, on_select_handler, on_activate_handler):
     assert tree.missing_value == "Boo!"
     assert tree.on_select._raw == on_select_handler
     assert tree.on_activate._raw == on_activate_handler
+    assert tree.style.width == 256
 
 
 def test_create_with_accessor_overrides():

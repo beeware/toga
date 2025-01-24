@@ -23,7 +23,12 @@ def test_divider_created():
 @pytest.mark.parametrize("direction", [toga.Divider.HORIZONTAL, toga.Divider.VERTICAL])
 def test_divider_created_explicit(direction):
     """A divider can be created."""
-    divider = toga.Divider(direction=direction)
+    divider = toga.Divider(
+        id="foobar",
+        direction=direction,
+        # A style property
+        width=256,
+    )
 
     # Round trip the impl/interface
     assert divider._impl.interface == divider
@@ -31,6 +36,9 @@ def test_divider_created_explicit(direction):
 
     # Default direction is honored
     assert divider.direction == direction
+
+    assert divider.id == "foobar"
+    assert divider.style.width == 256
 
 
 def test_disable_no_op():

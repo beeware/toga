@@ -93,6 +93,7 @@ def test_create_with_values(
 ):
     """A DetailedList can be created with initial values."""
     detailedlist = toga.DetailedList(
+        id="foobar",
         data=source,
         accessors=("key", "value", "icon"),
         missing_value="Boo!",
@@ -102,10 +103,13 @@ def test_create_with_values(
         on_primary_action=on_primary_action_handler,
         secondary_action="Secondary",
         on_secondary_action=on_secondary_action_handler,
+        # A style property
+        width=256,
     )
     assert detailedlist._impl.interface == detailedlist
     assert_action_performed(detailedlist, "create DetailedList")
 
+    assert detailedlist.id == "foobar"
     assert len(detailedlist.data) == 3
     assert detailedlist.accessors == ("key", "value", "icon")
     assert detailedlist.missing_value == "Boo!"
@@ -115,6 +119,7 @@ def test_create_with_values(
     assert detailedlist.on_secondary_action._raw == on_secondary_action_handler
     assert detailedlist._primary_action == "Primary"
     assert detailedlist._secondary_action == "Secondary"
+    assert detailedlist.style.width == 256
 
     assert_action_performed_with(detailedlist, "refresh enabled", enabled=True)
     assert_action_performed_with(detailedlist, "primary action enabled", enabled=True)

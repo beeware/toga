@@ -2,7 +2,6 @@ from abc import abstractmethod
 
 from toga_iOS.colors import native_color
 from toga_iOS.constraints import Constraints
-from toga_iOS.libs import UIColor
 
 
 class Widget:
@@ -13,6 +12,10 @@ class Widget:
         self.constraints = None
         self.native = None
         self.create()
+
+        # Override this attribute to set a different default background
+        # color for a given widget.
+        self._default_background_color = self.native.backgroundColor
 
     @abstractmethod
     def create(self): ...
@@ -88,20 +91,9 @@ class Widget:
         pass
 
     def set_background_color(self, color):
-        # By default, background color can't be changed
-        pass
-
-    # TODO: check if it's safe to make this the default implementation.
-    def set_background_color_simple(self, value):
-        if value:
-            self.native.backgroundColor = native_color(value)
-        else:
-            try:
-                # systemBackgroundColor() was introduced in iOS 13
-                # We don't test on iOS 12, so mark the other branch as nocover
-                self.native.backgroundColor = UIColor.systemBackgroundColor()
-            except AttributeError:  # pragma: no cover
-                self.native.backgroundColor = UIColor.whiteColor
+        self.native.backgroundColor = (
+            self._default_background_color if color is None else native_color(color)
+        )
 
     # INTERFACE
     def add_child(self, child):

@@ -19,9 +19,6 @@ class Box(Widget):
         # Add the layout constraints
         self.add_constraints()
 
-    def set_background_color(self, value):
-        self.set_background_color_simple(value)
-
     def rehint(self):
         self.interface.intrinsic.width = at_least(0)
         self.interface.intrinsic.height = at_least(0)

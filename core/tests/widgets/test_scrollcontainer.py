@@ -47,18 +47,23 @@ def test_widget_created():
 def test_widget_created_with_values(content, on_scroll_handler):
     """A scroll container can be created with arguments."""
     scroll_container = toga.ScrollContainer(
+        id="foobar",
         content=content,
         on_scroll=on_scroll_handler,
         vertical=False,
         horizontal=False,
+        # A style property
+        width=256,
     )
     assert scroll_container._impl.interface == scroll_container
     assert_action_performed(scroll_container, "create ScrollContainer")
 
+    assert scroll_container.id == "foobar"
     assert scroll_container.content == content
     assert not scroll_container.vertical
     assert not scroll_container.horizontal
     assert scroll_container.on_scroll._raw == on_scroll_handler
+    assert scroll_container.style.width == 256
 
     # The content has been assigned to the widget
     assert_action_performed_with(
