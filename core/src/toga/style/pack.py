@@ -56,44 +56,11 @@ from toga.fonts import (
 # Make sure deprecation warnings are shown by default
 warnings.filterwarnings("default", category=DeprecationWarning)
 
-######################################################################
-# Display
-######################################################################
-
 PACK = "pack"
-
-######################################################################
-# Declaration choices
-######################################################################
 
 # Used in backwards compatibility section below
 ALIGNMENT = "alignment"
 ALIGN_ITEMS = "align_items"
-
-DISPLAY_CHOICES = Choices(PACK, NONE)
-VISIBILITY_CHOICES = Choices(VISIBLE, HIDDEN)
-DIRECTION_CHOICES = Choices(ROW, COLUMN)
-ALIGN_ITEMS_CHOICES = Choices(START, CENTER, END)
-ALIGNMENT_CHOICES = Choices(LEFT, RIGHT, TOP, BOTTOM, CENTER)  # Deprecated
-JUSTIFY_CONTENT_CHOICES = Choices(START, CENTER, END)
-GAP_CHOICES = Choices(integer=True)
-
-SIZE_CHOICES = Choices(NONE, integer=True)
-FLEX_CHOICES = Choices(number=True)
-
-MARGIN_CHOICES = Choices(integer=True)
-
-TEXT_ALIGN_CHOICES = Choices(LEFT, RIGHT, CENTER, JUSTIFY)
-TEXT_DIRECTION_CHOICES = Choices(RTL, LTR)
-
-COLOR_CHOICES = Choices(color=True)
-BACKGROUND_COLOR_CHOICES = Choices(TRANSPARENT, color=True)
-
-FONT_FAMILY_CHOICES = Choices(*SYSTEM_DEFAULT_FONTS, string=True)
-FONT_STYLE_CHOICES = Choices(*FONT_STYLES)
-FONT_VARIANT_CHOICES = Choices(*FONT_VARIANTS)
-FONT_WEIGHT_CHOICES = Choices(*FONT_WEIGHTS)
-FONT_SIZE_CHOICES = Choices(integer=True)
 
 
 class Pack(BaseStyle):
@@ -107,42 +74,44 @@ class Pack(BaseStyle):
 
     _depth = -1
 
-    display: str = validated_property(choices=DISPLAY_CHOICES, initial=PACK)
-    visibility: str = validated_property(choices=VISIBILITY_CHOICES, initial=VISIBLE)
-    direction: str = validated_property(choices=DIRECTION_CHOICES, initial=ROW)
-    align_items: str | None = validated_property(choices=ALIGN_ITEMS_CHOICES)
-    alignment: str | None = validated_property(choices=ALIGNMENT_CHOICES)  # Deprecated
+    display: str = validated_property(Choices(PACK, NONE), initial=PACK)
+    visibility: str = validated_property(Choices(VISIBLE, HIDDEN), initial=VISIBLE)
+    direction: str = validated_property(Choices(ROW, COLUMN), initial=ROW)
+    align_items: str | None = validated_property(Choices(START, CENTER, END))
+    alignment: str | None = validated_property(
+        Choices(LEFT, RIGHT, TOP, BOTTOM, CENTER)
+    )  # Deprecated
     justify_content: str | None = validated_property(
-        choices=JUSTIFY_CONTENT_CHOICES, initial=START
+        Choices(START, CENTER, END), initial=START
     )
-    gap: int = validated_property(choices=GAP_CHOICES, initial=0)
+    gap: int = validated_property(Choices(integer=True), initial=0)
 
-    width: str | int = validated_property(choices=SIZE_CHOICES, initial=NONE)
-    height: str | int = validated_property(choices=SIZE_CHOICES, initial=NONE)
-    flex: float = validated_property(choices=FLEX_CHOICES, initial=0)
+    width: str | int = validated_property(Choices(NONE, integer=True), initial=NONE)
+    height: str | int = validated_property(Choices(NONE, integer=True), initial=NONE)
+    flex: float = validated_property(Choices(number=True), initial=0)
 
     margin: int | tuple[int] = directional_property("margin{}")
-    margin_top: int = validated_property(choices=MARGIN_CHOICES, initial=0)
-    margin_right: int = validated_property(choices=MARGIN_CHOICES, initial=0)
-    margin_bottom: int = validated_property(choices=MARGIN_CHOICES, initial=0)
-    margin_left: int = validated_property(choices=MARGIN_CHOICES, initial=0)
+    margin_top: int = validated_property(choices=Choices(integer=True), initial=0)
+    margin_right: int = validated_property(choices=Choices(integer=True), initial=0)
+    margin_bottom: int = validated_property(choices=Choices(integer=True), initial=0)
+    margin_left: int = validated_property(choices=Choices(integer=True), initial=0)
 
-    color: rgb | hsl | str | None = validated_property(choices=COLOR_CHOICES)
+    color: rgb | hsl | str | None = validated_property(Choices(color=True))
     background_color: rgb | hsl | str | None = validated_property(
-        choices=BACKGROUND_COLOR_CHOICES
+        Choices(TRANSPARENT, color=True)
     )
 
-    text_align: str | None = validated_property(choices=TEXT_ALIGN_CHOICES)
-    text_direction: str | None = validated_property(
-        choices=TEXT_DIRECTION_CHOICES, initial=LTR
-    )
+    text_align: str | None = validated_property(Choices(LEFT, RIGHT, CENTER, JUSTIFY))
+    text_direction: str | None = validated_property(Choices(RTL, LTR), initial=LTR)
 
-    font_family: str = validated_property(choices=FONT_FAMILY_CHOICES, initial=SYSTEM)
-    font_style: str = validated_property(choices=FONT_STYLE_CHOICES, initial=NORMAL)
-    font_variant: str = validated_property(choices=FONT_VARIANT_CHOICES, initial=NORMAL)
-    font_weight: str = validated_property(choices=FONT_WEIGHT_CHOICES, initial=NORMAL)
+    font_family: str = validated_property(
+        Choices(*SYSTEM_DEFAULT_FONTS, string=True), initial=SYSTEM
+    )
+    font_style: str = validated_property(Choices(*FONT_STYLES), initial=NORMAL)
+    font_variant: str = validated_property(Choices(*FONT_VARIANTS), initial=NORMAL)
+    font_weight: str = validated_property(Choices(*FONT_WEIGHTS), initial=NORMAL)
     font_size: int = validated_property(
-        choices=FONT_SIZE_CHOICES, initial=SYSTEM_DEFAULT_FONT_SIZE
+        Choices(integer=True), initial=SYSTEM_DEFAULT_FONT_SIZE
     )
 
     @classmethod
