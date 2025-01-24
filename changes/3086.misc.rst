@@ -1,1 +1,0 @@
-Travertino has moved from its own repository to Toga's and is now released to coincide with each version release of Toga.
