@@ -196,4 +196,6 @@ class DialogsMixin:
             )
 
     def is_modal_dialog(self, dialog):
+        if GTK_VERSION >= (4, 0, 0):
+            pytest.xfail("Getting the modal of a dialog is not yet supported on GTK4")
         return dialog._impl.native.get_modal()

@@ -5,6 +5,7 @@ from pathlib import Path
 import pytest
 
 import toga
+from toga_gtk.libs import GTK_VERSION
 
 TESTS_DIR = Path(__file__).parent.parent
 
@@ -109,6 +110,8 @@ async def test_save_file_dialog(
     result,
 ):
     """An app-level file open dialog can be displayed and acknowledged."""
+    if GTK_VERSION >= (4, 0, 0):
+        pytest.xfail("Save dialog is not yet supported on GTK4")
     dialog = toga.SaveFileDialog(
         "Save file",
         suggested_filename=filename,
@@ -175,6 +178,8 @@ async def test_open_file_dialog(
     result,
 ):
     """An app-level file open dialog can be displayed and acknowledged."""
+    if GTK_VERSION >= (4, 0, 0):
+        pytest.xfail("Open dialog is not yet supported on GTK4")
     dialog = toga.OpenFileDialog(
         "Open file",
         initial_directory=initial_directory,
@@ -223,6 +228,8 @@ async def test_select_folder_dialog(
     result,
 ):
     """An app-level folder selection dialog can be displayed and acknowledged."""
+    if GTK_VERSION >= (4, 0, 0):
+        pytest.xfail("Open dialog is not yet supported on GTK4")
     dialog = toga.SelectFolderDialog(
         "Select folder",
         initial_directory=initial_directory,

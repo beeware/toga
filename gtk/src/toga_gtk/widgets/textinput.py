@@ -72,21 +72,22 @@ class TextInput(Widget):
         self.native.set_text(value)
 
     def rehint(self):
-        # print(
-        #     "REHINT",
-        #     self,
-        #     self._impl.get_preferred_width(),
-        #     self._impl.get_preferred_height(),
-        #     getattr(self, "_fixed_height", False),
-        #     getattr(self, "_fixed_width", False),
-        # )
-        width = self.native.get_preferred_width()
-        height = self.native.get_preferred_height()
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            # print(
+            #     "REHINT",
+            #     self,
+            #     self._impl.get_preferred_width(),
+            #     self._impl.get_preferred_height(),
+            #     getattr(self, "_fixed_height", False),
+            #     getattr(self, "_fixed_width", False),
+            # )
+            width = self.native.get_preferred_width()
+            height = self.native.get_preferred_height()
 
-        self.interface.intrinsic.width = at_least(
-            max(self.interface._MIN_WIDTH, width[1])
-        )
-        self.interface.intrinsic.height = height[1]
+            self.interface.intrinsic.width = at_least(
+                max(self.interface._MIN_WIDTH, width[1])
+            )
+            self.interface.intrinsic.height = height[1]
 
     def set_error(self, error_message):
         self.native.set_icon_from_icon_name(Gtk.EntryIconPosition.SECONDARY, "error")

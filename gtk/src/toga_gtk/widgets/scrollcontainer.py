@@ -1,7 +1,7 @@
 from travertino.size import at_least
 
 from ..container import TogaContainer
-from ..libs import Gtk
+from ..libs import GTK_VERSION, Gtk
 from .base import Widget
 
 
@@ -21,7 +21,8 @@ class ScrollContainer(Widget):
         self.native.set_overlay_scrolling(True)
 
         self.document_container = TogaContainer()
-        self.native.add(self.document_container)
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            self.native.add(self.document_container)
 
     def gtk_on_changed(self, *args):
         self.interface.on_scroll()
@@ -29,8 +30,9 @@ class ScrollContainer(Widget):
     def set_content(self, widget):
         self.document_container.content = widget
 
-        # Force the display of the new content
-        self.native.show_all()
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            # Force the display of the new content
+            self.native.show_all()
 
     def set_app(self, app):
         self.interface.content.app = app

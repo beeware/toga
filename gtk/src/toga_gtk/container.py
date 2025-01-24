@@ -123,6 +123,12 @@ class TogaContainer(Gtk.Box):
         # A flag that can be used to explicitly flag that a redraw is required.
         self.needs_redraw = True
 
+    def get_children(self):
+        if GTK_VERSION < (4, 0, 0):
+            return self.get_children()
+        else:
+            return None
+
     def refreshed(self):
         pass
 

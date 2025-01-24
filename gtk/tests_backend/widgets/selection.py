@@ -1,12 +1,16 @@
+import pytest
 from pytest import skip, xfail
 
-from toga_gtk.libs import Gtk
+from toga_gtk.libs import GTK_VERSION, Gtk
 
 from .base import SimpleProbe
 
 
 class SelectionProbe(SimpleProbe):
     native_class = Gtk.ComboBoxText
+
+    if GTK_VERSION >= (4, 0, 0):
+        pytest.skip("GTK4 doesn't support selection probes yet")
 
     def assert_resizes_on_content_change(self):
         pass

@@ -1,7 +1,7 @@
 import asyncio
 
 from ..container import TogaContainer
-from ..libs import Gtk
+from ..libs import GTK_VERSION, Gtk
 from .base import Widget
 
 
@@ -29,9 +29,10 @@ class OptionContainer(Widget):
 
         self.sub_containers.insert(index, sub_container)
         self.native.insert_page(sub_container, Gtk.Label(label=text), index)
-        # Tabs aren't visible by default;
-        # tell the notebook to show all content.
-        self.native.show_all()
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            # Tabs aren't visible by default;
+            # tell the notebook to show all content.
+            self.native.show_all()
 
     def remove_option(self, index):
         self.native.remove_page(index)
