@@ -30,7 +30,11 @@ class Window:
             "delete-event",
             self.gtk_delete_event,
         )
+        self.native.connect("show", self.gtk_show)
+        self.native.connect("hide", self.gtk_hide)
         self.native.connect("window-state-event", self.gtk_window_state_event)
+        self.native.connect("focus-in-event", self.gtk_focus_in_event)
+        self.native.connect("focus-out-event", self.gtk_focus_out_event)
 
         self._window_state_flags = None
         self._in_presentation = False
@@ -67,11 +71,18 @@ class Window:
     ######################################################################
     # Native event handlers
     ######################################################################
+    def gtk_show(self, widget):
+        self.interface.on_show()
+
+    def gtk_hide(self, widget):
+        self.interface.on_hide()
 
     def gtk_window_state_event(self, widget, event):
         previous_window_state_flags = self._window_state_flags
+        previous_state = self.get_window_state()
         # Get the window state flags
         self._window_state_flags = event.new_window_state
+        current_state = self.get_window_state()
 
         # Window state flags are unreliable when window is hidden,
         # so cache the previous window state flag on to the new
@@ -88,8 +99,22 @@ class Window:
                     self._window_state_flags |= flag
                     break
 
+        # Trigger the appropriate visibility events
+        # Wayland doesn't allow for the detection of MINIMIZED, so the
+        # visibility events will not be triggered when the window will
+        # be minimized or un-minimized.
+        if previous_state != current_state:
+            if (
+                previous_state == WindowState.MINIMIZED
+            ):  # pragma: no-cover-if-linux-wayland
+                self.interface.on_show()
+            elif (
+                current_state == WindowState.MINIMIZED
+            ):  # pragma: no-cover-if-linux-wayland
+                self.interface.on_hide()
+
+        # Handle the pending state transitions
         if self._pending_state_transition:
-            current_state = self.get_window_state()
             if current_state != WindowState.NORMAL:
                 if self._pending_state_transition != current_state:
                     # Add a 10ms delay to wait for the native window state
@@ -126,6 +151,12 @@ class Window:
         # handler must be deleted to allow the window to actually close.
         self.interface.on_close()
         return True
+
+    def gtk_focus_in_event(self, sender, event):
+        self.interface.on_gain_focus()
+
+    def gtk_focus_out_event(self, sender, event):
+        self.interface.on_lose_focus()
 
     ######################################################################
     # Window properties
