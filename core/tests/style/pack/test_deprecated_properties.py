@@ -15,49 +15,17 @@ from toga.style.pack import (
     Pack,
 )
 
-
-def with_init(name, value):
-    return Pack(**{name: value})
-
-
-def with_update(name, value):
-    style = Pack()
-    style.update(**{name: value})
-    return style
-
-
-def with_setattr(name, value):
-    style = Pack()
-    setattr(style, name, value)
-    return style
-
-
-def with_setitem(name, value):
-    style = Pack()
-    style[name] = value
-    return style
-
-
-def with_setitem_hyphen(name, value):
-    style = Pack()
-    style[name.replace("_", "-")] = value
-    return style
-
-
-def getitem(obj, name):
-    return obj[name]
-
-
-def getitem_hyphen(obj, name):
-    return obj[name.replace("_", "-")]
-
-
-def delitem(obj, name):
-    del obj[name]
-
-
-def delitem_hyphen(obj, name):
-    del obj[name.replace("_", "-")]
+from . import (
+    delitem,
+    delitem_hyphen,
+    getitem,
+    getitem_hyphen,
+    with_init,
+    with_setattr,
+    with_setitem,
+    with_setitem_hyphen,
+    with_update,
+)
 
 
 @pytest.mark.parametrize(
@@ -80,7 +48,7 @@ def test_padding_margin(old_name, new_name, value, default, style_with, get_fn, 
     """Padding (with deprecation warning) and margin map to each other."""
     # Set the old name, then check the new name
     with pytest.warns(DeprecationWarning):
-        style = style_with(old_name, value)
+        style = style_with(**{old_name: value})
     assert get_fn(style, new_name) == value
 
     # Delete the old name, check new name
@@ -89,7 +57,7 @@ def test_padding_margin(old_name, new_name, value, default, style_with, get_fn, 
     assert get_fn(style, new_name) == default
 
     # Set the new name, then check the old name
-    style = style_with(new_name, value)
+    style = style_with(**{new_name: value})
     with pytest.warns(DeprecationWarning):
         assert get_fn(style, old_name) == value
 
@@ -128,7 +96,7 @@ def test_alignment_align_items(
     """Alignment (with deprecation warning) and align_items map to each other."""
     # Set alignment, check align_items
     with pytest.warns(DeprecationWarning):
-        style = style_with("alignment", alignment)
+        style = style_with(alignment=alignment)
         style.update(direction=direction, text_direction=text_direction)
 
     assert get_fn(style, "align_items") == align_items
@@ -139,7 +107,7 @@ def test_alignment_align_items(
     assert get_fn(style, "align_items") is None
 
     # Set align_items, check alignment
-    style = style_with("align_items", align_items)
+    style = style_with(align_items=align_items)
     style.update(direction=direction, text_direction=text_direction)
 
     with pytest.warns(DeprecationWarning):

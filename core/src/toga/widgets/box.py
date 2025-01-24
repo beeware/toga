@@ -50,3 +50,13 @@ class Box(Widget):
     def focus(self) -> None:
         """No-op; Box cannot accept input focus."""
         pass
+
+
+def Row(*args, **kwargs):
+    """Shorthand for :any:`Box` with its :ref:`pack-direction` set to "row"."""
+    return Box(*args, direction="row", **kwargs)
+
+
+def Column(*args, **kwargs):
+    """Shorthand for :any:`Box` with its :ref:`pack-direction` set to "column"."""
+    return Box(*args, direction="column", **kwargs)

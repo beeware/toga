@@ -70,6 +70,7 @@ jobs:
         - "toga_textual"
         - "toga_web"
         - "toga_winforms"
+        - "travertino"
     steps:
       - name: Get Packages
         uses: actions/download-artifact@v4.1.8

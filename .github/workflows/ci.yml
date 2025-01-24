@@ -59,6 +59,7 @@ jobs:
         - "gtk"
         - "iOS"
         - "toga"
+        - "travertino"
         - "textual"
         - "web"
         - "winforms"
@@ -67,8 +68,8 @@ jobs:
       build-subdirectory: ${{ matrix.subdir }}
       attest: ${{ inputs.attest-package }}
 
-  core:
-    name: Test core
+  core-and-travertino:
+    name: Test ${{ matrix.package }} (${{ matrix.platform }}, ${{ matrix.python-version }})
     runs-on: ${{ matrix.platform }}
     needs: [ pre-commit, towncrier, package ]
     continue-on-error: ${{ matrix.experimental }}
@@ -77,8 +78,18 @@ jobs:
       matrix:
         platform: [ "macos-latest", "ubuntu-latest", "windows-latest" ]
         python-version: [ "3.9", "3.10", "3.11", "3.12", "3.13" ]
+        package: ["core", "travertino"]
+        exclude:
+        - package: travertino
+          platform: macos-latest
+        - package: travertino
+          platform: windows-latest
         include:
         - experimental: false
+        - package: "core"
+          tox-suffix: ""
+        - package: "travertino"
+          tox-suffix: "-trav"
 
     steps:
     - name: Checkout
@@ -97,7 +108,7 @@ jobs:
       with:
         requirements: tox
         extra: dev
-        project-root: core
+        project-root: ${{ matrix.package }}
 
     - name: Get Packages
       uses: actions/download-artifact@v4.1.8
@@ -110,16 +121,16 @@ jobs:
       run: |
         # The $(ls ...) shell expansion is done in the Github environment;
         # the value of TOGA_INSTALL_COMMAND will be a literal string without any shell expansions to perform
-        TOGA_INSTALL_COMMAND="python -m pip install ../$(ls dist/toga_core-*.whl)[dev] ../$(ls dist/toga_dummy-*.whl)" \
-          tox -e py-cov
-        tox -qe coverage$(tr -dc "0-9" <<< "${{ matrix.python-version }}")
-        mv core/.coverage core/.coverage.${{ matrix.platform }}.${{ matrix.python-version }}
+        TOGA_INSTALL_COMMAND="python -m pip install ../$(ls dist/toga_core-*.whl)[dev] ../$(ls dist/toga_dummy-*.whl) ../$(ls dist/travertino-*.whl)"
+        tox -e py-cov${{ matrix.tox-suffix }}
+        tox -qe coverage$(tr -dc "0-9" <<< "${{ matrix.python-version }}")${{ matrix.tox-suffix }}
+        mv ${{ matrix.package }}/.coverage ${{ matrix.package }}/.coverage.${{ matrix.platform }}.${{ matrix.python-version }}
 
     - name: Store Coverage Data
       uses: actions/upload-artifact@v4.6.0
       with:
-        name: core-coverage-data-${{ matrix.platform }}-${{ matrix.python-version }}
-        path: "core/.coverage.*"
+        name: ${{ matrix.package }}-coverage-data-${{ matrix.platform }}-${{ matrix.python-version }}
+        path: "${{ matrix.package }}/.coverage.*"
         if-no-files-found: error
         include-hidden-files: true
 
@@ -159,15 +170,21 @@ jobs:
         with:
           python-version: "3.13"
 
-      - name: Get Packages
+      - name: Get Core Package
         uses: actions/download-artifact@v4.1.8
         with:
           name: Packages-toga-core
           path: dist
 
+      - name: Get Travertino Package
+        uses: actions/download-artifact@v4.1.8
+        with:
+          name: Packages-toga-travertino
+          path: dist
+
       - name: Test
         run: |
-          pip install dist/toga_core-*.whl
+          pip install dist/toga_core-*.whl dist/travertino-*.whl
           site_packages=$(python -c '
           import sys
           print([path for path in sys.path if "site-packages" in path][0])
@@ -176,17 +193,20 @@ jobs:
           cd core
           export MICROPYPATH="$site_packages:.frozen"
 
-          echo "Stable Travertino"
           ${{ steps.micropython.outputs.executable }} micropython_check.py
 
-          echo "Development Travertino"
-          pip install git+https://github.com/beeware/travertino
-          ${{ steps.micropython.outputs.executable }} micropython_check.py
-
-  core-coverage:
-    name: Coverage
-    needs: core
+  core-and-travertino-coverage:
+    name: "Coverage: ${{ matrix.package }}"
+    needs: core-and-travertino
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        package: ["core", "travertino"]
+        include:
+          - package: "core"
+            tox-suffix: ""
+          - package: "travertino"
+            tox-suffix: "-trav"
     steps:
     - name: Checkout
       uses: actions/checkout@v4.2.2
@@ -205,28 +225,29 @@ jobs:
       with:
         requirements: tox
         extra: dev
-        project-root: core
+        project-root: ${{ matrix.package }}
 
     - name: Retrieve Coverage Data
       uses: actions/download-artifact@v4.1.8
       with:
-        pattern: core-coverage-data-*
-        path: core
+        pattern: ${{ matrix.package }}-coverage-data-*
+        path: ${{ matrix.package }}
         merge-multiple: true
 
     - name: Generate Coverage Report
-      run: tox -e coverage-html-fail-platform
+      # Even with "fail" on, Travertino will accept <100%.
+      run: tox -e coverage${{ matrix.tox-suffix }}-html-fail-platform
 
     - name: Upload HTML Coverage Report
       uses: actions/upload-artifact@v4.6.0
       if: failure()
       with:
         name: html-coverage-report
-        path: core/htmlcov
+        path: ${{ matrix.package }}/htmlcov
 
   testbed:
     name: Testbed
-    needs: core
+    needs: core-and-travertino
     runs-on: ${{ matrix.runs-on }}
     strategy:
       fail-fast: false
@@ -321,7 +342,7 @@ jobs:
           platform: "linux"
           runs-on: "ubuntu-latest"
           setup-python: false  # Use the system Python packages
-          briefcase-run-args: --config 'requires=["../core","../textual"]' --config 'console_app=true'
+          briefcase-run-args: --config 'requires=["../core","../textual", "../travertino"]' --config 'console_app=true'
           app-user-data-path: "$HOME/.local/share/testbed"
           # install the meta-package build-essential since Briefcase explicitly checks for it
           pre-command: sudo apt update -y && sudo apt install -y build-essential
@@ -329,13 +350,13 @@ jobs:
         - backend: "textual-macOS"
           platform: "macOS"
           runs-on: "macos-latest"
-          briefcase-run-args: --config 'requires=["../core","../textual"]' --config 'console_app=true'
+          briefcase-run-args: --config 'requires=["../core","../textual", "../travertino"]' --config 'console_app=true'
           app-user-data-path: "$HOME/Library/Application Support/org.beeware.toga.testbed"
 
         - backend: "textual-windows"
           platform: "windows"
           runs-on: "windows-latest"
-          briefcase-run-args: --config 'requires=["../core","../textual"]' --config 'console_app=true'
+          briefcase-run-args: --config 'requires=["../core","../textual", "../travertino"]' --config 'console_app=true'
           app-user-data-path: '$HOME\AppData\Local\Tiberius Yak\Toga Testbed\Data'
 
         - backend: "windows"

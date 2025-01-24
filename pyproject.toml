@@ -49,6 +49,7 @@ split_on_trailing_comma = true
 combine_as_imports = true
 known_third_party = [
     "android",  # isort defaults to making this first-party for some reason.
+    "travertino", # In this repo, but still a separate package
 ]
 known_first_party = [
     "testbed",
@@ -61,6 +62,7 @@ known_first_party = [
     "toga_web",
     "toga_winforms",
 ]
+extend_skip = ["travertino"]
 
 [tool.towncrier]
 directory = "changes"

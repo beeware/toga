@@ -371,15 +371,9 @@ def assert_action_performed_with(_widget, _action, **test_data):
                             found = False
                     except AttributeError:
                         # No raw attribute; use the provided value as-is
-                        try:
-                            if data[key] != value:
-                                found = False
-                        ########################################################
-                        # Backwards compatibility for Travertino 0.3.0
-                        # Font.__eq__ throws an AttributeError against non-Fonts
-                        ########################################################
-                        except AttributeError:
+                        if data[key] != value:
                             found = False
+
                 except KeyError:
                     found = False
 
