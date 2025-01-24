@@ -35,6 +35,7 @@ test_sources = [
 ]
 requires = [
     "../core",
+    "../travertino",
 ]
 
 permission.camera = "The testbed needs to exercise Camera APIs"

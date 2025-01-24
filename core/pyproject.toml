@@ -55,9 +55,6 @@ classifiers = [
     "Topic :: Software Development :: User Interfaces",
     "Topic :: Software Development :: Widget Sets",
 ]
-dependencies = [
-    "travertino >= 0.3.0, < 0.4.0",
-]
 
 [project.optional-dependencies]
 # Extras used by developers *of* Toga are pinned to specific versions to
@@ -103,6 +100,11 @@ pil = "toga.plugins.image_formats.PILConverter"
 
 [tool.setuptools_scm]
 root = ".."
+
+[tool.setuptools_dynamic_dependencies]
+dependencies = [
+    "travertino == {version}",
+]
 
 [tool.coverage.run]
 parallel = true

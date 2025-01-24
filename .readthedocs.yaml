@@ -35,3 +35,5 @@ python:
     extra_requirements:
       - dev
       - docs
+  - method: pip
+    path: travertino
