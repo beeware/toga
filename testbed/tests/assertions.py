@@ -101,6 +101,7 @@ def assert_background_color(actual, expected):
     else:
         assert_color(actual, expected)
 
+
 def assert_window_gain_focus(window, trigger_expected=True):
     on_gain_focus_handler = window.on_gain_focus._raw
     on_lose_focus_handler = window.on_lose_focus._raw
