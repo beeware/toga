@@ -12,8 +12,8 @@ from .base import Widget
 class Switch(Widget):
     def create(self):
         self.native = WinForms.CheckBox()
-        self.native.CheckedChanged += WeakrefCallable(self.winforms_checked_changed)
         self._default_background_color = TRANSPARENT
+        self.native.CheckedChanged += WeakrefCallable(self.winforms_checked_changed)
 
     def winforms_checked_changed(self, sender, event):
         self.interface.on_change()

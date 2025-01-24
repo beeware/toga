@@ -12,14 +12,13 @@ from .base import Widget
 class ImageView(Widget):
     def create(self):
         self.native = WinForms.PictureBox()
+        self._default_background_color = TRANSPARENT
         self.native.SizeMode = WinForms.PictureBoxSizeMode.Zoom
 
         # If self.native.Image is None, Winforms renders it as a white square
         # with a red cross through it. Ensure we always have an actual image,
         # using a 1x1 blank bitmap for the None case.
         self.native.Image = self._empty_image()
-
-        self._default_background_color = TRANSPARENT
 
     def _empty_image(self):
         return Bitmap(1, 1)

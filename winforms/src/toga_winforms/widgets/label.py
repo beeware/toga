@@ -12,9 +12,8 @@ from .base import Widget
 class Label(Widget):
     def create(self):
         self.native = WinForms.Label()
-        self.native.AutoSizeMode = WinForms.AutoSizeMode.GrowAndShrink
-
         self._default_background_color = TRANSPARENT
+        self.native.AutoSizeMode = WinForms.AutoSizeMode.GrowAndShrink
 
     def set_text_align(self, value):
         self.native.TextAlign = TextAlignment(value)

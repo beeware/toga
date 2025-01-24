@@ -275,10 +275,7 @@ class Canvas(Box):
         draw_context.clear_paths()
 
     def stroke(self, color, line_width, line_dash, draw_context, **kwargs):
-        pen = Pen(
-            native_color(color),
-            self.scale_in(line_width, rounding=None),
-        )
+        pen = Pen(native_color(color), self.scale_in(line_width, rounding=None))
         if line_dash is not None:
             pen.DashPattern = [ld / line_width for ld in line_dash]
 

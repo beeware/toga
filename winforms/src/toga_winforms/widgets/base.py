@@ -47,12 +47,20 @@ class Widget(Scalable, ABC):
 
         self._container = None
         self.native = None
-
-        # Widgets that need to set a different default background_color
-        # should override this attribute.
-        self._default_background_color = toga_color(SystemColors.Control)
-
         self.create()
+
+        # Widgets that need to set a different default background_color should override
+        # the _default_background_color attribute.
+        #
+        # Note: On Winforms, _default_background_color is set in the form of toga color,
+        #       instead of the native Color. This is because we need to manually do the
+        #       alpha blending, and the native Color class does not directly handle the
+        #       alpha transparency in the same way.
+        if getattr(self, "_default_background_color", None) is None:
+            # If a widget hasn't specifically defined a default background color then
+            # set the system assigned background color as the default background color
+            # of the widget.
+            self._default_background_color = toga_color(self.native.BackColor)
 
         # Obtain a Graphics object and immediately dispose of it. This is
         # done to trigger the control's Paint event and force it to redraw.

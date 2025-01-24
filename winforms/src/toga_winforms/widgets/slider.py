@@ -24,6 +24,7 @@ class Slider(Widget, IntSliderImpl):
     def create(self):
         IntSliderImpl.__init__(self)
         self.native = WinForms.TrackBar()
+        self._default_background_color = TRANSPARENT
         self.native.AutoSize = False
 
         # Unlike Scroll, ValueChanged also fires when the value is changed
@@ -31,8 +32,6 @@ class Slider(Widget, IntSliderImpl):
         self.native.ValueChanged += WeakrefCallable(self.winforms_value_changed)
         self.native.MouseDown += WeakrefCallable(self.winforms_mouse_down)
         self.native.MouseUp += WeakrefCallable(self.winforms_mouse_up)
-
-        self._default_background_color = TRANSPARENT
 
     def winforms_value_changed(self, sender, event):
         self.on_change()

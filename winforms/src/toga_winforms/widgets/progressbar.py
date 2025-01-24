@@ -2,8 +2,6 @@ from decimal import ROUND_UP
 
 import System.Windows.Forms as WinForms
 
-from toga.colors import TRANSPARENT
-
 from .base import Widget
 
 # Implementation notes
@@ -22,12 +20,10 @@ from .base import Widget
 
 
 class ProgressBar(Widget):
-
     TOGA_SCALE = 1000
 
     def create(self):
         self.native = WinForms.ProgressBar()
-        self._default_background_color = TRANSPARENT
         self.set_stopping_style()
 
         self._running = False
