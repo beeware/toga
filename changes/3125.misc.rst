@@ -1,0 +1,1 @@
+On iOS, widgets without a specified default background color now use the system-assigned default background color.
