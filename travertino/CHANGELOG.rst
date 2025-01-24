@@ -1,39 +1,40 @@
 Changelog
 =========
 
-**Note:** As of version 0.5.0, Travertino is now hosted and developed as part of the Toga repository. It's now released along with — and has the same version number as — each `Toga release <https://github.com/beeware/toga/releases>`_.
+**Note:** As of version 0.5.0, Travertino is now hosted and developed as part of the
+Toga repository. It's now released along with — and has the same version number as —
+each `Toga release <https://github.com/beeware/toga/releases>`_.
 
-For all development beyond 0.5.0, any changes made to Travertino will be logged along with Toga's overall list of changes for each new release.
+For all development beyond 0.5.0, any changes made to Travertino will be logged along
+with Toga's overall list of changes for each new release.
 
 .. towncrier release notes start
 
-0.5.0 (2025-01-22)
-==============================================
+0.5.0 (2025-??-??)
+==================
 
 Features
 --------
 
 * Validated properties of styles can now be defined as dataclass class attributes. (`#141 <https://github.com/beeware/travertino/issues/141>`_)
 * BaseStyle now supports ``|``, ``|=``, and ``in`` operators. (`#143 <https://github.com/beeware/travertino/issues/143>`_)
-* Added a ``list_property`` for storing multi-valued elements. (`#148 <https://github.com/beeware/travertino/issues/148>`_)
+* A ``list_property`` declaration has been added to support storing multi-valueds style elements. (`#148 <https://github.com/beeware/travertino/issues/148>`_)
 * Support for Python 3.13 was added. (`#149 <https://github.com/beeware/travertino/issues/149>`_)
 * Support for Python 3.14 was added. (`#223 <https://github.com/beeware/travertino/issues/223>`_)
-* Constants now include START and END. (`#241 <https://github.com/beeware/travertino/issues/241>`_)
-
+* The constants ``START`` and ``END`` have been added. (`#241 <https://github.com/beeware/travertino/issues/241>`_)
 
 Bugfixes
 --------
 
 * Assigning a new style object to a node that already has an applicator assigned now properly maintains an association between the applicator and the new style, and triggers a style reapplication. (`#224 <https://github.com/beeware/travertino/issues/224>`_)
-* Fixed a bug which caused an equality check between a Font object and a non-Font to throw an exception instead of returning False. (`#233 <https://github.com/beeware/travertino/issues/233>`_)
-
+* Equality checks between a Font object and a non-Font object will now throw an exception instead of returning False. (`#233 <https://github.com/beeware/travertino/issues/233>`_)
 
 Backward Incompatible Changes
 -----------------------------
 
-* The 'default' parameter for Choice has been deprecated. (`#139 <https://github.com/beeware/travertino/issues/139>`_)
+* The `default` parameter for Choice has been deprecated. (`#139 <https://github.com/beeware/travertino/issues/139>`_)
 * Python 3.8 is no longer supported. (`#223 <https://github.com/beeware/travertino/issues/223>`_)
-* The mechanisms for assigning styles and applicators to nodes, and applying styles, have been reworked. A node will now attempt to apply its style as soon as it is assigned an applicator; this means you should not assign an applicator to a node until the node is sufficiently initialized to apply its style. To accommodate uses that currently do not follow this order, any exceptions resulting from a failed style application are caught, and a runtime warning is issued. In a future version, this will be an exception. (`#224 <https://github.com/beeware/travertino/issues/224>`_)
+* The mechanisms for assigning styles and applicators to nodes, and applying styles, have been reworked. A node will now attempt to apply its style as soon as it is assigned an applicator. This means you should not assign an applicator to a node until the node is sufficiently initialized to apply its style. To accommodate uses that currently do not follow this order, any exceptions resulting from a failed style application are caught, and a runtime warning is issued. In a future version, this will be an exception. (`#224 <https://github.com/beeware/travertino/issues/224>`_)
 * Supplying an applicator to BaseStyle.copy() has been deprecated. If you need to manually assign an applicator to a style, do it separately, after the copy. (`#224 <https://github.com/beeware/travertino/issues/224>`_)
 * The API for ``Style.layout()`` has been formally specified as part of the Travertino API. The initial ``node`` argument is no longer required as part of the ``layout()`` method. A ``Style`` instance can interrogate ``self._applicator.node`` to retrieve the node to which the style is being applied. (`#244 <https://github.com/beeware/travertino/issues/244>`_)
 
@@ -100,7 +101,7 @@ Misc
 
 
 0.1.3 (2020-05-25)
-==============================================
+==================
 
 Features
 --------
@@ -117,17 +118,17 @@ Misc
 
 
 0.1.2
-==============================================
+=====
 
 * Added constants for system and message fonts
 * Added hash method to fonts and colors
 
 0.1.1
-==============================================
+=====
 
 * Added font definitions
 
 0.1.0
-==============================================
+=====
 
 Initial release.
