@@ -1012,6 +1012,9 @@ else:
     ):
         """The window can trigger on_gain_focus() and on_lose_focus()
         event handlers, when the window gains or loses input focus."""
+        if not main_window_probe.supports_focus:
+            pytest.skip("GTK4 doesn't yet support gain and lose focus.")
+
         main_window.on_gain_focus = Mock()
         main_window.on_lose_focus = Mock()
         second_window.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))

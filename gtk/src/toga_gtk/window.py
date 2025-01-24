@@ -40,12 +40,12 @@ class Window:
         self.native.connect("hide", self.gtk_hide)
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             self.native.connect("window-state-event", self.gtk_window_state_event)
+            self.native.connect("focus-in-event", self.gtk_focus_in_event)
+            self.native.connect("focus-out-event", self.gtk_focus_out_event)
         else:  # pragma: no-cover-if-gtk3
             self.native.connect("notify::fullscreened", self.gtk_window_state_event)
             self.native.connect("notify::maximized", self.gtk_window_state_event)
             self.native.connect("notify::minimized", self.gtk_window_state_event)
-        self.native.connect("focus-in-event", self.gtk_focus_in_event)
-        self.native.connect("focus-out-event", self.gtk_focus_out_event)
 
         self._window_state_flags = None
         self._in_presentation = False
@@ -96,25 +96,29 @@ class Window:
     def gtk_window_state_event(self, widget, event):
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             previous_window_state_flags = self._window_state_flags
-            previous_state = self.get_window_state()
             # Get the window state flags
             self._window_state_flags = event.new_window_state
-            current_state = self.get_window_state()
+        else:
+            previous_window_state_flags = None
+            self._window_state_flags = None
+        previous_state = self.get_window_state()
+        current_state = self.get_window_state()
 
         # Window state flags are unreliable when window is hidden,
         # so cache the previous window state flag on to the new
         # window state flag, so that get_window_state() would work
         # correctly.
-        if not self.get_visible():
-            restore_flags = {
-                Gdk.WindowState.MAXIMIZED,
-                Gdk.WindowState.ICONIFIED,
-                Gdk.WindowState.FULLSCREEN,
-            }
-            for flag in restore_flags:
-                if previous_window_state_flags & flag:
-                    self._window_state_flags |= flag
-                    break
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            if not self.get_visible():
+                restore_flags = {
+                    Gdk.WindowState.MAXIMIZED,
+                    Gdk.WindowState.ICONIFIED,
+                    Gdk.WindowState.FULLSCREEN,
+                }
+                for flag in restore_flags:
+                    if previous_window_state_flags & flag:
+                        self._window_state_flags |= flag
+                        break
 
         # Trigger the appropriate visibility events
         # Wayland doesn't allow for the detection of MINIMIZED, so the

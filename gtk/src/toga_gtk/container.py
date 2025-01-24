@@ -56,9 +56,7 @@ class TogaContainerLayoutManager(LayoutManager):
         if container._content:
             # Re-evaluate the layout using the  size as the basis for geometry
             # print("REFRESH LAYOUT", width, height)
-            container._content.interface.style.layout(
-                container._content.interface, container
-            )
+            container._content.interface.style.layout(container)
 
             # Ensure the minimum content size from the layout is retained
             container.min_width = container._content.interface.layout.min_width
@@ -274,8 +272,8 @@ class TogaContainer(Gtk.Box):
             self.set_allocation(allocation)
 
             if self._content:
-                # This function may be called in response to irrelevant events like button
-                # clicks, so only refresh if we really need to.
+                # This function may be called in response to irrelevant events like
+                # button clicks, so only refresh if we really need to.
                 if resized or self.needs_redraw:
                     # Re-evaluate the layout using the allocation size as the basis
                     # for geometry

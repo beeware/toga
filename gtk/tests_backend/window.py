@@ -16,9 +16,11 @@ class WindowProbe(BaseProbe, DialogsMixin):
     if GTK_VERSION < (4, 0, 0):
         supports_closable = True
         supports_as_image = True
+        supports_focus = True
     else:
         supports_closable = False
         supports_as_image = False
+        supports_focus = False
     supports_minimizable = False
     supports_move_while_hidden = False
     supports_unminimize = False
