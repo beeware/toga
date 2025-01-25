@@ -229,6 +229,7 @@ class SaveFileDialog(FileDialog):
         initial_directory,
         file_types=None,
     ):
+        save_icon = Gtk.Image.new_from_icon_name("document-save")
         super().__init__(
             title=title,
             filename=filename,
@@ -236,9 +237,10 @@ class SaveFileDialog(FileDialog):
             file_types=file_types,
             multiple_select=False,
             action=Gtk.FileChooserAction.SAVE,
-            ok_icon=Gtk.STOCK_SAVE,
+            ok_icon=save_icon,
         )
-        self.native.set_do_overwrite_confirmation(True)
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            self.native.set_do_overwrite_confirmation(True)
 
 
 class OpenFileDialog(FileDialog):
@@ -249,6 +251,7 @@ class OpenFileDialog(FileDialog):
         file_types,
         multiple_select,
     ):
+        open_icon = Gtk.Image.new_from_icon_name("document-open")
         super().__init__(
             title=title,
             filename=None,
@@ -256,7 +259,7 @@ class OpenFileDialog(FileDialog):
             file_types=file_types,
             multiple_select=multiple_select,
             action=Gtk.FileChooserAction.OPEN,
-            ok_icon=Gtk.STOCK_OPEN,
+            ok_icon=open_icon,
         )
 
 
@@ -267,6 +270,7 @@ class SelectFolderDialog(FileDialog):
         initial_directory,
         multiple_select,
     ):
+        open_icon = Gtk.Image.new_from_icon_name("document-open")
         super().__init__(
             title=title,
             filename=None,
@@ -274,5 +278,5 @@ class SelectFolderDialog(FileDialog):
             file_types=None,
             multiple_select=multiple_select,
             action=Gtk.FileChooserAction.SELECT_FOLDER,
-            ok_icon=Gtk.STOCK_OPEN,
+            ok_icon=open_icon,
         )
