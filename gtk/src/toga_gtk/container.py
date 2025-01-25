@@ -103,7 +103,7 @@ class TogaContainer(Gtk.Box):
     def __init__(self):
         super().__init__()
 
-        if GTK_VERSION >= (4, 0):  # pragma: no-cover-if-gtk3
+        if GTK_VERSION >= (4, 0, 0):  # pragma: no-cover-if-gtk3
             # Because we don’t have access to the existing layout manager, we must
             # create our custom layout manager class.
             layout_manager = TogaContainerLayoutManager()

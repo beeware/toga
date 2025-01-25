@@ -4,12 +4,9 @@ from importlib import import_module
 import pytest
 
 import toga
-from toga_gtk.libs import GTK_VERSION
 
 
 def icon_probe(app, image):
-    if GTK_VERSION >= (4, 0, 0):
-        pytest.xfail("Labels are not yet supported on GTK4")
     module = import_module("tests_backend.icons")
     return module.IconProbe(app, image)
 

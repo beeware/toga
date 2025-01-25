@@ -176,26 +176,27 @@ class FileDialog(BaseDialog):
             title=title,
             action=action,
         )
-        self.native.add_button(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL)
-        self.native.add_button(ok_icon, Gtk.ResponseType.OK)
-        self.native.set_modal(True)
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            self.native.add_button("_Cancel", Gtk.ResponseType.CANCEL)
+            self.native.add_button(ok_icon, Gtk.ResponseType.OK)
+            self.native.set_modal(True)
 
-        if filename:
-            self.native.set_current_name(filename)
+            if filename:
+                self.native.set_current_name(filename)
 
-        if initial_directory:
-            self.native.set_current_folder(str(initial_directory))
+            if initial_directory:
+                self.native.set_current_folder(str(initial_directory))
 
-        if file_types:
-            for file_type in file_types:
-                filter_filetype = Gtk.FileFilter()
-                filter_filetype.set_name("." + file_type + " files")
-                filter_filetype.add_pattern("*." + file_type)
-                self.native.add_filter(filter_filetype)
+            if file_types:
+                for file_type in file_types:
+                    filter_filetype = Gtk.FileFilter()
+                    filter_filetype.set_name("." + file_type + " files")
+                    filter_filetype.add_pattern("*." + file_type)
+                    self.native.add_filter(filter_filetype)
 
-        self.multiple_select = multiple_select
-        if self.multiple_select:
-            self.native.set_select_multiple(True)
+            self.multiple_select = multiple_select
+            if self.multiple_select:
+                self.native.set_select_multiple(True)
 
         self.native.connect("response", self.gtk_response)
 

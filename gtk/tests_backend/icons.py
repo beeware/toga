@@ -5,13 +5,16 @@ import pytest
 
 import toga
 import toga_gtk
-from toga_gtk.libs import GdkPixbuf
+from toga_gtk.libs import GTK_VERSION, GdkPixbuf
 
 from .probe import BaseProbe
 
 
 class IconProbe(BaseProbe):
     alternate_resource = "resources/icons/orange"
+
+    if GTK_VERSION >= (4, 0, 0):
+        pytest.skip("GTK4 doesn't support icons yet")
 
     def __init__(self, app, icon):
         super().__init__()
