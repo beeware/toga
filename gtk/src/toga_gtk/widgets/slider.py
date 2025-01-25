@@ -2,7 +2,7 @@ from travertino.size import at_least
 
 from toga.widgets.slider import SliderImpl
 
-from ..libs import Gtk
+from ..libs import GTK_VERSION, Gtk
 from .base import Widget
 
 # Implementation notes
@@ -82,15 +82,16 @@ class Slider(Widget, SliderImpl):
         return self.tick_count
 
     def rehint(self):
-        # print(
-        #     "REHINT",
-        #     self,
-        #     self.native.get_preferred_width(),
-        #     self.native.get_preferred_height(),
-        # )
-        height = self.native.get_preferred_height()
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            # print(
+            #     "REHINT",
+            #     self,
+            #     self.native.get_preferred_width(),
+            #     self.native.get_preferred_height(),
+            # )
+            height = self.native.get_preferred_height()
 
-        # Set intrinsic width to at least the minimum width
-        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
-        # Set intrinsic height to the natural height
-        self.interface.intrinsic.height = height[1]
+            # Set intrinsic width to at least the minimum width
+            self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
+            # Set intrinsic height to the natural height
+            self.interface.intrinsic.height = height[1]

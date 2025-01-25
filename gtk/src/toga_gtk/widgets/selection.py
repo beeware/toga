@@ -2,7 +2,7 @@ from contextlib import contextmanager
 
 from travertino.size import at_least
 
-from ..libs import Gtk
+from ..libs import GTK_VERSION, Gtk
 from .base import Widget
 
 
@@ -89,17 +89,18 @@ class Selection(Widget):
         return index
 
     def rehint(self):
-        width = self.native.get_preferred_width()
-        height = self.native.get_preferred_height()
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            width = self.native.get_preferred_width()
+            height = self.native.get_preferred_height()
 
-        # FIXME: 2023-05-31 This will always provide a size that is big enough,
-        # but sometimes it will be *too* big. For example, if you set the font size
-        # large, then reduce it again, the widget *could* reduce in size. However,
-        # I can't find any way to prod GTK to perform a resize that will reduce
-        # it's minimum size. This is the reason the test probe has a `shrink_on_resize`
-        # property; if we can fix this resize issue, `shrink_on_resize` may not
-        # be necessary.
-        self.interface.intrinsic.width = at_least(
-            max(self.interface._MIN_WIDTH, width[1])
-        )
-        self.interface.intrinsic.height = height[1]
+            # FIXME: 2023-05-31 This will always provide a size that is big enough,
+            # but sometimes it will be *too* big. For example, if you set the font size
+            # large, then reduce it again, the widget *could* reduce in size. However,
+            # I can't find any way to prod GTK to perform a resize that will reduce
+            # it's minimum size. This is the reason the test probe has a
+            # `shrink_on_resize` property; if we can fix this resize issue,
+            # `shrink_on_resize` may not be necessary.
+            self.interface.intrinsic.width = at_least(
+                max(self.interface._MIN_WIDTH, width[1])
+            )
+            self.interface.intrinsic.height = height[1]

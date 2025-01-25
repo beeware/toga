@@ -4,7 +4,7 @@ from travertino.size import at_least
 
 from toga.widgets.webview import CookiesResult, JavaScriptResult
 
-from ..libs import GLib, WebKit2
+from ..libs import GTK_VERSION, GLib, WebKit2
 from .base import Widget
 
 
@@ -125,5 +125,6 @@ class WebView(Widget):
         return result
 
     def rehint(self):
-        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
-        self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
+            self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)

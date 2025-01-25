@@ -148,8 +148,9 @@ class MultilineTextInput(Widget):
         return False
 
     def rehint(self):
-        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
-        self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
+            self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
 
     def scroll_to_bottom(self):
         self.buffer.place_cursor(self.buffer.get_end_iter())

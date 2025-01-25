@@ -58,9 +58,10 @@ class ImageView(Widget):
         self.native.set_from_pixbuf(scaled)
 
     def rehint(self):
-        width, height, self._aspect_ratio = rehint_imageview(
-            image=self.interface.image,
-            style=self.interface.style,
-        )
-        self.interface.intrinsic.width = width
-        self.interface.intrinsic.height = height
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            width, height, self._aspect_ratio = rehint_imageview(
+                image=self.interface.image,
+                style=self.interface.style,
+            )
+            self.interface.intrinsic.width = width
+            self.interface.intrinsic.height = height

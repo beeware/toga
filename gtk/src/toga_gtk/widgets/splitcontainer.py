@@ -1,7 +1,7 @@
 from travertino.size import at_least
 
 from ..container import TogaContainer
-from ..libs import Gtk
+from ..libs import GTK_VERSION, Gtk
 from .base import Widget
 
 
@@ -97,5 +97,6 @@ class SplitContainer(Widget):
 
             min_width = max(min_width, self.interface._MIN_WIDTH) + SPLITTER_WIDTH
 
-        self.interface.intrinsic.width = at_least(min_width)
-        self.interface.intrinsic.height = at_least(min_height)
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            self.interface.intrinsic.width = at_least(min_width)
+            self.interface.intrinsic.height = at_least(min_height)
