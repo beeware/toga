@@ -17,10 +17,6 @@ class AppProbe(BaseProbe, DialogsMixin):
     supports_key_mod3 = True
     # Gtk 3.24.41 ships with Ubuntu 24.04 where present() works on Wayland
     supports_current_window_assignment = not (IS_WAYLAND and GTK_VERSION < (3, 24, 41))
-    if GTK_VERSION < (4, 0, 0):
-        supports_save_dialog = True
-    else:
-        supports_save_dialog = False
 
     def __init__(self, app):
         super().__init__()
