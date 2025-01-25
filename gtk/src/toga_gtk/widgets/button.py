@@ -52,17 +52,18 @@ class Button(Widget):
         super().set_background_color(None if color is TRANSPARENT else color)
 
     def rehint(self):
-        # print(
-        #     "REHINT",
-        #     self,
-        #     self.native.get_preferred_width(),
-        #     self.native.get_preferred_height(),
-        # )
-        width = self.native.get_preferred_width()
-        height = self.native.get_preferred_height()
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            # print(
+            #     "REHINT",
+            #     self,
+            #     self.native.get_preferred_width(),
+            #     self.native.get_preferred_height(),
+            # )
+            width = self.native.get_preferred_width()
+            height = self.native.get_preferred_height()
 
-        self.interface.intrinsic.width = at_least(width[0])
-        self.interface.intrinsic.height = height[1]
+            self.interface.intrinsic.width = at_least(width[0])
+            self.interface.intrinsic.height = height[1]
 
     def gtk_clicked(self, event):
         self.interface.on_press()
