@@ -13,19 +13,7 @@ class Widget:
         self.native = None
         self.create()
 
-        # Widgets that need to set a different default background_color should override
-        # the _default_background_color attribute.
-        # On iOS, _default_background_color is set in the form of native UIColor.
-        #
-        # Currently, on iOS there is no widget that specifies a custom default
-        # background color, so the else branch would never be reached.
-        if (
-            getattr(self, "_default_background_color", None) is None
-        ):  # pragma: no branch
-            # If a widget hasn't specifically defined a default background color then
-            # set the system assigned background color as the default background color
-            # of the widget.
-            self._default_background_color = self.native.backgroundColor
+        self._default_background_color = self.native.backgroundColor
 
     @abstractmethod
     def create(self): ...
