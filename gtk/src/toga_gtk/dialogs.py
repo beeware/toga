@@ -178,7 +178,7 @@ class FileDialog(BaseDialog):
         )
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             self.native.add_button("_Cancel", Gtk.ResponseType.CANCEL)
-            self.native.add_button(ok_icon, Gtk.ResponseType.OK)
+            self.native.add_button("_OK", Gtk.ResponseType.OK)
             self.native.set_modal(True)
 
             if filename:
@@ -230,7 +230,7 @@ class SaveFileDialog(FileDialog):
         initial_directory,
         file_types=None,
     ):
-        save_icon = Gtk.Image.new_from_icon_name("document-save")
+        save_icon = "_Save"
         super().__init__(
             title=title,
             filename=filename,
@@ -252,7 +252,7 @@ class OpenFileDialog(FileDialog):
         file_types,
         multiple_select,
     ):
-        open_icon = Gtk.Image.new_from_icon_name("document-open")
+        open_icon = "_OK"
         super().__init__(
             title=title,
             filename=None,
@@ -271,7 +271,7 @@ class SelectFolderDialog(FileDialog):
         initial_directory,
         multiple_select,
     ):
-        open_icon = Gtk.Image.new_from_icon_name("document-open")
+        open_icon = "_Open"
         super().__init__(
             title=title,
             filename=None,
