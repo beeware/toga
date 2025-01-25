@@ -38,14 +38,21 @@ IS_WAYLAND = not isinstance(Gdk.Display.get_default(), GdkX11.X11Display)
 # The following imports will fail if the underlying libraries or their API
 # wrappers aren't installed; handle failure gracefully (see
 # https://github.com/beeware/toga/issues/26)
-try:
+if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
     try:
-        gi.require_version("WebKit2", "4.1")
-    except ValueError:  # pragma: no cover
-        gi.require_version("WebKit2", "4.0")
-    from gi.repository import WebKit2  # noqa: F401
-except (ImportError, ValueError):  # pragma: no cover
-    WebKit2 = None
+        try:
+            gi.require_version("WebKit2", "4.1")
+        except ValueError:  # pragma: no cover
+            gi.require_version("WebKit2", "4.0")
+        from gi.repository import WebKit2  # noqa: F401
+    except (ImportError, ValueError):  # pragma: no cover
+        WebKit2 = None
+else:  # pragma: no-cover-if-gtk3
+    try:
+        gi.require_version("WebKit", "6.0")
+        from gi.repository import WebKit as WebKit2  # noqa: F401
+    except (ImportError, ValueError):  # pragma: no cover
+        WebKit2 = None
 
 try:
     gi.require_version("Pango", "1.0")
