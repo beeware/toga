@@ -14,7 +14,7 @@ else:  # pragma: no-cover-if-gtk3
     LayoutManager = Gtk.LayoutManager
 
 
-class TogaContainerLayoutManager(LayoutManager):
+class TogaContainerLayoutManager(LayoutManager):  # pragma: no-cover-if-gtk3
     def __init__(self):
         super().__init__()
 
