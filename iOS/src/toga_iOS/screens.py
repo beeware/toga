@@ -1,6 +1,7 @@
 from rubicon.objc import Block, objc_id
 
 from toga.screens import Screen as ScreenInterface
+from toga.types import Position, Size
 from toga_iOS.libs import UIGraphicsImageRenderer, UIImage
 
 
@@ -8,6 +9,7 @@ class Screen:
     _instances = {}
 
     def __new__(cls, native):
+        # native is an instance of UIScreen
         if native in cls._instances:
             return cls._instances[native]
         else:
@@ -21,11 +23,11 @@ class Screen:
         # Return a dummy name as UIScreen object has no name related attributes.
         return "iOS Screen"
 
-    def get_origin(self):
-        return (0, 0)
+    def get_origin(self) -> Position:
+        return Position(0, 0)
 
-    def get_size(self):
-        return (
+    def get_size(self) -> Size:
+        return Size(
             int(self.native.bounds.size.width),
             int(self.native.bounds.size.height),
         )

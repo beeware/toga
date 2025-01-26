@@ -1,1 +1,0 @@
-The placement of menu items relative to submenus was corrected on GTK.

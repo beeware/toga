@@ -41,7 +41,7 @@ class MapView(Widget):
         if OSMMapView is None:  # pragma: no cover
             raise RuntimeError(
                 "Unable to import MapView. Ensure that the OSMDroid Android "
-                "system package (org.osmdroid:osmdroid-android:6.1.0) "
+                "system package (org.osmdroid:osmdroid-android:6.1.20) "
                 "is listed in your app's dependencies."
             )
 
@@ -79,12 +79,18 @@ class MapView(Widget):
         return LatLng(location.getLatitude(), location.getLongitude())
 
     def set_location(self, position):
+        # If there are any outstanding animations, stop them, and force the view to the
+        # end state.
+        self.native.getController().stopAnimation(True)
         self.native.getController().animateTo(GeoPoint(*position))
 
     def get_zoom(self):
         return self.native.getZoomLevelDouble()
 
     def set_zoom(self, zoom):
+        # If there are any outstanding animations, stop them, and force the view to the
+        # end state.
+        self.native.getController().stopAnimation(True)
         self.native.getController().zoomTo(zoom, None)
 
     def add_pin(self, pin):

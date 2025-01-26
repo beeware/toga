@@ -1,4 +1,5 @@
 import asyncio
+import gc
 import inspect
 from dataclasses import dataclass
 from importlib import import_module
@@ -7,6 +8,7 @@ from pytest import fixture, register_assert_rewrite, skip
 
 import toga
 from toga.colors import GOLDENROD
+from toga.constants import WindowState
 from toga.style import Pack
 
 # Ideally, we'd register rewrites for "tests" and get all the submodules
@@ -16,20 +18,46 @@ register_assert_rewrite("tests.widgets")
 register_assert_rewrite("tests_backend")
 
 
-# Use this for widgets or tests which are not supported on some platforms, but could be
-# supported in the future.
-def skip_on_platforms(*platforms):
+# Use this for widgets or tests which are not supported on some platforms,
+# but could be supported in the future.
+def skip_on_platforms(*platforms, reason=None, allow_module_level=False):
     current_platform = toga.platform.current_platform
     if current_platform in platforms:
-        skip(f"not yet implemented on {current_platform}")
+        skip(
+            reason or f"not yet implemented on {current_platform}",
+            allow_module_level=allow_module_level,
+        )
 
 
-# Use this for widgets or tests which are not supported on some platforms, and will not
-# be supported in the foreseeable future.
-def xfail_on_platforms(*platforms):
+# Use this for widgets or tests which are not supported on some platforms,
+# and will not be supported in the foreseeable future.
+def xfail_on_platforms(*platforms, reason=None):
     current_platform = toga.platform.current_platform
     if current_platform in platforms:
-        skip(f"not applicable on {current_platform}")
+        skip(reason or f"not applicable on {current_platform}")
+
+
+# Use this for widgets or tests which trip up macOS privacy controls, and requires
+# properties or entitlements defined in Info.plist
+def skip_if_unbundled_app(reason=None, allow_module_level=False):
+    if not toga.App.app.is_bundled:
+        skip(
+            reason
+            or (
+                "test requires a full application, "
+                "use 'briefcase run' instead of 'briefcase dev'"
+            ),
+            allow_module_level=allow_module_level,
+        )
+
+
+@fixture(autouse=True)
+def no_dangling_tasks():
+    """Ensure any tasks for the test were removed when the test finished."""
+    yield
+    if toga.App.app:
+        tasks = toga.App.app._running_tasks
+        assert not tasks, f"the app has dangling tasks: {tasks}"
 
 
 @fixture(scope="session")
@@ -46,10 +74,45 @@ async def app_probe(app):
         print("\nConstructing app probe")
     yield probe
 
+    # Force a GC pass on the main thread. This isn't perfect, but it helps
+    # minimize garbage collection on the test thread.
+    gc.collect()
+
+    # Reset the command action mock
+    app.cmd_action.reset_mock()
+
 
 @fixture(scope="session")
 def main_window(app):
     return app.main_window
+
+
+@fixture(autouse=True)
+async def window_cleanup(app, app_probe, main_window, main_window_probe):
+    # Ensure that at the end of every test, all windows that aren't the
+    # main window have been closed and deleted. This needs to be done in
+    # 2 passes because we can't modify the list while iterating over it.
+    kill_list = []
+    for window in app.windows:
+        if window != main_window:
+            kill_list.append(window)
+
+    # Then purge everything on the kill list.
+    while kill_list:
+        window = kill_list.pop()
+        probe = import_module("tests_backend.window").WindowProbe(app, window)
+        await probe.cleanup()
+        del window
+
+    # Force a GC pass on the main thread. This isn't perfect, but it helps
+    # minimize garbage collection on the test thread.
+    gc.collect()
+
+    main_window.state = WindowState.NORMAL
+    app.current_window = main_window
+    await main_window_probe.wait_for_window(
+        "Resetting main_window", state=WindowState.NORMAL
+    )
 
 
 @fixture(scope="session")
@@ -69,14 +132,22 @@ async def main_window_probe(app, main_window):
 
 # Controls the event loop used by pytest-asyncio.
 @fixture(scope="session")
-def event_loop(app):
-    loop = ProxyEventLoop(app._impl.loop)
-    yield loop
-    loop.close()
+def event_loop_policy(app):
+    yield ProxyEventLoopPolicy(ProxyEventLoop(app._impl.loop))
 
 
-# Proxy which forwards all tasks to another event loop in a thread-safe manner. It
-# implements only the methods used by pytest-asyncio.
+# Loop policy that ensures proxy loop is always used.
+class ProxyEventLoopPolicy(asyncio.DefaultEventLoopPolicy):
+    def __init__(self, proxy_loop: "ProxyEventLoop"):
+        super().__init__()
+        self._proxy_loop = proxy_loop
+
+    def new_event_loop(self):
+        return self._proxy_loop
+
+
+# Proxy which forwards all tasks to another event loop in a thread-safe manner.
+# It implements only the methods used by pytest-asyncio.
 @dataclass
 class ProxyEventLoop(asyncio.AbstractEventLoop):
     loop: object
@@ -94,6 +165,11 @@ class ProxyEventLoop(asyncio.AbstractEventLoop):
         else:
             raise TypeError(f"Future type {type(future)} is not currently supported")
         return asyncio.run_coroutine_threadsafe(coro, self.loop).result()
+
+    async def shutdown_asyncgens(self):
+        # The proxy event loop doesn't need to shut anything down; the
+        # underlying event loop will shut down its own async generators.
+        pass
 
     def is_closed(self):
         return self.closed

@@ -33,8 +33,8 @@ class SimpleProbe(BaseProbe, FontMixin):
         assert self.native.superview is None
         assert self.native.window is None
 
-    def assert_alignment(self, expected):
-        assert self.alignment == expected
+    def assert_text_align(self, expected):
+        assert self.text_align == expected
 
     async def redraw(self, message=None, delay=0):
         """Request a redraw of the app, waiting until that redraw has completed."""
@@ -114,6 +114,8 @@ class SimpleProbe(BaseProbe, FontMixin):
         key_code = {
             "<backspace>": 51,
             "<esc>": 53,
+            "<down>": 125,
+            "<up>": 126,
             " ": 49,
             "\n": 36,
             "a": 0,
@@ -147,7 +149,8 @@ class SimpleProbe(BaseProbe, FontMixin):
         if modifierFlags:
             char = None
 
-        # This posts a single keyDown followed by a keyUp, matching "normal" keyboard operation.
+        # This posts a single keyDown followed by a keyUp, matching "normal"
+        # keyboard operation.
         await self.post_event(
             NSEvent.keyEventWithType(
                 NSEventType.KeyDown,

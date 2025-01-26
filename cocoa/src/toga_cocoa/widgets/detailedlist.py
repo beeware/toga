@@ -37,7 +37,7 @@ class TogaList(NSTableView):
             )
 
             # Create a popup menu to display the possible actions.
-            popup = NSMenu.alloc().initWithTitle("popup").autorelease()
+            popup = NSMenu.alloc().initWithTitle("popup")
             if self.impl.primary_action_enabled:
                 primary_action_item = popup.addItemWithTitle(
                     self.interface._primary_action,
@@ -83,7 +83,6 @@ class TogaList(NSTableView):
             data = value._impl
         except AttributeError:
             data = TogaData.alloc().init()
-            data.retain()
             value._impl = data
 
         try:

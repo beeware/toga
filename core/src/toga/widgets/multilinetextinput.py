@@ -1,19 +1,32 @@
 from __future__ import annotations
 
+from typing import Any, Protocol
+
+import toga
 from toga.handlers import wrapped_handler
 
-from .base import Widget
+from .base import StyleT, Widget
+
+
+class OnChangeHandler(Protocol):
+    def __call__(self, widget: MultilineTextInput, **kwargs: Any) -> object:
+        """A handler to invoke when the value is changed.
+
+        :param widget: The MultilineTextInput that was changed.
+        :param kwargs: Ensures compatibility with arguments added in future versions.
+        """
 
 
 class MultilineTextInput(Widget):
     def __init__(
         self,
-        id=None,
-        style=None,
+        id: str | None = None,
+        style: StyleT | None = None,
         value: str | None = None,
         readonly: bool = False,
         placeholder: str | None = None,
-        on_change: callable | None = None,
+        on_change: toga.widgets.multilinetextinput.OnChangeHandler | None = None,
+        **kwargs,
     ):
         """Create a new multi-line text input widget.
 
@@ -26,15 +39,12 @@ class MultilineTextInput(Widget):
             there is no user content to display.
         :param on_change: A handler that will be invoked when the value of
             the widget changes.
+        :param kwargs: Initial style properties.
         """
+        super().__init__(id, style, **kwargs)
 
-        super().__init__(id=id, style=style)
-
-        # Create a platform specific implementation of a MultilineTextInput
-        self._impl = self.factory.MultilineTextInput(interface=self)
-
-        # Set a dummy handler before installing the actual on_change, because we do not want
-        # on_change triggered by the initial value being set
+        # Set a dummy handler before installing the actual on_change, because we do not
+        # want on_change triggered by the initial value being set
         self.on_change = None
         self.value = value
 
@@ -42,6 +52,9 @@ class MultilineTextInput(Widget):
         self.readonly = readonly
         self.placeholder = placeholder
         self.on_change = on_change
+
+    def _create(self) -> Any:
+        return self.factory.MultilineTextInput(interface=self)
 
     @property
     def placeholder(self) -> str:
@@ -53,7 +66,7 @@ class MultilineTextInput(Widget):
         return self._impl.get_placeholder()
 
     @placeholder.setter
-    def placeholder(self, value):
+    def placeholder(self, value: object) -> None:
         self._impl.set_placeholder("" if value is None else str(value))
         self.refresh()
 
@@ -68,7 +81,7 @@ class MultilineTextInput(Widget):
         return self._impl.get_readonly()
 
     @readonly.setter
-    def readonly(self, value):
+    def readonly(self, value: object) -> None:
         self._impl.set_readonly(bool(value))
 
     @property
@@ -81,23 +94,25 @@ class MultilineTextInput(Widget):
         return self._impl.get_value()
 
     @value.setter
-    def value(self, value):
+    def value(self, value: object) -> None:
         self._impl.set_value("" if value is None else str(value))
         self.refresh()
 
-    def scroll_to_bottom(self):
+    def scroll_to_bottom(self) -> None:
         """Scroll the view to make the bottom of the text field visible."""
         self._impl.scroll_to_bottom()
 
-    def scroll_to_top(self):
+    def scroll_to_top(self) -> None:
         """Scroll the view to make the top of the text field visible."""
         self._impl.scroll_to_top()
 
     @property
-    def on_change(self) -> callable:
+    def on_change(self) -> OnChangeHandler:
         """The handler to invoke when the value of the widget changes."""
         return self._on_change
 
     @on_change.setter
-    def on_change(self, handler):
+    def on_change(
+        self, handler: toga.widgets.multilinetextinput.OnChangeHandler
+    ) -> None:
         self._on_change = wrapped_handler(self, handler)

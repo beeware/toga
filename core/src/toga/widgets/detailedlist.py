@@ -1,29 +1,70 @@
 from __future__ import annotations
 
-import warnings
-from typing import Any
+from collections.abc import Iterable
+from typing import Any, Literal, Protocol, TypeVar
 
+import toga
 from toga.handlers import wrapped_handler
 from toga.sources import ListSource, Row, Source
 
-from .base import Widget
+from .base import StyleT, Widget
+
+SourceT = TypeVar("SourceT", bound=Source)
+
+
+class OnPrimaryActionHandler(Protocol):
+    def __call__(self, widget: DetailedList, row: Any, **kwargs: Any) -> object:
+        """A handler to invoke for the primary action.
+
+        :param widget: The DetailedList that was invoked.
+        :param row: The current row for the detailed list.
+        :param kwargs: Ensures compatibility with arguments added in future versions.
+        """
+
+
+class OnSecondaryActionHandler(Protocol):
+    def __call__(self, widget: DetailedList, row: Any, **kwargs: Any) -> object:
+        """A handler to invoke for the secondary action.
+
+        :param widget: The DetailedList that was invoked.
+        :param row: The current row for the detailed list.
+        :param kwargs: Ensures compatibility with arguments added in future versions.
+        """
+
+
+class OnRefreshHandler(Protocol):
+    def __call__(self, widget: DetailedList, **kwargs: Any) -> object:
+        """A handler to invoke when the detailed list is refreshed.
+
+        :param widget: The DetailedList that was refreshed.
+        :param kwargs: Ensures compatibility with arguments added in future versions.
+        """
+
+
+class OnSelectHandler(Protocol):
+    def __call__(self, widget: DetailedList, **kwargs: Any) -> object:
+        """A handler to invoke when the detailed list is selected.
+
+        :param widget: The DetailedList that was selected.
+        :param kwargs: Ensures compatibility with arguments added in future versions.
+        """
 
 
 class DetailedList(Widget):
     def __init__(
         self,
-        id=None,
-        style=None,
-        data: Any = None,
+        id: str | None = None,
+        style: StyleT | None = None,
+        data: SourceT | Iterable | None = None,
         accessors: tuple[str, str, str] = ("title", "subtitle", "icon"),
         missing_value: str = "",
         primary_action: str | None = "Delete",
-        on_primary_action: callable = None,
+        on_primary_action: OnPrimaryActionHandler | None = None,
         secondary_action: str | None = "Action",
-        on_secondary_action: callable = None,
-        on_refresh: callable = None,
-        on_select: callable = None,
-        on_delete: callable = None,  # DEPRECATED
+        on_secondary_action: OnSecondaryActionHandler | None = None,
+        on_refresh: OnRefreshHandler | None = None,
+        on_select: toga.widgets.detailedlist.OnSelectHandler | None = None,
+        **kwargs,
     ):
         """Create a new DetailedList widget.
 
@@ -41,35 +82,19 @@ class DetailedList(Widget):
         :param secondary_action: The name for the secondary action.
         :param on_secondary_action: Initial :any:`on_secondary_action` handler.
         :param on_refresh: Initial :any:`on_refresh` handler.
-        :param on_delete: **DEPRECATED**; use ``on_primary_action``.
+        :param kwargs: Initial style properties.
         """
-        super().__init__(id=id, style=style)
-
-        ######################################################################
-        # 2023-06: Backwards compatibility
-        ######################################################################
-        if on_delete:
-            if on_primary_action:
-                raise ValueError("Cannot specify both on_delete and on_primary_action")
-            else:
-                warnings.warn(
-                    "DetailedList.on_delete has been renamed DetailedList.on_primary_action.",
-                    DeprecationWarning,
-                )
-                on_primary_action = on_delete
-        ######################################################################
-        # End backwards compatibility.
-        ######################################################################
-
-        # Prime the attributes and handlers that need to exist when the widget is created.
+        # Prime the attributes and handlers that need to exist when the widget is
+        # created.
         self._accessors = accessors
+        self._missing_value = missing_value
         self._primary_action = primary_action
         self._secondary_action = secondary_action
-        self._missing_value = missing_value
-        self._data = None
         self.on_select = None
 
-        self._impl = self.factory.DetailedList(interface=self)
+        self._data: SourceT | ListSource = None
+
+        super().__init__(id, style, **kwargs)
 
         self.data = data
         self.on_primary_action = on_primary_action
@@ -77,24 +102,27 @@ class DetailedList(Widget):
         self.on_refresh = on_refresh
         self.on_select = on_select
 
+    def _create(self) -> Any:
+        return self.factory.DetailedList(interface=self)
+
     @property
-    def enabled(self) -> bool:
+    def enabled(self) -> Literal[True]:
         """Is the widget currently enabled? i.e., can the user interact with the widget?
-        DetailedList widgets cannot be disabled; this property will always return True; any
-        attempt to modify it will be ignored.
+        DetailedList widgets cannot be disabled; this property will always return True;
+        any attempt to modify it will be ignored.
         """
         return True
 
     @enabled.setter
-    def enabled(self, value):
+    def enabled(self, value: object) -> None:
         pass
 
-    def focus(self):
-        "No-op; DetailedList cannot accept input focus"
+    def focus(self) -> None:
+        """No-op; DetailedList cannot accept input focus."""
         pass
 
     @property
-    def data(self) -> ListSource:
+    def data(self) -> SourceT | ListSource:
         """The data to display in the table.
 
         When setting this property:
@@ -110,7 +138,7 @@ class DetailedList(Widget):
         return self._data
 
     @data.setter
-    def data(self, data: Any):
+    def data(self, data: SourceT | Iterable | None) -> None:
         if data is None:
             self._data = ListSource(data=[], accessors=self.accessors)
         elif isinstance(data, Source):
@@ -121,11 +149,11 @@ class DetailedList(Widget):
         self._data.add_listener(self._impl)
         self._impl.change_source(source=self._data)
 
-    def scroll_to_top(self):
+    def scroll_to_top(self) -> None:
         """Scroll the view so that the top of the list (first row) is visible."""
         self.scroll_to_row(0)
 
-    def scroll_to_row(self, row: int):
+    def scroll_to_row(self, row: int) -> None:
         """Scroll the view so that the specified row index is visible.
 
         :param row: The index of the row to make visible. Negative values refer to the
@@ -137,12 +165,12 @@ class DetailedList(Widget):
             else:
                 self._impl.scroll_to_row(max(len(self.data) + row, 0))
 
-    def scroll_to_bottom(self):
+    def scroll_to_bottom(self) -> None:
         """Scroll the view so that the bottom of the list (last row) is visible."""
         self.scroll_to_row(-1)
 
     @property
-    def accessors(self) -> list[str]:
+    def accessors(self) -> tuple[str, str, str]:
         """The accessors used to populate the list (read-only)"""
         return self._accessors
 
@@ -165,7 +193,7 @@ class DetailedList(Widget):
             return None
 
     @property
-    def on_primary_action(self) -> callable:
+    def on_primary_action(self) -> OnPrimaryActionHandler:
         """The handler to invoke when the user performs the primary action on a row of
         the DetailedList.
 
@@ -178,12 +206,12 @@ class DetailedList(Widget):
         return self._on_primary_action
 
     @on_primary_action.setter
-    def on_primary_action(self, handler: callable):
+    def on_primary_action(self, handler: OnPrimaryActionHandler) -> None:
         self._on_primary_action = wrapped_handler(self, handler)
         self._impl.set_primary_action_enabled(handler is not None)
 
     @property
-    def on_secondary_action(self) -> callable:
+    def on_secondary_action(self) -> OnSecondaryActionHandler:
         """The handler to invoke when the user performs the secondary action on a row of
         the DetailedList.
 
@@ -196,12 +224,12 @@ class DetailedList(Widget):
         return self._on_secondary_action
 
     @on_secondary_action.setter
-    def on_secondary_action(self, handler: callable):
+    def on_secondary_action(self, handler: OnSecondaryActionHandler) -> None:
         self._on_secondary_action = wrapped_handler(self, handler)
         self._impl.set_secondary_action_enabled(handler is not None)
 
     @property
-    def on_refresh(self) -> callable:
+    def on_refresh(self) -> OnRefreshHandler:
         """The callback function to invoke when the user performs a refresh action
         (usually "pull down") on the DetailedList.
 
@@ -211,38 +239,18 @@ class DetailedList(Widget):
         return self._on_refresh
 
     @on_refresh.setter
-    def on_refresh(self, handler: callable):
+    def on_refresh(self, handler: OnRefreshHandler) -> None:
         self._on_refresh = wrapped_handler(
             self, handler, cleanup=self._impl.after_on_refresh
         )
         self._impl.set_refresh_enabled(handler is not None)
 
     @property
-    def on_select(self) -> callable:
-        """The callback function that is invoked when a row of the DetailedList is selected."""
+    def on_select(self) -> OnSelectHandler:
+        """The callback function that is invoked
+        when a row of the DetailedList is selected."""
         return self._on_select
 
     @on_select.setter
-    def on_select(self, handler: callable):
+    def on_select(self, handler: toga.widgets.detailedlist.OnSelectHandler) -> None:
         self._on_select = wrapped_handler(self, handler)
-
-    ######################################################################
-    # 2023-06: Backwards compatibility
-    ######################################################################
-
-    @property
-    def on_delete(self):
-        """**DEPRECATED**; Use :any:`on_primary_action`"""
-        warnings.warn(
-            "DetailedList.on_delete has been renamed DetailedList.on_primary_action.",
-            DeprecationWarning,
-        )
-        return self.on_primary_action
-
-    @on_delete.setter
-    def on_delete(self, handler):
-        warnings.warn(
-            "DetailedList.on_delete has been renamed DetailedList.on_primary_action.",
-            DeprecationWarning,
-        )
-        self.on_primary_action = handler

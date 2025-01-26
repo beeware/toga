@@ -1,14 +1,17 @@
 from __future__ import annotations
 
-from .base import Widget
+from typing import Any
+
+from .base import StyleT, Widget
 
 
 class Label(Widget):
     def __init__(
         self,
         text: str,
-        id=None,
-        style=None,
+        id: str | None = None,
+        style: StyleT | None = None,
+        **kwargs,
     ):
         """Create a new text label.
 
@@ -16,16 +19,17 @@ class Label(Widget):
         :param id: The ID for the widget.
         :param style: A style object. If no style is provided, a default style
             will be applied to the widget.
+        :param kwargs: Initial style properties.
         """
-        super().__init__(id=id, style=style)
-
-        # Create a platform specific implementation of a Label
-        self._impl = self.factory.Label(interface=self)
+        super().__init__(id, style, **kwargs)
 
         self.text = text
 
-    def focus(self):
-        "No-op; Label cannot accept input focus"
+    def _create(self) -> Any:
+        return self.factory.Label(interface=self)
+
+    def focus(self) -> None:
+        """No-op; Label cannot accept input focus."""
         pass
 
     @property
@@ -39,7 +43,7 @@ class Label(Widget):
         return self._impl.get_text()
 
     @text.setter
-    def text(self, value):
+    def text(self, value: object) -> None:
         if value is None or value == "\u200B":
             text = ""
         else:

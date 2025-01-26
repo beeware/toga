@@ -1,1 +1,0 @@
-The camera permission requirements on macOS apps were clarified.

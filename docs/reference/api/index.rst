@@ -7,14 +7,14 @@ API Reference
 Core application components
 ---------------------------
 
-================================================= ===================================================
- Component                                         Description
-================================================= ===================================================
- :doc:`App </reference/api/app>`                   The top-level representation of an application.
- :doc:`DocumentApp </reference/api/documentapp>`   An application that manages documents.
- :doc:`Window </reference/api/window>`             An operating system-managed container of widgets.
- :doc:`MainWindow </reference/api/mainwindow>`     The main window of the application.
-================================================= ===================================================
+======================================================= =============================================================================
+ Component                                                       Description
+======================================================= =============================================================================
+ :doc:`App </reference/api/app>`                         The top-level representation of an application.
+ :doc:`Window </reference/api/window>`                   An operating system-managed container of widgets.
+ :doc:`MainWindow </reference/api/mainwindow>`           A window that can use the full set of window-level user interface elements.
+ :doc:`DocumentWindow </reference/api/documentwindow>`   A window that can be used as the main interface to a document-based app.
+======================================================= =============================================================================
 
 General widgets
 ---------------
@@ -80,24 +80,30 @@ Resources
                                                                       for an application.
  :doc:`Command </reference/api/resources/command>`                    A representation of app functionality that the user can invoke from
                                                                       menus or toolbars.
- :doc:`Font </reference/api/resources/fonts>`                         Fonts
+ :doc:`Dialogs </reference/api/resources/dialogs>`                    A short-lived window asking the user for input.
+ :doc:`Document </reference/api/resources/document>`                  A representation of a file on disk that will be displayed in one or
+                                                                      more windows
+ :doc:`Font </reference/api/resources/fonts>`                         A representation of a Font
  :doc:`Icon </reference/api/resources/icons>`                         An icon for buttons, menus, etc
  :doc:`Image </reference/api/resources/images>`                       An image
  :doc:`Source </reference/api/resources/sources/source>`              A base class for data source implementations.
+ :doc:`Status Icons </reference/api/resources/statusicons>`           Icons that appear in the system tray for representing app status
+                                                                      while the app isn't visible.
  :doc:`ListSource </reference/api/resources/sources/list_source>`     A data source describing an ordered list of data.
  :doc:`TreeSource </reference/api/resources/sources/tree_source>`     A data source describing an ordered hierarchical tree of data.
  :doc:`ValueSource </reference/api/resources/sources/value_source>`   A data source describing a single value.
  :doc:`Validators </reference/api/resources/validators>`              A mechanism for validating that input meets a given set of criteria.
 ==================================================================== ========================================================================
 
-Device and Hardware
--------------------
+Hardware
+--------
 
 ==================================================================== ========================================================================
  Usage                                                                Description
 ==================================================================== ========================================================================
  :doc:`Camera </reference/api/hardware/camera>`                       A sensor that can capture photos and/or video.
- :doc:`Screen </reference/api/screens>`                               A representation of a screen attached to a device.
+ :doc:`Location </reference/api/hardware/location>`                   A sensor that can capture the geographical location of the device.
+ :doc:`Screen </reference/api/hardware/screens>`                      A representation of a screen attached to a device.
 ==================================================================== ========================================================================
 
 Other
@@ -115,14 +121,13 @@ Other
    :hidden:
 
    app
-   documentapp
    window
    mainwindow
+   documentwindow
    containers/index
    hardware/index
    resources/index
    widgets/index
    constants
    keys
-   screens
    types

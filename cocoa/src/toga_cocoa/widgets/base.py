@@ -9,12 +9,10 @@ class Widget:
     def __init__(self, interface):
         super().__init__()
         self.interface = interface
-        self.interface._impl = self
         self._container = None
         self.constraints = None
         self.native = None
         self.create()
-        self.interface.style.reapply()
 
     @abstractmethod
     def create(self): ...
@@ -61,7 +59,7 @@ class Widget:
         # print(f"SET BOUNDS ON {self.interface} {width}x{height} @ ({x},{y})")
         self.constraints.update(x, y, width, height)
 
-    def set_alignment(self, alignment):
+    def set_text_align(self, alignment):
         pass
 
     def set_hidden(self, hidden):

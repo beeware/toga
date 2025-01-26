@@ -8,7 +8,7 @@ A generic container for other widgets. Used to construct layouts.
    :header-rows: 1
    :file: ../../data/widgets_by_platform.csv
    :included_cols: 4,5,6,7,8,9,10
-   :exclude: {0: '(?!(Box|Component))'}
+   :include: {0: '^Box$'}
 
 Usage
 -----
@@ -41,7 +41,7 @@ Alternatively, children can be specified at the time the box is constructed:
 
 In most apps, a layout is constructed by building a tree of boxes inside boxes, with
 concrete widgets (such as :class:`~toga.Label` or :class:`~toga.Button`) forming the
-leaf nodes of the tree. Style directives can be applied to enforce padding around the
+leaf nodes of the tree. Style directives can be applied to enforce a margin around the
 outside of the box, direction of child stacking inside the box, and background color of
 the box.
 
@@ -49,3 +49,5 @@ Reference
 ---------
 
 .. autoclass:: toga.Box
+.. autofunction:: toga.Row
+.. autofunction:: toga.Column

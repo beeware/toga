@@ -1,4 +1,5 @@
 from toga.screens import Screen as ScreenInterface
+from toga.types import Position, Size
 
 
 class Screen:
@@ -17,11 +18,11 @@ class Screen:
     def get_name(self):
         return "Web Screen"
 
-    def get_origin(self):
-        return (0, 0)
+    def get_origin(self) -> Position:
+        return Position(0, 0)
 
-    def get_size(self):
-        return self.native.clientWidth, self.native.clientHeight
+    def get_size(self) -> Size:
+        return Size(self.native.clientWidth, self.native.clientHeight)
 
     def get_image_data(self):
         self.interface.factory.not_implemented("Screen.get_image_data()")

@@ -102,6 +102,7 @@ GDK_KEYS = {
     Gdk.KEY_X: Key.X,
     Gdk.KEY_Y: Key.Y,
     Gdk.KEY_Z: Key.Z,
+    Gdk.KEY_Caps_Lock: Key.CAPSLOCK,
     Gdk.KEY_Tab: Key.TAB,
     Gdk.KEY_bracketleft: Key.OPEN_BRACKET,
     Gdk.KEY_bracketright: Key.CLOSE_BRACKET,
@@ -121,7 +122,10 @@ GDK_KEYS = {
     Gdk.KEY_less: Key.LESS_THAN,
     Gdk.KEY_greater: Key.GREATER_THAN,
     Gdk.KEY_question: Key.QUESTION,
+    Gdk.KEY_Insert: Key.INSERT,
     Gdk.KEY_Delete: Key.DELETE,
+    Gdk.KEY_Begin: Key.BEGIN,
+    Gdk.KEY_Menu: Key.MENU,
     Gdk.KEY_Home: Key.HOME,
     Gdk.KEY_End: Key.END,
     Gdk.KEY_Page_Up: Key.PAGE_UP,
@@ -130,6 +134,7 @@ GDK_KEYS = {
     Gdk.KEY_Right: Key.RIGHT,
     Gdk.KEY_Up: Key.UP,
     Gdk.KEY_Down: Key.DOWN,
+    Gdk.KEY_Num_Lock: Key.NUMLOCK,
     Gdk.KEY_KP_Enter: Key.NUMPAD_ENTER,
     Gdk.KEY_KP_0: Key.NUMPAD_0,
     Gdk.KEY_KP_1: Key.NUMPAD_1,
@@ -150,11 +155,23 @@ GDK_KEYS = {
     Gdk.KEY_KP_Up: Key.UP,
     Gdk.KEY_KP_Down: Key.DOWN,
     Gdk.KEY_KP_Delete: Key.DELETE,
+    Gdk.KEY_KP_Insert: Key.INSERT,
     Gdk.KEY_KP_Add: Key.NUMPAD_PLUS,
     Gdk.KEY_KP_Subtract: Key.NUMPAD_MINUS,
     Gdk.KEY_KP_Multiply: Key.NUMPAD_MULTIPLY,
     Gdk.KEY_KP_Divide: Key.NUMPAD_DIVIDE,
-    Gdk.KEY_KP_Delete: Key.DELETE,
+    Gdk.KEY_KP_Begin: Key.BEGIN,
+    Gdk.KEY_Pause: Key.PAUSE,
+    Gdk.KEY_ISO_Left_Tab: Key.TAB,
+    Gdk.KEY_Scroll_Lock: Key.SCROLLLOCK,
+    Gdk.KEY_Shift_L: Key.SHIFT,
+    Gdk.KEY_Shift_R: Key.SHIFT,
+    Gdk.KEY_Control_L: Key.MOD_1,
+    Gdk.KEY_Control_R: Key.MOD_1,
+    Gdk.KEY_Alt_L: Key.MOD_2,
+    Gdk.KEY_Alt_R: Key.MOD_2,
+    Gdk.KEY_Hyper_L: Key.MOD_3,
+    Gdk.KEY_Hyper_R: Key.MOD_3,
 }
 
 GTK_KEY_NAMES = {
@@ -172,7 +189,14 @@ GTK_MODIFIER_CODES = {
 
 def toga_key(event):
     """Convert a GDK Key Event into a Toga key."""
-    key = GDK_KEYS[event.keyval]
+    try:
+        key = GDK_KEYS[event.keyval]
+    except KeyError:  # pragma: no cover
+        # Ignore any key event code we can't map. This can happen for weird key
+        # combination (ctrl-alt-tux), and if the X server has weird key
+        # bindings. If we can't map it, we can't really type it either, so we
+        # need to no-cover this branch.
+        return None
 
     modifiers = set()
 

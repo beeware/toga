@@ -1,18 +1,22 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Literal
 
 from travertino.size import at_least
 
 import toga
 from toga.style.pack import NONE
-from toga.widgets.base import Widget
+from toga.widgets.base import StyleT, Widget
 
 if TYPE_CHECKING:
-    from toga.images import ImageContent, ImageT
+    from toga.images import ImageContentT, ImageT
 
 
-def rehint_imageview(image, style, scale=1):
+def rehint_imageview(
+    image: toga.Image,
+    style: StyleT,
+    scale: int = 1,
+) -> tuple[int, int, float | None]:
     """Compute the size hints for an ImageView based on the image.
 
     This logic is common across all backends, so it's shared here.
@@ -63,32 +67,35 @@ def rehint_imageview(image, style, scale=1):
     return width, height, aspect_ratio
 
 
-# Note: remove PIL type annotation when plugin system is implemented for image format
-# registration; replace with ImageT?
 class ImageView(Widget):
     def __init__(
         self,
-        image: ImageContent | None = None,
-        id=None,
-        style=None,
+        image: ImageContentT | None = None,
+        id: str | None = None,
+        style: StyleT | None = None,
+        **kwargs,
     ):
-        """
-        Create a new image view.
+        """Create a new image view.
 
         :param image: The image to display. Can be any valid :any:`image content
-            <ImageContent>` type; or :any:`None` to display no image.
+            <ImageContentT>` type; or :any:`None` to display no image.
         :param id: The ID for the widget.
         :param style: A style object. If no style is provided, a default style will be
             applied to the widget.
+        :param kwargs: Initial style properties.
         """
-        super().__init__(id=id, style=style)
         # Prime the image attribute
         self._image = None
-        self._impl = self.factory.ImageView(interface=self)
+
+        super().__init__(id, style, **kwargs)
+
         self.image = image
 
+    def _create(self) -> Any:
+        return self.factory.ImageView(interface=self)
+
     @property
-    def enabled(self) -> bool:
+    def enabled(self) -> Literal[True]:
         """Is the widget currently enabled? i.e., can the user interact with the widget?
 
         ImageView widgets cannot be disabled; this property will always return True; any
@@ -97,11 +104,11 @@ class ImageView(Widget):
         return True
 
     @enabled.setter
-    def enabled(self, value):
+    def enabled(self, value: object) -> None:
         pass
 
-    def focus(self):
-        "No-op; ImageView cannot accept input focus"
+    def focus(self) -> None:
+        """No-op; ImageView cannot accept input focus."""
         pass
 
     @property
@@ -109,12 +116,12 @@ class ImageView(Widget):
         """The image to display.
 
         When setting an image, you can provide any valid :any:`image content
-        <ImageContent>` type; or :any:`None` to clear the image view.
+        <ImageContentT>` type; or :any:`None` to clear the image view.
         """
         return self._image
 
     @image.setter
-    def image(self, image):
+    def image(self, image: ImageContentT) -> None:
         if isinstance(image, toga.Image):
             self._image = image
         elif image is None:

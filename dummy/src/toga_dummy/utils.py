@@ -173,7 +173,7 @@ class LogEntry:
         self.context = context
 
     def __repr__(self):
-        return f"<LogEntry: {self.logtype} on {self.instance}"
+        return f"<LogEntry: {self.logtype} on {self.instance}: {self.context}"
 
 
 # A constant that can be used to differentiate between a value not being
@@ -373,6 +373,7 @@ def assert_action_performed_with(_widget, _action, **test_data):
                         # No raw attribute; use the provided value as-is
                         if data[key] != value:
                             found = False
+
                 except KeyError:
                     found = False
 

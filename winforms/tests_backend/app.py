@@ -2,20 +2,23 @@ import ctypes
 from pathlib import Path
 from time import sleep
 
+import PIL.Image
 import pytest
 from System import EventArgs
-from System.Drawing import Point
+from System.Drawing import Bitmap, Point
 from System.Windows.Forms import Application, Cursor, ToolStripSeparator
 
+import toga
 from toga_winforms.keys import toga_to_winforms_key, winforms_to_toga_key
 
+from .dialogs import DialogsMixin
 from .probe import BaseProbe
-from .window import WindowProbe
 
 
-class AppProbe(BaseProbe):
+class AppProbe(BaseProbe, DialogsMixin):
     supports_key = True
     supports_key_mod3 = False
+    supports_current_window_assignment = True
 
     def __init__(self, app):
         super().__init__()
@@ -97,11 +100,25 @@ class AppProbe(BaseProbe):
         # input through touch or pen instead of the mouse"). hCursor is more reliable.
         return info.hCursor is not None
 
-    def is_full_screen(self, window):
-        return WindowProbe(self.app, window).is_full_screen
+    def assert_app_icon(self, icon):
+        for window in self.app.windows:
+            # We have no real way to check we've got the right icon; use pixel peeping
+            # as a guess. Construct a PIL image from the current icon.
+            img = toga.Image(
+                Bitmap.FromHicon(window._impl.native.Icon.Handle)
+            ).as_format(PIL.Image.Image)
 
-    def content_size(self, window):
-        return WindowProbe(self.app, window).content_size
+            if icon:
+                # The explicit alt icon has blue background, with green at a point 1/3
+                # into the image
+                assert img.getpixel((5, 5)) == (211, 230, 245, 255)
+                mid_color = img.getpixel((img.size[0] // 3, img.size[1] // 3))
+                assert mid_color == (0, 204, 9, 255)
+            else:
+                # The default icon is transparent background, and brown in the center.
+                assert img.getpixel((5, 5))[3] == 0
+                mid_color = img.getpixel((img.size[0] // 2, img.size[1] // 2))
+                assert mid_color == (130, 100, 57, 255)
 
     def _menu_item(self, path):
         item = self.main_window._impl.native.MainMenuStrip
@@ -128,10 +145,21 @@ class AppProbe(BaseProbe):
         self._activate_menu_item(["Help", "About Toga Testbed"])
 
     async def close_about_dialog(self):
-        await WindowProbe(self.app, self.main_window)._close_dialog("\n")
+        await self.type_character("\n")
 
     def activate_menu_visit_homepage(self):
         self._activate_menu_item(["Help", "Visit homepage"])
+
+    def assert_dialog_in_focus(self, dialog):
+        active_window_handle = ctypes.windll.user32.GetForegroundWindow()
+        # The window class name for dialog boxes is "#32770":
+        # https://learn.microsoft.com/en-us/windows/win32/winauto/dialog-box
+        expected_dialog_handle = ctypes.windll.user32.FindWindowW(
+            "#32770", dialog._impl.title
+        )
+        assert (
+            expected_dialog_handle == active_window_handle
+        ), "The dialog is not in focus"
 
     def assert_menu_item(self, path, *, enabled=True):
         item = self._menu_item(path)
@@ -161,6 +189,12 @@ class AppProbe(BaseProbe):
                 assert item.Text == title
 
     def assert_system_menus(self):
+        self.assert_menu_item(["File", "New Example Document"], enabled=True)
+        self.assert_menu_item(["File", "New Read-only Document"], enabled=True)
+        self.assert_menu_item(["File", "Open..."], enabled=True)
+        self.assert_menu_item(["File", "Save"], enabled=True)
+        self.assert_menu_item(["File", "Save As..."], enabled=True)
+        self.assert_menu_item(["File", "Save All"], enabled=True)
         self.assert_menu_item(["File", "Preferences"], enabled=False)
         self.assert_menu_item(["File", "Exit"])
 
@@ -178,3 +212,43 @@ class AppProbe(BaseProbe):
 
     def keystroke(self, combination):
         return winforms_to_toga_key(toga_to_winforms_key(combination))
+
+    async def restore_standard_app(self):
+        # No special handling needed to restore standard app.
+        await self.redraw("Restore to standard app")
+
+    async def open_initial_document(self, monkeypatch, document_path):
+        pytest.xfail("Winforms doesn't require initial document support")
+
+    def open_document_by_drag(self, document_path):
+        pytest.xfail("Winforms doesn't support opening documents by drag")
+
+    def has_status_icon(self, status_icon):
+        return status_icon._impl.native is not None
+
+    def status_menu_items(self, status_icon):
+        if status_icon._impl.native.ContextMenu:
+            return [
+                {
+                    "-": "---",
+                    "About Toga Testbed": "**ABOUT**",
+                    "Exit": "**EXIT**",
+                }.get(str(item.Text), str(item.Text))
+                for item in status_icon._impl.native.ContextMenu.MenuItems
+            ]
+        else:
+            # It's a button status item
+            return None
+
+    def activate_status_icon_button(self, item_id):
+        # Winforms doesn't provide an OnClick to trigger clicks, so we have to fake it
+        # at the level of the impl.
+        self.app.status_icons[item_id]._impl.winforms_click(
+            self.app.status_icons[item_id]._impl.native,
+            EventArgs.Empty,
+        )
+
+    def activate_status_menu_item(self, item_id, title):
+        menu = self.app.status_icons[item_id]._impl.native.ContextMenu
+        item = {item.Text: item for item in menu.MenuItems}[title]
+        item.OnClick(EventArgs.Empty)

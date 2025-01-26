@@ -3,6 +3,7 @@ from unittest.mock import Mock
 import pytest
 
 import toga
+from toga.types import Position
 from toga_dummy.utils import (
     EventLog,
     assert_action_not_performed,
@@ -46,18 +47,23 @@ def test_widget_created():
 def test_widget_created_with_values(content, on_scroll_handler):
     """A scroll container can be created with arguments."""
     scroll_container = toga.ScrollContainer(
+        id="foobar",
         content=content,
         on_scroll=on_scroll_handler,
         vertical=False,
         horizontal=False,
+        # A style property
+        width=256,
     )
     assert scroll_container._impl.interface == scroll_container
     assert_action_performed(scroll_container, "create ScrollContainer")
 
+    assert scroll_container.id == "foobar"
     assert scroll_container.content == content
     assert not scroll_container.vertical
     assert not scroll_container.horizontal
     assert scroll_container.on_scroll._raw == on_scroll_handler
+    assert scroll_container.style.width == 256
 
     # The content has been assigned to the widget
     assert_action_performed_with(
@@ -320,7 +326,10 @@ def test_horizontal_position_when_not_horizontal(scroll_container):
     scroll_container.horizontal = False
     with pytest.raises(
         ValueError,
-        match=r"Cannot set horizontal position when horizontal scrolling is not enabled.",
+        match=(
+            r"Cannot set horizontal position "
+            r"when horizontal scrolling is not enabled."
+        ),
     ):
         scroll_container.horizontal_position = 37
 
@@ -395,7 +404,9 @@ def test_set_vertical_position_when_not_vertical(scroll_container):
 @pytest.mark.parametrize(
     "position, expected",
     [
-        ((37, 42), (37, 42)),
+        ((37, 42), Position(37, 42)),  # Cast to a Position type
+        ((37, 42), (37, 42)),  # Backwards-compatible with tuple
+        (Position(82, 82), Position(82, 82)),  # Accepts Position input
         ((-100, 42), (0, 42)),  # Clipped to minimum horizontal value
         ((37, -100), (37, 0)),  # Clipped to minimum vertical value
         ((-100, -100), (0, 0)),  # Clipped to minimum

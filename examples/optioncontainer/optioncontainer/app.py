@@ -14,7 +14,7 @@ class ExampleOptionContainerApp(toga.App):
         result = (
             f"Option {self._box_count}",
             toga.Box(
-                style=Pack(background_color="cyan", padding=10),
+                style=Pack(background_color="cyan", margin=10),
                 children=[toga.Label(f"This is Box {self._box_count}")],
             ),
         )
@@ -36,44 +36,48 @@ class ExampleOptionContainerApp(toga.App):
         self.optioncontainer.content.insert(index, *self._create_option())
         self._refresh_select()
 
-    def on_enable_option(self, button):
+    async def on_enable_option(self, button):
         index = int(self.select_option.value)
         try:
             self.optioncontainer.content[index].enabled = (
                 not self.optioncontainer.content[index].enabled
             )
         except ValueError as e:
-            self.main_window.info_dialog("Oops", str(e))
+            await self.main_window.dialog(toga.InfoDialog("Oops", str(e)))
 
     def on_change_option_title(self, button):
         index = int(self.select_option.value)
         self.optioncontainer.content[index].text = self.input_change_title.value
 
-    def on_activate_option(self, button):
+    async def on_activate_option(self, button):
         try:
             index = int(self.select_option.value)
             self.optioncontainer.current_tab = index
         except ValueError as e:
-            self.main_window.info_dialog("Oops", str(e))
+            await self.main_window.dialog(toga.InfoDialog("Oops", str(e)))
 
-    def on_remove_option(self, button):
+    async def on_remove_option(self, button):
         try:
             index = int(self.select_option.value)
             del self.optioncontainer.content[index]
             self._refresh_select()
         except ValueError as e:
-            self.main_window.info_dialog("Oops", str(e))
+            await self.main_window.dialog(toga.InfoDialog("Oops", str(e)))
 
     def set_next_tab(self, widget):
         if (
             self.optioncontainer.current_tab.index
             < len(self.optioncontainer.content) - 1
         ):
-            self.optioncontainer.current_tab += 1
+            self.optioncontainer.current_tab = (
+                self.optioncontainer.current_tab.index + 1
+            )
 
     def set_previous_tab(self, widget):
         if self.optioncontainer.current_tab.index > 0:
-            self.optioncontainer.current_tab -= 1
+            self.optioncontainer.current_tab = (
+                self.optioncontainer.current_tab.index - 1
+            )
 
     def on_select_tab(self, widget, **kwargs):
         self.selected_label.text = (
@@ -85,11 +89,11 @@ class ExampleOptionContainerApp(toga.App):
         self.main_window = toga.MainWindow()
 
         # styles
-        style_flex = Pack(flex=1, padding=5)
+        style_flex = Pack(flex=1, margin=5)
 
         # select
         label_select = toga.Label("Select an Option position:", style=style_flex)
-        self.select_option = toga.Selection(style=Pack(padding=5, width=50))
+        self.select_option = toga.Selection(style=Pack(margin=5, width=50))
         # buttons
         btn_activate = toga.Button(
             "Activate", on_press=self.on_activate_option, style=style_flex
@@ -107,7 +111,7 @@ class ExampleOptionContainerApp(toga.App):
         )
 
         box_select = toga.Box(
-            style=Pack(direction=ROW, padding_right=10, width=200),
+            style=Pack(direction=ROW, margin_right=10, width=200),
             children=[label_select, self.select_option],
         )
         box_actions_1 = toga.Box(
@@ -121,20 +125,20 @@ class ExampleOptionContainerApp(toga.App):
 
         self.selected_label = toga.Label("")
         self.optioncontainer = toga.OptionContainer(
-            on_select=self.on_select_tab, style=Pack(padding_bottom=20, flex=1)
+            on_select=self.on_select_tab, style=Pack(margin_bottom=20, flex=1)
         )
         self._create_options()
 
         btn_add = toga.Button(
-            "Append new option", style=Pack(padding=5), on_press=self.on_add_option
+            "Append new option", style=Pack(margin=5), on_press=self.on_add_option
         )
         btn_insert = toga.Button(
             "Insert new option before active option",
-            style=Pack(padding=5),
+            style=Pack(margin=5),
             on_press=self.on_insert_option,
         )
         box_general_actions = toga.Box(
-            style=Pack(padding_bottom=10), children=[btn_add, btn_insert]
+            style=Pack(margin_bottom=10), children=[btn_add, btn_insert]
         )
 
         # Outermost box
@@ -150,7 +154,7 @@ class ExampleOptionContainerApp(toga.App):
             style=Pack(
                 flex=1,
                 direction=COLUMN,
-                padding=10,
+                margin=10,
             ),
         )
 

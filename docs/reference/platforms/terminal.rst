@@ -27,13 +27,13 @@ Installation
 If ``toga-textual`` is the only Toga backend that is installed, it will be picked up
 automatically on any desktop operating system. If you have another backend installed
 (usually, this will be the default GUI for your operating system), you will need to set
-the ``TOGA_BACKEND`` environment variable to ``toga-textual`` to force the selection of
+the ``TOGA_BACKEND`` environment variable to ``toga_textual`` to force the selection of
 the backend.
 
 Implementation details
 ----------------------
 
-``toga-textual`` uses the `Textual <https://textual.textualize.io>`__ UI toolkit.
+The ``toga-textual`` backend uses the `Textual API <https://textual.textualize.io>`__.
 
 macOS Terminal.app limitations
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -1,7 +1,9 @@
+from http.cookiejar import Cookie, CookieJar
+
 from rubicon.objc import objc_id, objc_method, objc_property, py_from_ns
 from travertino.size import at_least
 
-from toga.widgets.webview import JavaScriptResult
+from toga.widgets.webview import CookiesResult, JavaScriptResult
 from toga_iOS.libs import NSURL, NSURLRequest, WKWebView
 from toga_iOS.widgets.base import Widget
 
@@ -14,6 +16,43 @@ def js_completion_handler(result):
             result.set_exception(exc)
         else:
             result.set_result(py_from_ns(res))
+
+    return _completion_handler
+
+
+def cookies_completion_handler(result):
+    def _completion_handler(cookies: objc_id) -> None:
+
+        # Convert cookies from Objective-C to Python objects
+        cookies_array = py_from_ns(cookies)
+
+        # Initialize a CookieJar
+        cookie_jar = CookieJar()
+
+        # Add each cookie from the array into the CookieJar
+        for cookie in cookies_array:
+            cookie_obj = Cookie(
+                version=0,
+                name=str(cookie.name),
+                value=str(cookie.value),
+                port=None,
+                port_specified=False,
+                domain=str(cookie.domain),
+                domain_specified=True,
+                domain_initial_dot=False,
+                path=str(cookie.path),
+                path_specified=True,
+                secure=bool(cookie.Secure),
+                expires=None,
+                discard=bool(cookie.isSessionOnly()),
+                comment=None,
+                comment_url=None,
+                rest={},
+            )
+            cookie_jar.set_cookie(cookie_obj)
+
+        # Set the result in the AsyncResult
+        result.set_result(cookie_jar)
 
     return _completion_handler
 
@@ -68,6 +107,23 @@ class WebView(Widget):
 
     def set_user_agent(self, value):
         self.native.customUserAgent = value
+
+    def get_cookies(self):
+        """
+        Retrieve all cookies asynchronously from the WebView.
+
+        :returns: An AsyncResult object that can be awaited.
+        """
+        # Create an AsyncResult to manage the cookies
+        result = CookiesResult()
+
+        # Retrieve the cookie store from the WebView
+        cookie_store = self.native.configuration.websiteDataStore.httpCookieStore
+
+        # Call the method to retrieve all cookies and pass the completion handler
+        cookie_store.getAllCookies(cookies_completion_handler(result))
+
+        return result
 
     def evaluate_javascript(self, javascript, on_result=None):
         result = JavaScriptResult(on_result)

@@ -1,7 +1,7 @@
 import asyncio
-import gc
 from asyncio import wait_for
 from contextlib import nullcontext
+from http.cookiejar import CookieJar
 from time import time
 from unittest.mock import ANY, Mock
 
@@ -10,6 +10,7 @@ import pytest
 import toga
 from toga.style import Pack
 
+from .conftest import build_cleanup_test
 from .properties import (  # noqa: F401
     test_flex_widget_size,
     test_focus,
@@ -79,13 +80,6 @@ async def on_load():
 
 @pytest.fixture
 async def widget(on_load):
-    if toga.platform.current_platform == "linux":
-        # On Gtk, ensure that the WebView from a previous test run is garbage collected.
-        # This prevents a segfault at GC time likely coming from the test suite running
-        # in a thread and Gtk WebViews sharing resources between instances. We perform
-        # the GC run here since pytest fixtures make earlier cleanup difficult.
-        gc.collect()
-
     widget = toga.WebView(style=Pack(flex=1), on_webview_load=on_load)
     # We shouldn't be able to get a callback until at least one tick of the event loop
     # has completed.
@@ -114,15 +108,19 @@ async def widget(on_load):
     yield widget
 
     if toga.platform.current_platform == "linux":
-        # On Gtk, ensure that the WebView is garbage collection before the next test
-        # case. This prevents a segfault at GC time likely coming from the test suite
-        # running in a thread and Gtk WebViews sharing resources between instances.
-        del widget
-        gc.collect()
+        # On Gtk, ensure that the MapView evades garbage collection by keeping a
+        # reference to it in the app. The WebKit2 WebView will raise a SIGABRT if the
+        # thread disposing of it is not the same thread running the event loop. Since
+        # garbage collection for the WebView can run in either thread, just defer GC
+        # for it until after the testing thread has joined.
+        toga.App.app._gc_protector.append(widget)
+
+
+test_cleanup = build_cleanup_test(toga.WebView, xfail_platforms=("linux",))
 
 
 async def test_set_url(widget, probe, on_load):
-    "The URL can be set"
+    """The URL can be set."""
     widget.url = "https://github.com/beeware"
 
     # Wait for the content to be loaded
@@ -137,7 +135,7 @@ async def test_set_url(widget, probe, on_load):
 
 
 async def test_clear_url(widget, probe, on_load):
-    "The URL can be cleared"
+    """The URL can be cleared."""
     widget.url = None
 
     # Wait for the content to be cleared
@@ -152,7 +150,7 @@ async def test_clear_url(widget, probe, on_load):
 
 
 async def test_load_empty_url(widget, probe, on_load):
-    "An empty URL can be loaded asynchronously into the view"
+    """An empty URL can be loaded asynchronously into the view."""
     await wait_for(
         widget.load_url(None),
         LOAD_TIMEOUT,
@@ -170,7 +168,7 @@ async def test_load_empty_url(widget, probe, on_load):
 
 
 async def test_load_url(widget, probe, on_load):
-    "A URL can be loaded into the view"
+    """A URL can be loaded into the view."""
     await wait_for(
         widget.load_url("https://github.com/beeware"),
         LOAD_TIMEOUT,
@@ -188,7 +186,7 @@ async def test_load_url(widget, probe, on_load):
 
 
 async def test_static_content(widget, probe, on_load):
-    "Static content can be loaded into the page"
+    """Static content can be loaded into the page."""
     widget.set_content("https://example.com/", "<h1>Nice page</h1>")
 
     # DOM loads aren't instantaneous; wait for the URL to appear
@@ -212,7 +210,7 @@ async def test_user_agent(widget, probe):
 
 
 async def test_evaluate_javascript(widget, probe):
-    "JavaScript can be evaluated"
+    """JavaScript can be evaluated."""
     on_result_handler = Mock()
 
     for expression, expected in [
@@ -239,7 +237,7 @@ async def test_evaluate_javascript(widget, probe):
 
 
 async def test_evaluate_javascript_no_handler(widget, probe):
-    "A handler isn't needed to evaluate JavaScript"
+    """A handler isn't needed to evaluate JavaScript."""
     result = await wait_for(
         widget.evaluate_javascript("37 + 42"),
         JS_TIMEOUT,
@@ -257,7 +255,7 @@ def javascript_error_context(probe):
 
 
 async def test_evaluate_javascript_error(widget, probe):
-    "If JavaScript content raises an error, the error is propegated"
+    """If JavaScript content raises an error, the error is propagated."""
     on_result_handler = Mock()
 
     with javascript_error_context(probe):
@@ -285,7 +283,7 @@ async def test_evaluate_javascript_error(widget, probe):
 
 
 async def test_evaluate_javascript_error_without_handler(widget, probe):
-    "A handler isn't needed to propegate a JavaScript error"
+    """A handler isn't needed to propagate a JavaScript error."""
     with javascript_error_context(probe):
         result = await wait_for(
             widget.evaluate_javascript("not valid js"),
@@ -294,3 +292,83 @@ async def test_evaluate_javascript_error_without_handler(widget, probe):
         # If the backend supports exceptions, the previous line should have raised one.
         assert not probe.javascript_supports_exception
         assert result is None
+
+
+async def test_dom_storage_enabled(widget, probe, on_load):
+    """Ensure DOM storage is enabled."""
+    # a page must be loaded to access local storage
+    await wait_for(
+        widget.load_url("https://example.com/"),
+        LOAD_TIMEOUT,
+    )
+    # small pause to ensure javascript can run without security errors
+    await asyncio.sleep(1)
+
+    expected_value = "Hello World"
+    expression = f"""\
+(function isLocalStorageAvailable(){{
+    var test = 'testkey';
+    try {{
+        localStorage.setItem(test, "{expected_value}");
+        item = localStorage.getItem(test);
+        localStorage.removeItem(test);
+        return item;
+    }} catch(e) {{
+        return String(e);
+    }}
+}})()"""
+    result = await wait_for(widget.evaluate_javascript(expression), JS_TIMEOUT)
+    assert result == expected_value
+
+
+async def test_retrieve_cookies(widget, probe, on_load):
+    """Cookies can be retrieved."""
+    # A page must be loaded to set cookies
+    await wait_for(
+        widget.load_url("https://github.com/beeware"),
+        LOAD_TIMEOUT,
+    )
+    # DOM loads aren't instantaneous; wait for the URL to appear
+    await assert_content_change(
+        widget,
+        probe,
+        message="Page has been loaded",
+        url="https://github.com/beeware",
+        content=ANY,
+        on_load=on_load,
+    )
+
+    # On iOS and macOS, setting a cookie can fail if it's done too soon after page load.
+    # Try a couple of times to make sure the cookie is actually set.
+    for i in range(0, 5):
+        # JavaScript expression to set a cookie and return the current cookies
+        expression = """
+        (function setCookie() {
+            document.cookie = "test=test_value; path=/; Secure; SameSite=None";
+            return document.cookie;
+        })()"""
+
+        await wait_for(widget.evaluate_javascript(expression), JS_TIMEOUT)
+
+        # Retrieve cookies.
+        cookie_jar = await widget.cookies
+
+        assert isinstance(cookie_jar, CookieJar)
+
+        # Cookie retrieval isn't implemented on every backend (yet), so we implement the
+        # retrieval in the probe to provide an opportunity to skip the test.
+        cookie = probe.extract_cookie(cookie_jar, "test")
+
+        if cookie is None:
+            # Cookie wasn't set; wait a little bit before trying again.
+            await probe.redraw("Cookie wasn't set; wait and try again", delay=0.2)
+
+    assert cookie is not None, "Test cookie not found in CookieJar"
+
+    # Validate the test cookie
+    assert cookie.name == "test"
+    assert cookie.value == "test_value"
+    assert cookie.domain == "github.com"
+    assert cookie.path == "/"
+    assert cookie.secure is True
+    assert cookie.expires is None

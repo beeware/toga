@@ -1,16 +1,60 @@
-import pytest
+import asyncio
+
+from android.content import Context
 from androidx.appcompat import R as appcompat_R
 
+from toga.constants import WindowState
+
+from .dialogs import DialogsMixin
 from .probe import BaseProbe
 
 
-class WindowProbe(BaseProbe):
+class WindowProbe(BaseProbe, DialogsMixin):
+    supports_fullscreen = True
+    supports_presentation = True
+
     def __init__(self, app, window):
         super().__init__(app)
         self.native = self.app._impl.native
+        self.window = window
+        self.impl = self.window._impl
 
-    async def wait_for_window(self, message, minimize=False, full_screen=False):
-        await self.redraw(message)
+    async def wait_for_window(
+        self,
+        message,
+        state=None,
+    ):
+        await self.redraw(message, delay=0.1)
+        if state:
+            timeout = 5
+            polling_interval = 0.1
+            exception = None
+            loop = asyncio.get_running_loop()
+            start_time = loop.time()
+            while (loop.time() - start_time) < timeout:
+                try:
+                    assert self.instantaneous_state == state
+                    if state in {WindowState.FULLSCREEN, WindowState.PRESENTATION}:
+                        # Add a slight delay to ensure window properties like
+                        # `content_size` are updated according to the new state.
+                        await self.redraw(delay=0.1)
+                    return
+                except AssertionError as e:
+                    exception = e
+                    await asyncio.sleep(polling_interval)
+                    continue
+                raise exception
+
+    async def cleanup(self):
+        # Store the pre closing window state as determination of
+        # window state after closing the window is unreliable.
+        pre_close_window_state = self.window.state
+        self.window.close()
+        if pre_close_window_state in {WindowState.FULLSCREEN, WindowState.PRESENTATION}:
+            delay = 0.5
+        else:
+            delay = 0.1
+        await self.redraw("Closing window", delay=delay)
 
     @property
     def content_size(self):
@@ -19,40 +63,22 @@ class WindowProbe(BaseProbe):
             self.root_view.getHeight() / self.scale_factor,
         )
 
-    async def close_info_dialog(self, dialog):
-        dialog_view = self.get_dialog_view()
-        self.assert_dialog_buttons(dialog_view, ["OK"])
-        await self.press_dialog_button(dialog_view, "OK")
-
-    async def close_question_dialog(self, dialog, result):
-        dialog_view = self.get_dialog_view()
-        self.assert_dialog_buttons(dialog_view, ["No", "Yes"])
-        await self.press_dialog_button(dialog_view, "Yes" if result else "No")
-
-    async def close_confirm_dialog(self, dialog, result):
-        dialog_view = self.get_dialog_view()
-        self.assert_dialog_buttons(dialog_view, ["Cancel", "OK"])
-        await self.press_dialog_button(dialog_view, "OK" if result else "Cancel")
-
-    async def close_error_dialog(self, dialog):
-        dialog_view = self.get_dialog_view()
-        self.assert_dialog_buttons(dialog_view, ["OK"])
-        await self.press_dialog_button(dialog_view, "OK")
-
-    async def close_stack_trace_dialog(self, dialog, result):
-        pytest.skip("Stack Trace dialog not implemented on Android")
-
-    async def close_save_file_dialog(self, dialog, result):
-        pytest.skip("Save File dialog not implemented on Android")
-
-    async def close_open_file_dialog(self, dialog, result, multiple_select):
-        pytest.skip("Open File dialog not implemented on Android")
-
-    async def close_select_folder_dialog(self, dialog, result, multiple_select):
-        pytest.skip("Select Folder dialog not implemented on Android")
+    @property
+    def top_bar_height(self):
+        # Android doesn't require explicit allowances for the top bar in content layout;
+        # the size of the top bar is the difference between the screen and the root
+        # window content size.
+        context = self.app._impl.native.getApplicationContext()
+        window_manager = context.getSystemService(Context.WINDOW_SERVICE)
+        display = window_manager.getDefaultDisplay()
+        return (display.getHeight() - self.root_view.getHeight()) / self.scale_factor
 
     def _native_menu(self):
         return self.native.findViewById(appcompat_R.id.action_bar).getMenu()
+
+    @property
+    def instantaneous_state(self):
+        return self.impl.get_window_state(in_progress_state=False)
 
     def _toolbar_items(self):
         result = []

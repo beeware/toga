@@ -39,27 +39,32 @@ def test_widget_created():
     assert splitcontainer._impl.interface == splitcontainer
     assert_action_performed(splitcontainer, "create SplitContainer")
 
-    assert splitcontainer.content == (None, None)
+    assert splitcontainer.content == [None, None]
     assert splitcontainer.direction == toga.SplitContainer.VERTICAL
 
 
 def test_widget_created_with_values(content1, content2):
     """A split container can be created with arguments."""
     splitcontainer = toga.SplitContainer(
+        id="foobar",
         content=[content1, content2],
         direction=toga.SplitContainer.HORIZONTAL,
+        # A style property
+        width=256,
     )
     assert splitcontainer._impl.interface == splitcontainer
     assert_action_performed(splitcontainer, "create SplitContainer")
 
-    assert splitcontainer.content == (content1, content2)
+    assert splitcontainer.id == "foobar"
+    assert splitcontainer.content == [content1, content2]
     assert splitcontainer.direction == toga.SplitContainer.HORIZONTAL
+    assert splitcontainer.style.width == 256
 
     # The content has been assigned to the widget
     assert_action_performed_with(
         splitcontainer,
         "set content",
-        content=(content1._impl, content2._impl),
+        content=[content1._impl, content2._impl],
         flex=[1, 1],
     )
 
@@ -212,10 +217,10 @@ def test_set_content_widgets(
     assert_action_performed_with(
         splitcontainer,
         "set content",
-        content=(
+        content=[
             content2._impl if include_left else None,
             content3._impl if include_right else None,
-        ),
+        ],
         flex=[1, 1],
     )
 
@@ -248,10 +253,10 @@ def test_set_content_flex(
     assert_action_performed_with(
         splitcontainer,
         "set content",
-        content=(
+        content=[
             content2._impl if include_left else None,
             content3._impl if include_right else None,
-        ),
+        ],
         flex=[2, 3],
     )
 
@@ -284,10 +289,10 @@ def test_set_content_flex_mixed(
     assert_action_performed_with(
         splitcontainer,
         "set content",
-        content=(
+        content=[
             content2._impl if include_left else None,
             content3._impl if include_right else None,
-        ),
+        ],
         flex=[1, 3],
     )
 

@@ -1,28 +1,50 @@
 from __future__ import annotations
 
-import warnings
-from typing import Any
+from collections.abc import Iterable
+from typing import Any, Literal, Protocol, TypeVar
 
+import toga
 from toga.handlers import wrapped_handler
 from toga.sources import ListSource, Row, Source
 from toga.sources.accessors import build_accessors, to_accessor
 
-from .base import Widget
+from .base import StyleT, Widget
+
+SourceT = TypeVar("SourceT", bound=Source)
+
+
+class OnSelectHandler(Protocol):
+    def __call__(self, widget: Table, **kwargs: Any) -> object:
+        """A handler to invoke when the table is selected.
+
+        :param widget: The Table that was selected.
+        :param kwargs: Ensures compatibility with arguments added in future versions.
+        """
+
+
+class OnActivateHandler(Protocol):
+    def __call__(self, widget: Table, row: Any, **kwargs: Any) -> object:
+        """A handler to invoke when the table is activated.
+
+        :param widget: The Table that was activated.
+        :param row: The Table Row that was activated.
+        :param kwargs: Ensures compatibility with arguments added in future versions.
+        """
 
 
 class Table(Widget):
     def __init__(
         self,
-        headings: list[str] | None = None,
-        id=None,
-        style=None,
-        data: Any = None,
-        accessors: list[str] | None = None,
+        headings: Iterable[str] | None = None,
+        id: str | None = None,
+        style: StyleT | None = None,
+        data: SourceT | Iterable | None = None,
+        accessors: Iterable[str] | None = None,
         multiple_select: bool = False,
-        on_select: callable | None = None,
-        on_activate: callable | None = None,
+        on_select: toga.widgets.table.OnSelectHandler | None = None,
+        on_activate: toga.widgets.table.OnActivateHandler | None = None,
         missing_value: str = "",
-        on_double_click=None,  # DEPRECATED
+        **kwargs,
     ):
         """Create a new Table widget.
 
@@ -53,32 +75,18 @@ class Table(Widget):
         :param missing_value: The string that will be used to populate a cell when the
             value provided by its accessor is :any:`None`, or the accessor isn't
             defined.
-        :param on_double_click: **DEPRECATED**; use :attr:`on_activate`.
+        :param kwargs: Initial style properties.
         """
-        super().__init__(id=id, style=style)
-
-        ######################################################################
-        # 2023-06: Backwards compatibility
-        ######################################################################
-        if on_double_click:
-            if on_activate:
-                raise ValueError("Cannot specify both on_double_click and on_activate")
-            else:
-                warnings.warn(
-                    "Table.on_double_click has been renamed Table.on_activate.",
-                    DeprecationWarning,
-                )
-                on_activate = on_double_click
-        ######################################################################
-        # End backwards compatibility.
-        ######################################################################
+        self._headings: list[str] | None
+        self._accessors: list[str]
+        self._data: SourceT | ListSource
 
         if headings is not None:
             self._headings = [heading.split("\n")[0] for heading in headings]
             self._accessors = build_accessors(self._headings, accessors)
         elif accessors is not None:
             self._headings = None
-            self._accessors = accessors
+            self._accessors = list(accessors)
         else:
             raise ValueError(
                 "Cannot create a table without either headings or accessors"
@@ -92,14 +100,18 @@ class Table(Widget):
         self.on_activate = None
         self._data = None
 
-        self._impl = self.factory.Table(interface=self)
+        super().__init__(id, style, **kwargs)
+
         self.data = data
 
         self.on_select = on_select
         self.on_activate = on_activate
 
+    def _create(self) -> Any:
+        return self.factory.Table(interface=self)
+
     @property
-    def enabled(self) -> bool:
+    def enabled(self) -> Literal[True]:
         """Is the widget currently enabled? i.e., can the user interact with the widget?
         Table widgets cannot be disabled; this property will always return True; any
         attempt to modify it will be ignored.
@@ -107,15 +119,15 @@ class Table(Widget):
         return True
 
     @enabled.setter
-    def enabled(self, value):
+    def enabled(self, value: object) -> None:
         pass
 
-    def focus(self):
-        "No-op; Table cannot accept input focus"
+    def focus(self) -> None:
+        """No-op; Table cannot accept input focus."""
         pass
 
     @property
-    def data(self) -> ListSource:
+    def data(self) -> SourceT | ListSource:
         """The data to display in the table.
 
         When setting this property:
@@ -131,7 +143,7 @@ class Table(Widget):
         return self._data
 
     @data.setter
-    def data(self, data: Any):
+    def data(self, data: SourceT | Iterable | None) -> None:
         if data is None:
             self._data = ListSource(accessors=self._accessors, data=[])
         elif isinstance(data, Source):
@@ -166,11 +178,11 @@ class Table(Widget):
         else:
             return self.data[selection]
 
-    def scroll_to_top(self):
+    def scroll_to_top(self) -> None:
         """Scroll the view so that the top of the list (first row) is visible."""
         self.scroll_to_row(0)
 
-    def scroll_to_row(self, row: int):
+    def scroll_to_row(self, row: int) -> None:
         """Scroll the view so that the specified row index is visible.
 
         :param row: The index of the row to make visible. Negative values refer to the
@@ -182,34 +194,30 @@ class Table(Widget):
             else:
                 self._impl.scroll_to_row(max(len(self.data) + row, 0))
 
-    def scroll_to_bottom(self):
+    def scroll_to_bottom(self) -> None:
         """Scroll the view so that the bottom of the list (last row) is visible."""
         self.scroll_to_row(-1)
 
     @property
-    def on_select(self) -> callable:
+    def on_select(self) -> OnSelectHandler:
         """The callback function that is invoked when a row of the table is selected."""
         return self._on_select
 
     @on_select.setter
-    def on_select(self, handler: callable):
+    def on_select(self, handler: toga.widgets.table.OnSelectHandler) -> None:
         self._on_select = wrapped_handler(self, handler)
 
     @property
-    def on_activate(self) -> callable:
+    def on_activate(self) -> OnActivateHandler:
         """The callback function that is invoked when a row of the table is activated,
         usually with a double click or similar action."""
         return self._on_activate
 
     @on_activate.setter
-    def on_activate(self, handler):
+    def on_activate(self, handler: toga.widgets.table.OnActivateHandler) -> None:
         self._on_activate = wrapped_handler(self, handler)
 
-    def add_column(self, heading: str, accessor: str | None = None):
-        """**DEPRECATED**: use :meth:`~toga.Table.append_column`"""
-        self.insert_column(len(self._accessors), heading, accessor=accessor)
-
-    def append_column(self, heading: str, accessor: str | None = None):
+    def append_column(self, heading: str, accessor: str | None = None) -> None:
         """Append a column to the end of the table.
 
         :param heading: The heading for the new column.
@@ -222,9 +230,9 @@ class Table(Widget):
     def insert_column(
         self,
         index: int | str,
-        heading: str | None,
+        heading: str,
         accessor: str | None = None,
-    ):
+    ) -> None:
         """Insert an additional column into the table.
 
         :param index: The index at which to insert the column, or the accessor of the
@@ -257,7 +265,7 @@ class Table(Widget):
 
         self._impl.insert_column(index, heading, accessor)
 
-    def remove_column(self, column: int | str):
+    def remove_column(self, column: int | str) -> None:
         """Remove a table column.
 
         :param column: The index of the column to remove, or the accessor of the column
@@ -296,24 +304,3 @@ class Table(Widget):
         attribute.
         """
         return self._missing_value
-
-    ######################################################################
-    # 2023-06: Backwards compatibility
-    ######################################################################
-
-    @property
-    def on_double_click(self):
-        """**DEPRECATED**: Use ``on_activate``"""
-        warnings.warn(
-            "Table.on_double_click has been renamed Table.on_activate.",
-            DeprecationWarning,
-        )
-        return self.on_activate
-
-    @on_double_click.setter
-    def on_double_click(self, handler):
-        warnings.warn(
-            "Table.on_double_click has been renamed Table.on_activate.",
-            DeprecationWarning,
-        )
-        self.on_activate = handler

@@ -36,12 +36,6 @@ class Image:
         else:
             self.native = raw
 
-        self.native.retain()
-
-    def __del__(self):
-        if self.native:
-            self.native.release()
-
     def get_width(self):
         return self.native.size.width
 

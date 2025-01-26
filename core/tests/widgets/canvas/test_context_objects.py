@@ -272,7 +272,10 @@ def test_fill(widget, kwargs, args_repr, has_move, properties):
         # Color
         (
             {"color": REBECCAPURPLE},
-            f"x=None, y=None, color={REBECCA_PURPLE_COLOR}, line_width=2.0, line_dash=None",
+            (
+                f"x=None, y=None, color={REBECCA_PURPLE_COLOR}, "
+                f"line_width=2.0, line_dash=None"
+            ),
             False,
             {
                 "x": None,
@@ -330,7 +333,10 @@ def test_fill(widget, kwargs, args_repr, has_move, properties):
                 "line_width": 4.5,
                 "line_dash": [2, 7],
             },
-            f"x=10, y=20, color={REBECCA_PURPLE_COLOR}, line_width=4.5, line_dash=[2, 7]",
+            (
+                f"x=10, y=20, color={REBECCA_PURPLE_COLOR}, "
+                f"line_width=4.5, line_dash=[2, 7]"
+            ),
             True,
             {
                 "x": 10,
@@ -375,52 +381,6 @@ def test_stroke(widget, kwargs, args_repr, has_move, properties):
             },
         ),
         ("stroke", properties),
-        ("pop context", {}),
-    ]
-
-
-def test_deprecated_drawing_operations(widget):
-    """Deprecated simple drawing operations raise a warning."""
-
-    with pytest.warns(
-        DeprecationWarning,
-        match=r"Context.new_path\(\) has been renamed Context.begin_path\(\)",
-    ):
-        widget.context.new_path()
-
-    with pytest.warns(
-        DeprecationWarning,
-        match=r"Context.context\(\) has been renamed Context.Context\(\)",
-    ):
-        with widget.context.context() as subcontext:
-            subcontext.line_to(20, 30)
-            subcontext.line_to(30, 20)
-
-    with pytest.warns(
-        DeprecationWarning,
-        match=r"Context.closed_path\(\) has been renamed Context.ClosedPath\(\)",
-    ):
-        with widget.context.closed_path(10, 20) as closed_path:
-            closed_path.line_to(20, 30)
-            closed_path.line_to(30, 20)
-
-    # Assert the deprecated draw instructions rendered as expected
-    assert widget._impl.draw_instructions == [
-        ("push context", {}),
-        ("begin path", {}),
-        # Context
-        ("push context", {}),
-        ("line to", {"x": 20, "y": 30}),
-        ("line to", {"x": 30, "y": 20}),
-        ("pop context", {}),
-        # ClosedPath
-        ("push context", {}),
-        ("begin path", {}),
-        ("move to", {"x": 10, "y": 20}),
-        ("line to", {"x": 20, "y": 30}),
-        ("line to", {"x": 30, "y": 20}),
-        ("close path", {}),
-        ("pop context", {}),
         ("pop context", {}),
     ]
 
@@ -831,23 +791,3 @@ def test_stacked_kwargs(widget):
         ("line to", {"x": 99, "y": 99}),
         ("pop context", {}),
     ]
-
-
-def test_deprecated_args(widget):
-    """Deprecated arguments to canvas functions raise warnings."""
-
-    # fill() raises a warning about preserve being deprecated, then raises an error when
-    # it's used as a context manager.
-    with pytest.raises(
-        RuntimeError,
-        match=r"Context\.fill\(\) has been renamed Context\.Fill\(\)\.",
-    ):
-        with pytest.warns(
-            DeprecationWarning,
-            match=r"The `preserve` argument on fill\(\) has been deprecated.",
-        ):
-            with widget.context.fill(
-                "rebeccapurple", FillRule.EVENODD, preserve=False
-            ) as fill:
-                fill.line_to(20, 30)
-                fill.line_to(30, 20)

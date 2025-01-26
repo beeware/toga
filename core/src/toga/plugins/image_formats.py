@@ -4,7 +4,7 @@ from io import BytesIO
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from toga.images import BytesLike
+    from toga.images import BytesLikeT
 
 # Presumably, other converter plugins will be included with, or only installed
 # alongside, the packages they're for. But since this is provided in Toga, we need to
@@ -12,9 +12,9 @@ if TYPE_CHECKING:
 try:
     import PIL.Image
 
-    PIL_imported = True
+    PIL_imported = True  # pragma: no-cover-if-missing-PIL
 
-except ImportError:  # pragma: no cover
+except ImportError:  # pragma: no-cover-if-PIL-installed
     PIL_imported = False
 
 
@@ -29,8 +29,8 @@ class PILConverter:
 
     @staticmethod
     def convert_to_format(
-        data: BytesLike,
-        image_class: type(PIL.Image.Image),
+        data: BytesLikeT,
+        image_class: type[PIL.Image.Image],
     ) -> PIL.Image.Image:
         # PIL Images aren't designed to be subclassed, so no implementation is necessary
         # for a supplied format.

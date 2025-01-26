@@ -1,8 +1,8 @@
 [build-system]
 requires = [
-    "setuptools==69.2.0",
-    "setuptools_scm==8.0.4",
-    "setuptools_dynamic_dependencies @ git+https://github.com/beeware/setuptools_dynamic_dependencies",
+    "setuptools==75.8.0",
+    "setuptools_scm==8.1.0",
+    "setuptools_dynamic_dependencies==1.0.0",
 ]
 build-backend = "setuptools.build_meta"
 
@@ -11,7 +11,7 @@ dynamic = ["version"]
 name = "toga-core"
 description = "A Python native, OS native GUI toolkit."
 readme = "README.rst"
-requires-python = ">= 3.8"
+requires-python = ">= 3.9"
 license.text = "New BSD"
 authors = [
     {name="Russell Keith-Magee", email="russell@keith-magee.com"},
@@ -45,7 +45,6 @@ classifiers = [
     "License :: OSI Approved :: BSD License",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
@@ -56,59 +55,56 @@ classifiers = [
     "Topic :: Software Development :: User Interfaces",
     "Topic :: Software Development :: Widget Sets",
 ]
-dependencies = [
-    "travertino >= 0.3.0",
-    # limited to <=3.9 for the `group` argument for `entry_points()`
-    "importlib_metadata >= 4.4.0; python_version <= '3.9'",
-]
 
 [project.optional-dependencies]
 # Extras used by developers *of* Toga are pinned to specific versions to
 # ensure environment consistency.
 dev = [
-    "coverage[toml] == 7.4.4",
-    "Pillow == 10.2.0",
-    # Pre-commit 3.6.0 deprecated support for Python 3.8
-    "pre-commit == 3.5.0 ; python_version < '3.9'",
-    "pre-commit == 3.6.2 ; python_version >= '3.9'",
-    "pytest == 8.1.1",
-    "pytest-asyncio == 0.23.5.post1",
-    "pytest-freezer == 0.4.8",
-    "setuptools-scm == 8.0.4",
-    "tox == 4.14.1",
+    "coverage[toml] == 7.6.10",
+    "coverage-conditional-plugin == 0.9.0",
+    "Pillow == 11.1.0",
+    "pre-commit == 4.1.0",
+    "pytest == 8.3.4",
+    "pytest-asyncio == 0.25.2",
+    "pytest-freezer == 0.4.9",
+    "setuptools-scm == 8.1.0",
+    "tox == 4.24.1",
     # typing-extensions needed for TypeAlias added in Py 3.10
-    "typing-extensions == 4.9.0 ; python_version < '3.10'"
+    "typing-extensions == 4.12.2 ; python_version < '3.10'",
 ]
+# Docs are always built on a specific Python version; see RTD and tox config files,
+# and the docs contribution guide.
 docs = [
-    "furo == 2024.1.29",
-    "Pillow == 10.2.0",
+    "furo == 2024.8.6",
+    "Pillow == 11.1.0",
     "pyenchant == 3.2.2",
-    # Sphinx 7.2 deprecated support for Python 3.8
-    "sphinx == 7.1.2 ; python_version < '3.9'",
-    "sphinx == 7.2.6 ; python_version >= '3.9'",
+    "sphinx == 8.1.3",
     "sphinx_tabs == 3.4.5",
-    # Sphinx 2024.2.4 deprecated support for Python 3.8
-    "sphinx-autobuild == 2021.3.14 ; python_version < '3.9'",
-    "sphinx-autobuild == 2024.2.4 ; python_version >= '3.9'",
-    "sphinx-autodoc-typehints == 2.0.0",
-    "sphinx-csv-filter == 0.4.1",
+    "sphinx-autobuild == 2024.10.3",
+    "sphinx-csv-filter == 0.4.2",
     "sphinx-copybutton == 0.5.2",
-    "sphinx-toolbox == 3.5.0",
-    "sphinxcontrib-spelling == 8.0.0",
+    "sphinx-toolbox == 3.8.1",
+    "sphinxcontrib-spelling == 8.0.1",
 ]
 
 [project.urls]
 Homepage = "https://beeware.org/project/projects/libraries/toga/"
 Funding = "https://beeware.org/contributing/membership/"
-Documentation = "https://toga.readthedocs.io/en/latest/"
+Documentation = "https://toga.readthedocs.io/"
 Tracker = "https://github.com/beeware/toga/issues"
 Source = "https://github.com/beeware/toga"
+Changelog = "https://toga.readthedocs.io/en/stable/background/project/releases.html"
 
 [project.entry-points."toga.image_formats"]
 pil = "toga.plugins.image_formats.PILConverter"
 
 [tool.setuptools_scm]
 root = ".."
+
+[tool.setuptools_dynamic_dependencies]
+dependencies = [
+    "travertino == {version}",
+]
 
 [tool.coverage.run]
 parallel = true
@@ -118,6 +114,7 @@ relative_files = true
 # See notes in the root pyproject.toml file.
 source = ["src"]
 source_pkgs = ["toga"]
+omit = ["**/toga/compat/**"]  # Only used by MicroPython.
 
 [tool.coverage.paths]
 source = [
@@ -127,6 +124,7 @@ source = [
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
 filterwarnings = [
     "error",
 ]

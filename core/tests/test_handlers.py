@@ -3,7 +3,7 @@ from unittest.mock import Mock
 
 import pytest
 
-from toga.handlers import AsyncResult, NativeHandler, wrapped_handler
+from toga.handlers import AsyncResult, NativeHandler, simple_handler, wrapped_handler
 
 
 class ExampleAsyncResult(AsyncResult):
@@ -18,8 +18,8 @@ def test_noop_handler():
 
     assert wrapped._raw is None
 
-    # This does nothing, but doesn't raise an error.
-    wrapped("arg1", "arg2", kwarg1=3, kwarg2=4)
+    # This does nothing, but doesn't raise an error, and returns None
+    assert wrapped("arg1", "arg2", kwarg1=3, kwarg2=4) is None
 
 
 def test_noop_handler_with_cleanup():
@@ -31,8 +31,8 @@ def test_noop_handler_with_cleanup():
 
     assert wrapped._raw is None
 
-    # This does nothing, but doesn't raise an error.
-    wrapped("arg1", "arg2", kwarg1=3, kwarg2=4)
+    # This does nothing, but doesn't raise an error, and returns None
+    assert wrapped("arg1", "arg2", kwarg1=3, kwarg2=4) is None
 
     # Cleanup method was invoked
     cleanup.assert_called_once_with(obj, None)
@@ -47,16 +47,16 @@ def test_noop_handler_with_cleanup_error(capsys):
 
     assert wrapped._raw is None
 
-    # This does nothing, but doesn't raise an error.
-    wrapped("arg1", "arg2", kwarg1=3, kwarg2=4)
+    # This does nothing, but doesn't raise an error, and returns None
+    assert wrapped("arg1", "arg2", kwarg1=3, kwarg2=4) is None
 
     # Cleanup method was invoked
     cleanup.assert_called_once_with(obj, None)
 
     # Evidence of the handler cleanup error is in the log.
     assert (
-        "Error in handler cleanup: Problem in cleanup\nTraceback (most recent call last):\n"
-        in capsys.readouterr().err
+        "Error in handler cleanup: Problem in cleanup\n"
+        "Traceback (most recent call last):\n" in capsys.readouterr().err
     )
 
 
@@ -68,14 +68,15 @@ def test_function_handler():
     def handler(*args, **kwargs):
         handler_call["args"] = args
         handler_call["kwargs"] = kwargs
+        return 42
 
     wrapped = wrapped_handler(obj, handler)
 
     # Raw handler is the original function
     assert wrapped._raw == handler
 
-    # Invoke wrapper
-    wrapped("arg1", "arg2", kwarg1=3, kwarg2=4)
+    # Invoke wrapper; handler return value is preserved
+    assert wrapped("arg1", "arg2", kwarg1=3, kwarg2=4) == 42
 
     # Handler arguments are as expected.
     assert handler_call == {
@@ -98,8 +99,8 @@ def test_function_handler_error(capsys):
 
     assert wrapped._raw == handler
 
-    # Invoke handler. The exception is swallowed
-    wrapped("arg1", "arg2", kwarg1=3, kwarg2=4)
+    # Invoke handler. The exception is swallowed; return value is None
+    assert wrapped("arg1", "arg2", kwarg1=3, kwarg2=4) is None
 
     # Handler arguments are as expected.
     assert handler_call == {
@@ -131,7 +132,7 @@ def test_function_handler_with_cleanup():
     assert wrapped._raw == handler
 
     # Invoke handler
-    wrapped("arg1", "arg2", kwarg1=3, kwarg2=4)
+    assert wrapped("arg1", "arg2", kwarg1=3, kwarg2=4) == 42
 
     # Handler arguments are as expected.
     assert handler_call == {
@@ -159,8 +160,8 @@ def test_function_handler_with_cleanup_error(capsys):
     # Raw handler is the original function
     assert wrapped._raw == handler
 
-    # Invoke handler. The exception in cleanup is swallowed
-    wrapped("arg1", "arg2", kwarg1=3, kwarg2=4)
+    # Invoke handler. The error in cleanup is swallowed.
+    assert wrapped("arg1", "arg2", kwarg1=3, kwarg2=4) == 42
 
     # Handler arguments are as expected.
     assert handler_call == {
@@ -173,8 +174,8 @@ def test_function_handler_with_cleanup_error(capsys):
 
     # Evidence of the handler cleanup error is in the log.
     assert (
-        "Error in handler cleanup: Problem in cleanup\nTraceback (most recent call last):\n"
-        in capsys.readouterr().err
+        "Error in handler cleanup: Problem in cleanup\n"
+        "Traceback (most recent call last):\n" in capsys.readouterr().err
     )
 
 
@@ -190,21 +191,17 @@ def test_generator_handler(event_loop):
         handler_call["slept"] = True
         yield  # A yield without a sleep
         handler_call["done"] = True
+        return 42
 
     wrapped = wrapped_handler(obj, handler)
 
     # Raw handler is the original generator
     assert wrapped._raw == handler
 
-    # Invoke wrapper inside an active run loop.
-    async def waiter():
-        wrapped("arg1", "arg2", kwarg1=3, kwarg2=4)
-        count = 0
-        while not handler_call.get("done", False) and count < 5:
-            await asyncio.sleep(0.01)
-            count += 1
-
-    event_loop.run_until_complete(waiter())
+    # Invoke the handler, and run until it is complete.
+    assert (
+        event_loop.run_until_complete(wrapped("arg1", "arg2", kwarg1=3, kwarg2=4)) == 42
+    )
 
     # Handler arguments are as expected.
     assert handler_call == {
@@ -231,15 +228,11 @@ def test_generator_handler_error(event_loop, capsys):
     # Raw handler is the original generator
     assert wrapped._raw == handler
 
-    # Invoke wrapper inside an active run loop.
-    async def waiter():
-        wrapped("arg1", "arg2", kwarg1=3, kwarg2=4)
-        count = 0
-        while not handler_call.get("done", False) and count < 5:
-            await asyncio.sleep(0.01)
-            count += 1
-
-    event_loop.run_until_complete(waiter())
+    # Invoke the handler; return value is None due to exception
+    assert (
+        event_loop.run_until_complete(wrapped("arg1", "arg2", kwarg1=3, kwarg2=4))
+        is None
+    )
 
     # Handler arguments are as expected.
     assert handler_call == {
@@ -249,8 +242,8 @@ def test_generator_handler_error(event_loop, capsys):
 
     # Evidence of the handler cleanup error is in the log.
     assert (
-        "Error in long running handler: Problem in handler\nTraceback (most recent call last):\n"
-        in capsys.readouterr().err
+        "Error in long running handler: Problem in handler\n"
+        "Traceback (most recent call last):\n" in capsys.readouterr().err
     )
 
 
@@ -274,15 +267,10 @@ def test_generator_handler_with_cleanup(event_loop):
     # Raw handler is the original generator
     assert wrapped._raw == handler
 
-    # Invoke wrapper inside an active run loop.
-    async def waiter():
-        wrapped("arg1", "arg2", kwarg1=3, kwarg2=4)
-        count = 0
-        while not handler_call.get("done", False) and count < 5:
-            await asyncio.sleep(0.01)
-            count += 1
-
-    event_loop.run_until_complete(waiter())
+    # Invoke the handler
+    assert (
+        event_loop.run_until_complete(wrapped("arg1", "arg2", kwarg1=3, kwarg2=4)) == 42
+    )
 
     # Handler arguments are as expected.
     assert handler_call == {
@@ -316,15 +304,10 @@ def test_generator_handler_with_cleanup_error(event_loop, capsys):
     # Raw handler is the original generator
     assert wrapped._raw == handler
 
-    # Invoke wrapper inside an active run loop.
-    async def waiter():
-        wrapped("arg1", "arg2", kwarg1=3, kwarg2=4)
-        count = 0
-        while not handler_call.get("done", False) and count < 5:
-            await asyncio.sleep(0.01)
-            count += 1
-
-    event_loop.run_until_complete(waiter())
+    # Invoke the handler; error in cleanup is swallowed
+    assert (
+        event_loop.run_until_complete(wrapped("arg1", "arg2", kwarg1=3, kwarg2=4)) == 42
+    )
 
     # Handler arguments are as expected.
     assert handler_call == {
@@ -339,8 +322,8 @@ def test_generator_handler_with_cleanup_error(event_loop, capsys):
 
     # Evidence of the handler cleanup error is in the log.
     assert (
-        "Error in long running handler cleanup: Problem in cleanup\nTraceback (most recent call last):\n"
-        in capsys.readouterr().err
+        "Error in long running handler cleanup: Problem in cleanup\n"
+        "Traceback (most recent call last):\n" in capsys.readouterr().err
     )
 
 
@@ -354,21 +337,17 @@ def test_coroutine_handler(event_loop):
         handler_call["kwargs"] = kwargs
         await asyncio.sleep(0.01)  # A short sleep
         handler_call["done"] = True
+        return 42
 
     wrapped = wrapped_handler(obj, handler)
 
     # Raw handler is the original coroutine
     assert wrapped._raw == handler
 
-    # Invoke wrapper inside an active run loop.
-    async def waiter():
-        wrapped("arg1", "arg2", kwarg1=3, kwarg2=4)
-        count = 0
-        while not handler_call.get("done", False) and count < 5:
-            await asyncio.sleep(0.01)
-            count += 1
-
-    event_loop.run_until_complete(waiter())
+    # Invoke the handler
+    assert (
+        event_loop.run_until_complete(wrapped("arg1", "arg2", kwarg1=3, kwarg2=4)) == 42
+    )
 
     # Handler arguments are as expected.
     assert handler_call == {
@@ -394,15 +373,11 @@ def test_coroutine_handler_error(event_loop, capsys):
     # Raw handler is the original coroutine
     assert wrapped._raw == handler
 
-    # Invoke wrapper inside an active run loop.
-    async def waiter():
-        wrapped("arg1", "arg2", kwarg1=3, kwarg2=4)
-        count = 0
-        while not handler_call.get("done", False) and count < 5:
-            await asyncio.sleep(0.01)
-            count += 1
-
-    event_loop.run_until_complete(waiter())
+    # Invoke the handler; return value is None due to exception
+    assert (
+        event_loop.run_until_complete(wrapped("arg1", "arg2", kwarg1=3, kwarg2=4))
+        is None
+    )
 
     # Handler arguments are as expected.
     assert handler_call == {
@@ -412,8 +387,8 @@ def test_coroutine_handler_error(event_loop, capsys):
 
     # Evidence of the handler cleanup error is in the log.
     assert (
-        "Error in async handler: Problem in handler\nTraceback (most recent call last):\n"
-        in capsys.readouterr().err
+        "Error in async handler: Problem in handler\n"
+        "Traceback (most recent call last):\n" in capsys.readouterr().err
     )
 
 
@@ -435,15 +410,10 @@ def test_coroutine_handler_with_cleanup(event_loop):
     # Raw handler is the original coroutine
     assert wrapped._raw == handler
 
-    # Invoke wrapper inside an active run loop.
-    async def waiter():
-        wrapped("arg1", "arg2", kwarg1=3, kwarg2=4)
-        count = 0
-        while not handler_call.get("done", False) and count < 5:
-            await asyncio.sleep(0.01)
-            count += 1
-
-    event_loop.run_until_complete(waiter())
+    # Invoke the handler
+    assert (
+        event_loop.run_until_complete(wrapped("arg1", "arg2", kwarg1=3, kwarg2=4)) == 42
+    )
 
     # Handler arguments are as expected.
     assert handler_call == {
@@ -474,15 +444,10 @@ def test_coroutine_handler_with_cleanup_error(event_loop, capsys):
     # Raw handler is the original coroutine
     assert wrapped._raw == handler
 
-    # Invoke wrapper inside an active run loop.
-    async def waiter():
-        wrapped("arg1", "arg2", kwarg1=3, kwarg2=4)
-        count = 0
-        while not handler_call.get("done", False) and count < 5:
-            await asyncio.sleep(0.01)
-            count += 1
-
-    event_loop.run_until_complete(waiter())
+    # Invoke the handler; error in cleanup is swallowed
+    assert (
+        event_loop.run_until_complete(wrapped("arg1", "arg2", kwarg1=3, kwarg2=4)) == 42
+    )
 
     # Handler arguments are as expected.
     assert handler_call == {
@@ -496,8 +461,8 @@ def test_coroutine_handler_with_cleanup_error(event_loop, capsys):
 
     # Evidence of the handler cleanup error is in the log.
     assert (
-        "Error in async handler cleanup: Problem in cleanup\nTraceback (most recent call last):\n"
-        in capsys.readouterr().err
+        "Error in async handler cleanup: Problem in cleanup\n"
+        "Traceback (most recent call last):\n" in capsys.readouterr().err
     )
 
 
@@ -519,7 +484,7 @@ def test_async_result_non_comparable(event_loop):
     result = ExampleAsyncResult(None)
 
     # repr for the result is useful
-    assert repr(result) == "<Async Test result; future=<Future pending>>"
+    assert repr(result).startswith("<Async Test result; future=<Future pending")
 
     # Result cannot be compared.
 
@@ -612,8 +577,54 @@ def test_async_exception_cancelled(event_loop):
         event_loop.run_until_complete(result.future)
 
 
+def test_simple_handler_function():
+    """A function can be wrapped as a simple handler."""
+    handler_call = {}
+
+    def handler(*args, **kwargs):
+        handler_call["args"] = args
+        handler_call["kwargs"] = kwargs
+        return 42
+
+    wrapped = simple_handler(handler, "arg1", "arg2", kwarg1=3, kwarg2=4)
+
+    # Invoke the handler as if it were a method handler (i.e., with the extra "widget"
+    # argument)
+    assert wrapped("obj") == 42
+    assert wrapped._raw == handler
+
+    # The "widget" bound argument has been dropped
+    assert handler_call == {
+        "args": ("arg1", "arg2"),
+        "kwargs": {"kwarg1": 3, "kwarg2": 4},
+    }
+
+
+def test_simple_handler_coroutine(event_loop):
+    """A coroutine can be wrapped as a simple handler."""
+    handler_call = {}
+
+    async def handler(*args, **kwargs):
+        handler_call["args"] = args
+        handler_call["kwargs"] = kwargs
+        return 42
+
+    wrapped = simple_handler(handler, "arg1", "arg2", kwarg1=3, kwarg2=4)
+
+    # Invoke the handler as if it were a coroutine method handler (i.e., with the extra
+    # "widget" argument)
+    assert event_loop.run_until_complete(wrapped("obj")) == 42
+    assert wrapped._raw == handler
+
+    # The "widget" bound argument has been dropped
+    assert handler_call == {
+        "args": ("arg1", "arg2"),
+        "kwargs": {"kwarg1": 3, "kwarg2": 4},
+    }
+
+
 ######################################################################
-# 2023-12: Backwards compatibility
+# 2023-12: Backwards compatibility for <= 0.4.0
 ######################################################################
 
 

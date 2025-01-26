@@ -2,8 +2,8 @@ from pytest import approx, fixture
 
 import toga
 
+from .conftest import build_cleanup_test
 from .properties import (  # noqa: F401
-    test_alignment,
     test_background_color,
     test_background_color_reset,
     test_background_color_transparent,
@@ -15,6 +15,7 @@ from .properties import (  # noqa: F401
     test_font,
     test_font_attrs,
     test_text,
+    test_text_align,
     test_text_width_change,
 )
 
@@ -22,6 +23,9 @@ from .properties import (  # noqa: F401
 @fixture
 async def widget():
     return toga.Label("hello, this is a label")
+
+
+test_cleanup = build_cleanup_test(toga.Label, args=("hello, this is a label",))
 
 
 async def test_multiline(widget, probe):

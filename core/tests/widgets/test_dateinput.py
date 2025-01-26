@@ -36,18 +36,23 @@ def test_widget_created_with_values(on_change_handler):
     """A DateInput can be created with initial values."""
     # Round trip the impl/interface
     widget = toga.DateInput(
+        id="foobar",
         value=date(2015, 6, 15),
         min=date(2013, 5, 14),
         max=date(2017, 7, 16),
         on_change=on_change_handler,
+        # A style property
+        width=256,
     )
     assert widget._impl.interface == widget
     assert_action_performed(widget, "create DateInput")
 
+    assert widget.id == "foobar"
     assert widget.value == date(2015, 6, 15)
     assert widget.min == date(2013, 5, 14)
     assert widget.max == date(2017, 7, 16)
     assert widget.on_change._raw == on_change_handler
+    assert widget.style.width == 256
 
     # The change handler isn't invoked at construction.
     on_change_handler.assert_not_called()
@@ -242,50 +247,3 @@ def test_max_clip(widget, on_change_handler, max, clip_value, clip_min):
         assert widget.min == max
     else:
         assert widget.min == date(2005, 6, 25)
-
-
-def test_deprecated_names():
-    MIN = date(2012, 8, 3)
-    MAX = date(2016, 11, 15)
-
-    with pytest.warns(
-        DeprecationWarning, match="DatePicker has been renamed DateInput"
-    ), pytest.warns(
-        DeprecationWarning, match="DatePicker.min_date has been renamed DateInput.min"
-    ), pytest.warns(
-        DeprecationWarning, match="DatePicker.max_date has been renamed DateInput.max"
-    ):
-        widget = toga.DatePicker(min_date=MIN, max_date=MAX)
-
-    assert widget.min == MIN
-    assert widget.max == MAX
-    widget.min = widget.max = None
-
-    with pytest.warns(
-        DeprecationWarning, match="DatePicker.min_date has been renamed DateInput.min"
-    ):
-        widget.min_date = MIN
-
-    with pytest.warns(
-        DeprecationWarning, match="DatePicker.min_date has been renamed DateInput.min"
-    ):
-        assert widget.min_date == MIN
-    assert widget.min == MIN
-
-    with pytest.warns(
-        DeprecationWarning, match="DatePicker.max_date has been renamed DateInput.max"
-    ):
-        widget.max_date = MAX
-
-    with pytest.warns(
-        DeprecationWarning, match="DatePicker.max_date has been renamed DateInput.max"
-    ):
-        assert widget.max_date == MAX
-    assert widget.max == MAX
-
-    with pytest.warns(
-        DeprecationWarning, match="DatePicker has been renamed DateInput"
-    ):
-        widget = toga.DatePicker()
-    assert widget.min == date(1800, 1, 1)
-    assert widget.max == date(8999, 12, 31)

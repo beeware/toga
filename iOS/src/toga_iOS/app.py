@@ -3,32 +3,32 @@ import asyncio
 from rubicon.objc import objc_method
 from rubicon.objc.eventloop import EventLoopPolicy, iOSLifecycle
 
+import toga
 from toga_iOS.libs import UIResponder, UIScreen, av_foundation
-from toga_iOS.window import Window
 
 from .screens import Screen as ScreenImpl
-
-
-class MainWindow(Window):
-    _is_main_window = True
 
 
 class PythonAppDelegate(UIResponder):
     @objc_method
     def applicationDidBecomeActive_(self, application) -> None:
         print("App became active.")
+        App.app.interface.current_window.on_gain_focus()
 
     @objc_method
     def applicationWillResignActive_(self, application) -> None:
         print("App about to leave foreground.", flush=True)
+        App.app.interface.current_window.on_lose_focus()
 
     @objc_method
     def applicationDidEnterBackground_(self, application) -> None:
         print("App entered background.")
+        App.app.interface.current_window.on_hide()
 
     @objc_method
     def applicationWillEnterForeground_(self, application) -> None:
         print("App about to enter foreground.")
+        App.app.interface.current_window.on_show()
 
     @objc_method
     def application_didFinishLaunchingWithOptions_(
@@ -37,6 +37,7 @@ class PythonAppDelegate(UIResponder):
         print("App finished launching.")
         App.app.native = application
         App.app.create()
+        App.app.interface.current_window.on_show()
         return True
 
     @objc_method
@@ -53,6 +54,12 @@ class PythonAppDelegate(UIResponder):
 
 
 class App:
+    # iOS apps exit when the last window is closed
+    CLOSE_ON_LAST_WINDOW = True
+    # iOS doesn't have command line handling;
+    # but saying it does shortcuts the default handling
+    HANDLES_COMMAND_LINE = True
+
     def __init__(self, interface):
         self.interface = interface
         self.interface._impl = self
@@ -73,6 +80,9 @@ class App:
     # Commands and menus
     ######################################################################
 
+    def create_standard_commands(self):
+        pass
+
     def create_menus(self):
         # No menus on an iOS app (for now)
         pass
@@ -92,8 +102,13 @@ class App:
         # iOS event loop.
         self.loop.run_forever_cooperatively(lifecycle=iOSLifecycle())
 
+    def set_icon(self, icon):
+        # iOS apps don't have runtime icons, so this can't be invoked
+        pass  # pragma: no cover
+
     def set_main_window(self, window):
-        pass
+        if window is None or window == toga.App.BACKGROUND:
+            raise ValueError("Apps without main windows are not supported on iOS")
 
     ######################################################################
     # App resources
@@ -101,6 +116,14 @@ class App:
 
     def get_screens(self):
         return [ScreenImpl(UIScreen.mainScreen)]
+
+    ######################################################################
+    # App state
+    ######################################################################
+
+    def get_dark_mode_state(self):
+        self.interface.factory.not_implemented("dark mode state")
+        return None
 
     ######################################################################
     # App capabilities
@@ -140,16 +163,4 @@ class App:
 
     def set_current_window(self, window):
         # iOS only has a main window, so this is a no-op
-        pass
-
-    ######################################################################
-    # Full screen control
-    ######################################################################
-
-    def enter_full_screen(self, windows):
-        # No-op; mobile doesn't support full screen
-        pass
-
-    def exit_full_screen(self, windows):
-        # No-op; mobile doesn't support full screen
         pass

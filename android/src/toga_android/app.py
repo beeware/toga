@@ -1,23 +1,21 @@
 import asyncio
-import sys
 import warnings
 
 from android.content import Context
 from android.graphics.drawable import BitmapDrawable
 from android.media import RingtoneManager
+from android.os import Build
 from android.view import Menu, MenuItem
+from androidx.core.content import ContextCompat
 from java import dynamic_proxy
 from org.beeware.android import IPythonApp, MainActivity
 
-from toga.command import Command, Group, Separator
+import toga
+from toga.command import Group, Separator
+from toga.dialogs import InfoDialog
 
 from .libs import events
 from .screens import Screen as ScreenImpl
-from .window import Window
-
-
-class MainWindow(Window):
-    _is_main_window = True
 
 
 class TogaApp(dynamic_proxy(IPythonApp)):
@@ -38,21 +36,39 @@ class TogaApp(dynamic_proxy(IPythonApp)):
 
     def onStart(self):
         print("Toga app: onStart")
+        self._impl.interface.current_window.on_show()
 
-    def onResume(self):
+    def onResume(self):  # pragma: no cover
         print("Toga app: onResume")
+        # onTopResumedActivityChanged is not available on android versions less
+        # than Q. onResume is the best indicator for the gain input focus event.
+        # https://developer.android.com/reference/android/app/Activity#onWindowFocusChanged(boolean):~:text=If%20the%20intent,the%20best%20indicator.
+        if Build.VERSION.SDK_INT < Build.VERSION_CODES.Q:
+            self._impl.interface.current_window.on_gain_focus()
 
-    def onPause(self):
-        print("Toga app: onPause")  # pragma: no cover
+    def onPause(self):  # pragma: no cover
+        print("Toga app: onPause")
+        # onTopResumedActivityChanged is not available on android versions less
+        # than Q. onPause is the best indicator for the lost input focus event.
+        if Build.VERSION.SDK_INT < Build.VERSION_CODES.Q:
+            self._impl.interface.current_window.on_lose_focus()
 
-    def onStop(self):
-        print("Toga app: onStop")  # pragma: no cover
+    def onStop(self):  # pragma: no cover
+        print("Toga app: onStop")
+        self._impl.interface.current_window.on_hide()
 
     def onDestroy(self):
         print("Toga app: onDestroy")  # pragma: no cover
 
     def onRestart(self):
         print("Toga app: onRestart")  # pragma: no cover
+
+    def onTopResumedActivityChanged(self, isTopResumedActivity):  # pragma: no cover
+        print("Toga app: onTopResumedActivityChanged")
+        if isTopResumedActivity:
+            self._impl.interface.current_window.on_gain_focus()
+        else:
+            self._impl.interface.current_window.on_lose_focus()
 
     def onActivityResult(self, requestCode, resultCode, resultData):
         print(f"Toga app: onActivityResult {requestCode=} {resultCode=} {resultData=}")
@@ -71,7 +87,8 @@ class TogaApp(dynamic_proxy(IPythonApp)):
 
     def onRequestPermissionsResult(self, requestCode, permissions, grantResults):
         print(
-            f"Toga app: onRequestPermissionsResult {requestCode=} {permissions=} {grantResults=}"
+            f"Toga app: onRequestPermissionsResult "
+            f"{requestCode=} {permissions=} {grantResults=}"
         )
         try:
             # Retrieve the completion callback and invoke it.
@@ -95,6 +112,12 @@ class TogaApp(dynamic_proxy(IPythonApp)):
             return True
 
     def onPrepareOptionsMenu(self, menu):
+        # If the main window doesn't have a toolbar, there's no preparation required;
+        # this is a simple main window, which can't have commands. This can't be
+        # validated in the testbed, so it's marked no-cover.
+        if not hasattr(self._impl.interface.main_window, "toolbar"):
+            return False  # pragma: no cover
+
         menu.clear()
         itemid = 1  # 0 is the same as Menu.NONE.
         groupid = 1
@@ -179,6 +202,12 @@ class TogaApp(dynamic_proxy(IPythonApp)):
 
 
 class App:
+    # Android apps exit when the last window is closed
+    CLOSE_ON_LAST_WINDOW = True
+    # Android doesn't have command line handling;
+    # but saying it does shortcuts the default handling
+    HANDLES_COMMAND_LINE = True
+
     def __init__(self, interface):
         self.interface = interface
         self.interface._impl = self
@@ -194,26 +223,21 @@ class App:
         # The `_listener` listens for activity event callbacks. For simplicity,
         # the app's `.native` is the listener's native Java class.
         self._listener = TogaApp(self)
+
         # Call user code to populate the main window
         self.interface._startup()
-        self.create_app_commands()
 
     ######################################################################
     # Commands and menus
     ######################################################################
 
-    def create_app_commands(self):
-        self.interface.commands.add(
-            # About should be the last item in the menu, in a section on its own.
-            Command(
-                lambda _: self.interface.about(),
-                f"About {self.interface.formal_name}",
-                section=sys.maxsize,
-            ),
-        )
+    def create_standard_commands(self):
+        pass
 
     def create_menus(self):
-        self.native.invalidateOptionsMenu()  # Triggers onPrepareOptionsMenu
+        # Menu items are configured as part of onPrepareOptionsMenu; trigger that
+        # handler.
+        self.native.invalidateOptionsMenu()
 
     ######################################################################
     # App lifecycle
@@ -223,15 +247,26 @@ class App:
         pass  # pragma: no cover
 
     def main_loop(self):
-        # In order to support user asyncio code, start the Python/Android cooperative event loop.
+        # In order to support user asyncio code, start the Python/Android cooperative
+        # event loop.
         self.loop.run_forever_cooperatively()
 
-        # On Android, Toga UI integrates automatically into the main Android event loop by virtue
-        # of the Android Activity system.
+        # On Android, Toga UI integrates automatically into the main Android event loop
+        # by virtue of the Android Activity system.
         self.create()
 
+    def set_icon(self, icon):
+        # Android apps don't have runtime icons, so this can't be invoked
+        pass  # pragma: no cover
+
     def set_main_window(self, window):
-        pass
+        if window is None or window == toga.App.BACKGROUND:
+            raise ValueError("Apps without main windows are not supported on Android")
+        else:
+            # The default layout of an Android app includes a titlebar; a simple App
+            # then hides that titlebar. We know what type of app we have when the main
+            # window is set.
+            self.interface.main_window._impl.configure_titlebar()
 
     ######################################################################
     # App resources
@@ -242,6 +277,14 @@ class App:
         display_manager = context.getSystemService(Context.DISPLAY_SERVICE)
         screen_list = display_manager.getDisplays()
         return [ScreenImpl(self, screen) for screen in screen_list]
+
+    ######################################################################
+    # App state
+    ######################################################################
+
+    def get_dark_mode_state(self):
+        self.interface.factory.not_implemented("dark mode state")
+        return None
 
     ######################################################################
     # App capabilities
@@ -267,8 +310,16 @@ class App:
             message_parts.append(f"Author: {self.interface.author}")
         if self.interface.description is not None:
             message_parts.append(f"\n{self.interface.description}")
-        self.interface.main_window.info_dialog(
-            f"About {self.interface.formal_name}", "\n".join(message_parts)
+
+        # Create and show an info dialog as the about dialog.
+        # We don't care about the response.
+        asyncio.create_task(
+            self.interface.dialog(
+                InfoDialog(
+                    f"About {self.interface.formal_name}",
+                    "\n".join(message_parts),
+                )
+            )
         )
 
     ######################################################################
@@ -292,17 +343,11 @@ class App:
         pass
 
     ######################################################################
-    # Full screen control
-    ######################################################################
-
-    def enter_full_screen(self, windows):
-        pass
-
-    def exit_full_screen(self, windows):
-        pass
-
-    ######################################################################
     # Platform-specific APIs
+    ######################################################################
+
+    ######################################################################
+    # 2024-2: Backwards compatibility for < 0.4.1
     ######################################################################
 
     async def intent_result(self, intent):  # pragma: no cover
@@ -322,6 +367,10 @@ class App:
             return result_future.result()
         except AttributeError:
             raise RuntimeError("No appropriate Activity found to handle this intent.")
+
+    ######################################################################
+    # End backwards compatibility
+    ######################################################################
 
     def _native_startActivityForResult(
         self, activity, code, *options
@@ -345,6 +394,12 @@ class App:
         self._listener.running_intents[code] = on_complete
 
         self._native_startActivityForResult(activity, code, *options)
+
+    def _native_checkSelfPermission(self, permission):  # pragma: no cover
+        # A wrapper around the native method so that it can be mocked during testing.
+        return ContextCompat.checkSelfPermission(
+            self.native.getApplicationContext(), permission
+        )
 
     def _native_requestPermissions(self, permissions, code):  # pragma: no cover
         # A wrapper around the native method so that it can be mocked during testing.

@@ -47,7 +47,7 @@ class TableProbe(SimpleProbe):
             assert gtk_row[col * 2 + 2]
 
             if icon:
-                assert gtk_row[col * 2 + 1] == icon._impl.native_16
+                assert gtk_row[col * 2 + 1] == icon._impl.native(16)
             else:
                 assert gtk_row[col * 2 + 1] is None
 
@@ -84,3 +84,6 @@ class TableProbe(SimpleProbe):
             Gtk.TreePath(row),
             self.native_table.get_columns()[0],
         )
+
+    async def acquire_keyboard_focus(self):
+        pytest.skip("test not implemented for this platform")

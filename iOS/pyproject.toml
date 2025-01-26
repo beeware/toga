@@ -1,8 +1,8 @@
 [build-system]
 requires = [
-    "setuptools==69.2.0",
-    "setuptools_scm==8.0.4",
-    "setuptools_dynamic_dependencies @ git+https://github.com/beeware/setuptools_dynamic_dependencies",
+    "setuptools==75.8.0",
+    "setuptools_scm==8.1.0",
+    "setuptools_dynamic_dependencies==1.0.0",
 ]
 build-backend = "setuptools.build_meta"
 
@@ -11,7 +11,7 @@ dynamic = ["version", "dependencies"]
 name = "toga-iOS"
 description = "An iOS backend for the Toga widget toolkit."
 readme = "README.rst"
-requires-python = ">= 3.8"
+requires-python = ">= 3.9"
 license.text = "New BSD"
 authors = [
     {name="Russell Keith-Magee", email="russell@keith-magee.com"},
@@ -33,7 +33,6 @@ classifiers = [
     "License :: OSI Approved :: BSD License",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
@@ -48,9 +47,10 @@ classifiers = [
 [project.urls]
 Homepage = "https://beeware.org/project/projects/libraries/toga/"
 Funding = "https://beeware.org/contributing/membership/"
-Documentation = "https://toga.readthedocs.io/en/latest/"
+Documentation = "https://toga.readthedocs.io/"
 Tracker = "https://github.com/beeware/toga/issues"
 Source = "https://github.com/beeware/toga"
+Changelog = "https://toga.readthedocs.io/en/stable/background/project/releases.html"
 
 [project.entry-points."toga.backends"]
 iOS = "toga_iOS"
@@ -61,7 +61,7 @@ root = ".."
 [tool.setuptools_dynamic_dependencies]
 dependencies = [
     "fonttools >= 4.42.1, < 5.0.0",
-    "rubicon-objc >= 0.4.7, < 0.5.0",
+    "rubicon-objc >= 0.5.0, < 0.6.0",
     "toga-core == {version}",
 ]
 

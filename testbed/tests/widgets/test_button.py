@@ -1,12 +1,13 @@
 from unittest.mock import Mock
 
-from pytest import fixture
+from pytest import approx, fixture
 
 import toga
 from toga.colors import TRANSPARENT
 
 from ..assertions import assert_color
 from ..data import TEXTS
+from .conftest import build_cleanup_test
 from .properties import (  # noqa: F401
     test_background_color,
     test_background_color_reset,
@@ -31,6 +32,11 @@ async def widget():
     return toga.Button("Hello")
 
 
+test_cleanup = build_cleanup_test(
+    toga.Button, args=("Hello",), skip_platforms=("android",)
+)
+
+
 async def test_text(widget, probe):
     "The text displayed on a button can be changed"
     initial_height = probe.height
@@ -44,7 +50,8 @@ async def test_text(widget, probe):
         expected = str(text).split("\n")[0]
         assert widget.text == expected
         assert probe.text == expected
-        assert probe.height == initial_height
+        # GTK rendering can result in a very minor change in button height
+        assert probe.height == approx(initial_height, abs=1)
 
 
 async def test_icon(widget, probe):
@@ -94,6 +101,9 @@ async def test_press(widget, probe):
 
 async def test_background_color_transparent(widget, probe):
     "Buttons treat background transparency as a color reset."
+    del widget.style.background_color
+    original_background_color = probe.background_color
+
     widget.style.background_color = TRANSPARENT
-    await probe.redraw("Button background color should be transparent")
-    assert_color(probe.background_color, None)
+    await probe.redraw("Button background color should be reset to the default color")
+    assert_color(probe.background_color, original_background_color)

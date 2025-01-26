@@ -5,6 +5,8 @@ from toga_gtk.libs import Gtk
 
 
 class BaseProbe:
+    GTK_VERSION = Gtk.MAJOR_VERSION, Gtk.MINOR_VERSION, Gtk.MICRO_VERSION
+
     def repaint_needed(self):
         return Gtk.events_pending()
 

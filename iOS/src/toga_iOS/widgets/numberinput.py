@@ -108,7 +108,7 @@ class NumberInput(Widget):
             self.native.text = str(value)
         self.interface.on_change()
 
-    def set_alignment(self, value):
+    def set_text_align(self, value):
         self.native.textAlignment = NSTextAlignment(value)
 
     def set_font(self, font):
@@ -116,9 +116,6 @@ class NumberInput(Widget):
 
     def set_color(self, color):
         self.native.textColor = native_color(color)
-
-    def set_background_color(self, color):
-        self.set_background_color_simple(color)
 
     def rehint(self):
         # Height of a text input is known.

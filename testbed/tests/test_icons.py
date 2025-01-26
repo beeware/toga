@@ -25,6 +25,12 @@ async def test_icon(app):
     probe.assert_icon_content(probe.alternate_resource)
 
 
+async def test_app_icon(app):
+    """The app icon can be obtained."""
+    probe = icon_probe(app, toga.Icon.APP_ICON)
+    probe.assert_app_icon_content()
+
+
 async def test_system_icon(app):
     "The default icon can be obtained"
     probe = icon_probe(app, toga.Icon.DEFAULT_ICON)
@@ -41,6 +47,9 @@ async def test_bad_icon_file(app):
     "If a file isn't a loadable icon, an error is raised"
     with pytest.raises(
         ValueError,
-        match=rf"Unable to load icon from {re.escape(str(app.paths.app / 'resources' / 'icons' / 'bad'))}",
+        match=(
+            rf"Unable to load icon from "
+            rf"{re.escape(str(app.paths.app / 'resources' / 'icons' / 'bad'))}"
+        ),
     ):
         toga.Icon("resources/icons/bad")

@@ -1,5 +1,6 @@
 import json
 import webbrowser
+from http.cookiejar import Cookie, CookieJar
 
 import System.Windows.Forms as WinForms
 from System import (
@@ -7,12 +8,14 @@ from System import (
     String,
     Uri,
 )
+from System.Collections.Generic import List  # Import List for generics
 from System.Drawing import Color
 from System.Threading.Tasks import Task, TaskScheduler
 
 import toga
-from toga.widgets.webview import JavaScriptResult
+from toga.widgets.webview import CookiesResult, JavaScriptResult
 from toga_winforms.libs.extensions import (
+    CoreWebView2Cookie,
     CoreWebView2CreationProperties,
     WebView2,
     WebView2RuntimeNotFoundException,
@@ -30,6 +33,49 @@ def requires_initialization(method):
         self.run_after_initialization(task)
 
     return wrapper
+
+
+def cookies_completion_handler(result):
+    """
+    Generalized completion handler for processing cookies.
+    """
+
+    def _completion_handler(task):
+
+        # Initialize a CookieJar to store cookies
+        cookie_jar = CookieJar()
+
+        # Use a list comprehension to convert each cookie into a Cookie
+        # object and add it to the CookieJar
+        [
+            cookie_jar.set_cookie(
+                Cookie(
+                    version=0,
+                    name=cookie.Name,
+                    value=cookie.Value,
+                    port=None,
+                    port_specified=False,
+                    domain=cookie.Domain,
+                    domain_specified=True,
+                    domain_initial_dot=False,
+                    path=cookie.Path,
+                    path_specified=True,
+                    secure=cookie.IsSecure,
+                    expires=None,
+                    discard=cookie.IsSession,
+                    comment=None,
+                    comment_url=None,
+                    rest={},
+                    rfc2109=False,  # Whether the cookie follows RFC 2109
+                )
+            )
+            for cookie in task.Result
+        ]
+
+        # Set the CookieJar in the CookiesResult object
+        result.set_result(cookie_jar)
+
+    return _completion_handler
 
 
 class WebView(Widget):
@@ -75,7 +121,11 @@ class WebView(Widget):
             settings = self.native.CoreWebView2.Settings
             self.default_user_agent = settings.UserAgent
 
+            # Initialize cookie manager
+            self.cookie_manager = self.native.CoreWebView2.CookieManager
+
             debug = True
+            settings.AreBrowserAcceleratorKeysEnabled = debug
             settings.AreDefaultContextMenusEnabled = debug
             settings.AreDefaultScriptDialogsEnabled = True
             settings.AreDevToolsEnabled = debug
@@ -83,6 +133,7 @@ class WebView(Widget):
             settings.IsScriptEnabled = True
             settings.IsWebMessageEnabled = True
             settings.IsStatusBarEnabled = debug
+            settings.IsSwipeNavigationEnabled = False
             settings.IsZoomControlEnabled = True
 
             for task in self.pending_tasks:
@@ -108,11 +159,18 @@ class WebView(Widget):
                     WinForms.MessageBoxIcon.Error,
                 )
                 webbrowser.open(
-                    "https://developer.microsoft.com/en-us/microsoft-edge/webview2/#download-section"
+                    "https://developer.microsoft.com/en-us/microsoft-edge/webview2/#download"  # noqa: E501
                 )
 
         else:  # pragma: nocover
-            raise RuntimeError(args.InitializationException)
+            WinForms.MessageBox.Show(
+                "A critical error has occurred and functionality may be impaired.\n\n"
+                "The WebView2 initialization failed with an exception:\n\n"
+                f"{args.InitializationException}",
+                "Error",
+                WinForms.MessageBoxButtons.OK,
+                WinForms.MessageBoxIcon.Error,
+            )
 
     def winforms_navigation_completed(self, sender, args):
         self.interface.on_webview_load()
@@ -153,6 +211,28 @@ class WebView(Widget):
         self.native.CoreWebView2.Settings.UserAgent = (
             self.default_user_agent if value is None else value
         )
+
+    def get_cookies(self):
+        """
+        Retrieve all cookies asynchronously from the WebView.
+
+        :return: A CookiesResult object that can be awaited.
+        """
+        # Create an AsyncResult to manage the cookies
+        result = CookiesResult()
+
+        # Wrap the Python completion handler in a .NET Action delegate
+        completion_handler_delegate = Action[Task[List[CoreWebView2Cookie]]](
+            cookies_completion_handler(result)
+        )
+
+        # Call the method to retrieve cookies asynchronously
+        task_scheduler = TaskScheduler.FromCurrentSynchronizationContext()
+        self.cookie_manager.GetCookiesAsync(None).ContinueWith(
+            completion_handler_delegate, task_scheduler
+        )
+
+        return result
 
     def evaluate_javascript(self, javascript, on_result=None):
         result = JavaScriptResult(on_result)

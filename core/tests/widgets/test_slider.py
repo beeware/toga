@@ -31,9 +31,44 @@ def slider(on_change):
     )
 
 
-def test_widget_created(slider, on_change):
+def test_widget_create(slider, on_change):
+    """A slider widget can be created."""
     assert slider._impl.interface == slider
     assert_action_performed(slider, "create Slider")
+
+
+def test_widget_create_initial_values(on_change):
+    """A slider widget can be created."""
+    on_press = Mock()
+    on_release = Mock()
+
+    slider = toga.Slider(
+        id="foobar",
+        value=37.0,
+        min=-42.0,
+        max=42.0,
+        tick_count=1234,
+        on_change=on_change,
+        on_press=on_press,
+        on_release=on_release,
+        enabled=False,
+        # A style property
+        width=256,
+    )
+
+    assert slider._impl.interface == slider
+    assert_action_performed(slider, "create Slider")
+
+    assert slider.id == "foobar"
+    assert slider.value == pytest.approx(37.0, abs=0.1)
+    assert slider.min == pytest.approx(-42.0)
+    assert slider.max == pytest.approx(42.0)
+    assert slider.tick_count == 1234
+    assert slider.on_change._raw == on_change
+    assert slider.on_press._raw == on_press
+    assert slider.on_release._raw == on_release
+    assert not slider.enabled
+    assert slider.style.width == 256
 
 
 @pytest.mark.parametrize(
@@ -338,8 +373,8 @@ def test_set_value_with_tick_count(
         slider, on_change, approx(value), tick_value=tick_value, change_count=1
     )
 
-    # Resetting the same value should round to the same result, so on_change should not be
-    # called.
+    # Resetting the same value should round to the same result, so on_change should not
+    # be called.
     on_change.reset_mock()
     slider.value = INITIAL_VALUE
     assert_value(
@@ -544,54 +579,3 @@ def test_int_impl_on_change(tick_count, data):
         impl.on_change()
         assert impl.get_value() == approx(value)
         impl.interface.on_change.assert_called_once_with()
-
-
-def test_deprecated():
-    """Check the deprecated min/max naming."""
-    # Can't specify min and range
-    with pytest.raises(
-        ValueError,
-        match=r"range cannot be specified if min and max are specified",
-    ):
-        toga.Slider(min=2, range=(2, 4))
-
-    # Can't specify max and range
-    with pytest.raises(
-        ValueError,
-        match=r"range cannot be specified if min and max are specified",
-    ):
-        toga.Slider(max=4, range=(2, 4))
-
-    # Can't specify min and max and range
-    with pytest.raises(
-        ValueError,
-        match=r"range cannot be specified if min and max are specified",
-    ):
-        toga.Slider(min=2, max=4, range=(2, 4))
-
-    # Range is deprecated
-    with pytest.warns(
-        DeprecationWarning,
-        match="Slider.range has been deprecated in favor of Slider.min and Slider.max",
-    ):
-        widget = toga.Slider(range=(2, 4))
-
-    # range is converted to min/max
-    assert widget.min == pytest.approx(2)
-    assert widget.max == pytest.approx(4)
-
-    with pytest.warns(
-        DeprecationWarning,
-        match="Slider.range has been deprecated in favor of Slider.min and Slider.max",
-    ):
-        assert widget.range == (pytest.approx(2), pytest.approx(4))
-
-    # range is converted to min/max
-    with pytest.warns(
-        DeprecationWarning,
-        match="Slider.range has been deprecated in favor of Slider.min and Slider.max",
-    ):
-        widget.range = (6, 8)
-
-    assert widget.min == pytest.approx(6)
-    assert widget.max == pytest.approx(8)

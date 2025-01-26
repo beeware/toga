@@ -26,18 +26,23 @@ def test_create_with_values():
     """A multiline text input can be created with initial values."""
     on_change = Mock()
     widget = toga.MultilineTextInput(
+        id="foobar",
         value="Some text",
         placeholder="A placeholder",
         readonly=True,
         on_change=on_change,
+        # A style property
+        width=256,
     )
     assert widget._impl.interface == widget
     assert_action_performed(widget, "create MultilineTextInput")
 
+    assert widget.id == "foobar"
     assert widget.readonly
     assert widget.placeholder == "A placeholder"
     assert widget.value == "Some text"
     assert widget._on_change._raw == on_change
+    assert widget.style.width == 256
 
     # Change handler hasn't been invoked
     on_change.assert_not_called()

@@ -13,11 +13,13 @@ from toga.colors import TRANSPARENT
 from toga_winforms.colors import native_color
 
 
-class Scalable:
+class Scalable(ABC):
     SCALE_DEFAULT_ROUNDING = ROUND_HALF_EVEN
 
-    def init_scale(self, native):
-        self.dpi_scale = native.CreateGraphics().DpiX / 96
+    @property
+    @abstractmethod
+    def dpi_scale(self):
+        raise NotImplementedError()
 
     # Convert CSS pixels to native pixels
     def scale_in(self, value, rounding=SCALE_DEFAULT_ROUNDING):
@@ -36,7 +38,7 @@ class Scalable:
         return int(Decimal(value).to_integral(rounding))
 
 
-class Widget(ABC, Scalable):
+class Widget(Scalable, ABC):
     # In some widgets, attempting to set a background color with any alpha value other
     # than 1 raises "System.ArgumentException: Control does not support transparent
     # background colors". Those widgets should set this attribute to False.
@@ -44,13 +46,22 @@ class Widget(ABC, Scalable):
 
     def __init__(self, interface):
         self.interface = interface
-        self.interface._impl = self
 
         self._container = None
         self.native = None
         self.create()
-        self.init_scale(self.native)
-        self.interface.style.reapply()
+
+        # Obtain a Graphics object and immediately dispose of it. This is
+        # done to trigger the control's Paint event and force it to redraw.
+        # Since in toga, Hwnds could be created at inappropriate times.
+        # As an example, without this fix, running the OptionContainer
+        # example app should give an error, like:
+        #
+        # System.ArgumentOutOfRangeException: InvalidArgument=Value of '0' is not valid
+        # for 'index'.
+        # Parameter name: index
+        #    at System.Windows.Forms.TabControl.GetTabPage(Int32 index)
+        self.native.CreateGraphics().Dispose()
 
     @abstractmethod
     def create(self): ...
@@ -60,8 +71,15 @@ class Widget(ABC, Scalable):
         pass
 
     def set_window(self, window):
-        # No special handling required
-        pass
+        self.scale_font()
+
+    @property
+    def dpi_scale(self):
+        window = self.interface.window
+        if window:
+            return window._impl.dpi_scale
+        else:
+            return 1
 
     @property
     def container(self):
@@ -102,15 +120,23 @@ class Widget(ABC, Scalable):
         self.native.Size = Size(*map(self.scale_in, (width, height)))
         self.native.Location = Point(*map(self.scale_in, (x, y)))
 
-    def set_alignment(self, alignment):
-        # By default, alignment can't be changed
+    def set_text_align(self, alignment):
+        # By default, text alignment can't be changed
         pass
 
     def set_hidden(self, hidden):
         self.native.Visible = not hidden
 
     def set_font(self, font):
-        self.native.Font = font._impl.native
+        self.original_font = font._impl.native
+        self.scale_font()
+
+    def scale_font(self):
+        font = self.original_font
+        window = self.interface.window
+        if window:
+            font = window._impl.scale_font(self.original_font)
+        self.native.Font = font
 
     def set_color(self, color):
         if color is None:

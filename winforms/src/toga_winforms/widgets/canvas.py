@@ -22,7 +22,8 @@ from System.Drawing.Drawing2D import (
 from System.Drawing.Imaging import ImageFormat
 from System.IO import MemoryStream
 
-from toga.widgets.canvas import Baseline, FillRule, arc_to_bezier, sweepangle
+from toga.constants import Baseline, FillRule
+from toga.widgets.canvas import arc_to_bezier, sweepangle
 from toga_winforms.colors import native_color
 
 from ..libs.wrapper import WeakrefCallable

@@ -15,6 +15,7 @@ class TableProbe(SimpleProbe):
     background_supports_alpha = False
     supports_icons = 1  # First column only
     supports_keyboard_shortcuts = False
+    supports_keyboard_boundary_shortcuts = True
     supports_widgets = False
 
     @property
@@ -56,11 +57,13 @@ class TableProbe(SimpleProbe):
             self.native.Items[self.row_count - 1].Bounds.Bottom
             - self.native.Items[0].Bounds.Top
         )
-        return (document_height - self.native.ClientSize.Height) / self.scale_factor
+        return round(
+            (document_height - self.native.ClientSize.Height) / self.scale_factor
+        )
 
     @property
     def scroll_position(self):
-        return -(self.native.Items[0].Bounds.Top) / self.scale_factor
+        return -round((self.native.Items[0].Bounds.Top) / self.scale_factor)
 
     async def wait_for_scroll_completion(self):
         # No animation associated with scroll, so this is a no-op
@@ -75,7 +78,7 @@ class TableProbe(SimpleProbe):
         return [col.Text for col in self.native.Columns]
 
     def column_width(self, index):
-        return self.native.Columns[index].Width / self.scale_factor
+        return round(self.native.Columns[index].Width / self.scale_factor)
 
     async def select_row(self, row, add=False):
         item = self.native.Items[row]
@@ -97,3 +100,9 @@ class TableProbe(SimpleProbe):
                 delta=0,
             )
         )
+
+    async def acquire_keyboard_focus(self):
+        await self.type_character(
+            "\t"
+        )  # switch to widget.focus() when possible (#2972)
+        await self.type_character(" ")  # select first row

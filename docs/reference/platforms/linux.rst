@@ -21,16 +21,15 @@ The Toga backend for Linux (and other Unix-like operating systems) is `toga-gtk
 
     Although GTK *can* be installed on Windows and macOS, and the ``toga-gtk`` backend
     *may* work on those platforms, this is not officially supported by Toga. We
-    recommend using ``toga-winforms`` on Windows, and ``toga-cocoa`` on macOS.
+    recommend using ``toga-winforms`` on :doc:`./windows`, and ``toga-cocoa``
+    on :doc:`macOS`.
 
 Prerequisites
 -------------
 
-``toga-gtk`` requires GTK 3.22 or newer. This requirement can be met with with all
-versions of Ubuntu since 18.04, and all versions of Fedora since Fedora 26.
-
-Toga receives the most testing with GTK 3.24. This is the version that has shipped with
-all versions of Ubuntu since Ubuntu 20.04, and all versions of Fedora since Fedora 29.
+``toga-gtk`` requires GTK 3.22 or newer. Most testing occurs with GTK 3.24 as this is
+the version that has shipped with all versions of Ubuntu since Ubuntu 20.04, and all
+versions of Fedora since Fedora 32.
 
 The system packages that provide GTK must be installed manually:
 
@@ -52,4 +51,7 @@ Installation
 Implementation details
 ----------------------
 
-``toga-gtk`` uses the native GObject Python bindings.
+The ``toga-gtk`` backend uses the `GTK3 API <https://docs.gtk.org/gtk3/>`__.
+
+The native APIs are accessed using the `PyGObject binding
+<https://pygobject.readthedocs.io>`__.

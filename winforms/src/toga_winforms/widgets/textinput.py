@@ -61,7 +61,7 @@ class TextInput(Widget):
     def set_value(self, value):
         self.native.Text = value
 
-    def set_alignment(self, value):
+    def set_text_align(self, value):
         self.native.TextAlign = HorizontalTextAlignment(value)
 
     def set_color(self, color):
@@ -76,8 +76,7 @@ class TextInput(Widget):
         )
 
     def winforms_text_changed(self, sender, event):
-        self.interface.on_change()
-        self.interface._validate()
+        self.interface._value_changed()
 
     def winforms_key_press(self, sender, event):
         if ord(event.KeyChar) == int(WinForms.Keys.Enter):

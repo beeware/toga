@@ -94,3 +94,6 @@ class TableProbe(SimpleProbe):
     @property
     def text_size(self):
         return self._row_view(0).getChildAt(0).getTextSize()
+
+    async def acquire_keyboard_focus(self):
+        pytest.skip("test not implemented for this platform")

@@ -6,7 +6,9 @@ from rubicon.objc import (
     objc_id,
 )
 
-from toga_iOS.container import RootContainer
+from toga.constants import WindowState
+from toga.types import Position, Size
+from toga_iOS.container import NavigationContainer, RootContainer
 from toga_iOS.images import nsdata_to_bytes
 from toga_iOS.libs import (
     NSData,
@@ -23,22 +25,14 @@ from .screens import Screen as ScreenImpl
 
 
 class Window:
-    _is_main_window = False
-
     def __init__(self, interface, title, position, size):
         self.interface = interface
         self.interface._impl = self
 
-        if not self._is_main_window:
-            raise RuntimeError(
-                "Secondary windows cannot be created on mobile platforms"
-            )
-
         self.native = UIWindow.alloc().initWithFrame(UIScreen.mainScreen.bounds)
 
         # Set up a container for the window's content
-        # RootContainer provides a titlebar for the window.
-        self.container = RootContainer(on_refresh=self.content_refreshed)
+        self.create_container()
 
         # Set the size of the content to the size of the window
         self.container.native.frame = self.native.bounds
@@ -56,6 +50,10 @@ class Window:
 
         self.set_title(title)
 
+    def create_container(self):
+        # RootContainer provides a titlebar for the window.
+        self.container = RootContainer(on_refresh=self.content_refreshed)
+
     ######################################################################
     # Window properties
     ######################################################################
@@ -70,14 +68,14 @@ class Window:
     # Window lifecycle
     ######################################################################
 
-    def close(self):
+    def close(self):  # pragma: no cover
+        # An iOS app only ever contains a main window, and that window *can't* be
+        # closed, so the platform-specific close handling is never triggered.
         pass
-
-    def create_toolbar(self):
-        pass  # pragma: no cover
 
     def set_app(self, app):
-        pass
+        if len(app.interface.windows) > 1:
+            raise RuntimeError("Secondary windows cannot be created on iOS")
 
     def show(self):
         self.native.makeKeyAndVisible()
@@ -94,7 +92,8 @@ class Window:
         if self.container.width < min_width or self.container.height < min_height:
             print(
                 f"Warning: Window content {(min_width, min_height)} "
-                f"exceeds available space {(self.container.width, self.container.height)}"
+                f"exceeds available space "
+                f"{(self.container.width, self.container.height)}"
             )
 
     def set_content(self, widget):
@@ -104,8 +103,8 @@ class Window:
     # Window size
     ######################################################################
 
-    def get_size(self):
-        return (
+    def get_size(self) -> Size:
+        return Size(
             UIScreen.mainScreen.bounds.size.width,
             UIScreen.mainScreen.bounds.size.height,
         )
@@ -121,8 +120,8 @@ class Window:
     def get_current_screen(self):
         return ScreenImpl(UIScreen.mainScreen)
 
-    def get_position(self):
-        return 0, 0
+    def get_position(self) -> Position:
+        return Position(0, 0)
 
     def set_position(self, position):
         # Does nothing on mobile
@@ -133,8 +132,12 @@ class Window:
     ######################################################################
 
     def get_visible(self):
-        # The window is always visible
-        return True
+        # The window is hidden as default by the system, unless makeKeyAndVisible
+        # has been called on the UIWindow. Requesting the same visibility as the
+        # current visibility state is a no-op and is ignored at the core level.
+        # So, always check if the window is currently hidden or not, to ensure that
+        # the other APIs that are dependent on get_visible() work correctly.
+        return not bool(self.native.isHidden())
 
     def hide(self):
         # A no-op, as the window cannot be hidden.
@@ -144,8 +147,12 @@ class Window:
     # Window state
     ######################################################################
 
-    def set_full_screen(self, is_full_screen):
-        # Windows are always full screen
+    def get_window_state(self, in_progress_state=False):
+        # Windows are always in NORMAL state.
+        return WindowState.NORMAL
+
+    def set_window_state(self, state):
+        # Window state setting is not implemented on iOS.
         pass
 
     ######################################################################
@@ -199,7 +206,8 @@ class Window:
             renderer.PNGDataWithActions(Block(render, None, objc_id))
         )
 
-        # Get the size of the actual content (offsetting for the header) in raw coordinates.
+        # Get the size of the actual content (offsetting for the header)
+        # in raw coordinates.
         container_bounds = self.container.content.native.bounds
         image_bounds = NSRect(
             NSPoint(
@@ -221,3 +229,13 @@ class Window:
         final_image = UIImage.imageWithCGImage(cropped_image)
         # Convert into PNG data.
         return nsdata_to_bytes(NSData(uikit.UIImagePNGRepresentation(final_image)))
+
+
+class MainWindow(Window):
+    def create_container(self):
+        # NavigationContainer provides a titlebar for the window.
+        self.container = NavigationContainer(on_refresh=self.content_refreshed)
+
+    def create_toolbar(self):
+        # No toolbar handling at present
+        pass

@@ -1,4 +1,4 @@
-from toga.style.pack import BOTTOM, COLUMN, LEFT, RIGHT, ROW, RTL, TOP, Pack
+from toga.style.pack import COLUMN, END, ROW, RTL, START, Pack
 
 from ..utils import ExampleNode, ExampleViewport, assert_layout
 
@@ -10,16 +10,16 @@ def test_row_box_child_layout():
         children=[
             ExampleNode(
                 "widget_a",
-                style=Pack(width=30, height=100, padding_left=32, padding_right=34),
+                style=Pack(width=30, height=100, margin_left=32, margin_right=34),
             ),
             ExampleNode(
                 "widget_b",
-                style=Pack(width=36, height=100, padding_left=38, padding_right=40),
+                style=Pack(width=36, height=100, margin_left=38, margin_right=40),
             ),
         ],
     )
 
-    root.style.layout(root, ExampleViewport(640, 480))
+    root.style.layout(ExampleViewport(640, 480))
     assert_layout(
         root,
         (210, 100),
@@ -42,17 +42,17 @@ def test_column_box_child_layout():
         children=[
             ExampleNode(
                 "widget_a",
-                style=Pack(width=100, height=30, padding_top=32, padding_bottom=34),
+                style=Pack(width=100, height=30, margin_top=32, margin_bottom=34),
             ),
             ExampleNode(
                 "widget_b",
-                style=Pack(width=100, height=36, padding_top=38, padding_bottom=40),
+                style=Pack(width=100, height=36, margin_top=38, margin_bottom=40),
             ),
         ],
     )
 
     # Normal size
-    root.style.layout(root, ExampleViewport(640, 480))
+    root.style.layout(ExampleViewport(640, 480))
     assert_layout(
         root,
         (100, 210),
@@ -68,17 +68,17 @@ def test_column_box_child_layout():
     )
 
 
-def test_alignment_top():
+def test_align_items_top():
     root = ExampleNode(
         "root",
-        style=Pack(text_direction=RTL, direction=ROW, alignment=TOP),
+        style=Pack(text_direction=RTL, direction=ROW, align_items=START),
         children=[
             ExampleNode("space_filler", style=Pack(width=30, height=100)),
             ExampleNode("widget", style=Pack(width=30, height=30)),
         ],
     )
 
-    root.style.layout(root, ExampleViewport(640, 480))
+    root.style.layout(ExampleViewport(640, 480))
     assert_layout(
         root,
         (60, 100),
@@ -94,17 +94,17 @@ def test_alignment_top():
     )
 
 
-def test_alignment_bottom():
+def test_align_items_bottom():
     root = ExampleNode(
         "root",
-        style=Pack(text_direction=RTL, direction=ROW, alignment=BOTTOM),
+        style=Pack(text_direction=RTL, direction=ROW, align_items=END),
         children=[
             ExampleNode("space_filler", style=Pack(width=30, height=100)),
             ExampleNode("widget", style=Pack(width=30, height=30)),
         ],
     )
 
-    root.style.layout(root, ExampleViewport(640, 480))
+    root.style.layout(ExampleViewport(640, 480))
     assert_layout(
         root,
         (60, 100),
@@ -120,17 +120,17 @@ def test_alignment_bottom():
     )
 
 
-def test_alignment_left():
+def test_align_items_left():
     root = ExampleNode(
         "root",
-        style=Pack(text_direction=RTL, direction=COLUMN, alignment=LEFT),
+        style=Pack(text_direction=RTL, direction=COLUMN, align_items=END),
         children=[
             ExampleNode("space_filler", style=Pack(width=100, height=30)),
             ExampleNode("widget", style=Pack(width=30, height=30)),
         ],
     )
 
-    root.style.layout(root, ExampleViewport(640, 480))
+    root.style.layout(ExampleViewport(640, 480))
     assert_layout(
         root,
         (100, 60),
@@ -146,17 +146,17 @@ def test_alignment_left():
     )
 
 
-def test_alignment_right():
+def test_align_items_right():
     root = ExampleNode(
         "root",
-        style=Pack(text_direction=RTL, direction=COLUMN, alignment=RIGHT),
+        style=Pack(text_direction=RTL, direction=COLUMN, align_items=START),
         children=[
             ExampleNode("space_filler", style=Pack(width=100, height=30)),
             ExampleNode("widget", style=Pack(width=30, height=30)),
         ],
     )
 
-    root.style.layout(root, ExampleViewport(640, 480))
+    root.style.layout(ExampleViewport(640, 480))
     assert_layout(
         root,
         (100, 60),

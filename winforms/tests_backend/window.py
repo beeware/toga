@@ -1,5 +1,4 @@
 import asyncio
-from unittest.mock import Mock
 
 from System import EventArgs
 from System.Windows.Forms import (
@@ -7,52 +6,78 @@ from System.Windows.Forms import (
     FormBorderStyle,
     FormWindowState,
     MenuStrip,
+    Panel,
     ToolStrip,
     ToolStripSeparator,
 )
 
+from toga import Size
+
+from .dialogs import DialogsMixin
 from .probe import BaseProbe
 
 
-class WindowProbe(BaseProbe):
+class WindowProbe(BaseProbe, DialogsMixin):
     # Disabling the close button requires overriding a protected method
     # (https://stackoverflow.com/a/7301828), which Python.NET doesn't support
     # (https://github.com/pythonnet/pythonnet/issues/2192).
     supports_closable = False
     supports_minimizable = True
     supports_move_while_hidden = True
-    supports_multiple_select_folder = False
     supports_unminimize = True
+    supports_minimize = True
+    supports_placement = True
 
     def __init__(self, app, window):
-        super().__init__()
         self.app = app
         self.window = window
         self.impl = window._impl
-        self.native = window._impl.native
+        super().__init__(window._impl.native)
         assert isinstance(self.native, Form)
 
-    async def wait_for_window(self, message, minimize=False, full_screen=False):
+    async def wait_for_window(
+        self,
+        message,
+        state=None,
+    ):
         await self.redraw(message)
+
+        if state:
+            timeout = 5
+            polling_interval = 0.1
+            exception = None
+            loop = asyncio.get_running_loop()
+            start_time = loop.time()
+            while (loop.time() - start_time) < timeout:
+                try:
+                    assert self.instantaneous_state == state
+                    return
+                except AssertionError as e:
+                    exception = e
+                    await asyncio.sleep(polling_interval)
+                    continue
+                raise exception
+
+    async def cleanup(self):
+        self.window.close()
+        await self.redraw("Closing window")
 
     def close(self):
         self.native.Close()
 
     @property
     def content_size(self):
-        return (
-            (self.native.ClientSize.Width) / self.scale_factor,
-            (
-                (self.native.ClientSize.Height - self.impl._top_bars_height())
-                / self.scale_factor
-            ),
+        client_size = self.client_size
+        return Size(
+            client_size.width,
+            client_size.height - (self.impl._top_bars_height() / self.scale_factor),
         )
 
     @property
-    def is_full_screen(self):
-        return (
-            self.native.FormBorderStyle == getattr(FormBorderStyle, "None")
-            and self.native.WindowState == FormWindowState.Maximized
+    def client_size(self):
+        return Size(
+            self.native.ClientSize.Width / self.scale_factor,
+            self.native.ClientSize.Height / self.scale_factor,
         )
 
     @property
@@ -74,54 +99,25 @@ class WindowProbe(BaseProbe):
     def unminimize(self):
         self.native.WindowState = FormWindowState.Normal
 
-    async def _close_dialog(self, *args, **kwargs):
-        # Give the inner event loop a chance to start. The MessageBox dialogs work with
-        # sleep(0), but the file dialogs require it to be positive for some reason.
-        await asyncio.sleep(0.001)
+    @property
+    def container_probe(self):
+        panels = [
+            control for control in self.native.Controls if isinstance(control, Panel)
+        ]
+        assert len(panels) == 1
+        return BaseProbe(panels[0])
 
-        await self.type_character(*args, **kwargs)
+    @property
+    def instantaneous_state(self):
+        return self.impl.get_window_state(in_progress_state=False)
 
-    async def close_info_dialog(self, dialog):
-        await self._close_dialog("\n")
+    @property
+    def menubar_probe(self):
+        return BaseProbe(bar) if (bar := self.native.MainMenuStrip) else None
 
-    async def close_question_dialog(self, dialog, result):
-        await self._close_dialog("y" if result else "n")
-
-    async def close_confirm_dialog(self, dialog, result):
-        await self._close_dialog("\n" if result else "<esc>")
-
-    async def close_error_dialog(self, dialog):
-        await self._close_dialog("\n")
-
-    async def close_stack_trace_dialog(self, dialog, result):
-        await self._close_dialog(
-            {None: "o", True: "r", False: "q"}[result],
-            alt=True,
-        )
-
-    async def close_save_file_dialog(self, dialog, result):
-        await self._close_dialog("\n" if result else "<esc>")
-
-    async def close_open_file_dialog(self, dialog, result, multiple_select):
-        if result is None:
-            await self._close_dialog("<esc>")
-        else:
-            if multiple_select:
-                # native.FileNames is read-only, and a .NET property can't be replaced
-                # with a mock, so we have to mock the entire native dialog.
-                dialog.native.FileName = str(result[0])  # Enable the OK button
-                dialog.native = Mock()
-                dialog.native.FileNames = [str(path) for path in result]
-            else:
-                dialog.native.FileName = str(result)
-            await self._close_dialog("\n")
-
-    async def close_select_folder_dialog(self, dialog, result, multiple_select):
-        if result is None:
-            await self._close_dialog("<esc>")
-        else:
-            dialog.native.SelectedPath = str(result[-1] if multiple_select else result)
-            await self._close_dialog("\n")
+    @property
+    def toolbar_probe(self):
+        return BaseProbe(bar) if (bar := self._native_toolbar()) else None
 
     def _native_toolbar(self):
         for control in self.native.Controls:

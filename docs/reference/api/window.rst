@@ -23,33 +23,41 @@ An operating system-managed container of widgets.
        :align: center
        :width: 300px
 
-  .. group-tab:: Android |no|
+  .. group-tab:: Android
 
-    Not supported
+    .. figure:: /reference/images/window-android.png
+       :align: center
+       :width: 300px
 
-  .. group-tab:: iOS |no|
+  .. group-tab:: iOS
 
-    Not supported
+    .. figure:: /reference/images/window-iOS.png
+       :align: center
+       :width: 300px
 
-  .. group-tab:: Web |no|
+  .. group-tab:: Web
 
-    Not supported
+    Screenshot not available
 
-  .. group-tab:: Textual |no|
+  .. group-tab:: Textual
 
-    Not supported
+    Screenshot not available
 
 Usage
 -----
 
-A window is the top-level container that the operating system uses to display widgets. A
-window may also have other decorations, such as a title bar or toolbar.
+A window is the top-level container that the operating system uses to display widgets.
+On desktop platforms, an instance of :class:`~toga.Window` will have a title bar, but
+will not have a menu or toolbar. On mobile, web and console platforms,
+:class:`~toga.Window` is a bare container with no other decoration. Subclasses of
+:class:`~toga.Window` (such as :class:`~toga.MainWindow`) add other decorations.
 
 When first created, a window is not visible. To display it, call the
-:meth:`~toga.Window.show` method.
+:meth:`~toga.Window.show` method. The title of the window will default to the
+formal name of the app.
 
 The window has content, which will usually be a container widget of some kind. The
-content of the window can be changed by re-assigning its `content` attribute to a
+content of the window can be changed by re-assigning its ``content`` attribute to a
 different widget.
 
 .. code-block:: python
@@ -73,6 +81,7 @@ Once a window has been closed (either by user action, or programmatically with
 
 Notes
 -----
+
 * The operating system may provide controls that allow the user to resize, reposition,
   minimize, maximize or close the window. However, the availability of these controls
   is entirely operating system dependent.
@@ -85,16 +94,27 @@ Notes
   avoid making UI design decisions that are dependent on specific size and
   placement of windows.
 
-* A mobile application can only have a single window (the :class:`~toga.MainWindow`),
-  and that window cannot be moved, resized, hidden, or made full screen. Toga will raise
-  an exception if you attempt to create a secondary window on a mobile platform. If you
-  try to modify the size, position, or visibility of the main window, the request will
-  be ignored.
+* A mobile application can only have a single window (the
+  :attr:`~toga.App.main_window`), and that window cannot be moved, resized, hidden, or
+  made full screen. Toga will raise an exception if you attempt to create a secondary
+  window on a mobile platform. If you try to modify the size, position, or visibility of
+  the main window, the request will be ignored.
+
+* On mobile platforms, a window's state cannot be :any:`WindowState.MINIMIZED` or
+  :any:`WindowState.MAXIMIZED`. Any request to move to these states will be ignored.
+
+* On Linux, when using Wayland, a request to put a window into a :any:`WindowState.MINIMIZED`
+  state, or to restore from the :any:`WindowState.MINIMIZED` state, will be ignored, and any
+  associated events like :meth:`~toga.Window.on_hide` and :meth:`~toga.Window.on_show`, will
+  not be triggered. This is due to limitations in window management features that Wayland
+  allows apps to use.
 
 Reference
 ---------
 
 .. autoclass:: toga.Window
+.. autoclass:: toga.app.WindowSet
 
+.. autoprotocol:: toga.window.Dialog
 .. autoprotocol:: toga.window.OnCloseHandler
 .. autoprotocol:: toga.window.DialogResultHandler

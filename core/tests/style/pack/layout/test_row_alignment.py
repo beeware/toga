@@ -1,4 +1,4 @@
-from toga.style.pack import BOTTOM, CENTER, COLUMN, ROW, TOP, Pack
+from toga.style.pack import CENTER, COLUMN, END, ROW, START, Pack
 
 from ..utils import ExampleNode, ExampleViewport, assert_layout
 
@@ -6,27 +6,27 @@ from ..utils import ExampleNode, ExampleViewport, assert_layout
 def test_top():
     root = ExampleNode(
         "root",
-        style=Pack(direction=ROW, alignment=TOP, width=300),
+        style=Pack(direction=ROW, align_items=START, width=300),
         children=[
             ExampleNode("space_filler", style=Pack(width=100, height=540)),
             ExampleNode(
                 "container",
-                style=Pack(direction=COLUMN, padding_top=110, padding_bottom=120),
+                style=Pack(direction=COLUMN, margin_top=110, margin_bottom=120),
                 children=[
                     ExampleNode(
                         "widget_a",
-                        style=Pack(height=30, padding_top=32, padding_bottom=34),
+                        style=Pack(height=30, margin_top=32, margin_bottom=34),
                     ),
                     ExampleNode(
                         "widget_b",
-                        style=Pack(height=36, padding_top=38, padding_bottom=40),
+                        style=Pack(height=36, margin_top=38, margin_bottom=40),
                     ),
                 ],
             ),
         ],
     )
 
-    root.style.layout(root, ExampleViewport(640, 480))
+    root.style.layout(ExampleViewport(640, 480))
     assert_layout(
         root,
         (300, 540),
@@ -52,27 +52,27 @@ def test_top():
 def test_center():
     root = ExampleNode(
         "root",
-        style=Pack(direction=ROW, alignment=CENTER, width=300),
+        style=Pack(direction=ROW, align_items=CENTER, width=300),
         children=[
             ExampleNode("space_filler", style=Pack(width=100, height=540)),
             ExampleNode(
                 "container",
-                style=Pack(direction=COLUMN, padding_top=110, padding_bottom=120),
+                style=Pack(direction=COLUMN, margin_top=110, margin_bottom=120),
                 children=[
                     ExampleNode(
                         "widget_a",
-                        style=Pack(height=30, padding_top=32, padding_bottom=34),
+                        style=Pack(height=30, margin_top=32, margin_bottom=34),
                     ),
                     ExampleNode(
                         "widget_b",
-                        style=Pack(height=36, padding_top=38, padding_bottom=40),
+                        style=Pack(height=36, margin_top=38, margin_bottom=40),
                     ),
                 ],
             ),
         ],
     )
 
-    root.style.layout(root, ExampleViewport(640, 480))
+    root.style.layout(ExampleViewport(640, 480))
     assert_layout(
         root,
         (300, 540),
@@ -98,27 +98,27 @@ def test_center():
 def test_bottom():
     root = ExampleNode(
         "root",
-        style=Pack(direction=ROW, alignment=BOTTOM, width=300),
+        style=Pack(direction=ROW, align_items=END, width=300),
         children=[
             ExampleNode("space_filler", style=Pack(width=100, height=540)),
             ExampleNode(
                 "container",
-                style=Pack(direction=COLUMN, padding_top=110, padding_bottom=120),
+                style=Pack(direction=COLUMN, margin_top=110, margin_bottom=120),
                 children=[
                     ExampleNode(
                         "widget_a",
-                        style=Pack(height=30, padding_top=32, padding_bottom=34),
+                        style=Pack(height=30, margin_top=32, margin_bottom=34),
                     ),
                     ExampleNode(
                         "widget_b",
-                        style=Pack(height=36, padding_top=38, padding_bottom=40),
+                        style=Pack(height=36, margin_top=38, margin_bottom=40),
                     ),
                 ],
             ),
         ],
     )
 
-    root.style.layout(root, ExampleViewport(640, 480))
+    root.style.layout(ExampleViewport(640, 480))
     assert_layout(
         root,
         (300, 540),
@@ -141,17 +141,17 @@ def test_bottom():
     )
 
 
-def test_no_padding():
+def test_no_margin():
     root = ExampleNode(
         "root",
-        style=Pack(direction=ROW, alignment=CENTER, width=300),
+        style=Pack(direction=ROW, align_items=CENTER, width=300),
         children=[
             ExampleNode("space_filler", style=Pack(width=100, height=540)),
             ExampleNode("widget", style=Pack(height=440)),
         ],
     )
 
-    root.style.layout(root, ExampleViewport(640, 480))
+    root.style.layout(ExampleViewport(640, 480))
     assert_layout(
         root,
         (300, 540),
@@ -170,23 +170,23 @@ def test_no_padding():
 def test_row_box():
     root = ExampleNode(
         "root",
-        style=Pack(direction=ROW, alignment=CENTER),
+        style=Pack(direction=ROW, align_items=CENTER),
         children=[
             ExampleNode("space_filler", style=Pack(width=100, height=430)),
             ExampleNode(
                 "container",
-                style=Pack(direction=ROW, padding_top=110, padding_bottom=120),
+                style=Pack(direction=ROW, margin_top=110, margin_bottom=120),
                 children=[
                     ExampleNode(
                         "widget_a",
                         style=Pack(
-                            width=30, height=100, padding_left=32, padding_right=34
+                            width=30, height=100, margin_left=32, margin_right=34
                         ),
                     ),
                     ExampleNode(
                         "widget_b",
                         style=Pack(
-                            width=36, height=100, padding_left=38, padding_right=40
+                            width=36, height=100, margin_left=38, margin_right=40
                         ),
                     ),
                 ],
@@ -194,7 +194,7 @@ def test_row_box():
         ],
     )
 
-    root.style.layout(root, ExampleViewport(640, 480))
+    root.style.layout(ExampleViewport(640, 480))
     assert_layout(
         root,
         (310, 430),
