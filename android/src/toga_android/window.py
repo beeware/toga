@@ -26,7 +26,6 @@ class LayoutListener(dynamic_proxy(ViewTreeObserver.OnGlobalLayoutListener)):
         """
         native_parent = self.window.native_content.getParent()
         self.window.resize_content(native_parent.getWidth(), native_parent.getHeight())
-        self.window.interface.on_resize()
 
 
 class Window(Container):

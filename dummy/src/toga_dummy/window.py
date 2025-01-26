@@ -110,6 +110,3 @@ class Window(LoggedObject):
     def get_current_screen(self):
         # `window.screen` will return `Secondary Screen`
         return ScreenImpl(native=("Secondary Screen", (-1366, -768), (1366, 768)))
-
-    def simulate_on_resize(self):
-        self.interface.on_resize()
