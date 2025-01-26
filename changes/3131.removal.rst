@@ -1,0 +1,1 @@
+Requests for resizing window to the same size as current, are now ignored.
