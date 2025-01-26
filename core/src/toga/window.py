@@ -443,9 +443,10 @@ class Window:
     def size(self, size: SizeT) -> None:
         if self.state in {WindowState.FULLSCREEN, WindowState.PRESENTATION}:
             raise RuntimeError(f"Cannot resize window while in {self.state}")
-        self._impl.set_size(size)
-        if self.content:
-            self.content.refresh()
+        elif self.size != size:
+            self._impl.set_size(size)
+            if self.content:
+                self.content.refresh()
 
     ######################################################################
     # Window position
