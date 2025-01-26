@@ -1066,32 +1066,29 @@ else:
             )
         ],
     )
-    async def test_on_resize(second_window, second_window_probe):
-        if toga.platform.current_platform in {"android", "iOS", "web"}:
-            pytest.xfail("Window.on_resize is non functional on current platform.")
+    async def test_resize_event(second_window, second_window_probe):
+        second_window.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
+        second_window.show()
         second_window_on_resize_handler = Mock()
         second_window.on_resize = second_window_on_resize_handler
-
-        second_window.show()
         await second_window_probe.wait_for_window("Main window has been shown")
-
         initial_size = second_window.size
 
-        # Resize the window, on_resize will be triggered
+        # Resize the window, on_resize() will be triggered
         second_window.size = (200, 150)
         await second_window_probe.wait_for_window("Main window has been resized")
         assert second_window.size == (200, 150)
         second_window_on_resize_handler.assert_called_with(second_window)
         second_window_on_resize_handler.reset_mock()
 
-        # Resize to initial size, on_resize will be triggered
+        # Resize to initial size, on_resize() will be triggered
         second_window.size = initial_size
         await second_window_probe.wait_for_window("Main window has been resized")
         assert second_window.size == initial_size
         second_window_on_resize_handler.assert_called_with(second_window)
         second_window_on_resize_handler.reset_mock()
 
-        # Again resize to initial size, on_resize will not be triggered
+        # Again resize to initial size, on_resize() will not be triggered
         second_window.size = initial_size
         await second_window_probe.wait_for_window("Main window has been resized")
         assert second_window.size == initial_size

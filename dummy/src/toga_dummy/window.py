@@ -103,7 +103,9 @@ class Window(LoggedObject):
         return self._get_value("size", Size(640, 480))
 
     def set_size(self, size):
-        self._set_value("size", size)
+        if self.get_size() != size:
+            self._set_value("size", size)
+            self.interface.on_resize()
 
     ######################################################################
     # Window position
@@ -173,9 +175,6 @@ class Window(LoggedObject):
         result = self.interface.on_close()
         if isinstance(result, asyncio.Task):
             self.interface.app.loop.run_until_complete(result)
-
-    def simulate_on_resize(self):
-        self.interface.on_resize()
 
 
 class MainWindow(Window):

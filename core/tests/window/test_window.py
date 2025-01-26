@@ -750,17 +750,33 @@ def test_visibility_events(window):
     assert_window_on_show(window)
 
 
-def test_on_resize(window):
+def test_resize_event(window):
+    """The window can trigger on_resize() event handler, when the window
+    size is changed."""
+    window.show()
     assert window.on_resize._raw is None
+    window_on_resize_handler = Mock()
+    window.on_resize = window_on_resize_handler
+    assert window.on_resize._raw == window_on_resize_handler
+    initial_size = window.size
 
-    on_resize_handler = Mock()
-    window.on_resize = on_resize_handler
+    # Resize the window, on_resize() will be triggered
+    window.size = (200, 150)
+    assert window.size == (200, 150)
+    window_on_resize_handler.assert_called_with(window)
+    window_on_resize_handler.reset_mock()
 
-    assert window.on_resize._raw == on_resize_handler
+    # Resize to initial size, on_resize() will be triggered
+    window.size = initial_size
+    assert window.size == initial_size
+    window_on_resize_handler.assert_called_with(window)
+    window_on_resize_handler.reset_mock()
 
-    window._impl.simulate_on_resize()
-
-    on_resize_handler.assert_called_once_with(window)
+    # Again request for resizing to initial size, on_resize()
+    # will not be triggered
+    window.size = initial_size
+    assert window.size == initial_size
+    window_on_resize_handler.assert_not_called()
 
 
 def test_as_image(window):
