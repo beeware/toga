@@ -13,8 +13,13 @@ class Widget:
         self.native = None
         self.create()
 
-        # Override this attribute to set a different default background
-        # color for a given widget.
+        # Many widgets have a "transparent" background; however, some widgets use
+        # UIColor.ClearColor, and some use UIExtendedGrayColorSpace 0 0, which has
+        # slightly different color mixing characteristics. Widgets like TextInput use
+        # `None` as their initial background color, so that always adapts to light/dark
+        # mode. Preserve the initial background color on the freshly created widget so
+        # that we can reset back to that color when background_color is set to None. See
+        # #3104 for details.
         self._default_background_color = self.native.backgroundColor
 
     @abstractmethod
