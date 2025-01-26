@@ -750,6 +750,19 @@ def test_visibility_events(window):
     assert_window_on_show(window)
 
 
+def test_on_resize(window):
+    assert window.on_resize._raw is None
+
+    on_resize_handler = Mock()
+    window.on_resize = on_resize_handler
+
+    assert window.on_resize._raw == on_resize_handler
+
+    window._impl.simulate_on_resize()
+
+    on_resize_handler.assert_called_once_with(window)
+
+
 def test_as_image(window):
     """A window can be captured as an image."""
     image = window.as_image()

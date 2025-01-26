@@ -158,6 +158,16 @@ class OnHideHandler(Protocol):
         ...
 
 
+class OnResizeHandler(Protocol):
+    def __call__(self, window: Window, **kwargs: Any) -> None:
+        """A handler to invoke when a window resizes.
+        :param window: The window instance that resizes.
+        :param kwargs: Ensures compatibility with additional arguments introduced in
+            future ver
+        """
+        ...
+
+
 _DialogResultT = TypeVar("_DialogResultT")
 
 
@@ -197,6 +207,7 @@ class Window:
         on_lose_focus: OnLoseFocusHandler | None = None,
         on_show: OnShowHandler | None = None,
         on_hide: OnHideHandler | None = None,
+        on_resize: OnResizeHandler | None = None,
         content: Widget | None = None,
     ) -> None:
         """Create a new Window.
@@ -253,6 +264,8 @@ class Window:
         self.on_lose_focus = on_lose_focus
         self.on_show = on_show
         self.on_hide = on_hide
+
+        self.on_resize = on_resize
 
     def __lt__(self, other: Window) -> bool:
         return self.id < other.id
@@ -650,6 +663,15 @@ class Window:
     @on_hide.setter
     def on_hide(self, handler):
         self._on_hide = wrapped_handler(self, handler)
+
+    @property
+    def on_resize(self) -> OnResizeHandler:
+        """The handler to invoke when the window resizes."""
+        return self._on_resize
+
+    @on_resize.setter
+    def on_resize(self, handler):
+        self._on_resize = wrapped_handler(self, handler)
 
     ######################################################################
     # 2024-06: Backwards compatibility for <= 0.4.5

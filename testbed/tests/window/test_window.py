@@ -1057,6 +1057,27 @@ else:
         await second_window_probe.wait_for_window(f"Showing {second_window.title}")
         assert_window_on_show(second_window)
 
+    async def test_on_resize(main_window, main_window_probe):
+        if toga.platform.current_platform in {"android", "iOS", "web"}:
+            pytest.xfail("Window.on_resize is non functional on current platform.")
+        main_window_on_resize_handler = Mock()
+        main_window.on_resize = main_window_on_resize_handler
+
+        main_window.show()
+        await main_window_probe.wait_for_window("Main window has been shown")
+
+        initial_size = main_window.size
+
+        main_window.size = (200, 150)
+        await main_window_probe.wait_for_window("Main window has been resized")
+        assert main_window.size == (200, 150)
+
+        main_window_on_resize_handler.assert_called_with(main_window)
+
+        main_window.size = initial_size
+        await main_window_probe.wait_for_window("Main window has been resized")
+        assert main_window.size == initial_size
+
     @pytest.mark.parametrize(
         "second_window_class, second_window_kwargs",
         [

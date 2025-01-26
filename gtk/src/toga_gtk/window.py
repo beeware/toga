@@ -35,6 +35,7 @@ class Window:
         self.native.connect("window-state-event", self.gtk_window_state_event)
         self.native.connect("focus-in-event", self.gtk_focus_in_event)
         self.native.connect("focus-out-event", self.gtk_focus_out_event)
+        self.native.connect("configure-event", self.gtk_configure_event)
 
         self._window_state_flags = None
         self._in_presentation = False
@@ -71,6 +72,9 @@ class Window:
     ######################################################################
     # Native event handlers
     ######################################################################
+    def gtk_configure_event(self, widget, data):
+        self.interface.on_resize()
+
     def gtk_show(self, widget):
         self.interface.on_show()
 
@@ -143,9 +147,6 @@ class Window:
                     )
                 else:  # pragma: no-cover-if-linux-wayland
                     self._apply_state(self._pending_state_transition)
-
-    def gtk_configure_event(self, widget, data):
-        self.interface.on_resize()
 
     def gtk_delete_event(self, widget, data):
         # Return value of the GTK on_close handler indicates whether the event has been

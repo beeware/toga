@@ -174,6 +174,9 @@ class Window(LoggedObject):
         if isinstance(result, asyncio.Task):
             self.interface.app.loop.run_until_complete(result)
 
+    def simulate_on_resize(self):
+        self.interface.on_resize()
+
 
 class MainWindow(Window):
 

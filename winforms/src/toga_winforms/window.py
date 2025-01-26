@@ -98,6 +98,8 @@ class Window(Container, Scalable):
         if self.get_current_screen().dpi_scale != self._dpi_scale:
             self.update_dpi()
 
+        self.interface.on_resize()
+
     def winforms_FormClosing(self, sender, event):
         # If the app is exiting, do nothing; we've already approved the exit
         # (and thus the window close). This branch can't be triggered in test
