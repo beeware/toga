@@ -1057,26 +1057,45 @@ else:
         await second_window_probe.wait_for_window(f"Showing {second_window.title}")
         assert_window_on_show(second_window)
 
-    async def test_on_resize(main_window, main_window_probe):
+    @pytest.mark.parametrize(
+        "second_window_class, second_window_kwargs",
+        [
+            (
+                toga.Window,
+                dict(title="Secondary Window", position=(200, 150)),
+            )
+        ],
+    )
+    async def test_on_resize(second_window, second_window_probe):
         if toga.platform.current_platform in {"android", "iOS", "web"}:
             pytest.xfail("Window.on_resize is non functional on current platform.")
-        main_window_on_resize_handler = Mock()
-        main_window.on_resize = main_window_on_resize_handler
+        second_window_on_resize_handler = Mock()
+        second_window.on_resize = second_window_on_resize_handler
 
-        main_window.show()
-        await main_window_probe.wait_for_window("Main window has been shown")
+        second_window.show()
+        await second_window_probe.wait_for_window("Main window has been shown")
 
-        initial_size = main_window.size
+        initial_size = second_window.size
 
-        main_window.size = (200, 150)
-        await main_window_probe.wait_for_window("Main window has been resized")
-        assert main_window.size == (200, 150)
+        # Resize the window, on_resize will be triggered
+        second_window.size = (200, 150)
+        await second_window_probe.wait_for_window("Main window has been resized")
+        assert second_window.size == (200, 150)
+        second_window_on_resize_handler.assert_called_with(second_window)
+        second_window_on_resize_handler.reset_mock()
 
-        main_window_on_resize_handler.assert_called_with(main_window)
+        # Resize to initial size, on_resize will be triggered
+        second_window.size = initial_size
+        await second_window_probe.wait_for_window("Main window has been resized")
+        assert second_window.size == initial_size
+        second_window_on_resize_handler.assert_called_with(second_window)
+        second_window_on_resize_handler.reset_mock()
 
-        main_window.size = initial_size
-        await main_window_probe.wait_for_window("Main window has been resized")
-        assert main_window.size == initial_size
+        # Again resize to initial size, on_resize will not be triggered
+        second_window.size = initial_size
+        await second_window_probe.wait_for_window("Main window has been resized")
+        assert second_window.size == initial_size
+        second_window_on_resize_handler.assert_not_called()
 
     @pytest.mark.parametrize(
         "second_window_class, second_window_kwargs",

@@ -91,14 +91,13 @@ class Window(Container, Scalable):
     ######################################################################
 
     def winforms_Resize(self, sender, event):
-        if self.native.WindowState != WinForms.FormWindowState.Minimized:
+        if self.get_window_state() != WindowState.MINIMIZED:
             self.resize_content()
+            self.interface.on_resize()
 
         # See DisplaySettingsChanged in app.py.
         if self.get_current_screen().dpi_scale != self._dpi_scale:
             self.update_dpi()
-
-        self.interface.on_resize()
 
     def winforms_FormClosing(self, sender, event):
         # If the app is exiting, do nothing; we've already approved the exit
