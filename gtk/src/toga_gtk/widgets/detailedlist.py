@@ -162,7 +162,7 @@ class DetailedList(Widget):
         self.gesture.set_propagation_phase(Gtk.PropagationPhase.BUBBLE)
         self.gesture.connect("pressed", self.gtk_on_right_click)
 
-        # Set up a box that contains action buttons. This widget can be can be re-used
+        # Set up a box that contains action buttons. This widget can be can be reused
         # for any row when it is activated.
         self.native_action_buttons = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
         action_buttons_hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
