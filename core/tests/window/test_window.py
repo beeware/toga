@@ -803,7 +803,7 @@ def test_widget_id_reusablity(window, app):
     try:
         new_label_widget = toga.Label(text="New Label", id=LABEL_WIDGET_ID)
     except KeyError:
-        pytest.fail("Widget IDs that aren't part of a layout can be re-used.")
+        pytest.fail("Widget IDs that aren't part of a layout can be reused.")
 
     # Create 2 new visible windows
     second_window = toga.Window()
@@ -827,7 +827,7 @@ def test_widget_id_reusablity(window, app):
     assert CONTENT_WIDGET_ID not in third_window.widgets
     assert LABEL_WIDGET_ID not in third_window.widgets
 
-    # Adding content that has a child with a re-used ID should raise an error
+    # Adding content that has a child with a reused ID should raise an error
     with pytest.raises(
         KeyError,
         match=r"There is already a widget with the id 'sample_label'",
@@ -836,7 +836,7 @@ def test_widget_id_reusablity(window, app):
     assert CONTENT_WIDGET_ID not in third_window.widgets
     assert LABEL_WIDGET_ID not in third_window.widgets
 
-    # Adding a child with a re-used ID should raise an error.
+    # Adding a child with a reused ID should raise an error.
     third_window.content = third_window_content
     with pytest.raises(
         KeyError,
@@ -850,13 +850,13 @@ def test_widget_id_reusablity(window, app):
     try:
         another_label_widget = toga.Label(text="Another Label", id=LABEL_WIDGET_ID)
     except KeyError:
-        pytest.fail("Widget IDs that aren't part of a layout can be re-used.")
+        pytest.fail("Widget IDs that aren't part of a layout can be reused.")
 
-    # If a widget using an ID is being *replaced*, the ID can be re-used.
+    # If a widget using an ID is being *replaced*, the ID can be reused.
     try:
         second_window.content = another_label_widget
     except KeyError:
-        pytest.fail("Widget IDs that are replaced can be re-used.")
+        pytest.fail("Widget IDs that are replaced can be reused.")
 
     # Close Window 2
     second_window.close()
@@ -867,7 +867,7 @@ def test_widget_id_reusablity(window, app):
     try:
         third_window_content.add(new_label_widget)
     except KeyError:
-        pytest.fail("Widget IDs that are replaced can be re-used.")
+        pytest.fail("Widget IDs that are replaced can be reused.")
 
     third_window.close()
 
