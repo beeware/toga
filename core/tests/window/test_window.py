@@ -232,9 +232,18 @@ def test_position_cascade(app):
 
 def test_set_size(window):
     """The size of the window can be set."""
+    # Request for resizing to a new window size.
     window.size = (123, 456)
 
     assert window.size == toga.Size(123, 456)
+    assert_action_performed(window, "set size")
+    EventLog.reset()
+
+    # Again request for resizing to the same window size.
+    window.size = (123, 456)
+
+    assert window.size == toga.Size(123, 456)
+    assert_action_not_performed(window, "set size")
 
 
 def test_set_size_with_content(window):
@@ -242,10 +251,20 @@ def test_set_size_with_content(window):
     content = toga.Box()
     window.content = content
 
+    # Request for resizing to a new window size.
     window.size = (123, 456)
 
     assert window.size == toga.Size(123, 456)
+    assert_action_performed(window, "set size")
     assert_action_performed(content, "refresh")
+    EventLog.reset()
+
+    # Again request for resizing to the same window size.
+    window.size = (123, 456)
+
+    assert window.size == toga.Size(123, 456)
+    assert_action_not_performed(window, "set size")
+    assert_action_not_performed(content, "refresh")
 
 
 def test_show_hide(window, app):
