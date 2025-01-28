@@ -56,7 +56,7 @@ class Widget(Scalable, ABC):
         #       instead of the native Color. This is because we need to manually do the
         #       alpha blending, and the native Color class does not directly handle the
         #       alpha transparency in the same way.
-        if getattr(self, "_default_background_color", None) is None:
+        if not hasattr(self, "_default_background_color"):
             # If a widget hasn't specifically defined a default background color then
             # set the system assigned background color as the default background color
             # of the widget.
