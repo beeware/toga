@@ -101,13 +101,27 @@ class Choices:
 
 
 class validated_property:
-    def __init__(self, choices, initial=None):
+    def __init__(
+        self,
+        *constants,
+        string=False,
+        integer=False,
+        number=False,
+        color=False,
+        initial=None,
+    ):
         """Define a simple validated property attribute.
 
-        :param choices: The available choices.
+        :param constants: Explicitly allowable values.
+        :param string: Are strings allowed as values?
+        :param integer: Are integers allowed as values?
+        :param number: Are numbers allowed as values?
+        :param color: Are colors allowed as values?
         :param initial: The initial value for the property.
         """
-        self.choices = choices
+        self.choices = Choices(
+            *constants, string=string, integer=integer, number=number, color=color
+        )
         self.initial = None
 
         try:
@@ -119,7 +133,7 @@ class validated_property:
             # Unfortunately, __set_name__ hasn't been called yet, so we don't know the
             # property's name.
             raise ValueError(
-                f"Invalid initial value {initial!r}. Available choices: {choices}"
+                f"Invalid initial value {initial!r}. Available choices: {self.choices}"
             )
 
     def __set_name__(self, owner, name):
@@ -444,7 +458,14 @@ class BaseStyle:
             DeprecationWarning,
             stacklevel=2,
         )
-        prop = validated_property(choices, initial)
+        prop = validated_property(
+            *choices.constants,
+            string=choices.string,
+            integer=choices.integer,
+            number=choices.number,
+            color=choices.color,
+            initial=initial,
+        )
         setattr(cls, name, prop)
         prop.__set_name__(cls, name)
 

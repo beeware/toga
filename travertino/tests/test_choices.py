@@ -13,21 +13,21 @@ from .utils import mock_attr, prep_style_class
 
 @prep_style_class
 class Style(BaseStyle):
-    none: str = validated_property(choices=Choices(NONE, REBECCAPURPLE), initial=NONE)
-    allow_string: str = validated_property(
-        choices=Choices(string=True), initial="start"
-    )
-    allow_integer: int = validated_property(choices=Choices(integer=True), initial=0)
-    allow_number: float = validated_property(choices=Choices(number=True), initial=0)
-    allow_color: str = validated_property(
-        choices=Choices(color=True), initial="goldenrod"
-    )
-    values: str = validated_property(choices=Choices("a", "b", NONE), initial="a")
+    none: str = validated_property(NONE, REBECCAPURPLE, initial=NONE)
+    allow_string: str = validated_property(string=True, initial="start")
+    allow_integer: int = validated_property(integer=True, initial=0)
+    allow_number: float = validated_property(number=True, initial=0)
+    allow_color: str = validated_property(color=True, initial="goldenrod")
+    values: str = validated_property("a", "b", NONE, initial="a")
     multiple_choices: str | float = validated_property(
-        choices=Choices("a", "b", NONE, number=True, color=True),
+        "a",
+        "b",
+        NONE,
+        number=True,
+        color=True,
         initial=None,
     )
-    string_symbol: str = validated_property(choices=Choices(TOP, NONE))
+    string_symbol: str = validated_property(TOP, NONE)
 
 
 with catch_warnings():
