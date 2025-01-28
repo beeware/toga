@@ -55,8 +55,11 @@ class Window(LoggedObject):
 
         self.set_title(title)
         self.set_position(position if position is not None else _initial_position())
-        self.set_size(size)
 
+        # We cannot store the following values on the EventLog, since they
+        # would be cleared on EventLog.reset(), thereby preventing us from
+        # testing no-op condition of requesting the same value as current.
+        self._size = size if size else Size(640, 480)
         self._state = WindowState.NORMAL
         self._visible = False
 
@@ -100,13 +103,12 @@ class Window(LoggedObject):
     ######################################################################
 
     def get_size(self) -> Size:
-        return self._get_value("size", Size(640, 480))
+        return self._size
 
     def set_size(self, size):
-        if self.get_size() != size:
-            self._set_value("size", size)
-            if self._get_value("size", None) is not None:
-                self.interface.on_resize()
+        self._action("set size")
+        self._size = size
+        self.interface.on_resize()
 
     ######################################################################
     # Window position
@@ -127,9 +129,6 @@ class Window(LoggedObject):
     ######################################################################
 
     def get_visible(self):
-        # We cannot store the visibility value on the EventLog, since the value
-        # would be cleared on EventLog.reset(), thereby preventing us from
-        # testing no-op condition of requesting the same visibility as current.
         return self._visible
 
     def hide(self):
@@ -148,9 +147,6 @@ class Window(LoggedObject):
         previous_state = self._state
 
         self._action(f"set window state to {state}", state=state)
-        # We cannot store the state value on the EventLog, since the state
-        # value would be cleared on EventLog.reset(), thereby preventing us
-        # from testing no-op condition of assigning same state as current.
         self._state = state
         current_state = self._state
         if previous_state != current_state:
