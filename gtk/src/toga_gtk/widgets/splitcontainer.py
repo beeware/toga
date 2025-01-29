@@ -100,3 +100,5 @@ class SplitContainer(Widget):
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             self.interface.intrinsic.width = at_least(min_width)
             self.interface.intrinsic.height = at_least(min_height)
+        else:  # pragma: no-cover-if-gtk3
+            pass

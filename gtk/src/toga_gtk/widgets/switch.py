@@ -71,3 +71,5 @@ class Switch(Widget):
             )
             # Set intrinsic height to the natural height
             self.interface.intrinsic.height = max(label_height[1], switch_height[1])
+        else:  # pragma: no-cover-if-gtk3
+            pass

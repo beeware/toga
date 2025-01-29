@@ -22,6 +22,8 @@ class DetailedListRow(Gtk.ListBoxRow):
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             self.stack.set_homogeneous(True)
             self.add(self.stack)
+        else:  # pragma: no-cover-if-gtk3
+            pass
 
         self.content = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
 
@@ -45,6 +47,8 @@ class DetailedListRow(Gtk.ListBoxRow):
 
             # Make sure the widgets have been made visible.
             self.show_all()
+        else:  # pragma: no-cover-if-gtk3
+            pass
 
     def update(self, dl, row):
         """Update the contents of the rendered row, using data from `row`,
@@ -114,6 +118,8 @@ class DetailedList(Widget):
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             self.native_detailedlist.set_selection_mode(Gtk.SelectionMode.SINGLE)
             self.native_detailedlist.connect("row-selected", self.gtk_on_row_selected)
+        else:  # pragma: no-cover-if-gtk3
+            pass
 
         self.store = Gio.ListStore()
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
@@ -121,20 +127,26 @@ class DetailedList(Widget):
             # store into a `Gtk.ListBoxRow`, but the items in the store already
             # are `Gtk.ListBoxRow`, so this is the identity function.
             self.native_detailedlist.bind_model(self.store, lambda a: a)
+        else:  # pragma: no-cover-if-gtk3
+            pass
 
-            # Put the ListBox into a vertically scrolling window.
+        # Put the ListBox into a vertically scrolling window.
         scrolled_window = Gtk.ScrolledWindow()
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             scrolled_window.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
             scrolled_window.set_min_content_width(self.interface._MIN_WIDTH)
             scrolled_window.set_min_content_height(self.interface._MIN_HEIGHT)
             scrolled_window.add(self.native_detailedlist)
+        else:  # pragma: no-cover-if-gtk3
+            pass
 
         self.native_vadj = scrolled_window.get_vadjustment()
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             self.native_vadj.connect("value-changed", self.gtk_on_value_changed)
+        else:  # pragma: no-cover-if-gtk3
+            pass
 
-            # Define a revealer widget that can be used to show/hide with a crossfade.
+        # Define a revealer widget that can be used to show/hide with a crossfade.
         self.native_revealer = Gtk.Revealer()
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             self.native_revealer.set_transition_type(
@@ -159,6 +171,8 @@ class DetailedList(Widget):
 
             # Add the refresh button to the revealer
             self.native_revealer.add(self.native_refresh_button)
+        else:  # pragma: no-cover-if-gtk3
+            pass
 
         # The actual native widget is an overlay, made up of the scrolled window, with
         # the revealer over the top.
@@ -183,6 +197,8 @@ class DetailedList(Widget):
             #     "user-trash-symbolic", Gtk.IconSize.BUTTON
             # )
             action_buttons_hbox.pack_start(Gtk.Box(), True, True, 0)
+        else:  # pragma: no-cover-if-gtk3
+            pass
 
         self.native_primary_action_button = Gtk.Button.new_with_label(
             self.interface._primary_action
@@ -199,6 +215,8 @@ class DetailedList(Widget):
             # self.native_secondary_action_button = Gtk.Button.new_from_icon_name(
             #     "user-trash-symbolic", Gtk.IconSize.BUTTON
             # )
+        else:  # pragma: no-cover-if-gtk3
+            pass
         self.native_secondary_action_button = Gtk.Button.new_with_label(
             self.interface._secondary_action
         )
@@ -214,6 +232,8 @@ class DetailedList(Widget):
 
             self.native_action_buttons.pack_start(action_buttons_hbox, True, False, 0)
             self.native_action_buttons.show_all()
+        else:  # pragma: no-cover-if-gtk3
+            pass
 
     def row_factory(self, item):
         return DetailedListRow(self.interface, item)
@@ -342,3 +362,5 @@ class DetailedList(Widget):
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
             self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
+        else:  # pragma: no-cover-if-gtk3
+            pass

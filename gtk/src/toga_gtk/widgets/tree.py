@@ -23,6 +23,8 @@ class Tree(Widget):
             self.selection.connect("changed", self.gtk_on_select)
 
             self._create_columns()
+        else:  # pragma: no-cover-if-gtk3
+            pass
 
         self.native = Gtk.ScrolledWindow()
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
@@ -30,6 +32,8 @@ class Tree(Widget):
             self.native.add(self.native_tree)
             self.native.set_min_content_width(200)
             self.native.set_min_content_height(200)
+        else:  # pragma: no-cover-if-gtk3
+            pass
 
     def _create_columns(self):
         if self.interface.headings:
@@ -83,6 +87,8 @@ class Tree(Widget):
 
             self.native_tree.set_model(self.store)
             self.refresh()
+        else:  # pragma: no-cover-if-gtk3
+            pass
 
     def insert(self, parent, index, item):
         row = TogaRow(item)
@@ -153,3 +159,5 @@ class Tree(Widget):
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
             self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
+        else:  # pragma: no-cover-if-gtk3
+            pass

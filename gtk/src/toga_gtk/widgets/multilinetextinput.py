@@ -45,6 +45,8 @@ class MultilineTextInput(Widget):
             self.native_textview.connect("key-press-event", self.gtk_on_key_press)
 
             self.native.add(self.native_textview)
+        else:  # pragma: no-cover-if-gtk3
+            pass
 
     def set_color(self, color):
         self.apply_css(
@@ -151,6 +153,8 @@ class MultilineTextInput(Widget):
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
             self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
+        else:  # pragma: no-cover-if-gtk3
+            pass
 
     def scroll_to_bottom(self):
         self.buffer.place_cursor(self.buffer.get_end_iter())

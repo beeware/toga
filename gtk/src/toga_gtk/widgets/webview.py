@@ -128,3 +128,5 @@ class WebView(Widget):
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
             self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
+        else:  # pragma: no-cover-if-gtk3
+            pass

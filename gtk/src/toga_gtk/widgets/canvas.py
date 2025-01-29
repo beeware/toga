@@ -34,6 +34,8 @@ class Canvas(Widget):
                 | Gdk.EventMask.BUTTON_RELEASE_MASK
                 | Gdk.EventMask.BUTTON_MOTION_MASK
             )
+        else:  # pragma: no-cover-if-gtk3
+            pass
 
     def gtk_draw_callback(self, widget, cairo_context):
         """Creates a draw callback.

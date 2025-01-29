@@ -33,6 +33,8 @@ class OptionContainer(Widget):
             # Tabs aren't visible by default;
             # tell the notebook to show all content.
             self.native.show_all()
+        else:  # pragma: no-cover-if-gtk3
+            pass
 
     def remove_option(self, index):
         self.native.remove_page(index)

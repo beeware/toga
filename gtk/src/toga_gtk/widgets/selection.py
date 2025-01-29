@@ -104,3 +104,5 @@ class Selection(Widget):
                 max(self.interface._MIN_WIDTH, width[1])
             )
             self.interface.intrinsic.height = height[1]
+        else:  # pragma: no-cover-if-gtk3
+            pass

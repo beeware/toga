@@ -88,6 +88,8 @@ class TextInput(Widget):
                 max(self.interface._MIN_WIDTH, width[1])
             )
             self.interface.intrinsic.height = height[1]
+        else:  # pragma: no-cover-if-gtk3
+            pass
 
     def set_error(self, error_message):
         self.native.set_icon_from_icon_name(Gtk.EntryIconPosition.SECONDARY, "error")

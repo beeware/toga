@@ -28,3 +28,5 @@ class ActivityIndicator(Widget):
 
             self.interface.intrinsic.width = width[0]
             self.interface.intrinsic.height = height[0]
+        else:  # pragma: no-cover-if-gtk3
+            pass

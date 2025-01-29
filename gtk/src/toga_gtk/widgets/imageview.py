@@ -9,6 +9,8 @@ class ImageView(Widget):
         self.native = Gtk.Image()
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             self.native.connect("size-allocate", self.gtk_size_allocate)
+        else:  # pragma: no-cover-if-gtk3
+            pass
         self._aspect_ratio = None
 
     def set_image(self, image):
@@ -65,3 +67,5 @@ class ImageView(Widget):
             )
             self.interface.intrinsic.width = width
             self.interface.intrinsic.height = height
+        else:  # pragma: no-cover-if-gtk3
+            pass

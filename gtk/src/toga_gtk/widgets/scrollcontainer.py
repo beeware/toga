@@ -23,6 +23,8 @@ class ScrollContainer(Widget):
         self.document_container = TogaContainer()
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             self.native.add(self.document_container)
+        else:  # pragma: no-cover-if-gtk3
+            pass
 
     def gtk_on_changed(self, *args):
         self.interface.on_scroll()
@@ -33,6 +35,8 @@ class ScrollContainer(Widget):
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             # Force the display of the new content
             self.native.show_all()
+        else:  # pragma: no-cover-if-gtk3
+            pass
 
     def set_app(self, app):
         self.interface.content.app = app
@@ -44,6 +48,8 @@ class ScrollContainer(Widget):
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
             self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
+        else:  # pragma: no-cover-if-gtk3
+            pass
 
     def get_horizontal(self):
         return self.native.get_policy()[0] == Gtk.PolicyType.AUTOMATIC

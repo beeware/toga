@@ -41,6 +41,8 @@ class SimpleStatusIcon(StatusIcon):
         super().create()
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             self.native.connect("activate", self.gtk_activate)
+        else:  # pragma: no-cover-if-gtk3
+            pass
 
     def gtk_activate(self, icon, button, time):
         self.interface.on_press()

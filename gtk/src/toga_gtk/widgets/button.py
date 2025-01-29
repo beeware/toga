@@ -64,6 +64,8 @@ class Button(Widget):
 
             self.interface.intrinsic.width = at_least(width[0])
             self.interface.intrinsic.height = height[1]
+        else:  # pragma: no-cover-if-gtk3
+            pass
 
     def gtk_clicked(self, event):
         self.interface.on_press()

@@ -98,7 +98,7 @@ class Window:
             previous_window_state_flags = self._window_state_flags
             # Get the window state flags
             self._window_state_flags = event.new_window_state
-        else:
+        else:  # pragma: no-cover-if-gtk3
             previous_window_state_flags = None
             self._window_state_flags = None
         previous_state = self.get_window_state()
@@ -119,6 +119,8 @@ class Window:
                     if previous_window_state_flags & flag:
                         self._window_state_flags |= flag
                         break
+        else:  # pragma: no-cover-if-gtk3
+            pass
 
         # Trigger the appropriate visibility events
         # Wayland doesn't allow for the detection of MINIMIZED, so the
@@ -444,6 +446,8 @@ class MainWindow(Window):
             self.native_toolbar.set_style(Gtk.ToolbarStyle.BOTH)
             self.toolbar_items = {}
             self.toolbar_separators = set()
+        else:  # pragma: no-cover-if-gtk3
+            pass
 
     def create_menus(self):
         # GTK menus are handled at the app level

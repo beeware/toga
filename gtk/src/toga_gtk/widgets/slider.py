@@ -95,3 +95,5 @@ class Slider(Widget, SliderImpl):
             self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
             # Set intrinsic height to the natural height
             self.interface.intrinsic.height = height[1]
+        else:  # pragma: no-cover-if-gtk3
+            pass

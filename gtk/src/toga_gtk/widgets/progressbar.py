@@ -103,3 +103,5 @@ class ProgressBar(Widget):
 
             self.interface.intrinsic.width = at_least(width[0])
             self.interface.intrinsic.height = height[0]
+        else:  # pragma: no-cover-if-gtk3
+            pass

@@ -197,6 +197,8 @@ class FileDialog(BaseDialog):
             self.multiple_select = multiple_select
             if self.multiple_select:
                 self.native.set_select_multiple(True)
+        else:  # pragma: no cover-if-gtk3
+            pass
 
         self.native.connect("response", self.gtk_response)
 
@@ -242,6 +244,8 @@ class SaveFileDialog(FileDialog):
         )
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             self.native.set_do_overwrite_confirmation(True)
+        else:  # pragma: no-cover-if-gtk3
+            pass
 
 
 class OpenFileDialog(FileDialog):
