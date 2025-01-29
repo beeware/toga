@@ -11,17 +11,23 @@ class Switch(Widget):
         self.native = Gtk.Box(spacing=self.SPACING)
 
         self.native_label = Gtk.Label(xalign=0)
-        self.native_label.set_name(f"toga-{self.interface.id}-label")
-        self.native_label.get_style_context().add_class("toga")
-        self.native_label.set_line_wrap(False)
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            self.native_label.set_name(f"toga-{self.interface.id}-label")
+            self.native_label.get_style_context().add_class("toga")
+            self.native_label.set_line_wrap(False)
+        else:  # pragma: no-cover-if-gtk3
+            pass
 
         self.native_switch = Gtk.Switch()
-        self.native_switch.set_name(f"toga-{self.interface.id}-switch")
-        self.native_switch.get_style_context().add_class("toga")
-        self.native_switch.connect("notify::active", self.gtk_notify_active)
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            self.native_switch.set_name(f"toga-{self.interface.id}-switch")
+            self.native_switch.get_style_context().add_class("toga")
+            self.native_switch.connect("notify::active", self.gtk_notify_active)
 
-        self.native.pack_start(self.native_label, True, True, 0)
-        self.native.pack_start(self.native_switch, False, False, 0)
+            self.native.pack_start(self.native_label, True, True, 0)
+            self.native.pack_start(self.native_switch, False, False, 0)
+        else:  # pragma: no-cover-if-gtk3
+            pass
 
     def gtk_notify_active(self, widget, state):
         self.interface.on_change()

@@ -10,22 +10,14 @@ from .base import Widget
 class TextInput(Widget):
     def create(self):
         self.native = Gtk.Entry()
-        self.native.connect("changed", self.gtk_on_change)
 
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            self.native.connect("changed", self.gtk_on_change)
             self.native.connect("focus-in-event", self.gtk_focus_in_event)
             self.native.connect("focus-out-event", self.gtk_focus_out_event)
             self.native.connect("key-press-event", self.gtk_key_press_event)
         else:  # pragma: no-cover-if-gtk3
-            focus_controller = Gtk.EventControllerFocus()
-            focus_controller.connect("enter", self.gtk_focus_in_event)
-            focus_controller.connect("leave", self.gtk_focus_out_event)
-
-            key_press_controller = Gtk.EventControllerKey()
-            key_press_controller.connect("key-pressed", self.gtk_key_press_event)
-
-            self.native.add_controller(focus_controller)
-            self.native.add_controller(key_press_controller)
+            pass
 
     def gtk_on_change(self, *_args):
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4

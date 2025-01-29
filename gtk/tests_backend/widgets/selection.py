@@ -7,9 +7,10 @@ from .base import SimpleProbe
 
 
 class SelectionProbe(SimpleProbe):
-    native_class = Gtk.ComboBoxText
-
-    if GTK_VERSION >= (4, 0, 0):
+    if GTK_VERSION < (4, 0, 0):
+        native_class = Gtk.ComboBoxText
+    else:
+        native_class = Gtk.DropDown
         pytest.skip("GTK4 doesn't support selection probes yet")
 
     def assert_resizes_on_content_change(self):

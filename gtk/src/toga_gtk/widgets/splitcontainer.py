@@ -11,8 +11,12 @@ class SplitContainer(Widget):
         self.native.set_wide_handle(True)
 
         self.sub_containers = [TogaContainer(), TogaContainer()]
-        self.native.pack1(self.sub_containers[0], True, False)
-        self.native.pack2(self.sub_containers[1], True, False)
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            self.native.pack1(self.sub_containers[0], True, False)
+            self.native.pack2(self.sub_containers[1], True, False)
+        else:  # pragma: no-cover-if-gtk3
+            self.native.set_start_child(self.sub_containers[0])
+            self.native.set_end_child(self.sub_containers[1])
 
         self._split_proportion = 0.5
 

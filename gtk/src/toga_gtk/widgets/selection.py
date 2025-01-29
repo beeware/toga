@@ -8,9 +8,12 @@ from .base import Widget
 
 class Selection(Widget):
     def create(self):
-        self.native = Gtk.ComboBoxText.new()
-        self.native.connect("changed", self.gtk_on_changed)
-        self._send_notifications = True
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            self.native = Gtk.ComboBoxText.new()
+            self.native.connect("changed", self.gtk_on_changed)
+            self._send_notifications = True
+        else:  # pragma: no-cover-if-gtk3
+            self.native = Gtk.DropDown()
 
     @contextmanager
     def suspend_notifications(self):
@@ -57,12 +60,15 @@ class Selection(Widget):
         self.interface.refresh()
 
     def insert(self, index, item):
-        with self.suspend_notifications():
-            self.native.insert_text(index, self.interface._title_for_item(item))
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            with self.suspend_notifications():
+                self.native.insert_text(index, self.interface._title_for_item(item))
 
-        # If you're inserting the first item, make sure it's selected
-        if self.native.get_active() == -1:
-            self.native.set_active(0)
+            # If you're inserting the first item, make sure it's selected
+            if self.native.get_active() == -1:
+                self.native.set_active(0)
+        else:  # pragma: no-cover-if-gtk3
+            pass
 
     def remove(self, index, item):
         selection = self.native.get_active()
@@ -75,9 +81,12 @@ class Selection(Widget):
             self.native.set_active(0)
 
     def clear(self):
-        with self.suspend_notifications():
-            self.native.remove_all()
-        self.interface.on_change()
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            with self.suspend_notifications():
+                self.native.remove_all()
+            self.interface.on_change()
+        else:  # pragma: no-cover-if-gtk3
+            pass
 
     def select_item(self, index, item):
         self.native.set_active(index)
