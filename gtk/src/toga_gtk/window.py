@@ -96,12 +96,13 @@ class Window:
     def gtk_window_state_event(self, widget, event):
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             previous_window_state_flags = self._window_state_flags
+            previous_state = self.get_window_state()
             # Get the window state flags
             self._window_state_flags = event.new_window_state
         else:  # pragma: no-cover-if-gtk3
             previous_window_state_flags = None
+            previous_state = self.get_window_state()
             self._window_state_flags = None
-        previous_state = self.get_window_state()
         current_state = self.get_window_state()
 
         # Window state flags are unreliable when window is hidden,
