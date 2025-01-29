@@ -398,9 +398,3 @@ def test_string_symbol(StyleClass):
     # Both equality and instance checking should work.
     assert_property(style, "string_symbol", TOP)
     assert style.string_symbol is TOP
-
-
-def test_deprecated_default():
-    """The `default` parameter is deprecated."""
-    with pytest.warns(DeprecationWarning):
-        Choices(integer=True, default=5)
