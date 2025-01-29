@@ -583,6 +583,6 @@ __all__ = [
     "color",
     "NAMED_COLOR",
     "TRANSPARENT",
-    "alpha_blending_over_operation",
-    "reverse_alpha_blending_over",
+    "straight_alpha_blending_over",
+    "reverse_straight_alpha_blending_over",
 ] + [name.upper() for name in NAMED_COLOR.keys()]
