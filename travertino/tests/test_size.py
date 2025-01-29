@@ -9,9 +9,6 @@ class Size(NamedTuple):
     width: int
     height: int
 
-    def change(self, dimension, value):
-        return self._replace(**{dimension: value})
-
 
 BASE_SIZE = Size(width=1, height=2)
 
@@ -40,6 +37,12 @@ def assert_size(size, values):
 
 def test_at_least_repr():
     assert repr(at_least(10)) == "at least 10"
+
+
+def test_at_least_eq():
+    assert at_least(10) == at_least(10)
+    assert at_least(10) != at_least(4)
+    assert at_least(10) != "something else"
 
 
 def test_size_repr(box):
