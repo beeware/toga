@@ -27,3 +27,10 @@ def mock_attr(attr):
         return cls
 
     return returned_decorator
+
+
+def assert_equal_color(actual, expected, tolerance=1e-5):
+    assert abs(actual.rgba.r - expected.rgba.r) < tolerance
+    assert abs(actual.rgba.g - expected.rgba.g) < tolerance
+    assert abs(actual.rgba.b - expected.rgba.b) < tolerance
+    assert abs(actual.rgba.a - expected.rgba.a) < tolerance
