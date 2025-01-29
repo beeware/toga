@@ -287,33 +287,27 @@ class TogaContainer(Gtk.Box):
                 # WARNING! This is the list of children of the *container*, not
                 # the Toga widget. Toga maintains a tree of children; all nodes
                 # in that tree are direct children of the container.
-                children = self.get_children()
-                if children is not None:
-                    for widget in children:
-                        if widget.get_visible():
-                            # Set the size of the child widget to the computed
-                            # layout size.
-                            # print(
-                            #     f"  allocate child {widget.interface}: "
-                            #     f"{widget.interface.layout}"
-                            # )
-                            widget_allocation = Gdk.Rectangle()
-                            widget_allocation.x = (
-                                widget.interface.layout.absolute_content_left
-                                + allocation.x
-                            )
-                            widget_allocation.y = (
-                                widget.interface.layout.absolute_content_top
-                                + allocation.y
-                            )
-                            widget_allocation.width = (
-                                widget.interface.layout.content_width
-                            )
-                            widget_allocation.height = (
-                                widget.interface.layout.content_height
-                            )
+                for widget in self.get_children():
+                    if widget.get_visible():
+                        # Set the size of the child widget to the computed
+                        # layout size.
+                        # print(
+                        #     f"  allocate child {widget.interface}: "
+                        #     f"{widget.interface.layout}"
+                        # )
+                        widget_allocation = Gdk.Rectangle()
+                        widget_allocation.x = (
+                            widget.interface.layout.absolute_content_left + allocation.x
+                        )
+                        widget_allocation.y = (
+                            widget.interface.layout.absolute_content_top + allocation.y
+                        )
+                        widget_allocation.width = widget.interface.layout.content_width
+                        widget_allocation.height = (
+                            widget.interface.layout.content_height
+                        )
 
-                            widget.size_allocate(widget_allocation)
+                        widget.size_allocate(widget_allocation)
 
             # The layout has been redrawn
             self.needs_redraw = False
