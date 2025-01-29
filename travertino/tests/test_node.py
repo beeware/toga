@@ -318,7 +318,7 @@ def test_clear():
 
 
 def test_clear_leaf():
-    """For a node that can't have children, remove() is a no-op."""
+    """For a node that can't have children, clear() is a no-op."""
     node = Node(style=Style())
     assert node.children == []
     node.clear()
