@@ -4,7 +4,6 @@ import System.Windows.Forms as WinForms
 from System import Array
 from System.Drawing import (
     Bitmap,
-    Color,
     Graphics,
     Pen,
     PointF,
@@ -79,6 +78,7 @@ class WinformContext:
 class Canvas(Box):
     def create(self):
         super().create()
+        self._default_background_color = TRANSPARENT
         self.native.DoubleBuffered = True
         self.native.Paint += WeakrefCallable(self.winforms_paint)
         self.native.Resize += WeakrefCallable(self.winforms_resize)
@@ -343,6 +343,14 @@ class Canvas(Box):
         )
 
     def get_image_data(self):
+        # Temporarily switch out the manually alpha blended background color
+        # to the native system produced background color, in order to avoid
+        # loss of transparency in the exported image. This is because manually
+        # alpha blended colors are actually opaque in nature.
+        self.native.SuspendLayout()
+        current_background_color = self.interface.style.background_color
+        self.native.BackColor = native_color(current_background_color)
+
         width, height = (self.native.Width, self.native.Height)
         bitmap = Bitmap(width, height)
         rect = Rectangle(0, 0, width, height)
@@ -352,12 +360,10 @@ class Canvas(Box):
 
         stream = MemoryStream()
         bitmap.Save(stream, ImageFormat.Png)
-        return bytes(stream.ToArray())
 
-    def set_background_color(self, color):
-        if color in {None, TRANSPARENT}:
-            # BackColor needs to be set to Color.Transparent or else the
-            # image captured by get_image_data() won't have transparency.
-            self.native.BackColor = Color.Transparent
-        else:
-            super().set_background_color(color)
+        # Switch back to the manually alpha blended background color, so that
+        # the appearance of the background color on the app will be correct.
+        self.set_background_color(current_background_color)
+        self.native.ResumeLayout()
+
+        return bytes(stream.ToArray())
