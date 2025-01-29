@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 # flake8: NOQA: F405
 from .constants import *
 
@@ -32,8 +34,12 @@ class Color:
     def _validate_alpha(cls, value):
         cls._validate_partial("alpha", value)
 
-    def blend_over(color):
-        return alpha_blending_over_operation(front_color=self, back_color=color)
+    def blend_over(self, back_color: rgba) -> rgba:
+        """Returns an alpha blended color, by performing the "over" straight alpha
+        blending operation, compositing the front color over the back color."""
+        return straight_alpha_blending_over(
+            front_color=self.rgba, back_color=back_color.rgba
+        )
 
 
 class rgba(Color):
@@ -72,6 +78,15 @@ class rgb(rgba):
 
     def __repr__(self):
         return f"rgb({self.r}, {self.g}, {self.b})"
+
+    @property
+    def rgba(self):
+        return rgba(
+            self.r,
+            self.g,
+            self.b,
+            1,  # alpha will be 1 for a rgb color.
+        )
 
 
 class hsla(Color):
@@ -394,230 +409,168 @@ NAMED_COLOR = {
 }
 
 
-def alpha_blending_over_operation(
-    front_color: rgba, back_color: rgba, pre_multiplied_alpha_blending: bool = False
-):
-    """Performs the "over" alpha blending operation, compositing the front color over
-    the back color.
+def straight_alpha_blending_over(
+    front_color: rgba, back_color: rgba, round_to_nearest_int: bool = True
+) -> rgba:
+    """Performs the "over" straight alpha blending operation, compositing the front
+     color over the back color.
 
-    Supports both **Straight alpha blending** and **Premultiplied alpha blending**:
+    **Straight alpha blending** is not the same as **Premultiplied alpha blending**:
     See https://en.wikipedia.org/wiki/Alpha_compositing#Straight_versus_premultiplied
 
     :param front_color: The foreground color in the form of :any:`rgba()`.
     :param back_color: The background color in the form of :any:`rgba()`.
-    :param pre_multiplied_alpha_blending: Should the operation do pre-multiplied alpha
-     blending or straight alpha blending (i.e., should the resultant blended color be
-     in the form of pre-multiplied alpha or straight alpha).
+    :param round_to_nearest_int: Should the rgb values of the blended color be
+     rounded to the nearest int? If the blended color will be later deblended
+     to get the original front color, then keeping the decimal precision will
+     give a more accurate value of the original front color.
 
     :returns: The blended color in the form of :any:`rgba()`.
     """
     # The blending operation implemented here is the "over" operation and
     # replicates CSS's rgba mechanism. For the formulae used here, see:
-    # * For Straight alpha blending:
-    #       https://en.wikipedia.org/wiki/Alpha_compositing#Description
-    # * For Premultiplied alpha blending:
-    #       https://en.wikipedia.org/wiki/Alpha_compositing#Straight_versus_premultiplied
+    # https://en.wikipedia.org/wiki/Alpha_compositing#Description
 
     blended_alpha = min(
-        1, max(0, round(front_color.a + ((1 - front_color.a) * back_color.a), 4))
+        1, max(0, (front_color.a + ((1 - front_color.a) * back_color.a)))
     )
     if blended_alpha == 0:
+        # Don't further blend the color, to prevent divide by 0.
         return rgba(0, 0, 0, 0)
     else:
-        if pre_multiplied_alpha_blending:
-            blended_color = rgba(
-                # Red Component
-                min(
-                    255,
-                    max(
-                        0, round((front_color.r) + (back_color.r * (1 - front_color.a)))
+        blended_color = rgba(
+            # Red Component
+            min(
+                255,
+                max(
+                    0,
+                    (
+                        (
+                            (front_color.r * front_color.a)
+                            + (back_color.r * back_color.a * (1 - front_color.a))
+                        )
+                        / blended_alpha
                     ),
                 ),
-                # Green Component
-                min(
-                    255,
-                    max(
-                        0, round((front_color.g) + (back_color.g * (1 - front_color.a)))
+            ),
+            # Green Component
+            min(
+                255,
+                max(
+                    0,
+                    (
+                        (
+                            (front_color.g * front_color.a)
+                            + (back_color.g * back_color.a * (1 - front_color.a))
+                        )
+                        / blended_alpha
                     ),
                 ),
-                # Blue Component
-                min(
-                    255,
-                    max(
-                        0, round((front_color.b) + (back_color.b * (1 - front_color.a)))
+            ),
+            # Blue Component
+            min(
+                255,
+                max(
+                    0,
+                    (
+                        (
+                            (front_color.b * front_color.a)
+                            + (back_color.b * back_color.a * (1 - front_color.a))
+                        )
+                        / blended_alpha
                     ),
                 ),
-                # Alpha Component
-                blended_alpha,
+            ),
+            # Alpha component
+            blended_alpha,
+        )
+        if round_to_nearest_int:
+            return rgba(
+                int(round(blended_color.r)),
+                int(round(blended_color.g)),
+                int(round(blended_color.b)),
+                round(blended_color.a, 2),
             )
-        else:  # Straight alpha blending
-            blended_color = rgba(
-                # Red Component
-                min(
-                    255,
-                    max(
-                        0,
-                        round(
-                            (
-                                (front_color.r * front_color.a)
-                                + (back_color.r * back_color.a * (1 - front_color.a))
-                            )
-                            / blended_alpha
-                        ),
-                    ),
-                ),
-                # Green Component
-                min(
-                    255,
-                    max(
-                        0,
-                        round(
-                            (
-                                (front_color.g * front_color.a)
-                                + (back_color.g * back_color.a * (1 - front_color.a))
-                            )
-                            / blended_alpha
-                        ),
-                    ),
-                ),
-                # Blue Component
-                min(
-                    255,
-                    max(
-                        0,
-                        round(
-                            (
-                                (front_color.b * front_color.a)
-                                + (back_color.b * back_color.a * (1 - front_color.a))
-                            )
-                            / blended_alpha
-                        ),
-                    ),
-                ),
-                # Alpha component
-                blended_alpha,
-            )
-        return blended_color
+        else:
+            return blended_color
 
 
-def reverse_alpha_blending_over(
+def reverse_straight_alpha_blending_over(
     blended_color: rgba,
     back_color: rgba,
-    original_alpha: float,
-    blended_color_pre_multiplied_alpha: bool = False,
-):
-    """Performs the reverse of the "over" alpha blending operation, returning the front color.
+    front_color_alpha: float,
+) -> rgba:
+    """Performs the reverse of the "over" straight alpha blending operation, returning
+    the front color.
 
-    Supports both **Straight alpha blended** and **Premultiplied alpha blended** colors:
-    See https://en.wikipedia.org/wiki/Alpha_compositing#Straight_versus_premultiplied
-
-    :param blended_color: The blended color resultant from the alpha blending "over" operation,
-     in the form of :any:`rgba()`.
+    :param blended_color: The blended color resultant from the alpha blending "over"
+     operation, in the form of :any:`rgba()`.
     :param back_color: The background color in the form of :any:`rgba()`..
-    :param original_alpha: The original alpha value of the front color, within the range of [0, 1].
-    :param blended_color_pre_multiplied_alpha: Is the blended color in the form of pre-multiplied
-     alpha or straight alpha?
-    :raises ValueError: If the value of :any:`original_alpha` is not within the range of [0, 1].
+    :param front_color_alpha: The original alpha value of the front color, within the
+     range of (0, 1].
+
+    :raises ValueError: If the value of :any:`front_color_alpha` is not within the range
+     of (0, 1]. The value cannot be 0, since the blended color produced will be equal to
+     the back color, and all information related to the front color will be lost.
 
     :returns: The front color in the form of :any:`rgba()`.
     """
-    # The blending operation implemented here is the reverse of the "over" operation and
-    # replicates CSS's rgba mechanism. The formula used here are derived from the "over"
-    # operation formulae, see:
-    # * For Straight alpha blending:
-    #       https://en.wikipedia.org/wiki/Alpha_compositing#Description
-    # * For Premultiplied alpha blending:
-    #       https://en.wikipedia.org/wiki/Alpha_compositing#Straight_versus_premultiplied
+    # The blending operation implemented here is the reverse of the "over" operation
+    # and replicates CSS's rgba mechanism. The formula used here are derived from the
+    # "over" straight alpha blending operation formula, see:
+    # https://en.wikipedia.org/wiki/Alpha_compositing#Description
 
-    if not (0 <= original_alpha <= 1):
+    if not (0 < front_color_alpha <= 1):
         raise ValueError(
-            "The value of original_alpha must be within the range of [0, 1]."
+            "The value of front_color_alpha must be within the range of (0, 1]."
         )
-    elif original_alpha == 0:
-        return back_color
     else:
-        if blended_color_pre_multiplied_alpha:
-            front_color = rgba(
-                # Red Component
-                min(
-                    255,
-                    max(
-                        0,
-                        round(
-                            (blended_color.r) - (back_color.r * (1 - original_alpha))
-                        ),
+        front_color = rgba(
+            # Red Component
+            min(
+                255,
+                max(
+                    0,
+                    (
+                        (
+                            (blended_color.r * blended_color.a)
+                            - (back_color.r * back_color.a * (1 - front_color_alpha))
+                        )
+                        / front_color_alpha
                     ),
                 ),
-                # Green Component
-                min(
-                    255,
-                    max(
-                        0,
-                        round(
-                            (blended_color.g) - (back_color.g * (1 - original_alpha))
-                        ),
+            ),
+            # Green Component
+            min(
+                255,
+                max(
+                    0,
+                    (
+                        (
+                            (blended_color.g * blended_color.a)
+                            - (back_color.g * back_color.a * (1 - front_color_alpha))
+                        )
+                        / front_color_alpha
                     ),
                 ),
-                # Blue Component
-                min(
-                    255,
-                    max(
-                        0,
-                        round(
-                            (blended_color.b) - (back_color.b * (1 - original_alpha))
-                        ),
+            ),
+            # Blue Component
+            min(
+                255,
+                max(
+                    0,
+                    (
+                        (
+                            (blended_color.b * blended_color.a)
+                            - (back_color.b * back_color.a * (1 - front_color_alpha))
+                        )
+                        / front_color_alpha
                     ),
                 ),
-                # Alpha Component
-                original_alpha,
-            )
-        else:  # Blended color is in the form of straight alpha
-            front_color = rgba(
-                # Red Component
-                min(
-                    255,
-                    max(
-                        0,
-                        round(
-                            (
-                                (blended_color.r * blended_color.a)
-                                - (back_color.r * back_color.a * (1 - original_alpha))
-                            )
-                            / original_alpha
-                        ),
-                    ),
-                ),
-                # Green Component
-                min(
-                    255,
-                    max(
-                        0,
-                        round(
-                            (
-                                (blended_color.g * blended_color.a)
-                                - (back_color.g * back_color.a * (1 - original_alpha))
-                            )
-                            / original_alpha
-                        ),
-                    ),
-                ),
-                # Blue Component
-                min(
-                    255,
-                    max(
-                        0,
-                        round(
-                            (
-                                (blended_color.b * blended_color.a)
-                                - (back_color.b * back_color.a * (1 - original_alpha))
-                            )
-                            / original_alpha
-                        ),
-                    ),
-                ),
-                # Alpha Component
-                original_alpha,
-            )
+            ),
+            # Alpha Component
+            front_color_alpha,
+        )
         return front_color
 
 
