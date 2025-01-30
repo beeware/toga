@@ -41,6 +41,9 @@ If you're not using one of these, you'll need to work out how to install the dev
 libraries for ``python3``, ``cairo``, and ``gobject-introspection`` (and please let us
 know so we can improve this documentation!)
 
+In addition to the dependencies above, if you would like to help add additional support
+for GTK4, you need to also install ``gir1.2-gtk-4.0`` or equivalent on your system.
+
 Some widgets (most notably, the :ref:`WebView <webview-system-requires>` and
 :ref:`MapView <mapview-system-requires>` widgets) have additional system requirements.
 Likewise, certain hardware features (:ref:`Location <location-system-requires>`) have

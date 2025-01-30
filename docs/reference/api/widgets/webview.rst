@@ -83,6 +83,9 @@ System requirements
   - OpenSUSE Tumbleweed: ``libwebkit2gtk3 typelib(WebKit2)``
   - FreeBSD: ``webkit2-gtk3``
 
+  Additionally, if you are helping to develop support for GTK4, you need to install
+  ``gir1.2-webkit-6.0`` (currently experimental / not fully implemented).
+
 Notes
 -----
 

@@ -832,6 +832,11 @@ run``.
 You can also use slow mode or pytest specifiers with ``briefcase run``, using
 the same ``--`` syntax as you used in developer mode.
 
+Finally, if you would like to run the tests against GTK4 on Linux, set the
+environmental variable ``TOGA_GTK=4``. This is experimental and only partially
+implemented, but we would greatly appreciate your help translating widgets from
+GTK3 to GTK4.
+
 .. _testbed-probe:
 
 How the testbed works
