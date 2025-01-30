@@ -55,9 +55,13 @@ class Window(LoggedObject):
 
         self.set_title(title)
         self.set_position(position if position is not None else _initial_position())
-        self.set_size(size)
 
+        # We cannot store the following values on the EventLog, since they
+        # would be cleared on EventLog.reset(), thereby preventing us from
+        # testing no-op condition of requesting the same value as current.
+        self._size = size if size else Size(640, 480)
         self._state = WindowState.NORMAL
+        self._visible = False
 
     ######################################################################
     # Window properties
@@ -82,7 +86,8 @@ class Window(LoggedObject):
 
     def show(self):
         self._action("show")
-        self._set_value("visible", True)
+        self._visible = True
+        self.interface.on_show()
 
     ######################################################################
     # Window content and resources
@@ -98,10 +103,11 @@ class Window(LoggedObject):
     ######################################################################
 
     def get_size(self) -> Size:
-        return self._get_value("size", Size(640, 480))
+        return self._size
 
     def set_size(self, size):
-        self._set_value("size", size)
+        self._action("set size")
+        self._size = size
 
     ######################################################################
     # Window position
@@ -122,11 +128,12 @@ class Window(LoggedObject):
     ######################################################################
 
     def get_visible(self):
-        return self._get_value("visible", False)
+        return self._visible
 
     def hide(self):
         self._action("hide")
-        self._set_value("visible", False)
+        self._visible = False
+        self.interface.on_hide()
 
     ######################################################################
     # Window state
@@ -136,11 +143,16 @@ class Window(LoggedObject):
         return self._state
 
     def set_window_state(self, state):
+        previous_state = self._state
+
         self._action(f"set window state to {state}", state=state)
-        # We cannot store the state value on the EventLog, since the state
-        # value would be cleared on EventLog.reset(), thereby preventing us
-        # from testing no-op condition of assigning same state as current.
         self._state = state
+        current_state = self._state
+        if previous_state != current_state:
+            if previous_state == WindowState.MINIMIZED:
+                self.interface.on_show()
+            elif current_state == WindowState.MINIMIZED:
+                self.interface.on_hide()
 
     ######################################################################
     # Window capabilities

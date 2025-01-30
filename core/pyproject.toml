@@ -55,9 +55,6 @@ classifiers = [
     "Topic :: Software Development :: User Interfaces",
     "Topic :: Software Development :: Widget Sets",
 ]
-dependencies = [
-    "travertino >= 0.3.0, < 0.4.0",
-]
 
 [project.optional-dependencies]
 # Extras used by developers *of* Toga are pinned to specific versions to
@@ -66,12 +63,12 @@ dev = [
     "coverage[toml] == 7.6.10",
     "coverage-conditional-plugin == 0.9.0",
     "Pillow == 11.1.0",
-    "pre-commit == 4.0.1",
+    "pre-commit == 4.1.0",
     "pytest == 8.3.4",
     "pytest-asyncio == 0.25.2",
     "pytest-freezer == 0.4.9",
     "setuptools-scm == 8.1.0",
-    "tox == 4.23.2",
+    "tox == 4.24.1",
     # typing-extensions needed for TypeAlias added in Py 3.10
     "typing-extensions == 4.12.2 ; python_version < '3.10'",
 ]
@@ -103,6 +100,11 @@ pil = "toga.plugins.image_formats.PILConverter"
 
 [tool.setuptools_scm]
 root = ".."
+
+[tool.setuptools_dynamic_dependencies]
+dependencies = [
+    "travertino == {version}",
+]
 
 [tool.coverage.run]
 parallel = true

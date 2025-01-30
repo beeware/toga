@@ -46,8 +46,6 @@ class OnLoseFocusHandler(Protocol):
 
 
 class TextInput(Widget):
-    """Create a new single-line text input widget."""
-
     def __init__(
         self,
         id: str | None = None,
@@ -60,8 +58,10 @@ class TextInput(Widget):
         on_gain_focus: OnGainFocusHandler | None = None,
         on_lose_focus: OnLoseFocusHandler | None = None,
         validators: Iterable[Callable[[str], bool]] | None = None,
+        **kwargs,
     ):
-        """
+        """Create a new single-line text input widget.
+
         :param id: The ID for the widget.
         :param style: A style object. If no style is provided, a default style will be
             applied to the widget.
@@ -78,8 +78,9 @@ class TextInput(Widget):
         :param on_lose_focus: A handler that will be invoked when the widget loses
             input focus.
         :param validators: A list of validators to run on the value of the input.
+        :param kwargs: Initial style properties.
         """
-        super().__init__(id=id, style=style)
+        super().__init__(id, style, **kwargs)
 
         self.placeholder = placeholder
         self.readonly = readonly

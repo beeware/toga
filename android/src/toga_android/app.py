@@ -4,6 +4,7 @@ import warnings
 from android.content import Context
 from android.graphics.drawable import BitmapDrawable
 from android.media import RingtoneManager
+from android.os import Build
 from android.view import Menu, MenuItem
 from androidx.core.content import ContextCompat
 from java import dynamic_proxy
@@ -35,21 +36,39 @@ class TogaApp(dynamic_proxy(IPythonApp)):
 
     def onStart(self):
         print("Toga app: onStart")
+        self._impl.interface.current_window.on_show()
 
-    def onResume(self):
+    def onResume(self):  # pragma: no cover
         print("Toga app: onResume")
+        # onTopResumedActivityChanged is not available on android versions less
+        # than Q. onResume is the best indicator for the gain input focus event.
+        # https://developer.android.com/reference/android/app/Activity#onWindowFocusChanged(boolean):~:text=If%20the%20intent,the%20best%20indicator.
+        if Build.VERSION.SDK_INT < Build.VERSION_CODES.Q:
+            self._impl.interface.current_window.on_gain_focus()
 
-    def onPause(self):
-        print("Toga app: onPause")  # pragma: no cover
+    def onPause(self):  # pragma: no cover
+        print("Toga app: onPause")
+        # onTopResumedActivityChanged is not available on android versions less
+        # than Q. onPause is the best indicator for the lost input focus event.
+        if Build.VERSION.SDK_INT < Build.VERSION_CODES.Q:
+            self._impl.interface.current_window.on_lose_focus()
 
-    def onStop(self):
-        print("Toga app: onStop")  # pragma: no cover
+    def onStop(self):  # pragma: no cover
+        print("Toga app: onStop")
+        self._impl.interface.current_window.on_hide()
 
     def onDestroy(self):
         print("Toga app: onDestroy")  # pragma: no cover
 
     def onRestart(self):
         print("Toga app: onRestart")  # pragma: no cover
+
+    def onTopResumedActivityChanged(self, isTopResumedActivity):  # pragma: no cover
+        print("Toga app: onTopResumedActivityChanged")
+        if isTopResumedActivity:
+            self._impl.interface.current_window.on_gain_focus()
+        else:
+            self._impl.interface.current_window.on_lose_focus()
 
     def onActivityResult(self, requestCode, resultCode, resultData):
         print(f"Toga app: onActivityResult {requestCode=} {resultCode=} {resultData=}")

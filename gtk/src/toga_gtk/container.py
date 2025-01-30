@@ -103,7 +103,7 @@ class TogaContainer(Gtk.Fixed):
                 widget.rehint()
 
             # Recompute the layout
-            self._content.interface.style.layout(self._content.interface, self)
+            self._content.interface.style.layout(self)
 
             self.min_width = self._content.interface.layout.min_width
             self.min_height = self._content.interface.layout.min_height
@@ -173,7 +173,7 @@ class TogaContainer(Gtk.Fixed):
                 # Re-evaluate the layout using the allocation size as the basis
                 # for geometry
                 # print("REFRESH LAYOUT", allocation.width, allocation.height)
-                self._content.interface.style.layout(self._content.interface, self)
+                self._content.interface.style.layout(self)
 
                 # Ensure the minimum content size from the layout is retained
                 self.min_width = self._content.interface.layout.min_width

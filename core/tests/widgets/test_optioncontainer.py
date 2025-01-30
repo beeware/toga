@@ -78,7 +78,6 @@ def test_widget_create():
 
 
 def test_widget_create_with_args(
-    optioncontainer,
     content1,
     content2,
     content3,
@@ -87,15 +86,30 @@ def test_widget_create_with_args(
     tab_icon,
 ):
     """An option container can be created with arguments."""
+    optioncontainer = toga.OptionContainer(
+        id="foobar",
+        content=[
+            ("Item 1", content1),
+            ("Item 2", content2, "other-icon"),
+            ("Item 3", content3, tab_icon, False),
+            toga.OptionItem("Item 4", content4),
+        ],
+        on_select=on_select_handler,
+        # A style property
+        width=256,
+    )
+
     assert optioncontainer._impl.interface == optioncontainer
     assert_action_performed(optioncontainer, "create OptionContainer")
 
+    assert optioncontainer.id == "foobar"
     assert len(optioncontainer.content) == 4
     assert optioncontainer.current_tab.text == "Item 1"
     assert optioncontainer.current_tab.icon is None
     assert optioncontainer.current_tab.enabled
     assert optioncontainer.current_tab.content == content1
     assert optioncontainer.on_select._raw == on_select_handler
+    assert optioncontainer.style.width == 256
 
     assert optioncontainer.content[1].text == "Item 2"
     assert optioncontainer.content[1].icon.path.name == "other-icon"

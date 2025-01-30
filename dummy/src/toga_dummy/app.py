@@ -133,8 +133,17 @@ class App(LoggedObject):
         return self._get_value("current_window", main_window)
 
     def set_current_window(self, window):
+        try:
+            previous_current_window = self.get_current_window().interface
+        except AttributeError:
+            previous_current_window = None
+
         self._action("set_current_window", window=window)
         self._set_value("current_window", window._impl)
+
+        if previous_current_window and previous_current_window != window:
+            previous_current_window.on_lose_focus()
+            window.on_gain_focus()
 
 
 class DocumentApp(App):

@@ -9,15 +9,17 @@ from travertino.node import Node
 
 from toga.platform import get_platform_factory
 from toga.style import Pack, TogaApplicator
+from toga.style.mixin import style_mixin
 
 if TYPE_CHECKING:
     from toga.app import App
     from toga.window import Window
 
 StyleT = TypeVar("StyleT", bound=BaseStyle)
+PackMixin = style_mixin(Pack)
 
 
-class Widget(Node):
+class Widget(Node, PackMixin):
     _MIN_WIDTH = 100
     _MIN_HEIGHT = 100
 
@@ -25,6 +27,7 @@ class Widget(Node):
         self,
         id: str | None = None,
         style: StyleT | None = None,
+        **kwargs,
     ):
         """Create a base Toga widget.
 
@@ -33,8 +36,14 @@ class Widget(Node):
         :param id: The ID for the widget.
         :param style: A style object. If no style is provided, a default style
             will be applied to the widget.
+        :param kwargs: Initial style properties.
         """
-        super().__init__(style=style if style is not None else Pack())
+        if style is None:
+            style = Pack(**kwargs)
+        elif kwargs:
+            style = style.copy()
+            style.update(**kwargs)
+        super().__init__(style)
 
         self._id = str(id if id else identifier(self))
         self._window: Window | None = None
@@ -64,27 +73,6 @@ class Widget(Node):
         #############################
 
         self.applicator = TogaApplicator()
-
-        ##############################################
-        # Backwards compatibility for Travertino 0.3.0
-        ##############################################
-
-        # The below if block will execute when using Travertino 0.3.0. For future
-        # versions of Travertino, these assignments (and the reapply) will already have
-        # been handled "automatically" by assigning the applicator above; in that case,
-        # we want to avoid doing a second, redundant style reapplication.
-
-        # This whole section can be removed as soon as there's a newer version of
-        # Travertino to set as Toga's minimum requirement.
-
-        if not hasattr(self.applicator, "node"):  # pragma: no cover
-            self.applicator.node = self
-            self.style._applicator = self.applicator
-            self.style.reapply()
-
-        #############################
-        # End backwards compatibility
-        #############################
 
     def _create(self) -> Any:
         """Create a platform-specific implementation of this widget.

@@ -52,6 +52,8 @@ If a previously hidden widget is made visible, any children of the widget with
 a visibility of ``hidden`` will remain hidden. Any descendants of the hidden
 child will also remain hidden, regardless of their visibility.
 
+.. _pack-direction:
+
 ``direction``
 -------------
 
@@ -71,6 +73,8 @@ indicates children will be packed horizontally; left-to-right if
 
 **Initial value:** ``start``
 
+**Aliases:** ``vertical_align_items`` in a row, ``horizontal_align_items`` in a column
+
 The alignment of this box's children along the cross axis. A row's cross axis is
 vertical, so ``start`` aligns children to the top, while ``end`` aligns them to the
 bottom. For columns, ``start`` is on the left if ``text_direction`` is ``ltr``, and the
@@ -82,6 +86,9 @@ right if ``rtl``.
 **Values:** ``start`` | ``center`` | ``end``
 
 **Initial value:** ``start``
+
+**Aliases:** ``horizontal_align_content`` in a row, ``vertical_align_content`` in a
+column
 
 The alignment of this box's children along the main axis. A column's main axis is
 vertical, so ``start`` aligns children to the top, while ``end`` aligns them to the

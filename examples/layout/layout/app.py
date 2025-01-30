@@ -1,6 +1,5 @@
 import toga
-from toga.constants import CENTER, COLUMN, HIDDEN, ROW, VISIBLE
-from toga.style import Pack
+from toga.constants import CENTER, HIDDEN, VISIBLE
 
 
 class ExampleLayoutApp(toga.App):
@@ -20,13 +19,13 @@ class ExampleLayoutApp(toga.App):
             text="Add new label", on_press=self.add_label
         )
 
-        self.content_box = toga.Box(children=[], style=Pack(direction=COLUMN, gap=4))
+        self.content_box = toga.Column(children=[], gap=4)
 
         image = toga.Image("resources/tiberius.png")
-        self.image_view = toga.ImageView(image, style=Pack(width=60, height=60))
+        self.image_view = toga.ImageView(image, width=60, height=60)
 
         # this tests adding children during init, before we have an implementation
-        self.button_box = toga.Box(
+        self.button_box = toga.Column(
             children=[
                 self.button_hide,
                 self.button_add,
@@ -35,18 +34,16 @@ class ExampleLayoutApp(toga.App):
                 self.button_remove,
                 self.button_add_to_scroll,
             ],
-            style=Pack(direction=COLUMN, width=120, gap=20),
+            width=120,
+            gap=20,
         )
 
-        self.box = toga.Box(
+        self.box = toga.Row(
             children=[],
-            style=Pack(
-                direction=ROW,
-                margin=20,
-                gap=20,
-                align_items=CENTER,
-                justify_content=CENTER,
-            ),
+            margin=20,
+            gap=20,
+            align_items=CENTER,
+            justify_content=CENTER,
         )
 
         # this tests adding children when we already have an impl but no window or app
@@ -63,11 +60,11 @@ class ExampleLayoutApp(toga.App):
         self.main_window.show()
 
     def hide_label(self, sender):
-        if self.labels[0].style.visibility == HIDDEN:
-            self.labels[0].style.visibility = VISIBLE
+        if self.labels[0].visibility == HIDDEN:
+            self.labels[0].visibility = VISIBLE
             self.button_hide.text = "Hide label"
         else:
-            self.labels[0].style.visibility = HIDDEN
+            self.labels[0].visibility = HIDDEN
             self.button_hide.text = "Show label"
 
     def add_image(self, sender):

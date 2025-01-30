@@ -29,6 +29,7 @@ class ScrollContainer(Widget):
         vertical: bool = True,
         on_scroll: OnScrollHandler | None = None,
         content: Widget | None = None,
+        **kwargs,
     ):
         """Create a new Scroll Container.
 
@@ -39,12 +40,13 @@ class ScrollContainer(Widget):
         :param vertical: Should horizontal scrolling be permitted?
         :param on_scroll: Initial :any:`on_scroll` handler.
         :param content: The content to display in the scroll window.
+        :param kwargs: Initial style properties.
         """
 
         self._content: Widget | None = None
         self.on_scroll = None
 
-        super().__init__(id=id, style=style)
+        super().__init__(id, style, **kwargs)
 
         # Set all attributes
         self.vertical = vertical

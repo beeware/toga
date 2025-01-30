@@ -11,6 +11,13 @@ from toga.colors import CORNFLOWERBLUE, GOLDENROD, REBECCAPURPLE
 from toga.constants import WindowState
 from toga.style.pack import COLUMN, Pack
 
+from ..assertions import (
+    assert_window_gain_focus,
+    assert_window_lose_focus,
+    assert_window_on_hide,
+    assert_window_on_show,
+)
+
 
 def window_probe(app, window):
     module = import_module("tests_backend.window")
@@ -732,6 +739,8 @@ else:
         second_window.toolbar.add(app.cmd1)
         second_window.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
         second_window.show()
+        second_window.on_show = Mock()
+        second_window.on_hide = Mock()
         # Wait for window animation before assertion.
         await second_window_probe.wait_for_window("Secondary window is visible")
         assert second_window_probe.instantaneous_state == WindowState.NORMAL
@@ -744,6 +753,17 @@ else:
         )
         assert second_window_probe.instantaneous_state == initial_state
 
+        # Check for visibility event notification
+        if initial_state == WindowState.MINIMIZED:
+            # on_hide() will be triggered, as it was set to a
+            # not-visible-to-user(minimized) state.
+            assert_window_on_hide(second_window)
+        else:
+            # on_show() will not be triggered again, as it was
+            # already in a visible-to-user(not hidden) state, and
+            # was set to a visible-to-user(not minimized) state.
+            assert_window_on_show(second_window, trigger_expected=False)
+
         # Set to final state
         second_window.state = final_state
         # Wait for window animation before assertion.
@@ -751,6 +771,26 @@ else:
             f"Secondary window is in {final_state}", state=final_state
         )
         assert second_window_probe.instantaneous_state == final_state
+
+        # Check for visibility event notification
+        if initial_state == WindowState.MINIMIZED:
+            if final_state == WindowState.MINIMIZED:
+                # on_hide() will not be triggered again, as it was
+                # already in a not-visible-to-user(minimized) state.
+                assert_window_on_hide(second_window, trigger_expected=False)
+            else:
+                # on_show() will be triggered, as it was previously
+                # in a not-visible-to-user(minimized) state.
+                assert_window_on_show(second_window)
+        else:
+            if final_state == WindowState.MINIMIZED:
+                # on_hide() will be triggered, as it was previously
+                # in a visible-to-user(not minimized) state.
+                assert_window_on_hide(second_window)
+            else:
+                # on_show() will not be triggered again, as it was
+                # already in a visible-to-user(not minimized) state.
+                assert_window_on_show(second_window, trigger_expected=False)
 
     @pytest.mark.parametrize(
         "states",
@@ -917,10 +957,9 @@ else:
         "state",
         [
             WindowState.NORMAL,
-            WindowState.MINIMIZED,
             WindowState.MAXIMIZED,
-            WindowState.FULLSCREEN,
-            WindowState.PRESENTATION,
+            # Window cannot be hidden while in MINIMIZED, FULLSCREEN or
+            # PRESENTATION. So, those states are excluded from this test.
         ],
     )
     @pytest.mark.parametrize(
@@ -957,6 +996,66 @@ else:
         second_window.hide()
         await second_window_probe.wait_for_window("Secondary window is hidden")
         assert second_window.state == window_state_before_hidden
+
+    @pytest.mark.parametrize(
+        "second_window_class, second_window_kwargs",
+        [
+            (
+                toga.Window,
+                dict(title="Secondary Window", position=(200, 150)),
+            )
+        ],
+    )
+    async def test_focus_events(
+        app, main_window, main_window_probe, second_window, second_window_probe
+    ):
+        """The window can trigger on_gain_focus() and on_lose_focus()
+        event handlers, when the window gains or loses input focus."""
+        main_window.on_gain_focus = Mock()
+        main_window.on_lose_focus = Mock()
+        second_window.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
+        second_window.show()
+        second_window.on_gain_focus = Mock()
+        second_window.on_lose_focus = Mock()
+
+        app.current_window = main_window
+        await main_window_probe.wait_for_window("Setting main window as current window")
+        assert app.current_window == main_window
+        assert_window_gain_focus(main_window)
+        assert_window_lose_focus(second_window)
+
+        app.current_window = second_window
+        await second_window_probe.wait_for_window(
+            "Setting second window as current window"
+        )
+        assert app.current_window == second_window
+        assert_window_gain_focus(second_window)
+        assert_window_lose_focus(main_window)
+
+    @pytest.mark.parametrize(
+        "second_window_class, second_window_kwargs",
+        [
+            (
+                toga.Window,
+                dict(title="Secondary Window", position=(200, 150)),
+            )
+        ],
+    )
+    async def test_visibility_events(second_window, second_window_probe):
+        """The window can trigger on_show() and on_hide() event handlers,
+        when the window is shown or hidden respectively."""
+        second_window.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
+        second_window.show()
+        second_window.on_show = Mock()
+        second_window.on_hide = Mock()
+
+        second_window.hide()
+        await second_window_probe.wait_for_window(f"Hiding {second_window.title}")
+        assert_window_on_hide(second_window)
+
+        second_window.show()
+        await second_window_probe.wait_for_window(f"Showing {second_window.title}")
+        assert_window_on_show(second_window)
 
     @pytest.mark.parametrize(
         "second_window_class, second_window_kwargs",

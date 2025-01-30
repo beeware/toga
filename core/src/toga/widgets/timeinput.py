@@ -27,6 +27,7 @@ class TimeInput(Widget):
         min: datetime.time | None = None,
         max: datetime.time | None = None,
         on_change: toga.widgets.timeinput.OnChangeHandler | None = None,
+        **kwargs,
     ):
         """Create a new TimeInput widget.
 
@@ -38,8 +39,9 @@ class TimeInput(Widget):
         :param min: The earliest time (inclusive) that can be selected.
         :param max: The latest time (inclusive) that can be selected.
         :param on_change: A handler that will be invoked when the value changes.
+        :param kwargs: Initial style properties.
         """
-        super().__init__(id=id, style=style)
+        super().__init__(id, style, **kwargs)
 
         self.on_change = None
         self.min = min
