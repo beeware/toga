@@ -93,8 +93,7 @@ class BaseBox:
         if value != self.__origin_top:
             self.__origin_top = value
             for child in self.node.children:
-                if child.layout:
-                    child.layout._origin_top = self.absolute_content_top
+                child.layout._origin_top = self.absolute_content_top
 
     @property
     def _origin_left(self):
@@ -105,8 +104,7 @@ class BaseBox:
         if value != self.__origin_left:
             self.__origin_left = value
             for child in self.node.children:
-                if child.layout:
-                    child.layout._origin_left = self.absolute_content_left
+                child.layout._origin_left = self.absolute_content_left
 
     @property
     def width(self):
@@ -135,8 +133,7 @@ class BaseBox:
     def content_top(self, value):
         self._content_top = value
         for child in self.node.children:
-            if child.layout:
-                child.layout._origin_top = self.absolute_content_top
+            child.layout._origin_top = self.absolute_content_top
 
     @property
     def content_left(self):
@@ -146,8 +143,7 @@ class BaseBox:
     def content_left(self, value):
         self._content_left = value
         for child in self.node.children:
-            if child.layout:
-                child.layout._origin_left = self.absolute_content_left
+            child.layout._origin_left = self.absolute_content_left
 
     ######################################################################
     # Absolute content box position
