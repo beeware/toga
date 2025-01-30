@@ -49,7 +49,7 @@ from ..utils import assert_equal_color
         (rgb(255, 0, 0), rgb(0, 255, 0), rgb(255, 0, 0)),
         (rgb(0, 255, 0), rgb(255, 0, 0), rgb(0, 255, 0)),
         (rgb(0, 0, 255), rgb(255, 0, 0), rgb(0, 0, 255)),
-        # Color with different channel values, including transparency
+        # Color with different channel values
         (rgb(50, 128, 200), rgb(255, 255, 255), rgb(50, 128, 200)),
         (rgb(50, 128, 200), rgb(128, 128, 128), rgb(50, 128, 200)),
         (rgb(50, 128, 200), rgb(0, 0, 0), rgb(50, 128, 200)),
@@ -115,7 +115,7 @@ from ..utils import assert_equal_color
         (hsl(0, 1, 0.5), hsl(120.0, 1, 0.5), hsl(0, 1, 0.5)),
         (hsl(120.0, 1, 0.5), hsl(0, 1, 0.5), hsl(120.0, 1, 0.5)),
         (hsl(240.0, 1, 0.5), hsl(0, 1, 0.5), hsl(240.0, 1, 0.5)),
-        # Color with different channel values, including transparency
+        # Color with different channel values
         (hsl(208.8, 0.6, 0.49), hsl(0, 0, 1), hsl(208.8, 0.6, 0.49)),
         (hsl(208.8, 0.6, 0.49), hsl(0, 0, 0.5), hsl(208.8, 0.6, 0.49)),
         (hsl(208.8, 0.6, 0.49), hsl(0, 0, 0), hsl(208.8, 0.6, 0.49)),
