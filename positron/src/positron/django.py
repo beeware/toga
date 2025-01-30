@@ -1,80 +1,44 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Any
 
 from briefcase.bootstraps import TogaGuiBootstrap
+
+
+def validate_path(value: str) -> bool:
+    """Validate that the value is a valid path."""
+    if not value.startswith("/"):
+        raise ValueError("Path must start with a /")
+    return True
+
+
+def templated_content(template_name, **context):
+    """Render a template for `template.name` with the provided context."""
+    template = (
+        Path(__file__).parent / f"django_templates/{template_name}.tmpl"
+    ).read_text(encoding="utf-8")
+    return template.format(**context)
+
+
+def templated_file(template_name, output_path, **context):
+    """Render a template for `template.name` with the provided context, saving the
+    result in `output_path`."""
+    (output_path / template_name).write_text(
+        templated_content(template_name, **context), encoding="utf-8"
+    )
 
 
 class DjangoPositronBootstrap(TogaGuiBootstrap):
     display_name_annotation = "does not support Web deployment"
 
     def app_source(self):
-        return """\
-import os
-import socketserver
-from threading import Event, Thread
-from wsgiref.simple_server import WSGIServer
-
-import django
-from django.core.handlers.wsgi import WSGIHandler
-from django.core.servers.basehttp import WSGIRequestHandler
-
-import toga
-
-
-class ThreadedWSGIServer(socketserver.ThreadingMixIn, WSGIServer):
-    pass
-
-
-class {{ cookiecutter.class_name }}(toga.App):
-    def web_server(self):
-        print("Starting server...")
-        # Use port 0 to let the server select an available port.
-        self._httpd = ThreadedWSGIServer(("127.0.0.1", 0), WSGIRequestHandler)
-        self._httpd.daemon_threads = True
-
-        os.environ["DJANGO_SETTINGS_MODULE"] = "{{ cookiecutter.module_name }}.settings"
-        django.setup(set_prefix=False)
-        wsgi_handler = WSGIHandler()
-        self._httpd.set_app(wsgi_handler)
-
-        # The server is now listening, but connections will block until
-        # serve_forever is run.
-        self.server_exists.set()
-        self._httpd.serve_forever()
-
-    def cleanup(self, app, **kwargs):
-        print("Shutting down...")
-        self._httpd.shutdown()
-        return True
-
-    def startup(self):
-        self.server_exists = Event()
-
-        self.web_view = toga.WebView()
-
-        self.server_thread = Thread(target=self.web_server)
-        self.server_thread.start()
-
-        self.on_exit = self.cleanup
-
-        self.server_exists.wait()
-        host, port = self._httpd.socket.getsockname()
-        self.web_view.url = f"http://{{host}}:{{port}}/"
-
-        self.main_window = toga.MainWindow()
-        self.main_window.content = self.web_view
-        self.main_window.show()
-
-
-def main():
-    return {{{{ cookiecutter.class_name }}}}()
-"""
+        return templated_content("app.py", initial_path=self.initial_path)
 
     def pyproject_table_briefcase_app_extra_content(self):
         return """
 requires = [
-    "django~=5.0",
+    "django~=5.1",
 ]
 test_requires = [
 {% if cookiecutter.test_framework == "pytest" %}
@@ -83,26 +47,46 @@ test_requires = [
 ]
 """
 
+    def extra_context(self, project_overrides: dict[str, str]) -> dict[str, Any] | None:
+        """Runs prior to other plugin hooks to provide additional context.
+
+        This can be used to prompt the user with additional questions or run arbitrary
+        logic to supplement the context provided to cookiecutter.
+
+        :param project_overrides: Any overrides provided by the user as -Q options that
+            haven't been consumed by the standard bootstrap wizard questions.
+        """
+        self.initial_path = self.console.text_question(
+            intro=(
+                "What path do you want to use as the initial URL for the app's "
+                "webview?\n"
+                "\n"
+                "The value should start with a '/', but can be any path that your "
+                "Django site will serve."
+            ),
+            description="Initial path",
+            default="/admin/",
+            validator=validate_path,
+            override_value=project_overrides.pop("initial_path", None),
+        )
+
+        return {}
+
     def post_generate(self, base_path: Path):
         app_path = base_path / "src" / self.context["module_name"]
 
-        # settings.py
-        (app_path / "settings.py").write_text(
-            """
-# TODO
-""",
-            encoding="UTF-8",
+        # Top level files
+        self.console.debug("Writing manage.py")
+        templated_file(
+            "manage.py",
+            app_path.parent,
+            module_name=self.context["module_name"],
         )
-
-        # urls.py
-        (app_path / "urls.py").write_text(
-            """\
-from django.contrib import admin
-from django.urls import path
-
-urlpatterns = [
-    path("admin/", admin.site.urls),
-]
-""",
-            encoding="UTF-8",
-        )
+        # App files
+        for template_name in ["settings.py", "urls.py", "wsgi.py"]:
+            self.console.debug(f"Writing {template_name}")
+            templated_file(
+                template_name,
+                app_path,
+                module_name=self.context["module_name"],
+            )

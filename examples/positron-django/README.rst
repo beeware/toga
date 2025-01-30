@@ -28,9 +28,9 @@ To run as a packaged app::
 
     (venv) $ briefcase run
 
-The app uses an SQLite3 database, served out of the user's app data folder. This
-database file will be created if it doesn't exist, and migrations will be run on every
-app start.
+The Django app will run on a SQLite3 database, stored in the user's data directory (the
+location of this directory is platform specific). This database file will be created if
+it doesn't exist, and migrations will be run on every app start.
 
 If you need to start the database with some initial content (e.g., an initial user
 login) you can use ``manage.py`` to create an initial database file. If there is a
@@ -43,4 +43,5 @@ To create an initial database, use ``manage.py`` - e.g.,:
     (venv) PYTHONPATH=src python src/manage.py migrate
     (venv) PYTHONPATH=src python src/manage.py createsuperuser
 
-This will create an initial ``db.sqlite3`` file with a superuser account.
+This will create an initial ``db.sqlite3`` file with a superuser account. All users of
+the app will have this superuser account in their database.
