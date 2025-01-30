@@ -34,11 +34,13 @@ class Color:
     def _validate_alpha(cls, value):
         cls._validate_partial("alpha", value)
 
-    def blend_over(self, back_color: rgba) -> rgba:
+    def blend_over(self, back_color: rgba, round_to_nearest_int: bool = True) -> rgba:
         """Returns an alpha blended color, by performing the "over" straight alpha
         blending operation, compositing the front color over the back color."""
-        return straight_alpha_blending_over(
-            front_color=self.rgba, back_color=back_color.rgba
+        return alpha_blend_over(
+            front_color=self.rgba,
+            back_color=back_color.rgba,
+            round_to_nearest_int=round_to_nearest_int,
         )
 
 
@@ -78,15 +80,6 @@ class rgb(rgba):
 
     def __repr__(self):
         return f"rgb({self.r}, {self.g}, {self.b})"
-
-    @property
-    def rgba(self):
-        return rgba(
-            self.r,
-            self.g,
-            self.b,
-            1,  # alpha will be 1 for a rgb color.
-        )
 
 
 class hsla(Color):
@@ -409,7 +402,7 @@ NAMED_COLOR = {
 }
 
 
-def straight_alpha_blending_over(
+def alpha_blend_over(
     front_color: rgba, back_color: rgba, round_to_nearest_int: bool = True
 ) -> rgba:
     """Performs the "over" straight alpha blending operation, compositing the front
@@ -495,7 +488,7 @@ def straight_alpha_blending_over(
             return blended_color
 
 
-def reverse_straight_alpha_blending_over(
+def alpha_unblend_over(
     blended_color: rgba,
     back_color: rgba,
     front_color_alpha: float,
@@ -583,6 +576,6 @@ __all__ = [
     "color",
     "NAMED_COLOR",
     "TRANSPARENT",
-    "straight_alpha_blending_over",
-    "reverse_straight_alpha_blending_over",
+    "alpha_blend_over",
+    "alpha_unblend_over",
 ] + [name.upper() for name in NAMED_COLOR.keys()]

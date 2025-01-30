@@ -3,9 +3,9 @@ import re
 import pytest
 
 from travertino.colors import (
-    reverse_straight_alpha_blending_over,
+    alpha_blend_over,
+    alpha_unblend_over,
     rgba,
-    straight_alpha_blending_over,
 )
 
 from ..utils import assert_equal_color
@@ -44,7 +44,7 @@ from ..utils import assert_equal_color
 def test_alpha_blending_over(front_color, back_color, expected_blended_color):
     """The front color can be composited over the back color."""
     # Calculate the blended color using the function directly:
-    calculated_blended_color1 = straight_alpha_blending_over(front_color, back_color)
+    calculated_blended_color1 = alpha_blend_over(front_color, back_color)
     # The calculated blended color will be equal to the expected blended color.
     assert_equal_color(calculated_blended_color1, expected_blended_color)
 
@@ -84,11 +84,11 @@ def test_alpha_blending_over(front_color, back_color, expected_blended_color):
         (rgba(50, 128, 200, 0.0), rgba(255, 255, 255, 1.0)),
     ],
 )
-def test_reverse_straight_alpha_blending_over(front_color, back_color):
+def test_alpha_unblend_over(front_color, back_color):
     """The alpha blended color can be unblended to get the original front color."""
     # Calculate the alpha blended color, keep the decimal precision, as the
     # blended color will be deblended to get the original front color.
-    calculated_blended_color = straight_alpha_blending_over(
+    calculated_blended_color = alpha_blend_over(
         front_color, back_color, round_to_nearest_int=False
     )
     if front_color.a == 0:
@@ -101,12 +101,12 @@ def test_reverse_straight_alpha_blending_over(front_color, back_color):
                 "The value of front_color_alpha must be within the range of (0, 1]."
             ),
         ):
-            calculated_front_color = reverse_straight_alpha_blending_over(
+            calculated_front_color = alpha_unblend_over(
                 calculated_blended_color, back_color, front_color.a
             )
     else:  # front_color.a != 0:
         # Calculate the original front color from the blended color
-        calculated_front_color = reverse_straight_alpha_blending_over(
+        calculated_front_color = alpha_unblend_over(
             calculated_blended_color, back_color, front_color.a
         )
         # The derived front color from the blended color, will be equal to the
