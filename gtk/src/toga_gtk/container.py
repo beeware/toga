@@ -14,84 +14,86 @@ else:  # pragma: no-cover-if-gtk3
     LayoutManager = Gtk.LayoutManager
 
 
-class TogaContainerLayoutManager(LayoutManager):  # pragma: no-cover-if-gtk3
-    def __init__(self):
-        super().__init__()
+if GTK_VERSION >= (4, 0, 0):  # pragma: no-cover-if-gtk3
 
-    def do_get_request_mode(self, container):
-        return Gtk.SizeRequestMode.CONSTANT_SIZE
+    class TogaContainerLayoutManager(LayoutManager):
+        def __init__(self):
+            super().__init__()
 
-    def do_measure(self, container, orientation, for_size):
-        """Return (recomputing if necessary) the preferred size for the container.
+        def do_get_request_mode(self, container):
+            return Gtk.SizeRequestMode.CONSTANT_SIZE
 
-        The preferred size of the container is its minimum size. This preference
-        will be overridden with the layout size when the layout is applied.
+        def do_measure(self, container, orientation, for_size):
+            """Return (recomputing if necessary) the preferred size for the container.
 
-        If the container does not yet have content, the minimum size is set to 0x0.
-        """
-        # print("GET PREFERRED SIZE", self._content)
-        if container._content is None:
-            return 0, 0, -1, -1
+            The preferred size of the container is its minimum size. This preference
+            will be overridden with the layout size when the layout is applied.
 
-        # Ensure we have an accurate min layout size
-        container.recompute()
+            If the container does not yet have content, the minimum size is set to 0x0.
+            """
+            # print("GET PREFERRED SIZE", self._content)
+            if container._content is None:
+                return 0, 0, -1, -1
 
-        # The container will conform to the size of the allocation it is given,
-        # so the min and preferred size are the same.
-        if orientation == Gtk.Orientation.HORIZONTAL:
-            return container.min_width, container.min_width, -1, -1
-        elif orientation == Gtk.Orientation.VERTICAL:
-            return container.min_height, container.min_height, -1, -1
+            # Ensure we have an accurate min layout size
+            container.recompute()
 
-    def do_allocate(self, container, width, height, baseline):
-        """Perform the actual layout for the all widget's children.
+            # The container will conform to the size of the allocation it is given,
+            # so the min and preferred size are the same.
+            if orientation == Gtk.Orientation.HORIZONTAL:
+                return container.min_width, container.min_width, -1, -1
+            elif orientation == Gtk.Orientation.VERTICAL:
+                return container.min_height, container.min_height, -1, -1
 
-        The manager will assume whatever size it has been given by GTK - usually the
-        full space of the window that holds the container (`widget`). The layout will
-        then be re-computed based on this new available size, and that new geometry
-        will be applied to all child widgets of the container.
-        """
-        # print(widget._content, f"Container layout {width}x{height} @ 0x0")
+        def do_allocate(self, container, width, height, baseline):
+            """Perform the actual layout for the all widget's children.
 
-        if container._content:
-            # Re-evaluate the layout using the  size as the basis for geometry
-            # print("REFRESH LAYOUT", width, height)
-            container._content.interface.style.layout(container)
+            The manager will assume whatever size it has been given by GTK - usually
+            the full space of the window that holds the container (`widget`). The
+            layout will then be re-computed based on this new available size, and
+            that new geometry will be applied to all child widgets of the container.
+            """
+            # print(widget._content, f"Container layout {width}x{height} @ 0x0")
 
-            # Ensure the minimum content size from the layout is retained
-            container.min_width = container._content.interface.layout.min_width
-            container.min_height = container._content.interface.layout.min_height
+            if container._content:
+                # Re-evaluate the layout using the  size as the basis for geometry
+                # print("REFRESH LAYOUT", width, height)
+                container._content.interface.style.layout(container)
 
-            # WARNING! This is the list of children of the *container*, not
-            # the Toga widget. Toga maintains a tree of children; all nodes
-            # in that tree are direct children of the container.
-            child_widget = container.get_last_child()
-            while child_widget is not None:
-                if child_widget.get_visible():
-                    # Set the allocation of the child widget to the computed
-                    # layout size.
-                    # print(
-                    #     f" allocate child {child_widget.interface}: "
-                    #     "{child_widget.interface.layout}"
-                    # )
-                    child_widget_allocation = Gdk.Rectangle()
-                    child_widget_allocation.x = (
-                        child_widget.interface.layout.absolute_content_left
-                    )
-                    child_widget_allocation.y = (
-                        child_widget.interface.layout.absolute_content_top
-                    )
-                    child_widget_allocation.width = (
-                        child_widget.interface.layout.content_width
-                    )
-                    child_widget_allocation.height = (
-                        child_widget.interface.layout.content_height
-                    )
-                    child_widget.size_allocate(child_widget_allocation, -1)
-                child_widget = child_widget.get_prev_sibling()
+                # Ensure the minimum content size from the layout is retained
+                container.min_width = container._content.interface.layout.min_width
+                container.min_height = container._content.interface.layout.min_height
 
-        # The layout has been redrawn
-        container.needs_redraw = False
+                # WARNING! This is the list of children of the *container*, not
+                # the Toga widget. Toga maintains a tree of children; all nodes
+                # in that tree are direct children of the container.
+                child_widget = container.get_last_child()
+                while child_widget is not None:
+                    if child_widget.get_visible():
+                        # Set the allocation of the child widget to the computed
+                        # layout size.
+                        # print(
+                        #     f" allocate child {child_widget.interface}: "
+                        #     "{child_widget.interface.layout}"
+                        # )
+                        child_widget_allocation = Gdk.Rectangle()
+                        child_widget_allocation.x = (
+                            child_widget.interface.layout.absolute_content_left
+                        )
+                        child_widget_allocation.y = (
+                            child_widget.interface.layout.absolute_content_top
+                        )
+                        child_widget_allocation.width = (
+                            child_widget.interface.layout.content_width
+                        )
+                        child_widget_allocation.height = (
+                            child_widget.interface.layout.content_height
+                        )
+                        child_widget.size_allocate(child_widget_allocation, -1)
+                    child_widget = child_widget.get_prev_sibling()
+
+            # The layout has been redrawn
+            container.needs_redraw = False
 
 
 class TogaContainer(Gtk.Box):
