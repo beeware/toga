@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Type
+
 # flake8: NOQA: F405
 from .constants import *
 
@@ -34,14 +36,205 @@ class Color:
     def _validate_alpha(cls, value):
         cls._validate_partial("alpha", value)
 
-    def blend_over(self, back_color: rgba, round_to_nearest_int: bool = True) -> rgba:
-        """Returns an alpha blended color, by performing the "over" straight alpha
-        blending operation, compositing the front color over the back color."""
-        return alpha_blend_over(
-            front_color=self.rgba,
-            back_color=back_color.rgba,
-            round_to_nearest_int=round_to_nearest_int,
+    def blend_over(
+        self,
+        back_color: Color,
+        round_to_nearest_int: bool = True,
+    ) -> Color:
+        """Performs the "over" straight alpha blending operation, compositing
+        the front color over the back color.
+
+        **Straight alpha blending** is not the same as
+        **Premultiplied alpha blending**, see:
+        https://en.wikipedia.org/wiki/Alpha_compositing#Straight_versus_premultiplied
+
+        :param front_color: The foreground color in the form of :any:`rgba()`.
+        :param back_color: The background color in the form of :any:`rgba()`.
+        :param round_to_nearest_int: Should the rgb values of the blended color be
+        rounded to the nearest int? If the blended color will be later deblended
+        to get the original front color, then keeping the decimal precision will
+        give a more accurate value of the original front color.
+
+        :returns: The blended color in the form of the current color class type.
+        """
+        # The blending operation implemented here is the "over" operation and
+        # replicates CSS's rgba mechanism. For the formulae used here, see:
+        # https://en.wikipedia.org/wiki/Alpha_compositing#Description
+
+        # Used to return the result in same color format as the current color class.
+        current_color_class_type = type(self).__name__
+        # Convert the input colors to rgba in order to do the calculation.
+        front_color = self.rgba
+        back_color = back_color.rgba
+
+        if front_color.a == 1:
+            # If the front color is fully opaque then the result will be the same as
+            # front color.
+            return getattr(front_color, current_color_class_type)
+
+        blended_alpha = min(
+            1, max(0, (front_color.a + ((1 - front_color.a) * back_color.a)))
         )
+
+        if blended_alpha == 0:
+            # Don't further blend the color, to prevent divide by 0.
+            return getattr(rgba(0, 0, 0, 0), current_color_class_type)
+        else:
+            blended_color = rgba(
+                # Red Component
+                min(
+                    255,
+                    max(
+                        0,
+                        (
+                            (
+                                (front_color.r * front_color.a)
+                                + (back_color.r * back_color.a * (1 - front_color.a))
+                            )
+                            / blended_alpha
+                        ),
+                    ),
+                ),
+                # Green Component
+                min(
+                    255,
+                    max(
+                        0,
+                        (
+                            (
+                                (front_color.g * front_color.a)
+                                + (back_color.g * back_color.a * (1 - front_color.a))
+                            )
+                            / blended_alpha
+                        ),
+                    ),
+                ),
+                # Blue Component
+                min(
+                    255,
+                    max(
+                        0,
+                        (
+                            (
+                                (front_color.b * front_color.a)
+                                + (back_color.b * back_color.a * (1 - front_color.a))
+                            )
+                            / blended_alpha
+                        ),
+                    ),
+                ),
+                # Alpha component
+                blended_alpha,
+            )
+            if round_to_nearest_int:
+                final_blended_color = rgba(
+                    int(round(blended_color.r)),
+                    int(round(blended_color.g)),
+                    int(round(blended_color.b)),
+                    round(blended_color.a, 2),
+                )
+            else:
+                final_blended_color = blended_color
+            # Return in the same color format as the current color class.
+            return getattr(final_blended_color, current_color_class_type)
+
+    def unblend_over(self, back_color: Color, front_color_alpha: float) -> Color:
+        """Performs the reverse of the "over" straight alpha blending operation,
+        returning the front color.
+
+        Note: Unblending of blended colors might produce front color with slightly
+        imprecise component values compared to the original front color. This is
+        due to the loss of some amount of precision during the calculation and
+        conversion process between the different color formats. For example,
+        unblending of a hsla blended color might might produce a slightly imprecise
+        original front color, since the alpha blending and unblending is calculated
+        after conversion to rgba values.
+
+        :param blended_color: The blended color resultant from the alpha blending
+         "over" operation, in the form of :any:`rgba()`.
+        :param back_color: The background color in the form of :any:`rgba()`..
+        :param front_color_alpha: The original alpha value of the front color,
+         within the range of (0, 1].
+
+        :raises ValueError: If the value of :any:`front_color_alpha` is not within
+         the range of (0, 1]. The value cannot be 0, since the blended color produced
+         will be equal to the back color, and all information related to the front
+         color will be lost.
+
+        :returns: The front color in the form of the current color class type.
+        """
+        # The blending operation implemented here is the reverse of the "over"
+        # operation and replicates CSS's rgba mechanism. The formula used here
+        # are derived from the "over" straight alpha blending operation formula,
+        # see: https://en.wikipedia.org/wiki/Alpha_compositing#Description
+
+        blended_color = self.rgba
+        back_color = back_color.rgba
+        if not (0 < front_color_alpha <= 1):
+            raise ValueError(
+                "The value of front_color_alpha must be within the range of (0, 1]."
+            )
+        else:
+            front_color = rgba(
+                # Red Component
+                min(
+                    255,
+                    max(
+                        0,
+                        (
+                            (
+                                (blended_color.r * blended_color.a)
+                                - (
+                                    back_color.r
+                                    * back_color.a
+                                    * (1 - front_color_alpha)
+                                )
+                            )
+                            / front_color_alpha
+                        ),
+                    ),
+                ),
+                # Green Component
+                min(
+                    255,
+                    max(
+                        0,
+                        (
+                            (
+                                (blended_color.g * blended_color.a)
+                                - (
+                                    back_color.g
+                                    * back_color.a
+                                    * (1 - front_color_alpha)
+                                )
+                            )
+                            / front_color_alpha
+                        ),
+                    ),
+                ),
+                # Blue Component
+                min(
+                    255,
+                    max(
+                        0,
+                        (
+                            (
+                                (blended_color.b * blended_color.a)
+                                - (
+                                    back_color.b
+                                    * back_color.a
+                                    * (1 - front_color_alpha)
+                                )
+                            )
+                            / front_color_alpha
+                        ),
+                    ),
+                ),
+                # Alpha Component
+                front_color_alpha,
+            )
+            # Return in the same color format as the current color class.
+            return getattr(front_color, type(self).__name__)
 
 
 class rgba(Color):
@@ -70,6 +263,51 @@ class rgba(Color):
     @property
     def rgba(self):
         return self
+
+    @property
+    def rgb(self):
+        return rgb(self.r, self.g, self.b)
+
+    @property
+    def hsla(self) -> hsla:
+        # Formula used here is from: https://en.wikipedia.org/wiki/HSL_and_HSV#From_RGB
+        r_prime = self.r / 255
+        g_prime = self.g / 255
+        b_prime = self.b / 255
+
+        max_component = max(r_prime, g_prime, b_prime)
+        min_component = min(r_prime, g_prime, b_prime)
+        value = max_component
+        chroma = max_component - min_component
+
+        lightness = (max_component + min_component) / 2
+
+        if chroma == 0:
+            hue = 0
+        elif value == r_prime:
+            hue = 60 * (((g_prime - b_prime) / chroma) % 6)
+        elif value == g_prime:
+            hue = 60 * (((b_prime - r_prime) / chroma) + 2)
+        else:  # value == b_prime:
+            hue = 60 * (((r_prime - g_prime) / chroma) + 4)
+
+        if lightness in {0, 1}:
+            saturation = 0
+        else:
+            saturation = chroma / (1 - abs((2 * value) - chroma - 1))
+
+        return hsla(
+            min(360, max(0, round(hue, 4))),
+            # Considering the CSS specs, specify that the saturation and lightness can
+            # be a percentage, so rounding to 4 decimal places would preserve precision.
+            min(1, max(0, round(saturation, 4))),
+            min(1, max(0, round(lightness, 4))),
+            self.a,
+        )
+
+    @property
+    def hsl(self):
+        return self.hsla.hsl
 
 
 class rgb(rgba):
@@ -100,6 +338,14 @@ class hsla(Color):
 
     def __repr__(self):
         return f"hsla({self.h}, {self.s}, {self.l}, {self.a})"
+
+    @property
+    def hsla(self):
+        return self
+
+    @property
+    def hsl(self):
+        return hsl(self.h, self.s, self.l)
 
     @property
     def rgba(self):
@@ -402,171 +648,6 @@ NAMED_COLOR = {
 }
 
 
-def alpha_blend_over(
-    front_color: rgba, back_color: rgba, round_to_nearest_int: bool = True
-) -> rgba:
-    """Performs the "over" straight alpha blending operation, compositing the front
-     color over the back color.
-
-    **Straight alpha blending** is not the same as **Premultiplied alpha blending**:
-    See https://en.wikipedia.org/wiki/Alpha_compositing#Straight_versus_premultiplied
-
-    :param front_color: The foreground color in the form of :any:`rgba()`.
-    :param back_color: The background color in the form of :any:`rgba()`.
-    :param round_to_nearest_int: Should the rgb values of the blended color be
-     rounded to the nearest int? If the blended color will be later deblended
-     to get the original front color, then keeping the decimal precision will
-     give a more accurate value of the original front color.
-
-    :returns: The blended color in the form of :any:`rgba()`.
-    """
-    # The blending operation implemented here is the "over" operation and
-    # replicates CSS's rgba mechanism. For the formulae used here, see:
-    # https://en.wikipedia.org/wiki/Alpha_compositing#Description
-
-    blended_alpha = min(
-        1, max(0, (front_color.a + ((1 - front_color.a) * back_color.a)))
-    )
-    if blended_alpha == 0:
-        # Don't further blend the color, to prevent divide by 0.
-        return rgba(0, 0, 0, 0)
-    else:
-        blended_color = rgba(
-            # Red Component
-            min(
-                255,
-                max(
-                    0,
-                    (
-                        (
-                            (front_color.r * front_color.a)
-                            + (back_color.r * back_color.a * (1 - front_color.a))
-                        )
-                        / blended_alpha
-                    ),
-                ),
-            ),
-            # Green Component
-            min(
-                255,
-                max(
-                    0,
-                    (
-                        (
-                            (front_color.g * front_color.a)
-                            + (back_color.g * back_color.a * (1 - front_color.a))
-                        )
-                        / blended_alpha
-                    ),
-                ),
-            ),
-            # Blue Component
-            min(
-                255,
-                max(
-                    0,
-                    (
-                        (
-                            (front_color.b * front_color.a)
-                            + (back_color.b * back_color.a * (1 - front_color.a))
-                        )
-                        / blended_alpha
-                    ),
-                ),
-            ),
-            # Alpha component
-            blended_alpha,
-        )
-        if round_to_nearest_int:
-            return rgba(
-                int(round(blended_color.r)),
-                int(round(blended_color.g)),
-                int(round(blended_color.b)),
-                round(blended_color.a, 2),
-            )
-        else:
-            return blended_color
-
-
-def alpha_unblend_over(
-    blended_color: rgba,
-    back_color: rgba,
-    front_color_alpha: float,
-) -> rgba:
-    """Performs the reverse of the "over" straight alpha blending operation, returning
-    the front color.
-
-    :param blended_color: The blended color resultant from the alpha blending "over"
-     operation, in the form of :any:`rgba()`.
-    :param back_color: The background color in the form of :any:`rgba()`..
-    :param front_color_alpha: The original alpha value of the front color, within the
-     range of (0, 1].
-
-    :raises ValueError: If the value of :any:`front_color_alpha` is not within the range
-     of (0, 1]. The value cannot be 0, since the blended color produced will be equal to
-     the back color, and all information related to the front color will be lost.
-
-    :returns: The front color in the form of :any:`rgba()`.
-    """
-    # The blending operation implemented here is the reverse of the "over" operation
-    # and replicates CSS's rgba mechanism. The formula used here are derived from the
-    # "over" straight alpha blending operation formula, see:
-    # https://en.wikipedia.org/wiki/Alpha_compositing#Description
-
-    if not (0 < front_color_alpha <= 1):
-        raise ValueError(
-            "The value of front_color_alpha must be within the range of (0, 1]."
-        )
-    else:
-        front_color = rgba(
-            # Red Component
-            min(
-                255,
-                max(
-                    0,
-                    (
-                        (
-                            (blended_color.r * blended_color.a)
-                            - (back_color.r * back_color.a * (1 - front_color_alpha))
-                        )
-                        / front_color_alpha
-                    ),
-                ),
-            ),
-            # Green Component
-            min(
-                255,
-                max(
-                    0,
-                    (
-                        (
-                            (blended_color.g * blended_color.a)
-                            - (back_color.g * back_color.a * (1 - front_color_alpha))
-                        )
-                        / front_color_alpha
-                    ),
-                ),
-            ),
-            # Blue Component
-            min(
-                255,
-                max(
-                    0,
-                    (
-                        (
-                            (blended_color.b * blended_color.a)
-                            - (back_color.b * back_color.a * (1 - front_color_alpha))
-                        )
-                        / front_color_alpha
-                    ),
-                ),
-            ),
-            # Alpha Component
-            front_color_alpha,
-        )
-        return front_color
-
-
 __all__ = [
     "Color",
     "rgba",
@@ -576,6 +657,4 @@ __all__ = [
     "color",
     "NAMED_COLOR",
     "TRANSPARENT",
-    "alpha_blend_over",
-    "alpha_unblend_over",
 ] + [name.upper() for name in NAMED_COLOR.keys()]

@@ -2,11 +2,7 @@ import re
 
 import pytest
 
-from travertino.colors import (
-    alpha_blend_over,
-    alpha_unblend_over,
-    rgba,
-)
+from travertino.colors import hsl, hsla, rgb, rgba
 
 from ..utils import assert_equal_color
 
@@ -14,6 +10,8 @@ from ..utils import assert_equal_color
 @pytest.mark.parametrize(
     "front_color, back_color, expected_blended_color",
     [
+        # Test with rgba color inputs:
+        #
         # Black, gray, white front colors
         (rgba(0, 0, 0, 0), rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)),
         (rgba(0, 0, 0, 0), rgba(50, 128, 200, 1.0), rgba(50, 128, 200, 1.0)),
@@ -39,25 +37,139 @@ from ..utils import assert_equal_color
         (rgba(150, 50, 100, 0.4), rgba(100, 150, 50, 0.6), rgba(126, 97, 76, 0.76)),
         (rgba(50, 60, 70, 0.55), rgba(70, 80, 90, 0.45), rgba(55, 65, 75, 0.75)),
         (rgba(255, 255, 0, 0.3), rgba(0, 255, 255, 0.7), rgba(97, 255, 158, 0.79)),
+        #
+        # Test with rgb color inputs:
+        #
+        # Black, gray, white front colors
+        (rgb(0, 0, 0), rgb(0, 0, 0), rgb(0, 0, 0)),
+        (rgb(0, 0, 0), rgb(50, 128, 200), rgb(0, 0, 0)),
+        (rgb(128, 128, 128), rgb(50, 128, 200), rgb(128, 128, 128)),
+        (rgb(255, 255, 255), rgb(50, 128, 200), rgb(255, 255, 255)),
+        # Primaries
+        (rgb(255, 0, 0), rgb(0, 255, 0), rgb(255, 0, 0)),
+        (rgb(0, 255, 0), rgb(255, 0, 0), rgb(0, 255, 0)),
+        (rgb(0, 0, 255), rgb(255, 0, 0), rgb(0, 0, 255)),
+        # Color with different channel values, including transparency
+        (rgb(50, 128, 200), rgb(255, 255, 255), rgb(50, 128, 200)),
+        (rgb(50, 128, 200), rgb(128, 128, 128), rgb(50, 128, 200)),
+        (rgb(50, 128, 200), rgb(0, 0, 0), rgb(50, 128, 200)),
+        # Both front_color and back_color having intermediate values
+        (rgb(100, 200, 255), rgb(255, 100, 200), rgb(100, 200, 255)),
+        (rgb(120, 180, 240), rgb(240, 120, 180), rgb(120, 180, 240)),
+        (rgb(150, 50, 100), rgb(100, 150, 50), rgb(150, 50, 100)),
+        (rgb(50, 60, 70), rgb(70, 80, 90), rgb(50, 60, 70)),
+        (rgb(255, 255, 0), rgb(0, 255, 255), rgb(255, 255, 0)),
+        #
+        # Test with hsla color inputs:
+        #
+        # Black, gray, white front colors
+        (hsla(0, 0, 0, 0), hsla(0, 0, 0, 0), hsla(0, 0, 0, 0)),
+        (hsla(0, 0, 0, 0), hsla(208.8, 0.6, 0.49, 1.0), hsla(208.8, 0.6, 0.49, 1)),
+        (hsla(0, 0, 0, 1.0), hsla(208.8, 0.6, 0.49, 0.9), hsla(0, 0, 0, 1.0)),
+        (hsla(0, 0, 0.5, 1.0), hsla(208.8, 0.6, 0.49, 0.5), hsla(0, 0, 0.5, 1.0)),
+        (hsla(0, 0, 1, 1.0), hsla(208.8, 0.6, 0.49, 0.0), hsla(0, 0, 1, 1.0)),
+        # Primaries
+        (hsla(0, 1, 0.5, 1.0), hsla(120.0, 1, 0.5, 1.0), hsla(0, 1, 0.5, 1.0)),
+        (hsla(120.0, 1, 0.5, 1.0), hsla(0, 1, 0.5, 1.0), hsla(120.0, 1, 0.5, 1.0)),
+        (hsla(240.0, 1, 0.5, 1.0), hsla(0, 1, 0.5, 1.0), hsla(240.0, 1, 0.5, 1.0)),
+        # Color with different channel values, including transparency
+        (hsla(208.8, 0.6, 0.49, 0.0), hsla(0, 0, 1, 1.0), hsla(0, 0, 1, 1)),
+        (hsla(208.8, 0.6, 0.49, 0.5), hsla(0, 0, 0.5, 1.0), hsla(208.8, 0.3, 0.5, 1)),
+        (hsla(208.8, 0.6, 0.49, 0.9), hsla(0, 0, 0, 1.0), hsla(208.89, 0.6, 0.44, 1)),
+        (hsla(208.8, 0.6, 0.49, 1.0), hsla(0, 0, 0, 0), hsla(208.8, 0.6, 0.49, 1.0)),
+        # Both front_color and back_color having intermediate alpha
+        (
+            hsla(201.29, 1, 0.7, 0.15),
+            hsla(321.29, 1, 0.7, 0.85),
+            hsla(310.36, 0.68, 0.68, 0.87),
+        ),
+        (
+            hsla(210.0, 0.8, 0.71, 0.2),
+            hsla(330.0, 0.8, 0.71, 0.8),
+            hsla(313.42, 0.47, 0.68, 0.84),
+        ),
+        (
+            hsla(330.0, 0.5, 0.39, 0.4),
+            hsla(90.0, 0.5, 0.39, 0.6),
+            hsla(25.71, 0.24, 0.39, 0.76),
+        ),
+        (
+            hsla(210.0, 0.17, 0.24, 0.55),
+            hsla(210.0, 0.12, 0.31, 0.45),
+            hsla(211.43, 0.16, 0.26, 0.75),
+        ),
+        (
+            hsla(60.0, 1, 0.5, 0.3),
+            hsla(180.0, 1, 0.5, 0.7),
+            hsla(143.16, 1, 0.69, 0.79),
+        ),
+        #
+        # Test with hsl color inputs:
+        #
+        # Black, gray, white front colors
+        (hsl(0, 0, 0), hsl(0, 0, 0), hsl(0, 0, 0)),
+        (hsl(0, 0, 0), hsl(208.8, 0.6, 0.49), hsl(0, 0, 0)),
+        (hsl(0, 0, 0.5), hsl(208.8, 0.6, 0.49), hsl(0, 0, 0.5)),
+        (hsl(0, 0, 1), hsl(208.8, 0.6, 0.49), hsl(0, 0, 1)),
+        # Primaries
+        (hsl(0, 1, 0.5), hsl(120.0, 1, 0.5), hsl(0, 1, 0.5)),
+        (hsl(120.0, 1, 0.5), hsl(0, 1, 0.5), hsl(120.0, 1, 0.5)),
+        (hsl(240.0, 1, 0.5), hsl(0, 1, 0.5), hsl(240.0, 1, 0.5)),
+        # Color with different channel values, including transparency
+        (hsl(208.8, 0.6, 0.49), hsl(0, 0, 1), hsl(208.8, 0.6, 0.49)),
+        (hsl(208.8, 0.6, 0.49), hsl(0, 0, 0.5), hsl(208.8, 0.6, 0.49)),
+        (hsl(208.8, 0.6, 0.49), hsl(0, 0, 0), hsl(208.8, 0.6, 0.49)),
+        # Both front_color and back_color having intermediate values
+        (hsl(201.29, 1, 0.7), hsl(321.29, 1, 0.7), hsl(201.18, 1, 0.7)),
+        (hsl(210.0, 0.8, 0.71), hsl(330.0, 0.8, 0.71), hsl(210.0, 0.8, 0.71)),
+        (hsl(330.0, 0.5, 0.39), hsl(90.0, 0.5, 0.39), hsl(330.3, 0.5, 0.39)),
+        (hsl(210.0, 0.17, 0.24), hsl(210.0, 0.12, 0.31), hsl(211.43, 0.17, 0.24)),
+        (hsl(60.0, 1, 0.5), hsl(180.0, 1, 0.5), hsl(60.0, 1, 0.5)),
+        #
+        # Test with mixed color class inputs:
+        #
+        # Black, gray, white front colors
+        (rgb(0, 0, 0), rgb(0, 0, 0), rgb(0, 0, 0)),
+        (hsla(0, 0, 0, 0), rgb(50, 128, 200), hsla(208.8, 0.6, 0.49, 1)),
+        (rgb(0, 0, 0), rgb(50, 128, 200), rgb(0, 0, 0)),
+        (rgba(128, 128, 128, 1.0), rgba(50, 128, 200, 0.5), rgba(128, 128, 128, 1.0)),
+        (rgb(255, 255, 255), rgb(50, 128, 200), rgb(255, 255, 255)),
+        # Primaries
+        (hsl(0, 1, 0.5), hsl(120.0, 1, 0.5), hsl(0, 1, 0.5)),
+        (rgb(0, 255, 0), hsla(0, 1, 0.5, 1.0), rgb(0, 255, 0)),
+        (rgb(0, 0, 255), hsla(0, 1, 0.5, 1.0), rgb(0, 0, 255)),
+        # Color with different channel values, including transparency
+        (hsla(208.8, 0.6, 0.49, 0.0), hsla(0, 0, 1, 1.0), hsla(0, 0, 1, 1)),
+        (rgba(50, 128, 200, 0.5), hsl(0, 0, 0.5), rgba(89, 128, 164, 1)),
+        (hsl(208.8, 0.6, 0.49), rgba(0, 0, 0, 1.0), hsl(208.8, 0.6, 0.49)),
+        (hsla(208.8, 0.6, 0.49, 1.0), rgba(0, 0, 0, 0), hsla(208.8, 0.6, 0.49, 1.0)),
+        # Both front_color and back_color having intermediate values
+        (hsla(201.29, 1, 0.7, 0.15), hsl(321.29, 1, 0.7), hsla(312.0, 0.71, 0.68, 1)),
+        (hsl(210.0, 0.8, 0.71), hsla(330.0, 0.8, 0.71, 0.8), hsl(210.0, 0.8, 0.71)),
+        (rgba(150, 50, 100, 0.4), hsla(90.0, 0.5, 0.39, 0.6), rgba(126, 97, 76, 0.76)),
+        (rgba(50, 60, 70, 0.55), hsla(210.0, 0.12, 0.31, 0.45), rgba(55, 65, 75, 0.75)),
+        (
+            hsla(60.0, 1, 0.5, 0.3),
+            hsla(180.0, 1, 0.5, 0.7),
+            hsla(143.16, 1, 0.69, 0.79),
+        ),
     ],
 )
 def test_alpha_blending_over(front_color, back_color, expected_blended_color):
     """The front color can be composited over the back color."""
-    # Calculate the blended color using the function directly:
-    calculated_blended_color1 = alpha_blend_over(front_color, back_color)
+    # Calculate the blended color using the blend_over() method on the Color class.
+    calculated_blended_color = front_color.blend_over(back_color)
     # The calculated blended color will be equal to the expected blended color.
-    assert_equal_color(calculated_blended_color1, expected_blended_color)
-
-    # Calculate the blended color using the blend_over() method on the Color class:
-    calculated_blended_color2 = front_color.blend_over(back_color)
-    # The calculated blended color will be equal to the expected blended color.
-    assert_equal_color(calculated_blended_color2, expected_blended_color)
+    assert_equal_color(calculated_blended_color, expected_blended_color)
 
 
 @pytest.mark.parametrize(
     "front_color, back_color",
     [
+        # Test with rgba color inputs:
+        #
         # Black, gray, white front colors
+        (rgba(0, 0, 0, 0), rgba(50, 128, 200, 1.0)),
         (rgba(0, 0, 0, 1.0), rgba(50, 128, 200, 0.9)),
         (rgba(128, 128, 128, 1.0), rgba(50, 128, 200, 0.5)),
         (rgba(255, 255, 255, 1.0), rgba(50, 128, 200, 0.0)),
@@ -66,6 +178,7 @@ def test_alpha_blending_over(front_color, back_color, expected_blended_color):
         (rgba(0, 255, 0, 1.0), rgba(255, 0, 0, 1.0)),
         (rgba(0, 0, 255, 1.0), rgba(255, 0, 0, 1.0)),
         # Color with different channel values, including transparency
+        (rgba(50, 128, 200, 0.0), rgba(255, 255, 255, 1.0)),
         (rgba(50, 128, 200, 0.5), rgba(128, 128, 128, 1.0)),
         (rgba(50, 128, 200, 0.9), rgba(0, 0, 0, 1.0)),
         (rgba(50, 128, 200, 1.0), rgba(0, 0, 0, 0)),
@@ -76,20 +189,101 @@ def test_alpha_blending_over(front_color, back_color, expected_blended_color):
         (rgba(50, 60, 70, 0.55), rgba(70, 80, 90, 0.45)),
         (rgba(255, 255, 0, 0.3), rgba(0, 255, 255, 0.7)),
         #
-        # The blended color of these pairs, cannot be deblended to get the front
-        # color. This is because when alpha channel of the front color is 0, then
-        # the blended color will be equal to the back color. Therefore, all of the
-        # information about the original front color will be lost.
-        (rgba(0, 0, 0, 0), rgba(50, 128, 200, 1.0)),
-        (rgba(50, 128, 200, 0.0), rgba(255, 255, 255, 1.0)),
+        # Test with rgb color inputs:
+        #
+        # Black, gray, white front colors
+        (rgb(0, 0, 0), rgb(50, 128, 200)),
+        (rgb(128, 128, 128), rgb(50, 128, 200)),
+        (rgb(255, 255, 255), rgb(50, 128, 200)),
+        # Primaries
+        (rgb(255, 0, 0), rgb(0, 255, 0)),
+        (rgb(0, 255, 0), rgb(255, 0, 0)),
+        (rgb(0, 0, 255), rgb(255, 0, 0)),
+        # Color with different channel values
+        (rgb(50, 128, 200), rgb(255, 255, 255)),
+        (rgb(50, 128, 200), rgb(128, 128, 128)),
+        (rgb(50, 128, 200), rgb(0, 0, 0)),
+        # Both front_color and back_color having intermediate values
+        (rgb(100, 200, 255), rgb(255, 100, 200)),
+        (rgb(120, 180, 240), rgb(240, 120, 180)),
+        (rgb(150, 50, 100), rgb(100, 150, 50)),
+        (rgb(50, 60, 70), rgb(70, 80, 90)),
+        (rgb(255, 255, 0), rgb(0, 255, 255)),
+        #
+        # Test with hsla color inputs:
+        #
+        # Black, gray, white front colors
+        (hsla(0, 0, 0, 0), hsla(208.8, 0.6, 0.49, 1.0)),
+        (hsla(0, 0, 0, 1.0), hsla(208.8, 0.6, 0.49, 0.9)),
+        (hsla(0, 0, 0.5, 1.0), hsla(208.8, 0.6, 0.49, 0.5)),
+        (hsla(0, 0, 1, 1.0), hsla(208.8, 0.6, 0.49, 0.0)),
+        # Primaries
+        (hsla(0, 1, 0.5, 1.0), hsla(120.0, 1, 0.5, 1.0)),
+        (hsla(120.0, 1, 0.5, 1.0), hsla(0, 1, 0.5, 1.0)),
+        (hsla(240.0, 1, 0.5, 1.0), hsla(0, 1, 0.5, 1.0)),
+        # Color with different channel values, including transparency
+        (hsla(208.8, 0.6, 0.49, 0.0), hsla(0, 0, 1, 1.0)),
+        (hsla(208.8, 0.6, 0.49, 0.5), hsla(0, 0, 0.5, 1.0)),
+        (hsla(208.8, 0.6, 0.49, 0.9), hsla(0, 0, 0, 1.0)),
+        (hsla(208.8, 0.6, 0.49, 1.0), hsla(0, 0, 0, 0)),
+        # Both front_color and back_color having intermediate alpha
+        (hsla(201.29, 1, 0.7, 0.15), hsla(321.29, 1, 0.7, 0.85)),
+        (hsla(210.0, 0.8, 0.71, 0.2), hsla(330.0, 0.8, 0.71, 0.8)),
+        (hsla(330.0, 0.5, 0.39, 0.4), hsla(90.0, 0.5, 0.39, 0.6)),
+        (hsla(210.0, 0.17, 0.24, 0.55), hsla(210.0, 0.12, 0.31, 0.45)),
+        (hsla(60.0, 1, 0.5, 0.3), hsla(180.0, 1, 0.5, 0.7)),
+        #
+        # Test with hsl color inputs:
+        #
+        # Black, gray, white front colors
+        (hsl(0, 0, 0), hsl(208.8, 0.6, 0.4902)),
+        (hsl(0, 0, 0.502), hsl(208.8, 0.6, 0.4902)),
+        (hsl(0, 0, 1), hsl(208.8, 0.6, 0.4902)),
+        # Primaries
+        (hsl(0, 1, 0.5), hsl(120.0, 1, 0.5)),
+        (hsl(120.0, 1, 0.5), hsl(0, 1, 0.5)),
+        (hsl(240.0, 1, 0.5), hsl(0, 1, 0.5)),
+        # Color with different channel values
+        (hsl(208.8, 0.6, 0.4902), hsl(0, 0, 1)),
+        (hsl(208.8, 0.6, 0.4902), hsl(0, 0, 0.502)),
+        (hsl(208.8, 0.6, 0.4902), hsl(0, 0, 0)),
+        # Both front_color and back_color having intermediate values
+        (hsl(201.2903, 1, 0.6961), hsl(321.2903, 1, 0.6961)),
+        (hsl(210.0, 0.8, 0.7059), hsl(330.0, 0.8, 0.7059)),
+        (hsl(330.0, 0.5, 0.3922), hsl(90.0, 0.5, 0.3922)),
+        (hsl(210.0, 0.1667, 0.2353), hsl(210.0, 0.125, 0.3137)),
+        (hsl(60.0, 1, 0.5), hsl(180.0, 1, 0.5)),
+        #
+        # Test with mixed color class inputs:
+        #
+        # Black, gray, white front colors
+        (hsl(0, 0, 0), hsl(208.8, 0.6, 0.4902)),
+        (hsl(0, 0, 0), rgba(50, 128, 200, 0.9)),
+        (rgba(128, 128, 128, 1.0), hsla(208.8, 0.6, 0.4902, 0.5)),
+        (hsla(0, 0, 1, 1.0), hsl(208.8, 0.6, 0.4902)),
+        # Primaries
+        (hsl(0, 1, 0.5), rgba(0, 255, 0, 1.0)),
+        (hsla(120.0, 1, 0.5, 1.0), hsl(0, 1, 0.5)),
+        (rgba(0, 0, 255, 1.0), rgba(255, 0, 0, 1.0)),
+        # Color with different channel values, including transparency
+        (hsla(208.8, 0.6, 0.4902, 0.0), rgba(255, 255, 255, 1.0)),
+        (rgb(50, 128, 200), rgba(128, 128, 128, 1.0)),
+        (rgba(50, 128, 200, 0.9), hsl(0, 0, 0)),
+        (rgb(50, 128, 200), hsla(0, 0, 0, 0)),
+        # Both front_color and back_color having intermediate values
+        (hsla(201.2903, 1, 0.6961, 0.15), rgb(255, 100, 200)),
+        (hsl(210.0, 0.8, 0.7059), rgb(240, 120, 180)),
+        (rgb(150, 50, 100), hsl(90.0, 0.5, 0.3922)),
+        (hsla(210.0, 0.1667, 0.2353, 0.55), rgba(70, 80, 90, 0.45)),
+        (rgba(255, 255, 0, 0.3), hsla(180.0, 1, 0.5, 0.7)),
     ],
 )
 def test_alpha_unblend_over(front_color, back_color):
     """The alpha blended color can be unblended to get the original front color."""
     # Calculate the alpha blended color, keep the decimal precision, as the
     # blended color will be deblended to get the original front color.
-    calculated_blended_color = alpha_blend_over(
-        front_color, back_color, round_to_nearest_int=False
+    calculated_blended_color = front_color.blend_over(
+        back_color, round_to_nearest_int=False
     )
     if front_color.a == 0:
         # When the front color has an alpha value of 0, then all information
@@ -101,14 +295,16 @@ def test_alpha_unblend_over(front_color, back_color):
                 "The value of front_color_alpha must be within the range of (0, 1]."
             ),
         ):
-            calculated_front_color = alpha_unblend_over(
-                calculated_blended_color, back_color, front_color.a
+            calculated_front_color = calculated_blended_color.unblend_over(
+                back_color, front_color.a
             )
     else:  # front_color.a != 0:
         # Calculate the original front color from the blended color
-        calculated_front_color = alpha_unblend_over(
-            calculated_blended_color, back_color, front_color.a
+        calculated_front_color = calculated_blended_color.unblend_over(
+            back_color, front_color.a
         )
         # The derived front color from the blended color, will be equal to the
         # original front color, within the given tolerance range.
-        assert_equal_color(calculated_front_color, front_color)
+        assert_equal_color(
+            calculated_front_color, front_color, alpha_unblending_operation=True
+        )
