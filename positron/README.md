@@ -94,8 +94,7 @@ CSS content. The app will serve the contents of the app's `resources` folder (i.
 `src/<app name>/resources`) as the root URL. A placeholder `index.html` file is generated
 in the resources folder as part of the template.
 
-Community
----------
+## Community
 
 Toga Positron is part of the [BeeWare suite](https://beeware.org). You can talk to the
 community through:
