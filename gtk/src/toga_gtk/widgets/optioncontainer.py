@@ -9,11 +9,11 @@ class OptionContainer(Widget):
     uses_icons = False
 
     def create(self):
-        if GTK_VERSION >= (4, 0, 0):  # pragma: no-cover-if-gtk3
-            raise RuntimeError("OptionContainer isn't supported on GTK4 (yet!)")
-
         self.native = Gtk.Notebook()
-        self.native.connect("switch-page", self.gtk_on_switch_page)
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            self.native.connect("switch-page", self.gtk_on_switch_page)
+        else:  # pragma: no-cover-if-gtk3
+            pass
         self.sub_containers = []
 
     def gtk_on_switch_page(self, widget, page, page_num):
@@ -27,12 +27,12 @@ class OptionContainer(Widget):
         asyncio.get_event_loop().call_soon(self.interface.on_select)
 
     def add_option(self, index, text, widget, icon):
-        sub_container = TogaContainer()
-        sub_container.content = widget
-
-        self.sub_containers.insert(index, sub_container)
-        self.native.insert_page(sub_container, Gtk.Label(label=text), index)
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            sub_container = TogaContainer()
+            sub_container.content = widget
+
+            self.sub_containers.insert(index, sub_container)
+            self.native.insert_page(sub_container, Gtk.Label(label=text), index)
             # Tabs aren't visible by default;
             # tell the notebook to show all content.
             self.native.show_all()
@@ -45,7 +45,10 @@ class OptionContainer(Widget):
         del self.sub_containers[index]
 
     def set_option_enabled(self, index, enabled):
-        self.sub_containers[index].set_visible(enabled)
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            self.sub_containers[index].set_visible(enabled)
+        else:  # pragma: no-cover-if-gtk3
+            pass
 
     def is_option_enabled(self, index):
         return self.sub_containers[index].get_visible()
