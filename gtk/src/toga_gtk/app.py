@@ -61,15 +61,13 @@ class App:
             context.add_provider_for_screen(
                 Gdk.Screen.get_default(), css_provider, Gtk.STYLE_PROVIDER_PRIORITY_USER
             )
+        elif GTK_VERSION >= (4, 12, 0):  # pragma: no-cover-if-gtk3
+            css_provider.load_from_string(TOGA_DEFAULT_STYLES)
+        elif GTK_VERSION >= (4, 8, 0):  # pragma: no-cover-if-gtk3
+            css_provider.load_from_data(TOGA_DEFAULT_STYLES, len(TOGA_DEFAULT_STYLES))
         else:  # pragma: no-cover-if-gtk3
-            if Gtk.get_minor_version() >= 12:
-                css_provider.load_from_string(TOGA_DEFAULT_STYLES)
-            elif Gtk.get_minor_version() > 8:
-                css_provider.load_from_data(
-                    TOGA_DEFAULT_STYLES, len(TOGA_DEFAULT_STYLES)
-                )
-            else:
-                css_provider.load_from_data(TOGA_DEFAULT_STYLES.encode("utf-8"))
+            # Earlier than GTK 4.8
+            css_provider.load_from_data(TOGA_DEFAULT_STYLES.encode("utf-8"))
 
     ######################################################################
     # Commands and menus
