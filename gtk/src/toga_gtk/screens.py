@@ -25,6 +25,9 @@ class Screen:
             geometry = self.native.get_geometry()
             return Position(geometry.x, geometry.y)
         else:  # pragma: no-cover-if-gtk3
+            self.interface.factory.not_implemented(
+                "Screen get_origin is not possible with GTK4"
+            )
             return Position(0, 0)
 
     def get_size(self) -> Size:
