@@ -12,6 +12,9 @@ class WebView(Widget):
     """GTK WebView implementation."""
 
     def create(self):
+        if GTK_VERSION >= (4, 0, 0):  # pragma: no-cover-if-gtk3
+            raise RuntimeError("WebView isn't supported on GTK4 (yet!)")
+
         if WebKit2 is None:  # pragma: no cover
             raise RuntimeError(
                 "Unable to import WebKit2. Ensure that the system package providing "

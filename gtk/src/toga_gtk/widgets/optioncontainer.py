@@ -9,6 +9,9 @@ class OptionContainer(Widget):
     uses_icons = False
 
     def create(self):
+        if GTK_VERSION >= (4, 0, 0):  # pragma: no-cover-if-gtk3
+            raise RuntimeError("OptionContainer isn't supported on GTK4 (yet!)")
+
         self.native = Gtk.Notebook()
         self.native.connect("switch-page", self.gtk_on_switch_page)
         self.sub_containers = []

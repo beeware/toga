@@ -10,7 +10,7 @@ import pytest
 import toga
 from toga.style import Pack
 
-from .conftest import build_cleanup_test
+from .conftest import build_cleanup_test, safe_create
 from .properties import (  # noqa: F401
     test_flex_widget_size,
     test_focus,
@@ -80,7 +80,9 @@ async def on_load():
 
 @pytest.fixture
 async def widget(on_load):
-    widget = toga.WebView(style=Pack(flex=1), on_webview_load=on_load)
+    with safe_create():
+        widget = toga.WebView(style=Pack(flex=1), on_webview_load=on_load)
+
     # We shouldn't be able to get a callback until at least one tick of the event loop
     # has completed.
     on_load.assert_not_called()
