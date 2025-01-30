@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import Type
-
 # flake8: NOQA: F405
 from .constants import *
 
