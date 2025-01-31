@@ -83,8 +83,10 @@ System requirements
   - OpenSUSE Tumbleweed: ``libwebkit2gtk3 typelib(WebKit2)``
   - FreeBSD: ``webkit2-gtk3``
 
-  Additionally, if you are helping to develop support for GTK4, you need to install
-  ``gir1.2-webkit-6.0`` (currently experimental / not fully implemented).
+  WebView is not fully supported on GTK4. If you want to contribute to the GTK4 WebView
+  implementation, you will require v6.0 of the WebKit2 libraries. This is provided by
+  ``gir1.2-webkit-6.0`` on Ubuntu/Debian, and ``webkitgtk6.0`` on Fedora; for other
+  distributions, consult your distributions's platform documentation.
 
 Notes
 -----

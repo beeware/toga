@@ -447,6 +447,25 @@ that you could try to implement.
 Again, you'll need to add unit tests and/or backend probes for any new features
 you add.
 
+Contribute to the GTK4 update
+-----------------------------
+
+Toga's GTK support is currently based on the GTK3 API. This API works, and ships with
+most Linux distributions, but is no longer maintained by the GTK team. We're in the
+process of adding GTK4 support to Toga's GTK backend. You can help with this update
+process.
+
+GTK4 support can be enabled by setting the ``TOGA_GTK=4`` environment variable. To
+contribute to the update, pick a widget that currently has GTK3 support, and try
+updating the widget's API to support GTK4 as well. You can identify a widget that hasn't
+been ported by looking at the :ref:`GTK probe for the widget <testbed-probe>` - widgets
+that aren't ported yet will have an "if GTK4, skip" block at the top of the probe
+definition.
+
+The code needs to support both GTK3 and GTK4; if there are significant differences in
+API, you can add conditional branches based on the GTK version. See one of the widgets
+that *has* been ported (e.g., Label) for examples of how this can be done.
+
 Implement an entirely new platform backend
 ------------------------------------------
 
