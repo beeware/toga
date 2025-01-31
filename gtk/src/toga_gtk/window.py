@@ -290,23 +290,27 @@ class Window:
     def get_window_state(self, in_progress_state=False):
         if in_progress_state and self._pending_state_transition:
             return self._pending_state_transition
+
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
-            window_state_flags = self._window_state_flags
-            if window_state_flags:  # pragma: no branch
-                if window_state_flags & Gdk.WindowState.MAXIMIZED:
-                    return WindowState.MAXIMIZED
-                elif window_state_flags & Gdk.WindowState.ICONIFIED:
-                    return WindowState.MINIMIZED  # pragma: no-cover-if-linux-wayland
-                elif window_state_flags & Gdk.WindowState.FULLSCREEN:
-                    return (
-                        WindowState.PRESENTATION
-                        if self._in_presentation
-                        else WindowState.FULLSCREEN
-                    )
+            if not self._window_state_flags:
+                return WindowState.NORMAL
+
+            flags = self._window_state_flags
+            if flags & Gdk.WindowState.MAXIMIZED:
+                return WindowState.MAXIMIZED
+            elif flags & Gdk.WindowState.ICONIFIED:
+                return WindowState.MINIMIZED  # pragma: no-cover-if-linux-wayland
+            elif flags & Gdk.WindowState.FULLSCREEN:
+                return (
+                    WindowState.PRESENTATION
+                    if self._in_presentation
+                    else WindowState.FULLSCREEN
+                )
+
         else:  # pragma: no-cover-if-gtk3
             if self.native.is_maximized():
                 return WindowState.MAXIMIZED
-            if GTK_VERSION >= (4, 12) and self.native.is_suspended():
+            elif GTK_VERSION >= (4, 12) and self.native.is_suspended():
                 return WindowState.MINIMIZED
             elif self.native.is_fullscreen():
                 return (
@@ -314,6 +318,7 @@ class Window:
                     if self._in_presentation
                     else WindowState.FULLSCREEN
                 )
+
         return WindowState.NORMAL
 
     def set_window_state(self, state):
