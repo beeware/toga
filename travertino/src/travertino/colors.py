@@ -295,12 +295,10 @@ class rgba(Color):
             saturation = chroma / (1 - abs((2 * value) - chroma - 1))
 
         return hsla(
-            min(360, max(0, round(hue, 4))),
-            # Considering the CSS specs, specify that the saturation and lightness can
-            # be a percentage, so rounding to 4 decimal places would preserve precision.
-            min(1, max(0, round(saturation, 4))),
-            min(1, max(0, round(lightness, 4))),
-            self.a,
+            min(360, max(0, hue)),
+            min(1, max(0, saturation)),
+            min(1, max(0, lightness)),
+            min(1, max(0, self.a)),
         )
 
     @property
