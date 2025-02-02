@@ -15,7 +15,7 @@ repos:
       - id: pyupgrade
         args: [--py39-plus]
   - repo: https://github.com/PyCQA/isort
-    rev: 5.13.2
+    rev: 6.0.0
     hooks:
       # isort for Travertino
       - id: isort
