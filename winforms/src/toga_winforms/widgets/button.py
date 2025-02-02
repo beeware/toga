@@ -23,7 +23,7 @@ class Button(Widget):
     def get_text(self):
         value = self.native.Text
         # Normalize a standalone ZERO WIDTH SPACE to an empty string.
-        if value == "\u200B":
+        if value == "\u200b":
             return ""
         return value
 
@@ -31,7 +31,7 @@ class Button(Widget):
         if text == "":
             # An empty label would cause the widget's height to collapse, so display a
             # Unicode ZERO WIDTH SPACE instead.
-            text = "\u200B"
+            text = "\u200b"
         self.native.Text = text
 
     def get_icon(self):
