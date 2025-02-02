@@ -38,20 +38,11 @@ class Choices:
     def __init__(
         self,
         *constants,
-        default=None,  # DEPRECATED
         string=False,
         integer=False,
         number=False,
         color=False,
     ):
-        if default is not None:
-            warn(
-                "The `default` argument to Choices.__init__ is deprecated. "
-                "Providing no initial value to a property using it is sufficient.",
-                DeprecationWarning,
-                stacklevel=2,
-            )
-
         self.constants = set(constants)
 
         self.string = string

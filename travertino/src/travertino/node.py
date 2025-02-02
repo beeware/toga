@@ -150,11 +150,7 @@ class Node:
         self._set_root(child, None)
 
     def clear(self):
-        """Clear all children from this node.
-
-        Raises:
-            ValueError: If this node is a leaf, and cannot have children.
-        """
+        """Clear all children from this node."""
         if self._children is None:
             # This is a leaf, so do nothing.
             return
