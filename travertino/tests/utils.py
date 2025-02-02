@@ -2,6 +2,8 @@ import sys
 from dataclasses import dataclass
 from unittest.mock import Mock
 
+import pytest
+
 if sys.version_info < (3, 10):
     _DATACLASS_KWARGS = {"init": False}
 else:
@@ -31,46 +33,30 @@ def mock_attr(attr):
     return returned_decorator
 
 
-def assert_equal_color(
-    actual, expected, tolerance=1e-2, alpha_unblending_operation=False
-):
-    try:
-        if {type(actual), type(expected)} == {rgba}:
-            assert abs(actual.rgba.r - expected.rgba.r) < tolerance
-            assert abs(actual.rgba.g - expected.rgba.g) < tolerance
-            assert abs(actual.rgba.b - expected.rgba.b) < tolerance
-            assert abs(actual.rgba.a - expected.rgba.a) < tolerance
-        elif {type(actual), type(expected)} == {rgb}:
-            assert abs(actual.rgb.r - expected.rgb.r) < tolerance
-            assert abs(actual.rgb.g - expected.rgb.g) < tolerance
-            assert abs(actual.rgb.b - expected.rgb.b) < tolerance
-        elif {type(actual), type(expected)} == {hsla}:
-            # Unblending hsla color, sometimes produces slightly
-            # imprecise original front_color, as the alpha blending
-            # calculation is done on rgba values, and some amount
-            # of precision is lost during the conversions. Hence,
-            # assert deblended color with slightly higher tolerance.
-            assert (
-                abs(actual.hsla.h - expected.hsla.h) < 1.4
-                if alpha_unblending_operation
-                else tolerance
-            )
-            assert (
-                abs(actual.hsla.s - expected.hsla.s) < 0.05
-                if alpha_unblending_operation
-                else tolerance
-            )
-            assert abs(actual.hsla.l - expected.hsla.l) < tolerance
-            assert abs(actual.hsla.a - expected.hsla.a) < tolerance
-        elif {type(actual), type(expected)} == {hsl}:
-            assert abs(actual.hsl.h - expected.hsl.h) < tolerance
-            assert abs(actual.hsl.s - expected.hsl.s) < tolerance
-            assert abs(actual.hsl.l - expected.hsl.l) < tolerance
-        else:
-            raise ValueError(
-                "Actual color and expected color should be of the same type. "
-                f"But got actual:{type(actual)} and expected:{type(expected)}."
-            )
-    except AssertionError as error:
-        error.add_note(f"actual: {actual}, expected: {expected}")
-        raise error
+def assert_equal_color(actual, expected, tolerance=None, blend=False, unblend=False):
+    if {True} in {blend, unblend}:
+        tolerance = 1e-6
+
+    if {type(actual), type(expected)} == {rgba}:
+        assert actual.rgba.r == pytest.approx(expected.rgba.r, abs=tolerance)
+        assert actual.rgba.g == pytest.approx(expected.rgba.g, abs=tolerance)
+        assert actual.rgba.b == pytest.approx(expected.rgba.b, abs=tolerance)
+        assert actual.rgba.a == pytest.approx(expected.rgba.a, abs=tolerance)
+    elif {type(actual), type(expected)} == {rgb}:
+        assert actual.rgb.r == pytest.approx(expected.rgb.r, abs=tolerance)
+        assert actual.rgb.g == pytest.approx(expected.rgb.g, abs=tolerance)
+        assert actual.rgb.b == pytest.approx(expected.rgb.b, abs=tolerance)
+    elif {type(actual), type(expected)} == {hsla}:
+        assert actual.hsla.h == pytest.approx(expected.hsla.h, abs=tolerance)
+        assert actual.hsla.s == pytest.approx(expected.hsla.s, abs=tolerance)
+        assert actual.hsla.l == pytest.approx(expected.hsla.l, abs=tolerance)
+        assert actual.hsla.a == pytest.approx(expected.hsla.a, abs=tolerance)
+    elif {type(actual), type(expected)} == {hsl}:
+        assert actual.hsl.h == pytest.approx(expected.hsl.h, abs=tolerance)
+        assert actual.hsl.s == pytest.approx(expected.hsl.s, abs=tolerance)
+        assert actual.hsl.l == pytest.approx(expected.hsl.l, abs=tolerance)
+    else:
+        raise ValueError(
+            "Actual color and expected color should be of the same type. "
+            f"But got actual:{type(actual)} and expected:{type(expected)}."
+        )
