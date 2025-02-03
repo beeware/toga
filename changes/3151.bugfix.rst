@@ -1,0 +1,1 @@
+Fixed a bug concerning inconsistent handling of whether explicitly assigning a style property a value equal to its initial value counts as having been set.
