@@ -1,7 +1,7 @@
 from travertino.size import at_least
 
 from ..container import TogaContainer
-from ..libs import Gtk
+from ..libs import GTK_VERSION, Gtk
 from .base import Widget
 
 
@@ -11,8 +11,12 @@ class SplitContainer(Widget):
         self.native.set_wide_handle(True)
 
         self.sub_containers = [TogaContainer(), TogaContainer()]
-        self.native.pack1(self.sub_containers[0], True, False)
-        self.native.pack2(self.sub_containers[1], True, False)
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            self.native.pack1(self.sub_containers[0], True, False)
+            self.native.pack2(self.sub_containers[1], True, False)
+        else:  # pragma: no-cover-if-gtk3
+            self.native.set_start_child(self.sub_containers[0])
+            self.native.set_end_child(self.sub_containers[1])
 
         self._split_proportion = 0.5
 
@@ -97,5 +101,8 @@ class SplitContainer(Widget):
 
             min_width = max(min_width, self.interface._MIN_WIDTH) + SPLITTER_WIDTH
 
-        self.interface.intrinsic.width = at_least(min_width)
-        self.interface.intrinsic.height = at_least(min_height)
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            self.interface.intrinsic.width = at_least(min_width)
+            self.interface.intrinsic.height = at_least(min_height)
+        else:  # pragma: no-cover-if-gtk3
+            pass

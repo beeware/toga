@@ -1,4 +1,6 @@
-from toga_gtk.libs import Gtk
+import pytest
+
+from toga_gtk.libs import GTK_VERSION, Gtk
 
 from .base import SimpleProbe
 
@@ -6,6 +8,9 @@ from .base import SimpleProbe
 class ScrollContainerProbe(SimpleProbe):
     native_class = Gtk.ScrolledWindow
     scrollbar_inset = 0
+
+    if GTK_VERSION >= (4, 0, 0):
+        pytest.skip("GTK4 doesn't support progress bars yet")
 
     @property
     def has_content(self):

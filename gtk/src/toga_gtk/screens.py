@@ -1,7 +1,7 @@
 from toga.screens import Screen as ScreenInterface
 from toga.types import Position, Size
 
-from .libs import IS_WAYLAND, Gdk
+from .libs import GTK_VERSION, IS_WAYLAND, Gdk
 
 
 class Screen:
@@ -21,8 +21,14 @@ class Screen:
         return self.native.get_model()
 
     def get_origin(self) -> Position:
-        geometry = self.native.get_geometry()
-        return Position(geometry.x, geometry.y)
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            geometry = self.native.get_geometry()
+            return Position(geometry.x, geometry.y)
+        else:  # pragma: no-cover-if-gtk3
+            self.interface.factory.not_implemented(
+                "Screen get_origin is not possible with GTK4"
+            )
+            return Position(0, 0)
 
     def get_size(self) -> Size:
         geometry = self.native.get_geometry()

@@ -5,7 +5,7 @@ from travertino.size import at_least
 
 from toga.widgets.numberinput import _clean_decimal
 
-from ..libs import Gtk, gtk_text_align
+from ..libs import GTK_VERSION, Gtk, gtk_text_align
 from .base import Widget
 
 
@@ -64,10 +64,13 @@ class NumberInput(Widget):
         self.native.set_alignment(xalign)
 
     def rehint(self):
-        width = self.native.get_preferred_width()
-        height = self.native.get_preferred_height()
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            width = self.native.get_preferred_width()
+            height = self.native.get_preferred_height()
 
-        self.interface.intrinsic.width = at_least(
-            max(self.interface._MIN_WIDTH, width[1])
-        )
-        self.interface.intrinsic.height = height[1]
+            self.interface.intrinsic.width = at_least(
+                max(self.interface._MIN_WIDTH, width[1])
+            )
+            self.interface.intrinsic.height = height[1]
+        else:  # pragma: no-cover-if-gtk3
+            pass

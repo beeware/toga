@@ -1,4 +1,6 @@
-from toga_gtk.libs import Gtk
+import pytest
+
+from toga_gtk.libs import GTK_VERSION, Gtk
 
 from .base import SimpleProbe
 from .properties import toga_color
@@ -6,6 +8,9 @@ from .properties import toga_color
 
 class SwitchProbe(SimpleProbe):
     native_class = Gtk.Box
+
+    if GTK_VERSION >= (4, 0, 0):
+        pytest.skip("GTK4 doesn't support switches yet")
 
     def __init__(self, widget):
         super().__init__(widget)

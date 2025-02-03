@@ -1,14 +1,18 @@
 from io import BytesIO
 
+import pytest
 from PIL import Image
 
-from toga_gtk.libs import IS_WAYLAND, Gdk, Gtk
+from toga_gtk.libs import GTK_VERSION, IS_WAYLAND, Gdk, Gtk
 
 from .base import SimpleProbe
 
 
 class CanvasProbe(SimpleProbe):
     native_class = Gtk.DrawingArea
+
+    if GTK_VERSION >= (4, 0, 0):
+        pytest.skip("GTK4 doesn't support a canvas yet")
 
     def reference_variant(self, reference):
         if reference == "multiline_text":
