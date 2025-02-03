@@ -51,13 +51,13 @@ class Label(Widget):
 
     def get_text(self):
         value = str(self.native.text)
-        if value == "\u200B":
+        if value == "\u200b":
             return ""
         return value
 
     def set_text(self, value):
         if value == "":
-            value = "\u200B"
+            value = "\u200b"
         self.native.text = value
         # Tell the text layout algorithm how many lines are allowed
         self.native.numberOfLines = len(self.interface.text.split("\n"))

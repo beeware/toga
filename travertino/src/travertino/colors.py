@@ -4,6 +4,7 @@ from .constants import *
 
 class Color:
     "A base class for all colorspace representations"
+
     pass
 
     def __eq__(self, other):
