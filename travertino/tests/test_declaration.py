@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Sequence
 from unittest.mock import call
 from warnings import catch_warnings, filterwarnings
 
@@ -605,6 +606,14 @@ def test_list_property_list_like():
     for _ in prop:
         count += 1
     assert count == 4
+
+    assert [*reversed(prop)] == [VALUE2, 3, 2, 1]
+
+    assert prop.index(3) == 2
+
+    assert prop.count(VALUE2) == 1
+
+    assert isinstance(prop, Sequence)
 
 
 @pytest.mark.parametrize("StyleClass", [Style, DeprecatedStyle])
