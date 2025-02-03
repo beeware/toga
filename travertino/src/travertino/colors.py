@@ -5,14 +5,7 @@ from .constants import *
 
 
 class Color:
-    """A base class for all colorspace representations
-
-    Note: Converting a :any:`hsla`/:any:`hsl` color into :any:`rgba`/:any:`rgb`,
-    looses some amount of precision due to rounding off of floating point numbers.
-    Therefore, back-and-forth conversion might not always produce the same color.
-    """
-
-    pass
+    "A base class for all colorspace representations."
 
     def __eq__(self, other):
         try:
@@ -236,7 +229,7 @@ class Color:
 
 
 class rgba(Color):
-    "A representation of an RGBA color"
+    "A representation of an RGBA color."
 
     def __init__(self, r, g, b, a):
         self._validate_rgb("red", r)
@@ -317,7 +310,7 @@ class rgb(rgba):
 
 
 class hsla(Color):
-    "A representation of an HSLA color"
+    "A representation of an HSLA color."
 
     def __init__(self, h, s, l, a=1.0):
         self._validate_between("hue", h, 0, 360)
