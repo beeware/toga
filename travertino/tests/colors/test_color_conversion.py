@@ -217,7 +217,7 @@ def test_hsla_to_hsl(input_color, expected_color):
         (hsla(208.8, 0.6, 0.4902, 0.5), rgba(50, 128, 200, 0.5)),
         (hsla(208.8, 0.6, 0.4902, 0.9), rgba(50, 128, 200, 0.9)),
         (hsla(208.8, 0.6, 0.4902, 1), rgba(50, 128, 200, 1.0)),
-        # Both front_color and back_color having intermediate alpha
+        # Color having intermediate alpha values
         (hsla(201.2903, 1, 0.6961, 0.15), rgba(100, 200, 255, 0.15)),
         (hsla(210.0, 0.8, 0.7059, 0.2), rgba(120, 180, 240, 0.2)),
         (hsla(330.0, 0.5, 0.3922, 0.4), rgba(150, 50, 100, 0.4)),
@@ -247,7 +247,7 @@ def test_hsla_to_rgba(input_color, expected_color):
         (hsla(208.8, 0.6, 0.4902, 0.5), rgb(50, 128, 200)),
         (hsla(208.8, 0.6, 0.4902, 0.9), rgb(50, 128, 200)),
         (hsla(208.8, 0.6, 0.4902, 1), rgb(50, 128, 200)),
-        # Both front_color and back_color having intermediate alpha
+        # Color having intermediate alpha values
         (hsla(201.2903, 1, 0.6961, 0.15), rgb(100, 200, 255)),
         (hsla(210.0, 0.8, 0.7059, 0.2), rgb(120, 180, 240)),
         (hsla(330.0, 0.5, 0.3922, 0.4), rgb(150, 50, 100)),
