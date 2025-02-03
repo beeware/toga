@@ -87,7 +87,7 @@ class Button(Widget):
     @text.setter
     def text(self, value: str | None) -> None:
         # \u200B: zero-width space
-        if value is None or value == "\u200B":
+        if value is None or value == "\u200b":
             value = ""
         else:
             # Button text can't include line breaks. Strip any content

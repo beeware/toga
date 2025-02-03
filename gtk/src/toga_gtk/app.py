@@ -6,6 +6,7 @@ from toga.command import Separator
 
 from .keys import gtk_accel
 from .libs import (
+    GTK_VERSION,
     IS_WAYLAND,
     TOGA_DEFAULT_STYLES,
     Gdk,
@@ -34,7 +35,7 @@ class App:
         # Stimulate the build of the app
         self.native = Gtk.Application(
             application_id=self.interface.app_id,
-            flags=Gio.ApplicationFlags.FLAGS_NONE,
+            flags=Gio.ApplicationFlags.DEFAULT_FLAGS,
         )
         self.native_about_dialog = None
 
@@ -53,12 +54,20 @@ class App:
 
         # Set any custom styles
         css_provider = Gtk.CssProvider()
-        css_provider.load_from_data(TOGA_DEFAULT_STYLES)
 
-        context = Gtk.StyleContext()
-        context.add_provider_for_screen(
-            Gdk.Screen.get_default(), css_provider, Gtk.STYLE_PROVIDER_PRIORITY_USER
-        )
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            css_provider.load_from_data(TOGA_DEFAULT_STYLES)
+            context = Gtk.StyleContext()
+            context.add_provider_for_screen(
+                Gdk.Screen.get_default(), css_provider, Gtk.STYLE_PROVIDER_PRIORITY_USER
+            )
+        elif GTK_VERSION >= (4, 12, 0):  # pragma: no-cover-if-gtk3
+            css_provider.load_from_string(TOGA_DEFAULT_STYLES)
+        elif GTK_VERSION >= (4, 8, 0):  # pragma: no-cover-if-gtk3
+            css_provider.load_from_data(TOGA_DEFAULT_STYLES, len(TOGA_DEFAULT_STYLES))
+        else:  # pragma: no-cover-if-gtk3
+            # Earlier than GTK 4.8
+            css_provider.load_from_data(TOGA_DEFAULT_STYLES.encode("utf-8"))
 
     ######################################################################
     # Commands and menus
@@ -173,20 +182,24 @@ class App:
 
     def get_screens(self):
         display = Gdk.Display.get_default()
-        if IS_WAYLAND:  # pragma: no-cover-if-linux-x
-            # `get_primary_monitor()` doesn't work on wayland, so return as it is.
-            return [
-                ScreenImpl(native=display.get_monitor(i))
-                for i in range(display.get_n_monitors())
-            ]
-        else:  # pragma: no-cover-if-linux-wayland
-            primary_screen = ScreenImpl(display.get_primary_monitor())
-            screen_list = [primary_screen] + [
-                ScreenImpl(native=display.get_monitor(i))
-                for i in range(display.get_n_monitors())
-                if display.get_monitor(i) != primary_screen.native
-            ]
-            return screen_list
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            if IS_WAYLAND:  # pragma: no-cover-if-linux-x
+                # `get_primary_monitor()` doesn't work on wayland, so return as it is.
+                return [
+                    ScreenImpl(native=display.get_monitor(i))
+                    for i in range(display.get_n_monitors())
+                ]
+
+            else:  # pragma: no-cover-if-linux-wayland
+                primary_screen = ScreenImpl(display.get_primary_monitor())
+                screen_list = [primary_screen] + [
+                    ScreenImpl(native=display.get_monitor(i))
+                    for i in range(display.get_n_monitors())
+                    if display.get_monitor(i) != primary_screen.native
+                ]
+                return screen_list
+        else:  # pragma: no-cover-if-gtk3
+            return [ScreenImpl(native=monitor) for monitor in display.get_monitors()]
 
     ######################################################################
     # App state
@@ -201,7 +214,10 @@ class App:
     ######################################################################
 
     def beep(self):
-        Gdk.beep()
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            Gdk.beep()
+        else:  # pragma: no-cover-if-gtk3
+            Gdk.Display.get_default().beep()
 
     def _close_about(self, dialog, *args, **kwargs):
         self.native_about_dialog.destroy()

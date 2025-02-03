@@ -11,6 +11,8 @@ from .probe import BaseProbe
 class WindowProbe(BaseProbe, DialogsMixin):
     supports_fullscreen = False
     supports_presentation = False
+    supports_as_image = True
+    supports_focus = True
 
     def __init__(self, app, window):
         super().__init__()

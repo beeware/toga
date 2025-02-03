@@ -105,7 +105,14 @@ def run_tests(app, cov, args, report_coverage, run_slow, running_in_ci):
                     show_missing=True,
                 )
                 if total < 100.0:
-                    print("Test coverage is incomplete")
+                    if os.getenv("TOGA_GTK", None) == "4":
+                        print("Incomplete test coverage is expected on GTK4 (for now!)")
+                    else:
+                        print("Test coverage is incomplete")
+                        app.returncode = 1
+                elif os.getenv("TOGA_GTK", None) == "4":
+                    print("Test coverage for GTK4 is unexpectedly complete!")
+                    print("Can we remove the special case in the testbed?")
                     app.returncode = 1
 
     except BaseException:
@@ -155,6 +162,8 @@ if __name__ == "__main__":
             "no-cover-if-linux-x": (
                 "os_environ.get('WAYLAND_DISPLAY', 'not-set') == 'not-set'"
             ),
+            "no-cover-if-gtk4": "os_environ.get('TOGA_GTK', '') == '4'",
+            "no-cover-if-gtk3": "os_environ.get('TOGA_GTK', '3') == '3'",
         },
     )
     cov.start()

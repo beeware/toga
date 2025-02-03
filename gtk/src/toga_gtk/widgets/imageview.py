@@ -1,20 +1,26 @@
 from toga.widgets.imageview import rehint_imageview
 
-from ..libs import GdkPixbuf, Gtk
+from ..libs import GTK_VERSION, GdkPixbuf, Gtk
 from .base import Widget
 
 
 class ImageView(Widget):
     def create(self):
         self.native = Gtk.Image()
-        self.native.connect("size-allocate", self.gtk_size_allocate)
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            self.native.connect("size-allocate", self.gtk_size_allocate)
+        else:  # pragma: no-cover-if-gtk3
+            pass
         self._aspect_ratio = None
 
     def set_image(self, image):
-        if image:
-            self.set_scaled_pixbuf(image._impl.native, self.native.get_allocation())
-        else:
-            self.native.set_from_pixbuf(None)
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            if image:
+                self.set_scaled_pixbuf(image._impl.native, self.native.get_allocation())
+            else:
+                self.native.set_from_pixbuf(None)
+        else:  # pragma: no-cover-if-gtk3
+            self.native.set_from_paintable()
 
     def gtk_size_allocate(self, widget, allocation):
         # GTK doesn't have any native image resizing; so, when the Gtk.Image
@@ -54,9 +60,12 @@ class ImageView(Widget):
         self.native.set_from_pixbuf(scaled)
 
     def rehint(self):
-        width, height, self._aspect_ratio = rehint_imageview(
-            image=self.interface.image,
-            style=self.interface.style,
-        )
-        self.interface.intrinsic.width = width
-        self.interface.intrinsic.height = height
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            width, height, self._aspect_ratio = rehint_imageview(
+                image=self.interface.image,
+                style=self.interface.style,
+            )
+            self.interface.intrinsic.width = width
+            self.interface.intrinsic.height = height
+        else:  # pragma: no-cover-if-gtk3
+            pass
