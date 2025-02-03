@@ -764,6 +764,33 @@ def test_dict(StyleClass):
 
 
 @pytest.mark.parametrize("StyleClass", [Style, DeprecatedStyle])
+def test_set_to_initial(StyleClass):
+    """A property set to its initial value is distinct from an unset property."""
+    style = StyleClass()
+
+    # explicit_const's initial value is VALUE1.
+    assert style.explicit_const == VALUE1
+    assert "explicit_const" not in style
+
+    # The unset property shouldn't affect the value when overlaid over a style with
+    # that property set.
+    non_initial_style = StyleClass(explicit_const=VALUE2)
+    union = non_initial_style | style
+    assert union.explicit_const == VALUE2
+    assert "explicit_const" in union
+
+    # The property should count as set, even when set to the same initial value.
+    style.explicit_const = VALUE1
+    assert style.explicit_const == VALUE1
+    assert "explicit_const" in style
+
+    # The property should now overwrite.
+    union = non_initial_style | style
+    assert union.explicit_const == VALUE1
+    assert "explicit_const" in union
+
+
+@pytest.mark.parametrize("StyleClass", [Style, DeprecatedStyle])
 @pytest.mark.parametrize("instantiate", [True, False])
 def test_union_operators(StyleClass, instantiate):
     """Styles support | and |= with dicts and with their own class."""

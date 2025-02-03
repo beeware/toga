@@ -153,7 +153,12 @@ class validated_property:
 
         value = self.validate(value)
 
-        if value != getattr(obj, f"_{self.name}", self.initial):
+        if (current := getattr(obj, f"_{self.name}", None)) is None:
+            setattr(obj, f"_{self.name}", value)
+            if value != self.initial:
+                obj.apply(self.name, value)
+
+        elif value != current:
             setattr(obj, f"_{self.name}", value)
             obj.apply(self.name, value)
 
