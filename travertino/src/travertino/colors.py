@@ -118,7 +118,7 @@ class Color:
                     ),
                 ),
                 # Alpha component
-                blended_alpha,
+                min(1, max(0, blended_alpha)),
             )
             if round_to_nearest_int:
                 return rgba(
@@ -288,10 +288,10 @@ class rgba(Color):
             saturation = chroma / (1 - abs((2 * value) - chroma - 1))
 
         return hsla(
-            min(360, max(0, hue)),
-            min(1, max(0, saturation)),
-            min(1, max(0, lightness)),
-            min(1, max(0, self.a)),
+            hue % 360,  # [0,360)
+            min(1, max(0, saturation)),  # [0,1]
+            min(1, max(0, lightness)),  # [0,1]
+            min(1, max(0, self.a)),  # [0,1]
         )
 
     @property
