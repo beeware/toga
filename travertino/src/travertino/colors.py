@@ -5,7 +5,17 @@ from .constants import *
 
 
 class Color:
-    "A base class for all colorspace representations"
+    """A base class for all colorspace representations
+
+    Note: Converting a :any:`hsla`/:any:`hsl` color into :any:`rgba`/:any:`rgb`,
+    and vice-versa, is a lossy operation, since rgb colors don't exactly map up to
+    the hsl colors. This is because the distinct values for a:
+     * rgb color is 256^3 = 16,777,216
+     * hsl color is 360*101*101 = 3,672,360
+    Therefore, as the distinct values for a hsl color is less than that for a
+    rgb color. Hence, the conversion is a lossy operation.
+    """
+
     pass
 
     def __eq__(self, other):
@@ -48,9 +58,9 @@ class Color:
 
         :param back_color: The background color.
         :param round_to_nearest_int: Should the rgb values of the blended color be
-        rounded to the nearest int? If the blended color will be later deblended
-        to get the original front color, then keeping the decimal precision will
-        give a more accurate value of the original front color.
+         rounded to the nearest int? If the blended color will be later deblended
+         to get the original front color, then keeping the decimal precision will
+         give a more accurate value of the original front color.
 
         :returns: The blended color.
         """

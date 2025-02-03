@@ -33,10 +33,7 @@ def mock_attr(attr):
     return returned_decorator
 
 
-def assert_equal_color(actual, expected, tolerance=None, blend=False, unblend=False):
-    if {True} in {blend, unblend}:
-        tolerance = 1e-6
-
+def assert_equal_color(actual, expected, tolerance=None):
     if {type(actual), type(expected)} == {rgba}:
         assert actual.rgba.r == pytest.approx(expected.rgba.r, abs=tolerance)
         assert actual.rgba.g == pytest.approx(expected.rgba.g, abs=tolerance)
