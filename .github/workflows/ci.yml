@@ -123,8 +123,8 @@ jobs:
         # TOGA_INSTALL_COMMAND will be a literal string without any shell expansions to
         # perform. We don't *explicitly* install the Travertino wheel; we provide the
         # dist dir as a source of wheels, and rely on pip to resolve the explicit
-        # version match to the travertino wheel in that folder.
-        TOGA_INSTALL_COMMAND="python -m pip install --find-wheels ./dist ../$(ls dist/toga_core-*.whl)[dev] ../$(ls dist/toga_dummy-*.whl)"
+        # version match to the Travertino wheel in that folder.
+        TOGA_INSTALL_COMMAND="python -m pip install --find-links ./dist ../$(ls dist/toga_core-*.whl)[dev] ../$(ls dist/toga_dummy-*.whl)"
         tox -e py-cov${{ matrix.tox-suffix }}
         tox -qe coverage$(tr -dc "0-9" <<< "${{ matrix.python-version }}")${{ matrix.tox-suffix }}
         mv ${{ matrix.package }}/.coverage ${{ matrix.package }}/.coverage.${{ matrix.platform }}.${{ matrix.python-version }}
@@ -190,7 +190,7 @@ jobs:
           # We don't *explicitly* install the Travertino wheel; we provide the dist dir
           # as a source of wheels, and rely on pip to resolve the explicit version match
           # to the travertino wheel in that folder.
-          pip install --find-wheels ./dist dist/toga_core-*.whl
+          pip install --find-links ./dist dist/toga_core-*.whl
 
           site_packages=$(python -c '
           import sys

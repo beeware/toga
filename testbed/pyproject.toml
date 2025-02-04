@@ -40,7 +40,7 @@ requires = [
 # Look for pre-release wheels in the dist folder of the parent repo.
 requirement_installer_args=[
     "--pre",
-    "--find-wheels", "../dist",
+    "--find-links", "../dist",
 ]
 
 permission.camera = "The testbed needs to exercise Camera APIs"
