@@ -179,154 +179,6 @@ def test_function_handler_with_cleanup_error(capsys):
     )
 
 
-def test_generator_handler(event_loop):
-    """A generator can be used as a handler."""
-    obj = Mock()
-    handler_call = {}
-
-    def handler(*args, **kwargs):
-        handler_call["args"] = args
-        handler_call["kwargs"] = kwargs
-        yield 0.01  # A short sleep
-        handler_call["slept"] = True
-        yield  # A yield without a sleep
-        handler_call["done"] = True
-        return 42
-
-    wrapped = wrapped_handler(obj, handler)
-
-    # Raw handler is the original generator
-    assert wrapped._raw == handler
-
-    # Invoke the handler, and run until it is complete.
-    assert (
-        event_loop.run_until_complete(wrapped("arg1", "arg2", kwarg1=3, kwarg2=4)) == 42
-    )
-
-    # Handler arguments are as expected.
-    assert handler_call == {
-        "args": (obj, "arg1", "arg2"),
-        "kwargs": {"kwarg1": 3, "kwarg2": 4},
-        "slept": True,
-        "done": True,
-    }
-
-
-def test_generator_handler_error(event_loop, capsys):
-    """A generator can raise an error."""
-    obj = Mock()
-    handler_call = {}
-
-    def handler(*args, **kwargs):
-        handler_call["args"] = args
-        handler_call["kwargs"] = kwargs
-        yield 0.01  # A short sleep
-        raise Exception("Problem in handler")
-
-    wrapped = wrapped_handler(obj, handler)
-
-    # Raw handler is the original generator
-    assert wrapped._raw == handler
-
-    # Invoke the handler; return value is None due to exception
-    assert (
-        event_loop.run_until_complete(wrapped("arg1", "arg2", kwarg1=3, kwarg2=4))
-        is None
-    )
-
-    # Handler arguments are as expected.
-    assert handler_call == {
-        "args": (obj, "arg1", "arg2"),
-        "kwargs": {"kwarg1": 3, "kwarg2": 4},
-    }
-
-    # Evidence of the handler cleanup error is in the log.
-    assert (
-        "Error in long running handler: Problem in handler\n"
-        "Traceback (most recent call last):\n" in capsys.readouterr().err
-    )
-
-
-def test_generator_handler_with_cleanup(event_loop):
-    """A generator can have cleanup."""
-    obj = Mock()
-    cleanup = Mock()
-    handler_call = {}
-
-    def handler(*args, **kwargs):
-        handler_call["args"] = args
-        handler_call["kwargs"] = kwargs
-        yield 0.01  # A short sleep
-        handler_call["slept"] = True
-        yield  # A yield without a sleep
-        handler_call["done"] = True
-        return 42
-
-    wrapped = wrapped_handler(obj, handler, cleanup=cleanup)
-
-    # Raw handler is the original generator
-    assert wrapped._raw == handler
-
-    # Invoke the handler
-    assert (
-        event_loop.run_until_complete(wrapped("arg1", "arg2", kwarg1=3, kwarg2=4)) == 42
-    )
-
-    # Handler arguments are as expected.
-    assert handler_call == {
-        "args": (obj, "arg1", "arg2"),
-        "kwargs": {"kwarg1": 3, "kwarg2": 4},
-        "slept": True,
-        "done": True,
-    }
-
-    # Cleanup method was invoked
-    cleanup.assert_called_once_with(obj, 42)
-
-
-def test_generator_handler_with_cleanup_error(event_loop, capsys):
-    """A generator can raise an error during cleanup."""
-    obj = Mock()
-    cleanup = Mock(side_effect=Exception("Problem in cleanup"))
-    handler_call = {}
-
-    def handler(*args, **kwargs):
-        handler_call["args"] = args
-        handler_call["kwargs"] = kwargs
-        yield 0.01  # A short sleep
-        handler_call["slept"] = True
-        yield  # A yield without a sleep
-        handler_call["done"] = True
-        return 42
-
-    wrapped = wrapped_handler(obj, handler, cleanup=cleanup)
-
-    # Raw handler is the original generator
-    assert wrapped._raw == handler
-
-    # Invoke the handler; error in cleanup is swallowed
-    assert (
-        event_loop.run_until_complete(wrapped("arg1", "arg2", kwarg1=3, kwarg2=4)) == 42
-    )
-
-    # Handler arguments are as expected.
-    assert handler_call == {
-        "args": (obj, "arg1", "arg2"),
-        "kwargs": {"kwarg1": 3, "kwarg2": 4},
-        "slept": True,
-        "done": True,
-    }
-
-    # Cleanup method was invoked
-    cleanup.assert_called_once_with(obj, 42)
-
-    # Evidence of the handler cleanup error is in the log.
-    assert (
-        "Error in long running handler cleanup: Problem in cleanup\n"
-        "Traceback (most recent call last):\n" in capsys.readouterr().err
-    )
-
-
 def test_coroutine_handler(event_loop):
     """A coroutine can be used as a handler."""
     obj = Mock()
@@ -714,3 +566,176 @@ def test_async_exception_cancelled_sync(event_loop):
 
     # The callback wasn't called
     on_result.assert_not_called()
+
+
+######################################################################
+# 2025-02: Handlers deprecated in 0.5.0
+######################################################################
+
+
+def test_generator_handler(event_loop):
+    """A generator can be used as a handler."""
+    obj = Mock()
+    handler_call = {}
+
+    def handler(*args, **kwargs):
+        handler_call["args"] = args
+        handler_call["kwargs"] = kwargs
+        yield 0.01  # A short sleep
+        handler_call["slept"] = True
+        yield  # A yield without a sleep
+        handler_call["done"] = True
+        return 42
+
+    wrapped = wrapped_handler(obj, handler)
+
+    # Raw handler is the original generator
+    assert wrapped._raw == handler
+
+    # Invoke the handler, and run until it is complete. Raises a deprecation warning.
+    with pytest.warns(
+        DeprecationWarning,
+        match=r"Use of generators for async handlers has been deprecated;",
+    ):
+        assert (
+            event_loop.run_until_complete(wrapped("arg1", "arg2", kwarg1=3, kwarg2=4))
+            == 42
+        )
+
+    # Handler arguments are as expected.
+    assert handler_call == {
+        "args": (obj, "arg1", "arg2"),
+        "kwargs": {"kwarg1": 3, "kwarg2": 4},
+        "slept": True,
+        "done": True,
+    }
+
+
+def test_generator_handler_error(event_loop, capsys):
+    """A generator can raise an error."""
+    obj = Mock()
+    handler_call = {}
+
+    def handler(*args, **kwargs):
+        handler_call["args"] = args
+        handler_call["kwargs"] = kwargs
+        yield 0.01  # A short sleep
+        raise Exception("Problem in handler")
+
+    wrapped = wrapped_handler(obj, handler)
+
+    # Raw handler is the original generator
+    assert wrapped._raw == handler
+
+    # Invoke the handler; raises a deprecation warning, return value is None due to
+    # exception.
+    with pytest.warns(
+        DeprecationWarning,
+        match=r"Use of generators for async handlers has been deprecated;",
+    ):
+        assert (
+            event_loop.run_until_complete(wrapped("arg1", "arg2", kwarg1=3, kwarg2=4))
+            is None
+        )
+
+    # Handler arguments are as expected.
+    assert handler_call == {
+        "args": (obj, "arg1", "arg2"),
+        "kwargs": {"kwarg1": 3, "kwarg2": 4},
+    }
+
+    # Evidence of the handler cleanup error is in the log.
+    assert (
+        "Error in long running handler: Problem in handler\n"
+        "Traceback (most recent call last):\n" in capsys.readouterr().err
+    )
+
+
+def test_generator_handler_with_cleanup(event_loop):
+    """A generator can have cleanup."""
+    obj = Mock()
+    cleanup = Mock()
+    handler_call = {}
+
+    def handler(*args, **kwargs):
+        handler_call["args"] = args
+        handler_call["kwargs"] = kwargs
+        yield 0.01  # A short sleep
+        handler_call["slept"] = True
+        yield  # A yield without a sleep
+        handler_call["done"] = True
+        return 42
+
+    wrapped = wrapped_handler(obj, handler, cleanup=cleanup)
+
+    # Raw handler is the original generator
+    assert wrapped._raw == handler
+
+    # Invoke the handler; raises a deprecation warning
+    with pytest.warns(
+        DeprecationWarning,
+        match=r"Use of generators for async handlers has been deprecated;",
+    ):
+        assert (
+            event_loop.run_until_complete(wrapped("arg1", "arg2", kwarg1=3, kwarg2=4))
+            == 42
+        )
+
+    # Handler arguments are as expected.
+    assert handler_call == {
+        "args": (obj, "arg1", "arg2"),
+        "kwargs": {"kwarg1": 3, "kwarg2": 4},
+        "slept": True,
+        "done": True,
+    }
+
+    # Cleanup method was invoked
+    cleanup.assert_called_once_with(obj, 42)
+
+
+def test_generator_handler_with_cleanup_error(event_loop, capsys):
+    """A generator can raise an error during cleanup."""
+    obj = Mock()
+    cleanup = Mock(side_effect=Exception("Problem in cleanup"))
+    handler_call = {}
+
+    def handler(*args, **kwargs):
+        handler_call["args"] = args
+        handler_call["kwargs"] = kwargs
+        yield 0.01  # A short sleep
+        handler_call["slept"] = True
+        yield  # A yield without a sleep
+        handler_call["done"] = True
+        return 42
+
+    wrapped = wrapped_handler(obj, handler, cleanup=cleanup)
+
+    # Raw handler is the original generator
+    assert wrapped._raw == handler
+
+    # Invoke the handler; raises a deprecation warning, error in cleanup is swallowed
+    with pytest.warns(
+        DeprecationWarning,
+        match=r"Use of generators for async handlers has been deprecated;",
+    ):
+        assert (
+            event_loop.run_until_complete(wrapped("arg1", "arg2", kwarg1=3, kwarg2=4))
+            == 42
+        )
+
+    # Handler arguments are as expected.
+    assert handler_call == {
+        "args": (obj, "arg1", "arg2"),
+        "kwargs": {"kwarg1": 3, "kwarg2": 4},
+        "slept": True,
+        "done": True,
+    }
+
+    # Cleanup method was invoked
+    cleanup.assert_called_once_with(obj, 42)
+
+    # Evidence of the handler cleanup error is in the log.
+    assert (
+        "Error in long running handler cleanup: Problem in cleanup\n"
+        "Traceback (most recent call last):\n" in capsys.readouterr().err
+    )
