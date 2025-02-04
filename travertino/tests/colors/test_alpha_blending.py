@@ -152,9 +152,7 @@ def test_alpha_blending_over(front_color, back_color, expected_blended_color):
     # Calculate the blended color using the blend_over() method on the Color class.
     calculated_blended_color = front_color.blend_over(back_color)
     # The calculated blended color will be equal to the expected blended color.
-    assert_equal_color(
-        calculated_blended_color, expected_blended_color.rgba, tolerance=1e-6
-    )
+    assert_equal_color(calculated_blended_color, expected_blended_color.rgba)
 
 
 @pytest.mark.parametrize(
@@ -299,4 +297,4 @@ def test_alpha_unblend_over(front_color, back_color):
         )
         # The derived front color from the blended color, will be equal to the
         # original front color, within the given tolerance range.
-        assert_equal_color(calculated_front_color, front_color.rgba, tolerance=1e-6)
+        assert_equal_color(calculated_front_color, front_color.rgba)
