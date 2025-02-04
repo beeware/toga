@@ -33,25 +33,25 @@ def mock_attr(attr):
     return returned_decorator
 
 
-def assert_equal_color(actual, expected, tolerance=None):
+def assert_equal_color(actual, expected, abs=1e-6):
     if {type(actual), type(expected)} == {rgba}:
-        assert actual.rgba.r == pytest.approx(expected.rgba.r, abs=tolerance)
-        assert actual.rgba.g == pytest.approx(expected.rgba.g, abs=tolerance)
-        assert actual.rgba.b == pytest.approx(expected.rgba.b, abs=tolerance)
-        assert actual.rgba.a == pytest.approx(expected.rgba.a, abs=tolerance)
+        assert actual.rgba.r == pytest.approx(expected.rgba.r, abs=abs)
+        assert actual.rgba.g == pytest.approx(expected.rgba.g, abs=abs)
+        assert actual.rgba.b == pytest.approx(expected.rgba.b, abs=abs)
+        assert actual.rgba.a == pytest.approx(expected.rgba.a, abs=abs)
     elif {type(actual), type(expected)} == {rgb}:
-        assert actual.rgb.r == pytest.approx(expected.rgb.r, abs=tolerance)
-        assert actual.rgb.g == pytest.approx(expected.rgb.g, abs=tolerance)
-        assert actual.rgb.b == pytest.approx(expected.rgb.b, abs=tolerance)
+        assert actual.rgb.r == pytest.approx(expected.rgb.r, abs=abs)
+        assert actual.rgb.g == pytest.approx(expected.rgb.g, abs=abs)
+        assert actual.rgb.b == pytest.approx(expected.rgb.b, abs=abs)
     elif {type(actual), type(expected)} == {hsla}:
-        assert actual.hsla.h == pytest.approx(expected.hsla.h, abs=tolerance)
-        assert actual.hsla.s == pytest.approx(expected.hsla.s, abs=tolerance)
-        assert actual.hsla.l == pytest.approx(expected.hsla.l, abs=tolerance)
-        assert actual.hsla.a == pytest.approx(expected.hsla.a, abs=tolerance)
+        assert actual.hsla.h == pytest.approx(expected.hsla.h, abs=abs)
+        assert actual.hsla.s == pytest.approx(expected.hsla.s, abs=abs)
+        assert actual.hsla.l == pytest.approx(expected.hsla.l, abs=abs)
+        assert actual.hsla.a == pytest.approx(expected.hsla.a, abs=abs)
     elif {type(actual), type(expected)} == {hsl}:
-        assert actual.hsl.h == pytest.approx(expected.hsl.h, abs=tolerance)
-        assert actual.hsl.s == pytest.approx(expected.hsl.s, abs=tolerance)
-        assert actual.hsl.l == pytest.approx(expected.hsl.l, abs=tolerance)
+        assert actual.hsl.h == pytest.approx(expected.hsl.h, abs=abs)
+        assert actual.hsl.s == pytest.approx(expected.hsl.s, abs=abs)
+        assert actual.hsl.l == pytest.approx(expected.hsl.l, abs=abs)
     else:
         raise ValueError(
             "Actual color and expected color should be of the same type. "

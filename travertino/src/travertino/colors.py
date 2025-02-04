@@ -123,9 +123,9 @@ class Color:
             )
             if round_to_nearest_int:
                 return rgba(
-                    int(round(blended_color.r)),
-                    int(round(blended_color.g)),
-                    int(round(blended_color.b)),
+                    round(blended_color.r),
+                    round(blended_color.g),
+                    round(blended_color.b),
                     round(blended_color.a, 2),
                 )
             else:
@@ -144,15 +144,15 @@ class Color:
         after conversion to rgba values.
 
         :param blended_color: The blended color resultant from the alpha blending
-         "over" operation, in the form of :any:`rgba()`.
+            "over" operation, in the form of :any:`rgba()`.
         :param back_color: The background color.
         :param front_color_alpha: The original alpha value of the front color,
-         within the range of (0, 1].
+            within the range of (0, 1].
 
         :raises ValueError: If the value of :any:`front_color_alpha` is not within
-         the range of (0, 1]. The value cannot be 0, since the blended color produced
-         will be equal to the back color, and all information related to the front
-         color will be lost.
+            the range of (0, 1]. The value cannot be 0, since the blended color produced
+            will be equal to the back color, and all information related to the front
+            color will be lost.
 
         :returns: The original front color.
         """
@@ -254,6 +254,10 @@ class rgba(Color):
 
     @property
     def rgba(self):
+        # Explicitly return a rgba value, to ensure that classes which inherit the
+        # parent rgba class, actually return the rgba() value, instead of the child
+        # class. For example, without this fix, doing rgb(20, 20, 20).rgba will
+        # return rgb(20, 20, 20), instead of rgba(20, 20, 20, 1).
         return rgba(self.r, self.g, self.b, self.a)
 
     @property
@@ -331,6 +335,10 @@ class hsla(Color):
 
     @property
     def hsla(self):
+        # Explicitly return a hsla value, to ensure that classes which inherit the
+        # parent hsla class, actually return the hsla() value, instead of the child
+        # class. For example, without this fix, doing hsl(210, 1, 0.5).hsla will
+        # return hsl(210, 1, 0.5), instead of hsla(210, 1, 0.5, 1).
         return hsla(self.h, self.s, self.l, self.a)
 
     @property

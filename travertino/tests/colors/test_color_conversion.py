@@ -62,7 +62,7 @@ def test_rgba_to_rgb(input_color, expected_color):
 )
 def test_rgba_to_hsla(input_color, expected_color):
     """A rgba color can be converted to hsla."""
-    assert_equal_color(input_color.hsla, expected_color, tolerance=1e-4)
+    assert_equal_color(input_color.hsla, expected_color, abs=1e-4)
 
 
 @pytest.mark.parametrize(
@@ -92,7 +92,7 @@ def test_rgba_to_hsla(input_color, expected_color):
 )
 def test_rgba_to_hsl(input_color, expected_color):
     """A rgba color can be converted to hsl."""
-    assert_equal_color(input_color.hsl, expected_color, tolerance=1e-4)
+    assert_equal_color(input_color.hsl, expected_color, abs=1e-4)
 
 
 @pytest.mark.parametrize(
@@ -142,7 +142,7 @@ def test_rgb_to_rgba(input_color, expected_color):
 )
 def test_rgb_to_hsla(input_color, expected_color):
     """A rgb color can be converted to hsla."""
-    assert_equal_color(input_color.hsla, expected_color, tolerance=1e-4)
+    assert_equal_color(input_color.hsla, expected_color, abs=1e-4)
 
 
 @pytest.mark.parametrize(
@@ -167,7 +167,7 @@ def test_rgb_to_hsla(input_color, expected_color):
 )
 def test_rgb_to_hsl(input_color, expected_color):
     """A rgb color can be converted to hsl."""
-    assert_equal_color(input_color.hsl, expected_color, tolerance=1e-4)
+    assert_equal_color(input_color.hsl, expected_color, abs=1e-4)
 
 
 @pytest.mark.parametrize(
