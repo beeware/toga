@@ -11,7 +11,6 @@ from android.os import Build, SystemClock
 from android.view import MotionEvent, View, ViewGroup
 
 from toga.style.pack import JUSTIFY, LEFT
-from toga_android.widgets.base import ContainedWidget
 
 from ..fonts import FontMixin
 from ..probe import BaseProbe
@@ -26,25 +25,16 @@ class SimpleProbe(BaseProbe, FontMixin):
         super().__init__(widget.app)
         self.widget = widget
         self.impl = widget._impl
-        self.native = widget._impl.native
+        self.native = widget._impl.native_toplevel
         assert isinstance(self.native, self.native_class)
 
     def assert_container(self, container):
         assert self.widget._impl.container is container._impl.container
-        if isinstance(self.impl, ContainedWidget):
-            assert (
-                self.impl.native_widget_container.getParent()
-                is container._impl.container.native_content
-            )
-        else:
-            assert self.native.getParent() is container._impl.container.native_content
+        assert self.native.getParent() is container._impl.container.native_content
 
     def assert_not_contained(self):
         assert self.widget._impl.container is None
-        if isinstance(self.impl, ContainedWidget):
-            assert self.impl.native_widget_container.getParent() is None
-        else:
-            assert self.native.getParent() is None
+        assert self.native.getParent() is None
 
     def assert_text_align(self, expected):
         actual = self.text_align
@@ -89,10 +79,7 @@ class SimpleProbe(BaseProbe, FontMixin):
     def assert_layout(self, size, position):
         # Widget is contained
         assert self.widget._impl.container is not None
-        if isinstance(self.impl, ContainedWidget):
-            assert self.impl.native_widget_container.getParent() is not None
-        else:
-            assert self.native.getParent() is not None
+        assert self.native.getParent() is not None
 
         # Size and position is as expected. Values must be scaled from DP, and
         # compared inexactly due to pixel scaling
@@ -107,40 +94,35 @@ class SimpleProbe(BaseProbe, FontMixin):
 
     @property
     def background_color(self):
-        if isinstance(self.impl, ContainedWidget):
-            return toga_color(
-                self.impl.native_widget_container.getBackground().getColor()
-            )
-        else:
-            background = self.native.getBackground()
-            while True:
-                if isinstance(background, ColorDrawable):
-                    return toga_color(background.getColor())
+        background = self.native.getBackground()
+        while True:
+            if isinstance(background, ColorDrawable):
+                return toga_color(background.getColor())
 
-                # The following complex Drawables all apply color filters to
-                # their children, but they don't implement getColorFilter, at
-                # least not in our current minimum API level.
-                elif isinstance(background, LayerDrawable):
-                    background = background.getDrawable(0)
-                elif isinstance(background, DrawableContainer):
-                    background = background.getCurrent()
-                elif isinstance(background, DrawableWrapper):
-                    background = background.getDrawable()
+            # The following complex Drawables all apply color filters to
+            # their children, but they don't implement getColorFilter, at
+            # least not in our current minimum API level.
+            elif isinstance(background, LayerDrawable):
+                background = background.getDrawable(0)
+            elif isinstance(background, DrawableContainer):
+                background = background.getCurrent()
+            elif isinstance(background, DrawableWrapper):
+                background = background.getDrawable()
 
-                else:
-                    break
-
-            if background is None:
-                return None
-            filter = background.getColorFilter()
-            if filter:
-                # PorterDuffColorFilter.getColor is undocumented, but continues
-                # to work for now. If this method is blocked in the future,
-                # another option is to use the filter to draw something and see
-                # what color comes out.
-                return toga_color(filter.getColor())
             else:
-                return None
+                break
+
+        if background is None:
+            return None
+        filter = background.getColorFilter()
+        if filter:
+            # PorterDuffColorFilter.getColor is undocumented, but continues
+            # to work for now. If this method is blocked in the future,
+            # another option is to use the filter to draw something and see
+            # what color comes out.
+            return toga_color(filter.getColor())
+        else:
+            return None
 
     async def press(self):
         self.native.performClick()

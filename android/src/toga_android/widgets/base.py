@@ -9,11 +9,7 @@ from org.beeware.android import MainActivity
 from travertino.size import at_least
 
 from toga.constants import CENTER, JUSTIFY, LEFT, RIGHT
-from toga_android.colors import (
-    DEFAULT_BACKGROUND_COLOR,
-    native_color,
-    toga_color,
-)
+from toga_android.colors import native_color
 
 
 class Scalable:
@@ -57,6 +53,8 @@ class Widget(ABC, Scalable):
         self.init_scale(self._native_activity)
         self.create()
 
+        self.native_toplevel = self.native
+
         # Some widgets, e.g. TextView, may throw an exception if we call measure()
         # before setting LayoutParams.
         self.native.setLayoutParams(
@@ -66,6 +64,7 @@ class Widget(ABC, Scalable):
             )
         )
 
+        self._default_background_color = Color.TRANSPARENT
         # Immediately re-apply styles. Some widgets may defer style application until
         # they have been added to a container.
         self.interface.style.reapply()
@@ -122,9 +121,9 @@ class Widget(ABC, Scalable):
 
     def set_hidden(self, hidden):
         if hidden:
-            self.native.setVisibility(View.INVISIBLE)
+            self.native_toplevel.setVisibility(View.INVISIBLE)
         else:
-            self.native.setVisibility(View.VISIBLE)
+            self.native_toplevel.setVisibility(View.VISIBLE)
 
     def set_font(self, font):
         # By default, font can't be changed
@@ -135,11 +134,13 @@ class Widget(ABC, Scalable):
     # appearance. So each widget must decide how to implement this method, possibly
     # using one of the utility functions below.
     def set_background_color(self, color):
-        pass
+        self.set_background_simple(color)
 
     def set_background_simple(self, color):
-        self.native.setBackground(
-            ColorDrawable(Color.TRANSPARENT if color is None else native_color(color))
+        self.native_toplevel.setBackground(
+            ColorDrawable(
+                self._default_background_color if color is None else native_color(color)
+            )
         )
 
     def set_background_filter(self, color):
@@ -216,19 +217,10 @@ def android_text_align(value):
 # and their native look and feel needs to be preserved.
 class ContainedWidget(Widget):
     def __init__(self, interface):
-
-        self._native_activity = MainActivity.singletonThis
-
-        self.interface = interface
-        self.interface._impl = self
-        self._container = None
-        self.native_widget_container = RelativeLayout(self._native_activity)
-        self.native = None
         super().__init__(interface)
 
-        self.create()
-
-        self.native_widget_container.addView(self.native)
+        self.native_toplevel = RelativeLayout(self._native_activity)
+        self.native_toplevel.addView(self.native)
 
         self.native.setLayoutParams(
             RelativeLayout.LayoutParams(
@@ -239,33 +231,3 @@ class ContainedWidget(Widget):
         # Immediately re-apply styles. Some widgets may defer style application until
         # they have been added to a container.
         self.interface.style.reapply()
-
-    def get_enabled(self):
-        return self.native.isEnabled() and self.native_widget_container.isEnabled()
-
-    def set_enabled(self, value):
-        self.native_widget_container.setEnabled(value)
-        self.native.setEnabled(value)
-
-    def focus(self):
-        if self.focusable:
-            self.native_widget_container.requestFocus()
-            self.native.requestFocus()
-
-    def set_hidden(self, hidden):
-        if hidden:  # pragma: no cover
-            self.native_widget_container.setVisibility(View.INVISIBLE)
-            self.native.setVisibility(View.INVISIBLE)
-        else:
-            self.native_widget_container.setVisibility(View.VISIBLE)
-            self.native.setVisibility(View.VISIBLE)
-
-    def set_background_simple(self, color):
-        self.native_widget_container.setBackground(ColorDrawable(native_color(color)))
-
-    # Widgets that need to set a different default background_color should
-    # override this method and set a background color for the None case.
-    def set_background_color(self, color):
-        self.set_background_simple(
-            toga_color(DEFAULT_BACKGROUND_COLOR) if color is None else color
-        )
