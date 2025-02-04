@@ -225,7 +225,7 @@ class ContainedWidget(Widget):
         self.native.setLayoutParams(
             RelativeLayout.LayoutParams(
                 RelativeLayout.LayoutParams.MATCH_PARENT,
-                RelativeLayout.LayoutParams.MATCH_PARENT,  # width  # height
+                RelativeLayout.LayoutParams.MATCH_PARENT,
             )
         )
         # Immediately re-apply styles. Some widgets may defer style application until

@@ -1,6 +1,6 @@
 from android.widget import RelativeLayout
 
-from .widgets.base import ContainedWidget, Scalable
+from .widgets.base import Scalable
 
 
 class Container(Scalable):
@@ -60,7 +60,4 @@ class Container(Scalable):
         lp = RelativeLayout.LayoutParams(width, height)
         lp.topMargin = y
         lp.leftMargin = x
-        if isinstance(widget, ContainedWidget):
-            widget.native_toplevel.setLayoutParams(lp)
-        else:
-            widget.native.setLayoutParams(lp)
+        widget.native_toplevel.setLayoutParams(lp)
