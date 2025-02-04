@@ -47,9 +47,10 @@ class Color:
 
         :param back_color: The background color.
         :param round_to_nearest_int: Should the rgb values of the blended color be
-         rounded to the nearest int? If the blended color will be later deblended
-         to get the original front color, then keeping the decimal precision will
-         give a more accurate value of the original front color.
+            rounded to the nearest int? If the blended color will be later
+            deblended to get the original front color, then keeping the decimal
+            precision will give a more accurate value of the original front
+            color.
 
         :returns: The blended color.
         """
