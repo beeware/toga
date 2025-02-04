@@ -34,19 +34,17 @@ jobs:
     name: Pre-commit checks
     uses: beeware/.github/.github/workflows/pre-commit-run.yml@main
     with:
-      # FIXME: This *should* be ./core[dev]; however, core is dependent on
-      # a dynamic version of Travertino, and the package that will match
-      # won't be built until *after* pre-commit is run.
-      # pre-commit-source: "./core[dev]"
-      pre-commit-source: "pre-commit"
+      # Although we only want to install the dev dependencies, we have to install the
+      # core, which means we need travertino as well.
+      pre-commit-source: "./travertino ./core[dev]"
 
   towncrier:
     name: Check towncrier
     uses: beeware/.github/.github/workflows/towncrier-run.yml@main
     with:
-      # FIXME: See pre-commit config
-      # tox-source: "./core[dev]"
-      tox-source: "tox"
+      # Although we only want to install the dev dependencies, we have to install the
+      # core, which means we need travertino as well.
+      tox-source: "./travertino ./core[dev]"
 
   package:
     name: Package Toga
