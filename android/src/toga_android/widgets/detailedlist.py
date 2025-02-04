@@ -15,7 +15,8 @@ except ImportError:  # pragma: no cover
     # No cover due to not being able to test in CI
     SwipeRefreshLayout = None
 
-from .base import ContainedWidget
+
+from .base import Widget
 
 
 class DetailedListOnClickListener(dynamic_proxy(View.OnClickListener)):
@@ -95,7 +96,7 @@ if SwipeRefreshLayout is not None:  # pragma: no cover
             self._interface.on_refresh()
 
 
-class DetailedList(ContainedWidget):
+class DetailedList(Widget):
     def create(self):
         if SwipeRefreshLayout is None:  # pragma: no cover
             raise RuntimeError(
