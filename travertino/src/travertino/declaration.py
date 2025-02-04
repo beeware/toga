@@ -120,7 +120,8 @@ class validated_property:
         :param integer: Are integers allowed as values?
         :param number: Are numbers allowed as values?
         :param color: Are colors allowed as values?
-        :param initial: The initial value for the property.
+        :param initial: The initial value for the property. If the property has not been
+            explicitly set, this is what is returned when it's accessed.
         """
         self.choices = Choices(
             *constants, string=string, integer=integer, number=number, color=color
@@ -154,6 +155,9 @@ class validated_property:
         value = self.validate(value)
 
         if (current := getattr(obj, f"_{self.name}", None)) is None:
+            # If the value has not been explicitly set already, then we always want to
+            # assign to the attribute -- even if the value being assigned is identical
+            # to the initial value.
             setattr(obj, f"_{self.name}", value)
             if value != self.initial:
                 obj.apply(self.name, value)
