@@ -17,6 +17,7 @@ icon = "src/positron/resources/positron"
 sources = ["src/positron"]
 requires = [
     "../../core",
+    "../../travertino",
 ]
 
 

@@ -17,6 +17,7 @@ icon = "src/positron/resources/positron"
 sources = ["src/positron", "src/webapp"]
 requires = [
     "../../core",
+    "../../travertino",
     "django~=4.1",
 ]
 
