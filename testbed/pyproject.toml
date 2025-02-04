@@ -38,6 +38,16 @@ requires = [
     "../travertino",
 ]
 
+# Some CI configurations (e.g., Textual) manually override `requires` to specify
+# installation via the wheels built as part of the CI run. Adding `--find-links` allows
+# those wheels to be found. However, in most CI builds, these wheels will be .devX
+# wheels, so we need to add `--pre` to ensure they are found as solutions to pip's
+# solver.
+requirement_installer_args=[
+    "--pre",
+    "--find-links", "../dist",
+]
+
 permission.camera = "The testbed needs to exercise Camera APIs"
 permission.fine_location = "The testbed needs to exercise fine-grained geolocation services."
 permission.coarse_location = "The testbed needs to exercise coarse-grained geolocation services."

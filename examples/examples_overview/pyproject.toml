@@ -16,6 +16,7 @@ description = "A testing app"
 sources = ["examples_overview"]
 requires = [
     "../../core",
+    "../../travertino",
 ]
 
 

@@ -34,13 +34,17 @@ jobs:
     name: Pre-commit checks
     uses: beeware/.github/.github/workflows/pre-commit-run.yml@main
     with:
-      pre-commit-source: "./core[dev]"
+      # Although we only want to install the dev dependencies, we have to install the
+      # core, which means we need travertino as well.
+      pre-commit-source: "./travertino ./core[dev]"
 
   towncrier:
     name: Check towncrier
     uses: beeware/.github/.github/workflows/towncrier-run.yml@main
     with:
-      tox-source: "./core[dev]"
+      # Although we only want to install the dev dependencies, we have to install the
+      # core, which means we need travertino as well.
+      tox-source: "./travertino ./core[dev]"
 
   package:
     name: Package Toga
@@ -119,9 +123,12 @@ jobs:
 
     - name: Test
       run: |
-        # The $(ls ...) shell expansion is done in the Github environment;
-        # the value of TOGA_INSTALL_COMMAND will be a literal string without any shell expansions to perform
-        TOGA_INSTALL_COMMAND="python -m pip install ../$(ls dist/toga_core-*.whl)[dev] ../$(ls dist/toga_dummy-*.whl) ../$(ls dist/travertino-*.whl)"
+        # The $(ls ...) shell expansion is done in the Github environment; the value of
+        # TOGA_INSTALL_COMMAND will be a literal string without any shell expansions to
+        # perform. We don't *explicitly* install the Travertino wheel; we provide the
+        # dist dir as a source of wheels, and rely on pip to resolve the explicit
+        # version match to the Travertino wheel in that folder.
+        export TOGA_INSTALL_COMMAND="python -m pip install --find-links ../dist ../$(ls dist/toga_core-*.whl)[dev] ../$(ls dist/toga_dummy-*.whl)"
         tox -e py-cov${{ matrix.tox-suffix }}
         tox -qe coverage$(tr -dc "0-9" <<< "${{ matrix.python-version }}")${{ matrix.tox-suffix }}
         mv ${{ matrix.package }}/.coverage ${{ matrix.package }}/.coverage.${{ matrix.platform }}.${{ matrix.python-version }}
@@ -184,7 +191,11 @@ jobs:
 
       - name: Test
         run: |
-          pip install dist/toga_core-*.whl dist/travertino-*.whl
+          # We don't *explicitly* install the Travertino wheel; we provide the dist dir
+          # as a source of wheels, and rely on pip to resolve the explicit version match
+          # to the travertino wheel in that folder.
+          pip install --find-links ./dist dist/toga_core-*.whl
+
           site_packages=$(python -c '
           import sys
           print([path for path in sys.path if "site-packages" in path][0])
@@ -247,7 +258,7 @@ jobs:
 
   testbed:
     name: Testbed
-    needs: core-and-travertino
+    needs: [ package, core-and-travertino ]
     runs-on: ${{ matrix.runs-on }}
     strategy:
       fail-fast: false
@@ -373,7 +384,7 @@ jobs:
           platform: "linux"
           runs-on: "ubuntu-latest"
           setup-python: false  # Use the system Python packages
-          briefcase-run-args: --config 'requires=["../core","../textual", "../travertino"]' --config 'console_app=true'
+          briefcase-run-args: --config 'requires=["toga-core", "toga-textual"]' --config 'console_app=true'
           app-user-data-path: "$HOME/.local/share/testbed"
           # install the meta-package build-essential since Briefcase explicitly checks for it
           pre-command: sudo apt update -y && sudo apt install -y build-essential
@@ -381,13 +392,13 @@ jobs:
         - backend: "textual-macOS"
           platform: "macOS"
           runs-on: "macos-latest"
-          briefcase-run-args: --config 'requires=["../core","../textual", "../travertino"]' --config 'console_app=true'
+          briefcase-run-args: --config 'requires=["toga-core", "toga-textual"]' --config 'console_app=true'
           app-user-data-path: "$HOME/Library/Application Support/org.beeware.toga.testbed"
 
         - backend: "textual-windows"
           platform: "windows"
           runs-on: "windows-latest"
-          briefcase-run-args: --config 'requires=["../core","../textual", "../travertino"]' --config 'console_app=true'
+          briefcase-run-args: --config 'requires=["toga-core", "toga-textual"]' --config 'console_app=true'
           app-user-data-path: '$HOME\AppData\Local\Tiberius Yak\Toga Testbed\Data'
 
         - backend: "windows"
@@ -443,6 +454,13 @@ jobs:
         # Use the development version of Briefcase
         python -m pip install -U pip
         python -m pip install git+https://github.com/beeware/briefcase.git
+
+    - name: Get Packages
+      uses: actions/download-artifact@v4.1.8
+      with:
+        pattern: ${{ format('{0}-*', needs.package.outputs.artifact-basename) }}
+        merge-multiple: true
+        path: dist
 
     - name: Test App
       working-directory: testbed

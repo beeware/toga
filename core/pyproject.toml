@@ -7,7 +7,7 @@ requires = [
 build-backend = "setuptools.build_meta"
 
 [project]
-dynamic = ["version"]
+dynamic = ["version", "dependencies"]
 name = "toga-core"
 description = "A Python native, OS native GUI toolkit."
 readme = "README.rst"
