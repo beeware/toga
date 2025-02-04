@@ -200,10 +200,11 @@ def android_text_align(value):
 # LayerDrawable cannot also be properly cloned. Using `getConstantState()` on the
 # Drawable will produce an erroneous version of the original Drawable.
 #
-# These widgets are also affected by the background color of the parent inside which
-# they are present. Directly, setting background color also destroys the native look
-# and feel of these widgets. Moreover, these effects also serve the purpose of
-# providing visual aid for the action of these widgets.
+# These widgets also draw some of their background effects on their native parent. 
+# But in the Widget base class, the native parent is actually the root Box of the
+# layout, and the parent Box is stacked under its children without any native
+# parent/child relationship. So if the parent Box has a background color, it may 
+# conceal some of the background elements of its children.
 #
 # Hence, the best option to preserve the native look and feel of the these widgets is
 # to contain them in a `RelativeLayout` and set the background color to the layout
