@@ -86,11 +86,11 @@ class WindowDemoApp(toga.App):
     def do_window_state_maximize(self, widget, **kwargs):
         self.main_window.state = WindowState.MAXIMIZED
 
-    def do_window_state_minimize(self, widget, **kwargs):
+    async def do_window_state_minimize(self, widget, **kwargs):
         self.main_window.state = WindowState.MINIMIZED
         for i in range(5, 0, -1):
             print(f"Back in {i}...")
-            yield 1
+            await asyncio.sleep(1)
         self.main_window.state = WindowState.NORMAL
 
     def do_window_state_full_screen(self, widget, **kwargs):
