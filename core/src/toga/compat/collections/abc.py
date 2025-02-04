@@ -43,6 +43,9 @@ class _SubscriptWrapper:
     def __getitem__(self, key):
         return self.abc_cls
 
+    def register(self, cls):
+        pass
+
 
 for cls_name in __all__:
     globals()[cls_name] = _SubscriptWrapper(type(cls_name, (object,), {}))

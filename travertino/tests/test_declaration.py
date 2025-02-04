@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Sequence
 from unittest.mock import call
 from warnings import catch_warnings, filterwarnings
 
@@ -606,6 +607,14 @@ def test_list_property_list_like():
         count += 1
     assert count == 4
 
+    assert [*reversed(prop)] == [VALUE2, 3, 2, 1]
+
+    assert prop.index(3) == 2
+
+    assert prop.count(VALUE2) == 1
+
+    assert isinstance(prop, Sequence)
+
 
 @pytest.mark.parametrize("StyleClass", [Style, DeprecatedStyle])
 def test_set_multiple_properties(StyleClass):
@@ -752,6 +761,33 @@ def test_dict(StyleClass):
 
     with pytest.raises(KeyError):
         del style["no-such-property"]
+
+
+@pytest.mark.parametrize("StyleClass", [Style, DeprecatedStyle])
+def test_set_to_initial(StyleClass):
+    """A property set to its initial value is distinct from an unset property."""
+    style = StyleClass()
+
+    # explicit_const's initial value is VALUE1.
+    assert style.explicit_const == VALUE1
+    assert "explicit_const" not in style
+
+    # The unset property shouldn't affect the value when overlaid over a style with
+    # that property set.
+    non_initial_style = StyleClass(explicit_const=VALUE2)
+    union = non_initial_style | style
+    assert union.explicit_const == VALUE2
+    assert "explicit_const" in union
+
+    # The property should count as set, even when set to the same initial value.
+    style.explicit_const = VALUE1
+    assert style.explicit_const == VALUE1
+    assert "explicit_const" in style
+
+    # The property should now overwrite.
+    union = non_initial_style | style
+    assert union.explicit_const == VALUE1
+    assert "explicit_const" in union
 
 
 @pytest.mark.parametrize("StyleClass", [Style, DeprecatedStyle])
