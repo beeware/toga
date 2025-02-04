@@ -1,1 +1,0 @@
-On Android, setting a custom background_color on the Selection widget, now also sets the background color of the dropdown popup.

@@ -1,12 +1,10 @@
 from decimal import ROUND_UP
 
 from android import R
-from android.graphics.drawable import ColorDrawable
 from android.view import View
 from android.widget import AdapterView, ArrayAdapter, Spinner
 from java import dynamic_proxy
 
-from toga_android.colors import DEFAULT_BACKGROUND_COLOR, native_color
 from toga_android.widgets.base import ContainedWidget
 
 
@@ -93,9 +91,3 @@ class Selection(ContainedWidget):
 
     def set_background_color(self, color):
         super().set_background_color(color)
-        # Also set the background color of the dropdown popup.
-        self.native.setPopupBackgroundDrawable(
-            ColorDrawable(
-                DEFAULT_BACKGROUND_COLOR if color is None else native_color(color)
-            )
-        )

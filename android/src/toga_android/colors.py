@@ -1,13 +1,5 @@
-from android import R
 from android.graphics import Color
-from org.beeware.android import MainActivity
 from travertino.colors import TRANSPARENT
-
-typed_array = MainActivity.singletonThis.getTheme().obtainStyledAttributes(
-    [R.attr.colorBackground]
-)
-DEFAULT_BACKGROUND_COLOR = typed_array.getColor(0, 0)
-typed_array.recycle()
 
 CACHE = {
     TRANSPARENT: Color.TRANSPARENT,
