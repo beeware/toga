@@ -29,6 +29,7 @@ class Button(Widget):
         style: StyleT | None = None,
         on_press: toga.widgets.button.OnPressHandler | None = None,
         enabled: bool = True,
+        purpose="FIXME",
         **kwargs,
     ):
         """Create a new button widget.
@@ -61,6 +62,7 @@ class Button(Widget):
 
         self.on_press = on_press
         self.enabled = enabled
+        self.purpose = purpose
 
     def _create(self) -> Any:
         return self.factory.Button(interface=self)

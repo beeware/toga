@@ -6,6 +6,7 @@ from typing import Any, Protocol
 import toga
 from toga.handlers import wrapped_handler
 
+from ..sources import ValueProperty
 from .base import StyleT, Widget
 
 
@@ -132,7 +133,7 @@ class TextInput(Widget):
         self._impl.set_placeholder("" if value is None else str(value))
         self.refresh()
 
-    @property
+    @ValueProperty
     def value(self) -> str:
         """The text to display in the widget.
 
