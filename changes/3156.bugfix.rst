@@ -1,1 +1,1 @@
-`toga.DetailedList` and `toga.Table` widgets now correctly unsets the highlight color from an unselected row.
+``toga.DetailedList`` and ``toga.Table`` widgets now correctly unset the highlight color from an unselected row.
