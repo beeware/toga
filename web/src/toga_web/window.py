@@ -21,6 +21,12 @@ class Window:
         app_placeholder = js.document.getElementById("app-placeholder")
         app_placeholder.appendChild(self.native)
 
+        js.document.body.onfocus = self.window_on_gain_focus
+        js.document.body.onblur = self.window_on_lose_focus
+        js.document.addEventListener(
+            "visibilitychange", self.window_on_visibility_change
+        )
+
         self.set_title(title)
 
     ######################################################################
@@ -32,6 +38,19 @@ class Window:
 
     def on_size_allocate(self, widget, allocation):
         pass
+
+    def window_on_gain_focus(self, sender, event):
+        self.interface.on_gain_focus()
+
+    def window_on_lose_focus(self, sender, event):
+        self.interface.on_lose_focus()
+
+    def window_on_visibility_change(self, sender, event):
+        if hasattr(js.document, "hidden"):
+            if js.document.visibilityState == "visible":
+                self.interface.on_show()
+            else:
+                self.interface.on_hide()
 
     ######################################################################
     # Window properties

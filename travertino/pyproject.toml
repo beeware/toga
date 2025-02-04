@@ -1,0 +1,85 @@
+[build-system]
+requires = [
+    "setuptools==75.8.0",
+    "setuptools_scm==8.1.0",
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+dynamic = ["version"]
+name = "travertino"
+description = "A set of constants and base classes for describing user interface layouts."
+readme = "README.rst"
+requires-python = ">= 3.9"
+license.text = "New BSD"
+authors = [
+    {name="Russell Keith-Magee", email="russell@keith-magee.com"},
+]
+maintainers = [
+    {name="BeeWare Team", email="team@beeware.org"},
+]
+keywords = [
+    "css",
+    "box model",
+    "layout",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: BSD License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: Software Development",
+    "Topic :: Software Development :: User Interfaces",
+]
+
+[project.optional-dependencies]
+# These are needed in order to run Travertino's test suite.
+dev = [
+    "coverage[toml] == 7.6.10",
+    "coverage-conditional-plugin == 0.9.0",
+    "pytest == 8.3.4",
+    "tox == 4.24.1",
+    # typing-extensions needed for TypeAlias added in Py 3.10
+    "typing-extensions == 4.12.2 ; python_version < '3.10'",
+]
+
+[project.urls]
+Homepage = "https://beeware.org/travertino"
+Funding = "https://beeware.org/contributing/membership/"
+# Documentation = "https://travertino.readthedocs.io/en/latest/"
+Tracker = "https://github.com/beeware/travertino/issues"
+Source = "https://github.com/beeware/travertino"
+
+[tool.isort]
+profile = "black"
+split_on_trailing_comma = true
+combine_as_imports = true
+
+[tool.setuptools_scm]
+root = ".."
+
+[tool.coverage.run]
+parallel = true
+branch = true
+relative_files = true
+
+# See notes in the root pyproject.toml file.
+source = ["src"]
+source_pkgs = ["travertino"]
+
+[tool.coverage.paths]
+source = [
+    "src/travertino",
+    "**/travertino",
+]
+
+[tool.pytest.ini_options]
+asyncio_default_fixture_loop_scope = "function"

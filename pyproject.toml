@@ -35,6 +35,7 @@ exclude_lines = [
 ]
 
 [tool.coverage.coverage_conditional_plugin.rules]
+# Additional testbed rules are configured in the testbed module
 no-cover-if-missing-setuptools_scm = "not is_installed('setuptools_scm')"
 no-cover-if-missing-PIL = "not is_installed('PIL')"
 no-cover-if-PIL-installed = "is_installed('PIL')"
@@ -49,6 +50,7 @@ split_on_trailing_comma = true
 combine_as_imports = true
 known_third_party = [
     "android",  # isort defaults to making this first-party for some reason.
+    "travertino", # In this repo, but still a separate package
 ]
 known_first_party = [
     "testbed",
@@ -61,6 +63,7 @@ known_first_party = [
     "toga_web",
     "toga_winforms",
 ]
+extend_skip = ["travertino"]
 
 [tool.towncrier]
 directory = "changes"

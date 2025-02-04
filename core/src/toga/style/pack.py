@@ -1,7 +1,10 @@
 from __future__ import annotations
 
 import warnings
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from travertino.colors import rgb, hsl
 
 from travertino.constants import (  # noqa: F401
     BOLD,
@@ -9,6 +12,7 @@ from travertino.constants import (  # noqa: F401
     CENTER,
     COLUMN,
     CURSIVE,
+    END,
     FANTASY,
     HIDDEN,
     ITALIC,
@@ -25,12 +29,13 @@ from travertino.constants import (  # noqa: F401
     SANS_SERIF,
     SERIF,
     SMALL_CAPS,
+    START,
     SYSTEM,
     TOP,
     TRANSPARENT,
     VISIBLE,
 )
-from travertino.declaration import BaseStyle, Choices
+from travertino.declaration import BaseStyle, directional_property, validated_property
 from travertino.layout import BaseBox
 from travertino.size import BaseIntrinsicSize
 
@@ -46,48 +51,11 @@ from toga.fonts import (
 # Make sure deprecation warnings are shown by default
 warnings.filterwarnings("default", category=DeprecationWarning)
 
-######################################################################
-# Display
-######################################################################
-
 PACK = "pack"
-
-######################################################################
-# Declaration choices
-######################################################################
-
-# Define here, since they're not available in Travertino 0.3.0
-START = "start"
-END = "end"
 
 # Used in backwards compatibility section below
 ALIGNMENT = "alignment"
 ALIGN_ITEMS = "align_items"
-
-DISPLAY_CHOICES = Choices(PACK, NONE)
-VISIBILITY_CHOICES = Choices(VISIBLE, HIDDEN)
-DIRECTION_CHOICES = Choices(ROW, COLUMN)
-ALIGN_ITEMS_CHOICES = Choices(START, CENTER, END)
-ALIGNMENT_CHOICES = Choices(LEFT, RIGHT, TOP, BOTTOM, CENTER)  # Deprecated
-JUSTIFY_CONTENT_CHOICES = Choices(START, CENTER, END)
-GAP_CHOICES = Choices(integer=True)
-
-SIZE_CHOICES = Choices(NONE, integer=True)
-FLEX_CHOICES = Choices(number=True)
-
-MARGIN_CHOICES = Choices(integer=True)
-
-TEXT_ALIGN_CHOICES = Choices(LEFT, RIGHT, CENTER, JUSTIFY)
-TEXT_DIRECTION_CHOICES = Choices(RTL, LTR)
-
-COLOR_CHOICES = Choices(color=True)
-BACKGROUND_COLOR_CHOICES = Choices(TRANSPARENT, color=True)
-
-FONT_FAMILY_CHOICES = Choices(*SYSTEM_DEFAULT_FONTS, string=True)
-FONT_STYLE_CHOICES = Choices(*FONT_STYLES)
-FONT_VARIANT_CHOICES = Choices(*FONT_VARIANTS)
-FONT_WEIGHT_CHOICES = Choices(*FONT_WEIGHTS)
-FONT_SIZE_CHOICES = Choices(integer=True)
 
 
 class Pack(BaseStyle):
@@ -100,6 +68,42 @@ class Pack(BaseStyle):
         pass
 
     _depth = -1
+
+    display: str = validated_property(PACK, NONE, initial=PACK)
+    visibility: str = validated_property(VISIBLE, HIDDEN, initial=VISIBLE)
+    direction: str = validated_property(ROW, COLUMN, initial=ROW)
+    align_items: str | None = validated_property(START, CENTER, END)
+    alignment: str | None = validated_property(
+        LEFT, RIGHT, TOP, BOTTOM, CENTER
+    )  # Deprecated
+    justify_content: str | None = validated_property(START, CENTER, END, initial=START)
+    gap: int = validated_property(integer=True, initial=0)
+
+    width: str | int = validated_property(NONE, integer=True, initial=NONE)
+    height: str | int = validated_property(NONE, integer=True, initial=NONE)
+    flex: float = validated_property(number=True, initial=0)
+
+    margin: int | tuple[int] = directional_property("margin{}")
+    margin_top: int = validated_property(integer=True, initial=0)
+    margin_right: int = validated_property(integer=True, initial=0)
+    margin_bottom: int = validated_property(integer=True, initial=0)
+    margin_left: int = validated_property(integer=True, initial=0)
+
+    color: rgb | hsl | str | None = validated_property(color=True)
+    background_color: rgb | hsl | str | None = validated_property(
+        TRANSPARENT, color=True
+    )
+
+    text_align: str | None = validated_property(LEFT, RIGHT, CENTER, JUSTIFY)
+    text_direction: str | None = validated_property(RTL, LTR, initial=LTR)
+
+    font_family: str = validated_property(
+        *SYSTEM_DEFAULT_FONTS, string=True, initial=SYSTEM
+    )
+    font_style: str = validated_property(*FONT_STYLES, initial=NORMAL)
+    font_variant: str = validated_property(*FONT_VARIANTS, initial=NORMAL)
+    font_weight: str = validated_property(*FONT_WEIGHTS, initial=NORMAL)
+    font_size: int = validated_property(integer=True, initial=SYSTEM_DEFAULT_FONT_SIZE)
 
     @classmethod
     def _debug(cls, *args: str) -> None:  # pragma: no cover
@@ -243,26 +247,12 @@ class Pack(BaseStyle):
     # Index notation
 
     def __getitem__(self, name):
-        # As long as we're mucking about with backwards compatibility: Travertino 0.3.0
-        # doesn't support accessing directional properties via bracket notation, so
-        # special-case it here to gain access to the FUTURE.
-        if name in {"padding", "margin"}:
-            return getattr(self, name)
-
         return super().__getitem__(self._update_property_name(name.replace("-", "_")))
 
     def __setitem__(self, name, value):
-        if name in {"padding", "margin"}:
-            setattr(self, name, value)
-            return
-
         super().__setitem__(self._update_property_name(name.replace("-", "_")), value)
 
     def __delitem__(self, name):
-        if name in {"padding", "margin"}:
-            delattr(self, name)
-            return
-
         super().__delitem__(self._update_property_name(name.replace("-", "_")))
 
     ######################################################################
@@ -317,19 +307,7 @@ class Pack(BaseStyle):
                 # so perform a refresh.
                 self._applicator.refresh()
 
-    def layout(self, viewport: Any, _deprecated_usage=None) -> None:
-        ######################################################################
-        # 2024-12: Backwards compatibility for Travertino 0.3.0
-        ######################################################################
-
-        if _deprecated_usage is not None:
-            # Was called with (self, viewport)
-            viewport = _deprecated_usage
-
-        ######################################################################
-        # End backwards compatibility
-        ######################################################################
-
+    def layout(self, viewport: Any) -> None:
         # self._debug("=" * 80)
         # self._debug(
         #     f"Layout root {node}, available {viewport.width}x{viewport.height}"
@@ -962,49 +940,4 @@ class Pack(BaseStyle):
         return " ".join(css)
 
 
-Pack.validated_property("display", choices=DISPLAY_CHOICES, initial=PACK)
-Pack.validated_property("visibility", choices=VISIBILITY_CHOICES, initial=VISIBLE)
-Pack.validated_property("direction", choices=DIRECTION_CHOICES, initial=ROW)
-Pack.validated_property("align_items", choices=ALIGN_ITEMS_CHOICES)
-Pack.validated_property("alignment", choices=ALIGNMENT_CHOICES)  # Deprecated
-Pack.validated_property(
-    "justify_content", choices=JUSTIFY_CONTENT_CHOICES, initial=START
-)
-Pack.validated_property("gap", choices=GAP_CHOICES, initial=0)
-
-Pack.validated_property("width", choices=SIZE_CHOICES, initial=NONE)
-Pack.validated_property("height", choices=SIZE_CHOICES, initial=NONE)
-Pack.validated_property("flex", choices=FLEX_CHOICES, initial=0)
-
-Pack.validated_property("margin_top", choices=MARGIN_CHOICES, initial=0)
-Pack.validated_property("margin_right", choices=MARGIN_CHOICES, initial=0)
-Pack.validated_property("margin_bottom", choices=MARGIN_CHOICES, initial=0)
-Pack.validated_property("margin_left", choices=MARGIN_CHOICES, initial=0)
-Pack.directional_property("margin%s")
-
-Pack.validated_property("color", choices=COLOR_CHOICES)
-Pack.validated_property("background_color", choices=BACKGROUND_COLOR_CHOICES)
-
-Pack.validated_property("text_align", choices=TEXT_ALIGN_CHOICES)
-Pack.validated_property("text_direction", choices=TEXT_DIRECTION_CHOICES, initial=LTR)
-
-Pack.validated_property("font_family", choices=FONT_FAMILY_CHOICES, initial=SYSTEM)
-# Pack.list_property('font_family', choices=FONT_FAMILY_CHOICES)
-Pack.validated_property("font_style", choices=FONT_STYLE_CHOICES, initial=NORMAL)
-Pack.validated_property("font_variant", choices=FONT_VARIANT_CHOICES, initial=NORMAL)
-Pack.validated_property("font_weight", choices=FONT_WEIGHT_CHOICES, initial=NORMAL)
-Pack.validated_property(
-    "font_size", choices=FONT_SIZE_CHOICES, initial=SYSTEM_DEFAULT_FONT_SIZE
-)
-# Pack.composite_property([
-#     'font_family', 'font_style', 'font_variant', 'font_weight', 'font_size'
-#     FONT_CHOICES
-# ])
-
-try:
-    _all_properties = Pack._BASE_ALL_PROPERTIES
-except AttributeError:
-    # Travertino 0.3 compatibility
-    _all_properties = Pack._ALL_PROPERTIES
-
-_all_properties[Pack].update(Pack._ALIASES)
+Pack._BASE_ALL_PROPERTIES[Pack].update(Pack._ALIASES)

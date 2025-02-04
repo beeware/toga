@@ -9,7 +9,7 @@ from toga.types import Position, Size
 from toga.window import _initial_position
 
 from .container import TogaContainer
-from .libs import IS_WAYLAND, Gdk, GLib, Gtk
+from .libs import GTK_VERSION, IS_WAYLAND, Gdk, GLib, Gtk
 from .screens import Screen as ScreenImpl
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -26,11 +26,26 @@ class Window:
         self.create()
         self.native._impl = self
 
-        self._delete_handler = self.native.connect(
-            "delete-event",
-            self.gtk_delete_event,
-        )
-        self.native.connect("window-state-event", self.gtk_window_state_event)
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            self._delete_handler = self.native.connect(
+                "delete-event",
+                self.gtk_delete_event,
+            )
+        else:  # pragma: no-cover-if-gtk3
+            self._delete_handler = self.native.connect(
+                "close-request", self.gtk_delete_event
+            )
+
+        self.native.connect("show", self.gtk_show)
+        self.native.connect("hide", self.gtk_hide)
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            self.native.connect("window-state-event", self.gtk_window_state_event)
+            self.native.connect("focus-in-event", self.gtk_focus_in_event)
+            self.native.connect("focus-out-event", self.gtk_focus_out_event)
+        else:  # pragma: no-cover-if-gtk3
+            self.native.connect("notify::fullscreened", self.gtk_window_state_event)
+            self.native.connect("notify::maximized", self.gtk_window_state_event)
+            self.native.connect("notify::minimized", self.gtk_window_state_event)
 
         self._window_state_flags = None
         self._in_presentation = False
@@ -57,9 +72,14 @@ class Window:
         # Because expand and fill are True, the container will fill the available
         # space, and will get a size_allocate callback if the window is resized.
         self.container = TogaContainer()
-        self.layout.pack_end(self.container, expand=True, fill=True, padding=0)
-
-        self.native.add(self.layout)
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            self.layout.pack_end(self.container, expand=True, fill=True, padding=0)
+            self.native.add(self.layout)
+        else:  # pragma: no-cover-if-gtk3
+            self.container.set_valign(Gtk.Align.FILL)
+            self.container.set_vexpand(True)
+            self.layout.append(self.container)
+            self.native.set_child(self.layout)
 
     def create(self):
         self.native = Gtk.Window()
@@ -67,29 +87,58 @@ class Window:
     ######################################################################
     # Native event handlers
     ######################################################################
+    def gtk_show(self, widget):
+        self.interface.on_show()
+
+    def gtk_hide(self, widget):
+        self.interface.on_hide()
 
     def gtk_window_state_event(self, widget, event):
-        previous_window_state_flags = self._window_state_flags
-        # Get the window state flags
-        self._window_state_flags = event.new_window_state
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            previous_window_state_flags = self._window_state_flags
+            previous_state = self.get_window_state()
+            # Get the window state flags
+            self._window_state_flags = event.new_window_state
+        else:  # pragma: no-cover-if-gtk3
+            previous_window_state_flags = None
+            previous_state = self.get_window_state()
+            self._window_state_flags = None
+        current_state = self.get_window_state()
 
         # Window state flags are unreliable when window is hidden,
         # so cache the previous window state flag on to the new
         # window state flag, so that get_window_state() would work
         # correctly.
-        if not self.get_visible():
-            restore_flags = {
-                Gdk.WindowState.MAXIMIZED,
-                Gdk.WindowState.ICONIFIED,
-                Gdk.WindowState.FULLSCREEN,
-            }
-            for flag in restore_flags:
-                if previous_window_state_flags & flag:
-                    self._window_state_flags |= flag
-                    break
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            if not self.get_visible():
+                restore_flags = {
+                    Gdk.WindowState.MAXIMIZED,
+                    Gdk.WindowState.ICONIFIED,
+                    Gdk.WindowState.FULLSCREEN,
+                }
+                for flag in restore_flags:
+                    if previous_window_state_flags & flag:
+                        self._window_state_flags |= flag
+                        break
+        else:  # pragma: no-cover-if-gtk3
+            pass
 
+        # Trigger the appropriate visibility events
+        # Wayland doesn't allow for the detection of MINIMIZED, so the
+        # visibility events will not be triggered when the window will
+        # be minimized or un-minimized.
+        if previous_state != current_state:
+            if (
+                previous_state == WindowState.MINIMIZED
+            ):  # pragma: no-cover-if-linux-wayland
+                self.interface.on_show()
+            elif (
+                current_state == WindowState.MINIMIZED
+            ):  # pragma: no-cover-if-linux-wayland
+                self.interface.on_hide()
+
+        # Handle the pending state transitions
         if self._pending_state_transition:
-            current_state = self.get_window_state()
             if current_state != WindowState.NORMAL:
                 if self._pending_state_transition != current_state:
                     # Add a 10ms delay to wait for the native window state
@@ -119,13 +168,19 @@ class Window:
                 else:  # pragma: no-cover-if-linux-wayland
                     self._apply_state(self._pending_state_transition)
 
-    def gtk_delete_event(self, widget, data):
+    def gtk_delete_event(self, *_):
         # Return value of the GTK on_close handler indicates whether the event has been
         # fully handled. Returning True indicates the event has been handled, so further
         # handling (including actually closing the window) shouldn't be performed. This
         # handler must be deleted to allow the window to actually close.
         self.interface.on_close()
         return True
+
+    def gtk_focus_in_event(self, sender, event):
+        self.interface.on_gain_focus()
+
+    def gtk_focus_out_event(self, sender, event):
+        self.interface.on_lose_focus()
 
     ######################################################################
     # Window properties
@@ -148,10 +203,16 @@ class Window:
 
     def set_app(self, app):
         app.native.add_window(self.native)
-        self.native.set_icon(app.interface.icon._impl.native(72))
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            self.native.set_icon(app.interface.icon._impl.native(72))
+        else:  # pragma: no-cover-if-gtk3
+            self.interface.factory.not_implemented("Window.set_app() icon")
 
     def show(self):
-        self.native.show_all()
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            self.native.show_all()
+        else:  # pragma: no-cover-if-gtk3
+            self.native.present()
 
     ######################################################################
     # Window content and resources
@@ -166,27 +227,48 @@ class Window:
     ######################################################################
 
     def get_size(self) -> Size:
-        size = self.native.get_size()
-        return Size(size.width, size.height)
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            width, height = self.native.get_default_size()
+            size = self.native.get_size()
+            return Size(size.width, size.height)
+        else:  # pragma: no-cover-if-gtk3
+            width, height = self.native.get_default_size()
+            return Size(width, height)
 
     def set_size(self, size: SizeT):
-        self.native.resize(size[0], size[1])
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            self.native.resize(size[0], size[1])
+        else:  # pragma: no-cover-if-gtk3
+            self.native.set_default_size(size[0], size[1])
 
     ######################################################################
     # Window position
     ######################################################################
 
     def get_current_screen(self):
-        display = Gdk.Display.get_default()
-        monitor_native = display.get_monitor_at_window(self.native.get_window())
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            display = Gdk.Display.get_default()
+            monitor_native = display.get_monitor_at_window(self.native.get_window())
+        else:  # pragma: no-cover-if-gtk3
+            monitor_native = self.native.props.display
         return ScreenImpl(monitor_native)
 
     def get_position(self) -> Position:
-        pos = self.native.get_position()
-        return Position(pos.root_x, pos.root_y)
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            pos = self.native.get_position()
+            return Position(pos.root_x, pos.root_y)
+        else:  # pragma: no-cover-if-gtk3
+            # GTK4 no longer has an API to get position
+            # since it isn't supported by Wayland
+            return Position(0, 0)
 
     def set_position(self, position: PositionT):
-        self.native.move(position[0], position[1])
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            self.native.move(position[0], position[1])
+        else:  # pragma: no-cover-if-gtk3
+            # GTK4 no longer has an API to set position
+            # since it isn't supported by Wayland
+            pass
 
     ######################################################################
     # Window visibility
@@ -196,7 +278,10 @@ class Window:
         return self.native.get_property("visible")
 
     def hide(self):
-        self.native.hide()
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            self.native.hide()
+        else:  # pragma: no-cover-if-gtk3
+            self.native.set_visible(False)
 
     ######################################################################
     # Window state
@@ -205,18 +290,35 @@ class Window:
     def get_window_state(self, in_progress_state=False):
         if in_progress_state and self._pending_state_transition:
             return self._pending_state_transition
-        window_state_flags = self._window_state_flags
-        if window_state_flags:  # pragma: no branch
-            if window_state_flags & Gdk.WindowState.MAXIMIZED:
+
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            if not self._window_state_flags:
+                return WindowState.NORMAL
+
+            flags = self._window_state_flags
+            if flags & Gdk.WindowState.MAXIMIZED:
                 return WindowState.MAXIMIZED
-            elif window_state_flags & Gdk.WindowState.ICONIFIED:
+            elif flags & Gdk.WindowState.ICONIFIED:
                 return WindowState.MINIMIZED  # pragma: no-cover-if-linux-wayland
-            elif window_state_flags & Gdk.WindowState.FULLSCREEN:
+            elif flags & Gdk.WindowState.FULLSCREEN:
                 return (
                     WindowState.PRESENTATION
                     if self._in_presentation
                     else WindowState.FULLSCREEN
                 )
+
+        else:  # pragma: no-cover-if-gtk3
+            if self.native.is_maximized():
+                return WindowState.MAXIMIZED
+            elif GTK_VERSION >= (4, 12) and self.native.is_suspended():
+                return WindowState.MINIMIZED
+            elif self.native.is_fullscreen():
+                return (
+                    WindowState.PRESENTATION
+                    if self._in_presentation
+                    else WindowState.FULLSCREEN
+                )
+
         return WindowState.NORMAL
 
     def set_window_state(self, state):
@@ -262,7 +364,10 @@ class Window:
             self.native.maximize()
 
         elif target_state == WindowState.MINIMIZED:  # pragma: no-cover-if-linux-wayland
-            self.native.iconify()
+            if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+                self.native.iconify()
+            else:  # pragma: no-cover-if-gtk3
+                self.native.minimize()
 
         elif target_state == WindowState.FULLSCREEN:
             self.native.fullscreen()
@@ -304,105 +409,115 @@ class Window:
     ######################################################################
 
     def get_image_data(self):
-        display = self.native.get_display()
-        display.flush()
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            display = self.native.get_display()
+            display.flush()
 
-        # For some reason, converting the *window* to a pixbuf fails. But if you extract
-        # a *part* of the overall screen, that works. So - work out the origin of the
-        # window, then the allocation for the container relative to that window, and
-        # capture that rectangle.
-        window = self.native.get_window()
-        origin = window.get_origin()
-        allocation = self.container.get_allocation()
+            # For some reason, converting the *window* to a pixbuf fails. But if you
+            # extract a *part* of the overall screen, that works. So - work out the
+            # origin of the window, then the allocation for the container relative to
+            # that window, and capture that rectangle.
+            window = self.native.get_window()
+            origin = window.get_origin()
+            allocation = self.container.get_allocation()
 
-        screen = display.get_default_screen()
-        root_window = screen.get_root_window()
-        screenshot = Gdk.pixbuf_get_from_window(
-            root_window,
-            origin.x + allocation.x,
-            origin.y + allocation.y,
-            allocation.width,
-            allocation.height,
-        )
+            screen = display.get_default_screen()
+            root_window = screen.get_root_window()
+            screenshot = Gdk.pixbuf_get_from_window(
+                root_window,
+                origin.x + allocation.x,
+                origin.y + allocation.y,
+                allocation.width,
+                allocation.height,
+            )
 
-        success, buffer = screenshot.save_to_bufferv("png")
-        if success:
-            return buffer
-        else:  # pragma: nocover
-            # This shouldn't ever happen, and it's difficult to manufacture
-            # in test conditions
-            raise ValueError(f"Unable to generate screenshot of {self}")
+            success, buffer = screenshot.save_to_bufferv("png")
+            if success:
+                return buffer
+            else:  # pragma: nocover
+                # This shouldn't ever happen, and it's difficult to manufacture
+                # in test conditions
+                raise ValueError(f"Unable to generate screenshot of {self}")
+        else:  # pragma: no-cover-if-gtk3
+            self.interface.factory.not_implemented("Window.get_image_data()")
 
 
 class MainWindow(Window):
     def create(self):
         self.native = Gtk.ApplicationWindow()
-        self.native.set_role("MainWindow")
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            self.native.set_role("MainWindow")
 
-        self.native_toolbar = Gtk.Toolbar()
-        self.native_toolbar.set_style(Gtk.ToolbarStyle.BOTH)
-        self.toolbar_items = {}
-        self.toolbar_separators = set()
+            self.native_toolbar = Gtk.Toolbar()
+            self.native_toolbar.set_style(Gtk.ToolbarStyle.BOTH)
+            self.toolbar_items = {}
+            self.toolbar_separators = set()
+        else:  # pragma: no-cover-if-gtk3
+            pass
 
     def create_menus(self):
         # GTK menus are handled at the app level
         pass
 
     def create_toolbar(self):
-        # If there's an existing toolbar, hide it until we know we need it.
-        self.layout.remove(self.native_toolbar)
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            # If there's an existing toolbar, hide it until we know we need it.
+            self.layout.remove(self.native_toolbar)
 
-        # Deregister any toolbar buttons from their commands, and remove them
-        # from the toolbar
-        for cmd, item_impl in self.toolbar_items.items():
-            self.native_toolbar.remove(item_impl)
-            cmd._impl.native.remove(item_impl)
+            # Deregister any toolbar buttons from their commands, and remove them
+            # from the toolbar
+            for cmd, item_impl in self.toolbar_items.items():
+                self.native_toolbar.remove(item_impl)
+                cmd._impl.native.remove(item_impl)
 
-        # Remove any toolbar separators
-        for sep in self.toolbar_separators:
-            self.native_toolbar.remove(sep)
+            # Remove any toolbar separators
+            for sep in self.toolbar_separators:
+                self.native_toolbar.remove(sep)
 
-        # Create the new toolbar items
-        self.toolbar_items = {}
-        self.toolbar_separators = set()
-        prev_group = None
-        for cmd in self.interface.toolbar:
-            if isinstance(cmd, Separator):
-                item_impl = Gtk.SeparatorToolItem()
-                item_impl.set_draw(False)
-                self.toolbar_separators.add(item_impl)
-                prev_group = None
-            else:
-                # A change in group requires adding a toolbar separator
-                if prev_group is not None and prev_group != cmd.group:
-                    group_sep = Gtk.SeparatorToolItem()
-                    group_sep.set_draw(True)
-                    self.toolbar_separators.add(group_sep)
-                    self.native_toolbar.insert(group_sep, -1)
+            # Create the new toolbar items
+            self.toolbar_items = {}
+            self.toolbar_separators = set()
+            prev_group = None
+            for cmd in self.interface.toolbar:
+                if isinstance(cmd, Separator):
+                    item_impl = Gtk.SeparatorToolItem()
+                    item_impl.set_draw(False)
+                    self.toolbar_separators.add(item_impl)
                     prev_group = None
                 else:
-                    prev_group = cmd.group
+                    # A change in group requires adding a toolbar separator
+                    if prev_group is not None and prev_group != cmd.group:
+                        group_sep = Gtk.SeparatorToolItem()
+                        group_sep.set_draw(True)
+                        self.toolbar_separators.add(group_sep)
+                        self.native_toolbar.insert(group_sep, -1)
+                        prev_group = None
+                    else:
+                        prev_group = cmd.group
 
-                item_impl = Gtk.ToolButton()
-                if cmd.icon:
-                    item_impl.set_icon_widget(
-                        Gtk.Image.new_from_pixbuf(cmd.icon._impl.native(32))
-                    )
-                item_impl.set_label(cmd.text)
-                if cmd.tooltip:
-                    item_impl.set_tooltip_text(cmd.tooltip)
-                item_impl.connect("clicked", cmd._impl.gtk_clicked)
-                cmd._impl.native.append(item_impl)
-                self.toolbar_items[cmd] = item_impl
+                    item_impl = Gtk.ToolButton()
+                    if cmd.icon:
+                        item_impl.set_icon_widget(
+                            Gtk.Image.new_from_pixbuf(cmd.icon._impl.native(32))
+                        )
+                    item_impl.set_label(cmd.text)
+                    if cmd.tooltip:
+                        item_impl.set_tooltip_text(cmd.tooltip)
+                    item_impl.connect("clicked", cmd._impl.gtk_clicked)
+                    cmd._impl.native.append(item_impl)
+                    self.toolbar_items[cmd] = item_impl
 
-            self.native_toolbar.insert(item_impl, -1)
+                self.native_toolbar.insert(item_impl, -1)
 
-        if self.toolbar_items:
-            # We have toolbar items; add the toolbar to the top of the layout.
-            self.layout.pack_start(
-                self.native_toolbar,
-                expand=False,
-                fill=False,
-                padding=0,
-            )
-            self.native_toolbar.show_all()
+            if self.toolbar_items:
+                # We have toolbar items; add the toolbar to the top of the layout.
+                self.layout.pack_start(
+                    self.native_toolbar,
+                    expand=False,
+                    fill=False,
+                    padding=0,
+                )
+                self.native_toolbar.show_all()
+        else:  # pragma: no-cover-if-gtk3
+            # TODO: Implement toolbar commands in HeaderBar with #1931
+            pass

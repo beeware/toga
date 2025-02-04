@@ -11,6 +11,13 @@ from toga.colors import CORNFLOWERBLUE, GOLDENROD, REBECCAPURPLE
 from toga.constants import WindowState
 from toga.style.pack import COLUMN, Pack
 
+from ..assertions import (
+    assert_window_gain_focus,
+    assert_window_lose_focus,
+    assert_window_on_hide,
+    assert_window_on_show,
+)
+
 
 def window_probe(app, window):
     module = import_module("tests_backend.window")
@@ -335,7 +342,8 @@ else:
         assert second_window.size == (640, 480)
         # Position should be cascaded; the exact position depends on the platform,
         # and how many windows have been created. As long as it's not at (100,100).
-        assert second_window.position != (100, 100)
+        if second_window_probe.supports_placement:
+            assert second_window.position != (100, 100)
 
         assert second_window_probe.is_resizable
         if second_window_probe.supports_closable:
@@ -732,6 +740,8 @@ else:
         second_window.toolbar.add(app.cmd1)
         second_window.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
         second_window.show()
+        second_window.on_show = Mock()
+        second_window.on_hide = Mock()
         # Wait for window animation before assertion.
         await second_window_probe.wait_for_window("Secondary window is visible")
         assert second_window_probe.instantaneous_state == WindowState.NORMAL
@@ -744,6 +754,17 @@ else:
         )
         assert second_window_probe.instantaneous_state == initial_state
 
+        # Check for visibility event notification
+        if initial_state == WindowState.MINIMIZED:
+            # on_hide() will be triggered, as it was set to a
+            # not-visible-to-user(minimized) state.
+            assert_window_on_hide(second_window)
+        else:
+            # on_show() will not be triggered again, as it was
+            # already in a visible-to-user(not hidden) state, and
+            # was set to a visible-to-user(not minimized) state.
+            assert_window_on_show(second_window, trigger_expected=False)
+
         # Set to final state
         second_window.state = final_state
         # Wait for window animation before assertion.
@@ -751,6 +772,26 @@ else:
             f"Secondary window is in {final_state}", state=final_state
         )
         assert second_window_probe.instantaneous_state == final_state
+
+        # Check for visibility event notification
+        if initial_state == WindowState.MINIMIZED:
+            if final_state == WindowState.MINIMIZED:
+                # on_hide() will not be triggered again, as it was
+                # already in a not-visible-to-user(minimized) state.
+                assert_window_on_hide(second_window, trigger_expected=False)
+            else:
+                # on_show() will be triggered, as it was previously
+                # in a not-visible-to-user(minimized) state.
+                assert_window_on_show(second_window)
+        else:
+            if final_state == WindowState.MINIMIZED:
+                # on_hide() will be triggered, as it was previously
+                # in a visible-to-user(not minimized) state.
+                assert_window_on_hide(second_window)
+            else:
+                # on_show() will not be triggered again, as it was
+                # already in a visible-to-user(not minimized) state.
+                assert_window_on_show(second_window, trigger_expected=False)
 
     @pytest.mark.parametrize(
         "states",
@@ -966,23 +1007,86 @@ else:
             )
         ],
     )
+    async def test_focus_events(
+        app, main_window, main_window_probe, second_window, second_window_probe
+    ):
+        """The window can trigger on_gain_focus() and on_lose_focus()
+        event handlers, when the window gains or loses input focus."""
+        if not main_window_probe.supports_focus:
+            pytest.skip("GTK4 doesn't yet support gain and lose focus.")
+
+        main_window.on_gain_focus = Mock()
+        main_window.on_lose_focus = Mock()
+        second_window.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
+        second_window.show()
+        second_window.on_gain_focus = Mock()
+        second_window.on_lose_focus = Mock()
+
+        app.current_window = main_window
+        await main_window_probe.wait_for_window("Setting main window as current window")
+        assert app.current_window == main_window
+        assert_window_gain_focus(main_window)
+        assert_window_lose_focus(second_window)
+
+        app.current_window = second_window
+        await second_window_probe.wait_for_window(
+            "Setting second window as current window"
+        )
+        assert app.current_window == second_window
+        assert_window_gain_focus(second_window)
+        assert_window_lose_focus(main_window)
+
+    @pytest.mark.parametrize(
+        "second_window_class, second_window_kwargs",
+        [
+            (
+                toga.Window,
+                dict(title="Secondary Window", position=(200, 150)),
+            )
+        ],
+    )
+    async def test_visibility_events(second_window, second_window_probe):
+        """The window can trigger on_show() and on_hide() event handlers,
+        when the window is shown or hidden respectively."""
+        second_window.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
+        second_window.show()
+        second_window.on_show = Mock()
+        second_window.on_hide = Mock()
+
+        second_window.hide()
+        await second_window_probe.wait_for_window(f"Hiding {second_window.title}")
+        assert_window_on_hide(second_window)
+
+        second_window.show()
+        await second_window_probe.wait_for_window(f"Showing {second_window.title}")
+        assert_window_on_show(second_window)
+
+    @pytest.mark.parametrize(
+        "second_window_class, second_window_kwargs",
+        [
+            (
+                toga.Window,
+                dict(title="Secondary Window", position=(200, 150)),
+            )
+        ],
+    )
     async def test_screen(second_window, second_window_probe):
         """The window can be relocated to another screen, using both absolute and
         relative screen positions."""
 
+        if not second_window_probe.supports_placement:
+            pytest.xfail("This backend doesn't support window placement.")
         initial_position = second_window.position
 
         # Move the window using absolute position.
         second_window.position = (200, 200)
         await second_window_probe.wait_for_window("Secondary window has been moved")
-        if second_window_probe.supports_placement:
-            assert second_window.position != initial_position
+        assert second_window.position != initial_position
 
         # `position` and `screen_position` will be same as the window will be in
         # primary screen.
-        if second_window_probe.supports_placement:
-            assert second_window.position == (200, 200)
-            assert second_window.screen_position == (200, 200)
+        assert second_window.position == (200, 200)
+        assert second_window.screen_position == (200, 200)
 
         # Move the window between available screens and assert its `screen_position`
         for screen in second_window.app.screens:
@@ -1000,9 +1104,10 @@ else:
 async def test_as_image(main_window, main_window_probe):
     """The window can be captured as a screenshot"""
 
-    screenshot = main_window.as_image()
-    main_window_probe.assert_image_size(
-        screenshot.size,
-        main_window_probe.content_size,
-        screen=main_window.screen,
-    )
+    if main_window_probe.supports_as_image:
+        screenshot = main_window.as_image()
+        main_window_probe.assert_image_size(
+            screenshot.size,
+            main_window_probe.content_size,
+            screen=main_window.screen,
+        )

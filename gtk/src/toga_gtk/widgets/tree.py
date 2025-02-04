@@ -1,6 +1,6 @@
 from travertino.size import at_least
 
-from ..libs import GdkPixbuf, Gtk
+from ..libs import GTK_VERSION, GdkPixbuf, Gtk
 from .base import Widget
 from .table import TogaRow
 
@@ -14,20 +14,26 @@ class Tree(Widget):
         self.native_tree = Gtk.TreeView(model=self.store)
         self.native_tree.connect("row-activated", self.gtk_on_row_activated)
 
-        self.selection = self.native_tree.get_selection()
-        if self.interface.multiple_select:
-            self.selection.set_mode(Gtk.SelectionMode.MULTIPLE)
-        else:
-            self.selection.set_mode(Gtk.SelectionMode.SINGLE)
-        self.selection.connect("changed", self.gtk_on_select)
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            self.selection = self.native_tree.get_selection()
+            if self.interface.multiple_select:
+                self.selection.set_mode(Gtk.SelectionMode.MULTIPLE)
+            else:
+                self.selection.set_mode(Gtk.SelectionMode.SINGLE)
+            self.selection.connect("changed", self.gtk_on_select)
 
-        self._create_columns()
+            self._create_columns()
+        else:  # pragma: no-cover-if-gtk3
+            pass
 
         self.native = Gtk.ScrolledWindow()
-        self.native.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
-        self.native.add(self.native_tree)
-        self.native.set_min_content_width(200)
-        self.native.set_min_content_height(200)
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            self.native.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
+            self.native.add(self.native_tree)
+            self.native.set_min_content_width(200)
+            self.native.set_min_content_height(200)
+        else:  # pragma: no-cover-if-gtk3
+            pass
 
     def _create_columns(self):
         if self.interface.headings:
@@ -62,24 +68,27 @@ class Tree(Widget):
         self.interface.on_activate(node=node)
 
     def change_source(self, source):
-        # Temporarily disconnecting the TreeStore improves performance for large
-        # updates by deferring row rendering until the update is complete.
-        self.native_tree.set_model(None)
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            # Temporarily disconnecting the TreeStore improves performance for large
+            # updates by deferring row rendering until the update is complete.
+            self.native_tree.set_model(None)
 
-        for column in self.native_tree.get_columns():
-            self.native_tree.remove_column(column)
-        self._create_columns()
+            for column in self.native_tree.get_columns():
+                self.native_tree.remove_column(column)
+            self._create_columns()
 
-        types = [TogaRow]
-        for accessor in self.interface._accessors:
-            types.extend([GdkPixbuf.Pixbuf, str])
-        self.store = Gtk.TreeStore(*types)
+            types = [TogaRow]
+            for accessor in self.interface._accessors:
+                types.extend([GdkPixbuf.Pixbuf, str])
+            self.store = Gtk.TreeStore(*types)
 
-        for i, row in enumerate(self.interface.data):
-            self.insert(None, i, row)
+            for i, row in enumerate(self.interface.data):
+                self.insert(None, i, row)
 
-        self.native_tree.set_model(self.store)
-        self.refresh()
+            self.native_tree.set_model(self.store)
+            self.refresh()
+        else:  # pragma: no-cover-if-gtk3
+            pass
 
     def insert(self, parent, index, item):
         row = TogaRow(item)
@@ -147,5 +156,8 @@ class Tree(Widget):
         self.change_source(self.interface.data)
 
     def rehint(self):
-        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
-        self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
+            self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
+        else:  # pragma: no-cover-if-gtk3
+            pass

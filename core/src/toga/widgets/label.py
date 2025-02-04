@@ -44,7 +44,7 @@ class Label(Widget):
 
     @text.setter
     def text(self, value: object) -> None:
-        if value is None or value == "\u200B":
+        if value is None or value == "\u200b":
             text = ""
         else:
             text = str(value)
