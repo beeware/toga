@@ -1,0 +1,1 @@
+DetailedList and Table widgets now correctly unsets the highlight color from an unselected row.
