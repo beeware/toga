@@ -27,13 +27,13 @@ sphinx:
 formats:
    - pdf
 
-# Install extras for build - dev is needed to run tox
+# Install extras for build. Order is significant; each entry is a separate call to
+# `pip`, and we need Travertino to exist before core is installed.
 python:
   install:
   - method: pip
+    path: travertino
+  - method: pip
     path: core
     extra_requirements:
-      - dev
       - docs
-  - method: pip
-    path: travertino
