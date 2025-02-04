@@ -37,6 +37,11 @@ requires = [
     "../core",
     "../travertino",
 ]
+# Look for pre-release wheels in the dist folder of the parent repo.
+requirement_installer_args=[
+    "--pre",
+    "--find-wheels", "../dist",
+]
 
 permission.camera = "The testbed needs to exercise Camera APIs"
 permission.fine_location = "The testbed needs to exercise fine-grained geolocation services."
