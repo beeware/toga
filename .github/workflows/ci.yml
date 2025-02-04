@@ -119,9 +119,12 @@ jobs:
 
     - name: Test
       run: |
-        # The $(ls ...) shell expansion is done in the Github environment;
-        # the value of TOGA_INSTALL_COMMAND will be a literal string without any shell expansions to perform
-        TOGA_INSTALL_COMMAND="python -m pip install ../$(ls dist/toga_core-*.whl)[dev] ../$(ls dist/toga_dummy-*.whl) ../$(ls dist/travertino-*.whl)"
+        # The $(ls ...) shell expansion is done in the Github environment; the value of
+        # TOGA_INSTALL_COMMAND will be a literal string without any shell expansions to
+        # perform. We don't *explicitly* install the Travertino wheel; we provide the
+        # dist dir as a source of wheels, and rely on pip to resolve the explicit
+        # version match to the travertino wheel in that folder.
+        TOGA_INSTALL_COMMAND="python -m pip install --find-wheels ./dist ../$(ls dist/toga_core-*.whl)[dev] ../$(ls dist/toga_dummy-*.whl)"
         tox -e py-cov${{ matrix.tox-suffix }}
         tox -qe coverage$(tr -dc "0-9" <<< "${{ matrix.python-version }}")${{ matrix.tox-suffix }}
         mv ${{ matrix.package }}/.coverage ${{ matrix.package }}/.coverage.${{ matrix.platform }}.${{ matrix.python-version }}
@@ -184,7 +187,11 @@ jobs:
 
       - name: Test
         run: |
-          pip install dist/toga_core-*.whl dist/travertino-*.whl
+          # We don't *explicitly* install the Travertino wheel; we provide the dist dir
+          # as a source of wheels, and rely on pip to resolve the explicit version match
+          # to the travertino wheel in that folder.
+          pip install --find-wheels ./dist dist/toga_core-*.whl
+
           site_packages=$(python -c '
           import sys
           print([path for path in sys.path if "site-packages" in path][0])
@@ -373,7 +380,7 @@ jobs:
           platform: "linux"
           runs-on: "ubuntu-latest"
           setup-python: false  # Use the system Python packages
-          briefcase-run-args: --config 'requires=["../core","../textual", "../travertino"]' --config 'console_app=true'
+          briefcase-run-args: --config 'requires=["../core", "../textual", "../travertino"]' --config 'console_app=true'
           app-user-data-path: "$HOME/.local/share/testbed"
           # install the meta-package build-essential since Briefcase explicitly checks for it
           pre-command: sudo apt update -y && sudo apt install -y build-essential
@@ -381,13 +388,13 @@ jobs:
         - backend: "textual-macOS"
           platform: "macOS"
           runs-on: "macos-latest"
-          briefcase-run-args: --config 'requires=["../core","../textual", "../travertino"]' --config 'console_app=true'
+          briefcase-run-args: --config 'requires=["../core", "../textual", "../travertino"]' --config 'console_app=true'
           app-user-data-path: "$HOME/Library/Application Support/org.beeware.toga.testbed"
 
         - backend: "textual-windows"
           platform: "windows"
           runs-on: "windows-latest"
-          briefcase-run-args: --config 'requires=["../core","../textual", "../travertino"]' --config 'console_app=true'
+          briefcase-run-args: --config 'requires=["../core", "../textual", "../travertino"]' --config 'console_app=true'
           app-user-data-path: '$HOME\AppData\Local\Tiberius Yak\Toga Testbed\Data'
 
         - backend: "windows"
