@@ -88,6 +88,3 @@ class Selection(ContainedWidget):
         self.interface.intrinsic.height = self.scale_out(
             self.native.getMeasuredHeight(), ROUND_UP
         )
-
-    def set_background_color(self, color):
-        super().set_background_color(color)
