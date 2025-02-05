@@ -51,6 +51,8 @@ from toga.fonts import (
 # Make sure deprecation warnings are shown by default
 warnings.filterwarnings("default", category=DeprecationWarning)
 
+NOT_PROVIDED = object()
+
 PACK = "pack"
 
 # Used in backwards compatibility section below
@@ -259,7 +261,25 @@ class Pack(BaseStyle):
     # End backwards compatibility
     ######################################################################
 
-    def apply(self, name: str) -> None:
+    def apply(self, name: str, value: object = NOT_PROVIDED) -> None:
+        ######################################################################
+        # 2025-01: Backwards compatibility for Toga <= 0.4.8
+        ######################################################################
+
+        if value is not NOT_PROVIDED:
+            warnings.warn(
+                (
+                    "The value parameter to Pack.apply() is deprecated. The instance "
+                    "will use its own current value for the property named."
+                ),
+                DeprecationWarning,
+                stacklevel=2,
+            )
+
+        ######################################################################
+        # End backwards compatibility
+        ######################################################################
+
         if self._applicator:
             if name == "text_align":
                 if (value := self.text_align) is None:
