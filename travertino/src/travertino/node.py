@@ -54,12 +54,12 @@ class Node:
         if applicator:
             # This needs to happen *before* assigning the applicator to the style,
             # below, because as part of receiving the applicator, the style will
-            # reapply itself. How this happens will vary with applicator
-            # implementation, but will probably need access to the node.
+            # apply itself. How this happens will vary with applicator implementation,
+            # but will probably need access to the node.
             applicator.node = self
 
         self._applicator = applicator
-        # This triggers style.reapply():
+        # This triggers style.apply_all():
         self.style._applicator = applicator
 
     @property

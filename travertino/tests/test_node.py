@@ -12,7 +12,7 @@ from .utils import mock_attr, prep_style_class
 
 
 @prep_style_class
-@mock_attr("reapply")
+@mock_attr("apply_all")
 class Style(BaseStyle):
     int_prop: int = validated_property(integer=True)
 
@@ -52,7 +52,7 @@ class OldTypeErrorStyle(Style):
 
 @prep_style_class
 class BrokenStyle(BaseStyle):
-    def reapply(self):
+    def apply_all(self):
         raise AttributeError("Missing attribute, node not ready for style application")
 
     class IntrinsicSize(BaseIntrinsicSize):
@@ -74,7 +74,7 @@ class AttributeTestStyle(BaseStyle):
     class Box(BaseBox):
         pass
 
-    def reapply(self):
+    def apply_all(self):
         assert self._applicator.node.style is self
 
 
@@ -212,7 +212,7 @@ def test_refresh_no_op():
     """Refresh is a no-op if no applicator is set."""
     node = Node(style=Style())
     node.refresh(Viewport(width=100, height=100))
-    node.style.reapply.assert_not_called()
+    node.style.apply_all.assert_not_called()
 
 
 @pytest.mark.parametrize("StyleClass", [TypeErrorStyle, OldTypeErrorStyle])
@@ -336,7 +336,7 @@ def test_create_with_no_applicator():
     assert node.style is not style
 
     # Since no applicator has been assigned, style wasn't applied.
-    node.style.reapply.assert_not_called()
+    node.style.apply_all.assert_not_called()
 
 
 def test_create_with_applicator():
@@ -357,7 +357,7 @@ def test_create_with_applicator():
     assert node.style._applicator is applicator
 
     # Assigning a non-None applicator should always apply style.
-    node.style.reapply.assert_called_once()
+    node.style.apply_all.assert_called_once()
 
 
 @pytest.mark.parametrize(
@@ -369,7 +369,7 @@ def test_create_with_applicator():
 )
 def test_assign_applicator(node):
     """A node can be assigned an applicator after creation."""
-    node.style.reapply.reset_mock()
+    node.style.apply_all.reset_mock()
 
     applicator = Mock()
     node.applicator = applicator
@@ -381,7 +381,7 @@ def test_assign_applicator(node):
     assert node.style._applicator is applicator
 
     # Assigning a non-None applicator should always apply style.
-    node.style.reapply.assert_called_once()
+    node.style.apply_all.assert_called_once()
 
 
 @pytest.mark.parametrize(
@@ -393,15 +393,15 @@ def test_assign_applicator(node):
 )
 def test_assign_applicator_none(node):
     """A node can have its applicator set to None."""
-    node.style.reapply.reset_mock()
+    node.style.apply_all.reset_mock()
 
     node.applicator = None
     assert node.applicator is None
 
     # Should be updated on style as well
     assert node.style._applicator is None
-    # Assigning None to applicator does not trigger reapply.
-    node.style.reapply.assert_not_called()
+    # Assigning None to applicator does not trigger application.
+    node.style.apply_all.assert_not_called()
 
 
 def assign_new_applicator():
@@ -431,11 +431,11 @@ def assign_new_applicator_none():
 
 
 def test_assign_style_with_applicator():
-    """Assigning a new style triggers a reapply if an applicator is already present."""
+    """Assigning a new style triggers apply_all if an applicator is already present."""
     style_1 = Style(int_prop=5)
     node = Node(style=style_1, applicator=Mock())
 
-    node.style.reapply.reset_mock()
+    node.style.apply_all.reset_mock()
     style_2 = Style(int_prop=10)
     node.style = style_2
 
@@ -447,15 +447,15 @@ def test_assign_style_with_applicator():
     assert node.style != style_1
 
     # Since an applicator has already been assigned, assigning style applies the style.
-    node.style.reapply.assert_called_once()
+    node.style.apply_all.assert_called_once()
 
 
 def test_assign_style_with_no_applicator():
-    """Assigning new style doesn't trigger a reapply if an applicator isn' present."""
+    """Assigning new style doesn't trigger apply_all if an applicator isn't present."""
     style_1 = Style(int_prop=5)
     node = Node(style=style_1)
 
-    node.style.reapply.reset_mock()
+    node.style.apply_all.reset_mock()
     style_2 = Style(int_prop=10)
     node.style = style_2
 
@@ -467,11 +467,11 @@ def test_assign_style_with_no_applicator():
     assert node.style != style_1
 
     # Since no applicator was present, style should not be applied.
-    node.style.reapply.assert_not_called()
+    node.style.apply_all.assert_not_called()
 
 
 def test_apply_before_node_is_ready():
-    """Triggering a reapply raises a warning if the node is not ready to apply style."""
+    """Triggering apply_all raises a warning if the node is not ready to apply style."""
     style = BrokenStyle()
     applicator = Mock()
 
@@ -489,10 +489,10 @@ def test_apply_before_node_is_ready():
 def test_applicator_has_node_reference():
     """Applicator should have a reference to its node before style is first applied."""
 
-    # We can't just check it after creating the widget, because at that point the
-    # reapply will have already happened. AttributeTestStyle has a reapply() method
-    # that asserts the reference trail of style -> applicator -> node -> style is
-    # already intact at the point that reapply is called.
+    # We can't just check it after creating the widget, because at that point the style
+    # will have already been applied. AttributeTestStyle has an apply_all() method that
+    # asserts the reference trail of style -> applicator -> node -> style is already
+    # intact at the point that apply_all is called.
 
     with catch_warnings():
         filterwarnings("error", category=RuntimeWarning)
