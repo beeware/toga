@@ -1,11 +1,11 @@
+from __future__ import annotations
+
 # flake8: NOQA: F405
 from .constants import *
 
 
 class Color:
-    "A base class for all colorspace representations"
-
-    pass
+    "A base class for all colorspace representations."
 
     def __eq__(self, other):
         try:
@@ -33,9 +33,188 @@ class Color:
     def _validate_alpha(cls, value):
         cls._validate_partial("alpha", value)
 
+    def blend_over(
+        self,
+        back_color: Color,
+    ) -> rgba:
+        """Performs the "over" straight alpha blending operation, compositing
+        the front color over the back color.
+
+        **Straight alpha blending** is not the same as
+        **Premultiplied alpha blending**, see:
+        https://en.wikipedia.org/wiki/Alpha_compositing#Straight_versus_premultiplied
+
+        :param back_color: The background color.
+
+        :returns: The blended color.
+        """
+        # The blending operation implemented here is the "over" operation and
+        # replicates CSS's rgba mechanism. For the formulae used here, see:
+        # https://en.wikipedia.org/wiki/Alpha_compositing#Description
+
+        # Convert the input colors to rgba in order to do the calculation.
+        front_color = self.rgba
+        back_color = back_color.rgba
+
+        if front_color.a == 1:
+            # If the front color is fully opaque then the result will be the same as
+            # front color.
+            return front_color.rgba
+
+        blended_alpha = min(
+            1, max(0, (front_color.a + ((1 - front_color.a) * back_color.a)))
+        )
+
+        if blended_alpha == 0:
+            # Don't further blend the color, to prevent divide by 0.
+            return rgba(0, 0, 0, 0)
+        else:
+            blended_color = rgba(
+                # Red Component
+                min(
+                    255,
+                    max(
+                        0,
+                        round(
+                            (
+                                (front_color.r * front_color.a)
+                                + (back_color.r * back_color.a * (1 - front_color.a))
+                            )
+                            / blended_alpha
+                        ),
+                    ),
+                ),
+                # Green Component
+                min(
+                    255,
+                    max(
+                        0,
+                        round(
+                            (
+                                (front_color.g * front_color.a)
+                                + (back_color.g * back_color.a * (1 - front_color.a))
+                            )
+                            / blended_alpha
+                        ),
+                    ),
+                ),
+                # Blue Component
+                min(
+                    255,
+                    max(
+                        0,
+                        round(
+                            (
+                                (front_color.b * front_color.a)
+                                + (back_color.b * back_color.a * (1 - front_color.a))
+                            )
+                            / blended_alpha
+                        ),
+                    ),
+                ),
+                # Alpha component
+                min(1, max(0, blended_alpha)),
+            )
+            return blended_color
+
+    def unblend_over(self, back_color: Color, front_color_alpha: float) -> rgba:
+        """Performs the reverse of the "over" straight alpha blending operation,
+        returning the front color.
+
+        Note: Unblending of blended colors might produce front color with slightly
+        imprecise component values compared to the original front color. This is
+        due to the loss of some amount of precision during the calculation and
+        conversion process between the different color formats. For example,
+        unblending of a hsla blended color might might produce a slightly imprecise
+        original front color, since the alpha blending and unblending is calculated
+        after conversion to rgba values.
+
+        :param back_color: The background color.
+        :param front_color_alpha: The original alpha value of the front color,
+            within the range of (0, 1].
+
+        :raises ValueError: If the value of :any:`front_color_alpha` is not within
+            the range of (0, 1]. The value cannot be 0, since the blended color produced
+            will be equal to the back color, and all information related to the front
+            color will be lost.
+
+        :returns: The original front color.
+        """
+        # The blending operation implemented here is the reverse of the "over"
+        # operation and replicates CSS's rgba mechanism. The formula used here
+        # are derived from the "over" straight alpha blending operation formula,
+        # see: https://en.wikipedia.org/wiki/Alpha_compositing#Description
+
+        blended_color = self.rgba
+        back_color = back_color.rgba
+        if not (0 < front_color_alpha <= 1):
+            raise ValueError(
+                "The value of front_color_alpha must be within the range of (0, 1]."
+            )
+        else:
+            front_color = rgba(
+                # Red Component
+                min(
+                    255,
+                    max(
+                        0,
+                        round(
+                            (
+                                (blended_color.r * blended_color.a)
+                                - (
+                                    back_color.r
+                                    * back_color.a
+                                    * (1 - front_color_alpha)
+                                )
+                            )
+                            / front_color_alpha
+                        ),
+                    ),
+                ),
+                # Green Component
+                min(
+                    255,
+                    max(
+                        0,
+                        round(
+                            (
+                                (blended_color.g * blended_color.a)
+                                - (
+                                    back_color.g
+                                    * back_color.a
+                                    * (1 - front_color_alpha)
+                                )
+                            )
+                            / front_color_alpha
+                        ),
+                    ),
+                ),
+                # Blue Component
+                min(
+                    255,
+                    max(
+                        0,
+                        round(
+                            (
+                                (blended_color.b * blended_color.a)
+                                - (
+                                    back_color.b
+                                    * back_color.a
+                                    * (1 - front_color_alpha)
+                                )
+                            )
+                            / front_color_alpha
+                        ),
+                    ),
+                ),
+                # Alpha Component
+                front_color_alpha,
+            )
+            return front_color.rgba
+
 
 class rgba(Color):
-    "A representation of an RGBA color"
+    "A representation of an RGBA color."
 
     def __init__(self, r, g, b, a):
         self._validate_rgb("red", r)
@@ -59,7 +238,54 @@ class rgba(Color):
 
     @property
     def rgba(self):
-        return self
+        # Explicitly return a rgba value, to ensure that classes which inherit the
+        # parent rgba class, actually return the rgba() value, instead of the child
+        # class. For example, without this fix, doing rgb(20, 20, 20).rgba will
+        # return rgb(20, 20, 20), instead of rgba(20, 20, 20, 1).
+        return rgba(self.r, self.g, self.b, self.a)
+
+    @property
+    def rgb(self):
+        return rgb(self.r, self.g, self.b)
+
+    @property
+    def hsla(self) -> hsla:
+        # Formula used here is from: https://en.wikipedia.org/wiki/HSL_and_HSV#From_RGB
+        r_prime = self.r / 255
+        g_prime = self.g / 255
+        b_prime = self.b / 255
+
+        max_component = max(r_prime, g_prime, b_prime)
+        min_component = min(r_prime, g_prime, b_prime)
+        value = max_component
+        chroma = max_component - min_component
+
+        lightness = (max_component + min_component) / 2
+
+        if chroma == 0:
+            hue = 0
+        elif value == r_prime:
+            hue = 60 * (((g_prime - b_prime) / chroma) % 6)
+        elif value == g_prime:
+            hue = 60 * (((b_prime - r_prime) / chroma) + 2)
+        else:  # value == b_prime:
+            hue = 60 * (((r_prime - g_prime) / chroma) + 4)
+
+        if lightness in {0, 1}:
+            saturation = 0
+        else:
+            saturation = chroma / (1 - abs((2 * value) - chroma - 1))
+
+        return hsla(
+            hue % 360,  # [0,360)
+            min(1, max(0, saturation)),  # [0,1]
+            min(1, max(0, lightness)),  # [0,1]
+            min(1, max(0, self.a)),  # [0,1]
+        )
+
+    @property
+    def hsl(self):
+        return self.hsla.hsl
 
 
 class rgb(rgba):
@@ -73,7 +299,7 @@ class rgb(rgba):
 
 
 class hsla(Color):
-    "A representation of an HSLA color"
+    "A representation of an HSLA color."
 
     def __init__(self, h, s, l, a=1.0):
         self._validate_between("hue", h, 0, 360)
@@ -90,6 +316,18 @@ class hsla(Color):
 
     def __repr__(self):
         return f"hsla({self.h}, {self.s}, {self.l}, {self.a})"
+
+    @property
+    def hsla(self):
+        # Explicitly return a hsla value, to ensure that classes which inherit the
+        # parent hsla class, actually return the hsla() value, instead of the child
+        # class. For example, without this fix, doing hsl(210, 1, 0.5).hsla will
+        # return hsl(210, 1, 0.5), instead of hsla(210, 1, 0.5, 1).
+        return hsla(self.h, self.s, self.l, self.a)
+
+    @property
+    def hsl(self):
+        return hsl(self.h, self.s, self.l)
 
     @property
     def rgba(self):
@@ -117,6 +355,10 @@ class hsla(Color):
             round(b * 0xFF),
             self.a,
         )
+
+    @property
+    def rgb(self):
+        return self.rgba.rgb
 
 
 class hsl(hsla):
