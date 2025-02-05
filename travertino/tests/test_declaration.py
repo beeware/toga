@@ -149,14 +149,14 @@ def test_reapply(StyleClass):
     style.reapply()
     style.apply.assert_has_calls(
         [
-            call("explicit_const", VALUE2),
-            call("explicit_value", 0),
-            call("explicit_none", None),
-            call("implicit", VALUE3),
-            call("thing_left", 0),
-            call("thing_top", 0),
-            call("thing_right", 0),
-            call("thing_bottom", 0),
+            call("explicit_const"),
+            call("explicit_value"),
+            call("explicit_none"),
+            call("implicit"),
+            call("thing_left"),
+            call("thing_top"),
+            call("thing_right"),
+            call("thing_bottom"),
         ],
         any_order=True,
     )
@@ -174,7 +174,7 @@ def test_property_with_explicit_const(StyleClass):
     style.explicit_const = 10
 
     assert style.explicit_const == 10
-    style.apply.assert_called_once_with("explicit_const", 10)
+    style.apply.assert_called_once_with("explicit_const")
 
     # Clear the applicator mock
     style.apply.reset_mock()
@@ -189,7 +189,7 @@ def test_property_with_explicit_const(StyleClass):
     # A dirty notification is set.
     style.explicit_const = 20
     assert style.explicit_const == 20
-    style.apply.assert_called_once_with("explicit_const", 20)
+    style.apply.assert_called_once_with("explicit_const")
 
     # Clear the applicator mock
     style.apply.reset_mock()
@@ -197,7 +197,7 @@ def test_property_with_explicit_const(StyleClass):
     # Clear the property
     del style.explicit_const
     assert style.explicit_const is VALUE1
-    style.apply.assert_called_once_with("explicit_const", VALUE1)
+    style.apply.assert_called_once_with("explicit_const")
 
     # Clear the applicator mock
     style.apply.reset_mock()
@@ -222,7 +222,7 @@ def test_property_with_explicit_value(StyleClass):
     style.explicit_value = 10
 
     assert style.explicit_value == 10
-    style.apply.assert_called_once_with("explicit_value", 10)
+    style.apply.assert_called_once_with("explicit_value")
 
     # Clear the applicator mock
     style.apply.reset_mock()
@@ -237,7 +237,7 @@ def test_property_with_explicit_value(StyleClass):
     # A dirty notification is set.
     style.explicit_value = 20
     assert style.explicit_value == 20
-    style.apply.assert_called_once_with("explicit_value", 20)
+    style.apply.assert_called_once_with("explicit_value")
 
     # Clear the applicator mock
     style.apply.reset_mock()
@@ -245,7 +245,7 @@ def test_property_with_explicit_value(StyleClass):
     # Clear the property
     del style.explicit_value
     assert style.explicit_value == 0
-    style.apply.assert_called_once_with("explicit_value", 0)
+    style.apply.assert_called_once_with("explicit_value")
 
 
 @pytest.mark.parametrize("StyleClass", [Style, DeprecatedStyle])
@@ -260,7 +260,7 @@ def test_property_with_explicit_none(StyleClass):
     style.explicit_none = 10
 
     assert style.explicit_none == 10
-    style.apply.assert_called_once_with("explicit_none", 10)
+    style.apply.assert_called_once_with("explicit_none")
 
     # Clear the applicator mock
     style.apply.reset_mock()
@@ -275,7 +275,7 @@ def test_property_with_explicit_none(StyleClass):
     # A dirty notification is set.
     style.explicit_none = 20
     assert style.explicit_none == 20
-    style.apply.assert_called_once_with("explicit_none", 20)
+    style.apply.assert_called_once_with("explicit_none")
 
     # Clear the applicator mock
     style.apply.reset_mock()
@@ -283,7 +283,7 @@ def test_property_with_explicit_none(StyleClass):
     # Clear the property
     del style.explicit_none
     assert style.explicit_none is None
-    style.apply.assert_called_once_with("explicit_none", None)
+    style.apply.assert_called_once_with("explicit_none")
 
 
 @pytest.mark.parametrize("StyleClass", [Style, DeprecatedStyle])
@@ -298,7 +298,7 @@ def test_property_with_implicit_default(StyleClass):
     style.implicit = 10
 
     assert style.implicit == 10
-    style.apply.assert_called_once_with("implicit", 10)
+    style.apply.assert_called_once_with("implicit")
 
     # Clear the applicator mock
     style.apply.reset_mock()
@@ -313,7 +313,7 @@ def test_property_with_implicit_default(StyleClass):
     # A dirty notification is set.
     style.implicit = 20
     assert style.implicit == 20
-    style.apply.assert_called_once_with("implicit", 20)
+    style.apply.assert_called_once_with("implicit")
 
     # Clear the applicator mock
     style.apply.reset_mock()
@@ -321,7 +321,7 @@ def test_property_with_implicit_default(StyleClass):
     # Clear the property
     del style.implicit
     assert style.implicit is None
-    style.apply.assert_called_once_with("implicit", None)
+    style.apply.assert_called_once_with("implicit")
 
 
 @pytest.mark.parametrize("StyleClass", [Style, DeprecatedStyle])
@@ -355,7 +355,7 @@ def test_directional_property(StyleClass):
     assert style.thing_right == 0
     assert style.thing_bottom == 0
     assert style.thing_left == 0
-    style.apply.assert_called_once_with("thing_top", 10)
+    style.apply.assert_called_once_with("thing_top")
 
     # Clear the applicator mock
     style.apply.reset_mock()
@@ -370,9 +370,9 @@ def test_directional_property(StyleClass):
     assert style.thing_left == 10
     style.apply.assert_has_calls(
         [
-            call("thing_right", 10),
-            call("thing_bottom", 10),
-            call("thing_left", 10),
+            call("thing_right"),
+            call("thing_bottom"),
+            call("thing_left"),
         ]
     )
 
@@ -389,10 +389,10 @@ def test_directional_property(StyleClass):
     assert style.thing_left == 30
     style.apply.assert_has_calls(
         [
-            call("thing_top", 30),
-            call("thing_right", 30),
-            call("thing_bottom", 30),
-            call("thing_left", 30),
+            call("thing_top"),
+            call("thing_right"),
+            call("thing_bottom"),
+            call("thing_left"),
         ]
     )
 
@@ -409,10 +409,10 @@ def test_directional_property(StyleClass):
     assert style.thing_left == 20
     style.apply.assert_has_calls(
         [
-            call("thing_top", 10),
-            call("thing_right", 20),
-            call("thing_bottom", 10),
-            call("thing_left", 20),
+            call("thing_top"),
+            call("thing_right"),
+            call("thing_bottom"),
+            call("thing_left"),
         ]
     )
 
@@ -427,7 +427,7 @@ def test_directional_property(StyleClass):
     assert style.thing_right == 20
     assert style.thing_bottom == 30
     assert style.thing_left == 20
-    style.apply.assert_called_once_with("thing_bottom", 30)
+    style.apply.assert_called_once_with("thing_bottom")
 
     # Clear the applicator mock
     style.apply.reset_mock()
@@ -440,7 +440,7 @@ def test_directional_property(StyleClass):
     assert style.thing_right == 20
     assert style.thing_bottom == 30
     assert style.thing_left == 40
-    style.apply.assert_called_once_with("thing_left", 40)
+    style.apply.assert_called_once_with("thing_left")
 
     # Set a value directly with an invalid number of values
     with pytest.raises(ValueError):
@@ -460,7 +460,7 @@ def test_directional_property(StyleClass):
     assert style.thing_right == 20
     assert style.thing_bottom == 30
     assert style.thing_left == 40
-    style.apply.assert_called_once_with("thing_top", 0)
+    style.apply.assert_called_once_with("thing_top")
 
     # Restore the top thing
     style.thing_top = 10
@@ -478,9 +478,9 @@ def test_directional_property(StyleClass):
     assert style.thing_left == 0
     style.apply.assert_has_calls(
         [
-            call("thing_right", 0),
-            call("thing_bottom", 0),
-            call("thing_left", 0),
+            call("thing_right"),
+            call("thing_bottom"),
+            call("thing_left"),
         ]
     )
 
@@ -628,8 +628,8 @@ def test_set_multiple_properties(StyleClass):
     assert style.explicit_value == 20
     style.apply.assert_has_calls(
         [
-            call("explicit_value", 20),
-            call("explicit_none", 10),
+            call("explicit_value"),
+            call("explicit_none"),
         ],
         any_order=True,
     )
@@ -642,8 +642,8 @@ def test_set_multiple_properties(StyleClass):
     assert style.explicit_none == 10
     style.apply.assert_has_calls(
         [
-            call("explicit_const", VALUE2),
-            call("explicit_value", 30),
+            call("explicit_const"),
+            call("explicit_value"),
         ],
         any_order=True,
     )

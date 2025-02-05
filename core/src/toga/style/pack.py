@@ -259,23 +259,26 @@ class Pack(BaseStyle):
     # End backwards compatibility
     ######################################################################
 
-    def apply(self, prop: str, value: object) -> None:
+    def apply(self, name: str) -> None:
         if self._applicator:
-            if prop == "text_align":
-                if value is None:
+            if name == "text_align":
+                if (value := self.text_align) is None:
                     if self.text_direction == RTL:
                         value = RIGHT
                     else:
                         value = LEFT
                 self._applicator.set_text_align(value)
-            elif prop == "text_direction":
+            elif name == "text_direction":
                 if self.text_align is None:
-                    self._applicator.set_text_align(RIGHT if value == RTL else LEFT)
-            elif prop == "color":
-                self._applicator.set_color(value)
-            elif prop == "background_color":
-                self._applicator.set_background_color(value)
-            elif prop == "visibility":
+                    self._applicator.set_text_align(
+                        RIGHT if self.text_direction == RTL else LEFT
+                    )
+            elif name == "color":
+                self._applicator.set_color(self.color)
+            elif name == "background_color":
+                self._applicator.set_background_color(self.background_color)
+            elif name == "visibility":
+                value = self.visibility
                 if value == VISIBLE:
                     # If visibility is being set to VISIBLE, look up the chain to see if
                     # an ancestor is hidden.
@@ -286,7 +289,7 @@ class Pack(BaseStyle):
                             break
 
                 self._applicator.set_hidden(value == HIDDEN)
-            elif prop in (
+            elif name in (
                 "font_family",
                 "font_size",
                 "font_style",
