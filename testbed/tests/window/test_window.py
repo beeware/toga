@@ -741,13 +741,17 @@ else:
         second_window.toolbar.add(app.cmd1)
         second_window.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
         second_window.show()
-        second_window.on_show = Mock()
-        second_window.on_hide = Mock()
         # Wait for window animation before assertion.
         await second_window_probe.wait_for_window("Secondary window is visible")
         assert second_window_probe.instantaneous_state == WindowState.NORMAL
-
+        # Set up event mocks after the test window has been initialized.
+        # This prevents unnecessary mock triggers during setup, which could
+        # lead to false assertion errors later by incorrectly indicating that
+        # the event was triggered.
+        second_window.on_show = Mock()
+        second_window.on_hide = Mock()
         second_window.on_resize = Mock()
+
         # Set to initial state
         second_window.state = initial_state
         # Wait for window animation before assertion.
