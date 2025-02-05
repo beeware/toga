@@ -743,11 +743,11 @@ else:
         second_window.show()
         second_window.on_show = Mock()
         second_window.on_hide = Mock()
-        second_window.on_resize = Mock()
         # Wait for window animation before assertion.
         await second_window_probe.wait_for_window("Secondary window is visible")
         assert second_window_probe.instantaneous_state == WindowState.NORMAL
 
+        second_window.on_resize = Mock()
         # Set to initial state
         second_window.state = initial_state
         # Wait for window animation before assertion.
