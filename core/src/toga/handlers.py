@@ -48,7 +48,7 @@ async def long_running_task(
     ######################################################################
     warnings.warn(
         "Use of generators for async handlers has been deprecated; convert "
-        "the handler to an async co-routine that uses `asycio.sleep()`.",
+        "the handler to an async co-routine that uses `asyncio.sleep()`.",
         DeprecationWarning,
     )
     try:
