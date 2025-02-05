@@ -26,6 +26,7 @@ class Window:
         js.document.addEventListener(
             "visibilitychange", self.window_on_visibility_change
         )
+        js.document.addEventListener("resize", self.window_on_resize)
 
         self.set_title(title)
 
@@ -51,6 +52,9 @@ class Window:
                 self.interface.on_show()
             else:
                 self.interface.on_hide()
+
+    def window_on_resize(self, sender, event):
+        self.interface.on_resize()
 
     ######################################################################
     # Window properties
