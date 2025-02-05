@@ -1,4 +1,4 @@
-from unittest.mock import call
+from unittest.mock import Mock, call
 
 import pytest
 
@@ -128,3 +128,12 @@ def test_apply_deprecated_signature():
     style = Pack()
     with pytest.warns(DeprecationWarning):
         style.apply("direction", ROW)
+
+
+def test_reapply_deprecated_name():
+    """Callying reapply instead of apply_all raises a DeprecationWarning."""
+    style = Pack()
+    style.apply_all = Mock()
+    with pytest.warns(DeprecationWarning):
+        style.reapply()
+    style.apply_all.assert_called_once()

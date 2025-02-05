@@ -258,6 +258,18 @@ class Pack(BaseStyle):
         super().__delitem__(self._update_property_name(name.replace("-", "_")))
 
     ######################################################################
+    # 2025-02: Backwards compatibility for Toga <= 0.4.8
+    ######################################################################
+
+    def reapply(self):
+        warnings.warn(
+            ("Pack.reapply() is deprecated; use Pack.apply_all() instead."),
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        self.apply_all()
+
+    ######################################################################
     # End backwards compatibility
     ######################################################################
 
