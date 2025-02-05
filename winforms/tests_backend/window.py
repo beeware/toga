@@ -29,6 +29,7 @@ class WindowProbe(BaseProbe, DialogsMixin):
     supports_placement = True
     supports_as_image = True
     supports_focus = True
+    supports_resize_detection = True
 
     def __init__(self, app, window):
         self.app = app

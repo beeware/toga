@@ -80,3 +80,19 @@ def assert_window_on_hide(window, trigger_expected=True):
 
     on_show_handler.reset_mock()
     on_hide_handler.reset_mock()
+
+
+def assert_window_on_resize(window, trigger_expected=True):
+    on_resize_handler = window.on_resize._raw
+    if trigger_expected:
+        # on_resize() event may be triggered multiple times, depending
+        # upon the backend. For example: for a state change between:
+        # FULLSCREEN -> MAXIMIZED, the actual window transition would
+        # be: FULLSCREEN -> NORMAL -> MAXIMIZED. Therefore, on_resize()
+        # would be triggered multiple times. Hence, just assert that the
+        # on_resize() event has been called.
+        on_resize_handler.assert_called_with(window)
+    else:
+        on_resize_handler.assert_not_called()
+
+    on_resize_handler.reset_mock()

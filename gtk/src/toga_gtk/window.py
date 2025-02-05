@@ -47,10 +47,8 @@ class Window:
             self.native.connect("notify::fullscreened", self.gtk_window_state_event)
             self.native.connect("notify::maximized", self.gtk_window_state_event)
             self.native.connect("notify::minimized", self.gtk_window_state_event)
-            # notify::default-width and notify::default-height do not fire
+            # notify::default-width and notify::default-height are not triggered
             # when the window is resized.
-            self.native.connect("notify::width", self.gtk_configure_event)
-            self.native.connect("notify::height", self.gtk_configure_event)
 
         self._window_state_flags = None
         self._in_presentation = False
@@ -92,7 +90,7 @@ class Window:
     ######################################################################
     # Native event handlers
     ######################################################################
-    def gtk_configure_event(self, widget, data):
+    def gtk_configure_event(self, widget, data):  # pragma: no-cover-if-gtk4
         self.interface.on_resize()
 
     def gtk_show(self, widget):

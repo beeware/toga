@@ -161,6 +161,19 @@ class OnHideHandler(Protocol):
 class OnResizeHandler(Protocol):
     def __call__(self, window: Window, **kwargs: Any) -> None:
         """A handler to invoke when a window resizes.
+
+        This event is also triggered when the window state changes between
+        :any:`WindowState.NORMAL` and any of the following states:
+        :any:`WindowState.MAXIMIZED`, :any:`WindowState.FULLSCREEN`,
+        or :any:`WindowState.PRESENTATION`.
+
+        However, it is *not* triggered when changing between
+        :any:`WindowState.NORMAL` and :any:`WindowState.MINIMIZED`,
+        as this does not resize the window.
+
+        On mobile platforms, it is also triggered when the orientation of the
+        device is changed.
+
         :param window: The window instance that resizes.
         :param kwargs: Ensures compatibility with additional arguments introduced in
             future ver
