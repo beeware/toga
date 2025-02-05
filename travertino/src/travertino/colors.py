@@ -36,7 +36,6 @@ class Color:
     def blend_over(
         self,
         back_color: Color,
-        round_to_nearest_int: bool = True,
     ) -> rgba:
         """Performs the "over" straight alpha blending operation, compositing
         the front color over the back color.
@@ -130,8 +129,6 @@ class Color:
         original front color, since the alpha blending and unblending is calculated
         after conversion to rgba values.
 
-        :param blended_color: The blended color resultant from the alpha blending
-            "over" operation, in the form of :any:`rgba()`.
         :param back_color: The background color.
         :param front_color_alpha: The original alpha value of the front color,
             within the range of (0, 1].
