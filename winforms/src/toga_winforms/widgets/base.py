@@ -10,7 +10,6 @@ from travertino.size import at_least
 
 from toga.colors import TRANSPARENT, rgba
 from toga_winforms.colors import (
-    alpha_blending_over_operation,
     native_color,
     toga_color,
 )
@@ -177,7 +176,7 @@ class Widget(Scalable, ABC):
         else:
             requested_color = color.rgba
 
-        blended_color = alpha_blending_over_operation(requested_color, parent_color)
+        blended_color = requested_color.blend_over(parent_color)
         self.native.BackColor = native_color(blended_color)
 
         for child in self.interface.children:

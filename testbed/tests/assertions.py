@@ -1,6 +1,6 @@
 from pytest import approx
 
-from toga.colors import TRANSPARENT, rgba
+from toga.colors import TRANSPARENT
 
 NOT_PROVIDED = object()
 
@@ -30,41 +30,6 @@ def assert_color(actual, expected):
             )
 
 
-def reverse_alpha_blending_over(blended_color, back_color, original_alpha):
-    # This is the reverse of the "over" operation and has
-    # been derived from the "over" operation formula, see:
-    # https://en.wikipedia.org/wiki/Alpha_compositing#Description
-
-    if original_alpha == 0:
-        return back_color
-    else:
-        front_color = rgba(
-            round(
-                (
-                    (blended_color.r * blended_color.a)
-                    - (back_color.r * back_color.a * (1 - original_alpha))
-                )
-                / original_alpha
-            ),
-            round(
-                (
-                    (blended_color.g * blended_color.a)
-                    - (back_color.g * back_color.a * (1 - original_alpha))
-                )
-                / original_alpha
-            ),
-            round(
-                (
-                    (blended_color.b * blended_color.a)
-                    - (back_color.b * back_color.a * (1 - original_alpha))
-                )
-                / original_alpha
-            ),
-            original_alpha,
-        )
-        return front_color
-
-
 def assert_background_color(actual, expected):
     # For platforms where alpha blending is manually implemented, the
     # probe.background_color property returns a tuple consisting of:
@@ -73,14 +38,24 @@ def assert_background_color(actual, expected):
     #   - The widget's original alpha value - Required for deblending
     if isinstance(actual, tuple):
         actual_widget_bg, actual_parent_bg, actual_widget_bg_alpha = actual
-        deblended_actual_widget_bg = reverse_alpha_blending_over(
-            actual_widget_bg, actual_parent_bg, actual_widget_bg_alpha
-        )
+        if actual_widget_bg_alpha == 0:
+            # Since a color having an alpha value of 0 cannot be deblended.
+            # So, the deblended widget color would be equal to the parent color.
+            deblended_actual_widget_bg = actual_parent_bg
+        else:
+            deblended_actual_widget_bg = actual_widget_bg.unblend_over(
+                actual_parent_bg, actual_widget_bg_alpha
+            )
         if isinstance(expected, tuple):
             expected_widget_bg, expected_parent_bg, expected_widget_bg_alpha = expected
-            deblended_expected_widget_bg = reverse_alpha_blending_over(
-                expected_widget_bg, expected_parent_bg, expected_widget_bg_alpha
-            )
+            if expected_widget_bg_alpha == 0:
+                # Since a color having an alpha value of 0 cannot be deblended.
+                # So, the deblended widget color would be equal to the parent color.
+                deblended_expected_widget_bg = expected_parent_bg
+            else:
+                deblended_expected_widget_bg = expected_widget_bg.unblend_over(
+                    expected_parent_bg, expected_widget_bg_alpha
+                )
             assert_color(deblended_actual_widget_bg, deblended_expected_widget_bg)
         # For comparison when expected is a single value object
         else:
