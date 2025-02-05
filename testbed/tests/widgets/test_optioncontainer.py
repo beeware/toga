@@ -6,7 +6,7 @@ import toga
 from toga.colors import CORNFLOWERBLUE, GOLDENROD, REBECCAPURPLE, SEAGREEN
 from toga.style.pack import Pack
 
-from .conftest import build_cleanup_test
+from .conftest import build_cleanup_test, safe_create
 from .probe import get_probe
 from .properties import (  # noqa: F401
     test_enable_noop,
@@ -61,15 +61,20 @@ async def on_select_handler():
 
 @pytest.fixture
 async def widget(content1, content2, content3, on_select_handler):
-    return toga.OptionContainer(
-        content=[
-            ("Tab 1", content1, "resources/tab-icon-1"),
-            toga.OptionItem("Tab 2", content2, icon=toga.Icon("resources/tab-icon-2")),
-            ("Tab 3", content3),
-        ],
-        style=Pack(flex=1),
-        on_select=on_select_handler,
-    )
+    with safe_create():
+        return toga.OptionContainer(
+            content=[
+                ("Tab 1", content1, "resources/tab-icon-1"),
+                toga.OptionItem(
+                    "Tab 2",
+                    content2,
+                    icon=toga.Icon("resources/tab-icon-2"),
+                ),
+                ("Tab 3", content3),
+            ],
+            style=Pack(flex=1),
+            on_select=on_select_handler,
+        )
 
 
 test_cleanup = build_cleanup_test(

@@ -31,6 +31,18 @@ class ImmutableList:
     def __repr__(self):
         return repr(self._data)
 
+    def __reversed__(self):
+        return reversed(self._data)
+
+    def index(self, value):
+        return self._data.index(value)
+
+    def count(self, value):
+        return self._data.count(value)
+
+
+Sequence.register(ImmutableList)
+
 
 class Choices:
     "A class to define allowable data types for a property"
@@ -38,20 +50,11 @@ class Choices:
     def __init__(
         self,
         *constants,
-        default=None,  # DEPRECATED
         string=False,
         integer=False,
         number=False,
         color=False,
     ):
-        if default is not None:
-            warn(
-                "The `default` argument to Choices.__init__ is deprecated. "
-                "Providing no initial value to a property using it is sufficient.",
-                DeprecationWarning,
-                stacklevel=2,
-            )
-
         self.constants = set(constants)
 
         self.string = string
@@ -101,26 +104,29 @@ class Choices:
 
 
 class validated_property:
-    def __init__(self, choices, initial=None):
+    def __init__(
+        self,
+        *constants,
+        string=False,
+        integer=False,
+        number=False,
+        color=False,
+        initial=None,
+    ):
         """Define a simple validated property attribute.
 
-        :param choices: The available choices.
-        :param initial: The initial value for the property.
+        :param constants: Explicitly allowable values.
+        :param string: Are strings allowed as values?
+        :param integer: Are integers allowed as values?
+        :param number: Are numbers allowed as values?
+        :param color: Are colors allowed as values?
+        :param initial: The initial value for the property. If the property has not been
+            explicitly set, this is what is returned when it's accessed.
         """
-        self.choices = choices
-        self.initial = None
-
-        try:
-            # If an initial value has been provided, it must be consistent with
-            # the choices specified.
-            if initial is not None:
-                self.initial = self.validate(initial)
-        except ValueError:
-            # Unfortunately, __set_name__ hasn't been called yet, so we don't know the
-            # property's name.
-            raise ValueError(
-                f"Invalid initial value {initial!r}. Available choices: {choices}"
-            )
+        self.choices = Choices(
+            *constants, string=string, integer=integer, number=number, color=color
+        )
+        self.initial = None if initial is None else self.validate(initial)
 
     def __set_name__(self, owner, name):
         self.name = name
@@ -148,7 +154,15 @@ class validated_property:
 
         value = self.validate(value)
 
-        if value != getattr(obj, f"_{self.name}", self.initial):
+        if (current := getattr(obj, f"_{self.name}", None)) is None:
+            # If the value has not been explicitly set already, then we always want to
+            # assign to the attribute -- even if the value being assigned is identical
+            # to the initial value.
+            setattr(obj, f"_{self.name}", value)
+            if value != self.initial:
+                obj.apply(self.name, value)
+
+        elif value != current:
             setattr(obj, f"_{self.name}", value)
             obj.apply(self.name, value)
 
@@ -161,8 +175,8 @@ class validated_property:
             obj.apply(self.name, self.initial)
 
     @property
-    def _name_if_set(self, default=""):
-        return f" {self.name}" if hasattr(self, "name") else default
+    def _name_if_set(self):
+        return f" {self.name}" if hasattr(self, "name") else ""
 
     def validate(self, value):
         try:
@@ -225,20 +239,19 @@ class directional_property:
         :param name_format: The format from which to generate subproperties. "{}" will
             be replaced with "_top", etc.
         """
-        self.name_format = name_format
+        self.property_names = [
+            name_format.format(f"_{direction}") for direction in self.DIRECTIONS
+        ]
 
     def __set_name__(self, owner, name):
         self.name = name
         owner._BASE_ALL_PROPERTIES[owner].add(self.name)
 
-    def format(self, direction):
-        return self.name_format.format(f"_{direction}")
-
     def __get__(self, obj, objtype=None):
         if obj is None:
             return self
 
-        return tuple(obj[self.format(direction)] for direction in self.DIRECTIONS)
+        return tuple(obj[name] for name in self.property_names)
 
     def __set__(self, obj, value):
         if value is self:
@@ -250,8 +263,8 @@ class directional_property:
             value = (value,)
 
         if order := self.ASSIGNMENT_SCHEMES.get(len(value)):
-            for direction, index in zip(self.DIRECTIONS, order):
-                obj[self.format(direction)] = value[index]
+            for name, index in zip(self.property_names, order):
+                obj[name] = value[index]
         else:
             raise ValueError(
                 f"Invalid value for '{self.name}'; value must be a number, or a 1-4 "
@@ -259,13 +272,11 @@ class directional_property:
             )
 
     def __delete__(self, obj):
-        for direction in self.DIRECTIONS:
-            del obj[self.format(direction)]
+        for name in self.property_names:
+            del obj[name]
 
     def is_set_on(self, obj):
-        return any(
-            hasattr(obj, self.format(direction)) for direction in self.DIRECTIONS
-        )
+        return any(hasattr(obj, name) for name in self.property_names)
 
 
 class BaseStyle:
@@ -292,8 +303,8 @@ class BaseStyle:
 
     # Fallback in case subclass isn't decorated as subclass (probably from using
     # previous API) or for pre-3.10, before kw_only argument existed.
-    def __init__(self, **style):
-        self.update(**style)
+    def __init__(self, **properties):
+        self.update(**properties)
 
     @property
     def _applicator(self):
@@ -319,6 +330,34 @@ class BaseStyle:
                     stacklevel=2,
                 )
 
+    def reapply(self):
+        for name in self._PROPERTIES:
+            self.apply(name, self[name])
+
+    def copy(self, applicator=None):
+        """Create a duplicate of this style declaration."""
+        dup = self.__class__()
+        dup.update(**self)
+
+        ######################################################################
+        # 10-2024: Backwards compatibility for Toga <= 0.4.8
+        ######################################################################
+
+        if applicator is not None:
+            warn(
+                "Providing an applicator to BaseStyle.copy() is deprecated. Set "
+                "applicator afterward on the returned copy.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+            dup._applicator = applicator
+
+        ######################################################################
+        # End backwards compatibility
+        ######################################################################
+
+        return dup
+
     ######################################################################
     # Interface that style declarations must define
     ######################################################################
@@ -337,34 +376,14 @@ class BaseStyle:
     # Provide a dict-like interface
     ######################################################################
 
-    def reapply(self):
-        for name in self._PROPERTIES:
-            self.apply(name, self[name])
-
-    def update(self, **styles):
-        "Set multiple styles on the style definition."
-        for name, value in styles.items():
+    def update(self, **properties):
+        """Set multiple styles on the style definition."""
+        for name, value in properties.items():
             name = name.replace("-", "_")
             if name not in self._ALL_PROPERTIES:
                 raise NameError(f"Unknown style '{name}'")
 
             self[name] = value
-
-    def copy(self, applicator=None):
-        "Create a duplicate of this style declaration."
-        dup = self.__class__()
-        dup.update(**self)
-
-        if applicator is not None:
-            warn(
-                "Providing an applicator to BaseStyle.copy() is deprecated. Set "
-                "applicator afterward on the returned copy.",
-                DeprecationWarning,
-                stacklevel=2,
-            )
-            dup._applicator = applicator
-
-        return dup
 
     def __getitem__(self, name):
         name = name.replace("-", "_")
@@ -387,13 +406,13 @@ class BaseStyle:
             raise KeyError(name)
 
     def keys(self):
-        return {name for name in self._PROPERTIES if name in self}
+        return {name for name in self}
 
     def items(self):
-        return [(name, self[name]) for name in self._PROPERTIES if name in self]
+        return [(name, self[name]) for name in self]
 
     def __len__(self):
-        return sum(1 for name in self._PROPERTIES if name in self)
+        return sum(1 for _ in self)
 
     def __contains__(self, name):
         return name in self._ALL_PROPERTIES and (
@@ -427,6 +446,7 @@ class BaseStyle:
     ######################################################################
     # Get the rendered form of the style declaration
     ######################################################################
+
     def __str__(self):
         return "; ".join(
             f"{name.replace('_', '-')}: {value}" for name, value in sorted(self.items())
@@ -444,7 +464,14 @@ class BaseStyle:
             DeprecationWarning,
             stacklevel=2,
         )
-        prop = validated_property(choices, initial)
+        prop = validated_property(
+            *choices.constants,
+            string=choices.string,
+            integer=choices.integer,
+            number=choices.number,
+            color=choices.color,
+            initial=initial,
+        )
         setattr(cls, name, prop)
         prop.__set_name__(cls, name)
 

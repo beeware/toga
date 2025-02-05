@@ -10,9 +10,9 @@ from types import ModuleType
 
 # Emulate the Python 3.10+ entry_points API on older Python versions.
 def entry_points(*, group):
-    if sys.version_info < (3, 10):
+    if sys.version_info < (3, 10):  # pragma: no-cover-if-gte-py310
         return metadata.entry_points()[group]
-    else:
+    else:  # pragma: no-cover-if-lt-py310
         return metadata.entry_points(group=group)
 
 

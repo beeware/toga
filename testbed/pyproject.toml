@@ -9,10 +9,10 @@ test = [
     # fonttools is only needed by Android, but we need to use
     # sys.platform == 'linux' as there's no dependency identifier
     # that can target Android exclusively until 3.13 lands.
-    "fonttools==4.55.5 ; sys.platform == 'linux'",
+    "fonttools==4.55.8 ; sys.platform == 'linux'",
     "pillow==11.0.0",
     "pytest==8.3.4",
-    "pytest-asyncio==0.25.2",
+    "pytest-asyncio==0.25.3",
 ]
 
 [tool.briefcase]
@@ -36,6 +36,16 @@ test_sources = [
 requires = [
     "../core",
     "../travertino",
+]
+
+# Some CI configurations (e.g., Textual) manually override `requires` to specify
+# installation via the wheels built as part of the CI run. Adding `--find-links` allows
+# those wheels to be found. However, in most CI builds, these wheels will be .devX
+# wheels, so we need to add `--pre` to ensure they are found as solutions to pip's
+# solver.
+requirement_installer_args=[
+    "--pre",
+    "--find-links", "../dist",
 ]
 
 permission.camera = "The testbed needs to exercise Camera APIs"

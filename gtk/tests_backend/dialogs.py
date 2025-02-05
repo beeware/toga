@@ -3,7 +3,9 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from unittest.mock import Mock
 
-from toga_gtk.libs import Gtk
+import pytest
+
+from toga_gtk.libs import GTK_VERSION, Gtk
 
 
 class DialogsMixin:
@@ -25,6 +27,9 @@ class DialogsMixin:
     def _setup_dialog_result(
         self, dialog, gtk_result, close_handler=None, pre_close_test_method=None
     ):
+        if GTK_VERSION >= (4, 0, 0):
+            pytest.xfail("Setting up Dialogs not yet supported on GTK4")
+
         # Install an overridden show method that invokes the original,
         # but then closes the open dialog.
         orig_show = dialog._impl.show
@@ -191,4 +196,6 @@ class DialogsMixin:
             )
 
     def is_modal_dialog(self, dialog):
+        if GTK_VERSION >= (4, 0, 0):
+            pytest.xfail("Getting the modal of a dialog is not yet supported on GTK4")
         return dialog._impl.native.get_modal()

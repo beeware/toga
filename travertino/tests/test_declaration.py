@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Sequence
 from unittest.mock import call
 from warnings import catch_warnings, filterwarnings
 
@@ -19,35 +20,38 @@ from .utils import mock_attr, prep_style_class
 VALUE1 = "value1"
 VALUE2 = "value2"
 VALUE3 = "value3"
-VALUE_CHOICES = Choices(VALUE1, VALUE2, VALUE3, None, integer=True)
-DEFAULT_VALUE_CHOICES = Choices(VALUE1, VALUE2, VALUE3, integer=True)
+VALUES = [VALUE1, VALUE2, VALUE3, None]
 
 
 @prep_style_class
 class Style(BaseStyle):
     # Some properties with explicit initial values
     explicit_const: str | int = validated_property(
-        choices=VALUE_CHOICES, initial=VALUE1
+        *VALUES, integer=True, initial=VALUE1
     )
-    explicit_value: str | int = validated_property(choices=VALUE_CHOICES, initial=0)
+    explicit_value: str | int = validated_property(*VALUES, integer=True, initial=0)
     explicit_none: str | int | None = validated_property(
-        choices=VALUE_CHOICES, initial=None
+        *VALUES, integer=True, initial=None
     )
 
     # A property with an implicit default value.
     # This usually means the default is platform specific.
-    implicit: str | int | None = validated_property(choices=DEFAULT_VALUE_CHOICES)
+    implicit: str | int | None = validated_property(
+        VALUE1, VALUE2, VALUE3, integer=True
+    )
 
     # A set of directional properties
     thing: tuple[str | int] | str | int = directional_property("thing{}")
-    thing_top: str | int = validated_property(choices=VALUE_CHOICES, initial=0)
-    thing_right: str | int = validated_property(choices=VALUE_CHOICES, initial=0)
-    thing_bottom: str | int = validated_property(choices=VALUE_CHOICES, initial=0)
-    thing_left: str | int = validated_property(choices=VALUE_CHOICES, initial=0)
+    thing_top: str | int = validated_property(*VALUES, integer=True, initial=0)
+    thing_right: str | int = validated_property(*VALUES, integer=True, initial=0)
+    thing_bottom: str | int = validated_property(*VALUES, integer=True, initial=0)
+    thing_left: str | int = validated_property(*VALUES, integer=True, initial=0)
 
     # Doesn't need to be tested in deprecated API:
-    list_prop: list[str] = list_property(choices=VALUE_CHOICES, initial=(VALUE2,))
+    list_prop: list[str] = list_property(*VALUES, integer=True, initial=(VALUE2,))
 
+
+VALUE_CHOICES = Choices(*VALUES, integer=True)
 
 with catch_warnings():
     filterwarnings("ignore", category=DeprecationWarning)
@@ -69,7 +73,9 @@ with catch_warnings():
 
     # A property with an implicit default value.
     # This usually means the default is platform specific.
-    DeprecatedStyle.validated_property("implicit", choices=DEFAULT_VALUE_CHOICES)
+    DeprecatedStyle.validated_property(
+        "implicit", choices=Choices(VALUE1, VALUE2, VALUE3, integer=True)
+    )
 
     # A set of directional properties
     DeprecatedStyle.validated_property("thing_top", choices=VALUE_CHOICES, initial=0)
@@ -100,11 +106,11 @@ class MockedReapplyStyle(BaseStyle):
 def test_invalid_style():
     with pytest.raises(ValueError):
         # Define an invalid initial value on a validated property
-        validated_property(choices=VALUE_CHOICES, initial="something")
+        validated_property(*VALUES, integer=True, initial="something")
 
     with pytest.raises(ValueError):
         # Same for list property
-        list_property(choices=VALUE_CHOICES, initial=["something"])
+        list_property(*VALUES, integer=True, initial=["something"])
 
 
 @pytest.mark.parametrize("StyleClass", [Style, DeprecatedStyle])
@@ -592,6 +598,7 @@ def test_list_property_list_like():
     assert isinstance(prop, ImmutableList)
     assert prop == [1, 2, 3, VALUE2]
     assert prop == ImmutableList([1, 2, 3, VALUE2])
+    assert prop[2] == 3
     assert str(prop) == repr(prop) == "[1, 2, 3, 'value2']"
     assert len(prop) == 4
 
@@ -599,6 +606,14 @@ def test_list_property_list_like():
     for _ in prop:
         count += 1
     assert count == 4
+
+    assert [*reversed(prop)] == [VALUE2, 3, 2, 1]
+
+    assert prop.index(3) == 2
+
+    assert prop.count(VALUE2) == 1
+
+    assert isinstance(prop, Sequence)
 
 
 @pytest.mark.parametrize("StyleClass", [Style, DeprecatedStyle])
@@ -696,6 +711,11 @@ def test_dict(StyleClass):
         ]
     )
 
+    # Style object has a length and is iterable.
+    assert len(style) == 6
+    for name in style:
+        assert name in expected_keys
+
     # Properties that are set are in the keys.
     for name in expected_keys:
         assert name in style
@@ -741,6 +761,33 @@ def test_dict(StyleClass):
 
     with pytest.raises(KeyError):
         del style["no-such-property"]
+
+
+@pytest.mark.parametrize("StyleClass", [Style, DeprecatedStyle])
+def test_set_to_initial(StyleClass):
+    """A property set to its initial value is distinct from an unset property."""
+    style = StyleClass()
+
+    # explicit_const's initial value is VALUE1.
+    assert style.explicit_const == VALUE1
+    assert "explicit_const" not in style
+
+    # The unset property shouldn't affect the value when overlaid over a style with
+    # that property set.
+    non_initial_style = StyleClass(explicit_const=VALUE2)
+    union = non_initial_style | style
+    assert union.explicit_const == VALUE2
+    assert "explicit_const" in union
+
+    # The property should count as set, even when set to the same initial value.
+    style.explicit_const = VALUE1
+    assert style.explicit_const == VALUE1
+    assert "explicit_const" in style
+
+    # The property should now overwrite.
+    union = non_initial_style | style
+    assert union.explicit_const == VALUE1
+    assert "explicit_const" in union
 
 
 @pytest.mark.parametrize("StyleClass", [Style, DeprecatedStyle])
@@ -831,7 +878,9 @@ def test_deprecated_class_methods():
         pass
 
     with pytest.warns(DeprecationWarning):
-        OldStyle.validated_property("implicit", choices=DEFAULT_VALUE_CHOICES)
+        OldStyle.validated_property(
+            "implicit", Choices(*VALUES, integer=True), initial=VALUE1
+        )
 
     with pytest.warns(DeprecationWarning):
         OldStyle.directional_property("thing%s")

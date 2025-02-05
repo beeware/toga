@@ -3,7 +3,7 @@ from threading import Event
 
 import pytest
 
-from toga_gtk.libs import Gdk, Gtk
+from toga_gtk.libs import GTK_VERSION, Gdk, Gtk
 
 from ..fonts import FontMixin
 from ..probe import BaseProbe
@@ -21,6 +21,9 @@ class SimpleProbe(BaseProbe, FontMixin):
 
         # Set the target for keypress events
         self._keypress_target = self.native
+
+        if GTK_VERSION >= (4, 0, 0):
+            pytest.skip("GTK4 only has minimal container support")
 
         # Ensure that the theme isn't using animations for the widget.
         settings = Gtk.Settings.get_for_screen(self.native.get_screen())

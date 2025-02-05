@@ -72,7 +72,7 @@ class Switch(Widget):
 
     @text.setter
     def text(self, value: object) -> None:
-        if value is None or value == "\u200B":
+        if value is None or value == "\u200b":
             value = ""
         else:
             # Switch text can't include line breaks. Strip any content

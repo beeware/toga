@@ -8,7 +8,7 @@ from toga import Font
 from toga.constants import Baseline, FillRule
 from toga.fonts import SYSTEM_DEFAULT_FONT_SIZE
 from toga_gtk.colors import native_color
-from toga_gtk.libs import Gdk, Gtk, Pango, PangoCairo, cairo
+from toga_gtk.libs import GTK_VERSION, Gdk, Gtk, Pango, PangoCairo, cairo
 
 from .base import Widget
 
@@ -23,16 +23,19 @@ class Canvas(Widget):
 
         self.native = Gtk.DrawingArea()
 
-        self.native.connect("draw", self.gtk_draw_callback)
-        self.native.connect("size-allocate", self.gtk_on_size_allocate)
-        self.native.connect("button-press-event", self.mouse_down)
-        self.native.connect("button-release-event", self.mouse_up)
-        self.native.connect("motion-notify-event", self.mouse_move)
-        self.native.set_events(
-            Gdk.EventMask.BUTTON_PRESS_MASK
-            | Gdk.EventMask.BUTTON_RELEASE_MASK
-            | Gdk.EventMask.BUTTON_MOTION_MASK
-        )
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            self.native.connect("draw", self.gtk_draw_callback)
+            self.native.connect("size-allocate", self.gtk_on_size_allocate)
+            self.native.connect("button-press-event", self.mouse_down)
+            self.native.connect("button-release-event", self.mouse_up)
+            self.native.connect("motion-notify-event", self.mouse_move)
+            self.native.set_events(
+                Gdk.EventMask.BUTTON_PRESS_MASK
+                | Gdk.EventMask.BUTTON_RELEASE_MASK
+                | Gdk.EventMask.BUTTON_MOTION_MASK
+            )
+        else:  # pragma: no-cover-if-gtk3
+            pass
 
     def gtk_draw_callback(self, widget, cairo_context):
         """Creates a draw callback.
