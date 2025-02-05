@@ -455,11 +455,15 @@ class Window:
             )
 
             # Going presentation mode causes the window content
-            # to be re-homed in a NSFullScreenWindow; teach the
-            # new parent window about its Toga representations.
+            # to be re-homed in a NSFullScreenWindow;
+            # Teach the new parent window about its Toga representations.
             self.container.native.window._impl = self
             self.container.native.window.interface = self.interface
             self.interface.content.refresh()
+            # Manually trigger the resize event as the original NSWindow's
+            # size remains unchanged, hence the windowDidResize_ would not
+            # be notified when the window goes into presentation mode.
+            self.interface.on_resize()
 
             # No need to check for other pending states,
             # since this is fully applied at this point.
