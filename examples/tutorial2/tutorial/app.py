@@ -1,12 +1,14 @@
+import asyncio
+
 import toga
 from toga.style.pack import COLUMN, Pack
 
 
-def button_handler(widget):
+async def button_handler(widget):
     print("button handler")
     for i in range(0, 10):
         print("hello", i)
-        yield 1
+        await asyncio.sleep(1)
     print("done", i)
 
 

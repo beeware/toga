@@ -1,3 +1,5 @@
+import asyncio
+
 import toga
 from toga.constants import COLUMN
 from toga.style import Pack
@@ -82,10 +84,10 @@ class TogaDemo(toga.App):
         # Show the main window
         self.main_window.show()
 
-    def button_handler(self, widget):
+    async def button_handler(self, widget):
         print("button press")
         for i in range(0, 10):
-            yield 1
+            await asyncio.sleep(1)
             print("still running... (iteration %s)" % i)
 
     def action1(self, widget):
