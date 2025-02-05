@@ -487,6 +487,7 @@ class Window:
                 )
                 self.container.native.exitFullScreenModeWithOptions(opts)
                 self.interface.content.refresh()
+                self.interface.on_resize()
 
                 self.interface.screen = self._before_presentation_mode_screen
                 del self._before_presentation_mode_screen

@@ -795,6 +795,13 @@ else:
                         assert_window_on_resize(second_window, trigger_expected=False)
                     else:
                         assert_window_on_resize(second_window)
+                elif (
+                    initial_state == WindowState.MINIMIZED
+                    and final_state == WindowState.NORMAL
+                ):
+                    # on_resize() will not be triggered, as the state change
+                    # between NORMAL <-> MINIMIZED doesn't resize the window.
+                    assert_window_on_resize(second_window, trigger_expected=False)
                 else:
                     assert_window_on_resize(second_window)
             else:
