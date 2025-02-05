@@ -46,11 +46,6 @@ class Color:
         https://en.wikipedia.org/wiki/Alpha_compositing#Straight_versus_premultiplied
 
         :param back_color: The background color.
-        :param round_to_nearest_int: Should the rgb values of the blended color be
-            rounded to the nearest int? If the blended color will be later
-            deblended to get the original front color, then keeping the decimal
-            precision will give a more accurate value of the original front
-            color.
 
         :returns: The blended color.
         """
@@ -81,7 +76,7 @@ class Color:
                     255,
                     max(
                         0,
-                        (
+                        round(
                             (
                                 (front_color.r * front_color.a)
                                 + (back_color.r * back_color.a * (1 - front_color.a))
@@ -95,7 +90,7 @@ class Color:
                     255,
                     max(
                         0,
-                        (
+                        round(
                             (
                                 (front_color.g * front_color.a)
                                 + (back_color.g * back_color.a * (1 - front_color.a))
@@ -109,7 +104,7 @@ class Color:
                     255,
                     max(
                         0,
-                        (
+                        round(
                             (
                                 (front_color.b * front_color.a)
                                 + (back_color.b * back_color.a * (1 - front_color.a))
@@ -121,15 +116,7 @@ class Color:
                 # Alpha component
                 min(1, max(0, blended_alpha)),
             )
-            if round_to_nearest_int:
-                return rgba(
-                    round(blended_color.r),
-                    round(blended_color.g),
-                    round(blended_color.b),
-                    round(blended_color.a, 2),
-                )
-            else:
-                return blended_color.rgba
+            return blended_color
 
     def unblend_over(self, back_color: Color, front_color_alpha: float) -> rgba:
         """Performs the reverse of the "over" straight alpha blending operation,
@@ -174,7 +161,7 @@ class Color:
                     255,
                     max(
                         0,
-                        (
+                        round(
                             (
                                 (blended_color.r * blended_color.a)
                                 - (
@@ -192,7 +179,7 @@ class Color:
                     255,
                     max(
                         0,
-                        (
+                        round(
                             (
                                 (blended_color.g * blended_color.a)
                                 - (
@@ -210,7 +197,7 @@ class Color:
                     255,
                     max(
                         0,
-                        (
+                        round(
                             (
                                 (blended_color.b * blended_color.a)
                                 - (
