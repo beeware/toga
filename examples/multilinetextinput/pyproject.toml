@@ -16,6 +16,7 @@ description = "A testing app"
 sources = ["multilinetextinput"]
 requires = [
     "../../core",
+    "../../travertino",
 ]
 
 

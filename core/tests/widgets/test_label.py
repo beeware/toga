@@ -44,7 +44,7 @@ def test_label_create_with_values():
         ("New Text", "New Text"),
         (12345, "12345"),
         (None, ""),
-        ("\u200B", ""),
+        ("\u200b", ""),
         ("Contains\nsome\nnewlines", "Contains\nsome\nnewlines"),
     ],
 )

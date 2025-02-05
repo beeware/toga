@@ -16,6 +16,7 @@ description = "A testing app"
 sources = ["font_size"]
 requires = [
     "../../core",
+    "../../travertino",
 ]
 
 [tool.briefcase.app.font_size.macOS]

@@ -116,6 +116,11 @@ System requirements
   - OpenSUSE Tumbleweed: ``libwebkit2gtk3 typelib(WebKit2)``
   - FreeBSD: ``webkit2-gtk3``
 
+  MapView is not fully supported on GTK4. If you want to contribute to the GTK4 MapView
+  implementation, you will require v6.0 of the WebKit2 libraries. This is provided by
+  ``gir1.2-webkit-6.0`` on Ubuntu/Debian, and ``webkitgtk6.0`` on Fedora; for other
+  distributions, consult your distributions's platform documentation.
+
 * Using MapView on Android requires the OSMDroid package in your project's Gradle
   dependencies. Ensure your app declares a dependency on
   ``org\.osmdroid:osmdroid-android:6.1.20`` or later.

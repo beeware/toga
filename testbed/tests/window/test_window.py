@@ -342,7 +342,8 @@ else:
         assert second_window.size == (640, 480)
         # Position should be cascaded; the exact position depends on the platform,
         # and how many windows have been created. As long as it's not at (100,100).
-        assert second_window.position != (100, 100)
+        if second_window_probe.supports_placement:
+            assert second_window.position != (100, 100)
 
         assert second_window_probe.is_resizable
         if second_window_probe.supports_closable:
@@ -1011,6 +1012,9 @@ else:
     ):
         """The window can trigger on_gain_focus() and on_lose_focus()
         event handlers, when the window gains or loses input focus."""
+        if not main_window_probe.supports_focus:
+            pytest.skip("GTK4 doesn't yet support gain and lose focus.")
+
         main_window.on_gain_focus = Mock()
         main_window.on_lose_focus = Mock()
         second_window.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
@@ -1141,19 +1145,19 @@ else:
         """The window can be relocated to another screen, using both absolute and
         relative screen positions."""
 
+        if not second_window_probe.supports_placement:
+            pytest.xfail("This backend doesn't support window placement.")
         initial_position = second_window.position
 
         # Move the window using absolute position.
         second_window.position = (200, 200)
         await second_window_probe.wait_for_window("Secondary window has been moved")
-        if second_window_probe.supports_placement:
-            assert second_window.position != initial_position
+        assert second_window.position != initial_position
 
         # `position` and `screen_position` will be same as the window will be in
         # primary screen.
-        if second_window_probe.supports_placement:
-            assert second_window.position == (200, 200)
-            assert second_window.screen_position == (200, 200)
+        assert second_window.position == (200, 200)
+        assert second_window.screen_position == (200, 200)
 
         # Move the window between available screens and assert its `screen_position`
         for screen in second_window.app.screens:
@@ -1171,9 +1175,10 @@ else:
 async def test_as_image(main_window, main_window_probe):
     """The window can be captured as a screenshot"""
 
-    screenshot = main_window.as_image()
-    main_window_probe.assert_image_size(
-        screenshot.size,
-        main_window_probe.content_size,
-        screen=main_window.screen,
-    )
+    if main_window_probe.supports_as_image:
+        screenshot = main_window.as_image()
+        main_window_probe.assert_image_size(
+            screenshot.size,
+            main_window_probe.content_size,
+            screen=main_window.screen,
+        )

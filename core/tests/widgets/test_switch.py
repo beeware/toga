@@ -56,7 +56,7 @@ def test_widget_created_explicit(switch):
         ("New Text", "New Text"),
         ("", ""),
         (None, ""),
-        ("\u200B", ""),
+        ("\u200b", ""),
         (12345, "12345"),
         ("Contains\nnewline", "Contains"),
     ],
