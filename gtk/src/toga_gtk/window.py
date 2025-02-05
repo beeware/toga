@@ -47,9 +47,10 @@ class Window:
             self.native.connect("notify::fullscreened", self.gtk_window_state_event)
             self.native.connect("notify::maximized", self.gtk_window_state_event)
             self.native.connect("notify::minimized", self.gtk_window_state_event)
-            # notify::default-width and notify::default-height do not work for
-            # detecting resize events.
-            self.native.connect("size-allocate", self.gtk_configure_event)
+            # notify::default-width and notify::default-height do not fire
+            # when the window is resized.
+            self.native.connect("notify::width", self.gtk_configure_event)
+            self.native.connect("notify::height", self.gtk_configure_event)
 
         self._window_state_flags = None
         self._in_presentation = False
