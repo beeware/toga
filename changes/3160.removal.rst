@@ -1,0 +1,1 @@
+``Basestyle.reapply()`` / ``Pack.reapply()`` has been renamed to ``apply_all()``. This method is normally only used internally, but any user code that calls the old name directly will cause a ``DeprecationWarning``.
