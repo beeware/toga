@@ -272,11 +272,7 @@ def test_alpha_blending_over(front_color, back_color, expected_blended_color):
 )
 def test_alpha_unblend_over(front_color, back_color):
     """The alpha blended color can be unblended to get the original front color."""
-    # Calculate the alpha blended color, keep the decimal precision, as the
-    # blended color will be deblended to get the original front color.
-    calculated_blended_color = front_color.blend_over(
-        back_color, round_to_nearest_int=False
-    )
+    calculated_blended_color = front_color.blend_over(back_color)
     if front_color.a == 0:
         # When the front color has an alpha value of 0, then all information
         # related to the front color will be lost when the color is blended,
