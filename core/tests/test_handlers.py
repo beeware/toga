@@ -180,7 +180,7 @@ def test_function_handler_with_cleanup_error(capsys):
 
 
 ######################################################################
-# 2025-02: Handlers deprecated in 0.5.0
+# 2025-02: Generator handlers deprecated in 0.5.0
 ######################################################################
 
 
