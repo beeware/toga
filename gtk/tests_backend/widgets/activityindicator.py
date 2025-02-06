@@ -5,3 +5,7 @@ from .base import SimpleProbe
 
 class ActivityIndicatorProbe(SimpleProbe):
     native_class = Gtk.Spinner
+
+    @property
+    def is_hidden(self):
+        return not self.native.get_visible()
