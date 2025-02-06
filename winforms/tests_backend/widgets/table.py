@@ -12,7 +12,6 @@ from .base import SimpleProbe
 
 class TableProbe(SimpleProbe):
     native_class = ListView
-    background_supports_alpha = False
     supports_icons = 1  # First column only
     supports_keyboard_shortcuts = False
     supports_keyboard_boundary_shortcuts = True
