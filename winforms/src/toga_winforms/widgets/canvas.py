@@ -343,10 +343,12 @@ class Canvas(Box):
         )
 
     def get_image_data(self):
-        # Temporarily switch out the manually alpha blended background color
-        # to the native system produced background color, in order to avoid
-        # loss of transparency in the exported image. This is because manually
-        # alpha blended colors are actually opaque in nature.
+        # Winforms backgrounds don't honor transparency, so the background that is
+        # rendered to screen manually computes the blended color. However, we want the
+        # image to reflect the background color that has actually been applied to the
+        # image. Temporarily switch out the manually alpha blended background color to
+        # the native system produced background color. Suspending the layout means this
+        # change isn't visible to the user.
         self.native.SuspendLayout()
         current_background_color = self.interface.style.background_color
         self.native.BackColor = native_color(current_background_color)
@@ -361,8 +363,8 @@ class Canvas(Box):
         stream = MemoryStream()
         bitmap.Save(stream, ImageFormat.Png)
 
-        # Switch back to the manually alpha blended background color, so that
-        # the appearance of the background color on the app will be correct.
+        # Switch back to the manually alpha blended background color, and resume layout
+        # updates.
         self.set_background_color(current_background_color)
         self.native.ResumeLayout()
 
