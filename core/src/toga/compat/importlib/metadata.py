@@ -11,7 +11,9 @@ def metadata(distribution_name):
     return {}
 
 
-# Return None so it'll work if it's simply assigned to a __version__ attribute, but will
-# give an error if it's ever used for anything else.
+class PackageNotFoundError(Exception):
+    pass
+
+
 def version(distribution_name):
-    return None
+    raise PackageNotFoundError(distribution_name)
