@@ -300,27 +300,35 @@ async def test_dom_storage_enabled(widget, probe, on_load):
     """Ensure DOM storage is enabled."""
     # a page must be loaded to access local storage
     await wait_for(
-        widget.load_url("https://example.com/"),
+        widget.load_url("https://github.com/"),
         LOAD_TIMEOUT,
     )
-    # small pause to ensure javascript can run without security errors
-    await asyncio.sleep(1)
 
-    expected_value = "Hello World"
-    expression = f"""\
-(function isLocalStorageAvailable(){{
-    var test = 'testkey';
-    try {{
-        localStorage.setItem(test, "{expected_value}");
-        item = localStorage.getItem(test);
-        localStorage.removeItem(test);
-        return item;
-    }} catch(e) {{
-        return String(e);
-    }}
-}})()"""
-    result = await wait_for(widget.evaluate_javascript(expression), JS_TIMEOUT)
-    assert result == expected_value
+    for i in range(0, 10):
+        expected_value = "Hello World"
+        expression = f"""\
+    (function isLocalStorageAvailable(){{
+        var test = 'testkey';
+        try {{
+            localStorage.setItem(test, "{expected_value}");
+            item = localStorage.getItem(test);
+            localStorage.removeItem(test);
+            return item;
+        }} catch(e) {{
+            return String(e);
+        }}
+    }})()"""
+        result = await wait_for(widget.evaluate_javascript(expression), JS_TIMEOUT)
+        if result == expected_value:
+            # Success!
+            return
+
+        await probe.redraw("Wait for DOM to be ready", delay=0.2)
+
+    pytest.fail(
+        f"Didn't receive expected result ({expected_value!r}) after multiple tries; "
+        f"last attempt returned {result!r}"
+    )
 
 
 async def test_retrieve_cookies(widget, probe, on_load):
