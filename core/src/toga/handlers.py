@@ -114,10 +114,33 @@ def simple_handler(fn: T, *args: object, **kwargs: object) -> T:
     return _handler
 
 
+# TODO: make sure Sphinx generates documentation correctly - this may require
+# making EventProperty a subclass of property.
+class EventProperty:
+    def __init__(self, doc):
+        self.__doc__ = doc
+
+    def __set_name__(self, widget_cls, name):
+        self.name = name
+        self.attr_name = "_" + name
+        self.event_name = name.removeprefix("on_")
+
+    def __get__(self, widget, widget_cls):
+        return getattr(widget, self.attr_name)
+
+    def __set__(self, widget, handler):
+        setattr(
+            widget,
+            self.attr_name,
+            wrapped_handler(widget, handler, event=self.event_name),
+        )
+
+
 def wrapped_handler(
     interface: object,
     handler: HandlerT | NativeHandler | None,
     cleanup: HandlerSyncT | None = None,
+    **extra_kwargs,
 ) -> WrappedHandlerT:
     """Wrap a handler provided by the user, so it can be invoked.
 
@@ -141,6 +164,7 @@ def wrapped_handler(
             return handler.native
 
         def _handler(*args: object, **kwargs: object) -> object:
+            kwargs.update(extra_kwargs)
             if asyncio.iscoroutinefunction(handler):
                 return asyncio.ensure_future(
                     handler_with_cleanup(handler, cleanup, interface, *args, **kwargs)

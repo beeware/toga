@@ -4,7 +4,7 @@ from collections.abc import Callable, Iterable
 from typing import Any, Protocol
 
 import toga
-from toga.handlers import wrapped_handler
+from toga.handlers import EventProperty
 
 from ..sources import ValueProperty
 from .base import StyleT, Widget
@@ -160,14 +160,9 @@ class TextInput(Widget):
         """Does the value of the widget currently pass all validators without error?"""
         return self._impl.is_valid()
 
-    @property
-    def on_change(self) -> OnChangeHandler:
-        """The handler to invoke when the value of the widget changes."""
-        return self._on_change
-
-    @on_change.setter
-    def on_change(self, handler: toga.widgets.textinput.OnChangeHandler) -> None:
-        self._on_change = wrapped_handler(self, handler)
+    on_change = EventProperty(
+        "The handler to invoke when the value of the widget changes."
+    )
 
     @property
     def validators(self) -> list[Callable[[str], bool]]:
@@ -188,23 +183,12 @@ class TextInput(Widget):
         if replacing:
             self._validate()
 
-    @property
-    def on_gain_focus(self) -> OnGainFocusHandler:
-        """The handler to invoke when the widget gains input focus."""
-        return self._on_gain_focus
-
-    @on_gain_focus.setter
-    def on_gain_focus(self, handler: OnGainFocusHandler) -> None:
-        self._on_gain_focus = wrapped_handler(self, handler)
-
-    @property
-    def on_lose_focus(self) -> OnLoseFocusHandler:
-        """The handler to invoke when the widget loses input focus."""
-        return self._on_lose_focus
-
-    @on_lose_focus.setter
-    def on_lose_focus(self, handler: OnLoseFocusHandler) -> None:
-        self._on_lose_focus = wrapped_handler(self, handler)
+    on_gain_focus = EventProperty(
+        "The handler to invoke when the widget gains input focus."
+    )
+    on_lose_focus = EventProperty(
+        "The handler to invoke when the widget loses input focus."
+    )
 
     def _validate(self) -> None:
         """Validate the current value of the widget.
@@ -224,13 +208,8 @@ class TextInput(Widget):
         self._validate()
         self.on_change()
 
-    @property
-    def on_confirm(self) -> OnConfirmHandler:
+    on_confirm = EventProperty(
         """The handler to invoke when the user accepts the value of the widget,
         usually by pressing return/enter on the keyboard.
         """
-        return self._on_confirm
-
-    @on_confirm.setter
-    def on_confirm(self, handler: OnConfirmHandler) -> None:
-        self._on_confirm = wrapped_handler(self, handler)
+    )

@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, Protocol
 
 import toga
-from toga.handlers import wrapped_handler
+from toga.handlers import EventProperty
 
 from .base import StyleT, Widget
 
@@ -144,11 +144,4 @@ class Button(Widget):
     def purpose(self, value):
         self._impl.set_purpose(value)
 
-    @property
-    def on_press(self) -> OnPressHandler:
-        """The handler to invoke when the button is pressed."""
-        return self._on_press
-
-    @on_press.setter
-    def on_press(self, handler: toga.widgets.button.OnPressHandler) -> None:
-        self._on_press = wrapped_handler(self, handler)
+    on_press = EventProperty("The handler to invoke when the button is pressed.")
