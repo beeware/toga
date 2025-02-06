@@ -55,6 +55,12 @@ class AppProbe(BaseProbe, DialogsMixin):
         # fall back to the implementation's proxy variable.
         return self.app._impl._cursor_visible
 
+    def hide(self):
+        self.app._impl.native.hide_(self.app._impl.native)
+
+    def unhide(self):
+        self.app._impl.native.unhide_(self.app._impl.native)
+
     def assert_app_icon(self, icon):
         # We have no real way to check we've got the right icon; use pixel peeping as a
         # guess. Construct a PIL image from the current icon.
@@ -128,6 +134,9 @@ class AppProbe(BaseProbe, DialogsMixin):
             restype=None,
             argtypes=[objc_id],
         )
+
+    def activate_menu_hide(self):
+        self._activate_menu_item(["*", "Hide Toga Testbed"])
 
     def activate_menu_exit(self):
         self._activate_menu_item(["*", "Quit Toga Testbed"])

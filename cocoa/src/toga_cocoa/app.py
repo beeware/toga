@@ -38,10 +38,30 @@ from .screens import Screen as ScreenImpl
 class AppDelegate(NSObject):
     interface = objc_property(object, weak=True)
     impl = objc_property(object, weak=True)
+    windows_visible_before_app_hide = []
 
     @objc_method
     def applicationDidFinishLaunching_(self, notification):
         self.native.activateIgnoringOtherApps(True)
+
+    @objc_method
+    def applicationWillHide_(self, notification):
+        self.windows_visible_before_app_hide = [
+            window for window in self.native.windows if window.isVisible
+        ]
+
+    @objc_method
+    def applicationDidHide_(self, notification):
+        for window in self.windows_visible_before_app_hide:
+            if getattr(window, "interface", None) is not None:
+                window.interface.on_hide()
+
+    @objc_method
+    def applicationDidUnhide_(self, notification):
+        for window in self.windows_visible_before_app_hide:
+            if getattr(window, "interface", None) is not None:
+                window.interface.on_show()
+        self.windows_visible_before_app_hide.clear()
 
     @objc_method
     def applicationSupportsSecureRestorableState_(self, app) -> bool:
