@@ -4,6 +4,7 @@ from . import dialogs
 from .app import App
 from .command import Command
 from .fonts import Font
+from .hardware.location import Location
 from .icons import Icon
 from .images import Image
 from .paths import Paths
@@ -61,6 +62,7 @@ __all__ = [
     "Divider",
     "ImageView",
     "Label",
+    "Location",
     "MapView",
     "MultilineTextInput",
     "NumberInput",
