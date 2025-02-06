@@ -309,20 +309,7 @@ class BaseStyle:
         self._assigned_applicator = value
 
         if value is not None:
-            try:
-                self.reapply()
-            # This is backwards compatibility for Toga, which (at least as of
-            # 0.4.8), assigns style and applicator before the widget's
-            # implementation is available.
-            except Exception:
-                warn(
-                    "Failed to apply style when assigning applicator, or when "
-                    "assigning a new style once applicator is present. Node should be "
-                    "sufficiently initialized to apply its style before it is assigned "
-                    "an applicator. This will be an exception in a future version.",
-                    RuntimeWarning,
-                    stacklevel=2,
-                )
+            self.reapply()
 
     ######################################################################
     # Interface that style declarations must define

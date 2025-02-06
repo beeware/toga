@@ -79,6 +79,10 @@ class Pack(BaseStyle):
     justify_content: str | None = validated_property(START, CENTER, END, initial=START)
     gap: int = validated_property(integer=True, initial=0)
 
+    columns: str | int = validated_property(NONE, integer=True, initial=NONE)
+    row_span: int = validated_property(integer=True, initial=1)
+    column_span: int = validated_property(integer=True, initial=1)
+
     width: str | int = validated_property(NONE, integer=True, initial=NONE)
     height: str | int = validated_property(NONE, integer=True, initial=NONE)
     flex: float = validated_property(number=True, initial=0)
@@ -869,10 +873,13 @@ class Pack(BaseStyle):
             css.append(f"visibility: {self.visibility};")
 
         # direction
-        css.append(f"flex-direction: {self.direction.lower()};")
+        if "direction" in self:
+            css.append(f"flex-direction: {self.direction.lower()};")
+
         # flex
-        if (self.width == NONE and self.direction == ROW) or (
-            self.height == NONE and self.direction == COLUMN
+        if self.flex and (
+            (self.width == NONE and self.direction == ROW)
+            or (self.height == NONE and self.direction == COLUMN)
         ):
             css.append(f"flex: {self.flex};")  # FIXME {self.flex} 0 auto
 
@@ -895,6 +902,14 @@ class Pack(BaseStyle):
         # gap
         if self.gap:
             css.append(f"gap: {self.gap}px;")
+
+        # grid properties
+        if "columns" in self:
+            css.append(f"columns: {self.columns};")
+        if "row_span" in self:
+            css.append(f"grid-row: span {self.row_span};")
+        if "column_span" in self:
+            css.append(f"grid-column: span {self.column_span};")
 
         # margin_*
         if self.margin_top:
