@@ -316,7 +316,9 @@ class BaseStyle:
 
         if value is not None:
             try:
-                self.reapply()
+                print("Going to call apply now")
+                self.apply()
+                print("After calling apply")
             # This is backwards compatibility for Toga, which (at least as of
             # 0.4.8), assigns style and applicator before the widget's
             # implementation is available.
@@ -329,10 +331,6 @@ class BaseStyle:
                     RuntimeWarning,
                     stacklevel=2,
                 )
-
-    def reapply(self):
-        for name in self._PROPERTIES:
-            self.apply(name)
 
     def copy(self, applicator=None):
         """Create a duplicate of this style declaration."""
@@ -363,6 +361,7 @@ class BaseStyle:
     ######################################################################
 
     def apply(self, name):
+        print("Calling base style somehow?")
         raise NotImplementedError(
             "Style must define an apply method"
         )  # pragma: no cover
@@ -455,6 +454,17 @@ class BaseStyle:
     ######################################################################
     # Backwards compatibility
     ######################################################################
+
+    def reapply(self):
+        warn(
+            "BaseStyle.reapply() is deprecated; call .apply with no arguments instead."
+            "This is probably because you've updated Travertino to 0.5.0 but are still "
+            "using Toga <= 0.4.8; to fix, either update Toga to >= 0.5.0, or pin "
+            "Travertino to 0.3.0.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        self.apply()
 
     @classmethod
     def validated_property(cls, name, choices, initial=None):

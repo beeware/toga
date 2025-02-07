@@ -13,8 +13,8 @@ from travertino.colors import hsl, hsla, rgb, rgba
 
 
 def prep_style_class(cls):
-    """Decorator to apply dataclass and mock apply."""
-    return mock_attr("apply")(dataclass(**_DATACLASS_KWARGS)(cls))
+    """Decorator to apply dataclass"""
+    return dataclass(**_DATACLASS_KWARGS)(cls)
 
 
 def mock_attr(attr):

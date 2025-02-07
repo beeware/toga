@@ -12,6 +12,7 @@ from .utils import mock_attr, prep_style_class
 
 
 @prep_style_class
+@mock_attr("apply")
 class Style(BaseStyle):
     none: str = validated_property(NONE, REBECCAPURPLE, initial=NONE)
     allow_string: str = validated_property(string=True, initial="start")

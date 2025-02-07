@@ -134,10 +134,10 @@ class Pack(BaseStyle):
 
     # Pack.alignment is still an actual property, despite being deprecated, so we need
     # to suppress deprecation warnings when reapply is called.
-    def reapply(self, *args, **kwargs):
-        with warnings.catch_warnings():
-            warnings.filterwarnings("ignore", category=DeprecationWarning)
-            super().reapply(*args, **kwargs)
+    # def reapply(self, *args, **kwargs):
+    #     with warnings.catch_warnings():
+    #         warnings.filterwarnings("ignore", category=DeprecationWarning)
+    #         super().apply(*args, **kwargs)
 
     _DEPRECATED_PROPERTIES = {
         # Map each deprecated property name to its replacement.
@@ -261,74 +261,57 @@ class Pack(BaseStyle):
     # End backwards compatibility
     ######################################################################
 
-    def apply(self, name: str, value: object = NOT_PROVIDED) -> None:
-        ######################################################################
-        # 2025-02: Backwards compatibility for Toga < 0.5.0
-        ######################################################################
-
-        if value is not NOT_PROVIDED:
-            warnings.warn(
-                (
-                    "The value parameter to Pack.apply() is deprecated. The instance "
-                    "will use its own current value for the property named."
-                ),
-                DeprecationWarning,
-                stacklevel=2,
-            )
-
-        ######################################################################
-        # End backwards compatibility
-        ######################################################################
-
+    def apply(self, *names: list[str]) -> None:
         if self._applicator:
-            if name == "text_align":
-                if (value := self.text_align) is None:
-                    if self.text_direction == RTL:
-                        value = RIGHT
-                    else:
-                        value = LEFT
-                self._applicator.set_text_align(value)
-            elif name == "text_direction":
-                if self.text_align is None:
-                    self._applicator.set_text_align(
-                        RIGHT if self.text_direction == RTL else LEFT
-                    )
-            elif name == "color":
-                self._applicator.set_color(self.color)
-            elif name == "background_color":
-                self._applicator.set_background_color(self.background_color)
-            elif name == "visibility":
-                value = self.visibility
-                if value == VISIBLE:
-                    # If visibility is being set to VISIBLE, look up the chain to see if
-                    # an ancestor is hidden.
-                    widget = self._applicator.widget
-                    while widget := widget.parent:
-                        if widget.style._hidden:
-                            value = HIDDEN
-                            break
+            for name in names or self._PROPERTIES:
+                if name == "text_align":
+                    if (value := self.text_align) is None:
+                        if self.text_direction == RTL:
+                            value = RIGHT
+                        else:
+                            value = LEFT
+                    self._applicator.set_text_align(value)
+                elif name == "text_direction":
+                    if self.text_align is None:
+                        self._applicator.set_text_align(
+                            RIGHT if self.text_direction == RTL else LEFT
+                        )
+                elif name == "color":
+                    self._applicator.set_color(self.color)
+                elif name == "background_color":
+                    self._applicator.set_background_color(self.background_color)
+                elif name == "visibility":
+                    value = self.visibility
+                    if value == VISIBLE:
+                        # If visibility is being set to VISIBLE, look up the chain to
+                        # see if an ancestor is hidden.
+                        widget = self._applicator.widget
+                        while widget := widget.parent:
+                            if widget.style._hidden:
+                                value = HIDDEN
+                                break
 
-                self._applicator.set_hidden(value == HIDDEN)
-            elif name in (
-                "font_family",
-                "font_size",
-                "font_style",
-                "font_variant",
-                "font_weight",
-            ):
-                self._applicator.set_font(
-                    Font(
-                        self.font_family,
-                        self.font_size,
-                        style=self.font_style,
-                        variant=self.font_variant,
-                        weight=self.font_weight,
+                    self._applicator.set_hidden(value == HIDDEN)
+                elif name in (
+                    "font_family",
+                    "font_size",
+                    "font_style",
+                    "font_variant",
+                    "font_weight",
+                ):
+                    self._applicator.set_font(
+                        Font(
+                            self.font_family,
+                            self.font_size,
+                            style=self.font_style,
+                            variant=self.font_variant,
+                            weight=self.font_weight,
+                        )
                     )
-                )
-            else:
-                # Any other style change will cause a change in layout geometry,
-                # so perform a refresh.
-                self._applicator.refresh()
+                else:
+                    # Any other style change will cause a change in layout geometry, so
+                    # perform a refresh.
+                    self._applicator.refresh()
 
     def layout(self, viewport: Any) -> None:
         # self._debug("=" * 80)

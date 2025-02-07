@@ -24,6 +24,7 @@ VALUES = [VALUE1, VALUE2, VALUE3, None]
 
 
 @prep_style_class
+@mock_attr("apply")
 class Style(BaseStyle):
     # Some properties with explicit initial values
     explicit_const: str | int = validated_property(
@@ -98,8 +99,8 @@ class Sibling(BaseStyle):
 
 
 @prep_style_class
-@mock_attr("reapply")
-class MockedReapplyStyle(BaseStyle):
+@mock_attr("apply")
+class MockedApplyStyle(BaseStyle):
     pass
 
 
@@ -134,32 +135,22 @@ def test_create_and_copy(StyleClass):
 
 
 def test_deprecated_copy():
-    style = MockedReapplyStyle()
+    style = MockedApplyStyle()
 
     with pytest.warns(DeprecationWarning):
         style_copy = style.copy(applicator=object())
 
-    style_copy.reapply.assert_called_once()
+    style_copy.apply.assert_called_once_with()
 
 
 @pytest.mark.parametrize("StyleClass", [Style, DeprecatedStyle])
-def test_reapply(StyleClass):
+def test_apply(StyleClass):
     style = StyleClass(explicit_const=VALUE2, implicit=VALUE3)
+    style.apply.assert_has_calls([call("explicit_const"), call("implicit")])
+    style.apply.reset_mock()
 
-    style.reapply()
-    style.apply.assert_has_calls(
-        [
-            call("explicit_const"),
-            call("explicit_value"),
-            call("explicit_none"),
-            call("implicit"),
-            call("thing_left"),
-            call("thing_top"),
-            call("thing_right"),
-            call("thing_bottom"),
-        ],
-        any_order=True,
-    )
+    style.apply()
+    style.apply.assert_called_once_with()
 
 
 @pytest.mark.parametrize("StyleClass", [Style, DeprecatedStyle])
@@ -884,3 +875,12 @@ def test_deprecated_class_methods():
 
     with pytest.warns(DeprecationWarning):
         OldStyle.directional_property("thing%s")
+
+
+def test_deprecated_reapply():
+    """Reapply() is deprecated (but still calls apply()."""
+    style = Style()
+    with pytest.warns(DeprecationWarning):
+        style.reapply()
+
+    style.apply.assert_called_once_with()
