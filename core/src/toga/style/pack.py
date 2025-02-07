@@ -117,7 +117,7 @@ class Pack(BaseStyle):
         return self.visibility == HIDDEN
 
     ######################################################################
-    # 2024-12: Backwards compatibility for Toga <= 0.4.8
+    # 2024-12: Backwards compatibility for Toga < 0.5.0
     ######################################################################
 
     def update(self, **properties):
@@ -263,7 +263,7 @@ class Pack(BaseStyle):
 
     def apply(self, name: str, value: object = NOT_PROVIDED) -> None:
         ######################################################################
-        # 2025-02: Backwards compatibility for Toga <= 0.4.8
+        # 2025-02: Backwards compatibility for Toga < 0.5.0
         ######################################################################
 
         if value is not NOT_PROVIDED:
