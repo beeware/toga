@@ -196,8 +196,24 @@ async def test_app_level_menu_hide(app, app_probe, main_window, main_window_prob
     assert initially_visible_window.visible
     assert not initially_hidden_window.visible
 
-    # app_probe.activate_menu_hide()
-    # await app_probe.redraw("Hide selected from menu, and accepted")
+    # Test using the "Hide" option from the global app menu.
+    app_probe.activate_menu_hide()
+    await main_window_probe.wait_for_window("Hide selected from menu, and accepted")
+    assert not initially_visible_window.visible
+    assert not initially_hidden_window.visible
+
+    assert_window_on_hide(initially_visible_window)
+    assert_window_on_hide(initially_hidden_window, trigger_expected=False)
+
+    app_probe.unhide()
+    await main_window_probe.wait_for_window("App level unhide has been activated")
+    assert initially_visible_window.visible
+    assert not initially_hidden_window.visible
+
+    assert_window_on_show(initially_visible_window)
+    assert_window_on_show(initially_hidden_window, trigger_expected=False)
+
+    # Test using the app level native hide API.
     app_probe.hide()
     await main_window_probe.wait_for_window("App level hide has been activated")
     assert not initially_visible_window.visible

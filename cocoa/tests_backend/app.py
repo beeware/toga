@@ -136,7 +136,16 @@ class AppProbe(BaseProbe, DialogsMixin):
         )
 
     def activate_menu_hide(self):
-        self._activate_menu_item(["*", "Hide Toga Testbed"])
+        item = self._menu_item(["*", "Hide Toga Testbed"])
+        # To activate the "Hide" in global app menu, we need call the native
+        # handler on the NSApplication instead of the NSApplicationDelegate.
+        send_message(
+            self.app._impl.native,
+            item.action,
+            self.app._impl.native,
+            restype=None,
+            argtypes=[objc_id],
+        )
 
     def activate_menu_exit(self):
         self._activate_menu_item(["*", "Quit Toga Testbed"])
