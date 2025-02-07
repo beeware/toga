@@ -15,7 +15,6 @@ from ..assertions import (
     assert_window_gain_focus,
     assert_window_lose_focus,
     assert_window_on_hide,
-    assert_window_on_resize,
     assert_window_on_show,
 )
 
@@ -750,7 +749,8 @@ else:
         # the event was triggered.
         second_window.on_show = Mock()
         second_window.on_hide = Mock()
-        second_window.on_resize = Mock()
+        second_window_on_resize_handler = Mock()
+        second_window.on_resize = second_window_on_resize_handler
 
         # Set to initial state
         second_window.state = initial_state
@@ -766,9 +766,11 @@ else:
                 # on_resize() will not be triggered, as the state change
                 # between NORMAL <-> MINIMIZED doesn't resize the window,
                 # and state change between NORMAL <-> NORMAL is a no-op.
-                assert_window_on_resize(second_window, trigger_expected=False)
+                second_window_on_resize_handler.assert_not_called()
+                second_window_on_resize_handler.reset_mock()
             else:
-                assert_window_on_resize(second_window)
+                second_window_on_resize_handler.assert_called_with(second_window)
+                second_window_on_resize_handler.reset_mock()
 
         # Check for visibility event notification
         if initial_state == WindowState.MINIMIZED:
@@ -791,27 +793,24 @@ else:
 
         # Check for resize event notification
         if second_window_probe.supports_resize_detection:
-            if initial_state != final_state:
-                if initial_state == WindowState.NORMAL:
-                    if final_state == WindowState.MINIMIZED:
-                        # on_resize() will not be triggered, as the state change
-                        # between NORMAL <-> MINIMIZED doesn't resize the window.
-                        assert_window_on_resize(second_window, trigger_expected=False)
-                    else:
-                        assert_window_on_resize(second_window)
-                elif (
-                    initial_state == WindowState.MINIMIZED
-                    and final_state == WindowState.NORMAL
-                ):
-                    # on_resize() will not be triggered, as the state change
-                    # between NORMAL <-> MINIMIZED doesn't resize the window.
-                    assert_window_on_resize(second_window, trigger_expected=False)
-                else:
-                    assert_window_on_resize(second_window)
+            # State change between NORMAL <-> MINIMIZED doesn't
+            # constitute a window resize operation.
+            resize_expected = (initial_state != final_state) and not (
+                {initial_state, final_state}
+                == {WindowState.NORMAL, WindowState.MINIMIZED}
+            )
+            if resize_expected:
+                # on_resize() event may be triggered multiple times, depending
+                # upon the backend. For example: for a state change between:
+                # FULLSCREEN -> MAXIMIZED, the actual window transition would
+                # be: FULLSCREEN -> NORMAL -> MAXIMIZED. Therefore, on_resize()
+                # would be triggered multiple times. Hence, just assert that the
+                # on_resize() event has been called.
+                second_window_on_resize_handler.assert_called_with(second_window)
+                second_window_on_resize_handler.reset_mock()
             else:
-                # on_resize() will not be triggered, as the initial
-                # and final states are same.
-                assert_window_on_resize(second_window, trigger_expected=False)
+                second_window_on_resize_handler.assert_not_called()
+                second_window_on_resize_handler.reset_mock()
 
         # Check for visibility event notification
         if initial_state == WindowState.MINIMIZED:
