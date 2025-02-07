@@ -33,6 +33,7 @@ from .libs import (
     NSScreen,
 )
 from .screens import Screen as ScreenImpl
+from .window import TogaWindow
 
 
 class AppDelegate(NSObject):
@@ -47,21 +48,21 @@ class AppDelegate(NSObject):
     @objc_method
     def applicationWillHide_(self, notification):
         self.windows_visible_before_app_hide = [
-            window for window in self.native.windows if window.isVisible
+            window
+            for window in self.native.windows
+            if window.isVisible and isinstance(window, TogaWindow)
         ]
 
     @objc_method
     def applicationDidHide_(self, notification):
         for window in self.windows_visible_before_app_hide:
-            if getattr(window, "interface", None) is not None:
-                window.interface.on_hide()
+            window.interface.on_hide()
 
     @objc_method
     def applicationDidUnhide_(self, notification):
-        for window in self.windows_visible_before_app_hide:
-            if getattr(window, "interface", None) is not None:
-                window.interface.on_show()
-        self.windows_visible_before_app_hide.clear()
+        for window in self.interface.windows:
+            if window.visible:
+                window.on_show()
 
     @objc_method
     def applicationSupportsSecureRestorableState_(self, app) -> bool:
