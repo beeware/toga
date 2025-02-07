@@ -132,13 +132,6 @@ class Pack(BaseStyle):
         }
         super().update(**properties)
 
-    # Pack.alignment is still an actual property, despite being deprecated, so we need
-    # to suppress deprecation warnings when reapply is called.
-    # def reapply(self, *args, **kwargs):
-    #     with warnings.catch_warnings():
-    #         warnings.filterwarnings("ignore", category=DeprecationWarning)
-    #         super().apply(*args, **kwargs)
-
     _DEPRECATED_PROPERTIES = {
         # Map each deprecated property name to its replacement.
         # alignment / align_items is handled separately.
