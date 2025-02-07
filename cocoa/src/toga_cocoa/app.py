@@ -13,6 +13,7 @@ from rubicon.objc.eventloop import CocoaLifecycle, EventLoopPolicy
 
 import toga
 from toga.command import Command, Group, Separator
+from toga.constants import WindowState
 from toga.handlers import NativeHandler
 
 from .command import Command as CommandImpl, submenu_for_group
@@ -33,7 +34,6 @@ from .libs import (
     NSScreen,
 )
 from .screens import Screen as ScreenImpl
-from .window import TogaWindow
 
 
 class AppDelegate(NSObject):
@@ -47,16 +47,11 @@ class AppDelegate(NSObject):
 
     @objc_method
     def applicationWillHide_(self, notification):
-        self.windows_visible_before_app_hide = [
-            window
-            for window in self.native.windows
-            if window.isVisible and isinstance(window, TogaWindow)
-        ]
-
-    @objc_method
-    def applicationDidHide_(self, notification):
-        for window in self.windows_visible_before_app_hide:
-            window.interface.on_hide()
+        for window in self.interface.windows:
+            # on_hide() is triggered only on windows which are in
+            # visible-to-user (i.e., not in minimized or hidden).
+            if window.visible and window.state != WindowState.MINIMIZED:
+                window.on_hide()
 
     @objc_method
     def applicationDidUnhide_(self, notification):
