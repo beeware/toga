@@ -1,5 +1,7 @@
 from unittest.mock import call
 
+import pytest
+
 from toga.colors import rgb
 from toga.fonts import Font
 from toga.style.pack import (
@@ -7,6 +9,7 @@ from toga.style.pack import (
     HIDDEN,
     LEFT,
     RIGHT,
+    ROW,
     RTL,
     VISIBLE,
     Pack,
@@ -118,3 +121,10 @@ def test_set_visibility_inherited():
     # Show grandparent again; the other two should reappear.
     grandparent.style.visibility = VISIBLE
     assert_hidden_called(False, False, False)
+
+
+def test_apply_deprecated_signature():
+    """Calling apply() with a second argument raises a DeprecationWarning."""
+    style = Pack()
+    with pytest.warns(DeprecationWarning):
+        style.apply("direction", ROW)
