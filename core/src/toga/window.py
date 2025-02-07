@@ -162,14 +162,10 @@ class OnResizeHandler(Protocol):
     def __call__(self, window: Window, **kwargs: Any) -> None:
         """A handler to invoke when a window resizes.
 
-        This event is also triggered when the window state changes between
-        :any:`WindowState.NORMAL` and any of the following states:
-        :any:`WindowState.MAXIMIZED`, :any:`WindowState.FULLSCREEN`,
-        or :any:`WindowState.PRESENTATION`.
-
-        However, it is *not* triggered when changing between
-        :any:`WindowState.NORMAL` and :any:`WindowState.MINIMIZED`,
-        as this does not resize the window.
+        This event is also triggered when any change in available layout size occurs.
+        However, a change in visibility (e.g. when a window is hidden or minimized)
+        does not cause a change in layout size and therefore, the event will not be
+        triggered.
 
         On mobile platforms, it is also triggered when the orientation of the
         device is changed.
