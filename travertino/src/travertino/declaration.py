@@ -361,7 +361,6 @@ class BaseStyle:
     ######################################################################
 
     def apply(self, name):
-        print("Calling base style somehow?")
         raise NotImplementedError(
             "Style must define an apply method"
         )  # pragma: no cover
