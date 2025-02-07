@@ -14,7 +14,7 @@ class TogaApplicator:
     """Apply styles to a Toga widget."""
 
     ######################################################################
-    # 2024-12: Backwards compatibility for <= 0.4.8
+    # 2024-12: Backwards compatibility for < 0.5.0
     ######################################################################
 
     def __init__(self, widget: None = None):
