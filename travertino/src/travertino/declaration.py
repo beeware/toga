@@ -316,7 +316,7 @@ class BaseStyle:
 
         if value is not None:
             try:
-                self.apply_all()
+                self.reapply()
             # This is backwards compatibility for Toga, which (at least as of
             # 0.4.8), assigns style and applicator before the widget's
             # implementation is available.
@@ -330,7 +330,7 @@ class BaseStyle:
                     stacklevel=2,
                 )
 
-    def apply_all(self):
+    def reapply(self):
         for name in self._PROPERTIES:
             self.apply(name)
 

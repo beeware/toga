@@ -1,4 +1,4 @@
-from unittest.mock import Mock, call
+from unittest.mock import call
 
 import pytest
 
@@ -20,7 +20,7 @@ from .utils import ExampleNode, ExampleParentNode
 
 def test_set_default_right_textalign_when_rtl():
     root = ExampleNode("app", style=Pack(text_direction=RTL))
-    root.style.apply_all()
+    root.style.reapply()
     # Two calls; one caused by text_align, one because text_direction
     # implies a change to text alignment.
     assert root._impl.set_text_align.mock_calls == [call(RIGHT), call(RIGHT)]
@@ -28,7 +28,7 @@ def test_set_default_right_textalign_when_rtl():
 
 def test_set_default_left_textalign_when_no_rtl():
     root = ExampleNode("app", style=Pack())
-    root.style.apply_all()
+    root.style.reapply()
     # Two calls; one caused by text_align, one because text_direction
     # implies a change to text alignment.
     assert root._impl.set_text_align.mock_calls == [call(LEFT), call(LEFT)]
@@ -36,21 +36,21 @@ def test_set_default_left_textalign_when_no_rtl():
 
 def test_set_center_text_align():
     root = ExampleNode("app", style=Pack(text_align="center"))
-    root.style.apply_all()
+    root.style.reapply()
     root._impl.set_text_align.assert_called_once_with(CENTER)
 
 
 def test_set_color():
     color = "#ffffff"
     root = ExampleNode("app", style=Pack(color=color))
-    root.style.apply_all()
+    root.style.reapply()
     root._impl.set_color.assert_called_once_with(rgb(255, 255, 255))
 
 
 def test_set_background_color():
     color = "#ffffff"
     root = ExampleNode("app", style=Pack(background_color=color))
-    root.style.apply_all()
+    root.style.reapply()
     root._impl.set_background_color.assert_called_once_with(rgb(255, 255, 255))
 
 
@@ -65,7 +65,7 @@ def test_set_font():
             font_weight="bold",
         ),
     )
-    root.style.apply_all()
+    root.style.reapply()
     root._impl.set_font.assert_called_with(
         Font("Roboto", 12, style="normal", variant="small-caps", weight="bold")
     )
@@ -74,7 +74,7 @@ def test_set_font():
 
 def test_set_visibility_hidden():
     root = ExampleNode("app", style=Pack(visibility=HIDDEN))
-    root.style.apply_all()
+    root.style.reapply()
     root._impl.set_hidden.assert_called_once_with(True)
 
 
@@ -128,12 +128,3 @@ def test_apply_deprecated_signature():
     style = Pack()
     with pytest.warns(DeprecationWarning):
         style.apply("direction", ROW)
-
-
-def test_reapply_deprecated_name():
-    """Callying reapply instead of apply_all raises a DeprecationWarning."""
-    style = Pack()
-    style.apply_all = Mock()
-    with pytest.warns(DeprecationWarning):
-        style.reapply()
-    style.apply_all.assert_called_once()

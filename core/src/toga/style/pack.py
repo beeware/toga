@@ -133,11 +133,11 @@ class Pack(BaseStyle):
         super().update(**properties)
 
     # Pack.alignment is still an actual property, despite being deprecated, so we need
-    # to suppress deprecation warnings when apply_all is called.
-    def apply_all(self, *args, **kwargs):
+    # to suppress deprecation warnings when reapply is called.
+    def reapply(self, *args, **kwargs):
         with warnings.catch_warnings():
             warnings.filterwarnings("ignore", category=DeprecationWarning)
-            super().apply_all(*args, **kwargs)
+            super().reapply(*args, **kwargs)
 
     _DEPRECATED_PROPERTIES = {
         # Map each deprecated property name to its replacement.
@@ -256,18 +256,6 @@ class Pack(BaseStyle):
 
     def __delitem__(self, name):
         super().__delitem__(self._update_property_name(name.replace("-", "_")))
-
-    ######################################################################
-    # 2025-02: Backwards compatibility for Toga <= 0.4.8
-    ######################################################################
-
-    def reapply(self):
-        warnings.warn(
-            ("Pack.reapply() is deprecated; use Pack.apply_all() instead."),
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        self.apply_all()
 
     ######################################################################
     # End backwards compatibility

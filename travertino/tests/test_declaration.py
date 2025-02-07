@@ -98,8 +98,8 @@ class Sibling(BaseStyle):
 
 
 @prep_style_class
-@mock_attr("apply_all")
-class MockedApplyAllStyle(BaseStyle):
+@mock_attr("reapply")
+class MockedReapplyStyle(BaseStyle):
     pass
 
 
@@ -134,19 +134,19 @@ def test_create_and_copy(StyleClass):
 
 
 def test_deprecated_copy():
-    style = MockedApplyAllStyle()
+    style = MockedReapplyStyle()
 
     with pytest.warns(DeprecationWarning):
         style_copy = style.copy(applicator=object())
 
-    style_copy.apply_all.assert_called_once()
+    style_copy.reapply.assert_called_once()
 
 
 @pytest.mark.parametrize("StyleClass", [Style, DeprecatedStyle])
-def test_apply_all(StyleClass):
+def test_reapply(StyleClass):
     style = StyleClass(explicit_const=VALUE2, implicit=VALUE3)
 
-    style.apply_all()
+    style.reapply()
     style.apply.assert_has_calls(
         [
             call("explicit_const"),
