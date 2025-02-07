@@ -15,8 +15,8 @@ formal_name = "Text Input Demo"
 description = "A testing app"
 sources = ["textinput"]
 requires = [
-    "../../core",
     "../../travertino",
+    "../../core",
 ]
 
 

@@ -15,8 +15,8 @@ formal_name = "Layout Test"
 description = "A testing app"
 sources = ["layout"]
 requires = [
-    "../../core",
     "../../travertino",
+    "../../core",
 ]
 
 

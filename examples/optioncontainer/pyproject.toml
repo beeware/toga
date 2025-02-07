@@ -15,8 +15,8 @@ formal_name = "Option Container Example"
 description = "A testing app"
 sources = ["optioncontainer"]
 requires = [
-    "../../core",
     "../../travertino",
+    "../../core",
 ]
 
 

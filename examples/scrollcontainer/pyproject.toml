@@ -15,8 +15,8 @@ formal_name = "ScrollContainer Demo"
 description = "A testing app"
 sources = ["scrollcontainer"]
 requires = [
-    "../../core",
     "../../travertino",
+    "../../core",
 ]
 
 

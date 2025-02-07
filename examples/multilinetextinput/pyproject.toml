@@ -15,8 +15,8 @@ formal_name = "MultilineTextInput Demo"
 description = "A testing app"
 sources = ["multilinetextinput"]
 requires = [
-    "../../core",
     "../../travertino",
+    "../../core",
 ]
 
 

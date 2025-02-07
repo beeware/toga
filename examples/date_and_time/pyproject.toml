@@ -15,8 +15,8 @@ formal_name = "Date And Time"
 description = "A testing app"
 sources = ["date_and_time"]
 requires = [
-    "../../core",
     "../../travertino",
+    "../../core",
 ]
 
 
