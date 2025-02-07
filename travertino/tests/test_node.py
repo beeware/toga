@@ -56,7 +56,6 @@ class OldTypeErrorStyle(Style):
 @prep_style_class
 class BrokenStyle(BaseStyle):
     def apply(self):
-        print("Broken apply called")
         raise AttributeError("Missing attribute, node not ready for style application")
 
     class IntrinsicSize(BaseIntrinsicSize):

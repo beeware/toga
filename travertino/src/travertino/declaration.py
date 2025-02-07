@@ -316,12 +316,10 @@ class BaseStyle:
 
         if value is not None:
             try:
-                print("Going to call apply now")
                 self.apply()
-                print("After calling apply")
-            # This is backwards compatibility for Toga, which (at least as of
-            # 0.4.8), assigns style and applicator before the widget's
-            # implementation is available.
+            ######################################################################
+            # 10-2024: Backwards compatibility for Toga <= 0.5.0
+            ######################################################################
             except Exception:
                 warn(
                     "Failed to apply style when assigning applicator, or when "
@@ -331,6 +329,9 @@ class BaseStyle:
                     RuntimeWarning,
                     stacklevel=2,
                 )
+            ######################################################################
+            # End backwards compatibility
+            ######################################################################
 
     def copy(self, applicator=None):
         """Create a duplicate of this style declaration."""
@@ -338,7 +339,7 @@ class BaseStyle:
         dup.update(**self)
 
         ######################################################################
-        # 10-2024: Backwards compatibility for Toga <= 0.4.8
+        # 10-2024: Backwards compatibility for Toga <= 0.5.0
         ######################################################################
 
         if applicator is not None:
