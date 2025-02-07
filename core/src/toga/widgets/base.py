@@ -94,7 +94,7 @@ class Widget(Node, PackMixin):
 
     @property
     def id(self) -> str:
-        """A unique identifier for the widget."""
+        """A unique identifier for the widget (read-only)."""
         return self._id
 
     @property
