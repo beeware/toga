@@ -56,10 +56,10 @@ class AppProbe(BaseProbe, DialogsMixin):
         return self.app._impl._cursor_visible
 
     def hide(self):
-        self.app._impl.native.hide_(self.app._impl.native)
+        self.app._impl.native.hide(self.app._impl.native)
 
     def unhide(self):
-        self.app._impl.native.unhide_(self.app._impl.native)
+        self.app._impl.native.unhide(self.app._impl.native)
 
     def assert_app_icon(self, icon):
         # We have no real way to check we've got the right icon; use pixel peeping as a
