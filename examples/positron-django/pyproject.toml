@@ -16,8 +16,8 @@ description = "Electron, but in Python"
 icon = "src/positron/resources/positron"
 sources = ["src/positron", "src/webapp"]
 requires = [
-    "../../core",
     "../../travertino",
+    "../../core",
     "django~=4.1",
 ]
 

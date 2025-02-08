@@ -15,8 +15,8 @@ formal_name = "Activity Indicator"
 description = "A testing app"
 sources = ["activityindicator"]
 requires = [
-    "../../core",
     "../../travertino",
+    "../../core",
 ]
 
 

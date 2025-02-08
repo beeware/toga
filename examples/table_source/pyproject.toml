@@ -15,8 +15,8 @@ formal_name = "TableSource Demo"
 description = "A testing app"
 sources = ["table_source"]
 requires = [
-    "../../core",
     "../../travertino",
+    "../../core",
 ]
 
 

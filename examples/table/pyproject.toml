@@ -15,8 +15,8 @@ formal_name = "Table Demo"
 description = "A testing app"
 sources = ["table"]
 requires = [
-    "../../core",
     "../../travertino",
+    "../../core",
 ]
 
 [tool.briefcase.app.table.macOS]

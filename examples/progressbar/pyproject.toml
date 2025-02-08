@@ -15,8 +15,8 @@ formal_name = "ProgressBar demo"
 description = "A testing app"
 sources = ["progressbar"]
 requires = [
-    "../../core",
     "../../travertino",
+    "../../core",
 ]
 
 
