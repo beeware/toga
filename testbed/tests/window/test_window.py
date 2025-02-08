@@ -761,16 +761,15 @@ else:
         assert second_window_probe.instantaneous_state == initial_state
 
         # Check for resize event notification
-        if second_window_probe.supports_resize_detection:
-            if initial_state in {WindowState.NORMAL, WindowState.MINIMIZED}:
-                # on_resize() will not be triggered, as the state change
-                # between NORMAL <-> MINIMIZED doesn't resize the window,
-                # and state change between NORMAL <-> NORMAL is a no-op.
-                second_window_on_resize_handler.assert_not_called()
-                second_window_on_resize_handler.reset_mock()
-            else:
-                second_window_on_resize_handler.assert_called_with(second_window)
-                second_window_on_resize_handler.reset_mock()
+        if initial_state in {WindowState.NORMAL, WindowState.MINIMIZED}:
+            # on_resize() will not be triggered, as the state change
+            # between NORMAL <-> MINIMIZED doesn't resize the window,
+            # and state change between NORMAL <-> NORMAL is a no-op.
+            second_window_on_resize_handler.assert_not_called()
+            second_window_on_resize_handler.reset_mock()
+        else:
+            second_window_on_resize_handler.assert_called_with(second_window)
+            second_window_on_resize_handler.reset_mock()
 
         # Check for visibility event notification
         if initial_state == WindowState.MINIMIZED:
@@ -792,25 +791,23 @@ else:
         assert second_window_probe.instantaneous_state == final_state
 
         # Check for resize event notification
-        if second_window_probe.supports_resize_detection:
-            # State change between NORMAL <-> MINIMIZED doesn't
-            # constitute a window resize operation.
-            resize_expected = (initial_state != final_state) and not (
-                {initial_state, final_state}
-                == {WindowState.NORMAL, WindowState.MINIMIZED}
-            )
-            if resize_expected:
-                # on_resize() event may be triggered multiple times, depending
-                # upon the backend. For example: for a state change between:
-                # FULLSCREEN -> MAXIMIZED, the actual window transition would
-                # be: FULLSCREEN -> NORMAL -> MAXIMIZED. Therefore, on_resize()
-                # would be triggered multiple times. Hence, just assert that the
-                # on_resize() event has been called.
-                second_window_on_resize_handler.assert_called_with(second_window)
-                second_window_on_resize_handler.reset_mock()
-            else:
-                second_window_on_resize_handler.assert_not_called()
-                second_window_on_resize_handler.reset_mock()
+        # State change between NORMAL <-> MINIMIZED doesn't
+        # constitute a window resize operation.
+        resize_expected = (initial_state != final_state) and not (
+            {initial_state, final_state} == {WindowState.NORMAL, WindowState.MINIMIZED}
+        )
+        if resize_expected:
+            # on_resize() event may be triggered multiple times, depending
+            # upon the backend. For example: for a state change between:
+            # FULLSCREEN -> MAXIMIZED, the actual window transition would
+            # be: FULLSCREEN -> NORMAL -> MAXIMIZED. Therefore, on_resize()
+            # would be triggered multiple times. Hence, just assert that the
+            # on_resize() event has been called.
+            second_window_on_resize_handler.assert_called_with(second_window)
+            second_window_on_resize_handler.reset_mock()
+        else:
+            second_window_on_resize_handler.assert_not_called()
+            second_window_on_resize_handler.reset_mock()
 
         # Check for visibility event notification
         if initial_state == WindowState.MINIMIZED:
@@ -1112,9 +1109,6 @@ else:
     async def test_resize_event(second_window, second_window_probe):
         """The window can trigger on_resize() event handler, when the window
         size is changed."""
-        if not second_window_probe.supports_resize_detection:
-            pytest.skip("GTK4 doesn't support detection of window resize events.")
-
         second_window.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
         second_window.show()
         second_window_on_resize_handler = Mock()

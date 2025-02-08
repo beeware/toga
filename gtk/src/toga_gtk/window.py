@@ -47,9 +47,8 @@ class Window:
             self.native.connect("notify::fullscreened", self.gtk_window_state_event)
             self.native.connect("notify::maximized", self.gtk_window_state_event)
             self.native.connect("notify::minimized", self.gtk_window_state_event)
-            # Gtk4 has removed configure-event signal, the recommended signals are
-            # notify::default-width and notify::default-height, but they are not
-            # triggered consistently like configure-event, when the window is resized.
+            self.native.connect("notify::default-width", self.gtk_configure_event)
+            self.native.connect("notify::default-height", self.gtk_configure_event)
 
         self._window_state_flags = None
         self._in_presentation = False
@@ -91,7 +90,7 @@ class Window:
     ######################################################################
     # Native event handlers
     ######################################################################
-    def gtk_configure_event(self, widget, data):  # pragma: no-cover-if-gtk4
+    def gtk_configure_event(self, widget, data):
         self.interface.on_resize()
 
     def gtk_show(self, widget):

@@ -246,6 +246,17 @@ class Window:
         self._closable = closable
         self._minimizable = minimizable
 
+        # Prime up the event handlers on the interface, as they might be
+        # called during the initialization of the native window class.
+        self.on_close = on_close
+
+        self.on_gain_focus = on_gain_focus
+        self.on_lose_focus = on_lose_focus
+        self.on_show = on_show
+        self.on_hide = on_hide
+
+        self.on_resize = on_resize
+
         # The app needs to exist before windows are created. _app will only be None
         # until the window is added to the app below.
         self._app: App = None
@@ -266,15 +277,6 @@ class Window:
         # If content has been provided, set it
         if content:
             self.content = content
-
-        self.on_close = on_close
-
-        self.on_gain_focus = on_gain_focus
-        self.on_lose_focus = on_lose_focus
-        self.on_show = on_show
-        self.on_hide = on_hide
-
-        self.on_resize = on_resize
 
     def __lt__(self, other: Window) -> bool:
         return self.id < other.id
