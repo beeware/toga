@@ -5,7 +5,7 @@ amongst
 AndroidX
 App
 apps
-Async
+async
 awaitable
 backend
 backends
@@ -28,6 +28,7 @@ Flexbox
 GBulb
 GeoClue
 geolocation
+getter
 GMail
 GObject
 Gradle
