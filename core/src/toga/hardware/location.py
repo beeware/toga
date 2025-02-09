@@ -141,7 +141,7 @@ class Location:
     def on_change(self, handler: OnLocationChangeHandler) -> None:
         self._on_change = wrapped_handler(self, handler)
 
-    def start_tracking(self, location_mode) -> None:
+    def start_tracking(self, location_mode=LocationMode.CONTINUOUS) -> None:
         """Start monitoring the user's location for changes.
 
         An :any:`on_change` callback will be generated when the user's location
