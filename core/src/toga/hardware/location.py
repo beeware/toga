@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, Protocol
 
 import toga
+from toga.constants import LocationMode
 from toga.handlers import AsyncResult, PermissionResult, wrapped_handler
 from toga.platform import get_platform_factory
 
@@ -140,7 +141,7 @@ class Location:
     def on_change(self, handler: OnLocationChangeHandler) -> None:
         self._on_change = wrapped_handler(self, handler)
 
-    def start_tracking(self) -> None:
+    def start_tracking(self, location_mode) -> None:
         """Start monitoring the user's location for changes.
 
         An :any:`on_change` callback will be generated when the user's location
@@ -150,7 +151,18 @@ class Location:
             use location services.
         """
         if self.has_permission:
-            self._impl.start_tracking()
+            if location_mode == LocationMode.CONTINUOUS:
+                self._impl.start_tracking()
+            elif location_mode == LocationMode.SIGNIFICANT:
+                self._impl.start_significant_tracking()
+            elif location_mode == LocationMode.VISITS:
+                self._impl.start_visits_tracking()
+            else:
+                raise ValueError(
+                    f"Invalid mode: {location_mode}. Must be one of CONTINUOUS, "
+                    f"VISITS, SIGNIFICANT."
+                )
+
         else:
             raise PermissionError(
                 "App does not have permission to use location services"
