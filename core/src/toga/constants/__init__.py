@@ -131,5 +131,4 @@ class LocationMode(Enum):
     or departs from a place of interest and delivers location updates only at
     those transition points.
     NOTE: Currently only supported on iOS and MacOS
-
     """
