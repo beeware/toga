@@ -16,7 +16,7 @@ if TYPE_CHECKING:  # pragma: no cover
     from toga.types import PositionT, SizeT
 
 
-class TogaWindow(Gtk.Window):
+class TogaWindow(Gtk.Window):  # pragma: no-cover-if-gtk3
     def __init__(self, interface, impl):
         self.interface = interface
         self.impl = impl
@@ -31,7 +31,7 @@ class TogaWindow(Gtk.Window):
             self.interface.on_resize()
 
 
-class TogaMainWindow(Gtk.ApplicationWindow):
+class TogaMainWindow(Gtk.ApplicationWindow):  # pragma: no-cover-if-gtk3
     def __init__(self, interface, impl):
         self.interface = interface
         self.impl = impl
