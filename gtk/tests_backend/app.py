@@ -44,9 +44,6 @@ class AppProbe(BaseProbe, DialogsMixin):
     def is_cursor_visible(self):
         pytest.skip("Cursor visibility not implemented on GTK")
 
-    def hide(self):
-        pytest.xfail("This platform doesn't have an app level hide.")
-
     def unhide(self):
         pytest.xfail("This platform doesn't have an app level unhide.")
 

@@ -100,9 +100,6 @@ class AppProbe(BaseProbe, DialogsMixin):
         # input through touch or pen instead of the mouse"). hCursor is more reliable.
         return info.hCursor is not None
 
-    def hide(self):
-        pytest.xfail("This platform doesn't have an app level hide.")
-
     def unhide(self):
         pytest.xfail("This platform doesn't have an app level unhide.")
 

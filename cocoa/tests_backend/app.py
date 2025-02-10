@@ -55,9 +55,6 @@ class AppProbe(BaseProbe, DialogsMixin):
         # fall back to the implementation's proxy variable.
         return self.app._impl._cursor_visible
 
-    def hide(self):
-        self.app._impl.native.hide(self.app._impl.native)
-
     def unhide(self):
         self.app._impl.native.unhide(self.app._impl.native)
 

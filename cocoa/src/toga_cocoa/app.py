@@ -39,7 +39,6 @@ from .screens import Screen as ScreenImpl
 class AppDelegate(NSObject):
     interface = objc_property(object, weak=True)
     impl = objc_property(object, weak=True)
-    windows_visible_before_app_hide = []
 
     @objc_method
     def applicationDidFinishLaunching_(self, notification):
@@ -56,7 +55,9 @@ class AppDelegate(NSObject):
     @objc_method
     def applicationDidUnhide_(self, notification):
         for window in self.interface.windows:
-            if window.visible:
+            # on_show() is triggered only on windows which are in
+            # visible-to-user (i.e., not in minimized or hidden).
+            if window.visible and window.state != WindowState.MINIMIZED:
                 window.on_show()
 
     @objc_method
