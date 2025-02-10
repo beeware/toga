@@ -354,7 +354,7 @@ class Window:
 
     def get_visible(self):
         # Although we are blocking (changes to window state when in hidden condition)
-        # and (changes to visibility when in minimized state), but the window can get
+        # and (changes to visibility when in minimized state), but the window will get
         # hidden when the app level hide option is activated from the global app menu.
         # Hence, also check the visibility of the app, so that we can correctly infer
         # the window visibility when app level hide is activated.
