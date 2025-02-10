@@ -63,7 +63,12 @@ class TogaWebView(WKWebView):
 
     @objc_method
     def webView_didFinishNavigation_(self, navigation) -> None:
-        self.interface.on_webview_load()
+        # It's possible for this handler to be invoked *after* the interface object has
+        # been destroyed. If the interface doesn't exist there's no handler to invoke
+        # either, so ignore the edge case. This can't be reproduced reliably, so don't
+        # check coverage on the `self.interface is None` case.
+        if self.interface:  # pragma: no branch
+            self.interface.on_webview_load()
 
         if self.impl.loaded_future:
             self.impl.loaded_future.set_result(None)
