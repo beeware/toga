@@ -919,7 +919,7 @@ class App:
         self.loop.call_soon_threadsafe(wrapped_handler(self, handler))
 
     ######################################################################
-    # 2024-12: Backwards compatibility for <= 0.4.8
+    # 2024-12: Backwards compatibility for < 0.5.0
     ######################################################################
 
     def exit_full_screen(self) -> None:

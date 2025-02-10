@@ -15,8 +15,8 @@ formal_name = "Beeliza"
 description = "A testing app"
 sources = ["beeliza"]
 requires = [
-    "../../core",
     "../../travertino",
+    "../../core",
 ]
 
 

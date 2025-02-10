@@ -15,8 +15,8 @@ formal_name = "WebView Demo"
 description = "A demo app using all WebView features"
 sources = ["webview"]
 requires = [
-    "../../core",
     "../../travertino",
+    "../../core",
 ]
 
 [tool.briefcase.app.webview.macOS]

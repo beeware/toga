@@ -15,8 +15,8 @@ formal_name = "Resize Test"
 description = "A testing app"
 sources = ["resize"]
 requires = [
-    "../../core",
     "../../travertino",
+    "../../core",
 ]
 
 

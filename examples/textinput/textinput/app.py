@@ -1,3 +1,4 @@
+import asyncio
 from string import ascii_lowercase, ascii_uppercase, digits
 
 import toga
@@ -10,7 +11,7 @@ EMPTY_PASSWORD = "Empty password"
 
 class TextInputApp(toga.App):
     # Button callback functions
-    def do_extract_values(self, widget, **kwargs):
+    async def do_extract_values(self, widget, **kwargs):
         # Disable all the text inputs
         for input in self.inputs:
             input.enabled = False
@@ -38,7 +39,7 @@ class TextInputApp(toga.App):
         # Wait a few seconds
         for i in range(2, 0, -1):
             self.label.text = f"Counting down from {i}..."
-            yield 1
+            await asyncio.sleep(1)
         self.label.text = "Enter some values and press extract."
 
         # Re-enable the inputs again.

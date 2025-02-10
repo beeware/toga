@@ -179,6 +179,11 @@ def test_function_handler_with_cleanup_error(capsys):
     )
 
 
+######################################################################
+# 2025-02: Generator handlers deprecated in 0.5.0
+######################################################################
+
+
 def test_generator_handler(event_loop):
     """A generator can be used as a handler."""
     obj = Mock()
@@ -198,10 +203,15 @@ def test_generator_handler(event_loop):
     # Raw handler is the original generator
     assert wrapped._raw == handler
 
-    # Invoke the handler, and run until it is complete.
-    assert (
-        event_loop.run_until_complete(wrapped("arg1", "arg2", kwarg1=3, kwarg2=4)) == 42
-    )
+    # Invoke the handler, and run until it is complete. Raises a deprecation warning.
+    with pytest.warns(
+        DeprecationWarning,
+        match=r"Use of generators for async handlers has been deprecated;",
+    ):
+        assert (
+            event_loop.run_until_complete(wrapped("arg1", "arg2", kwarg1=3, kwarg2=4))
+            == 42
+        )
 
     # Handler arguments are as expected.
     assert handler_call == {
@@ -228,11 +238,16 @@ def test_generator_handler_error(event_loop, capsys):
     # Raw handler is the original generator
     assert wrapped._raw == handler
 
-    # Invoke the handler; return value is None due to exception
-    assert (
-        event_loop.run_until_complete(wrapped("arg1", "arg2", kwarg1=3, kwarg2=4))
-        is None
-    )
+    # Invoke the handler; raises a deprecation warning, return value is None due to
+    # exception.
+    with pytest.warns(
+        DeprecationWarning,
+        match=r"Use of generators for async handlers has been deprecated;",
+    ):
+        assert (
+            event_loop.run_until_complete(wrapped("arg1", "arg2", kwarg1=3, kwarg2=4))
+            is None
+        )
 
     # Handler arguments are as expected.
     assert handler_call == {
@@ -267,10 +282,15 @@ def test_generator_handler_with_cleanup(event_loop):
     # Raw handler is the original generator
     assert wrapped._raw == handler
 
-    # Invoke the handler
-    assert (
-        event_loop.run_until_complete(wrapped("arg1", "arg2", kwarg1=3, kwarg2=4)) == 42
-    )
+    # Invoke the handler; raises a deprecation warning
+    with pytest.warns(
+        DeprecationWarning,
+        match=r"Use of generators for async handlers has been deprecated;",
+    ):
+        assert (
+            event_loop.run_until_complete(wrapped("arg1", "arg2", kwarg1=3, kwarg2=4))
+            == 42
+        )
 
     # Handler arguments are as expected.
     assert handler_call == {
@@ -304,10 +324,15 @@ def test_generator_handler_with_cleanup_error(event_loop, capsys):
     # Raw handler is the original generator
     assert wrapped._raw == handler
 
-    # Invoke the handler; error in cleanup is swallowed
-    assert (
-        event_loop.run_until_complete(wrapped("arg1", "arg2", kwarg1=3, kwarg2=4)) == 42
-    )
+    # Invoke the handler; raises a deprecation warning, error in cleanup is swallowed
+    with pytest.warns(
+        DeprecationWarning,
+        match=r"Use of generators for async handlers has been deprecated;",
+    ):
+        assert (
+            event_loop.run_until_complete(wrapped("arg1", "arg2", kwarg1=3, kwarg2=4))
+            == 42
+        )
 
     # Handler arguments are as expected.
     assert handler_call == {
@@ -325,6 +350,9 @@ def test_generator_handler_with_cleanup_error(event_loop, capsys):
         "Error in long running handler cleanup: Problem in cleanup\n"
         "Traceback (most recent call last):\n" in capsys.readouterr().err
     )
+
+
+######################################################################
 
 
 def test_coroutine_handler(event_loop):

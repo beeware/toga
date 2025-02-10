@@ -3,6 +3,8 @@ from decimal import ROUND_UP
 import System.Windows.Forms as WinForms
 from travertino.size import at_least
 
+from toga.colors import TRANSPARENT
+
 from ..libs.wrapper import WeakrefCallable
 from .base import Widget
 
@@ -10,6 +12,7 @@ from .base import Widget
 class Switch(Widget):
     def create(self):
         self.native = WinForms.CheckBox()
+        self._default_background_color = TRANSPARENT
         self.native.CheckedChanged += WeakrefCallable(self.winforms_checked_changed)
 
     def winforms_checked_changed(self, sender, event):

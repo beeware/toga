@@ -15,8 +15,8 @@ formal_name = "Demo NumberInput"
 description = "A testing app"
 sources = ["numberinput"]
 requires = [
-    "../../core",
     "../../travertino",
+    "../../core",
 ]
 
 

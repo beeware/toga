@@ -15,8 +15,8 @@ formal_name = "Tutorial 0"
 description = "A testing app"
 sources = ["tutorial"]
 requires = [
-    "../../core",
     "../../travertino",
+    "../../core",
 ]
 
 

@@ -52,9 +52,9 @@ class Widget(Node, PackMixin):
         # Get factory and assign implementation
         self.factory = get_platform_factory()
 
-        ####################################################
-        # 2024-12: Backwards compatibility for Toga <= 0.4.8
-        ####################################################
+        ##################################################################
+        # 2024-12: Backwards compatibility for Toga < 0.5.0
+        ##################################################################
 
         # Just in case we're working with a third-party widget created before
         # the _create() mechanism was added, which has already defined its

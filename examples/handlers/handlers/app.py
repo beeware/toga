@@ -15,7 +15,6 @@ class HandlerApp(toga.App):
         self.on_running_label.text = "Ready."
         self.background_label.text = "Ready."
         self.function_label.text = "Ready."
-        self.generator_label.text = "Ready."
         self.async_label.text = "Ready."
 
     def do_function(self, widget, **kwargs):
@@ -24,17 +23,6 @@ class HandlerApp(toga.App):
         self.function_label.text = "Here's a random number: {}".format(
             random.randint(0, 100)
         )
-
-    def do_generator(self, widget, **kwargs):
-        """A generator-based handler."""
-        # The generator yields a number; that number is the number of seconds
-        # to yield to the main event loop before processing is resumed.
-        widget.enabled = False
-        for i in range(1, 10):
-            self.generator_label.text = f"Iteration {i}"
-            yield 1
-        self.generator_label.text = "Ready."
-        widget.enabled = True
 
     async def do_async(self, widget, **kwargs):
         """An async handler."""
@@ -81,7 +69,6 @@ class HandlerApp(toga.App):
         self.on_running_label = toga.Label("Ready.", style=Pack(margin=10))
         self.background_label = toga.Label("Ready.", style=Pack(margin=10))
         self.function_label = toga.Label("Ready.", style=Pack(margin=10))
-        self.generator_label = toga.Label("Ready.", style=Pack(margin=10))
         self.async_label = toga.Label("Ready.", style=Pack(margin=10))
         self.web_label = toga.Label("Ready.", style=Pack(margin=10))
 
@@ -93,9 +80,6 @@ class HandlerApp(toga.App):
         btn_style = Pack(flex=1)
         btn_function = toga.Button(
             "Function callback", on_press=self.do_function, style=btn_style
-        )
-        btn_generator = toga.Button(
-            "Generator callback", on_press=self.do_generator, style=btn_style
         )
         btn_async = toga.Button(
             "Async callback", on_press=self.do_async, style=btn_style
@@ -112,8 +96,6 @@ class HandlerApp(toga.App):
                 self.background_label,
                 btn_function,
                 self.function_label,
-                btn_generator,
-                self.generator_label,
                 btn_async,
                 self.async_label,
                 btn_web,

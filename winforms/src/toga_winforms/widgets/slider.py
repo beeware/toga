@@ -2,6 +2,7 @@ from decimal import ROUND_UP
 
 import System.Windows.Forms as WinForms
 
+from toga.colors import TRANSPARENT
 from toga.widgets.slider import IntSliderImpl
 
 from ..libs.wrapper import WeakrefCallable
@@ -23,6 +24,7 @@ class Slider(Widget, IntSliderImpl):
     def create(self):
         IntSliderImpl.__init__(self)
         self.native = WinForms.TrackBar()
+        self._default_background_color = TRANSPARENT
         self.native.AutoSize = False
 
         # Unlike Scroll, ValueChanged also fires when the value is changed

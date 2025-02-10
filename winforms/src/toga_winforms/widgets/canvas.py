@@ -22,6 +22,7 @@ from System.Drawing.Drawing2D import (
 from System.Drawing.Imaging import ImageFormat
 from System.IO import MemoryStream
 
+from toga.colors import TRANSPARENT
 from toga.constants import Baseline, FillRule
 from toga.widgets.canvas import arc_to_bezier, sweepangle
 from toga_winforms.colors import native_color
@@ -77,6 +78,7 @@ class WinformContext:
 class Canvas(Box):
     def create(self):
         super().create()
+        self._default_background_color = TRANSPARENT
         self.native.DoubleBuffered = True
         self.native.Paint += WeakrefCallable(self.winforms_paint)
         self.native.Resize += WeakrefCallable(self.winforms_resize)
@@ -341,6 +343,16 @@ class Canvas(Box):
         )
 
     def get_image_data(self):
+        # Winforms backgrounds don't honor transparency, so the background that is
+        # rendered to screen manually computes the blended color. However, we want the
+        # image to reflect the background color that has actually been applied to the
+        # image. Temporarily switch out the manually alpha blended background color to
+        # the native system produced background color. Suspending the layout means this
+        # change isn't visible to the user.
+        self.native.SuspendLayout()
+        current_background_color = self.interface.style.background_color
+        self.native.BackColor = native_color(current_background_color)
+
         width, height = (self.native.Width, self.native.Height)
         bitmap = Bitmap(width, height)
         rect = Rectangle(0, 0, width, height)
@@ -350,4 +362,10 @@ class Canvas(Box):
 
         stream = MemoryStream()
         bitmap.Save(stream, ImageFormat.Png)
+
+        # Switch back to the manually alpha blended background color, and resume layout
+        # updates.
+        self.set_background_color(current_background_color)
+        self.native.ResumeLayout()
+
         return bytes(stream.ToArray())

@@ -15,8 +15,8 @@ formal_name = "SplitContainer Demo"
 description = "A testing app"
 sources = ["splitcontainer"]
 requires = [
-    "../../core",
     "../../travertino",
+    "../../core",
 ]
 
 

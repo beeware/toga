@@ -63,10 +63,6 @@ class Widget(ABC, Scalable):
             )
         )
 
-        # Immediately re-apply styles. Some widgets may defer style application until
-        # they have been added to a container.
-        self.interface.style.reapply()
-
     @abstractmethod
     def create(self): ...
 

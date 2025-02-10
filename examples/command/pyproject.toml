@@ -15,8 +15,8 @@ formal_name = "Command Example"
 description = "A testing app"
 sources = ["command"]
 requires = [
-    "../../core",
     "../../travertino",
+    "../../core",
 ]
 
 
