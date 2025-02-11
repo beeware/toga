@@ -10,6 +10,7 @@ from toga.colors import CORNFLOWERBLUE, FIREBRICK, GOLDENROD, REBECCAPURPLE
 from toga.constants import WindowState
 from toga.style.pack import Pack
 
+from ..assertions import assert_window_on_hide, assert_window_on_show
 from ..widgets.probe import get_probe
 from ..window.test_window import window_probe
 
@@ -172,6 +173,73 @@ async def test_menu_minimize(app, app_probe):
         "Extra window minimized", state=WindowState.MINIMIZED
     )
     assert window1_probe.is_minimized
+
+
+async def test_app_level_menu_hide(app, app_probe, main_window, main_window_probe):
+    """The app can be hidden from the global app menu option, thereby hiding all
+    the windows of the app."""
+    initially_visible_window = toga.Window(
+        title="Initially Visible Window",
+        size=(200, 200),
+        content=toga.Box(style=Pack(background_color=CORNFLOWERBLUE)),
+    )
+    initially_visible_window.show()
+
+    initially_hidden_window = toga.Window(
+        title="Initially Hidden Window",
+        size=(200, 200),
+        content=toga.Box(style=Pack(background_color=REBECCAPURPLE)),
+    )
+    initially_hidden_window.hide()
+
+    initially_minimized_window = toga.Window(
+        title="Initially Minimized Window",
+        size=(200, 200),
+        content=toga.Box(style=Pack(background_color=GOLDENROD)),
+    )
+    initially_minimized_window.show()
+    initially_minimized_window.state = WindowState.MINIMIZED
+
+    await window_probe(app, initially_minimized_window).wait_for_window(
+        "Test windows have been setup", state=WindowState.MINIMIZED
+    )
+
+    # Setup event mocks after test windows' setup to prevent false positive triggering.
+    initially_visible_window.on_show = Mock()
+    initially_visible_window.on_hide = Mock()
+
+    initially_hidden_window.on_show = Mock()
+    initially_hidden_window.on_hide = Mock()
+
+    initially_minimized_window.on_show = Mock()
+    initially_minimized_window.on_hide = Mock()
+
+    # Confirm the initial window state
+    assert initially_visible_window.visible
+    assert not initially_hidden_window.visible
+    assert initially_minimized_window.visible
+
+    # Test using the "Hide" option from the global app menu.
+    app_probe.activate_menu_hide()
+    await main_window_probe.wait_for_window("Hide selected from menu, and accepted")
+    assert not initially_visible_window.visible
+    assert not initially_hidden_window.visible
+    assert not initially_minimized_window.visible
+
+    assert_window_on_hide(initially_visible_window)
+    assert_window_on_hide(initially_hidden_window, trigger_expected=False)
+    assert_window_on_hide(initially_minimized_window, trigger_expected=False)
+
+    # Make the app visible again
+    app_probe.unhide()
+    await main_window_probe.wait_for_window("App level unhide has been activated")
+    assert initially_visible_window.visible
+    assert not initially_hidden_window.visible
+    assert initially_minimized_window.visible
+
+    assert_window_on_show(initially_visible_window)
+    assert_window_on_show(initially_hidden_window, trigger_expected=False)
+    assert_window_on_show(initially_minimized_window, trigger_expected=False)
 
 
 async def test_presentation_mode(app, app_probe, main_window, main_window_probe):
