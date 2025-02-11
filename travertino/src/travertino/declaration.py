@@ -137,8 +137,7 @@ class validated_property:
         if obj is None:
             return self
 
-        value = getattr(obj, f"_{self.name}", None)
-        return self.initial if value is None else value
+        return getattr(obj, f"_{self.name}", self.initial)
 
     def __set__(self, obj, value):
         if value is self:
