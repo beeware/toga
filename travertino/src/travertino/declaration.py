@@ -406,7 +406,7 @@ class BaseStyle:
             raise KeyError(name)
 
     def keys(self):
-        return {name for name in self}
+        return {*self}
 
     def items(self):
         return [(name, self[name]) for name in self]
