@@ -16,15 +16,18 @@ if TYPE_CHECKING:  # pragma: no cover
     from toga.types import PositionT, SizeT
 
 
-class TogaWindow(Gtk.Window):
+class GtkVfuncDelegate:
     def __init__(self, interface, impl):
         self.interface = interface
         self.impl = impl
-        super().__init__()
 
     def do_size_allocate(self, width, height, baseline):
         # Call parent's size_allocate first
-        Gtk.Window.do_size_allocate(self, width, height, baseline)
+        if isinstance(self.impl.native, Gtk.Window):
+            native_gtk_class = Gtk.Window
+        else:
+            native_gtk_class = Gtk.ApplicationWindow
+        native_gtk_class.do_size_allocate(self.impl.native, width, height, baseline)
 
         if self.impl._window_size != (width, height):
             self.impl._window_size = Size(width, height)
@@ -33,17 +36,20 @@ class TogaWindow(Gtk.Window):
 
 class TogaMainWindow(Gtk.ApplicationWindow):
     def __init__(self, interface, impl):
-        self.interface = interface
-        self.impl = impl
+        self.gtk_vfunc_delegate = GtkVfuncDelegate(interface, impl)
         super().__init__()
 
     def do_size_allocate(self, width, height, baseline):
-        # Call parent's size_allocate first
-        Gtk.ApplicationWindow.do_size_allocate(self, width, height, baseline)
+        self.gtk_vfunc_delegate.do_size_allocate(width, height, baseline)
 
-        if self.impl._window_size != (width, height):
-            self.impl._window_size = Size(width, height)
-            self.interface.on_resize()
+
+class TogaWindow(Gtk.ApplicationWindow):
+    def __init__(self, interface, impl):
+        self.gtk_vfunc_delegate = GtkVfuncDelegate(interface, impl)
+        super().__init__()
+
+    def do_size_allocate(self, width, height, baseline):
+        self.gtk_vfunc_delegate.do_size_allocate(width, height, baseline)
 
 
 class Window:
