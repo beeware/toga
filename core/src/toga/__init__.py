@@ -1,15 +1,5 @@
-# Enable the standard library compatibility shims before doing anything else.
-#
-# __future__ imports must be at the very top of the file, and MicroPython doesn't
-# currently include a __future__ module, so this file can't contain any __future__
-# imports. Other modules imported after `compat` can use __future__ as normal.
-import sys
-
-if sys.implementation.name != "cpython":  # pragma: no cover
-    from . import compat  # noqa: F401
-
+import importlib
 import warnings
-from importlib import import_module
 
 toga_core_imports = {
     # toga.app imports
@@ -92,21 +82,15 @@ __all__ = list(toga_core_imports.keys())
 
 
 def __getattr__(name):
-    if module_name := toga_core_imports.get(name):
-        module = import_module(module_name)
-        value = getattr(module, name)
+    try:
+        module_name = toga_core_imports[name]
+    except KeyError:
+        raise AttributeError(f"module '{__name__}' has no attribute '{name}'") from None
     else:
-        # MicroPython apparently doesn't attempt a submodule import when __getattr__
-        # raises AttributeError, so we need to do it manually.
-        try:
-            value = import_module(f"{__name__}.{name}")
-        except ImportError:
-            raise AttributeError(
-                f"module '{__name__}' has no attribute '{name}'"
-            ) from None
-
-    globals()[name] = value
-    return value
+        module = importlib.import_module(module_name)
+        value = getattr(module, name)
+        globals()[name] = value
+        return value
 
 
 class NotImplementedWarning(RuntimeWarning):
