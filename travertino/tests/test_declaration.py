@@ -15,7 +15,7 @@ from travertino.declaration import (
     validated_property,
 )
 
-from .utils import mock_attr, prep_style_class
+from .utils import apply_dataclass, mock_apply
 
 VALUE1 = "value1"
 VALUE2 = "value2"
@@ -23,8 +23,8 @@ VALUE3 = "value3"
 VALUES = [VALUE1, VALUE2, VALUE3, None]
 
 
-@prep_style_class
-@mock_attr("apply")
+@mock_apply
+@apply_dataclass
 class Style(BaseStyle):
     # Some properties with explicit initial values
     explicit_const: str | int = validated_property(
@@ -57,7 +57,7 @@ VALUE_CHOICES = Choices(*VALUES, integer=True)
 with catch_warnings():
     filterwarnings("ignore", category=DeprecationWarning)
 
-    @mock_attr("apply")
+    @mock_apply
     class DeprecatedStyle(BaseStyle):
         pass
 
@@ -98,8 +98,8 @@ class Sibling(BaseStyle):
     pass
 
 
-@prep_style_class
-@mock_attr("apply")
+@mock_apply
+@apply_dataclass
 class MockedApplyStyle(BaseStyle):
     pass
 

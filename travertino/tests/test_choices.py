@@ -8,11 +8,11 @@ from travertino.colors import NAMED_COLOR, rgb
 from travertino.constants import GOLDENROD, NONE, REBECCAPURPLE, TOP
 from travertino.declaration import BaseStyle, Choices, validated_property
 
-from .utils import mock_attr, prep_style_class
+from .utils import apply_dataclass, mock_apply
 
 
-@prep_style_class
-@mock_attr("apply")
+@mock_apply
+@apply_dataclass
 class Style(BaseStyle):
     none: str = validated_property(NONE, REBECCAPURPLE, initial=NONE)
     allow_string: str = validated_property(string=True, initial="start")
@@ -34,7 +34,7 @@ class Style(BaseStyle):
 with catch_warnings():
     filterwarnings("ignore", category=DeprecationWarning)
 
-    @mock_attr("apply")
+    @mock_apply
     class DeprecatedStyle(BaseStyle):
         pass
 
