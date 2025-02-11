@@ -353,15 +353,14 @@ class Window:
         self.interface.on_hide()
 
     def get_visible(self):
-        # Although we are blocking (changes to window state when in hidden condition)
-        # and (changes to visibility when in minimized state), but the window will get
-        # hidden when the app level hide option is activated from the global app menu.
-        # Hence, also check the visibility of the app, so that we can correctly infer
-        # the window visibility when app level hide is activated.
-        return (
-            bool(self.native.isVisible)
-            or self.get_window_state(in_progress_state=True) == WindowState.MINIMIZED
-        ) and not bool(self.interface.app._impl.native.isHidden())
+        # macOS reports minimized windows as non-visible, but Toga considers minimized
+        # windows to be visible, so we need to override in that case. However,
+        # minimization state is retained when the app as a whole is hidden; so we also
+        # need to check for app-level hiding when overriding.
+        return bool(self.native.isVisible) or (
+            self.get_window_state(in_progress_state=True) == WindowState.MINIMIZED
+            and not bool(self.interface.app._impl.native.isHidden())
+        )
 
     ######################################################################
     # Window state
