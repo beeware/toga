@@ -16,7 +16,7 @@ if TYPE_CHECKING:  # pragma: no cover
     from toga.types import PositionT, SizeT
 
 
-class GtkVfuncDelegate:
+class GtkVfuncDelegate:  # pragma: no-cover-if-gtk3
     def __init__(self, interface, impl):
         self.interface = interface
         self.impl = impl
@@ -34,7 +34,7 @@ class GtkVfuncDelegate:
             self.interface.on_resize()
 
 
-class TogaMainWindow(Gtk.ApplicationWindow):
+class TogaMainWindow(Gtk.ApplicationWindow):  # pragma: no-cover-if-gtk3
     def __init__(self, interface, impl):
         self.gtk_vfunc_delegate = GtkVfuncDelegate(interface, impl)
         super().__init__()
@@ -43,7 +43,7 @@ class TogaMainWindow(Gtk.ApplicationWindow):
         self.gtk_vfunc_delegate.do_size_allocate(width, height, baseline)
 
 
-class TogaWindow(Gtk.ApplicationWindow):
+class TogaWindow(Gtk.ApplicationWindow):  # pragma: no-cover-if-gtk3
     def __init__(self, interface, impl):
         self.gtk_vfunc_delegate = GtkVfuncDelegate(interface, impl)
         super().__init__()
