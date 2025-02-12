@@ -1,4 +1,4 @@
-from unittest.mock import Mock, call
+from unittest.mock import Mock
 from warnings import catch_warnings, filterwarnings
 
 import pytest
@@ -216,7 +216,7 @@ def test_refresh_no_op():
     """Refresh is a no-op if no applicator is set."""
     node = Node(style=Style())
     node.refresh(Viewport(width=100, height=100))
-    node.style.apply.assert_not_called()
+    node.style._apply_all.assert_not_called()
 
 
 @pytest.mark.parametrize("StyleClass", [TypeErrorStyle, OldTypeErrorStyle])
@@ -341,7 +341,7 @@ def test_create_with_no_applicator():
 
     # Since no applicator has been assigned, the overall style wasn't applied. However,
     # apply("int_prop") was still called.
-    node.style.apply.assert_called_once_with("int_prop")
+    node.style._apply_names.assert_called_once_with("int_prop")
 
 
 def test_create_with_applicator():
@@ -362,7 +362,7 @@ def test_create_with_applicator():
     assert node.style._applicator is applicator
 
     # Assigning a non-None applicator should always apply the style.
-    node.style.apply.assert_has_calls([call("int_prop"), call()])
+    node.style._apply_all.assert_called_once_with()
 
 
 @pytest.mark.parametrize(
@@ -374,7 +374,7 @@ def test_create_with_applicator():
 )
 def test_assign_applicator(node):
     """A node can be assigned an applicator after creation."""
-    node.style.apply.reset_mock()
+    node.style._reset_mocks()
 
     applicator = Mock()
     node.applicator = applicator
@@ -386,7 +386,7 @@ def test_assign_applicator(node):
     assert node.style._applicator is applicator
 
     # Assigning a non-None applicator should always apply style.
-    node.style.apply.assert_called_once()
+    node.style._apply_all.assert_called_once()
 
 
 @pytest.mark.parametrize(
@@ -398,7 +398,7 @@ def test_assign_applicator(node):
 )
 def test_assign_applicator_none(node):
     """A node can have its applicator set to None."""
-    node.style.apply.reset_mock()
+    node.style._reset_mocks()
 
     node.applicator = None
     assert node.applicator is None
@@ -406,7 +406,7 @@ def test_assign_applicator_none(node):
     # Should be updated on style as well
     assert node.style._applicator is None
     # Assigning None to applicator does not trigger apply.
-    node.style.apply.assert_not_called()
+    node.style._apply_all.assert_not_called()
 
 
 def assign_new_applicator():
@@ -440,7 +440,7 @@ def test_assign_style_with_applicator():
     style_1 = Style(int_prop=5)
     node = Node(style=style_1, applicator=Mock())
 
-    node.style.apply.reset_mock()
+    node.style._reset_mocks()
     style_2 = Style(int_prop=10)
     node.style = style_2
 
@@ -452,7 +452,7 @@ def test_assign_style_with_applicator():
     assert node.style != style_1
 
     # Since an applicator has already been assigned, assigning style applies the style.
-    node.style.apply.assert_has_calls([call("int_prop"), call()])
+    node.style._apply_all.assert_called_once()
 
 
 def test_assign_style_with_no_applicator():
@@ -460,7 +460,7 @@ def test_assign_style_with_no_applicator():
     style_1 = Style(int_prop=5)
     node = Node(style=style_1)
 
-    node.style.apply.reset_mock()
+    node.style._reset_mocks()
     style_2 = Style(int_prop=10)
     node.style = style_2
 
@@ -473,7 +473,7 @@ def test_assign_style_with_no_applicator():
 
     # Since no applicator has been assigned, the overall style wasn't applied. However,
     # apply("int_prop") was still called.
-    node.style.apply.assert_called_once_with("int_prop")
+    node.style._apply_names.assert_called_once_with("int_prop")
 
 
 def test_apply_before_node_is_ready():
