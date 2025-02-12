@@ -339,7 +339,7 @@ class BaseStyle:
         dup.update(**self)
 
         ######################################################################
-        # 10-2024: Backwards compatibility for Toga <= 0.5.0
+        # 10-2024: Backwards compatibility for Toga < 0.5.0
         ######################################################################
 
         if applicator is not None:
