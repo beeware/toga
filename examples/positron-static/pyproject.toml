@@ -16,6 +16,7 @@ description = "Electron, but in Python"
 icon = "src/positron/resources/positron"
 sources = ["src/positron"]
 requires = [
+    "../../travertino",
     "../../core",
 ]
 

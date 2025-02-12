@@ -15,6 +15,7 @@ formal_name = "Font Example"
 description = "A testing app"
 sources = ["font"]
 requires = [
+    "../../travertino",
     "../../core",
 ]
 

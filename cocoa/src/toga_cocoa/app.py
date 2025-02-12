@@ -13,6 +13,7 @@ from rubicon.objc.eventloop import CocoaLifecycle, EventLoopPolicy
 
 import toga
 from toga.command import Command, Group, Separator
+from toga.constants import WindowState
 from toga.handlers import NativeHandler
 
 from .command import Command as CommandImpl, submenu_for_group
@@ -42,6 +43,22 @@ class AppDelegate(NSObject):
     @objc_method
     def applicationDidFinishLaunching_(self, notification):
         self.native.activateIgnoringOtherApps(True)
+
+    @objc_method
+    def applicationWillHide_(self, notification):
+        for window in self.interface.windows:
+            # on_hide() is triggered only on windows which are in
+            # visible-to-user (i.e., not in minimized or hidden).
+            if window.visible and window.state != WindowState.MINIMIZED:
+                window.on_hide()
+
+    @objc_method
+    def applicationDidUnhide_(self, notification):
+        for window in self.interface.windows:
+            # on_show() is triggered only on windows which are in
+            # visible-to-user (i.e., not in minimized or hidden).
+            if window.visible and window.state != WindowState.MINIMIZED:
+                window.on_show()
 
     @objc_method
     def applicationSupportsSecureRestorableState_(self, app) -> bool:

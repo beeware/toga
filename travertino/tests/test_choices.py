@@ -66,7 +66,7 @@ with catch_warnings():
 def assert_property(obj, name, value):
     assert getattr(obj, name) == value
 
-    obj.apply.assert_called_once_with(name, value)
+    obj.apply.assert_called_once_with(name)
     obj.apply.reset_mock()
 
 

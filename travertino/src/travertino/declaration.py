@@ -137,8 +137,7 @@ class validated_property:
         if obj is None:
             return self
 
-        value = getattr(obj, f"_{self.name}", None)
-        return self.initial if value is None else value
+        return getattr(obj, f"_{self.name}", self.initial)
 
     def __set__(self, obj, value):
         if value is self:
@@ -160,11 +159,11 @@ class validated_property:
             # to the initial value.
             setattr(obj, f"_{self.name}", value)
             if value != self.initial:
-                obj.apply(self.name, value)
+                obj.apply(self.name)
 
         elif value != current:
             setattr(obj, f"_{self.name}", value)
-            obj.apply(self.name, value)
+            obj.apply(self.name)
 
     def __delete__(self, obj):
         try:
@@ -172,7 +171,7 @@ class validated_property:
         except AttributeError:
             pass
         else:
-            obj.apply(self.name, self.initial)
+            obj.apply(self.name)
 
     @property
     def _name_if_set(self):
@@ -332,7 +331,7 @@ class BaseStyle:
 
     def reapply(self):
         for name in self._PROPERTIES:
-            self.apply(name, self[name])
+            self.apply(name)
 
     def copy(self, applicator=None):
         """Create a duplicate of this style declaration."""
@@ -362,7 +361,7 @@ class BaseStyle:
     # Interface that style declarations must define
     ######################################################################
 
-    def apply(self, property, value):
+    def apply(self, name):
         raise NotImplementedError(
             "Style must define an apply method"
         )  # pragma: no cover
@@ -406,7 +405,7 @@ class BaseStyle:
             raise KeyError(name)
 
     def keys(self):
-        return {name for name in self}
+        return {*self}
 
     def items(self):
         return [(name, self[name]) for name in self]

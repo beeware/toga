@@ -1,1 +1,0 @@
-Use of current Xcode was restored.

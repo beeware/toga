@@ -39,7 +39,18 @@ async def long_running_task(
     generator: HandlerGeneratorReturnT[object],
     cleanup: HandlerSyncT | None,
 ) -> object | None:
-    """Run a generator as an asynchronous coroutine."""
+    """Run a generator as an asynchronous coroutine.
+
+    **DEPRECATED** - use async co-routines instead of generators.
+    """
+    ######################################################################
+    # 2025-02: Deprecated in 0.5.0
+    ######################################################################
+    warnings.warn(
+        "Use of generators for async handlers has been deprecated; convert "
+        "the handler to an async co-routine that uses `asyncio.sleep()`.",
+        DeprecationWarning,
+    )
     try:
         try:
             while True:

@@ -1,1 +1,0 @@
-The testbed app can now be run on *any* supported Python version.
