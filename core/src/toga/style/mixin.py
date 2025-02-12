@@ -17,14 +17,13 @@ class StyleProperty:
 
 def style_mixin(style_cls):
     mixin_dict = {
-        name: StyleProperty() for name in style_cls._BASE_ALL_PROPERTIES[style_cls]
+        "__doc__": (
+            f"""Allows accessing the {style_cls.__name__} {style_cls._doc_link} directly
+            on the widget. For example, instead of ``widget.style.color``, you can
+            simply write ``widget.color``.
+            """
+        ),
+        **{name: StyleProperty() for name in style_cls._BASE_ALL_PROPERTIES[style_cls]},
     }
-
-    mixin_dict["__doc__"] = (
-        f"""Allows accessing the {style_cls.__name__} {style_cls._doc_link} directly on
-        the widget. For example, instead of ``widget.style.color``, you can simply write
-        ``widget.color``.
-        """
-    )
 
     return type(style_cls.__name__ + "Mixin", (), mixin_dict)
