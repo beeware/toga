@@ -121,4 +121,5 @@ class NotImplementedWarning(RuntimeWarning):
         warnings.warn(NotImplementedWarning(f"[{platform}] Not implemented: {feature}"))
 
 
-__version__ = _package_version(__file__, __name__)
+# __name__ is "toga" in this file; we need the version of the toga-core package.
+__version__ = _package_version(__file__, "toga-core")

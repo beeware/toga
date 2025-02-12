@@ -18,7 +18,7 @@ def _package_version(file, name):
         import importlib.metadata
 
         # The Toga package names as defined in pyproject.toml all use dashes.
-        package = "toga-core" if name == "toga" else name.replace("_", "-")
+        package = name.replace("_", "-")
         return importlib.metadata.version(package)
 
 
