@@ -318,7 +318,7 @@ class BaseStyle:
             try:
                 self.apply()
             ######################################################################
-            # 10-2024: Backwards compatibility for Toga <= 0.5.0
+            # 10-2024: Backwards compatibility for Toga < 0.5.0
             ######################################################################
             except Exception:
                 warn(
