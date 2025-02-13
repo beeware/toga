@@ -283,7 +283,7 @@ class Window:
 
     @property
     def id(self) -> str:
-        """A unique identifier for the window."""
+        """A unique identifier for the window (read-only)."""
         return self._id
 
     @property
