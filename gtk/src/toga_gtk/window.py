@@ -9,47 +9,14 @@ from toga.types import Position, Size
 from toga.window import _initial_position
 
 from .container import TogaContainer
-from .libs import GTK_VERSION, IS_WAYLAND, Gdk, GLib, Gtk
+from .libs import GTK_VERSION, IS_WAYLAND, Gdk, GLib, Gtk, hook_up_vfunc_implementation
+from .libs.utils import create_toga_native
 from .screens import Screen as ScreenImpl
 
 if TYPE_CHECKING:  # pragma: no cover
     from toga.types import PositionT, SizeT
 
-
-class GtkVfuncDelegate:  # pragma: no-cover-if-gtk3
-    def __init__(self, interface, impl):
-        self.interface = interface
-        self.impl = impl
-
-    def do_size_allocate(self, width, height, baseline):
-        # Call parent's size_allocate first
-        if isinstance(self.impl.native, Gtk.Window):
-            native_gtk_class = Gtk.Window
-        else:
-            native_gtk_class = Gtk.ApplicationWindow
-        native_gtk_class.do_size_allocate(self.impl.native, width, height, baseline)
-
-        if self.impl._window_size != (width, height):
-            self.impl._window_size = Size(width, height)
-            self.interface.on_resize()
-
-
-class TogaMainWindow(Gtk.ApplicationWindow):  # pragma: no-cover-if-gtk3
-    def __init__(self, interface, impl):
-        self.gtk_vfunc_delegate = GtkVfuncDelegate(interface, impl)
-        super().__init__()
-
-    def do_size_allocate(self, width, height, baseline):
-        self.gtk_vfunc_delegate.do_size_allocate(width, height, baseline)
-
-
-class TogaWindow(Gtk.ApplicationWindow):  # pragma: no-cover-if-gtk3
-    def __init__(self, interface, impl):
-        self.gtk_vfunc_delegate = GtkVfuncDelegate(interface, impl)
-        super().__init__()
-
-    def do_size_allocate(self, width, height, baseline):
-        self.gtk_vfunc_delegate.do_size_allocate(width, height, baseline)
+from .libs.wrapper import WeakrefCallable
 
 
 class Window:
@@ -59,7 +26,8 @@ class Window:
 
         self.layout = None
 
-        self._window_size = Size(0, 0)
+        if GTK_VERSION >= (4, 0, 0):  # pragma: no-cover-if-gtk3
+            self._window_size = Size(0, 0)
 
         self.create()
         self.native._impl = self
@@ -85,6 +53,12 @@ class Window:
             self.native.connect("notify::fullscreened", self.gtk_window_state_event)
             self.native.connect("notify::maximized", self.gtk_window_state_event)
             self.native.connect("notify::minimized", self.gtk_window_state_event)
+            # do_size_allocate is a virtual function, used to track window resize.
+            hook_up_vfunc_implementation(
+                self.native.do_size_allocate,
+                self.native.__gtype__,
+                WeakrefCallable(self.gtk_do_size_allocate),
+            )
 
         self._window_state_flags = None
         self._in_presentation = False
@@ -124,11 +98,26 @@ class Window:
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             self.native = Gtk.Window()
         else:  # pragma: no-cover-if-gtk3
-            self.native = TogaWindow(self.interface, self)
+            self.native = create_toga_native(Gtk.Window)()
 
     ######################################################################
     # Native event handlers
     ######################################################################
+    def gtk_do_size_allocate(
+        self, native, width, height, baseline
+    ):  # pragma: no-cover-if-gtk3
+
+        # Note: Virtual methods can't use super() to access the original
+        # implementation, so they use native.base_class instead.
+
+        # Call the parent class's size_allocate via native.base_class.
+        native.base_class.do_size_allocate(native, width, height, baseline)
+
+        if self._window_size != (width, height):
+            self._window_size = Size(width, height)
+            self.interface.on_resize()
+            print(self._window_size)
+
     def gtk_configure_event(self, widget, data):  # pragma: no-cover-if-gtk4
         self.interface.on_resize()
 
@@ -490,8 +479,7 @@ class MainWindow(Window):
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             self.native = Gtk.ApplicationWindow()
         else:  # pragma: no-cover-if-gtk3
-            self.native = TogaMainWindow(self.interface, self)
-
+            self.native = create_toga_native(Gtk.ApplicationWindow)()
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             self.native.set_role("MainWindow")
 
