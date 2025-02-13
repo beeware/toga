@@ -1,7 +1,7 @@
 import weakref
 
 
-class WeakrefCallable:
+class WeakrefCallable:  # pragma: no-cover-if-gtk3
     """
     A wrapper for callable that holds a weak reference to it.
 

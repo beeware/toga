@@ -13,7 +13,7 @@ def gtk_text_align(alignment):
     }[alignment]
 
 
-def create_toga_native(native_gtk_class):
+def create_toga_native(native_gtk_class):  # pragma: no-cover-if-gtk3
     """Create a new native class from a native gtk class, whose virtual functions
     could be safely overridden."""
     toga_native_class = type(
