@@ -116,7 +116,6 @@ class Window:
         if self._window_size != (width, height):
             self._window_size = Size(width, height)
             self.interface.on_resize()
-            print(self._window_size)
 
     def gtk_configure_event(self, widget, data):  # pragma: no-cover-if-gtk4
         self.interface.on_resize()
