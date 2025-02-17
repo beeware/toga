@@ -315,23 +315,25 @@ class BaseStyle:
 
         if value is not None:
             try:
-                self.reapply()
-            # This is backwards compatibility for Toga, which (at least as of
-            # 0.4.8), assigns style and applicator before the widget's
-            # implementation is available.
+                self.apply()
+            ######################################################################
+            # 10-2024: Backwards compatibility for Toga < 0.5.0
+            ######################################################################
             except Exception:
                 warn(
                     "Failed to apply style when assigning applicator, or when "
                     "assigning a new style once applicator is present. Node should be "
                     "sufficiently initialized to apply its style before it is assigned "
-                    "an applicator. This will be an exception in a future version.",
+                    "an applicator. This will be an exception in a future version.\n"
+                    "This error probably means you've updated Travertino to 0.5.0 but "
+                    "are still using Toga <= 0.4.8; to fix, either update Toga to "
+                    ">= 0.5.0, or pin Travertino to 0.3.0.",
                     RuntimeWarning,
                     stacklevel=2,
                 )
-
-    def reapply(self):
-        for name in self._PROPERTIES:
-            self.apply(name)
+            ######################################################################
+            # End backwards compatibility
+            ######################################################################
 
     def copy(self, applicator=None):
         """Create a duplicate of this style declaration."""
@@ -339,13 +341,16 @@ class BaseStyle:
         dup.update(**self)
 
         ######################################################################
-        # 10-2024: Backwards compatibility for Toga <= 0.4.8
+        # 10-2024: Backwards compatibility for Toga < 0.5.0
         ######################################################################
 
         if applicator is not None:
             warn(
                 "Providing an applicator to BaseStyle.copy() is deprecated. Set "
-                "applicator afterward on the returned copy.",
+                "applicator afterward on the returned copy.\n"
+                "This error probably means you've updated Travertino to 0.5.0 but are "
+                "still using Toga <= 0.4.8; to fix, either update Toga to >= 0.5.0, or "
+                "pin Travertino to 0.3.0.",
                 DeprecationWarning,
                 stacklevel=2,
             )
@@ -455,11 +460,26 @@ class BaseStyle:
     # Backwards compatibility
     ######################################################################
 
+    def reapply(self):
+        warn(
+            "BaseStyle.reapply() is deprecated; call .apply with no arguments "
+            "instead.\n"
+            "This error probably means you've updated Travertino to 0.5.0 but are "
+            "still using Toga <= 0.4.8; to fix, either update Toga to >= 0.5.0, or pin "
+            "Travertino to 0.3.0.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        self.apply()
+
     @classmethod
     def validated_property(cls, name, choices, initial=None):
         warn(
             "Defining style properties with class methods is deprecated; use class "
-            "attributes instead.",
+            "attributes instead.\n"
+            "This error probably means you've updated Travertino to 0.5.0 but are "
+            "still using Toga <= 0.4.8; to fix, either update Toga to >= 0.5.0, or pin "
+            "Travertino to 0.3.0.",
             DeprecationWarning,
             stacklevel=2,
         )
@@ -478,7 +498,10 @@ class BaseStyle:
     def directional_property(cls, name):
         warn(
             "Defining style properties with class methods is deprecated; use class "
-            "attributes instead.",
+            "attributes instead.\n"
+            "This error probably means you've updated Travertino to 0.5.0 but are "
+            "still using Toga <= 0.4.8; to fix, either update Toga to >= 0.5.0, or pin "
+            "Travertino to 0.3.0.",
             DeprecationWarning,
             stacklevel=2,
         )
