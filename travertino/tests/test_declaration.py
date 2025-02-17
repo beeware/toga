@@ -146,7 +146,7 @@ def test_deprecated_copy():
 @pytest.mark.parametrize("StyleClass", [Style, DeprecatedStyle])
 def test_apply(StyleClass):
     style = StyleClass(explicit_const=VALUE2, implicit=VALUE3)
-    style.apply.mock_calls = [call("explicit_const"), call("implicit")]
+    assert style.apply.mock_calls == [call("explicit_const"), call("implicit")]
     style.apply.reset_mock()
 
     style.apply()
