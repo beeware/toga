@@ -365,7 +365,7 @@ def test_create_with_applicator():
 
     # First, call("int_prop") is called when style object is created.
     # Assigning a non-None applicator should always apply style.
-    node.style.apply.mock_calls = [call("int_prop"), call()]
+    assert node.style.apply.mock_calls == [call("int_prop"), call()]
 
 
 @pytest.mark.parametrize(
