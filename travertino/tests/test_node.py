@@ -456,7 +456,7 @@ def test_assign_style_with_applicator():
 
     # call("int_prop") is called when the style object is created.
     # Since an applicator has already been assigned, assigning style applies the style.
-    node.style.apply.mock_calls = [call("int_prop"), call()]
+    assert node.style.apply.mock_calls == [call("int_prop"), call()]
 
 
 def test_assign_style_with_no_applicator():
