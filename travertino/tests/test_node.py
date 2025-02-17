@@ -337,6 +337,7 @@ def test_create_with_no_applicator():
     # Style copies on assignment.
     assert isinstance(node.style, Style)
     assert node.style == style
+    assert node.style.int_prop == 5
     assert node.style is not style
 
     # Since no applicator has been assigned, the overall style wasn't applied. However,
@@ -353,6 +354,7 @@ def test_create_with_applicator():
     # Style copies on assignment.
     assert isinstance(node.style, Style)
     assert node.style == style
+    assert node.style.int_prop == 5
     assert node.style is not style
 
     # Applicator assignment does *not* copy.
@@ -361,8 +363,9 @@ def test_create_with_applicator():
     assert applicator.node is node
     assert node.style._applicator is applicator
 
-    # Assigning a non-None applicator should always apply the style.
-    node.style.apply.assert_has_calls([call("int_prop"), call()])
+    # First, call("int_prop") is called when style object is created.
+    # Assigning a non-None applicator should always apply style.
+    node.style.apply.mock_calls = [call("int_prop"), call()]
 
 
 @pytest.mark.parametrize(
@@ -386,7 +389,7 @@ def test_assign_applicator(node):
     assert node.style._applicator is applicator
 
     # Assigning a non-None applicator should always apply style.
-    node.style.apply.assert_called_once()
+    node.style.apply.assert_called_once_with()
 
 
 @pytest.mark.parametrize(
@@ -440,19 +443,20 @@ def test_assign_style_with_applicator():
     style_1 = Style(int_prop=5)
     node = Node(style=style_1, applicator=Mock())
 
-    node.style.apply.reset_mock()
     style_2 = Style(int_prop=10)
     node.style = style_2
 
     # Style copies on assignment.
     assert isinstance(node.style, Style)
     assert node.style == style_2
+    assert node.style.int_prop == 10
     assert node.style is not style_2
 
     assert node.style != style_1
 
+    # call("int_prop") is called when the style object is created.
     # Since an applicator has already been assigned, assigning style applies the style.
-    node.style.apply.assert_has_calls([call("int_prop"), call()])
+    node.style.apply.mock_calls = [call("int_prop"), call()]
 
 
 def test_assign_style_with_no_applicator():
@@ -460,19 +464,19 @@ def test_assign_style_with_no_applicator():
     style_1 = Style(int_prop=5)
     node = Node(style=style_1)
 
-    node.style.apply.reset_mock()
     style_2 = Style(int_prop=10)
     node.style = style_2
 
     # Style copies on assignment.
     assert isinstance(node.style, Style)
     assert node.style == style_2
+    assert node.style.int_prop == 10
     assert node.style is not style_2
 
     assert node.style != style_1
 
     # Since no applicator has been assigned, the overall style wasn't applied. However,
-    # apply("int_prop") was still called.
+    # apply("int_prop") was still called when creating the style.
     node.style.apply.assert_called_once_with("int_prop")
 
 
