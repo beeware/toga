@@ -18,31 +18,11 @@ def apply_dataclass(cls):
 
 
 def mock_apply(cls):
-    """Mock a style class's apply() method.
-
-    Because apply() is called with or without arguments in different circumstances, and
-    due to limited granularity in Mock's assertions (e.g. you can't check that multiple
-    calls are there, but no other calls), the two usages are dispatched to separate
-    mocks.
-    """
+    """Mock a style class's apply() method."""
     orig_init = cls.__init__
 
-    def apply(self, *args, **kwargs):
-        if args or kwargs:
-            self._apply_names(*args, **kwargs)
-        else:
-            self._apply_all()
-
-    def reset_mocks(self):
-        self._apply_names.reset_mock()
-        self._apply_all.reset_mock()
-
-    cls.apply = apply
-    cls._reset_mocks = reset_mocks
-
     def __init__(self, *args, **kwargs):
-        self._apply_names = Mock()
-        self._apply_all = Mock()
+        self.apply = Mock()
         orig_init(self, *args, **kwargs)
 
     cls.__init__ = __init__

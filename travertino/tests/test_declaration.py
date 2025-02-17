@@ -140,17 +140,17 @@ def test_deprecated_copy():
     with pytest.warns(DeprecationWarning):
         style_copy = style.copy(applicator=object())
 
-    style_copy._apply_all.assert_called_once()
+    style_copy.apply.assert_called_once_with()
 
 
 @pytest.mark.parametrize("StyleClass", [Style, DeprecatedStyle])
 def test_apply(StyleClass):
     style = StyleClass(explicit_const=VALUE2, implicit=VALUE3)
-    style._apply_names.assert_has_calls([call("explicit_const"), call("implicit")])
-    style._reset_mocks()
+    style.apply.assert_has_calls([call("explicit_const"), call("implicit")])
+    style.apply.reset_mock()
 
     style.apply()
-    style._apply_all.assert_called_once()
+    style.apply.assert_called_once_with()
 
 
 @pytest.mark.parametrize("StyleClass", [Style, DeprecatedStyle])
@@ -159,46 +159,46 @@ def test_property_with_explicit_const(StyleClass):
 
     # Default value is VALUE1
     assert style.explicit_const is VALUE1
-    style._apply_names.assert_not_called()
+    style.apply.assert_not_called()
 
     # Modify the value
     style.explicit_const = 10
 
     assert style.explicit_const == 10
-    style._apply_names.assert_called_once_with("explicit_const")
+    style.apply.assert_called_once_with("explicit_const")
 
     # Clear the applicator mock
-    style._reset_mocks()
+    style.apply.reset_mock()
 
     # Set the value to the same value.
     # No dirty notification is sent
     style.explicit_const = 10
     assert style.explicit_const == 10
-    style._apply_names.assert_not_called()
+    style.apply.assert_not_called()
 
     # Set the value to something new
     # A dirty notification is set.
     style.explicit_const = 20
     assert style.explicit_const == 20
-    style._apply_names.assert_called_once_with("explicit_const")
+    style.apply.assert_called_once_with("explicit_const")
 
     # Clear the applicator mock
-    style._reset_mocks()
+    style.apply.reset_mock()
 
     # Clear the property
     del style.explicit_const
     assert style.explicit_const is VALUE1
-    style._apply_names.assert_called_once_with("explicit_const")
+    style.apply.assert_called_once_with("explicit_const")
 
-    # Clear the applicator mocks
-    style._reset_mocks()
+    # Clear the applicator mock
+    style.apply.reset_mock()
 
     # Clear the property again.
     # The underlying attribute won't exist, so this
     # should be a no-op.
     del style.explicit_const
     assert style.explicit_const is VALUE1
-    style._apply_names.assert_not_called()
+    style.apply.assert_not_called()
 
 
 @pytest.mark.parametrize("StyleClass", [Style, DeprecatedStyle])
@@ -207,36 +207,36 @@ def test_property_with_explicit_value(StyleClass):
 
     # Default value is 0
     assert style.explicit_value == 0
-    style._apply_names.assert_not_called()
+    style.apply.assert_not_called()
 
     # Modify the value
     style.explicit_value = 10
 
     assert style.explicit_value == 10
-    style._apply_names.assert_called_once_with("explicit_value")
+    style.apply.assert_called_once_with("explicit_value")
 
     # Clear the applicator mock
-    style._apply_names.reset_mock()
+    style.apply.reset_mock()
 
     # Set the value to the same value.
     # No dirty notification is sent
     style.explicit_value = 10
     assert style.explicit_value == 10
-    style._apply_names.assert_not_called()
+    style.apply.assert_not_called()
 
     # Set the value to something new
     # A dirty notification is set.
     style.explicit_value = 20
     assert style.explicit_value == 20
-    style._apply_names.assert_called_once_with("explicit_value")
+    style.apply.assert_called_once_with("explicit_value")
 
     # Clear the applicator mock
-    style._reset_mocks()
+    style.apply.reset_mock()
 
     # Clear the property
     del style.explicit_value
     assert style.explicit_value == 0
-    style._apply_names.assert_called_once_with("explicit_value")
+    style.apply.assert_called_once_with("explicit_value")
 
 
 @pytest.mark.parametrize("StyleClass", [Style, DeprecatedStyle])
@@ -245,36 +245,36 @@ def test_property_with_explicit_none(StyleClass):
 
     # Default value is None
     assert style.explicit_none is None
-    style._apply_names.assert_not_called()
+    style.apply.assert_not_called()
 
     # Modify the value
     style.explicit_none = 10
 
     assert style.explicit_none == 10
-    style._apply_names.assert_called_once_with("explicit_none")
+    style.apply.assert_called_once_with("explicit_none")
 
     # Clear the applicator mock
-    style._reset_mocks()
+    style.apply.reset_mock()
 
     # Set the property to the same value.
     # No dirty notification is sent
     style.explicit_none = 10
     assert style.explicit_none == 10
-    style._apply_names.assert_not_called()
+    style.apply.assert_not_called()
 
     # Set the property to something new
     # A dirty notification is set.
     style.explicit_none = 20
     assert style.explicit_none == 20
-    style._apply_names.assert_called_once_with("explicit_none")
+    style.apply.assert_called_once_with("explicit_none")
 
     # Clear the applicator mock
-    style._reset_mocks()
+    style.apply.reset_mock()
 
     # Clear the property
     del style.explicit_none
     assert style.explicit_none is None
-    style._apply_names.assert_called_once_with("explicit_none")
+    style.apply.assert_called_once_with("explicit_none")
 
 
 @pytest.mark.parametrize("StyleClass", [Style, DeprecatedStyle])
@@ -283,36 +283,36 @@ def test_property_with_implicit_default(StyleClass):
 
     # Default value is None
     assert style.implicit is None
-    style._apply_names.assert_not_called()
+    style.apply.assert_not_called()
 
     # Modify the value
     style.implicit = 10
 
     assert style.implicit == 10
-    style._apply_names.assert_called_once_with("implicit")
+    style.apply.assert_called_once_with("implicit")
 
     # Clear the applicator mock
-    style._reset_mocks()
+    style.apply.reset_mock()
 
     # Set the value to the same value.
     # No dirty notification is sent
     style.implicit = 10
     assert style.implicit == 10
-    style._apply_names.assert_not_called()
+    style.apply.assert_not_called()
 
     # Set the value to something new
     # A dirty notification is set.
     style.implicit = 20
     assert style.implicit == 20
-    style._apply_names.assert_called_once_with("implicit")
+    style.apply.assert_called_once_with("implicit")
 
     # Clear the applicator mock
-    style._reset_mocks()
+    style.apply.reset_mock()
 
     # Clear the property
     del style.implicit
     assert style.implicit is None
-    style._apply_names.assert_called_once_with("implicit")
+    style.apply.assert_called_once_with("implicit")
 
 
 @pytest.mark.parametrize("StyleClass", [Style, DeprecatedStyle])
@@ -323,7 +323,7 @@ def test_set_initial_no_apply(StyleClass):
     # 0 is the initial value
     style.explicit_value = 0
 
-    style._apply_names.assert_not_called()
+    style.apply.assert_not_called()
 
 
 @pytest.mark.parametrize("StyleClass", [Style, DeprecatedStyle])
@@ -336,7 +336,7 @@ def test_directional_property(StyleClass):
     assert style.thing_right == 0
     assert style.thing_bottom == 0
     assert style.thing_left == 0
-    style._apply_names.assert_not_called()
+    style.apply.assert_not_called()
 
     # Set a value in one axis
     style.thing_top = 10
@@ -346,10 +346,10 @@ def test_directional_property(StyleClass):
     assert style.thing_right == 0
     assert style.thing_bottom == 0
     assert style.thing_left == 0
-    style._apply_names.assert_called_once_with("thing_top")
+    style.apply.assert_called_once_with("thing_top")
 
     # Clear the applicator mock
-    style._reset_mocks()
+    style.apply.reset_mock()
 
     # Set a value directly with a single item
     style.thing = (10,)
@@ -359,7 +359,7 @@ def test_directional_property(StyleClass):
     assert style.thing_right == 10
     assert style.thing_bottom == 10
     assert style.thing_left == 10
-    style._apply_names.assert_has_calls(
+    style.apply.assert_has_calls(
         [
             call("thing_right"),
             call("thing_bottom"),
@@ -368,7 +368,7 @@ def test_directional_property(StyleClass):
     )
 
     # Clear the applicator mock
-    style._reset_mocks()
+    style.apply.reset_mock()
 
     # Set a value directly with a single item
     style.thing = 30
@@ -378,7 +378,7 @@ def test_directional_property(StyleClass):
     assert style.thing_right == 30
     assert style.thing_bottom == 30
     assert style.thing_left == 30
-    style._apply_names.assert_has_calls(
+    style.apply.assert_has_calls(
         [
             call("thing_top"),
             call("thing_right"),
@@ -388,7 +388,7 @@ def test_directional_property(StyleClass):
     )
 
     # Clear the applicator mock
-    style._reset_mocks()
+    style.apply.reset_mock()
 
     # Set a value directly with a 2 values
     style.thing = (10, 20)
@@ -398,7 +398,7 @@ def test_directional_property(StyleClass):
     assert style.thing_right == 20
     assert style.thing_bottom == 10
     assert style.thing_left == 20
-    style._apply_names.assert_has_calls(
+    style.apply.assert_has_calls(
         [
             call("thing_top"),
             call("thing_right"),
@@ -408,7 +408,7 @@ def test_directional_property(StyleClass):
     )
 
     # Clear the applicator mock
-    style._reset_mocks()
+    style.apply.reset_mock()
 
     # Set a value directly with a 3 values
     style.thing = (10, 20, 30)
@@ -418,10 +418,10 @@ def test_directional_property(StyleClass):
     assert style.thing_right == 20
     assert style.thing_bottom == 30
     assert style.thing_left == 20
-    style._apply_names.assert_called_once_with("thing_bottom")
+    style.apply.assert_called_once_with("thing_bottom")
 
     # Clear the applicator mock
-    style._reset_mocks()
+    style.apply.reset_mock()
 
     # Set a value directly with a 4 values
     style.thing = (10, 20, 30, 40)
@@ -431,7 +431,7 @@ def test_directional_property(StyleClass):
     assert style.thing_right == 20
     assert style.thing_bottom == 30
     assert style.thing_left == 40
-    style._apply_names.assert_called_once_with("thing_left")
+    style.apply.assert_called_once_with("thing_left")
 
     # Set a value directly with an invalid number of values
     with pytest.raises(ValueError):
@@ -441,7 +441,7 @@ def test_directional_property(StyleClass):
         style.thing = (10, 20, 30, 40, 50)
 
     # Clear the applicator mock
-    style._reset_mocks()
+    style.apply.reset_mock()
 
     # Clear a value on one axis
     del style.thing_top
@@ -451,13 +451,13 @@ def test_directional_property(StyleClass):
     assert style.thing_right == 20
     assert style.thing_bottom == 30
     assert style.thing_left == 40
-    style._apply_names.assert_called_once_with("thing_top")
+    style.apply.assert_called_once_with("thing_top")
 
     # Restore the top thing
     style.thing_top = 10
 
     # Clear the applicator mock
-    style._reset_mocks()
+    style.apply.reset_mock()
 
     # Clear a value directly
     del style.thing
@@ -467,7 +467,7 @@ def test_directional_property(StyleClass):
     assert style.thing_right == 0
     assert style.thing_bottom == 0
     assert style.thing_left == 0
-    style._apply_names.assert_has_calls(
+    style.apply.assert_has_calls(
         [
             call("thing_right"),
             call("thing_bottom"),
@@ -617,7 +617,7 @@ def test_set_multiple_properties(StyleClass):
     assert style.explicit_const is VALUE1
     assert style.explicit_none == 10
     assert style.explicit_value == 20
-    style._apply_names.assert_has_calls(
+    style.apply.assert_has_calls(
         [
             call("explicit_value"),
             call("explicit_none"),
@@ -631,7 +631,7 @@ def test_set_multiple_properties(StyleClass):
     assert style.explicit_const is VALUE2
     assert style.explicit_value == 30
     assert style.explicit_none == 10
-    style._apply_names.assert_has_calls(
+    style.apply.assert_has_calls(
         [
             call("explicit_const"),
             call("explicit_value"),
@@ -640,13 +640,13 @@ def test_set_multiple_properties(StyleClass):
     )
 
     # Clear the applicator mock
-    style._reset_mocks()
+    style.apply.reset_mock()
 
     # Setting a non-property
     with pytest.raises(NameError):
         style.update(not_a_property=10)
 
-    style._apply_names.assert_not_called()
+    style.apply.assert_not_called()
 
 
 @pytest.mark.parametrize("StyleClass", [Style, DeprecatedStyle])
@@ -883,4 +883,4 @@ def test_deprecated_reapply():
     with pytest.warns(DeprecationWarning):
         style.reapply()
 
-    style._apply_all.assert_called_once()
+    style.apply.assert_called_once_with()

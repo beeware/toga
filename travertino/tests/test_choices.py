@@ -67,8 +67,8 @@ with catch_warnings():
 def assert_property(obj, name, value):
     assert getattr(obj, name) == value
 
-    obj._apply_names.assert_called_once_with(name)
-    obj._reset_mocks()
+    obj.apply.assert_called_once_with(name)
+    obj.apply.reset_mock()
 
 
 @pytest.mark.parametrize("StyleClass", [Style, DeprecatedStyle])
