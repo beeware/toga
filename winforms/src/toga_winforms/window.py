@@ -91,8 +91,14 @@ class Window(Container, Scalable):
     ######################################################################
 
     def winforms_Resize(self, sender, event):
-        if self.native.WindowState != WinForms.FormWindowState.Minimized:
+        if {self._previous_state, self.get_window_state()} != {
+            WindowState.NORMAL,
+            WindowState.MINIMIZED,
+        }:
+            # State change between NORMAL <-> MINIMIZED doesn't
+            # constitute a window resize operation.
             self.resize_content()
+            self.interface.on_resize()
 
         # See DisplaySettingsChanged in app.py.
         if self.get_current_screen().dpi_scale != self._dpi_scale:
