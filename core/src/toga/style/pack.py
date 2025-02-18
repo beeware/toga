@@ -35,9 +35,10 @@ from travertino.constants import (  # noqa: F401
     TRANSPARENT,
     VISIBLE,
 )
-from travertino.declaration import BaseStyle, directional_property, validated_property
 from travertino.layout import BaseBox
+from travertino.properties import directional_property, validated_property
 from travertino.size import BaseIntrinsicSize
+from travertino.style import BaseStyle
 
 from toga.fonts import (
     FONT_STYLES,
