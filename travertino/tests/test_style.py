@@ -884,3 +884,8 @@ def test_deprecated_reapply():
         style.reapply()
 
     style.apply.assert_called_once_with()
+
+
+def test_deprecated_import():
+    with pytest.deprecated_call():
+        from travertino.declaration import BaseStyle, Choices  # noqa
