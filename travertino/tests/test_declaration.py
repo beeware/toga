@@ -6,14 +6,14 @@ from warnings import catch_warnings, filterwarnings
 
 import pytest
 
-from travertino.declaration import (
-    BaseStyle,
+from travertino.properties import (
     Choices,
     ImmutableList,
     directional_property,
     list_property,
     validated_property,
 )
+from travertino.style import BaseStyle
 
 from .utils import apply_dataclass, mock_apply
 
