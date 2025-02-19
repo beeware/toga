@@ -225,6 +225,3 @@ class ContainedWidget(Widget):
                 RelativeLayout.LayoutParams.MATCH_PARENT,
             )
         )
-        # Immediately re-apply styles. Some widgets may defer style application until
-        # they have been added to a container.
-        self.interface.style.reapply()
