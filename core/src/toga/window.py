@@ -283,7 +283,7 @@ class Window:
 
     @property
     def id(self) -> str:
-        """A unique identifier for the window."""
+        """A unique identifier for the window (read-only)."""
         return self._id
 
     @property
@@ -858,7 +858,7 @@ class Window:
     ######################################################################
 
     ######################################################################
-    # 2024-10: Backwards compatibility for <= 0.4.8
+    # 2024-10: Backwards compatibility for < 0.5.0
     ######################################################################
     @property
     def full_screen(self) -> bool:

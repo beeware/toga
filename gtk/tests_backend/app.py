@@ -44,6 +44,9 @@ class AppProbe(BaseProbe, DialogsMixin):
     def is_cursor_visible(self):
         pytest.skip("Cursor visibility not implemented on GTK")
 
+    def unhide(self):
+        pytest.xfail("This platform doesn't have an app level unhide.")
+
     def assert_app_icon(self, icon):
         if GTK_VERSION >= (4, 0, 0):
             pytest.skip("Checking app icon not implemented in GTK4")
@@ -118,6 +121,9 @@ class AppProbe(BaseProbe, DialogsMixin):
             pytest.skip("GTK4 doesn't support system menus")
         _, action = self._menu_item(path)
         action.emit("activate", None)
+
+    def activate_menu_hide(self):
+        pytest.xfail("This platform doesn't present a app level hide option in menu.")
 
     def activate_menu_exit(self):
         if GTK_VERSION >= (4, 0, 0):

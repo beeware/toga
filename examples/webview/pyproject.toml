@@ -15,6 +15,7 @@ formal_name = "WebView Demo"
 description = "A demo app using all WebView features"
 sources = ["webview"]
 requires = [
+    "../../travertino",
     "../../core",
 ]
 

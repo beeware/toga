@@ -1244,14 +1244,15 @@ def test_tab_index(widget):
     assert attribute_value(widget, "tab_index") == tab_index
 
 
-def test_one_reapply_during_init():
-    """Style's reapply() should be called exactly once during widget initialization."""
+def test_one_apply_during_init():
+    """Style's apply() should be called exactly once during widget initialization."""
 
     class MockedPack(Pack):
-        reapply = Mock()
+        apply = Mock()
 
     ExampleWidget(style=MockedPack())
-    MockedPack.reapply.assert_called_once()
+    # Make sure it was called with no arguments, to apply all properties.
+    MockedPack.apply.assert_called_once_with()
 
 
 def test_widget_with_no_create():

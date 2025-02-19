@@ -35,9 +35,10 @@ from travertino.constants import (  # noqa: F401
     TRANSPARENT,
     VISIBLE,
 )
-from travertino.declaration import BaseStyle, directional_property, validated_property
 from travertino.layout import BaseBox
+from travertino.properties import directional_property, validated_property
 from travertino.size import BaseIntrinsicSize
+from travertino.style import BaseStyle
 
 from toga.fonts import (
     FONT_STYLES,
@@ -50,6 +51,8 @@ from toga.fonts import (
 
 # Make sure deprecation warnings are shown by default
 warnings.filterwarnings("default", category=DeprecationWarning)
+
+NOT_PROVIDED = object()
 
 PACK = "pack"
 
@@ -115,7 +118,7 @@ class Pack(BaseStyle):
         return self.visibility == HIDDEN
 
     ######################################################################
-    # 2024-12: Backwards compatibility for Toga <= 0.4.8
+    # 2024-12: Backwards compatibility for Toga < 0.5.0
     ######################################################################
 
     def update(self, **properties):
@@ -129,13 +132,6 @@ class Pack(BaseStyle):
             for name, value in properties.items()
         }
         super().update(**properties)
-
-    # Pack.alignment is still an actual property, despite being deprecated, so we need
-    # to suppress deprecation warnings when reapply is called.
-    def reapply(self, *args, **kwargs):
-        with warnings.catch_warnings():
-            warnings.filterwarnings("ignore", category=DeprecationWarning)
-            super().reapply(*args, **kwargs)
 
     _DEPRECATED_PROPERTIES = {
         # Map each deprecated property name to its replacement.
@@ -259,53 +255,57 @@ class Pack(BaseStyle):
     # End backwards compatibility
     ######################################################################
 
-    def apply(self, prop: str, value: object) -> None:
+    def apply(self, *names: list[str]) -> None:
         if self._applicator:
-            if prop == "text_align":
-                if value is None:
-                    if self.text_direction == RTL:
-                        value = RIGHT
-                    else:
-                        value = LEFT
-                self._applicator.set_text_align(value)
-            elif prop == "text_direction":
-                if self.text_align is None:
-                    self._applicator.set_text_align(RIGHT if value == RTL else LEFT)
-            elif prop == "color":
-                self._applicator.set_color(value)
-            elif prop == "background_color":
-                self._applicator.set_background_color(value)
-            elif prop == "visibility":
-                if value == VISIBLE:
-                    # If visibility is being set to VISIBLE, look up the chain to see if
-                    # an ancestor is hidden.
-                    widget = self._applicator.widget
-                    while widget := widget.parent:
-                        if widget.style._hidden:
-                            value = HIDDEN
-                            break
+            for name in names or self._PROPERTIES:
+                if name == "text_align":
+                    if (value := self.text_align) is None:
+                        if self.text_direction == RTL:
+                            value = RIGHT
+                        else:
+                            value = LEFT
+                    self._applicator.set_text_align(value)
+                elif name == "text_direction":
+                    if self.text_align is None:
+                        self._applicator.set_text_align(
+                            RIGHT if self.text_direction == RTL else LEFT
+                        )
+                elif name == "color":
+                    self._applicator.set_color(self.color)
+                elif name == "background_color":
+                    self._applicator.set_background_color(self.background_color)
+                elif name == "visibility":
+                    value = self.visibility
+                    if value == VISIBLE:
+                        # If visibility is being set to VISIBLE, look up the chain to
+                        # see if an ancestor is hidden.
+                        widget = self._applicator.widget
+                        while widget := widget.parent:
+                            if widget.style._hidden:
+                                value = HIDDEN
+                                break
 
-                self._applicator.set_hidden(value == HIDDEN)
-            elif prop in (
-                "font_family",
-                "font_size",
-                "font_style",
-                "font_variant",
-                "font_weight",
-            ):
-                self._applicator.set_font(
-                    Font(
-                        self.font_family,
-                        self.font_size,
-                        style=self.font_style,
-                        variant=self.font_variant,
-                        weight=self.font_weight,
+                    self._applicator.set_hidden(value == HIDDEN)
+                elif name in (
+                    "font_family",
+                    "font_size",
+                    "font_style",
+                    "font_variant",
+                    "font_weight",
+                ):
+                    self._applicator.set_font(
+                        Font(
+                            self.font_family,
+                            self.font_size,
+                            style=self.font_style,
+                            variant=self.font_variant,
+                            weight=self.font_weight,
+                        )
                     )
-                )
-            else:
-                # Any other style change will cause a change in layout geometry,
-                # so perform a refresh.
-                self._applicator.refresh()
+                else:
+                    # Any other style change will cause a change in layout geometry, so
+                    # perform a refresh.
+                    self._applicator.refresh()
 
     def layout(self, viewport: Any) -> None:
         # self._debug("=" * 80)

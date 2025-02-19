@@ -2,15 +2,17 @@ from abc import ABC, abstractmethod
 from decimal import ROUND_HALF_EVEN, Decimal
 
 from System.Drawing import (
-    Color,
     Point,
     Size,
     SystemColors,
 )
 from travertino.size import at_least
 
-from toga.colors import TRANSPARENT
-from toga_winforms.colors import native_color
+from toga.colors import TRANSPARENT, rgba
+from toga_winforms.colors import (
+    native_color,
+    toga_color,
+)
 
 
 class Scalable(ABC):
@@ -39,17 +41,25 @@ class Scalable(ABC):
 
 
 class Widget(Scalable, ABC):
-    # In some widgets, attempting to set a background color with any alpha value other
-    # than 1 raises "System.ArgumentException: Control does not support transparent
-    # background colors". Those widgets should set this attribute to False.
-    _background_supports_alpha = True
-
     def __init__(self, interface):
         self.interface = interface
 
         self._container = None
         self.native = None
         self.create()
+
+        # Widgets that need to set a different default background_color should override
+        # the _default_background_color attribute.
+        #
+        # Note: On Winforms, _default_background_color is set in the form of toga color,
+        #       instead of the native Color. This is because we need to manually do the
+        #       alpha blending, and the native Color class does not directly handle the
+        #       alpha transparency in the same way.
+        if not hasattr(self, "_default_background_color"):
+            # If a widget hasn't specifically defined a default background color then
+            # set the system assigned background color as the default background color
+            # of the widget.
+            self._default_background_color = toga_color(self.native.BackColor)
 
         # Obtain a Graphics object and immediately dispose of it. This is
         # done to trigger the control's Paint event and force it to redraw.
@@ -99,6 +109,12 @@ class Widget(Scalable, ABC):
 
         self.refresh()
 
+        # Background color needs to be reapplied on widget parent change as WinForms
+        # doesn't actually support transparency. It just copies the parent's
+        # BackColor to the widget. So, if a widget's parent changes then we need
+        # to reapply background_color to copy the new parent's BackColor.
+        self.set_background_color(self.interface.style.background_color)
+
     def get_tab_index(self):
         return self.native.TabIndex
 
@@ -145,17 +161,26 @@ class Widget(Scalable, ABC):
             self.native.ForeColor = native_color(color)
 
     def set_background_color(self, color):
-        if not hasattr(self, "_default_background"):
-            self._default_background = self.native.BackColor
-        if color is None or (
-            color == TRANSPARENT and not self._background_supports_alpha
-        ):
-            self.native.BackColor = self._default_background
+        if self.interface.parent:
+            parent_color = toga_color(self.interface.parent._impl.native.BackColor).rgba
         else:
-            win_color = native_color(color)
-            if not self._background_supports_alpha:
-                win_color = Color.FromArgb(255, win_color.R, win_color.G, win_color.B)
-            self.native.BackColor = win_color
+            parent_color = toga_color(SystemColors.Control).rgba
+
+        if color is None:
+            if self._default_background_color is TRANSPARENT:
+                requested_color = rgba(0, 0, 0, 0)
+            else:
+                requested_color = self._default_background_color.rgba
+        elif color is TRANSPARENT:
+            requested_color = rgba(0, 0, 0, 0)
+        else:
+            requested_color = color.rgba
+
+        blended_color = requested_color.blend_over(parent_color)
+        self.native.BackColor = native_color(blended_color)
+
+        for child in self.interface.children:
+            child._impl.set_background_color(child.style.background_color)
 
     # INTERFACE
 

@@ -1,20 +1,21 @@
 from __future__ import annotations
 
+from collections.abc import Sequence
 from unittest.mock import call
 from warnings import catch_warnings, filterwarnings
 
 import pytest
 
-from travertino.declaration import (
-    BaseStyle,
+from travertino.properties import (
     Choices,
     ImmutableList,
     directional_property,
     list_property,
     validated_property,
 )
+from travertino.style import BaseStyle
 
-from .utils import mock_attr, prep_style_class
+from .utils import apply_dataclass, mock_apply
 
 VALUE1 = "value1"
 VALUE2 = "value2"
@@ -22,7 +23,8 @@ VALUE3 = "value3"
 VALUES = [VALUE1, VALUE2, VALUE3, None]
 
 
-@prep_style_class
+@mock_apply
+@apply_dataclass
 class Style(BaseStyle):
     # Some properties with explicit initial values
     explicit_const: str | int = validated_property(
@@ -55,7 +57,7 @@ VALUE_CHOICES = Choices(*VALUES, integer=True)
 with catch_warnings():
     filterwarnings("ignore", category=DeprecationWarning)
 
-    @mock_attr("apply")
+    @mock_apply
     class DeprecatedStyle(BaseStyle):
         pass
 
@@ -96,9 +98,9 @@ class Sibling(BaseStyle):
     pass
 
 
-@prep_style_class
-@mock_attr("reapply")
-class MockedReapplyStyle(BaseStyle):
+@mock_apply
+@apply_dataclass
+class MockedApplyStyle(BaseStyle):
     pass
 
 
@@ -133,32 +135,22 @@ def test_create_and_copy(StyleClass):
 
 
 def test_deprecated_copy():
-    style = MockedReapplyStyle()
+    style = MockedApplyStyle()
 
     with pytest.warns(DeprecationWarning):
         style_copy = style.copy(applicator=object())
 
-    style_copy.reapply.assert_called_once()
+    style_copy.apply.assert_called_once_with()
 
 
 @pytest.mark.parametrize("StyleClass", [Style, DeprecatedStyle])
-def test_reapply(StyleClass):
+def test_apply(StyleClass):
     style = StyleClass(explicit_const=VALUE2, implicit=VALUE3)
+    assert style.apply.mock_calls == [call("explicit_const"), call("implicit")]
+    style.apply.reset_mock()
 
-    style.reapply()
-    style.apply.assert_has_calls(
-        [
-            call("explicit_const", VALUE2),
-            call("explicit_value", 0),
-            call("explicit_none", None),
-            call("implicit", VALUE3),
-            call("thing_left", 0),
-            call("thing_top", 0),
-            call("thing_right", 0),
-            call("thing_bottom", 0),
-        ],
-        any_order=True,
-    )
+    style.apply()
+    style.apply.assert_called_once_with()
 
 
 @pytest.mark.parametrize("StyleClass", [Style, DeprecatedStyle])
@@ -173,7 +165,7 @@ def test_property_with_explicit_const(StyleClass):
     style.explicit_const = 10
 
     assert style.explicit_const == 10
-    style.apply.assert_called_once_with("explicit_const", 10)
+    style.apply.assert_called_once_with("explicit_const")
 
     # Clear the applicator mock
     style.apply.reset_mock()
@@ -188,7 +180,7 @@ def test_property_with_explicit_const(StyleClass):
     # A dirty notification is set.
     style.explicit_const = 20
     assert style.explicit_const == 20
-    style.apply.assert_called_once_with("explicit_const", 20)
+    style.apply.assert_called_once_with("explicit_const")
 
     # Clear the applicator mock
     style.apply.reset_mock()
@@ -196,7 +188,7 @@ def test_property_with_explicit_const(StyleClass):
     # Clear the property
     del style.explicit_const
     assert style.explicit_const is VALUE1
-    style.apply.assert_called_once_with("explicit_const", VALUE1)
+    style.apply.assert_called_once_with("explicit_const")
 
     # Clear the applicator mock
     style.apply.reset_mock()
@@ -221,7 +213,7 @@ def test_property_with_explicit_value(StyleClass):
     style.explicit_value = 10
 
     assert style.explicit_value == 10
-    style.apply.assert_called_once_with("explicit_value", 10)
+    style.apply.assert_called_once_with("explicit_value")
 
     # Clear the applicator mock
     style.apply.reset_mock()
@@ -236,7 +228,7 @@ def test_property_with_explicit_value(StyleClass):
     # A dirty notification is set.
     style.explicit_value = 20
     assert style.explicit_value == 20
-    style.apply.assert_called_once_with("explicit_value", 20)
+    style.apply.assert_called_once_with("explicit_value")
 
     # Clear the applicator mock
     style.apply.reset_mock()
@@ -244,7 +236,7 @@ def test_property_with_explicit_value(StyleClass):
     # Clear the property
     del style.explicit_value
     assert style.explicit_value == 0
-    style.apply.assert_called_once_with("explicit_value", 0)
+    style.apply.assert_called_once_with("explicit_value")
 
 
 @pytest.mark.parametrize("StyleClass", [Style, DeprecatedStyle])
@@ -259,7 +251,7 @@ def test_property_with_explicit_none(StyleClass):
     style.explicit_none = 10
 
     assert style.explicit_none == 10
-    style.apply.assert_called_once_with("explicit_none", 10)
+    style.apply.assert_called_once_with("explicit_none")
 
     # Clear the applicator mock
     style.apply.reset_mock()
@@ -274,7 +266,7 @@ def test_property_with_explicit_none(StyleClass):
     # A dirty notification is set.
     style.explicit_none = 20
     assert style.explicit_none == 20
-    style.apply.assert_called_once_with("explicit_none", 20)
+    style.apply.assert_called_once_with("explicit_none")
 
     # Clear the applicator mock
     style.apply.reset_mock()
@@ -282,7 +274,7 @@ def test_property_with_explicit_none(StyleClass):
     # Clear the property
     del style.explicit_none
     assert style.explicit_none is None
-    style.apply.assert_called_once_with("explicit_none", None)
+    style.apply.assert_called_once_with("explicit_none")
 
 
 @pytest.mark.parametrize("StyleClass", [Style, DeprecatedStyle])
@@ -297,7 +289,7 @@ def test_property_with_implicit_default(StyleClass):
     style.implicit = 10
 
     assert style.implicit == 10
-    style.apply.assert_called_once_with("implicit", 10)
+    style.apply.assert_called_once_with("implicit")
 
     # Clear the applicator mock
     style.apply.reset_mock()
@@ -312,7 +304,7 @@ def test_property_with_implicit_default(StyleClass):
     # A dirty notification is set.
     style.implicit = 20
     assert style.implicit == 20
-    style.apply.assert_called_once_with("implicit", 20)
+    style.apply.assert_called_once_with("implicit")
 
     # Clear the applicator mock
     style.apply.reset_mock()
@@ -320,7 +312,7 @@ def test_property_with_implicit_default(StyleClass):
     # Clear the property
     del style.implicit
     assert style.implicit is None
-    style.apply.assert_called_once_with("implicit", None)
+    style.apply.assert_called_once_with("implicit")
 
 
 @pytest.mark.parametrize("StyleClass", [Style, DeprecatedStyle])
@@ -354,7 +346,7 @@ def test_directional_property(StyleClass):
     assert style.thing_right == 0
     assert style.thing_bottom == 0
     assert style.thing_left == 0
-    style.apply.assert_called_once_with("thing_top", 10)
+    style.apply.assert_called_once_with("thing_top")
 
     # Clear the applicator mock
     style.apply.reset_mock()
@@ -369,9 +361,9 @@ def test_directional_property(StyleClass):
     assert style.thing_left == 10
     style.apply.assert_has_calls(
         [
-            call("thing_right", 10),
-            call("thing_bottom", 10),
-            call("thing_left", 10),
+            call("thing_right"),
+            call("thing_bottom"),
+            call("thing_left"),
         ]
     )
 
@@ -388,10 +380,10 @@ def test_directional_property(StyleClass):
     assert style.thing_left == 30
     style.apply.assert_has_calls(
         [
-            call("thing_top", 30),
-            call("thing_right", 30),
-            call("thing_bottom", 30),
-            call("thing_left", 30),
+            call("thing_top"),
+            call("thing_right"),
+            call("thing_bottom"),
+            call("thing_left"),
         ]
     )
 
@@ -408,10 +400,10 @@ def test_directional_property(StyleClass):
     assert style.thing_left == 20
     style.apply.assert_has_calls(
         [
-            call("thing_top", 10),
-            call("thing_right", 20),
-            call("thing_bottom", 10),
-            call("thing_left", 20),
+            call("thing_top"),
+            call("thing_right"),
+            call("thing_bottom"),
+            call("thing_left"),
         ]
     )
 
@@ -426,7 +418,7 @@ def test_directional_property(StyleClass):
     assert style.thing_right == 20
     assert style.thing_bottom == 30
     assert style.thing_left == 20
-    style.apply.assert_called_once_with("thing_bottom", 30)
+    style.apply.assert_called_once_with("thing_bottom")
 
     # Clear the applicator mock
     style.apply.reset_mock()
@@ -439,7 +431,7 @@ def test_directional_property(StyleClass):
     assert style.thing_right == 20
     assert style.thing_bottom == 30
     assert style.thing_left == 40
-    style.apply.assert_called_once_with("thing_left", 40)
+    style.apply.assert_called_once_with("thing_left")
 
     # Set a value directly with an invalid number of values
     with pytest.raises(ValueError):
@@ -459,7 +451,7 @@ def test_directional_property(StyleClass):
     assert style.thing_right == 20
     assert style.thing_bottom == 30
     assert style.thing_left == 40
-    style.apply.assert_called_once_with("thing_top", 0)
+    style.apply.assert_called_once_with("thing_top")
 
     # Restore the top thing
     style.thing_top = 10
@@ -477,9 +469,9 @@ def test_directional_property(StyleClass):
     assert style.thing_left == 0
     style.apply.assert_has_calls(
         [
-            call("thing_right", 0),
-            call("thing_bottom", 0),
-            call("thing_left", 0),
+            call("thing_right"),
+            call("thing_bottom"),
+            call("thing_left"),
         ]
     )
 
@@ -606,6 +598,14 @@ def test_list_property_list_like():
         count += 1
     assert count == 4
 
+    assert [*reversed(prop)] == [VALUE2, 3, 2, 1]
+
+    assert prop.index(3) == 2
+
+    assert prop.count(VALUE2) == 1
+
+    assert isinstance(prop, Sequence)
+
 
 @pytest.mark.parametrize("StyleClass", [Style, DeprecatedStyle])
 def test_set_multiple_properties(StyleClass):
@@ -619,8 +619,8 @@ def test_set_multiple_properties(StyleClass):
     assert style.explicit_value == 20
     style.apply.assert_has_calls(
         [
-            call("explicit_value", 20),
-            call("explicit_none", 10),
+            call("explicit_value"),
+            call("explicit_none"),
         ],
         any_order=True,
     )
@@ -633,8 +633,8 @@ def test_set_multiple_properties(StyleClass):
     assert style.explicit_none == 10
     style.apply.assert_has_calls(
         [
-            call("explicit_const", VALUE2),
-            call("explicit_value", 30),
+            call("explicit_const"),
+            call("explicit_value"),
         ],
         any_order=True,
     )
@@ -755,6 +755,33 @@ def test_dict(StyleClass):
 
 
 @pytest.mark.parametrize("StyleClass", [Style, DeprecatedStyle])
+def test_set_to_initial(StyleClass):
+    """A property set to its initial value is distinct from an unset property."""
+    style = StyleClass()
+
+    # explicit_const's initial value is VALUE1.
+    assert style.explicit_const == VALUE1
+    assert "explicit_const" not in style
+
+    # The unset property shouldn't affect the value when overlaid over a style with
+    # that property set.
+    non_initial_style = StyleClass(explicit_const=VALUE2)
+    union = non_initial_style | style
+    assert union.explicit_const == VALUE2
+    assert "explicit_const" in union
+
+    # The property should count as set, even when set to the same initial value.
+    style.explicit_const = VALUE1
+    assert style.explicit_const == VALUE1
+    assert "explicit_const" in style
+
+    # The property should now overwrite.
+    union = non_initial_style | style
+    assert union.explicit_const == VALUE1
+    assert "explicit_const" in union
+
+
+@pytest.mark.parametrize("StyleClass", [Style, DeprecatedStyle])
 @pytest.mark.parametrize("instantiate", [True, False])
 def test_union_operators(StyleClass, instantiate):
     """Styles support | and |= with dicts and with their own class."""
@@ -848,3 +875,17 @@ def test_deprecated_class_methods():
 
     with pytest.warns(DeprecationWarning):
         OldStyle.directional_property("thing%s")
+
+
+def test_deprecated_reapply():
+    """Reapply() is deprecated (but still calls apply()."""
+    style = Style()
+    with pytest.warns(DeprecationWarning):
+        style.reapply()
+
+    style.apply.assert_called_once_with()
+
+
+def test_deprecated_import():
+    with pytest.deprecated_call():
+        from travertino.declaration import BaseStyle, Choices  # noqa

@@ -3,6 +3,7 @@ from decimal import ROUND_UP
 import System.Windows.Forms as WinForms
 from System.Drawing import Bitmap
 
+from toga.colors import TRANSPARENT
 from toga.widgets.imageview import rehint_imageview
 
 from .base import Widget
@@ -11,6 +12,7 @@ from .base import Widget
 class ImageView(Widget):
     def create(self):
         self.native = WinForms.PictureBox()
+        self._default_background_color = TRANSPARENT
         self.native.SizeMode = WinForms.PictureBoxSizeMode.Zoom
 
         # If self.native.Image is None, Winforms renders it as a white square

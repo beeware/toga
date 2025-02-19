@@ -4,8 +4,8 @@ from builtins import id as identifier
 from typing import TYPE_CHECKING, Any, TypeVar
 from warnings import warn
 
-from travertino.declaration import BaseStyle
 from travertino.node import Node
+from travertino.style import BaseStyle
 
 from toga.platform import get_platform_factory
 from toga.style import Pack, TogaApplicator
@@ -52,9 +52,9 @@ class Widget(Node, PackMixin):
         # Get factory and assign implementation
         self.factory = get_platform_factory()
 
-        ####################################################
-        # 2024-12: Backwards compatibility for Toga <= 0.4.8
-        ####################################################
+        ##################################################################
+        # 2024-12: Backwards compatibility for Toga < 0.5.0
+        ##################################################################
 
         # Just in case we're working with a third-party widget created before
         # the _create() mechanism was added, which has already defined its
@@ -94,7 +94,7 @@ class Widget(Node, PackMixin):
 
     @property
     def id(self) -> str:
-        """A unique identifier for the widget."""
+        """A unique identifier for the widget (read-only)."""
         return self._id
 
     @property

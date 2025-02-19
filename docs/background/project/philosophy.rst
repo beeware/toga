@@ -53,6 +53,11 @@ button is a button, no matter what platform you're on. But other widgets may
 not be exposed so literally. What the Toga API aims to expose is a set of
 mechanisms for achieving UI goals, not a literal widget set.
 
+We follow the 80% rule for abstractions - the goal is to provide an API that makes 80%
+of use cases possible, with enough internals exposed so that advanced users can get to
+the other 20% if they need to. We don't consider 100% coverage of all possible features
+to be desirable (or even achievable in many cases).
+
 Python native
 -------------
 

@@ -1,7 +1,7 @@
 from warnings import warn
 
 from android import R
-from android.graphics import Rect, Typeface
+from android.graphics import Color, Rect, Typeface
 from android.view import Gravity, View
 from android.widget import LinearLayout, ScrollView, TableLayout, TableRow, TextView
 from java import dynamic_proxy
@@ -47,15 +47,13 @@ class TogaOnLongClickListener(dynamic_proxy(View.OnLongClickListener)):
 class Table(Widget):
     table_layout = None
     color_selected = None
-    color_unselected = None
     _font_impl = None
 
     def create(self):
         # get the selection color from the current theme
-        attrs = [R.attr.colorBackground, R.attr.colorControlHighlight]
+        attrs = [R.attr.colorControlHighlight]
         typed_array = self._native_activity.obtainStyledAttributes(attrs)
-        self.color_unselected = typed_array.getColor(0, 0)
-        self.color_selected = typed_array.getColor(1, 0)
+        self.color_selected = typed_array.getColor(0, 0)
         typed_array.recycle()
 
         # add vertical scroll view
@@ -98,7 +96,7 @@ class Table(Widget):
 
     def remove_selection(self, index):
         table_row = self.selection.pop(index)
-        table_row.setBackgroundColor(self.color_unselected)
+        table_row.setBackgroundColor(Color.TRANSPARENT)
 
     def clear_selection(self):
         for index in list(self.selection):

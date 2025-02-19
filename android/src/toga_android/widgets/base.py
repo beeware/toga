@@ -65,9 +65,6 @@ class Widget(ABC, Scalable):
         )
 
         self._default_background_color = Color.TRANSPARENT
-        # Immediately re-apply styles. Some widgets may defer style application until
-        # they have been added to a container.
-        self.interface.style.reapply()
 
     @abstractmethod
     def create(self): ...
