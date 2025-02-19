@@ -10,7 +10,6 @@ from android.graphics.drawable import (
 from android.os import Build, SystemClock
 from android.view import MotionEvent, View, ViewGroup
 
-from toga.colors import TRANSPARENT
 from toga.style.pack import JUSTIFY, LEFT
 
 from ..fonts import FontMixin
@@ -27,15 +26,18 @@ class SimpleProbe(BaseProbe, FontMixin):
         self.widget = widget
         self.impl = widget._impl
         self.native = widget._impl.native
+        self.native_toplevel = widget._impl.native_toplevel
         assert isinstance(self.native, self.native_class)
 
     def assert_container(self, container):
         assert self.widget._impl.container is container._impl.container
-        assert self.native.getParent() is container._impl.container.native_content
+        assert (
+            self.native_toplevel.getParent() is container._impl.container.native_content
+        )
 
     def assert_not_contained(self):
         assert self.widget._impl.container is None
-        assert self.native.getParent() is None
+        assert self.native_toplevel.getParent() is None
 
     def assert_text_align(self, expected):
         actual = self.text_align
@@ -80,7 +82,7 @@ class SimpleProbe(BaseProbe, FontMixin):
     def assert_layout(self, size, position):
         # Widget is contained
         assert self.widget._impl.container is not None
-        assert self.native.getParent() is not None
+        assert self.native_toplevel.getParent() is not None
 
         # Size and position is as expected. Values must be scaled from DP, and
         # compared inexactly due to pixel scaling
@@ -95,14 +97,14 @@ class SimpleProbe(BaseProbe, FontMixin):
 
     @property
     def background_color(self):
-        background = self.native.getBackground()
+        background = self.native_toplevel.getBackground()
         while True:
             if isinstance(background, ColorDrawable):
                 return toga_color(background.getColor())
 
-            # The following complex Drawables all apply color filters to their children,
-            # but they don't implement getColorFilter, at least not in our current
-            # minimum API level.
+            # The following complex Drawables all apply color filters to
+            # their children, but they don't implement getColorFilter, at
+            # least not in our current minimum API level.
             elif isinstance(background, LayerDrawable):
                 background = background.getDrawable(0)
             elif isinstance(background, DrawableContainer):
@@ -114,15 +116,16 @@ class SimpleProbe(BaseProbe, FontMixin):
                 break
 
         if background is None:
-            return TRANSPARENT
+            return None
         filter = background.getColorFilter()
         if filter:
-            # PorterDuffColorFilter.getColor is undocumented, but continues to work for
-            # now. If this method is blocked in the future, another option is to use the
-            # filter to draw something and see what color comes out.
+            # PorterDuffColorFilter.getColor is undocumented, but continues
+            # to work for now. If this method is blocked in the future,
+            # another option is to use the filter to draw something and see
+            # what color comes out.
             return toga_color(filter.getColor())
         else:
-            return TRANSPARENT
+            return None
 
     async def press(self):
         self.native.performClick()

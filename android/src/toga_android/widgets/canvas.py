@@ -243,13 +243,12 @@ class Canvas(Widget):
         )
         canvas = A_Canvas(bitmap)
         background = self.native.getBackground()
-        if background:
-            background.draw(canvas)
+        background.draw(canvas)
         self.native.draw(canvas)
 
         stream = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.PNG, 0, stream)
         return bytes(stream.toByteArray())
 
-    def set_background_color(self, value):
-        self.set_background_simple(value)
+    def set_background_color(self, color):
+        self.set_background_simple(color)

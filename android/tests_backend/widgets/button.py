@@ -1,8 +1,6 @@
 import pytest
 from java import jclass
 
-from toga.colors import TRANSPARENT
-
 from .label import LabelProbe
 
 
@@ -23,8 +21,3 @@ class ButtonProbe(LabelProbe):
             assert (icon.getIntrinsicWidth(), icon.getIntrinsicHeight()) == scaled_size
         else:
             pytest.fail("Icon does not exist")
-
-    @property
-    def background_color(self):
-        color = super().background_color
-        return None if color == TRANSPARENT else color
