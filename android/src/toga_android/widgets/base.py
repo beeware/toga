@@ -1,13 +1,14 @@
 from abc import ABC, abstractmethod
 from decimal import ROUND_HALF_EVEN, Decimal
 
-from android.graphics import Color, PorterDuff, PorterDuffColorFilter
+from android.graphics import PorterDuff, PorterDuffColorFilter
 from android.graphics.drawable import ColorDrawable
 from android.view import Gravity, View
 from android.widget import RelativeLayout
 from org.beeware.android import MainActivity
 from travertino.size import at_least
 
+from toga.colors import TRANSPARENT
 from toga.constants import CENTER, JUSTIFY, LEFT, RIGHT
 from toga_android.colors import native_color
 
@@ -63,8 +64,6 @@ class Widget(ABC, Scalable):
                 RelativeLayout.LayoutParams.WRAP_CONTENT,
             )
         )
-
-        self._default_background_color = Color.TRANSPARENT
 
     @abstractmethod
     def create(self): ...
@@ -131,13 +130,8 @@ class Widget(ABC, Scalable):
     # appearance. So each widget must decide how to implement this method, possibly
     # using one of the utility functions below.
     def set_background_color(self, color):
-        self.set_background_simple(color)
-
-    def set_background_simple(self, color):
         self.native_toplevel.setBackground(
-            ColorDrawable(
-                self._default_background_color if color is None else native_color(color)
-            )
+            None if color in (None, TRANSPARENT) else ColorDrawable(native_color(color))
         )
 
     def set_background_filter(self, color):

@@ -7,7 +7,6 @@ from android.view import Gravity, View
 from android.widget import TextView
 from travertino.size import at_least
 
-from toga.colors import TRANSPARENT
 from toga.constants import JUSTIFY
 from toga_android.colors import native_color
 
@@ -77,6 +76,3 @@ class Label(TextViewWidget):
 
     def set_text_align(self, value):
         self.set_textview_alignment(value, Gravity.TOP)
-
-    def set_background_color(self, color):
-        self.set_background_simple(TRANSPARENT if color is None else color)

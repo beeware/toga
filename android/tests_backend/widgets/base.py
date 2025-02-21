@@ -102,9 +102,9 @@ class SimpleProbe(BaseProbe, FontMixin):
             if isinstance(background, ColorDrawable):
                 return toga_color(background.getColor())
 
-            # The following complex Drawables all apply color filters to
-            # their children, but they don't implement getColorFilter, at
-            # least not in our current minimum API level.
+            # The following complex Drawables all apply color filters to their children,
+            # but they don't implement getColorFilter, at least not in our current
+            # minimum API level.
             elif isinstance(background, LayerDrawable):
                 background = background.getDrawable(0)
             elif isinstance(background, DrawableContainer):
