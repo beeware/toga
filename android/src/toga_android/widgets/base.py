@@ -131,7 +131,11 @@ class Widget(ABC, Scalable):
     # using one of the utility functions below.
     def set_background_color(self, color):
         self.native_toplevel.setBackground(
-            None if color in (None, TRANSPARENT) else ColorDrawable(native_color(color))
+            ColorDrawable(
+                native_color(TRANSPARENT)
+                if color in (None, TRANSPARENT)
+                else native_color(color)
+            )
         )
 
     def set_background_filter(self, color):
