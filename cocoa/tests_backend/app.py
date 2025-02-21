@@ -55,6 +55,9 @@ class AppProbe(BaseProbe, DialogsMixin):
         # fall back to the implementation's proxy variable.
         return self.app._impl._cursor_visible
 
+    def unhide(self):
+        self.app._impl.native.unhide(self.app._impl.native)
+
     def assert_app_icon(self, icon):
         # We have no real way to check we've got the right icon; use pixel peeping as a
         # guess. Construct a PIL image from the current icon.
@@ -125,6 +128,18 @@ class AppProbe(BaseProbe, DialogsMixin):
             self.app._impl.native.delegate,
             item.action,
             item,
+            restype=None,
+            argtypes=[objc_id],
+        )
+
+    def activate_menu_hide(self):
+        item = self._menu_item(["*", "Hide Toga Testbed"])
+        # To activate the "Hide" in global app menu, we need call the native
+        # handler on the NSApplication instead of the NSApplicationDelegate.
+        send_message(
+            self.app._impl.native,
+            item.action,
+            self.app._impl.native,
             restype=None,
             argtypes=[objc_id],
         )

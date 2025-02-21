@@ -1,3 +1,3 @@
-import toga
+import travertino
 
-__version__ = toga._package_version(__file__, __name__)
+__version__ = travertino._package_version(__file__, __name__)

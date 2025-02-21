@@ -2,8 +2,10 @@ from __future__ import annotations
 
 import asyncio
 import importlib.metadata
+import signal
 import sys
 import warnings
+import webbrowser
 from collections.abc import Coroutine, Iterator
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Protocol
@@ -450,13 +452,7 @@ class App:
         On mobile and web platforms, it returns immediately.
         """
         # Modify signal handlers to make sure Ctrl-C is caught and handled.
-        try:
-            # This module doesn't exist in MicroPython, so don't import it globally.
-            import signal
-        except ModuleNotFoundError:  # pragma: no cover
-            pass
-        else:
-            signal.signal(signal.SIGINT, signal.SIG_DFL)
+        signal.signal(signal.SIGINT, signal.SIG_DFL)
 
         self._impl.main_loop()
 
@@ -790,9 +786,6 @@ class App:
         will be disabled.
         """
         if self.home_page is not None:
-            # This module doesn't exist in MicroPython, so don't import it globally.
-            import webbrowser
-
             webbrowser.open(self.home_page)
 
     ######################################################################
