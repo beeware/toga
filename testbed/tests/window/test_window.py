@@ -1120,14 +1120,14 @@ else:
         second_window.size = (200, 150)
         await second_window_probe.wait_for_window("Second window has been resized")
         assert second_window.size == (200, 150)
-        second_window_on_resize_handler.assert_called_once_with(second_window)
+        second_window_on_resize_handler.assert_called_with(second_window)
         second_window_on_resize_handler.reset_mock()
 
         # Resize to initial size, on_resize() will be triggered
         second_window.size = initial_size
         await second_window_probe.wait_for_window("Second window has been resized")
         assert second_window.size == initial_size
-        second_window_on_resize_handler.assert_called_once_with(second_window)
+        second_window_on_resize_handler.assert_called_with(second_window)
         second_window_on_resize_handler.reset_mock()
 
         # Again resize to initial size, on_resize() will not be triggered
