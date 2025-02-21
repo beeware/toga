@@ -1,3 +1,5 @@
+from unittest.mock import Mock
+
 import pytest
 
 import toga
@@ -119,6 +121,18 @@ async def test_device_rotation(app, app_probe):
     """App responds to device rotation"""
     app_probe.rotate()
     await app_probe.redraw("Device has been rotated")
+
+
+async def test_resize_event_on_device_rotation(
+    app, app_probe, main_window, main_window_probe
+):
+    """The on_resize() event is triggered when the device is rotated"""
+    main_window_on_resize_handler = Mock()
+    main_window.on_resize = main_window_on_resize_handler
+
+    app_probe.rotate()
+    await app_probe.redraw("Device has been rotated")
+    main_window_on_resize_handler.assert_called_once_with(main_window)
 
 
 async def test_session_based_app(app):

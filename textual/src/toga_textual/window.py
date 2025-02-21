@@ -109,8 +109,8 @@ class TogaWindow(TextualScreen):
         self.impl = impl
 
     def on_resize(self, event) -> None:
-        self.interface.content.refresh()
         self.interface.on_resize()
+        self.interface.content.refresh()
 
 
 class Window:

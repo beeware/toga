@@ -97,8 +97,8 @@ class Window(Container, Scalable):
         }:
             # State change between NORMAL <-> MINIMIZED doesn't
             # constitute a window resize operation.
-            self.resize_content()
             self.interface.on_resize()
+            self.resize_content()
 
         # See DisplaySettingsChanged in app.py.
         if self.get_current_screen().dpi_scale != self._dpi_scale:

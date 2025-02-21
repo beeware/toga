@@ -6,7 +6,6 @@ gtk_version = "4.0" if os.getenv("TOGA_GTK") == "4" else "3.0"
 gi.require_version("Gdk", gtk_version)
 gi.require_version("Gtk", gtk_version)
 
-from gi._gi import hook_up_vfunc_implementation  # noqa: E402, F401
 from gi.events import GLibEventLoopPolicy  # noqa: E402, F401
 from gi.repository import (  # noqa: E402, F401
     Gdk,
@@ -23,6 +22,9 @@ GTK_VERSION: tuple[int, int, int] = (
     Gtk.get_minor_version(),
     Gtk.get_micro_version(),
 )
+
+if GTK_VERSION >= (4, 0, 0):  # pragma: no-cover-if-gtk3
+    from gi._gi import hook_up_vfunc_implementation  # noqa: E402, F401
 
 if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
     default_display = Gdk.Screen.get_default()

@@ -9,14 +9,16 @@ from toga.types import Position, Size
 from toga.window import _initial_position
 
 from .container import TogaContainer
-from .libs import GTK_VERSION, IS_WAYLAND, Gdk, GLib, Gtk, hook_up_vfunc_implementation
-from .libs.utils import create_toga_native
+from .libs import GTK_VERSION, IS_WAYLAND, Gdk, GLib, Gtk
+
+if GTK_VERSION >= (4, 0, 0):  # pragma: no-cover-if-gtk3
+    from .libs import hook_up_vfunc_implementation
+    from .libs.utils import create_toga_native, WeakrefCallable
+
 from .screens import Screen as ScreenImpl
 
 if TYPE_CHECKING:  # pragma: no cover
     from toga.types import PositionT, SizeT
-
-from .libs.wrapper import WeakrefCallable
 
 
 class Window:
@@ -103,22 +105,26 @@ class Window:
     ######################################################################
     # Native event handlers
     ######################################################################
-    def gtk_do_size_allocate(
-        self, native, width, height, baseline
-    ):  # pragma: no-cover-if-gtk3
+    if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
 
-        # Note: Virtual methods can't use super() to access the original
-        # implementation, so they use native.base_class instead.
-
-        # Call the parent class's size_allocate via native.base_class.
-        native.base_class.do_size_allocate(native, width, height, baseline)
-
-        if self._window_size != (width, height):
-            self._window_size = Size(width, height)
+        def gtk_configure_event(self, widget, data):  # pragma: no-cover-if-gtk4
             self.interface.on_resize()
 
-    def gtk_configure_event(self, widget, data):  # pragma: no-cover-if-gtk4
-        self.interface.on_resize()
+    else:  # pragma: no-cover-if-gtk3
+
+        def gtk_do_size_allocate(
+            self, native, width, height, baseline
+        ):  # pragma: no-cover-if-gtk3
+
+            # Note: Virtual methods can't use super() to access the original
+            # implementation, so they must use native.base_class instead.
+
+            # Call the parent class's size_allocate via native.base_class.
+            native.base_class.do_size_allocate(native, width, height, baseline)
+
+            if self._window_size != (width, height):
+                self._window_size = Size(width, height)
+                self.interface.on_resize()
 
     def gtk_show(self, widget):
         self.interface.on_show()
@@ -477,9 +483,6 @@ class MainWindow(Window):
     def create(self):
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             self.native = Gtk.ApplicationWindow()
-        else:  # pragma: no-cover-if-gtk3
-            self.native = create_toga_native(Gtk.ApplicationWindow)()
-        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             self.native.set_role("MainWindow")
 
             self.native_toolbar = Gtk.Toolbar()
@@ -487,7 +490,7 @@ class MainWindow(Window):
             self.toolbar_items = {}
             self.toolbar_separators = set()
         else:  # pragma: no-cover-if-gtk3
-            pass
+            self.native = create_toga_native(Gtk.ApplicationWindow)()
 
     def create_menus(self):
         # GTK menus are handled at the app level
