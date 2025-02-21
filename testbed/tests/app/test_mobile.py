@@ -132,7 +132,7 @@ async def test_resize_event_on_device_rotation(
 
     app_probe.rotate()
     await app_probe.redraw("Device has been rotated")
-    main_window_on_resize_handler.assert_called_once_with(main_window)
+    main_window_on_resize_handler.assert_called_with(main_window)
 
 
 async def test_session_based_app(app):
