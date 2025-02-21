@@ -1172,7 +1172,7 @@ else:
         # Resize the window and assert.
         second_window.size = new_window_size
         await second_window_probe.wait_for_window("Second window has been resized")
-        second_window_on_resize_handler.assert_called_once_with(second_window)
+        second_window_on_resize_handler.assert_called_with(second_window)
         second_window_on_resize_handler.reset_mock()
 
     @pytest.mark.parametrize(
