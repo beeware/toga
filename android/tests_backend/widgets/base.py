@@ -126,13 +126,12 @@ class SimpleProbe(BaseProbe, FontMixin):
             return TRANSPARENT
         filter = background.getColorFilter()
         if filter:
-            # PorterDuffColorFilter.getColor is undocumented, but continues
-            # to work for now. If this method is blocked in the future,
-            # another option is to use the filter to draw something and see
-            # what color comes out.
+            # PorterDuffColorFilter.getColor is undocumented, but continues to work for
+            # now. If this method is blocked in the future, another option is to use the
+            # filter to draw something and see what color comes out.
             return toga_color(filter.getColor())
         else:
-            return None
+            return TRANSPARENT
 
     async def press(self):
         self.native.performClick()
