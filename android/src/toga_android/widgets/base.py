@@ -126,6 +126,8 @@ class Widget(ABC, Scalable):
         pass
 
     def set_background_color(self, color):
+        # Set background to None, when TRANSPARENT is requested, in order to prevent
+        # clipping of ripple and other effects on widgets.
         self.native_toplevel.setBackground(
             None if color in (None, TRANSPARENT) else ColorDrawable(native_color(color))
         )

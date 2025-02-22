@@ -243,7 +243,8 @@ class Canvas(Widget):
         )
         canvas = A_Canvas(bitmap)
         background = self.native.getBackground()
-        background.draw(canvas)
+        if background:
+            background.draw(canvas)
         self.native.draw(canvas)
 
         stream = ByteArrayOutputStream()
