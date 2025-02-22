@@ -1139,9 +1139,9 @@ else:
     @pytest.mark.parametrize(
         "new_window_size",
         [
-            (200, 150),
             (300, 250),
             (400, 350),
+            (600, 550),
         ],
     )
     @pytest.mark.parametrize(
@@ -1168,6 +1168,7 @@ else:
         second_window_on_resize_handler.side_effect = check_new_size_on_resize
         # Register the event handler.
         second_window.on_resize = second_window_on_resize_handler
+        assert second_window.size == (200, 150)
 
         # Resize the window and assert.
         second_window.size = new_window_size
