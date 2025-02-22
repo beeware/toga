@@ -125,16 +125,17 @@ class Widget(ABC, Scalable):
         # By default, font can't be changed
         pass
 
-    # Although setBackgroundColor is defined in the View base class, we can't use it as
-    # a default implementation because it often overwrites other aspects of the widget's
-    # appearance. So each widget must decide how to implement this method, possibly
-    # using one of the utility functions below.
     def set_background_color(self, color):
         self.native_toplevel.setBackground(
             None if color in (None, TRANSPARENT) else ColorDrawable(native_color(color))
         )
 
     def set_background_filter(self, color):
+        # Although setBackgroundColor is defined in the View base class, we can't
+        # use it as a default implementation on some widgets(e.g. Button), because
+        # it often overwrites other aspects of the widget's appearance. For example,
+        # when setBackgroundColor is used on a Button, it changes the background behind
+        # the button rather than the button's actual color.
         self.native.getBackground().setColorFilter(
             None
             if color is None
