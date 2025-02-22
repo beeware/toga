@@ -10,6 +10,7 @@ from android.graphics.drawable import (
 from android.os import Build, SystemClock
 from android.view import MotionEvent, View, ViewGroup
 
+from toga.colors import TRANSPARENT
 from toga.style.pack import JUSTIFY, LEFT
 
 from ..fonts import FontMixin
@@ -116,7 +117,10 @@ class SimpleProbe(BaseProbe, FontMixin):
                 break
 
         if background is None:
-            return None
+            # The default background color is TRANSPARENT, but setting it
+            # to TRANSPARENT actually sets it to None, in order to avoid
+            # clipping of ripple and other effects on widgets.
+            return TRANSPARENT
         filter = background.getColorFilter()
         if filter:
             # PorterDuffColorFilter.getColor is undocumented, but continues
