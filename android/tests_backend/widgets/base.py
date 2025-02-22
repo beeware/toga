@@ -35,6 +35,9 @@ class SimpleProbe(BaseProbe, FontMixin):
         assert (
             self.native_toplevel.getParent() is container._impl.container.native_content
         )
+        assert (self.native is self.native_toplevel) or (
+            self.native.getParent() is self.native_toplevel
+        )
 
     def assert_not_contained(self):
         assert self.widget._impl.container is None
