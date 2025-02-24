@@ -36,7 +36,8 @@ from travertino.constants import (  # noqa: F401
     VISIBLE,
 )
 from travertino.layout import BaseBox
-from travertino.properties import directional_property, validated_property
+from travertino.properties.shorthand import directional_property
+from travertino.properties.validated import validated_property
 from travertino.size import BaseIntrinsicSize
 from travertino.style import BaseStyle
 

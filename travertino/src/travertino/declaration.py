@@ -20,5 +20,5 @@ warn(
     stacklevel=2,
 )
 
-from .properties import Choices  # noqa
+from .properties.choices import Choices  # noqa
 from .style import BaseStyle  # noqa

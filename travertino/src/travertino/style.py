@@ -2,7 +2,8 @@ from collections import defaultdict
 from collections.abc import Mapping
 from warnings import filterwarnings, warn
 
-from .properties import directional_property, validated_property
+from .properties.shorthand import directional_property
+from .properties.validated import validated_property
 
 # Make sure deprecation warnings are shown by default
 filterwarnings("default", category=DeprecationWarning)
