@@ -5,7 +5,7 @@ import pytest
 
 from travertino.layout import BaseBox, Viewport
 from travertino.node import Node
-from travertino.properties import validated_property
+from travertino.properties.validated import validated_property
 from travertino.size import BaseIntrinsicSize
 from travertino.style import BaseStyle
 
