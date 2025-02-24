@@ -333,6 +333,7 @@ def test_directional_property(StyleClass):
     assert style.thing_right == 0
     assert style.thing_bottom == 0
     assert style.thing_left == 0
+    assert "thing" not in style
     style.apply.assert_not_called()
 
     # Set a value in one axis
@@ -343,6 +344,7 @@ def test_directional_property(StyleClass):
     assert style.thing_right == 0
     assert style.thing_bottom == 0
     assert style.thing_left == 0
+    assert "thing" in style
     style.apply.assert_called_once_with("thing_top")
 
     # Clear the applicator mock
@@ -356,6 +358,7 @@ def test_directional_property(StyleClass):
     assert style.thing_right == 10
     assert style.thing_bottom == 10
     assert style.thing_left == 10
+    assert "thing" in style
     style.apply.assert_has_calls(
         [
             call("thing_right"),
@@ -375,6 +378,7 @@ def test_directional_property(StyleClass):
     assert style.thing_right == 30
     assert style.thing_bottom == 30
     assert style.thing_left == 30
+    assert "thing" in style
     style.apply.assert_has_calls(
         [
             call("thing_top"),
@@ -387,7 +391,7 @@ def test_directional_property(StyleClass):
     # Clear the applicator mock
     style.apply.reset_mock()
 
-    # Set a value directly with a 2 values
+    # Set a value directly with 2 values
     style.thing = (10, 20)
 
     assert style.thing == (10, 20, 10, 20)
@@ -395,6 +399,7 @@ def test_directional_property(StyleClass):
     assert style.thing_right == 20
     assert style.thing_bottom == 10
     assert style.thing_left == 20
+    assert "thing" in style
     style.apply.assert_has_calls(
         [
             call("thing_top"),
@@ -407,7 +412,7 @@ def test_directional_property(StyleClass):
     # Clear the applicator mock
     style.apply.reset_mock()
 
-    # Set a value directly with a 3 values
+    # Set a value directly with 3 values
     style.thing = (10, 20, 30)
 
     assert style.thing == (10, 20, 30, 20)
@@ -415,12 +420,13 @@ def test_directional_property(StyleClass):
     assert style.thing_right == 20
     assert style.thing_bottom == 30
     assert style.thing_left == 20
+    assert "thing" in style
     style.apply.assert_called_once_with("thing_bottom")
 
     # Clear the applicator mock
     style.apply.reset_mock()
 
-    # Set a value directly with a 4 values
+    # Set a value directly with 4 values
     style.thing = (10, 20, 30, 40)
 
     assert style.thing == (10, 20, 30, 40)
@@ -428,6 +434,7 @@ def test_directional_property(StyleClass):
     assert style.thing_right == 20
     assert style.thing_bottom == 30
     assert style.thing_left == 40
+    assert "thing" in style
     style.apply.assert_called_once_with("thing_left")
 
     # Set a value directly with an invalid number of values
@@ -448,6 +455,7 @@ def test_directional_property(StyleClass):
     assert style.thing_right == 20
     assert style.thing_bottom == 30
     assert style.thing_left == 40
+    assert "thing" in style
     style.apply.assert_called_once_with("thing_top")
 
     # Restore the top thing
@@ -464,6 +472,7 @@ def test_directional_property(StyleClass):
     assert style.thing_right == 0
     assert style.thing_bottom == 0
     assert style.thing_left == 0
+    assert "thing" not in style
     style.apply.assert_has_calls(
         [
             call("thing_right"),
