@@ -6,13 +6,10 @@ from warnings import catch_warnings, filterwarnings
 
 import pytest
 
-from travertino.properties import (
-    Choices,
-    ImmutableList,
-    directional_property,
-    list_property,
-    validated_property,
-)
+from travertino.properties.choices import Choices
+from travertino.properties.immutablelist import ImmutableList
+from travertino.properties.shorthand import directional_property
+from travertino.properties.validated import list_property, validated_property
 from travertino.style import BaseStyle
 
 from .utils import apply_dataclass, mock_apply

@@ -6,7 +6,8 @@ import pytest
 
 from travertino.colors import NAMED_COLOR, rgb
 from travertino.constants import GOLDENROD, NONE, REBECCAPURPLE, TOP
-from travertino.properties import Choices, validated_property
+from travertino.properties.choices import Choices
+from travertino.properties.validated import validated_property
 from travertino.style import BaseStyle
 
 from .utils import apply_dataclass, mock_apply
