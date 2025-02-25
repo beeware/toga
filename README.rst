@@ -80,8 +80,7 @@ members:
     :target: https://anaconda.com/
     :alt: Anaconda logo
 
-Anaconda is the world's most trusted open ecosystem for sourcing, building, and
-deploying data science and AI initiatives.
+Anaconda Inc. - Advancing AI through open source.
 
 Plus individual contributions from `users like you
 <https://beeware.org/community/members/>`__. If you find Toga, or other BeeWare tools
