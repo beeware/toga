@@ -300,15 +300,15 @@ class Canvas(Box):
         self.scale(self.dpi_scale, self.dpi_scale, draw_context)
 
     # Text
-    def write_text(self, text, x, y, font, baseline, draw_context, **kwargs):
+    def write_text(self, text, x, y, font, baseline, draw_context, line_height_factor = 1.2, **kwargs):
         for op in ["fill", "stroke"]:
             if color := kwargs.pop(f"{op}_color", None):
-                self._text_path(text, x, y, font, baseline, draw_context)
+                self._text_path(text, x, y, font, baseline, draw_context, line_height_factor)
                 getattr(self, op)(color, draw_context=draw_context, **kwargs)
 
-    def _text_path(self, text, x, y, font, baseline, draw_context):
+    def _text_path(self, text, x, y, font, baseline, draw_context, line_height_factor):
         lines = text.splitlines()
-        line_height = font.metric("LineSpacing")
+        line_height = font.metric("LineSpacing") * line_height_factor
         total_height = line_height * len(lines)
 
         if baseline == Baseline.TOP:
@@ -331,7 +331,7 @@ class Canvas(Box):
                 self.string_format,
             )
 
-    def measure_text(self, text, font):
+    def measure_text(self, text, font, line_height_factor = 1.2):
         graphics = self.native.CreateGraphics()
         sizes = [
             graphics.MeasureString(line, font.native, 2**31 - 1, self.string_format)
@@ -339,7 +339,7 @@ class Canvas(Box):
         ]
         return (
             self.scale_out(max(size.Width for size in sizes)),
-            font.metric("LineSpacing") * len(sizes),
+            font.metric("LineSpacing") * line_height_factor * len(sizes),
         )
 
     def get_image_data(self):
