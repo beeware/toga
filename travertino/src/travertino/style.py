@@ -163,6 +163,7 @@ class BaseStyle:
         return sum(1 for _ in self)
 
     def __contains__(self, name):
+        name = name.replace("-", "_")
         return name in self._ALL_PROPERTIES and (
             getattr(self.__class__, name).is_set_on(self)
         )

@@ -96,7 +96,10 @@ class aliased_property:
             )
 
     def is_set_on(self, obj):
-        return hasattr(obj, f"_{self.other}")
+        if self.deprecated:
+            self.deprecation_warning()
+
+        return self.other in obj
 
 
 class paired_property(validated_property):
@@ -216,6 +219,9 @@ class paired_property(validated_property):
         super().__delete__(obj)
 
     def is_set_on(self, obj):
+        if self.deprecated:
+            self.deprecation_warning()
+
         return super().is_set_on(obj) or hasattr(obj, f"_{self.other}")
 
     def deprecation_warning(self):
