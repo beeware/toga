@@ -92,6 +92,7 @@ class Font:
 
             # Convert font size to Winforms format
             # TODO: update font-size to include CSS keywords
+            # size such as small, medium, and large.
             if self.interface.size == SYSTEM_DEFAULT_FONT_SIZE:
                 font_size = DEFAULT_FONT.Size
             else:
