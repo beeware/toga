@@ -579,39 +579,56 @@ def test_rect(widget):
         (
             {"text": "Hello world", "x": 10, "y": 20},
             "text='Hello world', x=10, y=20, font=<Font: system default size system>, "
-            "baseline=Baseline.ALPHABETIC",
+            "baseline=Baseline.ALPHABETIC, line_height_factor=1",
             {
                 "text": "Hello world",
                 "x": 10,
                 "y": 20,
                 "font": Font(SYSTEM, SYSTEM_DEFAULT_FONT_SIZE)._impl,
                 "baseline": Baseline.ALPHABETIC,
+                "line_height_factor": 1,
             },
         ),
         # Baseline
         (
             {"text": "Hello world", "x": 10, "y": 20, "baseline": Baseline.TOP},
             "text='Hello world', x=10, y=20, font=<Font: system default size system>, "
-            "baseline=Baseline.TOP",
+            "baseline=Baseline.TOP, line_height_factor=1",
             {
                 "text": "Hello world",
                 "x": 10,
                 "y": 20,
                 "font": Font(SYSTEM, SYSTEM_DEFAULT_FONT_SIZE)._impl,
                 "baseline": Baseline.TOP,
+                "line_height_factor": 1,
             },
         ),
         # Font
         (
             {"text": "Hello world", "x": 10, "y": 20, "font": Font("Cutive", 42)},
             "text='Hello world', x=10, y=20, font=<Font: 42pt Cutive>, "
-            "baseline=Baseline.ALPHABETIC",
+            "baseline=Baseline.ALPHABETIC, line_height_factor=1",
             {
                 "text": "Hello world",
                 "x": 10,
                 "y": 20,
                 "font": Font("Cutive", 42)._impl,
                 "baseline": Baseline.ALPHABETIC,
+                "line_height_factor": 1,
+            },
+        ),
+        # Line height factor
+        (
+            {"text": "Hello world", "x": 10, "y": 20, "line_height_factor": 1.5},
+            "text='Hello world', x=10, y=20, font=<Font: system default size system>, "
+            "baseline=Baseline.ALPHABETIC, line_height_factor=1.5",
+            {
+                "text": "Hello world",
+                "x": 10,
+                "y": 20,
+                "font": Font(SYSTEM, SYSTEM_DEFAULT_FONT_SIZE)._impl,
+                "baseline": Baseline.ALPHABETIC,
+                "line_height_factor": 1.5,
             },
         ),
     ],
@@ -634,6 +651,7 @@ def test_write_text(widget, kwargs, args_repr, draw_kwargs):
     assert draw_op.y == draw_kwargs["y"]
     assert draw_op.font == draw_kwargs["font"].interface
     assert draw_op.baseline == draw_kwargs["baseline"]
+    assert draw_op.line_height_factor == draw_kwargs["line_height_factor"]
 
 
 def test_rotate(widget):
