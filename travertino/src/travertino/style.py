@@ -40,10 +40,14 @@ class BaseStyle:
             # It still makes sense for update() to raise a NameError. However, here we
             # simulate the behavior of the dataclass-generated __init__() for
             # consistency.
-            raise TypeError(
-                f"{type(self)}.__init__() got an unexpected keyword argument "
-                "'nonexistent'"
-            )
+            for name in properties:
+                # This is redoing work, but it should only ever happen when a property
+                # name is invalid, and only in outdated Python or Toga, and only once.
+                if name not in self._ALL_PROPERTIES:
+                    raise TypeError(
+                        f"{type(self)}.__init__() got an unexpected keyword argument "
+                        f"'{name}'"
+                    )
 
     @property
     def _applicator(self):
