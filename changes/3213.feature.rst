@@ -1,0 +1,1 @@
+Travertino now has ``aliased_property`` and ``paired_property`` to support declaration of property name aliases in styles.
