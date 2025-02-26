@@ -297,6 +297,7 @@ class Canvas(Widget):
         self,
         text: str,
         font: Font | None = None,
+        line_height_factor: float = 1,
     ) -> tuple[float, float]:
         """Measure the size at which :meth:`~.Context.write_text` would
         render some text.
@@ -304,12 +305,14 @@ class Canvas(Widget):
         :param text: The text to measure. Newlines will cause line breaks, but long
             lines will not be wrapped.
         :param font: The font in which to draw the text. The default is the system font.
+        :param line_height_factor: Height of the line box as a multiple of the font size
+            when multiple lines are present.
         :returns: A tuple of ``(width, height)``.
         """
         if font is None:
             font = Font(family=SYSTEM, size=SYSTEM_DEFAULT_FONT_SIZE)
 
-        return self._impl.measure_text(str(text), font._impl)
+        return self._impl.measure_text(str(text), font._impl, line_height_factor)
 
     def as_image(self, format: type[ImageT] = toga.Image) -> ImageT:
         """Render the canvas as an image.

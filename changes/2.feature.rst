@@ -1,0 +1,1 @@
+Add line_height_factor to write_text and measure_text
