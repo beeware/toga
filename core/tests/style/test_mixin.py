@@ -27,7 +27,7 @@ def test_constructor(name, value, default):
     assert getattr(widget.style, name) == value
     assert widget.style.display == "none"
 
-    with raises(NameError, match="Unknown style 'nonexistent'"):
+    with raises(TypeError, match="unexpected keyword argument 'nonexistent'"):
         ExampleWidget(nonexistent=None)
 
 
