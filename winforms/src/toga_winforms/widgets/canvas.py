@@ -301,7 +301,7 @@ class Canvas(Box):
 
     # Text
     def write_text(
-        self, text, x, y, font, baseline, draw_context, line_height_factor=1.2, **kwargs
+        self, text, x, y, font, baseline, draw_context, line_height_factor=1, **kwargs
     ):
         for op in ["fill", "stroke"]:
             if color := kwargs.pop(f"{op}_color", None):
@@ -335,7 +335,7 @@ class Canvas(Box):
                 self.string_format,
             )
 
-    def measure_text(self, text, font, line_height_factor=1.2):
+    def measure_text(self, text, font, line_height_factor=1):
         graphics = self.native.CreateGraphics()
         sizes = [
             graphics.MeasureString(line, font.native, 2**31 - 1, self.string_format)

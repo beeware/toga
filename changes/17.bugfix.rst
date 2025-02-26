@@ -1,0 +1,1 @@
+Change default value of line height factor to 1.
