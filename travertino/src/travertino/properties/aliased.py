@@ -92,6 +92,7 @@ class aliased_property:
 
     def is_set_on(self, obj):
         self.warn_if_deprecated()
+        self.validate(obj)
 
         return self.other in obj
 

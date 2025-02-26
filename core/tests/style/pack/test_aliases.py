@@ -96,6 +96,8 @@ def test_align(css_name, row_alias, column_alias, default, style_with, get_fn, d
             style.update(**{"direction": direction, alias: END})
         with raises(**raises_kwargs):
             style.update(**{alias: END, "direction": direction})
+        with raises(**raises_kwargs):
+            alias in style
 
     assert_invalid_alias(column_alias, ROW)
     assert_invalid_alias(row_alias, COLUMN)
