@@ -91,6 +91,7 @@ class Font:
                 font_style |= FontStyle.Italic
 
             # Convert font size to Winforms format
+            # TODO: update font-size to include CSS keywords
             if self.interface.size == SYSTEM_DEFAULT_FONT_SIZE:
                 font_size = DEFAULT_FONT.Size
             else:
