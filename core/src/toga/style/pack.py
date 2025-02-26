@@ -36,6 +36,7 @@ from travertino.constants import (  # noqa: F401
     VISIBLE,
 )
 from travertino.layout import BaseBox
+from travertino.properties.aliased import Condition, aliased_property, paired_property
 from travertino.properties.shorthand import directional_property
 from travertino.properties.validated import validated_property
 from travertino.size import BaseIntrinsicSize
@@ -57,10 +58,6 @@ NOT_PROVIDED = object()
 
 PACK = "pack"
 
-# Used in backwards compatibility section below
-ALIGNMENT = "alignment"
-ALIGN_ITEMS = "align_items"
-
 
 class Pack(BaseStyle):
     _doc_link = ":doc:`style properties </reference/style/pack>`"
@@ -77,9 +74,6 @@ class Pack(BaseStyle):
     visibility: str = validated_property(VISIBLE, HIDDEN, initial=VISIBLE)
     direction: str = validated_property(ROW, COLUMN, initial=ROW)
     align_items: str | None = validated_property(START, CENTER, END)
-    alignment: str | None = validated_property(
-        LEFT, RIGHT, TOP, BOTTOM, CENTER
-    )  # Deprecated
     justify_content: str | None = validated_property(START, CENTER, END, initial=START)
     gap: int = validated_property(integer=True, initial=0)
 
@@ -109,6 +103,56 @@ class Pack(BaseStyle):
     font_weight: str = validated_property(*FONT_WEIGHTS, initial=NORMAL)
     font_size: int = validated_property(integer=True, initial=SYSTEM_DEFAULT_FONT_SIZE)
 
+    ######################################################################
+    # Directional aliases
+    ######################################################################
+
+    horizontal_align_content: str | None = aliased_property(
+        "justify_content", condition=Condition(direction=ROW)
+    )
+    horizontal_align_items: str | None = aliased_property(
+        "align_items", condition=Condition(direction=COLUMN)
+    )
+    vertical_align_content: str | None = aliased_property(
+        "justify_content", condition=Condition(direction=COLUMN)
+    )
+    vertical_align_items: str | None = aliased_property(
+        "align_items", condition=Condition(direction=ROW)
+    )
+
+    ######################################################################
+    # 2024-12: Backwards compatibility for Toga < 0.5.0
+    ######################################################################
+
+    padding: int | tuple[int] = aliased_property("margin", deprecated=True)
+    padding_top: int = aliased_property("margin_top", deprecated=True)
+    padding_right: int = aliased_property("margin_right", deprecated=True)
+    padding_bottom: int = aliased_property("margin_bottom", deprecated=True)
+    padding_left: int = aliased_property("margin_left", deprecated=True)
+
+    alignment: str | None = paired_property(
+        TOP,
+        RIGHT,
+        BOTTOM,
+        LEFT,
+        CENTER,
+        other="align_items",
+        derive={
+            Condition(CENTER): CENTER,
+            Condition(START, direction=COLUMN, text_direction=LTR): LEFT,
+            Condition(START, direction=COLUMN, text_direction=RTL): RIGHT,
+            Condition(START, direction=ROW): TOP,
+            Condition(END, direction=COLUMN, text_direction=LTR): RIGHT,
+            Condition(END, direction=COLUMN, text_direction=RTL): LEFT,
+            Condition(END, direction=ROW): BOTTOM,
+        },
+        deprecated=True,
+    )
+
+    ######################################################################
+    # End backwards compatibility
+    ######################################################################
+
     @classmethod
     def _debug(cls, *args: str) -> None:  # pragma: no cover
         print("    " * cls._depth, *args)
@@ -117,144 +161,6 @@ class Pack(BaseStyle):
     def _hidden(self) -> bool:
         """Does this style declaration define an object that should be hidden."""
         return self.visibility == HIDDEN
-
-    ######################################################################
-    # 2024-12: Backwards compatibility for Toga < 0.5.0
-    ######################################################################
-
-    def update(self, **properties):
-        # Set direction first, as it may change the interpretation of direction-based
-        # property aliases in _update_property_name.
-        if direction := properties.pop("direction", None):
-            self.direction = direction
-
-        properties = {
-            self._update_property_name(name.replace("-", "_")): value
-            for name, value in properties.items()
-        }
-        super().update(**properties)
-
-    _DEPRECATED_PROPERTIES = {
-        # Map each deprecated property name to its replacement.
-        # alignment / align_items is handled separately.
-        "padding": "margin",
-        "padding_top": "margin_top",
-        "padding_right": "margin_right",
-        "padding_bottom": "margin_bottom",
-        "padding_left": "margin_left",
-    }
-
-    _ALIASES = {
-        "horizontal_align_content": {ROW: "justify_content"},
-        "horizontal_align_items": {COLUMN: "align_items"},
-        "vertical_align_content": {COLUMN: "justify_content"},
-        "vertical_align_items": {ROW: "align_items"},
-    }
-
-    def _update_property_name(self, name):
-        if aliases := self._ALIASES.get(name):
-            try:
-                name = aliases[self.direction]
-            except KeyError:
-                raise AttributeError(
-                    f"{name!r} is not supported on a {self.direction}"
-                ) from None
-
-        if new_name := self._DEPRECATED_PROPERTIES.get(name):
-            self._warn_deprecated(name, new_name, stacklevel=4)
-            name = new_name
-
-        return name
-
-    def _warn_deprecated(self, old_name, new_name, stacklevel=3):
-        msg = f"Pack.{old_name} is deprecated; use {new_name} instead"
-        warnings.warn(msg, DeprecationWarning, stacklevel=stacklevel)
-
-    # Dot lookup
-
-    def __getattribute__(self, name):
-        if name.startswith("_"):
-            return super().__getattribute__(name)
-
-        # Align_items and alignment are paired. Both can never be set at the same time;
-        # if one is requested, and the other one is set, compute the requested value
-        # from the one that is set.
-        if name == ALIGN_ITEMS and (alignment := super().__getattribute__(ALIGNMENT)):
-            if alignment == CENTER:
-                return CENTER
-
-            if self.direction == ROW:
-                if alignment == TOP:
-                    return START
-                if alignment == BOTTOM:
-                    return END
-
-                # No remaining valid combinations
-                return None
-
-            # direction must be COLUMN
-            if alignment == LEFT:
-                return START if self.text_direction == LTR else END
-            if alignment == RIGHT:
-                return START if self.text_direction == RTL else END
-
-            # No remaining valid combinations
-            return None
-
-        if name == ALIGNMENT:
-            # Warn, whether it's set or not.
-            self._warn_deprecated(ALIGNMENT, ALIGN_ITEMS)
-
-            if align_items := super().__getattribute__(ALIGN_ITEMS):
-                if align_items == START:
-                    if self.direction == COLUMN:
-                        return LEFT if self.text_direction == LTR else RIGHT
-                    return TOP  # for ROW
-
-                if align_items == END:
-                    if self.direction == COLUMN:
-                        return RIGHT if self.text_direction == LTR else LEFT
-                    return BOTTOM  # for ROW
-
-                # Only CENTER remains
-                return CENTER
-
-        return super().__getattribute__(self._update_property_name(name))
-
-    def __setattr__(self, name, value):
-        # Only one of these can be set at a time.
-        if name == ALIGN_ITEMS:
-            super().__delattr__(ALIGNMENT)
-        elif name == ALIGNMENT:
-            self._warn_deprecated(ALIGNMENT, ALIGN_ITEMS)
-            super().__delattr__(ALIGN_ITEMS)
-
-        super().__setattr__(self._update_property_name(name), value)
-
-    def __delattr__(self, name):
-        # If one of the two is being deleted, delete the other also.
-        if name == ALIGN_ITEMS:
-            super().__delattr__(ALIGNMENT)
-        elif name == ALIGNMENT:
-            self._warn_deprecated(ALIGNMENT, ALIGN_ITEMS)
-            super().__delattr__(ALIGN_ITEMS)
-
-        super().__delattr__(self._update_property_name(name))
-
-    # Index notation
-
-    def __getitem__(self, name):
-        return super().__getitem__(self._update_property_name(name.replace("-", "_")))
-
-    def __setitem__(self, name, value):
-        super().__setitem__(self._update_property_name(name.replace("-", "_")), value)
-
-    def __delitem__(self, name):
-        super().__delitem__(self._update_property_name(name.replace("-", "_")))
-
-    ######################################################################
-    # End backwards compatibility
-    ######################################################################
 
     def apply(self, *names: list[str]) -> None:
         if self._applicator:
@@ -939,6 +845,3 @@ class Pack(BaseStyle):
             css.append(f"font-variant: {self.font_variant};")
 
         return " ".join(css)
-
-
-Pack._BASE_ALL_PROPERTIES[Pack].update(Pack._ALIASES)

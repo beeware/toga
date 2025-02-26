@@ -70,9 +70,10 @@ def test_align(css_name, row_alias, column_alias, default, style_with, get_fn, d
     # Column alias is not accepted in a row, and vice versa.
     def assert_invalid_alias(alias, direction):
         style = style_with(direction=direction)
+        correct_direction = ROW if direction == COLUMN else COLUMN
         raises_kwargs = dict(
             expected_exception=AttributeError,
-            match=f"'{alias}' is not supported on a {direction}",
+            match=f"'{alias}' is only supported when direction = {correct_direction}",
         )
 
         with raises(**raises_kwargs):
