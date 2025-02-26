@@ -1,0 +1,1 @@
+ Added line_height_factor the canvas.py for android.
