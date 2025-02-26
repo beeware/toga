@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import sys
 import warnings
+from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
@@ -160,7 +162,13 @@ class alignment_property(validated_property):
 # End backwards compatibility
 ######################################################################
 
+if sys.version_info < (3, 10):
+    _DATACLASS_KWARGS = {"init": False}
+else:
+    _DATACLASS_KWARGS = {"kw_only": True}
 
+
+@dataclass(**_DATACLASS_KWARGS)
 class Pack(BaseStyle):
     _doc_link = ":doc:`style properties </reference/style/pack>`"
 

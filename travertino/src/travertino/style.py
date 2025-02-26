@@ -34,7 +34,16 @@ class BaseStyle:
     # Fallback in case subclass isn't decorated as subclass (probably from using
     # previous API) or for pre-3.10, before kw_only argument existed.
     def __init__(self, **properties):
-        self.update(**properties)
+        try:
+            self.update(**properties)
+        except NameError:
+            # It still makes sense for update() to raise a NameError. However, here we
+            # simulate the behavior of the dataclass-generated __init__() for
+            # consistency.
+            raise TypeError(
+                f"{type(self)}.__init__() got an unexpected keyword argument "
+                "'nonexistent'"
+            )
 
     @property
     def _applicator(self):
