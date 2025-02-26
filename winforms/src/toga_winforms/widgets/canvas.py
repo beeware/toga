@@ -300,10 +300,14 @@ class Canvas(Box):
         self.scale(self.dpi_scale, self.dpi_scale, draw_context)
 
     # Text
-    def write_text(self, text, x, y, font, baseline, draw_context, line_height_factor = 1.2, **kwargs):
+    def write_text(
+        self, text, x, y, font, baseline, draw_context, line_height_factor=1.2, **kwargs
+    ):
         for op in ["fill", "stroke"]:
             if color := kwargs.pop(f"{op}_color", None):
-                self._text_path(text, x, y, font, baseline, draw_context, line_height_factor)
+                self._text_path(
+                    text, x, y, font, baseline, draw_context, line_height_factor
+                )
                 getattr(self, op)(color, draw_context=draw_context, **kwargs)
 
     def _text_path(self, text, x, y, font, baseline, draw_context, line_height_factor):
@@ -331,7 +335,7 @@ class Canvas(Box):
                 self.string_format,
             )
 
-    def measure_text(self, text, font, line_height_factor = 1.2):
+    def measure_text(self, text, font, line_height_factor=1.2):
         graphics = self.native.CreateGraphics()
         sizes = [
             graphics.MeasureString(line, font.native, 2**31 - 1, self.string_format)

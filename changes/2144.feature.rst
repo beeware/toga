@@ -1,0 +1,1 @@
+Add a line_height argument for Canvas write_text and measure_text with the same meaning as in CSS.
