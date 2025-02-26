@@ -54,9 +54,7 @@ class aliased_property:
         if obj is None:
             return self
 
-        if self.deprecated:
-            self.deprecation_warning()
-
+        self.warn_if_deprecated()
         self.validate(obj)
 
         return obj[self.other]
@@ -67,27 +65,24 @@ class aliased_property:
             # supplied.
             return
 
-        if self.deprecated:
-            self.deprecation_warning()
-
+        self.warn_if_deprecated()
         self.validate(obj)
 
         obj[self.other] = value
 
     def __delete__(self, obj):
-        if self.deprecated:
-            self.deprecation_warning()
-
+        self.warn_if_deprecated()
         self.validate(obj)
 
         del obj[self.other]
 
-    def deprecation_warning(self):
-        warn(
-            f"{self.name} is deprecated. Use {self.other} instead.",
-            DeprecationWarning,
-            stacklevel=3,
-        )
+    def warn_if_deprecated(self):
+        if self.deprecated:
+            warn(
+                f"{self.name} is deprecated. Use {self.other} instead.",
+                DeprecationWarning,
+                stacklevel=3,
+            )
 
     def validate(self, obj):
         if self.condition and not self.condition.match(obj):
@@ -96,8 +91,7 @@ class aliased_property:
             )
 
     def is_set_on(self, obj):
-        if self.deprecated:
-            self.deprecation_warning()
+        self.warn_if_deprecated()
 
         return self.other in obj
 
@@ -180,8 +174,7 @@ class paired_property(validated_property):
         if obj is None:
             return self
 
-        if self.deprecated:
-            self.deprecation_warning()
+        self.warn_if_deprecated()
 
         if not hasattr(obj, f"_{self.name}"):
             if hasattr(obj, f"_{self.other}"):
@@ -199,8 +192,7 @@ class paired_property(validated_property):
             # supplied.
             return
 
-        if self.deprecated:
-            self.deprecation_warning()
+        self.warn_if_deprecated()
 
         try:
             delattr(obj, f"_{self.other}")
@@ -209,8 +201,7 @@ class paired_property(validated_property):
         super().__set__(obj, value)
 
     def __delete__(self, obj):
-        if self.deprecated:
-            self.deprecation_warning()
+        self.warn_if_deprecated()
 
         try:
             delattr(obj, f"_{self.other}")
@@ -219,14 +210,14 @@ class paired_property(validated_property):
         super().__delete__(obj)
 
     def is_set_on(self, obj):
-        if self.deprecated:
-            self.deprecation_warning()
+        self.warn_if_deprecated()
 
         return super().is_set_on(obj) or hasattr(obj, f"_{self.other}")
 
-    def deprecation_warning(self):
-        warn(
-            f"{self.name} is deprecated. Use {self.other} instead.",
-            DeprecationWarning,
-            stacklevel=3,
-        )
+    def warn_if_deprecated(self):
+        if self.deprecated:
+            warn(
+                f"{self.name} is deprecated. Use {self.other} instead.",
+                DeprecationWarning,
+                stacklevel=3,
+            )
