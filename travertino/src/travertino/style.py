@@ -29,7 +29,20 @@ class BaseStyle:
     # Fallback in case subclass isn't decorated as dataclass (probably from using
     # previous API) or for pre-3.10, before kw_only argument existed.
     def __init__(self, **properties):
-        self.update(**properties)
+        try:
+            self.update(**properties)
+        except NameError:
+            # It still makes sense for update() to raise a NameError. However, here we
+            # simulate the behavior of the dataclass-generated __init__() for
+            # consistency.
+            for name in properties:
+                # This is redoing work, but it should only ever happen when a property
+                # name is invalid, and only in outdated Python or Toga, and only once.
+                if name not in self._ALL_PROPERTIES:
+                    raise TypeError(
+                        f"{type(self)}.__init__() got an unexpected keyword argument "
+                        f"'{name}'"
+                    )
 
     @property
     def _applicator(self):
