@@ -217,18 +217,18 @@ class Canvas(Widget):
     # Text
 
     def write_text(
-        self, text, x, y, font, baseline, cairo_context, line_height_factor, **kwargs
+        self, text, x, y, font, baseline, line_height_factor, cairo_context, **kwargs
     ):
         for op in ["fill", "stroke"]:
             if color := kwargs.pop(f"{op}_color", None):
                 self._text_path(
-                    text, x, y, font, baseline, cairo_context, line_height_factor
+                    text, x, y, font, baseline, line_height_factor, cairo_context
                 )
                 getattr(self, op)(color, cairo_context=cairo_context, **kwargs)
 
     # No need to check whether Pango or PangoCairo are None, because if they were, the
     # user would already have received an exception when trying to create a Font.
-    def _text_path(self, text, x, y, font, baseline, cairo_context, line_height_factor):
+    def _text_path(self, text, x, y, font, baseline, line_height_factor, cairo_context):
         pango_context = self._pango_context(font)
         metrics = self._font_metrics(pango_context)
         lines = text.splitlines()
