@@ -1,0 +1,1 @@
+``BaseStyle.__init_subclass__`` has been restored, now that MicroPython compatibility is no longer a concern.
