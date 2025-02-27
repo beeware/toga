@@ -1,0 +1,1 @@
+Fixed line_height_factor only allowing integers.
