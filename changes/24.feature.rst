@@ -1,0 +1,1 @@
+Added line_height_factor to gtk (linux)
