@@ -270,7 +270,7 @@ class Canvas(Widget):
 
     def write_text(self, text, x, y, font, baseline, line_height_factor, **kwargs):
         lines = text.splitlines()
-        line_height = self._line_height(font) * line_height_factor
+        line_height = self._line_height(font, line_height_factor)
         total_height = line_height * len(lines)
 
         if baseline == Baseline.TOP:
