@@ -273,7 +273,7 @@ class Canvas(Widget):
         # descender is a negative number.
         return ceil((font.native.ascender - font.native.descender) * line_height_factor)
 
-    def measure_text(self, text, font, line_height_factor=1):
+    def measure_text(self, text, font, line_height_factor):
         # We need at least a fill color to render, but that won't change the size.
         sizes = [
             self._render_string(line, font, fill_color=color(BLACK)).size()
@@ -284,7 +284,7 @@ class Canvas(Widget):
             self._line_height(font, line_height_factor) * len(sizes),
         )
 
-    def write_text(self, text, x, y, font, baseline, line_height_factor=1, **kwargs):
+    def write_text(self, text, x, y, font, baseline, line_height_factor, **kwargs):
         lines = text.splitlines()
         line_height = self._line_height(font, line_height_factor)
         total_height = line_height * len(lines)

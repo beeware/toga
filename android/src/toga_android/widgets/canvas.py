@@ -189,12 +189,7 @@ class Canvas(Widget):
 
     # Text
 
-    def measure_text(
-        self,
-        text,
-        font,
-        line_height_factor=1,
-    ):
+    def measure_text(self, text, font, line_height_factor):
         paint = self._text_paint(font)
         sizes = [paint.measureText(line) for line in text.splitlines()]
         return (
@@ -203,7 +198,7 @@ class Canvas(Widget):
         )
 
     def write_text(
-        self, text, x, y, font, baseline, canvas, line_height_factor=1, **kwargs
+        self, text, x, y, font, baseline, line_height_factor, canvas, **kwargs
     ):
         lines = text.splitlines()
         paint = self._text_paint(font)
