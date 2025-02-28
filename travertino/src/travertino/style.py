@@ -113,9 +113,10 @@ class BaseStyle:
 
     def update(self, **properties):
         """Set multiple styles on the style definition."""
-        # Some aliases may be valid only in the presence of other property values, and
-        # this update might be setting those prerequisite properties. So we need to
-        # defer setting any conditional aliases until last.
+        # Some aliases may be valid only in the presence of other property values, or
+        # depend on other values to determine what to alias to. This update might be
+        # setting those prerequisite properties. So we need to defer setting any
+        # conditional aliases until last.
 
         deferred_aliases = {}
 
@@ -125,7 +126,7 @@ class BaseStyle:
                 raise NameError(f"Unknown style '{name}'")
 
             prop = getattr(type(self), name)
-            if getattr(prop, "condition", None) is not None:
+            if isinstance(getattr(prop, "derive", None), dict):
                 deferred_aliases[name] = value
             else:
                 self[name] = value
