@@ -77,11 +77,10 @@ class AlignmentCondition(Condition):
 
 
 class alignment_property(validated_property):
-    def __init__(self, *constants, other, derive, deprecated=True):
+    def __init__(self, *constants, other, derive):
         super().__init__(*constants)
         self.other = other
         self.derive = derive
-        self.deprecated = deprecated
 
     def __set_name__(self, owner, name):
         self.name = "alignment"
@@ -97,7 +96,6 @@ class alignment_property(validated_property):
                 AlignmentCondition(result, **condition.properties): condition.main_value
                 for condition, result in self.derive.items()
             },
-            deprecated=False,
         )
         owner.align_items.name = "align_items"
 
