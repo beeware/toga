@@ -264,3 +264,8 @@ class App:
 
     def set_current_window(self, window):
         window._impl.native.Activate()
+
+    def focus(self):
+        # Bring the app's main window into focus if it exists
+        if self.interface.main_window:
+            self.interface.main_window._impl.native.Activate()
