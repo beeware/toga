@@ -14,7 +14,7 @@ class Condition:
         """
         self.properties = properties
 
-    def match(self, style, main_name=None):
+    def match(self, style):
         return all(style[name] == value for name, value in self.properties.items())
 
     def __str__(self):

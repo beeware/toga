@@ -77,27 +77,30 @@ class AlignmentCondition(Condition):
 
 
 class alignment_property(validated_property):
-    def __init__(self, *constants, other, derive):
-        super().__init__(*constants)
-        self.other = other
-        self.derive = derive
-
     def __set_name__(self, owner, name):
+        # Hard-coded because it's only called on alignment, not align_items.
+
         self.name = "alignment"
         owner._BASE_ALL_PROPERTIES[owner].add("alignment")
+        self.other = "align_items"
+        self.derive = {
+            AlignmentCondition(CENTER): CENTER,
+            AlignmentCondition(START, direction=COLUMN, text_direction=LTR): LEFT,
+            AlignmentCondition(START, direction=COLUMN, text_direction=RTL): RIGHT,
+            AlignmentCondition(START, direction=ROW): TOP,
+            AlignmentCondition(END, direction=COLUMN, text_direction=LTR): RIGHT,
+            AlignmentCondition(END, direction=COLUMN, text_direction=RTL): LEFT,
+            AlignmentCondition(END, direction=ROW): BOTTOM,
+        }
 
         # Replace the align_items validated_property
-        owner.align_items = alignment_property(
-            START,
-            CENTER,
-            END,
-            other="alignment",
-            derive={
-                AlignmentCondition(result, **condition.properties): condition.main_value
-                for condition, result in self.derive.items()
-            },
-        )
+        owner.align_items = alignment_property(START, CENTER, END)
         owner.align_items.name = "align_items"
+        owner.align_items.other = "alignment"
+        owner.align_items.derive = {
+            AlignmentCondition(result, **condition.properties): condition.main_value
+            for condition, result in self.derive.items()
+        }
 
     def __get__(self, obj, objtype=None):
         if obj is None:
@@ -229,23 +232,7 @@ class Pack(BaseStyle):
     padding_bottom: int = aliased_property(source="margin_bottom", deprecated=True)
     padding_left: int = aliased_property(source="margin_left", deprecated=True)
 
-    alignment: str | None = alignment_property(
-        TOP,
-        RIGHT,
-        BOTTOM,
-        LEFT,
-        CENTER,
-        other="align_items",
-        derive={
-            AlignmentCondition(CENTER): CENTER,
-            AlignmentCondition(START, direction=COLUMN, text_direction=LTR): LEFT,
-            AlignmentCondition(START, direction=COLUMN, text_direction=RTL): RIGHT,
-            AlignmentCondition(START, direction=ROW): TOP,
-            AlignmentCondition(END, direction=COLUMN, text_direction=LTR): RIGHT,
-            AlignmentCondition(END, direction=COLUMN, text_direction=RTL): LEFT,
-            AlignmentCondition(END, direction=ROW): BOTTOM,
-        },
-    )
+    alignment: str | None = alignment_property(TOP, RIGHT, BOTTOM, LEFT, CENTER)
 
     ######################################################################
     # End backwards compatibility
