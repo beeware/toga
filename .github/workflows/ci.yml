@@ -63,6 +63,7 @@ jobs:
         - "gtk"
         - "iOS"
         - "toga"
+        - "positron"
         - "travertino"
         - "textual"
         - "web"
