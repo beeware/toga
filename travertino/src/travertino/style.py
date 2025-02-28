@@ -126,7 +126,7 @@ class BaseStyle:
                 raise NameError(f"Unknown style '{name}'")
 
             prop = getattr(type(self), name)
-            if isinstance(getattr(prop, "derive", None), dict):
+            if isinstance(getattr(prop, "source", None), dict):
                 deferred_aliases[name] = value
             else:
                 self[name] = value

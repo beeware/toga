@@ -63,10 +63,59 @@ PACK = "pack"
 ######################################################################
 
 
-class paired_property(validated_property):
-    def __init__(self, *constants, other):
+class AlignmentCondition(Condition):
+    def __init__(self, main_value=None, /, **properties):
+        super().__init__(*properties)
+        self.properties = properties
+
+    def match(self, style, main_name=None):
+        # main_name can't be accessed the "normal" way without causing a loop; we need
+        # to access the private stored value.
+        return getattr(style, f"_{main_name}") == self.main_value and super().match(
+            style
+        )
+
+
+class alignment_property(validated_property):
+    def __init__(self, *constants, other, derive, deprecated=True):
         super().__init__(*constants)
         self.other = other
+        self.derive = derive
+        self.deprecated = deprecated
+
+    def __set_name__(self, owner, name):
+        self.name = "alignment"
+        owner._BASE_ALL_PROPERTIES[owner].add("alignment")
+
+        # Replace the align_items validated_property
+        owner.align_items = alignment_property(
+            START,
+            CENTER,
+            END,
+            other="alignment",
+            derive={
+                AlignmentCondition(result, **condition.properties): condition.main_value
+                for condition, result in self.derive.items()
+            },
+            deprecated=False,
+        )
+        owner.align_items.name = "align_items"
+
+    def __get__(self, obj, objtype=None):
+        if obj is None:
+            return self
+
+        self.warn_if_deprecated()
+
+        if not hasattr(obj, f"_{self.name}"):
+            if hasattr(obj, f"_{self.other}"):
+                for condition, value in self.derive.items():
+                    if condition.match(obj, main_name=self.other):
+                        return value
+
+            return self.initial
+
+        return super().__get__(obj)
 
     def __set__(self, obj, value):
         # This won't be executed until @dataclass is added
@@ -104,68 +153,6 @@ class paired_property(validated_property):
                 DeprecationWarning,
                 stacklevel=3,
             )
-
-
-class alignment_property(paired_property):
-    def __set_name__(self, owner, name):
-        self.name = name
-        owner._BASE_ALL_PROPERTIES[owner].add(name)
-
-        # Replace the align_items validated_property
-        owner.align_items = align_items_property(START, CENTER, END, other="alignment")
-        owner.align_items.name = "align_items"
-
-    def __get__(self, obj, objtype=None):
-        if obj is None:
-            return self
-
-        self.warn_if_deprecated()
-
-        if hasattr(obj, "_align_items"):
-            if obj._align_items == START:
-                if obj.direction == COLUMN:
-                    return LEFT if obj.text_direction == LTR else RIGHT
-                return TOP  # for ROW
-
-            if obj._align_items == END:
-                if obj.direction == COLUMN:
-                    return RIGHT if obj.text_direction == LTR else LEFT
-                return BOTTOM  # for ROW
-
-            # Only CENTER remains
-            return CENTER
-
-        return super().__get__(obj)
-
-
-class align_items_property(paired_property):
-    def __get__(self, obj, objtype=None):
-        if obj is None:
-            return self
-
-        if hasattr(obj, "_alignment"):
-            if obj._alignment == CENTER:
-                return CENTER
-
-            if obj.direction == ROW:
-                if obj._alignment == TOP:
-                    return START
-                if obj._alignment == BOTTOM:
-                    return END
-
-                # No remaining valid combinations
-                return None
-
-            # direction must be COLUMN
-            if obj._alignment == LEFT:
-                return START if obj.text_direction == LTR else END
-            if obj._alignment == RIGHT:
-                return START if obj.text_direction == RTL else END
-
-            # No remaining valid combinations
-            return None
-
-        return super().__get__(obj)
 
 
 ######################################################################
@@ -222,30 +209,44 @@ class Pack(BaseStyle):
     ######################################################################
 
     horizontal_align_content: str | None = aliased_property(
-        derive={Condition(direction=ROW): "justify_content"}
+        source={Condition(direction=ROW): "justify_content"}
     )
     horizontal_align_items: str | None = aliased_property(
-        derive={Condition(direction=COLUMN): "align_items"}
+        source={Condition(direction=COLUMN): "align_items"}
     )
     vertical_align_content: str | None = aliased_property(
-        derive={Condition(direction=COLUMN): "justify_content"}
+        source={Condition(direction=COLUMN): "justify_content"}
     )
     vertical_align_items: str | None = aliased_property(
-        derive={Condition(direction=ROW): "align_items"}
+        source={Condition(direction=ROW): "align_items"}
     )
 
     ######################################################################
     # 2024-12: Backwards compatibility for Toga < 0.5.0
     ######################################################################
 
-    padding: int | tuple[int] = aliased_property(derive="margin", deprecated=True)
-    padding_top: int = aliased_property(derive="margin_top", deprecated=True)
-    padding_right: int = aliased_property(derive="margin_right", deprecated=True)
-    padding_bottom: int = aliased_property(derive="margin_bottom", deprecated=True)
-    padding_left: int = aliased_property(derive="margin_left", deprecated=True)
+    padding: int | tuple[int] = aliased_property(source="margin", deprecated=True)
+    padding_top: int = aliased_property(source="margin_top", deprecated=True)
+    padding_right: int = aliased_property(source="margin_right", deprecated=True)
+    padding_bottom: int = aliased_property(source="margin_bottom", deprecated=True)
+    padding_left: int = aliased_property(source="margin_left", deprecated=True)
 
     alignment: str | None = alignment_property(
-        TOP, RIGHT, BOTTOM, LEFT, CENTER, other="align_items"
+        TOP,
+        RIGHT,
+        BOTTOM,
+        LEFT,
+        CENTER,
+        other="align_items",
+        derive={
+            AlignmentCondition(CENTER): CENTER,
+            AlignmentCondition(START, direction=COLUMN, text_direction=LTR): LEFT,
+            AlignmentCondition(START, direction=COLUMN, text_direction=RTL): RIGHT,
+            AlignmentCondition(START, direction=ROW): TOP,
+            AlignmentCondition(END, direction=COLUMN, text_direction=LTR): RIGHT,
+            AlignmentCondition(END, direction=COLUMN, text_direction=RTL): LEFT,
+            AlignmentCondition(END, direction=ROW): BOTTOM,
+        },
     )
 
     ######################################################################

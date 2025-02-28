@@ -26,15 +26,15 @@ class Condition:
 
 
 class aliased_property:
-    def __init__(self, derive: dict | str, deprecated: bool = False):
+    def __init__(self, source: str | dict, deprecated: bool = False):
         """Create a property that aliases an existing property.
 
-        :param derive: If this is a string, it is the name of the property to
+        :param source: If this is a string, it is the name of the property to
             reference. Otherwise, it is a dicitionary mapping conditions to the correct
             property name to use. If no condition is met, an AttributeError is raised.
         :deprecated: Is this property name deprecated?
         """
-        self.derive = derive
+        self.source = source
         self.deprecated = deprecated
 
     def __set_name__(self, owner, name):
@@ -74,14 +74,14 @@ class aliased_property:
         return name in obj
 
     def derive_name(self, obj):
-        if isinstance(self.derive, str):
-            return self.derive
+        if isinstance(self.source, str):
+            return self.source
 
-        for condition, name in self.derive.items():
+        for condition, name in self.source.items():
             if condition.match(obj):
                 return name
 
-        conditions = " or ".join([str(condition) for condition in self.derive])
+        conditions = " or ".join([str(condition) for condition in self.source])
         raise AttributeError(f"'{self.name}' is only supported when {conditions}")
 
     def warn_if_deprecated(self, name):
