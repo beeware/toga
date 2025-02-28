@@ -29,7 +29,20 @@ class BaseStyle:
     # Fallback in case subclass isn't decorated as dataclass (probably from using
     # previous API) or for pre-3.10, before kw_only argument existed.
     def __init__(self, **properties):
-        self.update(**properties)
+        try:
+            self.update(**properties)
+        except NameError:
+            # It still makes sense for update() to raise a NameError. However, here we
+            # simulate the behavior of the dataclass-generated __init__() for
+            # consistency.
+            for name in properties:
+                # This is redoing work, but it should only ever happen when a property
+                # name is invalid, and only in outdated Python or Toga, and only once.
+                if name not in self._ALL_PROPERTIES:
+                    raise TypeError(
+                        f"{type(self)}.__init__() got an unexpected keyword argument "
+                        f"'{name}'"
+                    )
 
     @property
     def _applicator(self):
@@ -108,11 +121,25 @@ class BaseStyle:
 
     def update(self, **properties):
         """Set multiple styles on the style definition."""
+        # Some aliases may be valid only in the presence of other property values, or
+        # depend on other values to determine what to alias to. This update might be
+        # setting those prerequisite properties. So we need to defer setting any
+        # conditional aliases until last.
+
+        deferred_aliases = {}
+
         for name, value in properties.items():
             name = name.replace("-", "_")
             if name not in self._ALL_PROPERTIES:
                 raise NameError(f"Unknown style '{name}'")
 
+            prop = getattr(type(self), name)
+            if isinstance(getattr(prop, "source", None), dict):
+                deferred_aliases[name] = value
+            else:
+                self[name] = value
+
+        for name, value in deferred_aliases.items():
             self[name] = value
 
     def __getitem__(self, name):
@@ -145,6 +172,7 @@ class BaseStyle:
         return sum(1 for _ in self)
 
     def __contains__(self, name):
+        name = name.replace("-", "_")
         return name in self._ALL_PROPERTIES and (
             getattr(self.__class__, name).is_set_on(self)
         )
