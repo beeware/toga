@@ -1,0 +1,1 @@
+A line_height argument can now be used to change the line height of multiline text.
