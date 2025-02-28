@@ -1,1 +1,0 @@
-Implement line_height_factor in IOS.

@@ -1,1 +1,0 @@
-Fix bug with line height factor in iOS backend
