@@ -64,7 +64,7 @@ PACK = "pack"
 
 
 class AlignmentCondition(Condition):
-    def __init__(self, main_value=None, /, **properties):
+    def __init__(self, main_value, /, **properties):
         super().__init__(**properties)
         self.main_value = main_value
 

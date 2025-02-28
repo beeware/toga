@@ -15,8 +15,6 @@ class Condition:
         self.properties = properties
 
     def match(self, style, main_name=None):
-        # main_name can't be accessed the "normal" way without causing a loop; we need
-        # to access the private stored value.
         return all(style[name] == value for name, value in self.properties.items())
 
     def __str__(self):
@@ -30,7 +28,7 @@ class aliased_property:
         """Create a property that aliases an existing property.
 
         :param source: If this is a string, it is the name of the property to
-            reference. Otherwise, it is a dicitionary mapping conditions to the correct
+            reference. Otherwise, it is a dictionary mapping conditions to the correct
             property name to use. If no condition is met, an AttributeError is raised.
         :deprecated: Is this property name deprecated?
         """
@@ -45,10 +43,7 @@ class aliased_property:
         if obj is None:
             return self
 
-        name = self.derive_name(obj)
-        self.warn_if_deprecated(name)
-
-        return obj[name]
+        return obj[self.derive_name(obj)]
 
     def __set__(self, obj, value):
         if value is self:
@@ -56,35 +51,29 @@ class aliased_property:
             # supplied.
             return
 
-        name = self.derive_name(obj)
-        self.warn_if_deprecated(name)
-
-        obj[name] = value
+        obj[self.derive_name(obj)] = value
 
     def __delete__(self, obj):
-        name = self.derive_name(obj)
-        self.warn_if_deprecated(name)
-
-        del obj[name]
+        del obj[self.derive_name(obj)]
 
     def is_set_on(self, obj):
-        name = self.derive_name(obj)
-        self.warn_if_deprecated(name)
-
-        return name in obj
+        return self.derive_name(obj) in obj
 
     def derive_name(self, obj):
+        name = None
+
         if isinstance(self.source, str):
-            return self.source
+            name = self.source
+        else:
+            for condition, result in self.source.items():
+                if condition.match(obj):
+                    name = result
+                    break
 
-        for condition, name in self.source.items():
-            if condition.match(obj):
-                return name
+        if name is None:
+            conditions = " or ".join([str(condition) for condition in self.source])
+            raise AttributeError(f"'{self.name}' is only supported when {conditions}")
 
-        conditions = " or ".join([str(condition) for condition in self.source])
-        raise AttributeError(f"'{self.name}' is only supported when {conditions}")
-
-    def warn_if_deprecated(self, name):
         if self.deprecated:
             cls = type(self)
             warn(
@@ -92,3 +81,5 @@ class aliased_property:
                 DeprecationWarning,
                 stacklevel=3,
             )
+
+        return name
