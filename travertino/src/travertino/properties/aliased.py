@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from warnings import filterwarnings, warn
 
 # Make sure deprecation warnings are shown by default
@@ -24,14 +26,10 @@ class Condition:
 
 
 class aliased_property:
-    def __init__(
-        self,
-        derive: dict | str,
-        deprecated: bool = False,
-    ):
+    def __init__(self, derive: dict | str, deprecated: bool = False):
         """Create a property that aliases an existing property.
 
-        :param condition: If this is a string, it is the name of the property to
+        :param derive: If this is a string, it is the name of the property to
             reference. Otherwise, it is a dicitionary mapping conditions to the correct
             property name to use. If no condition is met, an AttributeError is raised.
         :deprecated: Is this property name deprecated?
