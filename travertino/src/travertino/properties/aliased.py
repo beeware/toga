@@ -18,7 +18,7 @@ class Condition:
         return all(style[name] == value for name, value in self.properties.items())
 
     def __str__(self):
-        return ";".join(
+        return "; ".join(
             [f"{name} = {value}" for name, value in self.properties.items()]
         )
 
@@ -77,7 +77,7 @@ class aliased_property:
         if self.deprecated:
             cls = type(self)
             warn(
-                f"{cls}.{self.name} is deprecated. Use {cls}{name} instead.",
+                f"{cls}.{self.name} is deprecated. Use {cls}.{name} instead.",
                 DeprecationWarning,
                 stacklevel=3,
             )
