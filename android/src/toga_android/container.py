@@ -51,13 +51,13 @@ class Container(Scalable):
         self.native_content.setLayoutParams(lp)
 
     def add_content(self, widget):
-        self.native_content.addView(widget.native)
+        self.native_content.addView(widget.native_toplevel)
 
     def remove_content(self, widget):
-        self.native_content.removeView(widget.native)
+        self.native_content.removeView(widget.native_toplevel)
 
     def set_content_bounds(self, widget, x, y, width, height):
         lp = RelativeLayout.LayoutParams(width, height)
         lp.topMargin = y
         lp.leftMargin = x
-        widget.native.setLayoutParams(lp)
+        widget.native_toplevel.setLayoutParams(lp)

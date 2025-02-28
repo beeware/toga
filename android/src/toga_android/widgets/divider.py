@@ -16,7 +16,8 @@ class Divider(Widget):
         self._direction = self.interface.HORIZONTAL
 
     def set_background_color(self, value):
-        self.set_background_simple(value)
+        # Do nothing, since background color of Divider shouldn't be changed.
+        pass
 
     def get_direction(self):
         return self._direction
