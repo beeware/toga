@@ -72,8 +72,8 @@ class AlignmentCondition(Condition):
     def match(self, style, main_name=None):
         # main_name can't be accessed the "normal" way without causing a loop; we need
         # to access the private stored value.
-        return getattr(style, f"_{main_name}") == self.main_value and super().match(
-            style
+        return (
+            super().match(style) and getattr(style, f"_{main_name}") == self.main_value
         )
 
 
