@@ -65,8 +65,9 @@ PACK = "pack"
 
 class AlignmentCondition(Condition):
     def __init__(self, main_value=None, /, **properties):
-        super().__init__(*properties)
+        super().__init__(**properties)
         self.properties = properties
+        self.main_value = main_value
 
     def match(self, style, main_name=None):
         # main_name can't be accessed the "normal" way without causing a loop; we need
