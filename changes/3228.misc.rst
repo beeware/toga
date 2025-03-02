@@ -1,0 +1,1 @@
+Updated setuptools from 75.8.0 to 75.8.2 in /android.
