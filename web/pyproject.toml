@@ -1,6 +1,6 @@
 [build-system]
 requires = [
-    "setuptools==75.8.0",
+    "setuptools==75.8.2",
     "setuptools_scm==8.2.0",
     "setuptools_dynamic_dependencies==1.0.0",
 ]
