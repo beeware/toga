@@ -250,6 +250,3 @@ class Canvas(Widget):
         stream = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.PNG, 0, stream)
         return bytes(stream.toByteArray())
-
-    def set_background_color(self, value):
-        self.set_background_simple(value)
