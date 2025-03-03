@@ -134,10 +134,10 @@ class Widget(ABC, Scalable):
 
     def set_background_filter(self, color):
         # Although setBackgroundColor is defined in the View base class, we can't
-        # use it as a default implementation on some widgets(e.g. Button), because
+        # use it as a default implementation on some widgets (e.g. Button), because
         # it often overwrites other aspects of the widget's appearance. For example,
-        # when setBackgroundColor is used on a Button, it changes the background behind
-        # the button rather than the button's actual color.
+        # when setBackgroundColor is used on a Button, it makes the button appear
+        # as a solid rectangle with no bevels or animations.
         self.native.getBackground().setColorFilter(
             None
             if color is None
@@ -183,10 +183,9 @@ def android_text_align(value):
     }[value]
 
 
-# Most of the Android Widget have different effects applied them which provide
-# the native look and feel of Android. These widgets' background consists of
-# Drawables like ColorDrawable, InsetDrawable and other animation Effect Drawables
-# like RippleDrawable. Often when such Effect Drawables are used, they are stacked
+# The look and feel of Android widgets is sometimes implemented using background
+# Drawables like ColorDrawable, InsetDrawable and other animation effect Drawables
+# like RippleDrawable. Often when such effect Drawables are used, they are stacked
 # along with other Drawables in a LayerDrawable.
 #
 # LayerDrawable once created cannot be modified and attempting to modify it or
@@ -195,20 +194,12 @@ def android_text_align(value):
 # LayerDrawable cannot also be properly cloned. Using `getConstantState()` on the
 # Drawable will produce an erroneous version of the original Drawable.
 #
-# These widgets also draw some of their background effects on their native parent.
-# But in the Widget base class, the native parent is actually the root Box of the
-# layout, and the parent Box is stacked under its children without any native
-# parent/child relationship. So if the parent Box has a background color, it may
-# conceal some of the background elements of its children.
-#
 # Hence, the best option to preserve the native look and feel of the these widgets is
 # to contain them in a `RelativeLayout` and set the background color to the layout
 # instead of the widget itself.
 #
 # ContainedWidget should act as a drop-in replacement against the Widget class for
 # such widgets, without requiring the widgets to do anything extra on their part.
-# It should be used for widgets that have an animated Effect Drawable as background
-# and their native look and feel needs to be preserved.
 class ContainedWidget(Widget):
     def __init__(self, interface):
         super().__init__(interface)
