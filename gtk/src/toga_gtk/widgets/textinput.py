@@ -17,27 +17,40 @@ class TextInput(Widget):
             self.native.connect("focus-out-event", self.gtk_focus_out_event)
             self.native.connect("key-press-event", self.gtk_key_press_event)
         else:  # pragma: no-cover-if-gtk3
-            pass
+            self.native.connect("changed", self.gtk_on_change)
+
+            self.focus_controller = Gtk.EventControllerFocus.new()
+            self.native.add_controller(self.focus_controller)
+
+            self.focus_controller.connect("enter", self.gtk_focus_in_event)
+            self.focus_controller.connect("leave", self.gtk_focus_out_event)
+
+            self.key_controller = Gtk.EventControllerKey.new()
+            self.native.add_controller(self.key_controller)
+            self.key_controller.connect("key-pressed", self.gtk_key_pressed)
 
     def gtk_on_change(self, *_args):
-        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
-            self.interface._value_changed()
-        else:  # pragma: no-cover-if-gtk3
-            self.interface._value_changed(self.interface)
+        self.interface._value_changed()
 
     def gtk_focus_in_event(self, *_args):
-        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
-            self.interface.on_gain_focus()
-        else:  # pragma: no-cover-if-gtk3
-            self.interface.on_gain_focus(self.interface)
+        self.interface.on_gain_focus()
 
     def gtk_focus_out_event(self, *_args):
         self.interface.on_lose_focus()
 
-    def gtk_key_press_event(self, _, key_val, *_args):
-        key_pressed = toga_key(key_val)
-        if key_pressed and key_pressed["key"] in {Key.ENTER, Key.NUMPAD_ENTER}:
-            self.interface.on_confirm()
+    if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+
+        def gtk_key_press_event(self, _entry, event):
+            key_pressed = toga_key(event.keyval, event.state)
+            if key_pressed and key_pressed["key"] in {Key.ENTER, Key.NUMPAD_ENTER}:
+                self.interface.on_confirm()
+
+    else:  # pragma: no-cover-if-gtk3
+
+        def gtk_key_pressed(self, _controller, keyval, _keycode, state):
+            key_pressed = toga_key(keyval, state)
+            if key_pressed and key_pressed["key"] in {Key.ENTER, Key.NUMPAD_ENTER}:
+                self.interface.on_confirm()
 
     def get_readonly(self):
         return not self.native.get_property("editable")
@@ -81,7 +94,16 @@ class TextInput(Widget):
             )
             self.interface.intrinsic.height = height[1]
         else:  # pragma: no-cover-if-gtk3
-            pass
+            # print(
+            #     "REHINT",
+            #     self,
+            #     self.native.get_preferred_size()[0].width,
+            #     self.native.get_preferred_size()[0].height,
+            # )
+            min_size, size = self.native.get_preferred_size()
+
+            self.interface.intrinsic.width = at_least(min_size.width)
+            self.interface.intrinsic.height = size.height
 
     def set_error(self, error_message):
         self.native.set_icon_from_icon_name(Gtk.EntryIconPosition.SECONDARY, "error")

@@ -238,7 +238,7 @@ class AppProbe(BaseProbe, DialogsMixin):
         event.is_modifier = state != 0
         event.state = state
 
-        return toga_key(event)
+        return toga_key(event.keyval, event.state)
 
     async def restore_standard_app(self):
         # No special handling needed to restore standard app.
