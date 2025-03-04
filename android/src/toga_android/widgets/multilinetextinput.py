@@ -12,22 +12,10 @@ class MultilineTextInput(TextInput):
         )
 
     def set_disable_spellcheck(self, disable):
-        self.disable_spellcheck = disable
-        input_type = self.native.getInputType()
-        if disable:
-            input_type |= InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS  # Disable spellcheck
-        else:
-            input_type &= ~InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS  # Enable spellcheck
-        self.native.setInputType(input_type)
+        self.set_disable_spellcheck()
 
     def set_disable_autocorrect(self, disable):
-        self.disable_autocorrect = disable
-        input_type = self.native.getInputType()
-        if disable:
-            input_type &= ~InputType.TYPE_TEXT_FLAG_AUTO_CORRECT  # Disable autocorrect
-        else:
-            input_type |= InputType.TYPE_TEXT_FLAG_AUTO_CORRECT  # Enable autocorrect
-        self.native.setInputType(input_type)
+        self.set_disable_autocorrect()
 
     def _on_change(self):
         self.interface.on_change()
