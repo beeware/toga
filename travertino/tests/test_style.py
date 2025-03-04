@@ -1,11 +1,13 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
+from contextlib import nullcontext
 from unittest.mock import call
 from warnings import catch_warnings, filterwarnings
 
 import pytest
 
+from travertino.properties.aliased import Condition, aliased_property
 from travertino.properties.choices import Choices
 from travertino.properties.immutablelist import ImmutableList
 from travertino.properties.shorthand import directional_property
@@ -45,8 +47,33 @@ class Style(BaseStyle):
     thing_bottom: str | int = validated_property(*VALUES, integer=True, initial=0)
     thing_left: str | int = validated_property(*VALUES, integer=True, initial=0)
 
-    # Doesn't need to be tested in deprecated API:
+    # Nothing below here needs to be tested in deprecated API:
     list_prop: list[str] = list_property(*VALUES, integer=True, initial=(VALUE2,))
+
+    # A variety of aliases to other properties
+    plain_alias: str | int = aliased_property(source="explicit_const")
+    plain_alias_deprecated: str | int = aliased_property(
+        source="explicit_const", deprecated=True
+    )
+    directional_alias: tuple[str | int] | str | int = aliased_property(source="thing")
+    directional_alias_deprecated: tuple[str | int] | str | int = aliased_property(
+        source="thing", deprecated=True
+    )
+    conditional_alias: str | int = aliased_property(
+        source={
+            Condition(thing_top=0): "explicit_const",
+            Condition(thing_top=10, list_prop=[VALUE1, VALUE2]): "explicit_value",
+            Condition(thing_top=10, list_prop=[VALUE1]): "explicit_none",
+        }
+    )
+    conditional_alias_deprecated: str | int = aliased_property(
+        source={
+            Condition(thing_top=0): "explicit_const",
+            Condition(thing_top=10, list_prop=[VALUE1, VALUE2]): "explicit_value",
+            Condition(thing_top=10, list_prop=[VALUE1]): "explicit_none",
+        },
+        deprecated=True,
+    )
 
 
 VALUE_CHOICES = Choices(*VALUES, integer=True)
@@ -895,3 +922,161 @@ def test_deprecated_reapply():
 def test_deprecated_import():
     with pytest.deprecated_call():
         from travertino.declaration import BaseStyle, Choices  # noqa
+
+
+@pytest.mark.parametrize(
+    "source, alias, initial, value, context",
+    [
+        (
+            "explicit_const",
+            "plain_alias",
+            VALUE1,
+            VALUE3,
+            nullcontext,
+        ),
+        (
+            "explicit_const",
+            "plain_alias_deprecated",
+            VALUE1,
+            VALUE3,
+            pytest.deprecated_call,
+        ),
+        # There *shouldn't* be anything speecial about an alias to a
+        # directional_property vs. to a validated_property, but it doesn't hurt to
+        # check.
+        (
+            "thing",
+            "directional_alias",
+            (0, 0, 0, 0),
+            (10, 5, 10, 5),
+            nullcontext,
+        ),
+        (
+            "thing",
+            "directional_alias_deprecated",
+            (0, 0, 0, 0),
+            (10, 5, 10, 5),
+            pytest.deprecated_call,
+        ),
+    ],
+)
+def test_simple_alias(source, alias, initial, value, context):
+    """An alias with a constant source refers consistently to the source property."""
+    style = Style()
+
+    # Set on original, check on alias
+    with context():
+        assert alias not in style
+
+    style[source] = value
+
+    with context():
+        assert alias in style
+    with context():
+        assert style[alias] == value
+
+    del style[source]
+
+    with context():
+        assert alias not in style
+    with context():
+        assert style[alias] == initial
+
+    # Set on alias, check on original.
+    assert source not in style
+
+    with context():
+        style[alias] = value
+
+    assert source in style
+    assert style[source] == value
+
+    with context():
+        del style[alias]
+
+    assert source not in style
+    assert style[source] == initial
+
+
+@pytest.mark.parametrize(
+    "alias, context",
+    [
+        ("conditional_alias", nullcontext),
+        ("conditional_alias_deprecated", pytest.deprecated_call),
+    ],
+)
+@pytest.mark.parametrize(
+    "properties, source, value",
+    [
+        ({}, "explicit_const", VALUE1),
+        ({"thing_top": 10, "list_prop": [VALUE1, VALUE2]}, "explicit_value", 0),
+        ({"thing_top": 10, "list_prop": [VALUE1]}, "explicit_none", None),
+    ],
+)
+def test_conditional_alias(alias, context, properties, source, value):
+    """An alias correctly checks conditions to determine which property to access."""
+    style = Style(**properties)
+    with context():
+        assert style[alias] == style[source] == value
+
+
+@pytest.mark.parametrize(
+    "alias",
+    # No deprecation warnings are given; there's no way to even tell which newer name
+    # should be instead.
+    ["conditional_alias", "conditional_alias_deprecated"],
+)
+@pytest.mark.parametrize(
+    "properties",
+    [
+        {"thing_top": 1},
+        {"thing_top": 10, "list_prop": [VALUE1, VALUE3]},
+        {"thing_top": 11},
+    ],
+)
+def test_conditional_alias_invald(alias, properties):
+    style = Style(**properties)
+    with pytest.raises(AttributeError):
+        style[alias]
+
+    with pytest.raises(AttributeError):
+        style[alias] = 15
+
+    with pytest.raises(AttributeError):
+        alias in style
+
+    with pytest.raises(AttributeError):
+        del style[alias]
+
+
+@pytest.mark.parametrize(
+    "alias, context",
+    [
+        ("conditional_alias", nullcontext),
+        ("conditional_alias_deprecated", pytest.deprecated_call),
+    ],
+)
+@pytest.mark.parametrize(
+    "properties",
+    [
+        {"alias": 1, "thing_top": 10, "list_prop": [VALUE1]},
+        {"thing_top": 10, "alias": 1, "list_prop": [VALUE1]},
+        {"thing_top": 10, "list_prop": [VALUE1], "alias": 1},
+    ],
+)
+def test_conditional_alias_simultaneous_setting(alias, context, properties):
+    """Setting an alias along with its conditions works, in any order."""
+    properties = {
+        (alias if name == "alias" else name): value
+        for name, value in properties.items()
+    }
+    with context():
+        style = Style(**properties)
+    with context():
+        assert style[alias] == 1
+
+    style = Style()
+    with context():
+        style.update(**properties)
+    with context():
+        assert style[alias] == 1
