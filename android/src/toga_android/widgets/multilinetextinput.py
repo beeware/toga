@@ -12,10 +12,10 @@ class MultilineTextInput(TextInput):
         )
 
     def set_disable_spellcheck(self, disable):
-        self.set_disable_spellcheck()
+        self.set_disable_spellcheck(disable)
 
     def set_disable_autocorrect(self, disable):
-        self.set_disable_autocorrect()
+        self.set_disable_autocorrect(disable)
 
     def _on_change(self):
         self.interface.on_change()

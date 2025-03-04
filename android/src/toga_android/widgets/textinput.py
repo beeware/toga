@@ -92,7 +92,7 @@ class TextInput(TextViewWidget):
             )
             self.native.setInputType(input_type)
 
-    def set_spellcheck(self, disable):
+    def set_disable_spellcheck(self, disable):
         self.disable_spellcheck = disable
         # Get current input type
         input_type = self.native.getInputType()
