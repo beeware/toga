@@ -247,7 +247,9 @@ class Canvas(Widget):
         layout = Pango.Layout(pango_context)
         for line_num, line in enumerate(lines):
             layout.set_text(line)
-            cairo_context.move_to(x, top + (metrics.line_height * line_num))
+            cairo_context.move_to(
+                x, top + (metrics.line_height * line_height_factor * line_num)
+            )
             PangoCairo.layout_line_path(cairo_context, layout.get_line(0))
 
     def _pango_context(self, font):
