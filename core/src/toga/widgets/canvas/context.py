@@ -347,7 +347,7 @@ class Context(DrawingObject):
         y: float = 0.0,
         font: Font | None = None,
         baseline: Baseline = Baseline.ALPHABETIC,
-        line_height_factor: float = 1,
+        line_height: float = 1,
     ) -> WriteText:
         """Write text at a given position in the canvas context.
 
@@ -360,11 +360,11 @@ class Context(DrawingObject):
         :param y: The Y coordinate: its meaning depends on ``baseline``.
         :param font: The font in which to draw the text. The default is the system font.
         :param baseline: Alignment of text relative to the Y coordinate.
-        :param line_height_factor: Height of the line box as a multiple of the font size
+        :param line_height: Height of the line box as a multiple of the font size
             when multiple lines are present.
         :returns: The ``WriteText`` :any:`DrawingObject` for the operation.
         """
-        write_text = WriteText(text, x, y, font, baseline, line_height_factor)
+        write_text = WriteText(text, x, y, font, baseline, line_height)
         self.append(write_text)
         return write_text
 

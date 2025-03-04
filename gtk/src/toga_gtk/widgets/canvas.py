@@ -217,22 +217,20 @@ class Canvas(Widget):
     # Text
 
     def write_text(
-        self, text, x, y, font, baseline, line_height_factor, cairo_context, **kwargs
+        self, text, x, y, font, baseline, line_height, cairo_context, **kwargs
     ):
         for op in ["fill", "stroke"]:
             if color := kwargs.pop(f"{op}_color", None):
-                self._text_path(
-                    text, x, y, font, baseline, line_height_factor, cairo_context
-                )
+                self._text_path(text, x, y, font, baseline, line_height, cairo_context)
                 getattr(self, op)(color, cairo_context=cairo_context, **kwargs)
 
     # No need to check whether Pango or PangoCairo are None, because if they were, the
     # user would already have received an exception when trying to create a Font.
-    def _text_path(self, text, x, y, font, baseline, line_height_factor, cairo_context):
+    def _text_path(self, text, x, y, font, baseline, line_height, cairo_context):
         pango_context = self._pango_context(font)
         metrics = self._font_metrics(pango_context)
         lines = text.splitlines()
-        total_height = metrics.line_height * len(lines) * line_height_factor
+        total_height = metrics.line_height * len(lines) * line_height
 
         if baseline == Baseline.TOP:
             top = y + metrics.ascent
@@ -248,7 +246,7 @@ class Canvas(Widget):
         for line_num, line in enumerate(lines):
             layout.set_text(line)
             cairo_context.move_to(
-                x, top + (metrics.line_height * line_height_factor * line_num)
+                x, top + (metrics.line_height * line_height * line_num)
             )
             PangoCairo.layout_line_path(cairo_context, layout.get_line(0))
 
@@ -278,7 +276,7 @@ class Canvas(Widget):
         line_height = ascent + descent
         return FontMetrics(ascent, descent, line_height)
 
-    def measure_text(self, text, font, line_height_factor):
+    def measure_text(self, text, font, line_height):
         pango_context = self._pango_context(font)
         layout = Pango.Layout(pango_context)
 
@@ -290,9 +288,7 @@ class Canvas(Widget):
 
         return (
             ceil(max(width for width in widths)),
-            self._font_metrics(pango_context).line_height
-            * len(widths)
-            * line_height_factor,
+            self._font_metrics(pango_context).line_height * len(widths) * line_height,
         )
 
     def get_image_data(self):

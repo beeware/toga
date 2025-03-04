@@ -253,11 +253,11 @@ class Canvas(Widget):
 
     # Although the native API can measure and draw multi-line strings, this makes the
     # line spacing depend on the scale factor, which messes up the tests.
-    def _line_height(self, font, line_height_factor):
+    def _line_height(self, font, line_height):
         # descender is a negative number.
-        return ceil(font.native.ascender - font.native.descender) * line_height_factor
+        return ceil(font.native.ascender - font.native.descender) * line_height
 
-    def measure_text(self, text, font, line_height_factor):
+    def measure_text(self, text, font, line_height):
         # We need at least a fill color to render, but that won't change the size.
         sizes = [
             self._render_string(line, font, fill_color=color(BLACK)).size()
@@ -265,13 +265,13 @@ class Canvas(Widget):
         ]
         return (
             ceil(max(size.width for size in sizes)),
-            self._line_height(font, line_height_factor) * len(sizes),
+            self._line_height(font, line_height) * len(sizes),
         )
 
-    def write_text(self, text, x, y, font, baseline, line_height_factor, **kwargs):
+    def write_text(self, text, x, y, font, baseline, line_height, **kwargs):
         lines = text.splitlines()
-        line_height = self._line_height(font, line_height_factor)
-        total_height = line_height * len(lines)
+        scaled_line_height = self._line_height(font, line_height)
+        total_height = scaled_line_height * len(lines)
 
         if baseline == Baseline.TOP:
             top = y + font.native.ascender
@@ -285,7 +285,7 @@ class Canvas(Widget):
 
         for line_num, line in enumerate(lines):
             # Rounding minimizes differences between scale factors.
-            origin = NSPoint(round(x), round(top) + (line_height * line_num))
+            origin = NSPoint(round(x), round(top) + (scaled_line_height * line_num))
             rs = self._render_string(line, font, **kwargs)
 
             # "This method uses the baseline origin by default. If

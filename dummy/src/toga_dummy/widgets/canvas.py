@@ -212,7 +212,7 @@ class Canvas(Widget):
         y,
         font,
         baseline,
-        line_height_factor,
+        line_height,
         draw_instructions,
         **kwargs,
     ):
@@ -226,14 +226,14 @@ class Canvas(Widget):
                         "y": y,
                         "font": font,
                         "baseline": baseline,
-                        "line_height_factor": line_height_factor,
+                        "line_height": line_height,
                     },
                     **kwargs,
                 ),
             )
         )
 
-    def measure_text(self, text, font, line_height_factor):
+    def measure_text(self, text, font, line_height):
         # Assume system font produces characters that have the same width and height as
         # the point size, with a default point size of 12. Any other font is 1.5 times
         # bigger.
@@ -241,17 +241,17 @@ class Canvas(Widget):
         if font.interface.family == SYSTEM:
             if font.interface.size == SYSTEM_DEFAULT_FONT_SIZE:
                 width = len(text) * 12
-                height = lines * line_height_factor * 12
+                height = lines * line_height * 12
             else:
                 width = len(text) * font.interface.size
-                height = lines * line_height_factor * font.interface.size
+                height = lines * line_height * font.interface.size
         else:
             if font.interface.size == SYSTEM_DEFAULT_FONT_SIZE:
                 width = len(text) * 18
-                height = lines * line_height_factor * 18
+                height = lines * line_height * 18
             else:
                 width = int(len(text) * font.interface.size * 1.5)
-                height = lines * line_height_factor * int(font.interface.size * 1.5)
+                height = lines * line_height * int(font.interface.size * 1.5)
 
         return width, height
 

@@ -1,0 +1,1 @@
+Renamed line_height_factor to line_height.

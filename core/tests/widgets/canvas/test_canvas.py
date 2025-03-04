@@ -139,7 +139,7 @@ def test_stroke(widget):
 
 
 @pytest.mark.parametrize(
-    "font, line_height_factor, expected",
+    "font, line_height, expected",
     [
         (None, 1, (132, 12)),
         (Font(family=SYSTEM, size=SYSTEM_DEFAULT_FONT_SIZE), 1, (132, 12)),
@@ -150,18 +150,16 @@ def test_stroke(widget):
         (Font(family="Cutive", size=20), 1.5, (330, 45)),
     ],
 )
-def test_measure_text(widget, font, line_height_factor, expected):
+def test_measure_text(widget, font, line_height, expected):
     """Canvas can measure rendered text size."""
     assert (
-        widget.measure_text(
-            "Hello world", font=font, line_height_factor=line_height_factor
-        )
+        widget.measure_text("Hello world", font=font, line_height=line_height)
         == expected
     )
 
 
 @pytest.mark.parametrize(
-    "font, line_height_factor, expected",
+    "font, line_height, expected",
     [
         (None, 1, (132, 24)),
         (Font(family=SYSTEM, size=SYSTEM_DEFAULT_FONT_SIZE), 1, (132, 24)),
@@ -172,12 +170,10 @@ def test_measure_text(widget, font, line_height_factor, expected):
         (Font(family="Cutive", size=20), 1.5, (330, 90)),
     ],
 )
-def test_measure_text_multiline(widget, font, line_height_factor, expected):
+def test_measure_text_multiline(widget, font, line_height, expected):
     """Canvas can measure rendered text size of a multiline string."""
     assert (
-        widget.measure_text(
-            "Hello\nworld", font=font, line_height_factor=line_height_factor
-        )
+        widget.measure_text("Hello\nworld", font=font, line_height=line_height)
         == expected
     )
 
