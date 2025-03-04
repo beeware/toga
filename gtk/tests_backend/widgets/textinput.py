@@ -1,7 +1,7 @@
 import pytest
 
 from toga.constants import JUSTIFY, LEFT
-from toga_gtk.libs import GTK_VERSION, Gtk
+from toga_gtk.libs import Gtk
 
 from .base import SimpleProbe
 from .properties import toga_x_text_align
@@ -9,9 +9,6 @@ from .properties import toga_x_text_align
 
 class TextInputProbe(SimpleProbe):
     native_class = Gtk.Entry
-
-    if GTK_VERSION >= (4, 0, 0):
-        pytest.skip("GTK4 doesn't support text input yet")
 
     @property
     def value(self):
