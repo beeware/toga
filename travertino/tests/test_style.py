@@ -898,6 +898,8 @@ def test_union_operators_invalid_key_value(StyleClass, right, error):
 
 
 def test_deprecated_class_methods():
+    """Toga < 0.5.0 can still define style properties with the old API."""
+
     class OldStyle(BaseStyle):
         pass
 
@@ -920,6 +922,7 @@ def test_deprecated_reapply():
 
 
 def test_deprecated_import():
+    """Toga < 0.5.0 can still import what it needs from Travertino."""
     with pytest.deprecated_call():
         from travertino.declaration import BaseStyle, Choices  # noqa
 
@@ -1035,6 +1038,7 @@ def test_conditional_alias(alias, context, properties, source, value):
     ],
 )
 def test_conditional_alias_invald(alias, properties):
+    """If no condition is valid, using the alias raises an AttributeError."""
     style = Style(**properties)
     with pytest.raises(AttributeError):
         style[alias]
