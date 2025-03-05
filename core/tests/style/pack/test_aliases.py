@@ -83,7 +83,10 @@ def test_align(css_name, row_alias, column_alias, default, style_with, get_fn, d
         correct_direction = ROW if direction == COLUMN else COLUMN
         raises_kwargs = dict(
             expected_exception=AttributeError,
-            match=f"'{alias}' is only supported when direction = {correct_direction}",
+            match=(
+                rf"'{alias}' is only supported when "
+                rf"\(direction == {correct_direction}\)"
+            ),
         )
 
         with raises(**raises_kwargs):

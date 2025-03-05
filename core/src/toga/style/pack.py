@@ -63,7 +63,7 @@ PACK = "pack"
 ######################################################################
 
 
-class AlignmentCondition(Condition):
+class _AlignmentCondition(Condition):
     def __init__(self, main_value, /, **properties):
         super().__init__(**properties)
         self.main_value = main_value
@@ -76,7 +76,17 @@ class AlignmentCondition(Condition):
         )
 
 
-class alignment_property(validated_property):
+class _alignment_property(validated_property):
+    # Alignment is deprecated in favor of align_items, but the two share a complex
+    # relationship because they don't use the same set of values; translating from one
+    # to the other may require knowing the value of direction and text_direction as
+    # well.
+
+    # Both names exist as actual properties on the style object, and if one of them has
+    # been set. that one has been set is the source of truth. If the other name is
+    # requested, its value is computed / translated. They can never both be set at the
+    # same time; setting one deletes any value stored in the other.
+
     def __set_name__(self, owner, name):
         # Hard-coded because it's only called on alignment, not align_items.
 
@@ -84,21 +94,23 @@ class alignment_property(validated_property):
         owner._BASE_ALL_PROPERTIES[owner].add("alignment")
         self.other = "align_items"
         self.derive = {
-            AlignmentCondition(CENTER): CENTER,
-            AlignmentCondition(START, direction=COLUMN, text_direction=LTR): LEFT,
-            AlignmentCondition(START, direction=COLUMN, text_direction=RTL): RIGHT,
-            AlignmentCondition(START, direction=ROW): TOP,
-            AlignmentCondition(END, direction=COLUMN, text_direction=LTR): RIGHT,
-            AlignmentCondition(END, direction=COLUMN, text_direction=RTL): LEFT,
-            AlignmentCondition(END, direction=ROW): BOTTOM,
+            _AlignmentCondition(CENTER): CENTER,
+            _AlignmentCondition(START, direction=COLUMN, text_direction=LTR): LEFT,
+            _AlignmentCondition(START, direction=COLUMN, text_direction=RTL): RIGHT,
+            _AlignmentCondition(START, direction=ROW): TOP,
+            _AlignmentCondition(END, direction=COLUMN, text_direction=LTR): RIGHT,
+            _AlignmentCondition(END, direction=COLUMN, text_direction=RTL): LEFT,
+            _AlignmentCondition(END, direction=ROW): BOTTOM,
         }
 
-        # Replace the align_items validated_property
-        owner.align_items = alignment_property(START, CENTER, END)
+        # Replace the align_items validated_property with another instance of this
+        # class. This is needed so accessing or setting either one will reference the
+        # other properly.
+        owner.align_items = _alignment_property(START, CENTER, END)
         owner.align_items.name = "align_items"
         owner.align_items.other = "alignment"
         owner.align_items.derive = {
-            AlignmentCondition(result, **condition.properties): condition.main_value
+            _AlignmentCondition(result, **condition.properties): condition.main_value
             for condition, result in self.derive.items()
         }
 
@@ -110,12 +122,14 @@ class alignment_property(validated_property):
 
         if not hasattr(obj, f"_{self.name}"):
             if hasattr(obj, f"_{self.other}"):
+                # If this property hasn't been set but the other one has, attempt to
+                # translate.
                 for condition, value in self.derive.items():
                     if condition.match(obj, main_name=self.other):
                         return value
 
-            return self.initial
-
+        # Otherwise -- if this property is set, or *neither* is set, or no condition is
+        # valid -- access this property as usual.
         return super().__get__(obj)
 
     def __set__(self, obj, value):
@@ -127,6 +141,7 @@ class alignment_property(validated_property):
 
         self.warn_if_deprecated()
 
+        # Delete the other property when setting this one.
         try:
             delattr(obj, f"_{self.other}")
         except AttributeError:
@@ -136,6 +151,7 @@ class alignment_property(validated_property):
     def __delete__(self, obj):
         self.warn_if_deprecated()
 
+        # Delete the other property too.
         try:
             delattr(obj, f"_{self.other}")
         except AttributeError:
@@ -145,6 +161,7 @@ class alignment_property(validated_property):
     def is_set_on(self, obj):
         self.warn_if_deprecated()
 
+        # Counts as set if *either* of the two properties is set.
         return super().is_set_on(obj) or hasattr(obj, f"_{self.other}")
 
     def warn_if_deprecated(self):
@@ -232,7 +249,7 @@ class Pack(BaseStyle):
     padding_bottom: int = aliased_property(source="margin_bottom", deprecated=True)
     padding_left: int = aliased_property(source="margin_left", deprecated=True)
 
-    alignment: str | None = alignment_property(TOP, RIGHT, BOTTOM, LEFT, CENTER)
+    alignment: str | None = _alignment_property(TOP, RIGHT, BOTTOM, LEFT, CENTER)
 
     ######################################################################
     # End backwards compatibility
