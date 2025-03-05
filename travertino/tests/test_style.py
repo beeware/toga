@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from collections.abc import Sequence
 from contextlib import nullcontext
 from unittest.mock import call
@@ -1039,17 +1040,22 @@ def test_conditional_alias(alias, context, properties, source, value):
 )
 def test_conditional_alias_invald(alias, properties):
     """If no condition is valid, using the alias raises an AttributeError."""
+    error_msg = re.escape(
+        f"'{alias}' is only supported when (thing_top == 0) or (thing_top == 10; "
+        "list_prop == ['value1', 'value2']) or (thing_top == 10; list_prop == "
+        "['value1'])"
+    )
     style = Style(**properties)
-    with pytest.raises(AttributeError):
+    with pytest.raises(AttributeError, match=error_msg):
         style[alias]
 
-    with pytest.raises(AttributeError):
+    with pytest.raises(AttributeError, match=error_msg):
         style[alias] = 15
 
-    with pytest.raises(AttributeError):
+    with pytest.raises(AttributeError, match=error_msg):
         alias in style
 
-    with pytest.raises(AttributeError):
+    with pytest.raises(AttributeError, match=error_msg):
         del style[alias]
 
 

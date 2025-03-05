@@ -19,7 +19,7 @@ class Condition:
 
     def __str__(self):
         return "; ".join(
-            [f"{name} = {value}" for name, value in self.properties.items()]
+            [f"{name} == {value}" for name, value in self.properties.items()]
         )
 
 
@@ -71,7 +71,7 @@ class aliased_property:
                     break
 
         if name is None:
-            conditions = " or ".join([str(condition) for condition in self.source])
+            conditions = " or ".join([f"({condition})" for condition in self.source])
             raise AttributeError(f"'{self.name}' is only supported when {conditions}")
 
         if self.deprecated:
