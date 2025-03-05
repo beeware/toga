@@ -75,7 +75,7 @@ class aliased_property:
             raise AttributeError(f"'{self.name}' is only supported when {conditions}")
 
         if self.deprecated:
-            cls = type(self)
+            cls = type(obj).__name__
             warn(
                 f"{cls}.{self.name} is deprecated. Use {cls}.{name} instead.",
                 DeprecationWarning,
