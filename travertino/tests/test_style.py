@@ -3,6 +3,7 @@ from __future__ import annotations
 import re
 from collections.abc import Sequence
 from contextlib import nullcontext
+from functools import partial
 from unittest.mock import call
 from warnings import catch_warnings, filterwarnings
 
@@ -943,9 +944,15 @@ def test_deprecated_import():
             "plain_alias_deprecated",
             VALUE1,
             VALUE3,
-            pytest.deprecated_call,
+            partial(
+                pytest.deprecated_call,
+                match=(
+                    r"Style\.plain_alias_deprecated is deprecated\. "
+                    r"Use Style\.explicit_const instead\."
+                ),
+            ),
         ),
-        # There *shouldn't* be anything speecial about an alias to a
+        # There *shouldn't* be anything special about an alias to a
         # directional_property vs. to a validated_property, but it doesn't hurt to
         # check.
         (
@@ -960,7 +967,13 @@ def test_deprecated_import():
             "directional_alias_deprecated",
             (0, 0, 0, 0),
             (10, 5, 10, 5),
-            pytest.deprecated_call,
+            partial(
+                pytest.deprecated_call,
+                match=(
+                    r"Style\.directional_alias_deprecated is deprecated\. "
+                    r"Use Style\.thing instead\."
+                ),
+            ),
         ),
     ],
 )
