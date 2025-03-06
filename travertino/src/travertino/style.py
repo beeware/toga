@@ -207,8 +207,17 @@ class BaseStyle:
 
     def __str__(self):
         return "; ".join(
-            f"{name.replace('_', '-')}: {value}" for name, value in sorted(self.items())
+            [
+                f"{name.replace('_', '-')}: {value}"
+                for name, value in sorted(self.items())
+            ]
         )
+
+    def __repr__(self):
+        properties = ", ".join(
+            [f"{name}={repr(value)}" for name, value in sorted(self.items())]
+        )
+        return f"{type(self).__name__}({properties})"
 
     ######################################################################
     # Backwards compatibility
