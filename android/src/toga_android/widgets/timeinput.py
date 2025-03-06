@@ -4,6 +4,8 @@ from android import R
 from android.app import TimePickerDialog
 from java import dynamic_proxy
 
+from toga_android.widgets.base import ContainedWidget
+
 from .internal.pickers import PickerBase
 
 
@@ -19,7 +21,7 @@ class TimePickerListener(dynamic_proxy(TimePickerDialog.OnTimeSetListener)):
         self.impl.interface.value = time(hour, minute)
 
 
-class TimeInput(PickerBase):
+class TimeInput(PickerBase, ContainedWidget):
     @classmethod
     def _get_icon(cls):
         return R.drawable.ic_menu_recent_history

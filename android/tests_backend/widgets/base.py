@@ -27,15 +27,21 @@ class SimpleProbe(BaseProbe, FontMixin):
         self.widget = widget
         self.impl = widget._impl
         self.native = widget._impl.native
+        self.native_toplevel = widget._impl.native_toplevel
         assert isinstance(self.native, self.native_class)
 
     def assert_container(self, container):
         assert self.widget._impl.container is container._impl.container
-        assert self.native.getParent() is container._impl.container.native_content
+        assert (
+            self.native_toplevel.getParent() is container._impl.container.native_content
+        )
+        assert (self.native is self.native_toplevel) or (
+            self.native.getParent() is self.native_toplevel
+        )
 
     def assert_not_contained(self):
         assert self.widget._impl.container is None
-        assert self.native.getParent() is None
+        assert self.native_toplevel.getParent() is None
 
     def assert_text_align(self, expected):
         actual = self.text_align
@@ -80,7 +86,7 @@ class SimpleProbe(BaseProbe, FontMixin):
     def assert_layout(self, size, position):
         # Widget is contained
         assert self.widget._impl.container is not None
-        assert self.native.getParent() is not None
+        assert self.native_toplevel.getParent() is not None
 
         # Size and position is as expected. Values must be scaled from DP, and
         # compared inexactly due to pixel scaling
@@ -95,7 +101,7 @@ class SimpleProbe(BaseProbe, FontMixin):
 
     @property
     def background_color(self):
-        background = self.native.getBackground()
+        background = self.native_toplevel.getBackground()
         while True:
             if isinstance(background, ColorDrawable):
                 return toga_color(background.getColor())
@@ -114,6 +120,9 @@ class SimpleProbe(BaseProbe, FontMixin):
                 break
 
         if background is None:
+            # The default background color is TRANSPARENT, but setting it
+            # to TRANSPARENT actually sets it to None, in order to avoid
+            # clipping of ripple and other effects on widgets.
             return TRANSPARENT
         filter = background.getColorFilter()
         if filter:
