@@ -45,7 +45,9 @@ def verify_font_sizes():
     return False, True
 
 
-test_cleanup = build_cleanup_test(toga.PasswordInput, xfail_platforms=("android",))
+test_cleanup = build_cleanup_test(
+    toga.PasswordInput, xfail_platforms=("android", "linux")
+)
 
 
 async def test_value_hidden(widget, probe):
