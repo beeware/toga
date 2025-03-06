@@ -52,6 +52,8 @@ class TextInput(Widget):
         style: StyleT | None = None,
         value: str | None = None,
         readonly: bool = False,
+        disable_spellcheck: bool = False,
+        disable_autocorrect: bool = False,
         placeholder: str | None = None,
         on_change: toga.widgets.textinput.OnChangeHandler | None = None,
         on_confirm: OnConfirmHandler | None = None,
@@ -67,6 +69,7 @@ class TextInput(Widget):
             applied to the widget.
         :param value: The initial content to display in the widget.
         :param readonly: Can the value of the widget be modified by the user?
+        :paran disable_spellcheck: Default activated handles disabling spellcheck
         :param placeholder: The content to display as a placeholder when there is no
             user content to display.
         :param on_change: A handler that will be invoked when the value of the widget
@@ -84,7 +87,8 @@ class TextInput(Widget):
 
         self.placeholder = placeholder
         self.readonly = readonly
-
+        self.disable_spellcheck = disable_spellcheck
+        self.disable_AutoCorrect = disable_autocorrect
         # Set the actual value before on_change, because we do not want
         # on_change triggered by it However, we need to prime the handler
         # property in case it is accessed.
@@ -95,7 +99,6 @@ class TextInput(Widget):
         # validation is performed on the initial value
         self.validators = validators
         self.value = value
-
         self.on_change = on_change
         self.on_confirm = on_confirm
         self.on_lose_focus = on_lose_focus
@@ -117,6 +120,22 @@ class TextInput(Widget):
     @readonly.setter
     def readonly(self, value: object) -> None:
         self._impl.set_readonly(bool(value))
+
+    @property
+    def disable_Spellcheck(self) -> bool:
+        return self._impl.get_disable_spellcheck()
+
+    @disable_Spellcheck.setter
+    def disable_Spellcheck(self, value: object) -> None:
+        self._impl.set_disable_spellcheck(bool(value))
+
+    @property
+    def disable_AutoCorrect(self) -> None:
+        self._impl.get_disable_autocorrect()
+
+    @disable_AutoCorrect
+    def disable_AutoCorrect(self, value: object) -> None:
+        self._impl.set_disable_autocorrect(bool(value))
 
     @property
     def placeholder(self) -> str:
