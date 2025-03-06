@@ -24,6 +24,8 @@ class MultilineTextInput(Widget):
         style: StyleT | None = None,
         value: str | None = None,
         readonly: bool = False,
+        disable_spellcheck: bool = False,
+        disable_autocorrect: bool = False,
         placeholder: str | None = None,
         on_change: toga.widgets.multilinetextinput.OnChangeHandler | None = None,
         **kwargs,
@@ -47,9 +49,10 @@ class MultilineTextInput(Widget):
         # want on_change triggered by the initial value being set
         self.on_change = None
         self.value = value
-
         # Set all the properties
         self.readonly = readonly
+        self.disable_spellcheck = disable_spellcheck
+        self.disable_AutoCorrect = (disable_autocorrect,)
         self.placeholder = placeholder
         self.on_change = on_change
 
@@ -83,6 +86,22 @@ class MultilineTextInput(Widget):
     @readonly.setter
     def readonly(self, value: object) -> None:
         self._impl.set_readonly(bool(value))
+
+    @property
+    def disable_Spellcheck(self) -> bool:
+        return self._impl.get_disable_spellcheck()
+
+    @disable_Spellcheck.setter
+    def disable_Spellcheck(self, value: object) -> None:
+        self._impl.set_disable_spellcheck(bool(value))
+
+    @property
+    def disable_AutoCorrect(self) -> None:
+        self._impl.get_disable_autocorrect()
+
+    @disable_AutoCorrect
+    def disable_AutoCorrect(self, value: object) -> None:
+        self._impl.set_disable_autocorrect(bool(value))
 
     @property
     def value(self) -> str:
