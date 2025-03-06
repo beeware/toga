@@ -178,9 +178,9 @@ class _alignment_property(validated_property):
 ######################################################################
 
 if sys.version_info < (3, 10):
-    _DATACLASS_KWARGS = {"init": False}
+    _DATACLASS_KWARGS = {"init": False, "repr": False}
 else:
-    _DATACLASS_KWARGS = {"kw_only": True}
+    _DATACLASS_KWARGS = {"kw_only": True, "repr": False}
 
 
 @dataclass(**_DATACLASS_KWARGS)

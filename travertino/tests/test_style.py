@@ -704,6 +704,22 @@ def test_str(StyleClass):
     )
 
 
+def test_repr():
+    # Doesn't need to be tested with deprecated API.
+    style = Style(explicit_const=VALUE2, explicit_value=20, thing=(30, 40, 50, 60))
+
+    assert repr(style) == (
+        "Style("
+        "explicit_const='value2', "
+        "explicit_value=20, "
+        "thing_bottom=50, "
+        "thing_left=60, "
+        "thing_right=40, "
+        "thing_top=30"
+        ")"
+    )
+
+
 @pytest.mark.parametrize("StyleClass", [Style, DeprecatedStyle])
 def test_dict(StyleClass):
     "Style declarations expose a dict-like interface"
