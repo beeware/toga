@@ -133,7 +133,7 @@ class TextInput(Widget):
     def disable_AutoCorrect(self) -> None:
         self._impl.get_disable_autocorrect()
 
-    @disable_AutoCorrect
+    @disable_AutoCorrect.setter
     def disable_AutoCorrect(self, value: object) -> None:
         self._impl.set_disable_autocorrect(bool(value))
 
