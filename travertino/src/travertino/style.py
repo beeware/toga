@@ -43,6 +43,10 @@ class BaseStyle:
                         f"{type(self)}.__init__() got an unexpected keyword argument "
                         f"'{name}'"
                     )
+            # The above for loop should never run to completion, so that needs to be
+            # excluded from coverage.
+            else:  # pragma: no cover
+                pass
 
     @property
     def _applicator(self):
