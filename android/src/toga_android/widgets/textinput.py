@@ -93,7 +93,6 @@ class TextInput(TextViewWidget):
             self.native.setInputType(input_type)
 
     def set_disable_spellcheck(self, disable):
-        self.disable_spellcheck = disable
         # Get current input type
         input_type = self.native.getInputType()
         if disable:
@@ -101,11 +100,10 @@ class TextInput(TextViewWidget):
             input_type |= InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS
         else:
             # Remove flag to enable spellcheck
-            input_type &= ~InputType.TYPE_TEXT_FLAG_NO_SUGGESTION
+            input_type &= ~InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS
         self.native.setInputType(input_type)
 
     def set_disable_autocorrect(self, disable):
-        self.disable_autocorrect = disable
         input_type = self.native.getInputType()
         if disable:
             # Disable autocorrect
