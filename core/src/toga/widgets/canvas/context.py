@@ -347,7 +347,7 @@ class Context(DrawingObject):
         y: float = 0.0,
         font: Font | None = None,
         baseline: Baseline = Baseline.ALPHABETIC,
-        line_height: float = 1,
+        line_height: float | None = None,
     ) -> WriteText:
         """Write text at a given position in the canvas context.
 

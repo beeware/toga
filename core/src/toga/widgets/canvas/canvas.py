@@ -297,7 +297,7 @@ class Canvas(Widget):
         self,
         text: str,
         font: Font | None = None,
-        line_height: float = 1,
+        line_height: float | None = None,
     ) -> tuple[float, float]:
         """Measure the size at which :meth:`~.Context.write_text` would
         render some text.
@@ -311,6 +311,9 @@ class Canvas(Widget):
         """
         if font is None:
             font = Font(family=SYSTEM, size=SYSTEM_DEFAULT_FONT_SIZE)
+
+        if line_height is None:
+            line_height = 1
 
         return self._impl.measure_text(str(text), font._impl, line_height)
 
