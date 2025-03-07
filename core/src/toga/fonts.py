@@ -5,6 +5,7 @@ from pathlib import Path
 # Use the Travertino font definitions as-is
 from travertino import constants
 from travertino.constants import (
+    ABSOLUTE_FONT_SIZES,
     BOLD,
     CURSIVE,
     FANTASY,
@@ -13,6 +14,7 @@ from travertino.constants import (
     MONOSPACE,
     NORMAL,
     OBLIQUE,
+    RELATIVE_FONT_SIZES,
     SANS_SERIF,
     SERIF,
     SMALL_CAPS,
@@ -62,7 +64,11 @@ class Font(BaseFont):
         size = (
             "default size"
             if self.size == SYSTEM_DEFAULT_FONT_SIZE
-            else f"{self.size}pt"
+            else (
+                f"{self.size}"
+                if self.size in ABSOLUTE_FONT_SIZES or self.size in RELATIVE_FONT_SIZES
+                else f"{self.size}pt"
+            )
         )
         weight = f" {self.weight}" if self.weight != NORMAL else ""
         variant = f" {self.variant}" if self.variant != NORMAL else ""

@@ -1,4 +1,5 @@
 from .constants import (
+    ABSOLUTE_FONT_SIZES,
     BOLD,
     FONT_STYLES,
     FONT_VARIANTS,
@@ -6,6 +7,7 @@ from .constants import (
     ITALIC,
     NORMAL,
     OBLIQUE,
+    RELATIVE_FONT_SIZES,
     SMALL_CAPS,
     SYSTEM_DEFAULT_FONT_SIZE,
 )
@@ -26,6 +28,11 @@ class Font:
             try:
                 if size.strip().endswith("pt"):
                     self.size = int(size[:-2])
+                elif (
+                    size.strip() in ABSOLUTE_FONT_SIZES
+                    or size.strip() in RELATIVE_FONT_SIZES
+                ):
+                    self.size = size.strip()
                 else:
                     raise ValueError(f"Invalid font size {size!r}")
             except Exception:
@@ -47,7 +54,9 @@ class Font:
             (
                 "system default size"
                 if self.size == SYSTEM_DEFAULT_FONT_SIZE
-                else f"{self.size}pt"
+                else (
+                    f"{self.size}" if isinstance(self.size, str) else f"{self.size}pt"
+                )
             ),
             self.family,
         )

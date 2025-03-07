@@ -95,6 +95,87 @@ def app():
             NORMAL,
             "system default size",
         ),
+        # Custom font, small size
+        (
+            "Custom Font",
+            "small",
+            NORMAL,
+            NORMAL,
+            NORMAL,
+            "Custom Font small",
+        ),
+        # System font, medium size
+        (
+            SYSTEM,
+            "medium",
+            NORMAL,
+            NORMAL,
+            NORMAL,
+            "system medium",
+        ),
+        # System font, large size
+        (
+            SYSTEM,
+            "large",
+            NORMAL,
+            NORMAL,
+            NORMAL,
+            "system large",
+        ),
+        # System font, x-small size
+        (
+            SYSTEM,
+            "x-small",
+            NORMAL,
+            NORMAL,
+            NORMAL,
+            "system x-small",
+        ),
+        # System font, xx-small size
+        (
+            SYSTEM,
+            "xx-small",
+            NORMAL,
+            NORMAL,
+            NORMAL,
+            "system xx-small",
+        ),
+        # System font, xx-large size
+        (
+            SYSTEM,
+            "xx-large",
+            NORMAL,
+            NORMAL,
+            NORMAL,
+            "system xx-large",
+        ),
+        # System font, x-large size
+        (
+            SYSTEM,
+            "x-large",
+            NORMAL,
+            NORMAL,
+            NORMAL,
+            "system x-large",
+        ),
+        # Custom font, smaller size
+        (
+            "Custom Font",
+            "smaller",
+            NORMAL,
+            NORMAL,
+            NORMAL,
+            "Custom Font smaller",
+        ),
+        # Custom font, larger size
+        (
+            "Custom Font",
+            "larger",
+            NORMAL,
+            NORMAL,
+            NORMAL,
+            "Custom Font larger",
+        ),
     ],
 )
 def test_builtin_font(family, size, weight, style, variant, as_str):

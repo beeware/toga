@@ -1,6 +1,11 @@
 from pathlib import Path
 from warnings import warn
 
+from travertino.constants import (
+    ABSOLUTE_FONT_SIZES,
+    RELATIVE_FONT_SIZES,
+)
+
 from toga.fonts import (
     _REGISTERED_FONT_CACHE,
     BOLD,
@@ -78,8 +83,13 @@ class Font:
 
             font.set_family(family)
 
-            # If this is a non-default font size, set the font size
-            if self.interface.size != SYSTEM_DEFAULT_FONT_SIZE:
+            # Default font as well as values in absolute and relative font
+            # size are handled by Pango. Otherwise set font size manually.
+            if (
+                self.interface.size != SYSTEM_DEFAULT_FONT_SIZE
+                and self.interface.size not in ABSOLUTE_FONT_SIZES
+                and self.interface.size not in RELATIVE_FONT_SIZES
+            ):
                 font.set_size(self.interface.size * Pango.SCALE)
 
             # Set font style

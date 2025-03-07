@@ -1,3 +1,10 @@
+from travertino.constants import (
+    ABSOLUTE_FONT_SIZES,
+    FONT_SIZE_SCALE,
+    RELATIVE_FONT_SIZE_SCALE,
+    RELATIVE_FONT_SIZES,
+)
+
 from toga.fonts import (
     BOLD,
     ITALIC,
@@ -29,6 +36,12 @@ class FontMixin:
             assert expected == SYSTEM_DEFAULT_FONT_SIZE
         elif expected == SYSTEM_DEFAULT_FONT_SIZE:
             assert 8 < int(self.font.get_size() / Pango.SCALE) < 18
+        elif expected in ABSOLUTE_FONT_SIZES:
+            scale = FONT_SIZE_SCALE.get(expected, 1.0)
+            assert 8 * scale < int(self.font.get_size() / Pango.SCALE) < 18 * scale
+        elif expected in RELATIVE_FONT_SIZES:
+            scale = RELATIVE_FONT_SIZE_SCALE.get(expected, 1.0)
+            assert 8 * scale < int(self.font.get_size() / Pango.SCALE) < 18 * scale
         else:
             assert int(self.font.get_size() / Pango.SCALE) == expected
 

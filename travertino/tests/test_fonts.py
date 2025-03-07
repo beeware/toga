@@ -1,12 +1,23 @@
 import pytest
 
 from travertino.constants import (
+    ABSOLUTE_FONT_SIZES,
     BOLD,
     ITALIC,
+    LARGE,
+    LARGER,
+    MEDIUM,
     NORMAL,
     OBLIQUE,
+    RELATIVE_FONT_SIZES,
+    SMALL,
     SMALL_CAPS,
+    SMALLER,
     SYSTEM_DEFAULT_FONT_SIZE,
+    X_LARGE,
+    X_SMALL,
+    XX_LARGE,
+    XX_SMALL,
 )
 from travertino.fonts import Font
 
@@ -79,9 +90,61 @@ def test_simple_construction(size):
     assert_font(Font("Comic Sans", size), "Comic Sans", 12, NORMAL, NORMAL, NORMAL)
 
 
+@pytest.mark.parametrize(
+    "size",
+    [
+        XX_SMALL,
+        X_SMALL,
+        SMALL,
+        MEDIUM,
+        LARGE,
+        X_LARGE,
+        XX_LARGE,
+        LARGER,
+        SMALLER,
+    ],
+)
+def test_css_font_size_keywords(size):
+    font = Font("Comic Sans", size)
+    assert_font(font, "Comic Sans", size, NORMAL, NORMAL, NORMAL)
+    assert isinstance(font.size, str)
+    assert font.size in ABSOLUTE_FONT_SIZES or font.size in RELATIVE_FONT_SIZES
+
+
+@pytest.mark.parametrize(
+    "size, expected_repr",
+    [
+        (XX_SMALL, "<Font: xx-small Comic Sans>"),
+        (X_SMALL, "<Font: x-small Comic Sans>"),
+        (SMALL, "<Font: small Comic Sans>"),
+        (MEDIUM, "<Font: medium Comic Sans>"),
+        (LARGE, "<Font: large Comic Sans>"),
+        (X_LARGE, "<Font: x-large Comic Sans>"),
+        (XX_LARGE, "<Font: xx-large Comic Sans>"),
+        (LARGER, "<Font: larger Comic Sans>"),
+        (SMALLER, "<Font: smaller Comic Sans>"),
+    ],
+)
+def test_css_font_size_repr(size, expected_repr):
+    font = Font("Comic Sans", size)
+    assert repr(font) == expected_repr
+
+
 def test_invalid_construction():
     with pytest.raises(ValueError):
         Font("Comic Sans", "12 quatloos")
+
+    with pytest.raises(ValueError):
+        Font("Comic Sans", "invalid-size")
+
+    with pytest.raises(ValueError):
+        Font("Comic Sans", "")
+
+    try:
+        Font("Comic Sans", None)
+        assert False, "Should have raised TypeError"
+    except TypeError:
+        pass
 
 
 @pytest.mark.parametrize(
