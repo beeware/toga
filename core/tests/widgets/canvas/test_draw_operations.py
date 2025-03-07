@@ -579,42 +579,42 @@ def test_rect(widget):
         (
             {"text": "Hello world", "x": 10, "y": 20},
             "text='Hello world', x=10, y=20, font=<Font: system default size system>, "
-            "baseline=Baseline.ALPHABETIC, line_height=1",
+            "baseline=Baseline.ALPHABETIC, line_height=None",
             {
                 "text": "Hello world",
                 "x": 10,
                 "y": 20,
                 "font": Font(SYSTEM, SYSTEM_DEFAULT_FONT_SIZE)._impl,
                 "baseline": Baseline.ALPHABETIC,
-                "line_height": 1,
+                "line_height": None,
             },
         ),
         # Baseline
         (
             {"text": "Hello world", "x": 10, "y": 20, "baseline": Baseline.TOP},
             "text='Hello world', x=10, y=20, font=<Font: system default size system>, "
-            "baseline=Baseline.TOP, line_height=1",
+            "baseline=Baseline.TOP, line_height=None",
             {
                 "text": "Hello world",
                 "x": 10,
                 "y": 20,
                 "font": Font(SYSTEM, SYSTEM_DEFAULT_FONT_SIZE)._impl,
                 "baseline": Baseline.TOP,
-                "line_height": 1,
+                "line_height": None,
             },
         ),
         # Font
         (
             {"text": "Hello world", "x": 10, "y": 20, "font": Font("Cutive", 42)},
             "text='Hello world', x=10, y=20, font=<Font: 42pt Cutive>, "
-            "baseline=Baseline.ALPHABETIC, line_height=1",
+            "baseline=Baseline.ALPHABETIC, line_height=None",
             {
                 "text": "Hello world",
                 "x": 10,
                 "y": 20,
                 "font": Font("Cutive", 42)._impl,
                 "baseline": Baseline.ALPHABETIC,
-                "line_height": 1,
+                "line_height": None,
             },
         ),
         # Line height factor

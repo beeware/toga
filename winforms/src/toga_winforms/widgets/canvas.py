@@ -300,6 +300,12 @@ class Canvas(Box):
         self.scale(self.dpi_scale, self.dpi_scale, draw_context)
 
     # Text
+    def _line_height(self, font, line_height):
+        if line_height is None:
+            return font.metric("LineSpacing")
+        else:
+            return font.metric("EmHeight") * line_height
+
     def write_text(
         self, text, x, y, font, baseline, line_height, draw_context, **kwargs
     ):
@@ -310,7 +316,7 @@ class Canvas(Box):
 
     def _text_path(self, text, x, y, font, baseline, line_height, draw_context):
         lines = text.splitlines()
-        scaled_line_height = font.metric("LineSpacing") * line_height
+        scaled_line_height = self._line_height(font, line_height)
         total_height = scaled_line_height * len(lines)
 
         if baseline == Baseline.TOP:
@@ -341,7 +347,7 @@ class Canvas(Box):
         ]
         return (
             self.scale_out(max(size.Width for size in sizes)),
-            font.metric("LineSpacing") * line_height * len(sizes),
+            self._line_height(font, line_height) * len(sizes),
         )
 
     def get_image_data(self):

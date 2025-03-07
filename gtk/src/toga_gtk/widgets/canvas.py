@@ -228,9 +228,9 @@ class Canvas(Widget):
     # user would already have received an exception when trying to create a Font.
     def _text_path(self, text, x, y, font, baseline, line_height, cairo_context):
         pango_context = self._pango_context(font)
-        metrics = self._font_metrics(pango_context)
+        metrics = self._font_metrics(pango_context, line_height)
         lines = text.splitlines()
-        total_height = metrics.line_height * len(lines) * line_height
+        total_height = metrics.line_height * len(lines)
 
         if baseline == Baseline.TOP:
             top = y + metrics.ascent
@@ -245,9 +245,7 @@ class Canvas(Widget):
         layout = Pango.Layout(pango_context)
         for line_num, line in enumerate(lines):
             layout.set_text(line)
-            cairo_context.move_to(
-                x, top + (metrics.line_height * line_height * line_num)
-            )
+            cairo_context.move_to(x, top + (metrics.line_height * line_num))
             PangoCairo.layout_line_path(cairo_context, layout.get_line(0))
 
     def _pango_context(self, font):
@@ -265,20 +263,25 @@ class Canvas(Widget):
         pango_context.set_font_description(font.native)
         return pango_context
 
-    def _font_metrics(self, pango_context):
+    def _font_metrics(self, pango_context, line_height):
         pango_metrics = pango_context.load_font(
             pango_context.get_font_description()
         ).get_metrics()
         ascent = pango_metrics.get_ascent() / Pango.SCALE
         descent = pango_metrics.get_descent() / Pango.SCALE
 
-        # get_height was added in Pango 1.44, but Debian Buster comes with 1.42.
-        line_height = ascent + descent
-        return FontMetrics(ascent, descent, line_height)
+        if line_height is None:
+            # get_height was added in Pango 1.44, but Debian Buster comes with 1.42.
+            scaled_line_height = ascent + descent
+        else:
+            scaled_line_height = ascent * line_height
+
+        return FontMetrics(ascent, descent, scaled_line_height)
 
     def measure_text(self, text, font, line_height):
         pango_context = self._pango_context(font)
         layout = Pango.Layout(pango_context)
+        metrics = self._font_metrics(pango_context, line_height)
 
         widths = []
         for line in text.splitlines():
@@ -288,7 +291,7 @@ class Canvas(Widget):
 
         return (
             ceil(max(width for width in widths)),
-            self._font_metrics(pango_context).line_height * len(widths) * line_height,
+            metrics.line_height * len(widths),
         )
 
     def get_image_data(self):

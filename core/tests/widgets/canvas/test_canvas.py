@@ -141,7 +141,7 @@ def test_stroke(widget):
 @pytest.mark.parametrize(
     "font, line_height, expected",
     [
-        (None, 1, (132, 12)),
+        (None, None, (132, 12)),
         (Font(family=SYSTEM, size=SYSTEM_DEFAULT_FONT_SIZE), None, (132, 12)),
         (Font(family=SYSTEM, size=SYSTEM_DEFAULT_FONT_SIZE), 1, (132, 12)),
         (Font(family=SYSTEM, size=20), None, (220, 20)),
@@ -165,7 +165,7 @@ def test_measure_text(widget, font, line_height, expected):
 @pytest.mark.parametrize(
     "font, line_height, expected",
     [
-        (None, 1, (132, 24)),
+        (None, None, (132, 24)),
         (Font(family=SYSTEM, size=SYSTEM_DEFAULT_FONT_SIZE), None, (132, 24)),
         (Font(family=SYSTEM, size=SYSTEM_DEFAULT_FONT_SIZE), 1, (132, 24)),
         (Font(family=SYSTEM, size=20), None, (220, 40)),

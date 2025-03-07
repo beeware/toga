@@ -357,17 +357,6 @@ class WriteText(DrawingObject):
         else:
             self._font = value
 
-    @property
-    def line_height(self) -> float:
-        return self._line_height
-
-    @line_height.setter
-    def line_height(self, value: float | None) -> None:
-        if value is None:
-            self._line_height = 1
-        else:
-            self._line_height = value
-
 
 class Rotate(DrawingObject):
     def __init__(self, radians: float):

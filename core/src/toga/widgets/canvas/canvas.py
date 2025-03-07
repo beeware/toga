@@ -312,9 +312,6 @@ class Canvas(Widget):
         if font is None:
             font = Font(family=SYSTEM, size=SYSTEM_DEFAULT_FONT_SIZE)
 
-        if line_height is None:
-            line_height = 1
-
         return self._impl.measure_text(str(text), font._impl, line_height)
 
     def as_image(self, format: type[ImageT] = toga.Image) -> ImageT:

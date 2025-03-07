@@ -237,21 +237,27 @@ class Canvas(Widget):
         # Assume system font produces characters that have the same width and height as
         # the point size, with a default point size of 12. Any other font is 1.5 times
         # bigger.
+
+        if line_height is None:
+            line_height_factor = 1
+        else:
+            line_height_factor = line_height
+
         lines = text.count("\n") + 1
         if font.interface.family == SYSTEM:
             if font.interface.size == SYSTEM_DEFAULT_FONT_SIZE:
                 width = len(text) * 12
-                height = lines * line_height * 12
+                height = lines * line_height_factor * 12
             else:
                 width = len(text) * font.interface.size
-                height = lines * line_height * font.interface.size
+                height = lines * line_height_factor * font.interface.size
         else:
             if font.interface.size == SYSTEM_DEFAULT_FONT_SIZE:
                 width = len(text) * 18
-                height = lines * line_height * 18
+                height = lines * line_height_factor * 18
             else:
                 width = int(len(text) * font.interface.size * 1.5)
-                height = lines * line_height * int(font.interface.size * 1.5)
+                height = lines * line_height_factor * int(font.interface.size * 1.5)
 
         return width, height
 

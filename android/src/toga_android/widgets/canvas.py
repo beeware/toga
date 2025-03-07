@@ -188,19 +188,24 @@ class Canvas(Widget):
         self.scale(self.dpi_scale, self.dpi_scale, canvas)
 
     # Text
+    def _line_height(self, paint, line_height):
+        if line_height is None:
+            return paint.getFontSpacing()
+        else:
+            return paint.getTextSize() * line_height
 
     def measure_text(self, text, font, line_height):
         paint = self._text_paint(font)
         sizes = [paint.measureText(line) for line in text.splitlines()]
         return (
             max(size for size in sizes),
-            paint.getFontSpacing() * len(sizes) * line_height,
+            self._line_height(paint, line_height) * len(sizes),
         )
 
     def write_text(self, text, x, y, font, baseline, line_height, canvas, **kwargs):
         lines = text.splitlines()
         paint = self._text_paint(font)
-        scaled_line_height = paint.getFontSpacing() * line_height
+        scaled_line_height = self._line_height(paint, line_height)
         total_height = scaled_line_height * len(lines)
 
         # paint.ascent returns a negative number.
