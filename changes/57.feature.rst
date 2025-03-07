@@ -1,1 +1,0 @@
-change line_height to scale by font size instead of scaling by default line height
