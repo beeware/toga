@@ -1,6 +1,6 @@
 [build-system]
 requires = [
-    "setuptools==75.8.0",
+    "setuptools==75.8.2",
     "setuptools_scm==8.2.0",
     "setuptools_dynamic_dependencies==1.0.0",
 ]
@@ -64,10 +64,10 @@ dev = [
     "coverage-conditional-plugin == 0.9.0",
     "Pillow == 11.1.0",
     "pre-commit == 4.1.0",
-    "pytest == 8.3.4",
+    "pytest == 8.3.5",
     "pytest-asyncio == 0.25.3",
     "pytest-freezer == 0.4.9",
-    "setuptools-scm == 8.1.0",
+    "setuptools-scm == 8.2.0",
     "tox == 4.24.1",
     # typing-extensions needed for TypeAlias added in Py 3.10
     "typing-extensions == 4.12.2 ; python_version < '3.10'",
@@ -83,7 +83,7 @@ docs = [
     "sphinx-autobuild == 2024.10.3",
     "sphinx-csv-filter == 0.4.2",
     "sphinx-copybutton == 0.5.2",
-    "sphinx-toolbox == 3.8.3",
+    "sphinx-toolbox == 3.9.0",
     "sphinxcontrib-spelling == 8.0.1",
 ]
 

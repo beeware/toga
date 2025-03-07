@@ -54,4 +54,4 @@ class directional_property:
             del obj[name]
 
     def is_set_on(self, obj):
-        return any(hasattr(obj, name) for name in self.property_names)
+        return any(name in obj for name in self.property_names)

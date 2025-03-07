@@ -99,6 +99,3 @@ class ScrollContainer(Widget, Container):
     def set_position(self, horizontal_position, vertical_position):
         self.hScrollView.setScrollX(self.scale_in(horizontal_position))
         self.vScrollView.setScrollY(self.scale_in(vertical_position))
-
-    def set_background_color(self, value):
-        self.set_background_simple(value)

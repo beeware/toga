@@ -23,7 +23,7 @@ def style_mixin(style_cls):
             simply write ``widget.color``.
             """
         ),
-        **{name: StyleProperty() for name in style_cls._BASE_ALL_PROPERTIES[style_cls]},
+        **{name: StyleProperty() for name in style_cls._ALL_PROPERTIES},
     }
 
     return type(style_cls.__name__ + "Mixin", (), mixin_dict)
