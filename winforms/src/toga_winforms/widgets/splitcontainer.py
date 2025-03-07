@@ -5,9 +5,9 @@ from System.Windows.Forms import (
 )
 
 from toga.constants import Direction
+from toga.handlers import WeakrefCallable
 
 from ..container import Container
-from ..libs.wrapper import WeakrefCallable
 from .base import Widget
 
 

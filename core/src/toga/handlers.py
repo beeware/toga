@@ -5,6 +5,7 @@ import inspect
 import sys
 import traceback
 import warnings
+import weakref
 from abc import ABC
 from collections.abc import Awaitable, Callable, Generator
 from typing import TYPE_CHECKING, Any, NoReturn, Protocol, TypeVar
@@ -262,3 +263,25 @@ class AsyncResult(ABC):
 
 class PermissionResult(AsyncResult):
     RESULT_TYPE = "permission"
+
+
+class WeakrefCallable:
+    """
+    A wrapper for callable that holds a weak reference to it.
+
+    This can be useful in particular when setting winforms event handlers, to avoid
+    cyclical reference cycles between Python and the .NET CLR that are detected neither
+    by the Python garbage collector nor the C# garbage collector. It is also used
+    for some of the GTK4 event controllers.
+    """
+
+    def __init__(self, function):
+        try:
+            self.ref = weakref.WeakMethod(function)
+        except TypeError:  # pragma: no cover
+            self.ref = weakref.ref(function)
+
+    def __call__(self, *args, **kwargs):
+        function = self.ref()
+        if function:  # pragma: no branch
+            return function(*args, **kwargs)

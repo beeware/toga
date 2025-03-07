@@ -3,7 +3,8 @@ from decimal import ROUND_UP
 
 import System.Windows.Forms as WinForms
 
-from ..libs.wrapper import WeakrefCallable
+from toga.handlers import WeakrefCallable
+
 from .base import Widget
 
 
