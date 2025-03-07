@@ -96,7 +96,7 @@ class MultilineTextInput(Widget):
         self._impl.set_spellcheck(bool(value))
 
     @property
-    def autocorrect(self) -> None:
+    def autocorrect(self) -> bool:
         self._impl.get_autocorrect()
 
     @autocorrect
