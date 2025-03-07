@@ -1,7 +1,8 @@
 from System.Windows.Forms import TabControl, TabPage
 
+from toga.handlers import WeakrefCallable
+
 from ..container import Container
-from ..libs.wrapper import WeakrefCallable
 from .base import Widget
 
 
