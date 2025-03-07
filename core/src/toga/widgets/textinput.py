@@ -52,8 +52,8 @@ class TextInput(Widget):
         style: StyleT | None = None,
         value: str | None = None,
         readonly: bool = False,
-        disable_spellcheck: bool = False,
-        disable_autocorrect: bool = False,
+        spellcheck: bool = False,
+        autocorrect: bool = False,
         placeholder: str | None = None,
         on_change: toga.widgets.textinput.OnChangeHandler | None = None,
         on_confirm: OnConfirmHandler | None = None,
@@ -87,8 +87,8 @@ class TextInput(Widget):
 
         self.placeholder = placeholder
         self.readonly = readonly
-        self.disable_spellcheck = disable_spellcheck
-        self.disable_AutoCorrect = disable_autocorrect
+        self.spellcheck = spellcheck
+        self.autocorrect = autocorrect
         # Set the actual value before on_change, because we do not want
         # on_change triggered by it However, we need to prime the handler
         # property in case it is accessed.
@@ -123,19 +123,19 @@ class TextInput(Widget):
 
     @property
     def disable_Spellcheck(self) -> bool:
-        return self._impl.get_disable_spellcheck()
+        return self._impl.get_spellcheck()
 
     @disable_Spellcheck.setter
     def disable_Spellcheck(self, value: object) -> None:
-        self._impl.set_disable_spellcheck(bool(value))
+        self._impl.set_spellcheck(bool(value))
 
     @property
-    def disable_AutoCorrect(self) -> None:
-        self._impl.get_disable_autocorrect()
+    def autocorrect(self) -> None:
+        self._impl.get_autocorrect()
 
-    @disable_AutoCorrect.setter
+    @autocorrect.setter
     def disable_AutoCorrect(self, value: object) -> None:
-        self._impl.set_disable_autocorrect(bool(value))
+        self._impl.set_autocorrect(bool(value))
 
     @property
     def placeholder(self) -> str:
