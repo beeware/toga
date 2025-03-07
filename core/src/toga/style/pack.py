@@ -82,10 +82,10 @@ class _alignment_property(validated_property):
     # to the other may require knowing the value of direction and text_direction as
     # well.
 
-    # Both names exist as actual properties on the style object, and if one of them has
-    # been set. that one has been set is the source of truth. If the other name is
-    # requested, its value is computed / translated. They can never both be set at the
-    # same time; setting one deletes any value stored in the other.
+    # Both names exist as actual properties on the style object. If one of them has been
+    # set, that one is the source of truth; if the other name is requested, its value
+    # is computed / translated. They can never both be set at the same time; setting
+    # one deletes any value stored in the other.
 
     def __set_name__(self, owner, name):
         # Hard-coded because it's only called on alignment, not align_items.
@@ -104,8 +104,8 @@ class _alignment_property(validated_property):
         }
 
         # Replace the align_items validated_property with another instance of this
-        # class. This is needed so accessing or setting either one will reference the
-        # other properly.
+        # class. This is needed so accessing or setting either one will properly
+        # reference the other.
         owner.align_items = _alignment_property(START, CENTER, END)
         owner.align_items.name = "align_items"
         owner.align_items.other = "alignment"
