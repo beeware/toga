@@ -110,6 +110,7 @@ class _alignment_property(validated_property):
         owner.align_items.name = "align_items"
         owner.align_items.other = "alignment"
         owner.align_items.derive = {
+            # Invert each condition so that it maps in the opposite direction.
             _AlignmentCondition(result, **condition.properties): condition.main_value
             for condition, result in self.derive.items()
         }
@@ -120,13 +121,12 @@ class _alignment_property(validated_property):
 
         self.warn_if_deprecated()
 
-        if not hasattr(obj, f"_{self.name}"):
-            if hasattr(obj, f"_{self.other}"):
-                # If this property hasn't been set but the other one has, attempt to
-                # translate.
-                for condition, value in self.derive.items():
-                    if condition.match(obj, main_name=self.other):
-                        return value
+        if not hasattr(obj, f"_{self.name}") and hasattr(obj, f"_{self.other}"):
+            # If this property hasn't been set but the other one has, attempt to
+            # translate.
+            for condition, value in self.derive.items():
+                if condition.match(obj, main_name=self.other):
+                    return value
 
         # Otherwise -- if this property is set, or *neither* is set, or no condition is
         # valid -- access this property as usual.
