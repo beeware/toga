@@ -1,5 +1,6 @@
 from travertino.size import at_least
 
+from toga.handlers import WeakrefCallable
 from toga.keys import Key
 from toga_gtk.keys import toga_key
 
@@ -22,12 +23,18 @@ class TextInput(Widget):
             self.focus_controller = Gtk.EventControllerFocus.new()
             self.native.add_controller(self.focus_controller)
 
-            self.focus_controller.connect("enter", self.gtk_focus_in_event)
-            self.focus_controller.connect("leave", self.gtk_focus_out_event)
+            self.focus_controller.connect(
+                "enter", WeakrefCallable(self.gtk_focus_in_event)
+            )
+            self.focus_controller.connect(
+                "leave", WeakrefCallable(self.gtk_focus_out_event)
+            )
 
             self.key_controller = Gtk.EventControllerKey.new()
             self.native.add_controller(self.key_controller)
-            self.key_controller.connect("key-pressed", self.gtk_key_pressed)
+            self.key_controller.connect(
+                "key-pressed", WeakrefCallable(self.gtk_key_pressed)
+            )
 
     def gtk_on_change(self, *_args):
         self.interface._value_changed()
