@@ -319,22 +319,31 @@ class WriteText(DrawingObject):
         y: float = 0.0,
         font: Font | None = None,
         baseline: Baseline = Baseline.ALPHABETIC,
+        line_height: float | None = None,
     ):
         self.text = text
         self.x = x
         self.y = y
         self.font = font
         self.baseline = baseline
+        self.line_height = line_height
 
     def __repr__(self) -> str:
         return (
             f"{self.__class__.__name__}(text={self.text!r}, x={self.x}, y={self.y}, "
-            f"font={self.font!r}, baseline={self.baseline})"
+            f"font={self.font!r}, baseline={self.baseline}, "
+            f"line_height={self.line_height})"
         )
 
     def _draw(self, impl: Any, **kwargs: Any) -> None:
         impl.write_text(
-            str(self.text), self.x, self.y, self.font._impl, self.baseline, **kwargs
+            str(self.text),
+            self.x,
+            self.y,
+            self.font._impl,
+            self.baseline,
+            self.line_height,
+            **kwargs,
         )
 
     @property

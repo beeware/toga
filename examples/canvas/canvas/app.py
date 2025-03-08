@@ -82,6 +82,9 @@ class ExampleCanvasApp(toga.App):
         self.line_width_slider = toga.Slider(
             min=1, max=10, value=1, on_change=self.refresh_canvas
         )
+        self.line_height_slider = toga.Slider(
+            min=1.0, max=10.0, value=1.0, on_change=self.refresh_canvas
+        )
         self.dash_pattern_selection = toga.Selection(
             items=list(self.dash_patterns.keys()), on_change=self.refresh_canvas
         )
@@ -123,6 +126,8 @@ class ExampleCanvasApp(toga.App):
                     children=[
                         toga.Label("Line Width:", style=label_style),
                         self.line_width_slider,
+                        toga.Label("Line Height:", style=label_style),
+                        self.line_height_slider,
                         self.dash_pattern_selection,
                     ],
                 ),
@@ -514,9 +519,16 @@ class ExampleCanvasApp(toga.App):
             weight=self.get_weight(),
             style=self.get_style(),
         )
-        width, height = self.canvas.measure_text(text, font)
+        width, height = self.canvas.measure_text(
+            text, font, self.line_height_slider.value
+        )
         context.write_text(
-            text, self.x_middle - width / 2, self.y_middle, font, Baseline.MIDDLE
+            text,
+            self.x_middle - width / 2,
+            self.y_middle,
+            font,
+            Baseline.MIDDLE,
+            self.line_height_slider.value,
         )
 
     def get_weight(self):
