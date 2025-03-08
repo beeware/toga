@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import asyncio
 import os
 import shutil
@@ -17,10 +19,10 @@ class ThreadedWSGIServer(socketserver.ThreadingMixIn, WSGIServer):
     pass
 
 
-class Positron(toga.App):
+class {{{{ cookiecutter.class_name }}}}(toga.App):
     def web_server(self):
         print("Configuring settings...")
-        os.environ["DJANGO_SETTINGS_MODULE"] = "positron.settings"
+        os.environ["DJANGO_SETTINGS_MODULE"] = "{{{{ cookiecutter.module_name }}}}.settings"
         django.setup(set_prefix=False)
 
         self.paths.data.mkdir(exist_ok=True)
@@ -73,10 +75,10 @@ class Positron(toga.App):
         await self.server_exists
 
         host, port = self._httpd.socket.getsockname()
-        self.web_view.url = f"http://{host}:{port}/admin"
+        self.web_view.url = f"http://{{host}}:{{port}}{initial_path}"
 
         self.main_window.show()
 
 
 def main():
-    return Positron()
+    return {{{{ cookiecutter.class_name }}}}()
