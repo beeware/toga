@@ -95,8 +95,8 @@ Notes
   placement of windows.
 
 * A mobile application can only have a single window (the
-  :attr:`~toga.App.main_window`), and that window cannot be moved, resized, hidden, or
-  made full screen. Toga will raise an exception if you attempt to create a secondary
+  :attr:`~toga.App.main_window`), and that window cannot be moved, resized, or
+  hidden. Toga will raise an exception if you attempt to create a secondary
   window on a mobile platform. If you try to modify the size, position, or visibility of
   the main window, the request will be ignored.
 
