@@ -7,9 +7,9 @@ import pytest
 from travertino.colors import hsl, hsla, rgb, rgba
 
 if sys.version_info < (3, 10):
-    _DATACLASS_KWARGS = {"init": False}
+    _DATACLASS_KWARGS = {"init": False, "repr": False}
 else:
-    _DATACLASS_KWARGS = {"kw_only": True}
+    _DATACLASS_KWARGS = {"kw_only": True, "repr": False}
 
 
 def apply_dataclass(cls):
