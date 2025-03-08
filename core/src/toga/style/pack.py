@@ -121,15 +121,14 @@ class _alignment_property(validated_property):
 
         self.warn_if_deprecated()
 
-        if not hasattr(obj, f"_{self.name}") and hasattr(obj, f"_{self.other}"):
-            # If this property hasn't been set but the other one has, attempt to
-            # translate.
+        if hasattr(obj, f"_{self.other}"):
+            # If the other property is set, attempt to translate.
             for condition, value in self.derive.items():
                 if condition.match(obj, main_name=self.other):
                     return value
 
-        # Otherwise -- if this property is set, or *neither* is set, or no condition is
-        # valid -- access this property as usual.
+        # If the other property isn't set (or no condition is valid), access this
+        # property as usual.
         return super().__get__(obj)
 
     def __set__(self, obj, value):
