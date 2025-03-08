@@ -13,9 +13,13 @@ class BaseStyle:
     """A base class for style declarations.
 
     Exposes a dict-like interface. Designed for subclasses to be decorated
-    with @dataclass(kw_only=True), which most IDEs should be able to interpret and
-    provide autocompletion of argument names. On Python < 3.10, init=False can be used
-    to still get the keyword-only behavior from the included __init__.
+    with @dataclass(kw_only=True, repr=False).
+
+    The kw_only parameter was added in Python 3.10; for 3.9, init=False can be used
+    instead to still get the keyword-only behavior from the included __init__.
+
+    Most IDEs should see the dataclass decorator and provide autocompletion / type hints
+    for parameters to the constructor.
     """
 
     _BASE_PROPERTIES = defaultdict(set)
