@@ -287,11 +287,18 @@ The weight of the font to be used.
 ``font_size``
 -------------
 
-**Values:** ``<integer>``
+**Values:**
+    - ``<integer>`` (in :ref:`CSS points <css-units>`)
+    - Absolute keywords: ``xx-small`` | ``x-small`` | ``small`` | ``medium`` | ``large`` | ``x-large`` | ``xx-large``
+    - Relative keywords: ``larger`` | ``smaller``
 
 **Initial value:** System default
 
-The size of the font to be used, in :ref:`CSS points <css-units>`.
+The size of the font to be used. Can be specified in three ways:
+
+* An integer value in :ref:`CSS points <css-units>`
+* An absolute size keyword, which sets the size relative to the system's base font size
+* A relative size keyword, which adjusts the size relative to the parent element's font size
 
 The relationship between Pack and CSS
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
