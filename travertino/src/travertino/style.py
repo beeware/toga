@@ -92,7 +92,7 @@ class BaseStyle:
     # Interface that style declarations must define
     ######################################################################
 
-    def apply(self, name):
+    def apply(self, *names):
         raise NotImplementedError(
             "Style must define an apply method"
         )  # pragma: no cover
