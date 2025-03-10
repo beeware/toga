@@ -265,12 +265,11 @@ class Canvas(Widget):
 
     def _font_metrics(self, pango_context, line_height):
         pango_font = pango_context.load_font(pango_context.get_font_description())
+        pango_metrics = pango_font.get_metrics()
+        ascent = pango_metrics.get_ascent() / Pango.SCALE
+        descent = pango_metrics.get_descent() / Pango.SCALE
 
         if line_height is None:
-            pango_metrics = pango_font.get_metrics()
-            ascent = pango_metrics.get_ascent() / Pango.SCALE
-            descent = pango_metrics.get_descent() / Pango.SCALE
-
             # get_height was added in Pango 1.44, but Debian Buster comes with 1.42.
             scaled_line_height = ascent + descent
         else:
