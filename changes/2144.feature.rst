@@ -1,0 +1,1 @@
+The line height of multiline text on a Canvas can be configured.
