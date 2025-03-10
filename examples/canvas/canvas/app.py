@@ -83,7 +83,7 @@ class ExampleCanvasApp(toga.App):
             min=1, max=10, value=1, on_change=self.refresh_canvas
         )
         self.line_height_slider = toga.Slider(
-            min=1.0, max=10.0, value=1.0, on_change=self.refresh_canvas
+            min=1.0, max=10.0, value=1.2, on_change=self.refresh_canvas
         )
         self.dash_pattern_selection = toga.Selection(
             items=list(self.dash_patterns.keys()), on_change=self.refresh_canvas

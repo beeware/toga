@@ -1,1 +1,1 @@
-A line_height argument can now be used to change the line height of multiline text.
+The line height of multiline text on a Canvas can be configured.

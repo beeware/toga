@@ -274,7 +274,7 @@ class Canvas(Widget):
             # descender is a negative number.
             return ceil(font.native.ascender - font.native.descender)
         else:
-            return font.native.ascender * line_height
+            return font.native.pointSize * line_height
 
     def measure_text(self, text, font, line_height):
         # We need at least a fill color to render, but that won't change the size.
