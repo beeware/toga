@@ -14,11 +14,11 @@ author_email = "tiberius@beeware.org"
 formal_name = "Positron"
 description = "Electron, but in Python"
 icon = "src/positron/resources/positron"
-sources = ["src/positron", "src/webapp"]
+sources = ["src/positron"]
 requires = [
     "../../travertino",
     "../../core",
-    "django~=4.1",
+    "django~=5.1",
 ]
 
 
