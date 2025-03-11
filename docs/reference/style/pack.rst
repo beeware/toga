@@ -289,7 +289,7 @@ The weight of the font to be used.
 
 **Values:**
     - ``<integer>`` (in :ref:`CSS points <css-units>`)
-    - Absolute keywords: ``xx-small`` | ``x-small`` | ``small`` | ``medium`` | ``large`` | ``x-large`` | ``xx-large``
+    - Absolute keywords: ``xx-small`` | ``x-small`` | ``small`` | ``medium`` | ``large`` | ``x-large`` | ``xx-large`` | ``xxx-large``
     - Relative keywords: ``larger`` | ``smaller``
 
 **Initial value:** System default
