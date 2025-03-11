@@ -18,6 +18,7 @@ from travertino.constants import (
     X_SMALL,
     XX_LARGE,
     XX_SMALL,
+    XXX_LARGE,
 )
 from travertino.fonts import Font
 
@@ -100,6 +101,7 @@ def test_simple_construction(size):
         LARGE,
         X_LARGE,
         XX_LARGE,
+        XXX_LARGE,
         LARGER,
         SMALLER,
     ],
@@ -121,6 +123,7 @@ def test_css_font_size_keywords(size):
         (LARGE, "<Font: large Comic Sans>"),
         (X_LARGE, "<Font: x-large Comic Sans>"),
         (XX_LARGE, "<Font: xx-large Comic Sans>"),
+        (XXX_LARGE, "<Font: xxx-large Comic Sans>"),
         (LARGER, "<Font: larger Comic Sans>"),
         (SMALLER, "<Font: smaller Comic Sans>"),
     ],
