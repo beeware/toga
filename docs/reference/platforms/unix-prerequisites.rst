@@ -12,7 +12,7 @@ some of the common alternatives:
     (venv) $ sudo apt update
     (venv) $ sudo apt install git build-essential pkg-config python3-dev libgirepository-2.0-dev libcairo2-dev gir1.2-gtk-3.0 libcanberra-gtk3-module
 
-**Ubuntu 22.04 / Debian 11,12**
+**Ubuntu 22.04 / Debian 11, 12**
 
 .. code-block:: console
 
