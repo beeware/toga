@@ -46,3 +46,13 @@ def delitem(obj, name):
 
 def delitem_hyphen(obj, name):
     del obj[name.replace("_", "-")]
+
+
+def assert_name_in(name, style):
+    assert name in style
+    assert name.replace("_", "-") in style
+
+
+def assert_name_not_in(name, style):
+    assert name not in style
+    assert name.replace("_", "-") not in style
