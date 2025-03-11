@@ -242,7 +242,7 @@ jobs:
           pre-command: |
             sudo apt update -y
             sudo apt install -y --no-install-recommends \
-              blackbox pkg-config python3-dev libgirepository1.0-dev libcairo2-dev \
+              blackbox pkg-config python3-dev libgirepository-2.0-dev libcairo2-dev \
               gir1.2-webkit2-4.1 gir1.2-xapp-1.0 gir1.2-geoclue-2.0 gir1.2-flatpak-1.0
 
             # Start Virtual X Server
@@ -266,7 +266,7 @@ jobs:
           pre-command: |
             sudo apt update -y
             sudo apt install -y --no-install-recommends \
-              mutter pkg-config python3-dev libgirepository1.0-dev libcairo2-dev \
+              mutter pkg-config python3-dev libgirepository-2.0-dev libcairo2-dev \
               gir1.2-webkit2-4.1 gir1.2-xapp-1.0 gir1.2-geoclue-2.0 gir1.2-flatpak-1.0
 
             # Start Virtual X Server
@@ -290,12 +290,14 @@ jobs:
           runs-on: "ubuntu-24.04"
           env:
             XDG_RUNTIME_DIR: "/tmp"
-          # The package list should be the same as in unix-prerequisites.rst, and the BeeWare
-          # tutorial, plus mutter to provide a window manager.
+          # The package list should be build on the same base as unix-prerequisites.rst,
+          # and the BeeWare tutorial. Additional packages will be added for window
+          # management, and features such as web views and geolocation that aren't part
+          # of the default/tutorial environment.
           pre-command: |
             sudo apt update -y
             sudo apt install -y --no-install-recommends \
-              mutter pkg-config python3-dev libgirepository1.0-dev libcairo2-dev \
+              mutter pkg-config python3-dev libgirepository-2.0-dev libcairo2-dev \
               gir1.2-webkit-6.0 gir1.2-xapp-1.0 gir1.2-geoclue-2.0 gir1.2-flatpak-1.0 \
               gir1.2-gtk-4.0
 
