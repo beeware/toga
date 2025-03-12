@@ -183,14 +183,17 @@ class Location:
         if hasattr(self._impl, "start_visit_tracking"):
             self._impl.start_visit_tracking()
         else:
-            raise NotImplementedError("Visit tracking is not available on this platform.")
+            raise NotImplementedError(
+                "Visit tracking is not available on this platform."
+            )
 
     def stop_visit_tracking(self):
         if hasattr(self._impl, "stop_visit_tracking"):
             self._impl.stop_visit_tracking()
         else:
-            raise NotImplementedError("Visit tracking is not available on this platform.")
-
+            raise NotImplementedError(
+                "Visit tracking is not available on this platform."
+            )
 
     def current_location(self) -> LocationResult:
         """Obtain the user's current location using the location service.
