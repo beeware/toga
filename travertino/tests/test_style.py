@@ -153,7 +153,10 @@ def test_positional_argument(StyleClass):
 @pytest.mark.parametrize("StyleClass", [Style, DeprecatedStyle])
 def test_constructor_invalid_property(StyleClass):
     """Whether dataclass or not, the error should be the same."""
-    with pytest.raises(TypeError, match="unexpected keyword argument 'bogus'"):
+    with pytest.raises(
+        TypeError,
+        match=r"Style\.__init__\(\) got an unexpected keyword argument 'bogus'",
+    ):
         StyleClass(explicit_const=5, bogus=None)
 
 

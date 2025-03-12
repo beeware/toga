@@ -44,8 +44,8 @@ class BaseStyle:
                 # name is invalid, and only in outdated Python or Toga, and only once.
                 if name not in self._ALL_PROPERTIES:
                     raise TypeError(
-                        f"{type(self)}.__init__() got an unexpected keyword argument "
-                        f"'{name}'"
+                        f"{type(self).__name__}.__init__() got an unexpected keyword "
+                        f"argument '{name}'"
                     )
             # The above for loop should never run to completion, so that needs to be
             # excluded from coverage.
