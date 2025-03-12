@@ -151,6 +151,16 @@ def test_positional_argument(StyleClass):
 
 
 @pytest.mark.parametrize("StyleClass", [Style, DeprecatedStyle])
+def test_constructor_invalid_property(StyleClass):
+    """Whether dataclass or not, the error should be the same."""
+    with pytest.raises(
+        TypeError,
+        match=r"Style\.__init__\(\) got an unexpected keyword argument 'bogus'",
+    ):
+        StyleClass(explicit_const=5, bogus=None)
+
+
+@pytest.mark.parametrize("StyleClass", [Style, DeprecatedStyle])
 def test_create_and_copy(StyleClass):
     style = StyleClass(explicit_const=VALUE2, implicit=VALUE3)
 
@@ -701,6 +711,22 @@ def test_str(StyleClass):
         "thing-left: 60; "
         "thing-right: 40; "
         "thing-top: 30"
+    )
+
+
+def test_repr():
+    # Doesn't need to be tested with deprecated API.
+    style = Style(explicit_const=VALUE2, explicit_value=20, thing=(30, 40, 50, 60))
+
+    assert repr(style) == (
+        "Style("
+        "explicit_const='value2', "
+        "explicit_value=20, "
+        "thing_bottom=50, "
+        "thing_left=60, "
+        "thing_right=40, "
+        "thing_top=30"
+        ")"
     )
 
 

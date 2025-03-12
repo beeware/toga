@@ -13,9 +13,13 @@ class BaseStyle:
     """A base class for style declarations.
 
     Exposes a dict-like interface. Designed for subclasses to be decorated
-    with @dataclass(kw_only=True), which most IDEs should be able to interpret and
-    provide autocompletion of argument names. On Python < 3.10, init=False can be used
-    to still get the keyword-only behavior from the included __init__.
+    with @dataclass(kw_only=True, repr=False).
+
+    The kw_only parameter was added in Python 3.10; for 3.9, init=False can be used
+    instead to still get the keyword-only behavior from the included __init__.
+
+    Most IDEs should see the dataclass decorator and provide autocompletion / type hints
+    for parameters to the constructor.
     """
 
     _BASE_PROPERTIES = defaultdict(set)
@@ -26,10 +30,35 @@ class BaseStyle:
         cls._PROPERTIES = cls._BASE_PROPERTIES[cls]
         cls._ALL_PROPERTIES = cls._BASE_ALL_PROPERTIES[cls]
 
+    ########################################################################
+    # 03-2025: Backwards compatibility for Toga < 0.5.0 *and* for Python 3.9
+    ########################################################################
+
     # Fallback in case subclass isn't decorated as dataclass (probably from using
     # previous API) or for pre-3.10, before kw_only argument existed.
     def __init__(self, **properties):
-        self.update(**properties)
+        try:
+            self.update(**properties)
+        except NameError:
+            # It still makes sense for update() to raise a NameError. However, here we
+            # simulate the behavior of the dataclass-generated __init__() for
+            # consistency.
+            for name in properties:
+                # This is redoing work, but it should only ever happen when a property
+                # name is invalid, and only in outdated Python or Toga, and only once.
+                if name not in self._ALL_PROPERTIES:
+                    raise TypeError(
+                        f"{type(self).__name__}.__init__() got an unexpected keyword "
+                        f"argument '{name}'"
+                    )
+            # The above for loop should never run to completion, so that needs to be
+            # excluded from coverage.
+            else:  # pragma: no cover
+                pass
+
+    ######################################################################
+    # End backwards compatibility
+    ######################################################################
 
     @property
     def _applicator(self):
@@ -196,6 +225,12 @@ class BaseStyle:
         return "; ".join(
             f"{name.replace('_', '-')}: {value}" for name, value in sorted(self.items())
         )
+
+    def __repr__(self):
+        properties = ", ".join(
+            f"{name}={repr(value)}" for name, value in sorted(self.items())
+        )
+        return f"{type(self).__name__}({properties})"
 
     ######################################################################
     # Backwards compatibility
