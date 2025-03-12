@@ -22,7 +22,9 @@ class BaseStyle:
     for parameters to the constructor.
     """
 
+    # Only "real" properties
     _BASE_PROPERTIES = defaultdict(set)
+    # Includes aliases and shorthands
     _BASE_ALL_PROPERTIES = defaultdict(set)
 
     def __init_subclass__(cls):
@@ -197,10 +199,7 @@ class BaseStyle:
         yield from (name for name in self._PROPERTIES if name in self)
 
     def __or__(self, other):
-        if isinstance(other, BaseStyle):
-            if self.__class__ is not other.__class__:
-                return NotImplemented
-        elif not isinstance(other, Mapping):
+        if not (type(self) is type(other) or isinstance(other, Mapping)):
             return NotImplemented
 
         result = self.copy()
@@ -208,10 +207,7 @@ class BaseStyle:
         return result
 
     def __ior__(self, other):
-        if isinstance(other, BaseStyle):
-            if self.__class__ is not other.__class__:
-                return NotImplemented
-        elif not isinstance(other, Mapping):
+        if not (type(self) is type(other) or isinstance(other, Mapping)):
             return NotImplemented
 
         self.update(**other)
