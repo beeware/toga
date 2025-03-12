@@ -1,0 +1,1 @@
+On Android, setting a custom background_color on widgets now preserves the native look and feel.

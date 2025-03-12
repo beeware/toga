@@ -1,4 +1,4 @@
-.. |logo| image:: https://beeware.org/project/projects/libraries/toga/toga.png
+.. |logo| image:: https://beeware.org/project/toga/toga.png
     :width: 72px
     :target: https://beeware.org/toga
 
@@ -69,6 +69,22 @@ Documentation
 Documentation for Toga can be found on `Read The Docs`_.
 
 .. _Read The Docs: https://toga.readthedocs.io
+
+Financial support
+-----------------
+
+The BeeWare project would not be possible without the generous support of our financial
+members:
+
+.. image:: https://beeware.org/community/members/anaconda/anaconda-large.png
+    :target: https://anaconda.com/
+    :alt: Anaconda logo
+
+Anaconda Inc. - Advancing AI through open source.
+
+Plus individual contributions from `users like you
+<https://beeware.org/community/members/>`__. If you find Toga, or other BeeWare tools
+useful, please consider becoming a financial member.
 
 Community
 ---------

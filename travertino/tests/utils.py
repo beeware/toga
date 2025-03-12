@@ -4,33 +4,29 @@ from unittest.mock import Mock
 
 import pytest
 
-if sys.version_info < (3, 10):
-    _DATACLASS_KWARGS = {"init": False}
-else:
-    _DATACLASS_KWARGS = {"kw_only": True}
-
 from travertino.colors import hsl, hsla, rgb, rgba
 
+if sys.version_info < (3, 10):
+    _DATACLASS_KWARGS = {"init": False, "repr": False}
+else:
+    _DATACLASS_KWARGS = {"kw_only": True, "repr": False}
 
-def prep_style_class(cls):
-    """Decorator to apply dataclass and mock apply."""
-    return mock_attr("apply")(dataclass(**_DATACLASS_KWARGS)(cls))
+
+def apply_dataclass(cls):
+    """Decorator to apply dataclass with arguments depending on Python version"""
+    return dataclass(**_DATACLASS_KWARGS)(cls)
 
 
-def mock_attr(attr):
-    """Mock an arbitrary attribute of a class."""
+def mock_apply(cls):
+    """Mock a style class's apply() method."""
+    orig_init = cls.__init__
 
-    def returned_decorator(cls):
-        orig_init = cls.__init__
+    def __init__(self, *args, **kwargs):
+        self.apply = Mock()
+        orig_init(self, *args, **kwargs)
 
-        def __init__(self, *args, **kwargs):
-            setattr(self, attr, Mock())
-            orig_init(self, *args, **kwargs)
-
-        cls.__init__ = __init__
-        return cls
-
-    return returned_decorator
+    cls.__init__ = __init__
+    return cls
 
 
 def assert_equal_color(actual, expected, abs=1e-6):

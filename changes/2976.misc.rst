@@ -1,1 +1,1 @@
-MicroPython compatibility
+Initial MicroPython compatibility code was added.
