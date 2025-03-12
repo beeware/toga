@@ -37,11 +37,9 @@ A widget for the display and editing of a single line of text.
 
   .. group-tab:: Web |beta|
 
-    .. .. figure:: /reference/images/textinput-web.png
-    ..    :align: center
-    ..    :width: 300px
-
-    Screenshot not available
+    .. figure:: /reference/images/textinput-web.png
+       :align: center
+       :width: 300px
 
   .. group-tab:: Textual |beta|
 
