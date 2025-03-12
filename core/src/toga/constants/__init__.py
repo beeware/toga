@@ -103,32 +103,3 @@ class WindowState(Enum):
     A good example is a slideshow app in presentation mode - the only visible content
     is the slide.
     """
-
-
-class LocationMode(Enum):
-    """The possible options to start tracking."""
-
-    CONTINUOUS = 0
-    """
-    The "CONTINUOUS" tracking mode provides real-time, ongoing location updates.
-    This mode uses standard (continuous) location services and is generally
-    the most resource-intensive but provides the highest frequency and accuracy
-    of updates.
-    """
-
-    SIGNIFICANT = 1
-    """
-    The "SIGNIFICANT" tracking mode uses the significant-change location service
-    to trigger updates only when the device has moved a significant distance
-    (such as 500 meters) or has switched cell towers. This mode is less
-    resource-intensive than continuous tracking but offers lower granularity.
-    """
-
-    VISITS = 2
-    """
-    The "VISITS" tracking mode provides location updates based on significant
-    'visit' events. The system automatically determines when the user arrives at
-    or departs from a place of interest and delivers location updates only at
-    those transition points.
-    NOTE: Currently only supported on iOS and MacOS
-    """

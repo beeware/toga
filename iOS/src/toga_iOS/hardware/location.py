@@ -3,7 +3,6 @@ from __future__ import annotations
 from rubicon.objc import NSObject, objc_method, objc_property
 
 from toga import LatLng
-from toga.constants import LocationMode
 
 # for classes that need to be monkeypatched for testing
 from toga_iOS import libs as iOS
@@ -31,6 +30,19 @@ def toga_location(location):
         "altitude": altitude,
     }
 
+def toga_visit(visit):
+    """Convert a Cocoa visit into a Toga LatLng and structured data."""
+    latlng = LatLng(
+        visit.coordinate.latitude,
+        visit.coordinate.longitude,
+    )
+
+    return {
+        "location": latlng,
+        "arrivalDate": visit.arrivalDate,
+        "departureDate": visit.departureDate if visit.departureDate else None,
+        "accuracy": visit.horizontalAccuracy,
+    }
 
 class TogaLocationDelegate(NSObject):
     interface = objc_property(object, weak=True)
@@ -59,29 +71,18 @@ class TogaLocationDelegate(NSObject):
 
     @objc_method
     def locationManager_didVisit_(self, manager, visit) -> None:
-        """
-        Handles visit events and sends detailed data to the API.
-        """
-        latitude = visit.coordinate().latitude
-        longitude = visit.coordinate().longitude
-        arrival_time = visit.arrivalDate().timeIntervalSince1970
-        departure_time = (
-            visit.departureDate().timeIntervalSince1970
-            if visit.departureDate()
-            else None
-        )
-        accuracy = visit.horizontalAccuracy  # Accuracy of visit detection
+        """Handles visit events and sends detailed data to the API."""
+        toga_visit_data = toga_visit(visit)
 
-        loc = LatLng(latitude, longitude)
-
-        if self.interface.on_change:
-            self.interface.on_change(
-                location=loc,
+        if self.interface.on_visit:
+            self.interface.on_visit(
+                location=toga_visit_data["location"],
                 altitude=None,
                 type="visit",
-                arrival_time=arrival_time,
-                departure_time=departure_time,
-                accuracy=accuracy,
+                arrival_time=toga_visit_data["arrivalDate"].timeIntervalSince1970(),
+                departure_time=toga_visit_data["departureDate"].timeIntervalSince1970() if toga_visit_data[
+                    "departureDate"] else None,
+                accuracy=toga_visit_data["accuracy"]
             )
 
     @objc_method
@@ -104,7 +105,7 @@ class Location:
             self.delegate.interface = interface
             self.delegate.impl = self
             self._is_tracking = False
-            self.tracking_mode = None
+            self.significant = None
 
         else:  # pragma: no cover
             # The app doesn't have the NSLocationWhenInUseUsageDescription key (e.g.,
@@ -168,7 +169,7 @@ class Location:
         self.native.pausesLocationUpdatesAutomatically = False
 
         self._is_tracking = True
-        self.tracking_mode = LocationMode.CONTINUOUS
+        self.significant = False
         self.native.startUpdatingLocation()
 
     def start_significant_tracking(self) -> None:
@@ -178,7 +179,7 @@ class Location:
         self.native.pausesLocationUpdatesAutomatically = False
 
         self._is_tracking = True
-        self.tracking_mode = LocationMode.SIGNIFICANT
+        self.significant = True
         self.native.startMonitoringSignificantLocationChanges()
 
     def start_visit_tracking(self) -> None:
@@ -188,16 +189,13 @@ class Location:
         self.native.pausesLocationUpdatesAutomatically = False
 
         self._is_tracking = True
-        self.tracking_mode = LocationMode.VISITS
         self.native.startMonitoringVisits()
 
     def stop_tracking(self):
         self._is_tracking = False
-        if self.tracking_mode == LocationMode.CONTINUOUS:
+        if not self.significant:
             self.native.stopUpdatingLocation()
-        elif self.tracking_mode == LocationMode.SIGNIFICANT:
+        elif self.significant:
             self.native.stopMonitoringSignificantLocationChanges()
-        elif self.tracking_mode == LocationMode.VISITS:
-            self.native.stopMonitoringVisits()
         else:
             return

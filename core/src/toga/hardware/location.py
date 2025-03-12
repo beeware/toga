@@ -3,7 +3,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, Protocol
 
 import toga
-from toga.constants import LocationMode
 from toga.handlers import AsyncResult, PermissionResult, wrapped_handler
 from toga.platform import get_platform_factory
 
@@ -141,27 +140,26 @@ class Location:
     def on_change(self, handler: OnLocationChangeHandler) -> None:
         self._on_change = wrapped_handler(self, handler)
 
-    def start_tracking(self, location_mode=LocationMode.CONTINUOUS) -> None:
+    @property
+    def on_visit(self):
+        return self._on_visit
+
+    @on_visit.setter
+    def on_visit(self, handler):
+        self._on_visit = wrapped_handler(self, handler)
+
+    def start_tracking(self, significant=False) -> None:
         """Start monitoring the user's location for changes.
 
         An :any:`on_change` callback will be generated when the user's location
         changes.
 
-        :raises PermissionError: If the app has not requested and received permission to
-            use location services.
         """
         if self.has_permission:
-            if location_mode == LocationMode.CONTINUOUS:
+            if not significant:
                 self._impl.start_tracking()
-            elif location_mode == LocationMode.SIGNIFICANT:
+            elif significant:
                 self._impl.start_significant_tracking()
-            elif location_mode == LocationMode.VISITS:
-                self._impl.start_visits_tracking()
-            else:
-                raise ValueError(
-                    f"Invalid mode: {location_mode}. Must be one of CONTINUOUS, "
-                    f"VISITS, SIGNIFICANT."
-                )
 
         else:
             raise PermissionError(
@@ -180,6 +178,19 @@ class Location:
             raise PermissionError(
                 "App does not have permission to use location services"
             )
+
+    def start_visit_tracking(self):
+        if hasattr(self._impl, "start_visit_tracking"):
+            self._impl.start_visit_tracking()
+        else:
+            raise NotImplementedError("Visit tracking is not available on this platform.")
+
+    def stop_visit_tracking(self):
+        if hasattr(self._impl, "stop_visit_tracking"):
+            self._impl.stop_visit_tracking()
+        else:
+            raise NotImplementedError("Visit tracking is not available on this platform.")
+
 
     def current_location(self) -> LocationResult:
         """Obtain the user's current location using the location service.
