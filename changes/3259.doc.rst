@@ -1,0 +1,1 @@
+Added Web screenshots for the Button, Label, ProgressBar, Switch, TextInput widgets on their respective documentation pages.
