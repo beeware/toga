@@ -195,7 +195,5 @@ class Location:
         self._is_tracking = False
         if not self.significant:
             self.native.stopUpdatingLocation()
-        elif self.significant:
-            self.native.stopMonitoringSignificantLocationChanges()
         else:
-            return
+            self.native.stopMonitoringSignificantLocationChanges()
