@@ -1,0 +1,1 @@
+The logic that checks if two styles are compatible for union operators has been simplified.
