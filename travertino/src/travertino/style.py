@@ -30,6 +30,10 @@ class BaseStyle:
         cls._PROPERTIES = cls._BASE_PROPERTIES[cls]
         cls._ALL_PROPERTIES = cls._BASE_ALL_PROPERTIES[cls]
 
+    ########################################################################
+    # 03-2025: Backwards compatibility for Toga < 0.5.0 *and* for Python 3.9
+    ########################################################################
+
     # Fallback in case subclass isn't decorated as dataclass (probably from using
     # previous API) or for pre-3.10, before kw_only argument existed.
     def __init__(self, **properties):
@@ -51,6 +55,10 @@ class BaseStyle:
             # excluded from coverage.
             else:  # pragma: no cover
                 pass
+
+    ######################################################################
+    # End backwards compatibility
+    ######################################################################
 
     @property
     def _applicator(self):
