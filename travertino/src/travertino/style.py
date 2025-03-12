@@ -22,7 +22,9 @@ class BaseStyle:
     for parameters to the constructor.
     """
 
+    # Only "real" properties
     _BASE_PROPERTIES = defaultdict(set)
+    # Includes aliases and shorthands
     _BASE_ALL_PROPERTIES = defaultdict(set)
 
     def __init_subclass__(cls):
