@@ -108,6 +108,24 @@ SMALLER = "smaller"
 
 RELATIVE_FONT_SIZES = {LARGER, SMALLER}
 
+FONT_SIZE_SCALE_FACTOR = 1.2
+
+FONT_SIZE_SCALE = {
+    XX_SMALL: 0.6,
+    X_SMALL: 0.75,
+    SMALL: 0.89,
+    MEDIUM: 1.0,
+    LARGE: 1.2,
+    X_LARGE: 1.5,
+    XX_LARGE: 2.0,
+    XXX_LARGE: 3.0,
+}
+
+RELATIVE_FONT_SIZE_SCALE = {
+    LARGER: FONT_SIZE_SCALE_FACTOR,  # 20% larger
+    SMALLER: 1 / FONT_SIZE_SCALE_FACTOR,  # 20% smaller
+}
+
 ######################################################################
 # Colors
 ######################################################################

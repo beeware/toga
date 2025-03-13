@@ -8,6 +8,13 @@ from System.Drawing import (
 from System.Drawing.Text import PrivateFontCollection
 from System.IO import FileNotFoundException
 from System.Runtime.InteropServices import ExternalException
+from travertino.constants import (
+    ABSOLUTE_FONT_SIZES,
+    FONT_SIZE_SCALE,
+    RELATIVE_FONT_SIZE_SCALE,
+    RELATIVE_FONT_SIZES,
+    SYSTEM_DEFAULT_FONT_SIZE,
+)
 
 from toga.fonts import (
     _REGISTERED_FONT_CACHE,
@@ -18,7 +25,6 @@ from toga.fonts import (
     SANS_SERIF,
     SERIF,
     SYSTEM,
-    SYSTEM_DEFAULT_FONT_SIZE,
 )
 
 _FONT_CACHE = {}
@@ -93,6 +99,18 @@ class Font:
             # Convert font size to Winforms format
             if self.interface.size == SYSTEM_DEFAULT_FONT_SIZE:
                 font_size = DEFAULT_FONT.Size
+            elif (
+                isinstance(self.interface.size, str)
+                and self.interface.size in ABSOLUTE_FONT_SIZES
+            ):
+                font_size = DEFAULT_FONT.Size
+                font_size *= FONT_SIZE_SCALE.get(self.interface.size, 1.0)
+            elif (
+                isinstance(self.interface.size, str)
+                and self.interface.size in RELATIVE_FONT_SIZES
+            ):
+                font_size = getattr(self.interface, "_parent_size", DEFAULT_FONT.Size)
+                font_size *= RELATIVE_FONT_SIZE_SCALE.get(self.interface.size, 1.0)
             else:
                 font_size = self.interface.size
 
