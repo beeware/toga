@@ -63,6 +63,7 @@ jobs:
         - "gtk"
         - "iOS"
         - "toga"
+        - "positron"
         - "travertino"
         - "textual"
         - "web"
@@ -433,3 +434,54 @@ jobs:
     # - name: Setup tmate session
     #   uses: mxschmitt/action-tmate@v3
     #   if: failure()
+
+  bootstraps:
+    name: "Bootstrap"
+    needs: [ package ]
+    runs-on: "ubuntu-24.04"
+    strategy:
+      fail-fast: false
+      matrix:
+        bootstrap:
+        - "Positron (Django)"
+        - "Positron (Static)"
+        - "Positron (Site-specific)"
+        include:
+        - bootstrap: "Positron (Django)"
+          new-options: '-Q "bootstrap=Toga Positron (Django server)"'
+
+        - bootstrap: "Positron (Static)"
+          new-options: '-Q "bootstrap=Toga Positron (Static server)"'
+
+        - bootstrap: "Positron (Site-specific)"
+          new-options: '-Q "bootstrap=Toga Positron (Site-specific browser)" -Q "site_url=https://github.com/"'
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4.2.2
+      with:
+        fetch-depth: 0
+
+    - name: Set up Python
+      uses: actions/setup-python@v5.4.0
+      with:
+        python-version: "3.12"
+
+    - name: Get Packages
+      uses: actions/download-artifact@v4.1.9
+      with:
+        pattern: ${{ format('{0}-*', needs.package.outputs.artifact-basename) }}
+        merge-multiple: true
+        path: dist
+
+    - name: Test Bootstrap
+      run: |
+        mkdir bootstrap-test
+        cd bootstrap-test
+        python3 -m venv venv
+        source venv/bin/activate
+        pip install -U pip
+        pip install ../dist/toga_positron-*.whl
+        echo
+        echo "===== Create Briefcase project with ${{ matrix.bootstrap }} bootstrap ====="
+        briefcase new --no-input -Q "formal_name=Hello Bootstrap" ${{ matrix.new-options }}
