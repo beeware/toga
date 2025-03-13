@@ -1,1 +1,0 @@
-Travertino's ``BaseStyle.reapply()`` (and thus Toga's ``Pack.reapply()``) has been deprecated; the correct usage is now to call `.apply()` with no arguments. User code is unlikely to ever call this method, but Toga <= 0.4.8 calls it extensively, so users who update Travertino but not Toga will receive DeprecationWarnings.

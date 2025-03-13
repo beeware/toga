@@ -1,1 +1,0 @@
-Pack is now a dataclass. This should allow most IDEs to infer the names and types of properties and suggest them in creating a Pack instance.

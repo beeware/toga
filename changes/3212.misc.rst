@@ -1,1 +1,0 @@
-``__contains__`` checks for directional properties now no longer always erroneously return `True`.

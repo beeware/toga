@@ -1,1 +1,0 @@
-Updated sphinx from 8.2.1 to 8.2.3 in /core.

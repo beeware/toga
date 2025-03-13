@@ -20,6 +20,7 @@ codepoint
 coroutine
 CSS
 Ctrl
+dataclass
 dialogs
 Django
 draggable

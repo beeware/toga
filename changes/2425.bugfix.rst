@@ -1,1 +1,0 @@
-On WinForms, the background color of a widget now correctly honors the alpha channel of the selected color.

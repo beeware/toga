@@ -1,1 +1,0 @@
-A Briefcase bootstrap for generating Positron apps (i.e., apps that are a web view in a native wrapper) was added.

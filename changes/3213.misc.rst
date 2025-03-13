@@ -1,1 +1,0 @@
-Pack's aliases, deprecated names, and hyphenated style names now function correctly with ``name in style``.

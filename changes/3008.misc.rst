@@ -1,1 +1,0 @@
-The Travertino requirement has been updated to >= 0.3.0, < 0.4.0.

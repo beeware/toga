@@ -1,1 +1,0 @@
-On macOS, when a dialog is in focus, `App.current_window` now returns the host window, instead of raising an `AttributeError`.

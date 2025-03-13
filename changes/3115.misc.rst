@@ -1,1 +1,0 @@
-Travertino's new dataclass-based syntax for creating validated properties now directly accepts the arguments to pass along to its internal Choices object.

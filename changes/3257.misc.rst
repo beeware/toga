@@ -1,1 +1,0 @@
-The new signature for ``Pack.apply()`` from #3160 is now reflected in ``BaseStyle.apply()``.

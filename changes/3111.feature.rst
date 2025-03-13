@@ -1,1 +1,0 @@
-The ``align_items`` and ``justify_content`` properties now have the aliases ``horizontal_align_items``, ``vertical_align_items``, ``horizontal_align_content`` and ``vertical_align_content`` that explicitly describe layout behavior in the named direction.

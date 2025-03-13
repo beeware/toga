@@ -1,1 +1,0 @@
-Functionally innocuous but superfluous returns have been removed from dunder methods added in PR #3033.

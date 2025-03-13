@@ -1,1 +1,0 @@
-The binary dependencies for the GTK backend have been updated to reflect changes in requirements of PyGObject.

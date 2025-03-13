@@ -1,1 +1,0 @@
-An unnecessary dependency was removed from the Linux Wayland CI environment.

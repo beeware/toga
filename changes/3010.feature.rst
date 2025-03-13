@@ -1,1 +1,0 @@
-``toga.Row`` and ``toga.Column`` can now be used as shorthands for ``toga.Box(style=Pack(direction=...))``.

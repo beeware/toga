@@ -1,1 +1,0 @@
-On GTK, native colors representations are now cached.
