@@ -14,7 +14,7 @@ from toga.fonts import (
 )
 from toga.style.pack import CENTER, COLUMN, JUSTIFY, LEFT, LTR, RIGHT, RTL
 
-from ..assertions import assert_color
+from ..assertions import assert_background_color, assert_color
 from ..data import COLORS, TEXTS
 
 # An upper bound for widths
@@ -381,9 +381,7 @@ async def test_background_color(widget, probe):
     for color in COLORS:
         widget.style.background_color = color
         await probe.redraw("Widget background color should be %s" % color)
-        if not getattr(probe, "background_supports_alpha", True):
-            color.a = 1
-        assert_color(probe.background_color, color)
+        assert_background_color(probe.background_color, color)
 
 
 async def test_background_color_reset(widget, probe):
@@ -393,25 +391,28 @@ async def test_background_color_reset(widget, probe):
 
     # Set the background color to something different
     widget.style.background_color = RED
-    await probe.redraw("Widget background background color should be RED")
-    assert_color(probe.background_color, named_color(RED))
+    await probe.redraw("Widget background color should be RED")
+    assert_background_color(probe.background_color, named_color(RED))
 
     # Reset the background color, and check that it has been restored to the original
     del widget.style.background_color
-    await probe.redraw(
-        message="Widget background background color should be restored to original"
-    )
-    assert_color(probe.background_color, original)
+    await probe.redraw(message="Widget background color should be restored to original")
+    assert_background_color(probe.background_color, original)
 
 
 async def test_background_color_transparent(widget, probe):
     "Background transparency is supported"
     original = probe.background_color
-    supports_alpha = getattr(probe, "background_supports_alpha", True)
 
+    # Change the background color to transparent
     widget.style.background_color = TRANSPARENT
-    await probe.redraw("Widget background background color should be TRANSPARENT")
-    assert_color(probe.background_color, TRANSPARENT if supports_alpha else original)
+    await probe.redraw("Widget background color should be TRANSPARENT")
+    assert_background_color(probe.background_color, TRANSPARENT)
+
+    # Restore original background color
+    del widget.style.background_color
+    await probe.redraw("Widget background color should be restored to original")
+    assert_background_color(probe.background_color, original)
 
 
 async def test_text_align(widget, probe, verify_vertical_text_align):

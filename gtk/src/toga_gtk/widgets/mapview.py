@@ -4,7 +4,7 @@ from travertino.size import at_least
 
 from toga.types import LatLng
 
-from ..libs import Gtk, WebKit2
+from ..libs import GTK_VERSION, Gtk, WebKit2
 from .base import Widget
 
 MAPVIEW_HTML_CONTENT = """<!DOCTYPE html>
@@ -68,6 +68,9 @@ class MapView(Widget):
     SUPPORTS_ON_SELECT = False
 
     def create(self):
+        if GTK_VERSION >= (4, 0, 0):  # pragma: no-cover-if-gtk3
+            raise RuntimeError("MapView isn't supported on GTK4 (yet!)")
+
         if WebKit2 is None:  # pragma: no cover
             raise RuntimeError(
                 "Unable to import WebKit2. Ensure that the system package providing "

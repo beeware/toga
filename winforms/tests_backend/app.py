@@ -100,6 +100,9 @@ class AppProbe(BaseProbe, DialogsMixin):
         # input through touch or pen instead of the mouse"). hCursor is more reliable.
         return info.hCursor is not None
 
+    def unhide(self):
+        pytest.xfail("This platform doesn't have an app level unhide.")
+
     def assert_app_icon(self, icon):
         for window in self.app.windows:
             # We have no real way to check we've got the right icon; use pixel peeping
@@ -137,6 +140,9 @@ class AppProbe(BaseProbe, DialogsMixin):
 
     def _activate_menu_item(self, path):
         self._menu_item(path).OnClick(EventArgs.Empty)
+
+    def activate_menu_hide(self):
+        pytest.xfail("This platform doesn't present a app level hide option in menu.")
 
     def activate_menu_exit(self):
         self._activate_menu_item(["File", "Exit"])

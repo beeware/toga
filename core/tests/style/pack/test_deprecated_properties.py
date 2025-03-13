@@ -16,6 +16,8 @@ from toga.style.pack import (
 )
 
 from . import (
+    assert_name_in,
+    assert_name_not_in,
     delitem,
     delitem_hyphen,
     getitem,
@@ -49,20 +51,26 @@ def test_padding_margin(old_name, new_name, value, default, style_with, get_fn, 
     # Set the old name, then check the new name
     with pytest.warns(DeprecationWarning):
         style = style_with(**{old_name: value})
+    assert_name_in(new_name, style)
     assert get_fn(style, new_name) == value
 
     # Delete the old name, check new name
     with pytest.warns(DeprecationWarning):
         del_fn(style, old_name)
+    assert_name_not_in(new_name, style)
     assert get_fn(style, new_name) == default
 
     # Set the new name, then check the old name
     style = style_with(**{new_name: value})
     with pytest.warns(DeprecationWarning):
+        assert_name_in(old_name, style)
+    with pytest.warns(DeprecationWarning):
         assert get_fn(style, old_name) == value
 
     # Delete the new name, check old name
     del_fn(style, new_name)
+    with pytest.warns(DeprecationWarning):
+        assert_name_not_in(old_name, style)
     with pytest.warns(DeprecationWarning):
         assert get_fn(style, old_name) == default
 

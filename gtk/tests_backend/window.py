@@ -1,7 +1,9 @@
 import asyncio
 
+import pytest
+
 from toga.constants import WindowState
-from toga_gtk.libs import IS_WAYLAND, Gdk, Gtk
+from toga_gtk.libs import GTK_VERSION, IS_WAYLAND, Gdk, Gtk
 
 from .dialogs import DialogsMixin
 from .probe import BaseProbe
@@ -11,13 +13,25 @@ class WindowProbe(BaseProbe, DialogsMixin):
     # GTK defers a lot of window behavior to the window manager, which means some
     # features either don't exist, or we can't guarantee they behave the way Toga would
     # like.
-    supports_closable = True
+    if GTK_VERSION < (4, 0, 0):
+        supports_closable = True
+        supports_as_image = True
+        supports_focus = True
+    else:
+        supports_closable = False
+        supports_as_image = False
+        supports_focus = False
     supports_minimizable = False
     supports_move_while_hidden = False
     supports_unminimize = False
-    # Wayland mostly prohibits interaction with the larger windowing environment
-    supports_minimize = not IS_WAYLAND
-    supports_placement = not IS_WAYLAND
+
+    if GTK_VERSION < (4, 0, 0):
+        # Wayland mostly prohibits interaction with the larger windowing environment
+        supports_minimize = not IS_WAYLAND
+        supports_placement = not IS_WAYLAND
+    else:
+        supports_minimize = False
+        supports_placement = False
 
     def __init__(self, app, window):
         super().__init__()
@@ -64,12 +78,20 @@ class WindowProbe(BaseProbe, DialogsMixin):
     def close(self):
         if self.is_closable:
             # Trigger the OS-level window close event.
-            self.native.emit("delete-event", None)
+            if GTK_VERSION < (4, 0, 0):
+                self.native.emit("delete-event", None)
+            else:
+                self.native.emit("close-request")
 
     @property
     def content_size(self):
-        content_allocation = self.impl.container.get_allocation()
-        return (content_allocation.width, content_allocation.height)
+        if GTK_VERSION < (4, 0, 0):
+            content_allocation = self.impl.container.get_allocation()
+            return content_allocation.width, content_allocation.height
+        else:
+            pytest.skip("Content size in GTK4 is not implemented")
+            content = self.impl.container
+            return content.width, content.height
 
     @property
     def is_resizable(self):
@@ -84,17 +106,25 @@ class WindowProbe(BaseProbe, DialogsMixin):
         return self.impl._window_state_flags & Gdk.WindowState.ICONIFIED
 
     def minimize(self):
-        self.native.iconify()
+        if GTK_VERSION < (4, 0, 0):
+            self.native.iconify()
+        else:
+            self.native.minimize()
 
     def unminimize(self):
-        self.native.deiconify()
+        if GTK_VERSION < (4, 0, 0):
+            self.native.deiconify()
+        else:
+            self.native.present()
 
     @property
     def instantaneous_state(self):
         return self.impl.get_window_state(in_progress_state=False)
 
     def has_toolbar(self):
-        return self.impl.native_toolbar.get_n_items() > 0
+        if GTK_VERSION < (4, 0, 0):
+            return self.impl.native_toolbar.get_n_items() > 0
+        pytest.skip("Toolbars not implemented on GTK4")
 
     def assert_is_toolbar_separator(self, index, section=False):
         item = self.impl.native_toolbar.get_nth_item(index)

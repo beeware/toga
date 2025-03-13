@@ -4,7 +4,7 @@ from travertino.size import at_least
 
 import toga
 
-from ..libs import GdkPixbuf, GObject, Gtk
+from ..libs import GTK_VERSION, GdkPixbuf, GObject, Gtk
 from .base import Widget
 
 
@@ -45,23 +45,29 @@ class Table(Widget):
         self.store = None
         # Create a tree view, and put it in a scroll view.
         # The scroll view is the native, because it's the outer container.
-        self.native_table = Gtk.TreeView(model=self.store)
-        self.native_table.connect("row-activated", self.gtk_on_row_activated)
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            self.native_table = Gtk.TreeView(model=self.store)
+            self.native_table.connect("row-activated", self.gtk_on_row_activated)
 
-        self.selection = self.native_table.get_selection()
-        if self.interface.multiple_select:
-            self.selection.set_mode(Gtk.SelectionMode.MULTIPLE)
-        else:
-            self.selection.set_mode(Gtk.SelectionMode.SINGLE)
-        self.selection.connect("changed", self.gtk_on_select)
+            self.selection = self.native_table.get_selection()
+            if self.interface.multiple_select:
+                self.selection.set_mode(Gtk.SelectionMode.MULTIPLE)
+            else:
+                self.selection.set_mode(Gtk.SelectionMode.SINGLE)
+            self.selection.connect("changed", self.gtk_on_select)
 
-        self._create_columns()
+            self._create_columns()
+        else:  # pragma: no-cover-if-gtk3
+            pass
 
         self.native = Gtk.ScrolledWindow()
-        self.native.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
-        self.native.add(self.native_table)
-        self.native.set_min_content_width(200)
-        self.native.set_min_content_height(200)
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            self.native.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
+            self.native.add(self.native_table)
+            self.native.set_min_content_width(200)
+            self.native.set_min_content_height(200)
+        else:  # pragma: no-cover-if-gtk3
+            pass
 
     def _create_columns(self):
         if self.interface.headings:
@@ -96,24 +102,27 @@ class Table(Widget):
         self.interface.on_select()
 
     def change_source(self, source):
-        # Temporarily disconnecting the TreeStore improves performance for large
-        # updates by deferring row rendering until the update is complete.
-        self.native_table.set_model(None)
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            # Temporarily disconnecting the TreeStore improves performance for large
+            # updates by deferring row rendering until the update is complete.
+            self.native_table.set_model(None)
 
-        for column in self.native_table.get_columns():
-            self.native_table.remove_column(column)
-        self._create_columns()
+            for column in self.native_table.get_columns():
+                self.native_table.remove_column(column)
+            self._create_columns()
 
-        types = [TogaRow]
-        for accessor in self.interface._accessors:
-            types.extend([GdkPixbuf.Pixbuf, str])
-        self.store = Gtk.ListStore(*types)
+            types = [TogaRow]
+            for accessor in self.interface._accessors:
+                types.extend([GdkPixbuf.Pixbuf, str])
+            self.store = Gtk.ListStore(*types)
 
-        for i, row in enumerate(self.interface.data):
-            self.insert(i, row)
+            for i, row in enumerate(self.interface.data):
+                self.insert(i, row)
 
-        self.native_table.set_model(self.store)
-        self.refresh()
+            self.native_table.set_model(self.store)
+            self.refresh()
+        else:  # pragma: no-cover-if-gtk3
+            pass
 
     def insert(self, index, item):
         row = TogaRow(item)

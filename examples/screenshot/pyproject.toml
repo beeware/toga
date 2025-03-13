@@ -15,6 +15,7 @@ formal_name = "Screenshot Generator"
 description = "A testing app"
 sources = ["screenshot"]
 requires = [
+    "../../travertino",
     "../../core",
     "pillow",
 ]

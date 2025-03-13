@@ -1,1 +1,0 @@
-App.app is now set to an initial value of None, before an app instance is created. This avoids a potential Attribute Error in testing teardown.

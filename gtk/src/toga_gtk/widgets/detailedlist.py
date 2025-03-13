@@ -2,7 +2,7 @@ import html
 
 from travertino.size import at_least
 
-from toga_gtk.libs import Gdk, Gio, Gtk, Pango
+from toga_gtk.libs import GTK_VERSION, Gdk, Gio, Gtk, Pango
 
 from .base import Widget
 
@@ -18,8 +18,12 @@ class DetailedListRow(Gtk.ListBoxRow):
         # The row is a built as a stack, so that the action buttons can be pushed onto
         # the stack as required.
         self.stack = Gtk.Stack()
-        self.stack.set_homogeneous(True)
-        self.add(self.stack)
+
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            self.stack.set_homogeneous(True)
+            self.add(self.stack)
+        else:  # pragma: no-cover-if-gtk3
+            pass
 
         self.content = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
 
@@ -28,20 +32,23 @@ class DetailedListRow(Gtk.ListBoxRow):
 
         self.text = Gtk.Label(xalign=0)
 
-        # The three line below are necessary for right to left text.
-        self.text.set_hexpand(True)
-        self.text.set_ellipsize(Pango.EllipsizeMode.END)
-        self.text.set_margin_end(12)
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            # The three line below are necessary for right to left text.
+            self.text.set_hexpand(True)
+            self.text.set_ellipsize(Pango.EllipsizeMode.END)
+            self.text.set_margin_end(12)
 
-        self.content.pack_end(self.text, True, True, 5)
+            self.content.pack_end(self.text, True, True, 5)
 
-        # Update the content for the row.
-        self.update(dl, row)
+            # Update the content for the row.
+            self.update(dl, row)
 
-        self.stack.add_named(self.content, "content")
+            self.stack.add_named(self.content, "content")
 
-        # Make sure the widgets have been made visible.
-        self.show_all()
+            # Make sure the widgets have been made visible.
+            self.show_all()
+        else:  # pragma: no-cover-if-gtk3
+            pass
 
     def update(self, dl, row):
         """Update the contents of the rendered row, using data from `row`,
@@ -108,99 +115,125 @@ class DetailedList(Widget):
 
         # Main functional widget is a ListBox.
         self.native_detailedlist = Gtk.ListBox()
-        self.native_detailedlist.set_selection_mode(Gtk.SelectionMode.SINGLE)
-        self.native_detailedlist.connect("row-selected", self.gtk_on_row_selected)
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            self.native_detailedlist.set_selection_mode(Gtk.SelectionMode.SINGLE)
+            self.native_detailedlist.connect("row-selected", self.gtk_on_row_selected)
+        else:  # pragma: no-cover-if-gtk3
+            pass
 
         self.store = Gio.ListStore()
-        # We need to provide a function that transforms whatever is in the store into a
-        # `Gtk.ListBoxRow`, but the items in the store already are `Gtk.ListBoxRow`, so
-        # this is the identity function.
-        self.native_detailedlist.bind_model(self.store, lambda a: a)
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            # We need to provide a function that transforms whatever is in the
+            # store into a `Gtk.ListBoxRow`, but the items in the store already
+            # are `Gtk.ListBoxRow`, so this is the identity function.
+            self.native_detailedlist.bind_model(self.store, lambda a: a)
+        else:  # pragma: no-cover-if-gtk3
+            pass
 
         # Put the ListBox into a vertically scrolling window.
         scrolled_window = Gtk.ScrolledWindow()
-        scrolled_window.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
-        scrolled_window.set_min_content_width(self.interface._MIN_WIDTH)
-        scrolled_window.set_min_content_height(self.interface._MIN_HEIGHT)
-        scrolled_window.add(self.native_detailedlist)
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            scrolled_window.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
+            scrolled_window.set_min_content_width(self.interface._MIN_WIDTH)
+            scrolled_window.set_min_content_height(self.interface._MIN_HEIGHT)
+            scrolled_window.add(self.native_detailedlist)
+        else:  # pragma: no-cover-if-gtk3
+            pass
 
         self.native_vadj = scrolled_window.get_vadjustment()
-        self.native_vadj.connect("value-changed", self.gtk_on_value_changed)
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            self.native_vadj.connect("value-changed", self.gtk_on_value_changed)
+        else:  # pragma: no-cover-if-gtk3
+            pass
 
         # Define a revealer widget that can be used to show/hide with a crossfade.
         self.native_revealer = Gtk.Revealer()
-        self.native_revealer.set_transition_type(Gtk.RevealerTransitionType.CROSSFADE)
-        self.native_revealer.set_valign(Gtk.Align.END)
-        self.native_revealer.set_halign(Gtk.Align.CENTER)
-        self.native_revealer.set_margin_bottom(12)
-        self.native_revealer.set_reveal_child(False)
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            self.native_revealer.set_transition_type(
+                Gtk.RevealerTransitionType.CROSSFADE
+            )
+            self.native_revealer.set_valign(Gtk.Align.END)
+            self.native_revealer.set_halign(Gtk.Align.CENTER)
+            self.native_revealer.set_margin_bottom(12)
+            self.native_revealer.set_reveal_child(False)
 
-        # Define a refresh button.
-        self.native_refresh_button = Gtk.Button.new_from_icon_name(
-            "view-refresh-symbolic", Gtk.IconSize.BUTTON
-        )
-        self.native_refresh_button.set_can_focus(False)
-        self.native_refresh_button.connect("clicked", self.gtk_on_refresh_clicked)
+            # Define a refresh button.
+            self.native_refresh_button = Gtk.Button.new_from_icon_name(
+                "view-refresh-symbolic", Gtk.IconSize.BUTTON
+            )
+            self.native_refresh_button.set_can_focus(False)
+            self.native_refresh_button.connect("clicked", self.gtk_on_refresh_clicked)
 
-        style_context = self.native_refresh_button.get_style_context()
-        style_context.add_class("osd")
-        style_context.add_class("toga-detailed-list-floating-buttons")
-        style_context.remove_class("button")
+            style_context = self.native_refresh_button.get_style_context()
+            style_context.add_class("osd")
+            style_context.add_class("toga-detailed-list-floating-buttons")
+            style_context.remove_class("button")
 
-        # Add the refresh button to the revealer
-        self.native_revealer.add(self.native_refresh_button)
+            # Add the refresh button to the revealer
+            self.native_revealer.add(self.native_refresh_button)
+        else:  # pragma: no-cover-if-gtk3
+            pass
 
         # The actual native widget is an overlay, made up of the scrolled window, with
         # the revealer over the top.
         self.native = Gtk.Overlay()
-        self.native.add_overlay(scrolled_window)
-        self.native.add_overlay(self.native_revealer)
 
-        # Set up a gesture to capture right clicks.
-        self.gesture = Gtk.GestureMultiPress.new(self.native_detailedlist)
-        self.gesture.set_button(3)
-        self.gesture.set_propagation_phase(Gtk.PropagationPhase.BUBBLE)
-        self.gesture.connect("pressed", self.gtk_on_right_click)
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            self.native.add_overlay(scrolled_window)
+            self.native.add_overlay(self.native_revealer)
+            # Set up a gesture to capture right clicks.
+            self.gesture = Gtk.GestureMultiPress.new(self.native_detailedlist)
+            self.gesture.set_button(3)
+            self.gesture.set_propagation_phase(Gtk.PropagationPhase.BUBBLE)
+            self.gesture.connect("pressed", self.gtk_on_right_click)
 
-        # Set up a box that contains action buttons. This widget can be can be reused
-        # for any row when it is activated.
-        self.native_action_buttons = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
-        action_buttons_hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
+            # Set up a box that contains action buttons. This widget can be reused
+            # for any row when it is activated.
+            self.native_action_buttons = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+            action_buttons_hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
 
-        # TODO: Can we replace "magic words" like delete with an appropriate icon?
-        # self.native_primary_action_button = Gtk.Button.new_from_icon_name(
-        #     "user-trash-symbolic", Gtk.IconSize.BUTTON
-        # )
-        action_buttons_hbox.pack_start(Gtk.Box(), True, True, 0)
+            # TODO: Can we replace "magic words" like delete with an appropriate icon?
+            # self.native_primary_action_button = Gtk.Button.new_from_icon_name(
+            #     "user-trash-symbolic", Gtk.IconSize.BUTTON
+            # )
+            action_buttons_hbox.pack_start(Gtk.Box(), True, True, 0)
+        else:  # pragma: no-cover-if-gtk3
+            pass
 
         self.native_primary_action_button = Gtk.Button.new_with_label(
             self.interface._primary_action
         )
-        self.native_primary_action_button.connect(
-            "clicked", self.gtk_on_primary_clicked
-        )
-        action_buttons_hbox.pack_start(
-            self.native_primary_action_button, False, False, 10
-        )
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            self.native_primary_action_button.connect(
+                "clicked", self.gtk_on_primary_clicked
+            )
+            action_buttons_hbox.pack_start(
+                self.native_primary_action_button, False, False, 10
+            )
 
-        # TODO: Can we replace "magic words" like delete with an appropriate icon?
-        # self.native_secondary_action_button = Gtk.Button.new_from_icon_name(
-        #     "user-trash-symbolic", Gtk.IconSize.BUTTON
-        # )
+            # TODO: Can we replace "magic words" like delete with an appropriate icon?
+            # self.native_secondary_action_button = Gtk.Button.new_from_icon_name(
+            #     "user-trash-symbolic", Gtk.IconSize.BUTTON
+            # )
+        else:  # pragma: no-cover-if-gtk3
+            pass
         self.native_secondary_action_button = Gtk.Button.new_with_label(
             self.interface._secondary_action
         )
-        self.native_secondary_action_button.connect(
-            "clicked", self.gtk_on_secondary_clicked
-        )
-        action_buttons_hbox.pack_start(
-            self.native_secondary_action_button, False, False, 10
-        )
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            self.native_secondary_action_button.connect(
+                "clicked", self.gtk_on_secondary_clicked
+            )
+            action_buttons_hbox.pack_start(
+                self.native_secondary_action_button, False, False, 10
+            )
 
-        action_buttons_hbox.pack_start(Gtk.Box(), True, True, 0)
+            action_buttons_hbox.pack_start(Gtk.Box(), True, True, 0)
 
-        self.native_action_buttons.pack_start(action_buttons_hbox, True, False, 0)
-        self.native_action_buttons.show_all()
+            self.native_action_buttons.pack_start(action_buttons_hbox, True, False, 0)
+            self.native_action_buttons.show_all()
+        else:  # pragma: no-cover-if-gtk3
+            pass
 
     def row_factory(self, item):
         return DetailedListRow(self.interface, item)
@@ -326,5 +359,8 @@ class DetailedList(Widget):
         self.native_revealer.set_reveal_child(show_refresh)
 
     def rehint(self):
-        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
-        self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
+            self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
+        else:  # pragma: no-cover-if-gtk3
+            pass

@@ -86,11 +86,11 @@ class WindowDemoApp(toga.App):
     def do_window_state_maximize(self, widget, **kwargs):
         self.main_window.state = WindowState.MAXIMIZED
 
-    def do_window_state_minimize(self, widget, **kwargs):
+    async def do_window_state_minimize(self, widget, **kwargs):
         self.main_window.state = WindowState.MINIMIZED
         for i in range(5, 0, -1):
             print(f"Back in {i}...")
-            yield 1
+            await asyncio.sleep(1)
         self.main_window.state = WindowState.NORMAL
 
     def do_window_state_full_screen(self, widget, **kwargs):
@@ -110,7 +110,7 @@ class WindowDemoApp(toga.App):
 
     def do_new_windows(self, widget, **kwargs):
         non_resize_window = toga.Window(
-            "Non-resizable Window",
+            title="Non-resizable Window",
             size=(300, 300),
             resizable=False,
             on_close=self.close_handler,
@@ -121,7 +121,7 @@ class WindowDemoApp(toga.App):
         non_resize_window.show()
 
         non_close_window = toga.Window(
-            "Non-closeable Window",
+            title="Non-closeable Window",
             size=(300, 300),
             closable=False,
         )
@@ -131,7 +131,7 @@ class WindowDemoApp(toga.App):
         non_close_window.show()
 
         no_close_handler_window = toga.Window(
-            "No close handler",
+            title="No close handler",
             position=(400, 400),
             size=(300, 300),
         )
@@ -140,7 +140,7 @@ class WindowDemoApp(toga.App):
         )
         no_close_handler_window.show()
 
-        second_main_window = toga.MainWindow()
+        second_main_window = toga.MainWindow(title="Second Main")
         extra_command = toga.Command(
             lambda cmd: print("A little extra"),
             text="Extra",

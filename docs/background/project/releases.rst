@@ -6,6 +6,22 @@ Release History
 
 .. towncrier release notes start
 
+0.4.9 (2025-02-07)
+==================
+
+This release contains no new features. The primary purpose of this release is to add an upper version pin to Toga's Travertino requirement, protecting against the upcoming Toga 0.5.0 release that will include backwards incompatible changes in Travertino.  (`#3167 <https://github.com/beeware/toga/issues/3167>`__)
+
+Bugfixes
+--------
+
+* The testbed app can now be run on *any* supported Python version. (`#2883 <https://github.com/beeware/toga/issues/2883>`__)
+* App.app is now set to an initial value of ``None``, before an app instance is created. This avoids a potential ``AttributeError`` when the test suite finishes. (`#2918 <https://github.com/beeware/toga/issues/2918>`__)
+
+Misc
+----
+
+* `#2476 <https://github.com/beeware/toga/issues/2476>`__, `#2913 <https://github.com/beeware/toga/issues/2913>`__
+
 0.4.8 (2024-10-16)
 ==================
 

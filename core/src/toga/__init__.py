@@ -1,15 +1,7 @@
-# Enable the standard library compatibility shims before doing anything else.
-#
-# __future__ imports must be at the very top of the file, and MicroPython doesn't
-# currently include a __future__ module, so this file can't contain any __future__
-# imports. Other modules imported after `compat` can use __future__ as normal.
-import sys
-
-if sys.implementation.name != "cpython":  # pragma: no cover
-    from . import compat  # noqa: F401
-
+import importlib
 import warnings
-from importlib import import_module
+
+from travertino import _package_version
 
 toga_core_imports = {
     # toga.app imports
@@ -92,21 +84,15 @@ __all__ = list(toga_core_imports.keys())
 
 
 def __getattr__(name):
-    if module_name := toga_core_imports.get(name):
-        module = import_module(module_name)
-        value = getattr(module, name)
+    try:
+        module_name = toga_core_imports[name]
+    except KeyError:
+        raise AttributeError(f"module '{__name__}' has no attribute '{name}'") from None
     else:
-        # MicroPython apparently doesn't attempt a submodule import when __getattr__
-        # raises AttributeError, so we need to do it manually.
-        try:
-            value = import_module(f"{__name__}.{name}")
-        except ImportError:
-            raise AttributeError(
-                f"module '{__name__}' has no attribute '{name}'"
-            ) from None
-
-    globals()[name] = value
-    return value
+        module = importlib.import_module(module_name)
+        value = getattr(module, name)
+        globals()[name] = value
+        return value
 
 
 class NotImplementedWarning(RuntimeWarning):
@@ -119,28 +105,5 @@ class NotImplementedWarning(RuntimeWarning):
         warnings.warn(NotImplementedWarning(f"[{platform}] Not implemented: {feature}"))
 
 
-def _package_version(file, name):
-    try:
-        # Read version from SCM metadata
-        # This will only exist in a development environment
-        from setuptools_scm import get_version
-
-        # Excluded from coverage because a pure test environment (such as the one
-        # used by tox in CI) won't have setuptools_scm
-        return get_version(root="../../..", relative_to=file)  # pragma: no cover
-    except (
-        ModuleNotFoundError,
-        LookupError,
-    ):  # pragma: no-cover-if-missing-setuptools_scm
-        # If setuptools_scm isn't in the environment, the call to import will fail.
-        # If it *is* in the environment, but the code isn't a git checkout (e.g.,
-        # it's been pip installed non-editable) the call to get_version() will fail.
-        # If either of these occurs, read version from the installer metadata.
-        import importlib.metadata
-
-        # The Toga package names as defined in setup.cfg all use dashes.
-        package = "toga-core" if name == "toga" else name.replace("_", "-")
-        return importlib.metadata.version(package)
-
-
-__version__ = _package_version(__file__, __name__)
+# __name__ is "toga" in this file, but the distribution name is "toga-core".
+__version__ = _package_version(__file__, "toga-core")

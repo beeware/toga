@@ -15,6 +15,7 @@ formal_name = "DetailedList Demo"
 description = "A testing app"
 sources = ["detailedlist"]
 requires = [
+    "../../travertino",
     "../../core",
 ]
 

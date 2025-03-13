@@ -83,33 +83,17 @@ author_email = "tiberius@beeware.org"
 formal_name = "Toga Demo"
 description = "A demonstration of the capabilities of the Toga widget toolkit."
 sources = ["toga_demo"]
-requires = ["../core"]
 
 [tool.briefcase.app.toga-demo.macOS]
-requires = [
-    "../cocoa",
-]
 
 [tool.briefcase.app.toga-demo.linux]
-requires = [
-    "../gtk",
-]
 
 [tool.briefcase.app.toga-demo.windows]
-requires = [
-    "../winforms",
-]
 
 # Mobile deployments
 [tool.briefcase.app.toga-demo.iOS]
-requires = [
-    "../iOS",
-]
 
 [tool.briefcase.app.toga-demo.android]
-requires = [
-    "../android",
-]
 
 base_theme = "Theme.MaterialComponents.Light.DarkActionBar"
 

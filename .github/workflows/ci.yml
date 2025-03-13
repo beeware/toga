@@ -34,13 +34,17 @@ jobs:
     name: Pre-commit checks
     uses: beeware/.github/.github/workflows/pre-commit-run.yml@main
     with:
-      pre-commit-source: "./core[dev]"
+      # Although we only want to install the dev dependencies, we have to install the
+      # core, which means we need travertino as well.
+      pre-commit-source: "./travertino ./core[dev]"
 
   towncrier:
     name: Check towncrier
     uses: beeware/.github/.github/workflows/towncrier-run.yml@main
     with:
-      tox-source: "./core[dev]"
+      # Although we only want to install the dev dependencies, we have to install the
+      # core, which means we need travertino as well.
+      tox-source: "./travertino ./core[dev]"
 
   package:
     name: Package Toga
@@ -99,7 +103,7 @@ jobs:
         fetch-depth: 0
 
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v5.3.0
+      uses: actions/setup-python@v5.4.0
       with:
         python-version: ${{ matrix.python-version }}
         allow-prereleases: true
@@ -112,7 +116,7 @@ jobs:
         project-root: ${{ matrix.package }}
 
     - name: Get Packages
-      uses: actions/download-artifact@v4.1.8
+      uses: actions/download-artifact@v4.1.9
       with:
         pattern: ${{ format('{0}-*', needs.package.outputs.artifact-basename) }}
         merge-multiple: true
@@ -120,81 +124,23 @@ jobs:
 
     - name: Test
       run: |
-        # The $(ls ...) shell expansion is done in the Github environment;
-        # the value of TOGA_INSTALL_COMMAND will be a literal string without any shell expansions to perform
-        TOGA_INSTALL_COMMAND="python -m pip install ../$(ls dist/toga_core-*.whl)[dev] ../$(ls dist/toga_dummy-*.whl) ../$(ls dist/travertino-*.whl)"
+        # The $(ls ...) shell expansion is done in the Github environment; the value of
+        # TOGA_INSTALL_COMMAND will be a literal string without any shell expansions to
+        # perform. We don't *explicitly* install the Travertino wheel; we provide the
+        # dist dir as a source of wheels, and rely on pip to resolve the explicit
+        # version match to the Travertino wheel in that folder.
+        export TOGA_INSTALL_COMMAND="python -m pip install --find-links ../dist ../$(ls dist/toga_core-*.whl)[dev] ../$(ls dist/toga_dummy-*.whl)"
         tox -e py-cov${{ matrix.tox-suffix }}
         tox -qe coverage$(tr -dc "0-9" <<< "${{ matrix.python-version }}")${{ matrix.tox-suffix }}
         mv ${{ matrix.package }}/.coverage ${{ matrix.package }}/.coverage.${{ matrix.platform }}.${{ matrix.python-version }}
 
     - name: Store Coverage Data
-      uses: actions/upload-artifact@v4.6.0
+      uses: actions/upload-artifact@v4.6.1
       with:
         name: ${{ matrix.package }}-coverage-data-${{ matrix.platform }}-${{ matrix.python-version }}
         path: "${{ matrix.package }}/.coverage.*"
         if-no-files-found: error
         include-hidden-files: true
-
-  micropython:
-    name: MicroPython compatibility
-    runs-on: ubuntu-latest
-    needs: [ pre-commit, towncrier, package ]
-    steps:
-      - name: Build MicroPython
-        id: micropython
-        run: |
-          # The following script also works on macOS, except that due to a bug,
-          # threading must be enabled, i.e. THREAD must be omitted from the disabled
-          # feature list.
-          cd $RUNNER_TEMP
-          git clone https://github.com/micropython/micropython -b v1.24.0 --depth 1
-
-          # Create a variant with the same configuration as the PyScript build.
-          cd micropython/ports/unix
-          cp -a variants/standard variants/pyscript
-          grep require ../webassembly/variants/pyscript/manifest.py \
-              >> variants/pyscript/manifest.py
-          for feature in BTREE FFI SOCKET SSL TERMIOS THREAD; do
-              echo "MICROPY_PY_$feature = 0" >> variants/pyscript/mpconfigvariant.mk
-          done
-
-          export VARIANT=pyscript
-          make submodules
-          make -j $(nproc)
-          echo "executable=$(pwd)/build-pyscript/micropython" >> $GITHUB_OUTPUT
-
-      - name: Checkout
-        uses: actions/checkout@v4.2.2
-
-      - name: Set up Python
-        uses: actions/setup-python@v5.3.0
-        with:
-          python-version: "3.13"
-
-      - name: Get Core Package
-        uses: actions/download-artifact@v4.1.8
-        with:
-          name: Packages-toga-core
-          path: dist
-
-      - name: Get Travertino Package
-        uses: actions/download-artifact@v4.1.8
-        with:
-          name: Packages-toga-travertino
-          path: dist
-
-      - name: Test
-        run: |
-          pip install dist/toga_core-*.whl dist/travertino-*.whl
-          site_packages=$(python -c '
-          import sys
-          print([path for path in sys.path if "site-packages" in path][0])
-          ')
-
-          cd core
-          export MICROPYPATH="$site_packages:.frozen"
-
-          ${{ steps.micropython.outputs.executable }} micropython_check.py
 
   core-and-travertino-coverage:
     name: "Coverage: ${{ matrix.package }}"
@@ -215,7 +161,7 @@ jobs:
         fetch-depth: 0
 
     - name: Set up Python ${{ env.min_python_version }}
-      uses: actions/setup-python@v5.3.0
+      uses: actions/setup-python@v5.4.0
       with:
         # Use minimum version of python for coverage to avoid phantom branches
         # https://github.com/nedbat/coveragepy/issues/1572#issuecomment-1522546425
@@ -229,7 +175,7 @@ jobs:
         project-root: ${{ matrix.package }}
 
     - name: Retrieve Coverage Data
-      uses: actions/download-artifact@v4.1.8
+      uses: actions/download-artifact@v4.1.9
       with:
         pattern: ${{ matrix.package }}-coverage-data-*
         path: ${{ matrix.package }}
@@ -240,7 +186,7 @@ jobs:
       run: tox -e coverage${{ matrix.tox-suffix }}-html-fail-platform
 
     - name: Upload HTML Coverage Report
-      uses: actions/upload-artifact@v4.6.0
+      uses: actions/upload-artifact@v4.6.1
       if: failure()
       with:
         name: html-coverage-report
@@ -248,7 +194,7 @@ jobs:
 
   testbed:
     name: Testbed
-    needs: core-and-travertino
+    needs: [ package, core-and-travertino ]
     runs-on: ${{ matrix.runs-on }}
     strategy:
       fail-fast: false
@@ -257,8 +203,9 @@ jobs:
         - "macOS-x86_64"
         - "macOS-arm64"
         - "windows"
-        - "linux-x11"
-        - "linux-wayland"
+        - "linux-x11-gtk3"
+        - "linux-wayland-gtk3"
+        - "linux-wayland-gtk4"
         - "android"
         - "iOS"
         - "textual-linux"
@@ -283,7 +230,7 @@ jobs:
         # We use a fixed Ubuntu version rather than `-latest` because at some point,
         # `-latest` will be updated, but it will be a soft changeover, which would cause
         # the system Python version to become inconsistent from run to run.
-        - backend: "linux-x11"
+        - backend: "linux-x11-gtk3"
           platform: "linux"
           runs-on: "ubuntu-24.04"
           # The package list should be the same as in unix-prerequisites.rst, and the BeeWare
@@ -296,7 +243,7 @@ jobs:
           pre-command: |
             sudo apt update -y
             sudo apt install -y --no-install-recommends \
-              blackbox pkg-config python3-dev libgirepository1.0-dev libcairo2-dev \
+              blackbox pkg-config python3-dev libgirepository-2.0-dev libcairo2-dev \
               gir1.2-webkit2-4.1 gir1.2-xapp-1.0 gir1.2-geoclue-2.0 gir1.2-flatpak-1.0
 
             # Start Virtual X Server
@@ -312,7 +259,7 @@ jobs:
           setup-python: false  # Use the system Python packages
           app-user-data-path: "$HOME/.local/share/testbed"
 
-        - backend: "linux-wayland"
+        - backend: "linux-wayland-gtk3"
           platform: "linux"
           runs-on: "ubuntu-24.04"
           # The package list should be the same as in unix-prerequisites.rst, and the BeeWare
@@ -320,7 +267,7 @@ jobs:
           pre-command: |
             sudo apt update -y
             sudo apt install -y --no-install-recommends \
-              mutter pkg-config python3-dev libgirepository1.0-dev libcairo2-dev \
+              mutter pkg-config python3-dev libgirepository-2.0-dev libcairo2-dev \
               gir1.2-webkit2-4.1 gir1.2-xapp-1.0 gir1.2-geoclue-2.0 gir1.2-flatpak-1.0
 
             # Start Virtual X Server
@@ -331,7 +278,7 @@ jobs:
             # Start Window Manager
             echo "Start window manager..."
             # mutter is being run inside a virtual X server because mutter's headless
-            # mode is not compatible with Gtk
+            # mode does not provide a Gdk.Display
             DISPLAY=:99 MUTTER_DEBUG_DUMMY_MODE_SPECS=2048x1536 \
               mutter --nested --wayland --no-x11 --wayland-display toga &
             sleep 1
@@ -339,11 +286,43 @@ jobs:
           setup-python: false  # Use the system Python packages
           app-user-data-path: "$HOME/.local/share/testbed"
 
+        - backend: "linux-wayland-gtk4"
+          platform: "linux"
+          runs-on: "ubuntu-24.04"
+          env:
+            XDG_RUNTIME_DIR: "/tmp"
+          # The package list should be build on the same base as unix-prerequisites.rst,
+          # and the BeeWare tutorial. Additional packages will be added for window
+          # management, and features such as web views and geolocation that aren't part
+          # of the default/tutorial environment.
+          pre-command: |
+            sudo apt update -y
+            sudo apt install -y --no-install-recommends \
+              mutter pkg-config python3-dev libgirepository-2.0-dev libcairo2-dev \
+              gir1.2-webkit-6.0 gir1.2-xapp-1.0 gir1.2-geoclue-2.0 gir1.2-flatpak-1.0 \
+              gir1.2-gtk-4.0
+
+            # Start Virtual X Server
+            echo "Start X server..."
+            Xvfb :99 -screen 0 2048x1536x24 &
+            sleep 1
+
+            # Start Window Manager
+            echo "Start window manager..."
+            # mutter is being run inside a virtual X server because mutter's headless
+            # mode does not provide a Gdk.Display
+            DISPLAY=:99 MUTTER_DEBUG_DUMMY_MODE_SPECS=2048x1536 \
+              mutter --nested --wayland --no-x11 --wayland-display toga &
+            sleep 1
+          briefcase-run-prefix: "WAYLAND_DISPLAY=toga TOGA_GTK=4"
+          setup-python: false  # Use the system Python packages
+          app-user-data-path: "$HOME/.local/share/testbed"
+
         - backend: "textual-linux"
           platform: "linux"
           runs-on: "ubuntu-latest"
           setup-python: false  # Use the system Python packages
-          briefcase-run-args: --config 'requires=["../core","../textual", "../travertino"]' --config 'console_app=true'
+          briefcase-run-args: --config 'requires=["toga-core", "toga-textual"]' --config 'console_app=true'
           app-user-data-path: "$HOME/.local/share/testbed"
           # install the meta-package build-essential since Briefcase explicitly checks for it
           pre-command: sudo apt update -y && sudo apt install -y build-essential
@@ -351,13 +330,13 @@ jobs:
         - backend: "textual-macOS"
           platform: "macOS"
           runs-on: "macos-latest"
-          briefcase-run-args: --config 'requires=["../core","../textual", "../travertino"]' --config 'console_app=true'
+          briefcase-run-args: --config 'requires=["toga-core", "toga-textual"]' --config 'console_app=true'
           app-user-data-path: "$HOME/Library/Application Support/org.beeware.toga.testbed"
 
         - backend: "textual-windows"
           platform: "windows"
           runs-on: "windows-latest"
-          briefcase-run-args: --config 'requires=["../core","../textual", "../travertino"]' --config 'console_app=true'
+          briefcase-run-args: --config 'requires=["toga-core", "toga-textual"]' --config 'console_app=true'
           app-user-data-path: '$HOME\AppData\Local\Tiberius Yak\Toga Testbed\Data'
 
         - backend: "windows"
@@ -400,7 +379,7 @@ jobs:
         fetch-depth: 0
 
     - name: Set up Python
-      uses: actions/setup-python@v5.3.0
+      uses: actions/setup-python@v5.4.0
       if: matrix.setup-python
       with:
         python-version: "3.12"
@@ -414,6 +393,13 @@ jobs:
         python -m pip install -U pip
         python -m pip install git+https://github.com/beeware/briefcase.git
 
+    - name: Get Packages
+      uses: actions/download-artifact@v4.1.9
+      with:
+        pattern: ${{ format('{0}-*', needs.package.outputs.artifact-basename) }}
+        merge-multiple: true
+        path: dist
+
     - name: Test App
       working-directory: testbed
       timeout-minutes: 15
@@ -422,7 +408,7 @@ jobs:
           briefcase run ${{ matrix.platform }} --log --test ${{ matrix.briefcase-run-args }} -- --ci
 
     - name: Upload Logs
-      uses: actions/upload-artifact@v4.6.0
+      uses: actions/upload-artifact@v4.6.1
       if: failure()
       with:
         name: testbed-failure-logs-${{ matrix.backend }}
@@ -435,7 +421,7 @@ jobs:
         cp -r "${{ matrix.app-user-data-path }}" testbed/app_data/testbed-app_data-${{ matrix.backend }}
 
     - name: Upload App Data
-      uses: actions/upload-artifact@v4.6.0
+      uses: actions/upload-artifact@v4.6.1
       if: failure() && matrix.backend != 'android'
       with:
         name: testbed-failure-app-data-${{ matrix.backend }}

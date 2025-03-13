@@ -15,6 +15,7 @@ formal_name = "Tree Demo"
 description = "A testing app"
 sources = ["tree"]
 requires = [
+    "../../travertino",
     "../../core",
 ]
 

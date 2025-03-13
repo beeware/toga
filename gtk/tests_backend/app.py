@@ -6,7 +6,7 @@ import pytest
 
 import toga
 from toga_gtk.keys import gtk_accel, toga_key
-from toga_gtk.libs import IS_WAYLAND, Gdk, Gtk
+from toga_gtk.libs import GTK_VERSION, IS_WAYLAND, Gdk, Gtk
 
 from .dialogs import DialogsMixin
 from .probe import BaseProbe
@@ -16,9 +16,7 @@ class AppProbe(BaseProbe, DialogsMixin):
     supports_key = True
     supports_key_mod3 = True
     # Gtk 3.24.41 ships with Ubuntu 24.04 where present() works on Wayland
-    supports_current_window_assignment = not (
-        IS_WAYLAND and BaseProbe.GTK_VERSION < (3, 24, 41)
-    )
+    supports_current_window_assignment = not (IS_WAYLAND and GTK_VERSION < (3, 24, 41))
 
     def __init__(self, app):
         super().__init__()
@@ -46,7 +44,12 @@ class AppProbe(BaseProbe, DialogsMixin):
     def is_cursor_visible(self):
         pytest.skip("Cursor visibility not implemented on GTK")
 
+    def unhide(self):
+        pytest.xfail("This platform doesn't have an app level unhide.")
+
     def assert_app_icon(self, icon):
+        if GTK_VERSION >= (4, 0, 0):
+            pytest.skip("Checking app icon not implemented in GTK4")
         for window in self.app.windows:
             # We have no real way to check we've got the right icon; use pixel peeping
             # as a guess. Construct a PIL image from the current icon.
@@ -65,6 +68,8 @@ class AppProbe(BaseProbe, DialogsMixin):
                 assert mid_color == (149, 119, 73, 255)
 
     def assert_dialog_in_focus(self, dialog):
+        if GTK_VERSION >= (4, 0, 0):
+            pytest.skip("GTK4 doesn't support dialogs")
         # Gtk.Dialog's methods - is_active(), has_focus() both return False, even
         # when the dialog is in focus. Hence, they cannot be used to determine focus.
         assert dialog._impl.native.is_visible(), "The dialog is not in focus"
@@ -112,16 +117,27 @@ class AppProbe(BaseProbe, DialogsMixin):
         return item, action
 
     def _activate_menu_item(self, path):
+        if GTK_VERSION >= (4, 0, 0):
+            pytest.skip("GTK4 doesn't support system menus")
         _, action = self._menu_item(path)
         action.emit("activate", None)
 
+    def activate_menu_hide(self):
+        pytest.xfail("This platform doesn't present a app level hide option in menu.")
+
     def activate_menu_exit(self):
+        if GTK_VERSION >= (4, 0, 0):
+            pytest.skip("GTK4 doesn't support system menus")
         self._activate_menu_item(["*", "Quit"])
 
     def activate_menu_about(self):
+        if GTK_VERSION >= (4, 0, 0):
+            pytest.skip("GTK4 doesn't support system menus")
         self._activate_menu_item(["Help", "About Toga Testbed"])
 
     async def close_about_dialog(self):
+        if GTK_VERSION >= (4, 0, 0):
+            pytest.skip("GTK4 doesn't support system menus")
         self.app._impl._close_about(self.app._impl.native_about_dialog)
 
     def activate_menu_visit_homepage(self):
@@ -129,6 +145,8 @@ class AppProbe(BaseProbe, DialogsMixin):
         pytest.xfail("GTK doesn't have a visit homepage menu item")
 
     def assert_system_menus(self):
+        if GTK_VERSION >= (4, 0, 0):
+            pytest.skip("GTK4 doesn't support system menus")
         self.assert_menu_item(["*", "Preferences"], enabled=False)
         self.assert_menu_item(["*", "Quit"], enabled=True)
 
@@ -152,10 +170,14 @@ class AppProbe(BaseProbe, DialogsMixin):
         pytest.xfail("GTK doesn't have a window management menu items")
 
     def assert_menu_item(self, path, enabled):
+        if GTK_VERSION >= (4, 0, 0):
+            pytest.skip("GTK4 doesn't support menu items")
         _, action = self._menu_item(path)
         assert action.get_enabled() == enabled
 
     def assert_menu_order(self, path, expected):
+        if GTK_VERSION >= (4, 0, 0):
+            pytest.skip("GTK4 doesn't support menu items")
         item, action = self._menu_item(path)
         menu = item[0].get_item_link(item[1], "submenu")
 
@@ -181,6 +203,8 @@ class AppProbe(BaseProbe, DialogsMixin):
         assert actual == expected
 
     def keystroke(self, combination):
+        if GTK_VERSION >= (4, 0, 0):
+            pytest.skip("GTK4 doesn't support keystroke")
         accel = gtk_accel(combination)
         state = 0
 
@@ -226,9 +250,13 @@ class AppProbe(BaseProbe, DialogsMixin):
         pytest.xfail("GTK doesn't support opening documents by drag")
 
     def has_status_icon(self, status_icon):
+        if GTK_VERSION >= (4, 0, 0):
+            pytest.skip("GTK4 doesn't support status icons")
         return status_icon._impl.native is not None
 
     def status_menu_items(self, status_icon):
+        if GTK_VERSION >= (4, 0, 0):
+            pytest.skip("GTK4 doesn't support status menu items")
         menu = status_icon._impl.native.get_primary_menu()
         if menu:
             return [
@@ -244,9 +272,13 @@ class AppProbe(BaseProbe, DialogsMixin):
             return None
 
     def activate_status_icon_button(self, item_id):
+        if GTK_VERSION >= (4, 0, 0):
+            pytest.skip("GTK4 doesn't support status icons")
         self.app.status_icons[item_id]._impl.native.emit("activate", 0, 0)
 
     def activate_status_menu_item(self, item_id, title):
+        if GTK_VERSION >= (4, 0, 0):
+            pytest.skip("GTK4 doesn't support status menu items")
         menu = self.app.status_icons[item_id]._impl.native.get_primary_menu()
         item = {child.get_label(): child for child in menu.get_children()}[title]
 

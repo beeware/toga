@@ -9,6 +9,6 @@ class SwitchProbe(SimpleProbe):
     @property
     def text(self):
         # Normalize the zero width space to the empty string.
-        if self.native.Text == "\u200B":
+        if self.native.Text == "\u200b":
             return ""
         return self.native.Text
