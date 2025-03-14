@@ -31,11 +31,20 @@ class SimpleProbe(BaseProbe, FontMixin):
 
     def assert_container(self, container):
         container_native = container._impl.container
-        for control in container_native.get_children():
-            if control == self.native:
-                break
-        else:
-            raise ValueError(f"cannot find {self.native} in {container_native}")
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            for control in container_native.get_children():
+                if control == self.native:
+                    break
+            else:
+                raise ValueError(f"cannot find {self.native} in {container_native}")
+        else:  # pragma: no-cover-if-gtk3
+            control = container_native.get_last_child()
+            while control is not None:
+                if control == self.native:
+                    break
+                control = control.get_prev_sibling()
+            else:
+                raise ValueError(f"cannot find {self.native} in {container_native}")
 
     def assert_not_contained(self):
         assert self.widget._impl.container is None
