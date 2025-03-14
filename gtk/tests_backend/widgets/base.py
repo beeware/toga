@@ -166,6 +166,8 @@ class SimpleProbe(BaseProbe, FontMixin):
                 return False
 
     async def type_character(self, char):
+        if GTK_VERSION >= (4, 0, 0):
+            pytest.skip("GDK KeyPress is not implemented in GTK4")
         # Construct a GDK KeyPress event.
         keyval = getattr(
             Gdk,
