@@ -59,6 +59,8 @@ jobs:
       fail-fast: false
       matrix:
         package:
+        # As per PEP 503 normalization, these names should all be (a) lower case, and
+        # (b) use underscores. See https://github.com/pypa/packaging.python.org/pull/1032
         - "toga"
         - "toga_android"
         - "toga_cocoa"
@@ -66,7 +68,7 @@ jobs:
         - "toga_demo"
         - "toga_dummy"
         - "toga_gtk"
-        - "toga_iOS"
+        - "toga_ios"
         - "toga_positron"
         - "toga_textual"
         - "toga_web"
@@ -83,7 +85,7 @@ jobs:
       - name: Extract ${{ matrix.package }}
         run: |
           mkdir dist
-          mv staging_dist/$(echo ${{ matrix.package }} | sed 's/_/?/')-[0-9]* dist
+          mv staging_dist/${{ matrix.package }}-[0-9]* dist
 
       - name: Publish to TestPyPI
         uses: pypa/gh-action-pypi-publish@release/v1
