@@ -1,18 +1,27 @@
 import pytest
 
-from toga.colors import TRANSPARENT, rgba
+from toga.colors import TRANSPARENT, color as parse_color, rgba
 from toga.style.pack import BOTTOM, CENTER, JUSTIFY, LEFT, RIGHT, TOP
-from toga_gtk.libs import Gtk
+from toga_gtk.libs import GTK_VERSION, Gtk
 
 
 def toga_color(color):
     if color:
-        c = rgba(
-            int(color.red * 255),
-            int(color.green * 255),
-            int(color.blue * 255),
-            color.alpha,
-        )
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            c = rgba(
+                int(color.red * 255),
+                int(color.green * 255),
+                int(color.blue * 255),
+                color.alpha,
+            )
+        else:  # pragma: no-cover-if-gtk3
+            color = parse_color(color)
+            c = rgba(
+                int(color.r),
+                int(color.g),
+                int(color.b),
+                color.a,
+            )
 
         # Background color of rgba(0,0,0,0.0) is TRANSPARENT.
         if c.r == 0 and c.g == 0 and c.b == 0 and c.a == 0.0:
