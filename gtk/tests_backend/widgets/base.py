@@ -7,7 +7,7 @@ from toga_gtk.libs import GTK_VERSION, Gdk, Gtk
 
 from ..fonts import FontMixin
 from ..probe import BaseProbe
-from .properties import toga_color
+from .properties import toga_color, toga_font
 
 
 class SimpleProbe(BaseProbe, FontMixin):
@@ -129,8 +129,13 @@ class SimpleProbe(BaseProbe, FontMixin):
 
     @property
     def font(self):
-        sc = self.native.get_style_context()
-        return sc.get_property("font", sc.get_state())
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            sc = self.native.get_style_context()
+            return sc.get_property("font", sc.get_state())
+        else:  # pragma: no-cover-if-gtk3
+            style_provider = self.impl.style_providers.get(("font", id(self.native)))
+            font_value = style_provider.to_string() if style_provider else None
+            return toga_font(font_value) if font_value else None
 
     @property
     def is_hidden(self):
