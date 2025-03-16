@@ -12,6 +12,7 @@ from .statusicons import MenuStatusIcon, SimpleStatusIcon, StatusIconSet
 from .widgets.activityindicator import ActivityIndicator
 from .widgets.box import Box
 from .widgets.button import Button
+from .widgets.dateinput import DateInput
 from .widgets.divider import Divider
 
 # from .widgets.canvas import Canvas
@@ -33,6 +34,7 @@ from .widgets.switch import Switch
 
 # from .widgets.table import Table
 from .widgets.textinput import TextInput
+from .widgets.timeinput import TimeInput
 
 # from .widgets.tree import Tree
 # from .widgets.webview import WebView
@@ -61,6 +63,7 @@ __all__ = [
     "Box",
     "Button",
     # 'Canvas',
+    "DateInput",
     "Divider",
     # 'DetailedList',
     # 'ImageView',
@@ -78,6 +81,7 @@ __all__ = [
     "Switch",
     # 'Table',
     "TextInput",
+    "TimeInput",
     # 'Tree',
     # 'WebView',
     # Windows
