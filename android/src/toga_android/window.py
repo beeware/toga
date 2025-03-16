@@ -27,6 +27,7 @@ class LayoutListener(dynamic_proxy(ViewTreeObserver.OnGlobalLayoutListener)):
 
         If any view's size or position has changed, the new values will be visible here.
         """
+        self.window.interface.on_resize()
         native_parent = self.window.native_content.getParent()
         self.window.resize_content(native_parent.getWidth(), native_parent.getHeight())
 
