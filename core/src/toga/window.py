@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import warnings
 from builtins import id as identifier
-from collections.abc import Coroutine, Iterator, MutableSet
+from collections.abc import Iterator, MutableSet
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Protocol, TypeVar
 
