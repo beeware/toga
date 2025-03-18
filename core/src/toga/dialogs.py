@@ -116,6 +116,7 @@ class StackTraceDialog(Dialog[TDialogResult]):
         content: str,
         retry: Literal[False] = ...,
     ) -> None: ...
+
     @overload
     def __init__(
         self: StackTraceDialog[bool],
@@ -124,6 +125,7 @@ class StackTraceDialog(Dialog[TDialogResult]):
         content: str,
         retry: Literal[True],
     ) -> None: ...
+
     def __init__(
         self, title: str, message: str, content: str, retry: bool = False
     ) -> None:
@@ -197,6 +199,7 @@ class OpenFileDialog(Dialog[TDialogResult]):
         file_types: list[str] | None = None,
         multiple_select: Literal[False] = ...,
     ) -> None: ...
+
     @overload
     def __init__(
         self: OpenFileDialog[list[Path]],
@@ -206,6 +209,7 @@ class OpenFileDialog(Dialog[TDialogResult]):
         *,
         multiple_select: Literal[True],
     ) -> None: ...
+
     def __init__(
         self,
         title: str,
@@ -249,6 +253,7 @@ class SelectFolderDialog(Dialog[TDialogResult]):
         initial_directory: Path | str | None = None,
         multiple_select: Literal[False] = ...,
     ) -> None: ...
+
     @overload
     def __init__(
         self: SelectFolderDialog[list[Path]],
@@ -257,6 +262,7 @@ class SelectFolderDialog(Dialog[TDialogResult]):
         *,
         multiple_select: Literal[True],
     ) -> None: ...
+
     def __init__(
         self,
         title: str,
