@@ -593,8 +593,8 @@ class Window:
         return Image(self._impl.get_image_data()).as_format(format)
 
     async def dialog(
-        self, dialog: dialogs.Dialog[dialogs.TDialogResult]
-    ) -> dialogs.TDialogResult:
+        self, dialog: dialogs.Dialog[dialogs.DialogResultT]
+    ) -> dialogs.DialogResultT:
         """Display a dialog to the user, modal to this window.
 
         :param: The :doc:`dialog <resources/dialogs>` to display to the user.

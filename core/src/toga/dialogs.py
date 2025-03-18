@@ -21,10 +21,10 @@ __all__ = [
     "SelectFolderDialog",
 ]
 
-TDialogResult = TypeVar("TDialogResult")
+DialogResultT = TypeVar("DialogResultT")
 
 
-class Dialog(Generic[TDialogResult]):
+class Dialog(Generic[DialogResultT]):
     """A base class for dialogs.
 
     These classes are not displayed directly. To use them, pass a
@@ -32,7 +32,7 @@ class Dialog(Generic[TDialogResult]):
     window-modal dialog), or :meth:`~toga.App.dialog()` for an app-level dialog.
     """
 
-    def _show(self, window: Window | None) -> asyncio.Future[TDialogResult]:
+    def _show(self, window: Window | None) -> asyncio.Future[DialogResultT]:
         """Display the dialog and return the user's response.
 
         :param window: The window for which the dialog should be modal; or ``None`` for
@@ -107,7 +107,7 @@ class ErrorDialog(Dialog[None]):
         self._impl = self.factory.dialogs.ErrorDialog(title=title, message=message)
 
 
-class StackTraceDialog(Dialog[TDialogResult]):
+class StackTraceDialog(Dialog[DialogResultT]):
     @overload
     def __init__(
         self: StackTraceDialog[None],
@@ -190,7 +190,7 @@ class SaveFileDialog(Dialog[Union[Path, None]]):
         )
 
 
-class OpenFileDialog(Dialog[TDialogResult]):
+class OpenFileDialog(Dialog[DialogResultT]):
     @overload
     def __init__(
         self: OpenFileDialog[Path],
@@ -245,7 +245,7 @@ class OpenFileDialog(Dialog[TDialogResult]):
         )
 
 
-class SelectFolderDialog(Dialog[TDialogResult]):
+class SelectFolderDialog(Dialog[DialogResultT]):
     @overload
     def __init__(
         self: SelectFolderDialog[Path],
