@@ -1,8 +1,6 @@
 from travertino.constants import (
     ABSOLUTE_FONT_SIZES,
     FONT_SIZE_SCALE,
-    RELATIVE_FONT_SIZE_SCALE,
-    RELATIVE_FONT_SIZES,
 )
 
 from toga.fonts import (
@@ -39,15 +37,6 @@ class FontMixin:
         elif expected in ABSOLUTE_FONT_SIZES:
             scale = FONT_SIZE_SCALE.get(expected, 1.0)
             assert 8 * scale < int(self.font.get_size() / Pango.SCALE) < 18 * scale
-        elif expected in RELATIVE_FONT_SIZES:
-            parent_size = getattr(
-                self, "_parent_size", self.font.get_size() / Pango.SCALE
-            )
-            scale = RELATIVE_FONT_SIZE_SCALE.get(expected, 1.0)
-            expected = parent_size * scale
-            assert (
-                abs(expected - int(self.font.get_size() / Pango.SCALE)) <= 5
-            )  # Same as checking 8 to 18
         else:
             assert int(self.font.get_size() / Pango.SCALE) == expected
 

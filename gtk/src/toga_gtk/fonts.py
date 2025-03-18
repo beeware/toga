@@ -3,7 +3,6 @@ from warnings import warn
 
 from travertino.constants import (
     ABSOLUTE_FONT_SIZES,
-    RELATIVE_FONT_SIZES,
 )
 
 from toga.fonts import (
@@ -88,7 +87,6 @@ class Font:
             if (
                 self.interface.size != SYSTEM_DEFAULT_FONT_SIZE
                 and self.interface.size not in ABSOLUTE_FONT_SIZES
-                and self.interface.size not in RELATIVE_FONT_SIZES
             ):
                 font.set_size(self.interface.size * Pango.SCALE)
 

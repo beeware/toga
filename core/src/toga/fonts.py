@@ -14,7 +14,6 @@ from travertino.constants import (
     MONOSPACE,
     NORMAL,
     OBLIQUE,
-    RELATIVE_FONT_SIZES,
     SANS_SERIF,
     SERIF,
     SMALL_CAPS,
@@ -65,9 +64,7 @@ class Font(BaseFont):
             "default size"
             if self.size == SYSTEM_DEFAULT_FONT_SIZE
             else (
-                f"{self.size}"
-                if self.size in ABSOLUTE_FONT_SIZES or self.size in RELATIVE_FONT_SIZES
-                else f"{self.size}pt"
+                f"{self.size}" if self.size in ABSOLUTE_FONT_SIZES else f"{self.size}pt"
             )
         )
         weight = f" {self.weight}" if self.weight != NORMAL else ""

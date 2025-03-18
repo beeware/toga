@@ -1,7 +1,5 @@
 from travertino.constants import (
     FONT_SIZE_SCALE,
-    RELATIVE_FONT_SIZE_SCALE,
-    RELATIVE_FONT_SIZES,
 )
 
 from toga.fonts import (
@@ -55,14 +53,7 @@ class FontMixin:
         if expected == SYSTEM_DEFAULT_FONT_SIZE:
             assert self.font.pointSize == 13
         elif isinstance(expected, str):
-            base_size = 13
-            if expected in RELATIVE_FONT_SIZES:
-                parent_size = getattr(self, "_parent_size", base_size)
-                expected_size = parent_size * RELATIVE_FONT_SIZE_SCALE.get(
-                    expected, 1.0
-                )
-            else:
-                expected_size = base_size * FONT_SIZE_SCALE.get(expected, 1.0)
+            expected_size = 13 * FONT_SIZE_SCALE.get(expected, 1.0)
             assert abs(self.font.pointSize - expected_size) < 0.01
         else:
             assert self.font.pointSize == expected * 96 / 72

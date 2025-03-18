@@ -158,24 +158,6 @@ def app():
             NORMAL,
             "system x-large",
         ),
-        # Custom font, smaller size
-        (
-            "Custom Font",
-            "smaller",
-            NORMAL,
-            NORMAL,
-            NORMAL,
-            "Custom Font smaller",
-        ),
-        # Custom font, larger size
-        (
-            "Custom Font",
-            "larger",
-            NORMAL,
-            NORMAL,
-            NORMAL,
-            "Custom Font larger",
-        ),
     ],
 )
 def test_builtin_font(family, size, weight, style, variant, as_str):

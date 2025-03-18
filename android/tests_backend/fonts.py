@@ -8,8 +8,6 @@ from java import jint
 from java.lang import Integer, Long
 from travertino.constants import (
     FONT_SIZE_SCALE,
-    RELATIVE_FONT_SIZE_SCALE,
-    RELATIVE_FONT_SIZES,
 )
 
 from toga.fonts import (
@@ -81,7 +79,6 @@ class FontMixin:
             assert NORMAL == variant
 
     def assert_font_size(self, expected):
-        base_size = 14
         if expected == SYSTEM_DEFAULT_FONT_SIZE:
             expected = TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_SP,
@@ -89,15 +86,7 @@ class FontMixin:
                 self.native.getResources().getDisplayMetrics(),
             )
         elif isinstance(expected, str):
-            if expected in RELATIVE_FONT_SIZES:
-                parent_size = getattr(self, "_parent_size", base_size)
-                expected = TypedValue.applyDimension(
-                    TypedValue.COMPLEX_UNIT_SP,
-                    parent_size * RELATIVE_FONT_SIZE_SCALE.get(expected, 1.0),
-                    self.native.getResources().getDisplayMetrics(),
-                )
-            else:
-                expected = base_size * FONT_SIZE_SCALE.get(expected, 1.0)
+            expected = self.default_font_size * FONT_SIZE_SCALE.get(expected, 1.0)
         else:
             expected = TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_SP,

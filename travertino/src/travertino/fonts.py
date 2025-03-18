@@ -7,7 +7,6 @@ from .constants import (
     ITALIC,
     NORMAL,
     OBLIQUE,
-    RELATIVE_FONT_SIZES,
     SMALL_CAPS,
     SYSTEM_DEFAULT_FONT_SIZE,
 )
@@ -28,10 +27,7 @@ class Font:
             try:
                 if size.strip().endswith("pt"):
                     self.size = int(size[:-2])
-                elif (
-                    size.strip() in ABSOLUTE_FONT_SIZES
-                    or size.strip() in RELATIVE_FONT_SIZES
-                ):
+                elif size.strip() in ABSOLUTE_FONT_SIZES:
                     self.size = size.strip()
                 else:
                     raise ValueError(f"Invalid font size {size!r}")

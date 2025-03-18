@@ -3,7 +3,6 @@ from importlib import import_module
 import pytest
 from travertino.constants import (
     ABSOLUTE_FONT_SIZES,
-    RELATIVE_FONT_SIZES,
 )
 
 import toga
@@ -61,7 +60,6 @@ async def test_font_options(widget: toga.Label, font_probe):
             20,
             SYSTEM_DEFAULT_FONT_SIZE,
             *ABSOLUTE_FONT_SIZES,
-            *RELATIVE_FONT_SIZES,
         ]:
             for font_weight in FONT_WEIGHTS:
                 for font_style in FONT_STYLES:

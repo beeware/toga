@@ -24,7 +24,6 @@ from travertino.constants import (  # noqa: F401
     NONE,
     NORMAL,
     OBLIQUE,
-    RELATIVE_FONT_SIZES,
     RIGHT,
     ROW,
     RTL,
@@ -111,7 +110,6 @@ class Pack(BaseStyle):
     font_weight: str = validated_property(*FONT_WEIGHTS, initial=NORMAL)
     font_size: int | str = validated_property(
         *ABSOLUTE_FONT_SIZES,
-        *RELATIVE_FONT_SIZES,
         integer=True,
         initial=SYSTEM_DEFAULT_FONT_SIZE,
     )
@@ -937,9 +935,9 @@ class Pack(BaseStyle):
             else:
                 css.append(f"font-family: {self.font_family};")
         if self.font_size != SYSTEM_DEFAULT_FONT_SIZE:
-            if isinstance(self.font_size, str) and (
-                self.font_size in ABSOLUTE_FONT_SIZES
-                or self.font_size in RELATIVE_FONT_SIZES
+            if (
+                isinstance(self.font_size, str)
+                and self.font_size in ABSOLUTE_FONT_SIZES
             ):
                 css.append(f"font-size: {self.font_size};")
             else:
