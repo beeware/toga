@@ -3,15 +3,33 @@ import pytest
 from toga.colors import REBECCAPURPLE
 from toga.fonts import FANTASY
 from toga.style import TogaApplicator
-from toga.style.pack import HIDDEN, RIGHT, VISIBLE
-from toga_dummy.utils import assert_action_performed_with
+from toga.style.pack import (
+    BOLD,
+    CENTER,
+    COLUMN,
+    HIDDEN,
+    ITALIC,
+    NONE,
+    RIGHT,
+    RTL,
+    SMALL_CAPS,
+    VISIBLE,
+)
+from toga_dummy.utils import (
+    EventLog,
+    assert_action_not_performed,
+    assert_action_performed_with,
+)
 
 from ..utils import ExampleLeafWidget, ExampleWidget
 
 
 @pytest.fixture
 def grandchild():
-    return ExampleLeafWidget(id="grandchild_id")
+    widget = ExampleLeafWidget(id="grandchild_id")
+
+    EventLog.reset()
+    return widget
 
 
 @pytest.fixture
@@ -19,6 +37,7 @@ def child(grandchild):
     child = ExampleWidget(id="child_id")
     child.add(grandchild)
 
+    EventLog.reset()
     return child
 
 
@@ -27,6 +46,7 @@ def widget(child):
     widget = ExampleWidget(id="widget_id")
     widget.add(child)
 
+    EventLog.reset()
     return widget
 
 
@@ -153,3 +173,48 @@ def test_widget_alias_to_node(widget):
 
     assert applicator.widget is widget
     assert applicator.widget is applicator.node
+
+
+@pytest.mark.parametrize(
+    "name, value",
+    [
+        ("display", NONE),
+        ("direction", COLUMN),
+        ("align_items", CENTER),
+        ("justify_content", CENTER),
+        ("gap", 5),
+        ("width", 100),
+        ("height", 100),
+        ("flex", 5),
+        ("margin", 5),
+        ("margin_top", 5),
+        ("margin_right", 5),
+        ("margin_bottom", 5),
+        ("margin_left", 5),
+        ("text_direction", RTL),
+        ("font_family", "A Family"),
+        ("font_style", ITALIC),
+        ("font_variant", SMALL_CAPS),
+        ("font_weight", BOLD),
+        ("font_size", 12),
+    ],
+)
+def test_layout_properties(widget, name, value):
+    """Setting a property that could affect layout triggers a refresh."""
+    setattr(widget.style, name, value)
+    assert_action_performed_with(widget, "refresh")
+
+
+@pytest.mark.parametrize(
+    "name, value",
+    [
+        ("text_align", RIGHT),
+        ("color", REBECCAPURPLE),
+        ("background_color", REBECCAPURPLE),
+        ("visibility", HIDDEN),
+    ],
+)
+def test_non_layout_properties(widget, name, value):
+    """Setting a property that can't affect layout shouldn't trigger a refresh."""
+    setattr(widget.style, name, value)
+    assert_action_not_performed(widget, "refresh")
