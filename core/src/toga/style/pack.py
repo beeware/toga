@@ -285,6 +285,9 @@ class Pack(BaseStyle):
                         self._applicator.set_text_align(
                             RIGHT if self.text_direction == RTL else LEFT
                         )
+                    # Text direction affects how align_items (for a column) or
+                    # justify_content (for a row) is rendered.
+                    self._applicator.refresh()
                 elif name == "color":
                     self._applicator.set_color(self.color)
                 elif name == "background_color":
