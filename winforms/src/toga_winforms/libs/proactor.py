@@ -87,7 +87,10 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
         self.task = Action[Task](self.tick)
         Task.Delay(5).ContinueWith(self.task)
 
-    def tick(self, *args, **kwargs):
+    # This function doesn't report as covered because it runs on a
+    # non-Python-created thread (see App.run_app). But it must actually be
+    # covered, otherwise nothing would work.
+    def tick(self, *args, **kwargs):  # pragma: no cover
         """Cause a single iteration of the event loop to run on the main GUI thread."""
         action = Action(self.run_once_recurring)
         self.app.app_dispatcher.Invoke(action)
@@ -99,7 +102,8 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
         assert self._inner_loop is None
         self._inner_loop = (callback, args)
 
-    def winforms_application_exit(self, app, event):
+    # We can't get coverage for app shutdown, so this handler must be no-cover.
+    def winforms_application_exit(self, app, event):  # pragma: no cover
         """Perform cleanup that needs to occur when the app exits.
 
         This largely duplicates the "finally" behavior of the default Proactor
@@ -128,8 +132,10 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
         try:
             # If the app is exiting, stop the asyncio event loop.
             # Otherwise, perform one more tick of the event loop.
+            # We can't get coverage of app shutdown, so that branch
+            # is marked no cover
             if self.app._is_exiting:
-                self.stop()
+                self.stop()  # pragma: no cover
             else:
                 self._run_once()
 
