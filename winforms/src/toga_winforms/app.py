@@ -168,6 +168,8 @@ class App:
             # preserve the Python stacktrace
             self._exception = e
         else:
+            # Ensure the event loop is fully closed.
+            self.loop.close()
             self._exception = None
 
     def main_loop(self):
