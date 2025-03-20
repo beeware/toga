@@ -1,6 +1,9 @@
 from importlib import import_module
 
 import pytest
+from travertino.constants import (
+    ABSOLUTE_FONT_SIZES,
+)
 
 import toga
 from toga.fonts import (
@@ -53,7 +56,11 @@ async def test_use_system_font_fallback(
 async def test_font_options(widget: toga.Label, font_probe):
     """Every combination of weight, style and variant can be used on a font."""
     for font_family in SYSTEM_DEFAULT_FONTS:
-        for font_size in [20, SYSTEM_DEFAULT_FONT_SIZE]:
+        for font_size in [
+            20,
+            SYSTEM_DEFAULT_FONT_SIZE,
+            *ABSOLUTE_FONT_SIZES,
+        ]:
             for font_weight in FONT_WEIGHTS:
                 for font_style in FONT_STYLES:
                     for font_variant in FONT_VARIANTS:
