@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import warnings
 from builtins import id as identifier
-from collections.abc import Coroutine, Iterator, MutableSet
+from collections.abc import Iterator, MutableSet
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Protocol, TypeVar
 
@@ -104,6 +104,7 @@ class OnCloseHandler(Protocol):
         :returns: ``True`` if the window is allowed to close; ``False`` if the window
             is not allowed to close.
         """
+        ...
 
 
 class OnGainFocusHandler(Protocol):
@@ -158,10 +159,10 @@ class OnHideHandler(Protocol):
         ...
 
 
-_DialogResultT = TypeVar("_DialogResultT")
+_DialogResultT = TypeVar("_DialogResultT", contravariant=True)
 
 
-class DialogResultHandler(Protocol):
+class DialogResultHandler(Protocol[_DialogResultT]):
     def __call__(self, window: Window, result: _DialogResultT, **kwargs: Any) -> object:
         """A handler to invoke when a dialog is closed.
 
@@ -591,7 +592,9 @@ class Window:
         """
         return Image(self._impl.get_image_data()).as_format(format)
 
-    async def dialog(self, dialog) -> Coroutine[None, None, Any]:
+    async def dialog(
+        self, dialog: dialogs.Dialog[dialogs.DialogResultT]
+    ) -> dialogs.DialogResultT:
         """Display a dialog to the user, modal to this window.
 
         :param: The :doc:`dialog <resources/dialogs>` to display to the user.
