@@ -1,5 +1,7 @@
 from collections import defaultdict
 from collections.abc import Mapping
+from contextlib import contextmanager
+from functools import cached_property
 from warnings import filterwarnings, warn
 
 from .properties.shorthand import directional_property
@@ -123,15 +125,55 @@ class BaseStyle:
     # Interface that style declarations must define
     ######################################################################
 
-    def apply(self, *names):
+    def _apply(self, names: set):
         raise NotImplementedError(
-            "Style must define an apply method"
+            "Style must define an _apply method"
         )  # pragma: no cover
 
     def layout(self, viewport):
         raise NotImplementedError(
             "Style must define a layout method"
         )  # pragma: no cover
+
+    ######################################################################
+    # Support for batching calls to apply()
+    ######################################################################
+
+    def apply(self, name: str | None = None) -> None:
+        if not self._applicator:
+            return
+
+        if self._batched_mode:
+            self._batched_names.add(name)
+        else:
+            self._apply({name} if name else self._PROPERTIES)
+
+    @cached_property
+    def _batched_names(self):
+        return set()
+
+    @property
+    def _batched_mode(self):
+        return getattr(self, "_batched_mode_stored", False)
+
+    @_batched_mode.setter
+    def _batched_mode(self, value):
+        self._batched_mode_stored = value
+
+        if not value and self._applicator and self._batched_names:
+            self._apply(self._batched_names)
+            self._batched_names.clear()
+
+    @contextmanager
+    def batch_apply(self):
+        original = self._batched_mode
+        self._batched_mode = True
+        try:
+            yield
+        finally:
+            # Don't trigger the batch apply if the style was *already* in batch
+            # mode.
+            self._batched_mode = original
 
     ######################################################################
     # Provide a dict-like interface
@@ -143,22 +185,22 @@ class BaseStyle:
         # depend on other values to determine what to alias to. This update might be
         # setting those prerequisite properties. So we need to defer setting any
         # conditional aliases until last.
-
         deferred_aliases = {}
 
-        for name, value in properties.items():
-            name = name.replace("-", "_")
-            if name not in self._ALL_PROPERTIES:
-                raise NameError(f"Unknown style '{name}'")
+        with self.batch_apply():
+            for name, value in properties.items():
+                name = name.replace("-", "_")
+                if name not in self._ALL_PROPERTIES:
+                    raise NameError(f"Unknown style '{name}'")
 
-            prop = getattr(type(self), name)
-            if isinstance(getattr(prop, "source", None), dict):
-                deferred_aliases[name] = value
-            else:
+                prop = getattr(type(self), name)
+                if isinstance(getattr(prop, "source", None), dict):
+                    deferred_aliases[name] = value
+                else:
+                    self[name] = value
+
+            for name, value in deferred_aliases.items():
                 self[name] = value
-
-        for name, value in deferred_aliases.items():
-            self[name] = value
 
     def __getitem__(self, name):
         name = name.replace("-", "_")

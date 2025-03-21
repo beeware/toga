@@ -41,8 +41,9 @@ class directional_property:
             value = (value,)
 
         if order := self.ASSIGNMENT_SCHEMES.get(len(value)):
-            for name, index in zip(self.property_names, order):
-                obj[name] = value[index]
+            with obj.batch_apply():
+                for name, index in zip(self.property_names, order):
+                    obj[name] = value[index]
         else:
             raise ValueError(
                 f"Invalid value for '{self.name}'; value must be a number, or a 1-4 "
@@ -50,8 +51,9 @@ class directional_property:
             )
 
     def __delete__(self, obj):
-        for name in self.property_names:
-            del obj[name]
+        with obj.batch_apply():
+            for name in self.property_names:
+                del obj[name]
 
     def is_set_on(self, obj):
         return any(name in obj for name in self.property_names)

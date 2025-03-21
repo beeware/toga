@@ -73,10 +73,7 @@ class TogaApplicator:
             child.applicator.set_hidden(hidden or child.style._hidden)
 
     def set_font(self, font: object) -> None:
-        # Changing the font of a widget can make the widget change size,
-        # which in turn means we need to do a re-layout
         self.widget._impl.set_font(font)
-        self.widget.refresh()
 
     def set_color(self, color: object) -> None:
         self.widget._impl.set_color(color)

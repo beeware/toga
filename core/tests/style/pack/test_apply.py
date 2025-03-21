@@ -63,10 +63,18 @@ def test_set_font():
         ),
     )
     root.style.apply()
-    root._impl.set_font.assert_called_with(
+    # Should only be called once, despite multiple font-related properties being set.
+    root._impl.set_font.assert_called_once_with(
         Font("Roboto", 12, style="normal", variant="small-caps", weight="bold")
     )
-    root.refresh.assert_called_with()
+    root.refresh.assert_called_once_with()
+
+
+def test_set_multiple_layout_properties():
+    """Setting multiple layout properties at once should only trigger one refresh."""
+    root = ExampleNode("app", style=Pack(margin=10, width=100, height=100))
+    root.style.apply()
+    root.refresh.assert_called_once_with()
 
 
 def test_set_visibility_hidden():
