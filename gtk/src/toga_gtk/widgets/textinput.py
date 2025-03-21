@@ -18,7 +18,11 @@ class TextInput(Widget):
             self.native.connect("focus-out-event", self.gtk_focus_out_event)
             self.native.connect("key-press-event", self.gtk_key_press_event)
         else:  # pragma: no-cover-if-gtk3
-            self.native.connect("changed", self.gtk_on_change)
+
+            # Ideally we would connect to the `changed` signal, but it is
+            # emitting two events each time text is changed
+            # https://gitlab.gnome.org/GNOME/gtk/-/issues/7077
+            self.native.connect("notify::text", self.gtk_on_change)
 
             self.focus_controller = Gtk.EventControllerFocus.new()
             self.native.add_controller(self.focus_controller)
