@@ -2,7 +2,6 @@ from ..constants import BOTTOM, LEFT, RIGHT, TOP
 
 
 class directional_property:
-    DIRECTIONS = [TOP, RIGHT, BOTTOM, LEFT]
     ASSIGNMENT_SCHEMES = {
         #   T  R  B  L
         1: [0, 0, 0, 0],
@@ -18,7 +17,8 @@ class directional_property:
             be replaced with "_top", etc.
         """
         self.property_names = [
-            name_format.format(f"_{direction}") for direction in self.DIRECTIONS
+            name_format.format(f"_{direction}")
+            for direction in [TOP, RIGHT, BOTTOM, LEFT]
         ]
 
     def __set_name__(self, owner, name):

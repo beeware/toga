@@ -53,17 +53,10 @@ class validated_property:
             )
 
         value = self.validate(value)
+        current = getattr(obj, f"_{self.name}", None)
 
-        if (current := getattr(obj, f"_{self.name}", None)) is None:
-            # If the value has not been explicitly set already, then we always want to
-            # assign to the attribute -- even if the value being assigned is identical
-            # to the initial value.
-            setattr(obj, f"_{self.name}", value)
-            if value != self.initial:
-                obj.apply(self.name)
-
-        elif value != current:
-            setattr(obj, f"_{self.name}", value)
+        setattr(obj, f"_{self.name}", value)
+        if value != current:
             obj.apply(self.name)
 
     def __delete__(self, obj):
