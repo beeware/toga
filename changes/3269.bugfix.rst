@@ -1,0 +1,1 @@
+Enable persisted highlighting of a selected table row in Winforms.
