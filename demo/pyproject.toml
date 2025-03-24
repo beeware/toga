@@ -12,7 +12,10 @@ name = "toga-demo"
 description = "A demonstration of the capabilities of the Toga widget toolkit."
 readme = "README.rst"
 requires-python = ">= 3.9"
-license.text = "New BSD"
+license = "BSD-3-Clause"
+license-files = [
+    "LICENSE"
+]
 authors = [
     {name="Russell Keith-Magee", email="russell@keith-magee.com"},
 ]
@@ -37,7 +40,6 @@ keywords = [
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
-    "License :: OSI Approved :: BSD License",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.9",
@@ -75,7 +77,10 @@ project_name = "Toga Demo"
 bundle = "org.beeware"
 version = "0.0.1"
 url = "https://beeware.org"
-license.file = "LICENSE"
+license = "BSD-3-Clause"
+license-files = [
+    "LICENSE",
+]
 author = "Tiberius Yak"
 author_email = "tiberius@beeware.org"
 

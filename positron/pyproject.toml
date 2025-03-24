@@ -11,7 +11,10 @@ build-backend = "setuptools.build_meta"
 name = "toga-positron"
 description = "A Briefcase plugin for generating Positron apps."
 readme = "README.md"
-license.text = "New BSD"
+license = "BSD-3-Clause"
+license-files = [
+    "LICENSE"
+]
 dynamic = ["version"]
 dependencies = ["briefcase >= 0.3.21"]
 
