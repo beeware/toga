@@ -1,6 +1,6 @@
 [build-system]
 requires = [
-    "setuptools==75.5.0",
+    "setuptools==77.0.3",
     "setuptools_scm==8.1.0",
     "setuptools_dynamic_dependencies==1.0.0",
 ]
@@ -77,10 +77,7 @@ project_name = "Toga Demo"
 bundle = "org.beeware"
 version = "0.0.1"
 url = "https://beeware.org"
-license = "BSD-3-Clause"
-license-files = [
-    "LICENSE",
-]
+license.file = "LICENSE"
 author = "Tiberius Yak"
 author_email = "tiberius@beeware.org"
 
