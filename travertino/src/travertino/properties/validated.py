@@ -53,7 +53,7 @@ class validated_property:
             )
 
         value = self.validate(value)
-        current = style[self.name]  # Fetches original if not set
+        current = style[self.name]  # Fetches initial if not set
 
         setattr(style, f"_{self.name}", value)
         if value != current:
