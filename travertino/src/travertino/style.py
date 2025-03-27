@@ -3,7 +3,6 @@ from __future__ import annotations
 from collections import defaultdict
 from collections.abc import Mapping
 from contextlib import contextmanager
-from functools import cached_property
 from warnings import filterwarnings, warn
 
 from .properties.shorthand import directional_property
@@ -145,30 +144,19 @@ class BaseStyle:
         if not self._applicator:
             return
 
+        if not hasattr(self, "_batched_names"):
+            self._batched_names = set()
+        if not hasattr(self, "_batched_mode"):
+            self._batched_mode = False
+
         if self._batched_mode:
             self._batched_names.add(name)
         else:
             self._apply({name} if name else self._PROPERTIES)
 
-    @cached_property
-    def _batched_names(self):
-        return set()
-
-    @property
-    def _batched_mode(self):
-        return getattr(self, "_batched_mode_stored", False)
-
-    @_batched_mode.setter
-    def _batched_mode(self, value):
-        self._batched_mode_stored = value
-
-        if not value and self._applicator and self._batched_names:
-            self._apply(self._batched_names)
-            self._batched_names.clear()
-
     @contextmanager
     def batch_apply(self):
-        original = self._batched_mode
+        original = getattr(self, "_batched_mode", False)
         self._batched_mode = True
         try:
             yield
@@ -176,6 +164,10 @@ class BaseStyle:
             # Don't trigger the batch apply if the style was *already* in batch
             # mode.
             self._batched_mode = original
+
+            if not original and self._applicator and self._batched_names:
+                self._apply(self._batched_names)
+                self._batched_names.clear()
 
     ######################################################################
     # Provide a dict-like interface
