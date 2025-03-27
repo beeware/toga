@@ -149,7 +149,7 @@ class BaseStyle:
         for name, value in properties.items():
             name = name.replace("-", "_")
             if name not in self._ALL_PROPERTIES:
-                raise NameError(f"Unknown style '{name}'")
+                raise NameError(f"Unknown property '{name}'")
 
             prop = getattr(type(self), name)
             if isinstance(getattr(prop, "source", None), dict):
