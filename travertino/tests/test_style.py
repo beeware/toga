@@ -235,6 +235,15 @@ def test_property(name, initial, StyleClass):
     assert style[name] == initial
     style.apply.assert_called_once_with(name)
 
+    # Clear the applicator mock
+    style.apply.reset_mock()
+
+    # Clear the property again.
+    # The underlying attribute won't exist, so this should be a no-op.
+    del style[name]
+    assert style[name] is initial
+    style.apply.assert_not_called()
+
 
 @pytest.mark.parametrize("StyleClass", [Style, DeprecatedStyle])
 def test_set_delete_initial_no_apply(StyleClass):
