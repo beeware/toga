@@ -52,6 +52,7 @@ class Table(Widget):
         self.native.VirtualMode = True
         self.native.Columns.AddRange(dataColumn)
         self.native.SmallImageList = WinForms.ImageList()
+        self.native.HideSelection = False
 
         self.native.ItemSelectionChanged += WeakrefCallable(
             self.winforms_item_selection_changed

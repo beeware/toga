@@ -19,7 +19,7 @@ some of the common alternatives:
     (venv) $ sudo apt update
     (venv) $ sudo apt install git build-essential pkg-config python3-dev libgirepository1.0-dev libcairo2-dev gir1.2-gtk-3.0 libcanberra-gtk3-module
 
-If you're running on Ubuntu 22.04, Debian 11 or Debian 12, you'll also need add a pin
+If you're running on Ubuntu 22.04, Debian 11 or Debian 12, you'll also need to add a pin
 for ``PyGObject==3.50.0``. Later versions of PyGObject require the
 ``libgirepository-2.0-dev`` library, which isn't available on older Debian-based
 distributions.
