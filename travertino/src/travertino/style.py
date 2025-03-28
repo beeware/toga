@@ -44,6 +44,7 @@ class BaseStyle:
     def __init__(self, **properties):
         try:
             self.update(**properties)
+            self.__post_init__()
         except NameError:
             # It still makes sense for update() to raise a NameError. However, here we
             # simulate the behavior of the dataclass-generated __init__() for
@@ -140,16 +141,15 @@ class BaseStyle:
     # Support for batching calls to apply()
     ######################################################################
 
+    def __post_init__(self):
+        self._batched_mode = False
+        self._batched_names = set()
+
     # After deprecation is removed, this should be the signature:
     # def apply(self, name: str | None = None) -> None:
     def apply(self, *names: list[str]) -> None:
         if not self._applicator:
             return
-
-        if not hasattr(self, "_batched_names"):
-            self._batched_names = set()
-        if not hasattr(self, "_batched_mode"):
-            self._batched_mode = False
 
         ######################################################################
         # 10-2024: Backwards compatibility for Toga 0.5.1
@@ -180,18 +180,20 @@ class BaseStyle:
 
     @contextmanager
     def batch_apply(self):
-        original = getattr(self, "_batched_mode", False)
-        self._batched_mode = True
+        # No-op if no applicator is present, or if already in batched mode.
+        if batch_entered := self._applicator and not self._batched_mode:
+            self._batched_mode = True
+
         try:
             yield
-        finally:
-            # Don't trigger the batch apply if the style was *already* in batch
-            # mode.
-            self._batched_mode = original
 
-            if not original and self._applicator and self._batched_names:
-                self._apply(self._batched_names)
-                self._batched_names.clear()
+        finally:
+            if batch_entered:
+                self._batched_mode = False
+
+                if self._batched_names:
+                    self._apply(self._batched_names)
+                    self._batched_names.clear()
 
     ######################################################################
     # Provide a dict-like interface
