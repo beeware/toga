@@ -155,7 +155,7 @@ class BaseStyle:
             return
 
         ######################################################################
-        # 10-2024: Backwards compatibility for Toga 0.5.1
+        # 03-2025: Backwards compatibility for Toga 0.5.1
         ######################################################################
 
         if len(names) > 1:
