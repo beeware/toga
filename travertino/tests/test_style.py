@@ -1074,3 +1074,16 @@ def test_batched_apply_directional():
 
     del style.thing
     style._apply.assert_called_once_with({"thing_right", "thing_bottom", "thing_left"})
+
+
+def test_apply_deprecated():
+    """Calling with more than one argument is deprecated."""
+    style = Style(explicit_const=VALUE2, implicit=VALUE3)
+    style._applicator = Mock()
+    style._apply.reset_mock()
+
+    with pytest.warns(DeprecationWarning):
+        style.apply("explicit_const", "implicit")
+
+    # Should still call down to _apply, though.
+    style._apply.assert_called_once_with({"explicit_const", "implicit"})

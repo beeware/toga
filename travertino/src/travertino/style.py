@@ -140,7 +140,9 @@ class BaseStyle:
     # Support for batching calls to apply()
     ######################################################################
 
-    def apply(self, name: str | None = None) -> None:
+    # After deprecation is removed, this should be the signature:
+    # def apply(self, name: str | None = None) -> None:
+    def apply(self, *names: list[str]) -> None:
         if not self._applicator:
             return
 
@@ -149,10 +151,31 @@ class BaseStyle:
         if not hasattr(self, "_batched_mode"):
             self._batched_mode = False
 
+        ######################################################################
+        # 10-2024: Backwards compatibility for Toga 0.5.1
+        ######################################################################
+
+        if len(names) > 1:
+            warn(
+                "Calling apply() with multiple arguments is deprecated. Use the "
+                "batch_apply context manager instead.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+
         if self._batched_mode:
-            self._batched_names.add(name)
+            self._batched_names.update(names)
         else:
-            self._apply({name} if name else self._PROPERTIES)
+            self._apply({*names} if names else self._PROPERTIES)
+
+        ######################################################################
+        # End backwards compatibility
+        ######################################################################
+
+        # if self._batched_mode:
+        #     self._batched_names.add(name)
+        # else:
+        #     self._apply({name} if name else self._PROPERTIES)
 
     @contextmanager
     def batch_apply(self):
