@@ -33,10 +33,16 @@ class App:
         self.loop = self.policy.get_event_loop()
 
         # Stimulate the build of the app
-        self.native = Gtk.Application(
-            application_id=self.interface.app_id,
-            flags=Gio.ApplicationFlags.DEFAULT_FLAGS,
-        )
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            self.native = Gtk.Application(
+                application_id=self.interface.app_id,
+                flags=Gio.ApplicationFlags.FLAGS_NONE,
+            )
+        else:  # pragma: no-cover-if-gtk3
+            self.native = Gtk.Application(
+                application_id=self.interface.app_id,
+                flags=Gio.ApplicationFlags.DEFAULT_FLAGS,
+            )
         self.native_about_dialog = None
 
         # Connect the GTK signal that will cause app startup to occur
