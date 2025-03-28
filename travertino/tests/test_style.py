@@ -1082,7 +1082,13 @@ def test_apply_deprecated():
     style._applicator = Mock()
     style._apply.reset_mock()
 
-    with pytest.warns(DeprecationWarning):
+    with pytest.warns(
+        DeprecationWarning,
+        match=(
+            r"Calling Style\.apply\(\) with multiple arguments is deprecated\. Use the "
+            r'"with Style\.batch_apply\(\):" context manager instead\.'
+        ),
+    ):
         style.apply("explicit_const", "implicit")
 
     # Should still call down to _apply, though.

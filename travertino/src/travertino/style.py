@@ -156,9 +156,10 @@ class BaseStyle:
         ######################################################################
 
         if len(names) > 1:
+            cls = type(self).__name__
             warn(
-                "Calling apply() with multiple arguments is deprecated. Use the "
-                "batch_apply context manager instead.",
+                f"Calling {cls}.apply() with multiple arguments is deprecated. Use the "
+                f'"with {cls}.batch_apply():" context manager instead.',
                 DeprecationWarning,
                 stacklevel=2,
             )
