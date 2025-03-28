@@ -58,21 +58,6 @@ warnings.filterwarnings("default", category=DeprecationWarning)
 
 NOT_PROVIDED = object()
 
-FONT_PROPERTY_NAMES = {
-    "font_family",
-    "font_size",
-    "font_style",
-    "font_variant",
-    "font_weight",
-}
-# Properties which don't need to trigger a refresh.
-NON_LAYOUT_PROPERTY_NAMES = {
-    "text_align",
-    "color",
-    "background_color",
-    "visibility",
-}
-
 PACK = "pack"
 
 ######################################################################
@@ -315,7 +300,13 @@ class Pack(BaseStyle):
 
             self._applicator.set_hidden(value == HIDDEN)
 
-        if FONT_PROPERTY_NAMES & names:
+        if names & {
+            "font_family",
+            "font_size",
+            "font_style",
+            "font_variant",
+            "font_weight",
+        }:
             self._applicator.set_font(
                 Font(
                     self.font_family,
@@ -327,7 +318,13 @@ class Pack(BaseStyle):
             )
 
         # Refresh if any properties that could affect layout are being set.
-        if names - NON_LAYOUT_PROPERTY_NAMES:
+        if names - {
+            # All properties that *can't* affect layout
+            "text_align",
+            "color",
+            "background_color",
+            "visibility",
+        }:
             self._applicator.refresh()
 
     def layout(self, viewport: Any) -> None:
