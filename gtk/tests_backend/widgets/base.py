@@ -75,6 +75,8 @@ class SimpleProbe(BaseProbe, FontMixin):
             return self.native.compute_bounds(self.native)[1].get_height()
 
     def assert_layout(self, size, position):
+        if GTK_VERSION >= (4, 0, 0):
+            pytest.skip("Accurate layout is not yet supported in GTK4")
         # Widget is contained and in a window.
         assert self.widget._impl.container is not None
         assert self.native.get_parent() is not None
