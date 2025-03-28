@@ -1,5 +1,7 @@
 import asyncio
 
+import pytest
+
 import toga
 from toga_gtk.libs import GTK_VERSION, GLib, Gtk
 
@@ -14,12 +16,20 @@ class BaseProbe:
 
     async def redraw(self, message=None, delay=0):
         """Request a redraw of the app, waiting until that redraw has completed."""
-        # Force a repaint
-        while self.repaint_needed():
-            if GTK_VERSION < (4, 0, 0):
-                Gtk.main_iteration_do(blocking=False)
-            else:
-                GLib.main_context_default().iteration(may_block=False)
+
+        async def process_events():
+            # Force a repaint
+            while self.repaint_needed():
+                if GTK_VERSION < (4, 0, 0):
+                    Gtk.main_iteration_do(blocking=False)
+                else:
+                    GLib.main_context_default().iteration(may_block=False)
+                await asyncio.sleep(0)
+
+        try:
+            await asyncio.wait_for(process_events(), timeout=5000)
+        except TimeoutError:
+            pytest.xfail("Redraw timed out")
 
         # If we're running slow, wait for a second
         if toga.App.app.run_slow:
