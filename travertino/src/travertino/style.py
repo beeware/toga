@@ -142,6 +142,9 @@ class BaseStyle:
     ######################################################################
 
     def __post_init__(self):
+        # Because batch_apply is a no-op with no applicator, it's fine that these aren't
+        # set during the dataclass-generated __init__ — even when directional/composite
+        # properties (which call batch_apply) are set.
         self._batched_mode = False
         self._batched_names = set()
 
@@ -180,13 +183,17 @@ class BaseStyle:
 
     @contextmanager
     def batch_apply(self):
-        # No-op if no applicator is present, or if already in batched mode.
+        """Aggregate calls to appl() into one single call to _apply().
+
+        No-op if no applicator is present, or if already in batched mode.
+        """
+        # Short-circuit out if no applicator is set. This avoids trying to access the
+        # nonexistent _batched_mode during __init__.
         if batch_entered := self._applicator and not self._batched_mode:
             self._batched_mode = True
 
         try:
             yield
-
         finally:
             if batch_entered:
                 self._batched_mode = False
