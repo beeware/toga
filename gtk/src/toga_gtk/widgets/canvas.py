@@ -144,11 +144,11 @@ class Canvas(Widget):
         radius,
         startangle,
         endangle,
-        anticlockwise,
+        counterclockwise,
         cairo_context,
         **kwargs,
     ):
-        if anticlockwise:
+        if counterclockwise:
             cairo_context.arc_negative(x, y, radius, startangle, endangle)
         else:
             cairo_context.arc(x, y, radius, startangle, endangle)
@@ -162,7 +162,7 @@ class Canvas(Widget):
         rotation,
         startangle,
         endangle,
-        anticlockwise,
+        counterclockwise,
         cairo_context,
         **kwargs,
     ):
@@ -171,10 +171,14 @@ class Canvas(Widget):
         cairo_context.rotate(rotation)
         if radiusx >= radiusy:
             cairo_context.scale(1, radiusy / radiusx)
-            self.arc(0, 0, radiusx, startangle, endangle, anticlockwise, cairo_context)
+            self.arc(
+                0, 0, radiusx, startangle, endangle, counterclockwise, cairo_context
+            )
         else:
             cairo_context.scale(radiusx / radiusy, 1)
-            self.arc(0, 0, radiusy, startangle, endangle, anticlockwise, cairo_context)
+            self.arc(
+                0, 0, radiusy, startangle, endangle, counterclockwise, cairo_context
+            )
         cairo_context.identity_matrix()
         cairo_context.restore()
 

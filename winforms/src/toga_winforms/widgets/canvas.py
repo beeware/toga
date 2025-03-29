@@ -206,7 +206,15 @@ class Canvas(Box):
         )
 
     def arc(
-        self, x, y, radius, startangle, endangle, anticlockwise, draw_context, **kwargs
+        self,
+        x,
+        y,
+        radius,
+        startangle,
+        endangle,
+        counterclockwise,
+        draw_context,
+        **kwargs,
     ):
         self.ellipse(
             x,
@@ -216,7 +224,7 @@ class Canvas(Box):
             0,
             startangle,
             endangle,
-            anticlockwise,
+            counterclockwise,
             draw_context,
             **kwargs,
         )
@@ -230,7 +238,7 @@ class Canvas(Box):
         rotation,
         startangle,
         endangle,
-        anticlockwise,
+        counterclockwise,
         draw_context,
         **kwargs,
     ):
@@ -244,7 +252,7 @@ class Canvas(Box):
             [
                 PointF(x, y)
                 for x, y in arc_to_bezier(
-                    sweepangle(startangle, endangle, anticlockwise)
+                    sweepangle(startangle, endangle, counterclockwise)
                 )
             ]
         )

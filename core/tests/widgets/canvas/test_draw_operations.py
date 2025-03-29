@@ -3,6 +3,7 @@ import pytest
 from toga.colors import REBECCAPURPLE, rgb
 from toga.constants import Baseline, FillRule
 from toga.fonts import SYSTEM, SYSTEM_DEFAULT_FONT_SIZE, Font
+from toga.widgets.canvas import Arc, Ellipse
 from toga_dummy.utils import assert_action_performed
 
 REBECCA_PURPLE_COLOR = rgb(102, 51, 153)
@@ -264,7 +265,7 @@ def test_quadratic_curve_to(widget):
             {"x": 10, "y": 20, "radius": 30},
             (
                 "x=10, y=20, radius=30, startangle=0.000, "
-                "endangle=6.283, anticlockwise=False"
+                "endangle=6.283, counterclockwise=False"
             ),
             {
                 "x": 10,
@@ -272,7 +273,7 @@ def test_quadratic_curve_to(widget):
                 "radius": 30,
                 "startangle": 0.0,
                 "endangle": pytest.approx(6.283185),
-                "anticlockwise": False,
+                "counterclockwise": False,
             },
         ),
         # Start angle
@@ -280,7 +281,7 @@ def test_quadratic_curve_to(widget):
             {"x": 10, "y": 20, "radius": 30, "startangle": 1.234},
             (
                 "x=10, y=20, radius=30, startangle=1.234, "
-                "endangle=6.283, anticlockwise=False"
+                "endangle=6.283, counterclockwise=False"
             ),
             {
                 "x": 10,
@@ -288,7 +289,7 @@ def test_quadratic_curve_to(widget):
                 "radius": 30,
                 "startangle": pytest.approx(1.234),
                 "endangle": pytest.approx(6.283185),
-                "anticlockwise": False,
+                "counterclockwise": False,
             },
         ),
         # End angle
@@ -301,7 +302,7 @@ def test_quadratic_curve_to(widget):
             },
             (
                 "x=10, y=20, radius=30, startangle=0.000, "
-                "endangle=2.345, anticlockwise=False"
+                "endangle=2.345, counterclockwise=False"
             ),
             {
                 "x": 10,
@@ -309,20 +310,20 @@ def test_quadratic_curve_to(widget):
                 "radius": 30,
                 "startangle": 0.0,
                 "endangle": pytest.approx(2.345),
-                "anticlockwise": False,
+                "counterclockwise": False,
             },
         ),
-        # Anticlockwise explicitly False
+        # Counterclockwise explicitly False
         (
             {
                 "x": 10,
                 "y": 20,
                 "radius": 30,
-                "anticlockwise": False,
+                "counterclockwise": False,
             },
             (
                 "x=10, y=20, radius=30, startangle=0.000, "
-                "endangle=6.283, anticlockwise=False"
+                "endangle=6.283, counterclockwise=False"
             ),
             {
                 "x": 10,
@@ -330,20 +331,20 @@ def test_quadratic_curve_to(widget):
                 "radius": 30,
                 "startangle": 0.0,
                 "endangle": pytest.approx(6.283185),
-                "anticlockwise": False,
+                "counterclockwise": False,
             },
         ),
-        # Anticlockwise explicitly False
+        # Counterclockwise explicitly False
         (
             {
                 "x": 10,
                 "y": 20,
                 "radius": 30,
-                "anticlockwise": True,
+                "counterclockwise": True,
             },
             (
                 "x=10, y=20, radius=30, startangle=0.000, "
-                "endangle=6.283, anticlockwise=True"
+                "endangle=6.283, counterclockwise=True"
             ),
             {
                 "x": 10,
@@ -351,7 +352,7 @@ def test_quadratic_curve_to(widget):
                 "radius": 30,
                 "startangle": 0.0,
                 "endangle": pytest.approx(6.283185),
-                "anticlockwise": True,
+                "counterclockwise": True,
             },
         ),
         # All args
@@ -362,11 +363,11 @@ def test_quadratic_curve_to(widget):
                 "radius": 30,
                 "startangle": 1.234,
                 "endangle": 2.345,
-                "anticlockwise": True,
+                "counterclockwise": True,
             },
             (
                 "x=10, y=20, radius=30, startangle=1.234, "
-                "endangle=2.345, anticlockwise=True"
+                "endangle=2.345, counterclockwise=True"
             ),
             {
                 "x": 10,
@@ -374,7 +375,7 @@ def test_quadratic_curve_to(widget):
                 "radius": 30,
                 "startangle": pytest.approx(1.234),
                 "endangle": pytest.approx(2.345),
-                "anticlockwise": True,
+                "counterclockwise": True,
             },
         ),
     ],
@@ -404,7 +405,8 @@ def test_arc(widget, kwargs, args_repr, draw_kwargs):
             {"x": 10, "y": 20, "radiusx": 30, "radiusy": 40},
             (
                 "x=10, y=20, radiusx=30, radiusy=40, "
-                "rotation=0.000, startangle=0.000, endangle=6.283, anticlockwise=False"
+                "rotation=0.000, startangle=0.000, endangle=6.283, "
+                "counterclockwise=False"
             ),
             {
                 "x": 10,
@@ -414,7 +416,7 @@ def test_arc(widget, kwargs, args_repr, draw_kwargs):
                 "rotation": 0.0,
                 "startangle": 0.0,
                 "endangle": pytest.approx(6.283185),
-                "anticlockwise": False,
+                "counterclockwise": False,
             },
         ),
         # Rotation
@@ -422,7 +424,8 @@ def test_arc(widget, kwargs, args_repr, draw_kwargs):
             {"x": 10, "y": 20, "radiusx": 30, "radiusy": 40, "rotation": 1.234},
             (
                 "x=10, y=20, radiusx=30, radiusy=40, "
-                "rotation=1.234, startangle=0.000, endangle=6.283, anticlockwise=False"
+                "rotation=1.234, startangle=0.000, endangle=6.283, "
+                "counterclockwise=False"
             ),
             {
                 "x": 10,
@@ -432,7 +435,7 @@ def test_arc(widget, kwargs, args_repr, draw_kwargs):
                 "rotation": pytest.approx(1.234),
                 "startangle": 0.0,
                 "endangle": pytest.approx(6.283185),
-                "anticlockwise": False,
+                "counterclockwise": False,
             },
         ),
         # Start angle
@@ -440,7 +443,8 @@ def test_arc(widget, kwargs, args_repr, draw_kwargs):
             {"x": 10, "y": 20, "radiusx": 30, "radiusy": 40, "startangle": 2.345},
             (
                 "x=10, y=20, radiusx=30, radiusy=40, "
-                "rotation=0.000, startangle=2.345, endangle=6.283, anticlockwise=False"
+                "rotation=0.000, startangle=2.345, endangle=6.283, "
+                "counterclockwise=False"
             ),
             {
                 "x": 10,
@@ -450,7 +454,7 @@ def test_arc(widget, kwargs, args_repr, draw_kwargs):
                 "rotation": 0.0,
                 "startangle": pytest.approx(2.345),
                 "endangle": pytest.approx(6.283185),
-                "anticlockwise": False,
+                "counterclockwise": False,
             },
         ),
         # End angle
@@ -458,7 +462,8 @@ def test_arc(widget, kwargs, args_repr, draw_kwargs):
             {"x": 10, "y": 20, "radiusx": 30, "radiusy": 40, "endangle": 3.456},
             (
                 "x=10, y=20, radiusx=30, radiusy=40, "
-                "rotation=0.000, startangle=0.000, endangle=3.456, anticlockwise=False"
+                "rotation=0.000, startangle=0.000, endangle=3.456, "
+                "counterclockwise=False"
             ),
             {
                 "x": 10,
@@ -468,15 +473,16 @@ def test_arc(widget, kwargs, args_repr, draw_kwargs):
                 "rotation": 0.0,
                 "startangle": 0.0,
                 "endangle": pytest.approx(3.456),
-                "anticlockwise": False,
+                "counterclockwise": False,
             },
         ),
-        # Anticlockwise explicitly False
+        # Counterclockwise explicitly False
         (
-            {"x": 10, "y": 20, "radiusx": 30, "radiusy": 40, "anticlockwise": False},
+            {"x": 10, "y": 20, "radiusx": 30, "radiusy": 40, "counterclockwise": False},
             (
                 "x=10, y=20, radiusx=30, radiusy=40, "
-                "rotation=0.000, startangle=0.000, endangle=6.283, anticlockwise=False"
+                "rotation=0.000, startangle=0.000, endangle=6.283, "
+                "counterclockwise=False"
             ),
             {
                 "x": 10,
@@ -486,15 +492,16 @@ def test_arc(widget, kwargs, args_repr, draw_kwargs):
                 "rotation": 0.0,
                 "startangle": 0.0,
                 "endangle": pytest.approx(6.283185),
-                "anticlockwise": False,
+                "counterclockwise": False,
             },
         ),
-        # Anticlockwise
+        # Counterclockwise
         (
-            {"x": 10, "y": 20, "radiusx": 30, "radiusy": 40, "anticlockwise": True},
+            {"x": 10, "y": 20, "radiusx": 30, "radiusy": 40, "counterclockwise": True},
             (
                 "x=10, y=20, radiusx=30, radiusy=40, "
-                "rotation=0.000, startangle=0.000, endangle=6.283, anticlockwise=True"
+                "rotation=0.000, startangle=0.000, endangle=6.283, "
+                "counterclockwise=True"
             ),
             {
                 "x": 10,
@@ -504,7 +511,7 @@ def test_arc(widget, kwargs, args_repr, draw_kwargs):
                 "rotation": 0.0,
                 "startangle": 0.0,
                 "endangle": pytest.approx(6.283185),
-                "anticlockwise": True,
+                "counterclockwise": True,
             },
         ),
         # All args
@@ -517,11 +524,12 @@ def test_arc(widget, kwargs, args_repr, draw_kwargs):
                 "rotation": 1.234,
                 "startangle": 2.345,
                 "endangle": 3.456,
-                "anticlockwise": True,
+                "counterclockwise": True,
             },
             (
                 "x=10, y=20, radiusx=30, radiusy=40, "
-                "rotation=1.234, startangle=2.345, endangle=3.456, anticlockwise=True"
+                "rotation=1.234, startangle=2.345, endangle=3.456, "
+                "counterclockwise=True"
             ),
             {
                 "x": 10,
@@ -531,7 +539,7 @@ def test_arc(widget, kwargs, args_repr, draw_kwargs):
                 "rotation": pytest.approx(1.234),
                 "startangle": pytest.approx(2.345),
                 "endangle": pytest.approx(3.456),
-                "anticlockwise": True,
+                "counterclockwise": True,
             },
         ),
     ],
@@ -715,3 +723,63 @@ def test_reset_transform(widget):
     assert widget._impl.draw_instructions[1:-1] == [
         ("reset transform", {}),
     ]
+
+
+@pytest.mark.parametrize("value", [True, False])
+def test_anticlockwise_deprecated(widget, value):
+    """The 'anticlockwise' parameter is deprecated."""
+    match = (
+        r"Parameter 'anticlockwise' is deprecated\. Use 'counterclockwise' instead\."
+    )
+
+    with pytest.warns(DeprecationWarning, match=match):
+        widget.context.arc(x=0, y=0, radius=10, anticlockwise=value)
+
+    with pytest.warns(DeprecationWarning, match=match):
+        Arc(x=0, y=0, radius=10, anticlockwise=value)
+
+    with pytest.warns(DeprecationWarning, match=match):
+        widget.context.ellipse(x=0, y=0, radiusx=10, radiusy=10, anticlockwise=value)
+
+    with pytest.warns(DeprecationWarning, match=match):
+        Ellipse(x=0, y=0, radiusx=10, radiusy=10, anticlockwise=value)
+
+
+@pytest.mark.parametrize("anti", [True, False])
+@pytest.mark.parametrize("counter", [True, False])
+def test_anticlockwise_invalid(widget, anti, counter):
+    """Providing both 'anticlockwise' and 'counterclockwise' raises a TypeError.
+
+    Theoretically we should be able to proceed with the drawing operation (and only
+    issue a deprecation warning) if the two values supplied agree, but truthy/falsey
+    values could cause confusing errors.
+    """
+    match = r"Received both 'anticlockwise' and 'counterclockwise' arguments"
+
+    with pytest.raises(TypeError, match=match):
+        widget.context.arc(
+            x=0, y=0, radius=10, anticlockwise=anti, counterclockwise=counter
+        )
+
+    with pytest.raises(TypeError, match=match):
+        Arc(x=0, y=0, radius=10, anticlockwise=anti, counterclockwise=counter)
+
+    with pytest.raises(TypeError, match=match):
+        widget.context.ellipse(
+            x=0,
+            y=0,
+            radiusx=10,
+            radiusy=10,
+            anticlockwise=anti,
+            counterclockwise=counter,
+        )
+
+    with pytest.raises(TypeError, match=match):
+        Ellipse(
+            x=0,
+            y=0,
+            radiusx=10,
+            radiusy=10,
+            anticlockwise=anti,
+            counterclockwise=counter,
+        )

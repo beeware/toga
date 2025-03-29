@@ -3,6 +3,7 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from math import pi
 from typing import Any
+from warnings import filterwarnings, warn
 
 from travertino.colors import Color
 
@@ -13,6 +14,37 @@ from toga.fonts import (
     SYSTEM_DEFAULT_FONT_SIZE,
     Font,
 )
+
+# Make sure deprecation warnings are shown by default
+filterwarnings("default", category=DeprecationWarning)
+
+######################################################################
+# 03-2025: Backwards compatibility for Toga <= 0.5.1
+######################################################################
+
+
+def _determine_counterclockwise(anticlockwise, counterclockwise):
+    num_supplied = sum(value is not None for value in [anticlockwise, counterclockwise])
+    if num_supplied == 0:
+        return False
+    if num_supplied == 1:
+        if anticlockwise is not None:
+            warn(
+                "Parameter 'anticlockwise' is deprecated. Use 'counterclockwise' "
+                "instead.",
+                DeprecationWarning,
+                stacklevel=3,
+            )
+            return anticlockwise
+
+        return counterclockwise
+
+    raise TypeError("Received both 'anticlockwise' and 'counterclockwise' arguments")
+
+
+######################################################################
+# End backwards compatibility
+######################################################################
 
 
 class DrawingObject(ABC):
@@ -223,20 +255,31 @@ class Arc(DrawingObject):
         radius: float,
         startangle: float = 0.0,
         endangle: float = 2 * pi,
-        anticlockwise: bool = False,
+        counterclockwise: bool | None = None,
+        anticlockwise: bool | None = None,  # DEPRECATED
     ):
+        ######################################################################
+        # 03-2025: Backwards compatibility for Toga <= 0.5.1
+        ######################################################################
+
+        counterclockwise = _determine_counterclockwise(anticlockwise, counterclockwise)
+
+        ######################################################################
+        # End backwards compatibility
+        ######################################################################
+
         self.x = x
         self.y = y
         self.radius = radius
         self.startangle = startangle
         self.endangle = endangle
-        self.anticlockwise = anticlockwise
+        self.counterclockwise = counterclockwise
 
     def __repr__(self) -> str:
         return (
             f"{self.__class__.__name__}(x={self.x}, y={self.y}, "
             f"radius={self.radius}, startangle={self.startangle:.3f}, "
-            f"endangle={self.endangle:.3f}, anticlockwise={self.anticlockwise})"
+            f"endangle={self.endangle:.3f}, counterclockwise={self.counterclockwise})"
         )
 
     def _draw(self, impl: Any, **kwargs: Any) -> None:
@@ -246,7 +289,7 @@ class Arc(DrawingObject):
             self.radius,
             self.startangle,
             self.endangle,
-            self.anticlockwise,
+            self.counterclockwise,
             **kwargs,
         )
 
@@ -261,8 +304,19 @@ class Ellipse(DrawingObject):
         rotation: float = 0.0,
         startangle: float = 0.0,
         endangle: float = 2 * pi,
-        anticlockwise: bool = False,
+        counterclockwise: bool | None = None,
+        anticlockwise: bool | None = None,  # DEPRECATED
     ):
+        ######################################################################
+        # 03-2025: Backwards compatibility for Toga <= 0.5.1
+        ######################################################################
+
+        counterclockwise = _determine_counterclockwise(anticlockwise, counterclockwise)
+
+        ######################################################################
+        # End backwards compatibility
+        ######################################################################
+
         self.x = x
         self.y = y
         self.radiusx = radiusx
@@ -270,14 +324,14 @@ class Ellipse(DrawingObject):
         self.rotation = rotation
         self.startangle = startangle
         self.endangle = endangle
-        self.anticlockwise = anticlockwise
+        self.counterclockwise = counterclockwise
 
     def __repr__(self) -> str:
         return (
             f"{self.__class__.__name__}(x={self.x}, y={self.y}, "
             f"radiusx={self.radiusx}, radiusy={self.radiusy}, "
             f"rotation={self.rotation:.3f}, startangle={self.startangle:.3f}, "
-            f"endangle={self.endangle:.3f}, anticlockwise={self.anticlockwise})"
+            f"endangle={self.endangle:.3f}, counterclockwise={self.counterclockwise})"
         )
 
     def _draw(self, impl: Any, **kwargs: Any) -> None:
@@ -289,7 +343,7 @@ class Ellipse(DrawingObject):
             self.rotation,
             self.startangle,
             self.endangle,
-            self.anticlockwise,
+            self.counterclockwise,
             **kwargs,
         )
 

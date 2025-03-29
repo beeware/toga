@@ -387,11 +387,11 @@ async def test_arc(canvas, probe):
 
     # Smile (exactly half a turn)
     canvas.context.move_to(150, 100)
-    canvas.context.arc(100, 100, 50, 0, pi, anticlockwise=False)
+    canvas.context.arc(100, 100, 50, 0, pi, counterclockwise=False)
 
     # Hair (exactly half a turn, but in the opposite direction)
     canvas.context.move_to(190, 100)
-    canvas.context.arc(100, 100, 90, 0, pi, anticlockwise=True)
+    canvas.context.arc(100, 100, 90, 0, pi, counterclockwise=True)
 
     # Left eye
     canvas.context.move_to(70, 70)
@@ -438,7 +438,7 @@ async def test_ellipse(canvas, probe):
         rotation=-pi / 4,
         startangle=pi * 7 / 4,
         endangle=pi / 4,
-        anticlockwise=True,
+        counterclockwise=True,
     )
     canvas.context.stroke(color=CORNFLOWERBLUE)
 
