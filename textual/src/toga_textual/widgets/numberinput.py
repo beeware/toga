@@ -1,7 +1,7 @@
 from travertino.size import at_least
 
-from textual.widgets import Input as TextualInput
 from textual.validation import Number
+from textual.widgets import Input as TextualInput
 
 from .base import Widget
 
@@ -39,10 +39,10 @@ class NumberInput(Widget):
         self.native.placeholder = value
 
     def get_value(self):
-        if self.native.value == '' or self.native.value is None:
+        if self.native.value == "" or self.native.value is None:
             return None
         else:
-            if self.native.value != '-':
+            if self.native.value != "-":
                 return float(self.native.value)
             else:
                 return self.native.value
@@ -61,12 +61,15 @@ class NumberInput(Widget):
 
     def set_min_value(self, value):
         self.min = value
-        self.native.validators = [Number(minimum=self.min),]
+        self.native.validators = [
+            Number(minimum=self.min),
+        ]
 
     def set_max_value(self, value):
         self.max = value
-        self.native.validators = [Number(maximum=self.max),]
-
+        self.native.validators = [
+            Number(maximum=self.max),
+        ]
 
     @property
     def width_adjustment(self):
@@ -75,7 +78,6 @@ class NumberInput(Widget):
     @property
     def height_adjustment(self):
         return 2
-
 
     def rehint(self):
         self.interface.intrinsic.width = at_least(len(self.native.value) + 4)

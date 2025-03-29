@@ -1,10 +1,11 @@
 from .base import Widget
 
+
 class NumberInput(Widget):
     def create(self):
         self._return_listener = None
         self.native = self._create_native_widget("sl-input")
-        self.native.type = 'number'
+        self.native.type = "number"
         self.native.value = None
         self.native.onkeyup = self.dom_keyup
 
@@ -28,7 +29,7 @@ class NumberInput(Widget):
         self.native.max = value
 
     def get_value(self):
-        if self.native.value == '' or self.native.value is None:
+        if self.native.value == "" or self.native.value is None:
             return None
         else:
             return float(self.native.value)
