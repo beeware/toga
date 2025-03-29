@@ -61,11 +61,13 @@ class validated_property:
 
     def __delete__(self, style):
         try:
+            current = getattr(style, f"_{self.name}")
             delattr(style, f"_{self.name}")
         except AttributeError:
             pass
         else:
-            style.apply(self.name)
+            if current != self.initial:
+                style.apply(self.name)
 
     @property
     def _name_if_set(self):

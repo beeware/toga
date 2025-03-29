@@ -1,5 +1,8 @@
+from __future__ import annotations
+
 from collections import defaultdict
 from collections.abc import Mapping
+from contextlib import contextmanager
 from warnings import filterwarnings, warn
 
 from .properties.shorthand import directional_property
@@ -41,6 +44,7 @@ class BaseStyle:
     def __init__(self, **properties):
         try:
             self.update(**properties)
+            self.__post_init__()
         except NameError:
             # It still makes sense for update() to raise a NameError. However, here we
             # simulate the behavior of the dataclass-generated __init__() for
@@ -123,15 +127,80 @@ class BaseStyle:
     # Interface that style declarations must define
     ######################################################################
 
-    def apply(self, *names):
+    def _apply(self, names: set):
         raise NotImplementedError(
-            "Style must define an apply method"
+            "Style must define an _apply method"
         )  # pragma: no cover
 
     def layout(self, viewport):
         raise NotImplementedError(
             "Style must define a layout method"
         )  # pragma: no cover
+
+    ######################################################################
+    # Support for batching calls to apply()
+    ######################################################################
+
+    def __post_init__(self):
+        # Because batch_apply is a no-op with no applicator, it's fine that these aren't
+        # set during the dataclass-generated __init__ — even when directional/composite
+        # properties (which call batch_apply) are set.
+        self._batched_mode = False
+        self._batched_names = set()
+
+    # After deprecation is removed, this should be the signature:
+    # def apply(self, name: str | None = None) -> None:
+    def apply(self, *names: list[str]) -> None:
+        if not self._applicator:
+            return
+
+        ######################################################################
+        # 03-2025: Backwards compatibility for Toga 0.5.1
+        ######################################################################
+
+        if len(names) > 1:
+            cls = type(self).__name__
+            warn(
+                f"Calling {cls}.apply() with multiple arguments is deprecated. Use the "
+                f'"with {cls}.batch_apply():" context manager instead.',
+                DeprecationWarning,
+                stacklevel=2,
+            )
+
+        if self._batched_mode:
+            self._batched_names.update(names)
+        else:
+            self._apply({*names} if names else self._PROPERTIES)
+
+        ######################################################################
+        # End backwards compatibility
+        ######################################################################
+
+        # if self._batched_mode:
+        #     self._batched_names.add(name)
+        # else:
+        #     self._apply({name} if name else self._PROPERTIES)
+
+    @contextmanager
+    def batch_apply(self):
+        """Aggregate calls to appl() into one single call to _apply().
+
+        No-op if no applicator is present, or if already in batched mode.
+        """
+        # Short-circuit out if no applicator is set. This avoids trying to access the
+        # nonexistent _batched_mode during __init__.
+        if batch_entered := self._applicator and not self._batched_mode:
+            self._batched_mode = True
+
+        try:
+            yield
+        finally:
+            if batch_entered:
+                self._batched_mode = False
+
+                if self._batched_names:
+                    self._apply(self._batched_names)
+                    self._batched_names.clear()
 
     ######################################################################
     # Provide a dict-like interface
@@ -143,22 +212,22 @@ class BaseStyle:
         # depend on other values to determine what to alias to. This update might be
         # setting those prerequisite properties. So we need to defer setting any
         # conditional aliases until last.
-
         deferred_aliases = {}
 
-        for name, value in properties.items():
-            name = name.replace("-", "_")
-            if name not in self._ALL_PROPERTIES:
-                raise NameError(f"Unknown property '{name}'")
+        with self.batch_apply():
+            for name, value in properties.items():
+                name = name.replace("-", "_")
+                if name not in self._ALL_PROPERTIES:
+                    raise NameError(f"Unknown property '{name}'")
 
-            prop = getattr(type(self), name)
-            if isinstance(getattr(prop, "source", None), dict):
-                deferred_aliases[name] = value
-            else:
+                prop = getattr(type(self), name)
+                if isinstance(getattr(prop, "source", None), dict):
+                    deferred_aliases[name] = value
+                else:
+                    self[name] = value
+
+            for name, value in deferred_aliases.items():
                 self[name] = value
-
-        for name, value in deferred_aliases.items():
-            self[name] = value
 
     def __getitem__(self, name):
         name = name.replace("-", "_")
