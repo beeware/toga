@@ -35,13 +35,17 @@ A text input that is limited to numeric input.
        :align: center
        :width: 300px
 
-  .. group-tab:: Web |no|
+  .. group-tab:: Web
 
-    Not supported
+    .. figure:: /reference/images/numberinput-web.png
+       :align: center
+       :width: 300px
 
-  .. group-tab:: Textual |no|
+  .. group-tab:: Textual
 
-    Not supported
+    .. figure:: /reference/images/numberinput-textual.png
+       :align: center
+       :width: 300px
 
 Usage
 -----
