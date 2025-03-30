@@ -237,6 +237,7 @@ class Context(DrawingObject):
             X axis.
         :param counterclockwise: If true, the arc is swept counterclockwise. The default
             is clockwise.
+        :param anticlockwise: **DEPRECATED** - Use ``counterclockwise``.
         :returns: The ``Arc`` :any:`DrawingObject` for the operation.
         """
         arc = Arc(x, y, radius, startangle, endangle, counterclockwise, anticlockwise)
@@ -272,6 +273,7 @@ class Context(DrawingObject):
             X axis.
         :param counterclockwise: If true, the arc is swept counterclockwise. The default
             is clockwise.
+        :param anticlockwise: **DEPRECATED** - Use ``counterclockwise``.
         :returns: The ``Ellipse`` :any:`DrawingObject` for the operation.
         """
         ellipse = Ellipse(
