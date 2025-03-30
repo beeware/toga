@@ -67,7 +67,7 @@ dev = [
     "Pillow == 11.1.0",
     "pre-commit == 4.2.0",
     "pytest == 8.3.5",
-    "pytest-asyncio == 0.25.3",
+    "pytest-asyncio == 0.26.0",
     "pytest-freezer == 0.4.9",
     "setuptools-scm == 8.2.0",
     "tox == 4.24.2",
