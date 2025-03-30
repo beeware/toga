@@ -21,11 +21,9 @@ class Window:
         app_placeholder = js.document.getElementById("app-placeholder")
         app_placeholder.appendChild(self.native)
 
-        js.document.body.onfocus = self.window_on_gain_focus
-        js.document.body.onblur = self.window_on_lose_focus
-        js.document.addEventListener(
-            "visibilitychange", self.window_on_visibility_change
-        )
+        js.document.body.onfocus = self.dom_on_gain_focus
+        js.document.body.onblur = self.dom_on_lose_focus
+        js.document.addEventListener("visibilitychange", self.dom_on_visibility_change)
 
         self.set_title(title)
 
@@ -39,13 +37,13 @@ class Window:
     def on_size_allocate(self, widget, allocation):
         pass
 
-    def window_on_gain_focus(self, sender, event):
+    def dom_on_gain_focus(self, event):
         self.interface.on_gain_focus()
 
-    def window_on_lose_focus(self, sender, event):
+    def dom_on_lose_focus(self, event):
         self.interface.on_lose_focus()
 
-    def window_on_visibility_change(self, sender, event):
+    def dom_on_visibility_change(self, event):
         if hasattr(js.document, "hidden"):
             if js.document.visibilityState == "visible":
                 self.interface.on_show()
@@ -122,7 +120,7 @@ class Window:
     ######################################################################
 
     def get_visible(self):
-        self.interface.not_implemented("Window.get_visible()")
+        self.interface.factory.not_implemented("Window.get_visible()")
 
     def hide(self):
         self.native.style = "visibility: hidden;"
@@ -131,7 +129,7 @@ class Window:
     # Window state
     ######################################################################
 
-    def get_window_state(self):
+    def get_window_state(self, in_progress_state=False):
         # Windows are always normal
         return WindowState.NORMAL
 
