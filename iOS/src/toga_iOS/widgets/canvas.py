@@ -140,13 +140,13 @@ class Canvas(Widget):
         radius,
         startangle,
         endangle,
-        anticlockwise,
+        counterclockwise,
         draw_context,
         **kwargs,
     ):
         # UIKit uses a flipped coordinate system, so clockwise
-        # is actually anticlockwise
-        if anticlockwise:
+        # is actually counterclockwise
+        if counterclockwise:
             clockwise = 1
         else:
             clockwise = 0
@@ -163,7 +163,7 @@ class Canvas(Widget):
         rotation,
         startangle,
         endangle,
-        anticlockwise,
+        counterclockwise,
         draw_context,
         **kwargs,
     ):
@@ -172,10 +172,14 @@ class Canvas(Widget):
         self.rotate(rotation, draw_context)
         if radiusx >= radiusy:
             self.scale(1, radiusy / radiusx, draw_context)
-            self.arc(0, 0, radiusx, startangle, endangle, anticlockwise, draw_context)
+            self.arc(
+                0, 0, radiusx, startangle, endangle, counterclockwise, draw_context
+            )
         else:
             self.scale(radiusx / radiusy, 1, draw_context)
-            self.arc(0, 0, radiusy, startangle, endangle, anticlockwise, draw_context)
+            self.arc(
+                0, 0, radiusy, startangle, endangle, counterclockwise, draw_context
+            )
         core_graphics.CGContextRestoreGState(draw_context)
 
     def rect(self, x, y, width, height, draw_context, **kwargs):

@@ -107,7 +107,7 @@ class Canvas(Widget):
     @property
     def enabled(self) -> Literal[True]:
         """Is the widget currently enabled? i.e., can the user interact with the widget?
-        ScrollContainer widgets cannot be disabled; this property will always return
+        Canvas widgets cannot be disabled; this property will always return
         True; any attempt to modify it will be ignored.
         """
         return True
@@ -117,7 +117,7 @@ class Canvas(Widget):
         pass
 
     def focus(self) -> None:
-        """No-op; ScrollContainer cannot accept input focus."""
+        """No-op; Canvas cannot accept input focus."""
         pass
 
     @property

@@ -101,9 +101,18 @@ class Canvas(Widget):
         self._ensure_subpath(cpx, cpy, path)
         path.quadTo(cpx, cpy, x, y)
 
-    def arc(self, x, y, radius, startangle, endangle, anticlockwise, path, **kwargs):
+    def arc(self, x, y, radius, startangle, endangle, counterclockwise, path, **kwargs):
         self.ellipse(
-            x, y, radius, radius, 0, startangle, endangle, anticlockwise, path, **kwargs
+            x,
+            y,
+            radius,
+            radius,
+            0,
+            startangle,
+            endangle,
+            counterclockwise,
+            path,
+            **kwargs,
         )
 
     def ellipse(
@@ -115,7 +124,7 @@ class Canvas(Widget):
         rotation,
         startangle,
         endangle,
-        anticlockwise,
+        counterclockwise,
         path,
         **kwargs,
     ):
@@ -127,7 +136,7 @@ class Canvas(Widget):
 
         coords = list(
             itertools.chain(
-                *arc_to_bezier(sweepangle(startangle, endangle, anticlockwise))
+                *arc_to_bezier(sweepangle(startangle, endangle, counterclockwise))
             )
         )
         matrix.mapPoints(coords)
