@@ -1,1 +1,1 @@
-Added numberinput to web and textual backends.
+The web and Textual backends now provide a NumberInput widget.
