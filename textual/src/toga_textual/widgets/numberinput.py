@@ -15,8 +15,17 @@ class TogaInput(TextualInput):
     def on_input_changed(self, event: TextualInput.Changed) -> None:
         self.interface.on_change()
 
-    def on_input_submitted(self, event: TextualInput.Submitted) -> None:
-        self.interface.on_confirm()
+    def on_input_blurred(self, event: TextualInput.Blurred):
+        if self.impl.get_value() == "-":
+            self.impl.set_value("0")
+
+        if self.impl.get_value() is not None and self.impl.min is not None:
+            if float(self.impl.get_value()) < self.impl.min:
+                self.impl.set_value(str(self.impl.min))
+
+        if self.impl.get_value() is not None and self.impl.max is not None:
+            if float(self.impl.get_value()) > self.impl.max:
+                self.impl.set_value(str(self.impl.max))
 
 
 class NumberInput(Widget):
@@ -80,5 +89,5 @@ class NumberInput(Widget):
         return 2
 
     def rehint(self):
-        self.interface.intrinsic.width = at_least(len(self.native.value) + 4)
+        self.interface.intrinsic.width = at_least(10)
         self.interface.intrinsic.height = 3

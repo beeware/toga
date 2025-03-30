@@ -7,11 +7,20 @@ class NumberInput(Widget):
         self.native = self._create_native_widget("sl-input")
         self.native.type = "number"
         self.native.value = None
-        self.native.onkeyup = self.dom_keyup
+        self.native.onblur = self.lost_focus
 
-    def dom_keyup(self, event):
-        if event.key == "Enter":
-            self.interface.on_confirm()
+    def lost_focus(self, event):
+        print(self.native.value == "-")
+        if self.native.value == "":
+            self.native.value = None
+
+        if self.native.value is not None and self.native.min is not None:
+            if float(self.native.value) < self.native.min:
+                self.native.value = self.native.min
+
+        if self.native.value is not None and self.native.max is not None:
+            if float(self.native.value) > self.native.max:
+                self.native.value = self.native.max
 
     def get_readonly(self, value):
         return self.native.readOnly
