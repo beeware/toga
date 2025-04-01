@@ -49,7 +49,8 @@ class ExampleCanvasApp(toga.App):
         )
 
         self.context_selection = toga.Selection(
-            items=[FILL, STROKE], on_change=self.on_context_change
+            items=[FILL, STROKE],
+            on_change=self.on_context_change,
         )
         self.drawing_shape_instructions = {
             INSTRUCTIONS: self.draw_instructions,
@@ -74,7 +75,8 @@ class ExampleCanvasApp(toga.App):
             on_change=self.on_shape_change,
         )
         self.color_selection = toga.Selection(
-            items=[BLACK, BLUE, GREEN, RED, YELLOW], on_change=self.refresh_canvas
+            items=[BLACK, BLUE, GREEN, RED, YELLOW],
+            on_change=self.refresh_canvas,
         )
         self.fill_rule_selection = toga.Selection(
             items=[value.name for value in FillRule],
@@ -84,26 +86,41 @@ class ExampleCanvasApp(toga.App):
             min=1, max=10, value=1, on_change=self.refresh_canvas
         )
         self.dash_pattern_selection = toga.Selection(
-            items=list(self.dash_patterns), on_change=self.refresh_canvas
+            items=list(self.dash_patterns),
+            on_change=self.refresh_canvas,
         )
         self.clicked_point = None
         self.translation = None
         self.rotation = 0
         self.scale_x_slider = toga.Slider(
-            min=0, max=2, value=1, tick_count=11, on_change=self.refresh_canvas
+            min=0,
+            max=2,
+            value=1,
+            tick_count=11,
+            on_change=self.refresh_canvas,
         )
         self.scale_y_slider = toga.Slider(
-            min=0, max=2, value=1, tick_count=11, on_change=self.refresh_canvas
+            min=0,
+            max=2,
+            value=1,
+            tick_count=11,
+            on_change=self.refresh_canvas,
         )
         self.font_selection = toga.Selection(
             items=[SYSTEM, MESSAGE, SERIF, SANS_SERIF, CURSIVE, FANTASY, MONOSPACE],
             on_change=self.refresh_canvas,
         )
         self.line_height_slider = toga.Slider(
-            min=1.0, max=10.0, value=1.2, on_change=self.refresh_canvas
+            min=1.0,
+            max=10.0,
+            value=1.2,
+            on_change=self.refresh_canvas,
         )
         self.font_size = toga.NumberInput(
-            min=6, max=72, value=14, on_change=self.refresh_canvas
+            min=6,
+            max=72,
+            value=14,
+            on_change=self.refresh_canvas,
         )
         self.italic_switch = toga.Switch(text="italic", on_change=self.refresh_canvas)
         self.bold_switch = toga.Switch(text="bold", on_change=self.refresh_canvas)
