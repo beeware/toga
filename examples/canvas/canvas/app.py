@@ -431,34 +431,18 @@ class ExampleCanvasApp(toga.App):
         # calculate offsets to centralize drawing in the bigger axis
         triangle_size = factor / 5
         gap = factor / 12
-        context.move_to(
-            self.x_middle - 2 * triangle_size - gap, self.y_middle - 2 * triangle_size
-        )
-        context.line_to(self.x_middle - gap, self.y_middle - 2 * triangle_size)
-        context.line_to(
-            self.x_middle - triangle_size - gap, self.y_middle - triangle_size
-        )
-        context.line_to(
-            self.x_middle - 2 * triangle_size - gap, self.y_middle - 2 * triangle_size
-        )
-        context.move_to(self.x_middle + gap, self.y_middle - 2 * triangle_size)
-        context.line_to(
-            self.x_middle + 2 * triangle_size + gap, self.y_middle - 2 * triangle_size
-        )
-        context.line_to(
-            self.x_middle + triangle_size + gap, self.y_middle - triangle_size
-        )
-        context.line_to(self.x_middle + gap, self.y_middle - 2 * triangle_size)
-        context.move_to(
-            self.x_middle - triangle_size, self.y_middle - triangle_size + gap
-        )
-        context.line_to(
-            self.x_middle + triangle_size, self.y_middle - triangle_size + gap
-        )
-        context.line_to(self.x_middle, self.y_middle + gap)
-        context.line_to(
-            self.x_middle - triangle_size, self.y_middle - triangle_size + gap
-        )
+
+        for x, y in [
+            (-2 * triangle_size - gap, -2 * triangle_size),
+            (gap, -2 * triangle_size),
+            (-triangle_size, -triangle_size + gap),
+        ]:
+            with context.Context() as triangle:
+                triangle.translate(self.x_middle + x, self.y_middle + y)
+                triangle.move_to(0, 0)
+                triangle.line_to(2 * triangle_size, 0)
+                triangle.line_to(triangle_size, triangle_size)
+                triangle.move_to(0, 0)
 
     def draw_rectangle(self, context, factor):
         context.rect(
