@@ -83,7 +83,10 @@ class ExampleCanvasApp(toga.App):
             on_change=self.refresh_canvas,
         )
         self.stroke_width_slider = toga.Slider(
-            min=1, max=10, value=1, on_change=self.refresh_canvas
+            min=1,
+            max=10,
+            value=1,
+            on_change=self.refresh_canvas,
         )
         self.dash_pattern_selection = toga.Selection(
             items=list(self.dash_patterns),
@@ -420,7 +423,8 @@ class ExampleCanvasApp(toga.App):
     def render_drawing(self):
         self.canvas.context.clear()
         self.canvas.context.translate(
-            self.width / 2 + self.x_translation, self.height / 2 + self.y_translation
+            self.width / 2 + self.x_translation,
+            self.height / 2 + self.y_translation,
         )
         self.canvas.context.rotate(self.rotation)
         self.canvas.context.scale(self.scale_x_slider.value, self.scale_y_slider.value)
@@ -500,7 +504,8 @@ class ExampleCanvasApp(toga.App):
 
     def draw_sea(self, context, factor):
         with context.ClosedPath(
-            self.x_middle - 1 * factor / 5, self.y_middle - 1 * factor / 5
+            self.x_middle - 1 * factor / 5,
+            self.y_middle - 1 * factor / 5,
         ) as closer:
             closer.bezier_curve_to(
                 self.x_middle - 1 * factor / 10,
@@ -511,10 +516,12 @@ class ExampleCanvasApp(toga.App):
                 self.y_middle - 1 * factor / 5,
             )
             closer.line_to(
-                self.x_middle + 1 * factor / 5, self.y_middle + 1 * factor / 5
+                self.x_middle + 1 * factor / 5,
+                self.y_middle + 1 * factor / 5,
             )
             closer.line_to(
-                self.x_middle - 1 * factor / 5, self.y_middle + 1 * factor / 5
+                self.x_middle - 1 * factor / 5,
+                self.y_middle + 1 * factor / 5,
             )
 
     def draw_star(self, context, factor):
