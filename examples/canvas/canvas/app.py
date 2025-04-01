@@ -70,13 +70,15 @@ class ExampleCanvasApp(toga.App):
             DASH_2_3_1: [2, 3, 1],
         }
         self.shape_selection = toga.Selection(
-            items=list(self.drawing_shape_instructions), on_change=self.on_shape_change
+            items=list(self.drawing_shape_instructions),
+            on_change=self.on_shape_change,
         )
         self.color_selection = toga.Selection(
             items=[BLACK, BLUE, GREEN, RED, YELLOW], on_change=self.refresh_canvas
         )
         self.fill_rule_selection = toga.Selection(
-            items=[value.name for value in FillRule], on_change=self.refresh_canvas
+            items=[value.name for value in FillRule],
+            on_change=self.refresh_canvas,
         )
         self.stroke_width_slider = toga.Slider(
             min=1, max=10, value=1, on_change=self.refresh_canvas
@@ -442,7 +444,7 @@ class ExampleCanvasApp(toga.App):
                 triangle.move_to(0, 0)
                 triangle.line_to(2 * triangle_size, 0)
                 triangle.line_to(triangle_size, triangle_size)
-                triangle.move_to(0, 0)
+                triangle.line_to(0, 0)
 
     def draw_rectangle(self, context, factor):
         context.rect(
