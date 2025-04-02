@@ -79,6 +79,7 @@ test_sources = [
 ]
 requires = [
     "../winforms",
+    "comtypes",
 ]
 
 # Mobile deployments
