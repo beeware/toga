@@ -1,5 +1,7 @@
 from unittest.mock import call
 
+import pytest
+
 from toga.colors import rgb
 from toga.fonts import Font
 from toga.style.pack import (
@@ -10,6 +12,7 @@ from toga.style.pack import (
     ITALIC,
     LEFT,
     NONE,
+    PACK,
     RIGHT,
     RTL,
     SMALL_CAPS,
@@ -106,14 +109,28 @@ def test_set_multiple_layout_properties():
     root.refresh.assert_called_once_with()
 
 
-def test_set_visibility_hidden():
-    root = ExampleNode("app", style=Pack(visibility=HIDDEN))
+@pytest.mark.parametrize(
+    "name, value",
+    [
+        ("visibility", HIDDEN),
+        ("display", NONE),
+    ],
+)
+def test_set_visibility_hidden(name, value):
+    root = ExampleNode("app", style=Pack(**{name: value}))
     root.style.apply()
     root._impl.set_hidden.assert_called_once_with(True)
 
 
-def test_set_visibility_inherited():
-    """Nodes should be hidden when an ancestor is hidden."""
+@pytest.mark.parametrize(
+    "name, on, off",
+    [
+        ("visibility", VISIBLE, HIDDEN),
+        ("display", PACK, NONE),
+    ],
+)
+def test_set_visibility_inherited(name, on, off):
+    """Nodes should be hidden when an ancestor is hidden via display or visibility."""
     grandparent = ExampleParentNode("grandparent", style=Pack())
     parent = ExampleParentNode("parent", style=Pack())
     child = ExampleNode("child", style=Pack())
@@ -134,24 +151,24 @@ def test_set_visibility_inherited():
             node._impl.set_hidden.reset_mock()
 
     # Hiding grandparent should hide all.
-    grandparent.style.visibility = HIDDEN
+    grandparent.style[name] = off
     assert_hidden_called(True, True, True)
 
     # Just setting child or parent to VISIBLE won't trigger an apply, because that's
     # their default value. So first, set them to hidden.
-    parent.style.visibility = HIDDEN
+    parent.style[name] = off
     assert_hidden_called(None, True, True)
 
-    child.style.visibility = HIDDEN
+    child.style[name] = off
     assert_hidden_called(None, None, True)
 
     # Then set them to visible. They should still not actually be shown.
-    parent.style.visibility = VISIBLE
+    parent.style[name] = on
     assert_hidden_called(None, True, True)
 
-    child.style.visibility = VISIBLE
+    child.style[name] = on
     assert_hidden_called(None, None, True)
 
     # Show grandparent again; the other two should reappear.
-    grandparent.style.visibility = VISIBLE
+    grandparent.style[name] = on
     assert_hidden_called(False, False, False)
