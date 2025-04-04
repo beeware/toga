@@ -1,4 +1,5 @@
 import asyncio
+import contextlib
 
 import toga
 from toga_gtk.libs import GTK_VERSION, GLib, Gtk
@@ -16,27 +17,22 @@ class BaseProbe:
         if hasattr(self, "native") and self.native:
             self.native.queue_draw()
 
-            if hasattr(self.native, "get_mapped") and self.native.get_mapped():
-                frame_clock = self.native.get_frame_clock()
+            if frame_clock := self.native.get_frame_clock():
                 handler_id = None
+                with contextlib.suppress(asyncio.TimeoutError):
+                    redraw_complete = asyncio.Future()
 
-                if frame_clock:
-                    try:
-                        redraw_complete = asyncio.Future()
+                    def on_after_paint(*args):
+                        if not redraw_complete.done():
+                            redraw_complete.set_result(True)
+                        return False
 
-                        def on_after_paint(*args):
-                            if not redraw_complete.done():
-                                redraw_complete.set_result(True)
-                            return False
+                    handler_id = frame_clock.connect("after-paint", on_after_paint)
 
-                        handler_id = frame_clock.connect("after-paint", on_after_paint)
-
-                        await asyncio.wait_for(redraw_complete, 0.05)
-                    except asyncio.TimeoutError:
-                        pass
-                    finally:
-                        if handler_id is not None:
-                            frame_clock.disconnect(handler_id)
+                    await asyncio.wait_for(redraw_complete, 0.05)
+                if handler_id is not None:
+                    with contextlib.suppress(SystemError):
+                        frame_clock.disconnect(handler_id)
 
         # Process events to ensure the UI is fully updated
         for _ in range(15):
