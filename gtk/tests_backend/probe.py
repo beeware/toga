@@ -14,7 +14,11 @@ class BaseProbe:
 
     async def redraw(self, message=None, delay=0):
         """Request a redraw of the app, waiting until that redraw has completed."""
-        if hasattr(self, "native") and self.native:
+        if (
+            hasattr(self, "native")
+            and self.native
+            and hasattr(self.native, "queue_draw")
+        ):
             self.native.queue_draw()
 
             if frame_clock := self.native.get_frame_clock():
