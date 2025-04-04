@@ -1,7 +1,5 @@
 import asyncio
 
-import pytest
-
 import toga
 from toga_gtk.libs import GTK_VERSION, GLib, Gtk
 
@@ -15,40 +13,50 @@ class BaseProbe:
 
     async def redraw(self, message=None, delay=0):
         """Request a redraw of the app, waiting until that redraw has completed."""
-        if hasattr(self, "native"):
+        if hasattr(self, "native") and self.native:
             self.native.queue_draw()
 
-            frame_clock = self.native.get_frame_clock()
-            if frame_clock:
-                redraw_complete = asyncio.Future()
+            if hasattr(self.native, "get_mapped") and self.native.get_mapped():
+                frame_clock = self.native.get_frame_clock()
+                handler_id = None
 
-                def on_after_paint(clock, *args):
-                    redraw_complete.set_result(True)
-                    return False
+                if frame_clock:
+                    try:
+                        redraw_complete = asyncio.Future()
 
-                handler_id = frame_clock.connect("after-paint", on_after_paint)
+                        def on_after_paint(*args):
+                            if not redraw_complete.done():
+                                redraw_complete.set_result(True)
+                            return False
 
-                try:
-                    await asyncio.wait_for(redraw_complete, 0.1)
-                except asyncio.TimeoutError:
-                    pass
-                finally:
-                    frame_clock.disconnect(handler_id)
-        else:
-            # Process a few events if frame clock isn't available
-            for _ in range(10):
-                if GTK_VERSION < (4, 0, 0):
+                        handler_id = frame_clock.connect("after-paint", on_after_paint)
+
+                        await asyncio.wait_for(redraw_complete, 0.05)
+                    except asyncio.TimeoutError:
+                        pass
+                    finally:
+                        if handler_id is not None:
+                            frame_clock.disconnect(handler_id)
+
+        # Process events to ensure the UI is fully updated
+        for _ in range(15):
+            if GTK_VERSION < (4, 0, 0):
+                if Gtk.events_pending():
                     Gtk.main_iteration_do(blocking=False)
                 else:
-                    GLib.main_context_default().iteration(may_block=False)
+                    break
+            else:
+                context = GLib.main_context_default()
+                if context.pending():
+                    context.iteration(may_block=False)
+                else:
+                    break
 
-        # Always yield back to the event loop
+        # Always yield to let GTK catch up
         await asyncio.sleep(0)
 
-        # Handle delay
         if toga.App.app.run_slow:
             delay = max(1, delay)
-
         if delay:
             print("Waiting for redraw" if message is None else message)
             await asyncio.sleep(delay)
