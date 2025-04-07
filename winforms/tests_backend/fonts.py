@@ -50,7 +50,7 @@ class FontMixin:
         if expected == SYSTEM_DEFAULT_FONT_SIZE:
             expected = 9.0
         elif isinstance(expected, str):
-            expected = 9.0 * FONT_SIZE_SCALE.get(expected, 1.0)
+            expected = 9.0 * FONT_SIZE_SCALE[expected]
         assert abs(self.font.SizeInPoints - expected) < 0.1
 
     def assert_font_family(self, expected):

@@ -133,11 +133,8 @@ def test_invalid_construction():
     with pytest.raises(ValueError):
         Font("Comic Sans", "")
 
-    try:
+    with pytest.raises(TypeError):
         Font("Comic Sans", None)
-        assert False, "Should have raised TypeError"
-    except TypeError:
-        pass
 
 
 @pytest.mark.parametrize(

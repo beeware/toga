@@ -935,10 +935,7 @@ class Pack(BaseStyle):
             else:
                 css.append(f"font-family: {self.font_family};")
         if self.font_size != SYSTEM_DEFAULT_FONT_SIZE:
-            if (
-                isinstance(self.font_size, str)
-                and self.font_size in ABSOLUTE_FONT_SIZES
-            ):
+            if isinstance(self.font_size, str):
                 css.append(f"font-size: {self.font_size};")
             else:
                 css.append(f"font-size: {self.font_size}pt;")

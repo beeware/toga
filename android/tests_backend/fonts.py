@@ -86,7 +86,7 @@ class FontMixin:
                 self.native.getResources().getDisplayMetrics(),
             )
         elif isinstance(expected, str):
-            expected = self.default_font_size * FONT_SIZE_SCALE.get(expected, 1.0)
+            expected = self.default_font_size * FONT_SIZE_SCALE[expected]
         else:
             expected = TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_SP,

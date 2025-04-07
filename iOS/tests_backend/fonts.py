@@ -56,7 +56,7 @@ class FontMixin:
         if expected == SYSTEM_DEFAULT_FONT_SIZE:
             assert self.font.pointSize == 17
         elif isinstance(expected, str):
-            expected_size = 17 * FONT_SIZE_SCALE.get(expected, 1.0)
+            expected_size = 17 * FONT_SIZE_SCALE[expected]
             assert abs(self.font.pointSize - expected_size) < 0.01
         else:
             assert self.font.pointSize == expected * 96 / 72

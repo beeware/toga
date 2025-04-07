@@ -293,7 +293,7 @@ The weight of the font to be used.
 
 **Initial value:** System default
 
-The size of the font to be used. Can be specified in three ways:
+The size of the font to be used. Can be specified in the following ways:
 
 * An integer value in :ref:`CSS points <css-units>`
 * An absolute size keyword, which sets the size relative to the system's base font size

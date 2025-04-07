@@ -2,7 +2,6 @@ from pathlib import Path
 
 from fontTools.ttLib import TTFont
 from travertino.constants import (
-    ABSOLUTE_FONT_SIZES,
     FONT_SIZE_SCALE,
 )
 
@@ -97,13 +96,9 @@ class Font:
 
             if self.interface.size == SYSTEM_DEFAULT_FONT_SIZE:
                 font_size = NSFont.systemFontSize
-            elif (
-                isinstance(self.interface.size, str)
-                and self.interface.size in ABSOLUTE_FONT_SIZES
-            ):
+            elif isinstance(self.interface.size, str):
                 base_size = NSFont.systemFontSize
-                font_size = base_size * FONT_SIZE_SCALE.get(self.interface.size, 1.0)
-
+                font_size = base_size * FONT_SIZE_SCALE[self.interface.size]
             else:
                 # A "point" in Apple APIs is equivalent to a CSS pixel, but the Toga
                 # public API works in CSS points, which are slightly larger

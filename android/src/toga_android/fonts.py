@@ -5,7 +5,6 @@ from android.graphics import Typeface
 from android.util import TypedValue
 from org.beeware.android import MainActivity
 from travertino.constants import (
-    ABSOLUTE_FONT_SIZES,
     FONT_SIZE_SCALE,
 )
 
@@ -109,11 +108,8 @@ class Font:
                 default = typed_array.getDimension(0, 0)
                 typed_array.recycle()
             return default
-        elif (
-            isinstance(self.interface.size, str)
-            and self.interface.size in ABSOLUTE_FONT_SIZES
-        ):
-            default = base_size * FONT_SIZE_SCALE.get(self.interface.size, 1.0)
+        elif isinstance(self.interface.size, str):
+            default = base_size * FONT_SIZE_SCALE[self.interface.size]
             return default
         else:
             # Using SP means we follow the standard proportion between CSS pixels and

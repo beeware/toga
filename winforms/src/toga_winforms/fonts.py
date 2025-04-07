@@ -9,7 +9,6 @@ from System.Drawing.Text import PrivateFontCollection
 from System.IO import FileNotFoundException
 from System.Runtime.InteropServices import ExternalException
 from travertino.constants import (
-    ABSOLUTE_FONT_SIZES,
     FONT_SIZE_SCALE,
     SYSTEM_DEFAULT_FONT_SIZE,
 )
@@ -97,12 +96,9 @@ class Font:
             # Convert font size to Winforms format
             if self.interface.size == SYSTEM_DEFAULT_FONT_SIZE:
                 font_size = DEFAULT_FONT.Size
-            elif (
-                isinstance(self.interface.size, str)
-                and self.interface.size in ABSOLUTE_FONT_SIZES
-            ):
+            elif isinstance(self.interface.size, str):
                 font_size = DEFAULT_FONT.Size
-                font_size *= FONT_SIZE_SCALE.get(self.interface.size, 1.0)
+                font_size *= FONT_SIZE_SCALE[self.interface.size]
             else:
                 font_size = self.interface.size
 
