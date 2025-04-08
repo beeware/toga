@@ -14,7 +14,7 @@ Label,General Widget,:class:`~toga.Label`,Text label,|y|,|y|,|y|,|y|,|y|,|b|,|b|
 MapView,General Widget,:class:`~toga.MapView`,A zoomable map that can be annotated with location pins,|y|,|y|,|y|,|y|,|y|,,
 MultilineTextInput,General Widget,:class:`~toga.MultilineTextInput`,Multi-line Text Input field,|y|,|y|,|y|,|y|,|y|,,
 NumberInput,General Widget,:class:`~toga.NumberInput`,A text input that is limited to numeric input,|y|,|y|,|y|,|y|,|y|,,
-PasswordInput,General Widget,:class:`~toga.PasswordInput`,A text input that hides its input,|y|,|y|,|y|,|y|,|y|,,
+PasswordInput,General Widget,:class:`~toga.PasswordInput`,A text input that hides its input,|y|,|y|,|y|,|y|,|y|,|b|,
 ProgressBar,General Widget,:class:`~toga.ProgressBar`,Progress Bar,|y|,|y|,|y|,|y|,|y|,|b|,
 Selection,General Widget,:class:`~toga.Selection`,A widget to select a single option from a list of alternatives.,|y|,|y|,|y|,|y|,|y|,,
 Slider,General Widget,:class:`~toga.Slider`,Slider,|y|,|y|,|y|,|y|,|y|,,
