@@ -446,9 +446,13 @@ jobs:
         - "Positron (Django)"
         - "Positron (Static)"
         - "Positron (Site-specific)"
+        - "Positron (FastAPI)"
         include:
         - bootstrap: "Positron (Django)"
           new-options: '-Q "bootstrap=Toga Positron (Django server)"'
+
+        - bootstrap: "Positron (FastAPI)"
+          new-options: '-Q "bootstrap=Toga Positron (FastAPI server)"'
 
         - bootstrap: "Positron (Static)"
           new-options: '-Q "bootstrap=Toga Positron (Static server)"'
