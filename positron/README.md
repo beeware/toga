@@ -32,9 +32,10 @@ framework you want to use:
     3) Pygame                                (does not support iOS/Android/Web deployment)
     4) Console                               (does not support iOS/Android/Web deployment)
     5) Toga Positron (Django server)         (does not support Web deployment)
-    6) Toga Positron (Site-specific browser) (does not support Web deployment)
-    7) Toga Positron (Static server)         (does not support Web deployment)
-    8) None
+    6) Toga Positron (FastAPI server)         (does not support Web deployment)
+    7) Toga Positron (Site-specific browser) (does not support Web deployment)
+    8) Toga Positron (Static server)         (does not support Web deployment)
+    9) None
 
     GUI framework [1]:
 
@@ -77,6 +78,20 @@ To create an initial database, use `manage.py` - e.g.,:
 
 This will create an initial `db.sqlite3` file with a superuser account. All users
 of the app will have this superuser account in their database.
+
+### FastAPI Backend Support
+
+The `Positron (FastAPI)` backend enables you to create a Toga application that serves a FastAPI-powered web backend.
+
+This creates a template with:
+	•	A FastAPI app in server.py
+	•	A Toga app that serves the ASGI app
+	•	Uses asyncio.start_server to serve HTTP requests directly without needing Uvicorn
+
+FastAPI backend is ideal for developers who want a modern async web backend embedded in a native app.
+
+Note: This bootstrap is currently intended for local desktop use, not production deployments.
+
 
 ### Site-specific browser
 
