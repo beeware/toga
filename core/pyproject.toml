@@ -64,7 +64,7 @@ classifiers = [
 dev = [
     "coverage[toml] == 7.8.0",
     "coverage-conditional-plugin == 0.9.0",
-    "Pillow == 11.1.0",
+    "Pillow == 11.2.1",
     "pre-commit == 4.2.0",
     "pytest == 8.3.5",
     "pytest-asyncio == 0.26.0",
@@ -78,7 +78,7 @@ dev = [
 # and the docs contribution guide.
 docs = [
     "furo == 2024.8.6",
-    "Pillow == 11.1.0",
+    "Pillow == 11.2.1",
     "pyenchant == 3.2.2",
     "sphinx == 8.2.3",
     "sphinx_tabs == 3.4.5",
