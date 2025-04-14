@@ -67,14 +67,15 @@ Then in your python code, import and use it::
 Community
 ---------
 
-Travertino is part of the `BeeWare suite`_. You can talk to the community through:
+Travertino is part of the `BeeWare suite <https://beeware.org>`_. You can talk to the
+community through:
 
 * `@beeware@fosstodon.org on Mastodon <https://fosstodon.org/@beeware>`__
 
 * `Discord <https://beeware.org/bee/chat/>`__
 
 We foster a welcoming and respectful community as described in our
-`BeeWare Community Code of Conduct`_.
+`BeeWare Community Code of Conduct <https://beeware.org/community/behavior/>`__.
 
 Contributing
 ------------
