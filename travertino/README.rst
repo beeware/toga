@@ -67,31 +67,23 @@ Then in your python code, import and use it::
 Community
 ---------
 
-Travertino is part of the `BeeWare suite`_. You can talk to the community through:
+Travertino is part of the `BeeWare suite <https://beeware.org>`_. You can talk to the
+community through:
 
 * `@beeware@fosstodon.org on Mastodon <https://fosstodon.org/@beeware>`__
 
 * `Discord <https://beeware.org/bee/chat/>`__
 
 We foster a welcoming and respectful community as described in our
-`BeeWare Community Code of Conduct`_.
+`BeeWare Community Code of Conduct <https://beeware.org/community/behavior/>`__.
 
 Contributing
 ------------
 
-If you experience problems with Travertino, `log them on GitHub`_. If you
-want to contribute code, please `fork the code`_ and `submit a pull request`_.
+If you experience problems with Toga, `log them on GitHub
+<https://github.com/beeware/toga/issues>`__.
 
-Travertino uses `Pre-commit <https://pre-commit.com/>`__ and  `TownCrier
-<https://pypi.org/project/towncrier/>`__ to help maintain code quality. For
-details on how to use these tools as part of your development environment, see
-the `Briefcase code contribution guide
-<https://briefcase.readthedocs.io/en/stable/how-to/contribute-code.html>`__.
-Although that document is for a different project, the details about setting up
-your development environment are the same.
-
-.. _BeeWare suite: https://beeware.org
-.. _BeeWare Community Code of Conduct: https://beeware.org/community/behavior/
-.. _log them on Github: https://github.com/beeware/toga/issues
-.. _fork the code: https://github.com/beeware/toga
-.. _submit a pull request: https://github.com/beeware/toga/pulls
+If you'd like to contribute to Toga development, our `contribution guide
+<https://toga.readthedocs.io/en/latest/how-to/contribute/index.html>`__
+details how to set up a development environment, and other requirements we have
+as part of our contribution process.

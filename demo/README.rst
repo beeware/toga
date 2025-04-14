@@ -59,9 +59,10 @@ We foster a welcoming and respectful community as described in our
 Contributing
 ------------
 
-If you experience problems with Toga Demo, `log them on GitHub`_. If you
-want to contribute code, please `fork the code`_ and `submit a pull request`_.
+If you experience problems with Toga, `log them on GitHub
+<https://github.com/beeware/toga/issues>`__.
 
-.. _log them on Github: https://github.com/beeware/toga/issues
-.. _fork the code: https://github.com/beeware/toga
-.. _submit a pull request: https://github.com/beeware/toga/pulls
+If you'd like to contribute to Toga development, our `contribution guide
+<https://toga.readthedocs.io/en/latest/how-to/contribute/index.html>`__
+details how to set up a development environment, and other requirements we have
+as part of our contribution process.
