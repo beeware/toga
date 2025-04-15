@@ -16,23 +16,15 @@ class DateInput(Widget):
         self.native = self._create_native_widget("sl-input")
         self.native.type = "date"
         self.native.value = native_date(datetime.date.today())
-        self.native.onblur = self.lost_focus
+        self.native.onblur = self.dom_onblur
 
-    def lost_focus(self, event):
+    def dom_onblur(self, event):
         try:
             input_date = py_date(self.native.value)
         except Exception:
             input_date = datetime.date.today()
 
-        min_date = self.get_min_date()
-        max_date = self.get_max_date()
-
-        if input_date < min_date:
-            input_date = min_date
-        elif input_date > max_date:
-            input_date = max_date
-
-        self.native.value = native_date(input_date)
+        self.set_value(input_date)
 
     def get_value(self):
         try:
