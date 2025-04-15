@@ -29,9 +29,11 @@ A widget to select a calendar date.
 
     Not supported
 
-  .. group-tab:: Web |no|
+  .. group-tab:: Web
 
-    Not supported
+    .. figure:: /reference/images/dateinput-web.png
+       :align: center
+       :width: 300px
 
   .. group-tab:: Textual |no|
 
