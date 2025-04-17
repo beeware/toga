@@ -1,4 +1,5 @@
 import asyncio
+import threading
 
 import toga
 from textual.app import App as TextualApp
@@ -27,6 +28,7 @@ class App:
         self.interface._impl = self
 
         self.loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(self.loop)
         self.native = TogaApp(self)
 
         self._current_window = None
@@ -56,7 +58,21 @@ class App:
         self.native.exit()
 
     def main_loop(self):
-        self.loop.run_until_complete(self.native.run_async(headless=self.headless))
+        # This is duplicating the bulk of TextualApp.run(); however, that entry point
+        # doesn't give any control over the event loop that is used. The key detail
+        # is that the _context() is required to capture logging messages generated
+        # as the app is shutting down. See textualize/textual#5091.
+        with self.native._context():
+            try:
+                self.native._loop = self.loop
+                self.native._thread_id = threading.get_ident()
+
+                self.loop.run_until_complete(
+                    self.native.run_async(headless=self.headless)
+                )
+            finally:
+                self.native._loop = None
+                self.native._thread_id = 0
 
     def set_icon(self, icon):
         pass
