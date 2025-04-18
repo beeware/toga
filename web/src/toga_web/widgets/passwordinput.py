@@ -7,7 +7,7 @@ class PasswordInput(TextInput):
     def create(self):
         super().create()
         self.native.setAttribute("type", "password")
-        self.native.addEventListener("sl-change", create_proxy(self.dom_onchange))
+        create_proxy(self.native,"sl-change",self.dom_onchange)
 
     def dom_onchange(self, event):
         self.interface.on_change(None)
