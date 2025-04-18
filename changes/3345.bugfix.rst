@@ -1,0 +1,1 @@
+Improved web event listeners to prevent errors and improved stability
