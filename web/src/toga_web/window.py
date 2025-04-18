@@ -1,7 +1,7 @@
 from toga.command import Group, Separator
 from toga.constants import WindowState
 from toga.types import Position, Size
-from toga_web.libs import create_element, js
+from toga_web.libs import create_element, create_proxy, js
 
 from .screens import Screen as ScreenImpl
 
