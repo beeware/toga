@@ -1,7 +1,7 @@
 from toga.command import Group, Separator
 from toga.constants import WindowState
 from toga.types import Position, Size
-from toga_web.libs import create_element, js
+from toga_web.libs import create_element, create_proxy, js
 
 from .screens import Screen as ScreenImpl
 
@@ -21,9 +21,11 @@ class Window:
         app_placeholder = js.document.getElementById("app-placeholder")
         app_placeholder.appendChild(self.native)
 
-        js.document.body.onfocus = self.dom_on_gain_focus
-        js.document.body.onblur = self.dom_on_lose_focus
-        js.document.addEventListener("visibilitychange", self.dom_on_visibility_change)
+        create_proxy(js.document.body, "focus", self.dom_on_gain_focus)
+        create_proxy(js.document.body, "blur", self.dom_on_lose_focus)
+        create_proxy(
+            js.document.body, "visibilitychange", self.dom_on_visibility_change
+        )
 
         self.set_title(title)
 

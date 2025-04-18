@@ -7,14 +7,15 @@ except ModuleNotFoundError:
 
 
 try:
-    # Try to import pyodide from the PyScript namespace
+    # Try to import pyodide from the PyScript namespace and wrappers
     import pyodide
+    import pyodide.ffi.wrappers
 except ModuleNotFoundError:
     # To ensure the code can be imported, provide a pyodide symbol as a fallback
     pyodide = None
 
 
-create_proxy = pyodide.ffi.create_proxy if pyodide else lambda f: f
+create_proxy = pyodide.ffi.wrappers.add_event_listener if pyodide else lambda f: f
 
 
 def create_element(
