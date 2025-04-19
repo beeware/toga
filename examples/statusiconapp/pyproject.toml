@@ -15,6 +15,7 @@ formal_name = "Status Icon App"
 description = "A testing app"
 sources = ['statusiconapp']
 requires = [
+    '../../travertino',
     '../../core',
 ]
 
