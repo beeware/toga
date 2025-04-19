@@ -15,6 +15,7 @@ formal_name = "Password Input Demo"
 description = "A testing app"
 sources = ['passwordinput']
 requires = [
+    '../../travertino',
     '../../core',
 ]
 
