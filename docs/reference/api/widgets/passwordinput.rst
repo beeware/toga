@@ -37,9 +37,11 @@ not the actual characters.
        :align: center
        :width: 300px
 
-  .. group-tab:: Web |no|
+  .. group-tab:: Web
 
-    Not supported
+    .. figure:: /reference/images/passwordinput-web.png
+       :align: center
+       :width: 300px
 
   .. group-tab:: Textual |no|
 
