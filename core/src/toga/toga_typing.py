@@ -1,40 +1,55 @@
 # flake8: noqa
-from toga.app import App, DocumentApp
-from toga.colors import hsl, hsla, rgb, rgba
-from toga.command import Command, Group
-from toga.dialogs import (
-    ConfirmDialog,
-    ErrorDialog,
-    InfoDialog,
-    OpenFileDialog,
-    QuestionDialog,
-    SaveFileDialog,
-    SelectFolderDialog,
-    StackTraceDialog,
-)
-from toga.documents import Document, DocumentWindow
+"""
+isort:skip_file
+"""
+from toga.app import App
+from toga.app import DocumentApp
+from toga.colors import hsl
+from toga.colors import hsla
+from toga.colors import rgb
+from toga.colors import rgba
+from toga.command import Command
+from toga.command import Group
+from toga.dialogs import ConfirmDialog
+from toga.dialogs import ErrorDialog
+from toga.dialogs import InfoDialog
+from toga.dialogs import OpenFileDialog
+from toga.dialogs import QuestionDialog
+from toga.dialogs import SaveFileDialog
+from toga.dialogs import SelectFolderDialog
+from toga.dialogs import StackTraceDialog
+from toga.documents import Document
+from toga.documents import DocumentWindow
 from toga.fonts import Font
 from toga.icons import Icon
 from toga.images import Image
 from toga.keys import Key
-from toga.statusicons import MenuStatusIcon, SimpleStatusIcon
-from toga.types import LatLng, Position, Size
+from toga.statusicons import MenuStatusIcon
+from toga.statusicons import SimpleStatusIcon
+from toga.types import LatLng
+from toga.types import Position
+from toga.types import Size
 from toga.widgets.activityindicator import ActivityIndicator
 from toga.widgets.base import Widget
-from toga.widgets.box import Box, Column, Row
+from toga.widgets.box import Box
 from toga.widgets.button import Button
 from toga.widgets.canvas import Canvas
-from toga.widgets.dateinput import DateInput, DatePicker
+from toga.widgets.box import Column
+from toga.widgets.dateinput import DateInput
+from toga.widgets.dateinput import DatePicker
 from toga.widgets.detailedlist import DetailedList
 from toga.widgets.divider import Divider
 from toga.widgets.imageview import ImageView
 from toga.widgets.label import Label
-from toga.widgets.mapview import MapPin, MapView
+from toga.widgets.mapview import MapPin
+from toga.widgets.mapview import MapView
 from toga.widgets.multilinetextinput import MultilineTextInput
 from toga.widgets.numberinput import NumberInput
-from toga.widgets.optioncontainer import OptionContainer, OptionItem
+from toga.widgets.optioncontainer import OptionContainer
+from toga.widgets.optioncontainer import OptionItem
 from toga.widgets.passwordinput import PasswordInput
 from toga.widgets.progressbar import ProgressBar
+from toga.widgets.box import Row
 from toga.widgets.scrollcontainer import ScrollContainer
 from toga.widgets.selection import Selection
 from toga.widgets.slider import Slider
@@ -42,7 +57,10 @@ from toga.widgets.splitcontainer import SplitContainer
 from toga.widgets.switch import Switch
 from toga.widgets.table import Table
 from toga.widgets.textinput import TextInput
-from toga.widgets.timeinput import TimeInput, TimePicker
+from toga.widgets.timeinput import TimeInput
+from toga.widgets.timeinput import TimePicker
 from toga.widgets.tree import Tree
 from toga.widgets.webview import WebView
-from toga.window import DocumentMainWindow, MainWindow, Window
+from toga.window import DocumentMainWindow
+from toga.window import MainWindow
+from toga.window import Window
