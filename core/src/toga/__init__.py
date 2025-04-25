@@ -1,7 +1,11 @@
 import importlib
 import warnings
+from typing import TYPE_CHECKING
 
 from travertino import _package_version
+
+if TYPE_CHECKING:
+    from toga.toga_typing import *  # noqa: F401, F403
 
 toga_core_imports = {
     # toga.app imports
