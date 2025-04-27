@@ -1,1 +1,1 @@
-You can now use scroll container on the web – ScrollContainer is supported in Toga Web!
+You can now use scroll container on the web — ScrollContainer is supported in Toga web!
