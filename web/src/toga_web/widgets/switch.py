@@ -1,4 +1,4 @@
-from toga_web.libs import create_proxy
+from toga_web.libs import add_event_listener
 
 from .base import Widget
 
@@ -6,7 +6,7 @@ from .base import Widget
 class Switch(Widget):
     def create(self):
         self.native = self._create_native_widget("sl-switch")
-        self.native.addEventListener("sl-change", create_proxy(self.dom_onchange))
+        add_event_listener(self.native.id, "sl-change", self.dom_onchange)
 
     def dom_onchange(self, event):
         self.interface.on_change()

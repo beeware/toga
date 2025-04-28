@@ -1,7 +1,9 @@
+from pyscript.web import document, when
+
 from toga.command import Group, Separator
 from toga.constants import WindowState
 from toga.types import Position, Size
-from toga_web.libs import create_element, create_proxy, js
+from toga_web.libs import create_element, js
 
 from .screens import Screen as ScreenImpl
 
@@ -21,12 +23,6 @@ class Window:
         app_placeholder = js.document.getElementById("app-placeholder")
         app_placeholder.appendChild(self.native)
 
-        create_proxy(js.document.body, "focus", self.dom_on_gain_focus)
-        create_proxy(js.document.body, "blur", self.dom_on_lose_focus)
-        create_proxy(
-            js.document.body, "visibilitychange", self.dom_on_visibility_change
-        )
-
         self.set_title(title)
 
     ######################################################################
@@ -39,18 +35,20 @@ class Window:
     def on_size_allocate(self, widget, allocation):
         pass
 
+    @when("focus", selector="body")
     def dom_on_gain_focus(self, event):
         self.interface.on_gain_focus()
 
+    @when("onblur", selector="body")
     def dom_on_lose_focus(self, event):
         self.interface.on_lose_focus()
 
+    @when("visibilitychange", selector="document")
     def dom_on_visibility_change(self, event):
-        if hasattr(js.document, "hidden"):
-            if js.document.visibilityState == "visible":
-                self.interface.on_show()
-            else:
-                self.interface.on_hide()
+        if document.element.visibilityState == "visible":
+            self.interface.on_show()
+        else:
+            self.interface.on_hide()
 
     ######################################################################
     # Window properties
