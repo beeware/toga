@@ -4,7 +4,7 @@ from .base import Widget
 class ScrollContainer(Widget):
     def __init__(self, interface):
         super().__init__(interface)
-        self.native.addEventListener("scroll", self._on_native_scroll)
+        self.native.addEventListener("scroll", self.dom_onscroll)
 
     def create(self):
         self._horizontal_enabled = True
@@ -12,7 +12,7 @@ class ScrollContainer(Widget):
 
         self.native = self._create_native_widget(
             "div",
-            classes=["toga-scroll-container"],
+            classes=["container"],
         )
         self._content_div = self._create_native_widget(
             "div",
@@ -73,6 +73,6 @@ class ScrollContainer(Widget):
 
         self.native.scrollTo(horizontal, vertical)
 
-    def _on_native_scroll(self, _evt):
+    def dom_onscroll(self, _evt):
         if self.interface.on_scroll:
             self.interface.on_scroll(widget=self.interface)
