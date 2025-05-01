@@ -183,6 +183,23 @@ def test_set_content(widget):
     )
 
 
+def test_set_content_with_property(widget):
+    """Static HTML content can be loaded into the page, using a setter."""
+    widget.content = "<h1>Fancy page</h1>"
+    assert_action_performed_with(
+        widget,
+        "set content",
+        root_url="",
+        content="<h1>Fancy page</h1>",
+    )
+
+
+def test_get_content_property_error(widget):
+    """Verify that using the getter on widget.content fails."""
+    with pytest.raises(AttributeError):
+        _ = widget.content
+
+
 def test_user_agent(widget):
     """The user agent can be customized."""
     widget.user_agent = "New user agent"

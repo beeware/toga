@@ -142,6 +142,18 @@ class WebView(Widget):
         self._impl.set_content(root_url, content)
 
     @property
+    def content(self):
+        """A placeholder getter for the content property, which raises an AttributeError
+        since there is no way to access the content displayed in a WebView on most APIs.
+        """
+        raise AttributeError("'WebView' has a write-only 'content' attribute")
+
+    @content.setter
+    def content(self, value):
+        """Setter for content. Equivalent to the method set_content("", value)."""
+        self.set_content("", value)
+
+    @property
     def cookies(self) -> CookiesResult:
         """Retrieve cookies from the WebView.
 
