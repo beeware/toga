@@ -1,0 +1,1 @@
+Add a write-only property in WebView to set the contents without an annoying empty string.
