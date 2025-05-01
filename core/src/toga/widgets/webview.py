@@ -63,7 +63,6 @@ class WebView(Widget):
         # Otherwise, load the URL.
         if content is not None:
             self.set_content("", content)
-            self._content_init_test = content  # for testing purpose
             self.url = None
         else:
             self.url = url

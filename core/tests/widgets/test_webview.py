@@ -188,7 +188,12 @@ def test_init_widget_with_content():
     content = "<h1>Hello, World!</h1>"
     webview = toga.WebView(content=content)
 
-    assert webview._content_init_test == content
+    assert_action_performed_with(
+        webview,
+        "set content",
+        root_url="",
+        content="<h1>Hello, World!</h1>",
+    )
 
 
 def test_init_widget_content_discard_url():
