@@ -183,6 +183,22 @@ def test_set_content(widget):
     )
 
 
+def test_init_widget_with_content():
+    """Static HTML content can be loaded into the page at instantiation time."""
+    content = "<h1>Hello, World!</h1>"
+    webview = toga.WebView(content=content)
+
+    assert webview._content_init_test == content
+
+
+def test_init_widget_content_discard_url():
+    """When content is used in instantiation of WebView, url is discarded."""
+    content = "<h1>Hello, World!</h1>"
+    webview = toga.WebView(content=content, url="https://example.com")
+
+    assert webview.url is None
+
+
 def test_user_agent(widget):
     """The user agent can be customized."""
     widget.user_agent = "New user agent"

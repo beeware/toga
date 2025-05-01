@@ -31,6 +31,7 @@ class WebView(Widget):
         id: str | None = None,
         style: StyleT | None = None,
         url: str | None = None,
+        content: str | None = None,
         user_agent: str | None = None,
         on_webview_load: OnWebViewLoadHandler | None = None,
         **kwargs,
@@ -42,6 +43,9 @@ class WebView(Widget):
             will be applied to the widget.
         :param url: The full URL to load in the WebView. If not provided,
             an empty page will be displayed.
+        :param content: The static "non-URL" content to use for the WebView.
+            This supersedes the url parameter, since content and url initialization
+            are mutually exclusive.
         :param user_agent: The user agent to use for web requests. If not
             provided, the default user agent for the platform will be used.
         :param on_webview_load: A handler that will be invoked when the web view
@@ -54,7 +58,15 @@ class WebView(Widget):
 
         # Set the load handler before loading the first URL.
         self.on_webview_load = on_webview_load
-        self.url = url
+
+        # Load content only if it's provided by the user.
+        # Otherwise, load the URL.
+        if content is not None:
+            self.set_content("", content)
+            self._content_init_test = content  # for testing purpose
+            self.url = None
+        else:
+            self.url = url
 
     def _create(self) -> Any:
         return self.factory.WebView(interface=self)
