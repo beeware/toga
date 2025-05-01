@@ -1,0 +1,1 @@
+The type annotation for directional style properties (``margin``, the deprecated alias ``padding``) has been corrected.

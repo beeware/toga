@@ -206,7 +206,7 @@ class Pack(BaseStyle):
     height: str | int = validated_property(NONE, integer=True, initial=NONE)
     flex: float = validated_property(number=True, initial=0)
 
-    margin: int | tuple[int] = directional_property("margin{}")
+    margin: int | tuple[int, ...] = directional_property("margin{}")
     margin_top: int = validated_property(integer=True, initial=0)
     margin_right: int = validated_property(integer=True, initial=0)
     margin_bottom: int = validated_property(integer=True, initial=0)
@@ -249,7 +249,7 @@ class Pack(BaseStyle):
     # 2024-12: Backwards compatibility for Toga < 0.5.0
     ######################################################################
 
-    padding: int | tuple[int] = aliased_property(source="margin", deprecated=True)
+    padding: int | tuple[int, ...] = aliased_property(source="margin", deprecated=True)
     padding_top: int = aliased_property(source="margin_top", deprecated=True)
     padding_right: int = aliased_property(source="margin_right", deprecated=True)
     padding_bottom: int = aliased_property(source="margin_bottom", deprecated=True)
