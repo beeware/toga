@@ -146,8 +146,8 @@ class WebView(Widget):
         """A write-only attribute to set the HTML content currently displayed by the
         WebView.
 
-        ``web_view.content = "<html>..."`` is equivalent to calling 
-        ``web_view.set_content("", "<html>...")``. 
+        ``web_view.content = "<html>..."`` is equivalent to calling
+        ``web_view.set_content("", "<html>...")``.
 
         :raises AttributeError: If an attempt is made to read the page content.
         """
