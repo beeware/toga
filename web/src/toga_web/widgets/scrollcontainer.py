@@ -76,5 +76,4 @@ class ScrollContainer(Widget):
         self.native.scrollTo(horizontal, vertical)
 
     def dom_onscroll(self, _evt):
-        if self.interface.on_scroll:
-            self.interface.on_scroll(widget=self.interface)
+        self.interface.on_scroll()
