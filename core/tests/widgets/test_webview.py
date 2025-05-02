@@ -77,6 +77,19 @@ def test_webview_load_disabled(monkeypatch):
         del DummyWebView.SUPPORTS_ON_WEBVIEW_LOAD
 
 
+def test_init_widget_with_content():
+    """Static HTML content can be loaded into the page at instantiation time."""
+    webview = toga.WebView(url="https://example.com", content="<h1>Hello, World!</h1>")
+
+    assert_action_performed_with(
+        webview,
+        "set content",
+        root_url="https://example.com",
+        content="<h1>Hello, World!</h1>",
+    )
+    assert widget.url == "https://example.com"
+
+
 @pytest.mark.parametrize(
     "url",
     [
@@ -181,27 +194,6 @@ def test_set_content(widget):
         root_url="https://example.com",
         content="<h1>Fancy page</h1>",
     )
-
-
-def test_init_widget_with_content():
-    """Static HTML content can be loaded into the page at instantiation time."""
-    content = "<h1>Hello, World!</h1>"
-    webview = toga.WebView(content=content)
-
-    assert_action_performed_with(
-        webview,
-        "set content",
-        root_url="",
-        content="<h1>Hello, World!</h1>",
-    )
-
-
-def test_init_widget_content_discard_url():
-    """When content is used in instantiation of WebView, url is discarded."""
-    content = "<h1>Hello, World!</h1>"
-    webview = toga.WebView(content=content, url="https://example.com")
-
-    assert webview.url is None
 
 
 def test_user_agent(widget):

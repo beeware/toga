@@ -59,11 +59,10 @@ class WebView(Widget):
         # Set the load handler before loading the first URL.
         self.on_webview_load = on_webview_load
 
-        # Load content only if it's provided by the user.
-        # Otherwise, load the URL.
+        # Load both content and root URL if it's provided by the user.
+        # Otherwise, load the URL only.
         if content is not None:
-            self.set_content("", content)
-            self.url = None
+            self.set_content(url, content)
         else:
             self.url = url
 
