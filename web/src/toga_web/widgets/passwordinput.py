@@ -1,4 +1,4 @@
-from toga_web.libs import add_event_listener
+from toga_web.libs import create_proxy
 
 from .textinput import TextInput
 
@@ -7,7 +7,7 @@ class PasswordInput(TextInput):
     def create(self):
         super().create()
         self.native.setAttribute("type", "password")
-        add_event_listener(self.native.id, "sl-change", self.dom_onchange)
+        self.native.addEventListener("sl-change", create_proxy(self.dom_onchange))
 
     def dom_onchange(self, event):
         self.interface.on_change(None)

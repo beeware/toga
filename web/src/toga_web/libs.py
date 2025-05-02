@@ -4,8 +4,14 @@ try:
 except ModuleNotFoundError:
     # To ensure the code can be imported, provide a js symbol as a fallback
     js = None
+try:
+    import pyodide
+except ModuleNotFoundError:
+    pyodide = None
 
 from pyscript.web import document  # type: ignore
+
+create_proxy = pyodide.ffi.create_proxy if pyodide else lambda f: f
 
 
 def create_element(
@@ -60,17 +66,3 @@ def create_element(
             element.appendChild(child)
 
     return element
-
-
-def add_event_listener(element_id, event_type, callback):
-    """
-    Utility method to attach event listener to an element by ID
-
-    :param element_id: The ID of the DOM element
-    :param event_type: The name of the event e.g. sl-change
-    :param callback: The function to be called when the event triggers
-    """
-
-    element = document.querySelector(f"#{element_id}")
-    if element:
-        element.addEventListener(event_type, callback)
