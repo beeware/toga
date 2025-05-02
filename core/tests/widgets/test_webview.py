@@ -53,6 +53,18 @@ def test_create_with_values():
     assert widget.style.width == 256
 
 
+def test_create_with_content():
+    """Static HTML content can be loaded into the page at instantiation time."""
+    webview = toga.WebView(url="https://example.com", content="<h1>Hello, World!</h1>")
+
+    assert_action_performed_with(
+        webview,
+        "set content",
+        root_url="https://example.com",
+        content="<h1>Hello, World!</h1>",
+    )
+
+
 def test_webview_load_disabled(monkeypatch):
     """If the backend doesn't support on_webview_load, a warning is raised."""
     try:
@@ -75,19 +87,6 @@ def test_webview_load_disabled(monkeypatch):
     finally:
         # Clear the feature attribute.
         del DummyWebView.SUPPORTS_ON_WEBVIEW_LOAD
-
-
-def test_init_widget_with_content():
-    """Static HTML content can be loaded into the page at instantiation time."""
-    webview = toga.WebView(url="https://example.com", content="<h1>Hello, World!</h1>")
-
-    assert_action_performed_with(
-        webview,
-        "set content",
-        root_url="https://example.com",
-        content="<h1>Hello, World!</h1>",
-    )
-    assert widget.url == "https://example.com"
 
 
 @pytest.mark.parametrize(

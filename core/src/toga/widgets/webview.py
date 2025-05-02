@@ -44,8 +44,8 @@ class WebView(Widget):
         :param url: The full URL to load in the WebView. If not provided,
             an empty page will be displayed.
         :param content: The static "non-URL" content to use for the WebView.
-            This supersedes the ``url`` parameter, since content and URL initialization
-            are mutually exclusive.
+            If both ``content`` and ``url`` are provided, content-based initialization
+            are used, and the ``url`` is used as the root URL for the contents.
         :param user_agent: The user agent to use for web requests. If not
             provided, the default user agent for the platform will be used.
         :param on_webview_load: A handler that will be invoked when the web view
