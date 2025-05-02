@@ -151,7 +151,7 @@ class WebView(Widget):
 
         :raises AttributeError: If an attempt is made to read the page content.
         """
-        raise AttributeError("WebView.content is a write-only attribute.")
+        raise AttributeError("WebView.content is a write-only attribute")
 
     @content.setter
     def content(self, value):
