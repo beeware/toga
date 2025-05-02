@@ -9,7 +9,7 @@ try:
 except ModuleNotFoundError:
     pyodide = None
 
-from pyscript.web import document  # type: ignore
+from pyscript.web import document
 
 create_proxy = pyodide.ffi.create_proxy if pyodide else lambda f: f
 
