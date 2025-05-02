@@ -35,7 +35,7 @@ A widget to select a single option from a list of alternatives.
        :align: center
        :width: 300px
 
-  .. group-tab:: Web 
+  .. group-tab:: Web
 
     .. figure:: /reference/images/selection-web.png
        :align: center
