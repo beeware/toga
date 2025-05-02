@@ -1,10 +1,12 @@
+from toga_web.libs import create_proxy
+
 from .base import Widget
 
 
 class ScrollContainer(Widget):
     def __init__(self, interface):
         super().__init__(interface)
-        self.native.addEventListener("scroll", self.dom_onscroll)
+        self.native.addEventListener("scroll", create_proxy(self.dom_onscroll))
 
     def create(self):
         self._horizontal_enabled = True
