@@ -1,0 +1,1 @@
+Window visibility and focus events in the web backend no longer raise errors when the browser window loses focus
