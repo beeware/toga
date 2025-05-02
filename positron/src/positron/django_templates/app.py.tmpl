@@ -1,0 +1,84 @@
+from __future__ import annotations
+
+import asyncio
+import os
+import shutil
+import socketserver
+from threading import Thread
+from wsgiref.simple_server import WSGIServer
+
+import django
+from django.core import management as django_manage
+from django.core.handlers.wsgi import WSGIHandler
+from django.core.servers.basehttp import WSGIRequestHandler
+
+import toga
+
+
+class ThreadedWSGIServer(socketserver.ThreadingMixIn, WSGIServer):
+    pass
+
+
+class {{{{ cookiecutter.class_name }}}}(toga.App):
+    def web_server(self):
+        print("Configuring settings...")
+        os.environ["DJANGO_SETTINGS_MODULE"] = "{{{{ cookiecutter.module_name }}}}.settings"
+        django.setup(set_prefix=False)
+
+        self.paths.data.mkdir(exist_ok=True)
+        user_db = self.paths.data / "db.sqlite3"
+        if user_db.exists():
+            print("User already has a database.")
+        else:
+            template_db = self.paths.app / "resources" / "db.sqlite3"
+            if template_db.exists():
+                print("Copying initial database...")
+                shutil.copy(template_db, user_db)
+            else:
+                print("No initial database.")
+
+        print("Applying database migrations...")
+        django_manage.call_command("migrate")
+
+        print("Starting server...")
+        # Use port 0 to let the server select an available port.
+        self._httpd = ThreadedWSGIServer(("127.0.0.1", 0), WSGIRequestHandler)
+        self._httpd.daemon_threads = True
+
+        wsgi_handler = WSGIHandler()
+        self._httpd.set_app(wsgi_handler)
+
+        # The server is now listening, but connections will block until
+        # serve_forever is run.
+        self.loop.call_soon_threadsafe(self.server_exists.set_result, "ready")
+        self._httpd.serve_forever()
+
+    def cleanup(self, app, **kwargs):
+        print("Shutting down...")
+        self._httpd.shutdown()
+        return True
+
+    def startup(self):
+        self.server_exists = asyncio.Future()
+
+        self.web_view = toga.WebView()
+
+        self.server_thread = Thread(target=self.web_server)
+        self.server_thread.start()
+
+        self.on_exit = self.cleanup
+
+        self.main_window = toga.MainWindow()
+        self.main_window.content = self.web_view
+
+    async def on_running(self):
+        await self.server_exists
+
+        host, port = self._httpd.socket.getsockname()
+        self.web_view.url = f"http://{{host}}:{{port}}{initial_path}"
+
+        self.main_window.show()
+
+
+def main():
+    return {{{{ cookiecutter.class_name }}}}()

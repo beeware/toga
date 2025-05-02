@@ -1,1 +1,0 @@
-The `wait_for_window()` window probe method, now has a polling based waiting mechanism.

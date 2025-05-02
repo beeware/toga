@@ -206,7 +206,15 @@ class Canvas(Box):
         )
 
     def arc(
-        self, x, y, radius, startangle, endangle, anticlockwise, draw_context, **kwargs
+        self,
+        x,
+        y,
+        radius,
+        startangle,
+        endangle,
+        counterclockwise,
+        draw_context,
+        **kwargs,
     ):
         self.ellipse(
             x,
@@ -216,7 +224,7 @@ class Canvas(Box):
             0,
             startangle,
             endangle,
-            anticlockwise,
+            counterclockwise,
             draw_context,
             **kwargs,
         )
@@ -230,7 +238,7 @@ class Canvas(Box):
         rotation,
         startangle,
         endangle,
-        anticlockwise,
+        counterclockwise,
         draw_context,
         **kwargs,
     ):
@@ -244,7 +252,7 @@ class Canvas(Box):
             [
                 PointF(x, y)
                 for x, y in arc_to_bezier(
-                    sweepangle(startangle, endangle, anticlockwise)
+                    sweepangle(startangle, endangle, counterclockwise)
                 )
             ]
         )
@@ -300,16 +308,25 @@ class Canvas(Box):
         self.scale(self.dpi_scale, self.dpi_scale, draw_context)
 
     # Text
-    def write_text(self, text, x, y, font, baseline, draw_context, **kwargs):
+    def _line_height(self, font, line_height):
+        if line_height is None:
+            return font.metric("LineSpacing")
+        else:
+            # Get size in CSS pixels
+            return (font.native.SizeInPoints * 96 / 72) * line_height
+
+    def write_text(
+        self, text, x, y, font, baseline, line_height, draw_context, **kwargs
+    ):
         for op in ["fill", "stroke"]:
             if color := kwargs.pop(f"{op}_color", None):
-                self._text_path(text, x, y, font, baseline, draw_context)
+                self._text_path(text, x, y, font, baseline, line_height, draw_context)
                 getattr(self, op)(color, draw_context=draw_context, **kwargs)
 
-    def _text_path(self, text, x, y, font, baseline, draw_context):
+    def _text_path(self, text, x, y, font, baseline, line_height, draw_context):
         lines = text.splitlines()
-        line_height = font.metric("LineSpacing")
-        total_height = line_height * len(lines)
+        scaled_line_height = self._line_height(font, line_height)
+        total_height = scaled_line_height * len(lines)
 
         if baseline == Baseline.TOP:
             top = y
@@ -327,11 +344,11 @@ class Canvas(Box):
                 font.native.FontFamily,
                 font.native.Style.value__,
                 font.metric("EmHeight"),
-                PointF(x, top + (line_height * line_num)),
+                PointF(x, top + (scaled_line_height * line_num)),
                 self.string_format,
             )
 
-    def measure_text(self, text, font):
+    def measure_text(self, text, font, line_height):
         graphics = self.native.CreateGraphics()
         sizes = [
             graphics.MeasureString(line, font.native, 2**31 - 1, self.string_format)
@@ -339,7 +356,7 @@ class Canvas(Box):
         ]
         return (
             self.scale_out(max(size.Width for size in sizes)),
-            font.metric("LineSpacing") * len(sizes),
+            self._line_height(font, line_height) * len(sizes),
         )
 
     def get_image_data(self):

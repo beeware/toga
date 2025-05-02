@@ -1,3 +1,0 @@
-The Travertino library, providing the base classes for Toga's style and box model, is now managed as part of the Toga release process.
-
-TODO: CORRECT THE RELEASE DATE ON THE TRAVERTINO RELEASE NOTES

@@ -1,1 +1,0 @@
-Updated pytest-freezer from 0.4.8 to 0.4.9 in /core.

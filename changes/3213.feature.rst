@@ -1,1 +1,0 @@
-Travertino now has an ``aliased_property`` descriptor to support declaration of property name aliases in styles.

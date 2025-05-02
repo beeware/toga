@@ -1,1 +1,0 @@
-Rephrase web-specific language in docs.

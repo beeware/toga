@@ -1,1 +1,0 @@
-Tutorial 3 was extended to explain limitations of the browser example, and suggest some extension activities.

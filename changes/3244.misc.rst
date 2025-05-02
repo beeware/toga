@@ -1,1 +1,0 @@
-Updated setuptools from 75.8.2 to 76.0.0 in /core.

@@ -387,11 +387,11 @@ async def test_arc(canvas, probe):
 
     # Smile (exactly half a turn)
     canvas.context.move_to(150, 100)
-    canvas.context.arc(100, 100, 50, 0, pi, anticlockwise=False)
+    canvas.context.arc(100, 100, 50, 0, pi, counterclockwise=False)
 
     # Hair (exactly half a turn, but in the opposite direction)
     canvas.context.move_to(190, 100)
-    canvas.context.arc(100, 100, 90, 0, pi, anticlockwise=True)
+    canvas.context.arc(100, 100, 90, 0, pi, counterclockwise=True)
 
     # Left eye
     canvas.context.move_to(70, 70)
@@ -438,7 +438,7 @@ async def test_ellipse(canvas, probe):
         rotation=-pi / 4,
         startangle=pi * 7 / 4,
         endangle=pi / 4,
-        anticlockwise=True,
+        counterclockwise=True,
     )
     canvas.context.stroke(color=CORNFLOWERBLUE)
 
@@ -733,9 +733,12 @@ async def test_multiline_text(canvas, probe):
         # accepted.
         text_filler.write_text("", X[1], y)
 
-        # Explicit ALPHABETIC baseline, with default font and size. On most systems,
-        # this will go off the right edge of the canvas.
-        text_filler.write_text(caption(Baseline.ALPHABETIC), X[2], y)
+        # Explicit ALPHABETIC baseline, with default font and size but specified
+        # line height. On most systems, this will go off the right edge of the canvas.
+        line_height = 2.5
+        text_filler.write_text(
+            caption(Baseline.ALPHABETIC), X[2], y, line_height=line_height
+        )
 
     # Other baselines, with default font but specified size
     y = 130

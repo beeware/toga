@@ -10,7 +10,7 @@ with Toga's overall list of changes for each new release.
 
 .. towncrier release notes start
 
-0.5.0 (2025-??-??)
+0.5.0 (2025-03-14)
 ==================
 
 Features
@@ -37,6 +37,7 @@ Backward Incompatible Changes
 * The mechanisms for assigning styles and applicators to nodes, and applying styles, have been reworked. A node will now attempt to apply its style as soon as it is assigned an applicator. This means you should not assign an applicator to a node until the node is sufficiently initialized to apply its style. To accommodate uses that currently do not follow this order, any exceptions resulting from a failed style application are caught, and a runtime warning is issued. In a future version, this will be an exception. (`#224 <https://github.com/beeware/travertino/issues/224>`_)
 * Supplying an applicator to BaseStyle.copy() has been deprecated. If you need to manually assign an applicator to a style, do it separately, after the copy. (`#224 <https://github.com/beeware/travertino/issues/224>`_)
 * The API for ``Style.layout()`` has been formally specified as part of the Travertino API. The initial ``node`` argument is no longer required as part of the ``layout()`` method. A ``Style`` instance can interrogate ``self._applicator.node`` to retrieve the node to which the style is being applied. (`#244 <https://github.com/beeware/travertino/issues/244>`_)
+* Travertino's font-parsing function ``fonts.font`` has been removed, as has the ``default`` parameter to ``Choices``. Neither was in use by Toga; this should only affect direct use of the Travertino API. (`#3129 <https://github.com/beeware/toga/issues/3129>`__)
 
 
 Documentation

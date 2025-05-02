@@ -1,1 +1,0 @@
-Travertino's ``declaration`` module has been split into two smaller modules, ``properties`` and ``style``. Toga's imports have been updated to the new locations, but users with Toga <= 0.4.8 that update Travertino to 0.5.0 (and anyone who may be accessing these classes in user code) will get a ``DeprecationWarning`` explaining the situation.

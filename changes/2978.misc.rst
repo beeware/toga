@@ -1,1 +1,0 @@
-Update to rubicon-objc v0.5.0.

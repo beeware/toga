@@ -206,7 +206,13 @@ class Pack(BaseStyle):
     height: str | int = validated_property(NONE, integer=True, initial=NONE)
     flex: float = validated_property(number=True, initial=0)
 
-    margin: int | tuple[int] = directional_property("margin{}")
+    margin: (
+        int
+        | tuple[int]
+        | tuple[int, int]
+        | tuple[int, int, int]
+        | tuple[int, int, int, int]
+    ) = directional_property("margin{}")
     margin_top: int = validated_property(integer=True, initial=0)
     margin_right: int = validated_property(integer=True, initial=0)
     margin_bottom: int = validated_property(integer=True, initial=0)
@@ -249,7 +255,13 @@ class Pack(BaseStyle):
     # 2024-12: Backwards compatibility for Toga < 0.5.0
     ######################################################################
 
-    padding: int | tuple[int] = aliased_property(source="margin", deprecated=True)
+    padding: (
+        int
+        | tuple[int]
+        | tuple[int, int]
+        | tuple[int, int, int]
+        | tuple[int, int, int, int]
+    ) = aliased_property(source="margin", deprecated=True)
     padding_top: int = aliased_property(source="margin_top", deprecated=True)
     padding_right: int = aliased_property(source="margin_right", deprecated=True)
     padding_bottom: int = aliased_property(source="margin_bottom", deprecated=True)
@@ -270,57 +282,62 @@ class Pack(BaseStyle):
         """Does this style declaration define an object that should be hidden."""
         return self.visibility == HIDDEN
 
-    def apply(self, *names: list[str]) -> None:
-        if self._applicator:
-            for name in names or self._PROPERTIES:
-                if name == "text_align":
-                    if (value := self.text_align) is None:
-                        if self.text_direction == RTL:
-                            value = RIGHT
-                        else:
-                            value = LEFT
-                    self._applicator.set_text_align(value)
-                elif name == "text_direction":
-                    if self.text_align is None:
-                        self._applicator.set_text_align(
-                            RIGHT if self.text_direction == RTL else LEFT
-                        )
-                elif name == "color":
-                    self._applicator.set_color(self.color)
-                elif name == "background_color":
-                    self._applicator.set_background_color(self.background_color)
-                elif name == "visibility":
-                    value = self.visibility
-                    if value == VISIBLE:
-                        # If visibility is being set to VISIBLE, look up the chain to
-                        # see if an ancestor is hidden.
-                        widget = self._applicator.widget
-                        while widget := widget.parent:
-                            if widget.style._hidden:
-                                value = HIDDEN
-                                break
-
-                    self._applicator.set_hidden(value == HIDDEN)
-                elif name in (
-                    "font_family",
-                    "font_size",
-                    "font_style",
-                    "font_variant",
-                    "font_weight",
-                ):
-                    self._applicator.set_font(
-                        Font(
-                            self.font_family,
-                            self.font_size,
-                            style=self.font_style,
-                            variant=self.font_variant,
-                            weight=self.font_weight,
-                        )
-                    )
+    def _apply(self, names: set) -> None:
+        if "text_align" in names:
+            if (value := self.text_align) is None:
+                if self.text_direction == RTL:
+                    value = RIGHT
                 else:
-                    # Any other style change will cause a change in layout geometry, so
-                    # perform a refresh.
-                    self._applicator.refresh()
+                    value = LEFT
+            self._applicator.set_text_align(value)
+        if "text_direction" in names:
+            if self.text_align is None:
+                self._applicator.set_text_align(
+                    RIGHT if self.text_direction == RTL else LEFT
+                )
+        if "color" in names:
+            self._applicator.set_color(self.color)
+        if "background_color" in names:
+            self._applicator.set_background_color(self.background_color)
+        if "visibility" in names:
+            value = self.visibility
+            if value == VISIBLE:
+                # If visibility is being set to VISIBLE, look up the chain to
+                # see if an ancestor is hidden.
+                widget = self._applicator.widget
+                while widget := widget.parent:
+                    if widget.style._hidden:
+                        value = HIDDEN
+                        break
+
+            self._applicator.set_hidden(value == HIDDEN)
+
+        if names & {
+            "font_family",
+            "font_size",
+            "font_style",
+            "font_variant",
+            "font_weight",
+        }:
+            self._applicator.set_font(
+                Font(
+                    self.font_family,
+                    self.font_size,
+                    style=self.font_style,
+                    variant=self.font_variant,
+                    weight=self.font_weight,
+                )
+            )
+
+        # Refresh if any properties that could affect layout are being set.
+        if names - {
+            # All properties that *can't* affect layout
+            "text_align",
+            "color",
+            "background_color",
+            "visibility",
+        }:
+            self._applicator.refresh()
 
     def layout(self, viewport: Any) -> None:
         # self._debug("=" * 80)

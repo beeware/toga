@@ -1,9 +1,12 @@
+import asyncio
 import os
+import shutil
 import socketserver
-from threading import Event, Thread
+from threading import Thread
 from wsgiref.simple_server import WSGIServer
 
 import django
+from django.core import management as django_manage
 from django.core.handlers.wsgi import WSGIHandler
 from django.core.servers.basehttp import WSGIRequestHandler
 
@@ -16,19 +19,36 @@ class ThreadedWSGIServer(socketserver.ThreadingMixIn, WSGIServer):
 
 class Positron(toga.App):
     def web_server(self):
+        print("Configuring settings...")
+        os.environ["DJANGO_SETTINGS_MODULE"] = "positron.settings"
+        django.setup(set_prefix=False)
+
+        self.paths.data.mkdir(exist_ok=True)
+        user_db = self.paths.data / "db.sqlite3"
+        if user_db.exists():
+            print("User already has a database.")
+        else:
+            template_db = self.paths.app / "resources" / "db.sqlite3"
+            if template_db.exists():
+                print("Copying initial database...")
+                shutil.copy(template_db, user_db)
+            else:
+                print("No initial database.")
+
+        print("Applying database migrations...")
+        django_manage.call_command("migrate")
+
         print("Starting server...")
         # Use port 0 to let the server select an available port.
         self._httpd = ThreadedWSGIServer(("127.0.0.1", 0), WSGIRequestHandler)
         self._httpd.daemon_threads = True
 
-        os.environ["DJANGO_SETTINGS_MODULE"] = "webapp.settings"
-        django.setup(set_prefix=False)
         wsgi_handler = WSGIHandler()
         self._httpd.set_app(wsgi_handler)
 
         # The server is now listening, but connections will block until
         # serve_forever is run.
-        self.server_exists.set()
+        self.loop.call_soon_threadsafe(self.server_exists.set_result, "ready")
         self._httpd.serve_forever()
 
     def cleanup(self, app, **kwargs):
@@ -37,7 +57,7 @@ class Positron(toga.App):
         return True
 
     def startup(self):
-        self.server_exists = Event()
+        self.server_exists = asyncio.Future()
 
         self.web_view = toga.WebView()
 
@@ -46,12 +66,15 @@ class Positron(toga.App):
 
         self.on_exit = self.cleanup
 
-        self.server_exists.wait()
-        host, port = self._httpd.socket.getsockname()
-        self.web_view.url = f"http://{host}:{port}/"
-
         self.main_window = toga.MainWindow()
         self.main_window.content = self.web_view
+
+    async def on_running(self):
+        await self.server_exists
+
+        host, port = self._httpd.socket.getsockname()
+        self.web_view.url = f"http://{host}:{port}/admin"
+
         self.main_window.show()
 
 

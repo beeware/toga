@@ -1,1 +1,0 @@
-On iOS, Box, Canvas, ImageView, Label, ProgressBar, ScrollContainer and Slider widgets now have transparent backgrounds by default.

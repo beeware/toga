@@ -1,0 +1,1 @@
+The ``anticlockwise`` parameter to the Canvas drawing context's ``arc`` and ``ellipse`` methods (and the ``Arc`` and ``Ellipse`` drawing objects) has been deprecated; use ``counterclockwise`` instead.

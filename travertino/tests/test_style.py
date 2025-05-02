@@ -4,7 +4,7 @@ import re
 from collections.abc import Sequence
 from contextlib import nullcontext
 from functools import partial
-from unittest.mock import call
+from unittest.mock import Mock, call
 from warnings import catch_warnings, filterwarnings
 
 import pytest
@@ -189,176 +189,72 @@ def test_apply(StyleClass):
     style.apply.assert_called_once_with()
 
 
+@pytest.mark.parametrize(
+    "name, initial",
+    [
+        ("explicit_const", VALUE1),
+        ("explicit_value", 0),
+        ("explicit_none", None),
+        ("implicit", None),
+    ],
+)
 @pytest.mark.parametrize("StyleClass", [Style, DeprecatedStyle])
-def test_property_with_explicit_const(StyleClass):
+def test_property(name, initial, StyleClass):
     style = StyleClass()
 
-    # Default value is VALUE1
-    assert style.explicit_const is VALUE1
+    # Default value
+    assert style[name] == initial
     style.apply.assert_not_called()
 
     # Modify the value
-    style.explicit_const = 10
+    style[name] = 10
 
-    assert style.explicit_const == 10
-    style.apply.assert_called_once_with("explicit_const")
+    assert style[name] == 10
+    style.apply.assert_called_once_with(name)
 
     # Clear the applicator mock
     style.apply.reset_mock()
 
     # Set the value to the same value.
     # No dirty notification is sent
-    style.explicit_const = 10
-    assert style.explicit_const == 10
+    style[name] = 10
+    assert style[name] == 10
     style.apply.assert_not_called()
 
     # Set the value to something new
     # A dirty notification is set.
-    style.explicit_const = 20
-    assert style.explicit_const == 20
-    style.apply.assert_called_once_with("explicit_const")
+    style[name] = 20
+    assert style[name] == 20
+    style.apply.assert_called_once_with(name)
 
     # Clear the applicator mock
     style.apply.reset_mock()
 
     # Clear the property
-    del style.explicit_const
-    assert style.explicit_const is VALUE1
-    style.apply.assert_called_once_with("explicit_const")
+    del style[name]
+    assert style[name] == initial
+    style.apply.assert_called_once_with(name)
 
     # Clear the applicator mock
     style.apply.reset_mock()
 
     # Clear the property again.
-    # The underlying attribute won't exist, so this
-    # should be a no-op.
-    del style.explicit_const
-    assert style.explicit_const is VALUE1
+    # The underlying attribute won't exist, so this should be a no-op.
+    del style[name]
+    assert style[name] is initial
     style.apply.assert_not_called()
 
 
 @pytest.mark.parametrize("StyleClass", [Style, DeprecatedStyle])
-def test_property_with_explicit_value(StyleClass):
-    style = StyleClass()
-
-    # Default value is 0
-    assert style.explicit_value == 0
-    style.apply.assert_not_called()
-
-    # Modify the value
-    style.explicit_value = 10
-
-    assert style.explicit_value == 10
-    style.apply.assert_called_once_with("explicit_value")
-
-    # Clear the applicator mock
-    style.apply.reset_mock()
-
-    # Set the value to the same value.
-    # No dirty notification is sent
-    style.explicit_value = 10
-    assert style.explicit_value == 10
-    style.apply.assert_not_called()
-
-    # Set the value to something new
-    # A dirty notification is set.
-    style.explicit_value = 20
-    assert style.explicit_value == 20
-    style.apply.assert_called_once_with("explicit_value")
-
-    # Clear the applicator mock
-    style.apply.reset_mock()
-
-    # Clear the property
-    del style.explicit_value
-    assert style.explicit_value == 0
-    style.apply.assert_called_once_with("explicit_value")
-
-
-@pytest.mark.parametrize("StyleClass", [Style, DeprecatedStyle])
-def test_property_with_explicit_none(StyleClass):
-    style = StyleClass()
-
-    # Default value is None
-    assert style.explicit_none is None
-    style.apply.assert_not_called()
-
-    # Modify the value
-    style.explicit_none = 10
-
-    assert style.explicit_none == 10
-    style.apply.assert_called_once_with("explicit_none")
-
-    # Clear the applicator mock
-    style.apply.reset_mock()
-
-    # Set the property to the same value.
-    # No dirty notification is sent
-    style.explicit_none = 10
-    assert style.explicit_none == 10
-    style.apply.assert_not_called()
-
-    # Set the property to something new
-    # A dirty notification is set.
-    style.explicit_none = 20
-    assert style.explicit_none == 20
-    style.apply.assert_called_once_with("explicit_none")
-
-    # Clear the applicator mock
-    style.apply.reset_mock()
-
-    # Clear the property
-    del style.explicit_none
-    assert style.explicit_none is None
-    style.apply.assert_called_once_with("explicit_none")
-
-
-@pytest.mark.parametrize("StyleClass", [Style, DeprecatedStyle])
-def test_property_with_implicit_default(StyleClass):
-    style = StyleClass()
-
-    # Default value is None
-    assert style.implicit is None
-    style.apply.assert_not_called()
-
-    # Modify the value
-    style.implicit = 10
-
-    assert style.implicit == 10
-    style.apply.assert_called_once_with("implicit")
-
-    # Clear the applicator mock
-    style.apply.reset_mock()
-
-    # Set the value to the same value.
-    # No dirty notification is sent
-    style.implicit = 10
-    assert style.implicit == 10
-    style.apply.assert_not_called()
-
-    # Set the value to something new
-    # A dirty notification is set.
-    style.implicit = 20
-    assert style.implicit == 20
-    style.apply.assert_called_once_with("implicit")
-
-    # Clear the applicator mock
-    style.apply.reset_mock()
-
-    # Clear the property
-    del style.implicit
-    assert style.implicit is None
-    style.apply.assert_called_once_with("implicit")
-
-
-@pytest.mark.parametrize("StyleClass", [Style, DeprecatedStyle])
-def test_set_initial_no_apply(StyleClass):
-    """If a property hasn't been set, assigning it its initial value shouldn't apply."""
+def test_set_delete_initial_no_apply(StyleClass):
+    """Assigning or deleting a value equal to the initial value shouldn't apply."""
     style = StyleClass()
 
     # 0 is the initial value
     style.explicit_value = 0
+    style.apply.assert_not_called()
 
+    del style.explicit_value
     style.apply.assert_not_called()
 
 
@@ -1129,3 +1025,98 @@ def test_conditional_alias_simultaneous_setting(alias, context, properties):
         style.update(**properties)
     with context():
         assert style[alias] == 1
+
+
+def test_batched_apply():
+    """With applicator, apply should batch calls to internal _apply."""
+    style = Style()
+    style._applicator = Mock()
+    style.apply.reset_mock()
+    style._apply.reset_mock()
+
+    style.update(explicit_const=VALUE2, implicit=VALUE3)
+    # Apply is called once for each property during update, but these calls are stored
+    # and batched into one combined call to _apply.
+    assert style.apply.mock_calls == [call("explicit_const"), call("implicit")]
+    style._apply.assert_called_once_with({"explicit_const", "implicit"})
+
+    style.apply.reset_mock()
+    style._apply.reset_mock()
+
+
+def test_batched_apply_no_names():
+    """Batching doesn't do anything if no names were batched."""
+    style = Style()
+    style._applicator = Mock()
+    style._apply.reset_mock()
+
+    with style.batch_apply():
+        pass
+
+    style._apply.assert_not_called()
+
+
+def test_batched_apply_nested():
+    """Nesting batch_apply() does nothing; _apply is only called when all are exited."""
+    style = Style()
+    style._applicator = Mock()
+    style._apply.reset_mock()
+
+    with style.batch_apply():
+        with style.batch_apply():
+            style.update(explicit_const=VALUE2, implicit=VALUE3)
+
+        style._apply.assert_not_called()
+
+    style._apply.assert_called_once_with({"explicit_const", "implicit"})
+
+
+def test_batched_apply_directional():
+    """Assigning or deleting a directional property batches to _apply."""
+    style = Style()
+    style._applicator = Mock()
+    style._apply.reset_mock()
+
+    style.thing = 10
+    style._apply.assert_called_once_with(
+        {"thing_top", "thing_right", "thing_bottom", "thing_left"}
+    )
+    style._apply.reset_mock()
+
+    del style.thing
+    style._apply.assert_called_once_with(
+        {"thing_top", "thing_right", "thing_bottom", "thing_left"}
+    )
+    style._apply.reset_mock()
+
+    style.thing = (15, 15, 15, 15)
+    style._apply.assert_called_once_with(
+        {"thing_top", "thing_right", "thing_bottom", "thing_left"}
+    )
+    style._apply.reset_mock()
+
+    style.thing = (0, 15, 15, 15)
+    style._apply.assert_called_once_with({"thing_top"})
+    style._apply.reset_mock()
+
+    del style.thing
+    style._apply.assert_called_once_with({"thing_right", "thing_bottom", "thing_left"})
+
+
+def test_apply_deprecated():
+    """Calling with more than one argument is deprecated."""
+    style = Style(explicit_const=VALUE2, implicit=VALUE3)
+    style._applicator = Mock()
+    style._apply.reset_mock()
+
+    with pytest.warns(
+        DeprecationWarning,
+        match=(
+            r"Calling Style\.apply\(\) with multiple arguments is deprecated\. Use the "
+            r'"with Style\.batch_apply\(\):" context manager instead\.'
+        ),
+    ):
+        style.apply("explicit_const", "implicit")
+
+    # Should still call down to _apply, though.
+    style._apply.assert_called_once_with({"explicit_const", "implicit"})

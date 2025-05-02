@@ -1,1 +1,0 @@
-The ``Pack.margin`` property (and its deprecated alias, ``padding``) can now be accessed via bracket notation, as in ``style["margin"]``. (Previously this worked for the "sub-properties" of ``margin_top`` etc., but not for ``margin``/``padding`` itself.)

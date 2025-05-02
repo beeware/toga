@@ -1,1 +1,0 @@
-List travertino before core when installing from local directories

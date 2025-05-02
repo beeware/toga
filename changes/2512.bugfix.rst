@@ -1,1 +1,0 @@
-If a WebView widget completes navigation to a new URL while it is being destroyed, an error is no longer raised on macOS or iOS.

@@ -1,1 +1,0 @@
-The name of the environment variable for the Textual backend was corrected from toga-textual to toga_textual.

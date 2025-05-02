@@ -1,11 +1,11 @@
 from math import cos, pi, sin, tan
 
 
-def sweepangle(startangle: float, endangle: float, anticlockwise: bool) -> float:
+def sweepangle(startangle: float, endangle: float, counterclockwise: bool) -> float:
     """Returns an arc length in the range [-2 * pi, 2 * pi], where positive numbers are
     clockwise. Based on the "ellipse method steps" in the HTML spec."""
 
-    if anticlockwise:
+    if counterclockwise:
         if endangle - startangle <= -2 * pi:
             return -2 * pi
     else:
@@ -15,7 +15,7 @@ def sweepangle(startangle: float, endangle: float, anticlockwise: bool) -> float
     startangle %= 2 * pi
     endangle %= 2 * pi
     sweepangle = endangle - startangle
-    if anticlockwise:
+    if counterclockwise:
         if sweepangle > 0:
             sweepangle -= 2 * pi
     else:
@@ -42,7 +42,7 @@ def arc_to_bezier(sweepangle: float) -> list[tuple[float, float]]:
         [0, 1, -1, 0],  # 270
     ]
 
-    if sweepangle < 0:  # Anticlockwise
+    if sweepangle < 0:  # Counterclockwise
         sweepangle *= -1
         for matrix in matrices:
             matrix[2] *= -1

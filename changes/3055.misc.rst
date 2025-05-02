@@ -1,1 +1,0 @@
-ChariotGazer app has been added to Toga success stories.

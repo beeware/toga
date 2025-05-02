@@ -1,1 +1,0 @@
-"Full screen mode" on an app has been renamed "Presentation mode" to avoid the ambiguity with "full screen mode" on a window. The ``toga.App.enter_full_screen`` and ``toga.App.exit_full_screen`` APIs have been renamed ``toga.App.enter_presentation_mode`` and ``toga.App.exit_presentation_mode``, respectively. ```

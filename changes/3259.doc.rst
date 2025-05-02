@@ -1,1 +1,0 @@
-Widget screenshots have been added for the Web backend.

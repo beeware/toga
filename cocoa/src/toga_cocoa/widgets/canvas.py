@@ -155,13 +155,13 @@ class Canvas(Widget):
         radius,
         startangle,
         endangle,
-        anticlockwise,
+        counterclockwise,
         draw_context,
         **kwargs,
     ):
         # Cocoa Box Widget is using a flipped coordinate system, so clockwise
-        # is actually anticlockwise
-        if anticlockwise:
+        # is actually counterclockwise
+        if counterclockwise:
             clockwise = 1
         else:
             clockwise = 0
@@ -178,7 +178,7 @@ class Canvas(Widget):
         rotation,
         startangle,
         endangle,
-        anticlockwise,
+        counterclockwise,
         draw_context,
         **kwargs,
     ):
@@ -187,10 +187,14 @@ class Canvas(Widget):
         self.rotate(rotation, draw_context)
         if radiusx >= radiusy:
             self.scale(1, radiusy / radiusx, draw_context)
-            self.arc(0, 0, radiusx, startangle, endangle, anticlockwise, draw_context)
+            self.arc(
+                0, 0, radiusx, startangle, endangle, counterclockwise, draw_context
+            )
         else:
             self.scale(radiusx / radiusy, 1, draw_context)
-            self.arc(0, 0, radiusy, startangle, endangle, anticlockwise, draw_context)
+            self.arc(
+                0, 0, radiusy, startangle, endangle, counterclockwise, draw_context
+            )
         core_graphics.CGContextRestoreGState(draw_context)
 
     def rect(self, x, y, width, height, draw_context, **kwargs):
@@ -269,11 +273,14 @@ class Canvas(Widget):
 
     # Although the native API can measure and draw multi-line strings, this makes the
     # line spacing depend on the scale factor, which messes up the tests.
-    def _line_height(self, font):
-        # descender is a negative number.
-        return ceil(font.native.ascender - font.native.descender)
+    def _line_height(self, font, line_height):
+        if line_height is None:
+            # descender is a negative number.
+            return ceil(font.native.ascender - font.native.descender)
+        else:
+            return font.native.pointSize * line_height
 
-    def measure_text(self, text, font):
+    def measure_text(self, text, font, line_height):
         # We need at least a fill color to render, but that won't change the size.
         sizes = [
             self._render_string(line, font, fill_color=color(BLACK)).size()
@@ -281,13 +288,13 @@ class Canvas(Widget):
         ]
         return (
             ceil(max(size.width for size in sizes)),
-            self._line_height(font) * len(sizes),
+            self._line_height(font, line_height) * len(sizes),
         )
 
-    def write_text(self, text, x, y, font, baseline, **kwargs):
+    def write_text(self, text, x, y, font, baseline, line_height, **kwargs):
         lines = text.splitlines()
-        line_height = self._line_height(font)
-        total_height = line_height * len(lines)
+        scaled_line_height = self._line_height(font, line_height)
+        total_height = scaled_line_height * len(lines)
 
         if baseline == Baseline.TOP:
             top = y + font.native.ascender
@@ -301,7 +308,7 @@ class Canvas(Widget):
 
         for line_num, line in enumerate(lines):
             # Rounding minimizes differences between scale factors.
-            origin = NSPoint(round(x), round(top) + (line_height * line_num))
+            origin = NSPoint(round(x), round(top) + (scaled_line_height * line_num))
             rs = self._render_string(line, font, **kwargs)
 
             # "This method uses the baseline origin by default. If

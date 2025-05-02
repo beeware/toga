@@ -1,1 +1,0 @@
-Initial experimental support for GTK4 has been added to Toga's GTK backend. This support can be enabled by setting ``TOGA_GTK=4`` in your environment.

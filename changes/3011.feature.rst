@@ -1,1 +1,0 @@
-Style properties can now be passed directly to a widget's constructor, or accessed as attributes, without explicitly using a ``style`` object.

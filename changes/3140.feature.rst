@@ -1,1 +1,0 @@
-The Travertino library now includes APIs to perform alpha blending operations and conversion of rgba to hsla.

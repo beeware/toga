@@ -101,9 +101,18 @@ class Canvas(Widget):
         self._ensure_subpath(cpx, cpy, path)
         path.quadTo(cpx, cpy, x, y)
 
-    def arc(self, x, y, radius, startangle, endangle, anticlockwise, path, **kwargs):
+    def arc(self, x, y, radius, startangle, endangle, counterclockwise, path, **kwargs):
         self.ellipse(
-            x, y, radius, radius, 0, startangle, endangle, anticlockwise, path, **kwargs
+            x,
+            y,
+            radius,
+            radius,
+            0,
+            startangle,
+            endangle,
+            counterclockwise,
+            path,
+            **kwargs,
         )
 
     def ellipse(
@@ -115,7 +124,7 @@ class Canvas(Widget):
         rotation,
         startangle,
         endangle,
-        anticlockwise,
+        counterclockwise,
         path,
         **kwargs,
     ):
@@ -127,7 +136,7 @@ class Canvas(Widget):
 
         coords = list(
             itertools.chain(
-                *arc_to_bezier(sweepangle(startangle, endangle, anticlockwise))
+                *arc_to_bezier(sweepangle(startangle, endangle, counterclockwise))
             )
         )
         matrix.mapPoints(coords)
@@ -188,20 +197,25 @@ class Canvas(Widget):
         self.scale(self.dpi_scale, self.dpi_scale, canvas)
 
     # Text
+    def _line_height(self, paint, line_height):
+        if line_height is None:
+            return paint.getFontSpacing()
+        else:
+            return paint.getTextSize() * line_height
 
-    def measure_text(self, text, font):
+    def measure_text(self, text, font, line_height):
         paint = self._text_paint(font)
         sizes = [paint.measureText(line) for line in text.splitlines()]
         return (
             max(size for size in sizes),
-            paint.getFontSpacing() * len(sizes),
+            self._line_height(paint, line_height) * len(sizes),
         )
 
-    def write_text(self, text, x, y, font, baseline, canvas, **kwargs):
+    def write_text(self, text, x, y, font, baseline, line_height, canvas, **kwargs):
         lines = text.splitlines()
         paint = self._text_paint(font)
-        line_height = paint.getFontSpacing()
-        total_height = line_height * len(lines)
+        scaled_line_height = self._line_height(paint, line_height)
+        total_height = scaled_line_height * len(lines)
 
         # paint.ascent returns a negative number.
         if baseline == Baseline.TOP:
@@ -217,7 +231,7 @@ class Canvas(Widget):
         for line_num, line in enumerate(text.splitlines()):
             # FILL_AND_STROKE doesn't allow separate colors, so we have to draw twice.
             def draw():
-                canvas.drawText(line, x, top + (line_height * line_num), paint)
+                canvas.drawText(line, x, top + (scaled_line_height * line_num), paint)
 
             if (color := kwargs.get("fill_color")) is not None:
                 paint.setStyle(Paint.Style.FILL)

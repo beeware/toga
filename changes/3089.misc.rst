@@ -1,1 +1,0 @@
-Moved to a pinned version of setuptools_dynamic_dependencies.

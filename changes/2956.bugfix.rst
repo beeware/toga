@@ -1,1 +1,0 @@
-Multi-letter keyboard navigation in Tables and DetailedLists with the winforms backend is now functional.

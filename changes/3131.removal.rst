@@ -1,1 +1,0 @@
-If window size is unchanged as a result of a resize request, a layout of window content is no longer triggered.

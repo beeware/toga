@@ -1,0 +1,1 @@
+The Canvas example app's UI controls have been reorganized and more clearly labeled.

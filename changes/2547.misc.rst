@@ -1,1 +1,0 @@
-Imports from the ``toga`` core namespace has been modified to use lazy importing.

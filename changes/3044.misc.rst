@@ -1,1 +1,0 @@
-An issue with PR #3033 that allowed bracket access of invalid style names on a Pack object has been fixed.

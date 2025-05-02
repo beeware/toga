@@ -1,1 +1,0 @@
-The properties module in Travertino has been split into submodules.
