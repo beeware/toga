@@ -1,5 +1,7 @@
 import datetime
 
+from toga_web.libs import create_proxy
+
 from .base import Widget
 
 
@@ -16,7 +18,7 @@ class DateInput(Widget):
         self.native = self._create_native_widget("sl-input")
         self.native.type = "date"
         self.native.value = native_date(datetime.date.today())
-        self.native.onblur = self.dom_onblur
+        self.native.addEventListener("sl-blur", create_proxy(self.dom_onblur))
 
     def dom_onblur(self, event):
         try:
