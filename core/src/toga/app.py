@@ -467,17 +467,11 @@ class App:
         """
         platform_task_factory = self.loop.get_task_factory()
 
-        def factory(loop, coro, context=None):
+        def factory(loop, coro, **kwargs):
             if platform_task_factory is not None:
-                if sys.version_info < (3, 11):  # pragma: no-cover-if-gte-py311
-                    task = platform_task_factory(loop, coro)
-                else:  # pragma: no-cover-if-lt-py311
-                    task = platform_task_factory(loop, coro, context=context)
+                task = platform_task_factory(loop, coro, **kwargs)
             else:
-                if sys.version_info < (3, 11):  # pragma: no-cover-if-gte-py311
-                    task = asyncio.Task(coro, loop=loop)
-                else:  # pragma: no-cover-if-lt-py311
-                    task = asyncio.Task(coro, loop=loop, context=context)
+                task = asyncio.Task(coro, loop=loop, **kwargs)
 
             self._running_tasks.add(task)
             task.add_done_callback(self._running_tasks.discard)

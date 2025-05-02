@@ -1,7 +1,7 @@
 from toga.command import Group, Separator
 from toga.constants import WindowState
 from toga.types import Position, Size
-from toga_web.libs import create_element, js
+from toga_web.libs import create_element, create_proxy, js
 
 from .screens import Screen as ScreenImpl
 
@@ -21,9 +21,15 @@ class Window:
         app_placeholder = js.document.getElementById("app-placeholder")
         app_placeholder.appendChild(self.native)
 
-        js.document.body.onfocus = self.dom_on_gain_focus
-        js.document.body.onblur = self.dom_on_lose_focus
-        js.document.addEventListener("visibilitychange", self.dom_on_visibility_change)
+        js.document.body.addEventListener(
+            "focus", create_proxy(self.dom_on_gain_focus), True
+        )
+        js.document.body.addEventListener(
+            "blur", create_proxy(self.dom_on_lose_focus), True
+        )
+        js.document.addEventListener(
+            "visibilitychange", create_proxy(self.dom_on_visibility_change)
+        )
 
         self.set_title(title)
 
@@ -44,11 +50,10 @@ class Window:
         self.interface.on_lose_focus()
 
     def dom_on_visibility_change(self, event):
-        if hasattr(js.document, "hidden"):
-            if js.document.visibilityState == "visible":
-                self.interface.on_show()
-            else:
-                self.interface.on_hide()
+        if js.document.visibilityState == "visible":
+            self.interface.on_show()
+        else:
+            self.interface.on_hide()
 
     ######################################################################
     # Window properties

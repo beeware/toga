@@ -142,6 +142,23 @@ class WebView(Widget):
         self._impl.set_content(root_url, content)
 
     @property
+    def content(self):
+        """A write-only attribute to set the HTML content currently displayed by the
+        WebView.
+
+        ``web_view.content = "<html>..."`` is equivalent to calling
+        ``web_view.set_content("", "<html>...")``.
+
+        :raises AttributeError: If an attempt is made to read the page content.
+        """
+        raise AttributeError("WebView.content is a write-only attribute")
+
+    @content.setter
+    def content(self, value):
+        """Setter for content. Equivalent to the method set_content("", value)."""
+        self.set_content("", value)
+
+    @property
     def cookies(self) -> CookiesResult:
         """Retrieve cookies from the WebView.
 
