@@ -26,7 +26,7 @@ from .widgets.passwordinput import PasswordInput
 from .widgets.progressbar import ProgressBar
 
 # from .widgets.scrollcontainer import ScrollContainer
-# from .widgets.selection import Selection
+from .widgets.selection import Selection
 # from .widgets.slider import Slider
 # from .widgets.splitcontainer import SplitContainer
 from .widgets.switch import Switch
@@ -72,7 +72,7 @@ __all__ = [
     "ProgressBar",
     "ActivityIndicator",
     # 'ScrollContainer',
-    # 'Selection',
+    'Selection',
     # 'Slider',
     # 'SplitContainer',
     "Switch",
