@@ -1,1 +1,1 @@
-Add a write-only property in WebView to set the contents without an annoying empty string.
+The content of a WebView can now be assigned using the `content` property, without providing a root URL for the content.

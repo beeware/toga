@@ -143,10 +143,15 @@ class WebView(Widget):
 
     @property
     def content(self):
-        """A placeholder getter for the content property, which raises an AttributeError
-        since there is no way to access the content displayed in a WebView on most APIs.
+        """A write-only attribute to set the HTML content currently displayed by the
+        WebView.
+
+        ``web_view.content = "<html>..."`` is equivalent to calling 
+        ``web_view.set_content("", "<html>...")``. 
+
+        :raises AttributeError: If an attempt is made to read the page content.
         """
-        raise AttributeError("'WebView' has a write-only 'content' attribute")
+        raise AttributeError("WebView.content is a write-only attribute.")
 
     @content.setter
     def content(self, value):
