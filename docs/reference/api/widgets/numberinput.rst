@@ -50,7 +50,7 @@ Usage
 
     import toga
 
-    widget = toga.NumberInput(min_value=1, max_value=10, step=0.001)
+    widget = toga.NumberInput(min=1, max=10, step=0.001)
     widget.value = 2.718
 
 NumberInput's properties can accept :class:`~decimal.Decimal`, :any:`int`, :any:`float`,
