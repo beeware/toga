@@ -1,0 +1,1 @@
+Documentation fix for `min` and `max` parameters in `NumberInput` widget usage.
