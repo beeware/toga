@@ -31,7 +31,9 @@ A widget to select a clock time.
 
   .. group-tab:: Web |no|
 
-    Not supported
+    .. figure:: /reference/images/timeinput-web.png
+       :align: center
+       :width: 300px
 
   .. group-tab:: Textual |no|
 
