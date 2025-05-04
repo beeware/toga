@@ -1,0 +1,1 @@
+You can now add dropdown menus to your web apps, the Selection widget is now supported on the web!
