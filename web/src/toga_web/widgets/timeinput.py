@@ -7,20 +7,22 @@ from .base import Widget
 
 def py_time(native_time):
     if isinstance(native_time, datetime.datetime):
-        return native_time.time().replace(microsecond=0)
+        time = native_time.time()
+    elif isinstance(native_time, str):
+        time = datetime.time.fromisoformat(native_time)
+    else:
+        time = datetime.datetime.now().time()
 
-    if isinstance(native_time, str):
-        parsed_time = datetime.time.fromisoformat(native_time)
-        return parsed_time.replace(microsecond=0)
-
-    return datetime.datetime.now().time().replace(microsecond=0)
+    return time.replace(microsecond=0)
 
 
 def native_time(py_time):
     if isinstance(py_time, datetime.datetime):
-        return py_time.time().replace(microsecond=0).isoformat()
+        time = py_time.time()
+    else:
+        time = py_time
 
-    return py_time.replace(microsecond=0).isoformat()
+    return time.replace(microsecond=0).isoformat()
 
 
 class TimeInput(Widget):
@@ -29,22 +31,17 @@ class TimeInput(Widget):
         self.native = self._create_native_widget("sl-input")
         self.native.setAttribute("step", "1")  # force seconds to show
         self.native.type = "time"
-        self.native.value = native_time(
-            datetime.datetime.now().time().replace(microsecond=0)
-        )
-        self.native.addEventListener("sl-blur", create_proxy(self.dom_sl_blur))
+        self.native.value = native_time(datetime.datetime.now())
         self.native.addEventListener("sl-change", create_proxy(self.dom_sl_change))
 
     def dom_sl_change(self, event):
-        self.interface.on_change()
-
-    def dom_sl_blur(self, event):
         try:
             input_time = py_time(self.native.value)
         except Exception:
             input_time = datetime.datetime.now().time().replace(microsecond=0)
 
         self.set_value(input_time)
+        self.interface.on_change()
 
     def get_value(self):
         try:
