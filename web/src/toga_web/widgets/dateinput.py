@@ -18,19 +18,16 @@ class DateInput(Widget):
         self.native = self._create_native_widget("sl-input")
         self.native.type = "date"
         self.native.value = native_date(datetime.date.today())
-        self.native.addEventListener("sl-blur", create_proxy(self.dom_sl_blur))
         self.native.addEventListener("sl-change", create_proxy(self.dom_sl_change))
 
     def dom_sl_change(self, event):
-        self.interface.on_change()
-
-    def dom_sl_blur(self, event):
         try:
             input_date = py_date(self.native.value)
         except Exception:
             input_date = datetime.date.today()
 
         self.set_value(input_date)
+        self.interface.on_change()
 
     def get_value(self):
         try:

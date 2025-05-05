@@ -1,1 +1,0 @@
-You can now pick dates on the web – DateInput is supported in Toga Web!
