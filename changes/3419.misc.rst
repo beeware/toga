@@ -1,0 +1,1 @@
+Fix a link for the license of WebView2 in the WinForms backend vendored DLLs README.
