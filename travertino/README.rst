@@ -50,7 +50,7 @@ Install Travertino:
 
 Then in your python code, import and use it::
 
-    >>> from travertino.colors import color, rgb,
+    >>> from travertino.colors import color, rgb
 
     # Define a new color as an RGB triple
     >>> red = rgb(0xff, 0x00, 0x00)
