@@ -1,1 +1,0 @@
-The WebView widget now supports specifying static content on instantiation.

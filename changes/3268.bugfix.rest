@@ -1,1 +1,0 @@
-Changing a widget's ``text_direction`` now triggers a layout refresh, since it can affect child positioning.
