@@ -30,8 +30,7 @@ from .widgets.progressbar import ProgressBar
 # from .widgets.slider import Slider
 # from .widgets.splitcontainer import SplitContainer
 from .widgets.switch import Switch
-
-# from .widgets.table import Table
+from .widgets.table import Table
 from .widgets.textinput import TextInput
 
 # from .widgets.tree import Tree
@@ -76,7 +75,7 @@ __all__ = [
     # 'Slider',
     # 'SplitContainer',
     "Switch",
-    # 'Table',
+    "Table",
     "TextInput",
     # 'Tree',
     # 'WebView',
