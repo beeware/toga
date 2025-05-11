@@ -34,9 +34,11 @@ necessary.
 
     Not supported
 
-  .. group-tab:: Web |no|
+  .. group-tab:: Web
 
-    Not supported
+    .. figure:: /reference/images/table-web.png
+       :align: center
+       :width: 450px
 
   .. group-tab:: Textual |no|
 

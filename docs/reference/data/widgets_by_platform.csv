@@ -19,7 +19,7 @@ ProgressBar,General Widget,:class:`~toga.ProgressBar`,Progress Bar,|y|,|y|,|y|,|
 Selection,General Widget,:class:`~toga.Selection`,A widget to select a single option from a list of alternatives.,|y|,|y|,|y|,|y|,|y|,,
 Slider,General Widget,:class:`~toga.Slider`,Slider,|y|,|y|,|y|,|y|,|y|,,
 Switch,General Widget,:class:`~toga.Switch`,Switch,|y|,|y|,|y|,|y|,|y|,|b|,
-Table,General Widget,:class:`~toga.Table`,A widget for displaying columns of tabular data.,|y|,|y|,|y|,,|b|,,
+Table,General Widget,:class:`~toga.Table`,A widget for displaying columns of tabular data.,|y|,|y|,|y|,,|b|,|b|,
 TextInput,General Widget,:class:`~toga.TextInput`,A widget for the display and editing of a single line of text.,|y|,|y|,|y|,|y|,|y|,|b|,|b|
 TimeInput,General Widget,:class:`~toga.TimeInput`,A widget to select a clock time,,,|y|,,|y|,,
 Tree,General Widget,:class:`~toga.Tree`,A widget for displaying a hierarchical tree of tabular data.,|y|,|y|,,,,,
