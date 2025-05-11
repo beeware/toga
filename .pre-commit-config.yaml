@@ -41,10 +41,3 @@ repos:
     - id: codespell
       # remove toml extra once Python 3.10 is no longer supported
       additional_dependencies: ['.[toml]']
-  - repo: local
-    hooks:
-    - id: gen_typing
-      name: Generate toga core typing file
-      language: system
-      files: core/src/toga/__init__.py
-      entry: python core/gen_typing.py
