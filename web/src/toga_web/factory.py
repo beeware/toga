@@ -12,6 +12,7 @@ from .statusicons import MenuStatusIcon, SimpleStatusIcon, StatusIconSet
 from .widgets.activityindicator import ActivityIndicator
 from .widgets.box import Box
 from .widgets.button import Button
+from .widgets.dateinput import DateInput
 from .widgets.divider import Divider
 
 # from .widgets.canvas import Canvas
@@ -24,14 +25,15 @@ from .widgets.label import Label
 # from .widgets.optioncontainer import OptionContainer
 from .widgets.passwordinput import PasswordInput
 from .widgets.progressbar import ProgressBar
+from .widgets.scrollcontainer import ScrollContainer
 
-# from .widgets.scrollcontainer import ScrollContainer
 # from .widgets.selection import Selection
 # from .widgets.slider import Slider
 # from .widgets.splitcontainer import SplitContainer
 from .widgets.switch import Switch
 from .widgets.table import Table
 from .widgets.textinput import TextInput
+from .widgets.timeinput import TimeInput
 
 # from .widgets.tree import Tree
 # from .widgets.webview import WebView
@@ -61,6 +63,8 @@ __all__ = [
     "Button",
     # 'Canvas',
     "Divider",
+    "DateInput",
+    "TimeInput",
     # 'DetailedList',
     # 'ImageView',
     "Label",
@@ -70,7 +74,7 @@ __all__ = [
     "PasswordInput",
     "ProgressBar",
     "ActivityIndicator",
-    # 'ScrollContainer',
+    "ScrollContainer",
     # 'Selection',
     # 'Slider',
     # 'SplitContainer',

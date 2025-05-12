@@ -103,7 +103,7 @@ jobs:
         fetch-depth: 0
 
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v5.5.0
+      uses: actions/setup-python@v5.6.0
       with:
         python-version: ${{ matrix.python-version }}
         allow-prereleases: true
@@ -116,7 +116,7 @@ jobs:
         project-root: ${{ matrix.package }}
 
     - name: Get Packages
-      uses: actions/download-artifact@v4.2.1
+      uses: actions/download-artifact@v4.3.0
       with:
         pattern: ${{ format('{0}-*', needs.package.outputs.artifact-basename) }}
         merge-multiple: true
@@ -161,7 +161,7 @@ jobs:
         fetch-depth: 0
 
     - name: Set up Python ${{ env.min_python_version }}
-      uses: actions/setup-python@v5.5.0
+      uses: actions/setup-python@v5.6.0
       with:
         # Use minimum version of python for coverage to avoid phantom branches
         # https://github.com/nedbat/coveragepy/issues/1572#issuecomment-1522546425
@@ -175,7 +175,7 @@ jobs:
         project-root: ${{ matrix.package }}
 
     - name: Retrieve Coverage Data
-      uses: actions/download-artifact@v4.2.1
+      uses: actions/download-artifact@v4.3.0
       with:
         pattern: ${{ matrix.package }}-coverage-data-*
         path: ${{ matrix.package }}
@@ -379,7 +379,7 @@ jobs:
         fetch-depth: 0
 
     - name: Set up Python
-      uses: actions/setup-python@v5.5.0
+      uses: actions/setup-python@v5.6.0
       if: matrix.setup-python
       with:
         python-version: "3.12"
@@ -394,7 +394,7 @@ jobs:
         python -m pip install git+https://github.com/beeware/briefcase.git
 
     - name: Get Packages
-      uses: actions/download-artifact@v4.2.1
+      uses: actions/download-artifact@v4.3.0
       with:
         pattern: ${{ format('{0}-*', needs.package.outputs.artifact-basename) }}
         merge-multiple: true
@@ -463,12 +463,12 @@ jobs:
         fetch-depth: 0
 
     - name: Set up Python
-      uses: actions/setup-python@v5.5.0
+      uses: actions/setup-python@v5.6.0
       with:
         python-version: "3.12"
 
     - name: Get Packages
-      uses: actions/download-artifact@v4.2.1
+      uses: actions/download-artifact@v4.3.0
       with:
         pattern: ${{ format('{0}-*', needs.package.outputs.artifact-basename) }}
         merge-multiple: true

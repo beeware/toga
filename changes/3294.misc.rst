@@ -1,1 +1,0 @@
-Some internal parameter names in Travertino, as well as the wording of some error messages, were made clearer, and logic in ``validated_property.__set__`` was simplified.

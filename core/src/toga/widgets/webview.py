@@ -31,6 +31,7 @@ class WebView(Widget):
         id: str | None = None,
         style: StyleT | None = None,
         url: str | None = None,
+        content: str | None = None,
         user_agent: str | None = None,
         on_webview_load: OnWebViewLoadHandler | None = None,
         **kwargs,
@@ -42,6 +43,11 @@ class WebView(Widget):
             will be applied to the widget.
         :param url: The full URL to load in the WebView. If not provided,
             an empty page will be displayed.
+        :param content: The HTML content to display in the WebView. If ``content`` is
+            provided, the value of ``url`` will be used as the root URL for the content
+            that is displayed; this URL will be used to resolve any relative URLs in the
+            content. **Note:** On Android and Windows, if ``content`` is specified, any
+            value provided for the ``url`` argument will be ignored.
         :param user_agent: The user agent to use for web requests. If not
             provided, the default user agent for the platform will be used.
         :param on_webview_load: A handler that will be invoked when the web view
@@ -54,7 +60,13 @@ class WebView(Widget):
 
         # Set the load handler before loading the first URL.
         self.on_webview_load = on_webview_load
-        self.url = url
+
+        # Load both content and root URL if it's provided by the user.
+        # Otherwise, load the URL only.
+        if content is not None:
+            self.set_content(url, content)
+        else:
+            self.url = url
 
     def _create(self) -> Any:
         return self.factory.WebView(interface=self)
@@ -140,6 +152,23 @@ class WebView(Widget):
         :param content: The HTML content for the WebView
         """
         self._impl.set_content(root_url, content)
+
+    @property
+    def content(self):
+        """A write-only attribute to set the HTML content currently displayed by the
+        WebView.
+
+        ``web_view.content = "<html>..."`` is equivalent to calling
+        ``web_view.set_content("", "<html>...")``.
+
+        :raises AttributeError: If an attempt is made to read the page content.
+        """
+        raise AttributeError("WebView.content is a write-only attribute")
+
+    @content.setter
+    def content(self, value):
+        """Setter for content. Equivalent to the method set_content("", value)."""
+        self.set_content("", value)
 
     @property
     def cookies(self) -> CookiesResult:

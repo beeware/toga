@@ -1,1 +1,0 @@
-The asyncio event loop used on Winforms now shuts down correctly, ensuring there are no dangling resources on application exit.

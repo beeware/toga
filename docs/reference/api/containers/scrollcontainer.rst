@@ -36,9 +36,11 @@ overflow controlled by scroll bars.
        :align: center
        :width: 450px
 
-  .. group-tab:: Web |no|
+  .. group-tab:: Web
 
-    Not supported
+    .. figure:: /reference/images/scrollcontainer-web.png
+       :align: center
+       :width: 450px
 
   .. group-tab:: Textual |no|
 

@@ -1,1 +1,0 @@
-A typo was fixed in the Linux docs.

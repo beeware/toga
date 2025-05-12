@@ -1,1 +1,0 @@
-Application of style properties has been streamlined to reduce redundant font creation and widget-refreshing.

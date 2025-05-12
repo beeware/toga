@@ -1,1 +1,0 @@
-The referencing of contribution documentation was normalized across BeeWare projects.
