@@ -36,7 +36,6 @@ from toga.widgets.button import Button as Button
 from toga.widgets.canvas import Canvas as Canvas
 from toga.widgets.box import Column as Column
 from toga.widgets.dateinput import DateInput as DateInput
-from toga.widgets.dateinput import DatePicker as DatePicker
 from toga.widgets.detailedlist import DetailedList as DetailedList
 from toga.widgets.divider import Divider as Divider
 from toga.widgets.imageview import ImageView as ImageView
@@ -58,9 +57,7 @@ from toga.widgets.switch import Switch as Switch
 from toga.widgets.table import Table as Table
 from toga.widgets.textinput import TextInput as TextInput
 from toga.widgets.timeinput import TimeInput as TimeInput
-from toga.widgets.timeinput import TimePicker as TimePicker
 from toga.widgets.tree import Tree as Tree
 from toga.widgets.webview import WebView as WebView
-from toga.window import DocumentMainWindow as DocumentMainWindow
 from toga.window import MainWindow as MainWindow
 from toga.window import Window as Window
