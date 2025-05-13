@@ -117,7 +117,3 @@ class WebView(Widget):
 
         self.native.evaluateJavascript(javascript, ReceiveString(result))
         return result
-
-    def set_on_navigation_starting(self, handler):
-        # print(f"set_on_navigation_starting")
-        pass

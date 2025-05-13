@@ -128,7 +128,6 @@ class WebView(Widget):
             self.factory.not_implemented("WebView.on_navigation_starting")
 
         self._on_navigation_starting = wrapped_handler(self, handler)
-        self._impl.set_on_navigation_starting(self._on_navigation_starting)
 
     @property
     def on_webview_load(self) -> OnWebViewLoadHandler:

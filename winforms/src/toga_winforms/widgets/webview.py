@@ -244,9 +244,6 @@ class WebView(Widget):
 
         return result
 
-    def set_on_navigation_starting(self, handler):
-        pass
-
     def evaluate_javascript(self, javascript, on_result=None):
         result = JavaScriptResult(on_result)
         task_scheduler = TaskScheduler.FromCurrentSynchronizationContext()
