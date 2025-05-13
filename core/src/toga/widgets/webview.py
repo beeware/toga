@@ -33,7 +33,7 @@ class WebView(Widget):
         url: str | None = None,
         content: str | None = None,
         user_agent: str | None = None,
-        on_navigation_starting = None,
+        on_navigation_starting=None,
         on_webview_load: OnWebViewLoadHandler | None = None,
         **kwargs,
     ):
@@ -51,9 +51,9 @@ class WebView(Widget):
             value provided for the ``url`` argument will be ignored.
         :param user_agent: The user agent to use for web requests. If not
             provided, the default user agent for the platform will be used.
-        :param on_navigation_starting: A handler that will be invoked when the 
-            web view is requesting permission to navigate or redirect 
-            to a different URI. 
+        :param on_navigation_starting: A handler that will be invoked when the
+            web view is requesting permission to navigate or redirect
+            to a different URI.
         :param on_webview_load: A handler that will be invoked when the web view
             finishes loading.
         :param kwargs: Initial style properties.
@@ -111,10 +111,10 @@ class WebView(Widget):
 
     @property
     def on_navigation_starting(self):
-        """A handler that will be invoked when the webview is requesting 
+        """A handler that will be invoked when the webview is requesting
         permission to navigate or redirect to a different URI.
-        
-        The handler will receive the arguments `widget` and `url` and must 
+
+        The handler will receive the arguments `widget` and `url` and must
         return True to allow the navigation or False to deny the navigation to the URL.
 
         :returns: The function ``callable`` that is called by this navigation event.
@@ -123,10 +123,10 @@ class WebView(Widget):
 
     @on_navigation_starting.setter
     def on_navigation_starting(self, handler):
-        """Set the handler to invoke when the webview starts navigating """
+        """Set the handler to invoke when the webview starts navigating"""
         if handler and not getattr(self._impl, "SUPPORTS_ON_NAVIGATION_STARTING", True):
             self.factory.not_implemented("WebView.on_navigation_starting")
-        
+
         self._on_navigation_starting = wrapped_handler(self, handler)
         self._impl.set_on_navigation_starting(self._on_navigation_starting)
 
