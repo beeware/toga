@@ -17,10 +17,8 @@ install a backend that implements the core Toga API for that platform:
 Minimum requirements
 --------------------
 
-Toga requires **Python 3.9** or newer.
-
-Each backend also has specific requirements and pre-requisites. See the `platform
-documentation <https://toga.readthedocs.io/en/latest/reference/platforms.html>`__ for
+Each backend has specific requirements and pre-requisites. See the `platform
+documentation <https://toga.readthedocs.io/en/latest/reference/platforms/>`__ for
 details.
 
 Quickstart
