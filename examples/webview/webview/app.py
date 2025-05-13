@@ -1,7 +1,8 @@
+import asyncio
+
 import toga
 from toga.constants import COLUMN, ROW
 from toga.style import Pack
-import asyncio
 
 
 class ExampleWebView(toga.App):
@@ -26,15 +27,15 @@ class ExampleWebView(toga.App):
         self.label.text = "www loaded!"
 
     def on_navigation_starting(self, widget, url):
-        # print(f"on_navigation_starting: {url}")
-        allow = True
-        if !url.startswith(allowed_base_url):
+        print(f"on_navigation_starting: {url}")
+        allow = True
+        if not url.startswith(self.allowed_base_url):
             allow = False
             message = f"Navigation not allowed to: {url}"
             dialog = toga.InfoDialog("on_navigation_starting()", message)
-            task = asyncio.create_task(self.dialog(dialog))
+            asyncio.create_task(self.dialog(dialog))
         return allow
-            
+
     def on_set_url(self, widget, **kwargs):
         self.label.text = "Loading page..."
         self.webview.url = "https://beeware.org/"

@@ -1,8 +1,13 @@
 import json
 from http.cookiejar import CookieJar
 
-from android.webkit import ValueCallback, WebView as A_WebView, WebViewClient
-from java import dynamic_proxy, static_proxy, constructor, jboolean, jclass, Override
+from android.webkit import (
+    ValueCallback,
+    WebResourceRequest,
+    WebView as A_WebView,
+    WebViewClient,
+)
+from java import Override, dynamic_proxy, jboolean, static_proxy
 
 from toga.widgets.webview import CookiesResult, JavaScriptResult
 
@@ -23,7 +28,7 @@ class ReceiveString(dynamic_proxy(ValueCallback)):
         self.result.set_result(res)
 
 
-class TogaNavigationEvent():
+class TogaNavigationEvent:
     def __init__(self, webresourcerequest):
         self.request = webresourcerequest
         self.cancel = False

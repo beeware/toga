@@ -136,8 +136,10 @@ class WebView(Widget):
             settings.IsSwipeNavigationEnabled = False
             settings.IsZoomControlEnabled = True
 
-            self.native.CoreWebView2.NavigationStarting += self.winforms_navigation_starting
-            
+            self.native.CoreWebView2.NavigationStarting += (
+                self.winforms_navigation_starting
+            )
+
             for task in self.pending_tasks:
                 task()
             self.pending_tasks = None
@@ -182,7 +184,7 @@ class WebView(Widget):
             self.loaded_future = None
 
     def winforms_navigation_starting(self, sender, event):
-        print(f"winforms_navigation_starting: {event.Uri}")
+        # print(f"winforms_navigation_starting: {event.Uri}")
         if self.interface.on_navigation_starting:
             allow = self.interface.on_navigation_starting(event.Uri)
             if not allow:
