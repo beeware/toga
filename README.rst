@@ -10,13 +10,13 @@
     :target: https://pypi.python.org/pypi/toga
     :alt: Project version
 
+.. |license| image:: https://img.shields.io/pypi/l/toga.svg
+    :target: https://github.com/beeware/toga/blob/main/LICENSE
+    :alt: BSD-3-Clause License
+
 .. |maturity| image:: https://img.shields.io/pypi/status/toga.svg
     :target: https://pypi.python.org/pypi/toga
     :alt: Project status
-
-.. |license| image:: https://img.shields.io/pypi/l/toga.svg
-    :target: https://github.com/beeware/toga/blob/main/LICENSE
-    :alt: BSD License
 
 .. |ci| image:: https://github.com/beeware/toga/workflows/CI/badge.svg?branch=main
    :target: https://github.com/beeware/toga/actions
@@ -31,7 +31,7 @@
 Toga
 ====
 
-|pyversions| |version| |maturity| |license| |ci| |social|
+|pyversions| |license| |version| |maturity| |ci| |social|
 
 A Python native, OS native GUI toolkit.
 

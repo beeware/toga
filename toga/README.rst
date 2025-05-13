@@ -1,5 +1,19 @@
+.. |pyversions| image:: https://img.shields.io/pypi/pyversions/toga.svg
+    :target: https://pypi.python.org/pypi/toga
+    :alt: Python Versions
+
+.. |license| image:: https://img.shields.io/pypi/l/toga.svg
+    :target: https://github.com/beeware/toga/blob/main/LICENSE
+    :alt: BSD-3-Clause License
+
+.. |maturity| image:: https://img.shields.io/pypi/status/toga.svg
+    :target: https://pypi.python.org/pypi/toga
+    :alt: Project status
+
 toga
 ====
+
+|pyversions| |license| |maturity|
 
 A meta-package for installing the `Toga widget toolkit`_.
 

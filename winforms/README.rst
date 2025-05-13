@@ -1,5 +1,19 @@
+.. |pyversions| image:: https://img.shields.io/pypi/pyversions/toga-winforms.svg
+    :target: https://pypi.python.org/pypi/toga-winforms
+    :alt: Python Versions
+
+.. |license| image:: https://img.shields.io/pypi/l/toga-winforms.svg
+    :target: https://github.com/beeware/toga-winforms/blob/main/LICENSE
+    :alt: BSD-3-Clause License
+
+.. |maturity| image:: https://img.shields.io/pypi/status/toga-winforms.svg
+    :target: https://pypi.python.org/pypi/toga-winforms
+    :alt: Project status
+
 toga-winforms
 =============
+
+|pyversions| |license| |maturity|
 
 A Microsoft .NET backend for the `Toga widget toolkit`_ utilizing the WinForms API.
 

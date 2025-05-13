@@ -1,5 +1,19 @@
+.. |pyversions| image:: https://img.shields.io/pypi/pyversions/toga-gtk.svg
+    :target: https://pypi.python.org/pypi/toga-gtk
+    :alt: Python Versions
+
+.. |license| image:: https://img.shields.io/pypi/l/toga-gtk.svg
+    :target: https://github.com/beeware/toga-gtk/blob/main/LICENSE
+    :alt: BSD-3-Clause License
+
+.. |maturity| image:: https://img.shields.io/pypi/status/toga-gtk.svg
+    :target: https://pypi.python.org/pypi/toga-gtk
+    :alt: Project status
+
 toga-gtk
 ========
+
+|pyversions| |license| |maturity|
 
 A GTK backend for the `Toga widget toolkit`_.
 
