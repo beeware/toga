@@ -136,6 +136,8 @@ class WebView(Widget):
             settings.IsSwipeNavigationEnabled = False
             settings.IsZoomControlEnabled = True
 
+            self.native.CoreWebView2.NavigationStarting += self.winforms_navigation_starting
+            
             for task in self.pending_tasks:
                 task()
             self.pending_tasks = None
@@ -178,6 +180,13 @@ class WebView(Widget):
         if self.loaded_future:
             self.loaded_future.set_result(None)
             self.loaded_future = None
+
+    def winforms_navigation_starting(self, sender, event):
+        print(f"winforms_navigation_starting: {event.Uri}")
+        if self.interface.on_navigation_starting:
+            allow = self.interface.on_navigation_starting(event.Uri)
+            if not allow:
+                event.Cancel = True
 
     def get_url(self):
         source = self.native.Source
@@ -233,6 +242,9 @@ class WebView(Widget):
         )
 
         return result
+
+    def set_on_navigation_starting(self, handler):
+        pass
 
     def evaluate_javascript(self, javascript, on_result=None):
         result = JavaScriptResult(on_result)

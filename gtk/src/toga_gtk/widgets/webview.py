@@ -10,6 +10,7 @@ from .base import Widget
 
 class WebView(Widget):
     """GTK WebView implementation."""
+    SUPPORTS_ON_NAVIGATION_STARTING = False
 
     def create(self):
         if GTK_VERSION >= (4, 0, 0):  # pragma: no-cover-if-gtk3
