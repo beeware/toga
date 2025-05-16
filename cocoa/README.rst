@@ -1,5 +1,19 @@
+.. |pyversions| image:: https://img.shields.io/pypi/pyversions/toga-android.svg
+    :target: https://pypi.python.org/pypi/toga-android
+    :alt: Python Versions
+
+.. |license| image:: https://img.shields.io/pypi/l/toga-android.svg
+    :target: https://github.com/beeware/toga-android/blob/main/LICENSE
+    :alt: BSD-3-Clause License
+
+.. |maturity| image:: https://img.shields.io/pypi/status/toga-android.svg
+    :target: https://pypi.python.org/pypi/toga-android
+    :alt: Project status
+
 toga-cocoa
 ==========
+
+|pyversions| |license| |maturity|
 
 A Cocoa backend for the `Toga widget toolkit`_.
 
