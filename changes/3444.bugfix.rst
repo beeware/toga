@@ -1,1 +1,1 @@
-`Add error handling for Window content setter AttributeErrors`
+Add error handling for Window content setter AttributeErrors
