@@ -43,6 +43,7 @@ if GTK_VERSION >= (4, 0, 0):  # pragma: no-cover-if-gtk3
                 return container.min_width, container.min_width, -1, -1
             elif orientation == Gtk.Orientation.VERTICAL:
                 return container.min_height, container.min_height, -1, -1
+            return None
 
         def do_allocate(self, container, width, height, baseline):
             """Perform the actual layout for the all widget's children.
@@ -199,38 +200,6 @@ if GTK_VERSION >= (4, 0, 0):  # pragma: no-cover-if-gtk3
 
                 self.min_width = self._content.interface.layout.min_width
                 self.min_height = self._content.interface.layout.min_height
-
-        def do_get_preferred_width(self):
-            """Return (recomputing if necessary) the preferred width for the container.
-
-            The preferred size of the container is its minimum size. This
-            preference will be overridden with the layout size when the layout is
-            applied.
-
-            If the container does not yet have content, the minimum width is set to
-            0.
-            """
-            pass
-
-        def do_get_preferred_height(self):
-            """Return (recomputing if necessary) the preferred height for the container.
-
-            The preferred size of the container is its minimum size. This preference
-            will be overridden with the layout size when the layout is applied.
-
-            If the container does not yet have content, the minimum height is set to 0.
-            """
-            pass
-
-        def do_size_allocate(self, allocation):
-            """Perform the actual layout for the widget, and all it's children.
-
-            The container will assume whatever size it has been given by GTK - usually
-            the full space of the window that holds the container. The layout will then
-            be recomputed based on this new available size, and that new geometry will
-            be applied to all child widgets of the container.
-            """
-            pass
 
 else:  # pragma: no-cover-if-gtk4
 
