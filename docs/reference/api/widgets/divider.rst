@@ -63,7 +63,9 @@ To separate two labels stacked vertically with a horizontal line:
             toga.Divider(),
             toga.Label("Second section"),
         ],
-        style=Pack(direction=COLUMN, flex=1, margin=10)
+        direction=COLUMN,
+        flex=1,
+        margin=10
     )
 
 The direction (horizontal or vertical) can be given as an argument. If not

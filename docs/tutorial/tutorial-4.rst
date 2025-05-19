@@ -25,7 +25,7 @@ eyes with the color white.
 
 2. Next we create a new Canvas::
 
-    self.canvas = toga.Canvas(style=Pack(flex=1))
+    self.canvas = toga.Canvas(flex=1)
 
 That's all there is to! In this example we also add our canvas to the MainWindow
 through use of the Box Widget::
