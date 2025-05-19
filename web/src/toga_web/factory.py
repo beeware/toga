@@ -12,6 +12,7 @@ from .statusicons import MenuStatusIcon, SimpleStatusIcon, StatusIconSet
 from .widgets.activityindicator import ActivityIndicator
 from .widgets.box import Box
 from .widgets.button import Button
+from .widgets.dateinput import DateInput
 from .widgets.divider import Divider
 
 # from .widgets.canvas import Canvas
