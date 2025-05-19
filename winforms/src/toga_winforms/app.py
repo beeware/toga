@@ -238,9 +238,12 @@ class App:
             message_parts.append(f"Author: {self.interface.author}")
         if self.interface.description is not None:
             message_parts.append(f"\n{self.interface.description}")
-
-        self.interface.dialog(
-            InfoDialog(f"About {self.interface.formal_name}", "\n".join(message_parts))
+        asyncio.create_task(
+            self.interface.dialog(
+                InfoDialog(
+                    f"About {self.interface.formal_name}", "\n".join(message_parts)
+                )
+            )
         )
 
     ######################################################################
