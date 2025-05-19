@@ -404,23 +404,20 @@ class Window:
         if self._content:
             self._content.window = None
 
-        try:
-            # Assign the content widget to the same app as the window.
-            widget.app = self.app
+        # Assign the content widget to the same app as the window.
+        widget.app = self.app
 
-            # Assign the content widget to the window.
-            widget.window = self
+        # Assign the content widget to the window.
+        widget.window = self
 
-            # Track our new content
-            self._content = widget
+        # Track our new content
+        self._content = widget
 
-            # Manifest the widget
-            self._impl.set_content(widget._impl)
+        # Manifest the widget
+        self._impl.set_content(widget._impl)
 
-            # Update the geometry of the widget
-            widget.refresh()
-        except AttributeError as e:
-            print(f"Error: {e}")
+        # Update the geometry of the widget
+        widget.refresh()
 
     @property
     def widgets(self) -> FilteredWidgetRegistry:
