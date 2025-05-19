@@ -1,1 +1,0 @@
-Supplying multiple arguments to ``BaseStyle.apply()`` (and therefore ``Pack.apply()``) has been deprecated. If you want to apply multiple arguments at once, apply them within the ``with style_object.batch_apply()`` context manager.

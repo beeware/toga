@@ -1,5 +1,19 @@
+.. |pyversions| image:: https://img.shields.io/pypi/pyversions/toga-ios.svg
+    :target: https://pypi.python.org/pypi/toga-ios
+    :alt: Python Versions
+
+.. |license| image:: https://img.shields.io/pypi/l/toga-ios.svg
+    :target: https://github.com/beeware/toga-ios/blob/main/LICENSE
+    :alt: BSD-3-Clause License
+
+.. |maturity| image:: https://img.shields.io/pypi/status/toga-ios.svg
+    :target: https://pypi.python.org/pypi/toga-ios
+    :alt: Project status
+
 toga-iOS
 ========
+
+|pyversions| |license| |maturity|
 
 An iOS backend for the `Toga widget toolkit`_.
 

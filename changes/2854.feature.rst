@@ -1,1 +1,0 @@
-The content of a WebView can now be assigned using the `content` property, without providing a root URL for the content.

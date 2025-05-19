@@ -1,5 +1,19 @@
+.. |pyversions| image:: https://img.shields.io/pypi/pyversions/toga-core.svg
+    :target: https://pypi.python.org/pypi/toga-core
+    :alt: Python Versions
+
+.. |license| image:: https://img.shields.io/pypi/l/toga-core.svg
+    :target: https://github.com/beeware/toga-core/blob/main/LICENSE
+    :alt: BSD-3-Clause License
+
+.. |maturity| image:: https://img.shields.io/pypi/status/toga-core.svg
+    :target: https://pypi.python.org/pypi/toga-core
+    :alt: Project status
+
 Toga
 ====
+
+|pyversions| |license| |maturity|
 
 A Python native, OS native GUI toolkit.
 
@@ -17,10 +31,8 @@ install a backend that implements the core Toga API for that platform:
 Minimum requirements
 --------------------
 
-Toga requires **Python 3.9** or newer.
-
-Each backend also has specific requirements and pre-requisites. See the `platform
-documentation <https://toga.readthedocs.io/en/latest/reference/platforms.html>`__ for
+Each backend has specific requirements and pre-requisites. See the `platform
+documentation <https://toga.readthedocs.io/en/latest/reference/platforms/>`__ for
 details.
 
 Quickstart

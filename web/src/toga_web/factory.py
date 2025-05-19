@@ -33,6 +33,7 @@ from .widgets.switch import Switch
 
 # from .widgets.table import Table
 from .widgets.textinput import TextInput
+from .widgets.timeinput import TimeInput
 
 # from .widgets.tree import Tree
 # from .widgets.webview import WebView
@@ -62,6 +63,8 @@ __all__ = [
     "Button",
     # 'Canvas',
     "Divider",
+    "DateInput",
+    "TimeInput",
     # 'DetailedList',
     # 'ImageView',
     "Label",
