@@ -1,0 +1,1 @@
+`Add error handling for Window content setter AttributeErrors`
