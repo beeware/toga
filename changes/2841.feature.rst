@@ -1,1 +1,1 @@
-Added night mode detection function for android.
+Added dark mode detection function for Android.
