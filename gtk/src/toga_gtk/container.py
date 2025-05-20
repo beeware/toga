@@ -56,13 +56,17 @@ if GTK_VERSION >= (4, 0, 0):  # pragma: no-cover-if-gtk3
             # print(widget._content, f"Container layout {width}x{height} @ 0x0")
 
             if container._content:
-                # Re-evaluate the layout using the  size as the basis for geometry
-                # print("REFRESH LAYOUT", width, height)
-                container._content.interface.style.layout(container)
+                current_width = container.width
+                current_height = container.height
+                resized = (width, height) != (current_width, current_height)
 
-                # Ensure the minimum content size from the layout is retained
-                container.min_width = container._content.interface.layout.min_width
-                container.min_height = container._content.interface.layout.min_height
+                if resized or container.needs_redraw:
+                    # print("REFRESH LAYOUT", width, height)
+                    container._content.interface.style.layout(container)
+                    container.min_width = container._content.interface.layout.min_width
+                    container.min_height = (
+                        container._content.interface.layout.min_height
+                    )
 
                 # WARNING! This is the list of children of the *container*, not
                 # the Toga widget. Toga maintains a tree of children; all nodes
