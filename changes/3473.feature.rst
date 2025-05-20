@@ -1,1 +1,1 @@
-Support ActivityIndicator on WinForms.
+Winforms now provides an ActivityIndicator widget.
