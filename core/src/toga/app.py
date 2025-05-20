@@ -666,8 +666,9 @@ class App:
             content = self._startup_method(self)
             if content is None:
                 raise ValueError(
-                    "You need to return a value from your startup method "
-                    "that is your main window's content"
+                    "Your app's startup method has not provided any content for your "
+                    "app's main window. Did you remember to return the main content "
+                    "container in your startup method?"
                 )
             self.main_window.content = content
 

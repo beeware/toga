@@ -709,8 +709,10 @@ def test_startup_method_returns_none():
     def startup_none(app):
         pass
 
-    with pytest.raises(ValueError):
-
+    with pytest.raises(
+        ValueError,
+        match=r"Your app's startup method has not provided any content",
+    ):
         toga.App(
             formal_name="Test App", app_id="org.example.test", startup=startup_none
         )
