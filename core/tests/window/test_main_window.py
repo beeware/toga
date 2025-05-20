@@ -9,7 +9,7 @@ def test_create(app):
     window = toga.MainWindow()
 
     assert window.app == app
-    assert window.content is None
+    assert window.content is not None
 
     assert window._impl.interface == window
     assert_action_performed(window, "create MainWindow")

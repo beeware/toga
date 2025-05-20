@@ -245,8 +245,8 @@ class Window:
         App.app.windows.add(self)
 
         # If content has been provided, set it
-        if content:
-            self.content = content
+        # Otherwise, set content to an empty Box widget
+        self.content = content if content else toga.Box()
 
         self.on_close = on_close
 

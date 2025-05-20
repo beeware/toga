@@ -1,0 +1,1 @@
+A Window is now guaranteed to have a content widget. If no content is provided at time of construction, an empty Box widget will be added as the content.

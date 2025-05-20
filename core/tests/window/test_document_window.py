@@ -39,7 +39,7 @@ def test_create(app):
     window = doc.main_window
 
     assert window.app == app
-    assert window.content is None
+    assert window.content is not None
     # Document reference is preserved
     assert window.doc == doc
 

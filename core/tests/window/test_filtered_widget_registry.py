@@ -29,8 +29,8 @@ def test_membership(app):
     win_1 = make_window("1")
     win_2 = make_window("2")
 
-    # The widget registry now has 6 items in it
-    assert len(app.widgets) == 6
+    # The widget registry now has 7 items in it
+    assert len(app.widgets) == 7
     assert "1.0" in app.widgets
     assert "1.1" in app.widgets
     assert "1.2" in app.widgets
@@ -39,39 +39,56 @@ def test_membership(app):
     assert "2.1" in app.widgets
     assert "2.2" in app.widgets
     assert "2.X" not in app.widgets
+    assert app.main_window.content.id in app.widgets
 
     assert app.widgets["1.1"] == win_1.content.children[0]
     assert app.widgets["2.1"] == win_2.content.children[0]
 
-    assert sorted(app.widgets.keys()) == ["1.0", "1.1", "1.2", "2.0", "2.1", "2.2"]
-    assert sorted(app.widgets.values()) == [
-        win_1.content,
-        win_1.content.children[0],
-        win_1.content.children[1],
-        win_2.content,
-        win_2.content.children[0],
-        win_2.content.children[1],
-    ]
-    assert sorted(iter(app.widgets)) == [
-        win_1.content,
-        win_1.content.children[0],
-        win_1.content.children[1],
-        win_2.content,
-        win_2.content.children[0],
-        win_2.content.children[1],
-    ]
-    assert sorted(app.widgets.items()) == [
-        ("1.0", win_1.content),
-        ("1.1", win_1.content.children[0]),
-        ("1.2", win_1.content.children[1]),
-        ("2.0", win_2.content),
-        ("2.1", win_2.content.children[0]),
-        ("2.2", win_2.content.children[1]),
-    ]
-    assert repr(app.widgets) == (
-        "{'1.0': Box(id='1.0'), '1.1': Widget(id='1.1'), '1.2': Widget(id='1.2'), "
-        "'2.0': Box(id='2.0'), '2.1': Widget(id='2.1'), '2.2': Widget(id='2.2')}"
+    assert sorted(app.widgets.keys()) == sorted(
+        ["1.0", "1.1", "1.2", "2.0", "2.1", "2.2", app.main_window.content.id]
     )
+    assert sorted(app.widgets.values()) == sorted(
+        [
+            win_1.content,
+            win_1.content.children[0],
+            win_1.content.children[1],
+            win_2.content,
+            win_2.content.children[0],
+            win_2.content.children[1],
+            app.main_window.content,
+        ]
+    )
+    assert sorted(iter(app.widgets)) == sorted(
+        [
+            win_1.content,
+            win_1.content.children[0],
+            win_1.content.children[1],
+            win_2.content,
+            win_2.content.children[0],
+            win_2.content.children[1],
+            app.main_window.content,
+        ]
+    )
+    assert sorted(app.widgets.items()) == sorted(
+        [
+            ("1.0", win_1.content),
+            ("1.1", win_1.content.children[0]),
+            ("1.2", win_1.content.children[1]),
+            ("2.0", win_2.content),
+            ("2.1", win_2.content.children[0]),
+            ("2.2", win_2.content.children[1]),
+            (app.main_window.content.id, app.main_window.content),
+        ]
+    )
+    widget_reprs = [
+        "'1.0': Box(id='1.0')",
+        "'1.1': Widget(id='1.1')",
+        "'1.2': Widget(id='1.2')",
+        "'2.0': Box(id='2.0')",
+        "'2.1': Widget(id='2.1')",
+        "'2.2': Widget(id='2.2')",
+    ]
+    assert all([widget_repr in repr(app.widgets) for widget_repr in widget_reprs])
 
     # Window 1's registry only has the subset of win1 widgets
     assert len(win_1.widgets) == 3
@@ -122,7 +139,7 @@ def test_membership(app):
     win_1.content.remove(widget)
 
     # It is no longer in the app registry.
-    assert len(app.widgets) == 5
+    assert len(app.widgets) == 6
     assert len(win_1.widgets) == 2
     assert "1.1" not in app.widgets
     assert "1.1" not in win_1.widgets

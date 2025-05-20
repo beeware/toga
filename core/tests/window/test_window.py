@@ -25,7 +25,7 @@ def test_window_created(app):
     window = toga.Window()
 
     assert window.app == app
-    assert window.content is None
+    assert window.content is not None
 
     assert window._impl.interface == window
     assert_action_performed(window, "create Window")
@@ -154,7 +154,7 @@ def test_title(window, value, expected):
 
 def test_change_content(window, app):
     """The content of a window can be changed."""
-    assert window.content is None
+    assert window.content is not None
     assert window.app == app
 
     # Set the content of the window
