@@ -1,0 +1,1 @@
+Support ActivityIndicator on WinForms.
