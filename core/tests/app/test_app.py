@@ -702,6 +702,9 @@ def test_startup_method(event_loop):
     # The app has a main window that is a MainWindow
     assert isinstance(app.main_window, toga.MainWindow)
 
+    # The main window has been shown.
+    assert_action_performed(app.main_window, "show")
+
 
 def test_startup_method_returns_none():
     """Test that startup method returning None raises appropriate error"""
