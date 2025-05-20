@@ -663,9 +663,14 @@ class App:
         self.main_window = MainWindow(title=self.formal_name, id="main")
 
         if self._startup_method:
-            self.main_window.content = self._startup_method(self)
-
-        self.main_window.show()
+            content = self._startup_method(self)
+            if content is None:
+                raise ValueError(
+                    "Your app's startup method has not provided any content for your "
+                    "app's main window. Did you remember to return the main content "
+                    "container in your startup method?"
+                )
+            self.main_window.content = content
 
     ######################################################################
     # App resources
