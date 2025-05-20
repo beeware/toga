@@ -22,12 +22,15 @@ def toga_location(location):
     # A vertical accuracy that non-positive indicates altitude is invalid.
     if location.verticalAccuracy > 0.0:
         altitude = location.altitude
+        vertical_accuracy = location.verticalAccuracy
     else:
         altitude = None
-
+        vertical_accuracy = None
     return {
         "location": latlng,
         "altitude": altitude,
+        "horizontalAccuracy": location.horizontalAccuracy,
+        "verticalAccuracy": vertical_accuracy,
     }
 
 
