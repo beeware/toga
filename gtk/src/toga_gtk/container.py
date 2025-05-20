@@ -18,8 +18,10 @@ if GTK_VERSION >= (4, 0, 0):  # pragma: no-cover-if-gtk3
     class TogaContainerLayoutManager(Gtk.LayoutManager):
         def __init__(self):
             super().__init__()
+            print("[DEBUG CONTAINER] TogaContainerLayoutManager initialized")
 
         def do_get_request_mode(self, container):
+            print(f"[DEBUG CONTAINER] Getting request mode for container {container}")
             return Gtk.SizeRequestMode.CONSTANT_SIZE
 
         def do_measure(self, container, orientation, for_size):
@@ -30,19 +32,42 @@ if GTK_VERSION >= (4, 0, 0):  # pragma: no-cover-if-gtk3
 
             If the container does not yet have content, the minimum size is set to 0x0.
             """
-            # print("GET PREFERRED SIZE", self._content)
+            orient_name = (
+                "HORIZONTAL"
+                if orientation == Gtk.Orientation.HORIZONTAL
+                else "VERTICAL"
+            )
+            print(
+                f"[DEBUG CONTAINER] Measuring container: orientation={orient_name}, "
+                f"for_size={for_size}"
+            )
+
             if container._content is None:
+                print(
+                    "[DEBUG CONTAINER] Container has no content, returning 0, 0, -1, -1"
+                )
                 return 0, 0, -1, -1
 
             # Ensure we have an accurate min layout size
+            print("[DEBUG CONTAINER] Recomputing container layout for measurement")
             container.recompute()
 
             # The container will conform to the size of the allocation it is given,
             # so the min and preferred size are the same.
             if orientation == Gtk.Orientation.HORIZONTAL:
-                return container.min_width, container.min_width, -1, -1
+                result = container.min_width, container.min_width, -1, -1
+                print(
+                    f"[DEBUG CONTAINER] Horizontal measure result: "
+                    f"min={result[0]}, nat={result[1]}"
+                )
+                return result
             elif orientation == Gtk.Orientation.VERTICAL:
-                return container.min_height, container.min_height, -1, -1
+                result = container.min_height, container.min_height, -1, -1
+                print(
+                    f"[DEBUG CONTAINER] Vertical measure result: "
+                    f"min={result[0]}, nat={result[1]}"
+                )
+                return result
             return None
 
         def do_allocate(self, container, width, height, baseline):
@@ -53,19 +78,32 @@ if GTK_VERSION >= (4, 0, 0):  # pragma: no-cover-if-gtk3
             layout will then be re-computed based on this new available size, and
             that new geometry will be applied to all child widgets of the container.
             """
-            # print(widget._content, f"Container layout {width}x{height} @ 0x0")
+            print(
+                f"[DEBUG CONTAINER] Allocating container: "
+                f"width={width}, height={height}, baseline={baseline}"
+            )
 
             if container._content:
                 current_width = container.width
                 current_height = container.height
                 resized = (width, height) != (current_width, current_height)
 
+                print(
+                    f"[DEBUG CONTAINER] Current container size: "
+                    f"{current_width}x{current_height}, "
+                    f"resized={resized}, needs_redraw={container.needs_redraw}"
+                )
+
                 if resized or container.needs_redraw:
-                    # print("REFRESH LAYOUT", width, height)
+                    print(f"[DEBUG CONTAINER] Refreshing layout to {width}x{height}")
                     container._content.interface.style.layout(container)
                     container.min_width = container._content.interface.layout.min_width
                     container.min_height = (
                         container._content.interface.layout.min_height
+                    )
+                    print(
+                        f"[DEBUG CONTAINER] New min size: "
+                        f"{container.min_width}x{container.min_height}"
                     )
 
                 # WARNING! This is the list of children of the *container*, not
@@ -73,15 +111,19 @@ if GTK_VERSION >= (4, 0, 0):  # pragma: no-cover-if-gtk3
                 # in that tree are direct children of the container.
 
                 # Process each child widget
+                print("[DEBUG CONTAINER] Allocating children:")
+                child_count = 0
                 child_widget = container.get_first_child()
                 while child_widget is not None:
+                    child_count += 1
                     if child_widget.get_visible():
                         # Set the allocation of the child widget to the computed
                         # layout size.
-                        # print(
-                        #     f" allocate child {child_widget.interface}: "
-                        #     "{child_widget.interface.layout}"
-                        # )
+                        print(
+                            f"[DEBUG CONTAINER] Child {child_count}: "
+                            f"{getattr(child_widget, 'interface', 'unknown')}"
+                        )
+
                         child_widget_allocation = Gdk.Rectangle()
                         child_widget_allocation.x = (
                             child_widget.interface.layout.absolute_content_left
@@ -95,11 +137,31 @@ if GTK_VERSION >= (4, 0, 0):  # pragma: no-cover-if-gtk3
                         child_widget_allocation.height = (
                             child_widget.interface.layout.content_height
                         )
+
+                        print(
+                            f"[DEBUG CONTAINER] Allocating at "
+                            f"({child_widget_allocation.x},"
+                            f"{child_widget_allocation.y}) "
+                            f"size {child_widget_allocation.width}x"
+                            f"{child_widget_allocation.height}"
+                        )
                         child_widget.size_allocate(child_widget_allocation, -1)
+                    else:
+                        print(
+                            f"[DEBUG CONTAINER] Child {child_count}: "
+                            f"{getattr(child_widget, 'interface', 'unknown')} "
+                            f"(not visible)"
+                        )
                     child_widget = child_widget.get_next_sibling()
+
+                print(f"[DEBUG CONTAINER] Allocated {child_count} children")
 
             # The layout has been redrawn
             container.needs_redraw = False
+            print(
+                "[DEBUG CONTAINER] Allocation complete, "
+                "container.needs_redraw set to False"
+            )
 
     class TogaContainer(Gtk.Box):
         """A GTK container widget implementing Toga's layout.
@@ -109,11 +171,13 @@ if GTK_VERSION >= (4, 0, 0):  # pragma: no-cover-if-gtk3
 
         def __init__(self):
             super().__init__()
+            print("[DEBUG CONTAINER] TogaContainer initialized")
 
             # Because we don't have access to the existing layout manager, we must
             # create our custom layout manager class.
             layout_manager = TogaContainerLayoutManager()
             self.set_layout_manager(layout_manager)
+            print("[DEBUG CONTAINER] Custom layout manager set")
 
             self._content = None
             self.min_width = 100
@@ -128,8 +192,14 @@ if GTK_VERSION >= (4, 0, 0):  # pragma: no-cover-if-gtk3
 
             # A flag that can be used to explicitly flag that a redraw is required.
             self.needs_redraw = True
+            print(
+                f"[DEBUG CONTAINER] Initial state: "
+                f"min_size={self.min_width}x{self.min_height}, dpi={self.dpi}, "
+                f"needs_redraw={self.needs_redraw}"
+            )
 
         def refreshed(self):
+            print("[DEBUG CONTAINER] Container refreshed called")
             pass
 
         def make_dirty(self, widget=None):
@@ -140,7 +210,16 @@ if GTK_VERSION >= (4, 0, 0):  # pragma: no-cover-if-gtk3
             self.needs_redraw = True
             if widget is not None:
                 self._dirty_widgets.add(widget)
+                print(
+                    f"[DEBUG CONTAINER] Widget {widget} marked as dirty, "
+                    f"dirty count: {len(self._dirty_widgets)}"
+                )
+            else:
+                print(
+                    "[DEBUG CONTAINER] Container marked as dirty (no specific widget)"
+                )
             self.queue_resize()
+            print("[DEBUG CONTAINER] Resize queued")
 
         @property
         def width(self):
@@ -149,11 +228,13 @@ if GTK_VERSION >= (4, 0, 0):  # pragma: no-cover-if-gtk3
             If the container doesn't have any content yet, the width is 0.
             """
             if self._content is None:
+                print("[DEBUG CONTAINER] width property: No content, returning 0")
                 return 0
 
             if self._dirty_widgets and self.needs_redraw:
                 self.recompute()
             width = self.get_width()
+            print(f"[DEBUG CONTAINER] width property: returning {width}")
             return width
 
         @property
@@ -163,11 +244,13 @@ if GTK_VERSION >= (4, 0, 0):  # pragma: no-cover-if-gtk3
             If the container doesn't have any content yet, the height is 0.
             """
             if self._content is None:
+                print("[DEBUG CONTAINER] height property: No content, returning 0")
                 return 0
 
             if self._dirty_widgets and self.needs_redraw:
                 self.recompute()
             height = self.get_height()
+            print(f"[DEBUG CONTAINER] height property: returning {height}")
             return height
 
         @property
@@ -185,14 +268,20 @@ if GTK_VERSION >= (4, 0, 0):  # pragma: no-cover-if-gtk3
 
         @content.setter
         def content(self, widget):
+            print(f"[DEBUG CONTAINER] Setting container content to {widget}")
             if self._content:
+                print(f"[DEBUG CONTAINER] Removing old content {self._content}")
                 self._content.container = None
 
             self._content = widget
             if widget:
+                print(
+                    f"[DEBUG CONTAINER] Setting container reference on widget {widget}"
+                )
                 widget.container = self
                 self.make_dirty(widget)
             else:
+                print("[DEBUG CONTAINER] No new content, marking container as dirty")
                 self.make_dirty()
 
         def recompute(self):
@@ -201,19 +290,42 @@ if GTK_VERSION >= (4, 0, 0):  # pragma: no-cover-if-gtk3
             Any widgets known to be dirty will be rehinted. The minimum possible
             layout size for the container will also be recomputed.
             """
+            print(
+                f"[DEBUG CONTAINER] recompute() called. Has content: "
+                f"{self._content is not None}, "
+                f"Dirty widgets: {len(self._dirty_widgets)}"
+            )
             if self._content and self._dirty_widgets:
                 # If any of the widgets have been marked as dirty,
                 # recompute their bounds, and re-evaluate the minimum
                 # allowed size for the layout.
+                print(
+                    f"[DEBUG CONTAINER] Rehinting "
+                    f"{len(self._dirty_widgets)} dirty widgets"
+                )
                 while self._dirty_widgets:
                     widget = self._dirty_widgets.pop()
+                    print(f"[DEBUG CONTAINER] Rehinting widget {widget}")
                     widget.rehint()
 
                 # Recompute the layout
+                print("[DEBUG CONTAINER] Recomputing layout for content")
                 self._content.interface.style.layout(self)
 
+                old_min_width = self.min_width
+                old_min_height = self.min_height
                 self.min_width = self._content.interface.layout.min_width
                 self.min_height = self._content.interface.layout.min_height
+                print(
+                    f"[DEBUG CONTAINER] Min size updated: "
+                    f"{old_min_width}x{old_min_height} -> "
+                    f"{self.min_width}x{self.min_height}"
+                )
+            else:
+                print(
+                    "[DEBUG CONTAINER] No content or no dirty widgets, "
+                    "skipping recompute"
+                )
 
 else:  # pragma: no-cover-if-gtk4
 
