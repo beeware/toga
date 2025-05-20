@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import System.Windows.Forms as WinForms
+from System.Drawing import Image
 
 from .base import Widget
 
@@ -8,8 +9,8 @@ from .base import Widget
 class ActivityIndicator(Widget):
     def create(self):
         self.native = WinForms.PictureBox()
-        self.native.Image = str(
-            Path(__file__).parent.parent / "resources" / "spinner.gif"
+        self.native.Image = Image.FromFile(
+            str(Path(__file__).parent.parent / "resources" / "spinner.gif")
         )
         self.native.SizeMode = WinForms.PictureBoxSizeMode.Zoom
         self.running = True

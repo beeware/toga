@@ -12,7 +12,7 @@ from .properties import (  # noqa: F401
 
 @pytest.fixture
 async def widget():
-    skip_on_platforms("android", "windows")
+    skip_on_platforms("android")
     return toga.ActivityIndicator()
 
 
