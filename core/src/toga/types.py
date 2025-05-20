@@ -24,10 +24,10 @@ class LatLng(NamedTuple):
     #: Longitude
     lng: float
 
-    #: Horizontal accuracy in meters
+    #: Horizontal accuracy
     horizontal_accuracy: float | None = None
 
-    #: Vertical accuracy in meters
+    #: Vertical accuracy
     vertical_accuracy: float | None = None
 
     def __str__(self) -> str:
