@@ -110,7 +110,7 @@ if GTK_VERSION >= (4, 0, 0):  # pragma: no-cover-if-gtk3
         def __init__(self):
             super().__init__()
 
-            # Because we don’t have access to the existing layout manager, we must
+            # Because we don't have access to the existing layout manager, we must
             # create our custom layout manager class.
             layout_manager = TogaContainerLayoutManager()
             self.set_layout_manager(layout_manager)
@@ -150,9 +150,11 @@ if GTK_VERSION >= (4, 0, 0):  # pragma: no-cover-if-gtk3
             """
             if self._content is None:
                 return 0
-            return self.get_width()
+
             if self._dirty_widgets and self.needs_redraw:
                 self.recompute()
+            width = self.get_width()
+            return width
 
         @property
         def height(self):
@@ -162,9 +164,11 @@ if GTK_VERSION >= (4, 0, 0):  # pragma: no-cover-if-gtk3
             """
             if self._content is None:
                 return 0
-            return self.get_height()
+
             if self._dirty_widgets and self.needs_redraw:
                 self.recompute()
+            height = self.get_height()
+            return height
 
         @property
         def content(self):
