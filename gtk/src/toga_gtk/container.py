@@ -74,7 +74,7 @@ if GTK_VERSION >= (4, 0, 0):  # pragma: no-cover-if-gtk3
 
                 container_rect = container.get_allocation()
                 # Process each child widget
-                child_widget = container.get_last_child()
+                child_widget = container.get_first_child()
                 while child_widget is not None:
                     if child_widget.get_visible():
                         # Set the allocation of the child widget to the computed
@@ -99,7 +99,7 @@ if GTK_VERSION >= (4, 0, 0):  # pragma: no-cover-if-gtk3
                             child_widget.interface.layout.content_height
                         )
                         child_widget.size_allocate(child_widget_allocation, -1)
-                    child_widget = child_widget.get_prev_sibling()
+                    child_widget = child_widget.get_next_sibling()
 
             # The layout has been redrawn
             container.needs_redraw = False
