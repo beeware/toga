@@ -114,7 +114,7 @@ class TextInput(Widget):
             min_size, size = self.native.get_preferred_size()
 
             self.interface.intrinsic.width = at_least(
-                max(min_size.width, self.interface._MIN_WIDTH)
+                max(size.width, self.interface._MIN_WIDTH)
             )
             self.interface.intrinsic.height = size.height
 
