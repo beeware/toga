@@ -151,6 +151,8 @@ if GTK_VERSION >= (4, 0, 0):  # pragma: no-cover-if-gtk3
             if self._content is None:
                 return 0
             return self.get_width()
+            if self._dirty_widgets and self.needs_redraw:
+                self.recompute()
 
         @property
         def height(self):
@@ -161,6 +163,8 @@ if GTK_VERSION >= (4, 0, 0):  # pragma: no-cover-if-gtk3
             if self._content is None:
                 return 0
             return self.get_height()
+            if self._dirty_widgets and self.needs_redraw:
+                self.recompute()
 
         @property
         def content(self):
