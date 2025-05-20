@@ -35,9 +35,9 @@ class LatLng(NamedTuple):
         if self.horizontal_accuracy is not None or self.vertical_accuracy is not None:
             accuracy = []
             if self.horizontal_accuracy is not None:
-                accuracy.append(f"horizontal_accuracy: {self.horizontal_accuracy:6f}m")
+                accuracy.append(f"horizontal_accuracy: {self.horizontal_accuracy:6f}")
             if self.vertical_accuracy is not None:
-                accuracy.append(f"vertical_accuracy: {self.vertical_accuracy:6f}m")
+                accuracy.append(f"vertical_accuracy: {self.vertical_accuracy:6f}")
             return f"{base} [{', '.join(accuracy)}]"
         return base
 
