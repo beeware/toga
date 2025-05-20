@@ -6,10 +6,8 @@ from toga_web.libs import create_proxy
 from .base import Widget
 
 
-# placeholder from gtk
 class TogaRow:
     def __init__(self, value):
-        super().__init__()
         self.value = value
 
     # All paths return none as Icon is not implemented in web.
@@ -45,22 +43,13 @@ class TogaRow:
 class Table(Widget):
     def create(self):
 
-        self.native = self._create_native_widget(
-            "div", classes=["toga-table-container"]
-        )
+        self.native = self._create_native_widget("table")
 
-        self.table = self._create_native_widget(
-            "table",
-        )
-        self.native.appendChild(self.table)
+        self.table_header = self._create_native_widget("thead")
+        self.native.appendChild(self.table_header)
 
-        self.table_header_group = self._create_native_widget(
-            "thead", classes=["table-header"]
-        )
-        self.table.appendChild(self.table_header_group)
-
-        self.table_body = self._create_native_widget("tbody", classes=["table-body"])
-        self.table.appendChild(self.table_body)
+        self.table_body = self._create_native_widget("tbody")
+        self.native.appendChild(self.table_body)
 
     def change_source(self, source):
         self.selection = {}
@@ -71,10 +60,10 @@ class Table(Widget):
                 row_child.removeChild(td_child)
             self.table_body.removeChild(row_child)
 
-        for row_child in list(self.table_header_group.children):
+        for row_child in list(self.table_header.children):
             for td_child in list(row_child.children):
                 row_child.removeChild(td_child)
-            self.table_header_group.removeChild(row_child)
+            self.table_header.removeChild(row_child)
 
         if source is not None:
             self._create_table_headers()
@@ -82,7 +71,6 @@ class Table(Widget):
             for i, row in enumerate(source):
                 self._create_table_row(row, i)
 
-        # set table here
         self.refresh()
 
     def get_selection(self):
@@ -96,12 +84,11 @@ class Table(Widget):
 
     def add_selection(self, index, table_row):
         self.selection[index] = table_row
-        table_row.style.backgroundColor = "lightblue"
-        # set colour
+        table_row.classList.add("selected")
 
     def remove_selection(self, index):
         table_row = self.selection.pop(index)
-        table_row.style.backgroundColor = ""
+        table_row.classList.remove("selected")
 
     def clear_selection(self):
         for index in list(self.selection):
@@ -112,15 +99,13 @@ class Table(Widget):
             headings = self.interface.headings
         else:
             headings = self.interface.accessors
-        self.table_header_row = self._create_native_widget(
-            "tr", classes=["table-header-row"]
-        )
+        self.table_header_row = self._create_native_widget("tr")
 
         for heading in headings:
             th = self._create_native_widget("th", content=heading)
             self.table_header_row.appendChild(th)
 
-        self.table_header_group.appendChild(self.table_header_row)
+        self.table_header.appendChild(self.table_header_row)
 
     def _create_table_row(self, item, index):
         row = TogaRow(item)
@@ -133,9 +118,7 @@ class Table(Widget):
                     row.text(accessor, self.interface.missing_value),
                 ]
             )
-        tr = self._create_native_widget(
-            "tr",
-        )
+        tr = self._create_native_widget("tr")
 
         tr.addEventListener(
             "click", create_proxy(lambda event: self.dom_row_click(event, index, tr))
@@ -147,18 +130,12 @@ class Table(Widget):
         self.table_body.appendChild(tr)
 
     def dom_row_click(self, event, index, table_row):
-        print("row_click listener! row:", index)
         if index in self.selection:
             self.remove_selection(index)
-            print("removing row ", index, " from selection")
         else:
             if not self.interface.multiple_select:
                 self.clear_selection()
             self.add_selection(index, table_row)
-            print("adding row ", index, " to selection")
-
-        # if self.interface.on_select:
-        #       self.interface.on_select(self.interface)
 
     def insert(self, index, item):
         self.change_source(self.interface.data)
