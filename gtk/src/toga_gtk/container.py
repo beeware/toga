@@ -72,7 +72,6 @@ if GTK_VERSION >= (4, 0, 0):  # pragma: no-cover-if-gtk3
                 # the Toga widget. Toga maintains a tree of children; all nodes
                 # in that tree are direct children of the container.
 
-                container_rect = container.get_allocation()
                 # Process each child widget
                 child_widget = container.get_first_child()
                 while child_widget is not None:
@@ -86,11 +85,9 @@ if GTK_VERSION >= (4, 0, 0):  # pragma: no-cover-if-gtk3
                         child_widget_allocation = Gdk.Rectangle()
                         child_widget_allocation.x = (
                             child_widget.interface.layout.absolute_content_left
-                            + container_rect.x
                         )
                         child_widget_allocation.y = (
                             child_widget.interface.layout.absolute_content_top
-                            + container_rect.y
                         )
                         child_widget_allocation.width = (
                             child_widget.interface.layout.content_width
