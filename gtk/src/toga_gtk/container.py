@@ -153,7 +153,7 @@ if GTK_VERSION >= (4, 0, 0):  # pragma: no-cover-if-gtk3
             """
             if self._content is None:
                 return 0
-            return self.compute_bounds(self)[1].get_width()
+            return self.get_width()
 
         @property
         def height(self):
@@ -163,7 +163,7 @@ if GTK_VERSION >= (4, 0, 0):  # pragma: no-cover-if-gtk3
             """
             if self._content is None:
                 return 0
-            return self.compute_bounds(self)[1].get_height()
+            return self.get_height()
 
         @property
         def content(self):
