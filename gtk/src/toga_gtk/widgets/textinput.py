@@ -105,18 +105,18 @@ class TextInput(Widget):
             )
             self.interface.intrinsic.height = height[1]
         else:  # pragma: no-cover-if-gtk3
-            # print(
-            #     "REHINT",
-            #     self,
-            #     self.native.get_preferred_size()[0].width,
-            #     self.native.get_preferred_size()[0].height,
-            # )
+            print(
+                "[DEBUG TextInput] REHINT",
+                self,
+                self.native.get_preferred_size()[1].width,
+                self.native.get_preferred_size()[1].height,
+            )
             min_size, size = self.native.get_preferred_size()
 
             self.interface.intrinsic.width = at_least(
-                max(size.width, self.interface._MIN_WIDTH)
+                max(min_size.width, self.interface._MIN_WIDTH)
             )
-            self.interface.intrinsic.height = size.height
+            self.interface.intrinsic.height = min_size.height
 
     def set_error(self, error_message):
         self.native.set_icon_from_icon_name(Gtk.EntryIconPosition.SECONDARY, "error")
