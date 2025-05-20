@@ -1,4 +1,4 @@
-from importlib.resources import files
+from pathlib import Path
 
 import System.Windows.Forms as WinForms
 
@@ -8,7 +8,9 @@ from .base import Widget
 class ActivityIndicator(Widget):
     def create(self):
         self.native = WinForms.PictureBox()
-        self.native.Image = files("toga_winforms.resources").joinpath("spinner.gif")
+        self.native.Image = str(
+            Path(__file__).parent.parent / "resources" / "spinner.gif"
+        )
         self.native.SizeMode = WinForms.PictureBoxSizeMode.Zoom
         self.running = True
 
