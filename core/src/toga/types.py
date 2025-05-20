@@ -31,15 +31,12 @@ class LatLng(NamedTuple):
     vertical_accuracy: float | None = None
 
     def __str__(self) -> str:
-        base = f"({self.lat:6f}, {self.lng:6f})"
-        if self.horizontal_accuracy is not None or self.vertical_accuracy is not None:
-            accuracy = []
-            if self.horizontal_accuracy is not None:
-                accuracy.append(f"horizontal_accuracy: {self.horizontal_accuracy:6f}")
-            if self.vertical_accuracy is not None:
-                accuracy.append(f"vertical_accuracy: {self.vertical_accuracy:6f}")
-            return f"{base} [{', '.join(accuracy)}]"
-        return base
+        values = [f"{self.lat:.6f}", f"{self.lng:.6f}"]
+        if self.horizontal_accuracy is not None:
+            values.append(f"{self.horizontal_accuracy:.6f}")
+        if self.vertical_accuracy is not None:
+            values.append(f"{self.vertical_accuracy:.6f}")
+        return f"({', '.join(values)})"
 
 
 class Position(NamedTuple):
