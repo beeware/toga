@@ -81,3 +81,9 @@ source = [
     "src/toga_winforms",
     "**/toga_winforms",
 ]
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.package-data]
+"my_package" = ["resources/*"]
