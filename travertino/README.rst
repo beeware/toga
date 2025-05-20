@@ -1,37 +1,19 @@
-.. |logo| image:: https://beeware.org/static/images/defaultlogo.png
-    :width: 72px
-    :target: https://beeware.org
-
 .. |pyversions| image:: https://img.shields.io/pypi/pyversions/travertino.svg
     :target: https://pypi.python.org/pypi/travertino
     :alt: Python Versions
 
-.. |version| image:: https://img.shields.io/pypi/v/travertino.svg
-    :target: https://pypi.python.org/pypi/travertino
-    :alt: Project version
+.. |license| image:: https://img.shields.io/pypi/l/travertino.svg
+    :target: https://github.com/beeware/toga/blob/main/travertino/LICENSE
+    :alt: BSD-3-Clause License
 
 .. |maturity| image:: https://img.shields.io/pypi/status/travertino.svg
     :target: https://pypi.python.org/pypi/travertino
     :alt: Project status
 
-.. |license| image:: https://img.shields.io/pypi/l/travertino.svg
-    :target: https://github.com/beeware/toga/blob/main/travertino/LICENSE
-    :alt: BSD License
-
-.. |ci| image:: https://github.com/beeware/toga/workflows/CI/badge.svg?branch=main
-   :target: https://github.com/beeware/toga/actions
-   :alt: Build Status
-
-.. |social| image:: https://img.shields.io/discord/836455665257021440?label=Discord%20Chat&logo=discord&style=plastic
-   :target: https://beeware.org/bee/chat/
-   :alt: Discord server
-
-|logo|
-
 Travertino
 ==========
 
-|pyversions| |version| |maturity| |license| |ci| |social|
+|pyversions| |license| |maturity|
 
 Travertino is a set of constants and utilities for describing user
 interfaces, including:

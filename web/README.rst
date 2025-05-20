@@ -1,5 +1,19 @@
+.. |pyversions| image:: https://img.shields.io/pypi/pyversions/toga-web.svg
+    :target: https://pypi.python.org/pypi/toga-web
+    :alt: Python Versions
+
+.. |license| image:: https://img.shields.io/pypi/l/toga-web.svg
+    :target: https://github.com/beeware/toga-web/blob/main/LICENSE
+    :alt: BSD-3-Clause License
+
+.. |maturity| image:: https://img.shields.io/pypi/status/toga-web.svg
+    :target: https://pypi.python.org/pypi/toga-web
+    :alt: Project status
+
 toga-web
 ========
+
+|pyversions| |license| |maturity|
 
 A backend for the `Toga widget toolkit`_ on web platforms.
 

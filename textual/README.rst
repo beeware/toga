@@ -1,5 +1,19 @@
+.. |pyversions| image:: https://img.shields.io/pypi/pyversions/toga-textual.svg
+    :target: https://pypi.python.org/pypi/toga-textual
+    :alt: Python Versions
+
+.. |license| image:: https://img.shields.io/pypi/l/toga-textual.svg
+    :target: https://github.com/beeware/toga-textual/blob/main/LICENSE
+    :alt: BSD-3-Clause License
+
+.. |maturity| image:: https://img.shields.io/pypi/status/toga-textual.svg
+    :target: https://pypi.python.org/pypi/toga-textual
+    :alt: Project status
+
 toga-textual
 ============
+
+|pyversions| |license| |maturity|
 
 A Textual backend for the `Toga widget toolkit`_.
 
