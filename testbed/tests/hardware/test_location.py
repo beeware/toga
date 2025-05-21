@@ -8,7 +8,7 @@ from toga import LatLng
 from .probe import list_probes
 
 
-@pytest.fixture(params=list_probes("location", skip_platforms=("windows",)))
+@pytest.fixture(params=list_probes("location"))
 async def location_probe(monkeypatch, app_probe, request):
     probe_cls = request.param
     probe = probe_cls(monkeypatch, app_probe)
