@@ -1,9 +1,13 @@
+import asyncio
+
 import toga
 from toga.constants import COLUMN, ROW
 from toga.style import Pack
 
 
 class ExampleWebView(toga.App):
+    allowed_base_url = "https://beeware.org/"
+
     async def on_do_async_js(self, widget, **kwargs):
         self.label.text = repr(await self.webview.evaluate_javascript("2 + 2"))
 
@@ -21,6 +25,16 @@ class ExampleWebView(toga.App):
 
     def on_webview_load(self, widget, **kwargs):
         self.label.text = "www loaded!"
+
+    def on_navigation_starting(self, widget, url):
+        print(f"on_navigation_starting: {url}")
+        allow = True
+        if not url.startswith(self.allowed_base_url):
+            allow = False
+            message = f"Navigation not allowed to: {url}"
+            dialog = toga.InfoDialog("on_navigation_starting()", message)
+            asyncio.create_task(self.dialog(dialog))
+        return allow
 
     def on_set_url(self, widget, **kwargs):
         self.label.text = "Loading page..."
@@ -92,6 +106,9 @@ class ExampleWebView(toga.App):
             on_webview_load=self.on_webview_load,
             style=Pack(flex=1),
         )
+        # activate web navigation filtering on supported platforms
+        if getattr(self.webview._impl, "SUPPORTS_ON_NAVIGATION_STARTING", True):
+            self.webview.on_navigation_starting = self.on_navigation_starting
 
         box = toga.Box(
             children=[
