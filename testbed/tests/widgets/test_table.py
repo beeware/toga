@@ -304,6 +304,59 @@ async def test_multiselect(
         assert len(multiselect_widget.selection) == 100
 
 
+async def test_multiselect_keyboard_control(
+    multiselect_widget,
+    multiselect_probe,
+    source,
+    on_select_handler,
+):
+    """A multiselect table can be controlled by keyboard.
+    This is a workaround to create a scenario where multiple items are
+    selected while invoking VirtualItemSelectionRangeChanged event.
+    It simulates the behavior of a user pressing the down arrow key
+    while holding the shift key.
+
+    Directly changing the selection state of items in the multiselect test
+    case does not trigger the VirtualItemSelectionRangeChanged event, hence
+    the need for this workaround.
+    """
+    await multiselect_probe.redraw("No row is selected in multiselect table")
+
+    # Initial selection is empty
+    assert multiselect_widget.selection == []
+    on_select_handler.assert_not_called()
+
+    await multiselect_probe.acquire_keyboard_focus()
+
+    # A single row can be added to the selection
+    await multiselect_probe.redraw("First row selected")
+    assert multiselect_widget.selection == [source[0]]
+
+    await multiselect_probe.type_character("<down>", shift=True)
+    await multiselect_probe.redraw(
+        "Down arrow pressed - " "second row added to the selection"
+    )
+    assert multiselect_widget.selection == [source[0], source[1]]
+    on_select_handler.assert_called_with(multiselect_widget)
+    on_select_handler.reset_mock()
+
+    await multiselect_probe.type_character("<down>", shift=True)
+    await multiselect_probe.redraw(
+        "Down arrow pressed - " "third row added to the selection"
+    )
+    assert multiselect_widget.selection == [source[0], source[1], source[2]]
+    on_select_handler.assert_called_with(multiselect_widget)
+    on_select_handler.reset_mock()
+
+    await multiselect_probe.type_character("<up>", shift=True)
+    await multiselect_probe.redraw(
+        "Down arrow pressed - " "third row removed from the selection"
+    )
+    assert multiselect_widget.selection == [source[0], source[1]]
+    on_select_handler.assert_called_with(multiselect_widget)
+    on_select_handler.reset_mock()
+
+
 class MyData:
     def __init__(self, text):
         self.text = text
