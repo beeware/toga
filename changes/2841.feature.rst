@@ -1,0 +1,1 @@
+Added dark mode detection function for Android.

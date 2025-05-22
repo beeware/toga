@@ -283,8 +283,12 @@ class App:
     ######################################################################
 
     def get_dark_mode_state(self):
-        self.interface.factory.not_implemented("dark mode state")
-        return None
+        # https://developer.android.com/reference/android/content/res/Configuration#UI_MODE_NIGHT_MASK
+        config = self.native.getResources().getConfiguration()
+        in_dark_mode = (
+            config.uiMode & config.UI_MODE_NIGHT_MASK == config.UI_MODE_NIGHT_YES
+        )
+        return in_dark_mode
 
     ######################################################################
     # App capabilities
