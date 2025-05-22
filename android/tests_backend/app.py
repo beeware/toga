@@ -26,7 +26,10 @@ class AppProbe(BaseProbe, DialogsMixin):
         return self.native.getApplicationContext()
 
     @contextmanager
-    def prepare_paths(self):
+    def prepare_paths(self, *, custom):
+        if custom:
+            pytest.xfail("This backend doesn't implement app path customization.")
+
         yield {
             "config": Path(self.get_app_context().getFilesDir().getPath()) / "config",
             "data": Path(self.get_app_context().getFilesDir().getPath()) / "data",

@@ -32,7 +32,10 @@ class AppProbe(BaseProbe, DialogsMixin):
         return Path(urls[0].path)
 
     @contextmanager
-    def prepare_paths(self):
+    def prepare_paths(self, *, custom):
+        if custom:
+            pytest.xfail("This backend doesn't implement app path customization.")
+
         yield {
             "config": self.get_path(NSSearchPathDirectory.ApplicationSupport)
             / "Config",

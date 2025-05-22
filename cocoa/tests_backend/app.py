@@ -2,6 +2,7 @@ from contextlib import contextmanager
 from pathlib import Path
 
 import PIL.Image
+import pytest
 from rubicon.objc import SEL, NSPoint, ObjCClass, objc_id, send_message
 
 import toga
@@ -42,7 +43,10 @@ class AppProbe(BaseProbe, DialogsMixin):
         return self.app._impl._cursor_visible
 
     @contextmanager
-    def prepare_paths(self):
+    def prepare_paths(self, *, custom):
+        if custom:
+            pytest.xfail("This backend doesn't implement app path customization.")
+
         yield {
             "config": Path.home() / "Library/Preferences/org.beeware.toga.testbed",
             "data": Path.home()

@@ -73,7 +73,10 @@ class AppProbe(BaseProbe, DialogsMixin):
         return info.hCursor is not None
 
     @contextmanager
-    def prepare_paths(self):
+    def prepare_paths(self, *, custom):
+        if custom:
+            pytest.xfail("This backend doesn't implement app path customization.")
+
         yield {
             "config": (
                 Path.home()

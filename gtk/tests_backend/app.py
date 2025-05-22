@@ -31,7 +31,10 @@ class AppProbe(BaseProbe, DialogsMixin):
         pytest.skip("Cursor visibility not implemented on GTK")
 
     @contextmanager
-    def prepare_paths(self):
+    def prepare_paths(self, *, custom):
+        if custom:
+            pytest.xfail("This backend doesn't implement app path customization.")
+
         yield {
             "config": Path.home() / ".config/testbed",
             "data": Path.home() / ".local/share/testbed",
