@@ -113,4 +113,4 @@ class NSCalendarUnit(Enum):
 
 ######################################################################
 # NSDateComponents.h
-NSCalendar = ObjCClass("NSDateComponents")
+NSDateComponents = ObjCClass("NSDateComponents")
