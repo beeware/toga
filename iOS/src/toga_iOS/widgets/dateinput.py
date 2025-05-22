@@ -4,9 +4,7 @@ from rubicon.objc import SEL, CGSize, objc_method, objc_property
 
 from toga_iOS.libs import (
     NSCalendar,
-    NSCalendarUnitDay,
-    NSCalendarUnitMonth,
-    NSCalendarUnitYear,
+    NSCalendarUnit,
     NSDateComponents,
     UIControlEventValueChanged,
     UIDatePicker,
@@ -26,7 +24,7 @@ class TogaDatePicker(UIDatePicker):
 
 def py_date(native_date):
     components = NSCalendar.currentCalendar().componentsfromDate(
-        NSCalendarUnitDay | NSCalendarUnitMonth | NSCalendarUnitYear, native_date
+        NSCalendarUnit.Day | NSCalendarUnit.Month | NSCalendarUnit.Year, native_date
     )
     return datetime.date(components.year, components.month, components.day)
 
