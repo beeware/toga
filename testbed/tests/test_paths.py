@@ -5,8 +5,9 @@ import pytest
 
 
 @pytest.mark.parametrize("attr", ["config", "data", "cache", "logs"])
-async def test_app_paths(app, app_probe, attr):
-    with app_probe.prepare_paths() as expected_paths:
+@pytest.mark.parametrize("custom", [False, True])
+async def test_app_paths(app, app_probe, attr, custom):
+    with app_probe.prepare_paths(custom=custom) as expected_paths:
         """Platform paths are as expected."""
         path = getattr(app.paths, attr)
         assert path == expected_paths[attr]
