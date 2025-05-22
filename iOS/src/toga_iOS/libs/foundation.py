@@ -86,3 +86,7 @@ NSURL = ObjCClass("NSURL")
 ######################################################################
 # NSURLRequest.h
 NSURLRequest = ObjCClass("NSURLRequest")
+
+######################################################################
+# NSCalendar.h
+NSCalendar = ObjCClass("NSCalendar")
