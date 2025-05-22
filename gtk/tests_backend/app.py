@@ -1,4 +1,5 @@
 import os
+import tempfile
 from contextlib import contextmanager
 from pathlib import Path
 
@@ -32,15 +33,68 @@ class AppProbe(BaseProbe, DialogsMixin):
 
     @contextmanager
     def prepare_paths(self, *, custom):
-        if custom:
-            pytest.xfail("This backend doesn't implement app path customization.")
-
-        yield {
-            "config": Path.home() / ".config/testbed",
-            "data": Path.home() / ".local/share/testbed",
-            "cache": Path.home() / ".cache/testbed",
-            "logs": Path.home() / ".local/state/testbed/log",
+        # Backup environment variables for later restoration
+        backup = {
+            "XDG_CONFIG_HOME": os.getenv("XDG_CONFIG_HOME"),
+            "XDG_DATA_HOME": os.getenv("XDG_DATA_HOME"),
+            "XDG_CACHE_HOME": os.getenv("XDG_CACHE_HOME"),
+            "XDG_STATE_HOME": os.getenv("XDG_STATE_HOME"),
         }
+
+        # Creating this variable here so it can be checked during cleanup
+        temp_custom_dir = None
+
+        try:
+            if custom:
+                # This will be cleaned up later
+                temp_custom_dir = tempfile.TemporaryDirectory()
+
+                custom_root = Path(temp_custom_dir.name)
+                app_paths = {
+                    "config": custom_root / "config",
+                    "data": custom_root / "data",
+                    "cache": custom_root / "cache",
+                    "state": custom_root / "state",
+                }
+
+                # Set the custom paths
+                os.environ["XDG_CONFIG_HOME"] = str(app_paths["config"])
+                os.environ["XDG_DATA_HOME"] = str(app_paths["data"])
+                os.environ["XDG_CACHE_HOME"] = str(app_paths["cache"])
+                os.environ["XDG_STATE_HOME"] = str(app_paths["state"])
+            else:
+                # Delete existing environment variables to replicate the
+                # default state.
+                for envvar in backup:
+                    if envvar in os.environ:
+                        del os.environ[envvar]
+
+                # The default paths
+                app_paths = {
+                    "config": Path.home() / ".config",
+                    "data": Path.home() / ".local/share",
+                    "cache": Path.home() / ".cache",
+                    "state": Path.home() / ".local/state",
+                }
+
+            yield {
+                "config": app_paths["config"] / "testbed",
+                "data": app_paths["data"] / "testbed",
+                "cache": app_paths["cache"] / "testbed",
+                "logs": app_paths["state"] / "testbed" / "log",
+            }
+        finally:
+            # Restore environment variables
+            for envvar, value in backup.items():
+                if value is not None:
+                    os.environ[envvar] = value
+                else:
+                    if envvar in os.environ:
+                        del os.environ[envvar]
+
+            # Clean up temporary custom directory if it was created
+            if temp_custom_dir:
+                temp_custom_dir.cleanup()
 
     def unhide(self):
         pytest.xfail("This platform doesn't have an app level unhide.")
