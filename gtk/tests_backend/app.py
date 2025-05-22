@@ -1,4 +1,5 @@
 import os
+from contextlib import contextmanager
 from pathlib import Path
 
 import PIL.Image
@@ -26,24 +27,17 @@ class AppProbe(BaseProbe, DialogsMixin):
         assert IS_WAYLAND is (os.environ.get("WAYLAND_DISPLAY", "") != "")
 
     @property
-    def config_path(self):
-        return Path.home() / ".config/testbed"
-
-    @property
-    def data_path(self):
-        return Path.home() / ".local/share/testbed"
-
-    @property
-    def cache_path(self):
-        return Path.home() / ".cache/testbed"
-
-    @property
-    def logs_path(self):
-        return Path.home() / ".local/state/testbed/log"
-
-    @property
     def is_cursor_visible(self):
         pytest.skip("Cursor visibility not implemented on GTK")
+
+    @contextmanager
+    def prepare_paths(self):
+        yield {
+            "config": Path.home() / ".config/testbed",
+            "data": Path.home() / ".local/share/testbed",
+            "cache": Path.home() / ".cache/testbed",
+            "logs": Path.home() / ".local/state/testbed/log",
+        }
 
     def unhide(self):
         pytest.xfail("This platform doesn't have an app level unhide.")

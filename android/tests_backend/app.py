@@ -1,3 +1,4 @@
+from contextlib import contextmanager
 from pathlib import Path
 
 import pytest
@@ -24,21 +25,14 @@ class AppProbe(BaseProbe, DialogsMixin):
     def get_app_context(self):
         return self.native.getApplicationContext()
 
-    @property
-    def config_path(self):
-        return Path(self.get_app_context().getFilesDir().getPath()) / "config"
-
-    @property
-    def data_path(self):
-        return Path(self.get_app_context().getFilesDir().getPath()) / "data"
-
-    @property
-    def cache_path(self):
-        return Path(self.get_app_context().getCacheDir().getPath())
-
-    @property
-    def logs_path(self):
-        return Path(self.get_app_context().getFilesDir().getPath()) / "log"
+    @contextmanager
+    def prepare_paths(self):
+        yield {
+            "config": Path(self.get_app_context().getFilesDir().getPath()) / "config",
+            "data": Path(self.get_app_context().getFilesDir().getPath()) / "data",
+            "cache": Path(self.get_app_context().getCacheDir().getPath()),
+            "logs": Path(self.get_app_context().getFilesDir().getPath()) / "log",
+        }
 
     def assert_app_icon(self, icon):
         pytest.xfail("Android apps don't have app icons at runtime")

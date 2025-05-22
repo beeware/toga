@@ -1,3 +1,4 @@
+from contextlib import contextmanager
 from pathlib import Path
 
 import pytest
@@ -30,21 +31,15 @@ class AppProbe(BaseProbe, DialogsMixin):
         )
         return Path(urls[0].path)
 
-    @property
-    def config_path(self):
-        return self.get_path(NSSearchPathDirectory.ApplicationSupport) / "Config"
-
-    @property
-    def data_path(self):
-        return self.get_path(NSSearchPathDirectory.Documents)
-
-    @property
-    def cache_path(self):
-        return self.get_path(NSSearchPathDirectory.Cache)
-
-    @property
-    def logs_path(self):
-        return self.get_path(NSSearchPathDirectory.ApplicationSupport) / "Logs"
+    @contextmanager
+    def prepare_paths(self):
+        yield {
+            "config": self.get_path(NSSearchPathDirectory.ApplicationSupport)
+            / "Config",
+            "data": self.get_path(NSSearchPathDirectory.Documents),
+            "cache": self.get_path(NSSearchPathDirectory.Cache),
+            "logs": self.get_path(NSSearchPathDirectory.ApplicationSupport) / "Logs",
+        }
 
     def assert_app_icon(self, icon):
         pytest.xfail("iOS apps don't have app icons at runtime")
