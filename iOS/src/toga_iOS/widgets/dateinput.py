@@ -8,7 +8,7 @@ from toga_iOS.libs import (
     NSDateComponents,
     UIControlEventValueChanged,
     UIDatePicker,
-    UIDatePickerModeDate,
+    UIDatePickerMode,
 )
 from toga_iOS.widgets.base import Widget
 
@@ -44,7 +44,7 @@ class DateInput(Widget):
         self.native.impl = self
         self.native.delegate = self.native
 
-        self.native.datePickerMode = UIDatePickerModeDate
+        self.native.datePickerMode = UIDatePickerMode.Date
 
         self.native.addTarget(
             self.native,
