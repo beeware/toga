@@ -2,7 +2,7 @@
 # System/Library/Frameworks/UIKit.framework
 ##########################################################################
 from ctypes import POINTER, c_char_p, c_int, c_void_p, cdll, util
-from enum import Enum, IntEnum
+from enum import Enum, IntEnum, IntFlag
 
 from rubicon.objc import ObjCClass, ObjCProtocol, objc_const
 
@@ -537,7 +537,7 @@ UIKeyboardDidChangeFrameNotification = objc_const(
 UIDatePicker = ObjCClass("UIDatePicker")
 
 
-class UIDatePickerMode(IntEnum):
+class UIDatePickerMode(IntFlag):
     Time = 0
     Date = 1
     DateAndTime = 2

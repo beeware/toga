@@ -24,7 +24,11 @@ class TogaDatePicker(UIDatePicker):
 
 def py_date(native_date):
     components = NSCalendar.currentCalendar.components(
-        int(NSCalendarUnit.Year) | int(NSCalendarUnit.Month) | int(NSCalendarUnit.Day),
+        NSCalendarUnit(
+            NSCalendarUnit.Year.value
+            | NSCalendarUnit.Month.value
+            | NSCalendarUnit.Day.value
+        ),
         fromDate=native_date,
     )
     return datetime.date(components.year, components.month, components.day)
