@@ -57,6 +57,15 @@ class DateInput(Widget):
             forControlEvents=UIControlEventValueChanged,
         )
 
+        self._toga_max_date = datetime.date(8999, 1, 1)
+        self._toga_min_date = datetime.date(1800, 1, 1)
+
+        # Ensure that we always have maximum and minimum dates,
+        # since otherwise the get_min_date and get_max_date
+        # functions return None, which is problematic sometimes.
+        self.set_min_date(self._toga_min_date)
+        self.set_max_date(self._toga_max_date)
+
         # Add the layout constraints
         self.add_constraints()
 
@@ -75,11 +84,20 @@ class DateInput(Widget):
     def get_min_date(self):
         return py_date(self.native.minimumDate)
 
+    def normalize_date(self, value):
+        if value < self._toga_min_date:
+            value = self._toga_min_date
+        if value > self._toga_max_date:
+            value = self._toga_max_date
+        return value
+
     def set_min_date(self, value):
+        value = self.normalize_date(value)
         self.native.minimumDate = native_date(value)
 
     def get_max_date(self):
         return py_date(self.native.maximumDate)
 
     def set_max_date(self, value):
+        value = self.normalize_date(value)
         self.native.maximumDate = native_date(value)
