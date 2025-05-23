@@ -310,15 +310,10 @@ async def test_multiselect_keyboard_control(
     source,
     on_select_handler,
 ):
-    """A multiselect table can be controlled by keyboard.
-    This is a workaround to create a scenario where multiple items are
-    selected while invoking VirtualItemSelectionRangeChanged event.
-    It simulates the behavior of a user pressing the down arrow key
-    while holding the shift key.
+    """Selection on a multiselect table can be controlled by keyboard.
 
-    Directly changing the selection state of items in the multiselect test
-    case does not trigger the VirtualItemSelectionRangeChanged event, hence
-    the need for this workaround.
+    Keyboard navigation can produce different events to mouse navigation,
+    so we need to test keyboard selection independent of mouse selection.
     """
     await multiselect_probe.redraw("No row is selected in multiselect table")
 
@@ -334,7 +329,7 @@ async def test_multiselect_keyboard_control(
 
     await multiselect_probe.type_character("<down>", shift=True)
     await multiselect_probe.redraw(
-        "Down arrow pressed - " "second row added to the selection"
+        "Down arrow pressed - second row added to the selection"
     )
     assert multiselect_widget.selection == [source[0], source[1]]
     on_select_handler.assert_called_with(multiselect_widget)
@@ -342,7 +337,7 @@ async def test_multiselect_keyboard_control(
 
     await multiselect_probe.type_character("<down>", shift=True)
     await multiselect_probe.redraw(
-        "Down arrow pressed - " "third row added to the selection"
+        "Down arrow pressed - third row added to the selection"
     )
     assert multiselect_widget.selection == [source[0], source[1], source[2]]
     on_select_handler.assert_called_with(multiselect_widget)
@@ -350,7 +345,7 @@ async def test_multiselect_keyboard_control(
 
     await multiselect_probe.type_character("<up>", shift=True)
     await multiselect_probe.redraw(
-        "Down arrow pressed - " "third row removed from the selection"
+        "Up arrow pressed - third row removed from the selection"
     )
     assert multiselect_widget.selection == [source[0], source[1]]
     on_select_handler.assert_called_with(multiselect_widget)
