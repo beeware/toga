@@ -111,6 +111,4 @@ class NSCalendarUnit(Enum):
     TimeZone = 1 << 21
 
 
-######################################################################
-# NSDateComponents.h
 NSDateComponents = ObjCClass("NSDateComponents")
