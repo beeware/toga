@@ -2,7 +2,7 @@
 # System/Library/Frameworks/Foundation.framework
 ##########################################################################
 from ctypes import c_bool, cdll, util
-from enum import Enum
+from enum import Enum, IntFlag
 
 from rubicon.objc import NSPoint, NSRect, ObjCClass
 
@@ -92,7 +92,7 @@ NSURLRequest = ObjCClass("NSURLRequest")
 NSCalendar = ObjCClass("NSCalendar")
 
 
-class NSCalendarUnit(Enum):
+class NSCalendarUnit(IntFlag):
     Era = 1 << 1
     Year = 1 << 2
     Month = 1 << 3
