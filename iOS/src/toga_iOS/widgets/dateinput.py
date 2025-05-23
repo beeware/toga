@@ -79,7 +79,7 @@ class DateInput(Widget):
 
     def set_value(self, value):
         self.native.date = native_date(value)
-        self.interface._value_changed()
+        self.interface.on_change()
 
     def rehint(self):
         fitting_size = self.native.systemLayoutSizeFittingSize(CGSize(0, 0))
