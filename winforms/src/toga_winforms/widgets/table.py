@@ -67,7 +67,7 @@ class Table(Widget):
             self.winforms_search_for_virtual_item
         )
         self.native.VirtualItemsSelectionRangeChanged += WeakrefCallable(
-            self.winforms_item_selection_changed
+            self.winforms_virtual_items_selection_range_changed
         )
         self.add_action_events()
 
@@ -157,6 +157,19 @@ class Table(Widget):
 
     def winforms_item_selection_changed(self, sender, e):
         self.interface.on_select()
+
+    def winforms_virtual_items_selection_range_changed(self, sender, e):
+        # Event handler for the ListView.VirtualItemsSelectionRangeChanged
+        # with condition that only multiple items (>1) are selected.
+        # A ListView.VirtualItemsSelectionRangeChanged event will also be raised
+        # alongside a ListView.ItemSelectionChanged event when selecting a new
+        # item to replace an already selected item. This is due to the new selection
+        # action causing multiple items' selection state being changed.
+        # The number of selected items is checked before the on_select() is called.
+        # This is a workaround to avoid calling the on_select() method twice
+        # when selecting a new item to replace an already selected item.
+        if len(list(self.native.SelectedIndices)) > 1:
+            self.interface.on_select()
 
     def winforms_double_click(self, sender, e):
         hit_test = self.native.HitTest(e.X, e.Y)
