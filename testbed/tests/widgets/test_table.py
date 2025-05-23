@@ -99,18 +99,6 @@ async def multiselect_widget(source, on_select_handler):
 
 
 @pytest.fixture
-async def multiselect_keyboard_widget(source, on_select_handler):
-    skip_on_platforms("iOS", "macOS")
-    return toga.Table(
-        ["A", "B", "C"],
-        data=source,
-        multiple_select=True,
-        on_select=on_select_handler,
-        style=Pack(flex=1),
-    )
-
-
-@pytest.fixture
 async def multiselect_probe(main_window, multiselect_widget):
     old_content = main_window.content
 
@@ -118,20 +106,6 @@ async def multiselect_probe(main_window, multiselect_widget):
     main_window.content = box
     probe = get_probe(multiselect_widget)
     await probe.redraw("Constructing multiselect Table probe")
-    probe.assert_container(box)
-    yield probe
-
-    main_window.content = old_content
-
-
-@pytest.fixture
-async def multiselect_keyboard_probe(main_window, multiselect_keyboard_widget):
-    old_content = main_window.content
-
-    box = toga.Box(children=[multiselect_keyboard_widget])
-    main_window.content = box
-    probe = get_probe(multiselect_keyboard_widget)
-    await probe.redraw("Constructing multiselect Keyboard Table probe")
     probe.assert_container(box)
     yield probe
 
@@ -331,8 +305,8 @@ async def test_multiselect(
 
 
 async def test_multiselect_keyboard_control(
-    multiselect_keyboard_widget,
-    multiselect_keyboard_probe,
+    multiselect_widget,
+    multiselect_probe,
     source,
     on_select_handler,
 ):
@@ -346,40 +320,40 @@ async def test_multiselect_keyboard_control(
     case does not trigger the VirtualItemSelectionRangeChanged event, hence
     the need for this workaround.
     """
-    await multiselect_keyboard_probe.redraw("No row is selected in multiselect table")
+    await multiselect_probe.redraw("No row is selected in multiselect table")
 
     # Initial selection is empty
-    assert multiselect_keyboard_widget.selection == []
+    assert multiselect_widget.selection == []
     on_select_handler.assert_not_called()
 
-    await multiselect_keyboard_probe.acquire_keyboard_focus()
+    await multiselect_probe.acquire_keyboard_focus()
 
     # A single row can be added to the selection
-    await multiselect_keyboard_probe.redraw("First row selected")
-    assert multiselect_keyboard_widget.selection == [source[0]]
+    await multiselect_probe.redraw("First row selected")
+    assert multiselect_widget.selection == [source[0]]
 
-    await multiselect_keyboard_probe.type_character("<down>", shift=True)
-    await multiselect_keyboard_probe.redraw(
+    await multiselect_probe.type_character("<down>", shift=True)
+    await multiselect_probe.redraw(
         "Down arrow pressed - " "second row added to the selection"
     )
-    assert multiselect_keyboard_widget.selection == [source[0], source[1]]
-    on_select_handler.assert_called_with(multiselect_keyboard_widget)
+    assert multiselect_widget.selection == [source[0], source[1]]
+    on_select_handler.assert_called_with(multiselect_widget)
     on_select_handler.reset_mock()
 
-    await multiselect_keyboard_probe.type_character("<down>", shift=True)
-    await multiselect_keyboard_probe.redraw(
+    await multiselect_probe.type_character("<down>", shift=True)
+    await multiselect_probe.redraw(
         "Down arrow pressed - " "third row added to the selection"
     )
-    assert multiselect_keyboard_widget.selection == [source[0], source[1], source[2]]
-    on_select_handler.assert_called_with(multiselect_keyboard_widget)
+    assert multiselect_widget.selection == [source[0], source[1], source[2]]
+    on_select_handler.assert_called_with(multiselect_widget)
     on_select_handler.reset_mock()
 
-    await multiselect_keyboard_probe.type_character("<up>", shift=True)
-    await multiselect_keyboard_probe.redraw(
+    await multiselect_probe.type_character("<up>", shift=True)
+    await multiselect_probe.redraw(
         "Down arrow pressed - " "third row removed from the selection"
     )
-    assert multiselect_keyboard_widget.selection == [source[0], source[1]]
-    on_select_handler.assert_called_with(multiselect_keyboard_widget)
+    assert multiselect_widget.selection == [source[0], source[1]]
+    on_select_handler.assert_called_with(multiselect_widget)
     on_select_handler.reset_mock()
 
 
