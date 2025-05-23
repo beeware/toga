@@ -217,9 +217,7 @@ class SimpleProbe(BaseProbe, FontMixin):
         )
 
     async def undo(self):
-        await self.type_character("z", modifierFlags=NSEventModifierFlagCommand)
+        await self.type_character("z", alt=True)
 
     async def redo(self):
-        await self.type_character(
-            "z", modifierFlags=NSEventModifierFlagCommand | NSEventModifierFlagShift
-        )
+        await self.type_character("z", alt=True, shift=True)
