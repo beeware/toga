@@ -531,3 +531,7 @@ UIKeyboardWillChangeFrameNotification = objc_const(
 UIKeyboardDidChangeFrameNotification = objc_const(
     uikit, "UIKeyboardDidChangeFrameNotification"
 )
+
+######################################################################
+# UIDatePicker.h
+UIDatePicker = ObjCClass("UIDatePicker")
