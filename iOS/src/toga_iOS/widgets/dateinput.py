@@ -23,7 +23,7 @@ class TogaDatePicker(UIDatePicker):
 
 
 def py_date(native_date):
-    components = NSCalendar.currentCalendar().componentsfromDate(
+    components = NSCalendar.currentCalendar.componentsfromDate(
         NSCalendarUnit.Day | NSCalendarUnit.Month | NSCalendarUnit.Year, native_date
     )
     return datetime.date(components.year, components.month, components.day)
@@ -34,7 +34,7 @@ def native_date(py_date):
     components.setYear(py_date.year)
     components.setMonth(py_date.month)
     components.setDay(py_date.day)
-    return NSCalendar.currentCalendar().dateFromComponents(components)
+    return NSCalendar.currentCalendar.dateFromComponents(components)
 
 
 class DateInput(Widget):
