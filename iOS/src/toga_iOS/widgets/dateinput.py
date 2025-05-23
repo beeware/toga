@@ -22,7 +22,7 @@ class TogaDatePicker(UIDatePicker):
 
     @objc_method
     def dateInputDidChange_(self, dateInput) -> None:
-        self.interface._value_changed()
+        self.interface.on_change()
 
 
 def py_date(native_date):
@@ -63,6 +63,11 @@ class DateInput(Widget):
         # Ensure that we always have maximum and minimum dates,
         # since otherwise the get_min_date and get_max_date
         # functions return None, which is problematic sometimes.
+        #
+        # This is already handled on startup by toga_core, but
+        # the implementation also gets the min date and the max
+        # date to clip when setting, which will return null on
+        # the first call.
         self.set_min_date(MIN_DATE)
         self.set_max_date(MAX_DATE)
 
@@ -84,20 +89,11 @@ class DateInput(Widget):
     def get_min_date(self):
         return py_date(self.native.minimumDate)
 
-    def normalize_date(self, value):
-        if value < MIN_DATE:
-            value = MIN_DATE
-        if value > MAX_DATE:
-            value = MAX_DATE
-        return value
-
     def set_min_date(self, value):
-        value = self.normalize_date(value)
         self.native.minimumDate = native_date(value)
 
     def get_max_date(self):
         return py_date(self.native.maximumDate)
 
     def set_max_date(self, value):
-        value = self.normalize_date(value)
         self.native.maximumDate = native_date(value)
