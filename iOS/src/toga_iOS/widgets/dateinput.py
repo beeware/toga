@@ -12,6 +12,9 @@ from toga_iOS.libs import (
 )
 from toga_iOS.widgets.base import Widget
 
+MIN_DATE = datetime.date(1800, 1, 1)
+MAX_DATE = datetime.date(8999, 12, 31)
+
 
 class TogaDatePicker(UIDatePicker):
     interface = objc_property(object, weak=True)
@@ -57,14 +60,11 @@ class DateInput(Widget):
             forControlEvents=UIControlEventValueChanged,
         )
 
-        self._toga_max_date = datetime.date(8999, 1, 1)
-        self._toga_min_date = datetime.date(1800, 1, 1)
-
         # Ensure that we always have maximum and minimum dates,
         # since otherwise the get_min_date and get_max_date
         # functions return None, which is problematic sometimes.
-        self.set_min_date(self._toga_min_date)
-        self.set_max_date(self._toga_max_date)
+        self.set_min_date(MIN_DATE)
+        self.set_max_date(MAX_DATE)
 
         # Add the layout constraints
         self.add_constraints()
@@ -85,10 +85,10 @@ class DateInput(Widget):
         return py_date(self.native.minimumDate)
 
     def normalize_date(self, value):
-        if value < self._toga_min_date:
-            value = self._toga_min_date
-        if value > self._toga_max_date:
-            value = self._toga_max_date
+        if value < MIN_DATE:
+            value = MIN_DATE
+        if value > MAX_DATE:
+            value = MAX_DATE
         return value
 
     def set_min_date(self, value):
