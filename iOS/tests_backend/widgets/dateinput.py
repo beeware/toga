@@ -57,9 +57,9 @@ class DateInputProbe(DateTimeInputProbe):
         return datetime.date(components.year, components.month, components.day)
 
     async def change(self, delta):
-        # FIXME: We can change the date in the UIDatePicker on iOS, but changing
-        # it this way does not call the registered selector. Therefore it might just
-        # be impossible to automatically test that the on_change handler works.
+        # FIXME: It is possible to change the date in the UIDatePicker on iOS, but
+        # changing it this way does not call the registered selector. Therefore it might
+        # just be impossible to automatically test that the on_change handler works.
         self.native.date = NSCalendar.currentCalendar.dateByAddingUnit(
             NSCalendarUnit.Day, value=delta, toDate=self.native.date, options=0
         )
@@ -73,7 +73,7 @@ class DateInputProbe(DateTimeInputProbe):
 
     @property
     def background_color(self):
-        # .backgroundColor returns nil even when I've set one and it shows
+        # .backgroundColor returns nil even when one is *just* set and it shows
         # in the UI. Skip it.
-        # TODO: Should we keep track of this color manually?
+        # TODO: Should this color be kept track of manually?
         pytest.skip("Background color cannot be obtained on DateInput for iOS")

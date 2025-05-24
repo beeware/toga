@@ -66,7 +66,7 @@ class DateInput(Widget):
             forControlEvents=UIControlEventValueChanged,
         )
 
-        # Ensure that we always have maximum and minimum dates,
+        # Ensure there are maximum and minimum dates,
         # since otherwise the get_min_date and get_max_date
         # functions return None, which is problematic sometimes.
         #
@@ -108,6 +108,6 @@ class DateInput(Widget):
         # There is no API for textcolor etc in the latest iOS without some hacks.
         # https://stackoverflow.com/questions/20875054/change-uidatepicker-font-color
         # is extremely outdated and the techniques are not working.
-        # Therefore, as a workaround, we set the tintColor which sets everything
+        # Therefore, as a workaround, set the tintColor which sets everything
         # except for the text before clicking on it.
         self.native.tintColor = native_color(color)
