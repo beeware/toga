@@ -3,6 +3,7 @@ import datetime
 from rubicon.objc import SEL, CGSize, objc_method, objc_property
 from travertino.size import at_least
 
+from toga_iOS.colors import native_color
 from toga_iOS.libs import (
     NSCalendar,
     NSCalendarUnit,
@@ -100,3 +101,7 @@ class DateInput(Widget):
 
     def set_max_date(self, value):
         self.native.maximumDate = native_date(value)
+
+    def set_color(self, color):
+        # Set the tint color for color setting
+        self.native.tintColor = native_color(color)

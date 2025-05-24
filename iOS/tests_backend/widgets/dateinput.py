@@ -1,6 +1,8 @@
 import datetime
 from abc import ABC, abstractmethod
 
+import pytest
+
 from toga_iOS.libs import (
     NSCalendar,
     NSCalendarUnit,
@@ -10,6 +12,7 @@ from toga_iOS.libs import (
 )
 
 from .base import SimpleProbe
+from .properties import toga_color
 
 
 class DateTimeInputProbe(SimpleProbe, ABC):
@@ -59,3 +62,11 @@ class DateInputProbe(DateTimeInputProbe):
         )
         self.widget.on_change()  # On iOS, setting this seems to not trigger on_change
         await self.redraw(f"Change value by {delta} days")
+
+    @property
+    def color(self):
+        return toga_color(self.native.tintColor)
+
+    @property
+    def background_color(self):
+        pytest.skip("Background color cannot be obtained on DateInput for iOS")
