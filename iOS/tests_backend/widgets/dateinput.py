@@ -26,11 +26,11 @@ class DateTimeInputProbe(SimpleProbe, ABC):
 
     @property
     def min_value(self):
-        return self.py_value(self.native.min)
+        return self.py_value(self.native.minimumDate)
 
     @property
     def max_value(self):
-        return self.py_value(self.native.max)
+        return self.py_value(self.native.maximumDate)
 
 
 class DateInputProbe(DateTimeInputProbe):
