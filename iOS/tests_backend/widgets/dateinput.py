@@ -22,7 +22,7 @@ class DateTimeInputProbe(SimpleProbe, ABC):
 
     @property
     def value(self):
-        return self.py_value(self.native.value)
+        return self.py_value(self.native.date)
 
     @property
     def min_value(self):
@@ -54,13 +54,8 @@ class DateInputProbe(DateTimeInputProbe):
         return datetime.date(components.year, components.month, components.day)
 
     async def change(self, delta):
-        try:
-            calendar = NSCalendar.currentCalendar()
-            new_date = calendar.dateByAddingUnit(
-                NSCalendarUnit.Day, value=1, toDate=self.native.date, options=[]
-            )
-            self.native.date = self.py_value(new_date)
-        # TODO: What to except here?
-        except Exception:
-            pass
+        self.native.date = NSCalendar.currentCalendar.dateByAddingUnit(
+            NSCalendarUnit.Day, value=delta, toDate=self.native.date, options=0
+        )
+        self.widget.on_change()  # On iOS, setting this seems to not trigger on_change
         await self.redraw(f"Change value by {delta} days")

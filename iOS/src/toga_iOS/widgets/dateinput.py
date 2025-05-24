@@ -1,6 +1,7 @@
 import datetime
 
 from rubicon.objc import SEL, CGSize, objc_method, objc_property
+from travertino.size import at_least
 
 from toga_iOS.libs import (
     NSCalendar,
@@ -85,7 +86,7 @@ class DateInput(Widget):
 
     def rehint(self):
         fitting_size = self.native.systemLayoutSizeFittingSize(CGSize(0, 0))
-        self.interface.intrinsic.width = fitting_size.width
+        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
         self.interface.intrinsic.height = fitting_size.height
 
     def get_min_date(self):
