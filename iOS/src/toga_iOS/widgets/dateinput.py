@@ -25,7 +25,9 @@ class TogaDatePicker(UIDatePicker):
 
     @objc_method
     def dateInputDidChange_(self, dateInput) -> None:
-        self.interface.on_change()
+        # On ``pragma: no cover``: See the async def change method
+        # in the probe.
+        self.interface.on_change()  # pragma: no cover
 
 
 def py_date(native_date):
@@ -103,5 +105,9 @@ class DateInput(Widget):
         self.native.maximumDate = native_date(value)
 
     def set_color(self, color):
-        # Set the tint color for color setting
+        # There is no API for textcolor etc in the latest iOS without some hacks.
+        # https://stackoverflow.com/questions/20875054/change-uidatepicker-font-color
+        # is extremely outdated and the techniques are not working.
+        # Therefore, as a workaround, we set the tintColor which sets everything
+        # except for the text before clicking on it.
         self.native.tintColor = native_color(color)
