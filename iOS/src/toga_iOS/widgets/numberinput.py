@@ -118,7 +118,7 @@ class NumberInput(Widget):
         self.native.textColor = native_color(color)
 
     def rehint(self):
-        # Height of a text input is known.
+        # Height of a number input is known.
         fitting_size = self.native.systemLayoutSizeFittingSize(CGSize(0, 0))
         self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
         self.interface.intrinsic.height = fitting_size.height

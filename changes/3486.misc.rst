@@ -1,0 +1,1 @@
+Fixes a comment in the source of `NumberInput`.
