@@ -1,7 +1,7 @@
 [build-system]
 requires = [
     # keep versions in sync with ../pyproject.toml
-    "setuptools==80.7.1",
+    "setuptools==80.8.0",
     "setuptools_scm==8.3.1",
     "setuptools_dynamic_dependencies @ git+https://github.com/beeware/setuptools_dynamic_dependencies",
 ]
