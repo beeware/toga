@@ -45,7 +45,7 @@ classifiers = [
 [project.optional-dependencies]
 # These are needed in order to run Travertino's test suite.
 dev = [
-    "coverage[toml] == 7.8.0",
+    "coverage[toml] == 7.8.2",
     "coverage-conditional-plugin == 0.9.0",
     "pytest == 8.3.5",
     "tox == 4.26.0",
