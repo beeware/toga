@@ -1,4 +1,5 @@
 import ctypes
+from contextlib import contextmanager
 from pathlib import Path
 from time import sleep
 
@@ -26,36 +27,6 @@ class AppProbe(BaseProbe, DialogsMixin):
         self.main_window = app.main_window
         # The Winforms Application class is a singleton instance
         assert self.app._impl.native == Application
-
-    @property
-    def config_path(self):
-        return (
-            Path.home()
-            / "AppData"
-            / "Local"
-            / "Tiberius Yak"
-            / "Toga Testbed"
-            / "Config"
-        )
-
-    @property
-    def data_path(self):
-        return Path.home() / "AppData/Local/Tiberius Yak/Toga Testbed/Data"
-
-    @property
-    def cache_path(self):
-        return (
-            Path.home()
-            / "AppData"
-            / "Local"
-            / "Tiberius Yak"
-            / "Toga Testbed"
-            / "Cache"
-        )
-
-    @property
-    def logs_path(self):
-        return Path.home() / "AppData/Local/Tiberius Yak/Toga Testbed/Logs"
 
     @property
     def is_cursor_visible(self):
@@ -99,6 +70,32 @@ class AppProbe(BaseProbe, DialogsMixin):
         # returns 2 ("the system is not drawing the cursor because the user is providing
         # input through touch or pen instead of the mouse"). hCursor is more reliable.
         return info.hCursor is not None
+
+    @contextmanager
+    def prepare_paths(self, *, custom):
+        if custom:
+            pytest.xfail("This backend doesn't implement app path customization.")
+
+        yield {
+            "config": (
+                Path.home()
+                / "AppData"
+                / "Local"
+                / "Tiberius Yak"
+                / "Toga Testbed"
+                / "Config"
+            ),
+            "data": Path.home() / "AppData/Local/Tiberius Yak/Toga Testbed/Data",
+            "cache": (
+                Path.home()
+                / "AppData"
+                / "Local"
+                / "Tiberius Yak"
+                / "Toga Testbed"
+                / "Cache"
+            ),
+            "logs": Path.home() / "AppData/Local/Tiberius Yak/Toga Testbed/Logs",
+        }
 
     def unhide(self):
         pytest.xfail("This platform doesn't have an app level unhide.")
