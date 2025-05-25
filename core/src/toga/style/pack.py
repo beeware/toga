@@ -9,6 +9,7 @@ if TYPE_CHECKING:
     from travertino.colors import rgb, hsl
 
 from travertino.constants import (  # noqa: F401
+    ABSOLUTE_FONT_SIZES,
     BOLD,
     BOTTOM,
     CENTER,
@@ -232,7 +233,11 @@ class Pack(BaseStyle):
     font_style: str = validated_property(*FONT_STYLES, initial=NORMAL)
     font_variant: str = validated_property(*FONT_VARIANTS, initial=NORMAL)
     font_weight: str = validated_property(*FONT_WEIGHTS, initial=NORMAL)
-    font_size: int = validated_property(integer=True, initial=SYSTEM_DEFAULT_FONT_SIZE)
+    font_size: int | str = validated_property(
+        *ABSOLUTE_FONT_SIZES,
+        integer=True,
+        initial=SYSTEM_DEFAULT_FONT_SIZE,
+    )
 
     ######################################################################
     # Directional aliases
@@ -961,7 +966,10 @@ class Pack(BaseStyle):
             else:
                 css.append(f"font-family: {self.font_family};")
         if self.font_size != SYSTEM_DEFAULT_FONT_SIZE:
-            css.append(f"font-size: {self.font_size}pt;")
+            if isinstance(self.font_size, str):
+                css.append(f"font-size: {self.font_size};")
+            else:
+                css.append(f"font-size: {self.font_size}pt;")
         if self.font_weight != NORMAL:
             css.append(f"font-weight: {self.font_weight};")
         if self.font_style != NORMAL:
