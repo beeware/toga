@@ -3,6 +3,7 @@ import datetime
 from rubicon.objc import SEL, CGSize, objc_method, objc_property
 from travertino.size import at_least
 
+from toga.widgets.dateinput import MAX_DATE, MIN_DATE
 from toga_iOS.colors import native_color
 from toga_iOS.libs import (
     NSCalendar,
@@ -14,9 +15,6 @@ from toga_iOS.libs import (
     UIDatePickerMode,
 )
 from toga_iOS.widgets.base import Widget
-
-MIN_DATE = datetime.date(1800, 1, 1)
-MAX_DATE = datetime.date(8999, 12, 31)
 
 
 class TogaDatePicker(UIDatePicker):
