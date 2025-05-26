@@ -25,6 +25,16 @@ class OnWebViewLoadHandler(Protocol):
         """
 
 
+class OnNavigationStartingHandler(Protocol):
+    def __call__(self, widget: WebView, **kwargs: Any) -> object:
+        """A handler to invoke when the WebView is requesting permission to navigate or
+        redirect to a different URI.
+
+        :param widget: The WebView
+        :param kwargs: Ensures compatibility with arguments added in future versions.
+        """
+
+
 class WebView(Widget):
     def __init__(
         self,
@@ -33,7 +43,7 @@ class WebView(Widget):
         url: str | None = None,
         content: str | None = None,
         user_agent: str | None = None,
-        on_navigation_starting=None,
+        on_navigation_starting: OnNavigationStartingHandler | None = None,
         on_webview_load: OnWebViewLoadHandler | None = None,
         **kwargs,
     ):

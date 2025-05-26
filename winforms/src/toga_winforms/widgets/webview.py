@@ -135,7 +135,7 @@ class WebView(Widget):
             settings.IsSwipeNavigationEnabled = False
             settings.IsZoomControlEnabled = True
 
-            self.native.CoreWebView2.NavigationStarting += (
+            self.native.CoreWebView2.NavigationStarting += WeakrefCallable(
                 self.winforms_navigation_starting
             )
 

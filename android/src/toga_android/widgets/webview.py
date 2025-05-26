@@ -28,12 +28,6 @@ class ReceiveString(dynamic_proxy(ValueCallback)):
         self.result.set_result(res)
 
 
-class TogaNavigationEvent:
-    def __init__(self, webresourcerequest):
-        self.request = webresourcerequest
-        self.cancel = False
-
-
 class TogaWebClient(static_proxy(WebViewClient)):
     def __init__(self, impl):
         super().__init__()
@@ -42,13 +36,10 @@ class TogaWebClient(static_proxy(WebViewClient)):
     @Override(jboolean, [A_WebView, WebResourceRequest])
     def shouldOverrideUrlLoading(self, webview, webresourcerequest):
         if self.webview_impl.interface.on_navigation_starting:
-            event = TogaNavigationEvent(webresourcerequest)
             allow = self.webview_impl.interface.on_navigation_starting(
                 webresourcerequest.getUrl().toString()
             )
             if not allow:
-                event.cancel = True
-                event = None
                 return True
         return False
 
