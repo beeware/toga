@@ -73,7 +73,7 @@ class DateInputProbe(DateTimeInputProbe):
 
     @property
     def background_color(self):
-        # .backgroundColor returns nil even when one is *just* set and it shows
-        # in the UI. Skip it.
-        # TODO: Should this color be kept track of manually?
-        pytest.skip("Background color cannot be obtained on DateInput for iOS")
+        pytest.xfail(
+            "Background color is not readable on the native API for DateInput on iOS"
+        )
+        return toga_color(self.native.backgroundColor)
