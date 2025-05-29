@@ -20,7 +20,6 @@ class ActivityIndicator(Widget):
                 str(Path(__file__).parent.parent / "resources" / "spinner.gif")
             )
         self.native.SizeMode = WinForms.PictureBoxSizeMode.Zoom
-        self.native.InterpolerationMode = 7
         self.interface.intrinsic.width = 32
         self.interface.intrinsic.height = 32
         self.running = False
