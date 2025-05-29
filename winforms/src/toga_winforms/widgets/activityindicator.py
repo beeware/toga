@@ -13,17 +13,20 @@ class ActivityIndicator(Widget):
             str(Path(__file__).parent.parent / "resources" / "spinner.gif")
         )
         self.native.SizeMode = WinForms.PictureBoxSizeMode.Zoom
-        self.running = True
+        self.interface.intrinsic.width = 32
+        self.interface.intrinsic.height = 32
+        self.running = False
 
     def set_hidden(self, hidden):
-        self.native.Visible = (not self.running) or hidden
+        self.native.Visible = self.running and not hidden
+        self.hidden = hidden
 
     def is_running(self):
         return self.running
 
     def start(self):
-        self.native.Visible = True
         self.running = True
+        self.native.Visible = not self.hidden
 
     def stop(self):
         self.native.Visible = False
