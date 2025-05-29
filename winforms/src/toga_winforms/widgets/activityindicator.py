@@ -1,4 +1,4 @@
-from ctypes.windll import user32
+from ctypes import windll
 from pathlib import Path
 
 import System.Windows.Forms as WinForms
@@ -10,8 +10,8 @@ from .base import Widget
 class ActivityIndicator(Widget):
     def create(self):
         self.native = WinForms.PictureBox()
-        user32.SetProcessDPIAware()
-        if user32.GetDpiForSystem() > 96:
+        windll.user32.SetProcessDPIAware()
+        if windll.user32.GetDpiForSystem() > 96:
             self.native.Image = Image.FromFile(
                 str(Path(__file__).parent.parent / "resources" / "spinner2x.gif")
             )
@@ -20,6 +20,7 @@ class ActivityIndicator(Widget):
                 str(Path(__file__).parent.parent / "resources" / "spinner.gif")
             )
         self.native.SizeMode = WinForms.PictureBoxSizeMode.Zoom
+        self.native.InterpolerationMode = 7
         self.interface.intrinsic.width = 32
         self.interface.intrinsic.height = 32
         self.running = False
