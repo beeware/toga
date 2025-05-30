@@ -1,5 +1,4 @@
 import datetime
-from abc import ABC, abstractmethod
 
 import pytest
 
@@ -15,28 +14,10 @@ from .base import SimpleProbe
 from .properties import toga_color
 
 
-class DateTimeInputProbe(SimpleProbe, ABC):
+class DateInputProbe(SimpleProbe):
     native_class = UIDatePicker
     supports_limits = True
 
-    @abstractmethod
-    def py_value(self, native_value):
-        pass
-
-    @property
-    def value(self):
-        return self.py_value(self.native.date)
-
-    @property
-    def min_value(self):
-        return self.py_value(self.native.minimumDate)
-
-    @property
-    def max_value(self):
-        return self.py_value(self.native.maximumDate)
-
-
-class DateInputProbe(DateTimeInputProbe):
     def __init__(self, widget):
         super().__init__(widget)
         assert (
@@ -57,18 +38,19 @@ class DateInputProbe(DateTimeInputProbe):
         return datetime.date(components.year, components.month, components.day)
 
     async def change(self, delta):
-        # FIXME: It is possible to change the date in the UIDatePicker on iOS, but
+        # It is possible to change the date in the UIDatePicker on iOS, but
         # changing it this way does not call the registered selector. Therefore it might
         # just be impossible to automatically test that the on_change handler works.
         self.native.date = NSCalendar.currentCalendar.dateByAddingUnit(
             NSCalendarUnit.Day, value=delta, toDate=self.native.date, options=0
         )
         # Call it manually to have the test pass for now.
-        self.widget.on_change()
+        self.native.dateInputDidChange(self.native)
         await self.redraw(f"Change value by {delta} days")
 
     @property
     def color(self):
+        pytest.xfail("Color is not implemented for DateInput on iOS")
         return toga_color(self.native.tintColor)
 
     @property
@@ -77,3 +59,15 @@ class DateInputProbe(DateTimeInputProbe):
             "Background color is not readable on the native API for DateInput on iOS"
         )
         return toga_color(self.native.backgroundColor)
+
+    @property
+    def value(self):
+        return self.py_value(self.native.date)
+
+    @property
+    def min_value(self):
+        return self.py_value(self.native.minimumDate)
+
+    @property
+    def max_value(self):
+        return self.py_value(self.native.maximumDate)
