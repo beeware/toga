@@ -11,14 +11,17 @@ class ActivityIndicator(Widget):
     def create(self):
         self.native = WinForms.PictureBox()
         windll.user32.SetProcessDPIAware()
+        # No coverage for those below, because the CI
+        # or the local testing environment may or may
+        # not have a high DPI.
         if windll.user32.GetDpiForSystem() > 96:
             self.native.Image = Image.FromFile(
                 str(Path(__file__).parent.parent / "resources" / "spinner2x.gif")
-            )
+            )  # pragma: no cover
         else:
             self.native.Image = Image.FromFile(
                 str(Path(__file__).parent.parent / "resources" / "spinner.gif")
-            )
+            )  # pragma: no cover
         self.native.SizeMode = WinForms.PictureBoxSizeMode.Zoom
         self.interface.intrinsic.width = 32
         self.interface.intrinsic.height = 32
