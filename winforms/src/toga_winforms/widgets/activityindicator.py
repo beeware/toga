@@ -16,11 +16,11 @@ class ActivityIndicator(Widget):
         # not have a high DPI.
         if windll.user32.GetDpiForSystem() > 96:
             self.native.Image = Image.FromFile(
-                str(Path(__file__).parent.parent / "resources" / "spinner2x.gif")
+                str(Path(__file__).parent.parent / "resources" / "spinner2x_anti.gif")
             )  # pragma: no cover
         else:
             self.native.Image = Image.FromFile(
-                str(Path(__file__).parent.parent / "resources" / "spinner.gif")
+                str(Path(__file__).parent.parent / "resources" / "spinner_anti.gif")
             )  # pragma: no cover
         self.native.SizeMode = WinForms.PictureBoxSizeMode.Zoom
         self.interface.intrinsic.width = 32
