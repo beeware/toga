@@ -1,1 +1,2 @@
-Figures will not float in the LaTeX-generated PDF docs anymore.
+Figures will not float in the LaTeX-generated PDF docs anymore. In addition, symbols are added for used Unicode characters.
+
