@@ -1,0 +1,1 @@
+Figures will not float in the LaTeX-generated PDF docs anymore.

@@ -291,7 +291,7 @@ latex_elements = {
     # 'preamble': '',
     # Figure placement -- we have lots of figures associated with platform labels
     # and it does not make sense for them to float.
-    'figure_align': 'H',
+    "figure_align": "H",
 }
 
 # Grouping the document tree into LaTeX files. List of tuples
