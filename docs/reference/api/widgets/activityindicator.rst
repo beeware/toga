@@ -18,9 +18,11 @@ usually rendered as a "spinner" animation.
        :align: center
        :width: 100px
 
-  .. group-tab:: Windows |no|
+  .. group-tab:: Windows
 
-    Not supported
+    .. figure:: /reference/images/activityindicator-winforms.png
+       :align: center
+       :width: 100px
 
   .. group-tab:: Android |no|
 
