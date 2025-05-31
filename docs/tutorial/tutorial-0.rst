@@ -52,7 +52,7 @@ In addition, make sure that you have the platform-specific dependencies for your
 
   .. group-tab:: macOS
 
-    No additional dependencies are nessacary.
+    No additional dependencies are necessary.
 
   .. group-tab:: Linux
 
