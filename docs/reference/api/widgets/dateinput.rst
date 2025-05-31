@@ -60,8 +60,7 @@ Notes
   * :any:`datetime.datetime`: The date portion will be extracted.
   * :any:`str`: Will be parsed as an ISO8601 format date string (e.g., "2023-12-25").
 
-* On iOS, setting its color sets its *tint color*, which is like an accent color for the date input, but it does
-  not change the color of the date text because of limitations with iOS APIs that works across supported versions.
+* On iOS, there is no color handling (both color and background color) available.
 
 Reference
 ---------
