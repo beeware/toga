@@ -288,7 +288,19 @@ latex_elements = {
     # The font size ('10pt', '11pt' or '12pt').
     # 'pointsize': '10pt',
     # Additional stuff for the LaTeX preamble.
-    # 'preamble': '',
+    "preamble": r"""\usepackage{textcomp}
+\DeclareUnicodeCharacter{25CF}{{\Large\textbullet}}
+\DeclareUnicodeCharacter{25CB}{{\Large\textopenbullet}}
+\DeclareUnicodeCharacter{FE0E}{}  % ignore this
+\usepackage{menukeys}
+\DeclareUnicodeCharacter{2318}{\cmd}  % command symbol
+\usepackage{bbding}
+\DeclareUnicodeCharacter{2728}{\Sparkle}  % from bbding
+\usepackage{fontawesome}
+% can't think of any more ways to get cake with LaTeX
+\DeclareUnicodeCharacter{1F370}{\faBirthdayCake}
+\usepackage{upgreek}
+\DeclareUnicodeCharacter{03B2}{\ensuremath{\upbeta}}""",
     # Figure placement -- we have lots of figures associated with platform labels
     # and it does not make sense for them to float.
     "figure_align": "H",
