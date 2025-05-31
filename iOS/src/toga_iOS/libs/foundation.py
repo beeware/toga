@@ -2,7 +2,7 @@
 # System/Library/Frameworks/Foundation.framework
 ##########################################################################
 from ctypes import c_bool, cdll, util
-from enum import Enum
+from enum import Enum, IntFlag
 
 from rubicon.objc import NSPoint, NSRect, ObjCClass
 
@@ -86,3 +86,29 @@ NSURL = ObjCClass("NSURL")
 ######################################################################
 # NSURLRequest.h
 NSURLRequest = ObjCClass("NSURLRequest")
+
+######################################################################
+# NSCalendar.h
+NSCalendar = ObjCClass("NSCalendar")
+
+
+class NSCalendarUnit(IntFlag):
+    Era = 1 << 1
+    Year = 1 << 2
+    Month = 1 << 3
+    Day = 1 << 4
+    Hour = 1 << 5
+    Minute = 1 << 6
+    Second = 1 << 7
+    Weekday = 1 << 9
+    WeekdayOrdinal = 1 << 10
+    Quarter = 1 << 11
+    WeekOfMonth = 1 << 12
+    WeekOfYear = 1 << 13
+    YearForWeekOfYear = 1 << 14
+    Nanosecond = 1 << 15
+    Calendar = 1 << 20
+    TimeZone = 1 << 21
+
+
+NSDateComponents = ObjCClass("NSDateComponents")
