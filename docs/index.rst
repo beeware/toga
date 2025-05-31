@@ -29,9 +29,25 @@ single-page web apps, and console apps.
        :align: center
        :width: 450px
 
+.. toctree::
+   :maxdepth: 2
+   :hidden:
+   :titlesonly:
+
+   tutorial/index
+   reference/index
+   how-to/index
+   background/index
+
+
 .. raw:: html
 
   <div class="table">
+
+.. raw:: latex
+
+  \chapter{Components}
+  \let\oldchapter\chapter\let\chapter\section
 
 :ref:`Tutorial <tutorial>`
 --------------------------
@@ -63,19 +79,10 @@ single-page web apps, and console apps.
 * :doc:`Toga's architecture and other internals </background/internals/index>`
 
 
-.. toctree::
+.. raw:: latex
+  \let\chapter\oldchapter
+
 
 .. raw:: html
 
   </div>
-
-
-.. toctree::
-   :maxdepth: 2
-   :hidden:
-   :titlesonly:
-
-   tutorial/index
-   reference/index
-   how-to/index
-   background/index
