@@ -80,6 +80,7 @@ single-page web apps, and console apps.
 
 
 .. raw:: latex
+
   \let\chapter\oldchapter
 
 
