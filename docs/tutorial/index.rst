@@ -12,6 +12,10 @@ Tutorials
     specific hardware platforms. Once you've completed the BeeWare tutorial, this
     tutorial will introduce more details about Toga's capabilities as a GUI toolkit.
 
+.. raw:: latex
+
+  See section~\ref{tutorials:components} for an overview of the tutorials.
+
 .. toctree::
    :maxdepth: 1
    :hidden:
@@ -23,6 +27,11 @@ Tutorials
    tutorial-2
    tutorial-3
    tutorial-4
+
+.. raw:: latex
+
+  \section{Components}\label{tutorials:components}
+  \let\oldsection\section\let\section\subsection
 
 A quick test drive
 ==================
@@ -70,3 +79,8 @@ lines and shapes on a canvas.
 .. figure:: screenshots/tutorial-4.png
     :align: center
     :width: 300
+
+.. raw:: latex
+
+  \section{Introduction}
+  \let\section\oldsection
