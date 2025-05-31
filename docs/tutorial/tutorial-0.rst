@@ -46,6 +46,25 @@ virtual environment, open a fresh terminal session, and run:
 
 Your prompt should now have a ``(venv)`` prefix in front of it.
 
+In addition, make sure that you have the platform-specific dependencies for your platform:
+
+.. tabs::
+
+  .. group-tab:: macOS
+
+    No additional dependencies are nessacary.
+
+  .. group-tab:: Linux
+
+    Before you install Toga, you'll need to install some system packages.
+
+    .. include:: /reference/platforms/unix-prerequisites.rst
+
+  .. group-tab:: Windows
+
+    Confirm that your system meets the :ref:`Windows prerequisites
+    <windows-prerequisites>`.
+
 Next, install Toga into your virtual environment:
 
 .. tabs::
@@ -58,12 +77,6 @@ Next, install Toga into your virtual environment:
 
   .. group-tab:: Linux
 
-    Before you install Toga, you'll need to install some system packages.
-
-    .. include:: /reference/platforms/unix-prerequisites.rst
-
-    Then, install Toga:
-
     .. code-block:: console
 
       (venv) $ python -m pip install toga
@@ -72,9 +85,6 @@ Next, install Toga into your virtual environment:
     all the platform prerequisites.
 
   .. group-tab:: Windows
-
-    Confirm that your system meets the :ref:`Windows prerequisites
-    <windows-prerequisites>`; then run:
 
     .. code-block:: doscon
 
