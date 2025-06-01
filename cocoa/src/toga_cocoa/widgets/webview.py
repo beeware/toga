@@ -1,11 +1,18 @@
 from http.cookiejar import Cookie, CookieJar
 
-from rubicon.objc import objc_id, objc_method, objc_property, py_from_ns
+from rubicon.objc import ObjCBlock, objc_id, objc_method, objc_property, py_from_ns
 from travertino.size import at_least
 
 from toga.widgets.webview import CookiesResult, JavaScriptResult
 
-from ..libs import NSURL, NSURLRequest, WKWebView
+from ..libs import (
+    NSURL,
+    NSModalResponseOK,
+    NSOpenPanel,
+    NSURLRequest,
+    WKUIDelegate,
+    WKWebView,
+)
 from .base import Widget
 
 
@@ -57,7 +64,7 @@ def cookies_completion_handler(result):
     return _completion_handler
 
 
-class TogaWebView(WKWebView):
+class TogaWebView(WKWebView, protocols=[WKUIDelegate]):
     interface = objc_property(object, weak=True)
     impl = objc_property(object, weak=True)
 
@@ -78,6 +85,44 @@ class TogaWebView(WKWebView):
     def acceptsFirstResponder(self) -> bool:
         return True
 
+    @objc_method
+    def webView_runOpenPanelWithParameters_initiatedByFrame_completionHandler_(
+        self, webView, parameters, frame, completionHandler
+    ) -> None:
+        """Required by the WKUIDelegate protocol.
+
+        Called when the user clicks on an <input type="file"> HTML tag,
+        or something like the js func window.showOpenFilePicker.
+
+        :param webView: The web view invoking the delegate method.
+        :param parameters: The parameters describing the file upload control.
+        Has two attributes: allowsMultipleSelection and allowsDirectories
+        :param frame: The frame whose file upload control initiated the call.
+        :param completionHandler: The completion handler called after the open
+        panel has been dismissed.
+        :returns: Nothing
+        """
+        # Create open file dialog panel and set parameters
+        # Because of the "native" approach required for this method,
+        # the OpenFileDialog and SelectFolderDialog classes were not
+        # reused from dialogs.py
+        panel = NSOpenPanel.alloc().init()
+        panel.allowsMultipleSelection = parameters.allowsMultipleSelection
+        panel.canChooseDirectories = parameters.allowsDirectories
+        panel.canCreateDirectories = parameters.allowsDirectories
+        panel.canChooseFiles = not parameters.allowsDirectories
+        panel.resolvesAliases = parameters.allowsDirectories
+
+        # "Custom" handler to check if the user selected ok or cancelled
+        # then pass to the native completionHandler
+        def handler(res: int) -> None:
+            if res == NSModalResponseOK:
+                ObjCBlock(completionHandler, None, objc_id)(panel.URLs)
+            else:
+                ObjCBlock(completionHandler, None, objc_id)(None)
+
+        panel.beginWithCompletionHandler(handler)
+
 
 class WebView(Widget):
     def create(self):
@@ -93,6 +138,8 @@ class WebView(Widget):
         # from the command line.
         self.native.inspectable = True
         self.native.navigationDelegate = self.native
+        # Set UIDelegate to self for file dialog support
+        self.native.UIDelegate = self.native
 
         self.loaded_future = None
 
