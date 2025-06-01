@@ -288,8 +288,9 @@ latex_elements = {
     # The font size ('10pt', '11pt' or '12pt').
     # 'pointsize': '10pt',
     # Packages loaded before hyperref
+    "sphinxsetup": "iconpackage=fontawesome",
+    # A bunch of packages for all the symbols we use
     "extrapackages": r"\usepackage{textcomp, menukeys, bbding, textgreek}",
-    "iconpackage": "fontawesome",
     # Additional stuff for the LaTeX preamble.
     "preamble": r"""\DeclareUnicodeCharacter{25CF}{{\Large\textbullet}}
 \DeclareUnicodeCharacter{25CB}{{\Large\textopenbullet}}
@@ -298,7 +299,7 @@ latex_elements = {
 \DeclareUnicodeCharacter{2728}{\Sparkle}  % from bbding
 % can't think of any more ways to get cake with LaTeX
 \DeclareUnicodeCharacter{1F370}{\faBirthdayCake}
-\DeclareUnicodeCharacter{03B2}{\textbeta}""",
+\DeclareUnicodeCharacter{03B2}{{\fontfamily{cmr}\selectfont\textbeta}}""",
     # Figure placement -- we have lots of figures associated with platform labels
     # and it does not make sense for them to float.
     "figure_align": "H",
