@@ -288,7 +288,8 @@ latex_elements = {
     # The font size ('10pt', '11pt' or '12pt').
     # 'pointsize': '10pt',
     # Packages loaded before hyperref
-    "extrapackages": r"\usepackage{textcomp, menukeys, bbding, fontawesome, textgreek}",
+    "extrapackages": r"\usepackage{textcomp, menukeys, bbding, textgreek}",
+    "iconpackage": "fontawesome",
     # Additional stuff for the LaTeX preamble.
     "preamble": r"""\DeclareUnicodeCharacter{25CF}{{\Large\textbullet}}
 \DeclareUnicodeCharacter{25CB}{{\Large\textopenbullet}}
