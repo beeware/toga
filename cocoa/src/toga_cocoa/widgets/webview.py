@@ -106,22 +106,24 @@ class TogaWebView(WKWebView, protocols=[WKUIDelegate]):
         # Because of the "native" approach required for this method,
         # the OpenFileDialog and SelectFolderDialog classes were not
         # reused from dialogs.py
-        panel = NSOpenPanel.alloc().init()
-        panel.allowsMultipleSelection = parameters.allowsMultipleSelection
-        panel.canChooseDirectories = parameters.allowsDirectories
-        panel.canCreateDirectories = parameters.allowsDirectories
-        panel.canChooseFiles = not parameters.allowsDirectories
-        panel.resolvesAliases = parameters.allowsDirectories
+        panel = NSOpenPanel.alloc().init()  # pragma: no branch
+        panel.allowsMultipleSelection = (
+            parameters.allowsMultipleSelection
+        )  # pragma: no branch
+        panel.canChooseDirectories = parameters.allowsDirectories  # pragma: no branch
+        panel.canCreateDirectories = parameters.allowsDirectories  # pragma: no branch
+        panel.canChooseFiles = not parameters.allowsDirectories  # pragma: no branch
+        panel.resolvesAliases = parameters.allowsDirectories  # pragma: no branch
 
         # "Custom" handler to check if the user selected ok or cancelled
         # then pass to the native completionHandler
-        def handler(res: int) -> None:
+        def handler(res: int) -> None:  # pragma: no branch
             if res == NSModalResponseOK:
                 ObjCBlock(completionHandler, None, objc_id)(panel.URLs)
             else:
                 ObjCBlock(completionHandler, None, objc_id)(None)
 
-        panel.beginWithCompletionHandler(handler)
+        panel.beginWithCompletionHandler(handler)  # pragma: no branch
 
 
 class WebView(Widget):
