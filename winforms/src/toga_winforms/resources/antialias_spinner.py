@@ -12,7 +12,7 @@ def _get_size(logical_width=32, logical_height=32):
     try:
         user32.SetProcessDPIAware()
         dpi = user32.GetDpiForSystem()
-    except AttributeError:
+    except AttributeError:  # pragma: no cover
         dpi = 96
     physical_width = logical_width * dpi / 96
     physical_height = logical_height * dpi / 96
