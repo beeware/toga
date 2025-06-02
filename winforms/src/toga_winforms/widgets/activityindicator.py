@@ -17,7 +17,7 @@ class ActivityIndicator(Widget):
         self.running = False
 
     def set_background_color(self, color):
-        super.set_background_color(color)
+        super().set_background_color(color)
         self.native.Image = antialias_spinner(
             (self.native.BackColor.R, self.native.BackColor.G, self.native.BackColor.B)
         )
