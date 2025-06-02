@@ -65,7 +65,7 @@ root = ".."
 dependencies = [
     "pythonnet >= 3.0.0",
     "toga-core == {version}",
-    "Pillow == 10.4.0",
+    "pillow >= 10.0.0",
 ]
 
 [tool.coverage.run]
