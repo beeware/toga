@@ -9,7 +9,7 @@ class ActivityIndicator(Widget):
     def create(self):
         self.native = WinForms.PictureBox()
         self.native.Image = antialias_spinner(
-            self.native.BackColor.R, self.native.BackColor.G, self.native.BackColor.B
+            (self.native.BackColor.R, self.native.BackColor.G, self.native.BackColor.B)
         )
         self.native.SizeMode = WinForms.PictureBoxSizeMode.Zoom
         self.interface.intrinsic.width = 32
