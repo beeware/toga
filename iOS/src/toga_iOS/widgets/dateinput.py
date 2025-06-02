@@ -98,3 +98,11 @@ class DateInput(Widget):
 
     def set_max_date(self, value):
         self.native.maximumDate = native_date(value)
+
+    def set_color(self, color):
+        # pass, since there is no reliable way to change color
+        pass
+
+    def set_background_color(self, color):
+        # pass, since background color setting makes corners straight
+        pass
