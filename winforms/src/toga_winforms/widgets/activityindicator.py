@@ -16,6 +16,12 @@ class ActivityIndicator(Widget):
         self.interface.intrinsic.height = 32
         self.running = False
 
+    def set_background_color(self, color):
+        super.set_background_color(color)
+        self.native.Image = antialias_spinner(
+            (self.native.BackColor.R, self.native.BackColor.G, self.native.BackColor.B)
+        )
+
     def set_hidden(self, hidden):
         self.native.Visible = self.running and not hidden
         self.hidden = hidden
