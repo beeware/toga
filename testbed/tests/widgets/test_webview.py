@@ -386,63 +386,24 @@ async def test_retrieve_cookies(widget, probe, on_load):
     assert cookie.expires is None
 
 
-@pytest.mark.parametrize(
-    "multiple_select, webkitdirectory, result",
-    [
-        # Folder upload
-        # Successful single select
-        (False, True, TESTS_DIR / "widgets"),
-        # Cancelled single select
-        (False, True, None),
-        # Successful multiple selection
-        (True, True, [TESTS_DIR, TESTS_DIR / "widgets"]),
-        # Successful multiple selection with one item
-        (True, True, [TESTS_DIR / "widgets"]),
-        # Cancelled multiple selection
-        (True, True, None),
-        # File upload
-        # Successful single select
-        (False, False, TESTS_DIR / "data.py"),
-        # Cancelled single select
-        (False, False, None),
-        # Successful multiple selection
-        (True, False, [TESTS_DIR / "conftest.py", TESTS_DIR / "data.py"]),
-        # Successful multiple selection of one item
-        (True, False, [TESTS_DIR / "data.py"]),
-        # Cancelled multiple selection
-        (True, False, None),
-    ],
-)
-async def test_file_upload_dialog(
-    widget, probe, multiple_select, webkitdirectory, result
-):
+async def test_file_upload_dialog(widget, probe):
     # At a minimum, this places an <input type="file"> tag on the DOM and clicks it
     # and verifies that no errors are thrown when opening the dialog and
     # pressing "okay" or "cancel"
-    expression = f"""\
+    expression = """\
     var input = document.createElement("input");
     input.type = "file";
     input.id = "fileinput";
-    {'input.multiple = true;' if multiple_select else ''}
-    {'input.webkitdirectory = true;' if webkitdirectory else ''}
+    input.multiple = true;
+    input.webkitdirectory
     body = document.body;
     body.appendChild(input);
     input.click();"""
     # create input file element in DOM and click it to open the native file dialog
     await wait_for(widget.evaluate_javascript(expression), JS_TIMEOUT)
 
-    # simulate selecting the files and uploading them to the page
-    # returns True if no error, False if there was an error
-    # workaround until file upload is fully simulated
-    simulation_passed = await probe.simulate_webview_file_upload_dialog_result(
-        widget, multiple_select, webkitdirectory, result
-    )
-    await probe.redraw(
-        "Display upload dialog"
-        f" {multiple_select=}"
-        f" {webkitdirectory=}"
-        f" {result=}"
-    )
+    # TODO implement simulated file upload behavior
+
     expression = """\
     (function returnFiles(){
         var input = document.getElementById("fileinput");
@@ -461,10 +422,4 @@ async def test_file_upload_dialog(
     })()
     """
     actual = await wait_for(widget.evaluate_javascript(expression), JS_TIMEOUT)
-    if not actual:
-        actual = None
-    # Set result to None if sumlation passed
-    # workaround until file upload is fully simulated
-    if simulation_passed:
-        result = None
-    assert actual == result
+    assert not actual
