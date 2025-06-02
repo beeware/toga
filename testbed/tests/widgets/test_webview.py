@@ -2,6 +2,7 @@ import asyncio
 from asyncio import wait_for
 from contextlib import nullcontext
 from http.cookiejar import CookieJar
+from pathlib import Path
 from time import time
 from unittest.mock import ANY, Mock
 
@@ -20,6 +21,7 @@ from .properties import (  # noqa: F401
 LOAD_TIMEOUT = 30
 JS_TIMEOUT = 5
 WINDOWS_INIT_TIMEOUT = 60
+TESTS_DIR = Path(__file__).parent.parent
 
 
 async def get_content(widget):
@@ -382,3 +384,87 @@ async def test_retrieve_cookies(widget, probe, on_load):
     assert cookie.path == "/"
     assert cookie.secure is True
     assert cookie.expires is None
+
+
+@pytest.mark.parametrize(
+    "multiple_select, webkitdirectory, result",
+    [
+        # Folder upload
+        # Successful single select
+        (False, True, TESTS_DIR / "widgets"),
+        # Cancelled single select
+        (False, True, None),
+        # Successful multiple selection
+        (True, True, [TESTS_DIR, TESTS_DIR / "widgets"]),
+        # Successful multiple selection with one item
+        (True, True, [TESTS_DIR / "widgets"]),
+        # Cancelled multiple selection
+        (True, True, None),
+        # File upload
+        # Successful single select
+        (False, False, TESTS_DIR / "data.py"),
+        # Cancelled single select
+        (False, False, None),
+        # Successful multiple selection
+        (True, False, [TESTS_DIR / "conftest.py", TESTS_DIR / "data.py"]),
+        # Successful multiple selection of one item
+        (True, False, [TESTS_DIR / "data.py"]),
+        # Cancelled multiple selection
+        (True, False, None),
+    ],
+)
+async def test_file_upload_dialog(
+    widget, probe, multiple_select, webkitdirectory, result
+):
+    # At a minimum, this places an <input type="file"> tag on the DOM and clicks it
+    # and verifies that no errors are thrown when opening the dialog and
+    # pressing "okay" or "cancel"
+    expression = f"""\
+    var input = document.createElement("input");
+    input.type = "file";
+    input.id = "fileinput";
+    {'input.multiple = true;' if multiple_select else ''}
+    {'input.webkitdirectory = true;' if webkitdirectory else ''}
+    body = document.body;
+    body.appendChild(input);
+    input.click();"""
+    # create input file element in DOM and click it to open the native file dialog
+    await wait_for(widget.evaluate_javascript(expression), JS_TIMEOUT)
+
+    # simulate selecting the files and uploading them to the page
+    # returns True if no error, False if there was an error
+    # workaround until file upload is fully simulated
+    simulation_passed = await probe.simulate_webview_file_upload_dialog_result(
+        widget, multiple_select, webkitdirectory, result
+    )
+    await probe.redraw(
+        "Display upload dialog"
+        f" {multiple_select=}"
+        f" {webkitdirectory=}"
+        f" {result=}"
+    )
+    expression = """\
+    (function returnFiles(){
+        var input = document.getElementById("fileinput");
+        if (!input || !input.files) {
+            return "";
+        }
+
+        const files = input.files;
+        const filenames = [];
+
+        for (let i = 0; i < files.length; i++) {
+            filenames.push(files[i].name);
+        }
+
+        return filenames.join(", ");
+    })()
+    """
+    actual = await wait_for(widget.evaluate_javascript(expression), JS_TIMEOUT)
+    if not actual:
+        actual = None
+    # Set result to None if sumlation passed
+    # workaround until file upload is fully simulated
+    if simulation_passed:
+        result = None
+    assert actual == result

@@ -64,6 +64,16 @@ def cookies_completion_handler(result):
     return _completion_handler
 
 
+def file_upload_dialog_completion_handler(completionHandler, open_panel):
+    def _completion_handler(res: int) -> None:
+        if res == NSModalResponseOK:
+            ObjCBlock(completionHandler, None, objc_id)(open_panel.URLs)
+        else:
+            ObjCBlock(completionHandler, None, objc_id)(None)
+
+    return _completion_handler
+
+
 class TogaWebView(WKWebView, protocols=[WKUIDelegate]):
     interface = objc_property(object, weak=True)
     impl = objc_property(object, weak=True)
@@ -106,24 +116,15 @@ class TogaWebView(WKWebView, protocols=[WKUIDelegate]):
         # Because of the "native" approach required for this method,
         # the OpenFileDialog and SelectFolderDialog classes were not
         # reused from dialogs.py
-        panel = NSOpenPanel.alloc().init()  # pragma: no branch
-        panel.allowsMultipleSelection = (
-            parameters.allowsMultipleSelection
-        )  # pragma: no branch
-        panel.canChooseDirectories = parameters.allowsDirectories  # pragma: no branch
-        panel.canCreateDirectories = parameters.allowsDirectories  # pragma: no branch
-        panel.canChooseFiles = not parameters.allowsDirectories  # pragma: no branch
-        panel.resolvesAliases = parameters.allowsDirectories  # pragma: no branch
-
-        # "Custom" handler to check if the user selected ok or cancelled
-        # then pass to the native completionHandler
-        def handler(res: int) -> None:  # pragma: no branch
-            if res == NSModalResponseOK:
-                ObjCBlock(completionHandler, None, objc_id)(panel.URLs)
-            else:
-                ObjCBlock(completionHandler, None, objc_id)(None)
-
-        panel.beginWithCompletionHandler(handler)  # pragma: no branch
+        open_panel = NSOpenPanel.alloc().init()
+        open_panel.allowsMultipleSelection = parameters.allowsMultipleSelection
+        open_panel.canChooseDirectories = parameters.allowsDirectories
+        open_panel.canCreateDirectories = parameters.allowsDirectories
+        open_panel.canChooseFiles = not parameters.allowsDirectories
+        open_panel.resolvesAliases = parameters.allowsDirectories
+        open_panel.beginWithCompletionHandler(
+            file_upload_dialog_completion_handler(completionHandler, open_panel)
+        )
 
 
 class WebView(Widget):
