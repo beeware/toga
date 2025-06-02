@@ -1,0 +1,1 @@
+GTK4 applications now starts correctly on slightly older GNU/Linux versions.

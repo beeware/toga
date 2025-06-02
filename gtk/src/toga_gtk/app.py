@@ -6,6 +6,7 @@ from toga.command import Separator
 
 from .keys import gtk_accel
 from .libs import (
+    GLIB_VERSION,
     GTK_VERSION,
     IS_WAYLAND,
     TOGA_DEFAULT_STYLES,
@@ -33,12 +34,12 @@ class App:
         self.loop = self.policy.get_event_loop()
 
         # Stimulate the build of the app
-        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+        if GLIB_VERSION < (2, 74, 0):  # pragma: no-cover
             self.native = Gtk.Application(
                 application_id=self.interface.app_id,
                 flags=Gio.ApplicationFlags.FLAGS_NONE,
             )
-        else:  # pragma: no-cover-if-gtk3
+        else:  # pragma: no-cover
             self.native = Gtk.Application(
                 application_id=self.interface.app_id,
                 flags=Gio.ApplicationFlags.DEFAULT_FLAGS,
