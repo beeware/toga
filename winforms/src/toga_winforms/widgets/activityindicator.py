@@ -1,7 +1,6 @@
-from pathlib import Path
-
 import System.Windows.Forms as WinForms
-from System.Drawing import Image
+
+from toga_winforms.resources.antialias_spinner import antialias_spinner
 
 from .base import Widget
 
@@ -9,8 +8,8 @@ from .base import Widget
 class ActivityIndicator(Widget):
     def create(self):
         self.native = WinForms.PictureBox()
-        self.native.Image = Image.FromFile(
-            str(Path(__file__).parent.parent / "resources" / "spinner.gif")
+        self.native.Image = antialias_spinner(
+            self.native.BackColor.r, self.native.BackColor.g, self.native.BackColor.b
         )
         self.native.SizeMode = WinForms.PictureBoxSizeMode.Zoom
         self.interface.intrinsic.width = 32
