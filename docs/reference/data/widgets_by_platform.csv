@@ -17,7 +17,7 @@ NumberInput,General Widget,:class:`~toga.NumberInput`,A text input that is limit
 PasswordInput,General Widget,:class:`~toga.PasswordInput`,A text input that hides its input,|y|,|y|,|y|,|y|,|y|,|b|,
 ProgressBar,General Widget,:class:`~toga.ProgressBar`,Progress Bar,|y|,|y|,|y|,|y|,|y|,|b|,
 Selection,General Widget,:class:`~toga.Selection`,A widget to select a single option from a list of alternatives.,|y|,|y|,|y|,|y|,|y|,|b|,
-Slider,General Widget,:class:`~toga.Slider`,Slider,|y|,|y|,|y|,|y|,|y|,,
+Slider,General Widget,:class:`~toga.Slider`,Slider,|y|,|y|,|y|,|y|,|y|,|b|,
 Switch,General Widget,:class:`~toga.Switch`,Switch,|y|,|y|,|y|,|y|,|y|,|b|,
 Table,General Widget,:class:`~toga.Table`,A widget for displaying columns of tabular data.,|y|,|y|,|y|,,|b|,,
 TextInput,General Widget,:class:`~toga.TextInput`,A widget for the display and editing of a single line of text.,|y|,|y|,|y|,|y|,|y|,|b|,|b|
