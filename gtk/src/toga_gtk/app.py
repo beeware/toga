@@ -38,12 +38,12 @@ class App:
         # a newer version of glib or if GTK4 is used with an older version
         # of glib.  On local runs, coverage errors here can be safely
         # ignored if the version of software is as described above.
-        if GLIB_VERSION < (2, 74, 0):  # pragma: no-cover-if-gtk3
+        if GLIB_VERSION < (2, 74, 0):  # pragma: no-cover-if-gtk4
             self.native = Gtk.Application(
                 application_id=self.interface.app_id,
                 flags=Gio.ApplicationFlags.FLAGS_NONE,
             )
-        else:  # pragma: no-cover-if-gtk4
+        else:  # pragma: no-cover-if-gtk3
             self.native = Gtk.Application(
                 application_id=self.interface.app_id,
                 flags=Gio.ApplicationFlags.DEFAULT_FLAGS,
