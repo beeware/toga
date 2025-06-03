@@ -34,12 +34,14 @@ class App:
         self.loop = self.policy.get_event_loop()
 
         # Stimulate the build of the app
-        if GLIB_VERSION < (2, 74, 0):  # pragma: no-cover
+        # No coverage for either because both GTK3 and
+        # GTK4 could potentially go on the either cases
+        if GLIB_VERSION < (2, 74, 0):  # pragma: no cover
             self.native = Gtk.Application(
                 application_id=self.interface.app_id,
                 flags=Gio.ApplicationFlags.FLAGS_NONE,
             )
-        else:  # pragma: no-cover
+        else:  # pragma: no cover
             self.native = Gtk.Application(
                 application_id=self.interface.app_id,
                 flags=Gio.ApplicationFlags.DEFAULT_FLAGS,
