@@ -15,6 +15,7 @@ from toga.fonts import (
     SERIF,
     SYSTEM,
     SYSTEM_DEFAULT_FONT_SIZE,
+    UnknownFontError,
 )
 from toga_iOS.libs import (
     NSURL,
@@ -58,12 +59,7 @@ class Font:
                     font_path = _REGISTERED_FONT_CACHE[font_key]
                 except KeyError:
                     # The requested font has not been registered
-                    print(
-                        f"Unknown font '{self.interface}'; "
-                        "using system font as a fallback"
-                    )
-                    font_family = SYSTEM
-                    custom_font_name = None
+                    raise UnknownFontError(f"Unknown font '{self.interface}'")
                 else:
                     # We have a path for a font file.
                     try:

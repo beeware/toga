@@ -32,6 +32,10 @@ FONT_VARIANTS = {NORMAL, SMALL_CAPS}
 _REGISTERED_FONT_CACHE: dict[tuple[str, str, str, str], str] = {}
 
 
+class UnknownFontError(Exception):
+    pass
+
+
 class Font(BaseFont):
     def __init__(
         self,
@@ -42,7 +46,7 @@ class Font(BaseFont):
         style: str = NORMAL,
         variant: str = NORMAL,
     ):
-        """Constructs a reference to a font.
+        """Construct a reference to a font.
 
         This class should be used when an API requires an explicit font reference (e.g.
         :any:`Context.write_text`). In all other cases, fonts in Toga are controlled
@@ -78,9 +82,7 @@ class Font(BaseFont):
         style: str = NORMAL,
         variant: str = NORMAL,
     ) -> None:
-        """Registers a file-based font.
-
-        **Note:** This is not currently supported on macOS or iOS.
+        """Register a file-based font.
 
         :param family: The :ref:`font family <pack-font-family>`.
         :param path: The path to the font file. This can be an absolute path, or a path

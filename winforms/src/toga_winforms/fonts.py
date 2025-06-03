@@ -19,6 +19,7 @@ from toga.fonts import (
     SERIF,
     SYSTEM,
     SYSTEM_DEFAULT_FONT_SIZE,
+    UnknownFontError,
 )
 
 _FONT_CACHE = {}
@@ -61,11 +62,7 @@ class Font:
                     try:
                         font_family = FontFamily(self.interface.family)
                     except ArgumentException:
-                        print(
-                            f"Unknown font '{self.interface}'; "
-                            "using system font as a fallback"
-                        )
-                        font_family = DEFAULT_FONT.FontFamily
+                        raise UnknownFontError(f"Unknown font '{self.interface}'")
 
             else:
                 try:

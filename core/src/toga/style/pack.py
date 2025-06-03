@@ -40,7 +40,7 @@ from travertino.constants import (  # noqa: F401
 from travertino.layout import BaseBox
 from travertino.properties.aliased import Condition, aliased_property
 from travertino.properties.shorthand import directional_property
-from travertino.properties.validated import validated_property
+from travertino.properties.validated import list_property, validated_property
 from travertino.size import BaseIntrinsicSize
 from travertino.style import BaseStyle
 
@@ -51,6 +51,7 @@ from toga.fonts import (
     SYSTEM_DEFAULT_FONT_SIZE,
     SYSTEM_DEFAULT_FONTS,
     Font,
+    UnknownFontError,
 )
 
 # Make sure deprecation warnings are shown by default
@@ -226,7 +227,7 @@ class Pack(BaseStyle):
     text_align: str | None = validated_property(LEFT, RIGHT, CENTER, JUSTIFY)
     text_direction: str | None = validated_property(RTL, LTR, initial=LTR)
 
-    font_family: str = validated_property(
+    font_family: str | list[str] = list_property(
         *SYSTEM_DEFAULT_FONTS, string=True, initial=SYSTEM
     )
     font_style: str = validated_property(*FONT_STYLES, initial=NORMAL)
@@ -319,15 +320,30 @@ class Pack(BaseStyle):
             "font_variant",
             "font_weight",
         }:
-            self._applicator.set_font(
-                Font(
-                    self.font_family,
-                    self.font_size,
-                    style=self.font_style,
-                    variant=self.font_variant,
-                    weight=self.font_weight,
+            font = None
+            font_kwargs = {
+                "size": self.font_size,
+                "style": self.font_style,
+                "variant": self.font_variant,
+                "weight": self.font_weight,
+            }
+
+            for family in self.font_family:
+                try:
+                    font = Font(family, **font_kwargs)
+                    break
+                except UnknownFontError:
+                    pass
+
+            if font is None:
+                # Fall back to system font if no font families were valid
+                font = Font(SYSTEM, **font_kwargs)
+                print(
+                    f"No valid font family in {self.font_family}; using system font as "
+                    "a fallback"
                 )
-            )
+
+            self._applicator.set_font(font)
 
         # Refresh if any properties that could affect layout are being set.
         if names - {
@@ -955,11 +971,12 @@ class Pack(BaseStyle):
             css.append(f"text-direction: {self.text_direction};")
 
         # font-*
-        if self.font_family != SYSTEM:
-            if " " in self.font_family:
-                css.append(f'font-family: "{self.font_family}";')
-            else:
-                css.append(f"font-family: {self.font_family};")
+        if self.font_family != [SYSTEM]:
+            families = [
+                f'"{family}"' if " " in family else family
+                for family in self.font_family
+            ]
+            css.append(f"font-family: {', '.join(families)};")
         if self.font_size != SYSTEM_DEFAULT_FONT_SIZE:
             css.append(f"font-size: {self.font_size}pt;")
         if self.font_weight != NORMAL:

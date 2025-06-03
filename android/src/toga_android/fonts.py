@@ -19,6 +19,7 @@ from toga.fonts import (
     SYSTEM,
     SYSTEM_DEFAULT_FONT_SIZE,
     SYSTEM_DEFAULT_FONTS,
+    UnknownFontError,
 )
 
 _FONT_CACHE = {}
@@ -44,10 +45,7 @@ class Font:
         except KeyError:
             # Not a pre-registered font
             if self.interface.family not in SYSTEM_DEFAULT_FONTS:
-                print(
-                    f"Unknown font '{self.interface}'; "
-                    "using system font as a fallback"
-                )
+                raise UnknownFontError(f"Unknown font '{self.interface}'")
         else:
             if Path(font_path).is_file():
                 typeface = Typeface.createFromFile(font_path)

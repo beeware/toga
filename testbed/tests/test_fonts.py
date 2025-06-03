@@ -9,6 +9,9 @@ from toga.fonts import (
     FONT_VARIANTS,
     FONT_WEIGHTS,
     ITALIC,
+    MESSAGE,
+    SANS_SERIF,
+    SERIF,
     SYSTEM,
     SYSTEM_DEFAULT_FONT_SIZE,
     SYSTEM_DEFAULT_FONTS,
@@ -48,6 +51,38 @@ async def test_use_system_font_fallback(
     await font_probe.redraw("Falling back to system font")
 
     assert "using system font as a fallback" in capsys.readouterr().out
+
+
+@pytest.mark.parametrize(
+    "family, result, custom",
+    [
+        ([SERIF, SANS_SERIF, MESSAGE], SERIF, False),
+        (["Bogus", SANS_SERIF, SERIF], SANS_SERIF, False),
+        ([MESSAGE, "Bogus", SERIF], MESSAGE, False),
+        (["Bogus", "Missing"], SYSTEM, False),
+        (["Endor", SERIF, "Bogus"], "Endor", True),
+        (["Bogus", "Endor"], "Endor", True),
+        ([SERIF, "Endor"], SERIF, True),
+    ],
+)
+async def test_use_first_valid_font(
+    app,
+    widget: toga.Label,
+    font_probe,
+    family,
+    result,
+    custom,
+):
+    """The widget should get the first valid font."""
+    if custom:
+        if not font_probe.supports_custom_fonts:
+            pytest.skip("Platform doesn't support registering and loading custom fonts")
+
+        Font.register("Endor", path=app.paths.app / "resources/fonts/ENDOR___.ttf")
+
+    widget.style.font_family = family
+    await font_probe.redraw(f"Font family should be {result}")
+    font_probe.assert_font_family(result)
 
 
 async def test_font_options(widget: toga.Label, font_probe):
@@ -112,21 +147,20 @@ async def test_font_file_loaded(
     capsys: pytest.CaptureFixture[str],
 ):
     """Custom fonts can be loaded and used."""
+    if not font_probe.supports_custom_fonts:
+        pytest.skip("Platform doesn't support loading custom fonts")
+
     Font.register(
         family=font_family,
         path=app.paths.app / font_path,
         **font_kwargs,
     )
 
-    if not font_probe.supports_custom_fonts:
-        pytest.skip("Platform doesn't support loading custom fonts")
-
     # Update widget font family and other options if needed
-    widget.style.font_family = font_family
-    for prop, value in font_kwargs.items():
-        widget.style.update(
-            **{f"font_{kwarg}": value for kwarg, value in font_kwargs.items()}
-        )
+    widget.style |= {
+        "font_family": font_family,
+        **{f"font_{kwarg}": value for kwarg, value in font_kwargs.items()},
+    }
     await font_probe.redraw(f"Using {font_family} {' '.join(font_kwargs.values())}")
 
     # Check that font properties are updated
@@ -136,23 +170,14 @@ async def test_font_file_loaded(
     if not variable_font_test or font_probe.supports_custom_variable_fonts:
         font_probe.assert_font_options(**font_kwargs)
 
-    # Setting the font to "Roboto something" involves setting the font to
-    # "Roboto" as an intermediate step. However, we haven't registered "Roboto
-    # regular", so this will raise an warning about the missing "regular" font.
-    # Ignore this message.
-    stdout = capsys.readouterr().out
-    if font_kwargs:
-        stdout = stdout.replace(
-            f"Unknown font '{font_family} default size'; "
-            f"using system font as a fallback\n",
-            "",
-        )
-
-    assert "; using system font as a fallback" not in stdout
+    assert "; using system font as a fallback" not in capsys.readouterr().out
 
 
-async def test_non_existent_font_file(widget: toga.Label, app: toga.App):
-    "Invalid font files fail registration"
+async def test_non_existent_font_file(widget: toga.Label, app: toga.App, font_probe):
+    """Invalid font files fail registration."""
+    if not font_probe.supports_custom_fonts:
+        pytest.skip("Platform doesn't support loading custom fonts")
+
     Font.register(
         family="non-existent",
         path=app.paths.app / "resources/fonts/nonexistent.ttf",
@@ -168,7 +193,7 @@ async def test_corrupted_font_file(
     font_probe,
     app: toga.App,
 ):
-    "Corrupted font files fail registration"
+    """Corrupted font files fail registration."""
     if not font_probe.supports_custom_fonts:
         pytest.skip("Platform doesn't support registering and loading custom fonts")
 
