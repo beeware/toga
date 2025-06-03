@@ -116,7 +116,6 @@ class SimpleProbe(BaseProbe, FontMixin):
         # Convert the requested character into a Cocoa keycode.
         # This table is incomplete, but covers all the basics.
         key_code = {
-            "<enter>": 3,
             "<backspace>": 51,
             "<esc>": 53,
             "<down>": 125,

@@ -64,16 +64,6 @@ def cookies_completion_handler(result):
     return _completion_handler
 
 
-def file_upload_dialog_completion_handler(completionHandler, open_panel):
-    def _completion_handler(res: int) -> None:
-        if res == NSModalResponseOK:
-            ObjCBlock(completionHandler, None, objc_id)(open_panel.URLs)
-        else:
-            ObjCBlock(completionHandler, None, objc_id)(None)
-
-    return _completion_handler
-
-
 class TogaWebView(WKWebView, protocols=[WKUIDelegate]):
     interface = objc_property(object, weak=True)
     impl = objc_property(object, weak=True)
@@ -122,9 +112,14 @@ class TogaWebView(WKWebView, protocols=[WKUIDelegate]):
         open_panel.canCreateDirectories = parameters.allowsDirectories
         open_panel.canChooseFiles = not parameters.allowsDirectories
         open_panel.resolvesAliases = parameters.allowsDirectories
-        open_panel.beginWithCompletionHandler(
-            file_upload_dialog_completion_handler(completionHandler, open_panel)
-        )
+
+        def _completion_handler(res: int) -> None:
+            if res == NSModalResponseOK:
+                ObjCBlock(completionHandler, None, objc_id)(open_panel.URLs)
+            else:
+                ObjCBlock(completionHandler, None, objc_id)(None)
+
+        open_panel.beginWithCompletionHandler(_completion_handler)
 
 
 class WebView(Widget):
