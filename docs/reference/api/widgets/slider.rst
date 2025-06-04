@@ -36,9 +36,11 @@ and the selected value is shown as a draggable marker.
        :align: center
        :width: 300px
 
-  .. group-tab:: Web |no|
+  .. group-tab:: Web
 
-    Not supported
+    .. figure:: /reference/images/slider-web.png
+       :align: center
+       :width: 300px
 
   .. group-tab:: Textual |no|
 

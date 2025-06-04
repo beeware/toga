@@ -22,8 +22,8 @@ class SimpleProbe(BaseProbe, FontMixin):
         # Set the target for keypress events
         self._keypress_target = self.native
 
+        # Ensure that the theme isn't using animations for the widget.
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
-            # Ensure that the theme isn't using animations for the widget.
             settings = Gtk.Settings.get_for_screen(self.native.get_screen())
         else:  # pragma: no-cover-if-gtk3
             settings = Gtk.Settings.get_for_display(self.native.get_display())
