@@ -1,1 +1,0 @@
-The TextInput widget is now supported with GTK4.
