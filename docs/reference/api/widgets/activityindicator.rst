@@ -34,11 +34,9 @@ usually rendered as a "spinner" animation.
 
   .. group-tab:: Web |beta|
 
-    .. .. figure:: /reference/images/activityindicator-web.png
-    ..    :align: center
-    ..    :width: 100px
-
-    Screenshot not available
+    .. figure:: /reference/images/activityindicator-web.png
+       :align: center
+       :width: 100px
 
   .. group-tab:: Textual |no|
 
