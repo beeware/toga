@@ -7,7 +7,10 @@ class ActivityIndicator(Widget):
         self.native = Gtk.Spinner()
 
     def is_running(self):
-        return self.native.get_property("active")
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            return self.native.get_property("active")
+        else:  # pragma: no-cover-if-gtk3
+            return self.native.get_property("spinning")
 
     def start(self):
         self.native.start()
@@ -23,10 +26,10 @@ class ActivityIndicator(Widget):
             #     self.native.get_preferred_width(),
             #     self.native.get_preferred_height(),
             # )
-            width = self.native.get_preferred_width()
-            height = self.native.get_preferred_height()
-
-            self.interface.intrinsic.width = width[0]
-            self.interface.intrinsic.height = height[0]
+            width = self.native.get_preferred_width()[0]
+            height = self.native.get_preferred_height()[0]
         else:  # pragma: no-cover-if-gtk3
-            pass
+            size = self.native.get_preferred_size()[1]
+            width, height = size.width, size.height
+        self.interface.intrinsic.width = width
+        self.interface.intrinsic.height = height
