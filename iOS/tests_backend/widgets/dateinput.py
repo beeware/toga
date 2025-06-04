@@ -51,14 +51,12 @@ class DateInputProbe(SimpleProbe):
     @property
     def color(self):
         pytest.xfail("Color is not implemented for DateInput on iOS")
-        return toga_color(self.native.tintColor)
 
     @property
     def background_color(self):
         pytest.xfail(
             "Background color is not readable on the native API for DateInput on iOS"
         )
-        return toga_color(self.native.backgroundColor)
 
     @property
     def value(self):
