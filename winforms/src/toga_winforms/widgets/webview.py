@@ -41,7 +41,6 @@ def cookies_completion_handler(result):
     """
 
     def _completion_handler(task):
-
         # Initialize a CookieJar to store cookies
         cookie_jar = CookieJar()
 
@@ -136,6 +135,10 @@ class WebView(Widget):
             settings.IsSwipeNavigationEnabled = False
             settings.IsZoomControlEnabled = True
 
+            self.native.CoreWebView2.NavigationStarting += WeakrefCallable(
+                self.winforms_navigation_starting
+            )
+
             for task in self.pending_tasks:
                 task()
             self.pending_tasks = None
@@ -178,6 +181,13 @@ class WebView(Widget):
         if self.loaded_future:
             self.loaded_future.set_result(None)
             self.loaded_future = None
+
+    def winforms_navigation_starting(self, sender, event):
+        # print(f"winforms_navigation_starting: {event.Uri}")
+        if self.interface.on_navigation_starting:
+            allow = self.interface.on_navigation_starting(event.Uri)
+            if not allow:
+                event.Cancel = True
 
     def get_url(self):
         source = self.native.Source
