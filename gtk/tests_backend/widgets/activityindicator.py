@@ -1,6 +1,4 @@
-import pytest
-
-from toga_gtk.libs import GTK_VERSION, Gtk
+from toga_gtk.libs import Gtk
 
 from .base import SimpleProbe
 

@@ -1,10 +1,9 @@
 from travertino.size import at_least
 
-from toga.handlers import WeakrefCallable
 from toga.keys import Key
 from toga_gtk.keys import toga_key
 
-from ..libs import GTK_VERSION, Gtk, gtk_text_align
+from ..libs import Gtk, gtk_text_align
 from .base import Widget
 
 

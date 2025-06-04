@@ -9,7 +9,7 @@ from .properties import toga_x_text_align
 
 class TextInputProbe(SimpleProbe):
     native_class = Gtk.Entry
-    
+
     if GTK_VERSION >= (4, 0, 0):
         pytest.skip("GTK4 doesn't support text input yet")
 
