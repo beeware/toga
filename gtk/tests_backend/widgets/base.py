@@ -22,11 +22,11 @@ class SimpleProbe(BaseProbe, FontMixin):
         # Set the target for keypress events
         self._keypress_target = self.native
 
-        if GTK_VERSION >= (4, 0, 0):
-            pytest.skip("GTK4 only has minimal container support")
-
         # Ensure that the theme isn't using animations for the widget.
-        settings = Gtk.Settings.get_for_screen(self.native.get_screen())
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            settings = Gtk.Settings.get_for_screen(self.native.get_screen())
+        else:  # pragma: no-cover-if-gtk3
+            settings = Gtk.Settings.get_for_display(self.native.get_display())
         settings.set_property("gtk-enable-animations", False)
 
     def assert_container(self, container):
