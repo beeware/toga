@@ -12,7 +12,6 @@ from toga_iOS.libs import (
 )
 
 from .base import SimpleProbe
-from .properties import toga_color
 
 
 class DateInputProbe(SimpleProbe):
