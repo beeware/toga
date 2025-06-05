@@ -21,7 +21,7 @@ def _get_size(logical_width=32, logical_height=32):
     physical_height = logical_height * dpi / 96
     return int(physical_width * 2.5), int(
         physical_height * 2.5
-    )  # *2 to make it sharp on monitor
+    )  # *2.5 to make it sharp on monitor
 
 
 def _composite_gif_on_color(path: str, rgb_color: tuple, size: tuple) -> bytes:
