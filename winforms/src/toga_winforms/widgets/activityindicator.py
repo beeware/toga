@@ -10,29 +10,39 @@ from System.IO import MemoryStream
 from .base import Widget
 
 
-def _get_size(logical_width=32, logical_height=32):
+def _get_size(logical_size=32):
+    """
+    Get the size of the spinner to render to, as one integer representing
+    both height and width.
+
+    :param logical_size: The original size of the spinner.
+    :type logical_size: int
+
+    :return: The size for the spinner to resize to.
+    :rtype: int
+    """
     user32 = ctypes.windll.user32
     try:
         user32.SetProcessDPIAware()
         dpi = user32.GetDpiForSystem()
     except AttributeError:  # pragma: no cover
         dpi = 96
-    physical_width = logical_width * dpi / 96
-    physical_height = logical_height * dpi / 96
-    return int(physical_width * 2.5), int(
-        physical_height * 2.5
-    )  # *2.5 to make it sharp on monitor
+    physical_size = logical_size * dpi / 96
+    return int(physical_size * 2.5)  # *2.5 to make it sharp on monitor
 
 
-def _composite_gif_on_color(path: str, rgb_color: tuple, size: tuple) -> bytes:
+def _composite_gif_on_color(path: str, rgb_color: tuple, size: int) -> bytes:
     """
-    Composite the spinner GIF onto a solid color background and resize it using bilinear.
+    Composite the spinner GIF onto a solid color background and resize it
+    using bilinear interpolation.
 
     :param path: Path to the spinner GIF file
     :type path: str
-    :param rgb_color: A tuple of three integers of the solid background color, in RGB format.
+    :param rgb_color: A tuple of three integers of the solid background color,
+        in RGB format.
     :type rgb_color: tuple
-    :param size: A tuple representing the target size (width, height) in pixels to resize to
+    :param size: An integer representing the target size, both height and width since
+        it is always a square.
     :type size: tuple
 
     :return: The processed GIF as a byte stream
@@ -46,7 +56,7 @@ def _composite_gif_on_color(path: str, rgb_color: tuple, size: tuple) -> bytes:
             frame = frame.convert("RGBA")
             background = Image.new("RGBA", frame.size, rgb_color + (255,))
             composited = Image.alpha_composite(background, frame)
-            composited = composited.resize(size, Image.BILINEAR)
+            composited = composited.resize((size, size), Image.BILINEAR)
             composited_p = composited.convert("P", palette=Image.ADAPTIVE)
             composited_frames.append(composited_p)
             durations.append(frame.info.get("duration", 20))
@@ -69,18 +79,19 @@ cache = dict()
 
 
 def antialias_spinner(color: tuple):
-   """
+    """
     Get the spinner image of a desired color as a byte stream.
- 
+
     :type rgb_color: tuple
     :param size: The color background that the spinner is going to be on
     :type size: tuple
+
     :return: The processed GIF as a byte stream
     :rtype: bytes
     """
     size = _get_size()
-    if (color, size) not in cache:
-        cache[(color, size)] = NetImage.FromStream(
+    if color not in cache:
+        cache[color] = NetImage.FromStream(
             MemoryStream(
                 _composite_gif_on_color(
                     str(Path(__file__).parent.parent / "resources" / "spinner.gif"),
@@ -89,7 +100,7 @@ def antialias_spinner(color: tuple):
                 )
             )
         )
-    return cache[(color, size)]
+    return cache[color]
 
 
 class ActivityIndicator(Widget):
