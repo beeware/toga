@@ -1,52 +1,26 @@
-import ctypes
+from __future__ import annotations
+
 import io
 from pathlib import Path
 
 import System.Windows.Forms as WinForms
 from PIL import Image, ImageSequence
-from System.Drawing import Image as NetImage
+from System.Drawing import Image as WinImage
 from System.IO import MemoryStream
 
 from .base import Widget
 
 
-def _get_size(logical_size=32):
-    """
-    Get the size of the spinner to render to, as one integer representing
-    both height and width.
-
-    :param logical_size: The original size of the spinner.
-    :type logical_size: int
-
-    :return: The size for the spinner to resize to.
-    :rtype: int
-    """
-    user32 = ctypes.windll.user32
-    try:
-        user32.SetProcessDPIAware()
-        dpi = user32.GetDpiForSystem()
-    except AttributeError:  # pragma: no cover
-        dpi = 96
-    physical_size = logical_size * dpi / 96
-    return int(physical_size * 2.5)  # *2.5 to make it sharp on monitor
-
-
-def _composite_gif_on_color(path: str, rgb_color: tuple, size: int) -> bytes:
-    """
-    Composite the spinner GIF onto a solid color background and resize it
-    using bilinear interpolation.
+def composite_gif_on_color(
+    path: str, background_color: tuple[int, int, int], size: int
+) -> bytes:
+    """Composite the transparent spinner source GIF onto a solid color
+    background, and resize it using bilinear interpolation.
 
     :param path: Path to the spinner GIF file
-    :type path: str
-    :param rgb_color: A tuple of three integers of the solid background color,
-        in RGB format.
-    :type rgb_color: tuple
-    :param size: An integer representing the target size, both height and width since
-        it is always a square.
-    :type size: tuple
-
-    :return: The processed GIF as a byte stream
-    :rtype: bytes
+    :param background_color: The background color as an RGB integer triple.
+    :param size: The target size of the image to generate.
+    :return: The processed non-transparent animated GIF as a byte stream
     """
     with Image.open(path) as original_gif:
         composited_frames = []
@@ -54,7 +28,7 @@ def _composite_gif_on_color(path: str, rgb_color: tuple, size: int) -> bytes:
 
         for frame in ImageSequence.Iterator(original_gif):
             frame = frame.convert("RGBA")
-            background = Image.new("RGBA", frame.size, rgb_color + (255,))
+            background = Image.new("RGBA", frame.size, background_color + (255,))
             composited = Image.alpha_composite(background, frame)
             composited = composited.resize((size, size), Image.BILINEAR)
             composited_p = composited.convert("P", palette=Image.ADAPTIVE)
@@ -75,50 +49,64 @@ def _composite_gif_on_color(path: str, rgb_color: tuple, size: int) -> bytes:
         return output_buffer.getvalue()
 
 
-cache = dict()
-
-
-def antialias_spinner(color: tuple):
-    """
-    Get the spinner image of a desired color as a byte stream.
-
-    :type rgb_color: tuple
-    :param size: The color background that the spinner is going to be on
-    :type size: tuple
-
-    :return: The processed GIF as a byte stream
-    :rtype: bytes
-    """
-    size = _get_size()
-    if color not in cache:
-        cache[color] = NetImage.FromStream(
-            MemoryStream(
-                _composite_gif_on_color(
-                    str(Path(__file__).parent.parent / "resources" / "spinner.gif"),
-                    color,
-                    size,
-                )
-            )
-        )
-    return cache[color]
-
-
 class ActivityIndicator(Widget):
+    SPINNER_SIZE = 32
+    SPINNER_CACHE: dict[tuple[tuple[int, int, int], int], WinImage] = dict()
+
     def create(self):
         self.native = WinForms.PictureBox()
-        self.native.Image = antialias_spinner(
-            (self.native.BackColor.R, self.native.BackColor.G, self.native.BackColor.B)
-        )
         self.native.SizeMode = WinForms.PictureBoxSizeMode.Zoom
-        self.interface.intrinsic.width = 32
-        self.interface.intrinsic.height = 32
+        self._spinner_cache_key = None
+        self.set_spinner_image()
         self.running = False
+
+    def set_spinner_image(self):
+        """Set the spinner image, compositing against the current background
+        color, and scaling to reflect the current display DPI.
+        """
+        background_color = (
+            self.native.BackColor.R,
+            self.native.BackColor.G,
+            self.native.BackColor.B,
+        )
+        # Scale by 2.5 times over the pixel size to ensure a sharp image.
+        size = int(self.scale_in(self.SPINNER_SIZE) * 2.5)
+        cache_key = (background_color, size)
+
+        # We only need to change the image if the cache key has changed.
+        if self._spinner_cache_key != cache_key:
+            self._spinner_cache_key = cache_key
+            try:
+                spinner_image = self.SPINNER_CACHE[cache_key]
+            except KeyError:
+                # This is a new color/size combination; composite a new image.
+                spinner_image = WinImage.FromStream(
+                    MemoryStream(
+                        composite_gif_on_color(
+                            str(
+                                Path(__file__).parent.parent
+                                / "resources"
+                                / "spinner.gif"
+                            ),
+                            background_color,
+                            size,
+                        )
+                    )
+                )
+                self.SPINNER_CACHE[cache_key] = spinner_image
+
+            self.native.Image = spinner_image
+
+    def refresh(self):
+        # A refresh will be invoked if the DPI on the widget changes.
+        # Change the image *before* rehinting.
+        self.set_spinner_image()
+        super().refresh()
 
     def set_background_color(self, color):
         super().set_background_color(color)
-        self.native.Image = antialias_spinner(
-            (self.native.BackColor.R, self.native.BackColor.G, self.native.BackColor.B)
-        )
+        # A change in background color means we need to generate a new image.
+        self.set_spinner_image()
 
     def set_hidden(self, hidden):
         self.native.Visible = self.running and not hidden
@@ -136,5 +124,5 @@ class ActivityIndicator(Widget):
         self.running = False
 
     def rehint(self):
-        self.interface.intrinsic.width = 32
-        self.interface.intrinsic.height = 32
+        self.interface.intrinsic.width = self.SPINNER_SIZE
+        self.interface.intrinsic.height = self.SPINNER_SIZE
