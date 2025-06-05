@@ -65,14 +65,14 @@ class SimpleProbe(BaseProbe, FontMixin):
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             return self.native.get_allocation().width
         else:  # pragma: no-cover-if-gtk3
-            return self.native.compute_bounds(self.native)[1].get_width()
+            return self.native.get_width()
 
     @property
     def height(self):
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             return self.native.get_allocation().height
         else:  # pragma: no-cover-if-gtk3
-            return self.native.compute_bounds(self.native)[1].get_height()
+            return self.native.get_height()
 
     def assert_layout(self, size, position):
         if GTK_VERSION >= (4, 0, 0):
