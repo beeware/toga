@@ -25,6 +25,19 @@ def _get_size(logical_width=32, logical_height=32):
 
 
 def _composite_gif_on_color(path: str, rgb_color: tuple, size: tuple) -> bytes:
+    """
+    Composite the spinner GIF onto a solid color background and resize it using bilinear.
+
+    :param path: Path to the spinner GIF file
+    :type path: str
+    :param rgb_color: A tuple of three integers of the solid background color, in RGB format.
+    :type rgb_color: tuple
+    :param size: A tuple representing the target size (width, height) in pixels to resize to
+    :type size: tuple
+
+    :return: The processed GIF as a byte stream
+    :rtype: bytes
+    """
     with Image.open(path) as original_gif:
         composited_frames = []
         durations = []
@@ -56,6 +69,15 @@ cache = dict()
 
 
 def antialias_spinner(color: tuple):
+   """
+    Get the spinner image of a desired color as a byte stream.
+ 
+    :type rgb_color: tuple
+    :param size: The color background that the spinner is going to be on
+    :type size: tuple
+    :return: The processed GIF as a byte stream
+    :rtype: bytes
+    """
     size = _get_size()
     if (color, size) not in cache:
         cache[(color, size)] = NetImage.FromStream(
