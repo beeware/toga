@@ -29,7 +29,7 @@ class ActivityIndicator(Widget):
             width = self.native.get_preferred_width()[0]
             height = self.native.get_preferred_height()[0]
         else:  # pragma: no-cover-if-gtk3
-            size = self.native.get_preferred_size()[1]
+            size = self.native.get_preferred_size()[0]
             width, height = size.width, size.height
         self.interface.intrinsic.width = width
         self.interface.intrinsic.height = height
