@@ -71,7 +71,6 @@ test_sources = [
 ]
 requires = [
     "../gtk",
-    "PyGObject==3.50.0",
 ]
 
 [tool.briefcase.app.testbed.windows]
