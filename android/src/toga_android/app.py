@@ -423,3 +423,6 @@ class App:
 
         self._listener.permission_requests[code] = on_complete
         self._native_requestPermissions(permissions, code)
+
+    def focus(self):
+        pass  # No-op on Android
