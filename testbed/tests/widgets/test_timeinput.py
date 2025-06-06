@@ -75,20 +75,20 @@ def normalize(probe):
 
 @fixture
 async def widget():
-    skip_on_platforms("macOS", "iOS", "linux")
+    skip_on_platforms("macOS", "linux")
     return toga.TimeInput()
 
 
 test_cleanup = build_cleanup_test(
     toga.TimeInput,
-    skip_platforms=("macOS", "iOS", "linux"),
+    skip_platforms=("macOS", "linux"),
     xfail_platforms=("android",),
 )
 
 
 async def test_init(normalize):
     "Properties can be set in the constructor"
-    skip_on_platforms("macOS", "iOS", "linux")
+    skip_on_platforms("macOS", "linux")
 
     value = time(10, 10, 30)
     min = time(2, 3, 4)
