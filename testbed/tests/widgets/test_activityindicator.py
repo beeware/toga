@@ -16,9 +16,7 @@ async def widget():
     return toga.ActivityIndicator()
 
 
-test_cleanup = build_cleanup_test(
-    toga.ActivityIndicator, skip_platforms=("android", "windows")
-)
+test_cleanup = build_cleanup_test(toga.ActivityIndicator, skip_platforms=("android"))
 
 
 async def test_start_stop(widget, probe):
