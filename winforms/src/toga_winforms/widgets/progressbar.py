@@ -21,6 +21,7 @@ from .base import Widget
 
 class ProgressBar(Widget):
     TOGA_SCALE = 1000
+    _background_supports_alpha = False
 
     def create(self):
         self.native = WinForms.ProgressBar()
