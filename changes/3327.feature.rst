@@ -1,0 +1,1 @@
+Projects created with Toga can now use FastAPI as a backend option.

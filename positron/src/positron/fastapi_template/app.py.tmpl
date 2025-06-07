@@ -1,0 +1,100 @@
+from __future__ import annotations
+
+import asyncio
+import socket
+from threading import Thread
+
+import toga
+from asgiref.compatibility import guarantee_single_callable
+
+from .server import app as fastapi_app
+
+
+class SimpleReceive:
+    def __init__(self):
+        self._has_sent = False
+
+    async def __call__(self):
+        if not self._has_sent:
+            self._has_sent = True
+            return {{"type": "http.request", "body": b"", "more_body": False}}
+
+
+class {{{{ cookiecutter.class_name }}}}(toga.App):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+    async def handle_client(self, reader, writer):
+        request_line = await reader.readline()
+        if not request_line:
+            writer.close()
+            await writer.wait_closed()
+            return
+
+        method, path, _ = request_line.decode().split()
+        headers = []
+        while True:
+            line = await reader.readline()
+            if line == b"\r\n":
+                break
+            headers.append(line)
+
+        scope = {{
+            "type": "http",
+            "http_version": "1.1",
+            "method": method,
+            "path": path,
+            "scheme": "http",
+            "headers": [],
+            "query_string": b"",
+            "client": writer.get_extra_info("peername"),
+            "server": writer.get_extra_info("sockname"),
+        }}
+
+        async def send(message):
+            if message["type"] == "http.response.start":
+                status_code = message["status"]
+                writer.write(f"HTTP/1.1 {{status_code}} OK\r\n".encode())
+                for name, value in message.get("headers", []):
+                    writer.write(name + b": " + value + b"\r\n")
+                writer.write(b"\r\n")
+
+            elif message["type"] == "http.response.body":
+                writer.write(message.get("body", b""))
+                await writer.drain()
+                writer.close()
+
+        asgi_app = guarantee_single_callable(fastapi_app)
+        receive = SimpleReceive()
+        await asgi_app(scope, receive, send)
+
+    async def start_server(self):
+        self.port = self.get_free_port()
+        self.server = await asyncio.start_server(self.handle_client, "127.0.0.1", self.port)
+        print(f"🚀 Serving on http://127.0.0.1:{{self.port}}/")
+        self.server_ready.set_result(True)
+
+    @staticmethod
+    def get_free_port():
+        s = socket.socket()
+        s.bind(("127.0.0.1", 0))
+        _, port = s.getsockname()
+        s.close()
+        return port
+
+    def startup(self):
+        loop = asyncio.get_running_loop()
+        self.server_ready = loop.create_future()
+        self.web_view = toga.WebView()
+        asyncio.create_task(self.start_server())
+        self.main_window = toga.MainWindow(title=self.formal_name)
+        self.main_window.content = self.web_view
+
+    async def on_running(self):
+        await self.server_ready
+        self.web_view.url = f"http://127.0.0.1:{{self.port}}/"
+        self.main_window.show()
+
+
+def main():
+    return {{{{ cookiecutter.class_name }}}}()
