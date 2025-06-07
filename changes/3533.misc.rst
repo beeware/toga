@@ -1,0 +1,1 @@
+Simplify the combining of flags when getting date on iOS DateInput.

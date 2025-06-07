@@ -25,9 +25,11 @@ A widget to select a calendar date.
        :align: center
        :width: 300px
 
-  .. group-tab:: iOS |no|
+  .. group-tab:: iOS
 
-    Not supported
+    .. figure:: /reference/images/dateinput-iOS.png
+       :align: center
+       :width: 300px
 
   .. group-tab:: Web
 
@@ -57,6 +59,10 @@ Notes
 
   * :any:`datetime.datetime`: The date portion will be extracted.
   * :any:`str`: Will be parsed as an ISO8601 format date string (e.g., "2023-12-25").
+
+* On iOS, style directives for changing the widget's color and background color will
+  be ignored. Apple advises against customizing the look and feel of date pickers; as
+  a result, they don't expose APIs to change the color of date widgets.
 
 Reference
 ---------

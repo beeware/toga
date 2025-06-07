@@ -1,6 +1,6 @@
 [build-system]
 requires = [
-    "setuptools==80.8.0",
+    "setuptools==80.9.0",
     "setuptools_scm==8.3.1",
     "setuptools_dynamic_dependencies==1.0.0",
 ]
@@ -63,7 +63,7 @@ root = ".."
 [tool.setuptools_dynamic_dependencies]
 dependencies = [
     "fonttools >= 4.42.1, < 5.0.0",
-    "rubicon-objc >= 0.5.0, < 0.6.0",
+    "rubicon-objc >= 0.5.1, < 0.6.0",
     "toga-core == {version}",
 ]
 

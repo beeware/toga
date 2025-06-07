@@ -3,10 +3,10 @@ Application,Core Component,:class:`~toga.App`,The application itself,|y|,|y|,|y|
 Window,Core Component,:class:`~toga.Window`,An operating system-managed container of widgets.,|y|,|y|,|y|,|y|,|y|,|b|,|b|
 DocumentWindow,Core Component,:class:`~toga.DocumentWindow`,A window that can be used as the main interface to a document-based app.,|y|,|y|,|y|,,,,
 MainWindow,Core Component,:class:`~toga.MainWindow`,A window that can use the full set of window-level user interface elements.,|y|,|y|,|y|,|y|,|y|,|b|,|b|
-ActivityIndicator,General Widget,:class:`~toga.ActivityIndicator`,A spinning activity animation,|y|,|y|,,|y|,,|b|,
+ActivityIndicator,General Widget,:class:`~toga.ActivityIndicator`,A spinning activity animation,|y|,|y|,|y|,|y|,,|b|,
 Button,General Widget,:class:`~toga.Button`,Basic clickable Button,|y|,|y|,|y|,|y|,|y|,|b|,|b|
 Canvas,General Widget,:class:`~toga.Canvas`,A drawing area for 2D vector graphics.,|y|,|y|,|y|,|y|,|y|,,
-DateInput,General Widget,:class:`~toga.DateInput`,A widget to select a calendar date,,,|y|,,|y|,|b|,
+DateInput,General Widget,:class:`~toga.DateInput`,A widget to select a calendar date,,,|y|,|y|,|y|,|b|,
 DetailedList,General Widget,:class:`~toga.DetailedList`,"An ordered list of content where each item has an icon, a main heading, and a line of supplementary text.",|y|,|y|,|b|,|y|,|y|,,
 Divider,General Widget,:class:`~toga.Divider`,A horizontal or vertical line,|y|,|y|,|y|,|y|,|y|,|b|,
 ImageView,General Widget,:class:`~toga.ImageView`,A widget that displays an image,|y|,|y|,|y|,|y|,|y|,,
@@ -17,7 +17,7 @@ NumberInput,General Widget,:class:`~toga.NumberInput`,A text input that is limit
 PasswordInput,General Widget,:class:`~toga.PasswordInput`,A text input that hides its input,|y|,|y|,|y|,|y|,|y|,|b|,
 ProgressBar,General Widget,:class:`~toga.ProgressBar`,Progress Bar,|y|,|y|,|y|,|y|,|y|,|b|,
 Selection,General Widget,:class:`~toga.Selection`,A widget to select a single option from a list of alternatives.,|y|,|y|,|y|,|y|,|y|,|b|,
-Slider,General Widget,:class:`~toga.Slider`,Slider,|y|,|y|,|y|,|y|,|y|,,
+Slider,General Widget,:class:`~toga.Slider`,Slider,|y|,|y|,|y|,|y|,|y|,|b|,
 Switch,General Widget,:class:`~toga.Switch`,Switch,|y|,|y|,|y|,|y|,|y|,|b|,
 Table,General Widget,:class:`~toga.Table`,A widget for displaying columns of tabular data.,|y|,|y|,|y|,,|b|,,
 TextInput,General Widget,:class:`~toga.TextInput`,A widget for the display and editing of a single line of text.,|y|,|y|,|y|,|y|,|y|,|b|,|b|

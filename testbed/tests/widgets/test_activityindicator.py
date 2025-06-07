@@ -12,13 +12,11 @@ from .properties import (  # noqa: F401
 
 @pytest.fixture
 async def widget():
-    skip_on_platforms("android", "windows")
+    skip_on_platforms("android")
     return toga.ActivityIndicator()
 
 
-test_cleanup = build_cleanup_test(
-    toga.ActivityIndicator, skip_platforms=("android", "windows")
-)
+test_cleanup = build_cleanup_test(toga.ActivityIndicator, skip_platforms=("android"))
 
 
 async def test_start_stop(widget, probe):

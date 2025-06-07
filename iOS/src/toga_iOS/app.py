@@ -1,7 +1,5 @@
-import asyncio
-
 from rubicon.objc import objc_method
-from rubicon.objc.eventloop import EventLoopPolicy, iOSLifecycle
+from rubicon.objc.eventloop import RubiconEventLoop, iOSLifecycle
 
 import toga
 from toga_iOS.libs import UIResponder, UIScreen, av_foundation
@@ -69,8 +67,7 @@ class App:
         # Add a reference for the PythonAppDelegate class to use.
         App.app = self
 
-        asyncio.set_event_loop_policy(EventLoopPolicy())
-        self.loop = asyncio.new_event_loop()
+        self.loop = RubiconEventLoop()
 
     def create(self):
         """Calls the startup method on the interface."""
