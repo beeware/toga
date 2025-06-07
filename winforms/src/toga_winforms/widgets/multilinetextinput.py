@@ -115,6 +115,7 @@ class MultilineTextInput(TextInput):
 
     def _text_changed(self):
         # Check if the text has changed since the last time we checked.
-        # This is used to avoid triggering the on_change handler when the text
-        # is set programmatically.
+        # This is used to avoid triggering the on_change handler when the
+        # Winforms.RichFieldBox fires TextChange event due to style changes such
+        # as font, color, text alignment, etc.
         return True if self.native.Text != self._text_history else False
