@@ -27,6 +27,11 @@ class MultilineTextInput(TextInput):
         self._placeholder_visible = True
         self.set_color(None)
 
+        # Flags used to track whether changes are style-related or not.
+        # This is used to avoid triggering the on_change handler when the style changes.
+        # Currently this flag is used for font, color, and text alignment changes.
+        self._text_history = ""
+
     def winforms_got_focus(self, sender, event):
         # If the placeholder is visible when we gain focus, the widget is empty;
         # so make the native text empty and hide the placeholder.
@@ -68,7 +73,13 @@ class MultilineTextInput(TextInput):
 
     def winforms_text_changed(self, sender, event):
         # Showing and hiding the placeholder should not cause an interface event.
-        if not self._placeholder_visible:
+        # Also check if the text value has changed since the last time the event
+        # was triggered. This is a workaround to avoid triggering the on_change
+        # event due to style changes (e.g., color, font, text alignment).
+        # It might not be the most efficient solution, but for now it's the least
+        # problematic way to handle this.
+        if not self._placeholder_visible and self._text_changed():
+            self._text_history = self.native.Text
             self.interface.on_change()
 
     def _set_placeholder_visible(self, visible):
@@ -102,3 +113,9 @@ class MultilineTextInput(TextInput):
     def scroll_to_top(self):
         self.native.SelectionStart = 0
         self.native.ScrollToCaret()
+
+    def _text_changed(self):
+        # Check if the text has changed since the last time we checked.
+        # This is used to avoid triggering the on_change handler when the text
+        # is set programmatically.
+        return True if self.native.Text != self._text_history else False
