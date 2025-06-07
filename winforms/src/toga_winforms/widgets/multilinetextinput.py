@@ -27,9 +27,8 @@ class MultilineTextInput(TextInput):
         self._placeholder_visible = True
         self.set_color(None)
 
-        # Flags used to track whether changes are style-related or not.
-        # This is used to avoid triggering the on_change handler when the style changes.
-        # Currently this flag is used for font, color, and text alignment changes.
+        # Used to track the text value, so it is possible to determine if the text
+        # has changed since the last time the on_change event is triggered.
         self._text_history = ""
 
     def winforms_got_focus(self, sender, event):
