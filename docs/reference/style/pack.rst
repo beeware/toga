@@ -31,9 +31,8 @@ Pack style properties
 
 Used to define how to display the widget. A value of ``pack`` will apply
 the pack layout algorithm to this node and its descendants. A value of
-``none`` removes the widget from the layout entirely. Space will be allocated
-for the widget as if it were there, but the widget itself will not be
-visible.
+``none`` removes the widget from the layout entirely; it won't be shown,
+and it won't occupy space.
 
 ``visibility``
 --------------

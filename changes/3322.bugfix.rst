@@ -1,0 +1,1 @@
+``Pack.display="none"`` now correctly hides a widget, and removes it from the layout.

@@ -280,7 +280,7 @@ class Pack(BaseStyle):
     @property
     def _hidden(self) -> bool:
         """Does this style declaration define an object that should be hidden."""
-        return self.visibility == HIDDEN
+        return self.visibility == HIDDEN or self.display == NONE
 
     def _apply(self, names: set) -> None:
         if "text_align" in names:
@@ -299,19 +299,19 @@ class Pack(BaseStyle):
             self._applicator.set_color(self.color)
         if "background_color" in names:
             self._applicator.set_background_color(self.background_color)
-        if "visibility" in names:
-            value = self.visibility
-            if value == VISIBLE:
-                # If visibility is being set to VISIBLE, look up the chain to
-                # see if an ancestor is hidden.
+        if names & {"visibility", "display"}:
+            value = self._hidden
+
+            if not value:
+                # If this style is visible, look up the chain to see if an ancestor is
+                # hidden
                 widget = self._applicator.widget
                 while widget := widget.parent:
                     if widget.style._hidden:
-                        value = HIDDEN
+                        value = True
                         break
 
-            self._applicator.set_hidden(value == HIDDEN)
-
+            self._applicator.set_hidden(value)
         if names & {
             "font_family",
             "font_size",
@@ -432,7 +432,9 @@ class Pack(BaseStyle):
                 # self._debug(f"AUTO {available_height=}")
                 min_height = 0
 
-        if node.children:
+        if node.children and any(
+            child.style.display != NONE for child in node.children
+        ):
             min_width, width, min_height, height = self._layout_children(
                 available_width=available_width,
                 available_height=available_height,
@@ -526,7 +528,9 @@ class Pack(BaseStyle):
         # intrinsic non-flexible dimension. While iterating, collect the flex
         # total of remaining elements.
 
-        for i, child in enumerate(node.children):
+        children = [child for child in node.children if not child.style.display == NONE]
+
+        for i, child in enumerate(children):
             # self._debug(f"PASS 1 {child}")
             if child.style[main_name] != NONE:
                 # self._debug(f"- fixed {main_name} {child.style[main_name]}")
@@ -653,7 +657,7 @@ class Pack(BaseStyle):
             # the flex calculation.
 
             # self._debug(f"PASS 1a; {quantum=}")
-            for child in node.children:
+            for child in children:
                 child_intrinsic_main = getattr(child.intrinsic, main_name)
                 if child.style.flex and child_intrinsic_main is not None:
                     try:
@@ -681,7 +685,7 @@ class Pack(BaseStyle):
 
         # Pass 2: Lay out children with an intrinsic flexible main-axis size, or no
         # main-axis size specification at all.
-        for child in node.children:
+        for child in children:
             # self._debug(f"PASS 2 {child}")
             if child.style[main_name] != NONE:
                 # self._debug(f"- already laid out (explicit {main_name})")
@@ -799,7 +803,7 @@ class Pack(BaseStyle):
         cross = 0
         min_cross = 0
 
-        for child in node.children:
+        for child in children:
             # self._debug(f"PASS 3: {child} AT MAIN-AXIS OFFSET {offset}")
             if main_start == RIGHT:
                 # Needs special casing, since it's still ultimately content_left that
@@ -855,7 +859,7 @@ class Pack(BaseStyle):
             effective_cross_start = cross_start
             effective_cross_end = cross_end
 
-        for child in node.children:
+        for child in children:
             # self._debug(f"PASS 4: {child}")
             extra = cross - (
                 getattr(child.layout, f"content_{cross_name}")
