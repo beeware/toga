@@ -1,3 +1,84 @@
+/*----------------------------------------------------
+  Bootstrap style override
+ --------------------------------------------------- */
+
+/* Fixes issue with background colors being swapped in each mode */
+body[data-theme="dark"] {
+  background-color: var(--color-background-primary);
+}
+
+body[data-theme="light"] {
+  background-color: var(--color-background-primary);
+}
+
+/* Fixes issue with background colors on auto color mode */
+@media (prefers-color-scheme: dark) {
+  body[data-theme=auto] {
+    background-color: var(--color-background-primary);
+  }
+}
+
+.navbar {
+  padding-top: 1em !important;
+}
+
+.fixed-top {
+  position: relative !important;
+}
+
+.navbar-brand img {
+  max-width: initial;
+}
+
+.navbar-brand, .navbar-nav {
+  font-family: 'Cutive', serif;
+  font-weight: 600;
+  letter-spacing: -0.5px;
+}
+
+/*----------------------------------------------------
+  Furo style override
+ --------------------------------------------------- */
+
+/* This setting in Furo compounds with other font sizes and breaks the layout */
+@media (min-width: 97em) {
+  html {
+    font-size: 100%;
+  }
+}
+
+.main {
+  margin-top: 1em;
+}
+
+.sidebar-drawer, .toc-drawer {
+  padding-top: 3em;
+}
+
+.mobile-header {
+    position: unset;
+}
+
+/* Fixes the "View this page" icon color in dark modes */
+body[data-theme="dark"] {
+  .view-this-page svg {
+    color: #cfd0d0;
+  }
+}
+
+body[data-theme=auto] a.muted-link {
+  color: #cfd0d0;
+}
+
+/* For continuity, we may want to enable the following: */
+/*.page h1, .page h2, .page h3, .page h4, .page h5, .page h6 {*/
+/*  font-family: 'Cutive', serif;*/
+/*}*/
+
+/*.sidebar-brand-text {*/
+/*  font-family: 'Cutive', serif;*/
+/*}*/
+
 div.table {
     clear: both;
     display: flex;
