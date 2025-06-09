@@ -47,12 +47,11 @@ body[data-theme="light"] {
     }
 }
 
-.main {
-    margin-top: 1em;
-}
-
-.sidebar-drawer, .toc-drawer {
-    padding-top: 3em;
+/* Compensate for BeeWare header height on smaller displays */
+@media (max-width: 1007px) {
+    .sidebar-drawer, .toc-drawer {
+        padding-top: 3em;
+    }
 }
 
 .mobile-header {
@@ -138,7 +137,7 @@ body[data-theme=auto] a.muted-link {
 .github-links {
     font-family: 'Cutive', serif;
     padding: var(--sidebar-item-spacing-vertical) var(--sidebar-item-spacing-horizontal);
-    font-size: 1.25em;
+    /*font-size: var(--sidebar-item-font-size);*/
 }
 
 .github-links a {
