@@ -4,36 +4,36 @@
 
 /* Fixes issue with background colors being swapped in each mode */
 body[data-theme="dark"] {
-  background-color: var(--color-background-primary);
+    background-color: var(--color-background-primary);
 }
 
 body[data-theme="light"] {
-  background-color: var(--color-background-primary);
+    background-color: var(--color-background-primary);
 }
 
 /* Fixes issue with background colors on auto color mode */
 @media (prefers-color-scheme: dark) {
-  body[data-theme=auto] {
-    background-color: var(--color-background-primary);
-  }
+    body[data-theme=auto] {
+        background-color: var(--color-background-primary);
+    }
 }
 
 .navbar {
-  padding-top: 1em !important;
+    padding-top: 1em !important;
 }
 
 .fixed-top {
-  position: relative !important;
+    position: relative !important;
 }
 
 .navbar-brand img {
-  max-width: initial;
+    max-width: initial;
 }
 
 .navbar-brand, .navbar-nav {
-  font-family: 'Cutive', serif;
-  font-weight: 600;
-  letter-spacing: -0.5px;
+    font-family: 'Cutive', serif;
+    font-weight: 600;
+    letter-spacing: -0.6px;
 }
 
 /*----------------------------------------------------
@@ -42,17 +42,17 @@ body[data-theme="light"] {
 
 /* This setting in Furo compounds with other font sizes and breaks the layout */
 @media (min-width: 97em) {
-  html {
-    font-size: 100%;
-  }
+    html {
+        font-size: 100%;
+    }
 }
 
 .main {
-  margin-top: 1em;
+    margin-top: 1em;
 }
 
 .sidebar-drawer, .toc-drawer {
-  padding-top: 3em;
+    padding-top: 3em;
 }
 
 .mobile-header {
@@ -61,23 +61,94 @@ body[data-theme="light"] {
 
 /* Fixes the "View this page" icon color in dark modes */
 body[data-theme="dark"] {
-  .view-this-page svg {
-    color: #cfd0d0;
-  }
+    .view-this-page svg {
+        color: #cfd0d0;
+    }
 }
 
 body[data-theme=auto] a.muted-link {
-  color: #cfd0d0;
+    color: #cfd0d0;
 }
 
-/* For continuity, we may want to enable the following: */
-/*.page h1, .page h2, .page h3, .page h4, .page h5, .page h6 {*/
-/*  font-family: 'Cutive', serif;*/
-/*}*/
+.page h1 {
+    font-family: 'Cutive', serif;
+    margin-top: 1em;
+}
 
-/*.sidebar-brand-text {*/
-/*  font-family: 'Cutive', serif;*/
-/*}*/
+.page h2 {
+    font-family: 'Cutive', serif;
+    font-size: 160%;
+    margin: 1.8rem 0 0.8rem 0;
+    line-height: 2rem;
+}
+
+.page h2:first-child {
+    margin-top: 1.4rem;
+}
+
+.page h3 {
+    font-family: 'Cutive', serif;
+    font-size: 135%;
+    margin: 1.8rem 0 0.8rem 0;
+    line-height: 1.8rem;
+}
+
+.page h3:first-child {
+    margin-top: 1.0rem;
+}
+
+.page h4 {
+    font-family: 'Cutive', serif;
+    margin: 1.8rem 0 0.8rem 0;
+    font-size: 120%;
+    line-height: 1.6rem;
+}
+
+.page h4:first-child {
+    margin-top: 0.8rem;
+}
+
+
+.page h5 {
+    font-family: 'Cutive', serif;
+    font-size: 110%;
+    margin: 1.8rem 0 0.8rem;
+    line-height: 1.6rem;
+}
+
+.page h6:first-child {
+    margin-top: 0.8rem;
+}
+
+.page h6 {
+    font-family: 'Cutive', serif;
+    margin: 1.8rem 0 0.8rem 0;
+    font-size: 100%;
+    line-height: 1.6rem;
+}
+
+.page h6:first-child {
+    margin-top: 0.8rem;
+}
+
+.sidebar-brand-text {
+    font-family: 'Cutive', serif;
+}
+
+.github-links {
+    font-family: 'Cutive', serif;
+    padding: var(--sidebar-item-spacing-vertical) var(--sidebar-item-spacing-horizontal);
+    font-size: 1.25em;
+}
+
+.github-links a {
+    color: var(--color-sidebar-link-text--top-level);
+}
+
+.github-link {
+    padding-top: 0.5em;
+}
+
 
 div.table {
     clear: both;

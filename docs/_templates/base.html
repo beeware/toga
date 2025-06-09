@@ -71,6 +71,9 @@
     {%- block theme_styles %}
     {% include "partials/_head_css_variables.html" with context %}
     {%- endblock -%}
+     <!-- Bootstrap CSS -->
+    <link rel="stylesheet" type="text/css" href="https://beeware.org/static/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="https://beeware.org/static/bootstrap/css/bootstrap-grid.min.css">
     <!-- BeeWare Font -->
     <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Cutive">
     {%- block extra_styles %}
@@ -95,8 +98,8 @@
 
     {# Custom JS #}
     {%- block regular_scripts -%}
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="_static/bootstrap/js/bootstrap.js"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://beeware.org/static/bootstrap/js/bootstrap.min.js"></script>
     {% for path in script_files -%}
       {{ js_tag(path) }}
     {% endfor -%}
