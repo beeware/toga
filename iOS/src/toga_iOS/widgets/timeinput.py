@@ -28,6 +28,7 @@ def native_time(py_time):
     components = NSDateComponents.alloc().init()
     components.setHour(py_time.hour)
     components.setMinute(py_time.minute)
+    components.setSecond(py_time.second)
     return NSCalendar.currentCalendar.dateFromComponents(components)
 
 
@@ -65,7 +66,7 @@ class TimeInput(Widget):
         return py_time(self.native.date).replace(second=0, microsecond=0)
 
     def set_value(self, value):
-        self.native.date = native_time(value)
+        self.native.date = native_time(value.replace(second=0, microsecond=0))
         self.interface.on_change()
 
     def rehint(self):
