@@ -85,10 +85,16 @@ class TogaWebView(WKWebView, protocols=[WKUIDelegate]):
     def acceptsFirstResponder(self) -> bool:
         return True
 
+    # WKUIDelegate protocol method required to utilize the open file dialog for
+    # uploading a file to a website. Difficult to automatically test because it
+    # uses :param: completionHandler, which is a method utilized by the under-
+    # lying WKWebView objective-C codebase. :param: completionHandler cannot be
+    # created manually for testing because it is difficult to pull it up from
+    # the native codebase.
     @objc_method
     def webView_runOpenPanelWithParameters_initiatedByFrame_completionHandler_(
         self, webView, parameters, frame, completionHandler
-    ) -> None:
+    ) -> None:  # pragma: no cover
         """Required by the WKUIDelegate protocol.
 
         Called when the user clicks on an <input type="file"> HTML tag,
