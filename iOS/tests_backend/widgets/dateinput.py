@@ -1,5 +1,4 @@
 import datetime
-from abc import ABC, abstractmethod
 
 import pytest
 
@@ -15,11 +14,10 @@ from toga_iOS.libs import (
 from .base import SimpleProbe
 
 
-class DateTimeInputProbe(SimpleProbe, ABC):
+class DateTimeInputProbe(SimpleProbe):
     native_class = UIDatePicker
     supports_limits = True
 
-    @abstractmethod
     def __init__(self, widget):
         super().__init__(widget)
         assert (
