@@ -1,4 +1,5 @@
 import sys
+from functools import cached_property
 from pathlib import Path
 
 import toga
@@ -10,7 +11,7 @@ class Paths:
         self.factory = get_platform_factory()
         self._impl = self.factory.Paths(self)
 
-    @property
+    @cached_property
     def toga(self) -> Path:
         """The path that contains the core Toga resources.
 
@@ -19,7 +20,7 @@ class Paths:
         """
         return Path(toga.__file__).parent
 
-    @property
+    @cached_property
     def app(self) -> Path:
         """The path of the folder that contains the definition of the app class.
 
@@ -35,7 +36,7 @@ class Paths:
         else:
             return Path(app_file).parent
 
-    @property
+    @cached_property
     def config(self) -> Path:
         """The platform-appropriate location for storing user configuration
         files associated with this app.
@@ -44,7 +45,7 @@ class Paths:
         path.mkdir(parents=True, exist_ok=True)
         return path
 
-    @property
+    @cached_property
     def data(self) -> Path:
         """The platform-appropriate location for storing user data associated
         with this app.
@@ -53,7 +54,7 @@ class Paths:
         path.mkdir(parents=True, exist_ok=True)
         return path
 
-    @property
+    @cached_property
     def cache(self) -> Path:
         """The platform-appropriate location for storing cache files associated
         with this app.
@@ -65,7 +66,7 @@ class Paths:
         path.mkdir(parents=True, exist_ok=True)
         return path
 
-    @property
+    @cached_property
     def logs(self) -> Path:
         """The platform-appropriate location for storing log files associated
         with this app.
