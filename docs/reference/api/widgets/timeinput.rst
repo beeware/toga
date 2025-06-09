@@ -56,7 +56,7 @@ Notes
 * This widget supports hours, minutes and seconds. Microseconds will always be returned
   as zero.
 
-  * On Android and iOS, seconds will also be returned as zero. In addition, the second component of min and max are ignored, so setting a minimum of 13:00:40 will allow you to pick 13:00 in the date picker.
+  * On Android and iOS, seconds will also be returned as zero, and any second component of a minimum or maximum value will be ignored.
 
 * Properties that return :any:`datetime.time` objects can also accept:
 
