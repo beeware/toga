@@ -36,12 +36,12 @@ such as configuration files, log files, cache files, or user data.
 
 Each location provided by the :class:`~toga.paths.Paths` object is a
 :class:`pathlib.Path` that can be used to construct a full file path. If
-required, additional sub-folders can be created under these locations.
-
-You should not assume that any of these paths already exist. The location is
-guaranteed to follow operating system conventions, but the application is
-responsible for ensuring the folder exists prior to writing files in these
-locations.
+required, additional subdirectories can be created under these locations.
+Toga will guarantee that the path provided *by Toga* will exist, but it is
+up you to create any desired subdirectory - if you want to create a
+``credentials/user.toml`` configuration file, Toga will guarantee that the
+``apps.path.config`` will exist, but you must take responsibility for
+creating the ``credentials`` subdirectory before saving ``user.toml``.
 
 Reference
 ---------
