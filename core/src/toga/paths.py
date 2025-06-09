@@ -40,6 +40,7 @@ class Paths:
         """The platform-appropriate location for storing user configuration
         files associated with this app.
         """
+        self._impl.get_config_path().mkdir(parents=True, exist_ok=True)
         return self._impl.get_config_path()
 
     @property
@@ -47,6 +48,7 @@ class Paths:
         """The platform-appropriate location for storing user data associated
         with this app.
         """
+        self._impl.get_data_path().mkdir(parents=True, exist_ok=True)
         return self._impl.get_data_path()
 
     @property
@@ -57,6 +59,7 @@ class Paths:
         It should be assumed that the operating system will purge the contents
         of this directory without warning if it needs to recover disk space.
         """
+        self._impl.get_cache_path().mkdir(parents=True, exist_ok=True)
         return self._impl.get_cache_path()
 
     @property
@@ -64,4 +67,5 @@ class Paths:
         """The platform-appropriate location for storing log files associated
         with this app.
         """
+        self._impl.get_logs_path().mkdir(parents=True, exist_ok=True)
         return self._impl.get_logs_path()
