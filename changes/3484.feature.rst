@@ -1,1 +1,1 @@
-Toga-Cocoa webview now supports file uploads.
+WebViews on macOS now support file uploads.
