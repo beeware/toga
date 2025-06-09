@@ -2,7 +2,6 @@ import asyncio
 from asyncio import wait_for
 from contextlib import nullcontext
 from http.cookiejar import CookieJar
-from pathlib import Path
 from time import time
 from unittest.mock import ANY, Mock
 
@@ -21,7 +20,6 @@ from .properties import (  # noqa: F401
 LOAD_TIMEOUT = 30
 JS_TIMEOUT = 5
 WINDOWS_INIT_TIMEOUT = 60
-TESTS_DIR = Path(__file__).parent.parent
 
 
 async def get_content(widget):
