@@ -28,7 +28,6 @@ def native_time(py_time):
     components = NSDateComponents.alloc().init()
     components.setHour(py_time.hour)
     components.setMinute(py_time.minute)
-    components.setSecond(py_time.second)
     return NSCalendar.currentCalendar.dateFromComponents(components)
 
 
