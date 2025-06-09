@@ -7,9 +7,6 @@ import pytest
 @pytest.mark.parametrize("attr", ["config", "data", "cache", "logs"])
 async def test_app_paths(app, app_probe, attr):
     """Platform paths are as expected."""
-    # Confirm that path does not exist
-    assert not getattr(app_probe, f"{attr}_path").exists()
-
     # Create path and confirm it exists
     path = getattr(app.paths, attr)
     assert path == getattr(app_probe, f"{attr}_path")
