@@ -40,14 +40,18 @@ class Paths:
         """The platform-appropriate location for storing user configuration
         files associated with this app.
         """
-        return self._impl.get_config_path()
+        path = self._impl.get_config_path()
+        path.mkdir(parents=True, exist_ok=True)
+        return path
 
     @property
     def data(self) -> Path:
         """The platform-appropriate location for storing user data associated
         with this app.
         """
-        return self._impl.get_data_path()
+        path = self._impl.get_data_path()
+        path.mkdir(parents=True, exist_ok=True)
+        return path
 
     @property
     def cache(self) -> Path:
@@ -57,11 +61,15 @@ class Paths:
         It should be assumed that the operating system will purge the contents
         of this directory without warning if it needs to recover disk space.
         """
-        return self._impl.get_cache_path()
+        path = self._impl.get_cache_path()
+        path.mkdir(parents=True, exist_ok=True)
+        return path
 
     @property
     def logs(self) -> Path:
         """The platform-appropriate location for storing log files associated
         with this app.
         """
-        return self._impl.get_logs_path()
+        path = self._impl.get_logs_path()
+        path.mkdir(parents=True, exist_ok=True)
+        return path
