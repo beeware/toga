@@ -1,3 +1,5 @@
+from abc import ABC, abstractmethod
+
 import datetime
 
 import pytest
@@ -14,7 +16,7 @@ from toga_iOS.libs import (
 from .base import SimpleProbe
 
 
-class DateTimeInputProbe(SimpleProbe):
+class DateTimeInputProbe(SimpleProbe, ABC):
     native_class = UIDatePicker
     supports_limits = True
 
@@ -24,6 +26,10 @@ class DateTimeInputProbe(SimpleProbe):
             self.native.contentHorizontalAlignment
             == UIControlContentHorizontalAlignmentLeft
         )
+
+    @abstractmethod
+    def py_value(self, native_value):
+        pass
 
     @property
     def color(self):
