@@ -38,11 +38,6 @@ Each location provided by the :class:`~toga.paths.Paths` object is a
 :class:`pathlib.Path` that can be used to construct a full file path. If
 required, additional sub-folders can be created under these locations.
 
-You should not assume that any of these paths already exist. The location is
-guaranteed to follow operating system conventions, but the application is
-responsible for ensuring the folder exists prior to writing files in these
-locations.
-
 Reference
 ---------
 
