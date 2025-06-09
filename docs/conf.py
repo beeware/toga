@@ -274,7 +274,7 @@ htmlhelp_basename = "togadoc"
 
 html_theme = "furo"
 
-html_css_files = ["custom.css", "bootstrap/css/bootstrap.min.css"]
+html_css_files = ["custom.css"]
 
 html_extra_path = ["extra"]
 
