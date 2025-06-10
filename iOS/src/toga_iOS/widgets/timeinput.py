@@ -57,7 +57,7 @@ class TimeInput(Widget):
         # time to clip to when setting, which will return null on
         # the first call.
         self.set_min_time(datetime.time(0, 0, 0))
-        self.set_max_time(datetime.time(23, 59, 59))
+        self.set_max_time(datetime.time(23, 59, 0))
 
         # Add the layout constraints
         self.add_constraints()
