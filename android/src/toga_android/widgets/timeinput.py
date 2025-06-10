@@ -46,13 +46,13 @@ class TimeInput(PickerBase, ContainedWidget):
         return self._min_time
 
     def set_min_time(self, value):
-        self._min_time = value.replace(seconds=0, milliseconds=0)
+        self._min_time = value.replace(second=0, microsecond=0)
 
     def get_max_time(self):
         return self._max_time
 
     def set_max_time(self, value):
-        self._max_time = value.replace(seconds=0, milliseconds=0)
+        self._max_time = value.replace(second=0, microsecond=0)
 
     def _create_dialog(self):
         return TimePickerDialog(
