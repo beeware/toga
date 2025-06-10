@@ -1,0 +1,1 @@
+Disables the default enabled smart quote behavior on macOS.
