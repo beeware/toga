@@ -134,20 +134,23 @@ body[data-theme=auto] a.muted-link {
     font-family: 'Cutive', serif;
 }
 
-.github-links {
+.sidebar-github-links {
     font-family: 'Cutive', serif;
     padding: var(--sidebar-item-spacing-vertical) var(--sidebar-item-spacing-horizontal);
-    /*font-size: var(--sidebar-item-font-size);*/
+    font-size: var(--sidebar-item-font-size);
 }
 
-.github-links a {
+.sidebar-github-links a {
     color: var(--color-sidebar-link-text--top-level);
 }
 
-.github-link {
+.sidebar-github-link {
     padding-top: 0.5em;
 }
 
+.sidebar-github-link .fa-github {
+    margin-right: 0.3em;
+}
 
 div.table {
     clear: both;
