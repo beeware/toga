@@ -1,1 +1,1 @@
-Disables the default enabled smart quote behavior on macOS.
+Due to a default behavior on macOS, ``MultilineTextInput`` automatically converted straight quotes to smart quotes. This behavior has now been disabled.
