@@ -165,11 +165,11 @@ async def test_min(widget, probe, initial_value, min_value, values, normalize):
     "The minimum can be changed"
     value = normalize(initial_value)
     if probe.supports_limits:
-        assert probe.min_value == min_value
+        assert probe.min_value == normalize(min_value)
 
     for min in values:
         widget.min = min
-        assert widget.min == min
+        assert widget.min == normalize(min)
 
         if value < min:
             value = normalize(min)
@@ -177,18 +177,18 @@ async def test_min(widget, probe, initial_value, min_value, values, normalize):
 
         await probe.redraw(f"Minimum set to {min}")
         if probe.supports_limits:
-            assert probe.min_value == min
+            assert probe.min_value == normalize(min)
 
 
 async def test_max(widget, probe, initial_value, max_value, values, normalize):
     "The maximum can be changed"
     value = normalize(initial_value)
     if probe.supports_limits:
-        assert probe.max_value == max_value
+        assert probe.max_value == normalize(max_value)
 
     for max in reversed(values):
         widget.max = max
-        assert widget.max == max
+        assert widget.max == normalize(max)
 
         if value > max:
             value = normalize(max)
@@ -196,4 +196,4 @@ async def test_max(widget, probe, initial_value, max_value, values, normalize):
 
         await probe.redraw(f"Maximum set to {max}")
         if probe.supports_limits:
-            assert probe.max_value == max
+            assert probe.max_value == normalize(max)

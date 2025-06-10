@@ -97,8 +97,8 @@ async def test_init(normalize):
 
     widget = toga.TimeInput(value=value, min=min, max=max, on_change=on_change)
     assert widget.value == normalize(value)
-    assert widget.min == min
-    assert widget.max == max
+    assert widget.min == normalize(min)
+    assert widget.max == normalize(max)
     assert widget.on_change._raw is on_change
 
 

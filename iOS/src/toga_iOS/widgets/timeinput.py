@@ -18,17 +18,17 @@ from .dateinput import TogaDatePicker
 
 def py_time(native_time):
     components = NSCalendar.currentCalendar.components(
-        NSCalendarUnit.Hour | NSCalendarUnit.Minute | NSCalendarUnit.Second,
+        NSCalendarUnit.Hour | NSCalendarUnit.Minute,
         fromDate=native_time,
     )
-    return datetime.time(components.hour, components.minute, components.second)
+    return datetime.time(components.hour, components.minute, 0)
 
 
 def native_time(py_time):
     components = NSDateComponents.alloc().init()
     components.setHour(py_time.hour)
     components.setMinute(py_time.minute)
-    components.setSecond(py_time.second)
+    components.setSecond(0)
     return NSCalendar.currentCalendar.dateFromComponents(components)
 
 
@@ -63,7 +63,7 @@ class TimeInput(Widget):
         self.add_constraints()
 
     def get_value(self):
-        return py_time(self.native.date).replace(second=0, microsecond=0)
+        return py_time(self.native.date)
 
     def set_value(self, value):
         self.native.date = native_time(value.replace(second=0, microsecond=0))

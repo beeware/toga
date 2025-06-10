@@ -26,7 +26,7 @@ class TimeInputProbe(DateTimeInputProbe):
 
     @property
     def value(self):
-        return self.py_value(self.native.date).replace(second=0, microsecond=0)
+        return self.py_value(self.native.date)
 
     async def change(self, delta):
         # It is possible to change the time in the UIDatePicker on iOS, but
