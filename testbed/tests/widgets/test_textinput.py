@@ -107,6 +107,36 @@ async def test_on_change_user(widget, probe, on_change):
         assert widget.value == expected
 
 
+@pytest.mark.parametrize(
+    "test_input",
+    [
+        '""',
+        "''",
+        "--",
+        "---",
+        'Humorless "test" input',
+        "Can't 'bee' bothered",
+        "Bee dashing--or fail miserably. --- No One Ever",
+    ],
+)
+async def test_quote_dash_substitution_disabled(widget, probe, on_change, test_input):
+    """Verify automatic smart quote and dash substitution are disabled"""
+    # This test simulates typing, so the widget must be focused.
+    widget.focus()
+    widget.value = ""
+    on_change.reset_mock()
+
+    for count, char in enumerate(test_input, start=1):
+        await probe.type_character(char)
+        await probe.redraw(f"Typed {char!r}")
+
+        # The number of events equals the number of characters typed.
+        assert on_change.mock_calls == [call(widget)] * count
+        expected = test_input[:count]
+        assert probe.value == expected
+        assert widget.value == expected
+
+
 async def test_on_change_focus(widget, probe, on_change, focused, placeholder, other):
     """The on_change handler is not triggered by focus changes, even if they cause a
     placeholder to appear or disappear."""
