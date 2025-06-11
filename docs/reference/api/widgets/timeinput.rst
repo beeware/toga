@@ -25,9 +25,11 @@ A widget to select a clock time.
        :align: center
        :width: 300px
 
-  .. group-tab:: iOS |no|
+  .. group-tab:: iOS
 
-    Not supported
+    .. figure:: /reference/images/timeinput-iOS.png
+       :align: center
+       :width: 300px
 
   .. group-tab:: Web |no|
 
@@ -54,7 +56,7 @@ Notes
 * This widget supports hours, minutes and seconds. Microseconds will always be returned
   as zero.
 
-  * On Android, seconds will also be returned as zero.
+  * On Android and iOS, seconds will also be returned as zero, and any second component of a minimum or maximum value will be ignored.
 
 * Properties that return :any:`datetime.time` objects can also accept:
 
