@@ -26,15 +26,23 @@ class ExampleWebView(toga.App):
     def on_webview_load(self, widget, **kwargs):
         self.label.text = "www loaded!"
 
-    def on_navigation_starting(self, widget, url):
-        print(f"on_navigation_starting: {url}")
-        allow = True
+    def on_navigation_starting_sync(self, widget, url):
+        print(f"on_navigation_starting_sync: {url}")
+        allow = 1
         if not url.startswith(self.allowed_base_url):
-            allow = False
+            allow = 0
             message = f"Navigation not allowed to: {url}"
             dialog = toga.InfoDialog("on_navigation_starting()", message)
             asyncio.create_task(self.dialog(dialog))
         return allow
+
+    async def on_navigation_starting_async(self, widget, url):
+        print(f"on_navigation_starting_async: {url}")
+        if not url.startswith(self.allowed_base_url):
+            message = f"Do you want to allow navigation to: {url}"
+            dialog = toga.QuestionDialog("on_navigation_starting_async()", message)
+            return await self.main_window.dialog(dialog)
+        return 1
 
     def on_set_url(self, widget, **kwargs):
         self.label.text = "Loading page..."
@@ -108,7 +116,8 @@ class ExampleWebView(toga.App):
         )
         # activate web navigation filtering on supported platforms
         if getattr(self.webview._impl, "SUPPORTS_ON_NAVIGATION_STARTING", True):
-            self.webview.on_navigation_starting = self.on_navigation_starting
+            self.webview.on_navigation_starting = self.on_navigation_starting_async
+            # self.webview.on_navigation_starting = self.on_navigation_starting_sync
 
         box = toga.Box(
             children=[

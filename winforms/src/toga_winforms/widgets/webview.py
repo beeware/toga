@@ -1,3 +1,5 @@
+import asyncio
+import functools
 import json
 import webbrowser
 from http.cookiejar import Cookie, CookieJar
@@ -183,10 +185,52 @@ class WebView(Widget):
             self.loaded_future = None
 
     def winforms_navigation_starting(self, sender, event):
-        # print(f"winforms_navigation_starting: {event.Uri}")
+        print(f"winforms_navigation_starting: {event.Uri}")
+        self.interface._url_count += 1
         if self.interface.on_navigation_starting:
-            allow = self.interface.on_navigation_starting(event.Uri)
+            print("checking URL permission...")
+            if self.interface._url_count == 1:
+                print("Allow the URL set from code")
+                allow = True
+            elif event.Uri in self.interface._code_allowed_urls:
+                # URL is allowed by user on_navigation_starting handler
+                print("URL is allowed by user on_navigation_starting handler")
+                allow = True
+                # prevent the list from growing endlessly
+                self.interface._code_allowed_urls.remove(event.Uri)
+            elif event.Uri in self.interface._user_allowed_urls:
+                # URL is allowed by user interaction
+                print("URL is allowed by user")
+                allow = True
+            elif event.Uri in self.interface._user_denied_urls:
+                # URL is denied by user interaction
+                print("URL is denied by user")
+                allow = False
+            else:
+                result = self.interface.on_navigation_starting(event.Uri)
+                print("winforms_navigation_starting()")
+                if isinstance(result, int):
+                    # on_navigation_starting handler is synchronous
+                    print(f"synchronous handler, result={str(result)}")
+                    allow = True if result == 1 else False
+                elif isinstance(result, asyncio.Future):
+                    # on_navigation_starting handler is asynchronous
+                    if result.done():
+                        allow = result.result()
+                        print(f"asynchronous handler, result={str(allow)}")
+                    else:
+                        # deny the navigation until the user
+                        # or the user on_navigation_starting handler has allowed it
+                        allow = False
+                        print("waiting for permission")
+                        result.add_done_callback(
+                            functools.partial(
+                                self.interface.on_navigation_starting_callback,
+                                url=event.Uri,
+                            )
+                        )
             if not allow:
+                print("Denying navigation")
                 event.Cancel = True
 
     def get_url(self):
