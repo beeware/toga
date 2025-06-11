@@ -125,6 +125,8 @@ class SimpleProbe(BaseProbe, FontMixin):
                 ".": Gdk.KEY_period,
                 "\n": Gdk.KEY_Return,
                 "<esc>": Gdk.KEY_Escape,
+                "'": Gdk.KEY_apostrophe,
+                '"': Gdk.KEY_quotedbl,
             }.get(char, Gdk.KEY_question),
         )
 
