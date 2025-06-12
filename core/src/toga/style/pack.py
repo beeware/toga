@@ -228,7 +228,7 @@ class Pack(BaseStyle):
     text_direction: str | None = validated_property(RTL, LTR, initial=LTR)
 
     font_family: str | list[str] = list_property(
-        *SYSTEM_DEFAULT_FONTS, string=True, initial=SYSTEM
+        *SYSTEM_DEFAULT_FONTS, string=True, initial=[SYSTEM]
     )
     font_style: str = validated_property(*FONT_STYLES, initial=NORMAL)
     font_variant: str = validated_property(*FONT_VARIANTS, initial=NORMAL)
