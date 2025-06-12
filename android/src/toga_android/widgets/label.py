@@ -13,9 +13,9 @@ from toga_android.colors import native_color
 from .base import Widget, android_text_align
 
 
-def set_textview_font(tv, font, default_typeface, default_size):
-    tv.setTypeface(font.typeface(default=default_typeface))
-    tv.setTextSize(TypedValue.COMPLEX_UNIT_PX, font.size(default=default_size))
+def set_textview_font(textview, font, default_typeface, default_size):
+    textview.setTypeface(font.typeface(default=default_typeface))
+    textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, font.size(default=default_size))
 
 
 class TextViewWidget(Widget):

@@ -18,7 +18,6 @@ from toga.fonts import (
     SERIF,
     SYSTEM,
     SYSTEM_DEFAULT_FONT_SIZE,
-    SYSTEM_DEFAULT_FONTS,
     UnknownFontError,
 )
 
@@ -29,70 +28,72 @@ class Font:
     def __init__(self, interface):
         self.interface = interface
 
-    def typeface(self, *, default=Typeface.DEFAULT):
-        cache_key = (self.interface, default)
-        if typeface := _FONT_CACHE.get(cache_key):
-            return typeface
-
-        font_key = self.interface._registered_font_key(
-            self.interface.family,
-            weight=self.interface.weight,
-            style=self.interface.style,
-            variant=self.interface.variant,
-        )
+        # 1. Check for a cached typeface.
         try:
-            font_path = _REGISTERED_FONT_CACHE[font_key]
+            self.native_typeface = _FONT_CACHE[self.interface]
         except KeyError:
-            # Not a pre-registered font
-            if self.interface.family not in SYSTEM_DEFAULT_FONTS:
-                raise UnknownFontError(f"Unknown font '{self.interface}'")
-        else:
-            if Path(font_path).is_file():
-                typeface = Typeface.createFromFile(font_path)
-                if typeface is Typeface.DEFAULT:
-                    raise ValueError(f"Unable to load font file {font_path}")
-            else:
-                raise ValueError(f"Font file {font_path} could not be found")
 
-        if typeface is None:
-            if self.interface.family is SYSTEM:
-                # The default button font is not marked as bold, but it has a weight
-                # of "medium" (500), which is in between "normal" (400), and "bold"
-                # (600 or 700). To preserve this, we use the widget's original
-                # typeface as a starting point rather than Typeface.DEFAULT.
-                typeface = default
-            elif self.interface.family is MESSAGE:
-                typeface = Typeface.DEFAULT
-            elif self.interface.family is SERIF:
-                typeface = Typeface.SERIF
-            elif self.interface.family is SANS_SERIF:
-                typeface = Typeface.SANS_SERIF
-            elif self.interface.family is MONOSPACE:
-                typeface = Typeface.MONOSPACE
-            elif self.interface.family is CURSIVE:
-                typeface = Typeface.create("cursive", Typeface.NORMAL)
-            elif self.interface.family is FANTASY:
-                # Android appears to not have a fantasy font available by default,
-                # but if it ever does, we'll start using it. Android seems to choose
-                # a serif font when asked for a fantasy font.
-                typeface = Typeface.create("fantasy", Typeface.NORMAL)
-            else:
-                typeface = Typeface.create(self.interface.family, Typeface.NORMAL)
+            # 2. Check for a system font.
+            try:
+                self.native_typeface = {
+                    # SYSTEM is left as a placeholder.
+                    # The default button font is not marked as bold, but it has a weight
+                    # of "medium" (500), which is in between "normal" (400), and "bold"
+                    # (600 or 700). To preserve this, we use the widget's original
+                    # typeface as a starting point rather than Typeface.DEFAULT.
+                    SYSTEM: SYSTEM,
+                    MESSAGE: Typeface.DEFAULT,
+                    SERIF: Typeface.SERIF,
+                    SANS_SERIF: Typeface.SANS_SERIF,
+                    MONOSPACE: Typeface.MONOSPACE,
+                    # Android appears to not have a fantasy font available by default,
+                    # but if it ever does, we'll start using it. Android seems to
+                    # choose a serif font when asked for a fantasy font.
+                    FANTASY: Typeface.create("fantasy", Typeface.NORMAL),
+                    CURSIVE: Typeface.create("cursive", Typeface.NORMAL),
+                }[interface.family]
+            except KeyError:
 
-        native_style = typeface.getStyle()
+                # 3. Check for a user-registered font.
+                try:
+                    font_key = self.interface._registered_font_key(
+                        self.interface.family,
+                        weight=self.interface.weight,
+                        style=self.interface.style,
+                        variant=self.interface.variant,
+                    )
+                    font_path = _REGISTERED_FONT_CACHE[font_key]
+                except KeyError:
+
+                    # 3a. Not a user-registered font
+                    raise UnknownFontError(f"Unknown font '{self.interface}'")
+
+                # 3b. User has indeed registered this font.
+                else:
+                    if Path(font_path).is_file():
+                        self.native_typeface = Typeface.createFromFile(font_path)
+                        if self.native_typeface is Typeface.DEFAULT:
+                            raise ValueError(f"Unable to load font file {font_path}")
+                    else:
+                        raise ValueError(f"Font file {font_path} could not be found")
+
+        _FONT_CACHE[self.interface] = self.native_typeface
+
+        self.native_style = 0
         if self.interface.weight == BOLD:
-            native_style |= Typeface.BOLD
+            self.native_style |= Typeface.BOLD
         if self.interface.style in {ITALIC, OBLIQUE}:
-            native_style |= Typeface.ITALIC
+            self.native_style |= Typeface.ITALIC
 
-        if native_style != typeface.getStyle():
-            typeface = Typeface.create(typeface, native_style)
+    def typeface(self, default=Typeface.DEFAULT):
+        typeface = default if self.native_typeface == SYSTEM else self.native_typeface
 
-        _FONT_CACHE[cache_key] = typeface
+        if self.native_style != typeface.getStyle():
+            typeface = Typeface.create(typeface, self.native_style)
+
         return typeface
 
-    def size(self, *, default=None):
-        """Return the font size in physical pixels."""
+    def size(self, default=None):
         context = MainActivity.singletonThis
         if self.interface.size == SYSTEM_DEFAULT_FONT_SIZE:
             if default is None:
