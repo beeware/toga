@@ -1,4 +1,3 @@
-from System import ArgumentException
 from System.Drawing import (
     Font as WinFont,
     FontFamily,
@@ -35,36 +34,42 @@ class Font:
         # exceptions later
         self._pfc = None
         self.interface = interface
+
+        # Check for a cached typeface.
         try:
             font = _FONT_CACHE[self.interface]
+
         except KeyError:
-            font = None
-            font_key = self.interface._registered_font_key(
-                self.interface.family,
-                weight=self.interface.weight,
-                style=self.interface.style,
-                variant=self.interface.variant,
-            )
+            # Check for a system font.
             try:
-                font_path = _REGISTERED_FONT_CACHE[font_key]
+                font_family = {
+                    SYSTEM: DEFAULT_FONT.FontFamily,
+                    MESSAGE: DEFAULT_FONT.FontFamily,
+                    SERIF: FontFamily.GenericSerif,
+                    SANS_SERIF: FontFamily.GenericSansSerif,
+                    CURSIVE: FontFamily("Comic Sans MS"),
+                    FANTASY: FontFamily("Impact"),
+                    MONOSPACE: FontFamily.GenericMonospace,
+                }[self.interface.family]
+
             except KeyError:
+                # Check for a user-registered font.
+                font = None
+                font_key = self.interface._registered_font_key(
+                    self.interface.family,
+                    weight=self.interface.weight,
+                    style=self.interface.style,
+                    variant=self.interface.variant,
+                )
                 try:
-                    font_family = {
-                        SYSTEM: DEFAULT_FONT.FontFamily,
-                        MESSAGE: DEFAULT_FONT.FontFamily,
-                        SERIF: FontFamily.GenericSerif,
-                        SANS_SERIF: FontFamily.GenericSansSerif,
-                        CURSIVE: FontFamily("Comic Sans MS"),
-                        FANTASY: FontFamily("Impact"),
-                        MONOSPACE: FontFamily.GenericMonospace,
-                    }[self.interface.family]
+                    font_path = _REGISTERED_FONT_CACHE[font_key]
+
                 except KeyError:
-                    try:
-                        font_family = FontFamily(self.interface.family)
-                    except ArgumentException:
-                        raise UnknownFontError(f"Unknown font '{self.interface}'")
+                    # No, not a user-registered font.
+                    raise UnknownFontError(f"Unknown font '{self.interface}'")
 
             else:
+                # Yes, user has registered this font.
                 try:
                     self._pfc = PrivateFontCollection()
                     self._pfc.AddFontFile(font_path)

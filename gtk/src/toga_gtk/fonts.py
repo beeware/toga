@@ -7,7 +7,6 @@ from toga.fonts import (
     ITALIC,
     OBLIQUE,
     SMALL_CAPS,
-    SYSTEM,
     SYSTEM_DEFAULT_FONT_SIZE,
     SYSTEM_DEFAULT_FONTS,
     UnknownFontError,
@@ -32,49 +31,52 @@ class Font:
         if PangoCairo is None:  # pragma: no cover
             raise RuntimeError(import_error.format("PangoCairo"))
 
+        # Check for a cached typeface.
         try:
             font = _FONT_CACHE[self.interface]
+
         except KeyError:
-            font_key = self.interface._registered_font_key(
-                self.interface.family,
-                weight=self.interface.weight,
-                style=self.interface.style,
-                variant=self.interface.variant,
-            )
-            try:
-                font_path = _REGISTERED_FONT_CACHE[font_key]
-            except KeyError:
-                # Not a pre-registered font
-                if self.interface.family not in SYSTEM_DEFAULT_FONTS:
+            # Check for a system font.
+            if self.interface.family not in SYSTEM_DEFAULT_FONTS:
+                # Check for a user-registered font.
+                font_key = self.interface._registered_font_key(
+                    self.interface.family,
+                    weight=self.interface.weight,
+                    style=self.interface.style,
+                    variant=self.interface.variant,
+                )
+                try:
+                    font_path = _REGISTERED_FONT_CACHE[font_key]
+                except KeyError:
+
+                    # No, not a user-registered font.
                     raise UnknownFontError(f"Unknown font '{self.interface}'")
-            else:
-                if Path(font_path).is_file():
-                    FontConfig.add_font_file(font_path)
 
-                    # PangoFc provides the base class of the default font map, so if its
-                    # typelib file is missing, the cache_clear method will not be
-                    # visible.
-                    if PangoFc is None:  # pragma: no cover
-                        # Debian Buster doesn't include the typelib file in any package,
-                        # but it works even without a cache_clear, so continue with a
-                        # warning.
-                        warn(import_error.format("PangoFc"))
-                    else:
-                        # Ubuntu 22.04 includes the typelib file in gir1.2-pango-1.0,
-                        # and it does require a cache_clear to make new fonts visible
-                        # to the Canvas.
-                        PangoCairo.FontMap.get_default().cache_clear()
                 else:
-                    raise ValueError(f"Font file {font_path} could not be found")
+                    # Yes, user has registered this font.
+                    if Path(font_path).is_file():
+                        success = FontConfig.add_font_file(font_path)
+                        if not success:
+                            raise ValueError(f"Unable to load font file {font_path}")
 
-            # Initialize font with properties 'None NORMAL NORMAL NORMAL 0'
-            font = Pango.FontDescription()
+                        # PangoFc provides the base class of the default font map, so if
+                        # its typelib file is missing, the cache_clear method will not
+                        # be visible.
+                        if PangoFc is None:  # pragma: no cover
+                            # Debian Buster doesn't include the typelib file in any
+                            # package, but it works even without a cache_clear, so
+                            # continue with a warning.
+                            warn(import_error.format("PangoFc"))
+                        else:
+                            # Ubuntu 22.04 includes the typelib file in
+                            # gir1.2-pango-1.0, and it does require a cache_clear to
+                            # make new fonts visible to the Canvas.
+                            PangoCairo.FontMap.get_default().cache_clear()
+                    else:
+                        raise ValueError(f"Font file {font_path} could not be found")
 
-            family = self.interface.family
-            if family != SYSTEM:
-                family = f"{family}, {SYSTEM}"  # Default to system
-
-            font.set_family(family)
+            # Initialize font with properties '[Font family] NORMAL NORMAL NORMAL 0'
+            font = Pango.FontDescription(self.interface.family)
 
             # If this is a non-default font size, set the font size
             if self.interface.size != SYSTEM_DEFAULT_FONT_SIZE:
