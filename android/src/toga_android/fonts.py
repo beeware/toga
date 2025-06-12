@@ -55,13 +55,13 @@ class Font:
             except KeyError:
 
                 # 3. Check for a user-registered font.
+                font_key = self.interface._registered_font_key(
+                    self.interface.family,
+                    weight=self.interface.weight,
+                    style=self.interface.style,
+                    variant=self.interface.variant,
+                )
                 try:
-                    font_key = self.interface._registered_font_key(
-                        self.interface.family,
-                        weight=self.interface.weight,
-                        style=self.interface.style,
-                        variant=self.interface.variant,
-                    )
                     font_path = _REGISTERED_FONT_CACHE[font_key]
                 except KeyError:
 
