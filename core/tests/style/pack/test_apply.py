@@ -81,10 +81,12 @@ def test_set_font():
 @mark.parametrize(
     "family, result",
     [
+        ("Courier", "Courier"),
         (["Courier", "Helvetica"], "Courier"),
         (["Bogus Font", "Courier", "Helvetica"], "Courier"),
         (["Courier", "Bogus Font", "Helvetica"], "Courier"),
         (["Bogus Font"], SYSTEM),
+        ("Bogus Font", SYSTEM),
     ],
 )
 def test_set_font_family(family, result):

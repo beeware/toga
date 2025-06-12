@@ -93,7 +93,8 @@ class Font:
 
         return typeface
 
-    def size(self, default=None):
+    def size(self, *, default=None):
+        """Return the font size in physical pixels."""
         context = MainActivity.singletonThis
         if self.interface.size == SYSTEM_DEFAULT_FONT_SIZE:
             if default is None:
