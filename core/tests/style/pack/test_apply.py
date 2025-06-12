@@ -1,7 +1,9 @@
 from unittest.mock import call
 
+from pytest import mark
+
 from toga.colors import rgb
-from toga.fonts import Font
+from toga.fonts import SYSTEM_DEFAULT_FONT_SIZE, Font
 from toga.style.pack import (
     BOLD,
     CENTER,
@@ -13,6 +15,7 @@ from toga.style.pack import (
     RIGHT,
     RTL,
     SMALL_CAPS,
+    SYSTEM,
     VISIBLE,
     Pack,
 )
@@ -73,6 +76,24 @@ def test_set_font():
         Font("Roboto", 12, style="normal", variant="small-caps", weight="bold")
     )
     root.refresh.assert_called_once_with()
+
+
+@mark.parametrize(
+    "family, result",
+    [
+        ("Courier", "Courier"),
+        (["Courier", "Helvetica"], "Courier"),
+        (["Bogus Font", "Courier", "Helvetica"], "Courier"),
+        (["Courier", "Bogus Font", "Helvetica"], "Courier"),
+        (["Bogus Font"], SYSTEM),
+        ("Bogus Font", SYSTEM),
+    ],
+)
+def test_set_font_family(family, result):
+    """The first viable family is used. Dummy backend rejects 'Bogus Font'."""
+    node = ExampleNode("app", style=Pack(font_family=family))
+    node.style.apply()
+    node._impl.set_font.assert_called_once_with(Font(result, SYSTEM_DEFAULT_FONT_SIZE))
 
 
 def test_set_multiple_layout_properties():

@@ -10,6 +10,7 @@ from toga.fonts import (
     SYSTEM,
     SYSTEM_DEFAULT_FONT_SIZE,
     SYSTEM_DEFAULT_FONTS,
+    UnknownFontError,
 )
 
 from .libs import FontConfig, Pango, PangoCairo, PangoFc
@@ -45,10 +46,7 @@ class Font:
             except KeyError:
                 # Not a pre-registered font
                 if self.interface.family not in SYSTEM_DEFAULT_FONTS:
-                    print(
-                        f"Unknown font '{self.interface}'; "
-                        "using system font as a fallback"
-                    )
+                    raise UnknownFontError(f"Unknown font '{self.interface}'")
             else:
                 if Path(font_path).is_file():
                     FontConfig.add_font_file(font_path)
