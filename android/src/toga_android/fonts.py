@@ -77,7 +77,7 @@ class Font:
                     else:
                         raise ValueError(f"Font file {font_path} could not be found")
 
-        _FONT_CACHE[self.interface] = self.native_typeface
+            _FONT_CACHE[self.interface] = self.native_typeface
 
         self.native_style = 0
         if self.interface.weight == BOLD:
