@@ -141,7 +141,7 @@ The path to the file is being constructed from the ``self.paths.app`` ``Path`` o
 
 Now when we run the app, it starts successfully. We can click the button, and we'll see the contents of the file loaded into the text input.
 
-We've successfully read from a file packaged within our app. Let's explore how to use app paths to write files to the filesystem.
+We've successfully read from a file packaged within our app. Let's explore how to use app paths to write files to the file system.
 
 Writing Files
 =============
@@ -149,7 +149,7 @@ Writing Files
 So far, we've used ``paths.app``, which should be considered read-only. Toga won't stop you from writing to the app directory, and in testing, it will almost always work. However, once you ship your packaged app in production, writing to the app will fail. The overall reason is permissions, but it is a bit different for each operating system.
 
 - On Windows, you can install an app as a user or for all users. "All users" requires admin privileges, however when you run the app as a user, you are no longer running it as an admin, and you will not be permitted to write to that location.
-- On macOS, the contents of an app are contained within the app bundle. It is a file in a directory, however the contents have been signed and notarised, which cryptographically seals the bundle, and if you try to write to it, you will break that seal and end up with problems running the app.
+- On macOS, the contents of an app are contained within the app bundle. It is a file in a directory, however the contents have been signed and notarized, which cryptographically seals the bundle, and if you try to write to it, you will break that seal and end up with problems running the app.
 - On Unix, even if ``sudo`` is used to install the app, it installs to a directory that the user does not have permissions to write to.
 
 You can read from ``paths.app``, but you shouldn't write to it.
@@ -217,4 +217,4 @@ Update the ``load_button_pressed`` handler in ``app.py`` to the following:
             path = self.paths.app / "resources/initial_config.toml"
         self.text_input.value = path.read_text(encoding="utf-8")
 
-This updates the handler to try to load content from the existing ``config.toml`` file from the config directory, and if the file does not exist, loads the ``initial_config.toml` file contents instead.
+This updates the handler to try to load content from the existing ``config.toml`` file from the config directory, and if the file does not exist, loads the ``initial_config.toml`` file contents instead.
