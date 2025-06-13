@@ -18,3 +18,12 @@ class Paths:
 
     def get_logs_path(self):
         return Path.home() / "logs" / App.app.app_id
+
+    def get_documents_path(self):
+        return Path.home() / "Documents"
+
+    def get_pictures_path(self):
+        return Path.home() / "Pictures"
+
+    def get_desktop_path(self):
+        return Path.home() / "Desktop"
