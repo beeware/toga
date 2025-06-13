@@ -2,28 +2,38 @@
 File Management
 ===============
 
-TODO: Intro needs work
+File management works differently in packaged app than it does in the Python interpreter. Toga's app paths feature is designed to provide a straightforward way to read and write files from a packaged app.
 
-If you've worked with files in Python, you're probably used to being able to access a file in the same directory as your Python script using ``with open(file.txt) as f:``. Python defaults to looking in the current working directory (the directory from which the script is being run), and all path access from this is implicit. You are able to use relative paths to point to a location. This might even work with simple Toga scripts. However, when you get into packaging applications, things change.
+For this guide, we're going to use Briefcase as packaging our application, however the same path-related issues outlined here exist regardless of what tool you use, including Setuptools, py2app, PyInstaller, and so on.
+
+File access
+===========
+
+If you've worked with accessing files in Python, you're probably used to being able to read from a file in the same directory as your Python script using something like the following:
+
+.. code-block:: python
+
+    with open("file.txt") as f:
+        f.read()
+
+Python defaults to looking in the current working directory (the directory from which the script is being run), and all path access from this is implicit. You are able to use relative paths to point to a location. This might even work with simple Toga scripts. However, when you get into packaging applications, things change.
 
 A packaged app can be run from anywhere on a computer, and there's no guarantee you can write a file to the location from which the app is being run. You can package file content into an app, but there's still no guarantee of the location it will be installed or run. Further, you may run into permissions issues attempting to write to the app location.
-
-For this guide, we're going to use Briefcase for packaging our application, however the same path-related issues outlined here exist regardless of what tool you use, including Setuptools, py2app, PyInstaller, and so on.
-
-TODO: More
 
 So, if relative paths won't work in this situation, what can we do? We need to use absolute paths.
 
 Absolute paths
 ==============
 
+Unlike relative paths, absolute paths do not rely on the location of the Python program or application. They provide the full path of the file. There are multiple ways to construct absolute paths in Python.
+
+The most basic method is to spell out the entire path. For example, on macOS or Unix, to access ``file.txt`` in a directory called ``file_directory`` in your home directory, you could use ``"~/file_directory/file.txt"``.
+
 In any Python file, ``__file__`` is the full path to current working directory, i.e. the location of file being executed, provided as a string. We can use this to construct paths; for example, ``Path(__file__).parent`` is the parent directory of the currently running Python program.
 
 The ``pathlib`` module, from the Python standard library, provides several absolute path options including ``Path.cwd()``, which is a path to the current working directory, and ``Path.home()``, which is a path to your home directory.
 
-TODO: More
-
-Let's take a look at an example of reading file contents from a file using an absolute path.
+Let's take a look at an example of reading file contents from a file using the basic method to construct an absolute path.
 
 Create a `new Briefcase project <https://docs.beeware.org/en/latest/tutorial/tutorial-1.html>`__. Update ``app.py`` in the project to the following:
 
@@ -79,9 +89,9 @@ So, how do we get the benefits of absolute paths, but ensure that the file can b
 App paths
 =========
 
-Toga includes an :doc:`app paths </reference/api/resources/app_paths>` feature that provides a selection of known locations on the user's computer. Provided as a ``pathlib.Path`` object, they are known-safe locations for reading and writing files, that are specific to each operating system. They are unique to each application, and guaranteed to be isolated to the specific app. There are four writable paths, and one read-only path.
+Toga includes an :doc:`app paths <../../reference/api/resources/app_paths>` feature that provides a selection of known locations on the user's computer. Provided as a ``pathlib.Path`` object, they are known-safe locations for reading and writing files, that are specific to each operating system. They are unique to each application, and guaranteed to be isolated to the specific app. There are four writable paths, and one read-only path.
 
-The read-only path location, ``app``, provides an anchor from the location of the app file. It is the path of the directory that contains the Python file that defines the class that is being executed as the app, specifically the Python file that includes ``class MyApp(toga.app):``. In an application containing only a single file, is essentially returning ``Path(__file__).parent``. However, in an application with multiple levels of modules, or when calling a library that is independent of the app, calling ``Path(__file__)`` may not return the expected result, whereas ``app`` will return the same location no matter where it is. It can therefore be used to construct absolute paths based on the app file location within the package. For this to work, we need to package the file with our app. Briefcase guarantees that any file in the project directory (``helloworld/src/helloworld`` in the example project structure shown above), will be included with the packaged app, including the contents of any subdirectories. There are other ways to ensure a file is included - see the :doc:`Sources </reference/api/resources/sources>` documentation for details.
+The read-only path location, ``app``, provides an anchor from the location of the app file. It is the path of the directory that contains the Python file that defines the class that is being executed as the app, specifically the Python file that includes ``class MyApp(toga.app):``. In an application containing only a single file, is essentially returning ``Path(__file__).parent``. However, in an application with multiple levels of modules, or when calling a library that is independent of the app, calling ``Path(__file__)`` may not return the expected result, whereas ``app`` will return the same location no matter where it is. It can therefore be used to construct absolute paths based on the app file location within the package. For this to work, we need to package the file with our app. Briefcase guarantees that any file in the project directory (``helloworld/src/helloworld`` in the example project structure shown above), will be included with the packaged app, including the contents of any subdirectories. There are other ways to ensure a file is included - see the :doc:`Source <../../reference/api/resources/sources/source>` documentation for details.
 
 Let's build on the previous example to use the ``app`` to locate the file.
 
@@ -205,6 +215,9 @@ This change adds a save button, that when pressed, saves the contents of the tex
 
 Run the app and click the "load initial config" button to load the file contents into the text input. Update the variables to whatever you like. Click the save button to generate the file. Use the path displayed below the input to find and view your new config file.
 
+Updating an existing file
+=========================
+
 Now that the config file is generated, you may want to update it. You could use the same app to load the contents of ``initial_config.toml`` and update that info to the new configuration, but then you may not know what the previous changes were. Instead, you can tell the app to check for an existing config file, and load the contents of that if it exists.
 
 Update the ``load_button_pressed`` handler in ``app.py`` to the following:
@@ -217,4 +230,4 @@ Update the ``load_button_pressed`` handler in ``app.py`` to the following:
             path = self.paths.app / "resources/initial_config.toml"
         self.text_input.value = path.read_text(encoding="utf-8")
 
-This updates the handler to try to load content from the existing ``config.toml`` file from the config directory, and if the file does not exist, loads the ``initial_config.toml`` file contents instead.
+This updates the handler to first try to load content from an existing ``config.toml`` file in the config directory, and then, if the file does not exist, loads the ``initial_config.toml`` file contents instead.
