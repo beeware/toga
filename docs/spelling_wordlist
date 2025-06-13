@@ -23,6 +23,7 @@ Ctrl
 dataclass
 dialogs
 Django
+dotfiles
 draggable
 Flatpak
 Flexbox
@@ -47,6 +48,7 @@ macOS
 Manjaro
 misconfigured
 Monetization
+multiline
 namespace
 OpenStreetMap
 OTF
@@ -57,6 +59,7 @@ pre
 prepending
 programmatically
 px
+py
 Pygame
 PyScript
 pytest
@@ -76,6 +79,7 @@ scrollable
 scrollers
 Segoe
 selectable
+Setuptools
 Sonoma
 Stimpy
 stylesheet
@@ -116,4 +120,5 @@ WebKit
 whitespace
 Winforms
 Xcode
+XDG
 zoomable
