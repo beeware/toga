@@ -8,7 +8,7 @@ If you've worked with files in Python, you're probably used to being able to acc
 
 A packaged app can be run from anywhere on a computer, and there's no guarantee you can write a file to the location from which the app is being run. You can package file content into an app, but there's still no guarantee of the location it will be installed or run. Further, you may run into permissions issues attempting to write to the app location.
 
-For this guide, we're going to use Briefcase for packaging your application, however the same path-related issues outlined here exist regardless of what tool you use, including Setuptools, py2app, PyInstaller, and so on.
+For this guide, we're going to use Briefcase for packaging our application, however the same path-related issues outlined here exist regardless of what tool you use, including Setuptools, py2app, PyInstaller, and so on.
 
 TODO: More
 
@@ -17,7 +17,7 @@ So, if relative paths won't work in this situation, what can we do? We need to u
 Absolute paths
 ==============
 
-In any Python file, ``__file__`` is the full path to current working directory, i.e. the location of file being executed, provided as a string. You can use this to construct paths; for example, ``Path(__file__).parent`` is the parent directory of the currently running Python program.
+In any Python file, ``__file__`` is the full path to current working directory, i.e. the location of file being executed, provided as a string. We can use this to construct paths; for example, ``Path(__file__).parent`` is the parent directory of the currently running Python program.
 
 The ``pathlib`` module, from the Python standard library, provides several absolute path options including ``Path.cwd()``, which is a path to the current working directory, and ``Path.home()``, which is a path to your home directory.
 
@@ -25,7 +25,7 @@ TODO: More
 
 Let's take a look at an example of reading file contents from a file using an absolute path.
 
-Create a `new Briefcase project <https://docs.beeware.org/en/latest/tutorial/tutorial-1.html>`__. Update ``app.py`` in your project to the following:
+Create a `new Briefcase project <https://docs.beeware.org/en/latest/tutorial/tutorial-1.html>`__. Update ``app.py`` in the project to the following:
 
 .. code-block:: python
 
@@ -54,7 +54,7 @@ Create a `new Briefcase project <https://docs.beeware.org/en/latest/tutorial/tut
     def main():
         return ConfigFileCreator()
 
-This creates a multiline text input and automatically loads the contents of an ``initial_config.toml`` file into the text input. The file content is read from the file using ``pathlib.Path().read_text()`` with a hard coded file path.
+This creates a multiline text input and automatically loads the contents of an ``initial_config.toml`` file into the text input. The file content is read from the file using ``pathlib.Path().read_text()`` with a hard-coded file path.
 
 Now, if we run ``briefcase dev``, the app will fail to start, resulting in a ``FileNotFoundError``. This version worked great on Brutus' computer. However, the moment we try to start the app on a different machine, the path is no longer valid, and it will fail to run when it can't find the file.
 
@@ -68,31 +68,24 @@ You might be thinking: the issue is that the file is not located in the applicat
             ├── app.py
             └── resources/
 
-One possible option is in the top level ``helloworld/`` directory, as that's the location from which you actually run the app. While you could point your code to this location as an absolute path, you will still run into the problem when running your app from anywhere else but your computer.
+One possible option is in the top level ``helloworld/`` directory, as that's the location from which we actually run the app. While we could point our code to this location as an absolute path, we will still run into the problem when running the app from anywhere else but our own computer.
 
-A second possible option might be to put the file in ``helloworld/src/helloworld`` because that's where the ``app.py`` file is. After all, Python bases file access on the current working directory. This second option does ensure Briefcase packages the file with your app. However, apps can be run from anywhere on a computer, so it still doesn't guarantee a consistent path.
+A second possible option might be to put the file in ``helloworld/src/helloworld`` because that's where the ``app.py`` file is. After all, Python bases file access on the current working directory. This second option does ensure Briefcase packages the file with the app. However, apps can be run from anywhere on a computer, so it still doesn't guarantee a consistent path.
 
-To avoid the possibility of either of the above happening accidentally, Briefcase sets the current working directory to elsewhere so you aren't caught by this issue.
+To avoid the possibility of either of the above happening accidentally, Briefcase sets the current working directory to elsewhere so we aren't caught by this issue.
 
 So, how do we get the benefits of absolute paths, but ensure that the file can be found and read regardless of where the app is being run? This is where Toga can help.
 
 App paths
 =========
 
-Toga includes an :doc:`app paths </reference/api/resources/app_paths>` feature that provides a selection of known locations on the user's computer. Provided as a ``pathlib.Path`` object, they are known-safe locations for reading and writing files, that are specific to each operating system. They are unique to each application, and guaranteed to be isolated to the specific app. There are four writable paths available for storing files associated with an app:
+Toga includes an :doc:`app paths </reference/api/resources/app_paths>` feature that provides a selection of known locations on the user's computer. Provided as a ``pathlib.Path`` object, they are known-safe locations for reading and writing files, that are specific to each operating system. They are unique to each application, and guaranteed to be isolated to the specific app. There are four writable paths, and one read-only path.
 
-- ``data``: The location for storing user data.
-- ``config``: The location for storing user configuration data.
-- ``cache``: The location for storing cache files. This should be used only for easily regenerated files as the operating system may purge the contents of this directory without warning.
-- ``logs``: The location for storing log files.
+The read-only path location, ``app``, provides an anchor from the location of the app file. It is the path of the directory that contains the Python file that defines the class that is being executed as the app, specifically the Python file that includes ``class MyApp(toga.app):``. In an application containing only a single file, is essentially returning ``Path(__file__).parent``. However, in an application with multiple levels of modules, or when calling a library that is independent of the app, calling ``Path(__file__)`` may not return the expected result, whereas ``app`` will return the same location no matter where it is. It can therefore be used to construct absolute paths based on the app file location within the package. For this to work, we need to package the file with our app. Briefcase guarantees that any file in the project directory (``helloworld/src/helloworld`` in the example project structure shown above), will be included with the packaged app, including the contents of any subdirectories. There are other ways to ensure a file is included - see the :doc:`Sources </reference/api/resources/sources>` documentation for details.
 
-Toga also provides a read-only path location, ``app``, that provides an anchor from the location of the app file, or more specifically, the path of the directory that contains the Python file that defines the class that is being executed as the app. It is essentially returning ``Path(__file__).parent``, however ``app`` will return the same location no matter where you are. It can therefore be used to construct absolute paths based on the app file location within the package.
+Let's build on the previous example to use the ``app`` to locate the file.
 
-These paths are different on every operating system, and Toga guarantees the correct paths will be provided. The paths will be subdirectories found in ``~/Library`` on macOS, XDG-compliant dotfiles in ``~`` on Linux, and ``AppData/`` on Windows.
-
-Let's build on the previous example to use app paths to locate the file.
-
-Create a ``initial_config.toml`` file containing the following content, and place it in the ``resources/`` directory within your Briefcase project:
+Create a ``initial_config.toml`` file containing the following content, and place it in the ``resources/`` directory within the Briefcase project:
 
 .. code-block:: toml
 
@@ -136,7 +129,7 @@ Update ``app.py`` to the following:
 
 This updates the app to add a button that loads the file contents into the text input, instead of loading them automatically.
 
-The most important change is found in the ``load_button_pressed`` handler:
+The most important change is found in the new ``load_button_pressed`` handler:
 
 .. code-block:: python
 
@@ -144,4 +137,84 @@ The most important change is found in the ``load_button_pressed`` handler:
             path = self.paths.app / "resources/initial_config.toml"
             self.text_input.value = path.read_text(encoding="utf-8")
 
-The path to the file is being constructed from the ``self.paths.app`` ``Path`` object, instead of a hard coded path. This means that no matter where the app is being run from, it always knows where to find the file within the package.
+The path to the file is being constructed from the ``self.paths.app`` ``Path`` object, instead of a hard-coded path. This means that no matter where the app is being run from, it always knows where to find the file within the package.
+
+Now when we run the app, it starts successfully. We can click the button, and we'll see the contents of the file loaded into the text input.
+
+We've successfully read from a file packaged within our app. Let's explore how to use app paths to write files to the filesystem.
+
+Writing Files
+=============
+
+So far, we've used ``paths.app``, which should be considered read-only. Toga won't stop you from writing to the app directory, and in testing, it will almost always work. However, once you ship your packaged app in production, writing to the app will fail. The overall reason is permissions, but it is a bit different for each operating system.
+
+- On Windows, you can install an app as a user or for all users. "All users" requires admin privileges, however when you run the app as a user, you are no longer running it as an admin, and you will not be permitted to write to that location.
+- On macOS, the contents of an app are contained within the app bundle. It is a file in a directory, however the contents have been signed and notarised, which cryptographically seals the bundle, and if you try to write to it, you will break that seal and end up with problems running the app.
+- On Unix, even if ``sudo`` is used to install the app, it installs to a directory that the user does not have permissions to write to.
+
+You can read from ``paths.app``, but you shouldn't write to it.
+
+So, what if you want to generate a file through your app and save it? Toga provides four writable paths available for storing files associated with an app:
+
+- ``data``: The location for storing user data.
+- ``config``: The location for storing user configuration data.
+- ``cache``: The location for storing cache files. This should be used only for easily regenerated files as the operating system may purge the contents of this directory without warning.
+- ``logs``: The location for storing log files.
+
+These paths are different on every operating system, and Toga guarantees the correct paths will be provided. The paths will be subdirectories found in ``~/Library`` on macOS, XDG-compliant dotfiles in ``~`` on Linux, and ``AppData/`` on Windows.
+
+Let's build on the current application to generate a config file from the contents of the ``initial_config.toml`` file.
+
+Update the ``ConfigFileCreator`` class in ``app.py`` to the following:
+
+.. code-block:: python
+
+    class ConfigFileCreator(toga.App):
+        def startup(self):
+            self.text_input = toga.MultilineTextInput()
+            self.config_directory = toga.TextInput(readonly=True)
+
+            load_button = toga.Button(
+                text="Load initial config",
+                on_press=self.load_button_pressed,
+                margin=20,
+            )
+            save_button = toga.Button(
+                text="Save user config",
+                on_press=self.save_button_pressed,
+                margin=20,
+            )
+
+            main_box = toga.Box(
+                direction=COLUMN,
+                children=[self.text_input, self.config_directory, load_button, save_button],
+            )
+            self.main_window = toga.MainWindow(content=main_box)
+            self.main_window.show()
+
+        def load_button_pressed(self, button, **kwargs):
+            path = self.paths.app / "resources/initial_config.toml"
+            self.text_input.value = path.read_text(encoding="utf-8")
+
+        def save_button_pressed(self, button, **kwargs):
+            path = self.paths.config / "config.toml"
+            self.config_directory.value = path
+            path.write_text(self.text_input.value, encoding="utf-8")
+
+This change adds a save button, that when pressed, saves the contents of the text input to a ``config.toml`` file in an app-specific subdirectory of the operating-system appropriate config directory, and displays the path to the file below the input.
+
+Run the app and click the "load initial config" button to load the file contents into the text input. Update the variables to whatever you like. Click the save button to generate the file. Use the path displayed below the input to find and view your new config file.
+
+Now that the config file is generated, you may want to update it. You could use the same app to load the contents of ``initial_config.toml`` and update that info to the new configuration, but then you may not know what the previous changes were. Instead, you can tell the app to check for an existing config file, and load the contents of that if it exists.
+
+Update the ``load_button_pressed`` handler in ``app.py`` to the following:
+
+.. code-block:: python
+
+    def load_button_pressed(self, button, **kwargs):
+        path = self.paths.config / "config.toml"
+        if not path.exists():
+            path = self.paths.app / "resources/initial_config.toml"
+        self.text_input.value = path.read_text(encoding="utf-8")
+
+This updates the handler to try to load content from the existing ``config.toml`` file from the config directory, and if the file does not exist, loads the ``initial_config.toml` file contents instead.
