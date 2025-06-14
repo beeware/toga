@@ -2,7 +2,6 @@ import pytest
 
 import toga
 from toga.style import Pack
-from toga.style.pack import RIGHT, SERIF
 
 from .conftest import build_cleanup_test
 from .properties import (  # noqa: F401
@@ -25,6 +24,8 @@ from .properties import (  # noqa: F401
 )
 from .test_textinput import (  # noqa: F401
     placeholder,
+    test_no_event_on_initialization,
+    test_no_event_on_style_change,
     test_on_change_focus,
     test_on_change_programmatic,
     test_on_change_user,
@@ -97,34 +98,3 @@ async def test_scroll_position(widget, probe):
     # The scroll position back at the origin.
     # Due to scroll bounce etc, this might be slightly off 0
     assert probe.vertical_scroll_position == pytest.approx(0.0, abs=10)
-
-
-async def test_no_event_on_initialization(widget, probe, on_change):
-    "The widget don't fire events on initialization."
-    # When the widget is created and added to a box, no on_change event is fired.
-    parent = toga.Box(style=Pack(flex=1))
-    parent.add(widget)
-    await probe.redraw("Widget should not fire events on initialization")
-    on_change.assert_not_called()
-    on_change.reset_mock()
-
-
-async def test_no_event_on_style_change(widget, probe, on_change):
-    "The widget don't fire on_change events on text style changes."
-    # font changes
-    widget.style.font_family = SERIF
-    await probe.redraw("Font style has been changed")
-    on_change.assert_not_called()
-    on_change.reset_mock()
-
-    # text alignment changes
-    widget.style.text_align = RIGHT
-    await probe.redraw("Text alignment has been changed")
-    on_change.assert_not_called()
-    on_change.reset_mock()
-
-    # text color changes
-    widget.style.color = "#0000FF"
-    await probe.redraw("Text color has been changed")
-    on_change.assert_not_called()
-    on_change.reset_mock()
