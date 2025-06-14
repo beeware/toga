@@ -7,6 +7,7 @@ import System.Windows.Forms as WinForms
 from PIL import Image, ImageSequence
 from System.Drawing import Image as WinImage
 from System.IO import MemoryStream
+from toga.colors import TRANSPARENT
 
 from .base import Widget
 
@@ -57,6 +58,7 @@ class ActivityIndicator(Widget):
         self.native = WinForms.PictureBox()
         self.native.SizeMode = WinForms.PictureBoxSizeMode.Zoom
         self._spinner_cache_key = None
+        self._default_background_color = TRANSPARENT
         self.set_spinner_image()
         self.running = False
 
