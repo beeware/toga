@@ -22,6 +22,10 @@ def main():
     print(f"app.paths.logs={app.paths.logs.resolve()}")
     print(f"app.paths.toga={app.paths.toga.resolve()}")
 
+    print(f"app.paths.documents={app.paths.documents}")
+    print(f"app.paths.desktop={app.paths.desktop}")
+    print(f"app.paths.pictures={app.paths.pictures}")
+
 
 if __name__ == "__main__":
     main()
