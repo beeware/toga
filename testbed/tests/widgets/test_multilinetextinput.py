@@ -24,6 +24,8 @@ from .properties import (  # noqa: F401
 )
 from .test_textinput import (  # noqa: F401
     placeholder,
+    test_no_event_on_initialization,
+    test_no_event_on_style_change,
     test_on_change_focus,
     test_on_change_programmatic,
     test_on_change_user,
