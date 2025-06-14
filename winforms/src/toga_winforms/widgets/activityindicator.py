@@ -7,6 +7,7 @@ import System.Windows.Forms as WinForms
 from PIL import Image, ImageSequence
 from System.Drawing import Image as WinImage
 from System.IO import MemoryStream
+
 from toga.colors import TRANSPARENT
 
 from .base import Widget

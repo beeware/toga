@@ -1,0 +1,1 @@
+ActivityIndicator now has a transparent background on Winforms by default.
