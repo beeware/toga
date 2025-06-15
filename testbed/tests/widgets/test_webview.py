@@ -24,8 +24,11 @@ WINDOWS_INIT_TIMEOUT = 60
 
 async def get_content(widget):
     try:
+        # On Apple platforms while a page is still loading, document.body might return
+        # null and cause the call to fail and error.  Handle that by returning None
+        # otherwise.
         return await wait_for(
-            widget.evaluate_javascript("document.body.innerHTML"),
+            widget.evaluate_javascript("document.body ? document.body.innerHTML : null"),
             JS_TIMEOUT,
         )
     except asyncio.TimeoutError:
@@ -350,7 +353,7 @@ async def test_retrieve_cookies(widget, probe, on_load):
 
     # On iOS and macOS, setting a cookie can fail if it's done too soon after page load.
     # Try a couple of times to make sure the cookie is actually set.
-    for i in range(0, 5):
+    for i in range(0, 10):
         # JavaScript expression to set a cookie and return the current cookies
         expression = """
         (function setCookie() {
