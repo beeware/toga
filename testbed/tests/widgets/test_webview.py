@@ -30,9 +30,7 @@ async def get_content(widget):
     # cause an asyncio timeout error. This also avoids the error on Android by
     # returning null if there's no document.body.
     return await wait_for(
-        widget.evaluate_javascript(
-            "document.body ? document.body.innerHTML : null"
-        ),
+        widget.evaluate_javascript("document.body ? document.body.innerHTML : null"),
         JS_TIMEOUT,
     )
 
