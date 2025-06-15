@@ -1,8 +1,13 @@
 import json
 from http.cookiejar import CookieJar
 
-from android.webkit import ValueCallback, WebView as A_WebView, WebViewClient
-from java import dynamic_proxy
+from android.webkit import (
+    ValueCallback,
+    WebResourceRequest,
+    WebView as A_WebView,
+    WebViewClient,
+)
+from java import Override, dynamic_proxy, jboolean, static_proxy
 
 from toga.widgets.webview import CookiesResult, JavaScriptResult
 
@@ -23,6 +28,22 @@ class ReceiveString(dynamic_proxy(ValueCallback)):
         self.result.set_result(res)
 
 
+class TogaWebClient(static_proxy(WebViewClient)):
+    def __init__(self, impl):
+        super().__init__()
+        self.webview_impl = impl
+
+    @Override(jboolean, [A_WebView, WebResourceRequest])
+    def shouldOverrideUrlLoading(self, webview, webresourcerequest):
+        if self.webview_impl.interface.on_navigation_starting:
+            allow = self.webview_impl.interface.on_navigation_starting(
+                webresourcerequest.getUrl().toString()
+            )
+            if not allow:
+                return True
+        return False
+
+
 class WebView(Widget):
     SUPPORTS_ON_WEBVIEW_LOAD = False
 
@@ -30,7 +51,8 @@ class WebView(Widget):
         self.native = A_WebView(self._native_activity)
         # Set a WebViewClient so that new links open in this activity,
         # rather than triggering the phone's web browser.
-        self.native.setWebViewClient(WebViewClient())
+        client = TogaWebClient(self)
+        self.native.setWebViewClient(client)
 
         self.settings = self.native.getSettings()
         self.default_user_agent = self.settings.getUserAgentString()

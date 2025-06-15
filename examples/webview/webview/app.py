@@ -1,9 +1,13 @@
+import asyncio
+
 import toga
 from toga.constants import COLUMN, ROW
 from toga.style import Pack
 
 
 class ExampleWebView(toga.App):
+    allowed_base_url = "https://beeware.org/"
+
     async def on_do_async_js(self, widget, **kwargs):
         self.label.text = repr(await self.webview.evaluate_javascript("2 + 2"))
 
@@ -21,6 +25,24 @@ class ExampleWebView(toga.App):
 
     def on_webview_load(self, widget, **kwargs):
         self.label.text = "www loaded!"
+
+    def on_navigation_starting_sync(self, widget, url):
+        print(f"on_navigation_starting_sync: {url}")
+        allow = True
+        if not url.startswith(self.allowed_base_url):
+            allow = False
+            message = f"Navigation not allowed to: {url}"
+            dialog = toga.InfoDialog("on_navigation_starting()", message)
+            asyncio.create_task(self.dialog(dialog))
+        return allow
+
+    async def on_navigation_starting_async(self, widget, url):
+        print(f"on_navigation_starting_async: {url}")
+        if not url.startswith(self.allowed_base_url):
+            message = f"Do you want to allow navigation to: {url}"
+            dialog = toga.QuestionDialog("on_navigation_starting_async()", message)
+            return await self.main_window.dialog(dialog)
+        return True
 
     def on_set_url(self, widget, **kwargs):
         self.label.text = "Loading page..."
@@ -91,6 +113,8 @@ class ExampleWebView(toga.App):
             url="https://beeware.org/",
             on_webview_load=self.on_webview_load,
             style=Pack(flex=1),
+            # on_navigation_starting=self.on_navigation_starting_async,
+            on_navigation_starting=self.on_navigation_starting_sync,
         )
 
         box = toga.Box(
