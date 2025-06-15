@@ -23,21 +23,18 @@ WINDOWS_INIT_TIMEOUT = 60
 
 
 async def get_content(widget):
-    try:
-        # On Apple platforms while a page is still loading, document.body might return
-        # null and cause the call to fail and error.  Handle that by returning None
-        # otherwise.
-        return await wait_for(
-            widget.evaluate_javascript(
-                "document.body ? document.body.innerHTML : null"
-            ),
-            JS_TIMEOUT,
-        )
-    except asyncio.TimeoutError:
-        # On Android, if you call evaluate_javascript while a page is loading, the
-        # callback may never be called. This seems to be associated with the log message
-        # "Uncaught TypeError: Cannot read property 'innerHTML' of null".
-        return None
+    # On Apple platforms while a page is still loading, document.body might return
+    # null and cause the call to fail and error.  Handle that by returning None
+    # otherwise.
+    # On Android, if the same error happens, the callback will not be called and
+    # cause an asyncio timeout error. This also avoids the error on Android by
+    # returning null if there's no document.body.
+    return await wait_for(
+        widget.evaluate_javascript(
+            "document.body ? document.body.innerHTML : null"
+        ),
+        JS_TIMEOUT,
+    )
 
 
 async def assert_content_change(widget, probe, message, url, content, on_load):
