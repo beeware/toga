@@ -28,7 +28,9 @@ async def get_content(widget):
         # null and cause the call to fail and error.  Handle that by returning None
         # otherwise.
         return await wait_for(
-            widget.evaluate_javascript("document.body ? document.body.innerHTML : null"),
+            widget.evaluate_javascript(
+                "document.body ? document.body.innerHTML : null"
+            ),
             JS_TIMEOUT,
         )
     except asyncio.TimeoutError:
