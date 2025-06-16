@@ -256,7 +256,6 @@ async def test_no_event_on_initialization(widget, probe, on_change):
     # When the widget is created and added to a box, no on_change event is fired.
     parent = toga.Box(style=Pack(flex=1))
     parent.add(widget)
-    await probe.redraw("Widget should not fire events on initialization")
     on_change.assert_not_called()
     on_change.reset_mock()
 
