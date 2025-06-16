@@ -204,9 +204,8 @@ APP_METADATA = {
         ),
     ],
 )
-def test_create(
+async def test_create(
     monkeypatch,
-    event_loop,
     kwargs,
     metadata,
     main_module,
@@ -268,7 +267,7 @@ def test_bad_app_creation(kwargs, exc_type, message):
         toga.App(**kwargs)
 
 
-def test_app_metadata(monkeypatch, event_loop):
+async def test_app_metadata(monkeypatch):
     """An app can load metadata from the .dist-info file."""
     monkeypatch.setattr(
         importlib.metadata,
@@ -300,7 +299,7 @@ def test_app_metadata(monkeypatch, event_loop):
     assert app.is_bundled is False
 
 
-def test_explicit_app_metadata(monkeypatch, event_loop):
+async def test_explicit_app_metadata(monkeypatch):
     """App metadata can be provided explicitly, overriding module-level metadata."""
     monkeypatch.setattr(
         importlib.metadata,
@@ -345,7 +344,7 @@ def test_explicit_app_metadata(monkeypatch, event_loop):
 
 
 @pytest.mark.parametrize("construct", [True, False])
-def test_icon_construction(app, construct, event_loop):
+async def test_icon_construction(app, construct):
     """The app icon can be set during construction."""
     if construct:
         icon = toga.Icon("path/to/icon")
@@ -446,7 +445,7 @@ def test_change_invalid_main_window(app):
     assert_action_not_performed(app, "set_main_window")
 
 
-def test_change_invalid_creation_main_window(event_loop):
+async def test_change_invalid_creation_main_window():
     """If the new main window value provided at creation isn't valid,
     an exception is raised."""
 
@@ -471,7 +470,7 @@ def test_change_invalid_creation_main_window(event_loop):
         [{}, {}],  # Two windows
     ],
 )
-def test_presentation_mode_with_windows_list(event_loop, windows):
+async def test_presentation_mode_with_windows_list(windows):
     """The app can enter presentation mode with a windows list."""
     app = toga.App(formal_name="Test App", app_id="org.example.test")
     windows_list = [toga.Window() for window in windows]
@@ -505,7 +504,7 @@ def test_presentation_mode_with_windows_list(event_loop, windows):
         [{}, {}],  # Two windows
     ],
 )
-def test_presentation_mode_with_screen_window_dict(event_loop, windows):
+async def test_presentation_mode_with_screen_window_dict(windows):
     """The app can enter presentation mode with a screen-window paired dict."""
     app = toga.App(formal_name="Test App", app_id="org.example.test")
     screen_window_dict = {
@@ -535,7 +534,7 @@ def test_presentation_mode_with_screen_window_dict(event_loop, windows):
         )
 
 
-def test_presentation_mode_with_excess_windows_list(event_loop):
+async def test_presentation_mode_with_excess_windows_list():
     """Entering presentation mode limits windows to available displays."""
     app = toga.App(formal_name="Test App", app_id="org.example.test")
     window1 = toga.Window()
@@ -582,7 +581,7 @@ def test_presentation_mode_with_excess_windows_list(event_loop):
     )
 
 
-def test_presentation_mode_with_some_windows(event_loop):
+async def test_presentation_mode_with_some_windows():
     """The app can enter presentation mode for some windows while others stay normal."""
     app = toga.App(formal_name="Test App", app_id="org.example.test")
     window1 = toga.Window()
@@ -622,7 +621,7 @@ def test_presentation_mode_with_some_windows(event_loop):
     assert window2.state != WindowState.PRESENTATION
 
 
-def test_presentation_mode_no_op(event_loop):
+async def test_presentation_mode_no_op():
     """Entering presentation mode with invalid conditions is a no-op."""
     app = toga.App(formal_name="Test App", app_id="org.example.test")
 
@@ -672,7 +671,7 @@ def test_show_hide_cursor(app):
     assert_action_performed(app, "show_cursor")
 
 
-def test_startup_method(event_loop):
+async def test_startup_method():
     """If an app provides a startup method, it will be invoked during startup."""
 
     def startup_assertions(app):
@@ -721,7 +720,7 @@ def test_startup_method_returns_none():
         )
 
 
-def test_startup_subclass(event_loop):
+async def test_startup_subclass():
     """App can be subclassed."""
 
     class SubclassedApp(toga.App):
@@ -750,7 +749,7 @@ def test_startup_subclass(event_loop):
     assert app._impl.n_menu_items == 3
 
 
-def test_startup_subclass_no_main_window(event_loop):
+async def test_startup_subclass_no_main_window():
     """If a subclassed app doesn't define a main window, an error is raised."""
 
     class SubclassedApp(toga.App):
@@ -761,7 +760,7 @@ def test_startup_subclass_no_main_window(event_loop):
         SubclassedApp(formal_name="Test App", app_id="org.example.test")
 
 
-def test_startup_subclass_unknown_main_window(event_loop):
+async def test_startup_subclass_unknown_main_window():
     """If a subclassed app uses an unknown main window type, an error is raised"""
 
     class SubclassedApp(toga.App):
@@ -778,7 +777,7 @@ def test_about(app):
     assert_action_performed(app, "show_about_dialog")
 
 
-def test_visit_homepage(monkeypatch, event_loop):
+async def test_visit_homepage(monkeypatch):
     """The app's homepage can be opened."""
     app = toga.App(
         formal_name="Test App",
@@ -913,13 +912,13 @@ def test_no_exit_last_window_close(app):
     assert_action_performed(app, "exit")
 
 
-def test_loop(app, event_loop):
+async def test_loop(app):
     """The main thread's event loop can be accessed."""
     assert isinstance(app.loop, asyncio.AbstractEventLoop)
-    assert app.loop is event_loop
+    assert app.loop is asyncio.get_running_loop()
 
 
-def test_running(event_loop):
+def test_running():
     """The running() method is invoked when the main loop starts"""
     running = {}
 
@@ -939,7 +938,7 @@ def test_running(event_loop):
     assert running["called"]
 
 
-def test_async_running_method(event_loop):
+def test_async_running_method():
     """The running() method can be a coroutine."""
     running = {}
 
@@ -987,7 +986,7 @@ def test_deprecated_background_task(app):
     canary.assert_called_once()
 
 
-def test_deprecated_full_screen(event_loop):
+async def test_deprecated_full_screen():
     """The app can be put into full screen mode using the deprecated API."""
     app = toga.App(formal_name="Test App", app_id="org.example.test")
     app.main_window.content = toga.Box()
@@ -1116,7 +1115,7 @@ def test_deprecated_full_screen(event_loop):
     )
 
 
-def test_deprecated_set_empty_full_screen_window_list(event_loop):
+async def test_deprecated_set_empty_full_screen_window_list():
     """Setting the full screen window list to [] is an explicit exit."""
     app = toga.App(formal_name="Test App", app_id="org.example.test")
     app.main_window.content = toga.Box()

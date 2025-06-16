@@ -81,7 +81,7 @@ class ExampleDocumentApp(toga.App):
 
 
 @pytest.fixture
-def doc_app(monkeypatch, event_loop, example_file):
+async def doc_app(monkeypatch, example_file):
     # Create an instance of an ExampleDocumentApp that has 1 file open.
     monkeypatch.setattr(sys, "argv", ["app-exe", str(example_file)])
     app = ExampleDocumentApp(
@@ -1068,7 +1068,7 @@ def test_save_all_menu(doc_app, example_file, tmp_path):
     assert second_doc.title == "Example Document: filename2"
 
 
-def test_deprecated_document_app(monkeypatch, event_loop, example_file):
+async def test_deprecated_document_app(monkeypatch, example_file):
     """The deprecated API for creating Document-based apps still works."""
 
     class DeprecatedDocumentApp(toga.DocumentApp):
