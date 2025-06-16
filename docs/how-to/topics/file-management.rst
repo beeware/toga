@@ -2,7 +2,7 @@
 File Management
 ===============
 
-File management works differently in packaged app than it does in the Python interpreter. Toga's app paths feature is designed to provide a straightforward way to read and write files from a packaged app.
+In order to read and write files in a Python project, you need to be able to specify the location of the file you want to use. However, when you're deploying Python code as a packaged app, specifying that location is more complex than it would be when running Python code through the interpreter, or at an interactive Python prompt. Toga's app paths feature is designed to provide a way to reliably locate files, regardless of how an app is deployed.
 
 For this guide, we're going to use Briefcase as packaging our application, however the same path-related issues outlined here exist regardless of what tool you use, including Setuptools, py2app, PyInstaller, and so on.
 
