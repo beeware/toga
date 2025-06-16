@@ -57,7 +57,7 @@ def test_create_document(app):
     doc.main_window.hide.assert_called_once_with()
 
 
-def test_no_description(event_loop):
+async def test_no_description():
     """If a document class doesn't define a description, an error is raised."""
 
     class BadDoc(toga.Document):
@@ -78,7 +78,7 @@ def test_no_description(event_loop):
         )
 
 
-def test_no_extensions(event_loop):
+async def test_no_extensions():
     """If a document class doesn't define extensions, an error is raised."""
 
     class BadDoc(toga.Document):
@@ -101,7 +101,7 @@ def test_no_extensions(event_loop):
         )
 
 
-def test_empty_extensions(event_loop):
+async def test_empty_extensions():
     """If a document class doesn't define extensions, an error is raised."""
 
     class BadDoc(toga.Document):
