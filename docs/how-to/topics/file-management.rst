@@ -35,7 +35,7 @@ The ``pathlib`` module, from the Python standard library, provides several absol
 
 Let's take a look at an example of reading file contents from a file using the basic method to construct an absolute path.
 
-Create a `new Briefcase project <https://docs.beeware.org/en/latest/tutorial/tutorial-1.html>`__. Update ``app.py`` in the project to the following:
+Create a new Briefcase project (for a refresher on how to do this, see `the BeeWare tutorial <https://docs.beeware.org/en/latest/tutorial/tutorial-1.html>`__). Once you've created that project. update ``app.py`` in the project to contain the following:
 
 .. code-block:: python
 
