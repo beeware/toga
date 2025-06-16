@@ -64,7 +64,7 @@ Create a new Briefcase project (for a refresher on how to do this, see `the BeeW
     def main():
         return ConfigFileCreator()
 
-This creates a multiline text input and automatically loads the contents of an ``initial_config.toml`` file into the text input. The file content is read from the file using ``pathlib.Path().read_text()`` with a hard-coded file path.
+This creates a multiline text input and automatically loads the contents of an ``initial_config.toml`` file into the text input. The file content is read from the file using ``pathlib.Path().read_text()`` with a hard-coded *absolute* file path.
 
 Now, if we run ``briefcase dev``, the app will fail to start, resulting in a ``FileNotFoundError``. This version worked great on Brutus' computer. However, the moment we try to start the app on a different machine, the path is no longer valid, and it will fail to run when it can't find the file.
 
