@@ -77,10 +77,6 @@ class WebView(Widget):
         # If URL is allowed by user interaction or user on_navigation_starting
         # handler, the count will be set to 0
         self._url_count = 0
-        # For passing the requested URL to the cleanup method of
-        # the user on_navigation_starting async handler. Stays to None for synchronous
-        # handlers
-        self._requested_url = None
 
         # Set the load handler before loading the first URL.
         self.on_webview_load = on_webview_load
@@ -148,32 +144,34 @@ class WebView(Widget):
         return self._on_navigation_starting
 
     @on_navigation_starting.setter
-    def on_navigation_starting(self, handler, url=url):
+    def on_navigation_starting(self, handler, url=None):
         """Set the handler to invoke when the webview starts navigating"""
+
+        def cleanup(widget, result):
+            try:
+                msg = f"on_navigation_starting.cleanup, url={url}, "
+                msg += f"result={str(result)}"
+                print(msg)
+                print(f"widget._requested_url={widget._requested_url}")
+                if url is None:
+                    # The user on_navigation_handler is synchronous - do nothing
+                    return
+                if result is True:
+                    print(f"Navigating to {url}")
+                    # navigate to the url, the URL will automatically be marked
+                    # as allowed
+                    self.url = url
+            except Exception as ex:
+                print(f"on_navigation_starting.cleanup exception: {str(ex)}")
+
         self._on_navigation_starting = None
         if handler:
             if not getattr(self._impl, "SUPPORTS_ON_NAVIGATION_STARTING", True):
                 self.factory.not_implemented("WebView.on_navigation_starting")
                 return
             self._on_navigation_starting = wrapped_handler(
-                self, handler, cleanup=self.on_navigation_starting_callback
+                self, handler, cleanup=cleanup
             )
-
-    def on_navigation_starting_callback(self, widget, result):
-        try:
-            url = widget._requested_url
-            msg = f"on_navigation_starting_callback, url={url}, "
-            msg += f"result={str(result)}"
-            print(msg)
-            if url is None:
-                # The user on_navigation_handler is synchronous - do nothing
-                return
-            if result is True:
-                print(f"Navigating to {url}")
-                # navigate to the url, the URL will automatically be marked as allowed
-                self.url = url
-        except Exception as ex:
-            print(f"on_navigation_starting_callback exception: {str(ex)}")
 
     @property
     def on_webview_load(self) -> OnWebViewLoadHandler:
