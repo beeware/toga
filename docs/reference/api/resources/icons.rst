@@ -77,6 +77,14 @@ the console, and return :attr:`~toga.Icon.DEFAULT_ICON`. The only exception to t
 if an icon file is *found*, but it cannot be loaded (e.g., due to a file format or
 permission error). In this case, an error will be raised.
 
+Notes
+-----
+
+* On some platforms, GTK may not provide a loader to handle ICO icons by default. The
+  name of the system package that provides the ICO loader is distribution dependent:
+
+  - Fedora: ``gdk-pixbuf2-modules-extra``
+
 Reference
 ---------
 
