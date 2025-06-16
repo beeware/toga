@@ -1,0 +1,1 @@
+MultilineTextInput widget will no longer fire ``on_change`` events during creation on Windows.
