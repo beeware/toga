@@ -8,7 +8,7 @@ import System.Windows.Forms as WinForms
 from System import Action
 from System.Threading.Tasks import Task
 
-from .wrapper import WeakrefCallable
+from toga.handlers import WeakrefCallable
 
 
 class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
