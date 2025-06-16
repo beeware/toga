@@ -252,7 +252,7 @@ async def test_undo_redo(widget, probe):
 
 
 async def test_no_event_on_initialization(widget, probe, on_change):
-    "The widget don't fire events on initialization."
+    "The widget doesn't fire events on initialization."
     # When the widget is created and added to a box, no on_change event is fired.
     parent = toga.Box(style=Pack(flex=1))
     parent.add(widget)
@@ -261,7 +261,7 @@ async def test_no_event_on_initialization(widget, probe, on_change):
 
 
 async def test_no_event_on_style_change(widget, probe, on_change):
-    "The widget don't fire on_change events on text style changes."
+    "The widget doesn't fire on_change events on text style changes."
     # font changes
     widget.style.font_family = SERIF
     await probe.redraw("Font style has been changed")

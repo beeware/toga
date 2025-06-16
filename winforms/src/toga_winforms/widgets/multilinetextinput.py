@@ -28,7 +28,7 @@ class MultilineTextInput(TextInput):
         self.set_color(None)
 
         # Used to track the text value, so it is possible to determine if the text
-        # has changed since the last time the on_change event is triggered.
+        # has changed since the last time the on_change event was triggered.
         self._text_history = ""
 
     def winforms_got_focus(self, sender, event):
