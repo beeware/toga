@@ -80,8 +80,9 @@ permission error). In this case, an error will be raised.
 Notes
 -----
 
-* On some platforms, GTK may not provide a loader to handle ICO icons by default. The
-  name of the system package that provides the ICO loader is distribution dependent:
+* On some Linux distributions, GTK may not provide a loader to handle ICO icons by
+  default. The name of the system package that provides the ICO loader is distribution
+  dependent:
 
   - Fedora: ``gdk-pixbuf2-modules-extra``
 
