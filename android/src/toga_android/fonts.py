@@ -36,11 +36,10 @@ class Font:
             # Check for a system font.
             try:
                 self.native_typeface = {
-                    # None is left as a placeholder.
                     # The default button font is not marked as bold, but it has a weight
                     # of "medium" (500), which is in between "normal" (400), and "bold"
-                    # (600 or 700). To preserve this, we use the widget's original
-                    # typeface as a starting point rather than Typeface.DEFAULT.
+                    # (600 or 700). To preserve this, we interpret SYSTEM as the 
+                    # widget's original typeface.
                     SYSTEM: None,
                     MESSAGE: Typeface.DEFAULT,
                     SERIF: Typeface.SERIF,
