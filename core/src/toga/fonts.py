@@ -35,8 +35,6 @@ _REGISTERED_FONT_CACHE: dict[tuple[str, str, str, str], str] = {}
 class UnknownFontError(Exception):
     """Raised when an unknown font family is requested."""
 
-    pass
-
 
 class Font(BaseFont):
     def __init__(
