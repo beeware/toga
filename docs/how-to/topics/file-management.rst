@@ -16,22 +16,24 @@ If you've worked with accessing files in Python, you're probably used to being a
     with open("file.txt") as f:
         f.read()
 
-Python defaults to looking in the current working directory (the directory from which the script is being run), and all path access from this is implicit. You are able to use relative paths to point to a location. This might even work with simple Toga scripts. However, when you get into packaging applications, things change.
+This is an example of a relative path, meaning Python is expecting ``file.txt`` to be in a specific location relative to the Python program itself. Python defaults to looking in the *current working directory*, that is, the directory from which the program is being run. You are able to use relative paths to point to a file based on that location. However, this means the same relative path will point to a different location if the program is run from a different directory.
 
-A packaged app can be run from anywhere on a computer. You can package file content into an app, but there's still no guarantee of the location it will be installed or run.
+Absolute paths are the full path to a location, constructed using the root directory of the file system as the anchor (``/`` on macOS and Linux, and ``C:\`` on Windows). They do not rely on the location of the Python program or app, and they are valid from anywhere in the file system. At runtime, a relative path is resolved to an absolute path, constructed using the current working directory as the anchor.
 
-So, if relative paths won't work in this situation, what can we do? We need to use absolute paths.
+Relative paths might work with simple Toga scripts. However, when you get into packaging applications, things change. When you double-click on an icon to run an app, what directory is considered the current working directory? Is it the directory containing the app bundle? Is it the directory in the app bundle that holds the executable? There isn't a solid answer. The question we really need to answer is, how can we reliably tell an app where to look for file content?
+
+If we can't rely on the current working directory to construct relative paths, what *can* we use? We need to use absolute paths.
 
 Absolute paths
 ==============
 
-Unlike relative paths, absolute paths do not rely on the location of the Python program or application. They provide the full path of the file. There are multiple ways to construct absolute paths in Python.
+There are multiple ways to construct absolute paths in Python.
 
 The most basic method is to spell out the entire path. For example, on macOS or Unix, to access ``file.txt`` in a directory called ``file_directory`` in your home directory, you could use ``~/file_directory/file.txt``.
 
 In any Python file, ``__file__`` resolves to the absolute path to the location of file being executed, provided as a string. We can use this to construct paths; for example, ``Path(__file__).parent`` is the parent directory of the currently running Python program.
 
-The ``pathlib`` module, from the Python standard library, provides several absolute path options including ``Path.cwd()``, which is a path to the current working directory, and ``Path.home()``, which is a path to your home directory.
+The ``pathlib`` module, from the Python standard library, provides several absolute path options including ``Path.cwd()``, which is the path to the current working directory, and ``Path.home()``, which is the path to your home directory.
 
 Let's take a look at an example of reading file contents from a file using the basic method to construct an absolute path.
 
@@ -96,7 +98,7 @@ You might be thinking, the issue is that the file is not located in the applicat
 
 One possible option is in the top level ``configfilecreator/`` directory, as that's the location from which we actually run the app. This may have been what Brutus was intending with the path they specified. While we could point our code to this location as an absolute path, we will still run into the problem when running the app from anywhere else but our own computer.
 
-A second possible option might be to put the file in ``configfilecreator/src/configfilecreator`` because that's where the ``app.py`` file is. After all, Python bases file access on the directory from which the program is being run. This second option does ensure Briefcase packages the file with the app. However, apps can be run from anywhere on a computer, so it still doesn't guarantee a consistent path.
+A second possible option might be to put the file in ``configfilecreator/src/configfilecreator`` because that's where the ``app.py`` file is. After all, Python bases file access on the directory from which the program is being run. While the second option does ensure Briefcase packages the file with the app, it still doesn't guarantee a consistent path.
 
 To avoid the possibility of either of the above happening accidentally, Briefcase sets the current working directory to elsewhere so we aren't caught by this issue.
 
@@ -128,7 +130,7 @@ App paths
 
 Toga includes an :doc:`app paths <../../reference/api/resources/app_paths>` feature that provides a selection of known locations on the user's computer. Provided as ``pathlib.Path`` objects, they are known-safe locations for reading and writing files, that are specific to each operating system. Each user running an application will have their own unique app paths.
 
-The read-only path location, ``paths.app``, provides an anchor from the location of the app file. It can therefore be used to construct absolute paths based on the app file location within the package. For this to work, we need to package the file with our app. Briefcase guarantees that any file in the project directory (``configfilecreator/src/configfilecreator`` in the example project structure shown above), will be included with the packaged app, including the contents of any subdirectories. There are other ways to ensure a file is included - see the :doc:`Source <../../reference/api/resources/sources/source>` documentation for details.
+The read-only path location, ``paths.app``, provides an anchor from the location of the app file. [#f1]_ It can therefore be used to construct absolute paths based on the app file location within the package. For this to work, we need to package the file with our app. Briefcase guarantees that any file in the project directory (``configfilecreator/src/configfilecreator`` in the example project structure shown above), will be included with the packaged app, including the contents of any subdirectories. There are other ways to ensure a file is included - see the :doc:`Source <../../reference/api/resources/sources/source>` documentation for details.
 
 Let's build on the previous example to use the ``paths.app`` to locate the file.
 
