@@ -85,7 +85,7 @@ class Font:
         if self.interface.style in {ITALIC, OBLIQUE}:
             self.native_style |= Typeface.ITALIC
 
-    def typeface(self, default=Typeface.DEFAULT):
+    def typeface(self, *, default=Typeface.DEFAULT):
         """Return the appropriate native Typeface object."""
         typeface = default if self.native_typeface is None else self.native_typeface
 
