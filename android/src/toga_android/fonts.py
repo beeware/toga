@@ -31,14 +31,14 @@ class Font:
         # Check for a cached typeface.
         try:
             self.native_typeface = _FONT_CACHE[self.interface]
-        except KeyError:
 
+        except KeyError:
             # Check for a system font.
             try:
                 self.native_typeface = {
                     # The default button font is not marked as bold, but it has a weight
                     # of "medium" (500), which is in between "normal" (400), and "bold"
-                    # (600 or 700). To preserve this, we interpret SYSTEM as the 
+                    # (600 or 700). To preserve this, we interpret SYSTEM as the
                     # widget's original typeface.
                     SYSTEM: None,
                     MESSAGE: Typeface.DEFAULT,
@@ -51,8 +51,8 @@ class Font:
                     FANTASY: Typeface.create("fantasy", Typeface.NORMAL),
                     CURSIVE: Typeface.create("cursive", Typeface.NORMAL),
                 }[interface.family]
-            except KeyError:
 
+            except KeyError:
                 # Check for a user-registered font.
                 font_key = self.interface._registered_font_key(
                     self.interface.family,
@@ -62,13 +62,13 @@ class Font:
                 )
                 try:
                     font_path = _REGISTERED_FONT_CACHE[font_key]
-                except KeyError:
 
+                except KeyError:
                     # No, not a user-registered font
                     raise UnknownFontError(f"Unknown font '{self.interface}'")
 
-                # Yes, user has indeed registered this font.
                 else:
+                    # Yes, user has registered this font.
                     if Path(font_path).is_file():
                         self.native_typeface = Typeface.createFromFile(font_path)
                         if self.native_typeface is Typeface.DEFAULT:
