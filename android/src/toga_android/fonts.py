@@ -28,20 +28,20 @@ class Font:
     def __init__(self, interface):
         self.interface = interface
 
-        # 1. Check for a cached typeface.
+        # Check for a cached typeface.
         try:
             self.native_typeface = _FONT_CACHE[self.interface]
         except KeyError:
 
-            # 2. Check for a system font.
+            # Check for a system font.
             try:
                 self.native_typeface = {
-                    # SYSTEM is left as a placeholder.
+                    # None is left as a placeholder.
                     # The default button font is not marked as bold, but it has a weight
                     # of "medium" (500), which is in between "normal" (400), and "bold"
                     # (600 or 700). To preserve this, we use the widget's original
                     # typeface as a starting point rather than Typeface.DEFAULT.
-                    SYSTEM: SYSTEM,
+                    SYSTEM: None,
                     MESSAGE: Typeface.DEFAULT,
                     SERIF: Typeface.SERIF,
                     SANS_SERIF: Typeface.SANS_SERIF,
@@ -54,7 +54,7 @@ class Font:
                 }[interface.family]
             except KeyError:
 
-                # 3. Check for a user-registered font.
+                # Check for a user-registered font.
                 font_key = self.interface._registered_font_key(
                     self.interface.family,
                     weight=self.interface.weight,
@@ -65,10 +65,10 @@ class Font:
                     font_path = _REGISTERED_FONT_CACHE[font_key]
                 except KeyError:
 
-                    # 3a. Not a user-registered font
+                    # No, not a user-registered font
                     raise UnknownFontError(f"Unknown font '{self.interface}'")
 
-                # 3b. User has indeed registered this font.
+                # Yes, user has indeed registered this font.
                 else:
                     if Path(font_path).is_file():
                         self.native_typeface = Typeface.createFromFile(font_path)
@@ -86,9 +86,12 @@ class Font:
             self.native_style |= Typeface.ITALIC
 
     def typeface(self, default=Typeface.DEFAULT):
-        typeface = default if self.native_typeface == SYSTEM else self.native_typeface
+        """Return the appropriate native Typeface object."""
+        typeface = default if self.native_typeface is None else self.native_typeface
 
         if self.native_style != typeface.getStyle():
+            # While we're not caching this result, Android does its own caching of
+            # different styles of the same Typeface.
             typeface = Typeface.create(typeface, self.native_style)
 
         return typeface

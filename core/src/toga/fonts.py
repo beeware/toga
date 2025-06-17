@@ -33,6 +33,8 @@ _REGISTERED_FONT_CACHE: dict[tuple[str, str, str, str], str] = {}
 
 
 class UnknownFontError(Exception):
+    """Raised when an unknown font family is requested."""
+
     pass
 
 
@@ -57,6 +59,12 @@ class Font(BaseFont):
         :param weight: The :ref:`font weight <pack-font-weight>`.
         :param style: The :ref:`font style <pack-font-style>`.
         :param variant: The :ref:`font variant <pack-font-variant>`.
+
+        :raises UnknownFontError: If the font family requested corresponds to neither
+            one of the :ref:`built-in system fonts <pack-font-family>` nor a
+            user-registered font.
+        :raises ValueError: If a user-registered font is used, but the file specified
+            either doesn't exist or a font can't be successfully loaded from it.
         """
         super().__init__(family, size, weight=weight, style=style, variant=variant)
         self.factory = get_platform_factory()

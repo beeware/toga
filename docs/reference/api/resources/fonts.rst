@@ -85,3 +85,4 @@ Reference
 ---------
 
 .. autoclass:: toga.Font
+.. autoexception:: toga.fonts.UnknownFontError

@@ -231,7 +231,7 @@ Defines the natural direction of horizontal content.
 **Initial value:** ``[system]``
 
 A list defining possible font families, in order of preference: the first item that maps
-to a valid font will be used. If the none can be resolved, the system font will be
+to a valid font will be used. If none can be resolved, the system font will be
 used. Setting to a single string value is the same as setting to a list containing that
 string as the only item.
 
