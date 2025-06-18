@@ -11,7 +11,6 @@
 # serve to show the default.
 
 import os
-import sys
 from importlib.metadata import version as metadata_version
 
 # If extensions (or modules to document with autodoc) are in another directory,
@@ -35,6 +34,7 @@ extensions = [
     "sphinx_toolbox.more_autodoc.autonamedtuple",
     "sphinx_toolbox.more_autodoc.autoprotocol",
     "sphinx.ext.intersphinx",
+    "sphinxcontrib.spelling",
 ]
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
@@ -358,8 +358,6 @@ texinfo_documents = [
 
 # Spelling check needs an additional module that is not installed by default.
 # Add it only if spelling check is requested so docs can be generated without it.
-if "spelling" in sys.argv:
-    extensions.append("sphinxcontrib.spelling")
 
 # Spelling language.
 spelling_lang = "en_US"

@@ -1,0 +1,1 @@
+Adds File Management guide on how to handle file access with Toga's app paths.
