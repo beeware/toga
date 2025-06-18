@@ -2,22 +2,22 @@
 The Pack Style Engine
 =====================
 
-Toga's default style engine, **Pack**, is a layout algorithm based around the
-idea of packing boxes inside boxes. Each box specifies a direction for its
-children, and each child specifies how it will consume the available space -
-either as a specific width, or as a proportion of the available width. Other
-properties exist to control color, text alignment and so on.
+Toga's default style engine, **Pack**, is a layout algorithm based around the idea of
+packing boxes inside boxes. Each box specifies a direction for its children, and each
+child specifies how it will consume the available space - either as a specific width,
+or as a proportion of the available width. Other properties exist to control color,
+text alignment and so on.
 
-It is similar in some ways to the CSS Flexbox algorithm; but dramatically
-simplified, as there is no allowance for overflowing boxes.
+It is similar in some ways to the CSS Flexbox algorithm; but dramatically simplified, as
+there is no allowance for overflowing boxes.
 
 .. note::
 
-   The string values defined here are the string literals that the Pack
-   algorithm accepts. These values are also pre-defined as Python constants in
-   the ``toga.style.pack`` module with the same name; however, following Python
-   style, the constants use upper case and dashes are underscores. For example, the
-   Python constant ``toga.style.pack.SANS_SERIF`` evaluates as the string literal
+   The string values defined here are the string literals that the Pack algorithm
+   accepts. These values are also pre-defined as Python constants in the
+   ``toga.style.pack`` module with the same name; however, following Python style, the
+   constants use upper case and dashes are underscores. For example, the Python
+   constant ``toga.style.pack.SANS_SERIF`` evaluates as the string literal
    ``"sans-serif"``. (The constant ``NONE``, or ``"none"``, is distinct from Python's
    ``None``.)
 
@@ -39,11 +39,10 @@ Pack style properties
 
 **Initial value:** ``"pack"``
 
-Used to define how to display the widget. A value of ``"pack"`` will apply
-the pack layout algorithm to this node and its descendants. A value of
-``"none"`` removes the widget from the layout entirely. Space will be allocated
-for the widget as if it were there, but the widget itself will not be
-visible.
+Used to define how to display the widget. A value of ``"pack"`` will apply the pack
+layout algorithm to this node and its descendants. A value of ``"none"`` removes the
+widget from the layout entirely. Space will be allocated for the widget as if it were
+there, but the widget itself will not be visible.
 
 ``visibility``
 --------------
@@ -52,15 +51,15 @@ visible.
 
 **Initial value:** ``"visible"``
 
-Used to define whether the widget should be drawn. A value of ``"visible"`` means
-the widget will be displayed. A value of ``"hidden"`` removes the widget from
-view, but allocates space for the widget as if it were still in the layout.
+Used to define whether the widget should be drawn. A value of ``"visible"`` means the
+widget will be displayed. A value of ``"hidden"`` removes the widget from view, but
+allocates space for the widget as if it were still in the layout.
 
 Any children of a hidden widget are implicitly removed from view.
 
-If a previously hidden widget is made visible, any children of the widget with
-a visibility of ``"hidden"`` will remain hidden. Any descendants of the hidden
-child will also remain hidden, regardless of their visibility.
+If a previously hidden widget is made visible, any children of the widget with a
+visibility of ``"hidden"`` will remain hidden. Any descendants of the hidden child will
+also remain hidden, regardless of their visibility.
 
 .. _pack-direction:
 
@@ -72,9 +71,9 @@ child will also remain hidden, regardless of their visibility.
 **Initial value:** ``"row"``
 
 The packing direction for children of the box. A value of ``"column"`` indicates
-children will be stacked vertically, from top to bottom. A value of ``"row"``
-indicates children will be packed horizontally; left-to-right if
-``text_direction`` is ``"ltr"``, or right-to-left if ``text_direction`` is ``"rtl"``.
+children will be stacked vertically, from top to bottom. A value of ``"row"`` indicates
+children will be packed horizontally; left-to-right if ``text_direction`` is ``"ltr"``,
+or right-to-left if ``text_direction`` is ``"rtl"``.
 
 ``align_items``
 ---------------
@@ -87,8 +86,8 @@ indicates children will be packed horizontally; left-to-right if
 
 The alignment of this box's children along the cross axis. A row's cross axis is
 vertical, so ``"start"`` aligns children to the top, while ``"end"`` aligns them to the
-bottom. For columns, ``"start"`` is on the left if ``text_direction`` is ``"ltr"``, and the
-right if ``rtl``.
+bottom. For columns, ``"start"`` is on the left if ``text_direction`` is ``"ltr"``, and
+the right if ``rtl``.
 
 ``justify_content``
 -------------------
@@ -102,12 +101,12 @@ column
 
 The alignment of this box's children along the main axis. A column's main axis is
 vertical, so ``"start"`` aligns children to the top, while ``"end"`` aligns them to the
-bottom. For rows, ``"start"`` is on the left if ``text_direction`` is ``"ltr"``, and the
-right if ``"rtl"``.
+bottom. For rows, ``"start"`` is on the left if ``text_direction`` is ``"ltr"``, and
+the right if ``"rtl"``.
 
 This property only has an effect if there is some free space in the main axis. For
-example, if any children have a non-zero ``flex`` value, then they will consume all
-the available space, and ``justify_content`` will make no difference to the layout.
+example, if any children have a non-zero ``flex`` value, then they will consume all the
+available space, and ``justify_content`` will make no difference to the layout.
 
 ``gap``
 -------
@@ -181,21 +180,26 @@ The amount of space to allocate outside the edge of the box, in :ref:`CSS pixels
 ``margin``
 -----------
 
-**Value:** a tuple consisting of ``(margin_top, margin_right, margin_bottom, margin_left)``
+**Value:** a tuple consisting of ``(margin_top, margin_right, margin_bottom,
+  margin_left)``
 
 **Initial value:** ``(0, 0, 0, 0)``
 
 **Accepts:** an integer or a sequence of 1–4 integers
 
-A shorthand for setting the top, right, bottom and left margin with a single declaration.
+A shorthand for setting the top, right, bottom and left margin with a single
+declaration.
 
 If 1 integer is provided, that value will be used as the margin for all sides.
 
-If 2 integers are provided, the first value will be used as the margin for the top and bottom; the second will be used as the value for the left and right.
+If 2 integers are provided, the first value will be used as the margin for the top and
+bottom; the second will be used as the value for the left and right.
 
-If 3 integers are provided, the first value will be used as the top margin, the second for the left and right margin, and the third for the bottom margin.
+If 3 integers are provided, the first value will be used as the top margin, the second
+for the left and right margin, and the third for the bottom margin.
 
-If 4 integers are provided, they will be used as the top, right, bottom and left margin, respectively.
+If 4 integers are provided, they will be used as the top, right, bottom and left margin,
+respectively.
 
 ``color``
 ---------
@@ -224,7 +228,8 @@ Some objects may not use the value.
 
 **Value:** ``"left"``, ``"right"``, ``"center"``, or ``"justify"``
 
-**Initial value:** ``"left"`` if ``text_direction`` is ``"ltr"``; ``"right"`` if ``text_direction`` is ``"rtl"``
+**Initial value:** ``"left"`` if ``text_direction`` is ``"ltr"``; ``"right"`` if
+  ``text_direction`` is ``"rtl"``
 
 Defines the alignment of text in the object being rendered.
 
@@ -249,16 +254,16 @@ Defines the natural direction of horizontal content.
 **Accepts:** a string or a sequence of strings
 
 A list defining possible font families, in order of preference: the first item that maps
-to a valid font will be used. If none can be resolved, the system font will be
-used. Setting to a single string value is the same as setting to a list containing that
+to a valid font will be used. If none can be resolved, the system font will be used.
+Setting to a single string value is the same as setting to a list containing that
 string as the only item.
 
 A value of ``"system"`` indicates that whatever is a system-appropriate font
 should be used.
 
-A value of ``"serif"``, ``"sans-serif"``, ``"cursive"``, ``"fantasy"``, or ``"monospace"`` will
-use a system-defined font that matches the description (e.g. Times New Roman for
-``"serif"``, Courier New for ``"monospace"``).
+A value of ``"serif"``, ``"sans-serif"``, ``"cursive"``, ``"fantasy"``, or
+``"monospace"`` will use a system-defined font that matches the description (e.g. Times
+New Roman for ``"serif"``, Courier New for ``"monospace"``).
 
 Any other value will be checked against the family names previously registered with
 :any:`Font.register`.
@@ -309,7 +314,8 @@ The weight of the font to be used.
 
 **Value:** an integer
 
-**Initial value:** ``-1``; will use the system default size. This is also stored as a constant named ``SYSTEM_DEFAULT_SIZE``.
+**Initial value:** ``-1``; will use the system default size. This is also stored as a
+  constant named ``SYSTEM_DEFAULT_SIZE``.
 
 The size of the font to be used, in :ref:`CSS points <css-units>`.
 
