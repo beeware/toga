@@ -147,7 +147,7 @@ The path to the file is being constructed from the ``self.paths.app`` ``Path`` o
 
 When we run the app, it starts successfully. We can click the button, and we'll see the contents of the file loaded into the text input. This will also work when using ``briefcase run``, or with any mode of deployment, including desktop or mobile platforms, because ``paths.app`` will adapt to local conditions.
 
-We've successfully read from a file packaged within our app. What about writing a file? This gets more complicated Let's explore how to use app paths to write files to the file system.
+We've successfully read from a file packaged within our app. What about writing a file? This gets more complicated. Let's explore how to use app paths to write files to the file system.
 
 Writing Files
 =============
