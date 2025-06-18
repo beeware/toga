@@ -17,10 +17,10 @@ import beeware_theme
 
 # BeeWare theme override for Furo Sphinx theme to add BeeWare features.
 templates_path = []
-static_path = []
+html_static_path = []
 
 beeware_theme.init_templates(templates_path)
-beeware_theme.init_static(static_path)
+beeware_theme.init_static(html_static_path)
 
 
 # If extensions (or modules to document with autodoc) are in another directory,
