@@ -156,7 +156,7 @@ So far, we've used ``paths.app``, which should be considered read-only. Toga won
 
 - On Windows, you can install an app as a user or for all users. "All users" requires admin privileges, however when you run the app as a user, you are no longer running it as an admin, and you will not be permitted to write to that location.
 - On macOS, the contents of an app are contained within the app bundle. It is a file in a directory, however the contents have been signed and notarized, which cryptographically seals the bundle, and if you try to write to it, you will break that seal and end up with problems running the app.
-- On Unix, even if ``sudo`` is used to install the app, it installs to a directory that the user does not have permissions to write to.
+- On Unix, if ``sudo`` is used to install the app into `/usr` (or a similar location), it installs to a directory that the user does not have permissions to write to.
 
 You can read from ``paths.app``, but you shouldn't write to it.
 
