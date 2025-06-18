@@ -181,7 +181,7 @@ The amount of space to allocate outside the edge of the box, in :ref:`CSS pixels
 -----------
 
 **Value:** a tuple consisting of ``(margin_top, margin_right, margin_bottom,
-  margin_left)``
+margin_left)``
 
 **Initial value:** ``(0, 0, 0, 0)``
 
