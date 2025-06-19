@@ -68,16 +68,16 @@ class Font:
                     # No, not a user-registered font.
                     raise UnknownFontError(f"Unknown font '{self.interface}'")
 
-            else:
-                # Yes, user has registered this font.
-                try:
-                    self._pfc = PrivateFontCollection()
-                    self._pfc.AddFontFile(font_path)
-                    font_family = self._pfc.Families[0]
-                except FileNotFoundException:
-                    raise ValueError(f"Font file {font_path} could not be found")
-                except (IndexError, ExternalException):
-                    raise ValueError(f"Unable to load font file {font_path}")
+                else:
+                    # Yes, user has registered this font.
+                    try:
+                        self._pfc = PrivateFontCollection()
+                        self._pfc.AddFontFile(font_path)
+                        font_family = self._pfc.Families[0]
+                    except FileNotFoundException:
+                        raise ValueError(f"Font file {font_path} could not be found")
+                    except (IndexError, ExternalException):
+                        raise ValueError(f"Unable to load font file {font_path}")
 
             # Convert font style to Winforms format
             font_style = FontStyle.Regular
