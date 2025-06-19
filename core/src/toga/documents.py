@@ -106,6 +106,7 @@ class Document(ABC):
         if self._path.exists():
             self.read()
         else:
+            self._path = None
             raise FileNotFoundError()
 
         # Set the title of the document window to match the path

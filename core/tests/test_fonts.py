@@ -16,7 +16,7 @@ from toga.fonts import (
 
 
 @pytest.fixture
-def app():
+async def app():
     return toga.App("Fonts Test", "org.beeware.toga.fonts")
 
 
