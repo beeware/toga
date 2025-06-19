@@ -11,23 +11,18 @@ text alignment and so on.
 It is similar in some ways to the CSS Flexbox algorithm; but dramatically simplified, as
 there is no allowance for overflowing boxes.
 
-.. note::
 
-   The string values defined here are the string literals that the Pack algorithm
-   accepts. These values are also pre-defined as Python constants in the
-   ``toga.style.pack`` module with the same name; however, following Python style, the
-   constants use upper case and dashes are underscores. For example, the Python
-   constant ``toga.style.pack.SANS_SERIF`` evaluates as the string literal
-   ``"sans-serif"``. (The constant ``NONE``, or ``"none"``, is distinct from Python's
-   ``None``.)
+The string values defined here are the string literals that the Pack algorithm accepts.
+These values are also pre-defined as Python constants in the ``toga.style.pack`` module
+with the same name; however, following Python style, the constants use upper case and
+dashes are underscores. For example, the Python constant ``toga.style.pack.SANS_SERIF``
+evaluates as the string literal ``"sans-serif"``. (The constant ``NONE``, or
+``"none"``, is distinct from Python's ``None``.)
 
-.. note::
 
-   Some properties, while always storing their value in a consistent form, are more
-   liberal in what they accept, and perform conversation as necessary when assigned
-   alternate forms. In general, anywhere a value stores an integer, it will also accept
-   any string that can be evaluated to one. Any other variations are noted
-   under **Accepts**.
+Some properties, while always storing their value in a consistent form, are more liberal
+in what they accept, and perform conversation as necessary when assigned alternate
+forms. Where relevant, these are listed under **Accepts**.
 
 Pack style properties
 ~~~~~~~~~~~~~~~~~~~~~
@@ -149,8 +144,6 @@ fit inside the specified space.
 
 **Initial value:** ``0.0``
 
-**Accepts**: a floating-point number, a string that evaluates to one, or an integer
-
 A weighting that is used to compare this box with its siblings when
 allocating remaining space in a box.
 
@@ -229,7 +222,7 @@ Some objects may not use the value.
 **Value:** ``"left"``, ``"right"``, ``"center"``, or ``"justify"``
 
 **Initial value:** ``"left"`` if ``text_direction`` is ``"ltr"``; ``"right"`` if
-  ``text_direction`` is ``"rtl"``
+``text_direction`` is ``"rtl"``
 
 Defines the alignment of text in the object being rendered.
 
@@ -315,7 +308,7 @@ The weight of the font to be used.
 **Value:** an integer
 
 **Initial value:** ``-1``; will use the system default size. This is also stored as a
-  constant named ``SYSTEM_DEFAULT_SIZE``.
+constant named ``SYSTEM_DEFAULT_SIZE``.
 
 The size of the font to be used, in :ref:`CSS points <css-units>`.
 
