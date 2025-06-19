@@ -600,7 +600,7 @@ class App:
                     # Pass in the first document type as the default
                     self.documents.new(self.documents.types[0])
                 else:
-                    self.loop.run_until_complete(self.documents.request_open())
+                    self.loop.create_task(self.documents.request_open())
             else:
                 # No document types defined.
                 raise RuntimeError(
