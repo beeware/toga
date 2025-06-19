@@ -16,6 +16,7 @@ from toga.fonts import (
     SMALL_CAPS,
     SYSTEM,
     SYSTEM_DEFAULT_FONT_SIZE,
+    UnknownFontError,
 )
 from toga_cocoa.libs import (
     NSURL,
@@ -44,7 +45,7 @@ class Font:
             )
 
             try:
-                # Built in fonts have known names; no need to interrogate a file.
+                # Built-in fonts have known names; no need to interrogate a file.
                 custom_font_name = {
                     SYSTEM: None,  # No font name required
                     MESSAGE: None,  # No font name required
@@ -58,17 +59,11 @@ class Font:
                 try:
                     font_path = _REGISTERED_FONT_CACHE[font_key]
                 except KeyError:
-                    # The requested font has not been registered
-                    print(
-                        f"Unknown font '{self.interface}'; "
-                        "using system font as a fallback"
-                    )
-                    font_family = SYSTEM
-                    custom_font_name = None
+                    raise UnknownFontError(f"Unknown font '{self.interface}'")
                 else:
                     # We have a path for a font file.
                     try:
-                        # A font *file* an only be registered once under Cocoa.
+                        # A font *file* can only be registered once under Cocoa.
                         custom_font_name = _CUSTOM_FONT_NAMES[font_path]
                     except KeyError:
                         if Path(font_path).is_file():
