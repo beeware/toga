@@ -270,8 +270,13 @@ class App:
     ######################################################################
 
     def get_current_window(self):  # pragma: no-cover-if-linux-wayland
-        current_window = self.native.get_active_window()._impl
-        return current_window if current_window.interface.visible else None
+        active_window = self.native.get_active_window()
+        if active_window and active_window._impl.interface.visible:
+            return active_window._impl
+        else:  # pragma: no cover
+            # Can't test the case of having no window, as the testbed
+            # must always have a window.
+            return None
 
     def set_current_window(self, window):
         window._impl.native.present()
