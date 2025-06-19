@@ -20,9 +20,9 @@ evaluates as the string literal ``"sans-serif"``. (The constant ``NONE``, or
 ``"none"``, is distinct from Python's ``None``.)
 
 
-Some properties, while always storing their value in a consistent form, are more liberal
-in what they accept, and will convert as necessary when assigned alternate forms. Where
-relevant, these are listed under **Accepts**.
+Some properties, despite always storing their value in a consistent form, are more
+liberal in what they accept, and will convert as necessary when assigned alternate
+forms. Where relevant, these are listed under **Accepts**.
 
 Pack style properties
 ~~~~~~~~~~~~~~~~~~~~~
@@ -308,7 +308,7 @@ The weight of the font to be used.
 **Value:** an integer
 
 **Initial value:** ``-1``; will use the system default size. This is also stored as a
-constant named ``SYSTEM_DEFAULT_SIZE``.
+constant named ``SYSTEM_DEFAULT_FONT_SIZE``.
 
 The size of the font to be used, in :ref:`CSS points <css-units>`.
 
