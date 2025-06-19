@@ -21,8 +21,8 @@ evaluates as the string literal ``"sans-serif"``. (The constant ``NONE``, or
 
 
 Some properties, while always storing their value in a consistent form, are more liberal
-in what they accept, and perform conversation as necessary when assigned alternate
-forms. Where relevant, these are listed under **Accepts**.
+in what they accept, and will convert as necessary when assigned alternate forms. Where
+relevant, these are listed under **Accepts**.
 
 Pack style properties
 ~~~~~~~~~~~~~~~~~~~~~
