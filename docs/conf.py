@@ -26,6 +26,8 @@ beeware_theme.init(
     css=html_css_files,
 )
 
+# Sidebar Source Code and Issues links
+html_context = {"github_project_name": "toga"}
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -215,7 +217,7 @@ copybutton_copy_empty_lines = False
 # further.  For a list of options available for each theme, see the
 # documentation.
 # html_theme_options = {
-#     "base_url": "https://toga.readthedocs.io/en/stable/",
+#     "project_baseurl": "https://github.com/beeware/toga",
 # }
 
 # Add any paths that contain custom themes here, relative to this directory.
