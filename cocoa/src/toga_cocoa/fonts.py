@@ -33,17 +33,14 @@ _CUSTOM_FONT_NAMES = {}
 class Font:
     def __init__(self, interface):
         self.interface = interface
+
+        # Check for a cached typeface.
         try:
             attributed_font = _FONT_CACHE[self.interface]
-        except KeyError:
-            font_family = self.interface.family
-            font_key = self.interface._registered_font_key(
-                family=font_family,
-                weight=self.interface.weight,
-                style=self.interface.style,
-                variant=self.interface.variant,
-            )
 
+        except KeyError:
+            # Check for a system font.
+            font_family = self.interface.family
             try:
                 # Built-in fonts have known names; no need to interrogate a file.
                 custom_font_name = {
@@ -55,17 +52,30 @@ class Font:
                     FANTASY: "Papyrus",
                     MONOSPACE: "Courier New",
                 }[font_family]
+
             except KeyError:
+                # Check for a user-registered font.
+                font_key = self.interface._registered_font_key(
+                    family=font_family,
+                    weight=self.interface.weight,
+                    style=self.interface.style,
+                    variant=self.interface.variant,
+                )
                 try:
                     font_path = _REGISTERED_FONT_CACHE[font_key]
+
                 except KeyError:
+                    # No, not a user-registered font.
                     raise UnknownFontError(f"Unknown font '{self.interface}'")
+
                 else:
-                    # We have a path for a font file.
+                    # Yes, user has registered this font.
                     try:
-                        # A font *file* can only be registered once under Cocoa.
+                        # A font *file* can only be registered once under Cocoa, so
+                        # check if it's already registered.
                         custom_font_name = _CUSTOM_FONT_NAMES[font_path]
                     except KeyError:
+                        # Attempt to register the font file.
                         if Path(font_path).is_file():
                             font_url = NSURL.fileURLWithPath(font_path)
                             success = core_text.CTFontManagerRegisterFontsForURL(
@@ -73,9 +83,9 @@ class Font:
                             )
                             if success:
                                 ttfont = TTFont(font_path)
-                                custom_font_name = ttfont["name"].getBestFullName()
                                 # Preserve the Postscript font name contained in the
                                 # font file.
+                                custom_font_name = ttfont["name"].getBestFullName()
                                 _CUSTOM_FONT_NAMES[font_path] = custom_font_name
                             else:
                                 raise ValueError(
@@ -103,18 +113,17 @@ class Font:
                 font = NSFont.fontWithName(custom_font_name, size=font_size)
 
             # Convert the base font definition into a font with all the desired traits.
-            attributes_mask = 0
+            traits = 0
             if self.interface.weight == BOLD:
-                attributes_mask |= NSFontMask.Bold.value
+                traits |= NSFontMask.Bold.value
             if self.interface.style in {ITALIC, OBLIQUE}:
-                # Oblique is the fallback for Italic.
-                attributes_mask |= NSFontMask.Italic.value
+                traits |= NSFontMask.Italic.value
             if self.interface.variant == SMALL_CAPS:
-                attributes_mask |= NSFontMask.SmallCaps.value
+                traits |= NSFontMask.SmallCaps.value
 
-            if attributes_mask:
+            if traits:
                 attributed_font = NSFontManager.sharedFontManager.convertFont(
-                    font, toHaveTrait=attributes_mask
+                    font, toHaveTrait=traits
                 )
             else:
                 attributed_font = font

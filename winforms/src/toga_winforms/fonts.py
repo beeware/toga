@@ -35,44 +35,55 @@ class Font:
         # exceptions later
         self._pfc = None
         self.interface = interface
+
+        # Check for a cached typeface.
         try:
             font = _FONT_CACHE[self.interface]
+
         except KeyError:
-            font = None
-            font_key = self.interface._registered_font_key(
-                self.interface.family,
-                weight=self.interface.weight,
-                style=self.interface.style,
-                variant=self.interface.variant,
-            )
+            # Check for a system font.
             try:
-                font_path = _REGISTERED_FONT_CACHE[font_key]
+                font_family = {
+                    SYSTEM: DEFAULT_FONT.FontFamily,
+                    MESSAGE: DEFAULT_FONT.FontFamily,
+                    SERIF: FontFamily.GenericSerif,
+                    SANS_SERIF: FontFamily.GenericSansSerif,
+                    CURSIVE: FontFamily("Comic Sans MS"),
+                    FANTASY: FontFamily("Impact"),
+                    MONOSPACE: FontFamily.GenericMonospace,
+                }[self.interface.family]
+
             except KeyError:
+                # Check for a user-registered font.
+                font = None
+                font_key = self.interface._registered_font_key(
+                    self.interface.family,
+                    weight=self.interface.weight,
+                    style=self.interface.style,
+                    variant=self.interface.variant,
+                )
                 try:
-                    font_family = {
-                        SYSTEM: DEFAULT_FONT.FontFamily,
-                        MESSAGE: DEFAULT_FONT.FontFamily,
-                        SERIF: FontFamily.GenericSerif,
-                        SANS_SERIF: FontFamily.GenericSansSerif,
-                        CURSIVE: FontFamily("Comic Sans MS"),
-                        FANTASY: FontFamily("Impact"),
-                        MONOSPACE: FontFamily.GenericMonospace,
-                    }[self.interface.family]
+                    font_path = _REGISTERED_FONT_CACHE[font_key]
+
                 except KeyError:
+                    # No, not a user-registered font.
+
                     try:
+                        # Try loading a system-installed font.
                         font_family = FontFamily(self.interface.family)
                     except ArgumentException:
                         raise UnknownFontError(f"Unknown font '{self.interface}'")
 
-            else:
-                try:
-                    self._pfc = PrivateFontCollection()
-                    self._pfc.AddFontFile(font_path)
-                    font_family = self._pfc.Families[0]
-                except FileNotFoundException:
-                    raise ValueError(f"Font file {font_path} could not be found")
-                except (IndexError, ExternalException):
-                    raise ValueError(f"Unable to load font file {font_path}")
+                else:
+                    # Yes, user has registered this font.
+                    try:
+                        self._pfc = PrivateFontCollection()
+                        self._pfc.AddFontFile(font_path)
+                        font_family = self._pfc.Families[0]
+                    except FileNotFoundException:
+                        raise ValueError(f"Font file {font_path} could not be found")
+                    except (IndexError, ExternalException):
+                        raise ValueError(f"Unable to load font file {font_path}")
 
             # Convert font style to Winforms format
             font_style = FontStyle.Regular
