@@ -8,3 +8,4 @@ Topic guides
    api-design
    layout
    data-sources
+   file-management
