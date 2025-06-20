@@ -1,3 +1,4 @@
+from System import ArgumentException
 from System.Drawing import (
     Font as WinFont,
     FontFamily,
@@ -66,7 +67,12 @@ class Font:
 
                 except KeyError:
                     # No, not a user-registered font.
-                    raise UnknownFontError(f"Unknown font '{self.interface}'")
+
+                    try:
+                        # Try loading a system-installed font.
+                        font_family = FontFamily(self.interface.family)
+                    except ArgumentException:
+                        raise UnknownFontError(f"Unknown font '{self.interface}'")
 
                 else:
                     # Yes, user has registered this font.
