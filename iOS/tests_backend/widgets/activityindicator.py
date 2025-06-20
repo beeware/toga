@@ -6,6 +6,5 @@ from .base import SimpleProbe
 class ActivityIndicatorProbe(SimpleProbe):
     native_class = UIActivityIndicatorView
 
-    @property
-    def is_hidden(self):
-        return self.native.isHidden()
+    def assert_is_hidden(self, value):
+        assert self.native.isHidden() == value
