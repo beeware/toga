@@ -106,7 +106,7 @@ Update the ``load_button_pressed`` handler to the following:
         path = Path("initial_config.toml")
         self.text_input.value = path.read_text(encoding="utf-8")
 
-If we run ``briefcase dev`` again, we get the same ``FileNotFoundError`` when we press the button. As this is a relative path, it is turned into an absolute path using the current working directory. You might thing this would be the directory where Briefcase was executed - but clearly, it isn't.
+If we run ``briefcase dev`` again, we get the same ``FileNotFoundError`` when we press the button. As this is a relative path, it is turned into an absolute path using the current working directory. You might think this would be the directory where Briefcase was executed - but clearly, it isn't.
 
 At this point, you might think that the current working directory will be the location of the application code. Let's examine this as a possibility. Here is a summary of the directory structure of our project at this point:
 
