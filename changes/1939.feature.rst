@@ -1,1 +1,1 @@
-iOS now provides DateInput and TimeInput widgets.
+iOS and macOS backends now provide DateInput and TimeInput widgets.

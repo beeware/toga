@@ -5,9 +5,11 @@ A widget to select a calendar date.
 
 .. tabs::
 
-  .. group-tab:: macOS |no|
+  .. group-tab:: macOS
 
-    Not supported
+    .. figure:: /reference/images/dateinput-cocoa.png
+       :align: center
+       :width: 300px
 
   .. group-tab:: Linux |no|
 

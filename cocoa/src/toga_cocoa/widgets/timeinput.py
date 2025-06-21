@@ -1,15 +1,17 @@
 import datetime
 
-from rubicon.objc import SEL, CGSize
+from rubicon.objc import SEL
 from travertino.size import at_least
 
+from ..colors import native_color
 from ..libs import (
     NSCalendar,
     NSCalendarUnit,
+    NSColor,
     NSDateComponents,
-    UIControlContentHorizontalAlignmentLeft,
-    UIControlEventValueChanged,
-    UIDatePickerMode,
+    NSDatePickerElementFlags,
+    NSDatePickerMode,
+    NSDatePickerStyle,
 )
 from .base import Widget
 from .dateinput import TogaDatePicker
@@ -17,17 +19,17 @@ from .dateinput import TogaDatePicker
 
 def py_time(native_time):
     components = NSCalendar.currentCalendar.components(
-        NSCalendarUnit.Hour | NSCalendarUnit.Minute,
+        NSCalendarUnit.Hour | NSCalendarUnit.Minute | NSCalendarUnit.Second,
         fromDate=native_time,
     )
-    return datetime.time(components.hour, components.minute, 0)
+    return datetime.time(components.hour, components.minute, components.second)
 
 
 def native_time(py_time):
     components = NSDateComponents.alloc().init()
     components.setHour(py_time.hour)
     components.setMinute(py_time.minute)
-    components.setSecond(0)
+    components.setSecond(py_time.second)
     return NSCalendar.currentCalendar.dateFromComponents(components)
 
 
@@ -36,16 +38,12 @@ class TimeInput(Widget):
         self.native = TogaDatePicker.new()
         self.native.interface = self.interface
         self.native.impl = self
-        self.native.delegate = self.native
+        self.native.setTarget_(self.native)
+        self.native.setAction_(SEL("dateInputDidChange:"))
 
-        self.native.datePickerMode = UIDatePickerMode.Time
-        self.native.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft
-
-        self.native.addTarget(
-            self.native,
-            action=SEL("dateInputDidChange:"),
-            forControlEvents=UIControlEventValueChanged,
-        )
+        self.native.datePickerMode = NSDatePickerMode.Single
+        self.native.datePickerStyle = NSDatePickerStyle.TextFieldAndStepper
+        self.native.datePickerElements = NSDatePickerElementFlags.HourMinuteSecond
 
         # Ensure there are maximum and minimum times,
         # since otherwise the get_min_time and get_max_time
@@ -53,42 +51,39 @@ class TimeInput(Widget):
         #
         # This is already handled on startup by toga_core, but
         # the implementation also gets the min time and the max
-        # time to clip to when setting, which will return null on
+        # time to clip when setting, which will return null on
         # the first call.
         self.set_min_time(datetime.time(0, 0, 0))
-        self.set_max_time(datetime.time(23, 59, 0))
+        self.set_max_time(datetime.time(23, 59, 59))
 
         # Add the layout constraints
         self.add_constraints()
 
     def get_value(self):
-        return py_time(self.native.date)
+        return py_time(self.native.dateValue)
 
     def set_value(self, value):
-        self.native.date = native_time(value.replace(second=0, microsecond=0))
+        self.native.dateValue = native_time(value)
         self.interface.on_change()
 
     def rehint(self):
-        fitting_size = self.native.systemLayoutSizeFittingSize(CGSize(0, 0))
         self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
-        self.interface.intrinsic.height = fitting_size.height
+        self.interface.intrinsic.height = self.native.intrinsicContentSize().height
 
     def get_min_time(self):
-        return py_time(self.native.minimumDate)
+        return py_time(self.native.minDate)
 
     def set_min_time(self, value):
-        self.native.minimumDate = native_time(value)
+        self.native.minDate = native_time(value)
 
     def get_max_time(self):
-        return py_time(self.native.maximumDate)
+        return py_time(self.native.maxDate)
 
     def set_max_time(self, value):
-        self.native.maximumDate = native_time(value)
+        self.native.maxDate = native_time(value)
 
     def set_color(self, color):
-        # pass, since there is no reliable way to change color
-        pass
-
-    def set_background_color(self, color):
-        # pass, since background color setting makes corners straight
-        pass
+        if color is None:
+            self.native.textColor = NSColor.controlTextColor
+        else:
+            self.native.textColor = native_color(color)

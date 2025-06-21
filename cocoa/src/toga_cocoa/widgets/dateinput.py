@@ -1,23 +1,25 @@
 import datetime
 
-from rubicon.objc import SEL, CGSize, objc_method, objc_property
+from rubicon.objc import SEL, objc_method, objc_property
 from travertino.size import at_least
 
 from toga.widgets.dateinput import MAX_DATE, MIN_DATE
+from toga_cocoa.colors import native_color
 
 from ..libs import (
     NSCalendar,
     NSCalendarUnit,
+    NSColor,
     NSDateComponents,
-    UIControlContentHorizontalAlignmentLeft,
-    UIControlEventValueChanged,
-    UIDatePicker,
-    UIDatePickerMode,
+    NSDatePicker,
+    NSDatePickerElementFlags,
+    NSDatePickerMode,
+    NSDatePickerStyle,
 )
 from .base import Widget
 
 
-class TogaDatePicker(UIDatePicker):
+class TogaDatePicker(NSDatePicker):
     interface = objc_property(object, weak=True)
     impl = objc_property(object, weak=True)
 
@@ -47,16 +49,12 @@ class DateInput(Widget):
         self.native = TogaDatePicker.new()
         self.native.interface = self.interface
         self.native.impl = self
-        self.native.delegate = self.native
+        self.native.setTarget_(self.native)
+        self.native.setAction_(SEL("dateInputDidChange:"))
 
-        self.native.datePickerMode = UIDatePickerMode.Date
-        self.native.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft
-
-        self.native.addTarget(
-            self.native,
-            action=SEL("dateInputDidChange:"),
-            forControlEvents=UIControlEventValueChanged,
-        )
+        self.native.datePickerMode = NSDatePickerMode.Single
+        self.native.datePickerStyle = NSDatePickerStyle.TextFieldAndStepper
+        self.native.datePickerElements = NSDatePickerElementFlags.YearMonthDay
 
         # Ensure there are maximum and minimum dates,
         # since otherwise the get_min_date and get_max_date
@@ -73,33 +71,30 @@ class DateInput(Widget):
         self.add_constraints()
 
     def get_value(self):
-        return py_date(self.native.date)
+        return py_date(self.native.dateValue)
 
     def set_value(self, value):
-        self.native.date = native_date(value)
+        self.native.dateValue = native_date(value)
         self.interface.on_change()
 
     def rehint(self):
-        fitting_size = self.native.systemLayoutSizeFittingSize(CGSize(0, 0))
         self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
-        self.interface.intrinsic.height = fitting_size.height
+        self.interface.intrinsic.height = self.native.intrinsicContentSize().height
 
     def get_min_date(self):
-        return py_date(self.native.minimumDate)
+        return py_date(self.native.minDate)
 
     def set_min_date(self, value):
-        self.native.minimumDate = native_date(value)
+        self.native.minDate = native_date(value)
 
     def get_max_date(self):
-        return py_date(self.native.maximumDate)
+        return py_date(self.native.maxDate)
 
     def set_max_date(self, value):
-        self.native.maximumDate = native_date(value)
+        self.native.maxDate = native_date(value)
 
     def set_color(self, color):
-        # pass, since there is no reliable way to change color
-        pass
-
-    def set_background_color(self, color):
-        # pass, since background color setting makes corners straight
-        pass
+        if color is None:
+            self.native.textColor = NSColor.controlTextColor
+        else:
+            self.native.textColor = native_color(color)
