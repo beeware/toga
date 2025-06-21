@@ -27,7 +27,7 @@ class TimeInputProbe(DateTimeInputProbe):
         return datetime.time(components.hour, components.minute, components.second)
 
     async def change(self, delta):
-        # It is possible to change the time in the UIDatePicker on iOS, but
+        # It is possible to change the time in the NSDatePicker on macOS, but
         # this requires us to manually call the "value changed".
         self.native.dateValue = NSCalendar.currentCalendar.dateByAddingUnit(
             NSCalendarUnit.Minute, value=delta, toDate=self.native.dateValue, options=0
