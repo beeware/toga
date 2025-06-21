@@ -26,10 +26,6 @@ class TimeInputProbe(DateTimeInputProbe):
         )
         return datetime.time(components.hour, components.minute, components.second)
 
-    @property
-    def value(self):
-        return self.py_value(self.native.dateValue)
-
     async def change(self, delta):
         # It is possible to change the time in the UIDatePicker on iOS, but
         # this requires us to manually call the "value changed".
