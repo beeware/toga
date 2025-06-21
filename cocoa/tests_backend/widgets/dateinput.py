@@ -1,60 +1,50 @@
 import datetime
 from abc import ABC, abstractmethod
 
-import pytest
-
-from toga_iOS.libs import (
+from toga_cocoa.libs import (
+    NSApplication,
     NSCalendar,
     NSCalendarUnit,
-    UIControlContentHorizontalAlignmentLeft,
-    UIControlEventValueChanged,
-    UIDatePicker,
-    UIDatePickerMode,
+    NSDatePicker,
+    NSDatePickerElementFlags,
 )
 
 from .base import SimpleProbe
+from .properties import toga_color
 
 
 class DateTimeInputProbe(SimpleProbe, ABC):
-    native_class = UIDatePicker
+    native_class = NSDatePicker
     supports_limits = True
 
     def __init__(self, widget):
         super().__init__(widget)
-        assert (
-            self.native.contentHorizontalAlignment
-            == UIControlContentHorizontalAlignmentLeft
-        )
 
     @abstractmethod
     def py_value(self, native_value):
         pass
 
     @property
-    def color(self):
-        pytest.xfail("Color is not implemented for DateInput on iOS")
-
-    @property
-    def background_color(self):
-        pytest.xfail("Background color is not implemented for DateInput on iOS")
-
-    @property
     def value(self):
-        return self.py_value(self.native.date)
+        return self.py_value(self.native.dateValue)
 
     @property
     def min_value(self):
-        return self.py_value(self.native.minimumDate)
+        return self.py_value(self.native.minDate)
 
     @property
     def max_value(self):
-        return self.py_value(self.native.maximumDate)
+        return self.py_value(self.native.maxDate)
+
+    @property
+    def color(self):
+        return toga_color(self.native.textColor)
 
 
 class DateInputProbe(DateTimeInputProbe):
     def __init__(self, widget):
         super().__init__(widget)
-        assert self.native.datePickerMode == UIDatePickerMode.Date
+        assert self.native.datePickerElements == NSDatePickerElementFlags.YearMonthDay
 
     def py_value(self, native_value):
         components = NSCalendar.currentCalendar.components(
@@ -64,11 +54,15 @@ class DateInputProbe(DateTimeInputProbe):
         return datetime.date(components.year, components.month, components.day)
 
     async def change(self, delta):
-        # It is possible to change the date in the UIDatePicker on iOS, but
+        # It is possible to change the date in the NSDatePicker on macOS, but
         # this requires us to manually call the "value changed".
-        self.native.date = NSCalendar.currentCalendar.dateByAddingUnit(
-            NSCalendarUnit.Day, value=delta, toDate=self.native.date, options=0
+        self.native.setDateValue(
+            NSCalendar.currentCalendar.dateByAddingUnit(
+                NSCalendarUnit.Day, value=delta, toDate=self.native.dateValue, options=0
+            )
         )
         # Call it manually to have the test pass for now.
-        self.native.sendActionsForControlEvents(UIControlEventValueChanged)
+        NSApplication.sharedApplication.sendAction(
+            self.native.action, to=self.native.target, from__=self.native
+        )
         await self.redraw(f"Change value by {delta} days")
