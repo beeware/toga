@@ -50,8 +50,8 @@ class TimeInput(Widget):
         # functions return None, which is problematic sometimes.
         #
         # This is already handled on startup by toga_core, but
-        # the implementation also gets the min date and the max
-        # date to clip when setting, which will return null on
+        # the implementation also gets the min time and the max
+        # time to clip when setting, which will return null on
         # the first call.
         self.set_min_time(datetime.time(0, 0, 0))
         self.set_max_time(datetime.time(23, 59, 59))
