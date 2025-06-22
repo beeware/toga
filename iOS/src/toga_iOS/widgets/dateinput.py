@@ -4,8 +4,7 @@ from rubicon.objc import SEL, CGSize, objc_method, objc_property
 from travertino.size import at_least
 
 from toga.widgets.dateinput import MAX_DATE, MIN_DATE
-
-from ..libs import (
+from toga_iOS.libs import (
     NSCalendar,
     NSCalendarUnit,
     NSDateComponents,
@@ -14,6 +13,7 @@ from ..libs import (
     UIDatePicker,
     UIDatePickerMode,
 )
+
 from .base import Widget
 
 
