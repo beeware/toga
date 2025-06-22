@@ -48,7 +48,7 @@ dev = [
     "coverage[toml] == 7.9.1",
     "coverage-conditional-plugin == 0.9.0",
     "pytest == 8.4.0",
-    "tox == 4.26.0",
+    "tox == 4.27.0",
     # typing-extensions needed for TypeAlias added in Py 3.10
     "typing-extensions == 4.12.2 ; python_version < '3.10'",
 ]
