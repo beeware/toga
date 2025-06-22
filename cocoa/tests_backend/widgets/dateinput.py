@@ -5,6 +5,7 @@ from toga_cocoa.libs import (
     NSApplication,
     NSCalendar,
     NSCalendarUnit,
+    NSColor,
     NSDatePicker,
     NSDatePickerElementFlags,
 )
@@ -38,6 +39,8 @@ class DateTimeInputProbe(SimpleProbe, ABC):
 
     @property
     def color(self):
+        if color == NSColor.controlTextColor:
+            return None
         return toga_color(self.native.textColor)
 
 
