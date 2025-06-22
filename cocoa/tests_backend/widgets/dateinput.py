@@ -39,9 +39,10 @@ class DateTimeInputProbe(SimpleProbe, ABC):
 
     @property
     def color(self):
-        if color == NSColor.controlTextColor:
+        if self.native.textColor == NSColor.controlTextColor:
             return None
-        return toga_color(self.native.textColor)
+        else:
+            return toga_color(self.native.textColor)
 
 
 class DateInputProbe(DateTimeInputProbe):
