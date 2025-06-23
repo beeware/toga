@@ -78,7 +78,9 @@ class DateInput(Widget):
         self.interface.on_change()
 
     def rehint(self):
-        self.interface.intrinsic.width = at_least(self.native.intrinsicContentSize().width)
+        self.interface.intrinsic.width = at_least(
+            self.native.intrinsicContentSize().width
+        )
         self.interface.intrinsic.height = self.native.intrinsicContentSize().height
 
     def get_min_date(self):
