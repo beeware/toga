@@ -79,20 +79,20 @@ def assert_none_value(normalize):
 
 @fixture
 async def widget():
-    skip_on_platforms("macOS", "linux")
+    skip_on_platforms("linux")
     return toga.DateInput()
 
 
 test_cleanup = build_cleanup_test(
     toga.DateInput,
-    skip_platforms=("macOS", "linux"),
+    skip_platforms=("linux",),
     xfail_platforms=("android",),
 )
 
 
 async def test_init():
     "Properties can be set in the constructor"
-    skip_on_platforms("macOS", "linux")
+    skip_on_platforms("linux")
 
     value = date(1999, 12, 31)
     min = date(1999, 12, 30)

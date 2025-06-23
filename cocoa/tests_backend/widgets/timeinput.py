@@ -1,21 +1,23 @@
 import datetime
 
-from toga_iOS.libs import (
+from toga_cocoa.libs import (
+    NSApplication,
     NSCalendar,
     NSCalendarUnit,
-    UIControlEventValueChanged,
-    UIDatePickerMode,
+    NSDatePickerElementFlags,
 )
 
 from .dateinput import DateTimeInputProbe
 
 
 class TimeInputProbe(DateTimeInputProbe):
-    supports_seconds = False
+    supports_seconds = True
 
     def __init__(self, widget):
         super().__init__(widget)
-        assert self.native.datePickerMode == UIDatePickerMode.Time
+        assert (
+            self.native.datePickerElements == NSDatePickerElementFlags.HourMinuteSecond
+        )
 
     def py_value(self, native_value):
         components = NSCalendar.currentCalendar.components(
@@ -25,11 +27,13 @@ class TimeInputProbe(DateTimeInputProbe):
         return datetime.time(components.hour, components.minute, components.second)
 
     async def change(self, delta):
-        # It is possible to change the time in the UIDatePicker on iOS, but
+        # It is possible to change the time in the NSDatePicker on macOS, but
         # this requires us to manually call the "value changed".
-        self.native.date = NSCalendar.currentCalendar.dateByAddingUnit(
-            NSCalendarUnit.Minute, value=delta, toDate=self.native.date, options=0
+        self.native.dateValue = NSCalendar.currentCalendar.dateByAddingUnit(
+            NSCalendarUnit.Minute, value=delta, toDate=self.native.dateValue, options=0
         )
         # Call it manually to have the test pass for now.
-        self.native.sendActionsForControlEvents(UIControlEventValueChanged)
+        NSApplication.sharedApplication.sendAction(
+            self.native.action, to=self.native.target, from__=self.native
+        )
         await self.redraw(f"Change value by {delta} minutes")
