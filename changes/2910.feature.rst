@@ -1,0 +1,7 @@
+Android implementation of OpenFileDialog
+
+Adding a utility module for reading from external storage files
+
+Adding singleton for file management on Android/Windows for API communication
+
+Support with Python 3.10+
