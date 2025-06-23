@@ -94,7 +94,7 @@ class TableProbe(SimpleProbe):
         )
 
     async def select_all(self):
-        await self.type_character("A", alt=True),
+        (await self.type_character("A", alt=True),)
 
     async def select_row(self, row, add=False):
         point = self.row_position(row)

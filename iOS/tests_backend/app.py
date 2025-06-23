@@ -49,9 +49,9 @@ class AppProbe(BaseProbe, DialogsMixin):
 
     def assert_dialog_in_focus(self, dialog):
         root_view_controller = self.native.keyWindow.rootViewController
-        assert (
-            root_view_controller.presentedViewController == dialog._impl.native
-        ), "The dialog is not in focus"
+        assert root_view_controller.presentedViewController == dialog._impl.native, (
+            "The dialog is not in focus"
+        )
 
     def assert_system_menus(self):
         pytest.skip("Menus not implemented on iOS")

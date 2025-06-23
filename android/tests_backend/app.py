@@ -57,7 +57,7 @@ class AppProbe(BaseProbe, DialogsMixin):
                 if item.getTitle() == label and not item.requiresActionButton():
                     break
             else:
-                raise AssertionError(f"no item named {path[:i_path+1]}")
+                raise AssertionError(f"no item named {path[: i_path + 1]}")
 
             if i_path < len(path) - 1:
                 # Simulate opening the submenu.

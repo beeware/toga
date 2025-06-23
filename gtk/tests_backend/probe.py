@@ -6,7 +6,6 @@ import toga
 
 
 class BaseProbe:
-
     def repaint_needed(self):
         if GTK_VERSION < (4, 0, 0):
             return Gtk.events_pending()

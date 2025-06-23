@@ -197,9 +197,9 @@ class AppProbe(BaseProbe, DialogsMixin):
         self._activate_menu_item(["Window", "Minimize"])
 
     def assert_dialog_in_focus(self, dialog):
-        assert (
-            dialog._impl.native.window == self.app._impl.native.keyWindow
-        ), "The dialog is not in focus"
+        assert dialog._impl.native.window == self.app._impl.native.keyWindow, (
+            "The dialog is not in focus"
+        )
 
     def assert_menu_item(self, path, enabled):
         item = self._menu_item(path)
