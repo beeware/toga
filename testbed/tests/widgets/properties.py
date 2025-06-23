@@ -2,7 +2,8 @@ from unittest.mock import Mock
 
 from pytest import approx
 
-from toga.colors import CORNFLOWERBLUE, RED, TRANSPARENT, color as named_color
+from toga.colors import CORNFLOWERBLUE, RED, TRANSPARENT
+from toga.colors import color as named_color
 from toga.fonts import (
     BOLD,
     FANTASY,

@@ -1,11 +1,11 @@
 from unittest.mock import Mock
 
 import pytest
+from java.util import ArrayList
+from toga_android.hardware.location import TogaLocationConsumer
+
 from android import Manifest
 from android.location import Location, LocationManager
-from java.util import ArrayList
-
-from toga_android.hardware.location import TogaLocationConsumer
 
 from .hardware import HardwareProbe
 

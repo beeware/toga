@@ -1,6 +1,7 @@
 import datetime
 
 from rubicon.objc import SEL
+
 from travertino.size import at_least
 
 from ..colors import native_color

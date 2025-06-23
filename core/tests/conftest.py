@@ -1,10 +1,10 @@
 import sys
 
 import pytest
+from toga_dummy.utils import EventLog
 
 import toga
 from toga import window as toga_window
-from toga_dummy.utils import EventLog
 
 
 @pytest.fixture(autouse=True)

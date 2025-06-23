@@ -2,7 +2,6 @@ from http.cookiejar import CookieJar
 
 import pytest
 from pytest import skip
-
 from toga_gtk.libs import GTK_VERSION, WebKit2
 
 from .base import SimpleProbe

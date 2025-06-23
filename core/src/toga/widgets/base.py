@@ -4,12 +4,11 @@ from builtins import id as identifier
 from typing import TYPE_CHECKING, Any, TypeVar
 from warnings import warn
 
-from travertino.node import Node
-from travertino.style import BaseStyle
-
 from toga.platform import get_platform_factory
 from toga.style import Pack, TogaApplicator
 from toga.style.mixin import style_mixin
+from travertino.node import Node
+from travertino.style import BaseStyle
 
 if TYPE_CHECKING:
     from toga.app import App

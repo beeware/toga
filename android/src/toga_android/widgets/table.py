@@ -1,12 +1,12 @@
 from warnings import warn
 
+from java import dynamic_proxy
+
+import toga
 from android import R
 from android.graphics import Color, Rect, Typeface
 from android.view import Gravity, View
 from android.widget import LinearLayout, ScrollView, TableLayout, TableRow, TextView
-from java import dynamic_proxy
-
-import toga
 
 from .base import Widget
 from .label import set_textview_font

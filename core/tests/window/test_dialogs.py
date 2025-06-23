@@ -1,9 +1,10 @@
 from pathlib import Path
 
-import toga
 from toga_dummy.utils import (
     assert_action_performed_with,
 )
+
+import toga
 
 
 def test_info_dialog(window, app):

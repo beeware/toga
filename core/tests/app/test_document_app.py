@@ -2,9 +2,6 @@ import sys
 from unittest.mock import AsyncMock, Mock
 
 import pytest
-
-import toga
-from toga.documents import DocumentSet
 from toga_dummy.app import App as DummyApp
 from toga_dummy.command import Command as DummyCommand
 from toga_dummy.utils import (
@@ -12,6 +9,9 @@ from toga_dummy.utils import (
     assert_action_not_performed,
     assert_action_performed,
 )
+
+import toga
+from toga.documents import DocumentSet
 
 
 class ExampleDocument(toga.Document):

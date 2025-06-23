@@ -1,9 +1,9 @@
 import asyncio
 
 import pytest
+from toga_gtk.libs import GTK_VERSION, IS_WAYLAND, Gdk, Gtk
 
 from toga.constants import WindowState
-from toga_gtk.libs import GTK_VERSION, IS_WAYLAND, Gdk, Gtk
 
 from .dialogs import DialogsMixin
 from .probe import BaseProbe

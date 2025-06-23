@@ -1,7 +1,8 @@
 from unittest.mock import Mock
 
-import toga
 from toga_dummy.utils import assert_action_not_performed, assert_action_performed
+
+import toga
 
 
 def test_create(app):

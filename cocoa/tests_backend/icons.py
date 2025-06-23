@@ -2,10 +2,10 @@ from pathlib import Path
 
 import PIL.Image
 import pytest
-
-import toga
 import toga_cocoa
 from toga_cocoa.libs import NSImage
+
+import toga
 
 from .probe import BaseProbe
 

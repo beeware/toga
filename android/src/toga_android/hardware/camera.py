@@ -1,14 +1,14 @@
 import warnings
 from pathlib import Path
 
-from android.content import Context, Intent
-from android.content.pm import PackageManager
-from android.hardware.camera2 import CameraCharacteristics, CameraMetadata
-from android.provider import MediaStore
 from androidx.core.content import FileProvider
 from java.io import File
 
 import toga
+from android.content import Context, Intent
+from android.content.pm import PackageManager
+from android.hardware.camera2 import CameraCharacteristics, CameraMetadata
+from android.provider import MediaStore
 
 
 class CameraDevice:

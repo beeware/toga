@@ -1,7 +1,8 @@
 from pathlib import Path
 
-from android.graphics import Bitmap, BitmapFactory
 from java.io import ByteArrayOutputStream, FileOutputStream
+
+from android.graphics import Bitmap, BitmapFactory
 
 
 class Image:

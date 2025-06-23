@@ -1,11 +1,12 @@
 import asyncio
 
-from android import R
-from android.view import View, ViewTreeObserver, WindowManagerGlobal
-from android.widget import Button
 from java import dynamic_proxy
 from org.beeware.android import MainActivity
 from pytest import approx
+
+from android import R
+from android.view import View, ViewTreeObserver, WindowManagerGlobal
+from android.widget import Button
 
 
 class LayoutListener(dynamic_proxy(ViewTreeObserver.OnGlobalLayoutListener)):

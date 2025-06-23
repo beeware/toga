@@ -1,12 +1,12 @@
 from concurrent.futures import ThreadPoolExecutor
 
-from android.graphics import Typeface
-from android.graphics.fonts import FontFamily
-from android.util import TypedValue
 from fontTools.ttLib import TTFont
 from java import jint
 from java.lang import Integer, Long
 
+from android.graphics import Typeface
+from android.graphics.fonts import FontFamily
+from android.util import TypedValue
 from toga.fonts import (
     BOLD,
     ITALIC,

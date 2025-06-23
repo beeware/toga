@@ -2,10 +2,10 @@ import sys
 from pathlib import Path
 
 import pytest
-
-import toga
 import toga_gtk
 from toga_gtk.libs import GTK_VERSION, GdkPixbuf
+
+import toga
 
 from .probe import BaseProbe
 

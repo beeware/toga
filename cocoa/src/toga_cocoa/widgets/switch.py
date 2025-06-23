@@ -1,5 +1,3 @@
-from travertino.size import at_least
-
 from toga_cocoa.libs import (
     SEL,
     NSBezelStyle,
@@ -10,6 +8,7 @@ from toga_cocoa.libs import (
     objc_method,
     objc_property,
 )
+from travertino.size import at_least
 
 from .base import Widget
 

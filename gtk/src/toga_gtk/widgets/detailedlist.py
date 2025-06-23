@@ -1,8 +1,7 @@
 import html
 
-from travertino.size import at_least
-
 from toga_gtk.libs import GTK_VERSION, Gdk, Gio, Gtk, Pango
+from travertino.size import at_least
 
 from .base import Widget
 

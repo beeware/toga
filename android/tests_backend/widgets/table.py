@@ -1,4 +1,5 @@
 import pytest
+
 from android.widget import ScrollView, TableLayout, TextView
 
 from .base import SimpleProbe

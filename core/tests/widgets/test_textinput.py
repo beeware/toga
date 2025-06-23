@@ -1,9 +1,6 @@
 from unittest.mock import Mock
 
 import pytest
-
-import toga
-from toga.validators import Number
 from toga_dummy.utils import (
     EventLog,
     assert_action_not_performed,
@@ -11,6 +8,9 @@ from toga_dummy.utils import (
     assert_action_performed_with,
     attribute_value,
 )
+
+import toga
+from toga.validators import Number
 
 
 @pytest.fixture

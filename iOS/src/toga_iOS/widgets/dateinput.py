@@ -1,7 +1,6 @@
 import datetime
 
 from rubicon.objc import SEL, CGSize, objc_method, objc_property
-from travertino.size import at_least
 
 from toga.widgets.dateinput import MAX_DATE, MIN_DATE
 from toga_iOS.libs import (
@@ -13,6 +12,7 @@ from toga_iOS.libs import (
     UIDatePicker,
     UIDatePickerMode,
 )
+from travertino.size import at_least
 
 from .base import Widget
 

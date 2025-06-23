@@ -2,14 +2,14 @@ from decimal import Decimal
 from unittest.mock import Mock
 
 import pytest
-
-import toga
-from toga.widgets.numberinput import _clean_decimal, _clean_decimal_str
 from toga_dummy.utils import (
     EventLog,
     assert_action_performed,
     attribute_value,
 )
+
+import toga
+from toga.widgets.numberinput import _clean_decimal, _clean_decimal_str
 
 
 @pytest.fixture

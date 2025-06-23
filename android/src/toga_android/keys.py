@@ -1,5 +1,4 @@
 from android.view import KeyEvent
-
 from toga.keys import Key
 
 KEYEVENT_KEYS = {

@@ -1,6 +1,7 @@
 import sys
 
-from toga import Command as StandardCommand, Group, Key
+from toga import Command as StandardCommand
+from toga import Group, Key
 from toga_dummy.utils import LoggedObject
 
 

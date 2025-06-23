@@ -1,6 +1,7 @@
+from java import jclass
+
 from android.os import Build, SystemClock
 from android.view import MotionEvent
-from java import jclass
 
 from .base import SimpleProbe
 

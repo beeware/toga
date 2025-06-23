@@ -1,10 +1,11 @@
 from io import BytesIO
 
 import pytest
-from android.os import SystemClock
-from android.view import MotionEvent
 from org.beeware.android import DrawHandlerView
 from PIL import Image
+
+from android.os import SystemClock
+from android.view import MotionEvent
 
 from .base import SimpleProbe
 

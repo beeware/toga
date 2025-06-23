@@ -2,7 +2,6 @@ from io import BytesIO
 
 import pytest
 from PIL import Image
-
 from toga_gtk.libs import GTK_VERSION, IS_WAYLAND, Gdk, Gtk
 
 from .base import SimpleProbe

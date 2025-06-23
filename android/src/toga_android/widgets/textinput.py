@@ -1,10 +1,10 @@
 from decimal import ROUND_UP
 
+from java import dynamic_proxy
+
 from android.text import InputType, TextWatcher
 from android.view import Gravity, View
 from android.widget import EditText
-from java import dynamic_proxy
-
 from toga_android.keys import toga_key
 from toga_android.widgets.base import ContainedWidget
 

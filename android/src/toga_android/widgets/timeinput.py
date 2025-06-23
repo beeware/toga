@@ -1,9 +1,9 @@
 from datetime import time
 
-from android import R
-from android.app import TimePickerDialog
 from java import dynamic_proxy
 
+from android import R
+from android.app import TimePickerDialog
 from toga_android.widgets.base import ContainedWidget
 
 from .internal.pickers import PickerBase

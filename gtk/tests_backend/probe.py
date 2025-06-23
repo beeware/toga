@@ -1,7 +1,8 @@
 import asyncio
 
-import toga
 from toga_gtk.libs import GTK_VERSION, GLib, Gtk
+
+import toga
 
 
 class BaseProbe:

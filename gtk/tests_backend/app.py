@@ -3,10 +3,10 @@ from pathlib import Path
 
 import PIL.Image
 import pytest
-
-import toga
 from toga_gtk.keys import gtk_accel, toga_key
 from toga_gtk.libs import GTK_VERSION, IS_WAYLAND, Gdk, Gtk
+
+import toga
 
 from .dialogs import DialogsMixin
 from .probe import BaseProbe

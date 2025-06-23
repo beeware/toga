@@ -1,5 +1,6 @@
-from android.widget import Spinner
 from pytest import xfail
+
+from android.widget import Spinner
 
 from .base import SimpleProbe
 

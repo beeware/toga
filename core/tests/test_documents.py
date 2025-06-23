@@ -3,9 +3,9 @@ from pathlib import Path
 from unittest.mock import Mock
 
 import pytest
+from toga_dummy.utils import assert_action_performed_with
 
 import toga
-from toga_dummy.utils import assert_action_performed_with
 
 
 class MyDoc(toga.Document):

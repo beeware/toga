@@ -1,6 +1,5 @@
 import pytest
 from rubicon.objc import SEL, send_message
-
 from toga_iOS.libs import UITextField
 
 from .base import SimpleProbe

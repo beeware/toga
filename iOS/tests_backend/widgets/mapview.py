@@ -2,7 +2,6 @@ import asyncio
 import re
 
 import pytest
-
 from toga_iOS.libs import MKMapView
 
 from .base import SimpleProbe

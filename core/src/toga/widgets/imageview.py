@@ -2,11 +2,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Literal
 
-from travertino.size import at_least
-
 import toga
 from toga.style.pack import NONE
 from toga.widgets.base import StyleT, Widget
+from travertino.size import at_least
 
 if TYPE_CHECKING:
     from toga.images import ImageContentT, ImageT

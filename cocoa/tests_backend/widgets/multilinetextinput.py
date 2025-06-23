@@ -1,5 +1,6 @@
-from toga.colors import TRANSPARENT
 from toga_cocoa.libs import NSRange, NSScrollView, NSTextView
+
+from toga.colors import TRANSPARENT
 
 from .base import SimpleProbe
 from .properties import toga_color, toga_text_align

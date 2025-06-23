@@ -2,15 +2,15 @@ from pathlib import Path
 from unittest.mock import Mock
 
 import pytest
-
-import toga
-from toga.constants import WindowState
 from toga_dummy.utils import (
     EventLog,
     assert_action_not_performed,
     assert_action_performed,
     assert_action_performed_with,
 )
+
+import toga
+from toga.constants import WindowState
 
 from ..utils import (
     assert_window_gain_focus,

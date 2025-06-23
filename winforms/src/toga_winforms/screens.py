@@ -5,6 +5,8 @@ from System.Drawing import (
     Graphics,
     Imaging,
     Point,
+)
+from System.Drawing import (
     Size as WinSize,
 )
 from System.IO import MemoryStream

@@ -1,4 +1,9 @@
 import pytest
+from toga_dummy.utils import (
+    EventLog,
+    assert_action_not_performed,
+    assert_action_performed_with,
+)
 
 from toga.colors import REBECCAPURPLE
 from toga.fonts import FANTASY
@@ -14,11 +19,6 @@ from toga.style.pack import (
     RTL,
     SMALL_CAPS,
     VISIBLE,
-)
-from toga_dummy.utils import (
-    EventLog,
-    assert_action_not_performed,
-    assert_action_performed_with,
 )
 
 from ..utils import ExampleLeafWidget, ExampleWidget

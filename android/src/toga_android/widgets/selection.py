@@ -1,10 +1,10 @@
 from decimal import ROUND_UP
 
+from java import dynamic_proxy
+
 from android import R
 from android.view import View
 from android.widget import AdapterView, ArrayAdapter, Spinner
-from java import dynamic_proxy
-
 from toga_android.widgets.base import ContainedWidget
 
 

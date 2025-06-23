@@ -1,7 +1,5 @@
 from unittest.mock import Mock
 
-import toga
-from toga.constants import FlashMode
 from toga_iOS import libs as iOS
 from toga_iOS.hardware.camera import Camera
 from toga_iOS.libs import (
@@ -13,6 +11,9 @@ from toga_iOS.libs import (
     UIImagePickerControllerSourceTypeCamera,
     UIViewController,
 )
+
+import toga
+from toga.constants import FlashMode
 
 from ..app import AppProbe
 

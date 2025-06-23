@@ -1,11 +1,11 @@
 import pytest
-
-import toga
 from toga_dummy.utils import (
     EventLog,
     assert_action_not_performed,
     assert_action_performed,
 )
+
+import toga
 
 
 def test_divider_created():

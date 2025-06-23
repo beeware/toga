@@ -3,9 +3,9 @@ from ctypes import c_void_p
 
 from rubicon.objc import SEL, NSArray, NSObject, ObjCClass, objc_method
 from rubicon.objc.api import NSString
+from toga_cocoa.libs.appkit import appkit
 
 import toga
-from toga_cocoa.libs.appkit import appkit
 
 NSRunLoop = ObjCClass("NSRunLoop")
 NSRunLoop.declare_class_property("currentRunLoop")

@@ -1,9 +1,10 @@
 import json
 from http.cookiejar import CookieJar
 
-from android.webkit import ValueCallback, WebView as A_WebView, WebViewClient
 from java import dynamic_proxy
 
+from android.webkit import ValueCallback, WebViewClient
+from android.webkit import WebView as A_WebView
 from toga.widgets.webview import CookiesResult, JavaScriptResult
 
 from .base import Widget

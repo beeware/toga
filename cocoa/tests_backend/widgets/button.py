@@ -1,7 +1,7 @@
 from pytest import fail, xfail
+from toga_cocoa.libs import NSBezelStyle, NSButton, NSFont
 
 from toga.style.pack import NONE
-from toga_cocoa.libs import NSBezelStyle, NSButton, NSFont
 
 from .base import SimpleProbe
 from .properties import toga_color

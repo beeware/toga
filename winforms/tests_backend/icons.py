@@ -2,10 +2,10 @@ from pathlib import Path
 
 import PIL.Image
 import pytest
+import toga_winforms
 from System.Drawing import Icon as WinIcon
 
 import toga
-import toga_winforms
 
 from .probe import BaseProbe
 

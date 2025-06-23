@@ -1,8 +1,8 @@
 from unittest.mock import Mock
 
-from android.content.pm import PackageManager
-
 from toga_android.app import App
+
+from android.content.pm import PackageManager
 
 from ..app import AppProbe
 

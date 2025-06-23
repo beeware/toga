@@ -1,12 +1,12 @@
 import pytest
-
-import toga
-from toga.style import Pack
 from toga_dummy.utils import (
     assert_action_not_performed,
     assert_action_performed,
     assert_action_performed_with,
 )
+
+import toga
+from toga.style import Pack
 
 
 def test_create_box():

@@ -2,7 +2,6 @@ from unittest.mock import Mock, PropertyMock
 
 import pytest
 from rubicon.objc import ObjCClass
-
 from toga_cocoa import libs as cocoa
 from toga_cocoa.libs import (
     CLAuthorizationStatus,

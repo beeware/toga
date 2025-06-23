@@ -2,7 +2,8 @@ import sys
 
 from System.ComponentModel import InvalidEnumArgumentException
 
-from toga import Command as StandardCommand, Group, Key
+from toga import Command as StandardCommand
+from toga import Group, Key
 from toga_winforms.keys import toga_to_winforms_key, toga_to_winforms_shortcut
 from toga_winforms.libs.wrapper import WeakrefCallable
 

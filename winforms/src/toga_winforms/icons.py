@@ -1,7 +1,8 @@
 import sys
 
 from System import ArgumentException
-from System.Drawing import Bitmap, Icon as WinIcon
+from System.Drawing import Bitmap
+from System.Drawing import Icon as WinIcon
 
 
 class Icon:

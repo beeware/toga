@@ -1,5 +1,3 @@
-from toga.colors import TRANSPARENT
-from toga.constants import RIGHT
 from toga_cocoa.libs import (
     NSLeftTextAlignment,
     NSRange,
@@ -7,6 +5,9 @@ from toga_cocoa.libs import (
     NSTextField,
     NSTextView,
 )
+
+from toga.colors import TRANSPARENT
+from toga.constants import RIGHT
 
 from .base import SimpleProbe
 from .properties import toga_color, toga_text_align

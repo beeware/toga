@@ -1,5 +1,7 @@
 import asyncio
 
+from androidx.swiperefreshlayout.widget import SwipeRefreshLayout
+
 from android.os import SystemClock
 from android.view import KeyEvent
 from android.widget import (
@@ -10,7 +12,6 @@ from android.widget import (
     ScrollView,
     TextView,
 )
-from androidx.swiperefreshlayout.widget import SwipeRefreshLayout
 
 from .base import SimpleProbe, find_view_by_type
 

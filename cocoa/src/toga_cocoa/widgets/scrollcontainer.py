@@ -1,5 +1,4 @@
 from rubicon.objc import SEL, objc_method, objc_property
-from travertino.size import at_least
 
 from toga_cocoa.container import Container
 from toga_cocoa.libs import (
@@ -12,6 +11,7 @@ from toga_cocoa.libs import (
     NSScrollViewDidEndLiveScrollNotification,
     NSScrollViewDidLiveScrollNotification,
 )
+from travertino.size import at_least
 
 from .base import Widget
 

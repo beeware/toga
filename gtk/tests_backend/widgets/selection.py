@@ -1,6 +1,5 @@
 import pytest
 from pytest import skip, xfail
-
 from toga_gtk.libs import GTK_VERSION, Gtk
 
 from .base import SimpleProbe

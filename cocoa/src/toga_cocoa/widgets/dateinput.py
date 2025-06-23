@@ -1,10 +1,10 @@
 import datetime
 
 from rubicon.objc import SEL, objc_method, objc_property
-from travertino.size import at_least
 
 from toga.widgets.dateinput import MAX_DATE, MIN_DATE
 from toga_cocoa.colors import native_color
+from travertino.size import at_least
 
 from ..libs import (
     NSCalendar,

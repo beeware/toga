@@ -1,4 +1,5 @@
-from toga import Command as StandardCommand, Group
+from toga import Command as StandardCommand
+from toga import Group
 
 
 class Command:

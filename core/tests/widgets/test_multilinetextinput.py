@@ -1,9 +1,9 @@
 from unittest.mock import Mock
 
 import pytest
+from toga_dummy.utils import EventLog, assert_action_performed, attribute_value
 
 import toga
-from toga_dummy.utils import EventLog, assert_action_performed, attribute_value
 
 
 @pytest.fixture

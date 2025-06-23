@@ -1,5 +1,3 @@
-from travertino.size import at_least
-
 from toga.widgets.slider import SliderImpl
 from toga_cocoa.libs import (
     SEL,
@@ -8,6 +6,7 @@ from toga_cocoa.libs import (
     objc_method,
     objc_property,
 )
+from travertino.size import at_least
 
 from .base import Widget
 

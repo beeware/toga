@@ -1,8 +1,6 @@
 from unittest.mock import Mock
 
 import pytest
-
-import toga
 from toga_dummy.utils import (
     EventLog,
     assert_action_not_performed,
@@ -11,6 +9,8 @@ from toga_dummy.utils import (
     attribute_value,
 )
 from toga_dummy.widgets.mapview import MapView as DummyMapView
+
+import toga
 
 
 @pytest.fixture

@@ -1,11 +1,9 @@
 import pytest
-
-import toga
-from toga.constants import FlashMode
-from toga.hardware.camera import CameraDevice
 from toga_dummy import factory
 from toga_dummy.hardware.camera import (
     Camera as DummyCamera,
+)
+from toga_dummy.hardware.camera import (
     CameraDevice as DummyCameraDevice,
 )
 from toga_dummy.utils import (
@@ -13,6 +11,10 @@ from toga_dummy.utils import (
     assert_action_performed,
     assert_action_performed_with,
 )
+
+import toga
+from toga.constants import FlashMode
+from toga.hardware.camera import CameraDevice
 
 
 @pytest.fixture

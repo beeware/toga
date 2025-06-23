@@ -1,11 +1,12 @@
-from toga.colors import rgba
-from toga.style.pack import CENTER, JUSTIFY, LEFT, RIGHT
 from toga_cocoa.libs.appkit import (
     NSCenterTextAlignment,
     NSJustifiedTextAlignment,
     NSLeftTextAlignment,
     NSRightTextAlignment,
 )
+
+from toga.colors import rgba
+from toga.style.pack import CENTER, JUSTIFY, LEFT, RIGHT
 
 
 def toga_color(color):

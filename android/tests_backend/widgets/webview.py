@@ -1,7 +1,8 @@
 from http.cookiejar import CookieJar
 
-from android.webkit import WebView
 from pytest import skip
+
+from android.webkit import WebView
 
 from .base import SimpleProbe
 

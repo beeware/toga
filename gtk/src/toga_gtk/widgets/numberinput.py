@@ -1,9 +1,8 @@
 import sys
 from decimal import InvalidOperation
 
-from travertino.size import at_least
-
 from toga.widgets.numberinput import _clean_decimal
+from travertino.size import at_least
 
 from ..libs import GTK_VERSION, Gtk, gtk_text_align
 from .base import Widget

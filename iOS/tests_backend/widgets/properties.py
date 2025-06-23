@@ -1,9 +1,6 @@
 from ctypes import byref
 
 from rubicon.objc import CGFloat
-
-from toga.colors import TRANSPARENT, rgba
-from toga.style.pack import CENTER, JUSTIFY, LEFT, RIGHT
 from toga_iOS.libs import (
     NSCenterTextAlignment,
     NSJustifiedTextAlignment,
@@ -11,6 +8,9 @@ from toga_iOS.libs import (
     NSRightTextAlignment,
     UIColor,
 )
+
+from toga.colors import TRANSPARENT, rgba
+from toga.style.pack import CENTER, JUSTIFY, LEFT, RIGHT
 
 
 def toga_color(color):

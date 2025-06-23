@@ -1,3 +1,5 @@
+from toga_cocoa.libs.appkit import NSFontMask
+
 from toga.fonts import (
     BOLD,
     CURSIVE,
@@ -13,7 +15,6 @@ from toga.fonts import (
     SYSTEM,
     SYSTEM_DEFAULT_FONT_SIZE,
 )
-from toga_cocoa.libs.appkit import NSFontMask
 
 
 class FontMixin:

@@ -3,15 +3,15 @@ from http.cookiejar import Cookie, CookieJar
 from unittest.mock import Mock
 
 import pytest
-
-import toga
-from toga.widgets.webview import JavaScriptResult
 from toga_dummy.utils import (
     assert_action_performed,
     assert_action_performed_with,
     attribute_value,
 )
 from toga_dummy.widgets.webview import WebView as DummyWebView
+
+import toga
+from toga.widgets.webview import JavaScriptResult
 
 
 @pytest.fixture

@@ -1,6 +1,5 @@
 from pytest import xfail
 from rubicon.objc import NSPoint
-
 from toga_cocoa.libs import NSEventType, NSPopUpButton
 
 from .base import SimpleProbe

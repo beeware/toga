@@ -1,14 +1,14 @@
 import sys
 
 import pytest
-
-import toga
 from toga_dummy.utils import (
     EventLog,
     assert_action_not_performed,
     assert_action_performed,
     assert_attribute_not_set,
 )
+
+import toga
 
 
 @pytest.fixture

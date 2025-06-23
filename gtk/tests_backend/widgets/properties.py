@@ -1,8 +1,8 @@
 import pytest
+from toga_gtk.libs import Gtk
 
 from toga.colors import TRANSPARENT, rgba
 from toga.style.pack import BOTTOM, CENTER, JUSTIFY, LEFT, RIGHT, TOP
-from toga_gtk.libs import Gtk
 
 
 def toga_color(color):

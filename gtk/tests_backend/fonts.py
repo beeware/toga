@@ -1,3 +1,5 @@
+from toga_gtk.libs import Pango
+
 from toga.fonts import (
     BOLD,
     ITALIC,
@@ -6,7 +8,6 @@ from toga.fonts import (
     SMALL_CAPS,
     SYSTEM_DEFAULT_FONT_SIZE,
 )
-from toga_gtk.libs import Pango
 
 
 class FontMixin:

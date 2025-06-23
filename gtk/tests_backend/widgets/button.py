@@ -1,7 +1,7 @@
 import pytest
+from toga_gtk.libs import Gtk
 
 from toga.colors import TRANSPARENT
-from toga_gtk.libs import Gtk
 
 from .base import SimpleProbe
 

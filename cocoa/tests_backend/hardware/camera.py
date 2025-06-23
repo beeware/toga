@@ -1,6 +1,5 @@
 from unittest.mock import Mock
 
-from toga.constants import FlashMode
 from toga_cocoa import libs as cocoa
 from toga_cocoa.hardware.camera import TogaCameraWindow
 from toga_cocoa.libs import (
@@ -8,6 +7,8 @@ from toga_cocoa.libs import (
     AVCaptureFlashMode,
     AVMediaTypeVideo,
 )
+
+from toga.constants import FlashMode
 
 from ..app import AppProbe
 

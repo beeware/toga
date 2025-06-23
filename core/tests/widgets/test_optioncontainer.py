@@ -1,8 +1,6 @@
 from unittest.mock import Mock
 
 import pytest
-
-import toga
 from toga_dummy import factory as dummy_factory
 from toga_dummy.utils import (
     EventLog,
@@ -10,6 +8,8 @@ from toga_dummy.utils import (
     assert_action_performed,
     assert_action_performed_with,
 )
+
+import toga
 
 
 @pytest.fixture

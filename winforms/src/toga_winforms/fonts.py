@@ -1,6 +1,8 @@
 from System import ArgumentException
 from System.Drawing import (
     Font as WinFont,
+)
+from System.Drawing import (
     FontFamily,
     FontStyle,
     SystemFonts,

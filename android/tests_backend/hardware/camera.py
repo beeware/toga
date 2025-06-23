@@ -2,9 +2,9 @@ import shutil
 from unittest.mock import Mock
 
 import pytest
-from android.provider import MediaStore
-
 from toga_android.hardware.camera import Camera
+
+from android.provider import MediaStore
 
 from .hardware import HardwareProbe
 

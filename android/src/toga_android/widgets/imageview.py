@@ -1,7 +1,6 @@
 from decimal import ROUND_UP
 
 from android.widget import ImageView as A_ImageView
-
 from toga.widgets.imageview import rehint_imageview
 
 from .base import Widget

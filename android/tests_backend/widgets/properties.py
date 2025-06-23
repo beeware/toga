@@ -1,9 +1,9 @@
+from java import jint
+
 from android.graphics import Color
 from android.os import Build
 from android.text import Layout
 from android.view import Gravity
-from java import jint
-
 from toga.colors import TRANSPARENT, rgba
 from toga.constants import BOTTOM, CENTER, JUSTIFY, LEFT, RIGHT, TOP
 

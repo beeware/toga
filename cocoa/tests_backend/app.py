@@ -2,8 +2,6 @@ from pathlib import Path
 
 import PIL.Image
 from rubicon.objc import SEL, NSPoint, ObjCClass, objc_id, send_message
-
-import toga
 from toga_cocoa.keys import cocoa_key, toga_key
 from toga_cocoa.libs import (
     NSApplication,
@@ -13,6 +11,8 @@ from toga_cocoa.libs import (
     NSPanel,
     NSWindow,
 )
+
+import toga
 
 from .dialogs import DialogsMixin
 from .probe import BaseProbe, NSRunLoop

@@ -1,16 +1,16 @@
 from abc import ABC, abstractmethod
 from decimal import ROUND_HALF_EVEN, Decimal
 
+from org.beeware.android import MainActivity
+
 from android.graphics import PorterDuff, PorterDuffColorFilter
 from android.graphics.drawable import ColorDrawable
 from android.view import Gravity, View
 from android.widget import RelativeLayout
-from org.beeware.android import MainActivity
-from travertino.size import at_least
-
 from toga.colors import TRANSPARENT
 from toga.constants import CENTER, JUSTIFY, LEFT, RIGHT
 from toga_android.colors import native_color
+from travertino.size import at_least
 
 
 class Scalable:

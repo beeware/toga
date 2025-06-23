@@ -1,7 +1,6 @@
 import asyncio
 
 from rubicon.objc import NSMakePoint
-
 from toga_iOS.libs import UIScrollView
 
 from .base import SimpleProbe

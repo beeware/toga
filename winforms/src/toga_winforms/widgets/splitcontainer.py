@@ -1,6 +1,8 @@
 from System.Windows.Forms import (
     BorderStyle,
     Orientation,
+)
+from System.Windows.Forms import (
     SplitContainer as NativeSplitContainer,
 )
 

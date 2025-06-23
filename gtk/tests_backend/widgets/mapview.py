@@ -1,7 +1,6 @@
 import asyncio
 
 import pytest
-
 from toga_gtk.libs import GTK_VERSION, WebKit2
 
 from .base import SimpleProbe

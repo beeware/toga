@@ -1,5 +1,4 @@
 from rubicon.objc import SEL, objc_method, objc_property
-from travertino.size import at_least
 
 from toga_cocoa.libs import (
     NSIndexSet,
@@ -12,6 +11,7 @@ from toga_cocoa.widgets.base import Widget
 from toga_cocoa.widgets.internal.cells import TogaDetailedCell
 from toga_cocoa.widgets.internal.data import TogaData
 from toga_cocoa.widgets.internal.refresh import RefreshableScrollView
+from travertino.size import at_least
 
 
 class TogaList(NSTableView):

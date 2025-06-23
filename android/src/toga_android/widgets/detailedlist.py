@@ -1,12 +1,13 @@
 from dataclasses import dataclass
 
+from java import dynamic_proxy
+
 from android import R
 from android.app import AlertDialog
 from android.content import DialogInterface
 from android.graphics import Color, Rect
 from android.view import Gravity, View
 from android.widget import ImageView, LinearLayout, RelativeLayout, ScrollView, TextView
-from java import dynamic_proxy
 
 try:
     from androidx.swiperefreshlayout.widget import SwipeRefreshLayout
