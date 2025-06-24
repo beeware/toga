@@ -189,7 +189,7 @@ class Window:
         id: str | None = None,
         title: str | None = None,
         position: PositionT | None = None,
-        size: SizeT = Size(640, 480),
+        size: SizeT = (640, 480),
         resizable: bool = True,
         closable: bool = True,
         minimizable: bool = True,

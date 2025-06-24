@@ -1,9 +1,9 @@
 from __future__ import annotations
 
+import contextlib.AbstractContextManager as ContextManager
 from typing import (
     TYPE_CHECKING,
     Any,
-    ContextManager,
     Literal,
     Protocol,
 )
