@@ -39,7 +39,7 @@ class Font:
             attributed_font = _FONT_CACHE[self.interface]
 
         except KeyError:
-            # Check for a system font.
+            # Check for one of the predefined system fonts.
             font_family = self.interface.family
             try:
                 # Built-in fonts have known names; no need to interrogate a file.

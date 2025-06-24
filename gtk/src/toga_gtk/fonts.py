@@ -36,7 +36,7 @@ class Font:
             font = _FONT_CACHE[self.interface]
 
         except KeyError:
-            # Check for a system font.
+            # Check for one of the predefined system fonts.
             if self.interface.family not in SYSTEM_DEFAULT_FONTS:
                 # Check for a user-registered font.
                 font_key = self.interface._registered_font_key(
@@ -47,10 +47,15 @@ class Font:
                 )
                 try:
                     font_path = _REGISTERED_FONT_CACHE[font_key]
-                except KeyError:
 
+                except KeyError:
                     # No, not a user-registered font.
-                    raise UnknownFontError(f"Unknown font '{self.interface}'")
+                    # Check for a font installed on the system.
+                    installed = PangoCairo.FontMap.get_default().get_family(
+                        self.interface.family
+                    )
+                    if installed is None:
+                        raise UnknownFontError(f"Unknown font '{self.interface}'")
 
                 else:
                     # Yes, user has registered this font.

@@ -41,7 +41,7 @@ class Font:
             font = _FONT_CACHE[self.interface]
 
         except KeyError:
-            # Check for a system font.
+            # Check for one of the predefined system fonts.
             try:
                 font_family = {
                     SYSTEM: DEFAULT_FONT.FontFamily,
@@ -69,7 +69,7 @@ class Font:
                     # No, not a user-registered font.
 
                     try:
-                        # Try loading a system-installed font.
+                        # Check for a font installed on the system.
                         font_family = FontFamily(self.interface.family)
                     except ArgumentException:
                         raise UnknownFontError(f"Unknown font '{self.interface}'")
