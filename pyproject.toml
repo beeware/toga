@@ -47,6 +47,7 @@ no-cover-if-gte-py310 = "sys_version_info > (3, 10) and os_environ.get('COVERAGE
 [tool.ruff]
 exclude = [
     ".template",  # Ruff fails to run at all if allowed to lint the cookiecutter syntax
+    "core/src/toga/__init__.pyi"
 ]
 
 [tool.ruff.lint]
@@ -71,14 +72,14 @@ extend-select = [
 ignore = [
 #    "E501",    # line length
 #    "B007",    # loop control variable not used
-#    "B018",    # useless expression
+    "B018",    # useless expression
 #    "B019",    # memory leaks from functools.lru_cache / functools.cache
 #    "B024",    # abstract base class without abstract methods / properties
 #    "B027",    # empty method in abstract base class
 #    "B904",    # use raise ... from ...
 #    "SIM102",  # combine if statements
 #    "SIM103",  # return condition directly
-#    "SIM105",  # use contextlib.suppress() instead of try-except-pass
+    "SIM105",  # use contextlib.suppress() instead of try-except-pass
 #    "SIM108",  # use ternary operators
 #    "SIM115",  # use context manager for opening files
 #    "SIM117",  # combine with statements

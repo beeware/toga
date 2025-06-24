@@ -60,11 +60,6 @@ Funding = "https://beeware.org/contributing/membership/"
 Tracker = "https://github.com/beeware/travertino/issues"
 Source = "https://github.com/beeware/travertino"
 
-[tool.isort]
-profile = "black"
-split_on_trailing_comma = true
-combine_as_imports = true
-
 [tool.setuptools_scm]
 root = ".."
 

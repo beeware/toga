@@ -1,7 +1,3 @@
-# flake8: noqa
-"""
-isort:skip_file
-"""
 from toga.app import App as App
 from toga.app import DocumentApp as DocumentApp
 from toga.colors import hsl as hsl
