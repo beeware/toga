@@ -99,6 +99,19 @@ ignore = [
     "ASYNC110",  # use "asyncio.Event" instead of awaiting "asyncio.sleep" in "while"
 ]
 
+[tool.ruff.lint.isort]
+known-first-party = [
+    "android/src/toga_android",
+    "cocoa/src/toga_cocoa",
+    "core/src/toga",
+    "gtk/src/toga_gtk",
+    "iOS/src/toga_iOS",
+    "textual/src/toga_textual",
+    "travertino/src/travertino",
+    "web/src/toga_web",
+    "winforms/src/toga_winforms",
+]
+
 
 [tool.towncrier]
 directory = "changes"
