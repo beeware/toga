@@ -41,9 +41,10 @@ class IconProbe(BaseProbe):
             }
         elif path == "resources/icons/orange":
             # All icons match the single size .ico
-            assert (self.icon._impl.paths ==
-                    dict.fromkeys([16, 32, 64, 72, 128, 256, 512],
-                                  self.app.paths.app / "resources/icons/orange.ico"))
+            assert self.icon._impl.paths == dict.fromkeys(
+                [16, 32, 64, 72, 128, 256, 512],
+                self.app.paths.app / "resources/icons/orange.ico",
+            )
         else:
             pytest.fail("Unknown icon resource")
 

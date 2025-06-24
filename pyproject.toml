@@ -83,10 +83,12 @@ ignore = [
     "SIM103",    # return condition directly
     "SIM105",    # use contextlib.suppress() instead of try-except-pass
     "SIM108",    # use ternary operators
+    "SIM112",    # Use capitalized environment variable "PATH" instead of "Path"
     "SIM115",    # use context manager for opening files
     "SIM117",    # combine with statements
     "SIM118",    # use "key in dict" instead of "key in dict.keys()"
     "SIM201",    # use "x != y" instead of "not x == y"
+    "SIM211",    # Use "not ..." instead of "False if ... else True"
     "SIM300",    # Yoda condition (0 != x)
     "SIM905",    # use list literal instead of str.split()
     "C400",      # unnecessary generator
@@ -100,6 +102,7 @@ ignore = [
 ]
 
 [tool.ruff.lint.isort]
+combine-as-imports = true
 known-third-party = [
     "android",  # isort defaults to making this first-party for some reason.
     "travertino", # In this repo, but still a separate package
