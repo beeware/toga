@@ -16,8 +16,7 @@ from toga.command import Command, Group, Separator
 from toga.constants import WindowState
 from toga.handlers import NativeHandler
 
-from .command import Command as CommandImpl
-from .command import submenu_for_group
+from .command import Command as CommandImpl, submenu_for_group
 from .libs import (
     NSAboutPanelOptionApplicationIcon,
     NSAboutPanelOptionApplicationName,

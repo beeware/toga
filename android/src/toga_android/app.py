@@ -1,16 +1,16 @@
 import asyncio
 import warnings
 
-from androidx.core.content import ContextCompat
-from java import dynamic_proxy
-from org.beeware.android import IPythonApp, MainActivity
-
-import toga
 from android.content import Context
 from android.graphics.drawable import BitmapDrawable
 from android.media import RingtoneManager
 from android.os import Build
 from android.view import Menu, MenuItem
+from androidx.core.content import ContextCompat
+from java import dynamic_proxy
+from org.beeware.android import IPythonApp, MainActivity
+
+import toga
 from toga.command import Group, Separator
 from toga.dialogs import InfoDialog
 

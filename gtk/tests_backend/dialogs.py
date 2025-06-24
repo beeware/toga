@@ -4,6 +4,7 @@ from pathlib import Path
 from unittest.mock import Mock
 
 import pytest
+
 from toga_gtk.libs import GTK_VERSION, Gtk
 
 

@@ -1,21 +1,19 @@
 import itertools
 from math import degrees
 
-from java import dynamic_proxy, jint
-from java.io import ByteArrayOutputStream
-from org.beeware.android import DrawHandlerView, IDrawHandler
-
 from android.graphics import (
     Bitmap,
+    Canvas as A_Canvas,
     DashPathEffect,
     Matrix,
     Paint,
     Path,
 )
-from android.graphics import (
-    Canvas as A_Canvas,
-)
 from android.view import MotionEvent, View
+from java import dynamic_proxy, jint
+from java.io import ByteArrayOutputStream
+from org.beeware.android import DrawHandlerView, IDrawHandler
+
 from toga.constants import Baseline, FillRule
 from toga.widgets.canvas import arc_to_bezier, sweepangle
 

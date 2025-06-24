@@ -1,7 +1,7 @@
 from PIL.Image import Image as PILImage
-from toga_dummy.utils import assert_action_performed
 
 from toga.images import Image as TogaImage
+from toga_dummy.utils import assert_action_performed
 
 
 def test_name(app):

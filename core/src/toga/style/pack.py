@@ -6,17 +6,8 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
-    from travertino.colors import hsl, rgb
+    from travertino.colors import rgb, hsl
 
-from toga.fonts import (
-    FONT_STYLES,
-    FONT_VARIANTS,
-    FONT_WEIGHTS,
-    SYSTEM_DEFAULT_FONT_SIZE,
-    SYSTEM_DEFAULT_FONTS,
-    Font,
-    UnknownFontError,
-)
 from travertino.constants import (  # noqa: F401
     BOLD,
     BOTTOM,
@@ -52,6 +43,16 @@ from travertino.properties.shorthand import directional_property
 from travertino.properties.validated import list_property, validated_property
 from travertino.size import BaseIntrinsicSize
 from travertino.style import BaseStyle
+
+from toga.fonts import (
+    FONT_STYLES,
+    FONT_VARIANTS,
+    FONT_WEIGHTS,
+    SYSTEM_DEFAULT_FONT_SIZE,
+    SYSTEM_DEFAULT_FONTS,
+    Font,
+    UnknownFontError,
+)
 
 # Make sure deprecation warnings are shown by default
 warnings.filterwarnings("default", category=DeprecationWarning)

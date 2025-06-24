@@ -1,5 +1,4 @@
 from System.Drawing import Color
-
 from travertino.colors import TRANSPARENT, rgba
 
 CACHE = {TRANSPARENT: Color.Transparent}

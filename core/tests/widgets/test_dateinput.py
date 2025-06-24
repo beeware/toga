@@ -2,9 +2,9 @@ from datetime import date, datetime, time
 from unittest.mock import Mock
 
 import pytest
-from toga_dummy.utils import assert_action_performed
 
 import toga
+from toga_dummy.utils import assert_action_performed
 
 
 @pytest.fixture

@@ -1,6 +1,5 @@
-from com.google.android.material.bottomnavigation import BottomNavigationView
-
 from android.widget import LinearLayout
+from com.google.android.material.bottomnavigation import BottomNavigationView
 
 from .base import SimpleProbe
 

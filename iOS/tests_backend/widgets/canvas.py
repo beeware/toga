@@ -3,6 +3,7 @@ from io import BytesIO
 import pytest
 from PIL import Image
 from rubicon.objc import NSObject, NSPoint, ObjCClass, objc_method
+
 from toga_iOS.libs import UIView
 
 from .base import SimpleProbe

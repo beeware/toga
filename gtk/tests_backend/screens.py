@@ -1,7 +1,7 @@
 import pytest
-from toga_gtk.libs import IS_WAYLAND, GdkX11
 
 from toga.images import Image as TogaImage
+from toga_gtk.libs import IS_WAYLAND, GdkX11
 
 from .probe import BaseProbe
 

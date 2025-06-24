@@ -1,4 +1,5 @@
 from pytest import xfail
+
 from toga_cocoa.libs import NSButton
 
 from .base import SimpleProbe

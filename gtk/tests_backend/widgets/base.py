@@ -2,6 +2,7 @@ import asyncio
 from threading import Event
 
 import pytest
+
 from toga_gtk.libs import GTK_VERSION, Gdk, Gtk
 
 from ..fonts import FontMixin

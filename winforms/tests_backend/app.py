@@ -7,9 +7,9 @@ import pytest
 from System import EventArgs
 from System.Drawing import Bitmap, Point
 from System.Windows.Forms import Application, Cursor, ToolStripSeparator
-from toga_winforms.keys import toga_to_winforms_key, winforms_to_toga_key
 
 import toga
+from toga_winforms.keys import toga_to_winforms_key, winforms_to_toga_key
 
 from .dialogs import DialogsMixin
 from .probe import BaseProbe

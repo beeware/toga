@@ -1,5 +1,4 @@
 import pytest
-from toga_dummy.utils import assert_action_performed
 
 from toga.colors import REBECCAPURPLE, rgb
 from toga.constants import FillRule
@@ -10,6 +9,7 @@ from toga.widgets.canvas import (
     LineTo,
     StrokeContext,
 )
+from toga_dummy.utils import assert_action_performed
 
 REBECCA_PURPLE_COLOR = rgb(102, 51, 153)
 

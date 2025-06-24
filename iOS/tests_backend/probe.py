@@ -1,8 +1,7 @@
 import asyncio
 
-from toga_iOS.libs import NSRunLoop, UIScreen
-
 import toga
+from toga_iOS.libs import NSRunLoop, UIScreen
 
 
 class BaseProbe:

@@ -1,10 +1,9 @@
 from abc import ABC, abstractmethod
 from decimal import ROUND_UP
 
-from java import dynamic_proxy
-
 from android.view import View
 from android.widget import EditText
+from java import dynamic_proxy
 from travertino.size import at_least
 
 from ..label import TextViewWidget

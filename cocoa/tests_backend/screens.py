@@ -1,6 +1,5 @@
-from toga_cocoa.libs import NSScreen
-
 from toga.images import Image as TogaImage
+from toga_cocoa.libs import NSScreen
 
 from .probe import BaseProbe
 

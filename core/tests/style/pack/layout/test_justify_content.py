@@ -1,7 +1,7 @@
 import pytest
+from travertino.size import at_least
 
 from toga.style.pack import Pack
-from travertino.size import at_least
 
 from ..utils import ExampleNode, ExampleViewport, assert_layout
 

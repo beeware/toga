@@ -5,15 +5,15 @@ from math import pi
 from typing import Any
 from warnings import filterwarnings, warn
 
-from toga.colors import BLACK
-from toga.colors import color as parse_color
+from travertino.colors import Color
+
+from toga.colors import BLACK, color as parse_color
 from toga.constants import Baseline, FillRule
 from toga.fonts import (
     SYSTEM,
     SYSTEM_DEFAULT_FONT_SIZE,
     Font,
 )
-from travertino.colors import Color
 
 # Make sure deprecation warnings are shown by default
 filterwarnings("default", category=DeprecationWarning)

@@ -1,4 +1,5 @@
 from rubicon.objc import SEL, CGSize, objc_method, objc_property
+from travertino.size import at_least
 
 from toga.constants import LEFT, RIGHT
 from toga_iOS.colors import native_color
@@ -16,7 +17,6 @@ from toga_iOS.libs import (
     UITextField,
 )
 from toga_iOS.widgets.base import Widget
-from travertino.size import at_least
 
 
 class TogaTextField(UITextField):

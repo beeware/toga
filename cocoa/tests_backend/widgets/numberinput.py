@@ -1,4 +1,6 @@
 from rubicon.objc import NSPoint
+
+from toga.colors import TRANSPARENT
 from toga_cocoa.libs import (
     NSEventType,
     NSRange,
@@ -7,8 +9,6 @@ from toga_cocoa.libs import (
     NSTextView,
     NSView,
 )
-
-from toga.colors import TRANSPARENT
 
 from .base import SimpleProbe
 from .properties import toga_color, toga_text_align

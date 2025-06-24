@@ -1,10 +1,10 @@
 from pathlib import Path
 
 import pytest
-from toga_dummy.utils import assert_action_not_performed, assert_action_performed
 
 import toga
 from toga import MenuStatusIcon
+from toga_dummy.utils import assert_action_not_performed, assert_action_performed
 
 
 def test_create(app):

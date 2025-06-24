@@ -1,4 +1,5 @@
 import pytest
+
 from toga_gtk.libs import GTK_VERSION, Gdk, Gtk
 
 from .base import SimpleProbe

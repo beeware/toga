@@ -1,4 +1,5 @@
 from rubicon.objc import SEL, at, objc_method, objc_property
+from travertino.size import at_least
 
 import toga
 from toga_cocoa.libs import (
@@ -13,7 +14,6 @@ from toga_cocoa.libs import (
 from toga_cocoa.widgets.base import Widget
 from toga_cocoa.widgets.internal.cells import TogaIconView
 from toga_cocoa.widgets.internal.data import TogaData
-from travertino.size import at_least
 
 
 def node_impl(node):

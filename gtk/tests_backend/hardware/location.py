@@ -11,6 +11,7 @@ from unittest.mock import Mock
 from weakref import WeakSet
 
 import pytest
+
 from toga_gtk.libs import Geoclue, Gio, GLib, GObject
 
 from ..app import AppProbe

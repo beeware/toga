@@ -1,9 +1,9 @@
 import asyncio
 
 from rubicon.objc import objc_id, send_message
-from toga_cocoa.libs import NSWindow, NSWindowStyleMask
 
 from toga.constants import WindowState
+from toga_cocoa.libs import NSWindow, NSWindowStyleMask
 
 from .dialogs import DialogsMixin
 from .probe import BaseProbe

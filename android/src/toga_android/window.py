@@ -1,17 +1,15 @@
 from decimal import ROUND_UP
 
-from java import dynamic_proxy
-from java.io import ByteArrayOutputStream
-
 from android import R
 from android.content import Context
 from android.graphics import (
     Bitmap,
-)
-from android.graphics import (
     Canvas as A_Canvas,
 )
 from android.view import ViewTreeObserver
+from java import dynamic_proxy
+from java.io import ByteArrayOutputStream
+
 from toga.constants import WindowState
 from toga.types import Position, Size
 

@@ -1,7 +1,8 @@
 from unittest.mock import Mock
 
-from toga.style.applicator import TogaApplicator
 from travertino.node import Node
+
+from toga.style.applicator import TogaApplicator
 
 
 class ExampleNode(Node):

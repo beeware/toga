@@ -1,13 +1,13 @@
 from unittest.mock import MagicMock, call
 
 import pytest
+
+import toga
 from toga_dummy.utils import (
     EventLog,
     assert_action_performed,
     attribute_value,
 )
-
-import toga
 
 
 @pytest.fixture

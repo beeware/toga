@@ -1,7 +1,6 @@
 import asyncio
 
 import pytest
-
 from android.graphics.drawable import (
     ColorDrawable,
     DrawableContainer,
@@ -10,6 +9,7 @@ from android.graphics.drawable import (
 )
 from android.os import Build, SystemClock
 from android.view import MotionEvent, View, ViewGroup
+
 from toga.colors import TRANSPARENT
 from toga.style.pack import JUSTIFY, LEFT
 

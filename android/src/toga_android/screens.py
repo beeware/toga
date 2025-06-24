@@ -1,9 +1,8 @@
 from android.graphics import (
     Bitmap,
-)
-from android.graphics import (
     Canvas as A_Canvas,
 )
+
 from toga.screens import Screen as ScreenInterface
 from toga.types import Position, Size
 

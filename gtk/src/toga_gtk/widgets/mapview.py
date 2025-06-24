@@ -1,7 +1,8 @@
 from concurrent.futures import Future
 
-from toga.types import LatLng
 from travertino.size import at_least
+
+from toga.types import LatLng
 
 from ..libs import GTK_VERSION, Gtk, WebKit2
 from .base import Widget

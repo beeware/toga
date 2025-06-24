@@ -1,15 +1,15 @@
 from unittest.mock import Mock
 
 import pytest
+
+import toga
+from toga.types import Position
 from toga_dummy.utils import (
     EventLog,
     assert_action_not_performed,
     assert_action_performed,
     assert_action_performed_with,
 )
-
-import toga
-from toga.types import Position
 
 
 @pytest.fixture

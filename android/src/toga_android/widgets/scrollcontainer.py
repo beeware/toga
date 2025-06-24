@@ -1,9 +1,8 @@
 from decimal import ROUND_DOWN
 
-from java import dynamic_proxy
-
 from android.view import Gravity, View
 from android.widget import HorizontalScrollView, LinearLayout, ScrollView
+from java import dynamic_proxy
 
 from ..container import Container
 from .base import Widget

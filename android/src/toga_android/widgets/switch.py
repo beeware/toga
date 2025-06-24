@@ -1,12 +1,11 @@
 from decimal import ROUND_UP
 
-from java import dynamic_proxy
-
 from android.view import View
-from android.widget import CompoundButton
-from android.widget import Switch as A_Switch
-from toga_android.widgets.base import ContainedWidget
+from android.widget import CompoundButton, Switch as A_Switch
+from java import dynamic_proxy
 from travertino.size import at_least
+
+from toga_android.widgets.base import ContainedWidget
 
 from .label import TextViewWidget
 

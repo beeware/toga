@@ -13,6 +13,7 @@ from rubicon.objc import (
     objc_method,
     objc_property,
 )
+from travertino.size import at_least
 
 from toga.colors import BLACK, TRANSPARENT, color
 from toga.constants import Baseline, FillRule
@@ -36,7 +37,6 @@ from toga_iOS.libs import (
     uikit,
 )
 from toga_iOS.widgets.base import Widget
-from travertino.size import at_least
 
 
 class TogaCanvas(UIView):

@@ -1,10 +1,9 @@
 from pathlib import Path
 
-from java import dynamic_proxy
-
 from android.graphics import BitmapFactory
 from android.graphics.drawable import BitmapDrawable
 from android.preference import PreferenceManager
+from java import dynamic_proxy
 
 try:
     from org.osmdroid.config import Configuration

@@ -1,8 +1,8 @@
 import asyncio
 
+from android.content import Context
 from androidx.appcompat import R as appcompat_R
 
-from android.content import Context
 from toga.constants import WindowState
 
 from .dialogs import DialogsMixin

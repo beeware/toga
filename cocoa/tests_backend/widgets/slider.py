@@ -1,4 +1,5 @@
 from rubicon.objc import NSPoint
+
 from toga_cocoa.libs import NSEventType, NSSlider
 
 from .base import SimpleProbe

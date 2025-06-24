@@ -2,6 +2,7 @@ from ctypes import c_int
 from decimal import InvalidOperation
 
 from rubicon.objc import SEL, CGSize, NSRange, objc_method, objc_property, send_message
+from travertino.size import at_least
 
 from toga.widgets.numberinput import _clean_decimal
 from toga_iOS.colors import native_color
@@ -13,7 +14,6 @@ from toga_iOS.libs import (
     UITextField,
 )
 from toga_iOS.widgets.base import Widget
-from travertino.size import at_least
 
 
 class TogaNumericTextField(UITextField):

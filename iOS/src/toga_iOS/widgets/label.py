@@ -1,6 +1,7 @@
 from math import ceil
 
 from rubicon.objc import CGRect, NSInteger, NSMakeRect, objc_method, send_super
+from travertino.size import at_least
 
 from toga_iOS.colors import native_color
 from toga_iOS.libs import (
@@ -9,7 +10,6 @@ from toga_iOS.libs import (
     UILabel,
 )
 from toga_iOS.widgets.base import Widget
-from travertino.size import at_least
 
 
 class TogaLabel(UILabel):

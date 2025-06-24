@@ -3,9 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import System.Windows.Forms as WinForms
-from System.Drawing import Bitmap, Graphics, Point
-from System.Drawing import Font as WinFont
-from System.Drawing import Size as WinSize
+from System.Drawing import Bitmap, Font as WinFont, Graphics, Point, Size as WinSize
 from System.Drawing.Imaging import ImageFormat
 from System.IO import MemoryStream
 

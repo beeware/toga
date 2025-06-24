@@ -1,9 +1,9 @@
-from java import dynamic_proxy
-
-import toga
 from android import R
 from android.app import AlertDialog
 from android.content import DialogInterface
+from java import dynamic_proxy
+
+import toga
 
 
 class OnClickListener(dynamic_proxy(DialogInterface.OnClickListener)):

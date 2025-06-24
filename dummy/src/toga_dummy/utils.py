@@ -1,7 +1,6 @@
 from unittest.mock import Mock
 
 import pytest
-
 from travertino.layout import BaseBox
 from travertino.size import BaseIntrinsicSize
 from travertino.style import BaseStyle

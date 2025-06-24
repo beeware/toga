@@ -1,11 +1,11 @@
 from http.cookiejar import Cookie, CookieJar
 
 from rubicon.objc import objc_id, objc_method, objc_property, py_from_ns
+from travertino.size import at_least
 
 from toga.widgets.webview import CookiesResult, JavaScriptResult
 from toga_iOS.libs import NSURL, NSURLRequest, WKWebView
 from toga_iOS.widgets.base import Widget
-from travertino.size import at_least
 
 
 def js_completion_handler(result):

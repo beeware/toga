@@ -1,5 +1,6 @@
 from pytest import skip
 from rubicon.objc import NSPoint
+
 from toga_cocoa.keys import NSEventModifierFlagCommand
 from toga_cocoa.libs import NSEventType, NSScrollView, NSTableView
 

@@ -1,6 +1,10 @@
 from unittest.mock import Mock
 
 import pytest
+
+import toga
+from toga.platform import get_platform_factory
+from toga.style import Pack
 from toga_dummy.utils import (
     EventLog,
     assert_action_not_performed,
@@ -9,10 +13,6 @@ from toga_dummy.utils import (
     assert_attribute_not_set,
     attribute_value,
 )
-
-import toga
-from toga.platform import get_platform_factory
-from toga.style import Pack
 
 from ..utils import ExampleLeafWidget, ExampleWidget
 

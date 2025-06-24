@@ -2,11 +2,11 @@ import sys
 from pathlib import Path
 
 import pytest
-import toga_dummy
-from toga_dummy.icons import Icon as DummyIcon
 
 import toga
+import toga_dummy
 from toga.icons import _APP_ICON
+from toga_dummy.icons import Icon as DummyIcon
 
 APP_RESOURCES = Path(__file__).parent / "resources"
 TOGA_RESOURCES = Path(toga_dummy.__file__).parent / "resources"

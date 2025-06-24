@@ -1,8 +1,3 @@
-from toga_iOS.libs import (
-    UIFontDescriptorTraitBold,
-    UIFontDescriptorTraitItalic,
-)
-
 from toga.fonts import (
     BOLD,
     CURSIVE,
@@ -17,6 +12,10 @@ from toga.fonts import (
     SMALL_CAPS,
     SYSTEM,
     SYSTEM_DEFAULT_FONT_SIZE,
+)
+from toga_iOS.libs import (
+    UIFontDescriptorTraitBold,
+    UIFontDescriptorTraitItalic,
 )
 
 

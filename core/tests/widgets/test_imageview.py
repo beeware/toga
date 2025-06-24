@@ -3,16 +3,16 @@ from unittest.mock import ANY
 
 import PIL.Image
 import pytest
+from travertino.size import at_least
+
+import toga
+from toga.style.pack import Pack
+from toga.widgets.imageview import rehint_imageview
 from toga_dummy.utils import (
     assert_action_not_performed,
     assert_action_performed,
     assert_action_performed_with,
 )
-
-import toga
-from toga.style.pack import Pack
-from toga.widgets.imageview import rehint_imageview
-from travertino.size import at_least
 
 
 @pytest.fixture

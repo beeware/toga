@@ -1,11 +1,11 @@
 from decimal import ROUND_UP
 
-from java import dynamic_proxy
-
 from android.view import View
 from android.widget import Button as A_Button
-from toga.colors import TRANSPARENT
+from java import dynamic_proxy
 from travertino.size import at_least
+
+from toga.colors import TRANSPARENT
 
 from .label import TextViewWidget
 

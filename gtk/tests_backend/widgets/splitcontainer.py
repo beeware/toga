@@ -1,6 +1,7 @@
 import asyncio
 
 import pytest
+
 from toga_gtk.libs import GTK_VERSION, Gtk
 
 from .base import SimpleProbe

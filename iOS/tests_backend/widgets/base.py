@@ -1,5 +1,6 @@
 import pytest
 from rubicon.objc import ObjCClass
+
 from toga_iOS.libs import UIApplication
 
 from ..fonts import FontMixin

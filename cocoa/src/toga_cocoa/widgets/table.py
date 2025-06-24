@@ -1,4 +1,5 @@
 from rubicon.objc import SEL, NSPoint, at, objc_method, objc_property
+from travertino.size import at_least
 
 import toga
 from toga_cocoa.libs import (
@@ -11,7 +12,6 @@ from toga_cocoa.libs import (
     NSTableViewAnimation,
     NSTableViewColumnAutoresizingStyle,
 )
-from travertino.size import at_least
 
 from .base import Widget
 from .internal.cells import TogaIconView

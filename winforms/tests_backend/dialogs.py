@@ -1,8 +1,7 @@
 import asyncio
 from unittest.mock import Mock
 
-from System import Array as WinArray
-from System import String as WinString
+from System import Array as WinArray, String as WinString
 
 
 class DialogsMixin:

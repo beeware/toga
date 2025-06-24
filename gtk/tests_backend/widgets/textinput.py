@@ -1,7 +1,7 @@
 import pytest
-from toga_gtk.libs import GTK_VERSION, Gtk
 
 from toga.constants import JUSTIFY, LEFT
+from toga_gtk.libs import GTK_VERSION, Gtk
 
 from .base import SimpleProbe
 from .properties import toga_x_text_align

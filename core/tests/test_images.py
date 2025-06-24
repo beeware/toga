@@ -2,14 +2,14 @@ from pathlib import Path
 
 import PIL.Image
 import pytest
+
+import toga
 from toga_dummy.plugins.image_formats import (
     CustomImage,
     CustomImageSubclass,
     DisabledImageConverter,
 )
 from toga_dummy.utils import assert_action_performed_with
-
-import toga
 
 RELATIVE_FILE_PATH = Path("resources/sample.png")
 ABSOLUTE_FILE_PATH = Path(__file__).parent / "resources/sample.png"

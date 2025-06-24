@@ -2,6 +2,7 @@ import asyncio
 import re
 
 import pytest
+
 from toga_cocoa.libs import MKMapView
 
 from .base import SimpleProbe

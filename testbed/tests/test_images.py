@@ -5,8 +5,7 @@ import shutil
 from importlib import import_module
 
 import pytest
-from PIL import Image as PIL_Image
-from PIL import ImageDraw as PIL_ImageDraw
+from PIL import Image as PIL_Image, ImageDraw as PIL_ImageDraw
 
 import toga
 

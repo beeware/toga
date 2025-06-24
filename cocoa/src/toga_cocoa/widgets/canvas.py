@@ -1,6 +1,7 @@
 from math import ceil
 
 from rubicon.objc import CGSize, objc_method, objc_property
+from travertino.size import at_least
 
 from toga.colors import BLACK, TRANSPARENT, color
 from toga.constants import Baseline, FillRule
@@ -26,7 +27,6 @@ from toga_cocoa.libs import (
     kCGPathFill,
     kCGPathStroke,
 )
-from travertino.size import at_least
 
 from .base import Widget
 

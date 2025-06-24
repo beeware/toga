@@ -2,6 +2,7 @@ import asyncio
 from ctypes import c_int64, c_uint32, c_uint64
 
 from rubicon.objc import CGPoint, NSPoint
+
 from toga_cocoa.libs import (
     CGEventRef,
     NSEvent,

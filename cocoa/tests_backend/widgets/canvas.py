@@ -2,10 +2,10 @@ from io import BytesIO
 
 from PIL import Image, ImageCms
 from rubicon.objc import NSPoint
-from toga_cocoa.libs import NSEventType, NSView
 
 from toga.colors import TRANSPARENT
 from toga.images import Image as TogaImage
+from toga_cocoa.libs import NSEventType, NSView
 
 from .base import SimpleProbe
 from .properties import toga_color

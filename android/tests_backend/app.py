@@ -1,9 +1,9 @@
 from pathlib import Path
 
 import pytest
+from android import R
 from org.beeware.android import MainActivity
 
-from android import R
 from toga import Group
 
 from .dialogs import DialogsMixin

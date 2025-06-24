@@ -1,6 +1,5 @@
-from toga_iOS.libs import UIScreen
-
 from toga.images import Image as TogaImage
+from toga_iOS.libs import UIScreen
 
 from .probe import BaseProbe
 

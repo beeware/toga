@@ -1,14 +1,14 @@
 from unittest.mock import Mock
 
 import pytest
+
+from toga.command import Command
+from toga.statusicons import MenuStatusIcon, SimpleStatusIcon, StatusIconSet
 from toga_dummy.utils import (
     EventLog,
     assert_action_not_performed,
     assert_action_performed,
 )
-
-from toga.command import Command
-from toga.statusicons import MenuStatusIcon, SimpleStatusIcon, StatusIconSet
 
 
 @pytest.fixture

@@ -4,10 +4,8 @@ from pathlib import Path
 import System.Windows.Forms as WinForms
 from System.Drawing import (
     ContentAlignment,
-    FontFamily,
-)
-from System.Drawing import (
     Font as WinFont,
+    FontFamily,
 )
 from System.Windows.Forms import DialogResult, MessageBoxButtons, MessageBoxIcon
 

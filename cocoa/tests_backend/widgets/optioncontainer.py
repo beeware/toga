@@ -1,4 +1,5 @@
 from rubicon.objc import SEL, send_message
+
 from toga_cocoa.libs import NSTabView
 
 from .base import SimpleProbe

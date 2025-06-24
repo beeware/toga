@@ -2,10 +2,10 @@ from pathlib import Path
 from unittest.mock import Mock
 
 import pytest
-from toga_dummy.utils import assert_action_performed_with
 
 import toga
 from toga.command import Separator
+from toga_dummy.utils import assert_action_performed_with
 
 
 def assert_order(*items):

@@ -1,9 +1,9 @@
 from pathlib import Path
 
 import pytest
-import toga_android
-
 from android.graphics import Bitmap
+
+import toga_android
 
 from .probe import BaseProbe
 

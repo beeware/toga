@@ -1,9 +1,9 @@
 from decimal import ROUND_UP
 
 import System.Windows.Forms as WinForms
+from travertino.size import at_least
 
 from toga.colors import TRANSPARENT
-from travertino.size import at_least
 
 from ..libs.wrapper import WeakrefCallable
 from .base import Widget

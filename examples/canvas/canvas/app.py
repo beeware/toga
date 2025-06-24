@@ -1,12 +1,13 @@
 import math
 import sys
 
+from travertino.constants import BLACK, BLUE, BOLD, GREEN, ITALIC, NORMAL, RED, YELLOW
+
 import toga
 from toga.constants import Baseline, FillRule
 from toga.fonts import CURSIVE, FANTASY, MESSAGE, MONOSPACE, SANS_SERIF, SERIF, SYSTEM
 from toga.style import Pack
 from toga.style.pack import COLUMN, ROW
-from travertino.constants import BLACK, BLUE, BOLD, GREEN, ITALIC, NORMAL, RED, YELLOW
 
 MOVE_STEP = 5
 

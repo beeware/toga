@@ -3,8 +3,8 @@ import sys
 from unittest.mock import Mock
 
 import pytest
-import toga_dummy
 
+import toga_dummy
 from toga.platform import current_platform, get_current_platform, get_platform_factory
 
 

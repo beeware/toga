@@ -2,6 +2,7 @@ import asyncio
 import os
 
 from rubicon.objc.api import Block, ObjCClass
+
 from toga_iOS.libs import (
     NSIndexPath,
     NSPoint,

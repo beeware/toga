@@ -1,8 +1,8 @@
-from toga_android.widgets.base import Scalable
+from android.view import Display
 
 import toga
-from android.view import Display
 from toga.images import Image as TogaImage
+from toga_android.widgets.base import Scalable
 
 from .probe import BaseProbe
 

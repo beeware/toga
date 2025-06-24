@@ -2,9 +2,9 @@ from unittest.mock import Mock
 
 import pytest
 from pytest import approx, fixture, raises
-from toga_dummy.utils import assert_action_performed, attribute_value
 
 import toga
+from toga_dummy.utils import assert_action_performed, attribute_value
 
 INITIAL_VALUE = 50
 INITIAL_MIN = 0

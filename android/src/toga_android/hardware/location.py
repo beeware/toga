@@ -1,14 +1,14 @@
 from __future__ import annotations
 
-from java import dynamic_proxy
-from java.util import List
-from java.util.function import Consumer
-
 from android import Manifest
 from android.content import Context
 from android.content.pm import PackageManager
 from android.location import LocationListener, LocationManager
 from android.os import Build
+from java import dynamic_proxy
+from java.util import List
+from java.util.function import Consumer
+
 from toga import LatLng
 
 

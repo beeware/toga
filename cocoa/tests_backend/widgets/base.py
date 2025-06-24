@@ -1,12 +1,12 @@
 from rubicon.objc import NSPoint
+
+from toga.colors import TRANSPARENT
 from toga_cocoa.keys import (
     NSEventModifierFlagCommand,
     NSEventModifierFlagControl,
     NSEventModifierFlagShift,
 )
 from toga_cocoa.libs import NSEvent, NSEventType
-
-from toga.colors import TRANSPARENT
 
 from ..fonts import FontMixin
 from ..probe import BaseProbe

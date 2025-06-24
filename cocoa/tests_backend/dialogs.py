@@ -1,6 +1,7 @@
 from unittest.mock import Mock
 
 from rubicon.objc.collections import ObjCListInstance
+
 from toga_cocoa.libs import (
     NSURL,
     NSAlertFirstButtonReturn,

@@ -2,8 +2,7 @@ import sys
 
 from rubicon.objc import SEL
 
-from toga import Command as StandardCommand
-from toga import Group, Key
+from toga import Command as StandardCommand, Group, Key
 from toga_cocoa.keys import cocoa_key
 from toga_cocoa.libs import NSMenu, NSMenuItem
 
