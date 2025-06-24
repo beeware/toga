@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from .constants import *  # noqa: F405
+from .constants import *  # noqa: F405, F403
 
 
 class Color:
@@ -19,9 +19,8 @@ class Color:
     def _validate_between(cls, content_name, value, min_value, max_value):
         if value < min_value or value > max_value:
             raise ValueError(
-                "{} value should be between {}-{}. Got {}".format(
-                    content_name, min_value, max_value, value
-                )
+                f"{content_name} value should be between {min_value}-{max_value}. "
+                f"Got {value}."
             )
 
     @classmethod
@@ -478,7 +477,7 @@ def color(value):
             except KeyError:
                 pass
 
-    raise ValueError("Unknown color %s" % value)
+    raise ValueError(f"Unknown color {value}")
 
 
 NAMED_COLOR = {

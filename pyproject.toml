@@ -70,27 +70,31 @@ extend-select = [
 # instances of these errors were caught.  Many if not all of these are candidates
 # for future fixes throughout the project.
 ignore = [
-#    "E501",    # line length
-#    "B007",    # loop control variable not used
+    "E501",    # line length
+    "B007",    # loop control variable not used
+    "B015",    # pointless comparison
     "B018",    # useless expression
-#    "B019",    # memory leaks from functools.lru_cache / functools.cache
-#    "B024",    # abstract base class without abstract methods / properties
-#    "B027",    # empty method in abstract base class
-#    "B904",    # use raise ... from ...
-#    "SIM102",  # combine if statements
-#    "SIM103",  # return condition directly
+    "B019",    # memory leaks from functools.lru_cache / functools.cache
+    "B024",    # abstract base class without abstract methods / properties
+    "B027",    # empty method in abstract base class
+    "B904",    # use raise ... from ...
+    "SIM102",  # combine if statements
+    "SIM103",  # return condition directly
     "SIM105",  # use contextlib.suppress() instead of try-except-pass
-#    "SIM108",  # use ternary operators
-#    "SIM115",  # use context manager for opening files
-#    "SIM117",  # combine with statements
-#    "SIM118",  # use "key in dict" instead of "key in dict.keys()"
-#    "SIM201",  # use "x != y" instead of "not x == y"
-#    "SIM300",  # Yoda condition (0 != x)
-#    "SIM905",  # use list literal instead of str.split()
-#    "C400",    # unnecessary generator
-#    "C408",    # use dict literal instead of dict()
-#    "C414",    # unnecessary list() use within sorted()
-#    "C416",    # unnecessary list comprehension
+    "SIM108",  # use ternary operators
+    "SIM115",  # use context manager for opening files
+    "SIM117",  # combine with statements
+    "SIM118",  # use "key in dict" instead of "key in dict.keys()"
+    "SIM201",  # use "x != y" instead of "not x == y"
+    "SIM300",  # Yoda condition (0 != x)
+    "SIM905",  # use list literal instead of str.split()
+    "C400",    # unnecessary generator
+    "C408",    # use dict literal instead of dict()
+    "C414",    # unnecessary list() use within sorted()
+    "C416",    # unnecessary list comprehension
+    "F405",    # variable may be undefined
+    "UP031",   # use format specifiers instead of percent format
+    "UP032",   # Use f-string instead of "format" call
 ]
 
 

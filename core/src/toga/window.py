@@ -669,6 +669,7 @@ class Window:
         warnings.warn(
             "info_dialog(...) has been deprecated; use dialog(toga.InfoDialog(...))",
             DeprecationWarning,
+            stacklevel=2,
         )
 
         result = Dialog(
@@ -690,6 +691,7 @@ class Window:
             "question_dialog(...) has been deprecated; "
             "use dialog(toga.QuestionDialog(...))",
             DeprecationWarning,
+            stacklevel=2,
         )
 
         result = Dialog(
@@ -711,6 +713,7 @@ class Window:
             "confirm_dialog(...) has been deprecated; "
             "use dialog(toga.ConfirmDialog(...))",
             DeprecationWarning,
+            stacklevel=2,
         )
 
         result = Dialog(
@@ -731,6 +734,7 @@ class Window:
         warnings.warn(
             "error_dialog(...) has been deprecated; use dialog(toga.ErrorDialog(...))",
             DeprecationWarning,
+            stacklevel=2,
         )
 
         result = Dialog(
@@ -754,6 +758,7 @@ class Window:
             "stack_trace_dialog(...) has been deprecated; "
             "use dialog(toga.StackTraceDialog(...))",
             DeprecationWarning,
+            stacklevel=2,
         )
 
         result = Dialog(
@@ -781,6 +786,7 @@ class Window:
             "save_file_dialog(...) has been deprecated; "
             "use dialog(toga.SaveFileDialog(...))",
             DeprecationWarning,
+            stacklevel=2,
         )
         result = Dialog(
             self,
@@ -812,6 +818,7 @@ class Window:
             "open_file_dialog(...) has been deprecated; "
             "use dialog(toga.OpenFileDialog(...))",
             DeprecationWarning,
+            stacklevel=2,
         )
         result = Dialog(
             self,
@@ -843,6 +850,7 @@ class Window:
             "select_folder_dialog(...) has been deprecated; "
             "use dialog(toga.SelectFolderDialog(...))",
             DeprecationWarning,
+            stacklevel=2,
         )
         result = Dialog(
             self,
@@ -869,6 +877,7 @@ class Window:
         warnings.warn(
             ("`Window.full_screen` is deprecated. Use `Window.state` instead."),
             DeprecationWarning,
+            stacklevel=2,
         )
         return bool(self.state == WindowState.FULLSCREEN)
 
@@ -877,6 +886,7 @@ class Window:
         warnings.warn(
             ("`Window.full_screen` is deprecated. Use `Window.state` instead."),
             DeprecationWarning,
+            stacklevel=2,
         )
         target_state = WindowState.FULLSCREEN if is_full_screen else WindowState.NORMAL
         if self.state != target_state:

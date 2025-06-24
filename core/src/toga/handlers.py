@@ -50,6 +50,7 @@ async def long_running_task(
         "Use of generators for async handlers has been deprecated; convert "
         "the handler to an async co-routine that uses `asyncio.sleep()`.",
         DeprecationWarning,
+        stacklevel=2,
     )
     try:
         try:
@@ -215,6 +216,7 @@ class AsyncResult(ABC):
                 "Synchronous `on_result` handlers have been deprecated; "
                 "use `await` on the asynchronous result",
                 DeprecationWarning,
+                stacklevel=2,
             )
 
             self.on_result = on_result

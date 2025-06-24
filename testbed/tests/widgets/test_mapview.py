@@ -120,9 +120,9 @@ async def test_zoom(widget, probe):
 
         # Get the longitude span associated with a 256px tile.
         tile_span = await probe.tile_longitude_span()
-        assert (
-            min_span < tile_span < max_span
-        ), f"Zoom level {zoom}: failed {min_span} < {tile_span} < {max_span}"
+        assert min_span < tile_span < max_span, (
+            f"Zoom level {zoom}: failed {min_span} < {tile_span} < {max_span}"
+        )
 
         assert widget.zoom == zoom
 

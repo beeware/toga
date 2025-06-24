@@ -31,7 +31,7 @@ async def test_question_dialog(app, app_probe, result):
     app_probe.setup_question_dialog_result(dialog, result)
 
     await app_probe.redraw(
-        "Display app modal question dialog; " f"respond {'YES' if result else 'NO'}"
+        f"Display app modal question dialog; respond {'YES' if result else 'NO'}"
     )
     actual = await app.dialog(dialog)
 
@@ -47,7 +47,7 @@ async def test_confirm_dialog(app, app_probe, result):
     app_probe.setup_confirm_dialog_result(dialog, result)
 
     await app_probe.redraw(
-        "Display app modal confirm dialog; " f"respond {'OK' if result else 'CANCEL'}"
+        f"Display app modal confirm dialog; respond {'OK' if result else 'CANCEL'}"
     )
     actual = await app.dialog(dialog)
 

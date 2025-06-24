@@ -39,9 +39,9 @@ class ExampleOptionContainerApp(toga.App):
     async def on_enable_option(self, button):
         index = int(self.select_option.value)
         try:
-            self.optioncontainer.content[index].enabled = (
-                not self.optioncontainer.content[index].enabled
-            )
+            self.optioncontainer.content[
+                index
+            ].enabled = not self.optioncontainer.content[index].enabled
         except ValueError as e:
             await self.main_window.dialog(toga.InfoDialog("Oops", str(e)))
 
