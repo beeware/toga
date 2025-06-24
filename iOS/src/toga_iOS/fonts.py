@@ -94,9 +94,7 @@ class Font:
                 # (https://developer.apple.com/library/archive/documentation/GraphicsAnimation/Conceptual/HighResolutionOSX/Explained/Explained.html).
                 size = self.interface.size * 96 / 72
 
-            if font_family == SYSTEM:
-                font = UIFont.systemFontOfSize(size)
-            elif font_family == MESSAGE:
+            if font_family == SYSTEM or font_family == MESSAGE:
                 font = UIFont.systemFontOfSize(size)
             else:
                 font = UIFont.fontWithName(custom_font_name, size=size)

@@ -185,11 +185,7 @@ class Window(Container):
             self.set_window_state(state)
 
         else:  # current_state == WindowState.NORMAL:
-            if state == WindowState.MAXIMIZED:
-                # no-op on Android.
-                pass
-
-            elif state == WindowState.MINIMIZED:
+            if state == WindowState.MAXIMIZED or state == WindowState.MINIMIZED:
                 # no-op on Android.
                 pass
 

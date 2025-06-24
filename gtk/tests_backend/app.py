@@ -228,7 +228,7 @@ class AppProbe(BaseProbe, DialogsMixin):
                 "!": Gdk.KEY_exclam,
                 "<home>": Gdk.KEY_Home,
                 "F5": Gdk.KEY_F5,
-            }.get(accel, None),
+            }.get(accel),
         )
 
         event = Gdk.Event.new(Gdk.EventType.KEY_PRESS)
