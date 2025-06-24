@@ -119,7 +119,6 @@ known-first-party = [
     "toga_winforms",
 ]
 
-
 [tool.towncrier]
 directory = "changes"
 package = "toga"

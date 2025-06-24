@@ -4,7 +4,6 @@ from dataclasses import dataclass
 from unittest.mock import Mock
 
 import pytest
-
 from travertino.colors import hsl, hsla, rgb, rgba
 
 if sys.version_info < (3, 10):

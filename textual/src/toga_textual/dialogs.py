@@ -1,12 +1,11 @@
 from pathlib import Path
 
-from toga_textual.window import TitleBar
-
 import toga
 from textual.app import ComposeResult
 from textual.containers import Horizontal, Vertical, VerticalScroll
 from textual.screen import ModalScreen
 from textual.widgets import Button, DirectoryTree, Input, Label, Static
+from toga_textual.window import TitleBar
 
 
 class TextualDialog(ModalScreen[bool]):

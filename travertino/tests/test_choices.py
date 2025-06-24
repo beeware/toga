@@ -3,7 +3,6 @@ from __future__ import annotations
 from warnings import catch_warnings, filterwarnings
 
 import pytest
-
 from travertino.colors import NAMED_COLOR, rgb
 from travertino.constants import GOLDENROD, NONE, REBECCAPURPLE, TOP
 from travertino.properties.choices import Choices

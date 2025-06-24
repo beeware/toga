@@ -1,7 +1,6 @@
 from typing import NamedTuple
 
 import pytest
-
 from travertino.size import BaseIntrinsicSize, at_least
 
 

@@ -1,5 +1,4 @@
 import pytest
-
 from travertino.colors import hsl, hsla, rgb, rgba
 
 

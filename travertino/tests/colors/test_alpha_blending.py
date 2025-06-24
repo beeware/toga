@@ -1,7 +1,6 @@
 import re
 
 import pytest
-
 from travertino.colors import hsl, hsla, rgb, rgba
 
 from ..utils import assert_equal_color
