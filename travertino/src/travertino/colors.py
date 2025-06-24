@@ -301,14 +301,14 @@ class rgb(rgba):
 class hsla(Color):
     "A representation of an HSLA color."
 
-    def __init__(self, h, s, l, a=1.0):
+    def __init__(self, h, s, l, a=1.0):  # noqa: E741
         self._validate_between("hue", h, 0, 360)
         self._validate_partial("saturation", s)
         self._validate_partial("lightness", l)
         self._validate_alpha(a)
         self.h = h
         self.s = s
-        self.l = l  # NOQA; E741
+        self.l = l
         self.a = a
 
     def __hash__(self):
@@ -364,7 +364,7 @@ class hsla(Color):
 class hsl(hsla):
     "A representation of an HSL color"
 
-    def __init__(self, h, s, l):
+    def __init__(self, h, s, l):  # noqa: E741
         super().__init__(h, s, l, 1.0)
 
     def __repr__(self):
