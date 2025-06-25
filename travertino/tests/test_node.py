@@ -2,6 +2,7 @@ from unittest.mock import Mock, call
 from warnings import catch_warnings, filterwarnings
 
 import pytest
+
 from travertino.layout import BaseBox, Viewport
 from travertino.node import Node
 from travertino.properties.validated import validated_property

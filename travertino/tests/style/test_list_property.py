@@ -1,6 +1,7 @@
 from collections.abc import Sequence
 
 import pytest
+
 from travertino.properties.immutablelist import ImmutableList
 
 from .style_classes import VALUE1, VALUE2, VALUE3, Style

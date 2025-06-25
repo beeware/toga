@@ -1,6 +1,7 @@
 from unittest.mock import Mock
 
 import pytest
+
 from travertino.properties.choices import Choices
 
 from ..utils import apply_dataclass, mock_apply

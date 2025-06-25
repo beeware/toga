@@ -9,11 +9,6 @@ repos:
       - id: check-docstring-first
       - id: end-of-file-fixer
       - id: trailing-whitespace
-  - repo: https://github.com/asottile/pyupgrade
-    rev: v3.19.1
-    hooks:
-      - id: pyupgrade
-        args: [--py39-plus]
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.11.13
     hooks:

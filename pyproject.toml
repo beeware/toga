@@ -95,7 +95,6 @@ ignore = [
     "C408",      # use dict literal instead of dict()
     "C414",      # unnecessary list() use within sorted()
     "C416",      # unnecessary list comprehension
-    "F405",      # variable may be undefined
     "UP031",     # use format specifiers instead of percent format
     "UP032",     # use f-string instead of "format" call
     "ASYNC110",  # use "asyncio.Event" instead of awaiting "asyncio.sleep" in "while"

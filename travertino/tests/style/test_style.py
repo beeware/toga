@@ -1,4 +1,5 @@
 import pytest
+
 from travertino.properties.validated import list_property, validated_property
 
 from .style_classes import (

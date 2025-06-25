@@ -641,4 +641,4 @@ __all__ = [
     "color",
     "NAMED_COLOR",
     "TRANSPARENT",
-] + [name.upper() for name in NAMED_COLOR.keys()]
+] + [name.upper() for name in NAMED_COLOR]

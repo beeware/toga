@@ -45,7 +45,7 @@ class BaseStyle:
         try:
             self.update(**properties)
             self.__post_init__()
-        except NameError:
+        except NameError as error:
             # It still makes sense for update() to raise a NameError. However, here we
             # simulate the behavior of the dataclass-generated __init__() for
             # consistency.
@@ -56,7 +56,7 @@ class BaseStyle:
                     raise TypeError(
                         f"{type(self).__name__}.__init__() got an unexpected keyword "
                         f"argument '{name}'"
-                    )
+                    ) from error
             # The above for loop should never run to completion, so that needs to be
             # excluded from coverage.
             else:  # pragma: no cover
@@ -84,12 +84,13 @@ class BaseStyle:
                 warn(
                     (
                         "Failed to apply style when assigning applicator, or when "
-                        "assigning a new style once applicator is present. Node should be "
-                        "sufficiently initialized to apply its style before it is assigned "
-                        "an applicator. This will be an exception in a future version.\n"
-                        "This error probably means you've updated Travertino to 0.5.0 but "
-                        "are still using Toga <= 0.4.8; to fix, either update Toga to "
-                        ">= 0.5.0, or pin Travertino to 0.3.0."
+                        "assigning a new style once applicator is present. Node should "
+                        "be sufficiently initialized to apply its style before it is "
+                        "assigned an applicator. This will be an exception in a future "
+                        "version.\n"
+                        "This error probably means you've updated Travertino to 0.5.0 "
+                        "but are still using Toga <= 0.4.8; to fix, either update Toga "
+                        "to >= 0.5.0, or pin Travertino to 0.3.0."
                     ),
                     RuntimeWarning,
                     stacklevel=2,
@@ -112,9 +113,9 @@ class BaseStyle:
                 (
                     "Providing an applicator to BaseStyle.copy() is deprecated. Set "
                     "applicator afterward on the returned copy.\n"
-                    "This error probably means you've updated Travertino to 0.5.0 but are "
-                    "still using Toga <= 0.4.8; to fix, either update Toga to >= 0.5.0, or "
-                    "pin Travertino to 0.3.0."
+                    "This error probably means you've updated Travertino to 0.5.0 but "
+                    "are still using Toga <= 0.4.8; to fix, either update Toga to >= "
+                    "0.5.0, or pin Travertino to 0.3.0."
                 ),
                 DeprecationWarning,
                 stacklevel=2,
@@ -166,8 +167,8 @@ class BaseStyle:
             cls = type(self).__name__
             warn(
                 (
-                    f"Calling {cls}.apply() with multiple arguments is deprecated. Use the "
-                    f'"with {cls}.batch_apply():" context manager instead.'
+                    f"Calling {cls}.apply() with multiple arguments is deprecated. "
+                    f'Use the "with {cls}.batch_apply():" context manager instead.'
                 ),
                 DeprecationWarning,
                 stacklevel=2,
@@ -313,8 +314,8 @@ class BaseStyle:
                 "BaseStyle.reapply() is deprecated; call .apply with no arguments "
                 "instead.\n"
                 "This error probably means you've updated Travertino to 0.5.0 but are "
-                "still using Toga <= 0.4.8; to fix, either update Toga to >= 0.5.0, or pin "
-                "Travertino to 0.3.0."
+                "still using Toga <= 0.4.8; to fix, either update Toga to >= 0.5.0, or "
+                "pin Travertino to 0.3.0."
             ),
             DeprecationWarning,
             stacklevel=2,
@@ -328,8 +329,8 @@ class BaseStyle:
                 "Defining style properties with class methods is deprecated; use class "
                 "attributes instead.\n"
                 "This error probably means you've updated Travertino to 0.5.0 but are "
-                "still using Toga <= 0.4.8; to fix, either update Toga to >= 0.5.0, or pin "
-                "Travertino to 0.3.0."
+                "still using Toga <= 0.4.8; to fix, either update Toga to >= 0.5.0, or "
+                "pin Travertino to 0.3.0."
             ),
             DeprecationWarning,
             stacklevel=2,
@@ -352,8 +353,8 @@ class BaseStyle:
                 "Defining style properties with class methods is deprecated; use class "
                 "attributes instead.\n"
                 "This error probably means you've updated Travertino to 0.5.0 but are "
-                "still using Toga <= 0.4.8; to fix, either update Toga to >= 0.5.0, or pin "
-                "Travertino to 0.3.0."
+                "still using Toga <= 0.4.8; to fix, either update Toga to >= 0.5.0, or "
+                "pin Travertino to 0.3.0."
             ),
             DeprecationWarning,
             stacklevel=2,

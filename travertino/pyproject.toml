@@ -80,3 +80,34 @@ source = [
 
 [tool.pytest.ini_options]
 asyncio_default_fixture_loop_scope = "function"
+
+[tool.ruff.lint]
+# In addition to the default rules, these additional rules will be used:
+extend-select = [
+    "E",      # pycodestyle
+    "W",      # pycodestyle
+    "F",      # pyflakes
+    "UP",     # pyupgrade
+    "B",      # flake8-bugbear
+    "SIM",    # flake8-simplify
+    "YTT",    # flake8-2020
+    "ASYNC",  # flake8-async
+    "C4",     # flake8-comprehensions
+    "I",      # isort
+]
+
+# Below is a list of ignored rules.  Many (if not all) of these have been disabled
+# to facilitate a smooth transition from tools like black and isort to ruff, where
+# instances of these errors were caught.  Many if not all of these are candidates
+# for future fixes throughout the project.
+ignore = [
+    "F405",      # variable may be undefined
+]
+
+[tool.ruff.lint.isort]
+combine-as-imports = true
+known-third-party = [
+]
+known-first-party = [
+    "travertino"
+]

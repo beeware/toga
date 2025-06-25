@@ -1,4 +1,5 @@
 import pytest
+
 from travertino.constants import (
     BOLD,
     ITALIC,
