@@ -345,7 +345,7 @@ class hsla(Color):
         elif h < 4.0:
             r, g, b = m, x + m, c + m
         elif h < 5.0:
-            r, g, b = m, x + m, c + m
+            r, g, b = x + m, m, c + m
         else:
             r, g, b = c + m, m, x + m
 
