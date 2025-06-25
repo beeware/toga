@@ -20,7 +20,7 @@ class Color:
         if value < min_value or value > max_value:
             raise ValueError(
                 f"{content_name} value should be between {min_value}-{max_value}. "
-                f"Got {value}."
+                f"Got {value}"
             )
 
     @classmethod
