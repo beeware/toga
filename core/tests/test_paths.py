@@ -51,8 +51,7 @@ def assert_paths(output, app_path, app_name):
         f"{(Path.home() / 'cache' / f'org.testbed.{app_name}').resolve()}"
     ) in results
     assert (
-        f"app.paths.logs="
-        f"{(Path.home() / 'logs' / f'org.testbed.{app_name}').resolve()}"
+        f"app.paths.logs={(Path.home() / 'logs' / f'org.testbed.{app_name}').resolve()}"
     ) in results
     assert f"app.paths.toga={Path(toga.__file__).parent.resolve()}" in results
 

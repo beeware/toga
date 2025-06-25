@@ -162,7 +162,7 @@ def autodoc_process_signature(
         bases = [
             base
             for base in obj.__bases__
-            if (base != object) and not base.__module__.startswith("travertino.")
+            if base is not object and not base.__module__.startswith("travertino.")
         ]
         if bases:
             options.show_inheritance = True

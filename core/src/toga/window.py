@@ -189,7 +189,7 @@ class Window:
         id: str | None = None,
         title: str | None = None,
         position: PositionT | None = None,
-        size: SizeT = Size(640, 480),
+        size: SizeT = (640, 480),
         resizable: bool = True,
         closable: bool = True,
         minimizable: bool = True,
@@ -669,6 +669,7 @@ class Window:
         warnings.warn(
             "info_dialog(...) has been deprecated; use dialog(toga.InfoDialog(...))",
             DeprecationWarning,
+            stacklevel=2,
         )
 
         result = Dialog(
@@ -687,9 +688,12 @@ class Window:
     ) -> Dialog:
         """**DEPRECATED** - await :meth:`dialog` with a :any:`QuestionDialog`"""
         warnings.warn(
-            "question_dialog(...) has been deprecated; "
-            "use dialog(toga.QuestionDialog(...))",
+            (
+                "question_dialog(...) has been deprecated; "
+                "use dialog(toga.QuestionDialog(...))"
+            ),
             DeprecationWarning,
+            stacklevel=2,
         )
 
         result = Dialog(
@@ -708,9 +712,12 @@ class Window:
     ) -> Dialog:
         """**DEPRECATED** - await :meth:`dialog` with a :any:`ConfirmDialog`"""
         warnings.warn(
-            "confirm_dialog(...) has been deprecated; "
-            "use dialog(toga.ConfirmDialog(...))",
+            (
+                "confirm_dialog(...) has been deprecated; "
+                "use dialog(toga.ConfirmDialog(...))"
+            ),
             DeprecationWarning,
+            stacklevel=2,
         )
 
         result = Dialog(
@@ -731,6 +738,7 @@ class Window:
         warnings.warn(
             "error_dialog(...) has been deprecated; use dialog(toga.ErrorDialog(...))",
             DeprecationWarning,
+            stacklevel=2,
         )
 
         result = Dialog(
@@ -751,9 +759,12 @@ class Window:
     ) -> Dialog:
         """**DEPRECATED** - await :meth:`dialog` with a :any:`StackTraceDialog`"""
         warnings.warn(
-            "stack_trace_dialog(...) has been deprecated; "
-            "use dialog(toga.StackTraceDialog(...))",
+            (
+                "stack_trace_dialog(...) has been deprecated; "
+                "use dialog(toga.StackTraceDialog(...))"
+            ),
             DeprecationWarning,
+            stacklevel=2,
         )
 
         result = Dialog(
@@ -778,9 +789,12 @@ class Window:
     ) -> Dialog:
         """**DEPRECATED** - await :meth:`dialog` with a :any:`SaveFileDialog`"""
         warnings.warn(
-            "save_file_dialog(...) has been deprecated; "
-            "use dialog(toga.SaveFileDialog(...))",
+            (
+                "save_file_dialog(...) has been deprecated; "
+                "use dialog(toga.SaveFileDialog(...))"
+            ),
             DeprecationWarning,
+            stacklevel=2,
         )
         result = Dialog(
             self,
@@ -809,9 +823,12 @@ class Window:
     ) -> Dialog:
         """**DEPRECATED** - await :meth:`dialog` with an :any:`OpenFileDialog`"""
         warnings.warn(
-            "open_file_dialog(...) has been deprecated; "
-            "use dialog(toga.OpenFileDialog(...))",
+            (
+                "open_file_dialog(...) has been deprecated; "
+                "use dialog(toga.OpenFileDialog(...))"
+            ),
             DeprecationWarning,
+            stacklevel=2,
         )
         result = Dialog(
             self,
@@ -840,9 +857,12 @@ class Window:
     ) -> Dialog:
         """**DEPRECATED** - await :meth:`dialog` with a :any:`SelectFolderDialog`"""
         warnings.warn(
-            "select_folder_dialog(...) has been deprecated; "
-            "use dialog(toga.SelectFolderDialog(...))",
+            (
+                "select_folder_dialog(...) has been deprecated; "
+                "use dialog(toga.SelectFolderDialog(...))"
+            ),
             DeprecationWarning,
+            stacklevel=2,
         )
         result = Dialog(
             self,
@@ -867,16 +887,18 @@ class Window:
     def full_screen(self) -> bool:
         """**DEPRECATED** – Use :any:`Window.state`."""
         warnings.warn(
-            ("`Window.full_screen` is deprecated. Use `Window.state` instead."),
+            "`Window.full_screen` is deprecated. Use `Window.state` instead.",
             DeprecationWarning,
+            stacklevel=2,
         )
         return bool(self.state == WindowState.FULLSCREEN)
 
     @full_screen.setter
     def full_screen(self, is_full_screen: bool) -> None:
         warnings.warn(
-            ("`Window.full_screen` is deprecated. Use `Window.state` instead."),
+            "`Window.full_screen` is deprecated. Use `Window.state` instead.",
             DeprecationWarning,
+            stacklevel=2,
         )
         target_state = WindowState.FULLSCREEN if is_full_screen else WindowState.NORMAL
         if self.state != target_state:

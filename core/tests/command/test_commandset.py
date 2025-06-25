@@ -357,7 +357,9 @@ def test_default_command_ordering(app):
         (
             (obj.group.text, obj.id)
             if isinstance(obj, toga.Command)
-            else "---" if isinstance(obj, Separator) else "?"
+            else "---"
+            if isinstance(obj, Separator)
+            else "?"
         )
         for obj in app.commands
     ] == [

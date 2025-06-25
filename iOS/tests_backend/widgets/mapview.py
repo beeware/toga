@@ -61,7 +61,6 @@ class MapViewProbe(SimpleProbe):
         await self.redraw(f"{pin.title} pin has been selected")
 
     async def wait_for_map(self, message, max_delay=0.5):
-
         def region_eq(r1, r2):
             return (
                 pytest.approx(r1.span.latitudeDelta)

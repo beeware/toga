@@ -7,7 +7,7 @@ from toga.images import Image as TogaImage
 
 def screen_probe(screen):
     module = import_module("tests_backend.screens")
-    return getattr(module, "ScreenProbe")(screen)
+    return module.ScreenProbe(screen)
 
 
 async def test_name(app):

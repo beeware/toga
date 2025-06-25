@@ -138,13 +138,13 @@ def test_conditional_alias_invald(alias, properties):
     )
     style = Style(**properties)
     with pytest.raises(AttributeError, match=error_msg):
-        style[alias]
+        _ = style[alias]
 
     with pytest.raises(AttributeError, match=error_msg):
         style[alias] = 15
 
     with pytest.raises(AttributeError, match=error_msg):
-        alias in style
+        _ = alias in style
 
     with pytest.raises(AttributeError, match=error_msg):
         del style[alias]

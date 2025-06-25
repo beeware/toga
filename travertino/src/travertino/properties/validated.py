@@ -76,11 +76,11 @@ class validated_property:
     def validate(self, value):
         try:
             return self.choices.validate(value)
-        except ValueError:
+        except ValueError as error:
             raise ValueError(
                 f"Invalid value {value!r} for property{self._name_if_set}; "
                 f"Valid values are: {self.choices}"
-            )
+            ) from error
 
     def is_set_on(self, style):
         return hasattr(style, f"_{self.name}")
@@ -108,11 +108,11 @@ class list_property(validated_property):
         for item in value:
             try:
                 item = self.choices.validate(item)
-            except ValueError:
+            except ValueError as error:
                 raise ValueError(
                     f"Invalid item value {item!r} for list "
                     f"property{self._name_if_set}; Valid values are: {self.choices}"
-                )
+                ) from error
             result.append(item)
 
         return ImmutableList(result)
