@@ -60,8 +60,7 @@ def assert_background_color(actual, expected):
         # For comparison when expected is a single value object
         else:
             if (expected == TRANSPARENT) or (
-                expected.a
-                == 0
+                expected.a == 0
                 # Since a color having an alpha value of 0 cannot be deblended to
                 # get the exact original color, as deblending in such cases would
                 # lead to a division by zero error. So, just check that widget and

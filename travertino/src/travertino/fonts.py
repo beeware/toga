@@ -28,8 +28,8 @@ class Font:
                     self.size = int(size[:-2])
                 else:
                     raise ValueError(f"Invalid font size {size!r}")
-            except Exception:
-                raise ValueError(f"Invalid font size {size!r}")
+            except Exception as exc:
+                raise ValueError(f"Invalid font size {size!r}") from exc
         self.style = style if style in FONT_STYLES else NORMAL
         self.variant = variant if variant in FONT_VARIANTS else NORMAL
         self.weight = weight if weight in FONT_WEIGHTS else NORMAL

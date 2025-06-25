@@ -267,8 +267,7 @@ class Camera:
             if self.interface.app.is_bundled:
                 raise RuntimeError(msg)
             else:
-                warnings.warn(msg)
-
+                warnings.warn(msg, stacklevel=2)
         self.preview_windows = []
 
     def has_permission(self, allow_unknown=False):

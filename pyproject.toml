@@ -44,15 +44,70 @@ no-cover-if-gte-py311 = "sys_version_info > (3, 11) and os_environ.get('COVERAGE
 no-cover-if-lt-py310 = "sys_version_info < (3, 10) and os_environ.get('COVERAGE_EXCLUDE_PYTHON_VERSION') != 'disable'"
 no-cover-if-gte-py310 = "sys_version_info > (3, 10) and os_environ.get('COVERAGE_EXCLUDE_PYTHON_VERSION') != 'disable'"
 
-[tool.isort]
-profile = "black"
-split_on_trailing_comma = true
-combine_as_imports = true
-known_third_party = [
-    "android",  # isort defaults to making this first-party for some reason.
+[tool.ruff]
+exclude = [
+    ".template",  # Ruff fails to run at all if allowed to lint the cookiecutter syntax
+    "core/src/toga/__init__.pyi"
+]
+
+[tool.ruff.lint]
+# In addition to the default rules, these additional rules will be used:
+extend-select = [
+    "E",      # pycodestyle
+    "W",      # pycodestyle
+    "F",      # pyflakes
+    "UP",     # pyupgrade
+    "B",      # flake8-bugbear
+    "SIM",    # flake8-simplify
+    "YTT",    # flake8-2020
+    "ASYNC",  # flake8-async
+    "C4",     # flake8-comprehensions
+    "I",      # isort
+]
+
+# Below is a list of ignored rules.  Many (if not all) of these have been disabled
+# to facilitate a smooth transition from tools like black and isort to ruff, where
+# instances of these errors were caught.  Many if not all of these are candidates
+# for future fixes throughout the project.
+ignore = [
+    "E501",      # line length
+    "B007",      # loop control variable not used
+    "B015",      # pointless comparison
+    "B018",      # useless expression
+    "B019",      # memory leaks from functools.lru_cache / functools.cache
+    "B023",      # Function definition does not bind loop variable
+    "B024",      # abstract base class without abstract methods / properties
+    "B027",      # empty method in abstract base class
+    "B904",      # use raise ... from ...
+    "SIM102",    # combine if statements
+    "SIM103",    # return condition directly
+    "SIM105",    # use contextlib.suppress() instead of try-except-pass
+    "SIM108",    # use ternary operators
+    "SIM112",    # Use capitalized environment variable "PATH" instead of "Path"
+    "SIM115",    # use context manager for opening files
+    "SIM117",    # combine with statements
+    "SIM118",    # use "key in dict" instead of "key in dict.keys()"
+    "SIM201",    # use "x != y" instead of "not x == y"
+    "SIM211",    # Use "not ..." instead of "False if ... else True"
+    "SIM300",    # Yoda condition (0 != x)
+    "SIM905",    # use list literal instead of str.split()
+    "C400",      # unnecessary generator
+    "C408",      # use dict literal instead of dict()
+    "C414",      # unnecessary list() use within sorted()
+    "C416",      # unnecessary list comprehension
+    "UP031",     # use format specifiers instead of percent format
+    "UP032",     # use f-string instead of "format" call
+    "ASYNC110",  # use "asyncio.Event" instead of awaiting "asyncio.sleep" in "while"
+]
+
+[tool.ruff.lint.isort]
+combine-as-imports = true
+known-third-party = [
+    "android",  # isort defaults to making this first-party because it can't be imported.
+    "textual",  # We don't ever import textual, so Ruff doesn't know about it.
     "travertino", # In this repo, but still a separate package
 ]
-known_first_party = [
+known-first-party = [
     "testbed",
     "toga",
     "toga_android",
@@ -60,10 +115,10 @@ known_first_party = [
     "toga_dummy",
     "toga_gtk",
     "toga_iOS",
+    "toga_textual",
     "toga_web",
     "toga_winforms",
 ]
-extend_skip = ["travertino"]
 
 [tool.towncrier]
 directory = "changes"

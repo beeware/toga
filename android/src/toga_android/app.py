@@ -358,6 +358,7 @@ class App:
         warnings.warn(
             "intent_result has been deprecated; use start_activity",
             DeprecationWarning,
+            stacklevel=2,
         )
         try:
             result_future = asyncio.Future()

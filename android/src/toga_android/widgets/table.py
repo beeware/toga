@@ -168,7 +168,10 @@ class Table(Widget):
             None,
         )
         if isinstance(value, toga.Widget):
-            warn("This backend does not support the use of widgets in cells")
+            warn(
+                "This backend does not support the use of widgets in cells",
+                stacklevel=2,
+            )
             value = None
         if isinstance(value, tuple):  # TODO: support icons
             value = value[1]

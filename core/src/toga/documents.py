@@ -136,7 +136,7 @@ class Document(ABC):
 
     # A document is writable if its class overrides the `write` method.
     def _writable(self):
-        return getattr(type(self), "write") is not Document.write
+        return type(self).write is not Document.write
 
     def show(self) -> None:
         """Show the visual representation for this document."""
