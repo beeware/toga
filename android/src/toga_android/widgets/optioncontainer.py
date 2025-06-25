@@ -221,7 +221,10 @@ class OptionContainer(Widget, Container):
                 option.menu_item.setChecked(True)
             self.interface.on_select()
         else:
-            warnings.warn("Tab is outside selectable range", stacklevel=2)
+            warnings.warn(
+                "Tab is outside selectable range",
+                stacklevel=2,
+            )
 
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)

@@ -267,7 +267,10 @@ class Camera:
             if self.interface.app.is_bundled:
                 raise RuntimeError(msg)
             else:
-                warnings.warn(msg, stacklevel=2)
+                warnings.warn(
+                    msg,
+                    stacklevel=2,
+                )
 
         self.preview_windows = []
 

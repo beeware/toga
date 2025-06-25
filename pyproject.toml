@@ -115,6 +115,7 @@ known-first-party = [
     "toga_dummy",
     "toga_gtk",
     "toga_iOS",
+    "toga_textual",
     "toga_web",
     "toga_winforms",
 ]

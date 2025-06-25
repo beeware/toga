@@ -111,7 +111,8 @@ class OptionContainer(Widget):
             tabview._setTabEnabled(enabled)
         except AttributeError:  # pragma: no cover
             warnings.warn(
-                "Private Cocoa method _setTabEnabled: has been removed!", stacklevel=2
+                "Private Cocoa method _setTabEnabled: has been removed!",
+                stacklevel=2,
             )
 
     def is_option_enabled(self, index):

@@ -29,7 +29,8 @@ class TogaRow(GObject.Object):
         data = getattr(self.value, attr, None)
         if isinstance(data, toga.Widget):
             warnings.warn(
-                "GTK does not support the use of widgets in cells", stacklevel=2
+                "GTK does not support the use of widgets in cells",
+                stacklevel=2,
             )
             text = None
         elif isinstance(data, tuple):

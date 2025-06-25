@@ -58,7 +58,10 @@ class Font:
                         # Debian Buster doesn't include the typelib file in any package,
                         # but it works even without a cache_clear, so continue with a
                         # warning.
-                        warn(import_error.format("PangoFc"), stacklevel=2)
+                        warn(
+                            import_error.format("PangoFc"),
+                            stacklevel=2,
+                        )
                     else:
                         # Ubuntu 22.04 includes the typelib file in gir1.2-pango-1.0,
                         # and it does require a cache_clear to make new fonts visible
