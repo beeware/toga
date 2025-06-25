@@ -128,16 +128,20 @@ class OptionContainer(Widget, Container):
         # Create a menu item for the tab
         if index >= self.max_items:
             warnings.warn(
-                f"OptionContainer is limited to {self.max_items} items on "
-                "Android. Additional item will be ignored.",
+                (
+                    f"OptionContainer is limited to {self.max_items} items on "
+                    "Android. Additional item will be ignored."
+                ),
                 stacklevel=2,
             )
             option.menu_item = None
         else:
             if len(self.options) > self.max_items:
                 warnings.warn(
-                    f"OptionContainer is limited to {self.max_items} items on "
-                    "Android. Excess items will be ignored.",
+                    (
+                        f"OptionContainer is limited to {self.max_items} items on "
+                        "Android. Excess items will be ignored."
+                    ),
                     stacklevel=2,
                 )
                 last_option = self.options[self.max_items - 1]
