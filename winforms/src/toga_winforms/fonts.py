@@ -73,6 +73,9 @@ class Font:
                         font_family = FontFamily(self.interface.family)
                     except ArgumentException:
                         raise UnknownFontError(f"Unknown font '{self.interface}'")
+                    else:
+                        # So that Coverage see this...
+                        pass
 
                 else:
                     # Yes, user has registered this font.
