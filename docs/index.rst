@@ -35,13 +35,13 @@ single-page web apps, and console apps.
 
 :doc:`A quick Toga demonstration <tutorial/get-started>` and a :doc:`a hands-on introduction to Toga </tutorial/index>`.
 
-:ref:`How-to <how-to>`
-----------------------
+:ref:`How-to guides <how-to>`
+-----------------------------
 
 Guides and recipes for common problems and tasks, including how to :doc:`contribute to Toga <how-to/contribute/index>`.
 
-:ref:`Topics <topic>`
-----------------------
+:ref:`Topic Guides <topics>`
+----------------------------
 
 Deeper explorations of concepts and issues related to Toga usage.
 
