@@ -174,14 +174,10 @@ if toga.platform.current_platform in {"iOS", "android"}:
             final_state,
         }:
             pytest.xfail("This backend doesn't support fullscreen window state.")
-        if (
-            not main_window_probe.supports_presentation
-            and WindowState.PRESENTATION
-            in {
-                initial_state,
-                final_state,
-            }
-        ):
+        if not main_window_probe.supports_presentation and WindowState.PRESENTATION in {
+            initial_state,
+            final_state,
+        }:
             pytest.xfail("This backend doesn't support presentation window state.")
 
         # Set to initial state

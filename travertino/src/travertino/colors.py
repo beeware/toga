@@ -1,7 +1,6 @@
 from __future__ import annotations
 
-# flake8: NOQA: F405
-from .constants import *
+from .constants import *  # noqa: F405, F403
 
 
 class Color:
@@ -20,9 +19,8 @@ class Color:
     def _validate_between(cls, content_name, value, min_value, max_value):
         if value < min_value or value > max_value:
             raise ValueError(
-                "{} value should be between {}-{}. Got {}".format(
-                    content_name, min_value, max_value, value
-                )
+                f"{content_name} value should be between {min_value}-{max_value}. "
+                f"Got {value}"
             )
 
     @classmethod
@@ -301,14 +299,14 @@ class rgb(rgba):
 class hsla(Color):
     "A representation of an HSLA color."
 
-    def __init__(self, h, s, l, a=1.0):
+    def __init__(self, h, s, l, a=1.0):  # noqa: E741
         self._validate_between("hue", h, 0, 360)
         self._validate_partial("saturation", s)
         self._validate_partial("lightness", l)
         self._validate_alpha(a)
         self.h = h
         self.s = s
-        self.l = l  # NOQA; E741
+        self.l = l
         self.a = a
 
     def __hash__(self):
@@ -345,7 +343,7 @@ class hsla(Color):
         elif h < 4.0:
             r, g, b = m, x + m, c + m
         elif h < 5.0:
-            r, g, b = m, x + m, c + m
+            r, g, b = x + m, m, c + m
         else:
             r, g, b = c + m, m, x + m
 
@@ -364,7 +362,7 @@ class hsla(Color):
 class hsl(hsla):
     "A representation of an HSL color"
 
-    def __init__(self, h, s, l):
+    def __init__(self, h, s, l):  # noqa: E741
         super().__init__(h, s, l, 1.0)
 
     def __repr__(self):
@@ -479,7 +477,7 @@ def color(value):
             except KeyError:
                 pass
 
-    raise ValueError("Unknown color %s" % value)
+    raise ValueError(f"Unknown color {value}")
 
 
 NAMED_COLOR = {
@@ -643,4 +641,4 @@ __all__ = [
     "color",
     "NAMED_COLOR",
     "TRANSPARENT",
-] + [name.upper() for name in NAMED_COLOR.keys()]
+] + [name.upper() for name in NAMED_COLOR]

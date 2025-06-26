@@ -74,7 +74,6 @@ class Font:
                         # if it's already registered.
                         custom_font_name = _CUSTOM_FONT_NAMES[font_path]
                     except KeyError:
-
                         # Attempt to register the font file.
                         if Path(font_path).is_file():
                             font_url = NSURL.fileURLWithPath(font_path)

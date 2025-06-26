@@ -29,12 +29,17 @@ async def test_start_stop(widget, probe):
 
     # Widget should now be started
     assert widget.is_running
+    # Use the probe to do it, as some platforms need additional
+    # checks and some cannot return definite values, but we
+    # also don't want to xfail the whole test.
+    probe.assert_is_hidden(False)
 
     widget.stop()
     await probe.redraw("Activity Indicator should be stopped")
 
     # Widget should now be stopped
     assert not widget.is_running
+    probe.assert_is_hidden(True)
 
 
 async def test_fixed_square_widget_size(widget, probe):

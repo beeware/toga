@@ -110,7 +110,7 @@ class ExampleFocusApp(toga.App):
         self.info_label.text = f"Switch turned {on_off}!"
 
     def on_textinput_gain_focus(self, widget: toga.TextInput, **kwargs):
-        self.info_label.text = "TextInput has previously had focus " "{} times".format(
+        self.info_label.text = "TextInput has previously had focus {} times".format(
             self.text_input_focus_count
         )
 

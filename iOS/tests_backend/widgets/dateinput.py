@@ -36,9 +36,7 @@ class DateTimeInputProbe(SimpleProbe, ABC):
 
     @property
     def background_color(self):
-        pytest.xfail(
-            "Background color is not readable on the native API for DateInput on iOS"
-        )
+        pytest.xfail("Background color is not implemented for DateInput on iOS")
 
     @property
     def value(self):

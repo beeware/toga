@@ -85,7 +85,10 @@ class Camera:
 
     def take_photo(self, result, device, flash):
         if not self.has_camera:
-            warnings.warn("No camera is available")
+            warnings.warn(
+                "No camera is available",
+                stacklevel=2,
+            )
             result.set_result(None)
         elif self.has_permission():
             # We have permission; go directly to taking the photo.

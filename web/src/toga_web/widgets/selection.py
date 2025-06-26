@@ -6,7 +6,6 @@ from .base import Widget
 
 
 class Selection(Widget):
-
     def create(self):
         self.native = self._create_native_widget("sl-select")
         self.native.addEventListener("sl-change", create_proxy(self.dom_sl_change))

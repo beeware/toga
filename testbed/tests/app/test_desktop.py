@@ -290,12 +290,12 @@ async def test_presentation_mode(app, app_probe, main_window, main_window_probe)
         ), f"{window_information['window'].title}:"
         # 1000x700 is bigger than the original window size,
         # while being smaller than any likely screen.
-        assert (
-            window_information["window_probe"].content_size[0] > 1000
-        ), f"{window_information['window'].title}:"
-        assert (
-            window_information["window_probe"].content_size[1] > 700
-        ), f"{window_information['window'].title}:"
+        assert window_information["window_probe"].content_size[0] > 1000, (
+            f"{window_information['window'].title}:"
+        )
+        assert window_information["window_probe"].content_size[1] > 700, (
+            f"{window_information['window'].title}:"
+        )
         assert (
             window_information["widget_probe"].width
             > window_information["initial_widget_size"][0]
@@ -447,7 +447,7 @@ async def test_presentation_mode_exit_on_window_state_change(
     window1.state = new_window_state
     # Wait for window animation before assertion.
     await window1_probe.wait_for_window(
-        "App is not in presentation mode" f"\nTest Window 1 is in {new_window_state}",
+        f"App is not in presentation mode\nTest Window 1 is in {new_window_state}",
         state=new_window_state,
     )
 
@@ -480,7 +480,7 @@ async def test_presentation_mode_exit_on_window_state_change(
     window2.state = new_window_state
     # Wait for window animation before assertion.
     await window2_probe.wait_for_window(
-        "App is not in presentation mode" f"\nTest Window 2 is in {new_window_state}",
+        f"App is not in presentation mode\nTest Window 2 is in {new_window_state}",
         state=new_window_state,
     )
 
