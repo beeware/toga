@@ -70,34 +70,16 @@ extend-select = [
 # instances of these errors were caught.  Many if not all of these are candidates
 # for future fixes throughout the project.
 ignore = [
-    "E501",      # line length
-    "B007",      # loop control variable not used
-    "B015",      # pointless comparison
-    "B018",      # useless expression
-    "B019",      # memory leaks from functools.lru_cache / functools.cache
-    "B023",      # Function definition does not bind loop variable
     "B024",      # abstract base class without abstract methods / properties
-    "B027",      # empty method in abstract base class
     "B904",      # use raise ... from ...
-    "SIM102",    # combine if statements
-    "SIM103",    # return condition directly
-    "SIM105",    # use contextlib.suppress() instead of try-except-pass
-    "SIM108",    # use ternary operators
-    "SIM112",    # Use capitalized environment variable "PATH" instead of "Path"
-    "SIM115",    # use context manager for opening files
-    "SIM117",    # combine with statements
-    "SIM118",    # use "key in dict" instead of "key in dict.keys()"
-    "SIM201",    # use "x != y" instead of "not x == y"
-    "SIM211",    # Use "not ..." instead of "False if ... else True"
-    "SIM300",    # Yoda condition (0 != x)
-    "SIM905",    # use list literal instead of str.split()
-    "C400",      # unnecessary generator
-    "C408",      # use dict literal instead of dict()
-    "C414",      # unnecessary list() use within sorted()
-    "C416",      # unnecessary list comprehension
-    "UP031",     # use format specifiers instead of percent format
-    "UP032",     # use f-string instead of "format" call
     "ASYNC110",  # use "asyncio.Event" instead of awaiting "asyncio.sleep" in "while"
+
+    # These two, specifically, can affect code coverage. If enabled, we should consider
+    # ignore them on a case-by-case basis. (Of particular note: Coverage misses
+    # implicit else branches of try blocks, see
+    # https://github.com/nedbat/coveragepy/issues/877.)
+    "SIM108",    # use ternary operators
+    "SIM105",    # use contextlib.suppress() instead of try-except-pass
 ]
 
 [tool.ruff.lint.isort]

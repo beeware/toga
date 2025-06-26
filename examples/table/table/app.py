@@ -38,9 +38,7 @@ class ExampleTableApp(toga.App):
 
     def on_select_handler2(self, widget, **kwargs):
         if self.table2.selection is not None:
-            self.label_table2.text = "Rows selected: {}".format(
-                len(self.table2.selection)
-            )
+            self.label_table2.text = f"Rows selected: {len(self.table2.selection)}"
         else:
             self.label_table2.text = "No row selected"
 

@@ -42,7 +42,7 @@ async def test_start_stop_determinate(widget, probe):
     # Change the progress bar values
     for value in [20, 40, 60.5, 85]:
         widget.value = value
-        await probe.redraw("Widget value should be %s" % value)
+        await probe.redraw(f"Widget value should be {value}")
 
         # Probe is still running; value has been updated
         assert widget.is_running

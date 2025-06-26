@@ -168,7 +168,7 @@ class Document(ABC):
         :attr:`~toga.Document.path`, and populate the document window.
         """
 
-    def write(self) -> None:
+    def write(self) -> None:  # noqa: B027 (it's intentionally blank)
         """Persist a representation of the current state of the document.
 
         This method is a no-op by default, to allow for read-only document types.
@@ -285,15 +285,16 @@ class DocumentSet(Sequence[Document], Mapping[Path, Document]):
         # content into the existing window. This is actually implemented by creating a
         # new window and disposing of the old one; mark the current window for cleanup
         current_window = self.app.current_window
-        if self.app._impl.CLOSE_ON_LAST_WINDOW:
-            if hasattr(self.app.current_window, "_commit"):
-                if await self.app.current_window._commit():
-                    current_window._replace = True
-                else:
-                    # The changes in the current document window couldn't be committed
-                    # (e.g., a save was requested, but then cancelled), so we can't
-                    # proceed with opening a new document.
-                    return
+        if self.app._impl.CLOSE_ON_LAST_WINDOW and hasattr(
+            self.app.current_window, "_commit"
+        ):
+            if await self.app.current_window._commit():
+                current_window._replace = True
+            else:
+                # The changes in the current document window couldn't be committed
+                # (e.g., a save was requested, but then cancelled), so we can't
+                # proceed with opening a new document.
+                return
 
         self._open_dialog = dialogs.OpenFileDialog(
             self.app.formal_name,
@@ -429,17 +430,13 @@ class DocumentWindow(MainWindow):
         return self.doc.title
 
     async def _confirm_close(self, window, **kwargs):
-        if self.doc.modified:
-            if await self.dialog(
-                toga.QuestionDialog(
-                    "Save changes?",
-                    (
-                        "This document has unsaved changes. "
-                        "Do you want to save these changes?"
-                    ),
-                )
-            ):
-                return await self.save()
+        if self.doc.modified and await self.dialog(
+            toga.QuestionDialog(
+                "Save changes?",
+                "This document has unsaved changes. Do you want to save these changes?",
+            )
+        ):
+            return await self.save()
         return True
 
     async def _commit(self):

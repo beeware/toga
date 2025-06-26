@@ -26,7 +26,7 @@ class FontMixin:
         return self.native.Font
 
     def assert_font_options(self, weight=NORMAL, style=NORMAL, variant=NORMAL):
-        assert BOLD if self.font.Bold else NORMAL == weight
+        assert BOLD if self.font.Bold else weight == NORMAL
 
         if style == OBLIQUE:
             print("Interpreting OBLIQUE font as ITALIC")
@@ -37,7 +37,7 @@ class FontMixin:
         if variant == SMALL_CAPS:
             print("Ignoring SMALL CAPS font test")
         else:
-            assert NORMAL == variant
+            assert variant == NORMAL
 
     @property
     def font_size(self):

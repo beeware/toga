@@ -6,7 +6,7 @@ from toga.style import Pack
 class ExampleOptionContainerApp(toga.App):
     def _create_options(self):
         self._box_count = 0
-        for i in range(3):
+        for _ in range(3):
             self.optioncontainer.content.append(*self._create_option())
         self._refresh_select()
 

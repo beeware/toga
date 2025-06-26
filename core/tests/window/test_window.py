@@ -63,8 +63,8 @@ def test_window_created_explicit(app):
     assert window.app == app
     assert window.content == window_content
 
-    window_content.window == window
-    window_content.app == app
+    assert window_content.window == window
+    assert window_content.app == app
 
     assert window._impl.interface == window
     assert_action_performed(window, "create Window")
@@ -192,7 +192,7 @@ def test_position_cascade(app):
     """The initial position of windows will cascade."""
     windows = [app.main_window]
 
-    for i in range(0, 14):
+    for i in range(14):
         win = toga.Window(title=f"Window {i}")
         # The for the first 14 new windows (the app creates the first window)
         # the x and y coordinates must be the same
@@ -921,7 +921,7 @@ def test_deprecated_info_dialog(window, app):
         match=r"Can't check dialog result directly; use await or an on_result handler",
     ):
         # Perform a synchronous comparison; this will raise a runtime error
-        dialog == 1
+        dialog == 1  # noqa: B015
 
     assert app._impl.loop.run_until_complete(dialog) is None
 
@@ -968,7 +968,7 @@ def test_deprecated_question_dialog(window, app):
         match=r"Can't check dialog result directly; use await or an on_result handler",
     ):
         # Perform a synchronous comparison; this will raise a runtime error
-        dialog == 1
+        dialog == 1  # noqa: B015
 
     assert app._impl.loop.run_until_complete(dialog)
 
@@ -1015,7 +1015,7 @@ def test_deprecated_confirm_dialog(window, app):
         match=r"Can't check dialog result directly; use await or an on_result handler",
     ):
         # Perform a synchronous comparison; this will raise a runtime error
-        dialog == 1
+        dialog == 1  # noqa: B015
 
     assert app._impl.loop.run_until_complete(dialog)
 
@@ -1062,7 +1062,7 @@ def test_deprecated_error_dialog(window, app):
         match=r"Can't check dialog result directly; use await or an on_result handler",
     ):
         # Perform a synchronous comparison; this will raise a runtime error
-        dialog == 1
+        dialog == 1  # noqa: B015
 
     assert app._impl.loop.run_until_complete(dialog) is None
 
@@ -1114,7 +1114,7 @@ def test_deprecated_stack_trace_dialog(window, app):
         match=r"Can't check dialog result directly; use await or an on_result handler",
     ):
         # Perform a synchronous comparison; this will raise a runtime error
-        dialog == 1
+        dialog == 1  # noqa: B015
 
     assert app._impl.loop.run_until_complete(dialog) is None
 
@@ -1168,7 +1168,7 @@ def test_deprecated_save_file_dialog(window, app):
         match=r"Can't check dialog result directly; use await or an on_result handler",
     ):
         # Perform a synchronous comparison; this will raise a runtime error
-        dialog == 1
+        dialog == 1  # noqa: B015
 
     assert app._impl.loop.run_until_complete(dialog) is saved_file
 
@@ -1223,7 +1223,7 @@ def test_deprecated_save_file_dialog_default_directory(window, app):
         match=r"Can't check dialog result directly; use await or an on_result handler",
     ):
         # Perform a synchronous comparison; this will raise a runtime error
-        dialog == 1
+        dialog == 1  # noqa: B015
 
     assert app._impl.loop.run_until_complete(dialog) is saved_file
 
@@ -1277,7 +1277,7 @@ def test_deprecated_open_file_dialog(window, app):
         match=r"Can't check dialog result directly; use await or an on_result handler",
     ):
         # Perform a synchronous comparison; this will raise a runtime error
-        dialog == 1
+        dialog == 1  # noqa: B015
 
     assert app._impl.loop.run_until_complete(dialog) is opened_file
 
@@ -1335,7 +1335,7 @@ def test_deprecated_open_file_dialog_default_directory(window, app):
         match=r"Can't check dialog result directly; use await or an on_result handler",
     ):
         # Perform a synchronous comparison; this will raise a runtime error
-        dialog == 1
+        dialog == 1  # noqa: B015
 
     assert app._impl.loop.run_until_complete(dialog) is opened_files
 
@@ -1389,7 +1389,7 @@ def test_deprecated_select_folder_dialog(window, app):
         match=r"Can't check dialog result directly; use await or an on_result handler",
     ):
         # Perform a synchronous comparison; this will raise a runtime error
-        dialog == 1
+        dialog == 1  # noqa: B015
 
     assert app._impl.loop.run_until_complete(dialog) is opened_folder
 
@@ -1445,7 +1445,7 @@ def test_deprecated_select_folder_dialog_default_directory(window, app):
         match=r"Can't check dialog result directly; use await or an on_result handler",
     ):
         # Perform a synchronous comparison; this will raise a runtime error
-        dialog == 1
+        dialog == 1  # noqa: B015
 
     assert app._impl.loop.run_until_complete(dialog) is opened_paths
 

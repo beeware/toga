@@ -246,15 +246,15 @@ async def test_presentation_mode(app, app_probe, main_window, main_window_probe)
     """The app can enter presentation mode."""
     bg_colors = (CORNFLOWERBLUE, FIREBRICK, REBECCAPURPLE, GOLDENROD)
     color_cycle = itertools.cycle(bg_colors)
-    window_information_list = list()
-    screen_window_dict = dict()
+    window_information_list = []
+    screen_window_dict = {}
     for i in range(len(app.screens)):
         window = toga.Window(title=f"Test Window {i}", size=(200, 200))
         window_widget = toga.Box(style=Pack(flex=1, background_color=next(color_cycle)))
         window.content = window_widget
         window.show()
 
-        window_information = dict()
+        window_information = {}
         window_information["window"] = window
         window_information["window_probe"] = window_probe(app, window)
         window_information["initial_screen"] = window_information["window"].screen

@@ -208,7 +208,7 @@ class Table(Widget):
             selection = []
 
             current_index = self.native_table.selectedRowIndexes.firstIndex
-            for i in range(self.native_table.selectedRowIndexes.count):
+            for _ in range(self.native_table.selectedRowIndexes.count):
                 selection.append(current_index)
                 current_index = (
                     self.native_table.selectedRowIndexes.indexGreaterThanIndex(

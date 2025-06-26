@@ -17,15 +17,15 @@ from toga_dummy.utils import (
     assert_action_performed_with,
 )
 
-EXPLICIT_FULL_APP_KWARGS = dict(
-    formal_name="Explicit App",
-    app_id="org.beeware.explicit-app",
-    app_name="override-app",
-)
-EXPLICIT_MIN_APP_KWARGS = dict(
-    formal_name="Explicit App",
-    app_id="org.beeware.explicit-app",
-)
+EXPLICIT_FULL_APP_KWARGS = {
+    "formal_name": "Explicit App",
+    "app_id": "org.beeware.explicit-app",
+    "app_name": "override-app",
+}
+EXPLICIT_MIN_APP_KWARGS = {
+    "formal_name": "Explicit App",
+    "app_id": "org.beeware.explicit-app",
+}
 APP_METADATA = {
     "Formal-Name": "Test App",
     "App-ID": "org.beeware.test-app",
@@ -64,7 +64,7 @@ APP_METADATA = {
         ),
         # No app properties, with metadata
         (
-            dict(),
+            {},
             APP_METADATA,
             Mock(__package__=None),
             "Test App",
@@ -105,7 +105,7 @@ APP_METADATA = {
         ),
         # No app properties, with metadata
         (
-            dict(),
+            {},
             APP_METADATA,
             Mock(__package__=""),
             "Test App",
@@ -146,7 +146,7 @@ APP_METADATA = {
         ),
         # No app properties, with metadata
         (
-            dict(),
+            {},
             APP_METADATA,
             Mock(__package__="my_app"),
             "Test App",
@@ -186,7 +186,7 @@ APP_METADATA = {
         ),
         # No app properties, with metadata
         (
-            dict(),
+            {},
             APP_METADATA,
             None,
             "Test App",
@@ -253,9 +253,9 @@ async def test_create(
 @pytest.mark.parametrize(
     "kwargs, exc_type, message",
     [
-        (dict(), RuntimeError, "Toga application must have a formal name"),
+        ({}, RuntimeError, "Toga application must have a formal name"),
         (
-            dict(formal_name="Something"),
+            {"formal_name": "Something"},
             RuntimeError,
             "Toga application must have an app ID",
         ),
@@ -516,7 +516,7 @@ async def test_presentation_mode_with_screen_window_dict(windows):
     # Enter presentation mode with a 1 or more elements screen-window dict:
     app.enter_presentation_mode(screen_window_dict)
     assert app.in_presentation_mode
-    for screen, window in screen_window_dict.items():
+    for window in screen_window_dict.values():
         assert_action_performed_with(
             window,
             "set window state to WindowState.PRESENTATION",
@@ -526,7 +526,7 @@ async def test_presentation_mode_with_screen_window_dict(windows):
     # Exit presentation mode:
     app.exit_presentation_mode()
     assert not app.in_presentation_mode
-    for screen, window in screen_window_dict.items():
+    for window in screen_window_dict.values():
         assert_action_performed_with(
             window,
             "set window state to WindowState.NORMAL",

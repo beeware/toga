@@ -157,7 +157,7 @@ class Selection(Widget):
     def value(self, value: object) -> None:
         try:
             if self._accessor is None:
-                item = self._items.find(dict(value=value))
+                item = self._items.find({"value": value})
             else:
                 item = value
 

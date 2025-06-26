@@ -127,7 +127,7 @@ class SplitContainer(Widget):
                 widget.window = self.window
 
         self._impl.set_content(
-            list(w._impl if w is not None else None for w in _content),
+            [w._impl if w is not None else None for w in _content],
             flex,
         )
         self._content = list(_content)

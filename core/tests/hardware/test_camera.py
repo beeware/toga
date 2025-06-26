@@ -31,7 +31,7 @@ def test_no_camera(monkeypatch, app):
 
     # Accessing the camera object should raise NotImplementedError
     with pytest.raises(NotImplementedError):
-        app.camera
+        app.camera  # noqa: B018
 
 
 @pytest.mark.parametrize(
@@ -76,7 +76,7 @@ def test_request_permission_sync(app):
     # ... but the result won't be directly comparable
     with pytest.raises(RuntimeError):
         # == True isn't good python, but it's going to raise an exception anyway.
-        result == True  # noqa: E712
+        result == True  # noqa: E712, B015
 
 
 def test_device_properties(app):

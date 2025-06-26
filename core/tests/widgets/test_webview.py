@@ -233,7 +233,7 @@ def test_evaluate_javascript(widget):
             r"use await or an on_result handler"
         ),
     ):
-        result == 42
+        result == 42  # noqa: B015
 
 
 async def test_evaluate_javascript_async(widget):

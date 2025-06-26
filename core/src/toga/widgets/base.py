@@ -81,8 +81,8 @@ class Widget(Node, PackMixin):
         """
         warn(
             (
-                "Widgets should create and return their implementation in ._create(). This "
-                "will be an exception in a future version."
+                "Widgets should create and return their implementation in ._create(). "
+                "This will be an exception in a future version."
             ),
             RuntimeWarning,
             stacklevel=2,
@@ -260,10 +260,9 @@ class Widget(Node, PackMixin):
     @app.setter
     def app(self, app: App | None) -> None:
         # If the widget is already assigned to an app
-        if self._app:
-            if self._app == app:
-                # If app is the same as the previous app, return
-                return
+        if self._app and self._app == app:
+            # If app is the same as the previous app, return
+            return
 
         self._app = app
         self._impl.set_app(app)

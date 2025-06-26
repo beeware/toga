@@ -588,10 +588,9 @@ class App:
         one window, the app's default initial document handling will be triggered.
         """
         # Process command line arguments if the backend doesn't handle them
-        if not self._impl.HANDLES_COMMAND_LINE:
-            if self.documents.types:
-                for filename in sys.argv[1:]:
-                    self._open_initial_document(filename)
+        if not self._impl.HANDLES_COMMAND_LINE and self.documents.types:
+            for filename in sys.argv[1:]:
+                self._open_initial_document(filename)
 
         # Ensure there is at least one window
         if self.main_window is None and len(self.windows) == 0:
@@ -848,7 +847,7 @@ class App:
             not have content.
         """
         if windows:
-            screen_window_dict = dict()
+            screen_window_dict = {}
             if isinstance(windows, list):
                 for window, screen in zip(windows, self.screens):
                     screen_window_dict[screen] = window

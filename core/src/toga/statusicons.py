@@ -183,7 +183,7 @@ class StatusIconSet(Sequence[StatusIcon], Mapping[str, StatusIcon]):
 
     def __contains__(self, value: object) -> bool:
         if isinstance(value, str):
-            return value in self.elements.keys()
+            return value in self.elements
         else:
             return value in self.elements.values()
 

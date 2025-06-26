@@ -499,37 +499,37 @@ async def test_async_result_non_comparable():
         RuntimeError,
         match=r"Can't check Test result directly; use await or an on_result handler",
     ):
-        result == 42
+        result == 42  # noqa: B015
 
     with pytest.raises(
         RuntimeError,
         match=r"Can't check Test result directly; use await or an on_result handler",
     ):
-        result < 42
+        result < 42  # noqa: B015
 
     with pytest.raises(
         RuntimeError,
         match=r"Can't check Test result directly; use await or an on_result handler",
     ):
-        result <= 42
+        result <= 42  # noqa: B015
 
     with pytest.raises(
         RuntimeError,
         match=r"Can't check Test result directly; use await or an on_result handler",
     ):
-        result > 42
+        result > 42  # noqa: B015
 
     with pytest.raises(
         RuntimeError,
         match=r"Can't check Test result directly; use await or an on_result handler",
     ):
-        result >= 42
+        result >= 42  # noqa: B015
 
     with pytest.raises(
         RuntimeError,
         match=r"Can't check Test result directly; use await or an on_result handler",
     ):
-        result != 42
+        result != 42  # noqa: B015
 
 
 async def test_async_result():
