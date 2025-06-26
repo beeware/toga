@@ -64,6 +64,6 @@ Technical documentation such as :doc:`Toga's API <reference/api/index>`, details
 
    tutorial/index
    how-to/index
-   topic/index
+   topics/index
    reference/index
    about/index

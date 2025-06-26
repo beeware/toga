@@ -1,4 +1,4 @@
-.. _topic:
+.. _topics:
 
 ============
 Topic guides
