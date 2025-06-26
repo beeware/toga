@@ -1,0 +1,1 @@
+Documentation layout now aligned with the rest of the BeeWare docs.
