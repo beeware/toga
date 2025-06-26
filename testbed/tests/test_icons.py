@@ -48,8 +48,8 @@ async def test_bad_icon_file(app):
     with pytest.raises(
         ValueError,
         match=(
-            rf"Unable to load icon from "
-            rf"{re.escape(str(app.paths.app / 'resources' / 'icons' / 'bad'))}"
+            r"Unable to load icon from "
+            + re.escape(str(app.paths.app / "resources/icons/bad"))
         ),
     ):
         toga.Icon("resources/icons/bad")
