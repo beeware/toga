@@ -29,45 +29,32 @@ single-page web apps, and console apps.
        :align: center
        :width: 450px
 
-.. raw:: html
-
-  <div class="table">
 
 :ref:`Tutorial <tutorial>`
 --------------------------
 
-* :doc:`A quick Toga demonstration <tutorial/get-started>`
-* :doc:`A hands-on introduction to Toga </tutorial/index>`
+:doc:`A quick Toga demonstration <tutorial/get-started>` and a :doc:`a hands-on introduction to Toga </tutorial/index>`.
+
+:ref:`How-to guides <how-to>`
+-----------------------------
+
+Guides and recipes for common problems and tasks, including how to :doc:`contribute to Toga <how-to/contribute/index>`.
+
+:ref:`Topic Guides <topics>`
+----------------------------
+
+Deeper explorations of concepts and issues related to Toga usage.
 
 :ref:`Reference <reference>`
 ----------------------------
 
-* :doc:`API reference <reference/api/index>`
-* :doc:`Toga's platform support <reference/platforms/index>`
-* :doc:`Widget support by platform <reference/widgets_by_platform>`
-* :doc:`Managing style with Toga <reference/style/index>`
-* :doc:`Toga's plugin interfaces <reference/plugins/index>`
+Technical documentation such as :doc:`Toga's API <reference/api/index>`, details on :doc:`platform support <reference/platforms/index>`, and other detailed reference information (including :doc:`overall architectural details </reference/internals/index>`).
 
-:ref:`How-to <how-to>`
-----------------------
+:ref:`About Toga <about>`
+-------------------------
 
-* :doc:`Topic guides </how-to/topics/index>`
-* :doc:`Contribute to Toga <how-to/contribute/index>`
-* :doc:`Internal Toga processes <how-to/internal/index>`
+:doc:`Frequently asked questions </about/faq>`, :doc:`success stories </about/success>`, and other details about Toga as a project.
 
-:ref:`Background <background>`
-------------------------------
-
-* :doc:`Learn more about Toga </background/project/index>`
-* :doc:`Contacting the BeeWare community </background/community>`
-* :doc:`Toga's architecture and other internals </background/internals/index>`
-
-
-.. toctree::
-
-.. raw:: html
-
-  </div>
 
 
 .. toctree::
@@ -76,6 +63,7 @@ single-page web apps, and console apps.
    :titlesonly:
 
    tutorial/index
-   reference/index
    how-to/index
-   background/index
+   topics/index
+   reference/index
+   about/index

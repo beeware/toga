@@ -13,6 +13,5 @@ stand alone.
    :maxdepth: 2
    :glob:
 
-   topics/index
    contribute/index
    internal/index
