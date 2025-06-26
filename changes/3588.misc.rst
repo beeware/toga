@@ -1,1 +1,1 @@
-Unused ``min_python_version`` and ``max_python_version`` environment variables have been removed from GitHub CI configuration.
+Unused ``max_python_version`` environment variable has been removed from GitHub CI configuration.

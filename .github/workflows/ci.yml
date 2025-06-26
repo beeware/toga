@@ -16,6 +16,7 @@ on:
         value: ${{ jobs.package.outputs.artifact-basename }}
 
 env:
+  min_python_version: "3.10"
   FORCE_COLOR: "1"
 
 defaults:
