@@ -207,5 +207,12 @@ async def test_corrupted_font_file(
 
 async def test_arbitrary_system_font(widget: toga.Label, font_probe):
     """An arbitrary font installed on the system can be used."""
-    widget.font_family = "Times New Roman"
-    font_probe.assert_font_family("Times New Roman")
+    family = (
+        # Times is available widely enough to be a reasonable default, but the probe can
+        # override if it's not available on that platform.
+        "Times New Roman"
+        if font_probe.installed_font is None
+        else font_probe.installed_font
+    )
+    widget.font_family = family
+    font_probe.assert_font_family(family)

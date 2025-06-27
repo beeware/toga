@@ -12,6 +12,7 @@ from toga_gtk.libs import Pango
 class FontMixin:
     supports_custom_fonts = True
     supports_custom_variable_fonts = True
+    installed_font = "Caladea"
 
     def assert_font_family(self, expected):
         assert self.font.get_family().split(",")[0] == expected
