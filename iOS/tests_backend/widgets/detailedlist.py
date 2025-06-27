@@ -105,7 +105,7 @@ class DetailedListProbe(SimpleProbe):
             )
 
             # Wait for the scroll to relax after reload completion
-            while self.scroll_position < 0:
+            while self.scroll_position < 0:  # noqa: ASYNC110
                 await asyncio.sleep(0.01)
         else:
             assert self.native_controller.refreshControl is None

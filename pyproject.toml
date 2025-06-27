@@ -72,7 +72,6 @@ extend-select = [
 ignore = [
     "SIM",       # Various "simplifications"
     "B904",      # use raise ... from ...
-    "ASYNC110",  # use "asyncio.Event" instead of awaiting "asyncio.sleep" in "while"
 ]
 
 [tool.ruff.lint.isort]
