@@ -848,7 +848,7 @@ class App:
             not have content.
         """
         if windows:
-            screen_window_dict = dict()
+            screen_window_dict = {}
             if isinstance(windows, list):
                 for window, screen in zip(windows, self.screens):
                     screen_window_dict[screen] = window

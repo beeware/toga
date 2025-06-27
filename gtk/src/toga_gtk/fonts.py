@@ -43,10 +43,10 @@ class Font:
             )
             try:
                 font_path = _REGISTERED_FONT_CACHE[font_key]
-            except KeyError:
+            except KeyError as exc:
                 # Not a pre-registered font
                 if self.interface.family not in SYSTEM_DEFAULT_FONTS:
-                    raise UnknownFontError(f"Unknown font '{self.interface}'")
+                    raise UnknownFontError(f"Unknown font '{self.interface}'") from exc
             else:
                 if Path(font_path).is_file():
                     FontConfig.add_font_file(font_path)

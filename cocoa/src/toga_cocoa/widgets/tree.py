@@ -251,7 +251,7 @@ class Tree(Widget):
             selection = []
 
             current_index = self.native_tree.selectedRowIndexes.firstIndex
-            for i in range(self.native_tree.selectedRowIndexes.count):
+            for _ in range(self.native_tree.selectedRowIndexes.count):
                 selection.append(
                     self.native_tree.itemAtRow(current_index).attrs["node"]
                 )

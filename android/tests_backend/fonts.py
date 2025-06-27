@@ -73,7 +73,7 @@ class FontMixin:
         if variant == SMALL_CAPS:
             print("Ignoring SMALL CAPS font test")
         else:
-            assert NORMAL == variant
+            assert variant == NORMAL
 
     def assert_font_size(self, expected):
         if expected == SYSTEM_DEFAULT_FONT_SIZE:

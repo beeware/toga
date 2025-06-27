@@ -267,8 +267,8 @@ def assert_reference(probe, reference, threshold=0.0):
         reference_image = Image.open(path)
 
         total = 0.0
-        for y in range(0, reference_image.size[1]):
-            for x in range(0, reference_image.size[0]):
+        for y in range(reference_image.size[1]):
+            for x in range(reference_image.size[0]):
                 actual = scaled_image.getpixel((x, y))
                 expected = reference_image.getpixel((x, y))
 
@@ -461,7 +461,13 @@ async def test_ellipse_path(canvas, probe):
     "An elliptical arc can be connected to other segments of a path"
 
     context = canvas.context
-    ellipse_args = dict(x=100, y=100, radiusx=70, radiusy=40, rotation=radians(30))
+    ellipse_args = {
+        "x": 100,
+        "y": 100,
+        "radiusx": 70,
+        "radiusy": 40,
+        "rotation": radians(30),
+    }
 
     # Start of path -> arc
     context.ellipse(**ellipse_args, startangle=radians(80), endangle=radians(160))

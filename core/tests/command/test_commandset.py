@@ -440,7 +440,7 @@ def test_ordering(
 
     # First iteration, use the order as defined. Then repeat multiple times
     # to validate insertion order doesn't matter.
-    for attempt in range(0, 10):
+    for attempt in range(10):
         if attempt:
             random.shuffle(commands)
         cs = CommandSet()

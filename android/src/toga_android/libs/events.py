@@ -201,7 +201,7 @@ class AndroidEventLoop(asyncio.SelectorEventLoop):
         # run the next time (after another I/O poll). Use an idiom that is thread-safe
         # without using locks.
         ntodo = len(self._ready)
-        for i in range(ntodo):
+        for _ in range(ntodo):
             handle = self._ready.popleft()
             if handle._cancelled:
                 continue  # pragma: no cover
