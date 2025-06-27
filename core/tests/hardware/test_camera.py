@@ -73,10 +73,9 @@ def test_request_permission_sync(app):
     # This will cause a permission request to occur...
     assert_action_performed(app.camera, "request permission")
 
-    # ... but the result won't be directly comparable
+    # ... but the result won't be directly comparable (to anything)
     with pytest.raises(RuntimeError):
-        # == True isn't good python, but it's going to raise an exception anyway.
-        _ = result == True  # noqa: E712
+        _ = result == 1
 
 
 def test_device_properties(app):

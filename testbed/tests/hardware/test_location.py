@@ -27,7 +27,9 @@ async def test_grant_permission(app, location_probe):
     # Permission now exists, but not background permission
     assert app.location.has_permission
     assert app.location.has_background_permission == (
-        not location_probe.supports_background_permission
+        # If background permission isn't supported at all, it will return the same as
+        # has_permission (True in this case).
+        False if location_probe.supports_background_permission else True
     )
 
     # A second request to grant permissions is a no-op
@@ -36,7 +38,9 @@ async def test_grant_permission(app, location_probe):
     # Permission still exists, but not background permission
     assert app.location.has_permission
     assert app.location.has_background_permission == (
-        not location_probe.supports_background_permission
+        # If background permission isn't supported at all, it will return the same as
+        # has_permission (True in this case).
+        False if location_probe.supports_background_permission else True
     )
 
 
