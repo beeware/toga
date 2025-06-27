@@ -687,17 +687,15 @@ async def test_write_text(canvas, probe):
             toga_size[0],
             toga_size[1],
         )
-    with (
-        canvas.Stroke(color=REBECCAPURPLE) as stroke,
-        stroke.Fill(color=CORNFLOWERBLUE) as text_filler,
-    ):
-        text_filler.write_text(
-            toga_text,
-            100 - (toga_size[0] // 2),
-            150,
-            font=toga_font,
-            baseline=Baseline.MIDDLE,
-        )
+    with canvas.Stroke(color=REBECCAPURPLE) as stroke:
+        with stroke.Fill(color=CORNFLOWERBLUE) as text_filler:
+            text_filler.write_text(
+                toga_text,
+                100 - (toga_size[0] // 2),
+                150,
+                font=toga_font,
+                baseline=Baseline.MIDDLE,
+            )
 
     await probe.redraw("Text should be drawn")
     # 0.07 is quite a high error threshold; it's equivalent to 196 pixels being
