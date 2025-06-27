@@ -86,7 +86,7 @@ class ExampleMapViewApp(toga.App):
         zoom_box = toga.Box(
             children=[
                 toga.Button(i, on_press=self.zoom(i), style=btn_style)
-                for i in range(20, 3)
+                for i in range(0, 20, 3)
             ],
             style=Pack(direction=ROW, margin=5),
         )
