@@ -203,3 +203,9 @@ async def test_corrupted_font_file(
     )
     with pytest.raises(ValueError, match=r"Unable to load font file .*Corrupted.ttf"):
         widget.style.font_family = "corrupted"
+
+
+async def test_arbitrary_system_font(widget: toga.Label, font_probe):
+    """An arbitrary font installed on the system can be used."""
+    widget.font_family = "Times New Roman"
+    font_probe.assert_font_family("Times New Roman")
