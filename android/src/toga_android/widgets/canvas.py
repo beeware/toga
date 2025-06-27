@@ -235,12 +235,12 @@ class Canvas(Widget):
             if (color := kwargs.get("fill_color")) is not None:
                 paint.setStyle(Paint.Style.FILL)
                 paint.setColor(jint(native_color(color)))
-                canvas.drawText(draw_args)
+                canvas.drawText(*draw_args)
             if (color := kwargs.get("stroke_color")) is not None:
                 paint.setStyle(Paint.Style.STROKE)
                 paint.setStrokeWidth(kwargs["line_width"])
                 paint.setColor(jint(native_color(color)))
-                canvas.drawText(draw_args)
+                canvas.drawText(*draw_args)
 
     def _text_paint(self, font):
         # font.size applies the scale factor, and the canvas transformation matrix
