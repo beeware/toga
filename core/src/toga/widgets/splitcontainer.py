@@ -94,10 +94,10 @@ class SplitContainer(Widget):
         try:
             if len(content) != 2:
                 raise TypeError()
-        except TypeError:
+        except TypeError as exc:
             raise ValueError(
                 "SplitContainer content must be a sequence with exactly 2 elements"
-            )
+            ) from exc
 
         _content = []
         flex = []

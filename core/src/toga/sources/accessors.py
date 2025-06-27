@@ -37,10 +37,10 @@ def to_accessor(heading: str) -> str:
     try:
         if value[0].isdigit():
             value = f"_{value}"
-    except IndexError:
+    except IndexError as exc:
         raise ValueError(
             f"Unable to automatically generate accessor from heading {heading!r}."
-        )
+        ) from exc
 
     return value
 

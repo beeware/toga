@@ -344,10 +344,10 @@ class DocumentSet(Sequence[Document], Mapping[Path, Document]):
                     for doc_type in self.types
                     for extension in doc_type.extensions
                 }[path.suffix[1:]]
-            except KeyError:
+            except KeyError as exc:
                 raise ValueError(
                     f"Don't know how to open documents with extension {path.suffix}"
-                )
+                ) from exc
             else:
                 prev_window = self.app.current_window
                 document = DocType(app=self.app)

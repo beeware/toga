@@ -58,20 +58,14 @@ extend-select = [
     "F",      # pyflakes
     "UP",     # pyupgrade
     "B",      # flake8-bugbear
-    "SIM",    # flake8-simplify
     "YTT",    # flake8-2020
     "ASYNC",  # flake8-async
     "C4",     # flake8-comprehensions
     "I",      # isort
-]
-
-# Below is a list of ignored rules.  Many (if not all) of these have been disabled
-# to facilitate a smooth transition from tools like black and isort to ruff, where
-# instances of these errors were caught.  Many if not all of these are candidates
-# for future fixes throughout the project.
-ignore = [
-    "SIM",       # Various "simplifications"
-    "B904",      # use raise ... from ...
+    # The SIM rules are *very* opinionated, and don't necessarily make for better code.
+    # They may be worth occasionally turning on just to see if something could actually
+    # use improvement.
+    # "SIM",    # flake8-simplify
 ]
 
 [tool.ruff.lint.isort]

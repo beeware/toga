@@ -57,15 +57,15 @@ class Font:
             except KeyError:
                 try:
                     font_path = _REGISTERED_FONT_CACHE[font_key]
-                except KeyError:
+                except KeyError as exc:
                     # The requested font has not been registered
-                    raise UnknownFontError(f"Unknown font '{self.interface}'")
+                    raise UnknownFontError(f"Unknown font '{self.interface}'") from exc
                 else:
                     # We have a path for a font file.
                     try:
                         # A font *file* an only be registered once under Cocoa.
                         custom_font_name = _CUSTOM_FONT_NAMES[font_path]
-                    except KeyError:
+                    except KeyError as exc:
                         if Path(font_path).is_file():
                             font_url = NSURL.fileURLWithPath(font_path)
                             success = core_text.CTFontManagerRegisterFontsForURL(
@@ -80,11 +80,11 @@ class Font:
                             else:
                                 raise ValueError(
                                     f"Unable to load font file {font_path}"
-                                )
+                                ) from exc
                         else:
                             raise ValueError(
                                 f"Font file {font_path} could not be found"
-                            )
+                            ) from exc
 
             if self.interface.size == SYSTEM_DEFAULT_FONT_SIZE:
                 size = UIFont.labelFontSize
