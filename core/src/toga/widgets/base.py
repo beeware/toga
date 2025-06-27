@@ -260,9 +260,10 @@ class Widget(Node, PackMixin):
     @app.setter
     def app(self, app: App | None) -> None:
         # If the widget is already assigned to an app
-        if self._app and self._app == app:
-            # If app is the same as the previous app, return
-            return
+        if self._app:
+            if self._app == app:
+                # If app is the same as the previous app, return
+                return
 
         self._app = app
         self._impl.set_app(app)

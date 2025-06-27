@@ -32,16 +32,17 @@ class Constraints:
         self._remove_constraints()
 
     def _remove_constraints(self):
-        if self.container and self.container.native:
+        if self.container:
             # print(f"Remove constraints for {self.widget} in {self.container}")
             # Due to the unpredictability of garbage collection, it's possible for
             # the native object of the window's container to be deleted on the ObjC
             # side before the constraints for the window have been removed. Protect
             # against this possibility.
-            self.container.native.removeConstraint(self.width_constraint)
-            self.container.native.removeConstraint(self.height_constraint)
-            self.container.native.removeConstraint(self.left_constraint)
-            self.container.native.removeConstraint(self.top_constraint)
+            if self.container.native:
+                self.container.native.removeConstraint(self.width_constraint)
+                self.container.native.removeConstraint(self.height_constraint)
+                self.container.native.removeConstraint(self.left_constraint)
+                self.container.native.removeConstraint(self.top_constraint)
 
     @property
     def container(self):

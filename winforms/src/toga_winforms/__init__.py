@@ -28,9 +28,10 @@ import System.Windows.Forms as WinForms  # noqa: E402
 WinForms.Application.EnableVisualStyles()
 WinForms.Application.SetCompatibleTextRenderingDefault(False)
 
-if SetProcessDpiAwarenessContext is not None and not SetProcessDpiAwarenessContext(
-    DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2
-):  # pragma: no cover
-    print("WARNING: Failed to set the DPI Awareness mode for the app.")
+if SetProcessDpiAwarenessContext is not None:
+    if not SetProcessDpiAwarenessContext(
+        DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2
+    ):  # pragma: no cover
+        print("WARNING: Failed to set the DPI Awareness mode for the app.")
 
 __version__ = travertino._package_version(__file__, __name__)

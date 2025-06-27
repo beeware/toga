@@ -291,10 +291,11 @@ class Pack(BaseStyle):
                 else:
                     value = LEFT
             self._applicator.set_text_align(value)
-        if "text_direction" in names and self.text_align is None:
-            self._applicator.set_text_align(
-                RIGHT if self.text_direction == RTL else LEFT
-            )
+        if "text_direction" in names:
+            if self.text_align is None:
+                self._applicator.set_text_align(
+                    RIGHT if self.text_direction == RTL else LEFT
+                )
         if "color" in names:
             self._applicator.set_color(self.color)
         if "background_color" in names:
