@@ -116,9 +116,8 @@ class LengthBetween(BooleanValidator):
         self.max_length = max_length
 
     def is_valid(self, input_string: str) -> bool:
-        return all(
-            (self.min_length is None or len(input_string) >= self.min_length),
-            (self.max_length is None or len(input_string) <= self.max_length),
+        return (self.min_length is None or len(input_string) >= self.min_length) and (
+            self.max_length is None or len(input_string) <= self.max_length
         )
 
 
