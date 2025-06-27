@@ -430,7 +430,7 @@ class DocumentWindow(MainWindow):
 
     async def _confirm_close(self, window, **kwargs):
         if self.doc.modified:
-            if self.dialog(
+            if await self.dialog(
                 toga.QuestionDialog(
                     "Save changes?",
                     (
