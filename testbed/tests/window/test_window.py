@@ -473,7 +473,11 @@ else:
         [
             (
                 toga.Window,
-                {"title": "Not Resizable", "resizable": False, "position": (200, 150)},
+                {
+                    "title": "Not Resizable",
+                    "resizable": False,
+                    "position": (200, 150),
+                },
             )
         ],
     )
@@ -487,7 +491,11 @@ else:
         [
             (
                 toga.Window,
-                {"title": "Not Closeable", "closable": False, "position": (200, 150)},
+                {
+                    "title": "Not Closeable",
+                    "closable": False,
+                    "position": (200, 150),
+                },
             )
         ],
     )
@@ -544,7 +552,10 @@ else:
         [
             (
                 toga.Window,
-                {"title": "Secondary Window", "position": (200, 150)},
+                {
+                    "title": "Secondary Window",
+                    "position": (200, 150),
+                },
             )
         ],
     )
@@ -632,7 +643,10 @@ else:
         [
             (
                 toga.Window,
-                {"title": "Secondary Window", "position": (200, 150)},
+                {
+                    "title": "Secondary Window",
+                    "position": (200, 150),
+                },
             )
         ],
     )
