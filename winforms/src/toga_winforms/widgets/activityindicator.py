@@ -86,11 +86,7 @@ class ActivityIndicator(Widget):
                 spinner_image = WinImage.FromStream(
                     MemoryStream(
                         composite_gif_on_color(
-                            str(
-                                Path(__file__).parent.parent
-                                / "resources"
-                                / "spinner.gif"
-                            ),
+                            str(Path(__file__).parent.parent / "resources/spinner.gif"),
                             background_color,
                             size,
                         )
