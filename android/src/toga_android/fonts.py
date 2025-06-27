@@ -33,7 +33,7 @@ class Font:
             self.native_typeface = _FONT_CACHE[self.interface]
 
         except KeyError:
-            # Check for a system font.
+            # Check for one of the predefined system fonts.
             try:
                 self.native_typeface = {
                     # The default button font is not marked as bold, but it has a weight
@@ -64,7 +64,7 @@ class Font:
                     font_path = _REGISTERED_FONT_CACHE[font_key]
 
                 except KeyError:
-                    # No, not a user-registered font
+                    # No, not a user-registered font.
                     raise UnknownFontError(f"Unknown font '{self.interface}'")
 
                 else:
