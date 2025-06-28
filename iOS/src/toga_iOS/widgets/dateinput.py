@@ -24,6 +24,8 @@ class TogaDatePicker(UIDatePicker):
     @objc_method
     def dateInputDidChange_(self, dateInput) -> None:
         self.interface.on_change()
+        self.setNeedsLayout()
+        self.layoutIfNeeded()
         self.impl.refresh()
 
 
