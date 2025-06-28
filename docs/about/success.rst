@@ -11,3 +11,4 @@ Want to see examples of Toga in use? Here's some:
 * `RemoteCommand <https://www.tanapro.ch/joomla3/index.php/downloads>`_ is a Toga based app for synchronizing the clipboard between Windows and MacOS.
 * `ChariotGazer <https://insanesharpness.gitlab.io/ChariotGazer/>`_ is a Toga based app for Android and Windows, which provides detailed information about UK registered vehicles.
 * `Patent Toolkit <https://patenttk.com/>`_ is a Toga based app for Windows and MacOS, which contains a suite of tools for patent professionals.
+* `Easy Media Server <https://apps.rsmail.co/easy-media-server>`_ is a DLNA media server for streaming content to devices such as Smart TVs. It uses Toga for the graphical interface.
