@@ -130,10 +130,18 @@ async def test_zoom(widget, probe):
 async def test_add_pins(widget, probe, on_select):
     """Pins can be added and removed from the map."""
 
-    fremantle = toga.MapPin((-32.05423, 115.74763), title="Fremantle")
-    lesmurdie = toga.MapPin((-31.994, 116.05), title="lesmurdie")
-    joondalup = toga.MapPin((-31.745, 115.766), title="Joondalup")
-    stadium = toga.MapPin((-31.95985, 115.8795), title="WACA Ground", subtitle="Old")
+    fremantle = toga.MapPin(  # codespell:ignore mappin
+        (-32.05423, 115.74763), title="Fremantle"
+    )
+    lesmurdie = toga.MapPin(  # codespell:ignore mappin
+        (-31.994, 116.05), title="lesmurdie"
+    )
+    joondalup = toga.MapPin(  # codespell:ignore mappin
+        (-31.745, 115.766), title="Joondalup"
+    )
+    stadium = toga.MapPin(  # codespell:ignore mappin
+        (-31.95985, 115.8795), title="WACA Ground", subtitle="Old"
+    )
 
     widget.pins.add(joondalup)
     await probe.wait_for_map("Joondalup pin has been added")
@@ -163,9 +171,15 @@ async def test_add_pins(widget, probe, on_select):
 async def test_select_pin(widget, probe, on_select):
     """Pins can be selected."""
 
-    fremantle = toga.MapPin((-32.05423, 115.74763), title="Fremantle")
-    lesmurdie = toga.MapPin((-31.994, 116.05), title="lesmurdie")
-    joondalup = toga.MapPin((-31.745, 115.766), title="Joondalup")
+    fremantle = toga.MapPin(  # codespell:ignore mappin
+        (-32.05423, 115.74763), title="Fremantle"
+    )
+    lesmurdie = toga.MapPin(  # codespell:ignore mappin
+        (-31.994, 116.05), title="lesmurdie"
+    )
+    joondalup = toga.MapPin(  # codespell:ignore mappin
+        (-31.745, 115.766), title="Joondalup"
+    )
 
     widget.pins.add(joondalup)
     widget.pins.add(lesmurdie)

@@ -15,14 +15,16 @@ from toga_dummy.widgets.mapview import MapView as DummyMapView
 
 @pytest.fixture
 def pin_1():
-    return toga.MapPin(toga.LatLng(10.0, 10.0), title="First", subtitle="thing")
+    return toga.MapPin(  # codespell:ignore mappin
+        toga.LatLng(10.0, 10.0), title="First", subtitle="thing"
+    )  # codespell:ignore mappin  # noqa: E501
 
 
 @pytest.fixture
 def pins(pin_1):
     return [
         pin_1,
-        toga.MapPin((20.0, 20.0), title="Second"),
+        toga.MapPin((20.0, 20.0), title="Second"),  # codespell:ignore mappin
     ]
 
 
@@ -94,24 +96,32 @@ def test_latlng_properties():
 @pytest.mark.parametrize(
     "title, subtitle, value",
     [
-        ("The Title", None, "<MapPin @ (37.420000, 42.370000); The Title>"),
+        (
+            "The Title",
+            None,
+            "<MapPin @ (37.420000, 42.370000); The Title>",  # codespell:ignore mappin
+        ),
         (
             "The Title",
             "The Subtitle",
-            "<MapPin @ (37.420000, 42.370000); The Title - The Subtitle>",
+            "<MapPin @ (37.420000, 42.370000); The Title - The Subtitle>",  # codespell:ignore mappin  # noqa: E501
         ),
     ],
 )
 def test_pin_repr(title, subtitle, value):
     """The repr of a pin adapts to the properties that the pin has"""
-    pin = toga.MapPin((37.42, 42.37), title=title, subtitle=subtitle)
+    pin = toga.MapPin(  # codespell:ignore mappin
+        (37.42, 42.37), title=title, subtitle=subtitle
+    )
     assert repr(pin) == value
 
 
 def test_pin_location(widget):
     """Map pin location can be set and changed."""
 
-    pin = toga.MapPin((37.42, 42.37), title="TheTitle", subtitle="TheSubtitle")
+    pin = toga.MapPin(  # codespell:ignore mappin
+        (37.42, 42.37), title="TheTitle", subtitle="TheSubtitle"
+    )
 
     assert isinstance(pin.location, toga.LatLng)
     assert pin.location == (37.42, 42.37)
@@ -155,7 +165,9 @@ def test_pin_location(widget):
 
 def test_pin_title(widget):
     """Map pin title can be set and changed."""
-    pin = toga.MapPin((37.42, 42.37), title="The Title", subtitle="The Subtitle")
+    pin = toga.MapPin(  # codespell:ignore mappin
+        (37.42, 42.37), title="The Title", subtitle="The Subtitle"
+    )
     assert pin.title == "The Title"
 
     # Change the pin title before the pin is on the map
@@ -193,7 +205,9 @@ def test_pin_title(widget):
 
 def test_pin_subtitle(widget):
     """Map pin subtitle can be set and changed."""
-    pin = toga.MapPin((37.42, 42.37), title="The Title", subtitle="The Subtitle")
+    pin = toga.MapPin(  # codespell:ignore mappin
+        (37.42, 42.37), title="The Title", subtitle="The Subtitle"
+    )
     assert pin.subtitle == "The Subtitle"
 
     # Change the pin subtitle before the pin is on the map
@@ -287,7 +301,9 @@ def test_bad_zoom(widget, value, exception):
 
 def test_add_remove_pin(widget):
     """Pins can be added and removed from the map."""
-    pin = toga.MapPin((37.42, 42.37), title="The Title", subtitle="The Subtitle")
+    pin = toga.MapPin(  # codespell:ignore mappin
+        (37.42, 42.37), title="The Title", subtitle="The Subtitle"
+    )
 
     # Initially 2 pins
     assert len(widget.pins) == 2

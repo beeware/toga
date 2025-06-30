@@ -275,7 +275,7 @@ Documentation
 * The instructions for adding a change note to a pull request have been clarified. (`#2565 <https://github.com/beeware/toga/issues/2565>`__)
 * The minimum supported Linux release requirements were updated to Ubuntu 20.04 or Fedora 32. (`#2566 <https://github.com/beeware/toga/issues/2566>`__)
 * The first-time contributor README link has been updated. (`#2588 <https://github.com/beeware/toga/issues/2588>`__)
-* Typos in the usage examples of ``toga.MapPin`` were corrected. (`#2617 <https://github.com/beeware/toga/issues/2617>`__)
+* Typos in the usage examples of ``toga.MapPin`` were corrected. (`#2617 <https://github.com/beeware/toga/issues/2617>`__)  .. codespell:ignore mappin
 
 Misc
 ----

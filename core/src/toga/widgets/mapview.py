@@ -9,7 +9,7 @@ from toga.handlers import wrapped_handler
 from .base import StyleT, Widget
 
 
-class MapPin:
+class MapPin:  # codespell:ignore mappin
     def __init__(
         self,
         location: toga.LatLng | tuple[float, float],
@@ -37,7 +37,7 @@ class MapPin:
         else:
             label = f"; {self.title}"
 
-        return f"<MapPin @ {self.location}{label}>"
+        return f"<MapPin @ {self.location}{label}>"  # codespell:ignore mappin
 
     @property
     def location(self) -> toga.LatLng:
@@ -76,9 +76,13 @@ class MapPin:
 
 
 class MapPinSet:
-    def __init__(self, interface: MapView, pins: Iterable[MapPin] | None):
+    def __init__(
+        self,
+        interface: MapView,
+        pins: Iterable[MapPin] | None,  # codespell:ignore mappin  # noqa: E501
+    ):
         self.interface = interface
-        self._pins: set[MapPin] = set()
+        self._pins: set[MapPin] = set()  # codespell:ignore mappin
 
         if pins is not None:
             for item in pins:
@@ -87,7 +91,7 @@ class MapPinSet:
     def __repr__(self) -> str:
         return f"<MapPinSet ({len(self)} pins)>"
 
-    def __iter__(self) -> Iterator[MapPin]:
+    def __iter__(self) -> Iterator[MapPin]:  # codespell:ignore mappin
         """Return an iterator over the pins on the map."""
         return iter(self._pins)
 
@@ -95,19 +99,19 @@ class MapPinSet:
         """Return the number of pins being displayed."""
         return len(self._pins)
 
-    def add(self, pin: MapPin) -> None:
+    def add(self, pin: MapPin) -> None:  # codespell:ignore mappin
         """Add a new pin to the map.
 
-        :param pin: The :any:`toga.MapPin` instance to add.
+        :param pin: The :any:`toga.MapPin` instance to add.  # codespell:ignore mappin
         """
         pin.interface = self.interface
         self._pins.add(pin)
         self.interface._impl.add_pin(pin)
 
-    def remove(self, pin: MapPin) -> None:
+    def remove(self, pin: MapPin) -> None:  # codespell:ignore mappin
         """Remove a pin from the map.
 
-        :param pin: The  :any:`toga.MapPin` instance to remove.
+        :param pin: The  :any:`toga.MapPin` instance to remove.  # codespell:ignore
         """
         self.interface._impl.remove_pin(pin)
         self._pins.remove(pin)
@@ -121,7 +125,13 @@ class MapPinSet:
 
 
 class OnSelectHandler(Protocol):
-    def __call__(self, widget: MapView, *, pin: MapPin, **kwargs: Any) -> object:
+    def __call__(
+        self,
+        widget: MapView,
+        *,
+        pin: MapPin,  # codespell:ignore mappin
+        **kwargs: Any,
+    ) -> object:
         """A handler that will be invoked when the user selects a map pin.
 
         :param widget: The MapView that was selected.
@@ -137,7 +147,7 @@ class MapView(Widget):
         style: StyleT | None = None,
         location: toga.LatLng | tuple[float, float] | None = None,
         zoom: int = 11,
-        pins: Iterable[MapPin] | None = None,
+        pins: Iterable[MapPin] | None = None,  # codespell:ignore mappin
         on_select: toga.widgets.mapview.OnSelectHandler | None = None,
         **kwargs,
     ):

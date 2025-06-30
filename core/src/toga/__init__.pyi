@@ -40,7 +40,7 @@ from toga.widgets.detailedlist import DetailedList as DetailedList
 from toga.widgets.divider import Divider as Divider
 from toga.widgets.imageview import ImageView as ImageView
 from toga.widgets.label import Label as Label
-from toga.widgets.mapview import MapPin as MapPin
+from toga.widgets.mapview import MapPin as MapPin  # codespell:ignore mappin
 from toga.widgets.mapview import MapView as MapView
 from toga.widgets.multilinetextinput import MultilineTextInput as MultilineTextInput
 from toga.widgets.numberinput import NumberInput as NumberInput
