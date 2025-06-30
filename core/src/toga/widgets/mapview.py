@@ -79,7 +79,7 @@ class MapPinSet:
     def __init__(
         self,
         interface: MapView,
-        pins: Iterable[MapPin] | None,  # codespell:ignore mappin  # noqa: E501
+        pins: Iterable[MapPin] | None,  # codespell:ignore mappin
     ):
         self.interface = interface
         self._pins: set[MapPin] = set()  # codespell:ignore mappin

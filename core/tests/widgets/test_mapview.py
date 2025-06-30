@@ -17,7 +17,7 @@ from toga_dummy.widgets.mapview import MapView as DummyMapView
 def pin_1():
     return toga.MapPin(  # codespell:ignore mappin
         toga.LatLng(10.0, 10.0), title="First", subtitle="thing"
-    )  # codespell:ignore mappin  # noqa: E501
+    )
 
 
 @pytest.fixture
