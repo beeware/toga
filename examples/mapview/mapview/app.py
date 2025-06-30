@@ -46,25 +46,25 @@ class ExampleMapViewApp(toga.App):
         # Set up main window
         self.main_window = toga.MainWindow()
 
-        self.pin_1 = toga.MapPin(
+        self.pin_1 = toga.MapPin(  # codespell:ignore mappin
             (-41.2784, 174.7767),
             title="The Bee Hive",
             subtitle="NZ Parliament building",
         )
-        self.pin_2 = toga.MapPin(
+        self.pin_2 = toga.MapPin(  # codespell:ignore mappin
             (38.897778, -77.036389),
             title="The White House",
             subtitle="They have beehives!",
         )
 
-        self.map_view = toga.MapView(
+        self.map_view = toga.MapView(  # codespell:ignore mappin
             style=Pack(flex=1),
             pins=[self.pin_1, self.pin_2],
             on_select=self.pin_selected,
         )
 
         # Add a pin at runtime.
-        self.pin_3 = toga.MapPin(
+        self.pin_3 = toga.MapPin(  # codespell:ignore mappin
             (32.726, -117.07714),
             title="Carmen Sandiego",
         )

@@ -124,7 +124,7 @@ class ExampleHardwareApp(toga.App):
         self.map_view.location = location
 
         if self.pin is None:
-            self.pin = toga.MapPin(location, title="Here!")
+            self.pin = toga.MapPin(location, title="Here!")  # codespell:ignore mappin
             self.map_view.pins.add(self.pin)
             self.map_view.zoom = 16
         else:

@@ -77,7 +77,7 @@ bee_translations = [
     {"locale": "sv", "country": "Swedish", "string": "Bi"},
     {"locale": "sw", "country": "Swahili", "string": "Nyuki"},
     {"locale": "ta", "country": "Tamil", "string": "தேனீ"},
-    {"locale": "te", "country": "Telugu", "string": "బీ"},
+    {"locale": "te", "country": "Telugu", "string": "బీ"},  # codespell:ignore te
     {"locale": "tg", "country": "Tajik", "string": "Хушк"},
     {"locale": "th", "country": "Thai", "string": "ผึ้ง"},
     {"locale": "tl", "country": "Filipino", "string": "Bee"},

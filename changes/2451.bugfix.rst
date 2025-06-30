@@ -1,0 +1,1 @@
+Codespell errors are now ignored inline.
