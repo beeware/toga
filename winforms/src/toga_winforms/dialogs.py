@@ -1,13 +1,41 @@
 import asyncio
+import os
+from ctypes import (
+    HRESULT,
+    POINTER,
+    byref,
+    c_void_p,
+    c_wchar_p,
+    cast as cast_with_ctypes,
+    windll,
+)
+from ctypes.wintypes import HWND
 from pathlib import Path
+from typing import List, Optional, Tuple, Union
 
+import comtypes
+import comtypes.client
 import System.Windows.Forms as WinForms
+from comtypes import GUID
+from comtypes.hresult import S_OK
 from System.Drawing import (
     ContentAlignment,
     Font as WinFont,
     FontFamily,
 )
 from System.Windows.Forms import DialogResult, MessageBoxButtons, MessageBoxIcon
+
+from toga_winforms.libs.com.constants import COMDLG_FILTERSPEC, FileOpenOptions
+from toga_winforms.libs.com.identifiers import (
+    CLSID_FileOpenDialog,
+    CLSID_FileSaveDialog,
+)
+from toga_winforms.libs.com.interfaces import (
+    IFileOpenDialog,
+    IFileSaveDialog,
+    IShellItem,
+    IShellItemArray,
+)
 
 from .libs.user32 import DPI_AWARENESS_CONTEXT_UNAWARE, SetThreadDpiAwarenessContext
 from .libs.wrapper import WeakrefCallable
@@ -219,53 +247,87 @@ class StackTraceDialog(BaseDialog):
 class FileDialog(BaseDialog):
     def __init__(
         self,
-        native,
-        title,
-        initial_directory,
+        native: Union[IFileOpenDialog, IFileSaveDialog],
+        title: str,
+        initial_directory: Union[os.PathLike, str],
         *,
-        filename=None,
-        file_types=None,
+        filename: Optional[str] = None,
+        file_types: Optional[List[str]] = None,
     ):
         super().__init__()
+        self.native: Union[IFileOpenDialog, IFileSaveDialog] = native
         self.title = title
         self.native = native
 
         self._set_title(title)
         if filename is not None:
-            native.FileName = filename
+            self.native.SetFileName(filename)
 
         if initial_directory is not None:
             self._set_initial_directory(str(initial_directory))
 
         if file_types is not None:
-            filters = [f"{ext} files (*.{ext})|*.{ext}" for ext in file_types] + [
-                "All files (*.*)|*.*"
+            filters: List[Tuple[str, str]] = [
+                (f"{ext.upper()} files", f"*.{ext}") for ext in file_types
             ]
-
-            if len(file_types) > 1:
-                pattern = ";".join([f"*.{ext}" for ext in file_types])
-                filters.insert(0, f"All matching files ({pattern})|{pattern}")
-
-            native.Filter = "|".join(filters)
+            filterspec = (COMDLG_FILTERSPEC * len(file_types))(
+                *[(c_wchar_p(name), c_wchar_p(spec)) for name, spec in filters]
+            )
+            self.native.SetFileTypes(
+                len(filterspec), cast_with_ctypes(filterspec, POINTER(c_void_p))
+            )
 
     def _show(self):
-        response = self.native.ShowDialog()
-        if response == DialogResult.OK:
+        hwnd = HWND(0)
+        hr: int = self.native.Show(hwnd)
+        if hr == S_OK:
+            assert isinstance(
+                self, (SaveFileDialog, OpenFileDialog, SelectFolderDialog)
+            )
             self.future.set_result(self._get_filenames())
         else:
             self.future.set_result(None)
 
     def _set_title(self, title):
-        self.native.Title = title
+        self.native.SetTitle(title)
 
     def _set_initial_directory(self, initial_directory):
-        self.native.InitialDirectory = initial_directory
+        if initial_directory is None:
+            return
+        folder_path: Path = Path(initial_directory).resolve()
+        if folder_path.is_dir():  # sourcery skip: extract-method
+            SHCreateItemFromParsingName = windll.shell32.SHCreateItemFromParsingName
+            SHCreateItemFromParsingName.argtypes = [
+                c_wchar_p,  # LPCWSTR (wide string, null-terminated)
+                POINTER(
+                    comtypes.IUnknown
+                ),  # IBindCtx* (can be NULL, hence POINTER(IUnknown))
+                POINTER(GUID),  # REFIID (pointer to the interface ID, typically GUID)
+                POINTER(
+                    POINTER(IShellItem)
+                ),  # void** (output pointer to the requested interface)
+            ]
+            SHCreateItemFromParsingName.restype = HRESULT
+            shell_item = POINTER(IShellItem)()
+            hr = SHCreateItemFromParsingName(
+                str(folder_path), None, IShellItem._iid_, byref(shell_item)
+            )
+            if hr == S_OK:
+                self.native.SetFolder(shell_item)
 
 
 class SaveFileDialog(FileDialog):
-    def __init__(self, title, filename, initial_directory, file_types):
+    def __init__(
+        self,
+        title: str,
+        filename: str,
+        initial_directory: Union[os.PathLike, str],
+        file_types: List[str],
+    ):
         super().__init__(
-            WinForms.SaveFileDialog(),
+            comtypes.client.CreateObject(
+                CLSID_FileSaveDialog, interface=IFileSaveDialog
+            ),
             title,
             initial_directory,
             filename=filename,
@@ -273,55 +335,85 @@ class SaveFileDialog(FileDialog):
         )
 
     def _get_filenames(self):
-        return Path(self.native.FileName)
+        shell_item: IShellItem = self.native.GetResult()
+        display_name: str = shell_item.GetDisplayName(0x80058000)  # SIGDN_FILESYSPATH
+        return Path(display_name)
 
 
 class OpenFileDialog(FileDialog):
     def __init__(
         self,
-        title,
-        initial_directory,
-        file_types,
-        multiple_select,
+        title: str,
+        initial_directory: Union[os.PathLike, str],
+        file_types: List[str],
+        multiple_select: bool,
     ):
         super().__init__(
-            WinForms.OpenFileDialog(),
+            comtypes.client.CreateObject(
+                CLSID_FileOpenDialog, interface=IFileOpenDialog
+            ),
             title,
             initial_directory,
             file_types=file_types,
         )
         if multiple_select:
-            self.native.Multiselect = True
+            self.native.SetOptions(FileOpenOptions.FOS_ALLOWMULTISELECT)
 
-    # Provided as a stub that can be mocked in test conditions
     def selected_paths(self):
-        return self.native.FileNames
+        # This is a stub method; we provide functionality using the COM API
+        return self._get_filenames()
 
-    def _get_filenames(self):
-        if self.native.Multiselect:
-            return [Path(filename) for filename in self.selected_paths()]
-        else:
-            return Path(self.native.FileName)
+    def _get_filenames(self) -> List[Path]:
+        assert isinstance(self.native, IFileOpenDialog)
+        results: List[Path] = []
+        shell_item_array: IShellItemArray = self.native.GetResults()
+        item_count: int = shell_item_array.GetCount()
+        for i in range(item_count):
+            shell_item: IShellItem = shell_item_array.GetItemAt(i)
+            szFilePath: str = str(
+                shell_item.GetDisplayName(0x80058000)
+            )  # SIGDN_FILESYSPATH
+            results.append(Path(szFilePath))
+        return results
 
 
 class SelectFolderDialog(FileDialog):
-    def __init__(self, title, initial_directory, multiple_select):
+    def __init__(
+        self,
+        title: str,
+        initial_directory: Union[os.PathLike, str],
+        multiple_select: bool,
+    ):
         super().__init__(
-            WinForms.FolderBrowserDialog(),
+            comtypes.client.CreateObject(
+                CLSID_FileOpenDialog,
+                interface=IFileOpenDialog,
+            ),
             title,
             initial_directory,
         )
+        self.native.SetOptions(FileOpenOptions.FOS_PICKFOLDERS)
+        self.multiple_select: bool = multiple_select
 
-        # The native dialog doesn't support multiple selection, so the only effect
-        # this has is to change whether we return a list.
-        self.multiple_select = multiple_select
-
-    def _get_filenames(self):
-        filename = Path(self.native.SelectedPath)
-        return [filename] if self.multiple_select else filename
+    def _get_filenames(self) -> Union[List[Path], Path]:
+        shell_item: IShellItem = self.native.GetResult()
+        display_name: str = shell_item.GetDisplayName(0x80058000)  # SIGDN_FILESYSPATH
+        return [Path(display_name)] if self.multiple_select else Path(display_name)
 
     def _set_title(self, title):
-        self.native.Description = title
+        self.native.SetTitle(title)
 
     def _set_initial_directory(self, initial_directory):
-        self.native.SelectedPath = initial_directory
+        if initial_directory is None:
+            return
+        folder_path: Path = Path(initial_directory).resolve()
+        if folder_path.is_dir():  # sourcery skip: extract-method
+            shell_item = POINTER(IShellItem)()
+            hr = windll.shell32.SHCreateItemFromParsingName(
+                str(folder_path),
+                None,
+                IShellItem._iid_,
+                byref(shell_item),
+            )
+            if hr == S_OK:
+                self.native.SetFolder(shell_item)
