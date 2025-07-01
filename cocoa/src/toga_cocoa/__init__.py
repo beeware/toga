@@ -1,7 +1,7 @@
 import importlib
 from pathlib import Path
 
-import travertino
+from travertino import _package_version
 
 
 def lazy_load():
@@ -10,7 +10,7 @@ def lazy_load():
     with pyi.open() as f:
         for line in f:
             segments = line.split()
-            if segments[0] == "from":
+            if segments and segments[0] == "from":
                 toga_cocoa_imports[segments[3]] = segments[1]
     return toga_cocoa_imports
 
@@ -32,4 +32,4 @@ def __getattr__(name):
         return value
 
 
-__version__ = travertino._package_version(__file__, __name__)
+__version__ = _package_version(__file__, __name__)
