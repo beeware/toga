@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from builtins import id as identifier
 from os import environ
-from random import shuffle
 from typing import TYPE_CHECKING, Any, TypeVar
 from warnings import warn
 
@@ -22,10 +21,10 @@ PackMixin = style_mixin(Pack)
 
 
 # based on colors from https://davidmathlogic.com/colorblind
-debug_background_palette = [
+DEBUG_BACKGROUND_PALETTE = [
     "#d0e2ed",  # very light blue
-    "#b8d2e9",  # light blue
     "#f8ccb0",  # light orange
+    "#b8d2e9",  # light blue
     "#f6d3be",  # soft orange
     "#c7e7b2",  # light green
     "#f0b2d6",  # light pink
@@ -35,7 +34,6 @@ debug_background_palette = [
     "#e5e4af",  # light cream
     "#bde2dc",  # soft turquoise
 ]
-shuffle(debug_background_palette)
 
 
 class Widget(Node, PackMixin):
@@ -69,10 +67,10 @@ class Widget(Node, PackMixin):
         # is on, change bg color.BufferError
         if getattr(self, "_USE_DEBUG_BACKGROUND", False):
             if environ.get("TOGA_DEBUG_LAYOUT") == "1":
-                Widget._debug_color_index += 1
-                style.background_color = debug_background_palette[
-                    Widget._debug_color_index % len(debug_background_palette)
+                style.background_color = DEBUG_BACKGROUND_PALETTE[
+                    Widget._debug_color_index % len(DEBUG_BACKGROUND_PALETTE)
                 ]
+                Widget._debug_color_index += 1
         else:
             self._USE_DEBUG_BACKGROUND = False
 
