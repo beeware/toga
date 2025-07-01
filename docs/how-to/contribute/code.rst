@@ -443,7 +443,7 @@ suite.
 
 The default ``tox`` command includes running:
  * pre-commit hooks
- * towncrier release note check
+ * ``towncrier`` release note check
  * documentation linting
  * test suite for available Python versions for the core and Travertino
  * code coverage reporting for the core and Travertino
@@ -1268,7 +1268,7 @@ Add change information for release notes
 ----------------------------------------
 
 When you submit this change as a pull request, you need to add a *change
-note*. Toga uses `towncrier <https://pypi.org/project/towncrier/>`__ to automate
+note*. Toga uses ```towncrier`` <https://pypi.org/project/towncrier/>`__ to automate
 building the release notes for each release. Every pull request must include at
 least one file in the ``changes/`` directory that provides a short description
 of the change implemented by the pull request.
@@ -1278,7 +1278,7 @@ format ``<id>.<fragment type>.rst``. If the change you are proposing will fix a 
 implement a feature for which there is an existing issue number, the ID will be
 the number of that ticket. If the change has no corresponding issue, the PR
 number can be used as the ID. You won't know this PR number until you push the
-pull request, so the first CI pass will fail the Towncrier check; add the change
+pull request, so the first CI pass will fail the ``towncrier`` check; add the change
 note and push a PR update and CI should then pass.
 
 There are five allowed fragment types:
@@ -1319,7 +1319,7 @@ backwards incompatible changes, you might have 4 change note files:
 * ``789.removal.1.rst``
 * ``789.removal.2.rst``
 
-For more information about Towncrier and fragment types see `News Fragments
+For more information about ``towncrier`` and fragment types see `News Fragments
 <https://towncrier.readthedocs.io/en/stable/tutorial.html#creating-news-fragments>`__.
 You can also see existing examples of news fragments in the ``changes``
 directory of the Toga repository. If this folder is empty, it's likely because
