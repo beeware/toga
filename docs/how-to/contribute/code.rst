@@ -130,25 +130,6 @@ First, ensure that you have Python 3 and pip installed. To do this, run:
       C:\...>python --version
       C:\...>python -m pip --version
 
-Install system dependencies
----------------------------
-
-Next, install any additional dependencies for your operating system:
-
-.. tabs::
-
-  .. group-tab:: macOS
-
-    No additional dependencies
-
-  .. group-tab:: Linux
-
-    View the :ref:`Linux/Unix system dependencies <linux-prerequisites>`.
-
-  .. group-tab:: Windows
-
-    No additional dependencies
-
 Clone the Toga repository
 -------------------------
 
@@ -256,7 +237,7 @@ dependencies to source packages, so we have to manually install each package:
 Enable pre-commit
 -----------------
 
-Toga uses a tool called `Pre-Commit <https://pre-commit.com>`__ to identify
+Toga uses a tool called `pre-commit <https://pre-commit.com>`__ to identify
 simple issues and standardize code formatting. It does this by installing a git
 hook that automatically runs a series of code linters prior to finalizing any
 git commit. To enable pre-commit, run:
