@@ -1,0 +1,1 @@
+Imports from the ``cocoa`` core namespace has been modified to use lazy importing.
