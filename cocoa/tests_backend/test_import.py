@@ -27,6 +27,11 @@ def test_lazy_succeed(monkeypatch):
     App = toga_cocoa.App
     assert App is sys.modules["toga_cocoa.factory"].App
 
+    assert hasattr(toga_cocoa, "Button")
+    assert hasattr(toga_cocoa, "App")
+    cached_button = toga_cocoa.Button
+    assert cached_button is Button
+
 
 def test_lazy_fail():
     """Nonexistent names should raise a normal AttributeError."""
