@@ -59,23 +59,24 @@ class Widget(Node, PackMixin):
             will be applied to the widget.
         :param kwargs: Initial style properties.
         """
+        if style is None:
+            style = Pack(**kwargs)
+        elif kwargs:
+            style = style.copy()
+            style.update(**kwargs)
+
         # If the object has _USE_DEBUG_BACKGROUND=True and layout debug mode
         # is on, change bg color.BufferError
         if getattr(self, "_USE_DEBUG_BACKGROUND", False):
             if environ.get("TOGA_DEBUG_LAYOUT") == "1":
                 Widget._debug_color_index += 1
-                if style is None:
-                    style = Pack(**kwargs)
-                elif kwargs:
-                    style = style.copy()
-                    style.update(**kwargs)
                 style.background_color = debug_background_palette[
                     Widget._debug_color_index % len(debug_background_palette)
                 ]
         else:
             self._USE_DEBUG_BACKGROUND = False
 
-        super().__init__(style)
+        super().__init__(style=style)
 
         self._id = str(id if id else identifier(self))
         self._window: Window | None = None
