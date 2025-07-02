@@ -17,7 +17,7 @@ def test_lazy_succeed(monkeypatch):
     # Accessing a name should import only the necessary submodules.
     Button = toga_cocoa.Button
     assert "toga_cocoa.factory" in sys.modules
-    assert "toga_cocoa.widgets.button" not in sys.modules
+    assert "toga_cocoa.widgets.button" in sys.modules
 
     # Accessing a name multiple times should return the same object.
     assert Button is toga_cocoa.Button
