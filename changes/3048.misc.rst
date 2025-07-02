@@ -1,1 +1,0 @@
-An issue with PR #3033 that failed when providing ``padding`` to ``Pack()`` and ``Pack.update()`` was fixed.

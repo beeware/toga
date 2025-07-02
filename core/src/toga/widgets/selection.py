@@ -157,14 +157,16 @@ class Selection(Widget):
     def value(self, value: object) -> None:
         try:
             if self._accessor is None:
-                item = self._items.find(dict(value=value))
+                item = self._items.find({"value": value})
             else:
                 item = value
 
             index = self._items.index(item)
             self._impl.select_item(index=index, item=item)
-        except ValueError:
-            raise ValueError(f"{value!r} is not a current item in the selection")
+        except ValueError as exc:
+            raise ValueError(
+                f"{value!r} is not a current item in the selection"
+            ) from exc
 
     @property
     def on_change(self) -> OnChangeHandler:

@@ -5,7 +5,7 @@ from android.view import View
 from android.widget import AdapterView, ArrayAdapter, Spinner
 from java import dynamic_proxy
 
-from .base import Widget
+from toga_android.widgets.base import ContainedWidget
 
 
 class TogaOnItemSelectedListener(dynamic_proxy(AdapterView.OnItemSelectedListener)):
@@ -20,7 +20,7 @@ class TogaOnItemSelectedListener(dynamic_proxy(AdapterView.OnItemSelectedListene
         self.impl.on_change(None)
 
 
-class Selection(Widget):
+class Selection(ContainedWidget):
     focusable = False
 
     def create(self):

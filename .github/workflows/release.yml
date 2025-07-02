@@ -31,14 +31,14 @@ jobs:
           echo "VERSION=${GITHUB_REF_NAME#v}" | tee -a $GITHUB_ENV
 
       - name: Get Packages
-        uses: actions/download-artifact@v4.1.8
+        uses: actions/download-artifact@v4.3.0
         with:
           pattern: ${{ format('{0}-*', needs.ci.outputs.artifact-basename) }}
           merge-multiple: true
           path: dist
 
       - name: Create Release
-        uses: ncipollo/release-action@v1.16.0
+        uses: ncipollo/release-action@v1.17.0
         with:
           name: ${{ env.VERSION }}
           draft: true
@@ -59,6 +59,8 @@ jobs:
       fail-fast: false
       matrix:
         package:
+        # As per PEP 503 normalization, these names should all be (a) lower case, and
+        # (b) use underscores. See https://github.com/pypa/packaging.python.org/pull/1032
         - "toga"
         - "toga_android"
         - "toga_cocoa"
@@ -66,14 +68,15 @@ jobs:
         - "toga_demo"
         - "toga_dummy"
         - "toga_gtk"
-        - "toga_iOS"
+        - "toga_ios"
+        - "toga_positron"
         - "toga_textual"
         - "toga_web"
         - "toga_winforms"
         - "travertino"
     steps:
       - name: Get Packages
-        uses: actions/download-artifact@v4.1.8
+        uses: actions/download-artifact@v4.3.0
         with:
           pattern: ${{ format('{0}-*', needs.ci.outputs.artifact-basename) }}
           merge-multiple: true
@@ -82,7 +85,7 @@ jobs:
       - name: Extract ${{ matrix.package }}
         run: |
           mkdir dist
-          mv staging_dist/$(echo ${{ matrix.package }} | sed 's/_/?/')-[0-9]* dist
+          mv staging_dist/${{ matrix.package }}-[0-9]* dist
 
       - name: Publish to TestPyPI
         uses: pypa/gh-action-pypi-publish@release/v1

@@ -36,18 +36,18 @@ class FontMixin:
 
         traits = self.font.fontDescriptor.symbolicTraits
 
-        assert (BOLD if traits & NSFontMask.Bold else NORMAL) == weight
+        assert weight == (BOLD if traits & NSFontMask.Bold else NORMAL)
 
         if style == OBLIQUE:
             print("Interpreting OBLIQUE font as ITALIC")
             assert bool(traits & NSFontMask.Italic)
         else:
-            assert ITALIC if traits & NSFontMask.Italic else NORMAL == style
+            assert style == (ITALIC if traits & NSFontMask.Italic else NORMAL)
 
         if variant == SMALL_CAPS:
             print("Ignoring SMALL CAPS font test")
         else:
-            assert NORMAL == variant
+            assert variant == NORMAL
 
     def assert_font_size(self, expected):
         if expected == SYSTEM_DEFAULT_FONT_SIZE:

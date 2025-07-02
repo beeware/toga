@@ -21,7 +21,7 @@ from toga.fonts import (
     SERIF,
     SYSTEM,
     SYSTEM_DEFAULT_FONT_SIZE,
-    SYSTEM_DEFAULT_FONTS,
+    UnknownFontError,
 )
 
 _FONT_CACHE = {}
@@ -31,69 +31,71 @@ class Font:
     def __init__(self, interface):
         self.interface = interface
 
-    def typeface(self, *, default=Typeface.DEFAULT):
-        cache_key = (self.interface, default)
-        if typeface := _FONT_CACHE.get(cache_key):
-            return typeface
-
-        font_key = self.interface._registered_font_key(
-            self.interface.family,
-            weight=self.interface.weight,
-            style=self.interface.style,
-            variant=self.interface.variant,
-        )
+        # Check for a cached typeface.
         try:
-            font_path = _REGISTERED_FONT_CACHE[font_key]
+            self.native_typeface = _FONT_CACHE[self.interface]
+
         except KeyError:
-            # Not a pre-registered font
-            if self.interface.family not in SYSTEM_DEFAULT_FONTS:
-                print(
-                    f"Unknown font '{self.interface}'; "
-                    "using system font as a fallback"
+            # Check for a system font.
+            try:
+                self.native_typeface = {
+                    # The default button font is not marked as bold, but it has a weight
+                    # of "medium" (500), which is in between "normal" (400), and "bold"
+                    # (600 or 700). To preserve this, we interpret SYSTEM as the
+                    # widget's original typeface.
+                    SYSTEM: None,
+                    MESSAGE: Typeface.DEFAULT,
+                    SERIF: Typeface.SERIF,
+                    SANS_SERIF: Typeface.SANS_SERIF,
+                    MONOSPACE: Typeface.MONOSPACE,
+                    # Android appears to not have a fantasy font available by default,
+                    # but if it ever does, we'll start using it. Android seems to
+                    # choose a serif font when asked for a fantasy font.
+                    FANTASY: Typeface.create("fantasy", Typeface.NORMAL),
+                    CURSIVE: Typeface.create("cursive", Typeface.NORMAL),
+                }[interface.family]
+
+            except KeyError:
+                # Check for a user-registered font.
+                font_key = self.interface._registered_font_key(
+                    self.interface.family,
+                    weight=self.interface.weight,
+                    style=self.interface.style,
+                    variant=self.interface.variant,
                 )
-        else:
-            if Path(font_path).is_file():
-                typeface = Typeface.createFromFile(font_path)
-                if typeface is Typeface.DEFAULT:
-                    raise ValueError(f"Unable to load font file {font_path}")
-            else:
-                raise ValueError(f"Font file {font_path} could not be found")
+                try:
+                    font_path = _REGISTERED_FONT_CACHE[font_key]
 
-        if typeface is None:
-            if self.interface.family is SYSTEM:
-                # The default button font is not marked as bold, but it has a weight
-                # of "medium" (500), which is in between "normal" (400), and "bold"
-                # (600 or 700). To preserve this, we use the widget's original
-                # typeface as a starting point rather than Typeface.DEFAULT.
-                typeface = default
-            elif self.interface.family is MESSAGE:
-                typeface = Typeface.DEFAULT
-            elif self.interface.family is SERIF:
-                typeface = Typeface.SERIF
-            elif self.interface.family is SANS_SERIF:
-                typeface = Typeface.SANS_SERIF
-            elif self.interface.family is MONOSPACE:
-                typeface = Typeface.MONOSPACE
-            elif self.interface.family is CURSIVE:
-                typeface = Typeface.create("cursive", Typeface.NORMAL)
-            elif self.interface.family is FANTASY:
-                # Android appears to not have a fantasy font available by default,
-                # but if it ever does, we'll start using it. Android seems to choose
-                # a serif font when asked for a fantasy font.
-                typeface = Typeface.create("fantasy", Typeface.NORMAL)
-            else:
-                typeface = Typeface.create(self.interface.family, Typeface.NORMAL)
+                except KeyError as exc:
+                    # No, not a user-registered font
+                    raise UnknownFontError(f"Unknown font '{self.interface}'") from exc
 
-        native_style = typeface.getStyle()
+                else:
+                    # Yes, user has registered this font.
+                    if Path(font_path).is_file():
+                        self.native_typeface = Typeface.createFromFile(font_path)
+                        if self.native_typeface is Typeface.DEFAULT:
+                            raise ValueError(f"Unable to load font file {font_path}")
+                    else:
+                        raise ValueError(f"Font file {font_path} could not be found")
+
+            _FONT_CACHE[self.interface] = self.native_typeface
+
+        self.native_style = 0
         if self.interface.weight == BOLD:
-            native_style |= Typeface.BOLD
+            self.native_style |= Typeface.BOLD
         if self.interface.style in {ITALIC, OBLIQUE}:
-            native_style |= Typeface.ITALIC
+            self.native_style |= Typeface.ITALIC
 
-        if native_style != typeface.getStyle():
-            typeface = Typeface.create(typeface, native_style)
+    def typeface(self, *, default=Typeface.DEFAULT):
+        """Return the appropriate native Typeface object."""
+        typeface = default if self.native_typeface is None else self.native_typeface
 
-        _FONT_CACHE[cache_key] = typeface
+        if self.native_style != typeface.getStyle():
+            # While we're not caching this result, Android does its own caching of
+            # different styles of the same Typeface.
+            typeface = Typeface.create(typeface, self.native_style)
+
         return typeface
 
     def size(self, *, default=None):

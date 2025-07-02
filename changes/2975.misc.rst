@@ -1,1 +1,0 @@
-The flake8 line limit was adjusted to 88 to match limit for Black.

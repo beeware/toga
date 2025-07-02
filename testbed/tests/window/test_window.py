@@ -174,14 +174,10 @@ if toga.platform.current_platform in {"iOS", "android"}:
             final_state,
         }:
             pytest.xfail("This backend doesn't support fullscreen window state.")
-        if (
-            not main_window_probe.supports_presentation
-            and WindowState.PRESENTATION
-            in {
-                initial_state,
-                final_state,
-            }
-        ):
+        if not main_window_probe.supports_presentation and WindowState.PRESENTATION in {
+            initial_state,
+            final_state,
+        }:
             pytest.xfail("This backend doesn't support presentation window state.")
 
         # Set to initial state
@@ -361,7 +357,11 @@ else:
         [
             (
                 toga.Window,
-                dict(title="Secondary Window", position=(200, 300), size=(300, 200)),
+                {
+                    "title": "Secondary Window",
+                    "position": (200, 300),
+                    "size": (300, 200),
+                },
             )
         ],
     )
@@ -450,7 +450,11 @@ else:
         [
             (
                 toga.MainWindow,
-                dict(title="Secondary Window", position=(200, 300), size=(400, 200)),
+                {
+                    "title": "Secondary Window",
+                    "position": (200, 300),
+                    "size": (400, 200),
+                },
             )
         ],
     )
@@ -469,7 +473,11 @@ else:
         [
             (
                 toga.Window,
-                dict(title="Not Resizable", resizable=False, position=(200, 150)),
+                {
+                    "title": "Not Resizable",
+                    "resizable": False,
+                    "position": (200, 150),
+                },
             )
         ],
     )
@@ -483,7 +491,11 @@ else:
         [
             (
                 toga.Window,
-                dict(title="Not Closeable", closable=False, position=(200, 150)),
+                {
+                    "title": "Not Closeable",
+                    "closable": False,
+                    "position": (200, 150),
+                },
             )
         ],
     )
@@ -515,7 +527,11 @@ else:
         [
             (
                 toga.Window,
-                dict(title="Not Minimizable", minimizable=False, position=(200, 150)),
+                {
+                    "title": "Not Minimizable",
+                    "minimizable": False,
+                    "position": (200, 150),
+                },
             )
         ],
     )
@@ -536,7 +552,10 @@ else:
         [
             (
                 toga.Window,
-                dict(title="Secondary Window", position=(200, 150)),
+                {
+                    "title": "Secondary Window",
+                    "position": (200, 150),
+                },
             )
         ],
     )
@@ -624,7 +643,10 @@ else:
         [
             (
                 toga.Window,
-                dict(title="Secondary Window", position=(200, 150)),
+                {
+                    "title": "Secondary Window",
+                    "position": (200, 150),
+                },
             )
         ],
     )
@@ -717,7 +739,7 @@ else:
         [
             (
                 toga.MainWindow,
-                dict(title="Secondary Window", position=(200, 150)),
+                {"title": "Secondary Window", "position": (200, 150)},
             )
         ],
     )
@@ -814,7 +836,7 @@ else:
         [
             (
                 toga.MainWindow,
-                dict(title="Secondary Window", position=(200, 150)),
+                {"title": "Secondary Window", "position": (200, 150)},
             )
         ],
     )
@@ -865,7 +887,7 @@ else:
         [
             (
                 toga.Window,
-                dict(title="Secondary Window", position=(200, 150)),
+                {"title": "Secondary Window", "position": (200, 150)},
             )
         ],
     )
@@ -910,7 +932,7 @@ else:
         [
             (
                 toga.Window,
-                dict(title="Secondary Window", position=(200, 150)),
+                {"title": "Secondary Window", "position": (200, 150)},
             )
         ],
     )
@@ -968,7 +990,7 @@ else:
         [
             (
                 toga.Window,
-                dict(title="Secondary Window", position=(200, 150)),
+                {"title": "Secondary Window", "position": (200, 150)},
             )
         ],
     )
@@ -1003,7 +1025,7 @@ else:
         [
             (
                 toga.Window,
-                dict(title="Secondary Window", position=(200, 150)),
+                {"title": "Secondary Window", "position": (200, 150)},
             )
         ],
     )
@@ -1041,7 +1063,7 @@ else:
         [
             (
                 toga.Window,
-                dict(title="Secondary Window", position=(200, 150)),
+                {"title": "Secondary Window", "position": (200, 150)},
             )
         ],
     )
@@ -1066,7 +1088,7 @@ else:
         [
             (
                 toga.Window,
-                dict(title="Secondary Window", position=(200, 150)),
+                {"title": "Secondary Window", "position": (200, 150)},
             )
         ],
     )

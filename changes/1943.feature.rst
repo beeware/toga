@@ -1,1 +1,0 @@
-Added the ``gap`` style, which adds space between adjacent children of a box.

@@ -157,8 +157,8 @@ class NumberInput(Widget):
     def step(self, step: NumberInputT) -> None:
         try:
             self._step = _clean_decimal(step)
-        except (ValueError, TypeError, InvalidOperation):
-            raise ValueError("step must be a number")
+        except (ValueError, TypeError, InvalidOperation) as exc:
+            raise ValueError("step must be a number") from exc
 
         self._impl.set_step(self._step)
 
@@ -185,11 +185,11 @@ class NumberInput(Widget):
             # Clip widget's value to the new minimum
             if self.value is not None and self.value < new_min:
                 self.value = new_min
-        except (TypeError, ValueError, InvalidOperation):
+        except (TypeError, ValueError, InvalidOperation) as exc:
             if new_min is None or new_min == "":
                 new_min = None
             else:
-                raise ValueError("min must be a number or None")
+                raise ValueError("min must be a number or None") from exc
 
         # Clip the max value if it's inconsistent with the new min
         if self.max is not None and new_min is not None and new_min > self.max:
@@ -217,11 +217,11 @@ class NumberInput(Widget):
             # Clip widget's value to the new maximum
             if self.value is not None and self.value > new_max:
                 self.value = new_max
-        except (TypeError, ValueError, InvalidOperation):
+        except (TypeError, ValueError, InvalidOperation) as exc:
             if new_max is None or new_max == "":
                 new_max = None
             else:
-                raise ValueError("max must be a number or None")
+                raise ValueError("max must be a number or None") from exc
 
         # Clip the min value if it's inconsistent with the new max
         if self.min is not None and new_max is not None and new_max < self.min:
@@ -265,11 +265,11 @@ class NumberInput(Widget):
                 value = self.min
             elif self.max is not None and value > self.max:
                 value = self.max
-        except (TypeError, ValueError, InvalidOperation):
+        except (TypeError, ValueError, InvalidOperation) as exc:
             if value is None or value == "":
                 value = None
             else:
-                raise ValueError("value must be a number or None")
+                raise ValueError("value must be a number or None") from exc
 
         self._impl.set_value(value)
         self.refresh()

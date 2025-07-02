@@ -1,0 +1,1 @@
+Adds BeeWare header and GitHub links to Read the Docs documentation.

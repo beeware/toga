@@ -104,8 +104,8 @@ class AppProbe(BaseProbe, DialogsMixin):
                 menu = item[0].get_item_link(item[1], "submenu")
         except IndexError:
             pass
-        except AttributeError:
-            raise AssertionError(f"Menu {' > '.join(orig_path)} not found")
+        except AttributeError as exc:
+            raise AssertionError(f"Menu {' > '.join(orig_path)} not found") from exc
 
         action = item[0].get_item_attribute_value(item[1], "action")
         if action:
@@ -228,7 +228,7 @@ class AppProbe(BaseProbe, DialogsMixin):
                 "!": Gdk.KEY_exclam,
                 "<home>": Gdk.KEY_Home,
                 "F5": Gdk.KEY_F5,
-            }.get(accel, None),
+            }.get(accel),
         )
 
         event = Gdk.Event.new(Gdk.EventType.KEY_PRESS)

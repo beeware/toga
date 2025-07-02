@@ -1,1 +1,0 @@
-The initialization process for widgets has been internally restructured to avoid unnecessary style reapplications.

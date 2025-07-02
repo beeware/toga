@@ -1,5 +1,19 @@
+.. |pyversions| image:: https://img.shields.io/pypi/pyversions/toga-core.svg
+    :target: https://pypi.python.org/pypi/toga-core
+    :alt: Python Versions
+
+.. |license| image:: https://img.shields.io/pypi/l/toga-core.svg
+    :target: https://github.com/beeware/toga-core/blob/main/LICENSE
+    :alt: BSD-3-Clause License
+
+.. |maturity| image:: https://img.shields.io/pypi/status/toga-core.svg
+    :target: https://pypi.python.org/pypi/toga-core
+    :alt: Project status
+
 Toga
 ====
+
+|pyversions| |license| |maturity|
 
 A Python native, OS native GUI toolkit.
 
@@ -17,10 +31,8 @@ install a backend that implements the core Toga API for that platform:
 Minimum requirements
 --------------------
 
-Toga requires **Python 3.9** or newer.
-
-Each backend also has specific requirements and pre-requisites. See the `platform
-documentation <https://toga.readthedocs.io/en/latest/reference/platforms.html>`__ for
+Each backend has specific requirements and pre-requisites. See the `platform
+documentation <https://toga.readthedocs.io/en/latest/reference/platforms/>`__ for
 details.
 
 Quickstart
@@ -61,13 +73,10 @@ We foster a welcoming and respectful community as described in our
 Contributing
 ------------
 
-If you'd like to contribute to Toga development, our `guide for first time
-contributors`_ will help you get started.
+If you experience problems with Toga, `log them on GitHub
+<https://github.com/beeware/toga/issues>`__.
 
-If you experience problems with Toga, `log them on GitHub`_. If you want to
-contribute code, please `fork the code`_ and `submit a pull request`_.
-
-.. _guide for first time contributors: https://toga.readthedocs.io/en/latest/how-to/contribute/index.html
-.. _log them on Github: https://github.com/beeware/toga/issues
-.. _fork the code: https://github.com/beeware/toga
-.. _submit a pull request: https://github.com/beeware/toga/pulls
+If you'd like to contribute to Toga development, our `contribution guide
+<https://toga.readthedocs.io/en/latest/how-to/contribute/index.html>`__
+details how to set up a development environment, and other requirements we have
+as part of our contribution process.

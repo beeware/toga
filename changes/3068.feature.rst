@@ -1,1 +1,0 @@
-Webviews now support the retrieval of cookies.

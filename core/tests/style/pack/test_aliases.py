@@ -4,6 +4,8 @@ from pytest import raises
 from toga.style.pack import CENTER, COLUMN, END, ROW
 
 from . import (
+    assert_name_in,
+    assert_name_not_in,
     delitem,
     delitem_hyphen,
     getitem,
@@ -43,37 +45,49 @@ def test_align(css_name, row_alias, column_alias, default, style_with, get_fn, d
     """The `vertical_align` and `horizontal_align` aliases work correctly."""
     # Row alias
     style = style_with(**{row_alias: CENTER})
+    assert_name_in(css_name, style)
     assert get_fn(style, css_name) == CENTER
 
     del_fn(style, row_alias)
+    assert_name_not_in(css_name, style)
     assert get_fn(style, css_name) == default
 
     style = style_with(**{css_name: CENTER})
+    assert_name_in(row_alias, style)
     assert get_fn(style, row_alias) == CENTER
 
     del_fn(style, css_name)
+    assert_name_not_in(row_alias, style)
     assert get_fn(style, row_alias) == default
 
     # Column alias
     style = style_with(**{"direction": COLUMN, column_alias: CENTER})
+    assert_name_in(css_name, style)
     assert get_fn(style, css_name) == CENTER
 
     del_fn(style, column_alias)
+    assert_name_not_in(css_name, style)
     assert get_fn(style, css_name) == default
 
     style = style_with(**{"direction": COLUMN, css_name: CENTER})
+    assert_name_in(column_alias, style)
     assert get_fn(style, column_alias) == CENTER
 
     del_fn(style, css_name)
+    assert_name_not_in(column_alias, style)
     assert get_fn(style, column_alias) == default
 
     # Column alias is not accepted in a row, and vice versa.
     def assert_invalid_alias(alias, direction):
         style = style_with(direction=direction)
-        raises_kwargs = dict(
-            expected_exception=AttributeError,
-            match=f"'{alias}' is not supported on a {direction}",
-        )
+        correct_direction = ROW if direction == COLUMN else COLUMN
+        raises_kwargs = {
+            "expected_exception": AttributeError,
+            "match": (
+                rf"'{alias}' is only supported when "
+                rf"\(direction == {correct_direction}\)"
+            ),
+        }
 
         with raises(**raises_kwargs):
             get_fn(style, alias)
@@ -85,6 +99,8 @@ def test_align(css_name, row_alias, column_alias, default, style_with, get_fn, d
             style.update(**{"direction": direction, alias: END})
         with raises(**raises_kwargs):
             style.update(**{alias: END, "direction": direction})
+        with raises(**raises_kwargs):
+            _ = alias in style
 
     assert_invalid_alias(column_alias, ROW)
     assert_invalid_alias(row_alias, COLUMN)

@@ -1,1 +1,0 @@
-Travertino's font-parsing function ``fonts.font`` has been removed, as has the ``default`` parameter to ``Choices``. Neither was in use by Toga; this should only affect direct use of the Travertino API.

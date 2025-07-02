@@ -46,12 +46,10 @@ class BaseBox:
         self._reset()
 
     def __repr__(self):
-        return "<{} ({}x{} @ {},{})>".format(
-            self.__class__.__name__,
-            self.content_width,
-            self.content_height,
-            self.absolute_content_left,
-            self.absolute_content_top,
+        return (
+            f"<{self.__class__.__name__} "
+            f"({self.content_width}x{self.content_height} @ "
+            f"{self.absolute_content_left},{self.absolute_content_top})>"
         )
 
     def _reset(self):

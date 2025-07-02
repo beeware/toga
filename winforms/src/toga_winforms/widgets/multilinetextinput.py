@@ -27,6 +27,10 @@ class MultilineTextInput(TextInput):
         self._placeholder_visible = True
         self.set_color(None)
 
+        # Used to track the text value, so it is possible to determine if the text
+        # has changed since the last time the on_change event was triggered.
+        self._text_history = ""
+
     def winforms_got_focus(self, sender, event):
         # If the placeholder is visible when we gain focus, the widget is empty;
         # so make the native text empty and hide the placeholder.
@@ -68,7 +72,13 @@ class MultilineTextInput(TextInput):
 
     def winforms_text_changed(self, sender, event):
         # Showing and hiding the placeholder should not cause an interface event.
-        if not self._placeholder_visible:
+        # Also check if the text value has changed since the last time the event
+        # was triggered. This is a workaround to avoid triggering the on_change
+        # event due to style changes (e.g., color, font, text alignment).
+        # It might not be the most efficient solution, but for now it's the least
+        # problematic way to handle this.
+        if not self._placeholder_visible and self.native.Text != self._text_history:
+            self._text_history = self.native.Text
             self.interface.on_change()
 
     def _set_placeholder_visible(self, visible):

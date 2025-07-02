@@ -106,6 +106,7 @@ class Document(ABC):
         if self._path.exists():
             self.read()
         else:
+            self._path = None
             raise FileNotFoundError()
 
         # Set the title of the document window to match the path
@@ -135,7 +136,7 @@ class Document(ABC):
 
     # A document is writable if its class overrides the `write` method.
     def _writable(self):
-        return getattr(type(self), "write") is not Document.write
+        return type(self).write is not Document.write
 
     def show(self) -> None:
         """Show the visual representation for this document."""
@@ -167,7 +168,7 @@ class Document(ABC):
         :attr:`~toga.Document.path`, and populate the document window.
         """
 
-    def write(self) -> None:
+    def write(self) -> None:  # noqa: B027 (it's intentionally blank)
         """Persist a representation of the current state of the document.
 
         This method is a no-op by default, to allow for read-only document types.
@@ -342,10 +343,10 @@ class DocumentSet(Sequence[Document], Mapping[Path, Document]):
                     for doc_type in self.types
                     for extension in doc_type.extensions
                 }[path.suffix[1:]]
-            except KeyError:
+            except KeyError as exc:
                 raise ValueError(
                     f"Don't know how to open documents with extension {path.suffix}"
-                )
+                ) from exc
             else:
                 prev_window = self.app.current_window
                 document = DocType(app=self.app)
@@ -433,8 +434,8 @@ class DocumentWindow(MainWindow):
                 toga.QuestionDialog(
                     "Save changes?",
                     (
-                        "This document has unsaved changes. "
-                        "Do you want to save these changes?"
+                        "This document has unsaved changes. Do you want to save these "
+                        "changes?"
                     ),
                 )
             ):

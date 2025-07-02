@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import asyncio
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Generic, Literal, TypeVar, Union, overload
 
 from toga.platform import get_platform_factory
 
@@ -21,8 +21,10 @@ __all__ = [
     "SelectFolderDialog",
 ]
 
+DialogResultT = TypeVar("DialogResultT")
 
-class Dialog:
+
+class Dialog(Generic[DialogResultT]):
     """A base class for dialogs.
 
     These classes are not displayed directly. To use them, pass a
@@ -30,7 +32,7 @@ class Dialog:
     window-modal dialog), or :meth:`~toga.App.dialog()` for an app-level dialog.
     """
 
-    def _show(self, window: Window | None) -> asyncio.Future:
+    def _show(self, window: Window | None) -> asyncio.Future[DialogResultT]:
         """Display the dialog and return the user's response.
 
         :param window: The window for which the dialog should be modal; or ``None`` for
@@ -42,8 +44,8 @@ class Dialog:
         return future
 
 
-class InfoDialog(Dialog):
-    def __init__(self, title: str, message: str):
+class InfoDialog(Dialog[None]):
+    def __init__(self, title: str, message: str) -> None:
         """Ask the user to acknowledge some information.
 
         Presents as a dialog with a single "OK" button to close the dialog.
@@ -57,8 +59,8 @@ class InfoDialog(Dialog):
         self._impl = self.factory.dialogs.InfoDialog(title=title, message=message)
 
 
-class QuestionDialog(Dialog):
-    def __init__(self, title: str, message: str):
+class QuestionDialog(Dialog[bool]):
+    def __init__(self, title: str, message: str) -> None:
         """Ask the user a yes/no question.
 
         Presents as a dialog with "Yes" and "No" buttons.
@@ -73,8 +75,8 @@ class QuestionDialog(Dialog):
         self._impl = self.factory.dialogs.QuestionDialog(title=title, message=message)
 
 
-class ConfirmDialog(Dialog):
-    def __init__(self, title: str, message: str):
+class ConfirmDialog(Dialog[bool]):
+    def __init__(self, title: str, message: str) -> None:
         """Ask the user to confirm if they wish to proceed with an action.
 
         Presents as a dialog with "Cancel" and "OK" buttons (or whatever labels are
@@ -90,8 +92,8 @@ class ConfirmDialog(Dialog):
         self._impl = self.factory.dialogs.ConfirmDialog(title=title, message=message)
 
 
-class ErrorDialog(Dialog):
-    def __init__(self, title: str, message: str):
+class ErrorDialog(Dialog[None]):
+    def __init__(self, title: str, message: str) -> None:
         """Ask the user to acknowledge an error state.
 
         Presents as an error dialog with an "OK" button to close the dialog.
@@ -105,8 +107,28 @@ class ErrorDialog(Dialog):
         self._impl = self.factory.dialogs.ErrorDialog(title=title, message=message)
 
 
-class StackTraceDialog(Dialog):
-    def __init__(self, title: str, message: str, content: str, retry: bool = False):
+class StackTraceDialog(Dialog[DialogResultT]):
+    @overload
+    def __init__(
+        self: StackTraceDialog[None],
+        title: str,
+        message: str,
+        content: str,
+        retry: Literal[False] = ...,
+    ) -> None: ...
+
+    @overload
+    def __init__(
+        self: StackTraceDialog[bool],
+        title: str,
+        message: str,
+        content: str,
+        retry: Literal[True],
+    ) -> None: ...
+
+    def __init__(
+        self, title: str, message: str, content: str, retry: bool = False
+    ) -> None:
         """Open a dialog to display a large block of text, such as a stack trace.
 
         If ``retry`` is true, returns a response of ``True`` when the user selects
@@ -129,13 +151,13 @@ class StackTraceDialog(Dialog):
         )
 
 
-class SaveFileDialog(Dialog):
+class SaveFileDialog(Dialog[Union[Path, None]]):
     def __init__(
         self,
         title: str,
         suggested_filename: Path | str,
         file_types: list[str] | None = None,
-    ):
+    ) -> None:
         """Prompt the user for a location to save a file.
 
         This dialog is not currently supported on Android or iOS.
@@ -168,14 +190,33 @@ class SaveFileDialog(Dialog):
         )
 
 
-class OpenFileDialog(Dialog):
+class OpenFileDialog(Dialog[DialogResultT]):
+    @overload
+    def __init__(
+        self: OpenFileDialog[Path],
+        title: str,
+        initial_directory: Path | str | None = None,
+        file_types: list[str] | None = None,
+        multiple_select: Literal[False] = ...,
+    ) -> None: ...
+
+    @overload
+    def __init__(
+        self: OpenFileDialog[list[Path]],
+        title: str,
+        initial_directory: Path | str | None = None,
+        file_types: list[str] | None = None,
+        *,
+        multiple_select: Literal[True],
+    ) -> None: ...
+
     def __init__(
         self,
         title: str,
         initial_directory: Path | str | None = None,
         file_types: list[str] | None = None,
         multiple_select: bool = False,
-    ):
+    ) -> None:
         """Prompt the user to select a file (or files) to open.
 
         This dialog is not currently supported on Android or iOS.
@@ -204,13 +245,30 @@ class OpenFileDialog(Dialog):
         )
 
 
-class SelectFolderDialog(Dialog):
+class SelectFolderDialog(Dialog[DialogResultT]):
+    @overload
+    def __init__(
+        self: SelectFolderDialog[Path],
+        title: str,
+        initial_directory: Path | str | None = None,
+        multiple_select: Literal[False] = ...,
+    ) -> None: ...
+
+    @overload
+    def __init__(
+        self: SelectFolderDialog[list[Path]],
+        title: str,
+        initial_directory: Path | str | None = None,
+        *,
+        multiple_select: Literal[True],
+    ) -> None: ...
+
     def __init__(
         self,
         title: str,
         initial_directory: Path | str | None = None,
         multiple_select: bool = False,
-    ):
+    ) -> None:
         """Prompt the user to select a directory (or directories).
 
         This dialog is not currently supported on Android or iOS.

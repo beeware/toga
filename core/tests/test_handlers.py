@@ -184,7 +184,7 @@ def test_function_handler_with_cleanup_error(capsys):
 ######################################################################
 
 
-def test_generator_handler(event_loop):
+async def test_generator_handler():
     """A generator can be used as a handler."""
     obj = Mock()
     handler_call = {}
@@ -208,10 +208,7 @@ def test_generator_handler(event_loop):
         DeprecationWarning,
         match=r"Use of generators for async handlers has been deprecated;",
     ):
-        assert (
-            event_loop.run_until_complete(wrapped("arg1", "arg2", kwarg1=3, kwarg2=4))
-            == 42
-        )
+        assert await wrapped("arg1", "arg2", kwarg1=3, kwarg2=4) == 42
 
     # Handler arguments are as expected.
     assert handler_call == {
@@ -222,7 +219,7 @@ def test_generator_handler(event_loop):
     }
 
 
-def test_generator_handler_error(event_loop, capsys):
+async def test_generator_handler_error(capsys):
     """A generator can raise an error."""
     obj = Mock()
     handler_call = {}
@@ -244,10 +241,7 @@ def test_generator_handler_error(event_loop, capsys):
         DeprecationWarning,
         match=r"Use of generators for async handlers has been deprecated;",
     ):
-        assert (
-            event_loop.run_until_complete(wrapped("arg1", "arg2", kwarg1=3, kwarg2=4))
-            is None
-        )
+        assert await wrapped("arg1", "arg2", kwarg1=3, kwarg2=4) is None
 
     # Handler arguments are as expected.
     assert handler_call == {
@@ -262,7 +256,7 @@ def test_generator_handler_error(event_loop, capsys):
     )
 
 
-def test_generator_handler_with_cleanup(event_loop):
+async def test_generator_handler_with_cleanup():
     """A generator can have cleanup."""
     obj = Mock()
     cleanup = Mock()
@@ -287,10 +281,7 @@ def test_generator_handler_with_cleanup(event_loop):
         DeprecationWarning,
         match=r"Use of generators for async handlers has been deprecated;",
     ):
-        assert (
-            event_loop.run_until_complete(wrapped("arg1", "arg2", kwarg1=3, kwarg2=4))
-            == 42
-        )
+        assert await wrapped("arg1", "arg2", kwarg1=3, kwarg2=4) == 42
 
     # Handler arguments are as expected.
     assert handler_call == {
@@ -304,7 +295,7 @@ def test_generator_handler_with_cleanup(event_loop):
     cleanup.assert_called_once_with(obj, 42)
 
 
-def test_generator_handler_with_cleanup_error(event_loop, capsys):
+async def test_generator_handler_with_cleanup_error(capsys):
     """A generator can raise an error during cleanup."""
     obj = Mock()
     cleanup = Mock(side_effect=Exception("Problem in cleanup"))
@@ -329,10 +320,7 @@ def test_generator_handler_with_cleanup_error(event_loop, capsys):
         DeprecationWarning,
         match=r"Use of generators for async handlers has been deprecated;",
     ):
-        assert (
-            event_loop.run_until_complete(wrapped("arg1", "arg2", kwarg1=3, kwarg2=4))
-            == 42
-        )
+        assert await wrapped("arg1", "arg2", kwarg1=3, kwarg2=4) == 42
 
     # Handler arguments are as expected.
     assert handler_call == {
@@ -355,7 +343,7 @@ def test_generator_handler_with_cleanup_error(event_loop, capsys):
 ######################################################################
 
 
-def test_coroutine_handler(event_loop):
+async def test_coroutine_handler():
     """A coroutine can be used as a handler."""
     obj = Mock()
     handler_call = {}
@@ -373,9 +361,7 @@ def test_coroutine_handler(event_loop):
     assert wrapped._raw == handler
 
     # Invoke the handler
-    assert (
-        event_loop.run_until_complete(wrapped("arg1", "arg2", kwarg1=3, kwarg2=4)) == 42
-    )
+    assert await wrapped("arg1", "arg2", kwarg1=3, kwarg2=4) == 42
 
     # Handler arguments are as expected.
     assert handler_call == {
@@ -385,7 +371,7 @@ def test_coroutine_handler(event_loop):
     }
 
 
-def test_coroutine_handler_error(event_loop, capsys):
+async def test_coroutine_handler_error(capsys):
     """A coroutine can raise an error."""
     obj = Mock()
     handler_call = {}
@@ -402,10 +388,7 @@ def test_coroutine_handler_error(event_loop, capsys):
     assert wrapped._raw == handler
 
     # Invoke the handler; return value is None due to exception
-    assert (
-        event_loop.run_until_complete(wrapped("arg1", "arg2", kwarg1=3, kwarg2=4))
-        is None
-    )
+    assert await wrapped("arg1", "arg2", kwarg1=3, kwarg2=4) is None
 
     # Handler arguments are as expected.
     assert handler_call == {
@@ -420,7 +403,7 @@ def test_coroutine_handler_error(event_loop, capsys):
     )
 
 
-def test_coroutine_handler_with_cleanup(event_loop):
+async def test_coroutine_handler_with_cleanup():
     """A coroutine can have cleanup."""
     obj = Mock()
     cleanup = Mock()
@@ -439,9 +422,7 @@ def test_coroutine_handler_with_cleanup(event_loop):
     assert wrapped._raw == handler
 
     # Invoke the handler
-    assert (
-        event_loop.run_until_complete(wrapped("arg1", "arg2", kwarg1=3, kwarg2=4)) == 42
-    )
+    assert await wrapped("arg1", "arg2", kwarg1=3, kwarg2=4) == 42
 
     # Handler arguments are as expected.
     assert handler_call == {
@@ -454,7 +435,7 @@ def test_coroutine_handler_with_cleanup(event_loop):
     cleanup.assert_called_once_with(obj, 42)
 
 
-def test_coroutine_handler_with_cleanup_error(event_loop, capsys):
+async def test_coroutine_handler_with_cleanup_error(capsys):
     """A coroutine can raise an error during cleanup."""
     obj = Mock()
     cleanup = Mock(side_effect=Exception("Problem in cleanup"))
@@ -473,9 +454,7 @@ def test_coroutine_handler_with_cleanup_error(event_loop, capsys):
     assert wrapped._raw == handler
 
     # Invoke the handler; error in cleanup is swallowed
-    assert (
-        event_loop.run_until_complete(wrapped("arg1", "arg2", kwarg1=3, kwarg2=4)) == 42
-    )
+    assert await wrapped("arg1", "arg2", kwarg1=3, kwarg2=4) == 42
 
     # Handler arguments are as expected.
     assert handler_call == {
@@ -507,7 +486,7 @@ def test_native_handler():
     assert wrapped == native_method
 
 
-def test_async_result_non_comparable(event_loop):
+async def test_async_result_non_comparable():
     """An async result can't be compared or evaluated."""
     result = ExampleAsyncResult(None)
 
@@ -520,53 +499,53 @@ def test_async_result_non_comparable(event_loop):
         RuntimeError,
         match=r"Can't check Test result directly; use await or an on_result handler",
     ):
-        result == 42
+        _ = result == 42
 
     with pytest.raises(
         RuntimeError,
         match=r"Can't check Test result directly; use await or an on_result handler",
     ):
-        result < 42
+        _ = result < 42
 
     with pytest.raises(
         RuntimeError,
         match=r"Can't check Test result directly; use await or an on_result handler",
     ):
-        result <= 42
+        _ = result <= 42
 
     with pytest.raises(
         RuntimeError,
         match=r"Can't check Test result directly; use await or an on_result handler",
     ):
-        result > 42
+        _ = result > 42
 
     with pytest.raises(
         RuntimeError,
         match=r"Can't check Test result directly; use await or an on_result handler",
     ):
-        result >= 42
+        _ = result >= 42
 
     with pytest.raises(
         RuntimeError,
         match=r"Can't check Test result directly; use await or an on_result handler",
     ):
-        result != 42
+        _ = result != 42
 
 
-def test_async_result(event_loop):
+async def test_async_result():
     """An async result can be set."""
     result = ExampleAsyncResult()
 
     result.set_result(42)
 
     # Evaluate the future
-    async_answer = event_loop.run_until_complete(result.future)
+    async_answer = await result.future
 
     # The answer was returned, and passed to the callback
     assert async_answer == 42
 
 
-def test_async_result_cancelled(event_loop):
+async def test_async_result_cancelled():
     """An async result can be set even if the future is cancelled."""
     result = ExampleAsyncResult()
 
@@ -577,10 +556,10 @@ def test_async_result_cancelled(event_loop):
 
     # Evaluate the future. This will raise an error
     with pytest.raises(asyncio.CancelledError):
-        event_loop.run_until_complete(result.future)
+        await result.future
 
 
-def test_async_exception(event_loop):
+async def test_async_exception():
     """An async result can raise an exception."""
     result = ExampleAsyncResult()
 
@@ -588,10 +567,10 @@ def test_async_exception(event_loop):
 
     # Evaluate the future; this will raise an exception
     with pytest.raises(ValueError, match=r"Bad stuff"):
-        event_loop.run_until_complete(result.future)
+        await result.future
 
 
-def test_async_exception_cancelled(event_loop):
+async def test_async_exception_cancelled():
     """An async result can raise an exception even if the future is cancelled."""
     result = ExampleAsyncResult()
 
@@ -602,7 +581,7 @@ def test_async_exception_cancelled(event_loop):
 
     # Evaluate the future. This will raise an error
     with pytest.raises(asyncio.CancelledError):
-        event_loop.run_until_complete(result.future)
+        await result.future
 
 
 def test_simple_handler_function():
@@ -628,7 +607,7 @@ def test_simple_handler_function():
     }
 
 
-def test_simple_handler_coroutine(event_loop):
+async def test_simple_handler_coroutine():
     """A coroutine can be wrapped as a simple handler."""
     handler_call = {}
 
@@ -641,7 +620,7 @@ def test_simple_handler_coroutine(event_loop):
 
     # Invoke the handler as if it were a coroutine method handler (i.e., with the extra
     # "widget" argument)
-    assert event_loop.run_until_complete(wrapped("obj")) == 42
+    assert await wrapped("obj") == 42
     assert wrapped._raw == handler
 
     # The "widget" bound argument has been dropped
@@ -656,7 +635,7 @@ def test_simple_handler_coroutine(event_loop):
 ######################################################################
 
 
-def test_async_result_sync(event_loop):
+async def test_async_result_sync():
     """The deprecated behavior of using a synchronous result handler is supported."""
     on_result = Mock()
 
@@ -669,14 +648,14 @@ def test_async_result_sync(event_loop):
     result.set_result(42)
 
     # Evaluate the future
-    async_answer = event_loop.run_until_complete(result.future)
+    async_answer = await result.future
 
     # The answer was returned, and passed to the callback
     assert async_answer == 42
     on_result.assert_called_once_with(42)
 
 
-def test_async_result_cancelled_sync(event_loop):
+async def test_async_result_cancelled_sync():
     """A deprecated on_result handler won't be fired on a cancelled future."""
     on_result = Mock()
 
@@ -693,13 +672,13 @@ def test_async_result_cancelled_sync(event_loop):
 
     # Evaluate the future. This will raise an error
     with pytest.raises(asyncio.CancelledError):
-        event_loop.run_until_complete(result.future)
+        await result.future
 
     # The callback wasn't called
     on_result.assert_not_called()
 
 
-def test_async_exception_sync(event_loop):
+async def test_async_exception_sync():
     """A deprecated on_result handler can raise an exception."""
     on_result = Mock()
 
@@ -713,7 +692,7 @@ def test_async_exception_sync(event_loop):
 
     # Evaluate the future; this will raise an exception
     with pytest.raises(ValueError, match=r"Bad stuff"):
-        event_loop.run_until_complete(result.future)
+        await result.future
 
     # The answer was returned, and passed to the callback
     on_result.assert_called_once()
@@ -721,7 +700,7 @@ def test_async_exception_sync(event_loop):
     assert isinstance(on_result.call_args[1]["exception"], ValueError)
 
 
-def test_async_exception_cancelled_sync(event_loop):
+async def test_async_exception_cancelled_sync():
     """An async result can raise an exception even if the future is cancelled."""
     on_result = Mock()
 
@@ -738,7 +717,7 @@ def test_async_exception_cancelled_sync(event_loop):
 
     # Evaluate the future. This will raise an error
     with pytest.raises(asyncio.CancelledError):
-        event_loop.run_until_complete(result.future)
+        await result.future
 
     # The callback wasn't called
     on_result.assert_not_called()

@@ -18,10 +18,13 @@ clickable
 closable
 codepoint
 coroutine
+cryptographically
 CSS
 Ctrl
+dataclass
 dialogs
 Django
+dotfiles
 draggable
 Flatpak
 Flexbox
@@ -75,12 +78,15 @@ scrollable
 scrollers
 Segoe
 selectable
+Setuptools
 Sonoma
 Stimpy
 stylesheet
 subclasses
 Subclasses
 subclassing
+subdirectories
+subdirectory
 submodule
 subpackage
 substring
@@ -113,4 +119,5 @@ WebKit
 whitespace
 Winforms
 Xcode
+XDG
 zoomable

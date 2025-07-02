@@ -221,7 +221,8 @@ class Context(DrawingObject):
         radius: float,
         startangle: float = 0.0,
         endangle: float = 2 * pi,
-        anticlockwise: bool = False,
+        counterclockwise: bool | None = None,
+        anticlockwise: bool | None = None,  # DEPRECATED
     ) -> Arc:
         """Draw a circular arc in the canvas context.
 
@@ -234,11 +235,12 @@ class Context(DrawingObject):
             positive X axis.
         :param endangle: The end angle in radians, measured clockwise from the positive
             X axis.
-        :param anticlockwise: If true, the arc is swept anticlockwise. The default is
-            clockwise.
+        :param counterclockwise: If true, the arc is swept counterclockwise. The default
+            is clockwise.
+        :param anticlockwise: **DEPRECATED** - Use ``counterclockwise``.
         :returns: The ``Arc`` :any:`DrawingObject` for the operation.
         """
-        arc = Arc(x, y, radius, startangle, endangle, anticlockwise)
+        arc = Arc(x, y, radius, startangle, endangle, counterclockwise, anticlockwise)
         self.append(arc)
         return arc
 
@@ -251,7 +253,8 @@ class Context(DrawingObject):
         rotation: float = 0.0,
         startangle: float = 0.0,
         endangle: float = 2 * pi,
-        anticlockwise: bool = False,
+        counterclockwise: bool | None = None,
+        anticlockwise: bool | None = None,  # DEPRECATED
     ) -> Ellipse:
         """Draw an elliptical arc in the canvas context.
 
@@ -268,8 +271,9 @@ class Context(DrawingObject):
             positive X axis.
         :param endangle: The end angle in radians, measured clockwise from the positive
             X axis.
-        :param anticlockwise: If true, the arc is swept anticlockwise. The default is
-            clockwise.
+        :param counterclockwise: If true, the arc is swept counterclockwise. The default
+            is clockwise.
+        :param anticlockwise: **DEPRECATED** - Use ``counterclockwise``.
         :returns: The ``Ellipse`` :any:`DrawingObject` for the operation.
         """
         ellipse = Ellipse(
@@ -280,6 +284,7 @@ class Context(DrawingObject):
             rotation,
             startangle,
             endangle,
+            counterclockwise,
             anticlockwise,
         )
         self.append(ellipse)
@@ -347,6 +352,7 @@ class Context(DrawingObject):
         y: float = 0.0,
         font: Font | None = None,
         baseline: Baseline = Baseline.ALPHABETIC,
+        line_height: float | None = None,
     ) -> WriteText:
         """Write text at a given position in the canvas context.
 
@@ -359,9 +365,11 @@ class Context(DrawingObject):
         :param y: The Y coordinate: its meaning depends on ``baseline``.
         :param font: The font in which to draw the text. The default is the system font.
         :param baseline: Alignment of text relative to the Y coordinate.
+        :param line_height: Height of the line box as a multiple of the font size
+            when multiple lines are present.
         :returns: The ``WriteText`` :any:`DrawingObject` for the operation.
         """
-        write_text = WriteText(text, x, y, font, baseline)
+        write_text = WriteText(text, x, y, font, baseline, line_height)
         self.append(write_text)
         return write_text
 

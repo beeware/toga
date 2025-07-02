@@ -28,7 +28,10 @@ class TogaRow(GObject.Object):
     def text(self, attr, missing_value):
         data = getattr(self.value, attr, None)
         if isinstance(data, toga.Widget):
-            warnings.warn("GTK does not support the use of widgets in cells")
+            warnings.warn(
+                "GTK does not support the use of widgets in cells",
+                stacklevel=2,
+            )
             text = None
         elif isinstance(data, tuple):
             text = data[1]
@@ -111,9 +114,7 @@ class Table(Widget):
                 self.native_table.remove_column(column)
             self._create_columns()
 
-            types = [TogaRow]
-            for accessor in self.interface._accessors:
-                types.extend([GdkPixbuf.Pixbuf, str])
+            types = [TogaRow] + [GdkPixbuf.Pixbuf, str] * len(self.interface._accessors)
             self.store = Gtk.ListStore(*types)
 
             for i, row in enumerate(self.interface.data):

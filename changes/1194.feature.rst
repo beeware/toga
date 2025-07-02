@@ -1,1 +1,0 @@
-Added the ``justify_content`` style, which aligns children along a box's main axis.

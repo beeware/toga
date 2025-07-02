@@ -4,15 +4,12 @@ try:
 except ModuleNotFoundError:
     # To ensure the code can be imported, provide a js symbol as a fallback
     js = None
-
-
 try:
-    # Try to import pyodide from the PyScript namespace
     import pyodide
 except ModuleNotFoundError:
-    # To ensure the code can be imported, provide a pyodide symbol as a fallback
     pyodide = None
 
+from pyscript.web import document
 
 create_proxy = pyodide.ffi.create_proxy if pyodide else lambda f: f
 
@@ -43,7 +40,7 @@ def create_element(
         events or methods.
     :returns: A newly created DOM element.
     """
-    element = js.document.createElement(tag)
+    element = document.createElement(tag)
 
     if id:
         element.id = id

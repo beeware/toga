@@ -1036,7 +1036,7 @@ For more information about Towncrier and fragment types see `News Fragments
 You can also see existing examples of news fragments in the ``changes``
 directory of the Toga repository. If this folder is empty, it's likely because
 Toga has recently published a new release; change note files are deleted and
-combined to update the :doc:`release notes </background/project/releases>` with
+combined to update the :doc:`release notes </about/releases>` with
 each release. You can look at that file to see the style of comment that is
 required; you can look at `recently merged PRs
 <https://github.com/beeware/toga/pulls?q=is%3Apr+is%3Amerged>`__ to see how to

@@ -37,11 +37,9 @@ A text label for annotating forms or interfaces.
 
   .. group-tab:: Web |beta|
 
-    .. .. figure:: /reference/images/label-web.png
-    ..    :align: center
-    ..    :width: 300px
-
-    Screenshot not available
+    .. figure:: /reference/images/label-web.png
+       :align: center
+       :width: 300px
 
   .. group-tab:: Textual |beta|
 

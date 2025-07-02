@@ -1,12 +1,14 @@
+from toga_web.libs import create_proxy
+
 from .base import Widget
 
 
 class Button(Widget):
     def create(self):
         self.native = self._create_native_widget("sl-button")
-        self.native.onclick = self.dom_onclick
+        self.native.addEventListener("click", create_proxy(self.dom_click))
 
-    def dom_onclick(self, event):
+    def dom_click(self, event):
         self.interface.on_press()
 
     def get_text(self):

@@ -29,14 +29,7 @@ class AppProbe(BaseProbe, DialogsMixin):
 
     @property
     def config_path(self):
-        return (
-            Path.home()
-            / "AppData"
-            / "Local"
-            / "Tiberius Yak"
-            / "Toga Testbed"
-            / "Config"
-        )
+        return Path.home() / "AppData/Local/Tiberius Yak/Toga Testbed/Config"
 
     @property
     def data_path(self):
@@ -44,14 +37,7 @@ class AppProbe(BaseProbe, DialogsMixin):
 
     @property
     def cache_path(self):
-        return (
-            Path.home()
-            / "AppData"
-            / "Local"
-            / "Tiberius Yak"
-            / "Toga Testbed"
-            / "Cache"
-        )
+        return Path.home() / "AppData/Local/Tiberius Yak/Toga Testbed/Cache"
 
     @property
     def logs_path(self):
@@ -132,7 +118,7 @@ class AppProbe(BaseProbe, DialogsMixin):
                 child_index = child_labels.index(label)
             except ValueError:
                 raise AssertionError(
-                    f"no item named {path[:i+1]}; options are {child_labels}"
+                    f"no item named {path[: i + 1]}; options are {child_labels}"
                 ) from None
             item = children[child_index]
 
@@ -163,9 +149,9 @@ class AppProbe(BaseProbe, DialogsMixin):
         expected_dialog_handle = ctypes.windll.user32.FindWindowW(
             "#32770", dialog._impl.title
         )
-        assert (
-            expected_dialog_handle == active_window_handle
-        ), "The dialog is not in focus"
+        assert expected_dialog_handle == active_window_handle, (
+            "The dialog is not in focus"
+        )
 
     def assert_menu_item(self, path, *, enabled=True):
         item = self._menu_item(path)

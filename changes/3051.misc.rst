@@ -1,1 +1,0 @@
-The meta-package build-essential is installed for running testbed for textual on Linux since ubuntu-24.04 doesn't include it and Briefcase explicitly checks for it.

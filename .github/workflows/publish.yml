@@ -16,6 +16,8 @@ jobs:
       fail-fast: false
       matrix:
         package:
+        # As per PEP 503 normalization, these names should all be (a) lower case, and
+        # (b) use underscores. See https://github.com/pypa/packaging.python.org/pull/1032
         - "toga"
         - "toga_android"
         - "toga_cocoa"
@@ -23,8 +25,9 @@ jobs:
         - "toga_demo"
         - "toga_dummy"
         - "toga_gtk"
+        - "toga_positron"
         - "toga_textual"
-        - "toga_iOS"
+        - "toga_ios"
         - "toga_web"
         - "toga_winforms"
         - "travertino"
@@ -33,14 +36,14 @@ jobs:
         uses: dsaltares/fetch-gh-release-asset@1.1.2
         with:
           version: tags/${{ github.event.release.tag_name }}
-          file: ${{ github.event.repository.name }}.*
+          file: ${{ matrix.package }}-.*
           regex: true
           target: packages/
 
       - name: Extract ${{ matrix.package }}
         run: |
           mkdir dist
-          mv packages/$(echo ${{ matrix.package }} | sed 's/_/?/')-[0-9]* dist
+          mv packages/${{ matrix.package }}-[0-9]* dist
 
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1

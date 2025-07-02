@@ -9,7 +9,7 @@ from rubicon.objc import (
     objc_method,
     objc_property,
 )
-from rubicon.objc.eventloop import CocoaLifecycle, EventLoopPolicy
+from rubicon.objc.eventloop import CocoaLifecycle, RubiconEventLoop
 
 import toga
 from toga.command import Command, Group, Separator
@@ -105,8 +105,7 @@ class App:
 
         self._cursor_visible = True
 
-        asyncio.set_event_loop_policy(EventLoopPolicy())
-        self.loop = asyncio.new_event_loop()
+        self.loop = RubiconEventLoop()
 
         self.native = NSApplication.sharedApplication
 

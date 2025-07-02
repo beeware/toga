@@ -1,13 +1,21 @@
 from unittest.mock import call
 
+from pytest import mark
+
 from toga.colors import rgb
-from toga.fonts import Font
+from toga.fonts import SYSTEM_DEFAULT_FONT_SIZE, Font
 from toga.style.pack import (
+    BOLD,
     CENTER,
+    COLUMN,
     HIDDEN,
+    ITALIC,
     LEFT,
+    NONE,
     RIGHT,
     RTL,
+    SMALL_CAPS,
+    SYSTEM,
     VISIBLE,
     Pack,
 )
@@ -63,10 +71,60 @@ def test_set_font():
         ),
     )
     root.style.apply()
-    root._impl.set_font.assert_called_with(
+    # Should only be called once, despite multiple font-related properties being set.
+    root._impl.set_font.assert_called_once_with(
         Font("Roboto", 12, style="normal", variant="small-caps", weight="bold")
     )
-    root.refresh.assert_called_with()
+    root.refresh.assert_called_once_with()
+
+
+@mark.parametrize(
+    "family, result",
+    [
+        ("Courier", "Courier"),
+        (["Courier", "Helvetica"], "Courier"),
+        (["Bogus Font", "Courier", "Helvetica"], "Courier"),
+        (["Courier", "Bogus Font", "Helvetica"], "Courier"),
+        (["Bogus Font"], SYSTEM),
+        ("Bogus Font", SYSTEM),
+    ],
+)
+def test_set_font_family(family, result):
+    """The first viable family is used. Dummy backend rejects 'Bogus Font'."""
+    node = ExampleNode("app", style=Pack(font_family=family))
+    node.style.apply()
+    node._impl.set_font.assert_called_once_with(Font(result, SYSTEM_DEFAULT_FONT_SIZE))
+
+
+def test_set_multiple_layout_properties():
+    """Setting multiple layout properties at once should only trigger one refresh."""
+    root = ExampleNode(
+        "app",
+        style=Pack(
+            # All properties which can affect layout:
+            display=NONE,
+            direction=COLUMN,
+            align_items=CENTER,
+            justify_content=CENTER,
+            gap=5,
+            width=100,
+            height=100,
+            flex=5,
+            margin=5,
+            margin_top=5,
+            margin_right=5,
+            margin_bottom=5,
+            margin_left=5,
+            text_direction=RTL,
+            font_family="A Family",
+            font_style=ITALIC,
+            font_variant=SMALL_CAPS,
+            font_weight=BOLD,
+            font_size=12,
+        ),
+    )
+    root.style.apply()
+    root.refresh.assert_called_once_with()
 
 
 def test_set_visibility_hidden():

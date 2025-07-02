@@ -18,7 +18,7 @@ To set up a development environment::
 
 To run Django management commands::
 
-    PYTHONPATH=src python src/webapp/manage.py
+    (venv) PYTHONPATH=src python src/manage.py
 
 To run in development mode::
 
@@ -27,3 +27,21 @@ To run in development mode::
 To run as a packaged app::
 
     (venv) $ briefcase run
+
+The Django app will run on a SQLite3 database, stored in the user's data directory (the
+location of this directory is platform specific). This database file will be created if
+it doesn't exist, and migrations will be run on every app start.
+
+If you need to start the database with some initial content (e.g., an initial user
+login) you can use ``manage.py`` to create an initial database file. If there is a
+``db.sqlite3`` in the ``src/positron/resources`` folder when the app starts, and the
+user doesn't already have a ``db.sqlit3`` file in their app data folder, the initial
+database file will be copied into the user's data folder as a starting point.
+
+To create an initial database, use ``manage.py`` - e.g.,:
+
+    (venv) PYTHONPATH=src python src/manage.py migrate
+    (venv) PYTHONPATH=src python src/manage.py createsuperuser
+
+This will create an initial ``db.sqlite3`` file with a superuser account. All users of
+the app will have this superuser account in their database.

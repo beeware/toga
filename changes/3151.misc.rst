@@ -1,1 +1,0 @@
-Style properties are now consistently counted as having been set, even when they are explicitly set to their default initial value.

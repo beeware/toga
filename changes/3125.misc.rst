@@ -1,1 +1,0 @@
-On iOS, an erroneous note stating that widgets can override their system-assigned default background color, has now been removed.
