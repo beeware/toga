@@ -63,7 +63,7 @@ class ExampleExamplesOverviewApp(toga.App):
             dirs[:] = [d for d in dirs if not d.startswith(".") and d != "build"]
             if any(name == "__main__.py" for name in files):
                 path = Path(root)
-                self.examples.append(dict(name=path.name, path=path.parent))
+                self.examples.append({"name": path.name, "path": path.parent})
 
         self.examples.sort(key=lambda e: e["path"])
 

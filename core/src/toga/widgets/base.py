@@ -81,8 +81,8 @@ class Widget(Node, PackMixin):
         """
         warn(
             (
-                "Widgets should create and return their implementation in ._create(). This "
-                "will be an exception in a future version."
+                "Widgets should create and return their implementation in ._create(). "
+                "This will be an exception in a future version."
             ),
             RuntimeWarning,
             stacklevel=2,

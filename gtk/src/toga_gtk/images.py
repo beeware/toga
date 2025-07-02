@@ -12,14 +12,14 @@ class Image:
         if path:
             try:
                 self.native = GdkPixbuf.Pixbuf.new_from_file(str(path))
-            except GLib.GError:
-                raise ValueError(f"Unable to load image from {path}")
+            except GLib.GError as exc:
+                raise ValueError(f"Unable to load image from {path}") from exc
         elif data:
             try:
                 input_stream = Gio.MemoryInputStream.new_from_data(data, None)
                 self.native = GdkPixbuf.Pixbuf.new_from_stream(input_stream, None)
-            except GLib.GError:
-                raise ValueError("Unable to load image from data")
+            except GLib.GError as exc:
+                raise ValueError("Unable to load image from data") from exc
         else:
             self.native = raw
 
@@ -48,7 +48,9 @@ class Image:
                 ".bmp": "bmp",
             }[path.suffix.lower()]
             str_path = str(path)
-        except KeyError:
-            raise ValueError(f"Don't know how to save image of type {path.suffix!r}")
+        except KeyError as exc:
+            raise ValueError(
+                f"Don't know how to save image of type {path.suffix!r}"
+            ) from exc
 
         self.native.savev(str_path, filetype)

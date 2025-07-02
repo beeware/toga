@@ -101,17 +101,15 @@ class ExampleFocusApp(toga.App):
         self.text_input.focus()
 
     def on_button_press(self, widget: toga.Button):
-        self.info_label.text = "{widget_text} was pressed!".format(
-            widget_text=widget.text
-        )
+        self.info_label.text = f"{widget.text} was pressed!"
 
     def on_switch_toggle(self, widget: toga.Switch):
         on_off = "on" if widget.value else "off"
         self.info_label.text = f"Switch turned {on_off}!"
 
     def on_textinput_gain_focus(self, widget: toga.TextInput, **kwargs):
-        self.info_label.text = "TextInput has previously had focus {} times".format(
-            self.text_input_focus_count
+        self.info_label.text = (
+            f"TextInput has previously had focus {self.text_input_focus_count} times"
         )
 
     def on_textinput_lose_focus(self, widget: toga.TextInput, **kwargs):

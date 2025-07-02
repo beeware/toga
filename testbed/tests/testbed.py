@@ -122,7 +122,7 @@ def run_tests(app, cov, args, report_coverage, run_slow, running_in_ci):
         # Add a short pause to make sure any log tailing gets a chance to flush. Run a
         # couple of times to make sure any log streaming dropouts don't prevent
         # Briefcase from seeing the output.
-        for i in range(0, 6):
+        for _ in range(6):
             print(f">>>>>>>>>> EXIT {app.returncode} <<<<<<<<<<")
             time.sleep(0.5)
         app.loop.call_soon_threadsafe(app.exit)

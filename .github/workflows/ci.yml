@@ -17,7 +17,6 @@ on:
 
 env:
   min_python_version: "3.9"
-  max_python_version: "3.12"
   FORCE_COLOR: "1"
 
 defaults:

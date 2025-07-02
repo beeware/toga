@@ -40,7 +40,7 @@ class TextInputProbe(SimpleProbe):
 
     @property
     def placeholder_hides_on_focus(self):
-        False
+        return False
 
     @property
     def readonly(self):

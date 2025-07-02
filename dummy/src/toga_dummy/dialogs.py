@@ -19,14 +19,14 @@ class BaseDialog(LoggedObject):
                     self.__class__.__name__
                 ].pop(0)
 
-        except KeyError:
+        except KeyError as exc:
             raise RuntimeError(
                 f"Was not expecting responses for {self.__class__.__name__}"
-            )
-        except IndexError:
+            ) from exc
+        except IndexError as exc:
             raise RuntimeError(
                 f"Ran out of prepared responses for {self.__class__.__name__}"
-            )
+            ) from exc
 
         self.future.set_result(result)
 

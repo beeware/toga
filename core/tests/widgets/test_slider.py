@@ -313,7 +313,7 @@ def test_set_enabled_with_working_values(slider, on_change):
 
 def test_get_tick_count(slider, on_change):
     tick_count = slider.tick_count
-    assert INITIAL_TICK_COUNT == tick_count
+    assert tick_count == INITIAL_TICK_COUNT
 
 
 TICK_RANGE = (10, 110)

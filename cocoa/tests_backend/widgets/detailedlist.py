@@ -176,7 +176,7 @@ class DetailedListProbe(SimpleProbe):
         else:
             assert not self.native.refresh_indicator.isHidden()
             # Wait for the scroll to relax after reload completion
-            while self.scroll_position < 0:
+            while self.scroll_position < 0:  # noqa: ASYNC110
                 await asyncio.sleep(0.01)
 
     async def _perform_action(self, row, index):
