@@ -376,6 +376,9 @@ class OptionList:
         item._add_as_option(index, self.interface)
 
 
+_USE_DEBUG_BACKGROUND = True
+
+
 class OptionContainer(Widget):
     def __init__(
         self,
@@ -395,8 +398,6 @@ class OptionContainer(Widget):
         :param on_select: Initial :any:`on_select` handler.
         :param kwargs: Initial style properties.
         """
-        # enable the debug background functionality
-        self._USE_DEBUG_BACKGROUND = True
         self._content = OptionList(self)
         self.on_select = None
 

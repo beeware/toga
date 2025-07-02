@@ -19,6 +19,9 @@ if TYPE_CHECKING:
     SplitContainerContentT: TypeAlias = Widget | tuple[Widget, float] | None
 
 
+_USE_DEBUG_BACKGROUND = True
+
+
 class SplitContainer(Widget):
     HORIZONTAL = Direction.HORIZONTAL
     VERTICAL = Direction.VERTICAL
@@ -44,8 +47,6 @@ class SplitContainer(Widget):
             of the container. Defaults to both panels being empty.
         :param kwargs: Initial style properties.
         """
-        # enable the debug background functionality
-        self._USE_DEBUG_BACKGROUND = True
         self._content: list[SplitContainerContentT] = [None, None]
         super().__init__(id, style, **kwargs)
 

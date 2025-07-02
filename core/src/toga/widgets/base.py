@@ -40,6 +40,7 @@ class Widget(Node, PackMixin):
     _MIN_WIDTH = 100
     _MIN_HEIGHT = 100
 
+    _USE_DEBUG_BACKGROUND = False
     _debug_color_index = 0
 
     def __init__(
@@ -63,16 +64,12 @@ class Widget(Node, PackMixin):
             style = style.copy()
             style.update(**kwargs)
 
-        # If the object has _USE_DEBUG_BACKGROUND=True and layout debug mode
-        # is on, change bg color.BufferError
-        if getattr(self, "_USE_DEBUG_BACKGROUND", False):
+        if self._USE_DEBUG_BACKGROUND:
             if environ.get("TOGA_DEBUG_LAYOUT") == "1":
                 style.background_color = DEBUG_BACKGROUND_PALETTE[
                     Widget._debug_color_index % len(DEBUG_BACKGROUND_PALETTE)
                 ]
                 Widget._debug_color_index += 1
-        else:
-            self._USE_DEBUG_BACKGROUND = False
 
         super().__init__(style=style)
 

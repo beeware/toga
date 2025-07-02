@@ -20,6 +20,9 @@ class OnScrollHandler(Protocol):
         """
 
 
+_USE_DEBUG_BACKGROUND = True
+
+
 class ScrollContainer(Widget):
     def __init__(
         self,
@@ -42,8 +45,6 @@ class ScrollContainer(Widget):
         :param content: The content to display in the scroll window.
         :param kwargs: Initial style properties.
         """
-        # enable the debug background functionality
-        self._USE_DEBUG_BACKGROUND = True
 
         self._content: Widget | None = None
         self.on_scroll = None
