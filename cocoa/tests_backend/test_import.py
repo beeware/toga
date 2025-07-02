@@ -41,3 +41,21 @@ def test_lazy_fail():
         AttributeError, match="module 'toga_cocoa' has no attribute 'nonexistent'"
     ):
         _ = toga_cocoa.nonexistent
+
+
+def test_lazy_load_cache(monkeypatch):
+    import toga_cocoa
+
+    if "Button" in toga_cocoa.__dict__:
+        del toga_cocoa.__dict__["Button"]
+    btn = toga_cocoa.Button
+    assert btn is toga_cocoa.Button
+
+
+def test_lazy_attribute_error(monkeypatch):
+    import toga_cocoa
+
+    with pytest.raises(
+        AttributeError, match="module 'toga_cocoa' has no attribute 'nonexistent'"
+    ):
+        _ = toga_cocoa.nonexistent
