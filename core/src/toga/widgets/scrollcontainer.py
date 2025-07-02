@@ -20,10 +20,9 @@ class OnScrollHandler(Protocol):
         """
 
 
-_USE_DEBUG_BACKGROUND = True
-
-
 class ScrollContainer(Widget):
+    _USE_DEBUG_BACKGROUND = True
+
     def __init__(
         self,
         id: str | None = None,

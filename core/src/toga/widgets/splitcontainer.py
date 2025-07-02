@@ -19,12 +19,10 @@ if TYPE_CHECKING:
     SplitContainerContentT: TypeAlias = Widget | tuple[Widget, float] | None
 
 
-_USE_DEBUG_BACKGROUND = True
-
-
 class SplitContainer(Widget):
     HORIZONTAL = Direction.HORIZONTAL
     VERTICAL = Direction.VERTICAL
+    _USE_DEBUG_BACKGROUND = True
 
     def __init__(
         self,

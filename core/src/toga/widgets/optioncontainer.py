@@ -376,10 +376,9 @@ class OptionList:
         item._add_as_option(index, self.interface)
 
 
-_USE_DEBUG_BACKGROUND = True
-
-
 class OptionContainer(Widget):
+    _USE_DEBUG_BACKGROUND = True
+
     def __init__(
         self,
         id: str | None = None,
