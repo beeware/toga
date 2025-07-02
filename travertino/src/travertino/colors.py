@@ -3,6 +3,14 @@ from __future__ import annotations
 from .constants import *  # noqa: F403
 
 
+def _clamp(value, upper=1):
+    return min(upper, max(0, value))
+
+
+def _clamp_hex(value):
+    return round(_clamp(value, upper=255))
+
+
 class Color:
     "A base class for all colorspace representations."
 
@@ -57,63 +65,27 @@ class Color:
         if front_color.a == 1:
             # If the front color is fully opaque then the result will be the same as
             # front color.
-            return front_color.rgba
+            return front_color
 
-        blended_alpha = min(
-            1, max(0, (front_color.a + ((1 - front_color.a) * back_color.a)))
-        )
+        blended_alpha = _clamp(front_color.a + ((1 - front_color.a) * back_color.a))
 
         if blended_alpha == 0:
             # Don't further blend the color, to prevent divide by 0.
             return rgba(0, 0, 0, 0)
         else:
-            blended_color = rgba(
-                # Red Component
-                min(
-                    255,
-                    max(
-                        0,
-                        round(
-                            (
-                                (front_color.r * front_color.a)
-                                + (back_color.r * back_color.a * (1 - front_color.a))
-                            )
-                            / blended_alpha
-                        ),
-                    ),
-                ),
-                # Green Component
-                min(
-                    255,
-                    max(
-                        0,
-                        round(
-                            (
-                                (front_color.g * front_color.a)
-                                + (back_color.g * back_color.a * (1 - front_color.a))
-                            )
-                            / blended_alpha
-                        ),
-                    ),
-                ),
-                # Blue Component
-                min(
-                    255,
-                    max(
-                        0,
-                        round(
-                            (
-                                (front_color.b * front_color.a)
-                                + (back_color.b * back_color.a * (1 - front_color.a))
-                            )
-                            / blended_alpha
-                        ),
-                    ),
-                ),
-                # Alpha component
-                min(1, max(0, blended_alpha)),
-            )
-            return blended_color
+            bands = {}
+            for band in "rgb":
+                front = getattr(front_color, band)
+                back = getattr(back_color, band)
+                bands[band] = _clamp_hex(
+                    (
+                        (front * front_color.a)
+                        + (back * back_color.a * (1 - front_color.a))
+                    )
+                    / blended_alpha
+                )
+
+            return rgba(**bands, a=blended_alpha)
 
     def unblend_over(self, back_color: Color, front_color_alpha: float) -> rgba:
         """Performs the reverse of the "over" straight alpha blending operation,
@@ -145,70 +117,24 @@ class Color:
 
         blended_color = self.rgba
         back_color = back_color.rgba
-        if not (0 < front_color_alpha <= 1):
+        if not 0 < front_color_alpha <= 1:
             raise ValueError(
                 "The value of front_color_alpha must be within the range of (0, 1]."
             )
         else:
-            front_color = rgba(
-                # Red Component
-                min(
-                    255,
-                    max(
-                        0,
-                        round(
-                            (
-                                (blended_color.r * blended_color.a)
-                                - (
-                                    back_color.r
-                                    * back_color.a
-                                    * (1 - front_color_alpha)
-                                )
-                            )
-                            / front_color_alpha
-                        ),
-                    ),
-                ),
-                # Green Component
-                min(
-                    255,
-                    max(
-                        0,
-                        round(
-                            (
-                                (blended_color.g * blended_color.a)
-                                - (
-                                    back_color.g
-                                    * back_color.a
-                                    * (1 - front_color_alpha)
-                                )
-                            )
-                            / front_color_alpha
-                        ),
-                    ),
-                ),
-                # Blue Component
-                min(
-                    255,
-                    max(
-                        0,
-                        round(
-                            (
-                                (blended_color.b * blended_color.a)
-                                - (
-                                    back_color.b
-                                    * back_color.a
-                                    * (1 - front_color_alpha)
-                                )
-                            )
-                            / front_color_alpha
-                        ),
-                    ),
-                ),
-                # Alpha Component
-                front_color_alpha,
-            )
-            return front_color.rgba
+            bands = {}
+            for band in "rgb":
+                blended = getattr(blended_color, band)
+                back = getattr(back_color, band)
+                bands[band] = _clamp_hex(
+                    (
+                        (blended * blended_color.a)
+                        - (back * back_color.a * (1 - front_color_alpha))
+                    )
+                    / front_color_alpha
+                )
+
+            return rgba(**bands, a=front_color_alpha)
 
 
 class rgba(Color):
@@ -276,9 +202,9 @@ class rgba(Color):
 
         return hsla(
             hue % 360,  # [0,360)
-            min(1, max(0, saturation)),  # [0,1]
-            min(1, max(0, lightness)),  # [0,1]
-            min(1, max(0, self.a)),  # [0,1]
+            _clamp(saturation),  # [0,1]
+            _clamp(lightness),  # [0,1]
+            self.a,  # [0,1]
         )
 
     @property
