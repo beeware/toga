@@ -10,7 +10,6 @@ from System.IO import FileNotFoundException
 from System.Runtime.InteropServices import ExternalException
 from travertino.constants import (
     FONT_SIZE_SCALE,
-    SYSTEM_DEFAULT_FONT_SIZE,
 )
 
 from toga.fonts import (
