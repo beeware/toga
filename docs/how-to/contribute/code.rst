@@ -34,8 +34,8 @@ You'll need to install the following prerequisites.
 
 .. _dev-environment-tldr:
 
-tl;dr - Dev Quick-Setup
-=======================
+:spelling:ignore:`tl;dr` - Dev Quick-Setup
+==========================================
 
 Set up the dev environment by running:
 
@@ -135,8 +135,8 @@ Clone the Toga repository
 
 Next, go to the `Toga page on GitHub <https://github.com/beeware/toga>`__,
 and, if you haven't already, `fork the repository <https://github.com/beeware/toga/fork>`__
-into your own account. Next, click on the "<> Code" button. If you have the GitHub
-desktop application installed on your computer, you can select "Open with GitHub
+into your own account. Next, click on the "<> Code" button on your fork. If you have the
+GitHub desktop application installed on your computer, you can select "Open with GitHub
 Desktop"; otherwise, copy the HTTPS URL provided, and use it to clone the repository
 to your computer using the command line:
 
@@ -348,7 +348,7 @@ messages). At present, the Web and Textual backends have the most missing widget
 you have web skills, or would like to learn more about `PyScript
 <https://pyscript.net>`__ and `Shoelace <https://shoelace.style>`__, the web backend
 could be a good place to contribute; if you'd like to learn more about terminal
-applications and the or `Textual <https://textual.textualize.io>`__ API, contributing to
+applications or the `Textual <https://textual.textualize.io>`__ API, contributing to
 the Textual backend could be a good place for you to contribute.
 
 Alternatively, if there's a widget that doesn't exist, propose an interface
@@ -438,8 +438,10 @@ Running tests and coverage
 ==========================
 
 Toga uses `tox <https://tox.wiki/en/latest/>`__ to manage the testing
-process and `pytest <https://docs.pytest.org/en/latest>`__ for its own test
-suite.
+process and |pytest|_ for its own test suite.
+
+.. |pytest| replace:: ``pytest``
+.. _pytest: https://docs.pytest.org/en/latest
 
 The default ``tox`` command includes running:
  * pre-commit hooks
@@ -744,7 +746,7 @@ specification to the command line; a :ref:`specific Python version
 Code coverage
 =============
 
-toga maintains 100% branch coverage in its codebase. When you add or
+Toga maintains 100% branch coverage in its codebase. When you add or
 modify code in the project, you must add test code to ensure coverage of any
 changes you make.
 
@@ -925,7 +927,7 @@ Running a subset of the testbed suite and slow mode
 ---------------------------------------------------
 
 If you want to run a subset of the entire test suite, Briefcase honors `pytest
-specifiers <https://docs.pytest.org/en/latest/how-to/usage.html>`__) in the same
+specifiers <https://docs.pytest.org/en/latest/how-to/usage.html>`__ in the same
 way as the main test suite.
 
 The testbed app provides one additional feature that the core tests don't have --
@@ -1268,10 +1270,13 @@ Add change information for release notes
 ----------------------------------------
 
 When you submit this change as a pull request, you need to add a *change
-note*. Toga uses ```towncrier`` <https://pypi.org/project/towncrier/>`__ to automate
+note*. Toga uses |towncrier|_ to automate
 building the release notes for each release. Every pull request must include at
 least one file in the ``changes/`` directory that provides a short description
 of the change implemented by the pull request.
+
+.. |towncrier| replace:: ``towncrier``
+.. _towncrier: https://pypi.org/project/towncrier/
 
 The change note should be in reStructuredText format, in a file that has name of the
 format ``<id>.<fragment type>.rst``. If the change you are proposing will fix a bug or
@@ -1333,11 +1338,10 @@ format your change notes.
 It's not just about coverage!
 -----------------------------
 
-Although we're always trying to improve test coverage, the
-task isn't *just* about increasing the numerical coverage value. Part of the
-task is to audit the code as you go. You could write a comprehensive set of
-tests for a concrete life jacket... but a concrete life jacket would still be
-useless for the purpose it was intended!
+Although we have full test coverage, the task isn't *just* about maintaining
+the numerical coverage value. Part of the task is to audit the code as you go.
+You could write a comprehensive set of tests for a concrete life jacket... but
+a concrete life jacket would still be useless for the purpose it was intended!
 
 As you develop tests and improve coverage, you should be checking that the
 core module is internally **consistent** as well. If you notice any method
