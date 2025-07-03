@@ -15,3 +15,4 @@ step-by-step guide of accomplishing specific tasks.
    layout
    data-sources
    file-management
+   debugging
