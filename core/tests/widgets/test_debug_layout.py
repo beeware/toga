@@ -50,6 +50,7 @@ def test_debug_background(
         (env_var or class_var) and supports_debug
     )
 
+
 @pytest.mark.parametrize("use_class_var", [True, False])
 def test_box_debug_backgrounds(use_class_var, monkeypatch):
     """The list of debug layout colors is applied to each new widget in order."""
