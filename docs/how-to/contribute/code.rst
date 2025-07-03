@@ -47,7 +47,7 @@ Set up the dev environment by running:
 
       $ git clone https://github.com/beeware/toga.git
       $ cd toga
-      $ python -m venv .venv
+      $ python3 -m venv .venv
       $ . .venv/bin/activate
       (.venv) $ python -m pip install pip install -e "./core[dev]" -e ./dummy -e ./cocoa -e ./travertino
       (.venv) $ pre-commit install
@@ -58,7 +58,7 @@ Set up the dev environment by running:
 
       $ git clone https://github.com/beeware/toga.git
       $ cd toga
-      $ python -m venv .venv
+      $ python3 -m venv .venv
       $ . .venv/bin/activate
       (.venv) $ python -m pip install pip install -e "./core[dev]" -e ./dummy -e ./gtk -e ./travertino
       (.venv) $ pre-commit install
@@ -184,7 +184,7 @@ To set up a virtual environment, run:
     .. code-block:: console
 
       $ cd toga
-      $ python -m venv .venv
+      $ python3 -m venv .venv
       $ source .venv/bin/activate
 
   .. group-tab:: Linux
@@ -192,7 +192,7 @@ To set up a virtual environment, run:
     .. code-block:: console
 
       $ cd toga
-      $ python -m venv .venv
+      $ python3 -m venv .venv
       $ source .venv/bin/activate
 
   .. group-tab:: Windows
