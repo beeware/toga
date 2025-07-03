@@ -175,7 +175,7 @@ def autodoc_process_signature(
 linkcheck_ignore = [
     # GitHub generates anchors in javascript
     r"https://github.com/.*#",
-    # References to Github issues/pulls should all be safe.
+    # References to GitHub issues/pulls should all be safe.
     r"^https://github.com/beeware/toga/issues/\d+$",
     r"^https://github.com/beeware/toga/pull/\d+$",
 ]

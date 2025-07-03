@@ -123,7 +123,7 @@ jobs:
 
     - name: Test
       run: |
-        # The $(ls ...) shell expansion is done in the Github environment; the value of
+        # The $(ls ...) shell expansion is done in the GitHub environment; the value of
         # TOGA_INSTALL_COMMAND will be a literal string without any shell expansions to
         # perform. We don't *explicitly* install the Travertino wheel; we provide the
         # dist dir as a source of wheels, and rely on pip to resolve the explicit
