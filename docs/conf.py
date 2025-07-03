@@ -20,6 +20,7 @@ templates_path = []
 html_static_path = []
 html_css_files = []
 html_context = {}
+html_theme_options = {}
 
 beeware_theme.init(
     project_name="toga",
@@ -27,6 +28,7 @@ beeware_theme.init(
     context=html_context,
     static=html_static_path,
     css=html_css_files,
+    theme_options=html_theme_options,
 )
 
 # If extensions (or modules to document with autodoc) are in another directory,
