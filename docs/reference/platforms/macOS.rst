@@ -9,10 +9,12 @@ macOS
 The Toga backend for macOS is `toga-cocoa
 <https://github.com/beeware/toga/tree/main/cocoa>`__.
 
+.. _macos-prerequisites:
+
 Prerequisites
 -------------
 
-``toga-cocoa`` requires macOS 11 (Big Sur) or newer.
+``toga-cocoa`` requires Python 3.9+, and macOS 11 (Big Sur) or newer.
 
 Installation
 ------------
