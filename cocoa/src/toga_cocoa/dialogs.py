@@ -83,7 +83,7 @@ class NSAlertDialog(BaseDialog):
             session = nsapp.beginModalSessionForWindow(self.native.window)
 
             # Poll the modal session, waiting for the dialog to complete
-            while (
+            while (  # noqa: ASYNC110
                 result := self._poll_modal_session(nsapp, session)
             ) == NSModalResponseContinue:
                 await asyncio.sleep(0.1)

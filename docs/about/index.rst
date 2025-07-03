@@ -1,3 +1,5 @@
+.. _about:
+
 ==========
 About Toga
 ==========
@@ -5,8 +7,9 @@ About Toga
 .. toctree::
    :maxdepth: 1
 
-   Project philosophy <philosophy>
-   FAQ <faq>
+   philosophy
+   faq
    success
    releases
    roadmap
+   community

@@ -48,14 +48,16 @@ class Font:
                 try:
                     font_path = _REGISTERED_FONT_CACHE[font_key]
 
-                except KeyError:
+                except KeyError as exc:
                     # No, not a user-registered font.
                     # Check for a font installed on the system.
                     installed = PangoCairo.FontMap.get_default().get_family(
                         self.interface.family
                     )
                     if installed is None:
-                        raise UnknownFontError(f"Unknown font '{self.interface}'")
+                        raise UnknownFontError(
+                            f"Unknown font '{self.interface}'"
+                        ) from exc
 
                 else:
                     # Yes, user has registered this font.

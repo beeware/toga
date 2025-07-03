@@ -230,18 +230,17 @@ class Canvas(Widget):
 
         for line_num, line in enumerate(text.splitlines()):
             # FILL_AND_STROKE doesn't allow separate colors, so we have to draw twice.
-            def draw():
-                canvas.drawText(line, x, top + (scaled_line_height * line_num), paint)
+            draw_args = [line, x, top + (scaled_line_height * line_num), paint]
 
             if (color := kwargs.get("fill_color")) is not None:
                 paint.setStyle(Paint.Style.FILL)
                 paint.setColor(jint(native_color(color)))
-                draw()
+                canvas.drawText(*draw_args)
             if (color := kwargs.get("stroke_color")) is not None:
                 paint.setStyle(Paint.Style.STROKE)
                 paint.setStrokeWidth(kwargs["line_width"])
                 paint.setColor(jint(native_color(color)))
-                draw()
+                canvas.drawText(*draw_args)
 
     def _text_paint(self, font):
         # font.size applies the scale factor, and the canvas transformation matrix

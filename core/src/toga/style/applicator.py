@@ -21,8 +21,9 @@ class TogaApplicator:
         if widget is not None:
             warnings.warn(
                 (
-                    "Widget parameter is deprecated. Applicator will be given a reference "
-                    "to its widget when it is assigned as that widget's applicator."
+                    "Widget parameter is deprecated. Applicator will be given a "
+                    "reference to its widget when it is assigned as that widget's "
+                    "applicator."
                 ),
                 DeprecationWarning,
                 stacklevel=2,

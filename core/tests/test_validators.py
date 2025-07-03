@@ -7,33 +7,33 @@ from toga import validators
     "value, kwargs, error",
     [
         # Exact minimum size
-        ("exact", dict(length=5), None),
+        ("exact", {"length": 5}, None),
         # Exceeds minimum size
-        ("this is a long string", dict(length=5), None),
+        ("this is a long string", {"length": 5}, None),
         # Allow empty strings
-        ("", dict(length=5), None),
+        ("", {"length": 5}, None),
         # Too short
         (
             "bad!",
-            dict(length=5),
+            {"length": 5},
             "Input is too short (length should be at least 5)",
         ),
         # Too short, different length
         (
             "this is a long string",
-            dict(length=25),
+            {"length": 25},
             "Input is too short (length should be at least 25)",
         ),
         # Custom error message
         (
             "bad",
-            dict(length=5, error_message="Badness"),
+            {"length": 5, "error_message": "Badness"},
             "Badness",
         ),
         # Don't allow empty strings
         (
             "",
-            dict(length=5, allow_empty=False),
+            {"length": 5, "allow_empty": False},
             "Input is too short (length should be at least 5)",
         ),
     ],
@@ -48,33 +48,33 @@ def test_min_length(value, kwargs, error):
     "value, kwargs, error",
     [
         # Exact max size
-        ("right size", dict(length=10), None),
+        ("right size", {"length": 10}, None),
         # Less than max size
-        ("valid", dict(length=10), None),
+        ("valid", {"length": 10}, None),
         # Empty strings are less than any max length
-        ("", dict(length=10), None),
+        ("", {"length": 10}, None),
         # Just exceeds maximum length
         (
             "bad size!!!",
-            dict(length=10),
+            {"length": 10},
             "Input is too long (length should be at most 10)",
         ),
         # Exceeds maximum length
         (
             "this is a long string",
-            dict(length=10),
+            {"length": 10},
             "Input is too long (length should be at most 10)",
         ),
         # Exceeds a different maximum length
         (
             "this is a long string",
-            dict(length=5),
+            {"length": 5},
             "Input is too long (length should be at most 5)",
         ),
         # Custom error message
         (
             "this is a long string",
-            dict(length=10, error_message="Badness"),
+            {"length": 10, "error_message": "Badness"},
             "Badness",
         ),
     ],
@@ -89,35 +89,35 @@ def test_max_length(value, kwargs, error):
     "value, kwargs, error",
     [
         # Exact max size
-        ("right size", dict(min_length=5, max_length=10), None),
+        ("right size", {"min_length": 5, "max_length": 10}, None),
         # Middle size
-        ("all good", dict(min_length=5, max_length=10), None),
+        ("all good", {"min_length": 5, "max_length": 10}, None),
         # Exact min size
-        ("valid", dict(min_length=5, max_length=10), None),
+        ("valid", {"min_length": 5, "max_length": 10}, None),
         # Allow empty strings
-        ("", dict(min_length=5, max_length=10), None),
+        ("", {"min_length": 5, "max_length": 10}, None),
         # Just Exceeds maximum length
         (
             "bad size!!!",
-            dict(min_length=5, max_length=10),
+            {"min_length": 5, "max_length": 10},
             "Input should be between 5 and 10 characters",
         ),
         # Just less than minimum length
         (
             "bad!",
-            dict(min_length=5, max_length=10),
+            {"min_length": 5, "max_length": 10},
             "Input should be between 5 and 10 characters",
         ),
         # Custom error message
         (
             "this is a long string",
-            dict(min_length=5, max_length=10, error_message="Badness"),
+            {"min_length": 5, "max_length": 10, "error_message": "Badness"},
             "Badness",
         ),
         # Don't allow empty strings
         (
             "",
-            dict(min_length=5, max_length=10, allow_empty=False),
+            {"min_length": 5, "max_length": 10, "allow_empty": False},
             "Input should be between 5 and 10 characters",
         ),
     ],
@@ -141,27 +141,27 @@ def test_invalid_range():
     "value, kwargs, error",
     [
         # Exact match
-        ("hello", dict(substring="hello"), None),
+        ("hello", {"substring": "hello"}, None),
         # Starts with match
-        ("hello world", dict(substring="hello"), None),
+        ("hello world", {"substring": "hello"}, None),
         # Allow empty strings
-        ("", dict(substring="hello"), None),
+        ("", {"substring": "hello"}, None),
         # Doesn't start with match
         (
             "bad string",
-            dict(substring="hello"),
+            {"substring": "hello"},
             "Input should start with 'hello'",
         ),
         # Custom error message
         (
             "bad string",
-            dict(substring="hello", error_message="Badness"),
+            {"substring": "hello", "error_message": "Badness"},
             "Badness",
         ),
         # Don't allow empty strings
         (
             "",
-            dict(substring="hello", allow_empty=False),
+            {"substring": "hello", "allow_empty": False},
             "Input should start with 'hello'",
         ),
     ],
@@ -176,27 +176,27 @@ def test_startswith(value, kwargs, error):
     "value, kwargs, error",
     [
         # Exact match
-        ("goodbye", dict(substring="goodbye"), None),
+        ("goodbye", {"substring": "goodbye"}, None),
         # Ends with match
-        ("the final goodbye", dict(substring="goodbye"), None),
+        ("the final goodbye", {"substring": "goodbye"}, None),
         # Allow empty strings
-        ("", dict(substring="goodbye"), None),
+        ("", {"substring": "goodbye"}, None),
         # Doesn't end with match
         (
             "bad string",
-            dict(substring="goodbye"),
+            {"substring": "goodbye"},
             "Input should end with 'goodbye'",
         ),
         # Custom error message
         (
             "bad string",
-            dict(substring="goodbye", error_message="Badness"),
+            {"substring": "goodbye", "error_message": "Badness"},
             "Badness",
         ),
         # Don't allow empty strings
         (
             "",
-            dict(substring="goodbye", allow_empty=False),
+            {"substring": "goodbye", "allow_empty": False},
             "Input should end with 'goodbye'",
         ),
     ],
@@ -211,49 +211,49 @@ def test_endswith(value, kwargs, error):
     "value, kwargs, error",
     [
         # Exact single match
-        ("hello", dict(substring="hello"), None),
+        ("hello", {"substring": "hello"}, None),
         # Starts with match
-        ("hello is what you should say", dict(substring="hello"), None),
+        ("hello is what you should say", {"substring": "hello"}, None),
         # Ends with match
-        ("You should say hello", dict(substring="hello"), None),
+        ("You should say hello", {"substring": "hello"}, None),
         # Contains substring
-        ("Say hello, you fool", dict(substring="hello"), None),
+        ("Say hello, you fool", {"substring": "hello"}, None),
         # Contains multiple examples of substring
-        ("Say hello, and hello again", dict(substring="hello"), None),
+        ("Say hello, and hello again", {"substring": "hello"}, None),
         # Contains exact match of multiple substrings
-        ("Say hello, and hello again", dict(substring="hello", count=2), None),
+        ("Say hello, and hello again", {"substring": "hello", "count": 2}, None),
         # Count of 0 validates non-existence
-        ("Say hello, and hello again", dict(substring="bad", count=0), None),
+        ("Say hello, and hello again", {"substring": "bad", "count": 0}, None),
         # Allow empty strings
-        ("", dict(substring="hello"), None),
+        ("", {"substring": "hello"}, None),
         # Doesn't contain match
         (
             "bad string",
-            dict(substring="hello"),
+            {"substring": "hello"},
             "Input should contain 'hello'",
         ),
         # Contain match with a count of 0
         (
             "hello world",
-            dict(substring="hello", count=0),
+            {"substring": "hello", "count": 0},
             "Input should not contain 'hello'",
         ),
         # Contain match, but not the right count
         (
             "hello world",
-            dict(substring="hello", count=2),
+            {"substring": "hello", "count": 2},
             "Input should contain 'hello' exactly 2 times",
         ),
         # Custom error message
         (
             "bad string",
-            dict(substring="hello", error_message="Badness"),
+            {"substring": "hello", "error_message": "Badness"},
             "Badness",
         ),
         # Don't allow empty strings
         (
             "",
-            dict(substring="hello", allow_empty=False),
+            {"substring": "hello", "allow_empty": False},
             "Input should contain 'hello'",
         ),
     ],
@@ -268,31 +268,31 @@ def test_contains(value, kwargs, error):
     "value, kwargs, error",
     [
         # No match
-        ("nothing to see", dict(substring="hello"), None),
+        ("nothing to see", {"substring": "hello"}, None),
         # Allow empty strings (an empty string can't contain a substring)
-        ("", dict(substring="hello"), None),
+        ("", {"substring": "hello"}, None),
         # Starts with match
         (
             "hello is what you should say",
-            dict(substring="hello"),
+            {"substring": "hello"},
             "Input should not contain 'hello'",
         ),
         # Ends with match
         (
             "You should say hello",
-            dict(substring="hello"),
+            {"substring": "hello"},
             "Input should not contain 'hello'",
         ),
         # Contains substring
         (
             "Say hello, you fool",
-            dict(substring="hello"),
+            {"substring": "hello"},
             "Input should not contain 'hello'",
         ),
         # Custom error message
         (
             "You should say hello",
-            dict(substring="hello", error_message="Badness"),
+            {"substring": "hello", "error_message": "Badness"},
             "Badness",
         ),
     ],
@@ -311,31 +311,31 @@ TEST_REGEX = r"[A-Z]{1}[a-z]{2}[A-Z]{1}"
     "value, kwargs, error",
     [
         # Exact match
-        ("GooD", dict(regex_string=TEST_REGEX), None),
+        ("GooD", {"regex_string": TEST_REGEX}, None),
         # Match at start
-        ("GooD is what this is", dict(regex_string=TEST_REGEX), None),
+        ("GooD is what this is", {"regex_string": TEST_REGEX}, None),
         # Match at end
-        ("This is also GooD", dict(regex_string=TEST_REGEX), None),
+        ("This is also GooD", {"regex_string": TEST_REGEX}, None),
         # Exact match in the middle of the string
-        ("it's GooD if it's in the middle", dict(regex_string=TEST_REGEX), None),
+        ("it's GooD if it's in the middle", {"regex_string": TEST_REGEX}, None),
         # Allow empty strings
-        ("", dict(regex_string=TEST_REGEX), None),
+        ("", {"regex_string": TEST_REGEX}, None),
         # Doesn't match
         (
             "no match here",
-            dict(regex_string=TEST_REGEX),
+            {"regex_string": TEST_REGEX},
             "Input should match regex: '[A-Z]{1}[a-z]{2}[A-Z]{1}'",
         ),
         # Custom error message
         (
             "no match here",
-            dict(regex_string=TEST_REGEX, error_message="Badness"),
+            {"regex_string": TEST_REGEX, "error_message": "Badness"},
             "Badness",
         ),
         # Don't allow empty strings
         (
             "",
-            dict(regex_string=TEST_REGEX, allow_empty=False),
+            {"regex_string": TEST_REGEX, "allow_empty": False},
             "Input should match regex: '[A-Z]{1}[a-z]{2}[A-Z]{1}'",
         ),
     ],
@@ -350,43 +350,43 @@ def test_regex(value, kwargs, error):
     "value, kwargs, error",
     [
         # Only uppercase
-        ("GOOD!1", dict(), None),
+        ("GOOD!1", {}, None),
         # Some uppercase
-        ("Good!1", dict(), None),
+        ("Good!1", {}, None),
         # Some uppercase
-        ("GooD!1", dict(count=2), None),
+        ("GooD!1", {"count": 2}, None),
         # Count of 0
-        ("good!1", dict(count=0), None),
+        ("good!1", {"count": 0}, None),
         # Allow empty strings
-        ("", dict(), None),
+        ("", {}, None),
         # Doesn't match
         (
             "no match here",
-            dict(),
+            {},
             "Input should contain at least one upper case character",
         ),
         # Bad count
         (
             "Good!1",
-            dict(count=2),
+            {"count": 2},
             "Input should contain exactly 2 upper case characters",
         ),
         # Explicit count of 0
         (
             "Bad Text!1",
-            dict(count=0),
+            {"count": 0},
             "Input should not contain upper case characters",
         ),
         # Custom error message
         (
             "no match here",
-            dict(error_message="Badness"),
+            {"error_message": "Badness"},
             "Badness",
         ),
         # Don't allow empty strings
         (
             "",
-            dict(allow_empty=False),
+            {"allow_empty": False},
             "Input should contain at least one upper case character",
         ),
     ],
@@ -401,43 +401,43 @@ def test_contains_uppercase(value, kwargs, error):
     "value, kwargs, error",
     [
         # Only lower case
-        ("good!1", dict(), None),
+        ("good!1", {}, None),
         # Some lower case
-        ("Good!1", dict(), None),
+        ("Good!1", {}, None),
         # Some lower case, exact count
-        ("GooD!1", dict(count=2), None),
+        ("GooD!1", {"count": 2}, None),
         # Count of 0
-        ("GOOD!1", dict(count=0), None),
+        ("GOOD!1", {"count": 0}, None),
         # Allow empty strings
-        ("", dict(), None),
+        ("", {}, None),
         # Doesn't match
         (
             "NO MATCH HERE!",
-            dict(),
+            {},
             "Input should contain at least one lower case character",
         ),
         # Bad count
         (
             "Good!1",
-            dict(count=2),
+            {"count": 2},
             "Input should contain exactly 2 lower case characters",
         ),
         # Explicit count of 0
         (
             "Bad Text!1",
-            dict(count=0),
+            {"count": 0},
             "Input should not contain lower case characters",
         ),
         # Custom error message
         (
             "NO MATCH HERE!",
-            dict(error_message="Badness"),
+            {"error_message": "Badness"},
             "Badness",
         ),
         # Don't allow empty strings
         (
             "",
-            dict(allow_empty=False),
+            {"allow_empty": False},
             "Input should contain at least one lower case character",
         ),
     ],
@@ -452,43 +452,43 @@ def test_contains_lowercase(value, kwargs, error):
     "value, kwargs, error",
     [
         # Only digits
-        ("1234", dict(), None),
+        ("1234", {}, None),
         # Some digits
-        ("Good!12345", dict(), None),
+        ("Good!12345", {}, None),
         # Some digits, exact count
-        ("GooD12!", dict(count=2), None),
+        ("GooD12!", {"count": 2}, None),
         # Count of 0
-        ("good!", dict(count=0), None),
+        ("good!", {"count": 0}, None),
         # Allow empty strings
-        ("", dict(), None),
+        ("", {}, None),
         # Doesn't match
         (
             "no match here",
-            dict(),
+            {},
             "Input should contain at least one digit",
         ),
         # Bad count
         (
             "Good!1",
-            dict(count=2),
+            {"count": 2},
             "Input should contain exactly 2 digits",
         ),
         # Explicit count of 0
         (
             "Bad Text!1",
-            dict(count=0),
+            {"count": 0},
             "Input should not contain digits",
         ),
         # Custom error message
         (
             "no match here",
-            dict(error_message="Badness"),
+            {"error_message": "Badness"},
             "Badness",
         ),
         # Don't allow empty strings
         (
             "",
-            dict(allow_empty=False),
+            {"allow_empty": False},
             "Input should contain at least one digit",
         ),
     ],
@@ -503,43 +503,43 @@ def test_contains_digit(value, kwargs, error):
     "value, kwargs, error",
     [
         # Only special
-        ("!@*&#^(*&!^(&@))", dict(), None),
+        ("!@*&#^(*&!^(&@))", {}, None),
         # Some special
-        ("Good!1", dict(), None),
+        ("Good!1", {}, None),
         # Some special, exact count
-        ("GooD@!", dict(count=2), None),
+        ("GooD@!", {"count": 2}, None),
         # Count of 0
-        ("good1", dict(count=0), None),
+        ("good1", {"count": 0}, None),
         # Allow empty strings
-        ("", dict(), None),
+        ("", {}, None),
         # Doesn't match
         (
             "no match here",
-            dict(),
+            {},
             "Input should contain at least one special character",
         ),
         # Bad count
         (
             "Good!1",
-            dict(count=2),
+            {"count": 2},
             "Input should contain exactly 2 special characters",
         ),
         # Explicit count of 0
         (
             "Bad Text!1",
-            dict(count=0),
+            {"count": 0},
             "Input should not contain special characters",
         ),
         # Custom error message
         (
             "no match here",
-            dict(error_message="Badness"),
+            {"error_message": "Badness"},
             "Badness",
         ),
         # Don't allow empty strings
         (
             "",
-            dict(allow_empty=False),
+            {"allow_empty": False},
             "Input should contain at least one special character",
         ),
     ],
@@ -554,57 +554,57 @@ def test_contains_special(value, kwargs, error):
     "value, kwargs, error",
     [
         # Zero
-        ("0", dict(), None),
+        ("0", {}, None),
         # positive integer
-        ("123", dict(), None),
+        ("123", {}, None),
         # Negative integer
-        ("-123", dict(), None),
+        ("-123", {}, None),
         # Extra space
-        (" 123 ", dict(), None),
+        (" 123 ", {}, None),
         # leading zeros
-        ("01234", dict(), None),
+        ("01234", {}, None),
         # Allow empty strings
-        ("", dict(), None),
+        ("", {}, None),
         # Doesn't match
         (
             "no match here",
-            dict(),
+            {},
             "Input should be an integer",
         ),
         # Contains an integer, but not a pure integer
         (
             "no 123",
-            dict(),
+            {},
             "Input should be an integer",
         ),
         # Float
         (
             "1.234",
-            dict(),
+            {},
             "Input should be an integer",
         ),
         # Hex
         (
             "0x123",
-            dict(),
+            {},
             "Input should be an integer",
         ),
         # Octal
         (
             "0o123",
-            dict(),
+            {},
             "Input should be an integer",
         ),
         # Custom error message
         (
             "no match here",
-            dict(error_message="Badness"),
+            {"error_message": "Badness"},
             "Badness",
         ),
         # Don't allow empty strings
         (
             "",
-            dict(allow_empty=False),
+            {"allow_empty": False},
             "Input should be an integer",
         ),
     ],
@@ -619,67 +619,67 @@ def test_integer(value, kwargs, error):
     "value, kwargs, error",
     [
         # Zero
-        ("0", dict(), None),
+        ("0", {}, None),
         # positive integer
-        ("123", dict(), None),
+        ("123", {}, None),
         # Negative integer
-        ("-123", dict(), None),
+        ("-123", {}, None),
         # Extra space
-        (" 123 ", dict(), None),
+        (" 123 ", {}, None),
         # leading zeros
-        ("01234", dict(), None),
+        ("01234", {}, None),
         # Float
-        ("12.34", dict(), None),
+        ("12.34", {}, None),
         # Negative Float
-        ("-12.34", dict(), None),
+        ("-12.34", {}, None),
         # Float, no leading 0
-        (".1234", dict(), None),
+        (".1234", {}, None),
         # Negative Float, no leading 0
-        ("-.1234", dict(), None),
+        ("-.1234", {}, None),
         # Exponential
-        ("1.23e+4", dict(), None),
+        ("1.23e+4", {}, None),
         # Negative Exponential
-        ("-1.23e-4", dict(), None),
+        ("-1.23e-4", {}, None),
         # Exponential (capitalized)
-        ("1.23E+4", dict(), None),
+        ("1.23E+4", {}, None),
         # Negative (capitalized)
-        ("-1.23E-4", dict(), None),
+        ("-1.23E-4", {}, None),
         # Allow empty strings
-        ("", dict(), None),
+        ("", {}, None),
         # Doesn't match
         (
             "no match here",
-            dict(),
+            {},
             "Input should be a number",
         ),
         # Contains a number, but not a pure number
         (
             "no 1.23",
-            dict(),
+            {},
             "Input should be a number",
         ),
         # Just a decimal point isn't a number
         (
             ".",
-            dict(),
+            {},
             "Input should be a number",
         ),
         # Just an exponent isn't a number
         (
             "e+9",
-            dict(),
+            {},
             "Input should be a number",
         ),
         # Custom error message
         (
             "no match here",
-            dict(error_message="Badness"),
+            {"error_message": "Badness"},
             "Badness",
         ),
         # Don't allow empty strings
         (
             "",
-            dict(allow_empty=False),
+            {"allow_empty": False},
             "Input should be a number",
         ),
     ],
@@ -694,23 +694,23 @@ def test_number(value, kwargs, error):
     "value, kwargs, error",
     [
         # Valid email addresses
-        ("tiberius@beeware.org", dict(), None),
-        ("tiberius.yak@beeware.org", dict(), None),
-        ("tiberius+yak@beeware.org", dict(), None),
-        ("tiberius@beeware.ab.cd", dict(), None),
-        ("tiberius@localhost", dict(), None),
-        ("tiberius@beeware", dict(), None),
-        ("2iberius@beeware.org", dict(), None),
+        ("tiberius@beeware.org", {}, None),
+        ("tiberius.yak@beeware.org", {}, None),
+        ("tiberius+yak@beeware.org", {}, None),
+        ("tiberius@beeware.ab.cd", {}, None),
+        ("tiberius@localhost", {}, None),
+        ("tiberius@beeware", {}, None),
+        ("2iberius@beeware.org", {}, None),
         # Allow empty strings
-        ("", dict(), None),
+        ("", {}, None),
         # Invalid email addresses
-        ("tiberius.beeware.org", dict(), "Input should be a valid email address"),
-        ("tiberius@me@beeware.org", dict(), "Input should be a valid email address"),
-        ("tiberius@beeware.", dict(), "Input should be a valid email address"),
+        ("tiberius.beeware.org", {}, "Input should be a valid email address"),
+        ("tiberius@me@beeware.org", {}, "Input should be a valid email address"),
+        ("tiberius@beeware.", {}, "Input should be a valid email address"),
         # Custom error message
-        ("not an email", dict(error_message="badness"), "badness"),
+        ("not an email", {"error_message": "badness"}, "badness"),
         # Disallow empty strings
-        ("", dict(allow_empty=False), "Input should be a valid email address"),
+        ("", {"allow_empty": False}, "Input should be a valid email address"),
     ],
 )
 def test_email(value, kwargs, error):

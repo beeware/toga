@@ -22,7 +22,7 @@ arch_path = {
 # the WebView2 loader will search by default to find the runtime.
 # ref: https://learn.microsoft.com/en-us/microsoft-edge/webview2/concepts/distribution?tabs=dotnetcsharp#files-to-ship-with-the-app  # noqa: E501
 webview_runtime_dir = WEBVIEW2_DIR / f"runtimes/{arch_path}/native"
-os.environ["Path"] = f"{webview_runtime_dir}{os.pathsep}{os.environ['Path']}"
+os.environ["PATH"] = f"{webview_runtime_dir}{os.pathsep}{os.environ['PATH']}"
 
 clr.AddReference(str(WEBVIEW2_DIR / "Microsoft.Web.WebView2.Core.dll"))
 clr.AddReference(str(WEBVIEW2_DIR / "Microsoft.Web.WebView2.WinForms.dll"))

@@ -83,7 +83,7 @@ class SimpleProbe(BaseProbe):
         self.native.OnClick(EventArgs.Empty)
 
     def mouse_event(self, x=0, y=0, **kwargs):
-        kwargs = {**dict(button=MouseButtons.Left, clicks=1, delta=0), **kwargs}
+        kwargs = {"button": MouseButtons.Left, "clicks": 1, "delta": 0, **kwargs}
         return MouseEventArgs(
             x=round(x * self.scale_factor), y=round(y * self.scale_factor), **kwargs
         )

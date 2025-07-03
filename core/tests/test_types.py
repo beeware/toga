@@ -39,7 +39,7 @@ def test_size_properties():
     assert s.width == 1
     assert s.height == 2
     assert str(s) == "(1 x 2)"
-    s == (1, 2)  # Tuple equivalence for backwards-compatibility
+    assert s == (1, 2)  # Tuple equivalence for backwards-compatibility
 
 
 def test_mul_size():

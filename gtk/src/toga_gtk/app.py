@@ -130,7 +130,7 @@ class App:
                 submenu.append_section(None, section)
                 self._menu_groups[cmd.group] = (submenu, section)
             else:
-                cmd_id = "command-%s" % id(cmd)
+                cmd_id = f"command-{id(cmd)}"
                 action = Gio.SimpleAction.new(cmd_id, None)
                 action.connect("activate", cmd._impl.gtk_activate)
 

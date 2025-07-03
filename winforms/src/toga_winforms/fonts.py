@@ -71,8 +71,11 @@ class Font:
                     try:
                         # Check for a font installed on the system.
                         font_family = FontFamily(self.interface.family)
-                    except ArgumentException:
-                        raise UnknownFontError(f"Unknown font '{self.interface}'")
+
+                    except ArgumentException as exc:
+                        raise UnknownFontError(
+                            f"Unknown font '{self.interface}'"
+                        ) from exc
                     else:
                         # So that Coverage see this...
                         pass
@@ -83,10 +86,14 @@ class Font:
                         self._pfc = PrivateFontCollection()
                         self._pfc.AddFontFile(font_path)
                         font_family = self._pfc.Families[0]
-                    except FileNotFoundException:
-                        raise ValueError(f"Font file {font_path} could not be found")
-                    except (IndexError, ExternalException):
-                        raise ValueError(f"Unable to load font file {font_path}")
+                    except FileNotFoundException as exc:
+                        raise ValueError(
+                            f"Font file {font_path} could not be found"
+                        ) from exc
+                    except (IndexError, ExternalException) as exc:
+                        raise ValueError(
+                            f"Unable to load font file {font_path}"
+                        ) from exc
 
             # Convert font style to Winforms format
             font_style = FontStyle.Regular

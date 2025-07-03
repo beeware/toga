@@ -94,10 +94,10 @@ class SplitContainer(Widget):
         try:
             if len(content) != 2:
                 raise TypeError()
-        except TypeError:
+        except TypeError as exc:
             raise ValueError(
                 "SplitContainer content must be a sequence with exactly 2 elements"
-            )
+            ) from exc
 
         _content = []
         flex = []
@@ -127,7 +127,7 @@ class SplitContainer(Widget):
                 widget.window = self.window
 
         self._impl.set_content(
-            list(w._impl if w is not None else None for w in _content),
+            [w._impl if w is not None else None for w in _content],
             flex,
         )
         self._content = list(_content)

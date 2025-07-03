@@ -205,7 +205,7 @@ class TreeSource(Source):
             raise ValueError("accessors should be a list of attribute names")
 
         # Copy the list of accessors
-        self._accessors = [a for a in accessors]
+        self._accessors = list(accessors)
         if len(self._accessors) == 0:
             raise ValueError("TreeSource must be provided a list of accessors")
 

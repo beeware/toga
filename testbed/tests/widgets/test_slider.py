@@ -95,7 +95,7 @@ async def test_change(widget, probe, on_change):
         for position in POSITIONS:
             on_change.reset_mock()
             await probe.change(position)
-            await probe.redraw("Slider scale should be %s" % scale)
+            await probe.redraw(f"Slider scale should be {scale}")
             assert widget.value == approx(position * scale, abs=(ACCURACY * scale))
             on_change.assert_called_once_with(widget)
 
@@ -194,9 +194,7 @@ async def test_value_with_ticks(widget, probe, on_change):
         on_change.reset_mock()
         assert_set_value(widget, value_in, value_out)
         await probe.redraw(
-            message="Slider value with tick should be {}, {}".format(
-                value_in, value_out
-            )
+            message=f"Slider value with tick should be {value_in}, {value_out}"
         )
         assert probe.position == approx(value_out / 10, abs=ACCURACY)
 
@@ -225,9 +223,7 @@ async def test_range_with_ticks(widget, probe, on_change):
         widget.max = max
         assert widget.value == value
         await probe.redraw(
-            message="Slider range with tick should be {}, {}, {}".format(
-                min, max, value
-            )
+            message=f"Slider range with tick should be {min}, {max}, {value}"
         )
 
         assert probe.position == approx((value - min) / (max - min), abs=ACCURACY)

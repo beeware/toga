@@ -63,9 +63,9 @@ class Font:
                 try:
                     font_path = _REGISTERED_FONT_CACHE[font_key]
 
-                except KeyError:
-                    # No, not a user-registered font.
-                    raise UnknownFontError(f"Unknown font '{self.interface}'")
+                except KeyError as exc:
+                    # No, not a user-registered font
+                    raise UnknownFontError(f"Unknown font '{self.interface}'") from exc
 
                 else:
                     # Yes, user has registered this font.

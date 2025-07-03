@@ -304,7 +304,7 @@ async def test_dom_storage_enabled(widget, probe, on_load):
         LOAD_TIMEOUT,
     )
 
-    for i in range(0, 10):
+    for _ in range(10):
         expected_value = "Hello World"
         expression = f"""\
     (function isLocalStorageAvailable(){{
@@ -350,7 +350,7 @@ async def test_retrieve_cookies(widget, probe, on_load):
 
     # On iOS and macOS, setting a cookie can fail if it's done too soon after page load.
     # Try a couple of times to make sure the cookie is actually set.
-    for i in range(0, 5):
+    for _ in range(5):
         # JavaScript expression to set a cookie and return the current cookies
         expression = """
         (function setCookie() {
