@@ -23,14 +23,14 @@ PackMixin = style_mixin(Pack)
 # based on colors from https://davidmathlogic.com/colorblind
 DEBUG_BACKGROUND_PALETTE = [
     "#d0e2ed",  # very light blue
-    "#f8ccb0",  # light orange
-    "#b8d2e9",  # light blue
     "#f6d3be",  # soft orange
     "#c7e7b2",  # light green
     "#f0b2d6",  # light pink
+    "#b8d2e9",  # light blue
     "#e5dab0",  # light yellow
     "#d5c2ea",  # light lavender
     "#b2e4e5",  # light teal
+    "#f8ccb0",  # light orange
     "#e5e4af",  # light cream
     "#bde2dc",  # soft turquoise
 ]
