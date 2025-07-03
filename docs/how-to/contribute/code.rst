@@ -49,7 +49,7 @@ Set up the dev environment by running:
       $ cd toga
       $ python3 -m venv .venv
       $ . .venv/bin/activate
-      (.venv) $ python -m pip install pip install -e "./core[dev]" -e ./dummy -e ./cocoa -e ./travertino
+      (.venv) $ python -m pip install -e "./core[dev]" -e ./dummy -e ./cocoa -e ./travertino
       (.venv) $ pre-commit install
 
   .. group-tab:: Linux
@@ -60,7 +60,7 @@ Set up the dev environment by running:
       $ cd toga
       $ python3 -m venv .venv
       $ . .venv/bin/activate
-      (.venv) $ python -m pip install pip install -e "./core[dev]" -e ./dummy -e ./gtk -e ./travertino
+      (.venv) $ python -m pip install -e "./core[dev]" -e ./dummy -e ./gtk -e ./travertino
       (.venv) $ pre-commit install
 
   .. group-tab:: Windows
