@@ -67,11 +67,11 @@ class Font(BaseFont):
             either doesn't exist or a font can't be successfully loaded from it.
         """
         super().__init__(family, size, weight=weight, style=style, variant=variant)
-        self.factory = get_platform_factory()
         try:
             self._impl = _IMPL_CACHE[self]
 
         except KeyError:
+            self.factory = get_platform_factory()
             self._impl = self.factory.Font(self)
 
             try:
@@ -91,10 +91,8 @@ class Font(BaseFont):
             if self.size == SYSTEM_DEFAULT_FONT_SIZE
             else f"{self.size}pt"
         )
-        weight = f" {self.weight}" if self.weight != NORMAL else ""
-        variant = f" {self.variant}" if self.variant != NORMAL else ""
-        style = f" {self.style}" if self.style != NORMAL else ""
-        return f"{self.family} {size}{weight}{variant}{style}"
+        string = f"{self.family} {size} {self.weight} {self.variant} {self.style}"
+        return string.replace(" normal", "")
 
     @staticmethod
     def register(
