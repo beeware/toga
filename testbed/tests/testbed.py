@@ -74,21 +74,6 @@ def run_tests(app, cov, args, report_coverage, run_slow, running_in_ci):
             + args
         )
 
-        # WORKAROUND: On Android, the main thread where coverage has been started
-        # dies before this thread; as a result, the garbage collection on the tracer
-        # function raises an IndexError because the data stack is empty for that
-        # thread. This has been reported as
-        # https://github.com/nedbat/coveragepy/issues/1542 and a PR submitted; This
-        # workaround can be removed once that PR is available in a production
-        # version of coverage.
-        #
-        # Desktop platforms use CTracer, which doesn't have a data_stack attribute, but
-        # that's OK because desktop platforms don't have this threading issue anyway.
-        for tracer in cov._collector.tracers:
-            if hasattr(tracer, "data_stack") and len(tracer.data_stack) == 0:
-                print("Backfilling empty coverage stack...")
-                tracer.data_stack.append((None, None, None, None))
-
         # Only print a coverage report if the test suite passed.
         if app.returncode == 0:
             cov.stop()
