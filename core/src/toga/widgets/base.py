@@ -40,6 +40,7 @@ class Widget(Node, PackMixin):
     _MIN_WIDTH = 100
     _MIN_HEIGHT = 100
 
+    DEBUG_LAYOUT_ENABLED = False
     _USE_DEBUG_BACKGROUND = False
     _debug_color_index = 0
 
@@ -65,7 +66,7 @@ class Widget(Node, PackMixin):
             style.update(**kwargs)
 
         if self._USE_DEBUG_BACKGROUND:
-            if environ.get("TOGA_DEBUG_LAYOUT") == "1":
+            if environ.get("TOGA_DEBUG_LAYOUT") == "1" or self.DEBUG_LAYOUT_ENABLED:
                 style.background_color = DEBUG_BACKGROUND_PALETTE[
                     Widget._debug_color_index % len(DEBUG_BACKGROUND_PALETTE)
                 ]

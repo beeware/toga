@@ -37,20 +37,28 @@ from toga.widgets.base import DEBUG_BACKGROUND_PALETTE
     ],
 )
 @pytest.mark.parametrize("env_var", [1, 0])
-def test_debug_background(WidgetClass, supports_debug, args, env_var, monkeypatch):
+@pytest.mark.parametrize("class_var", [True, False])
+def test_debug_background(
+    WidgetClass, supports_debug, args, env_var, class_var, monkeypatch
+):
     """Test debug background for all widgets."""
-    # Enable or disable debug layout, depending on widget compatibility.
     monkeypatch.setenv("TOGA_DEBUG_LAYOUT", str(env_var))
+    monkeypatch.setattr(toga.Widget, "DEBUG_LAYOUT_ENABLED", class_var)
     widget = WidgetClass(*args)
-    # assert that the background is default, if it supports debug backgrounds.
-    assert ("background_color" in widget.style) == (env_var and supports_debug)
+    # assert background color is set, if debug is enabled and debug layout is supported.
+    assert ("background_color" in widget.style) == (
+        (env_var or class_var) and supports_debug
+    )
 
-
-def test_box_debug_backgrounds(monkeypatch):
+@pytest.mark.parametrize("use_class_var", [True, False])
+def test_box_debug_backgrounds(use_class_var, monkeypatch):
     """The list of debug layout colors is applied to each new widget in order."""
-    monkeypatch.setenv("TOGA_DEBUG_LAYOUT", "1")
+    if use_class_var:
+        monkeypatch.setattr(toga.Widget, "DEBUG_LAYOUT_ENABLED", True)
+    else:
+        monkeypatch.setenv("TOGA_DEBUG_LAYOUT", "1")
     color_index = toga.Widget._debug_color_index
-    palette_length = len(toga.widgets.base.DEBUG_BACKGROUND_PALETTE)
+    palette_length = len(DEBUG_BACKGROUND_PALETTE)
     # Add 3 for coverage of debug_background_palette array index rollover.
     for index in range(color_index, color_index + palette_length + 3):
         box = toga.Box()
