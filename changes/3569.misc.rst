@@ -1,1 +1,1 @@
-The logic and formatting in the font backends has been standardized.
+The overarching logic and error-handling for loading fonts has moved out of the backends and is now centralized in core.
