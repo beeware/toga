@@ -377,6 +377,8 @@ class OptionList:
 
 
 class OptionContainer(Widget):
+    _USE_DEBUG_BACKGROUND = True
+
     def __init__(
         self,
         id: str | None = None,

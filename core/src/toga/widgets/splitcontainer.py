@@ -22,6 +22,7 @@ if TYPE_CHECKING:
 class SplitContainer(Widget):
     HORIZONTAL = Direction.HORIZONTAL
     VERTICAL = Direction.VERTICAL
+    _USE_DEBUG_BACKGROUND = True
 
     def __init__(
         self,

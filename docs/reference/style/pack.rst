@@ -24,6 +24,9 @@ Some properties, despite always storing their value in a consistent form, are mo
 liberal in what they accept, and will convert as necessary when assigned alternate
 forms. Where relevant, these are listed under **Accepts**.
 
+Toga has a :ref:`layout debug mode <debug-layout>` to aid in visually debugging
+or exploring Pack layouts.
+
 Pack style properties
 ~~~~~~~~~~~~~~~~~~~~~
 

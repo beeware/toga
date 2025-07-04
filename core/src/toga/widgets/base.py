@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from builtins import id as identifier
+from os import environ
 from typing import TYPE_CHECKING, Any, TypeVar
 from warnings import warn
 
@@ -19,9 +20,29 @@ StyleT = TypeVar("StyleT", bound=BaseStyle)
 PackMixin = style_mixin(Pack)
 
 
+# based on colors from https://davidmathlogic.com/colorblind
+DEBUG_BACKGROUND_PALETTE = [
+    "#d0e2ed",  # very light blue
+    "#f6d3be",  # soft orange
+    "#c7e7b2",  # light green
+    "#f0b2d6",  # light pink
+    "#b8d2e9",  # light blue
+    "#e5dab0",  # light yellow
+    "#d5c2ea",  # light lavender
+    "#b2e4e5",  # light teal
+    "#f8ccb0",  # light orange
+    "#e5e4af",  # light cream
+    "#bde2dc",  # soft turquoise
+]
+
+
 class Widget(Node, PackMixin):
     _MIN_WIDTH = 100
     _MIN_HEIGHT = 100
+
+    DEBUG_LAYOUT_ENABLED = False
+    _USE_DEBUG_BACKGROUND = False
+    _debug_color_index = 0
 
     def __init__(
         self,
@@ -43,7 +64,16 @@ class Widget(Node, PackMixin):
         elif kwargs:
             style = style.copy()
             style.update(**kwargs)
-        super().__init__(style)
+
+        if self._USE_DEBUG_BACKGROUND:
+            if environ.get("TOGA_DEBUG_LAYOUT") == "1" or self.DEBUG_LAYOUT_ENABLED:
+                style.background_color = DEBUG_BACKGROUND_PALETTE[
+                    Widget._debug_color_index
+                ]
+                Widget._debug_color_index += 1
+                Widget._debug_color_index %= len(DEBUG_BACKGROUND_PALETTE)
+
+        super().__init__(style=style)
 
         self._id = str(id if id else identifier(self))
         self._window: Window | None = None

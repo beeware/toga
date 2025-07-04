@@ -9,6 +9,8 @@ class Box(Widget):
     _MIN_WIDTH = 0
     _MIN_HEIGHT = 0
 
+    _USE_DEBUG_BACKGROUND = True
+
     def __init__(
         self,
         id: str | None = None,
