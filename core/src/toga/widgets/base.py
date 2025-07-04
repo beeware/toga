@@ -71,6 +71,7 @@ class Widget(Node, PackMixin):
                     Widget._debug_color_index % len(DEBUG_BACKGROUND_PALETTE)
                 ]
                 Widget._debug_color_index += 1
+                Widget._debug_color_index %= len(DEBUG_BACKGROUND_PALETTE)
 
         super().__init__(style=style)
 
