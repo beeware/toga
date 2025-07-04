@@ -178,9 +178,9 @@ class _alignment_property(validated_property):
 # End backwards compatibility
 ######################################################################
 
-if sys.version_info < (3, 10):
+if sys.version_info < (3, 10):  # pragma: no-cover-if-gte-py310
     _DATACLASS_KWARGS = {"init": False, "repr": False}
-else:
+else:  # pragma: no-cover-if-lt-py310
     _DATACLASS_KWARGS = {"kw_only": True, "repr": False}
 
 
