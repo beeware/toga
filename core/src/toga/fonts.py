@@ -61,8 +61,9 @@ class Font(BaseFont):
         :param variant: The :ref:`font variant <pack-font-variant>`.
 
         :raises UnknownFontError: If the font family requested corresponds to neither
-            one of the :ref:`built-in system fonts <pack-font-family>` nor a
-            user-registered font.
+            one of the :ref:`built-in system fonts <pack-font-family>`, nor a
+            user-registered font, nor (depending on platform) a font installed on the
+            system.
         :raises ValueError: If a user-registered font is used, but the file specified
             either doesn't exist or a font can't be successfully loaded from it.
         """
