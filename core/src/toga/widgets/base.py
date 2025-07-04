@@ -68,7 +68,7 @@ class Widget(Node, PackMixin):
         if self._USE_DEBUG_BACKGROUND:
             if environ.get("TOGA_DEBUG_LAYOUT") == "1" or self.DEBUG_LAYOUT_ENABLED:
                 style.background_color = DEBUG_BACKGROUND_PALETTE[
-                    Widget._debug_color_index % len(DEBUG_BACKGROUND_PALETTE)
+                    Widget._debug_color_index
                 ]
                 Widget._debug_color_index += 1
                 Widget._debug_color_index %= len(DEBUG_BACKGROUND_PALETTE)
