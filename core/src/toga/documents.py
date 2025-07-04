@@ -21,7 +21,7 @@ class Document(ABC):
     description: str
 
     #: A list of extensions that documents of this type might use,
-    # without leading dots (e.g.,
+    #: without leading dots (e.g.,
     #: ``["doc", "txt"]``). The list must have at least one extension; the first is the
     #: default extension for documents of this type. This is a class variable that
     #: subclasses should define.
