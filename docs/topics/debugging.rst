@@ -4,6 +4,8 @@ Debugging Your App
 
 Debugging is the process of finding, understanding, and fixing bugs in your code.
 
+.. _debug-layout:
+
 Debugging Widget Layout
 =======================
 
