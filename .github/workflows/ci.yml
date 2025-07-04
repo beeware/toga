@@ -130,7 +130,7 @@ jobs:
         # version match to the Travertino wheel in that folder.
         export TOGA_INSTALL_COMMAND="python -m pip install --find-links ../dist ../$(ls dist/toga_core-*.whl)[dev] ../$(ls dist/toga_dummy-*.whl)"
         tox -e py-cov${{ matrix.tox-suffix }}
-        tox -qe coverage$(tr -dc "0-9" <<< "${{ matrix.python-version }}")${{ matrix.tox-suffix }}-fail
+        tox -qe coverage$(tr -dc "0-9" <<< "${{ matrix.python-version }}")${{ matrix.tox-suffix }}
         mv ${{ matrix.package }}/.coverage ${{ matrix.package }}/.coverage.${{ matrix.platform }}.${{ matrix.python-version }}
 
     - name: Store Coverage Data
@@ -181,7 +181,7 @@ jobs:
         merge-multiple: true
 
     - name: Generate Coverage Report
-      run: tox -e coverage${{ matrix.tox-suffix }}-html-fail-platform
+      run: tox -e coverage${{ matrix.tox-suffix }}-html-platform
 
     - name: Upload HTML Coverage Report
       uses: actions/upload-artifact@v4.6.2
