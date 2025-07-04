@@ -178,6 +178,7 @@ linkcheck_ignore = [
     # References to Github issues/pulls should all be safe.
     r"^https://github.com/beeware/toga/issues/\d+$",
     r"^https://github.com/beeware/toga/pull/\d+$",
+    r"^https://superuser.com/questions/",
 ]
 
 # -- Options for copy button ---------------------------------------------------
