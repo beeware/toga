@@ -48,7 +48,8 @@ class Font:
             }[self.interface.family]
 
         except KeyError as exc:
-            raise UnknownFontError from exc
+            msg = f"{self.interface} not a predefined system font"
+            raise UnknownFontError(msg) from exc
 
         self._assign_native(font_name)
 
@@ -63,7 +64,8 @@ class Font:
         try:
             font_path = _REGISTERED_FONT_CACHE[font_key]
         except KeyError as exc:
-            raise UnknownFontError from exc
+            msg = f"{self.interface} not a user-registered font"
+            raise UnknownFontError(msg) from exc
 
         # Yes, user has registered this font.
         try:
@@ -95,8 +97,7 @@ class Font:
 
     def load_arbitrary_system_font(self):
         """Use a font available on the system."""
-        # Not yet implemented on iOS
-        raise UnknownFontError
+        raise UnknownFontError("Arbitrary system fonts not yet supported on iOS")
 
     def _assign_native(self, font_name):
         if self.interface.size == SYSTEM_DEFAULT_FONT_SIZE:

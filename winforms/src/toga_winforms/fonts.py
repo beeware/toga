@@ -48,7 +48,8 @@ class Font:
                 MONOSPACE: FontFamily.GenericMonospace,
             }[self.interface.family]
         except KeyError as exc:
-            raise UnknownFontError from exc
+            msg = f"{self.interface} not a predefined system font"
+            raise UnknownFontError(msg) from exc
 
         self._assign_native(font_family)
 
@@ -63,7 +64,8 @@ class Font:
         try:
             font_path = _REGISTERED_FONT_CACHE[font_key]
         except KeyError as exc:
-            raise UnknownFontError from exc
+            msg = f"{self.interface} not a user-registered font"
+            raise UnknownFontError(msg) from exc
 
         # Yes, user has registered this font.
         try:
@@ -84,7 +86,8 @@ class Font:
             # Check for a font installed on the system.
             font_family = FontFamily(self.interface.family)
         except ArgumentException as exc:
-            raise UnknownFontError from exc
+            msg = f"{self.interface} not found installed on system"
+            raise UnknownFontError(msg) from exc
 
         self._assign_native(font_family)
 

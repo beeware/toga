@@ -18,14 +18,14 @@ class Font(LoggedObject):
             "fantasy",
             "monospace",
         }:
-            raise UnknownFontError
+            raise UnknownFontError(f"{self.interface} not a predefined system font")
 
     def load_user_registered_font(self):
         if self.interface.family == "Bogus Font":
-            raise UnknownFontError(f"Unknown font '{self.interface}'")
+            raise UnknownFontError(f"{self.interface} not a user-registered font")
 
     def load_arbitrary_system_font(self):
-        raise UnknownFontError
+        raise UnknownFontError("Arbitrary system fonts not yet supported on dummy")
 
     def __eq__(self, other):
         return all(

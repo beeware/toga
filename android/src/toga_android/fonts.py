@@ -53,7 +53,8 @@ class Font:
                 CURSIVE: Typeface.create("cursive", Typeface.NORMAL),
             }[self.interface.family]
         except KeyError as exc:
-            raise UnknownFontError from exc
+            msg = f"{self.interface} not a predefined system font"
+            raise UnknownFontError(msg) from exc
 
         self._assign_native(typeface)
 
@@ -68,7 +69,8 @@ class Font:
         try:
             font_path = _REGISTERED_FONT_CACHE[font_key]
         except KeyError as exc:
-            raise UnknownFontError(f"Unknown font '{self.interface}'") from exc
+            msg = f"{self.interface} not a user-registered font"
+            raise UnknownFontError(msg) from exc
 
         # Yes, user has registered this font.
         if not Path(font_path).is_file():
@@ -82,8 +84,7 @@ class Font:
 
     def load_arbitrary_system_font(self):
         """Use a font available on the system."""
-        # Not yet implemented on Android
-        raise UnknownFontError
+        raise UnknownFontError("Arbitrary system fonts not yet supported on Android")
 
     def _assign_native(self, typeface):
         style = 0

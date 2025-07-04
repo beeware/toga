@@ -34,7 +34,7 @@ class Font:
     def load_predefined_system_font(self):
         """Use one of the system font names Toga predefines."""
         if self.interface.family not in SYSTEM_DEFAULT_FONTS:
-            raise UnknownFontError
+            raise UnknownFontError(f"{self.interface} not a predefined system font")
 
         self._assign_native()
 
@@ -49,7 +49,8 @@ class Font:
         try:
             font_path = _REGISTERED_FONT_CACHE[font_key]
         except KeyError as exc:
-            raise UnknownFontError from exc
+            msg = f"{self.interface} not a user-registered font"
+            raise UnknownFontError(msg) from exc
 
         # Yes, user has registered this font.
         if not Path(font_path).is_file():
@@ -76,7 +77,7 @@ class Font:
         # Check for a font installed on the system.
         installed = PangoCairo.FontMap.get_default().get_family(self.interface.family)
         if installed is None:
-            raise UnknownFontError(f"Unknown font '{self.interface}'")
+            raise UnknownFontError(f"{self.interface} not found installed on system")
 
         self._assign_native()
 
