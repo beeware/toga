@@ -57,7 +57,7 @@ class Window:
             self.native.connect("notify::minimized", self.gtk_window_state_event)
             # do_size_allocate is a virtual function, used to track window resize.
             hook_up_vfunc_implementation(
-                self.native.do_size_allocate,
+                self.native.do_size_allocate.__func__,
                 self.native.__gtype__,
                 WeakrefCallable(self.gtk_do_size_allocate),
             )
