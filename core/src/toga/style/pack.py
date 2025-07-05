@@ -789,7 +789,10 @@ class Pack(BaseStyle):
                     main += getattr(child.layout, f"content_{main_name}")
                     min_main += getattr(child.layout, f"min_content_{main_name}")
 
-            else:
+            else:  # pragma: no-cover-if-lt-py310
+                # It makes no sense that coverage fails to see this branch on 3.9, but
+                # here we are.
+
                 # self._debug(f"- already laid out (intrinsic non-flex {main_name})")
                 pass
 
