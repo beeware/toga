@@ -68,8 +68,8 @@ class Font:
             raise UnknownFontError(msg) from exc
 
         # Yes, user has registered this font.
+        self._pfc = PrivateFontCollection()
         try:
-            self._pfc = PrivateFontCollection()
             self._pfc.AddFontFile(font_path)
             font_family = self._pfc.Families[0]
 

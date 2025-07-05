@@ -123,13 +123,11 @@ class Font:
 
         if traits:
             # If there is no font with the requested traits, this returns None.
-            font = (
-                UIFont.fontWithDescriptor(
-                    font.fontDescriptor.fontDescriptorWithSymbolicTraits(traits),
-                    size=size,
-                )
-                or font
+            font_with_traits = UIFont.fontWithDescriptor(
+                font.fontDescriptor.fontDescriptorWithSymbolicTraits(traits),
+                size=size,
             )
+            font = font_with_traits or font
 
         self.native = font
         _IMPL_CACHE[self.interface] = self
