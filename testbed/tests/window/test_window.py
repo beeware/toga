@@ -1171,7 +1171,7 @@ else:
         [
             (
                 toga.Window,
-                dict(title="Secondary Window", position=(200, 150)),
+                {"title": "Secondary Window", "position": (200, 150)},
             )
         ],
     )
@@ -1202,7 +1202,7 @@ else:
         [
             (
                 toga.Window,
-                dict(title="Secondary Window", position=(200, 150)),
+                {"title": "Secondary Window", "position": (200, 150)},
             )
         ],
     )

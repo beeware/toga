@@ -13,7 +13,7 @@ from .libs import GTK_VERSION, IS_WAYLAND, Gdk, GLib, Gtk
 
 if GTK_VERSION >= (4, 0, 0):  # pragma: no-cover-if-gtk3
     from .libs import hook_up_vfunc_implementation
-    from .libs.utils import create_toga_native, WeakrefCallable
+    from .libs.utils import WeakrefCallable, create_toga_native
 
 from .screens import Screen as ScreenImpl
 
@@ -115,7 +115,6 @@ class Window:
         def gtk_do_size_allocate(
             self, native, width, height, baseline
         ):  # pragma: no-cover-if-gtk3
-
             # Note: Virtual methods can't use super() to access the original
             # implementation, so they must use native.base_class instead.
 
