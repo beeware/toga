@@ -1,0 +1,1 @@
+On Windows and GTK, Toga now supports loading arbitrary fronts from the user's system, in addition to Toga's predefined set of system fonts and any that you have registered. (This was already possible on Windows, but undocumented.)
