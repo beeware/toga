@@ -4,6 +4,9 @@ from android import R
 from android.graphics import Typeface
 from android.util import TypedValue
 from org.beeware.android import MainActivity
+from travertino.constants import (
+    FONT_SIZE_SCALE,
+)
 
 from toga.fonts import (
     _REGISTERED_FONT_CACHE,
@@ -98,6 +101,7 @@ class Font:
     def size(self, *, default=None):
         """Return the font size in physical pixels."""
         context = MainActivity.singletonThis
+        base_size = 14
         if self.interface.size == SYSTEM_DEFAULT_FONT_SIZE:
             if default is None:
                 typed_array = context.obtainStyledAttributes(
@@ -106,12 +110,15 @@ class Font:
                 default = typed_array.getDimension(0, 0)
                 typed_array.recycle()
             return default
-
+        elif isinstance(self.interface.size, str):
+            default = base_size * FONT_SIZE_SCALE[self.interface.size]
+            return default
         else:
             # Using SP means we follow the standard proportion between CSS pixels and
             # points by default, but respect the system text scaling setting.
-            return TypedValue.applyDimension(
+            default = TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_SP,
                 self.interface.size * (96 / 72),
                 context.getResources().getDisplayMetrics(),
             )
+            return default
