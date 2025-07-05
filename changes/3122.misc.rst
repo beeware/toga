@@ -1,1 +1,0 @@
-Updated tox from 4.23.2 to 4.24.1 in /travertino.

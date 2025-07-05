@@ -15,6 +15,7 @@ from toga.fonts import (
     SERIF,
     SYSTEM,
     SYSTEM_DEFAULT_FONT_SIZE,
+    UnknownFontError,
 )
 from toga_iOS.libs import (
     NSURL,
@@ -56,20 +57,15 @@ class Font:
             except KeyError:
                 try:
                     font_path = _REGISTERED_FONT_CACHE[font_key]
-                except KeyError:
+                except KeyError as exc:
                     # The requested font has not been registered
-                    print(
-                        f"Unknown font '{self.interface}'; "
-                        "using system font as a fallback"
-                    )
-                    font_family = SYSTEM
-                    custom_font_name = None
+                    raise UnknownFontError(f"Unknown font '{self.interface}'") from exc
                 else:
                     # We have a path for a font file.
                     try:
                         # A font *file* an only be registered once under Cocoa.
                         custom_font_name = _CUSTOM_FONT_NAMES[font_path]
-                    except KeyError:
+                    except KeyError as exc:
                         if Path(font_path).is_file():
                             font_url = NSURL.fileURLWithPath(font_path)
                             success = core_text.CTFontManagerRegisterFontsForURL(
@@ -84,11 +80,11 @@ class Font:
                             else:
                                 raise ValueError(
                                     f"Unable to load font file {font_path}"
-                                )
+                                ) from exc
                         else:
                             raise ValueError(
                                 f"Font file {font_path} could not be found"
-                            )
+                            ) from exc
 
             if self.interface.size == SYSTEM_DEFAULT_FONT_SIZE:
                 size = UIFont.labelFontSize
@@ -98,9 +94,7 @@ class Font:
                 # (https://developer.apple.com/library/archive/documentation/GraphicsAnimation/Conceptual/HighResolutionOSX/Explained/Explained.html).
                 size = self.interface.size * 96 / 72
 
-            if font_family == SYSTEM:
-                font = UIFont.systemFontOfSize(size)
-            elif font_family == MESSAGE:
+            if font_family in (SYSTEM, MESSAGE):
                 font = UIFont.systemFontOfSize(size)
             else:
                 font = UIFont.fontWithName(custom_font_name, size=size)

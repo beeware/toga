@@ -17,9 +17,9 @@ class TextInputApp(toga.App):
             input.enabled = False
 
         # Update the labels with the extracted values
-        self.text_label.text = "Text content: {}; {}".format(
-            self.text_input.value,
-            self.text_input_placeholder.value,
+        self.text_label.text = (
+            "Text content: "
+            f"{self.text_input.value}; {self.text_input_placeholder.value}"
         )
 
         self.password_label.text = "Your password is {}: {}".format(

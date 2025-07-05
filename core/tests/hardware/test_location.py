@@ -23,7 +23,7 @@ def test_no_location(monkeypatch, app):
 
     # Accessing the location object should raise NotImplementedError
     with pytest.raises(NotImplementedError):
-        app.location
+        _ = app.location
 
 
 @pytest.mark.parametrize(
@@ -70,10 +70,9 @@ def test_request_permission_sync(app):
     assert_action_performed(app.location, "request permission")
     assert_action_not_performed(app.location, "request background permission")
 
-    # ... but the result won't be directly comparable
+    # ... but the result won't be directly comparable (to anything)
     with pytest.raises(RuntimeError):
-        # == True isn't good python, but it's going to raise an exception anyway.
-        result == True  # noqa: E712
+        _ = result == 1
 
 
 @pytest.mark.parametrize(
@@ -141,10 +140,9 @@ def test_request_background_permission_sync(app):
     assert_action_not_performed(app.location, "request permission")
     assert_action_performed(app.location, "request background permission")
 
-    # ... but the result won't be directly comparable
+    # ... but the result won't be directly comparable (to anything)
     with pytest.raises(RuntimeError):
-        # == True isn't good python, but it's going to raise an exception anyway.
-        result == True  # noqa: E712
+        _ = result == 1
 
 
 def test_current_location_prior_permission(app):

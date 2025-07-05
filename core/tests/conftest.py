@@ -40,11 +40,8 @@ class TestApp(toga.App):
         # Ensure that Toga's task factory is tracking all tasks
         toga_task_factory = self.loop.get_task_factory()
 
-        def task_factory(loop, coro, context=None):
-            if sys.version_info < (3, 11):
-                task = toga_task_factory(loop, coro)
-            else:
-                task = toga_task_factory(loop, coro, context=context)
+        def task_factory(loop, coro, **kwargs):
+            task = toga_task_factory(loop, coro, **kwargs)
             assert task in self._running_tasks, f"missing task reference for {task}"
             return task
 
@@ -53,7 +50,7 @@ class TestApp(toga.App):
 
 
 @pytest.fixture
-def app(event_loop):
+async def app():
     # The app icon is cached; purge the app icon cache if it exists
     try:
         del toga.Icon.__APP_ICON

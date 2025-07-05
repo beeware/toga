@@ -1,1 +1,0 @@
-Widgets on the iOS backend no longer leak memory when destroyed.

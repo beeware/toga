@@ -1,1 +1,0 @@
-Deprecations from 0.4.0 and earlier have been removed.

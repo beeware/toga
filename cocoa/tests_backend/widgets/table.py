@@ -1,12 +1,11 @@
 from pytest import skip
 from rubicon.objc import NSPoint
 
+from toga_cocoa.keys import NSEventModifierFlagCommand
 from toga_cocoa.libs import NSEventType, NSScrollView, NSTableView
 
 from .base import SimpleProbe
 from .properties import toga_color
-
-NSEventModifierFlagCommand = 1 << 20
 
 
 class TableProbe(SimpleProbe):
@@ -96,7 +95,7 @@ class TableProbe(SimpleProbe):
         )
 
     async def select_all(self):
-        await self.type_character("A", modifierFlags=NSEventModifierFlagCommand),
+        await self.type_character("A", alt=True)
 
     async def select_row(self, row, add=False):
         point = self.row_position(row)

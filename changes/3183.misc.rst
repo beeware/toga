@@ -1,1 +1,0 @@
-Move ``_package_version`` to travertino

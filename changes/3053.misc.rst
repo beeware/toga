@@ -1,1 +1,0 @@
-The ``Canvas`` widget has been split up from a single module into a subpackage.

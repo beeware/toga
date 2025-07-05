@@ -1,1 +1,0 @@
-The testbed test `test_window_state_rapid_change` now correctly passes through the macOS-arm64 CI.

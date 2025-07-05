@@ -1,16 +1,16 @@
 from abc import ABC, abstractmethod
 from decimal import ROUND_HALF_EVEN, Decimal
 
-from android.graphics import PorterDuff, PorterDuffColorFilter, Rect
-from android.graphics.drawable import ColorDrawable, InsetDrawable
+from android.graphics import PorterDuff, PorterDuffColorFilter
+from android.graphics.drawable import ColorDrawable
 from android.view import Gravity, View
 from android.widget import RelativeLayout
 from org.beeware.android import MainActivity
 from travertino.size import at_least
 
-from toga.constants import CENTER, JUSTIFY, LEFT, RIGHT, TRANSPARENT
-
-from ..colors import native_color
+from toga.colors import TRANSPARENT
+from toga.constants import CENTER, JUSTIFY, LEFT, RIGHT
+from toga_android.colors import native_color
 
 
 class Scalable:
@@ -53,6 +53,8 @@ class Widget(ABC, Scalable):
         self._native_activity = MainActivity.singletonThis
         self.init_scale(self._native_activity)
         self.create()
+
+        self.native_toplevel = self.native
 
         # Some widgets, e.g. TextView, may throw an exception if we call measure()
         # before setting LayoutParams.
@@ -115,46 +117,31 @@ class Widget(ABC, Scalable):
 
     def set_hidden(self, hidden):
         if hidden:
-            self.native.setVisibility(View.INVISIBLE)
+            self.native_toplevel.setVisibility(View.INVISIBLE)
         else:
-            self.native.setVisibility(View.VISIBLE)
+            self.native_toplevel.setVisibility(View.VISIBLE)
 
     def set_font(self, font):
         # By default, font can't be changed
         pass
 
-    # Although setBackgroundColor is defined in the View base class, we can't use it as
-    # a default implementation because it often overwrites other aspects of the widget's
-    # appearance. So each widget must decide how to implement this method, possibly
-    # using one of the utility functions below.
     def set_background_color(self, color):
-        pass
+        # Set background to None, when TRANSPARENT is requested, in order to prevent
+        # clipping of ripple and other effects on widgets.
+        self.native_toplevel.setBackground(
+            None if color in (None, TRANSPARENT) else ColorDrawable(native_color(color))
+        )
 
-    def set_background_simple(self, value):
-        if not hasattr(self, "_default_background"):
-            self._default_background = self.native.getBackground()
-
-        if value in (None, TRANSPARENT):
-            self.native.setBackground(self._default_background)
-        else:
-            background = ColorDrawable(native_color(value))
-            if isinstance(self._default_background, InsetDrawable):
-                outer_padding = Rect()
-                inner_padding = Rect()
-                self._default_background.getPadding(outer_padding)
-                self._default_background.getDrawable().getPadding(inner_padding)
-                insets = [
-                    getattr(outer_padding, name) - getattr(inner_padding, name)
-                    for name in ["left", "top", "right", "bottom"]
-                ]
-                background = InsetDrawable(background, *insets)
-            self.native.setBackground(background)
-
-    def set_background_filter(self, value):
+    def set_background_filter(self, color):
+        # Although setBackgroundColor is defined in the View base class, we can't
+        # use it as a default implementation on some widgets (e.g. Button), because
+        # it often overwrites other aspects of the widget's appearance. For example,
+        # when setBackgroundColor is used on a Button, it makes the button appear
+        # as a solid rectangle with no bevels or animations.
         self.native.getBackground().setColorFilter(
             None
-            if value in (None, TRANSPARENT)
-            else PorterDuffColorFilter(native_color(value), PorterDuff.Mode.SRC_IN)
+            if color is None
+            else PorterDuffColorFilter(native_color(color), PorterDuff.Mode.SRC_IN)
         )
 
     def set_text_align(self, alignment):
@@ -194,3 +181,35 @@ def android_text_align(value):
         CENTER: Gravity.CENTER_HORIZONTAL,
         JUSTIFY: Gravity.LEFT,
     }[value]
+
+
+# The look and feel of Android widgets is sometimes implemented using background
+# Drawables like ColorDrawable, InsetDrawable and other animation effect Drawables
+# like RippleDrawable. Often when such effect Drawables are used, they are stacked
+# along with other Drawables in a LayerDrawable.
+#
+# LayerDrawable once created cannot be modified and attempting to modify it or
+# creating a new LayerDrawable using the elements of the original LayerDrawable
+# stack, will destroy the native look and feel of the widgets. The original
+# LayerDrawable cannot also be properly cloned. Using `getConstantState()` on the
+# Drawable will produce an erroneous version of the original Drawable.
+#
+# Hence, the best option to preserve the native look and feel of the these widgets is
+# to contain them in a `RelativeLayout` and set the background color to the layout
+# instead of the widget itself.
+#
+# ContainedWidget should act as a drop-in replacement against the Widget class for
+# such widgets, without requiring the widgets to do anything extra on their part.
+class ContainedWidget(Widget):
+    def __init__(self, interface):
+        super().__init__(interface)
+
+        self.native_toplevel = RelativeLayout(self._native_activity)
+        self.native_toplevel.addView(self.native)
+
+        self.native.setLayoutParams(
+            RelativeLayout.LayoutParams(
+                RelativeLayout.LayoutParams.MATCH_PARENT,
+                RelativeLayout.LayoutParams.MATCH_PARENT,
+            )
+        )

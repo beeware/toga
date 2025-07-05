@@ -17,7 +17,6 @@ on:
 
 env:
   min_python_version: "3.9"
-  max_python_version: "3.12"
   FORCE_COLOR: "1"
 
 defaults:
@@ -63,6 +62,7 @@ jobs:
         - "gtk"
         - "iOS"
         - "toga"
+        - "positron"
         - "travertino"
         - "textual"
         - "web"
@@ -102,7 +102,7 @@ jobs:
         fetch-depth: 0
 
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v5.4.0
+      uses: actions/setup-python@v5.6.0
       with:
         python-version: ${{ matrix.python-version }}
         allow-prereleases: true
@@ -115,7 +115,7 @@ jobs:
         project-root: ${{ matrix.package }}
 
     - name: Get Packages
-      uses: actions/download-artifact@v4.1.8
+      uses: actions/download-artifact@v4.3.0
       with:
         pattern: ${{ format('{0}-*', needs.package.outputs.artifact-basename) }}
         merge-multiple: true
@@ -123,7 +123,7 @@ jobs:
 
     - name: Test
       run: |
-        # The $(ls ...) shell expansion is done in the Github environment; the value of
+        # The $(ls ...) shell expansion is done in the GitHub environment; the value of
         # TOGA_INSTALL_COMMAND will be a literal string without any shell expansions to
         # perform. We don't *explicitly* install the Travertino wheel; we provide the
         # dist dir as a source of wheels, and rely on pip to resolve the explicit
@@ -134,7 +134,7 @@ jobs:
         mv ${{ matrix.package }}/.coverage ${{ matrix.package }}/.coverage.${{ matrix.platform }}.${{ matrix.python-version }}
 
     - name: Store Coverage Data
-      uses: actions/upload-artifact@v4.6.0
+      uses: actions/upload-artifact@v4.6.2
       with:
         name: ${{ matrix.package }}-coverage-data-${{ matrix.platform }}-${{ matrix.python-version }}
         path: "${{ matrix.package }}/.coverage.*"
@@ -160,7 +160,7 @@ jobs:
         fetch-depth: 0
 
     - name: Set up Python ${{ env.min_python_version }}
-      uses: actions/setup-python@v5.4.0
+      uses: actions/setup-python@v5.6.0
       with:
         # Use minimum version of python for coverage to avoid phantom branches
         # https://github.com/nedbat/coveragepy/issues/1572#issuecomment-1522546425
@@ -174,7 +174,7 @@ jobs:
         project-root: ${{ matrix.package }}
 
     - name: Retrieve Coverage Data
-      uses: actions/download-artifact@v4.1.8
+      uses: actions/download-artifact@v4.3.0
       with:
         pattern: ${{ matrix.package }}-coverage-data-*
         path: ${{ matrix.package }}
@@ -185,7 +185,7 @@ jobs:
       run: tox -e coverage${{ matrix.tox-suffix }}-html-fail-platform
 
     - name: Upload HTML Coverage Report
-      uses: actions/upload-artifact@v4.6.0
+      uses: actions/upload-artifact@v4.6.2
       if: failure()
       with:
         name: html-coverage-report
@@ -242,7 +242,7 @@ jobs:
           pre-command: |
             sudo apt update -y
             sudo apt install -y --no-install-recommends \
-              blackbox pkg-config python3-dev libgirepository1.0-dev libcairo2-dev \
+              blackbox pkg-config python3-dev libgirepository-2.0-dev libcairo2-dev \
               gir1.2-webkit2-4.1 gir1.2-xapp-1.0 gir1.2-geoclue-2.0 gir1.2-flatpak-1.0
 
             # Start Virtual X Server
@@ -266,7 +266,7 @@ jobs:
           pre-command: |
             sudo apt update -y
             sudo apt install -y --no-install-recommends \
-              mutter pkg-config python3-dev libgirepository1.0-dev libcairo2-dev \
+              mutter pkg-config python3-dev libgirepository-2.0-dev libcairo2-dev \
               gir1.2-webkit2-4.1 gir1.2-xapp-1.0 gir1.2-geoclue-2.0 gir1.2-flatpak-1.0
 
             # Start Virtual X Server
@@ -290,12 +290,14 @@ jobs:
           runs-on: "ubuntu-24.04"
           env:
             XDG_RUNTIME_DIR: "/tmp"
-          # The package list should be the same as in unix-prerequisites.rst, and the BeeWare
-          # tutorial, plus mutter to provide a window manager.
+          # The package list should be build on the same base as unix-prerequisites.rst,
+          # and the BeeWare tutorial. Additional packages will be added for window
+          # management, and features such as web views and geolocation that aren't part
+          # of the default/tutorial environment.
           pre-command: |
             sudo apt update -y
             sudo apt install -y --no-install-recommends \
-              mutter pkg-config python3-dev libgirepository1.0-dev libcairo2-dev \
+              mutter pkg-config python3-dev libgirepository-2.0-dev libcairo2-dev \
               gir1.2-webkit-6.0 gir1.2-xapp-1.0 gir1.2-geoclue-2.0 gir1.2-flatpak-1.0 \
               gir1.2-gtk-4.0
 
@@ -376,7 +378,7 @@ jobs:
         fetch-depth: 0
 
     - name: Set up Python
-      uses: actions/setup-python@v5.4.0
+      uses: actions/setup-python@v5.6.0
       if: matrix.setup-python
       with:
         python-version: "3.12"
@@ -391,7 +393,7 @@ jobs:
         python -m pip install git+https://github.com/beeware/briefcase.git
 
     - name: Get Packages
-      uses: actions/download-artifact@v4.1.8
+      uses: actions/download-artifact@v4.3.0
       with:
         pattern: ${{ format('{0}-*', needs.package.outputs.artifact-basename) }}
         merge-multiple: true
@@ -405,7 +407,7 @@ jobs:
           briefcase run ${{ matrix.platform }} --log --test ${{ matrix.briefcase-run-args }} -- --ci
 
     - name: Upload Logs
-      uses: actions/upload-artifact@v4.6.0
+      uses: actions/upload-artifact@v4.6.2
       if: failure()
       with:
         name: testbed-failure-logs-${{ matrix.backend }}
@@ -418,7 +420,7 @@ jobs:
         cp -r "${{ matrix.app-user-data-path }}" testbed/app_data/testbed-app_data-${{ matrix.backend }}
 
     - name: Upload App Data
-      uses: actions/upload-artifact@v4.6.0
+      uses: actions/upload-artifact@v4.6.2
       if: failure() && matrix.backend != 'android'
       with:
         name: testbed-failure-app-data-${{ matrix.backend }}
@@ -431,3 +433,54 @@ jobs:
     # - name: Setup tmate session
     #   uses: mxschmitt/action-tmate@v3
     #   if: failure()
+
+  bootstraps:
+    name: "Bootstrap"
+    needs: [ package ]
+    runs-on: "ubuntu-24.04"
+    strategy:
+      fail-fast: false
+      matrix:
+        bootstrap:
+        - "Positron (Django)"
+        - "Positron (Static)"
+        - "Positron (Site-specific)"
+        include:
+        - bootstrap: "Positron (Django)"
+          new-options: '-Q "bootstrap=Toga Positron (Django server)"'
+
+        - bootstrap: "Positron (Static)"
+          new-options: '-Q "bootstrap=Toga Positron (Static server)"'
+
+        - bootstrap: "Positron (Site-specific)"
+          new-options: '-Q "bootstrap=Toga Positron (Site-specific browser)" -Q "site_url=https://github.com/"'
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4.2.2
+      with:
+        fetch-depth: 0
+
+    - name: Set up Python
+      uses: actions/setup-python@v5.6.0
+      with:
+        python-version: "3.12"
+
+    - name: Get Packages
+      uses: actions/download-artifact@v4.3.0
+      with:
+        pattern: ${{ format('{0}-*', needs.package.outputs.artifact-basename) }}
+        merge-multiple: true
+        path: dist
+
+    - name: Test Bootstrap
+      run: |
+        mkdir bootstrap-test
+        cd bootstrap-test
+        python3 -m venv venv
+        source venv/bin/activate
+        pip install -U pip
+        pip install ../dist/toga_positron-*.whl
+        echo
+        echo "===== Create Briefcase project with ${{ matrix.bootstrap }} bootstrap ====="
+        briefcase new --no-input -Q "formal_name=Hello Bootstrap" ${{ matrix.new-options }}

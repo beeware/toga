@@ -1,0 +1,1 @@
+WebViews on macOS now support file uploads.

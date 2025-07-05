@@ -252,7 +252,7 @@ def assert_reference(probe, reference, threshold=0.0):
 
     # Look for a platform-specific reference variant.
     reference_variant = probe.reference_variant(reference)
-    path = toga.App.app.paths.app / "resources/canvas" / f"{reference_variant}.png"
+    path = toga.App.app.paths.app / f"resources/canvas/{reference_variant}.png"
     save_dir = toga.App.app.paths.data / "canvas"
 
     def save():
@@ -267,8 +267,8 @@ def assert_reference(probe, reference, threshold=0.0):
         reference_image = Image.open(path)
 
         total = 0.0
-        for y in range(0, reference_image.size[1]):
-            for x in range(0, reference_image.size[0]):
+        for y in range(reference_image.size[1]):
+            for x in range(reference_image.size[0]):
                 actual = scaled_image.getpixel((x, y))
                 expected = reference_image.getpixel((x, y))
 
@@ -387,11 +387,11 @@ async def test_arc(canvas, probe):
 
     # Smile (exactly half a turn)
     canvas.context.move_to(150, 100)
-    canvas.context.arc(100, 100, 50, 0, pi, anticlockwise=False)
+    canvas.context.arc(100, 100, 50, 0, pi, counterclockwise=False)
 
     # Hair (exactly half a turn, but in the opposite direction)
     canvas.context.move_to(190, 100)
-    canvas.context.arc(100, 100, 90, 0, pi, anticlockwise=True)
+    canvas.context.arc(100, 100, 90, 0, pi, counterclockwise=True)
 
     # Left eye
     canvas.context.move_to(70, 70)
@@ -438,7 +438,7 @@ async def test_ellipse(canvas, probe):
         rotation=-pi / 4,
         startangle=pi * 7 / 4,
         endangle=pi / 4,
-        anticlockwise=True,
+        counterclockwise=True,
     )
     canvas.context.stroke(color=CORNFLOWERBLUE)
 
@@ -461,7 +461,13 @@ async def test_ellipse_path(canvas, probe):
     "An elliptical arc can be connected to other segments of a path"
 
     context = canvas.context
-    ellipse_args = dict(x=100, y=100, radiusx=70, radiusy=40, rotation=radians(30))
+    ellipse_args = {
+        "x": 100,
+        "y": 100,
+        "radiusx": 70,
+        "radiusy": 40,
+        "rotation": radians(30),
+    }
 
     # Start of path -> arc
     context.ellipse(**ellipse_args, startangle=radians(80), endangle=radians(160))
@@ -733,9 +739,12 @@ async def test_multiline_text(canvas, probe):
         # accepted.
         text_filler.write_text("", X[1], y)
 
-        # Explicit ALPHABETIC baseline, with default font and size. On most systems,
-        # this will go off the right edge of the canvas.
-        text_filler.write_text(caption(Baseline.ALPHABETIC), X[2], y)
+        # Explicit ALPHABETIC baseline, with default font and size but specified
+        # line height. On most systems, this will go off the right edge of the canvas.
+        line_height = 2.5
+        text_filler.write_text(
+            caption(Baseline.ALPHABETIC), X[2], y, line_height=line_height
+        )
 
     # Other baselines, with default font but specified size
     y = 130

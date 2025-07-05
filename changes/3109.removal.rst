@@ -1,1 +1,0 @@
-The `show()` and `hide()` APIs can no longer be used on a window while it is in a `MINIMIZED`, `FULLSCREEN` or `PRESENTATION` state.

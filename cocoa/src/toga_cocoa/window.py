@@ -140,9 +140,12 @@ class TogaWindow(NSWindow):
         for item in self.interface.toolbar:
             # If there's been a group change, and this item isn't a separator,
             # add a separator between groups.
-            if prev_group is not None:
-                if item.group != prev_group and not isinstance(item, Separator):
-                    default.addObject_(toolbar_identifier(prev_group))
+            if (
+                prev_group is not None
+                and item.group != prev_group
+                and not isinstance(item, Separator)
+            ):
+                default.addObject_(toolbar_identifier(prev_group))
             default.addObject_(toolbar_identifier(item))
             prev_group = item.group
 
@@ -550,7 +553,7 @@ class MainWindow(Window):
                     self._toolbar_items[toolbar_identifier(cmd)] = cmd
 
             self.native_toolbar = NSToolbar.alloc().initWithIdentifier(
-                "Toolbar-%s" % id(self)
+                f"Toolbar-{id(self)}"
             )
             self.native_toolbar.setDelegate(self.native)
         else:

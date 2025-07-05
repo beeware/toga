@@ -52,7 +52,7 @@ class ExampleLayoutApp(toga.App):
 
         # add a couple of labels to get us started
         self.labels = []
-        for i in range(3):
+        for _ in range(3):
             self.add_label()
 
         self.main_window = toga.MainWindow()

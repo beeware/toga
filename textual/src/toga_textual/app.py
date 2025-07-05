@@ -1,7 +1,8 @@
 import asyncio
 
-import toga
 from textual.app import App as TextualApp
+
+import toga
 
 from .screens import Screen as ScreenImpl
 
@@ -27,6 +28,7 @@ class App:
         self.interface._impl = self
 
         self.loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(self.loop)
         self.native = TogaApp(self)
 
         self._current_window = None
@@ -56,7 +58,7 @@ class App:
         self.native.exit()
 
     def main_loop(self):
-        self.loop.run_until_complete(self.native.run_async(headless=self.headless))
+        self.native.run(headless=self.headless, loop=self.loop)
 
     def set_icon(self, icon):
         pass

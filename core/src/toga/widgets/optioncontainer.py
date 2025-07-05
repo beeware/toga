@@ -260,8 +260,8 @@ class OptionList:
         else:
             try:
                 return next(filter(lambda item: item.text == str(value), self)).index
-            except StopIteration:
-                raise ValueError(f"No tab named {value!r}")
+            except StopIteration as exc:
+                raise ValueError(f"No tab named {value!r}") from exc
 
     @overload
     def append(
@@ -377,6 +377,8 @@ class OptionList:
 
 
 class OptionContainer(Widget):
+    _USE_DEBUG_BACKGROUND = True
+
     def __init__(
         self,
         id: str | None = None,

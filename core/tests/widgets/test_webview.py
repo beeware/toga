@@ -53,6 +53,18 @@ def test_create_with_values():
     assert widget.style.width == 256
 
 
+def test_create_with_content():
+    """Static HTML content can be loaded into the page at instantiation time."""
+    webview = toga.WebView(url="https://example.com", content="<h1>Hello, World!</h1>")
+
+    assert_action_performed_with(
+        webview,
+        "set content",
+        root_url="https://example.com",
+        content="<h1>Hello, World!</h1>",
+    )
+
+
 def test_webview_load_disabled(monkeypatch):
     """If the backend doesn't support on_webview_load, a warning is raised."""
     try:
@@ -183,6 +195,23 @@ def test_set_content(widget):
     )
 
 
+def test_set_content_with_property(widget):
+    """Static HTML content can be loaded into the page, using a setter."""
+    widget.content = "<h1>Fancy page</h1>"
+    assert_action_performed_with(
+        widget,
+        "set content",
+        root_url="",
+        content="<h1>Fancy page</h1>",
+    )
+
+
+def test_get_content_property_error(widget):
+    """Verify that using the getter on widget.content fails."""
+    with pytest.raises(AttributeError):
+        _ = widget.content
+
+
 def test_user_agent(widget):
     """The user agent can be customized."""
     widget.user_agent = "New user agent"
@@ -200,11 +229,10 @@ def test_evaluate_javascript(widget):
     with pytest.raises(
         RuntimeError,
         match=(
-            r"Can't check JavaScript result directly; "
-            r"use await or an on_result handler"
+            r"Can't check JavaScript result directly; use await or an on_result handler"
         ),
     ):
-        result == 42
+        _ = result == 42
 
 
 async def test_evaluate_javascript_async(widget):

@@ -1,1 +1,0 @@
-Camera tests which failed on macOS due to a lack of privacy permissions are now skipped upfront.

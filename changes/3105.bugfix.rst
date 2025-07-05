@@ -1,1 +1,0 @@
-On GTK, when a window is hidden, the `window.state` getter now correctly continues to report the same state as it did when the window was last visible.

@@ -23,16 +23,16 @@ WINDOWS_INIT_TIMEOUT = 60
 
 
 async def get_content(widget):
-    try:
-        return await wait_for(
-            widget.evaluate_javascript("document.body.innerHTML"),
-            JS_TIMEOUT,
-        )
-    except asyncio.TimeoutError:
-        # On Android, if you call evaluate_javascript while a page is loading, the
-        # callback may never be called. This seems to be associated with the log message
-        # "Uncaught TypeError: Cannot read property 'innerHTML' of null".
-        return None
+    # On Apple platforms while a page is still loading, document.body might return
+    # null and cause the call to fail and error.  Handle that by returning None
+    # otherwise.
+    # On Android, if the same error happens, the callback will not be called and
+    # cause an asyncio timeout error. This also avoids the error on Android by
+    # returning null if there's no document.body.
+    return await wait_for(
+        widget.evaluate_javascript("document.body ? document.body.innerHTML : null"),
+        JS_TIMEOUT,
+    )
 
 
 async def assert_content_change(widget, probe, message, url, content, on_load):
@@ -304,7 +304,7 @@ async def test_dom_storage_enabled(widget, probe, on_load):
         LOAD_TIMEOUT,
     )
 
-    for i in range(0, 10):
+    for _ in range(10):
         expected_value = "Hello World"
         expression = f"""\
     (function isLocalStorageAvailable(){{
@@ -350,7 +350,7 @@ async def test_retrieve_cookies(widget, probe, on_load):
 
     # On iOS and macOS, setting a cookie can fail if it's done too soon after page load.
     # Try a couple of times to make sure the cookie is actually set.
-    for i in range(0, 5):
+    for _ in range(5):
         # JavaScript expression to set a cookie and return the current cookies
         expression = """
         (function setCookie() {

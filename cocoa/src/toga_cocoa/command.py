@@ -25,9 +25,9 @@ def submenu_for_group(group, group_cache):
     """
     try:
         return group_cache[group]
-    except KeyError:
+    except KeyError as exc:
         if group is None:
-            raise ValueError("Cannot find top level group")
+            raise ValueError("Cannot find top level group") from exc
         else:
             parent_menu = submenu_for_group(group.parent, group_cache)
 

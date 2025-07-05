@@ -1,1 +1,0 @@
-Added a page summarizing Toga's API design principles.

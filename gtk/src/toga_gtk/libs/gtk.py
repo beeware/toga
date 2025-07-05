@@ -23,12 +23,16 @@ GTK_VERSION: tuple[int, int, int] = (
     Gtk.get_micro_version(),
 )
 
-if GTK_VERSION >= (4, 0, 0):  # pragma: no-cover-if-gtk3
-    from gi._gi import hook_up_vfunc_implementation  # noqa: E402, F401
+GLIB_VERSION: tuple[int, int, int] = (
+    GLib.MAJOR_VERSION,
+    GLib.MAJOR_VERSION,
+    GLib.MAJOR_VERSION,
+)
 
 if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
     default_display = Gdk.Screen.get_default()
 else:  # pragma: no-cover-if-gtk3
+    from gi._gi import hook_up_vfunc_implementation  # noqa: E402, F401
     default_display = Gdk.Display.get_default()
 if default_display is None:  # pragma: no cover
     raise RuntimeError(

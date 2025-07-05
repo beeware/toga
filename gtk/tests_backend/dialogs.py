@@ -122,9 +122,9 @@ class DialogsMixin:
             if result:
                 dialog._impl.native.select_filename(__file__)
                 self._wait_for_dialog("Wait for file to be selected")
-                assert (
-                    dialog._impl.native.get_filename() == __file__
-                ), "Dialog didn't select dummy file"
+                assert dialog._impl.native.get_filename() == __file__, (
+                    "Dialog didn't select dummy file"
+                )
             else:
                 self._wait_for_dialog("Wait for dialog to be dismissed")
 
@@ -173,9 +173,9 @@ class DialogsMixin:
                 self._wait_for_dialog("Wait for folder to be selected")
                 # We don't know how long it will take for the GUI to update, so iterate
                 # for a while until the change has been applied.
-                assert (
-                    dialog._impl.native.get_current_folder() == folder
-                ), "Dialog didn't select dummy folder"
+                assert dialog._impl.native.get_current_folder() == folder, (
+                    "Dialog didn't select dummy folder"
+                )
             else:
                 self._wait_for_dialog("Wait for folder to be dismissed")
 

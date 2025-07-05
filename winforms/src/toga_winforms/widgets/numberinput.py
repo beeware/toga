@@ -22,7 +22,6 @@ def native_decimal(value):
 
 
 class NumberInput(Widget):
-
     def create(self):
         self.native = WinForms.NumericUpDown()
         self.native.TextChanged += WeakrefCallable(self.winforms_text_changed)

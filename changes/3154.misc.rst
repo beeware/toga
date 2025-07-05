@@ -1,1 +1,0 @@
-The handling of the Travertino dependency in examples, CI and testbed was modified.

@@ -26,7 +26,6 @@ from ..utils import ExampleLeafWidget, ExampleWidget
 # exception.
 class WidgetSubclassWithoutCreate(toga.Widget):
     def __init__(self, *args, **kwargs):
-
         self.factory = get_platform_factory()
         self._impl = self.factory.Widget(interface=self)
 

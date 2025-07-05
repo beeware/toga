@@ -42,6 +42,14 @@ updates:
       time: "20:00"
 
   - package-ecosystem: "pip"
+    directory: "/dummy"
+    schedule:
+      # Check for updates on Sunday, 8PM UTC
+      interval: "weekly"
+      day: "sunday"
+      time: "20:00"
+
+  - package-ecosystem: "pip"
     directory: "/gtk"
     schedule:
       # Check for updates on Sunday, 8PM UTC
@@ -58,7 +66,7 @@ updates:
       time: "20:00"
 
   - package-ecosystem: "pip"
-    directory: "/web"
+    directory: "/positron"
     schedule:
       # Check for updates on Sunday, 8PM UTC
       interval: "weekly"
@@ -66,7 +74,10 @@ updates:
       time: "20:00"
 
   - package-ecosystem: "pip"
-    directory: "/winforms"
+    directory: "/testbed"
+    ignore:
+      # pin PIL for Android and iOS
+      - dependency-name: "pillow"
     schedule:
       # Check for updates on Sunday, 8PM UTC
       interval: "weekly"
@@ -82,10 +93,15 @@ updates:
       time: "20:00"
 
   - package-ecosystem: "pip"
-    directory: "/testbed"
-    ignore:
-      # pin PIL for Android and iOS
-      - dependency-name: "pillow"
+    directory: "/web"
+    schedule:
+      # Check for updates on Sunday, 8PM UTC
+      interval: "weekly"
+      day: "sunday"
+      time: "20:00"
+
+  - package-ecosystem: "pip"
+    directory: "/winforms"
     schedule:
       # Check for updates on Sunday, 8PM UTC
       interval: "weekly"

@@ -467,17 +467,11 @@ class App:
         """
         platform_task_factory = self.loop.get_task_factory()
 
-        def factory(loop, coro, context=None):
+        def factory(loop, coro, **kwargs):
             if platform_task_factory is not None:
-                if sys.version_info < (3, 11):  # pragma: no-cover-if-gte-py311
-                    task = platform_task_factory(loop, coro)
-                else:  # pragma: no-cover-if-lt-py311
-                    task = platform_task_factory(loop, coro, context=context)
+                task = platform_task_factory(loop, coro, **kwargs)
             else:
-                if sys.version_info < (3, 11):  # pragma: no-cover-if-gte-py311
-                    task = asyncio.Task(coro, loop=loop)
-                else:  # pragma: no-cover-if-lt-py311
-                    task = asyncio.Task(coro, loop=loop, context=context)
+                task = asyncio.Task(coro, loop=loop, **kwargs)
 
             self._running_tasks.add(task)
             task.add_done_callback(self._running_tasks.discard)
@@ -606,7 +600,7 @@ class App:
                     # Pass in the first document type as the default
                     self.documents.new(self.documents.types[0])
                 else:
-                    self.loop.run_until_complete(self.documents.request_open())
+                    self.loop.create_task(self.documents.request_open())
             else:
                 # No document types defined.
                 raise RuntimeError(
@@ -669,7 +663,14 @@ class App:
         self.main_window = MainWindow(title=self.formal_name, id="main")
 
         if self._startup_method:
-            self.main_window.content = self._startup_method(self)
+            content = self._startup_method(self)
+            if content is None:
+                raise ValueError(
+                    "Your app's startup method has not provided any content for your "
+                    "app's main window. Did you remember to return the main content "
+                    "container in your startup method?"
+                )
+            self.main_window.content = content
 
         self.main_window.show()
 
@@ -847,7 +848,7 @@ class App:
             not have content.
         """
         if windows:
-            screen_window_dict = dict()
+            screen_window_dict = {}
             if isinstance(windows, list):
                 for window, screen in zip(windows, self.screens):
                     screen_window_dict[screen] = window
@@ -903,8 +904,10 @@ class App:
         """**DEPRECATED** – Use :any:`asyncio.create_task`, or override/assign
         :meth:`~toga.App.on_running`."""
         warnings.warn(
-            "App.add_background_task is deprecated. Use asyncio.create_task(), "
-            "or set an App.on_running() handler",
+            (
+                "App.add_background_task is deprecated. Use asyncio.create_task(), "
+                "or set an App.on_running() handler"
+            ),
             DeprecationWarning,
             stacklevel=2,
         )

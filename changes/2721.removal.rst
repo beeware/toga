@@ -1,1 +1,0 @@
-The use of generators as event handlers has been deprecated. Any generator-based event handler can be converted into an asynchronous co-routine by converting the handler to ``async def``, and using ``await asyncio.sleep(t)`` in place of ``yield t`` (for some sleep interval ``t``).

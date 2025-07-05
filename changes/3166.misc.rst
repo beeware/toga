@@ -1,1 +1,0 @@
-On macOS, when the app is hidden via the global app menu option and later unhidden, the appropriate visibility events like `on_show()` and `on_hide()` are now triggered.

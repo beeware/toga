@@ -37,11 +37,9 @@ A button that can be pressed or clicked.
 
   .. group-tab:: Web |beta|
 
-    .. .. figure:: /reference/images/button-web.png
-    ..    :align: center
-    ..    :width: 300px
-
-    Screenshot not available
+    .. figure:: /reference/images/button-web.png
+       :align: center
+       :width: 300px
 
   .. group-tab:: Textual |beta|
 

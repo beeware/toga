@@ -1,4 +1,5 @@
 import sys
+from copy import deepcopy
 from dataclasses import dataclass
 from unittest.mock import Mock
 
@@ -7,9 +8,9 @@ import pytest
 from travertino.colors import hsl, hsla, rgb, rgba
 
 if sys.version_info < (3, 10):
-    _DATACLASS_KWARGS = {"init": False}
+    _DATACLASS_KWARGS = {"init": False, "repr": False}
 else:
-    _DATACLASS_KWARGS = {"kw_only": True}
+    _DATACLASS_KWARGS = {"kw_only": True, "repr": False}
 
 
 def apply_dataclass(cls):
@@ -22,11 +23,26 @@ def mock_apply(cls):
     orig_init = cls.__init__
 
     def __init__(self, *args, **kwargs):
-        self.apply = Mock()
+        self.apply = Mock(wraps=self.apply)
+        # The argument to _apply is a (mutable) set that will be cleared, so a copy
+        # needs to be saved to check against.
+        self._apply = CopyingMock()
         orig_init(self, *args, **kwargs)
 
     cls.__init__ = __init__
     return cls
+
+
+class CopyingMock(Mock):
+    """Mock that copies rather than references its call args, for mutable arguments.
+
+    Stripped-down version of example from:
+    https://docs.python.org/3.13//library/unittest.mock-examples.html
+    #coping-with-mutable-arguments
+    """
+
+    def __call__(self, *args):
+        return super().__call__(*deepcopy(args))
 
 
 def assert_equal_color(actual, expected, abs=1e-6):

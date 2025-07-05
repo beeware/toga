@@ -1,1 +1,0 @@
-The hardware example app's now correctly demonstrates usage of the location services method ``current_location``.

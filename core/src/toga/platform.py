@@ -67,7 +67,7 @@ def get_platform_factory() -> ModuleType:
     if backend_value := os.environ.get("TOGA_BACKEND"):
         try:
             factory = importlib.import_module(f"{backend_value}.factory")
-        except ModuleNotFoundError as e:
+        except ModuleNotFoundError as exc:
             toga_backends_values = ", ".join(
                 [f"{backend.value!r}" for backend in find_backends()]
             )
@@ -77,8 +77,8 @@ def get_platform_factory() -> ModuleType:
             # ModuleNotFoundError from one of its internal imports.
             raise RuntimeError(
                 f"The backend specified by TOGA_BACKEND ({backend_value!r}) could "
-                f"not be loaded ({e}). It should be one of: {toga_backends_values}."
-            )
+                f"not be loaded ({exc}). It should be one of: {toga_backends_values}."
+            ) from exc
 
     else:
         toga_backends = find_backends()

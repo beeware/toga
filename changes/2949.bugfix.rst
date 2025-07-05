@@ -1,1 +1,0 @@
-An issue with creating dialogs on the Textual backend was resolved.

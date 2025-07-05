@@ -133,29 +133,29 @@ def test_set_image_none(app):
     "params, expected_width, expected_height, expected_aspect_ratio",
     [
         # Intrinsic image size
-        (dict(style=Pack()), 144, 72, 2),
-        (dict(style=Pack(), scale=2), 288, 144, 2),
+        ({"style": Pack()}, 144, 72, 2),
+        ({"style": Pack(), "scale": 2}, 288, 144, 2),
         # Fixed width
-        (dict(style=Pack(width=150)), 150, 75, 2),
-        (dict(style=Pack(width=150), scale=2), 300, 150, 2),
+        ({"style": Pack(width=150)}, 150, 75, 2),
+        ({"style": Pack(width=150), "scale": 2}, 300, 150, 2),
         # Fixed height
-        (dict(style=Pack(height=80)), 160, 80, 2),
-        (dict(style=Pack(height=80), scale=2), 320, 160, 2),
+        ({"style": Pack(height=80)}, 160, 80, 2),
+        ({"style": Pack(height=80), "scale": 2}, 320, 160, 2),
         # Explicit image size
-        (dict(style=Pack(width=37, height=42)), 37, 42, None),
-        (dict(style=Pack(width=37, height=42), scale=2), 74, 84, None),
+        ({"style": Pack(width=37, height=42)}, 37, 42, None),
+        ({"style": Pack(width=37, height=42), "scale": 2}, 74, 84, None),
         # Intrinsic image size, flex widget
-        (dict(style=Pack(flex=1)), at_least(0), at_least(0), 2),
-        (dict(style=Pack(flex=1), scale=2), at_least(0), at_least(0), 2),
+        ({"style": Pack(flex=1)}, at_least(0), at_least(0), 2),
+        ({"style": Pack(flex=1), "scale": 2}, at_least(0), at_least(0), 2),
         # Fixed width, flex widget
-        (dict(style=Pack(width=150, flex=1)), 150, at_least(0), 2),
-        (dict(style=Pack(width=150, flex=1), scale=2), 300, at_least(0), 2),
+        ({"style": Pack(width=150, flex=1)}, 150, at_least(0), 2),
+        ({"style": Pack(width=150, flex=1), "scale": 2}, 300, at_least(0), 2),
         # Fixed height, flex widget
-        (dict(style=Pack(height=80, flex=1)), at_least(0), 80, 2),
-        (dict(style=Pack(height=80, flex=1), scale=2), at_least(0), 160, 2),
+        ({"style": Pack(height=80, flex=1)}, at_least(0), 80, 2),
+        ({"style": Pack(height=80, flex=1), "scale": 2}, at_least(0), 160, 2),
         # Explicit image size, flex widget
-        (dict(style=Pack(width=37, height=42, flex=1)), 37, 42, None),
-        (dict(style=Pack(width=37, height=42, flex=1), scale=2), 74, 84, None),
+        ({"style": Pack(width=37, height=42, flex=1)}, 37, 42, None),
+        ({"style": Pack(width=37, height=42, flex=1), "scale": 2}, 74, 84, None),
     ],
 )
 def test_rehint_image(
@@ -178,13 +178,13 @@ def test_rehint_image(
     "params",
     [
         # Default scale
-        dict(style=Pack()),
+        {"style": Pack()},
         # Explicit width/height
-        dict(style=Pack(width=100)),
-        dict(style=Pack(height=200)),
-        dict(style=Pack(width=100, height=200)),
+        {"style": Pack(width=100)},
+        {"style": Pack(height=200)},
+        {"style": Pack(width=100, height=200)},
         # 2x Scale
-        dict(style=Pack(), scale=2),
+        {"style": Pack(), "scale": 2},
     ],
 )
 def test_rehint_empty_image(params):

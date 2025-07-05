@@ -1,1 +1,0 @@
-Android cameras now describe themselves in terms of the direction they are facing (if known).

@@ -3,12 +3,11 @@ import asyncio
 from pytest import skip
 from rubicon.objc import NSPoint
 
+from toga_cocoa.keys import NSEventModifierFlagCommand
 from toga_cocoa.libs import NSEventType, NSOutlineView, NSScrollView
 
 from .base import SimpleProbe
 from .properties import toga_color
-
-NSEventModifierFlagCommand = 1 << 20
 
 
 class TreeProbe(SimpleProbe):
@@ -132,7 +131,7 @@ class TreeProbe(SimpleProbe):
         )
 
     async def select_all(self):
-        await self.type_character("A", modifierFlags=NSEventModifierFlagCommand),
+        await self.type_character("A", alt=True)
 
     async def select_row(self, row_path, add=False):
         point = self.row_position(row_path)

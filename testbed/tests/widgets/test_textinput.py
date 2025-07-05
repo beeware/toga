@@ -4,6 +4,8 @@ import pytest
 
 import toga
 from toga.constants import CENTER
+from toga.style import Pack
+from toga.style.pack import RIGHT, SERIF
 
 from ..data import TEXTS
 from .conftest import build_cleanup_test
@@ -103,6 +105,36 @@ async def test_on_change_user(widget, probe, on_change):
         # The number of events equals the number of characters typed.
         assert on_change.mock_calls == [call(widget)] * count
         expected = "Hello world"[:count]
+        assert probe.value == expected
+        assert widget.value == expected
+
+
+@pytest.mark.parametrize(
+    "test_input",
+    [
+        '""',
+        "''",
+        "--",
+        "---",
+        'Humorless "test" input',
+        "Can't 'bee' bothered",
+        "Bee dashing--or fail miserably. --- No One Ever",
+    ],
+)
+async def test_quote_dash_substitution_disabled(widget, probe, on_change, test_input):
+    """Verify automatic smart quote and dash substitution are disabled"""
+    # This test simulates typing, so the widget must be focused.
+    widget.focus()
+    widget.value = ""
+    on_change.reset_mock()
+
+    for count, char in enumerate(test_input, start=1):
+        await probe.type_character(char)
+        await probe.redraw(f"Typed {char!r}")
+
+        # The number of events equals the number of characters typed.
+        assert on_change.mock_calls == [call(widget)] * count
+        expected = test_input[:count]
         assert probe.value == expected
         assert widget.value == expected
 
@@ -247,3 +279,33 @@ async def test_undo_redo(widget, probe):
     await probe.redraw(f"Widget value should be {text_1!r}")
     assert widget.value == text_1
     assert probe.value == text_1
+
+
+async def test_no_event_on_initialization(widget, probe, on_change):
+    "The widget doesn't fire events on initialization."
+    # When the widget is created and added to a box, no on_change event is fired.
+    parent = toga.Box(style=Pack(flex=1))
+    parent.add(widget)
+    on_change.assert_not_called()
+    on_change.reset_mock()
+
+
+async def test_no_event_on_style_change(widget, probe, on_change):
+    "The widget doesn't fire on_change events on text style changes."
+    # font changes
+    widget.style.font_family = SERIF
+    await probe.redraw("Font style has been changed")
+    on_change.assert_not_called()
+    on_change.reset_mock()
+
+    # text alignment changes
+    widget.style.text_align = RIGHT
+    await probe.redraw("Text alignment has been changed")
+    on_change.assert_not_called()
+    on_change.reset_mock()
+
+    # text color changes
+    widget.style.color = "#0000FF"
+    await probe.redraw("Text color has been changed")
+    on_change.assert_not_called()
+    on_change.reset_mock()

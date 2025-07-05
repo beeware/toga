@@ -1,1 +1,0 @@
-Toga apps can now detect and set their window states including maximized, minimized, normal, full screen and presentation states.

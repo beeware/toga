@@ -168,7 +168,10 @@ class Table(Widget):
             None,
         )
         if isinstance(value, toga.Widget):
-            warn("This backend does not support the use of widgets in cells")
+            warn(
+                "This backend does not support the use of widgets in cells",
+                stacklevel=2,
+            )
             value = None
         if isinstance(value, tuple):  # TODO: support icons
             value = value[1]
@@ -211,9 +214,6 @@ class Table(Widget):
 
     def remove_column(self, index):
         self.change_source(self.interface.data)
-
-    def set_background_color(self, value):
-        self.set_background_simple(value)
 
     def set_font(self, font):
         self._font_impl = font._impl

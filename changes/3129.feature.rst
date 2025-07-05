@@ -1,1 +1,0 @@
-Travertino has now achieved 100% test coverage.
