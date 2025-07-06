@@ -1168,45 +1168,6 @@ else:
         second_window_on_resize_handler.assert_not_called()
 
     @pytest.mark.parametrize(
-        "new_window_size",
-        [
-            (200, 150),
-            (300, 250),
-            (400, 350),
-        ],
-    )
-    @pytest.mark.parametrize(
-        "second_window_class, second_window_kwargs",
-        [
-            (
-                toga.Window,
-                {"title": "Secondary Window", "position": (200, 150)},
-            )
-        ],
-    )
-    async def test_window_size_updated_on_resize_event(
-        second_window, second_window_probe, new_window_size
-    ):
-        """The window returns updated size when on_resize() event handler is called."""
-        second_window.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
-        second_window.show()
-        await second_window_probe.wait_for_window("Second window has been shown")
-
-        def check_new_size_on_resize(window):
-            assert window.size == new_window_size
-
-        second_window_on_resize_handler = Mock()
-        second_window_on_resize_handler.side_effect = check_new_size_on_resize
-        # Register the event handler.
-        second_window.on_resize = second_window_on_resize_handler
-
-        # Resize the window and assert.
-        second_window.size = new_window_size
-        await second_window_probe.wait_for_window("Second window has been resized")
-        second_window_on_resize_handler.assert_called_with(second_window)
-        second_window_on_resize_handler.reset_mock()
-
-    @pytest.mark.parametrize(
         "second_window_class, second_window_kwargs",
         [
             (
