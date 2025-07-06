@@ -25,6 +25,16 @@ class OnWebViewLoadHandler(Protocol):
         """
 
 
+class OnNavigationStartingHandler(Protocol):
+    def __call__(self, widget: WebView, **kwargs: Any) -> object:
+        """A handler to invoke when the WebView is requesting permission to navigate or
+        redirect to a different URI.
+
+        :param widget: The WebView
+        :param kwargs: Ensures compatibility with arguments added in future versions.
+        """
+
+
 class WebView(Widget):
     def __init__(
         self,
@@ -33,6 +43,7 @@ class WebView(Widget):
         url: str | None = None,
         content: str | None = None,
         user_agent: str | None = None,
+        on_navigation_starting: OnNavigationStartingHandler | None = None,
         on_webview_load: OnWebViewLoadHandler | None = None,
         **kwargs,
     ):
@@ -50,6 +61,11 @@ class WebView(Widget):
             value provided for the ``url`` argument will be ignored.
         :param user_agent: The user agent to use for web requests. If not
             provided, the default user agent for the platform will be used.
+        :param on_navigation_starting: A handler that will be invoked when the
+            web view is requesting permission to navigate or redirect
+            to a different URI. The handler can be synchronous or async and must
+            return True for allowing the URL, False for denying the URL or an awaited
+            QuestionDialog
         :param on_webview_load: A handler that will be invoked when the web view
             finishes loading.
         :param kwargs: Initial style properties.
@@ -58,8 +74,15 @@ class WebView(Widget):
 
         self.user_agent = user_agent
 
+        # If URL is allowed by user interaction or user on_navigation_starting
+        # handler, the count will be set to 0
+        self._url_count = 0
+
         # Set the load handler before loading the first URL.
         self.on_webview_load = on_webview_load
+
+        # Set the handler for URL filtering
+        self.on_navigation_starting = on_navigation_starting
 
         # Load both content and root URL if it's provided by the user.
         # Otherwise, load the URL only.
@@ -73,6 +96,9 @@ class WebView(Widget):
 
     def _set_url(self, url: str | None, future: asyncio.Future | None) -> None:
         # Utility method for validating and setting the URL with a future.
+        if self.on_navigation_starting:
+            # mark URL as being allowed
+            self._url_count = 0
         if (url is not None) and not url.startswith(("https://", "http://")):
             raise ValueError("WebView can only display http:// and https:// URLs")
 
@@ -103,6 +129,49 @@ class WebView(Widget):
         loaded_future = loop.create_future()
         self._set_url(url, future=loaded_future)
         return await loaded_future
+
+    @property
+    def on_navigation_starting(self):
+        """A handler that will be invoked when the webview is requesting
+        permission to navigate or redirect to a different URI.
+
+        The handler will receive the arguments `widget` and `url` and can
+        be synchronous or async. It must return True for allowing the URL,
+        False for denying the URL or an awaited QuestionDialog
+
+        :returns: The function ``callable`` that is called by this navigation event.
+        """
+        return self._on_navigation_starting
+
+    @on_navigation_starting.setter
+    def on_navigation_starting(self, handler, url=None):
+        """Set the handler to invoke when the webview starts navigating"""
+
+        def cleanup(widget, result):
+            try:
+                msg = f"on_navigation_starting.cleanup, url={url}, "
+                msg += f"result={str(result)}"
+                print(msg)
+                print(f"widget._requested_url={widget._requested_url}")
+                if url is None:
+                    # The user on_navigation_handler is synchronous - do nothing
+                    return
+                if result is True:
+                    print(f"Navigating to {url}")
+                    # navigate to the url, the URL will automatically be marked
+                    # as allowed
+                    self.url = url
+            except Exception as ex:
+                print(f"on_navigation_starting.cleanup exception: {str(ex)}")
+
+        self._on_navigation_starting = None
+        if handler:
+            if not getattr(self._impl, "SUPPORTS_ON_NAVIGATION_STARTING", True):
+                self.factory.not_implemented("WebView.on_navigation_starting")
+                return
+            self._on_navigation_starting = wrapped_handler(
+                self, handler, cleanup=cleanup
+            )
 
     @property
     def on_webview_load(self) -> OnWebViewLoadHandler:
@@ -151,6 +220,9 @@ class WebView(Widget):
             and used to resolve any relative URLs in the content.
         :param content: The HTML content for the WebView
         """
+        if self.on_navigation_starting:
+            # mark URL as being allowed
+            self._url_count = 0
         self._impl.set_content(root_url, content)
 
     @property

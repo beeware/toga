@@ -1,3 +1,4 @@
+import asyncio
 import json
 import webbrowser
 from http.cookiejar import Cookie, CookieJar
@@ -135,6 +136,10 @@ class WebView(Widget):
             settings.IsSwipeNavigationEnabled = False
             settings.IsZoomControlEnabled = True
 
+            self.native.CoreWebView2.NavigationStarting += WeakrefCallable(
+                self.winforms_navigation_starting
+            )
+
             for task in self.pending_tasks:
                 task()
             self.pending_tasks = None
@@ -177,6 +182,36 @@ class WebView(Widget):
         if self.loaded_future:
             self.loaded_future.set_result(None)
             self.loaded_future = None
+
+    def winforms_navigation_starting(self, sender, event):
+        print(f"winforms_navigation_starting: {event.Uri}")
+        if self.interface.on_navigation_starting:
+            print("checking URL permission...")
+            self.interface._url_count += 1
+            if self.interface._url_count == 1:
+                # URL is allowed by user code
+                print("URL is allowed by user code")
+                allow = True
+            else:
+                result = self.interface.on_navigation_starting(url=event.Uri)
+                if isinstance(result, bool):
+                    # on_navigation_starting handler is synchronous
+                    print(f"synchronous handler, result={str(result)}")
+                    allow = result
+                elif isinstance(result, asyncio.Future):
+                    # on_navigation_starting handler is asynchronous
+                    self.interface._requested_url = event.Uri  # should not be needed
+                    if result.done():
+                        allow = result.result()
+                        print(f"asynchronous handler, result={str(allow)}")
+                    else:
+                        # deny the navigation until the user himself or the user
+                        # defined on_navigation_starting handler has allowed it
+                        allow = False
+                        print("waiting for permission")
+            if not allow:
+                print("Denying navigation")
+                event.Cancel = True
 
     def get_url(self):
         source = self.native.Source
