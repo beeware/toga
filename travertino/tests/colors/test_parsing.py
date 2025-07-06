@@ -180,7 +180,7 @@ def test_hash_mark_invalid(num_digits):
     with pytest.raises(ValueError):
         color(f"#{'1' * num_digits}")
 
-        def test_rgb_char_invalido_no_final():
+def test_rgb_char_invalido_no_final():
     with pytest.raises(ValueError):
         color("rgb(1, 2, 3q")
 
