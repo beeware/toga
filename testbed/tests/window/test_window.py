@@ -1133,19 +1133,28 @@ else:
         size is changed."""
         second_window.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
         second_window.show()
+        expected_window_size = None
+
+        def check_new_size_on_resize(window):
+            assert window.size == expected_window_size
+
         second_window_on_resize_handler = Mock()
+        second_window_on_resize_handler.side_effect = check_new_size_on_resize
+        # Register the event handler.
         second_window.on_resize = second_window_on_resize_handler
         await second_window_probe.wait_for_window("Second window has been shown")
         initial_size = second_window.size
 
-        # Resize the window, on_resize() will be triggered
+        # Resize the window, on_resize() will be triggered with the new size.
+        expected_window_size = (200, 150)
         second_window.size = (200, 150)
         await second_window_probe.wait_for_window("Second window has been resized")
         assert second_window.size == (200, 150)
         second_window_on_resize_handler.assert_called_with(second_window)
         second_window_on_resize_handler.reset_mock()
 
-        # Resize to initial size, on_resize() will be triggered
+        # Resize to initial size, on_resize() will be triggered with the new size.
+        expected_window_size = initial_size
         second_window.size = initial_size
         await second_window_probe.wait_for_window("Second window has been resized")
         assert second_window.size == initial_size
