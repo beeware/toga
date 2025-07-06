@@ -64,7 +64,7 @@ classifiers = [
 dev = [
     "coverage[toml] == 7.9.2",
     "coverage-conditional-plugin == 0.9.0",
-    "Pillow == 11.2.1",
+    "Pillow == 11.3.0",
     "pre-commit == 4.2.0",
     "pytest == 8.4.1",
     "pytest-asyncio == 1.0.0",
@@ -80,7 +80,7 @@ dev = [
 docs = [
     "beeware_theme @ git+https://github.com/beeware/beeware-theme",
     "furo == 2024.8.6",
-    "Pillow == 11.2.1",
+    "Pillow == 11.3.0",
     "pyenchant == 3.2.2",
     "sphinx == 8.2.3",
     "sphinx_tabs == 3.4.5",
