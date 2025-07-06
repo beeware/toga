@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from .constants import *  # noqa: F403
+import re
 
 
 def _clamp(value, upper=1):
@@ -294,6 +295,26 @@ class hsl(hsla):
     def __repr__(self):
         return f"hsl({self.h}, {self.s}, {self.l})"
 
+def _parse_channel(v: str | int | float):
+    if isinstance(v, str):
+        v = v.strip().strip("'").strip('"')
+        if v.endswith("%"):
+            return round(255 * float(v.rstrip("%")) / 100)
+        if re.fullmatch(r"[0-9a-fA-F]{2}", v):
+            return int(v, 16)
+        return int(v)
+    return int(v)
+
+def _parse_alpha(v: str | int | float):
+    if isinstance(v, str):
+        v = v.strip().strip("'").strip('"')
+        if v.endswith("%"):
+            return float(v.rstrip("%")) / 100
+        if re.fullmatch(r"[0-9a-fA-F]{2}", v):
+            return int(v, 16) / 255
+        return float(v)
+    return float(v)
+
 
 def color(value):
     """Parse a color from a value.
@@ -349,19 +370,22 @@ def color(value):
                 )
         elif value.startswith("rgba"):
             try:
-                values = value[5:-1].split(",")
+                values = [x.strip() for x in value[5:-1].split(",")]
                 if len(values) == 4:
                     return rgba(
-                        int(values[0]),
-                        int(values[1]),
-                        int(values[2]),
-                        float(
-                            values[3],
-                        ),
+                        _parse_channel(values[0]),
+                        _parse_channel(values[1]),
+                        _parse_channel(values[2]),
+                        _parse_alpha(values[3]),
                     )
             except ValueError:
-                pass
+                pass     
+
         elif value.startswith("rgb"):
+            if not value.rstrip().endswith(")"):
+                raise ValueError("rgb() malformado: parêntese final ausente")
+            if not re.fullmatch(r"rgb\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*\)", value):
+                raise ValueError("rgb() contém caracteres inválidos")
             try:
                 values = value[4:-1].split(",")
                 if len(values) == 3:
@@ -387,6 +411,8 @@ def color(value):
                 pass
 
         elif value.startswith("hsl"):
+            if "%" not in value.split(",")[1] or "%" not in value.split(",")[2]:
+                raise ValueError("S e L em HSL devem estar em porcentagem")
             try:
                 values = value[4:-1].split(",")
                 if len(values) == 3:
