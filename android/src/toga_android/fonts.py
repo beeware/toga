@@ -1,5 +1,4 @@
 from pathlib import Path
-from typing import NamedTuple
 
 from android import R
 from android.graphics import Typeface
@@ -22,11 +21,6 @@ from toga.fonts import (
     SYSTEM_DEFAULT_FONT_SIZE,
     UnknownFontError,
 )
-
-
-class Native(NamedTuple):
-    typeface: Typeface
-    style: int
 
 
 class Font:
@@ -93,18 +87,18 @@ class Font:
         if self.interface.style in {ITALIC, OBLIQUE}:
             style |= Typeface.ITALIC
 
-        self.native = Native(typeface, style)
-
+        self.native_typeface = typeface
+        self.native_style = style
         _IMPL_CACHE[self.interface] = self
 
     def typeface(self, *, default=Typeface.DEFAULT):
         """Return the appropriate native Typeface object."""
-        typeface = default if self.native.typeface is None else self.native.typeface
+        typeface = default if self.native_typeface is None else self.native_typeface
 
-        if self.native.style != typeface.getStyle():
+        if self.native_style != typeface.getStyle():
             # While we're not caching this result, Android does its own caching of
             # different styles of the same Typeface.
-            typeface = Typeface.create(typeface, self.native.style)
+            typeface = Typeface.create(typeface, self.native_style)
 
         return typeface
 
