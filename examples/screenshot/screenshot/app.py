@@ -6,7 +6,6 @@ from PIL import Image
 
 import toga
 from toga.constants import CENTER, COLUMN
-from toga.style import Pack
 
 from .canvas import draw_tiberius
 
@@ -15,11 +14,11 @@ class ScreenshotGeneratorApp(toga.App):
     def create_activityindicator(self):
         return toga.Box(
             children=[
-                toga.Box(style=Pack(flex=1)),
-                toga.ActivityIndicator(running=True, style=Pack(margin=10)),
-                toga.Box(style=Pack(flex=1)),
+                toga.Box(flex=1),
+                toga.ActivityIndicator(running=True, margin=10),
+                toga.Box(flex=1),
             ],
-            style=Pack(width=100),
+            width=100,
         )
 
     def create_button(self):
@@ -27,26 +26,27 @@ class ScreenshotGeneratorApp(toga.App):
             children=[
                 toga.Button(
                     "Launch rocket",
-                    style=Pack(margin=10, flex=1),
+                    margin=10,
+                    flex=1,
                 )
             ],
-            style=Pack(width=300),
+            width=300,
         )
 
     def create_canvas(self):
-        canvas = toga.Canvas(style=Pack(margin=10, width=280, height=290))
+        canvas = toga.Canvas(margin=10, width=280, height=290)
         draw_tiberius(canvas)
 
-        return toga.Box(children=[canvas], style=Pack(width=280, height=290))
+        return toga.Box(children=[canvas], width=280, height=290)
 
     def create_dateinput(self):
         return toga.Box(
             children=[
-                toga.Box(style=Pack(flex=1)),
-                toga.DateInput(value=date(2014, 4, 21), style=Pack(margin=10)),
-                toga.Box(style=Pack(flex=1)),
+                toga.Box(flex=1),
+                toga.DateInput(value=date(2014, 4, 21), margin=10),
+                toga.Box(flex=1),
             ],
-            style=Pack(width=300),
+            width=300,
         )
 
     def create_detailedlist(self):
@@ -62,7 +62,7 @@ class ScreenshotGeneratorApp(toga.App):
                 {
                     "icon": user_icon,
                     "title": "Major General",
-                    "subtitle": "I have information animal, mineral, and vegetable...",
+                    "subtitle": "I have information vegetable, animal, and mineral...",
                 },
                 {
                     "icon": brutus_icon,
@@ -75,21 +75,20 @@ class ScreenshotGeneratorApp(toga.App):
                     "subtitle": "I can quote the fights historical!",
                 },
             ],
-            style=Pack(margin=10, width=self.MAX_WIDTH, height=300),
+            margin=10,
+            width=self.MAX_WIDTH,
+            height=300,
         )
 
     def create_divider(self):
         return toga.Box(
             children=[
-                toga.Label(
-                    "I'm on top", style=Pack(flex=1, margin=5, text_align=CENTER)
-                ),
-                toga.Divider(direction=toga.Divider.HORIZONTAL, style=Pack(margin=5)),
-                toga.Label(
-                    "I'm below", style=Pack(flex=1, margin=5, text_align=CENTER)
-                ),
+                toga.Label("I'm on top", flex=1, margin=5, text_align=CENTER),
+                toga.Divider(direction=toga.Divider.HORIZONTAL, margin=5),
+                toga.Label("I'm below", flex=1, margin=5, text_align=CENTER),
             ],
-            style=Pack(width=300, direction=COLUMN),
+            width=300,
+            direction=COLUMN,
         )
 
     def create_label(self):
@@ -97,17 +96,21 @@ class ScreenshotGeneratorApp(toga.App):
             children=[
                 toga.Label(
                     "Brutus was here!",
-                    style=Pack(margin=10, text_align=CENTER, flex=1),
+                    margin=10,
+                    text_align=CENTER,
+                    flex=1,
                 )
             ],
-            style=Pack(width=300),
+            width=300,
         )
 
     def create_mapview(self):
         return toga.MapView(
             zoom=3,
             pins=[toga.MapPin((-31.95064, 115.85889), title="Yagan Square")],
-            style=Pack(margin=10, width=self.MAX_WIDTH, height=300),
+            margin=10,
+            width=self.MAX_WIDTH,
+            height=300,
         )
 
     def create_multilinetextinput(self):
@@ -115,7 +118,7 @@ class ScreenshotGeneratorApp(toga.App):
             value="\n".join(
                 [
                     "I am the very model of a modern Major-General.",
-                    "I've information animal, mineral, and vegetable.",
+                    "I've information vegetable, animal, and mineral.",
                     "I know the kings of England, and I quote the fights historical",
                     "From Marathon to Waterloo, in order categorical.",
                     "I'm very well acquainted, too, with matters mathematical,",
@@ -129,7 +132,9 @@ class ScreenshotGeneratorApp(toga.App):
                     "I am the very model of a modern Major-General.",
                 ]
             ),
-            style=Pack(margin=10, width=self.MAX_WIDTH, height=200),
+            margin=10,
+            width=self.MAX_WIDTH,
+            height=200,
         )
 
     def create_numberinput(self):
@@ -138,10 +143,11 @@ class ScreenshotGeneratorApp(toga.App):
                 toga.NumberInput(
                     value=2.71818,
                     step=0.00001,
-                    style=Pack(margin=10, flex=1),
+                    margin=10,
+                    flex=1,
                 )
             ],
-            style=Pack(width=300),
+            width=300,
         )
 
     def create_passwordinput(self):
@@ -149,10 +155,11 @@ class ScreenshotGeneratorApp(toga.App):
             children=[
                 toga.PasswordInput(
                     value="secret",
-                    style=Pack(margin=10, flex=1),
+                    margin=10,
+                    flex=1,
                 )
             ],
-            style=Pack(width=300),
+            width=300,
         )
 
     def create_progressbar(self):
@@ -161,10 +168,11 @@ class ScreenshotGeneratorApp(toga.App):
                 toga.ProgressBar(
                     value=42,
                     max=100,
-                    style=Pack(margin=10, flex=1),
+                    margin=10,
+                    flex=1,
                 )
             ],
-            style=Pack(width=300),
+            width=300,
         )
 
     def create_selection(self):
@@ -172,10 +180,11 @@ class ScreenshotGeneratorApp(toga.App):
             children=[
                 toga.Selection(
                     items=["Titanium", "Yttrium", "Yterbium"],
-                    style=Pack(margin=10, flex=1),
+                    margin=10,
+                    flex=1,
                 )
             ],
-            style=Pack(width=300),
+            width=300,
         )
 
     def create_slider(self):
@@ -184,24 +193,25 @@ class ScreenshotGeneratorApp(toga.App):
                 toga.Slider(
                     value=42,
                     max=100,
-                    style=Pack(margin=10, flex=1),
+                    margin=10,
+                    flex=1,
                 )
             ],
-            style=Pack(width=300),
+            width=300,
         )
 
     def create_switch(self):
         return toga.Box(
             children=[
-                toga.Box(style=Pack(flex=1)),
+                toga.Box(flex=1),
                 toga.Switch(
                     "Turbo",
                     value=True,
-                    style=Pack(margin=10),
+                    margin=10,
                 ),
-                toga.Box(style=Pack(flex=1)),
+                toga.Box(flex=1),
             ],
-            style=Pack(width=150),
+            width=150,
         )
 
     def create_table(self):
@@ -213,7 +223,9 @@ class ScreenshotGeneratorApp(toga.App):
                 ("Tricia McMillan", 38, "Earth"),
                 ("Slartibartfast", 1005, "Magrathea"),
             ],
-            style=Pack(margin=10, width=self.MAX_WIDTH, height=200),
+            margin=10,
+            width=self.MAX_WIDTH,
+            height=200,
         )
 
     def create_textinput(self):
@@ -221,20 +233,21 @@ class ScreenshotGeneratorApp(toga.App):
             children=[
                 toga.TextInput(
                     value="Brutus was here!",
-                    style=Pack(margin=10, flex=1),
+                    margin=10,
+                    flex=1,
                 )
             ],
-            style=Pack(width=300),
+            width=300,
         )
 
     def create_timeinput(self):
         return toga.Box(
             children=[
-                toga.Box(style=Pack(flex=1)),
-                toga.TimeInput(value=time(9, 7, 37), style=Pack(margin=10)),
-                toga.Box(style=Pack(flex=1)),
+                toga.Box(flex=1),
+                toga.TimeInput(value=time(9, 7, 37), margin=10),
+                toga.Box(flex=1),
             ],
-            style=Pack(width=300),
+            width=300,
         )
 
     def create_tree(self):
@@ -252,7 +265,9 @@ class ScreenshotGeneratorApp(toga.App):
                     ("Slartibartfast", 1005, "Annoyed"): None,
                 },
             },
-            style=Pack(margin=10, width=self.MAX_WIDTH, height=200),
+            margin=10,
+            width=self.MAX_WIDTH,
+            height=200,
         )
         tree.expand()
         return tree
@@ -260,7 +275,9 @@ class ScreenshotGeneratorApp(toga.App):
     def create_webview(self):
         return toga.WebView(
             url="https://beeware.org",
-            style=Pack(margin=10, width=self.MAX_WIDTH, height=300),
+            margin=10,
+            width=self.MAX_WIDTH,
+            height=300,
         )
 
     def create_optioncontainer(self):
@@ -268,13 +285,15 @@ class ScreenshotGeneratorApp(toga.App):
             content=[
                 (
                     "Blue",
-                    toga.Box(style=Pack(background_color="cornflowerblue")),
+                    toga.Box(background_color="cornflowerblue"),
                     "resources/smile",
                 ),
                 ("Green", toga.Box(), "resources/landmark"),
                 ("Red", toga.Box()),
             ],
-            style=Pack(margin=10, width=self.MAX_WIDTH, height=300),
+            margin=10,
+            width=self.MAX_WIDTH,
+            height=300,
         )
 
         return container
@@ -283,15 +302,13 @@ class ScreenshotGeneratorApp(toga.App):
         container = toga.ScrollContainer(
             content=toga.Box(
                 children=[
-                    toga.Box(
-                        style=Pack(
-                            background_color="cornflowerblue", width=900, height=600
-                        )
-                    ),
+                    toga.Box(background_color="cornflowerblue", width=900, height=600),
                 ],
-                style=Pack(direction=COLUMN),
+                direction=COLUMN,
             ),
-            style=Pack(margin=10, width=self.MAX_WIDTH, height=300),
+            margin=10,
+            width=self.MAX_WIDTH,
+            height=300,
         )
 
         return container
@@ -299,10 +316,12 @@ class ScreenshotGeneratorApp(toga.App):
     def create_splitcontainer(self):
         container = toga.SplitContainer(
             content=[
-                toga.Box(style=Pack(background_color="goldenrod")),
-                toga.Box(style=Pack(background_color="cornflowerblue")),
+                toga.Box(background_color="goldenrod"),
+                toga.Box(background_color="cornflowerblue"),
             ],
-            style=Pack(margin=10, width=self.MAX_WIDTH, height=300),
+            margin=10,
+            width=self.MAX_WIDTH,
+            height=300,
         )
 
         return container
@@ -327,25 +346,24 @@ class ScreenshotGeneratorApp(toga.App):
         proceed_button = toga.Button(
             "Done",
             on_press=proceed,
-            style=Pack(margin=10),
+            margin=10,
         )
 
         if content:
             self.main_window.content = toga.Box(
                 children=[
                     content,
-                    toga.Box(style=Pack(flex=1)),
+                    toga.Box(flex=1),
                     proceed_button,
                 ],
-                style=Pack(direction=COLUMN),
+                direction=COLUMN,
             )
         else:
             self.main_window.content = toga.Box()
         await future
 
-    async def sequence(self, app, **kwargs):
-        print(f"Saving screenshots to {self.app.paths.data}")
-        self.app.paths.data.mkdir(parents=True, exist_ok=True)
+    async def sequence(self):
+        print(f"Saving screenshots to {self.paths.data}")
         for content_type in [
             "activityindicator",
             "button",
@@ -374,7 +392,7 @@ class ScreenshotGeneratorApp(toga.App):
             "main_window",
         ]:
             try:
-                content = getattr(self.app, f"create_{content_type}")()
+                content = getattr(self, f"create_{content_type}")()
                 if content:
                     if content_type == "main_window":
                         # image = self.main_window.screen.as_image()
@@ -428,7 +446,7 @@ class ScreenshotGeneratorApp(toga.App):
                     else:
                         self.main_window.content = toga.Box(
                             children=[content],
-                            style=Pack(direction=COLUMN),
+                            direction=COLUMN,
                         )
 
                         await asyncio.sleep(
@@ -493,15 +511,12 @@ class ScreenshotGeneratorApp(toga.App):
         # Show the main window
         self.main_window.show()
 
-        self.add_background_task(self.sequence)
+        asyncio.create_task(self.sequence())
 
 
 def main():
-    return ScreenshotGeneratorApp(
-        "My Application", "org.beeware.toga.examples.screenshot"
-    )
+    return ScreenshotGeneratorApp("Screenshot", "org.beeware.toga.examples.screenshot")
 
 
 if __name__ == "__main__":
-    app = main()
-    app.main_loop()
+    main().main_loop()

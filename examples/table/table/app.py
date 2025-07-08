@@ -2,12 +2,11 @@ import random
 
 import toga
 from toga.constants import COLUMN, ROW
-from toga.style import Pack
 
 headings = ["Title", "Year", "Rating", "Genre"]
 
 
-class ExampleTableApp(toga.App):
+class TableApp(toga.App):
     lbl_fontsize = None
 
     def load_data(self):
@@ -99,36 +98,35 @@ class ExampleTableApp(toga.App):
         self.main_window = toga.MainWindow()
 
         # Label to show which row is currently selected.
-        self.label_table1 = toga.Label("Ready.", style=Pack(flex=1, margin_right=5))
+        self.label_table1 = toga.Label("Ready.", flex=1, margin_right=5)
         self.label_table2 = toga.Label(
-            "Try multiple row selection.", style=Pack(flex=1, margin_left=5)
+            "Try multiple row selection.", flex=1, margin_left=5
         )
         labelbox = toga.Box(
             children=[self.label_table1, self.label_table2],
-            style=Pack(flex=0, margin_top=5),
+            flex=0,
+            margin_top=5,
         )
 
         # Change font size
         lbl_fontlabel = toga.Label("Font size =")
         self.lbl_fontsize = toga.Label("10")
-        btn_reduce_size = toga.Button(
-            " - ", on_press=self.reduce_fontsize, style=Pack(width=40)
-        )
+        btn_reduce_size = toga.Button(" - ", on_press=self.reduce_fontsize, width=40)
         btn_increase_size = toga.Button(
-            " + ", on_press=self.increase_fontsize, style=Pack(width=40)
+            " + ", on_press=self.increase_fontsize, width=40
         )
         font_box = toga.Box(
             children=[
                 toga.Box(
                     children=[btn_reduce_size, btn_increase_size],
-                    style=Pack(direction=ROW),
+                    direction=ROW,
                 ),
                 toga.Box(
                     children=[lbl_fontlabel, self.lbl_fontsize],
-                    style=Pack(direction=ROW),
+                    direction=ROW,
                 ),
             ],
-            style=Pack(direction=COLUMN),
+            direction=COLUMN,
         )
 
         # Data to populate the table.
@@ -142,13 +140,11 @@ class ExampleTableApp(toga.App):
         self.table1 = toga.Table(
             headings=headings,
             data=table_data,
-            style=Pack(
-                flex=1,
-                margin_right=5,
-                font_family="monospace",
-                font_size=int(self.lbl_fontsize.text),
-                font_style="italic",
-            ),
+            flex=1,
+            margin_right=5,
+            font_family="monospace",
+            font_size=int(self.lbl_fontsize.text),
+            font_style="italic",
             multiple_select=False,
             on_select=self.on_select_handler1,
             on_activate=self.on_activate1,
@@ -160,49 +156,42 @@ class ExampleTableApp(toga.App):
             accessors=[h.lower() for h in headings],
             data=self.table1.data,
             multiple_select=True,
-            style=Pack(flex=1, margin_left=5),
+            flex=1,
+            margin_left=5,
             on_select=self.on_select_handler2,
             on_activate=self.on_activate2,
             missing_value="?",
         )
 
-        tablebox = toga.Box(children=[self.table1, self.table2], style=Pack(flex=1))
+        tablebox = toga.Box(children=[self.table1, self.table2], flex=1)
 
         # Buttons
-        btn_style = Pack(flex=1)
-        btn_insert = toga.Button(
-            "Insert", on_press=self.insert_handler, style=btn_style
-        )
-        btn_delete = toga.Button(
-            "Delete", on_press=self.delete_handler, style=btn_style
-        )
-        btn_clear = toga.Button("Clear", on_press=self.clear_handler, style=btn_style)
-        btn_reset = toga.Button("Reset", on_press=self.reset_handler, style=btn_style)
-        btn_toggle = toga.Button(
-            "Column", on_press=self.toggle_handler, style=btn_style
-        )
-        btn_top = toga.Button("Top", on_press=self.top_handler, style=btn_style)
-        btn_bottom = toga.Button(
-            "Bottom", on_press=self.bottom_handler, style=btn_style
-        )
+        btn_style = {"flex": 1}
+        btn_insert = toga.Button("Insert", on_press=self.insert_handler, **btn_style)
+        btn_delete = toga.Button("Delete", on_press=self.delete_handler, **btn_style)
+        btn_clear = toga.Button("Clear", on_press=self.clear_handler, **btn_style)
+        btn_reset = toga.Button("Reset", on_press=self.reset_handler, **btn_style)
+        btn_toggle = toga.Button("Column", on_press=self.toggle_handler, **btn_style)
+        btn_top = toga.Button("Top", on_press=self.top_handler, **btn_style)
+        btn_bottom = toga.Button("Bottom", on_press=self.bottom_handler, **btn_style)
 
         controls_1 = toga.Box(
             children=[font_box, btn_insert, btn_delete, btn_clear],
-            style=Pack(direction=ROW, margin_bottom=5),
+            direction=ROW,
+            margin_bottom=5,
         )
         controls_2 = toga.Box(
             children=[btn_reset, btn_toggle, btn_top, btn_bottom],
-            style=Pack(direction=ROW, margin_bottom=5),
+            direction=ROW,
+            margin_bottom=5,
         )
 
         # Most outer box
         outer_box = toga.Box(
             children=[controls_1, controls_2, tablebox, labelbox],
-            style=Pack(
-                flex=1,
-                direction=COLUMN,
-                margin=10,
-            ),
+            flex=1,
+            direction=COLUMN,
+            margin=10,
         )
 
         # Add the content on the main window
@@ -214,13 +203,13 @@ class ExampleTableApp(toga.App):
     def reduce_fontsize(self, widget):
         font_size = int(self.lbl_fontsize.text) - 1
         self.lbl_fontsize.text = str(font_size)
-        font = toga.Font("monospace", font_size, "italic")
+        font = toga.Font(family="monospace", size=font_size, style="italic")
         self.table1._impl.set_font(font)
 
     def increase_fontsize(self, widget):
         font_size = int(self.lbl_fontsize.text) + 1
         self.lbl_fontsize.text = str(font_size)
-        font = toga.Font("monospace", font_size, "italic")
+        font = toga.Font(family="monospace", size=font_size, style="italic")
         self.table1._impl.set_font(font)
 
     @classmethod
@@ -236,9 +225,8 @@ class ExampleTableApp(toga.App):
 
 
 def main():
-    return ExampleTableApp("Table", "org.beeware.toga.examples.table")
+    return TableApp("Table", "org.beeware.toga.examples.table")
 
 
 if __name__ == "__main__":
-    app = main()
-    app.main_loop()
+    main().main_loop()

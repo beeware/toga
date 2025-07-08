@@ -1,7 +1,6 @@
 import toga
 from toga.colors import REBECCAPURPLE
 from toga.constants import COLUMN
-from toga.style import Pack
 
 
 class SwitchApp(toga.App):
@@ -12,42 +11,37 @@ class SwitchApp(toga.App):
         self.main_window.content = toga.Box(
             children=[
                 # Simple switch with label and callback function called toggled
-                toga.Switch("Change Label", on_change=self.callbackLabel),
+                toga.Switch("Change Label", on_change=self.callback_label),
                 # Switch with initial state
-                toga.Switch("Initial state", value=True, style=Pack(margin_top=24)),
+                toga.Switch("Initial state", value=True, margin_top=24),
                 # Switch with label and enable option
-                toga.Switch("Disabled", enabled=False, style=Pack(margin_top=24)),
+                toga.Switch("Disabled", enabled=False, margin_top=24),
                 # Switch with a big font
                 toga.Switch(
                     "Big and colorful",
-                    style=Pack(
-                        margin_top=24,
-                        font_family="serif",
-                        font_size=20,
-                        font_weight="bold",
-                        color=REBECCAPURPLE,
-                    ),
+                    margin_top=24,
+                    font_family="serif",
+                    font_size=20,
+                    font_weight="bold",
+                    color=REBECCAPURPLE,
                 ),
             ],
-            style=Pack(direction=COLUMN, margin=24),
+            direction=COLUMN,
+            margin=24,
         )
 
         # Show the main window
         self.main_window.show()
 
-    def callbackLabel(self, switch):
-        # Some action when you hit the switch
-        #   In this case the label will change
-        switch.text = f"switch is {'on' if switch.value else 'off'}"
+    @staticmethod
+    def callback_label(switch):
+        # The label will change when you toggle the switch
+        switch.text = f"Switch is {'on' if switch.value else 'off'}"
 
 
 def main():
-    # Application class
-    #   App name and namespace
-    app = SwitchApp("Switches", "org.beeware.toga.examples.switch_demo")
-    return app
+    return SwitchApp("Switches", "org.beeware.toga.examples.switch_demo")
 
 
 if __name__ == "__main__":
-    app = main()
-    app.main_loop()
+    main().main_loop()

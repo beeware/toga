@@ -2,7 +2,6 @@ from travertino import colors
 
 import toga
 from toga.constants import COLUMN, ROW
-from toga.style import Pack
 
 
 class ColorsApp(toga.App):
@@ -36,7 +35,7 @@ class ColorsApp(toga.App):
         multiline_text_input = toga.MultilineTextInput(
             value="This is a Multiline Text Input field!",
             placeholder="placeholder",
-            style=Pack(flex=1),
+            flex=1,
         )
         number_input = toga.NumberInput(value=1337)
         password_input = toga.PasswordInput(value="adminadmin")
@@ -57,7 +56,7 @@ class ColorsApp(toga.App):
                 ("value 1", "value 2"),
             ],
             missing_value="none",
-            style=Pack(flex=1),
+            flex=1,
         )
         text_input = toga.TextInput(
             value="This is a Text input field!", placeholder="placeholder"
@@ -66,18 +65,19 @@ class ColorsApp(toga.App):
         scroll_container = toga.ScrollContainer(
             horizontal=True,
             vertical=True,
-            style=Pack(direction=COLUMN, flex=1),
+            direction=COLUMN,
+            flex=1,
         )
         temp_box = toga.Box(
             children=[toga.Label("Scrollcontainer example! filled with labels.")],
-            style=Pack(direction=COLUMN),
+            direction=COLUMN,
         )
         for x in range(20):
             temp_box.add(toga.Label(f"Label {x}"))
         scroll_container.content = temp_box
 
         box_label = toga.Label("This is a Box:")
-        box = toga.Box(style=Pack(flex=1))
+        box = toga.Box(flex=1)
 
         self.widget_box = toga.Box(
             children=[
@@ -101,11 +101,16 @@ class ColorsApp(toga.App):
                     # Stack widgets vertically, and add margin so the
                     # background cyan of the parent is a border around the
                     # widgets
-                    style=Pack(direction=COLUMN, flex=1, margin=10, gap=10),
+                    direction=COLUMN,
+                    flex=1,
+                    margin=10,
+                    gap=10,
                 )
             ],
             # Use a cyan background so that color changes are obvious
-            style=Pack(direction=COLUMN, flex=1, background_color="cyan"),
+            direction=COLUMN,
+            flex=1,
+            background_color="cyan",
         )
         # These are the widgets that will have their color changed.
         self.example_widgets = [
@@ -125,51 +130,51 @@ class ColorsApp(toga.App):
         ]
 
         # setup control box
-        button_style = Pack(margin=2, width=100)
+        button_style = {"margin": 2, "width": 100}
         change_fcolor_r = toga.Button(
             "Red",
             on_press=self.change_color_foreground(colors.RED),
-            style=button_style,
+            **button_style,
         )
         change_fcolor_g = toga.Button(
             "Green",
             on_press=self.change_color_foreground(colors.GREEN),
-            style=button_style,
+            **button_style,
         )
         change_fcolor_b = toga.Button(
             "Blue",
             on_press=self.change_color_foreground(colors.BLUE),
-            style=button_style,
+            **button_style,
         )
         change_fcolor_reset = toga.Button(
             "Reset",
             on_press=self.change_color_foreground(None),
-            style=button_style,
+            **button_style,
         )
         change_bcolor_r = toga.Button(
             "Red",
             on_press=self.change_color_background(colors.RED),
-            style=button_style,
+            **button_style,
         )
         change_bcolor_g = toga.Button(
             "Green",
             on_press=self.change_color_background(colors.GREEN),
-            style=button_style,
+            **button_style,
         )
         change_bcolor_b = toga.Button(
             "Blue",
             on_press=self.change_color_background(colors.BLUE),
-            style=button_style,
+            **button_style,
         )
         change_bcolor_t = toga.Button(
             "Transparent",
             on_press=self.change_color_background(colors.TRANSPARENT),
-            style=button_style,
+            **button_style,
         )
         change_bcolor_reset = toga.Button(
             "Reset",
             on_press=self.change_color_background(None),
-            style=button_style,
+            **button_style,
         )
 
         control_box = toga.Box(
@@ -179,20 +184,22 @@ class ColorsApp(toga.App):
                 change_fcolor_g,
                 change_fcolor_b,
                 change_fcolor_reset,
-                toga.Label("Background", style=Pack(margin_top=10)),
+                toga.Label("Background", margin_top=10),
                 change_bcolor_r,
                 change_bcolor_g,
                 change_bcolor_b,
                 change_bcolor_t,
                 change_bcolor_reset,
             ],
-            style=Pack(direction=COLUMN, margin=5),
+            direction=COLUMN,
+            margin=5,
         )
 
         # Outermost box
         outer_box = toga.Box(
             children=[self.widget_box, control_box],
-            style=Pack(flex=1, direction=ROW),
+            flex=1,
+            direction=ROW,
         )
 
         # Add the content on the main window
@@ -207,5 +214,4 @@ def main():
 
 
 if __name__ == "__main__":
-    app = main()
-    app.main_loop()
+    main().main_loop()

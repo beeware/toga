@@ -1,13 +1,22 @@
 import math
 import sys
 
-from travertino.constants import BLACK, BLUE, BOLD, GREEN, ITALIC, NORMAL, RED, YELLOW
-
 import toga
-from toga.constants import Baseline, FillRule
+from toga.constants import (
+    BLACK,
+    BLUE,
+    BOLD,
+    COLUMN,
+    GREEN,
+    ITALIC,
+    NORMAL,
+    RED,
+    ROW,
+    YELLOW,
+    Baseline,
+    FillRule,
+)
 from toga.fonts import CURSIVE, FANTASY, MESSAGE, MONOSPACE, SANS_SERIF, SERIF, SYSTEM
-from toga.style import Pack
-from toga.style.pack import COLUMN, ROW
 
 MOVE_STEP = 5
 
@@ -31,13 +40,13 @@ DASH_1_2 = "dash 1-2"
 DASH_2_3_1 = "dash 2-3-1"
 
 
-class ExampleCanvasApp(toga.App):
+class CanvasApp(toga.App):
     def startup(self):
         # Set up main window
         self.main_window = toga.MainWindow(size=(750, 500))
 
         self.canvas = toga.Canvas(
-            style=Pack(flex=1),
+            flex=1,
             on_resize=self.refresh_canvas,
             on_press=self.on_press,
             on_activate=self.on_activate,
@@ -128,14 +137,16 @@ class ExampleCanvasApp(toga.App):
         self.italic_switch = toga.Switch(text="italic", on_change=self.refresh_canvas)
         self.bold_switch = toga.Switch(text="bold", on_change=self.refresh_canvas)
 
-        row_style = Pack(direction=ROW, gap=10)
+        row_style = {"direction": ROW, "gap": 10}
 
         # Add the content on the main window
         box = toga.Box(
-            style=Pack(direction=COLUMN, gap=15, margin=10),
+            direction=COLUMN,
+            gap=15,
+            margin=10,
             children=[
                 toga.Box(
-                    style=row_style,
+                    **row_style,
                     children=[
                         toga.Label("Fill / Stroke:"),
                         self.context_selection,
@@ -146,7 +157,7 @@ class ExampleCanvasApp(toga.App):
                     ],
                 ),
                 toga.Box(
-                    style=row_style,
+                    **row_style,
                     children=[
                         toga.Label("Fill rule:"),
                         self.fill_rule_selection,
@@ -157,7 +168,7 @@ class ExampleCanvasApp(toga.App):
                     ],
                 ),
                 toga.Box(
-                    style=row_style,
+                    **row_style,
                     children=[
                         toga.Label("X Scale:"),
                         self.scale_x_slider,
@@ -169,7 +180,7 @@ class ExampleCanvasApp(toga.App):
                     ],
                 ),
                 toga.Box(
-                    style=row_style,
+                    **row_style,
                     children=[
                         toga.Label("Font Family:"),
                         self.font_selection,
@@ -580,7 +591,7 @@ class ExampleCanvasApp(toga.App):
 
 
 def main():
-    return ExampleCanvasApp("Canvas", "org.beeware.toga.examples.canvas")
+    return CanvasApp("Canvas", "org.beeware.toga.examples.canvas")
 
 
 if __name__ == "__main__":
