@@ -264,6 +264,11 @@ New Roman for ``"serif"``, Courier New for ``"monospace"``).
 Any other value will be checked against the family names previously registered with
 :any:`Font.register`.
 
+On supported platforms (currently Windows and Linux), if Toga doesn't recognize the
+family as one of its predefined builtins or as a font you've registered, it will
+attempt to load the requested font from your system before falling back to the default
+system font.
+
 .. _pack-font-style:
 
 ``font_style``

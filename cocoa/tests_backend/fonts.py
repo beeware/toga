@@ -1,3 +1,5 @@
+import pytest
+
 from toga.fonts import (
     BOLD,
     CURSIVE,
@@ -19,6 +21,9 @@ from toga_cocoa.libs.appkit import NSFontMask
 class FontMixin:
     supports_custom_fonts = True
     supports_custom_variable_fonts = False
+
+    def preinstalled_font(self):
+        pytest.skip("Use of arbitrary system fonts is not yet supported on macOS.")
 
     def assert_font_options(self, weight=NORMAL, style=NORMAL, variant=NORMAL):
         # Cocoa's FANTASY (Papyrus) and CURSIVE (Apple Chancery) system

@@ -1,5 +1,6 @@
 from concurrent.futures import ThreadPoolExecutor
 
+import pytest
 from android.graphics import Typeface
 from android.graphics.fonts import FontFamily
 from android.util import TypedValue
@@ -60,6 +61,9 @@ def reflect_font_methods():
 class FontMixin:
     supports_custom_fonts = True
     supports_custom_variable_fonts = True
+
+    def preinstalled_font(self):
+        pytest.skip("Use of arbitrary system fonts is not yet supported on Android.")
 
     def assert_font_options(self, weight=NORMAL, style=NORMAL, variant=NORMAL):
         assert (BOLD if self.typeface.isBold() else NORMAL) == weight

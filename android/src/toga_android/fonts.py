@@ -6,6 +6,7 @@ from android.util import TypedValue
 from org.beeware.android import MainActivity
 
 from toga.fonts import (
+    _IMPL_CACHE,
     _REGISTERED_FONT_CACHE,
     BOLD,
     CURSIVE,
@@ -21,68 +22,74 @@ from toga.fonts import (
     UnknownFontError,
 )
 
-_FONT_CACHE = {}
-
 
 class Font:
     def __init__(self, interface):
         self.interface = interface
 
-        # Check for a cached typeface.
+    def load_predefined_system_font(self):
+        """Use one of the system font names Toga predefines."""
         try:
-            self.native_typeface = _FONT_CACHE[self.interface]
+            typeface = {
+                # The default button font is not marked as bold, but it has a weight
+                # of "medium" (500), which is in between "normal" (400), and "bold"
+                # (600 or 700). To preserve this, we interpret SYSTEM as the widget's
+                # original typeface.
+                SYSTEM: None,
+                MESSAGE: Typeface.DEFAULT,
+                SERIF: Typeface.SERIF,
+                SANS_SERIF: Typeface.SANS_SERIF,
+                MONOSPACE: Typeface.MONOSPACE,
+                # Android appears to not have a fantasy font available by default, but
+                # if it ever does, we'll start using it. Android seems to choose a
+                # serif font when asked for a fantasy font.
+                FANTASY: Typeface.create("fantasy", Typeface.NORMAL),
+                CURSIVE: Typeface.create("cursive", Typeface.NORMAL),
+            }[self.interface.family]
+        except KeyError as exc:
+            msg = f"{self.interface} not a predefined system font"
+            raise UnknownFontError(msg) from exc
 
-        except KeyError:
-            # Check for a system font.
-            try:
-                self.native_typeface = {
-                    # The default button font is not marked as bold, but it has a weight
-                    # of "medium" (500), which is in between "normal" (400), and "bold"
-                    # (600 or 700). To preserve this, we interpret SYSTEM as the
-                    # widget's original typeface.
-                    SYSTEM: None,
-                    MESSAGE: Typeface.DEFAULT,
-                    SERIF: Typeface.SERIF,
-                    SANS_SERIF: Typeface.SANS_SERIF,
-                    MONOSPACE: Typeface.MONOSPACE,
-                    # Android appears to not have a fantasy font available by default,
-                    # but if it ever does, we'll start using it. Android seems to
-                    # choose a serif font when asked for a fantasy font.
-                    FANTASY: Typeface.create("fantasy", Typeface.NORMAL),
-                    CURSIVE: Typeface.create("cursive", Typeface.NORMAL),
-                }[interface.family]
+        self._assign_native(typeface)
 
-            except KeyError:
-                # Check for a user-registered font.
-                font_key = self.interface._registered_font_key(
-                    self.interface.family,
-                    weight=self.interface.weight,
-                    style=self.interface.style,
-                    variant=self.interface.variant,
-                )
-                try:
-                    font_path = _REGISTERED_FONT_CACHE[font_key]
+    def load_user_registered_font(self):
+        """Use a font that the user has registered in their code."""
+        font_key = self.interface._registered_font_key(
+            self.interface.family,
+            weight=self.interface.weight,
+            style=self.interface.style,
+            variant=self.interface.variant,
+        )
+        try:
+            font_path = _REGISTERED_FONT_CACHE[font_key]
+        except KeyError as exc:
+            msg = f"{self.interface} not a user-registered font"
+            raise UnknownFontError(msg) from exc
 
-                except KeyError as exc:
-                    # No, not a user-registered font
-                    raise UnknownFontError(f"Unknown font '{self.interface}'") from exc
+        # Yes, user has registered this font.
+        if not Path(font_path).is_file():
+            raise ValueError(f"Font file {font_path} could not be found")
 
-                else:
-                    # Yes, user has registered this font.
-                    if Path(font_path).is_file():
-                        self.native_typeface = Typeface.createFromFile(font_path)
-                        if self.native_typeface is Typeface.DEFAULT:
-                            raise ValueError(f"Unable to load font file {font_path}")
-                    else:
-                        raise ValueError(f"Font file {font_path} could not be found")
+        typeface = Typeface.createFromFile(font_path)
+        if typeface is Typeface.DEFAULT:
+            raise ValueError(f"Unable to load font file {font_path}")
 
-            _FONT_CACHE[self.interface] = self.native_typeface
+        self._assign_native(typeface)
 
-        self.native_style = 0
+    def load_arbitrary_system_font(self):
+        """Use a font available on the system."""
+        raise UnknownFontError("Arbitrary system fonts not yet supported on Android")
+
+    def _assign_native(self, typeface):
+        style = 0
         if self.interface.weight == BOLD:
-            self.native_style |= Typeface.BOLD
+            style |= Typeface.BOLD
         if self.interface.style in {ITALIC, OBLIQUE}:
-            self.native_style |= Typeface.ITALIC
+            style |= Typeface.ITALIC
+
+        self.native_typeface = typeface
+        self.native_style = style
+        _IMPL_CACHE[self.interface] = self
 
     def typeface(self, *, default=Typeface.DEFAULT):
         """Return the appropriate native Typeface object."""
