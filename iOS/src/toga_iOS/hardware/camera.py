@@ -141,7 +141,7 @@ class Camera:
 
     def take_photo(self, result, device, flash):
         if self.native is None:
-            warnings.warn("No camera is available")
+            warnings.warn("No camera is available", stacklevel=2)
             result.set_result(None)
         elif self.has_permission(allow_unknown=True):
             # Configure the controller to take a photo

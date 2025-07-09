@@ -1,7 +1,8 @@
 import asyncio
 
-import toga
 from textual.app import App as TextualApp
+
+import toga
 
 from .screens import Screen as ScreenImpl
 

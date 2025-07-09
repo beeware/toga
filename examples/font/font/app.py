@@ -134,7 +134,7 @@ class ExampleFontExampleApp(toga.App):
             ),
         )
 
-        unknown_style = dict(font_family="Unknown", font_size=14)
+        unknown_style = {"font_family": "Unknown", "font_size": 14}
         lbl_u = toga.Label("Unknown", style=Pack(**unknown_style))
         lbl_ub = toga.Label(
             "Unknown bold", style=Pack(font_weight=BOLD, **unknown_style)

@@ -64,8 +64,10 @@ class Image:
                 ".tiff": NSBitmapImageFileType.TIFF,
             }[path.suffix.lower()]
             str_path = str(path)
-        except KeyError:
-            raise ValueError(f"Don't know how to save image of type {path.suffix!r}")
+        except KeyError as exc:
+            raise ValueError(
+                f"Don't know how to save image of type {path.suffix!r}"
+            ) from exc
 
         bitmapData = NSBitmapImageRep.representationOfImageRepsInArray(
             self.native.representations,

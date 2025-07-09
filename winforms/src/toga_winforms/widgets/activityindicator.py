@@ -53,7 +53,7 @@ def composite_gif_on_color(
 
 class ActivityIndicator(Widget):
     SPINNER_SIZE = 32
-    SPINNER_CACHE: dict[tuple[tuple[int, int, int], int], WinImage] = dict()
+    SPINNER_CACHE: dict[tuple[tuple[int, int, int], int], WinImage] = {}
 
     def create(self):
         self.native = WinForms.PictureBox()
@@ -86,11 +86,7 @@ class ActivityIndicator(Widget):
                 spinner_image = WinImage.FromStream(
                     MemoryStream(
                         composite_gif_on_color(
-                            str(
-                                Path(__file__).parent.parent
-                                / "resources"
-                                / "spinner.gif"
-                            ),
+                            str(Path(__file__).parent.parent / "resources/spinner.gif"),
                             background_color,
                             size,
                         )

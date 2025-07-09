@@ -155,7 +155,7 @@ async def test_select_tab_overflow(widget, probe, on_select_handler):
                 }[i % 3]
             ),
         )
-        for i in range(0, 5)
+        for i in range(5)
     ]
     extra_probes = [get_probe(w) for w in extra_widgets]
 

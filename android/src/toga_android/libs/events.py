@@ -13,7 +13,7 @@ from java.io import FileDescriptor
 from java.lang import Runnable
 
 # Some methods in this file are based on CPython's implementation. Per
-# https://github.com/python/cpython/blob/master/LICENSE , re-use is permitted via the
+# https://github.com/python/cpython/blob/master/LICENSE , reuse is permitted via the
 # Python Software Foundation License Version 2, which includes inclusion into this
 # project under its BSD license terms so long as we retain this copyright notice:
 #
@@ -201,7 +201,7 @@ class AndroidEventLoop(asyncio.SelectorEventLoop):
         # run the next time (after another I/O poll). Use an idiom that is thread-safe
         # without using locks.
         ntodo = len(self._ready)
-        for i in range(ntodo):
+        for _ in range(ntodo):
             handle = self._ready.popleft()
             if handle._cancelled:
                 continue  # pragma: no cover

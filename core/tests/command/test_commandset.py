@@ -357,7 +357,9 @@ def test_default_command_ordering(app):
         (
             (obj.group.text, obj.id)
             if isinstance(obj, toga.Command)
-            else "---" if isinstance(obj, Separator) else "?"
+            else "---"
+            if isinstance(obj, Separator)
+            else "?"
         )
         for obj in app.commands
     ] == [
@@ -438,7 +440,7 @@ def test_ordering(
 
     # First iteration, use the order as defined. Then repeat multiple times
     # to validate insertion order doesn't matter.
-    for attempt in range(0, 10):
+    for attempt in range(10):
         if attempt:
             random.shuffle(commands)
         cs = CommandSet()

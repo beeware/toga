@@ -38,8 +38,8 @@ class StartApp(toga.App):
             head_filler.arc(82, 84, 30, 3 * math.pi / 2, 2 * math.pi)
 
     def stroke_head(self):
-        with self.canvas.Stroke(line_width=4.0) as head_stroker:
-            with head_stroker.ClosedPath(112, 103) as closed_head:
+        with self.canvas.Stroke(line_width=4.0) as head_outline:
+            with head_outline.ClosedPath(112, 103) as closed_head:
                 closed_head.line_to(112, 113)
                 closed_head.ellipse(73, 114, 39, 47, 0, 0, math.pi)
                 closed_head.line_to(35, 84)

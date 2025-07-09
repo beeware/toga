@@ -174,7 +174,6 @@ class Window(LoggedObject):
 
 
 class MainWindow(Window):
-
     def create_menus(self):
         self._action("create Window menus")
 

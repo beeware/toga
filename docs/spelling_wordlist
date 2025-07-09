@@ -16,12 +16,14 @@ Cairo
 cancelled
 clickable
 closable
+codebase
 codepoint
 coroutine
 cryptographically
 CSS
 Ctrl
 dataclass
+dev
 dialogs
 Django
 dotfiles
@@ -99,8 +101,8 @@ toolbars
 Toolbars
 toolkits
 tooltip
-Towncrier
-Tox
+towncrier
+tox
 Travertino
 triaged
 Triaging

@@ -135,7 +135,7 @@ So - lets build an absolute path, using an anchor that we *do* know - the ``__fi
 .. code-block:: python
 
     def load_button_pressed(self, button, **kwargs):
-        path = Path(__file__).parent / "resources" / "initial_config.toml"
+        path = Path(__file__).parent / "resources/initial_config.toml"
         self.text_input.value = path.read_text(encoding="utf-8")
 
 Now when you run the app, it will start, and the button will successfully load the contents of the file into the multi-line text input.
@@ -158,7 +158,7 @@ Update ``load_button_pressed`` handler to the following:
 .. code-block:: python
 
     def load_button_pressed(self, button, **kwargs):
-        path = self.paths.app /  "resources" / "initial_config.toml"
+        path = self.paths.app /  "resources/initial_config.toml"
         self.text_input.value = path.read_text(encoding="utf-8")
 
 The path to the file is being constructed from the ``self.paths.app`` ``Path`` object, instead of a hard-coded absolute path, or a path based on the location of a specific Python file. If you have a more complex application, or a library that isn't part of your app code, and you can pass in a reference to the app (or access the ``toga.App.app`` singleton), you can refer to the location of the folder containing the app code.
@@ -215,7 +215,7 @@ Update the ``load_button_pressed`` handler in ``app.py`` to the following:
     def load_button_pressed(self, button, **kwargs):
         path = self.paths.config / "config.toml"
         if not path.exists():
-            path = self.paths.app / "resources" / "initial_config.toml"
+            path = self.paths.app / "resources/initial_config.toml"
         self.text_input.value = path.read_text(encoding="utf-8")
 
 This updates the handler to first try to load content from an existing ``config.toml`` file in the configuration directory, and then, if the file does not exist, loads the ``initial_config.toml`` file contents instead.

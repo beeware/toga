@@ -20,6 +20,7 @@ templates_path = []
 html_static_path = []
 html_css_files = []
 html_context = {}
+html_theme_options = {}
 
 beeware_theme.init(
     project_name="toga",
@@ -27,6 +28,7 @@ beeware_theme.init(
     context=html_context,
     static=html_static_path,
     css=html_css_files,
+    theme_options=html_theme_options,
 )
 
 # If extensions (or modules to document with autodoc) are in another directory,
@@ -162,7 +164,7 @@ def autodoc_process_signature(
         bases = [
             base
             for base in obj.__bases__
-            if (base != object) and not base.__module__.startswith("travertino.")
+            if base is not object and not base.__module__.startswith("travertino.")
         ]
         if bases:
             options.show_inheritance = True
@@ -173,9 +175,10 @@ def autodoc_process_signature(
 linkcheck_ignore = [
     # GitHub generates anchors in javascript
     r"https://github.com/.*#",
-    # References to Github issues/pulls should all be safe.
+    # References to GitHub issues/pulls should all be safe.
     r"^https://github.com/beeware/toga/issues/\d+$",
     r"^https://github.com/beeware/toga/pull/\d+$",
+    r"^https://superuser.com/questions/",
 ]
 
 # -- Options for copy button ---------------------------------------------------

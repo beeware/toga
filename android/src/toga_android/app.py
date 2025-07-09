@@ -358,6 +358,7 @@ class App:
         warnings.warn(
             "intent_result has been deprecated; use start_activity",
             DeprecationWarning,
+            stacklevel=2,
         )
         try:
             result_future = asyncio.Future()
@@ -369,8 +370,10 @@ class App:
 
             await result_future
             return result_future.result()
-        except AttributeError:
-            raise RuntimeError("No appropriate Activity found to handle this intent.")
+        except AttributeError as exc:
+            raise RuntimeError(
+                "No appropriate Activity found to handle this intent."
+            ) from exc
 
     ######################################################################
     # End backwards compatibility

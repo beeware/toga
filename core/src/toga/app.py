@@ -848,7 +848,7 @@ class App:
             not have content.
         """
         if windows:
-            screen_window_dict = dict()
+            screen_window_dict = {}
             if isinstance(windows, list):
                 for window, screen in zip(windows, self.screens):
                     screen_window_dict[screen] = window
@@ -904,8 +904,10 @@ class App:
         """**DEPRECATED** – Use :any:`asyncio.create_task`, or override/assign
         :meth:`~toga.App.on_running`."""
         warnings.warn(
-            "App.add_background_task is deprecated. Use asyncio.create_task(), "
-            "or set an App.on_running() handler",
+            (
+                "App.add_background_task is deprecated. Use asyncio.create_task(), "
+                "or set an App.on_running() handler"
+            ),
             DeprecationWarning,
             stacklevel=2,
         )

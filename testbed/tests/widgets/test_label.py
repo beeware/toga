@@ -55,7 +55,7 @@ async def test_multiline(widget, probe):
 
     for n in range(3, 6):
         widget.text = make_lines(n)
-        await probe.redraw("Label text should be changed to %s lines" % n)
+        await probe.redraw(f"Label text should be changed to {n} lines")
         # Label height should reflect the number of lines
         assert probe.height == approx(
             (line_height * n) + (line_spacing * (n - 1)),
