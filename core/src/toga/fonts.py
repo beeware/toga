@@ -68,13 +68,13 @@ class Font(BaseFont):
             either doesn't exist or a font can't be successfully loaded from it.
         """
         super().__init__(family, size, weight=weight, style=style, variant=variant)
+        self.factory = get_platform_factory()
+
         try:
             self._impl = _IMPL_CACHE[self]
 
         except KeyError:
-            self.factory = get_platform_factory()
             self._impl = self.factory.Font(self)
-
             try:
                 self._impl.load_predefined_system_font()
             except UnknownFontError:

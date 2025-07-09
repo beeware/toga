@@ -63,7 +63,7 @@ class FontMixin:
     supports_custom_variable_fonts = True
 
     def preinstalled_font(self):
-        pytest.xfail("Use of arbitrary system fonts is not yet supported on Android.")
+        pytest.skip("Use of arbitrary system fonts is not yet supported on Android.")
 
     def assert_font_options(self, weight=NORMAL, style=NORMAL, variant=NORMAL):
         assert (BOLD if self.typeface.isBold() else NORMAL) == weight
