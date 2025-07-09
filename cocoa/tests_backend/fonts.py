@@ -1,3 +1,7 @@
+from travertino.constants import (
+    FONT_SIZE_SCALE,
+)
+
 from toga.fonts import (
     BOLD,
     CURSIVE,
@@ -48,6 +52,9 @@ class FontMixin:
     def assert_font_size(self, expected):
         if expected == SYSTEM_DEFAULT_FONT_SIZE:
             assert self.font.pointSize == 13
+        elif isinstance(expected, str):
+            expected_size = 13 * FONT_SIZE_SCALE[expected]
+            assert abs(self.font.pointSize - expected_size) < 0.01
         else:
             assert self.font.pointSize == expected * 96 / 72
 
