@@ -32,6 +32,10 @@ class Screen(Scalable):
 
     @property
     def dpi_scale(self):
+        if shcore.GetScaleFactorForMonitor is None:
+            # Fallback for Windows <8.1
+            return 1.0
+
         screen_rect = wintypes.RECT(
             self.native.Bounds.Left,
             self.native.Bounds.Top,
