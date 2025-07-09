@@ -32,7 +32,7 @@ class Screen(Scalable):
 
     @property
     def dpi_scale(self):
-        if shcore.GetScaleFactorForMonitor is None:
+        if shcore.GetScaleFactorForMonitor is None:  # pragma: no cover
             # Fallback for Windows <8.1
             return 1.0
 
