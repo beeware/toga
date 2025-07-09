@@ -1,6 +1,6 @@
 from unittest.mock import call
 
-from pytest import mark
+import pytest
 
 from toga.colors import rgb
 from toga.fonts import SYSTEM_DEFAULT_FONT_SIZE, Font
@@ -59,17 +59,20 @@ def test_set_background_color():
     root._impl.set_background_color.assert_called_once_with(rgb(255, 255, 255))
 
 
-def test_set_font():
-    root = ExampleNode(
-        "app",
-        style=Pack(
+@pytest.mark.parametrize("use_shorthand", [True, False])
+def test_set_font(use_shorthand):
+    if use_shorthand:
+        style = Pack(font=("normal", "small-caps", "bold", 12, "Roboto"))
+    else:
+        style = Pack(
             font_family="Roboto",
             font_size=12,
             font_style="normal",
             font_variant="small-caps",
             font_weight="bold",
-        ),
-    )
+        )
+
+    root = ExampleNode("app", style=style)
     root.style.apply()
     # Should only be called once, despite multiple font-related properties being set.
     root._impl.set_font.assert_called_once_with(
@@ -78,7 +81,7 @@ def test_set_font():
     root.refresh.assert_called_once_with()
 
 
-@mark.parametrize(
+@pytest.mark.parametrize(
     "family, result",
     [
         ("Courier", "Courier"),

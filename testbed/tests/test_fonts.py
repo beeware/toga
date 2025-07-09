@@ -85,18 +85,29 @@ async def test_use_first_valid_font(
     font_probe.assert_font_family(result)
 
 
-async def test_font_options(widget: toga.Label, font_probe):
+@pytest.mark.parametrize("use_shorthand", [True, False])
+async def test_font_options(widget: toga.Label, font_probe, use_shorthand):
     """Every combination of weight, style and variant can be used on a font."""
     for font_family in SYSTEM_DEFAULT_FONTS:
         for font_size in [20, SYSTEM_DEFAULT_FONT_SIZE]:
             for font_weight in FONT_WEIGHTS:
                 for font_style in FONT_STYLES:
                     for font_variant in FONT_VARIANTS:
-                        widget.style.font_family = font_family
-                        widget.style.font_size = font_size
-                        widget.style.font_style = font_style
-                        widget.style.font_variant = font_variant
-                        widget.style.font_weight = font_weight
+                        if use_shorthand:
+                            widget.style.font = (
+                                font_style,
+                                font_variant,
+                                font_weight,
+                                font_size,
+                                font_family,
+                            )
+                        else:
+                            with widget.style.batch_apply():
+                                widget.style.font_family = font_family
+                                widget.style.font_size = font_size
+                                widget.style.font_style = font_style
+                                widget.style.font_variant = font_variant
+                                widget.style.font_weight = font_weight
                         await font_probe.redraw(
                             f"Using a {font_family} {font_size} {font_weight} "
                             f"{font_style} {font_variant} font"
@@ -110,7 +121,7 @@ async def test_font_options(widget: toga.Label, font_probe):
 
 
 @pytest.mark.parametrize(
-    "font_family,font_path,font_kwargs,variable_font_test",
+    "font_family, font_path, font_kwargs, variable_font_test",
     [
         # OpenType font with weight property
         (
