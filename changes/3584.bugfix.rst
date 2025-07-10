@@ -1,1 +1,0 @@
-The conversion of HSL values with a hue between 240 and 330 has been corrected. The previous calculation reversed the red and green components of the converted colors.

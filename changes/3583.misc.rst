@@ -1,1 +1,0 @@
-Linting and formatting checks are now handled by Ruff.

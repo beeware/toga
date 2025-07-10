@@ -1,1 +1,0 @@
-The Ruff check in the pre-commit hook now automatically applies safe fixes.

@@ -1,1 +1,0 @@
-Toga now works with the latest BeeWare theme.

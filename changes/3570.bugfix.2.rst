@@ -1,1 +1,0 @@
-When an app has no windows, GTK no longer returns an error when requesting ``toga.App.current_window``.

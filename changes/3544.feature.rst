@@ -1,1 +1,0 @@
-App paths are now cached upon first retrieval.

@@ -1,1 +1,0 @@
-Updated coverage[toml] from 7.9.1 to 7.9.2 in /travertino.

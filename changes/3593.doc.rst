@@ -1,1 +1,0 @@
-An "Easy Media Server" success story has been added to the docs.

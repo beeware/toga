@@ -1,1 +1,0 @@
-tox now supports fast variant, and bare tox command now runs same tests as -ci target. -ci target has been removed.

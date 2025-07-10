@@ -1,1 +1,0 @@
-Coverage is now correctly checked on each Python version, not only in the aggregate; missing no-covers were added to a Python-version-based conditionals in pack and properties.

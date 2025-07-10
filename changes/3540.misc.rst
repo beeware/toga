@@ -1,1 +1,0 @@
-Updated fonttools from 4.58.1 to 4.58.2 in /testbed.

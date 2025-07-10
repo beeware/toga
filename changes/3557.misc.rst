@@ -1,1 +1,0 @@
-An intermittent failure for WebView tests on Apple Platforms has been repaired.

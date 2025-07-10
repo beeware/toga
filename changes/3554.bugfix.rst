@@ -1,1 +1,0 @@
-A crash on Android 9 (and earlier) caused by a symbol that wasn't available on those versions has been resolved.

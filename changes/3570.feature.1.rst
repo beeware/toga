@@ -1,1 +1,0 @@
-On GTK, a document-based app with multiple file extensions registered will now provide a file type filter that will match all available document types.

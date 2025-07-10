@@ -1,1 +1,0 @@
-``pip`` install lines in the tl;dr section of the contribution guide now only have ``pip install`` listed once.

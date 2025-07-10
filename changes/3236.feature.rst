@@ -1,1 +1,0 @@
-toga.App.paths properties now create the path on demand, if it does not already exist.

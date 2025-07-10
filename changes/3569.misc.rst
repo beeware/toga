@@ -1,1 +1,0 @@
-The overarching logic and error-handling for loading fonts has moved out of the backends and is now centralized in core.
