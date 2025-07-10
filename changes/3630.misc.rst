@@ -1,0 +1,1 @@
+Add GetScaleFactorForMonitor fallback for older (pre-8.1) Windows versions
