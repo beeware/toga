@@ -78,7 +78,11 @@ dev = [
 # Docs are always built on a specific Python version; see RTD and tox config files,
 # and the docs contribution guide.
 docs = [
-    "beeware_theme @ git+https://github.com/beeware/beeware-theme",
+    # Docs requirements are *mostly* handled by the `docs` extra; but we can't include
+    # the theme that way, so the theme is installed using a requirements.txt file,
+    # independent of the docs extra. Ideally, we'd use dependency groups for docs
+    # dependencies, but RTD doesn't support them yet.
+    # "beeware_theme @ git+https://github.com/beeware/beeware-theme",
     "furo == 2024.8.6",
     "Pillow == 11.3.0",
     "pyenchant == 3.2.2",
