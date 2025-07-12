@@ -1,0 +1,1 @@
+Pack now has a ``font`` shorthand property for specifying all font properties at once.
