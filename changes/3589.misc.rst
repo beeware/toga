@@ -1,1 +1,0 @@
-Most of the rule exclusions for Ruff have been removed.

@@ -62,14 +62,14 @@ classifiers = [
 # Extras used by developers *of* Toga are pinned to specific versions to
 # ensure environment consistency.
 dev = [
-    "coverage[toml] == 7.9.1",
+    "coverage[toml] == 7.9.2",
     "coverage-conditional-plugin == 0.9.0",
-    "Pillow == 11.2.1",
+    "Pillow == 11.3.0",
     "pre-commit == 4.2.0",
     "pytest == 8.4.1",
     "pytest-asyncio == 1.0.0",
     "pytest-freezer == 0.4.9",
-    "pytest-xdist == 3.7.0",
+    "pytest-xdist == 3.8.0",
     "setuptools-scm == 8.3.1",
     "tox == 4.27.0",
     # typing-extensions needed for TypeAlias added in Py 3.10
@@ -78,9 +78,13 @@ dev = [
 # Docs are always built on a specific Python version; see RTD and tox config files,
 # and the docs contribution guide.
 docs = [
-    "beeware_theme @ git+https://github.com/beeware/beeware-theme",
+    # Docs requirements are *mostly* handled by the `docs` extra; but we can't include
+    # the theme that way, so the theme is installed using a requirements.txt file,
+    # independent of the docs extra. Ideally, we'd use dependency groups for docs
+    # dependencies, but RTD doesn't support them yet.
+    # "beeware_theme @ git+https://github.com/beeware/beeware-theme",
     "furo == 2024.8.6",
-    "Pillow == 11.2.1",
+    "Pillow == 11.3.0",
     "pyenchant == 3.2.2",
     "sphinx == 8.2.3",
     "sphinx_tabs == 3.4.5",

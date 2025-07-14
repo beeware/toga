@@ -1,1 +1,0 @@
-Removed work around to suppress textual backend logging messages when app is closed.

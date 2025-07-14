@@ -1,1 +1,0 @@
-Unused ``max_python_version`` environment variable has been removed from GitHub CI configuration.

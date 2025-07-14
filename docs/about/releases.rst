@@ -6,6 +6,59 @@ Release History
 
 .. towncrier release notes start
 
+0.5.2 (2025-07-10)
+==================
+
+Features
+--------
+
+* iOS and macOS backends now provide DateInput and TimeInput widgets. (`#1939 <https://github.com/beeware/toga/issues/1939>`__)
+* The Android backend can now identify if dark mode is enabled. (`#2841 <https://github.com/beeware/toga/issues/2841>`__)
+* Toga now has a layout debugging mode. If you set ``TOGA_DEBUG_LAYOUT=1`` in your app's runtime environment or ``toga.Widget.DEBUG_LAYOUT_ENABLED == True`` directly in the app's code, widgets will be rendered with different background colors, making it easier to identify how space is being allocated by Toga's layout algorithm. (`#2953 <https://github.com/beeware/toga/issues/2953>`__)
+* ``toga.App.paths`` properties now create the path on demand, if it does not already exist. (`#3236 <https://github.com/beeware/toga/issues/3236>`__)
+* The Web backend now provides Selection and Slider widgets. (`#3334 <https://github.com/beeware/toga/issues/3334>`__)
+* Lazily loaded objects in the ``toga`` namespace now support type checking. (`#3358 <https://github.com/beeware/toga/issues/3358>`__)
+* Winforms now provides an ActivityIndicator widget. (`#3473 <https://github.com/beeware/toga/issues/3473>`__)
+* WebViews on macOS now support file uploads. (`#3484 <https://github.com/beeware/toga/issues/3484>`__)
+* ``Pack.font_family`` now accepts a list of possible values; text will be rendered with the first font family that is available. (`#3526 <https://github.com/beeware/toga/issues/3526>`__)
+* App paths are now cached upon first retrieval. (`#3544 <https://github.com/beeware/toga/issues/3544>`__)
+* On Windows and GTK, Toga now supports loading arbitrary fronts from the user's system, in addition to Toga's predefined set of system fonts and any that you have registered. (This was already possible on Windows, but undocumented.) (`#3569 <https://github.com/beeware/toga/issues/3569>`__)
+* On GTK, a document-based app with multiple file extensions registered will now provide a file type filter that will match all available document types. (`#3570 <https://github.com/beeware/toga/issues/3570>`__)
+
+Bugfixes
+--------
+
+* Attempting to refresh a window with no content no longer raises an error on Textual. (`#2818 <https://github.com/beeware/toga/issues/2818>`__)
+* MultilineTextInput widget will no longer fire ``on_change`` events during creation on Windows. (`#3290 <https://github.com/beeware/toga/issues/3290>`__)
+* The Textual backend no longer raises superfluous console messages when the app shuts down. (`#3399 <https://github.com/beeware/toga/issues/3399>`__)
+* Apps that use a function-based app startup method now validate that the startup method returns content that can be added to the main window. (`#3444 <https://github.com/beeware/toga/issues/3444>`__)
+* Buttons in Toga Web now correctly respond to clicks and trigger their associated actions. (`#3451 <https://github.com/beeware/toga/issues/3451>`__)
+* Table Widget on Windows now only fires one event on item selection. (`#3472 <https://github.com/beeware/toga/issues/3472>`__)
+* Older Linux distributions (such as Ubuntu 22.04) that ship with GLib < 2.74 can now use GTK4 with Toga. (`#3525 <https://github.com/beeware/toga/issues/3525>`__)
+*  (`#3531 <https://github.com/beeware/toga/issues/3531>`__)
+* On macOS, ``MultilineTextInput`` will no longer automatically convert straight quotes to smart quotes. (`#3546 <https://github.com/beeware/toga/issues/3546>`__)
+* A crash on Android 9 (and earlier) caused by a symbol that wasn't available on those versions has been resolved. (`#3554 <https://github.com/beeware/toga/issues/3554>`__)
+* On macOS, document-based apps no longer raise an error on startup about the event loop already running. (`#3570 <https://github.com/beeware/toga/issues/3570>`__)
+* When an app has no windows, GTK no longer returns an error when requesting ``toga.App.current_window``. (`#3570 <https://github.com/beeware/toga/issues/3570>`__)
+* The conversion of HSL values with a hue between 240 and 330 has been corrected. The previous calculation reversed the red and green components of the converted colors. (`#3584 <https://github.com/beeware/toga/issues/3584>`__)
+
+Backward Incompatible Changes
+-----------------------------
+
+* ``toga.Font`` objects now raise an `UnknownFontError` instead of silently falling back to system font if the font family can't be successfully loaded. (`#3526 <https://github.com/beeware/toga/issues/3526>`__)
+
+Documentation
+-------------
+
+* Documentation for installing platform-specific dependencies has been improved. (`#1688 <https://github.com/beeware/toga/issues/1688>`__)
+* Toga's documentation now uses a header and style consistent with the BeeWare website. (`#3538 <https://github.com/beeware/toga/issues/3538>`__)
+* A topic guide on managing file paths has been added. (`#3552 <https://github.com/beeware/toga/issues/3552>`__)
+
+Misc
+----
+
+* `#2453 <https://github.com/beeware/toga/issues/2453>`__, `#2975 <https://github.com/beeware/toga/issues/2975>`__, `#3138 <https://github.com/beeware/toga/issues/3138>`__, `#3420 <https://github.com/beeware/toga/issues/3420>`__, `#3426 <https://github.com/beeware/toga/issues/3426>`__, `#3427 <https://github.com/beeware/toga/issues/3427>`__, `#3428 <https://github.com/beeware/toga/issues/3428>`__, `#3429 <https://github.com/beeware/toga/issues/3429>`__, `#3430 <https://github.com/beeware/toga/issues/3430>`__, `#3431 <https://github.com/beeware/toga/issues/3431>`__, `#3432 <https://github.com/beeware/toga/issues/3432>`__, `#3433 <https://github.com/beeware/toga/issues/3433>`__, `#3434 <https://github.com/beeware/toga/issues/3434>`__, `#3435 <https://github.com/beeware/toga/issues/3435>`__, `#3436 <https://github.com/beeware/toga/issues/3436>`__, `#3437 <https://github.com/beeware/toga/issues/3437>`__, `#3438 <https://github.com/beeware/toga/issues/3438>`__, `#3439 <https://github.com/beeware/toga/issues/3439>`__, `#3441 <https://github.com/beeware/toga/issues/3441>`__, `#3444 <https://github.com/beeware/toga/issues/3444>`__, `#3447 <https://github.com/beeware/toga/issues/3447>`__, `#3452 <https://github.com/beeware/toga/issues/3452>`__, `#3453 <https://github.com/beeware/toga/issues/3453>`__, `#3454 <https://github.com/beeware/toga/issues/3454>`__, `#3455 <https://github.com/beeware/toga/issues/3455>`__, `#3456 <https://github.com/beeware/toga/issues/3456>`__, `#3457 <https://github.com/beeware/toga/issues/3457>`__, `#3458 <https://github.com/beeware/toga/issues/3458>`__, `#3459 <https://github.com/beeware/toga/issues/3459>`__, `#3460 <https://github.com/beeware/toga/issues/3460>`__, `#3461 <https://github.com/beeware/toga/issues/3461>`__, `#3462 <https://github.com/beeware/toga/issues/3462>`__, `#3463 <https://github.com/beeware/toga/issues/3463>`__, `#3464 <https://github.com/beeware/toga/issues/3464>`__, `#3465 <https://github.com/beeware/toga/issues/3465>`__, `#3486 <https://github.com/beeware/toga/issues/3486>`__, `#3488 <https://github.com/beeware/toga/issues/3488>`__, `#3489 <https://github.com/beeware/toga/issues/3489>`__, `#3490 <https://github.com/beeware/toga/issues/3490>`__, `#3491 <https://github.com/beeware/toga/issues/3491>`__, `#3492 <https://github.com/beeware/toga/issues/3492>`__, `#3493 <https://github.com/beeware/toga/issues/3493>`__, `#3494 <https://github.com/beeware/toga/issues/3494>`__, `#3495 <https://github.com/beeware/toga/issues/3495>`__, `#3496 <https://github.com/beeware/toga/issues/3496>`__, `#3497 <https://github.com/beeware/toga/issues/3497>`__, `#3498 <https://github.com/beeware/toga/issues/3498>`__, `#3499 <https://github.com/beeware/toga/issues/3499>`__, `#3500 <https://github.com/beeware/toga/issues/3500>`__, `#3501 <https://github.com/beeware/toga/issues/3501>`__, `#3509 <https://github.com/beeware/toga/issues/3509>`__, `#3511 <https://github.com/beeware/toga/issues/3511>`__, `#3512 <https://github.com/beeware/toga/issues/3512>`__, `#3513 <https://github.com/beeware/toga/issues/3513>`__, `#3514 <https://github.com/beeware/toga/issues/3514>`__, `#3515 <https://github.com/beeware/toga/issues/3515>`__, `#3516 <https://github.com/beeware/toga/issues/3516>`__, `#3517 <https://github.com/beeware/toga/issues/3517>`__, `#3518 <https://github.com/beeware/toga/issues/3518>`__, `#3519 <https://github.com/beeware/toga/issues/3519>`__, `#3520 <https://github.com/beeware/toga/issues/3520>`__, `#3521 <https://github.com/beeware/toga/issues/3521>`__, `#3522 <https://github.com/beeware/toga/issues/3522>`__, `#3523 <https://github.com/beeware/toga/issues/3523>`__, `#3528 <https://github.com/beeware/toga/issues/3528>`__, `#3533 <https://github.com/beeware/toga/issues/3533>`__, `#3539 <https://github.com/beeware/toga/issues/3539>`__, `#3540 <https://github.com/beeware/toga/issues/3540>`__, `#3541 <https://github.com/beeware/toga/issues/3541>`__, `#3542 <https://github.com/beeware/toga/issues/3542>`__, `#3550 <https://github.com/beeware/toga/issues/3550>`__, `#3556 <https://github.com/beeware/toga/issues/3556>`__, `#3557 <https://github.com/beeware/toga/issues/3557>`__, `#3558 <https://github.com/beeware/toga/issues/3558>`__, `#3559 <https://github.com/beeware/toga/issues/3559>`__, `#3560 <https://github.com/beeware/toga/issues/3560>`__, `#3561 <https://github.com/beeware/toga/issues/3561>`__, `#3562 <https://github.com/beeware/toga/issues/3562>`__, `#3563 <https://github.com/beeware/toga/issues/3563>`__, `#3569 <https://github.com/beeware/toga/issues/3569>`__, `#3572 <https://github.com/beeware/toga/issues/3572>`__, `#3575 <https://github.com/beeware/toga/issues/3575>`__, `#3576 <https://github.com/beeware/toga/issues/3576>`__, `#3577 <https://github.com/beeware/toga/issues/3577>`__, `#3578 <https://github.com/beeware/toga/issues/3578>`__, `#3579 <https://github.com/beeware/toga/issues/3579>`__, `#3583 <https://github.com/beeware/toga/issues/3583>`__, `#3586 <https://github.com/beeware/toga/issues/3586>`__, `#3587 <https://github.com/beeware/toga/issues/3587>`__, `#3587 <https://github.com/beeware/toga/issues/3587>`__, `#3588 <https://github.com/beeware/toga/issues/3588>`__, `#3589 <https://github.com/beeware/toga/issues/3589>`__, `#3591 <https://github.com/beeware/toga/issues/3591>`__, `#3592 <https://github.com/beeware/toga/issues/3592>`__, `#3593 <https://github.com/beeware/toga/issues/3593>`__, `#3594 <https://github.com/beeware/toga/issues/3594>`__, `#3595 <https://github.com/beeware/toga/issues/3595>`__, `#3601 <https://github.com/beeware/toga/issues/3601>`__, `#3603 <https://github.com/beeware/toga/issues/3603>`__, `#3604 <https://github.com/beeware/toga/issues/3604>`__, `#3605 <https://github.com/beeware/toga/issues/3605>`__, `#3607 <https://github.com/beeware/toga/issues/3607>`__, `#3608 <https://github.com/beeware/toga/issues/3608>`__, `#3617 <https://github.com/beeware/toga/issues/3617>`__, `#3618 <https://github.com/beeware/toga/issues/3618>`__, `#3619 <https://github.com/beeware/toga/issues/3619>`__, `#3620 <https://github.com/beeware/toga/issues/3620>`__, `#3621 <https://github.com/beeware/toga/issues/3621>`__, `#3622 <https://github.com/beeware/toga/issues/3622>`__, `#3623 <https://github.com/beeware/toga/issues/3623>`__, `#3629 <https://github.com/beeware/toga/issues/3629>`__, `#3633 <https://github.com/beeware/toga/issues/3633>`__
+
 0.5.1 (2025-05-08)
 ==================
 

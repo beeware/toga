@@ -1,1 +1,0 @@
-Added a check to ensure window content exists before calling the refresh method for textual.

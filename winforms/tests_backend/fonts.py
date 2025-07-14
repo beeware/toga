@@ -21,6 +21,9 @@ class FontMixin:
     supports_custom_fonts = True
     supports_custom_variable_fonts = True
 
+    def preinstalled_font(self):
+        return "Times New Roman"
+
     @property
     def font(self):
         return self.native.Font

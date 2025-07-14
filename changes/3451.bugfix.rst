@@ -1,1 +1,0 @@
-Buttons in Toga Web now correctly respond to clicks and trigger their associated actions.

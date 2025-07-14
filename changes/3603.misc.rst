@@ -1,1 +1,0 @@
-Correct the casing of GitHub in README files and other places.

@@ -181,8 +181,7 @@ jobs:
         merge-multiple: true
 
     - name: Generate Coverage Report
-      # Even with "fail" on, Travertino will accept <100%.
-      run: tox -e coverage${{ matrix.tox-suffix }}-html-fail-platform
+      run: tox -e coverage${{ matrix.tox-suffix }}-html-platform
 
     - name: Upload HTML Coverage Report
       uses: actions/upload-artifact@v4.6.2

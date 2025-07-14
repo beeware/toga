@@ -1,1 +1,0 @@
-Restore main_window.show to the default startup method.

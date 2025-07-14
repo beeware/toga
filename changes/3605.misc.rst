@@ -1,1 +1,0 @@
-``venv`` commands for macOS and Linux now use ``python3`` explicitly.

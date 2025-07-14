@@ -1,1 +1,0 @@
-An obsolete workaround for an Android bug at testbed startup has now been removed.

@@ -55,7 +55,7 @@ This example uses a series of nested boxes to show a variety of available colors
         return DebugLayoutColors("Debug Layout Colors Demo", "org.beeware.toga.debug.layout")
 
     if __name__ == "__main__":
-    main().main_loop()
+        main().main_loop()
 
 Save the example as a Python file on your computer. When you run the file, you should see the following.
 

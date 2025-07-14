@@ -28,6 +28,11 @@ sphinx:
 # to run `tox -e docs-lint` as a pre-build step.
 python:
   install:
+  # Docs requirements are *mostly* handled by the `docs` extra; but we can't include
+  # the theme that way, so the theme is installed using a requirements.txt file,
+  # independent of the docs extra. Ideally, we'd use dependency groups for docs
+  # dependencies, but RTD doesn't support them yet.
+  - requirements: requirements-docs.txt
   - method: pip
     path: travertino
   - method: pip

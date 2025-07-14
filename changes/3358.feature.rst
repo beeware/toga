@@ -1,1 +1,0 @@
-Toga core module now supports type checking of lazily loaded classes.

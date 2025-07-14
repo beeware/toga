@@ -1,1 +1,0 @@
-``toga.Font`` objects now raise an `UnknownFontError` instead of silently falling back to system font if the font family can't be successfully loaded.
