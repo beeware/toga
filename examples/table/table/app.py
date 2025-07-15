@@ -166,14 +166,13 @@ class TableApp(toga.App):
         tablebox = toga.Box(children=[self.table1, self.table2], flex=1)
 
         # Buttons
-        btn_style = {"flex": 1}
-        btn_insert = toga.Button("Insert", on_press=self.insert_handler, **btn_style)
-        btn_delete = toga.Button("Delete", on_press=self.delete_handler, **btn_style)
-        btn_clear = toga.Button("Clear", on_press=self.clear_handler, **btn_style)
-        btn_reset = toga.Button("Reset", on_press=self.reset_handler, **btn_style)
-        btn_toggle = toga.Button("Column", on_press=self.toggle_handler, **btn_style)
-        btn_top = toga.Button("Top", on_press=self.top_handler, **btn_style)
-        btn_bottom = toga.Button("Bottom", on_press=self.bottom_handler, **btn_style)
+        btn_insert = toga.Button("Insert", on_press=self.insert_handler, flex=1)
+        btn_delete = toga.Button("Delete", on_press=self.delete_handler, flex=1)
+        btn_clear = toga.Button("Clear", on_press=self.clear_handler, flex=1)
+        btn_reset = toga.Button("Reset", on_press=self.reset_handler, flex=1)
+        btn_toggle = toga.Button("Column", on_press=self.toggle_handler, flex=1)
+        btn_top = toga.Button("Top", on_press=self.top_handler, flex=1)
+        btn_bottom = toga.Button("Bottom", on_press=self.bottom_handler, flex=1)
 
         controls_1 = toga.Box(
             children=[font_box, btn_insert, btn_delete, btn_clear],

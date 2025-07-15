@@ -10,9 +10,6 @@ class ButtonApp(toga.App):
             size=(800, 500), resizable=False, minimizable=False
         )
 
-        # Common style of the inner boxes
-        style_inner_box = {"direction": COLUMN}
-
         # Button class
         #   Simple button with text and callback function called when
         #   hit the button
@@ -42,7 +39,7 @@ class ButtonApp(toga.App):
         # Container of components
         #   Add components for the first row of the outer box
         inner_box1 = toga.Box(
-            **style_inner_box,
+            direction=COLUMN,
             children=[
                 button1,
                 self.button2,
@@ -76,7 +73,7 @@ class ButtonApp(toga.App):
 
         # Add components for the second row of the outer box
         inner_box2 = toga.Box(
-            **style_inner_box,
+            direction=COLUMN,
             children=[button5, button6, button7, button8, button9],
         )
 

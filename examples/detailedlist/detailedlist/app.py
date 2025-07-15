@@ -71,7 +71,6 @@ class DetailedListApp(toga.App):
         )
 
         # Switches to enable/disable actions
-        switch_style = {"margin": 10}
         self.switch_box = toga.Box(
             direction=ROW,
             children=[
@@ -80,19 +79,19 @@ class DetailedListApp(toga.App):
                     "Delete",
                     value=True,
                     on_change=self.on_delete_switch,
-                    **switch_style,
+                    margin=10,
                 ),
                 toga.Switch(
                     "Visit",
                     value=True,
                     on_change=self.on_visit_switch,
-                    **switch_style,
+                    margin=10,
                 ),
                 toga.Switch(
                     "Refresh",
                     value=True,
                     on_change=self.on_refresh_switch,
-                    **switch_style,
+                    margin=10,
                 ),
                 toga.Box(flex=1),  # Spacer
             ],

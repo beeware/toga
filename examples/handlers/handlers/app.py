@@ -74,13 +74,12 @@ class HandlerApp(toga.App):
         asyncio.create_task(self.do_background_task())
 
         # Buttons
-        btn_style = {"flex": 1}
         btn_function = toga.Button(
-            "Function callback", on_press=self.do_function, **btn_style
+            "Function callback", on_press=self.do_function, flex=1
         )
-        btn_async = toga.Button("Async callback", on_press=self.do_async, **btn_style)
-        btn_clear = toga.Button("Clear", on_press=self.do_clear, **btn_style)
-        btn_web = toga.Button("Get web content", on_press=self.do_web_get, **btn_style)
+        btn_async = toga.Button("Async callback", on_press=self.do_async, flex=1)
+        btn_clear = toga.Button("Clear", on_press=self.do_clear, flex=1)
+        btn_web = toga.Button("Get web content", on_press=self.do_web_get, flex=1)
 
         # Outermost box
         box = toga.Box(

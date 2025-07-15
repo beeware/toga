@@ -259,43 +259,42 @@ class DialogsApp(toga.App):
         self.set_window_label_text(0)
 
         # Buttons
-        btn_style = {"flex": 1}
         btn_app_info = toga.Button(
-            "Info (App)", on_press=self.action_app_info_dialog, **btn_style
+            "Info (App)", on_press=self.action_app_info_dialog, flex=1
         )
-        btn_info = toga.Button("Info", on_press=self.action_info_dialog, **btn_style)
+        btn_info = toga.Button("Info", on_press=self.action_info_dialog, flex=1)
         btn_question = toga.Button(
-            "Question", on_press=self.action_question_dialog, **btn_style
+            "Question", on_press=self.action_question_dialog, flex=1
         )
         btn_confirm = toga.Button(
-            "Confirm", on_press=self.action_confirm_dialog, **btn_style
+            "Confirm", on_press=self.action_confirm_dialog, flex=1
         )
-        btn_error = toga.Button("Error", on_press=self.action_error_dialog, **btn_style)
+        btn_error = toga.Button("Error", on_press=self.action_error_dialog, flex=1)
         btn_stack_trace = toga.Button(
-            "Stack Trace", on_press=self.action_stack_trace, **btn_style
+            "Stack Trace", on_press=self.action_stack_trace, flex=1
         )
         btn_stack_trace_retry = toga.Button(
             "Stack Trace (with retry)",
             on_press=self.action_stack_trace_retry,
-            **btn_style,
+            flex=1,
         )
         btn_app_open = toga.Button(
             "Open File (App)",
             on_press=self.action_app_open_file_dialog,
-            **btn_style,
+            flex=1,
         )
         btn_open = toga.Button(
-            "Open File", on_press=self.action_open_file_dialog, **btn_style
+            "Open File", on_press=self.action_open_file_dialog, flex=1
         )
         btn_open_filtered = toga.Button(
             "Open File (Filtered)",
             on_press=self.action_open_file_filtered_dialog,
-            **btn_style,
+            flex=1,
         )
         btn_open_multi = toga.Button(
             "Open File (Multiple)",
             on_press=self.action_open_file_dialog_multi,
-            **btn_style,
+            flex=1,
         )
         btn_open_init_folder = toga.Button(
             "Open File In Home Folder",
@@ -303,34 +302,34 @@ class DialogsApp(toga.App):
         )
 
         btn_save = toga.Button(
-            "Save File", on_press=self.action_save_file_dialog, **btn_style
+            "Save File", on_press=self.action_save_file_dialog, flex=1
         )
         btn_select = toga.Button(
-            "Select Folder", on_press=self.action_select_folder_dialog, **btn_style
+            "Select Folder", on_press=self.action_select_folder_dialog, flex=1
         )
         btn_select_multi = toga.Button(
             "Select Folders",
             on_press=self.action_select_folder_dialog_multi,
-            **btn_style,
+            flex=1,
         )
         btn_select_init_folder = toga.Button(
             "Select Folder In Current Folder ",
             on_press=self.action_select_folder_dialog_with_initial_folder,
-            **btn_style,
+            flex=1,
         )
 
         btn_open_secondary_window = toga.Button(
             "Open Secondary Window",
             on_press=self.action_open_secondary_window,
-            **btn_style,
+            flex=1,
         )
         btn_close_secondary_window = toga.Button(
             "Close All Secondary Windows",
             on_press=self.action_close_secondary_windows,
-            **btn_style,
+            flex=1,
         )
 
-        btn_clear = toga.Button("Clear", on_press=self.do_clear, **btn_style)
+        btn_clear = toga.Button("Clear", on_press=self.do_clear, flex=1)
 
         # Outermost box
         box = toga.Box(

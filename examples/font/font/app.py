@@ -55,6 +55,12 @@ class FontApp(toga.App):
             "Roboto", "resources/Roboto-BoldItalic.ttf", weight=BOLD, style=ITALIC
         )
 
+        button_style = {
+            "font_family": "awesome-free-solid",
+            "font_size": 14,
+            "width": 50,
+        }
+
         # Buttons
         btn_box1 = toga.Box(
             direction=ROW,
@@ -76,25 +82,19 @@ class FontApp(toga.App):
             "\uf0c5",
             id="copy",
             on_press=self.do_icon_button,
-            font_family="awesome-free-solid",
-            font_size=14,
-            width=50,
+            **button_style,
         )
         btn3 = toga.Button(
             "\uf0ea",
             id="paste",
             on_press=self.do_icon_button,
-            font_family="awesome-free-solid",
-            font_size=14,
-            width=50,
+            **button_style,
         )
         btn4 = toga.Button(
             "\uf0a9",
             id="arrow-right",
             on_press=self.do_icon_button,
-            font_family="awesome-free-solid",
-            font_size=14,
-            width=50,
+            **button_style,
         )
         btn_box2 = toga.Box(
             direction=ROW,

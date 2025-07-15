@@ -166,14 +166,9 @@ class TableSourceApp(toga.App):
         tablebox = toga.Box(children=[self.table1, self.table2], flex=1)
 
         # Buttons
-        btn_style = {"flex": 1}
-        btn_insert = toga.Button(
-            "Insert Row", on_press=self.insert_handler, **btn_style
-        )
-        btn_delete = toga.Button(
-            "Delete Row", on_press=self.delete_handler, **btn_style
-        )
-        btn_clear = toga.Button("Clear Table", on_press=self.clear_handler, **btn_style)
+        btn_insert = toga.Button("Insert Row", on_press=self.insert_handler, flex=1)
+        btn_delete = toga.Button("Delete Row", on_press=self.delete_handler, flex=1)
+        btn_clear = toga.Button("Clear Table", on_press=self.clear_handler, flex=1)
         btn_box = toga.Box(children=[btn_insert, btn_delete, btn_clear], direction=ROW)
 
         # Most outer box

@@ -50,9 +50,8 @@ class NumberInputApp(toga.App):
             margin=5,
         )
         # Buttons
-        btn_style = {"flex": 1}
-        btn_do_stuff = toga.Button("Get value", on_press=self.do_stuff, **btn_style)
-        btn_clear = toga.Button("Clear", on_press=self.do_clear, **btn_style)
+        btn_do_stuff = toga.Button("Get value", on_press=self.do_stuff, flex=1)
+        btn_clear = toga.Button("Clear", on_press=self.do_clear, flex=1)
         btn_box = toga.Box(children=[btn_do_stuff, btn_clear], direction=ROW)
 
         # Outermost box

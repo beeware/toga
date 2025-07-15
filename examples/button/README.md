@@ -5,11 +5,9 @@ Test app for the
 
 The following button features are present in this example:
 
-- Simple buttons with a callback function when a click event happen
+- Simple buttons with a callback function when a click event happens
 - A disabled button
-- Buttons styled using Toga's default style engine, Pack
-- A grid of buttons using the flexbox from Pack
-- Different button's background color
+- Buttons of various styles
 
 ## Quickstart
 

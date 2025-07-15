@@ -3,9 +3,7 @@
 Test app for the
 [Divider widget](https://toga.beeware.org/en/stable/reference/api/widgets/divider.html).
 
-The following divider features are present in this example:
-
-- Horizontal and vertical dividers
+This example demonstrates both horizontal and vertical dividers.
 
 ## Quickstart
 

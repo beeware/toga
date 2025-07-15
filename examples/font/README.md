@@ -1,7 +1,8 @@
 # Font
 
 Test app for the
-[Font widget](https://toga.beeware.org/en/stable/reference/api/resources/fonts.html).
+[font](https://toga.beeware.org/en/stable/reference/api/resources/fonts.html)
+manipulation.
 
 ## Quickstart
 

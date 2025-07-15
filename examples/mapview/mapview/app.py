@@ -69,13 +69,12 @@ class MapViewApp(toga.App):
         )
         self.map_view.pins.add(self.pin_3)
 
-        btn_style = {"flex": 1}
         # Location buttons
-        btn_perth = toga.Button("PER", on_press=self.goto_perth, **btn_style)
-        btn_london = toga.Button("LON", on_press=self.goto_london, **btn_style)
-        btn_austin = toga.Button("AUS", on_press=self.goto_austin, **btn_style)
-        btn_rio = toga.Button("RIO", on_press=self.goto_rio, **btn_style)
-        btn_where = toga.Button("???", on_press=self.where_am_i, **btn_style)
+        btn_perth = toga.Button("PER", on_press=self.goto_perth, flex=1)
+        btn_london = toga.Button("LON", on_press=self.goto_london, flex=1)
+        btn_austin = toga.Button("AUS", on_press=self.goto_austin, flex=1)
+        btn_rio = toga.Button("RIO", on_press=self.goto_rio, flex=1)
+        btn_where = toga.Button("???", on_press=self.where_am_i, flex=1)
         location_box = toga.Box(
             children=[btn_perth, btn_london, btn_austin, btn_rio, btn_where],
             direction=ROW,
@@ -85,18 +84,17 @@ class MapViewApp(toga.App):
         # Zoom buttons
         zoom_box = toga.Box(
             children=[
-                toga.Button(i, on_press=self.zoom(i), **btn_style)
-                for i in range(0, 20, 3)
+                toga.Button(i, on_press=self.zoom(i), flex=1) for i in range(0, 20, 3)
             ],
             direction=ROW,
             margin=5,
         )
 
         # Point Of Interest buttons
-        btn_pin_1 = toga.Button("Pin 1", on_press=self.goto_pin_1, **btn_style)
-        btn_pin_2 = toga.Button("Pin 2", on_press=self.goto_pin_2, **btn_style)
-        btn_pin_3 = toga.Button("Pin 3", on_press=self.goto_pin_3, **btn_style)
-        btn_move = toga.Button("Move", on_press=self.move_carmen, **btn_style)
+        btn_pin_1 = toga.Button("Pin 1", on_press=self.goto_pin_1, flex=1)
+        btn_pin_2 = toga.Button("Pin 2", on_press=self.goto_pin_2, flex=1)
+        btn_pin_3 = toga.Button("Pin 3", on_press=self.goto_pin_3, flex=1)
+        btn_move = toga.Button("Move", on_press=self.move_carmen, flex=1)
         pin_box = toga.Box(
             children=[btn_pin_1, btn_pin_2, btn_pin_3, btn_move],
             direction=ROW,
