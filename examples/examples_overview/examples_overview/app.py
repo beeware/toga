@@ -31,7 +31,7 @@ class ExamplesOverviewApp(toga.App):
             subprocess.run(["xdg-open", row.path])
 
     def on_example_selected(self, widget):
-        readme_path = widget.selection.path / "README.rst"
+        readme_path = widget.selection.path / "README.md"
 
         try:
             with open(readme_path) as f:
