@@ -1,9 +1,13 @@
-import io
+try:
+    import PIL.Image
+    import PIL.ImageDraw
 
-from PIL import Image, ImageDraw
+    pil_present = True
+except ImportError:
+    pil_present = False
 
 import toga
-from toga.style.pack import CENTER, COLUMN, Pack
+from toga.constants import CENTER, COLUMN
 
 
 class ImageViewApp(toga.App):
@@ -11,11 +15,9 @@ class ImageViewApp(toga.App):
         self.main_window = toga.MainWindow()
 
         box = toga.Box(
-            style=Pack(
-                margin=10,
-                align_items=CENTER,
-                direction=COLUMN,
-            )
+            margin=10,
+            align_items=CENTER,
+            direction=COLUMN,
         )
 
         # image from relative path, specified as a string to load brutus.png from
@@ -29,65 +31,65 @@ class ImageViewApp(toga.App):
             )
         )
 
-        # Scale ONE of the width or height, and the aspect ratio should be retained.
-        box.add(
-            toga.ImageView(
-                image_from_path,
-                style=Pack(width=72),
-            )
-        )
-        box.add(
-            toga.ImageView(
-                image_from_path,
-                style=Pack(height=72),
-            )
-        )
-
         # image from pathlib.Path object
         # same as the above image, just with a different argument type
         image_from_pathlib_path = toga.Image(
             self.paths.app / "resources/pride-brutus.png"
         )
 
-        # Scale BOTH of the width or height, and the aspect ratio should be overridden.
+        # Scale ONE of the width or height, and the aspect ratio should be retained.
         box.add(
             toga.ImageView(
                 image_from_pathlib_path,
-                style=Pack(width=72, height=72),
+                width=72,
+            )
+        )
+        box.add(
+            toga.ImageView(
+                image_from_pathlib_path,
+                height=72,
             )
         )
 
-        # Flex with unpecified cross axis size: aspect ratio should be retained.
+        # Image path can also be provided directly to ImageView - relative path.
+        # Scale BOTH of the width or height, and the aspect ratio should be overridden.
         box.add(
             toga.ImageView(
-                image_from_pathlib_path,
-                style=Pack(flex=1),
+                toga.Image("resources/pride-brutus.png"),
+                width=72,
+                height=72,
+            )
+        )
+
+        # Image path can also be provided directly to ImageView - pathlib.Path object.
+        # Flex with unspecified cross axis size: aspect ratio should be retained.
+        box.add(
+            toga.ImageView(
+                self.paths.app / "resources/pride-brutus.png",
+                flex=1,
             )
         )
 
         # Flex with fixed cross axis size: aspect ratio should be retained.
         box.add(
             toga.ImageView(
-                image_from_pathlib_path,
-                style=Pack(flex=1, width=150),
+                self.paths.app / "resources/pride-brutus.png",
+                flex=1,
+                width=150,
             )
         )
 
-        # image from bytes
-        # generate an image using pillow
-        img = Image.new("RGBA", size=(110, 30))
-        d1 = ImageDraw.Draw(img)
-        d1.text((20, 10), "Pillow image", fill="green")
-        # get png bytes
-        buffer = io.BytesIO()
-        img.save(buffer, format="png", compress_level=0)
-
-        image_from_bytes = toga.Image(data=buffer.getvalue())
-        imageview_from_bytes = toga.ImageView(
-            image_from_bytes,
-            style=Pack(height=72, background_color="lightgray"),
-        )
-        box.add(imageview_from_bytes)
+        if pil_present:
+            # Generate an image using pillow
+            img = PIL.Image.new("RGBA", size=(110, 30))
+            d1 = PIL.ImageDraw.Draw(img)
+            d1.text((20, 10), "Pillow image", fill="green")
+            imageview_from_pil = toga.ImageView(
+                img,
+                height=72,
+                background_color="lightgray",
+            )
+            box.add(imageview_from_pil)
 
         # An empty imageview.
         empty_imageview = toga.ImageView()
@@ -102,5 +104,4 @@ def main():
 
 
 if __name__ == "__main__":
-    app = main()
-    app.main_loop()
+    main().main_loop()

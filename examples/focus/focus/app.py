@@ -1,15 +1,13 @@
 import random
 
-from travertino.constants import COLUMN
-
 import toga
-from toga.style import Pack
+from toga.constants import COLUMN
 
 WIDGETS_GROUP = toga.Group("Widgets", order=2)
 FOCUS_ORDER_GROUP = toga.Group("Focus Order", order=3)
 
 
-class ExampleFocusApp(toga.App):
+class FocusApp(toga.App):
     def startup(self):
         self.main_window = toga.MainWindow(
             size=(800, 500), resizable=False, minimizable=False
@@ -21,22 +19,26 @@ class ExampleFocusApp(toga.App):
         self.text_input_focus_count = 0
         self.text_input = toga.TextInput(
             placeholder="I get focused on startup.",
-            style=Pack(height=25, width=200, font_size=10),
+            height=25,
+            width=200,
+            font_size=10,
             on_gain_focus=self.on_textinput_gain_focus,
             on_lose_focus=self.on_textinput_lose_focus,
         )
         self.other_text_input = toga.TextInput(
             placeholder="A non-focussed text input.",
-            style=Pack(height=25, width=200, font_size=10),
+            height=25,
+            width=200,
+            font_size=10,
         )
         self.switch = toga.Switch("Switch", on_change=self.on_switch_toggle)
         self.info_label = toga.Label(
             "Use keyboard shortcuts to focus on the different widgets",
-            style=Pack(font_size=10),
+            font_size=10,
         )
         # Add the content on the main window
         self.main_window.content = toga.Box(
-            style=Pack(direction=COLUMN),
+            direction=COLUMN,
             children=[
                 toga.Box(children=[self.a_button, self.b_button, self.c_button]),
                 toga.Box(children=[self.text_input]),
@@ -141,12 +143,8 @@ class ExampleFocusApp(toga.App):
 
 
 def main():
-    # Application class
-    #   App name and namespace
-    app = ExampleFocusApp("Focus", "org.beeware.toga.examples.focus")
-    return app
+    return FocusApp("Focus", "org.beeware.toga.examples.focus")
 
 
 if __name__ == "__main__":
-    app = main()
-    app.main_loop()
+    main().main_loop()

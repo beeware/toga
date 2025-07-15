@@ -2,10 +2,9 @@ import random
 
 import toga
 from toga.constants import COLUMN, ROW
-from toga.style import Pack
 
 
-class ExampleMapViewApp(toga.App):
+class MapViewApp(toga.App):
     def zoom(self, factor):
         def _zoom(widget, **kwargs):
             self.map_view.zoom = factor
@@ -58,7 +57,7 @@ class ExampleMapViewApp(toga.App):
         )
 
         self.map_view = toga.MapView(
-            style=Pack(flex=1),
+            flex=1,
             pins=[self.pin_1, self.pin_2],
             on_select=self.pin_selected,
         )
@@ -70,44 +69,46 @@ class ExampleMapViewApp(toga.App):
         )
         self.map_view.pins.add(self.pin_3)
 
-        btn_style = Pack(flex=1)
         # Location buttons
-        btn_perth = toga.Button("PER", on_press=self.goto_perth, style=btn_style)
-        btn_london = toga.Button("LON", on_press=self.goto_london, style=btn_style)
-        btn_austin = toga.Button("AUS", on_press=self.goto_austin, style=btn_style)
-        btn_rio = toga.Button("RIO", on_press=self.goto_rio, style=btn_style)
-        btn_where = toga.Button("???", on_press=self.where_am_i, style=btn_style)
+        btn_perth = toga.Button("PER", on_press=self.goto_perth, flex=1)
+        btn_london = toga.Button("LON", on_press=self.goto_london, flex=1)
+        btn_austin = toga.Button("AUS", on_press=self.goto_austin, flex=1)
+        btn_rio = toga.Button("RIO", on_press=self.goto_rio, flex=1)
+        btn_where = toga.Button("???", on_press=self.where_am_i, flex=1)
         location_box = toga.Box(
             children=[btn_perth, btn_london, btn_austin, btn_rio, btn_where],
-            style=Pack(direction=ROW, margin=5),
+            direction=ROW,
+            margin=5,
         )
 
         # Zoom buttons
         zoom_box = toga.Box(
             children=[
-                toga.Button(i, on_press=self.zoom(i), style=btn_style)
-                for i in range(0, 20, 3)
+                toga.Button(i, on_press=self.zoom(i), flex=1) for i in range(0, 20, 3)
             ],
-            style=Pack(direction=ROW, margin=5),
+            direction=ROW,
+            margin=5,
         )
 
         # Point Of Interest buttons
-        btn_pin_1 = toga.Button("Pin 1", on_press=self.goto_pin_1, style=btn_style)
-        btn_pin_2 = toga.Button("Pin 2", on_press=self.goto_pin_2, style=btn_style)
-        btn_pin_3 = toga.Button("Pin 3", on_press=self.goto_pin_3, style=btn_style)
-        btn_move = toga.Button("Move", on_press=self.move_carmen, style=btn_style)
+        btn_pin_1 = toga.Button("Pin 1", on_press=self.goto_pin_1, flex=1)
+        btn_pin_2 = toga.Button("Pin 2", on_press=self.goto_pin_2, flex=1)
+        btn_pin_3 = toga.Button("Pin 3", on_press=self.goto_pin_3, flex=1)
+        btn_move = toga.Button("Move", on_press=self.move_carmen, flex=1)
         pin_box = toga.Box(
             children=[btn_pin_1, btn_pin_2, btn_pin_3, btn_move],
-            style=Pack(direction=ROW, margin=5),
+            direction=ROW,
+            margin=5,
         )
 
         # Label to show responses.
-        self.label = toga.Label("Ready.", style=Pack(margin=5))
+        self.label = toga.Label("Ready.", margin=5)
 
         # Add the content on the main window
         self.main_window.content = toga.Box(
             children=[self.map_view, location_box, zoom_box, pin_box, self.label],
-            style=Pack(flex=1, direction=COLUMN),
+            flex=1,
+            direction=COLUMN,
         )
 
         # Show the main window
@@ -115,9 +116,8 @@ class ExampleMapViewApp(toga.App):
 
 
 def main():
-    return ExampleMapViewApp("Map View", "org.beeware.toga.examples.mapview")
+    return MapViewApp("Map View", "org.beeware.toga.examples.mapview")
 
 
 if __name__ == "__main__":
-    app = main()
-    app.main_loop()
+    main().main_loop()

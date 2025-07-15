@@ -1,9 +1,8 @@
 import toga
 from toga.constants import COLUMN, ROW
-from toga.style import Pack
 
 
-class ExampleOptionContainerApp(toga.App):
+class OptionContainerApp(toga.App):
     def _create_options(self):
         self._box_count = 0
         for _ in range(3):
@@ -14,7 +13,8 @@ class ExampleOptionContainerApp(toga.App):
         result = (
             f"Option {self._box_count}",
             toga.Box(
-                style=Pack(background_color="cyan", margin=10),
+                background_color="cyan",
+                margin=10,
                 children=[toga.Label(f"This is Box {self._box_count}")],
             ),
         )
@@ -89,57 +89,55 @@ class ExampleOptionContainerApp(toga.App):
         self.main_window = toga.MainWindow()
 
         # styles
-        style_flex = Pack(flex=1, margin=5)
+        style_flex = {"flex": 1, "margin": 5}
 
         # select
-        label_select = toga.Label("Select an Option position:", style=style_flex)
-        self.select_option = toga.Selection(style=Pack(margin=5, width=50))
+        label_select = toga.Label("Select an Option position:", **style_flex)
+        self.select_option = toga.Selection(margin=5, width=50)
         # buttons
         btn_activate = toga.Button(
-            "Activate", on_press=self.on_activate_option, style=style_flex
+            "Activate", on_press=self.on_activate_option, **style_flex
         )
-        btn_remove = toga.Button(
-            "Remove", on_press=self.on_remove_option, style=style_flex
-        )
+        btn_remove = toga.Button("Remove", on_press=self.on_remove_option, **style_flex)
         btn_enabled = toga.Button(
-            "Toggle enabled", on_press=self.on_enable_option, style=style_flex
+            "Toggle enabled", on_press=self.on_enable_option, **style_flex
         )
         # change title
-        self.input_change_title = toga.TextInput(style=style_flex)
+        self.input_change_title = toga.TextInput(**style_flex)
         btn_change_title = toga.Button(
-            "Change title", on_press=self.on_change_option_title, style=style_flex
+            "Change title", on_press=self.on_change_option_title, **style_flex
         )
 
         box_select = toga.Box(
-            style=Pack(direction=ROW, margin_right=10, width=200),
+            direction=ROW,
+            margin_right=10,
+            width=200,
             children=[label_select, self.select_option],
         )
         box_actions_1 = toga.Box(
-            style=Pack(direction=ROW),
+            direction=ROW,
             children=[btn_activate, btn_remove, btn_enabled],
         )
         box_actions_2 = toga.Box(
-            style=Pack(direction=ROW),
+            direction=ROW,
             children=[self.input_change_title, btn_change_title],
         )
 
         self.selected_label = toga.Label("")
         self.optioncontainer = toga.OptionContainer(
-            on_select=self.on_select_tab, style=Pack(margin_bottom=20, flex=1)
+            on_select=self.on_select_tab, margin_bottom=20, flex=1
         )
         self._create_options()
 
         btn_add = toga.Button(
-            "Append new option", style=Pack(margin=5), on_press=self.on_add_option
+            "Append new option", margin=5, on_press=self.on_add_option
         )
         btn_insert = toga.Button(
             "Insert new option before active option",
-            style=Pack(margin=5),
+            margin=5,
             on_press=self.on_insert_option,
         )
-        box_general_actions = toga.Box(
-            style=Pack(margin_bottom=10), children=[btn_add, btn_insert]
-        )
+        box_general_actions = toga.Box(margin_bottom=10, children=[btn_add, btn_insert])
 
         # Outermost box
         outer_box = toga.Box(
@@ -151,11 +149,9 @@ class ExampleOptionContainerApp(toga.App):
                 self.selected_label,
                 self.optioncontainer,
             ],
-            style=Pack(
-                flex=1,
-                direction=COLUMN,
-                margin=10,
-            ),
+            flex=1,
+            direction=COLUMN,
+            margin=10,
         )
 
         self.commands.add(
@@ -183,11 +179,10 @@ class ExampleOptionContainerApp(toga.App):
 
 
 def main():
-    return ExampleOptionContainerApp(
+    return OptionContainerApp(
         "Option Container Example", "org.beeware.toga.examples.optioncontainer"
     )
 
 
 if __name__ == "__main__":
-    app = main()
-    app.main_loop()
+    main().main_loop()
