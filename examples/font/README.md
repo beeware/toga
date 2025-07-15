@@ -1,6 +1,6 @@
 # Font
 
-Test app for the
+Test app for
 [font](https://toga.beeware.org/en/stable/reference/api/resources/fonts.html)
 manipulation.
 
