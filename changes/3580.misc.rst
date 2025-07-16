@@ -1,0 +1,1 @@
+The width of the iOS widget DateInput and TimeInput is fixed.
