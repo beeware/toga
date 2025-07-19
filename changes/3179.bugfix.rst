@@ -1,0 +1,3 @@
+The toga-winforms wheel is labelled correctly as ``py3-none-win_amd64``.
+The toga-winforms wheel includes only ``in-x64``-specific WebView2 dll from now on.
+The toga-winforms package keywords and classifiers reflect being specific to Windows & dotnet.

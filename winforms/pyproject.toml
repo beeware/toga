@@ -25,16 +25,17 @@ maintainers = [
 keywords = [
     "gui",
     "widget",
-    "cross-platform",
+    "windows",
+    "winforms",
     "toga",
     "desktop",
-    "macOS",
-    "cocoa",
+    ".net",
+    "dotnet",
 ]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
-    "Operating System :: OS Independent",
+    "Operating System :: Microsoft :: Windows",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
@@ -58,8 +59,15 @@ Changelog = "https://toga.readthedocs.io/en/stable/background/project/releases.h
 [project.entry-points."toga.backends"]
 windows = "toga_winforms"
 
+[tool.distutils.bdist_wheel]
+plat-name = "win_amd64"
+
 [tool.setuptools_scm]
 root = ".."
+
+# see MANIFEST.in for details
+[tool.setuptools]
+include-package-data = true
 
 [tool.setuptools_dynamic_dependencies]
 dependencies = [
