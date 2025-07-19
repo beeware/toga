@@ -11,7 +11,7 @@ from .base import StyleT, Widget
 
 
 class OnChangeHandler(Protocol):
-    def __call__(self, widget: Slider, **kwargs: Any) -> object:
+    def __call__(self, widget: Slider, **kwargs: Any) -> None:
         """A handler to invoke when the value is changed.
 
         :param widget: The Slider that was changed.
@@ -20,7 +20,7 @@ class OnChangeHandler(Protocol):
 
 
 class OnPressHandler(Protocol):
-    def __call__(self, widget: Slider, **kwargs: Any) -> object:
+    def __call__(self, widget: Slider, **kwargs: Any) -> None:
         """A handler to invoke when the slider is pressed.
 
         :param widget: The Slider that was pressed.
@@ -29,7 +29,7 @@ class OnPressHandler(Protocol):
 
 
 class OnReleaseHandler(Protocol):
-    def __call__(self, widget: Slider, **kwargs: Any) -> object:
+    def __call__(self, widget: Slider, **kwargs: Any) -> None:
         """A handler to invoke when the slider is pressed.
 
         :param widget: The Slider that was released.

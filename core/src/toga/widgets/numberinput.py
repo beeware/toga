@@ -72,7 +72,7 @@ def _clean_decimal_str(value: str) -> str:
 
 
 class OnChangeHandler(Protocol):
-    def __call__(self, widget: NumberInput, **kwargs: Any) -> object:
+    def __call__(self, widget: NumberInput, **kwargs: Any) -> None:
         """A handler to invoke when the value is changed.
 
         :param widget: The NumberInput that was changed.
