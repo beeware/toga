@@ -1,0 +1,1 @@
+Under GTK 3, ``toga.App.dark_mode`` returns the value of the GTK setting ``gtk-application-prefer-dark-theme``
