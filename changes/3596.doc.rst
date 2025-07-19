@@ -1,0 +1,1 @@
+The Success Stories page has been reformatted as a table, making it easier to compare applications and see which platforms and BeeWare components they use.
