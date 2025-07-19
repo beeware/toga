@@ -249,8 +249,8 @@ class ListSource(Source):
                 start=start,
                 error=f"No row matching {data!r} in data",
             )
-        except ValueError as e:
+        except ValueError:
             if default is UNDEFINED:
-                raise e
+                raise
             else:
                 return default
