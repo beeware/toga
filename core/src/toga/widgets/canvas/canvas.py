@@ -40,9 +40,7 @@ class OnTouchHandler(Protocol):
 
 
 class OnResizeHandler(Protocol):
-    def __call__(
-        self, widget: Canvas, width: int, height: int, **kwargs: Any
-    ) -> None:
+    def __call__(self, widget: Canvas, width: int, height: int, **kwargs: Any) -> None:
         """A handler that will be invoked when a :any:`Canvas` is resized.
 
         :param widget: The canvas that was resized.
