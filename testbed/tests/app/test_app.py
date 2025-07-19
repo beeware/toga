@@ -256,5 +256,8 @@ async def test_app_icon(app, app_probe):
     app_probe.assert_app_icon(None)
 
 
-async def test_dark_mode_state_read(app):
-    assert isinstance(app.dark_mode, (NoneType, bool))
+async def test_dark_mode_state_read(app, app_probe):
+    if app_probe.supports_dark_mode:
+        assert isinstance(app.dark_mode, bool)
+    else:
+        assert isinstance(app.dark_mode, NoneType)

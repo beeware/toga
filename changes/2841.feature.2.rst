@@ -1,0 +1,1 @@
+Testbed differentiates between platforms that support dark mode and those that do not.
