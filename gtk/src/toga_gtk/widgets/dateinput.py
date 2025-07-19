@@ -33,7 +33,11 @@ class DateInput(Widget):
         self.set_min_date(MIN_DATE)
         self.set_max_date(MAX_DATE)
 
-        self.native.connect("day-selected", self.gtk_on_day_selected)
+        self.native.connect("day-selected", self.gtk_on_change)
+        self.native.connect("next-month", self.gtk_on_change)
+        self.native.connect("next-year", self.gtk_on_change)
+        self.native.connect("prev-month", self.gtk_on_change)
+        self.native.connect("prev-year", self.gtk_on_change)
 
     def get_value(self):
         return py_date(self.native.get_date())
@@ -51,7 +55,7 @@ class DateInput(Widget):
 
             self.interface.intrinsic.width = at_least(width[0])
             self.interface.intrinsic.height = height[0]
-        else:
+        else:  # pragma: no-cover-if-gtk3
             min_size, _ = self.native.get_preferred_size()
             self.interface.intrinsic.width = at_least(min_size.width)
             self.interface.intrinsic.height = at_least(min_size.height)
@@ -68,5 +72,14 @@ class DateInput(Widget):
     def set_max_date(self, value):
         self.native.maxDate = native_date(value)
 
-    def gtk_on_day_selected(self, *_args):
+    def gtk_on_change(self, *_args):
+        current_date = self.get_value()
+        min_date = self.get_min_date()
+        max_date = self.get_max_date()
+
+        if current_date < min_date:
+            self.set_value(min_date)
+        elif current_date > max_date:
+            self.set_value(max_date)
+
         self.interface.on_change()
