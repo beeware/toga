@@ -11,7 +11,7 @@ class Icon:
     EXTENSIONS = [".icns", ".png", ".bmp", ".ico"]
     SIZES = None
 
-    def __init__(self, interface, path):
+    def __init__(self, interface, path, size=None):
         self.interface = interface
 
         if path is None:
@@ -19,11 +19,13 @@ class Icon:
             raise FileNotFoundError("No runtime app icon")
 
         self.path = path
+        self.size = size
         self.native = UIImage.imageWithContentsOfFile(str(path))
         if self.native is None:
             raise ValueError(f"Unable to load icon from {path}")
 
-    def _as_size(self, size):
+    def _as_size(self, default_size):
+        size = self.size if self.size is not None else default_size
         renderer = UIGraphicsImageRenderer.alloc().initWithSize(NSSize(size, size))
 
         def _resize(context: UIGraphicsImageRendererContext) -> None:

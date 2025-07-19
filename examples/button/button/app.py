@@ -47,6 +47,7 @@ class ButtonApp(toga.App):
                 button4a,
                 button4b,
             ],
+            gap=10,
         )
 
         # Button with text and margin style
@@ -71,10 +72,16 @@ class ButtonApp(toga.App):
             icon=toga.Icon("resources/star"),
         )
 
+        # Button with a resized icon
+        button10 = toga.Button(
+            icon=toga.Icon("resources/star", size=16),
+        )
+
         # Add components for the second row of the outer box
         inner_box2 = toga.Box(
             direction=COLUMN,
-            children=[button5, button6, button7, button8, button9],
+            children=[button5, button6, button7, button8, button9, button10],
+            gap=10,
         )
 
         #  Create the outer box with 2 rows

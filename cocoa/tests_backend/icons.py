@@ -32,6 +32,19 @@ class IconProbe(BaseProbe):
         else:
             pytest.fail("Unknown icon resource")
 
+    def assert_icon_size(self, path):
+        if path == "resources/icons/green":
+            assert (
+                self.icon._impl.path
+                == self.app.paths.app / "resources/icons/green.icns"
+            )
+        elif path == "resources/icons/blue":
+            assert (
+                self.icon._impl.path == self.app.paths.app / "resources/icons/blue.png"
+            )
+        else:
+            pytest.fail("Unknown icon resource")
+
     def assert_default_icon_content(self):
         assert (
             self.icon._impl.path

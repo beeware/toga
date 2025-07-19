@@ -8,9 +8,10 @@ class Icon:
     EXTENSIONS = [".ico", ".png", ".bmp"]
     SIZES = None
 
-    def __init__(self, interface, path):
+    def __init__(self, interface, path, size=None):
         self.interface = interface
         self.path = path
+        self.size = size
 
         try:
             if path is None:

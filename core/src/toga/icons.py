@@ -69,6 +69,7 @@ class Icon:
     def __init__(
         self,
         path: str | Path,
+        size: int | None = None,
         *,
         system: bool = False,  # Deliberately undocumented; for internal use only
     ):
@@ -81,6 +82,8 @@ class Icon:
             icon will be :attr:`~toga.Icon.DEFAULT_ICON`. If an icon file is found, but
             it cannot be loaded (due to a file format or permission error), an exception
             will be raised.
+        :param size: The size of the icon. This attribute is currently only supported
+            within buttons.
         :param system: **For internal use only**
         """
         self.factory = get_platform_factory()
@@ -92,6 +95,7 @@ class Icon:
             else:
                 self.path = Path(path)
 
+            self.size = size
             self.system = system
             if self.system:
                 resource_path = Path(self.factory.__file__).parent / "resources"
@@ -118,7 +122,9 @@ class Icon:
                     resource_path=resource_path,
                 )
 
-            self._impl = self.factory.Icon(interface=self, path=full_path)
+            self._impl = self.factory.Icon(
+                interface=self, path=full_path, size=self.size
+            )
         except FileNotFoundError:
             # Icon path couldn't be found. If the path is the sentinel for the app
             # icon, and this isn't running as a script, fall back to the application
@@ -127,7 +133,9 @@ class Icon:
                 if toga.App.app.is_bundled:
                     try:
                         # Use the application binary's icon
-                        self._impl = self.factory.Icon(interface=self, path=None)
+                        self._impl = self.factory.Icon(
+                            interface=self, path=None, size=self.size
+                        )
                     except FileNotFoundError:
                         # Can't find the application binary's icon.
                         print(

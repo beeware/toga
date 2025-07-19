@@ -36,8 +36,7 @@ class Button(Widget):
                 self.native.set_always_show_image(False)
         else:  # pragma: no-cover-if-gtk3
             if icon:
-                icon._impl.native.set_icon_size(Gtk.IconSize.LARGE)
-                self.native.set_child(icon._impl.native)
+                self.native.set_child(icon._impl.native(Gtk.IconSize.LARGE))
             else:
                 text = self.native.get_label()
                 if text:

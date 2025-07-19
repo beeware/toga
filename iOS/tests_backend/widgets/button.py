@@ -16,10 +16,10 @@ class ButtonProbe(SimpleProbe):
     def assert_no_icon(self):
         assert self.native.imageForState(UIControlStateNormal) is None
 
-    def assert_icon_size(self):
+    def assert_icon_size(self, size=48):
         icon = self.native.imageForState(UIControlStateNormal)
         if icon:
-            assert (icon.size.width, icon.size.height) == (48, 48)
+            assert (icon.size.width, icon.size.height) == (size, size)
         else:
             pytest.fail("Icon does not exist")
 

@@ -9,6 +9,8 @@ from toga.colors import TRANSPARENT
 
 from .label import TextViewWidget
 
+DEFAULT_ICON_SIZE = 48
+
 
 class TogaOnClickListener(dynamic_proxy(View.OnClickListener)):
     def __init__(self, button_impl):
@@ -41,8 +43,9 @@ class Button(TextViewWidget):
     def set_icon(self, icon):
         self._icon = icon
         if icon:
-            # Scale icon to to a 48x48 CSS pixel bitmap drawable.
-            drawable = icon._impl.as_drawable(self, 48)
+            # Scale icon to a CSS pixel bitmap drawable (default to 48x48 if the size
+            # hasn't been provided).
+            drawable = icon._impl.as_drawable(self, DEFAULT_ICON_SIZE)
         else:
             drawable = None
 
@@ -57,10 +60,13 @@ class Button(TextViewWidget):
     def rehint(self):
         if self._icon:
             # Icons aren't considered "inside" the button, so they aren't part of the
-            # "measured" size. Hardcode a button size of 48x48 pixels with 10px of
-            # padding (in CSS pixels).
-            self.interface.intrinsic.width = at_least(68)
-            self.interface.intrinsic.height = 68
+            # "measured" size. Hardcode a button size of the icon size (or the 48x48
+            # pixels default) with 10px of padding on each side (in CSS pixels).
+            size = 20 + (
+                DEFAULT_ICON_SIZE if self._icon.size is None else self._icon.size
+            )
+            self.interface.intrinsic.width = at_least(size)
+            self.interface.intrinsic.height = size
         else:
             self.native.measure(
                 View.MeasureSpec.UNSPECIFIED,

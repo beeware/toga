@@ -14,10 +14,10 @@ class ButtonProbe(LabelProbe):
     def assert_no_icon(self):
         return self.native.getCompoundDrawablesRelative()[0] is None
 
-    def assert_icon_size(self):
+    def assert_icon_size(self, size=48):
         icon = self.native.getCompoundDrawablesRelative()[0]
         if icon:
-            scaled_size = (self.impl.scale_in(48), self.impl.scale_in(48))
+            scaled_size = (self.impl.scale_in(size), self.impl.scale_in(size))
             assert (icon.getIntrinsicWidth(), icon.getIntrinsicHeight()) == scaled_size
         else:
             pytest.fail("Icon does not exist")

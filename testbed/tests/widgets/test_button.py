@@ -87,6 +87,12 @@ async def test_icon(widget, probe):
     assert probe.height == initial_height
 
 
+async def test_icon_size(widget, probe):
+    """The button can have an icon of the specific size"""
+    widget.icon = toga.Icon("resources/icons/red", size=16)
+    probe.assert_icon_size(16)
+
+
 async def test_press(widget, probe):
     # Press the button before installing a handler
     await probe.press()

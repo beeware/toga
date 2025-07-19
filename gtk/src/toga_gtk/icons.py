@@ -10,9 +10,10 @@ class Icon:
     EXTENSIONS = [".png", ".ico", ".icns"]
     SIZES = [512, 256, 128, 72, 64, 32, 16]
 
-    def __init__(self, interface, path):
+    def __init__(self, interface, path, size=None):
         self.interface = interface
         self._native = {}
+        self.size = size
 
         if path is None:
             # Use the executable location to find the share folder; look for icons
@@ -45,17 +46,25 @@ class Icon:
             raise ValueError(f"Unable to load icon from {path}") from exc
 
     def native(self, size):
+        pixel_size = self.size
+        if pixel_size is None and GTK_VERSION < (4, 0, 0):
+            pixel_size = size
         try:
-            return self._native[size]
+            return self._native[pixel_size]
         except KeyError:
-            if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            native = self._native[next(iter(self._native))]
+            if GTK_VERSION < (4, 0, 0):
+                # pragma: no-cover-if-gtk4
                 # self._native will have at least one entry, and it will have been
                 # populated in reverse size order, so the first value returned will
                 # be the largest size discovered.
-                native = self._native[next(iter(self._native))].scale_simple(
-                    size, size, GdkPixbuf.InterpType.BILINEAR
-                )
+                native = native.scale_simple(size, size, GdkPixbuf.InterpType.BILINEAR)
                 self._native[size] = native
                 return native
             else:  # pragma: no-cover-if-gtk3
-                return None
+                if pixel_size is not None:
+                    native.set_pixel_size(self.size)
+                    self._native[pixel_size] = native
+                else:
+                    native.set_icon_size(size)
+                return native

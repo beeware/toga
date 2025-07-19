@@ -1,6 +1,7 @@
 from decimal import ROUND_UP
 
 import System.Windows.Forms as WinForms
+from System.Drawing import Size
 from travertino.size import at_least
 
 from toga.colors import TRANSPARENT
@@ -14,6 +15,7 @@ class Button(Widget):
         self.native = WinForms.Button()
         self.native.AutoSizeMode = WinForms.AutoSizeMode.GrowAndShrink
         self.native.Click += WeakrefCallable(self.winforms_click)
+        self.native.ImageList = WinForms.ImageList()
 
         self._icon = None
 
@@ -40,9 +42,18 @@ class Button(Widget):
     def set_icon(self, icon):
         self._icon = icon
         if icon:
-            self.native.Image = icon._impl.native.ToBitmap()
+            size = icon.size if icon.size is not None else 48
+            # Use an image list to display the icon so the size can be set.
+            index = self.native.ImageList.Images.IndexOfKey(str(size))
+            if index == -1:
+                index = self.native.ImageList.Images.Count
+                self.native.ImageList.Images.Add(
+                    str(size), icon._impl.native.ToBitmap()
+                )
+            self.native.ImageList.ImageSize = Size(size, size)
+            self.native.ImageIndex = index
         else:
-            self.native.Image = None
+            self.native.ImageIndex = -1
 
     def set_background_color(self, color):
         super().set_background_color(

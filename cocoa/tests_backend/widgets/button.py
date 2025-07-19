@@ -17,10 +17,10 @@ class ButtonProbe(SimpleProbe):
     def assert_no_icon(self):
         assert self.native.image is None
 
-    def assert_icon_size(self):
+    def assert_icon_size(self, size=32):
         icon = self.native.image
         if icon:
-            assert (icon.size.width, icon.size.height) == (32, 32)
+            assert (icon.size.width, icon.size.height) == (size, size)
         else:
             fail("Icon does not exist")
 

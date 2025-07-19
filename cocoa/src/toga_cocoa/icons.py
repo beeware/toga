@@ -9,9 +9,10 @@ class Icon:
     EXTENSIONS = [".icns", ".png", ".pdf"]
     SIZES = None
 
-    def __init__(self, interface, path):
+    def __init__(self, interface, path, size=None):
         self.interface = interface
         self.interface._impl = self
+        self.size = size
 
         if path is None:
             # Look to the app bundle, and get the icon. Set self.path as None
@@ -42,7 +43,8 @@ class Icon:
         if self.native is None:
             raise ValueError(f"Unable to load icon from {path}")
 
-    def _as_size(self, size):
+    def _as_size(self, default_size):
+        size = self.size if self.size is not None else default_size
         image = self.native.copy()
         image.setSize(NSSize(size, size))
         return image

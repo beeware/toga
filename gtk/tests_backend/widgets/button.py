@@ -16,10 +16,10 @@ class ButtonProbe(SimpleProbe):
     def assert_no_icon(self):
         assert self.native.get_image() is None
 
-    def assert_icon_size(self):
+    def assert_icon_size(self, size=32):
         icon = self.native.get_image().get_pixbuf()
         if icon:
-            assert (icon.get_width(), icon.get_height()) == (32, 32)
+            assert (icon.get_width(), icon.get_height()) == (size, size)
         else:
             pytest.fail("Icon does not exist")
 
