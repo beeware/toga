@@ -405,7 +405,7 @@ def test_find(source):
     # A partial match is enough
     assert source.find({"val1": "third"}) == source[2]
 
-    # find will fail if the object doesn't exist
+    # find will raise ValueError if no match is found and no default is provided
     with pytest.raises(
         ValueError,
         match=r"No row matching {'val1': 'not there', 'val2': 999} in data",
@@ -421,3 +421,6 @@ def test_find(source):
         ),
     ):
         source.find({"val1": "first", "val2": 111, "value": "overspecified"})
+
+    # If a default is provided, it will be returned if no match is found
+    assert source.find({"val1": "not there", "val2": 999}, default=None) is None
