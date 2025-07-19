@@ -17,7 +17,7 @@ MAX_DATE = datetime.date(8999, 12, 31)
 
 
 class OnChangeHandler(Protocol):
-    def __call__(self, widget: DateInput, **kwargs: Any) -> object:
+    def __call__(self, widget: DateInput, **kwargs: Any) -> None:
         """A handler that will be invoked when a change occurs.
 
         :param widget: The DateInput that was changed.

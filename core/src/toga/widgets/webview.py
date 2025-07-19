@@ -17,7 +17,7 @@ class CookiesResult(AsyncResult):
 
 
 class OnWebViewLoadHandler(Protocol):
-    def __call__(self, widget: WebView, **kwargs: Any) -> object:
+    def __call__(self, widget: WebView, **kwargs: Any) -> None:
         """A handler to invoke when the WebView is loaded.
 
         :param widget: The WebView that was loaded.

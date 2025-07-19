@@ -28,7 +28,7 @@ if TYPE_CHECKING:
 
 
 class OnTouchHandler(Protocol):
-    def __call__(self, widget: Canvas, x: int, y: int, **kwargs: Any) -> object:
+    def __call__(self, widget: Canvas, x: int, y: int, **kwargs: Any) -> None:
         """A handler that will be invoked when a :any:`Canvas` is touched with a finger
         or mouse.
 
@@ -42,7 +42,7 @@ class OnTouchHandler(Protocol):
 class OnResizeHandler(Protocol):
     def __call__(
         self, widget: Canvas, width: int, height: int, **kwargs: Any
-    ) -> object:
+    ) -> None:
         """A handler that will be invoked when a :any:`Canvas` is resized.
 
         :param widget: The canvas that was resized.

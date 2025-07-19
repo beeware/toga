@@ -13,7 +13,7 @@ SourceT = TypeVar("SourceT", bound=Source)
 
 
 class OnPrimaryActionHandler(Protocol):
-    def __call__(self, widget: DetailedList, row: Any, **kwargs: Any) -> object:
+    def __call__(self, widget: DetailedList, row: Any, **kwargs: Any) -> None:
         """A handler to invoke for the primary action.
 
         :param widget: The DetailedList that was invoked.
@@ -23,7 +23,7 @@ class OnPrimaryActionHandler(Protocol):
 
 
 class OnSecondaryActionHandler(Protocol):
-    def __call__(self, widget: DetailedList, row: Any, **kwargs: Any) -> object:
+    def __call__(self, widget: DetailedList, row: Any, **kwargs: Any) -> None:
         """A handler to invoke for the secondary action.
 
         :param widget: The DetailedList that was invoked.
@@ -33,7 +33,7 @@ class OnSecondaryActionHandler(Protocol):
 
 
 class OnRefreshHandler(Protocol):
-    def __call__(self, widget: DetailedList, **kwargs: Any) -> object:
+    def __call__(self, widget: DetailedList, **kwargs: Any) -> None:
         """A handler to invoke when the detailed list is refreshed.
 
         :param widget: The DetailedList that was refreshed.
@@ -42,7 +42,7 @@ class OnRefreshHandler(Protocol):
 
 
 class OnSelectHandler(Protocol):
-    def __call__(self, widget: DetailedList, **kwargs: Any) -> object:
+    def __call__(self, widget: DetailedList, **kwargs: Any) -> None:
         """A handler to invoke when the detailed list is selected.
 
         :param widget: The DetailedList that was selected.
