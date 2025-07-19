@@ -13,10 +13,12 @@ class WebViewApp(toga.App):
         )
 
     async def on_bad_js(self, widget, **kwargs):
-        result = await self.webview.evaluate_javascript("invalid js")
-        return await self.on_bad_js_result(result)
-
-    async def on_bad_js_result(self, result, *, exception=None):
+        try:
+            result = await self.webview.evaluate_javascript("invalid js")
+            exception = None
+        except Exception as exc:
+            result = None
+            exception = exc
         self.label.text = f"{result=!r}, {exception=!r}"
 
     def on_webview_load(self, widget, **kwargs):
