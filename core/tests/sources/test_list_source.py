@@ -422,5 +422,15 @@ def test_find(source):
     ):
         source.find({"val1": "first", "val2": 111, "value": "overspecified"})
 
+
+def test_find_with_default(source):
+    """You can provide a default return value to the find method."""
+
+    # Duplicate row 1 of the data.
+    source.append({"val1": "second", "val2": 222})
+
     # If a default is provided, it will be returned if no match is found
+    assert source.find({"val1": "not there", "val2": 999}, default=-1) == -1
+
+    # If the given default value is None, None will be returned if no match is found
     assert source.find({"val1": "not there", "val2": 999}, default=None) is None
