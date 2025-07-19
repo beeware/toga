@@ -217,8 +217,9 @@ class App:
     ######################################################################
 
     def get_dark_mode_state(self):
-        self.interface.factory.not_implemented("dark mode state")
-        return None
+        return Gtk.Settings.get_default().get_property(
+            "gtk-application-prefer-dark-theme"
+        )
 
     ######################################################################
     # App capabilities
