@@ -34,7 +34,6 @@ class DateInputProbe(DateTimeInputProbe):
     def __init__(self, widget):
         super().__init__(widget)
         self.minimum_required_height = 236
-        # assert self.native.show_day_names == Gtk.Calendar.show_day_names
 
     def py_value(self, native_value):
         year, month, day = native_value
