@@ -24,6 +24,9 @@ class TogaDatePicker(UIDatePicker):
     @objc_method
     def dateInputDidChange_(self, dateInput) -> None:
         self.interface.on_change()
+        self.setNeedsLayout()
+        self.layoutIfNeeded()
+        self.impl.refresh()
 
 
 def py_date(native_date):
@@ -81,7 +84,7 @@ class DateInput(Widget):
 
     def rehint(self):
         fitting_size = self.native.systemLayoutSizeFittingSize(CGSize(0, 0))
-        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
+        self.interface.intrinsic.width = at_least(fitting_size.width)
         self.interface.intrinsic.height = fitting_size.height
 
     def get_min_date(self):
