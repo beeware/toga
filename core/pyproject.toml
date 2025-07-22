@@ -72,8 +72,9 @@ dev = [
     "pytest-xdist == 3.8.0",
     "setuptools-scm == 8.3.1",
     "tox == 4.28.0",
-    # typing-extensions needed for TypeAlias added in Py 3.10
-    "typing-extensions == 4.12.2 ; python_version < '3.10'",
+    # typing-extensions 4.12.2+ needed for TypeAlias added in Py 3.10.
+    # Tox dependencies force us to pin a newer version.
+    "typing-extensions == 4.14.1 ; python_version < '3.10'",
 ]
 # Docs are always built on a specific Python version; see RTD and tox config files,
 # and the docs contribution guide.
