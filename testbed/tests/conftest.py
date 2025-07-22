@@ -154,8 +154,8 @@ class ProxyEventLoop(asyncio.AbstractEventLoop):
     closed: bool = False
 
     # Used by ensure_future.
-    def create_task(self, coro):
-        return ProxyTask(coro)
+    def create_task(self, coro, **kwargs):
+        return ProxyTask(coro, kwargs)
 
     def run_until_complete(self, future):
         if inspect.iscoroutine(future):
@@ -171,6 +171,11 @@ class ProxyEventLoop(asyncio.AbstractEventLoop):
         # underlying event loop will shut down its own async generators.
         pass
 
+    async def shutdown_default_executor(self, timeout):
+        # The proxy event loop doesn't need to shut anything down; the
+        # underlying event loop will shut down its own executor.
+        pass
+
     def is_closed(self):
         return self.closed
 
@@ -181,6 +186,7 @@ class ProxyEventLoop(asyncio.AbstractEventLoop):
 @dataclass
 class ProxyTask:
     coro: object
+    kwargs: dict
 
     # Used by ensure_future.
     _source_traceback = None
