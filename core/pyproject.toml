@@ -83,7 +83,7 @@ docs = [
     # independent of the docs extra. Ideally, we'd use dependency groups for docs
     # dependencies, but RTD doesn't support them yet.
     # "beeware_theme @ git+https://github.com/beeware/beeware-theme",
-    "furo == 2024.8.6",
+    "furo == 2025.7.19",
     "Pillow == 11.3.0",
     "pyenchant == 3.2.2",
     "sphinx == 8.2.3",
