@@ -42,17 +42,6 @@ classifiers = [
     "Topic :: Software Development :: User Interfaces",
 ]
 
-[project.optional-dependencies]
-# These are needed in order to run Travertino's test suite.
-dev = [
-    "coverage[toml] == 7.9.2",
-    "coverage-conditional-plugin == 0.9.0",
-    "pytest == 8.4.1",
-    "tox == 4.27.0",
-    # typing-extensions needed for TypeAlias added in Py 3.10
-    "typing-extensions == 4.12.2 ; python_version < '3.10'",
-]
-
 [project.urls]
 Homepage = "https://beeware.org/travertino"
 Funding = "https://beeware.org/contributing/membership/"
