@@ -14,7 +14,8 @@ readme = "README.rst"
 requires-python = ">= 3.9"
 license = "BSD-3-Clause"
 license-files = [
-    "LICENSE"
+    "LICENSE",
+    "src/toga_winforms/libs/WebView2/LICENSE.md",
 ]
 authors = [
     {name="Russell Keith-Magee", email="russell@keith-magee.com"},
@@ -60,14 +61,12 @@ Changelog = "https://toga.readthedocs.io/en/stable/background/project/releases.h
 windows = "toga_winforms"
 
 [tool.distutils.bdist_wheel]
+# This backend needs to be tagged `py3-none-win_arm64`. All the code in this backend is
+# pure Python, *but* it contains pre-compiled binary libraries to support WebView2.
 plat-name = "win_amd64"
 
 [tool.setuptools_scm]
 root = ".."
-
-# see MANIFEST.in for details
-[tool.setuptools]
-include-package-data = true
 
 [tool.setuptools_dynamic_dependencies]
 dependencies = [
