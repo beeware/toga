@@ -137,3 +137,9 @@ async def test_background_app(app):
         match=r"Apps without main windows are not supported on .*",
     ):
         app.main_window = toga.App.BACKGROUND
+
+
+async def test_raise_not_implemented_error_on_unsupported_widget(app):
+    with pytest.raises(NotImplementedError) as exc:
+        _ = app.factory.Nothing
+    assert "backend doesn't implement Nothing" in str(exc)

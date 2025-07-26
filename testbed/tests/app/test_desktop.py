@@ -937,3 +937,9 @@ async def test_background_app(
     finally:
         app.main_window = main_window
         await app_probe.restore_standard_app()
+
+
+async def test_raise_not_implemented_error_on_unsupported_widget(app):
+    with pytest.raises(NotImplementedError) as exc:
+        _ = app.factory.Nothing
+    assert "backend doesn't implement Nothing" in str(exc)
