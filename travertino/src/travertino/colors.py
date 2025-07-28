@@ -1,7 +1,17 @@
 from __future__ import annotations
 
 import string
-from itertools import batched
+import sys
+
+if sys.version_info < (3, 12):  # pragma: no-cover-if-gte-py311
+    from itertools import islice
+
+    def batched(iterable, n):
+        iterator = iter(iterable)
+        while batch := tuple(islice(iterator, n)):
+            yield batch
+else:  # pragma: no-cover-if-lt-py312
+    from itertools import batched
 
 from .constants import *  # noqa: F403
 
