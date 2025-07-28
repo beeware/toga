@@ -1,0 +1,1 @@
+In order to better match CSS, the ``rgb`` and ``hsl`` constructors now silently clip (or in the case of hue, wrap) out-of-range values rather than throwing errors. They also convert them to consistent types: integers for red, blue, green, and hue; and floats for saturation, lightness, and alpha.
