@@ -72,6 +72,10 @@ class Style(BaseStyle):
         optional=("explicit_none", "different_values_prop"),
         required=("explicit_const", "explicit_value"),
     )
+    composite_different_lengths: tuple[str] = composite_property(
+        optional=("explicit_none", "different_values_prop", "explicit_const"),
+        required=("explicit_value",),
+    )
 
     #########
     # Aliases

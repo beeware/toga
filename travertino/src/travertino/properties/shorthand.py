@@ -1,4 +1,19 @@
+from collections.abc import Sequence
+
 from ..constants import BOTTOM, LEFT, RIGHT, TOP
+
+
+def _comma_list(items, joiner="and"):
+    items = [f"'{item}'" for item in items]
+
+    if len(items) == 1:
+        return items[0]
+
+    if len(items) == 2:
+        return f"{items[0]} {joiner} {items[1]}"
+
+    items = (*items[:-1], f"{joiner} {items[-1]}")
+    return ", ".join(items)
 
 
 class shorthand_property:
@@ -90,10 +105,21 @@ class composite_property(shorthand_property):
             # supplied.
             return
 
-        if not self.min_num <= len(composite_value) <= self.max_num:
+        if (
+            not isinstance(composite_value, Sequence)
+            or isinstance(composite_value, str)
+            or not self.min_num <= len(composite_value) <= self.max_num
+        ):
+            if self.optional:
+                addendum = ", optionally preceded by " + _comma_list(
+                    self.optional, joiner="and/or"
+                )
+            else:
+                addendum = ""
+
             raise TypeError(
-                f"Composite property '{self.name}' must be set with at least "
-                f"{self.min_num} and no more than {self.max_num} values."
+                f"Composite property '{self.name}' assignment must provide "
+                f"{_comma_list(self.required)}{addendum}."
             )
 
         # Don't clear and set values until we're sure everything validates.

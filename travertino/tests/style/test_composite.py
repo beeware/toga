@@ -11,25 +11,66 @@ def test_default_values():
 
 
 @pytest.mark.parametrize(
-    "prop_name, min_num, max_num",
+    "prop_name, min_num, max_num, match",
     [
-        ("composite_no_optional", 2, 2),
-        ("composite_optional", 2, 4),
+        (
+            "composite_no_optional",
+            2,
+            2,
+            (
+                r"Composite property 'composite_no_optional' assignment must provide "
+                r"'explicit_const' and 'explicit_value'\."
+            ),
+        ),
+        (
+            "composite_optional",
+            2,
+            4,
+            (
+                r"Composite property 'composite_optional' assignment must provide "
+                r"'explicit_const' and 'explicit_value', optionally preceded by "
+                r"'explicit_none' and/or 'different_values_prop'\."
+            ),
+        ),
+        (
+            "composite_different_lengths",
+            1,
+            4,
+            (
+                r"Composite property 'composite_different_lengths' assignment must "
+                r"provide 'explicit_value', optionally preceded by 'explicit_none', "
+                r"'different_values_prop', and/or 'explicit_const'\."
+            ),
+        ),
     ],
 )
-def test_wrong_number_args(prop_name, min_num, max_num):
-    """Error when too many or not enough arguments."""
+def test_wrong_number_args(prop_name, min_num, max_num, match):
+    """Too many or not enough values raises an error."""
     for num_values in [min_num - 1, max_num + 1]:
         values = (VALUE1,) * num_values
 
-        with pytest.raises(
-            TypeError,
-            match=(
-                rf"Composite property '{prop_name}' must be set with at least "
-                rf"{min_num} and no more than {max_num} values\."
-            ),
-        ):
+        with pytest.raises(TypeError, match=match):
             _ = Style(**{prop_name: values})
+
+
+@pytest.mark.parametrize(
+    "value",
+    [
+        "I'm a string",
+        42,
+        None,
+    ],
+)
+def test_invalid_value(value):
+    """Assigning a string or a non-sequence also raises an error."""
+    with pytest.raises(
+        TypeError,
+        match=(
+            r"Composite property 'composite_no_optional' assignment must provide "
+            r"'explicit_const' and 'explicit_value'\."
+        ),
+    ):
+        _ = Style(composite_no_optional=value)
 
 
 def test_set_composite_with_no_optionals():
@@ -59,7 +100,9 @@ def test_assign_only_requied():
     """Assigning only the required properties works."""
     style = Style(composite_optional=(VALUE2, VALUE3))
 
+    # The two optional properties should still be their default values.
     assert_composite(style, (None, VALUE2, VALUE2, VALUE3))
+    # Confirm that they haven't been explicitly set.
     assert "different_values_prop" not in style
     assert "explicit_none" not in style
 

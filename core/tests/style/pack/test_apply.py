@@ -59,19 +59,22 @@ def test_set_background_color():
     root._impl.set_background_color.assert_called_once_with(rgb(255, 255, 255))
 
 
-@pytest.mark.parametrize("use_shorthand", [True, False])
-def test_set_font(use_shorthand):
-    if use_shorthand:
-        style = Pack(font=("normal", "small-caps", "bold", 12, "Roboto"))
-    else:
-        style = Pack(
-            font_family="Roboto",
-            font_size=12,
-            font_style="normal",
-            font_variant="small-caps",
-            font_weight="bold",
-        )
-
+@pytest.mark.parametrize(
+    "kwargs",
+    [
+        # Test with both shorthand and with individual properties.
+        {"font": ("normal", "small-caps", "bold", 12, "Roboto")},
+        {
+            "font_family": "Roboto",
+            "font_size": 12,
+            "font_style": "normal",
+            "font_variant": "small-caps",
+            "font_weight": "bold",
+        },
+    ],
+)
+def test_set_font(kwargs):
+    style = Pack(**kwargs)
     root = ExampleNode("app", style=style)
     root.style.apply()
     # Should only be called once, despite multiple font-related properties being set.

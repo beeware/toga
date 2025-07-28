@@ -77,3 +77,25 @@ def test_assign_one_non_default_after_setting(values):
     style.font = values
 
     assert_font(style, (NORMAL, SMALL_CAPS, NORMAL, 12, ["Comic Sans", SANS_SERIF]))
+
+
+@pytest.mark.parametrize(
+    "value",
+    [
+        "Comic Sans",
+        (NORMAL, SMALL_CAPS, NORMAL, 12, ["Comic Sans", SANS_SERIF], "extra"),
+        None,
+        12,
+    ],
+)
+def test_assign_invalid_font(value):
+    """Invalid assignment raises a TypeError."""
+    with pytest.raises(
+        TypeError,
+        match=(
+            r"Composite property 'font' assignment must provide 'font_size' and "
+            r"'font_family', optionally preceded by 'font_style', 'font_variant', "
+            r"and/or 'font_weight'\."
+        ),
+    ):
+        _ = Pack(font=value)
