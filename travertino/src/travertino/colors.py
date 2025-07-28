@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import string
-from contextlib import contextmanager
 from itertools import batched
 
 from .constants import *  # noqa: F403
@@ -24,19 +23,13 @@ class Color:
             return False
 
     @staticmethod
-    @contextmanager
-    def _try_validate(name, value):
+    def _validate_zero_to_one(name, value):
         try:
-            yield
+            return _clamp(float(value), 0.0, 1.0)
         except (ValueError, TypeError) as exc:
             raise TypeError(
                 f"Value for {name} must be a number; got {value!r}"
             ) from exc
-
-    @classmethod
-    def _validate_zero_to_one(cls, name, value):
-        with cls._try_validate(name, value):
-            return _clamp(float(value), 0.0, 1.0)
 
     @property
     def a(self) -> float:
@@ -161,10 +154,14 @@ class rgb(Color):
     def __str__(self):
         return f"rgb({self.r} {self.g} {self.b} / {self.a})"
 
-    @classmethod
-    def _validate_band(cls, name, value):
-        with cls._try_validate(name, value):
+    @staticmethod
+    def _validate_band(name, value):
+        try:
             return _clamp(round(value), 0, 255)
+        except TypeError as exc:
+            raise TypeError(
+                f"Value for {name} must be a number; got {value!r}"
+            ) from exc
 
     @property
     def r(self) -> int:
@@ -217,6 +214,7 @@ class rgb(Color):
         return self._hsl
 
 
+# As in CSS, rgba is simply a direct alias for rgb.
 rgba = rgb
 
 
@@ -224,8 +222,10 @@ class hsl(Color):
     """A representation of an HSL(A) color."""
 
     def __init__(self, h, s, l, a=1.0):  # noqa: E741
-        with self._try_validate("hue", h):
+        try:
             self._h = round(h) % 360
+        except TypeError as exc:
+            raise TypeError(f"Value for hue must be a number; got {h!r}") from exc
         self._s = self._validate_zero_to_one("saturation", s)
         self._l = self._validate_zero_to_one("lightness", l)
         self._a = self._validate_zero_to_one("alpha", a)
@@ -282,6 +282,7 @@ class hsl(Color):
         return self._rgb
 
 
+# As in CSS, hsla is simply a direct alias for hsl.
 hsla = hsl
 
 
