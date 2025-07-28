@@ -1,17 +1,6 @@
 from __future__ import annotations
 
 import string
-import sys
-
-if sys.version_info < (3, 12):  # pragma: no-cover-if-gte-py311
-    from itertools import islice
-
-    def batched(iterable, n):
-        iterator = iter(iterable)
-        while batch := tuple(islice(iterator, n)):
-            yield batch
-else:  # pragma: no-cover-if-lt-py312
-    from itertools import batched
 
 from .constants import *  # noqa: F403
 
@@ -317,21 +306,22 @@ def color(value: str) -> Color:
 
         pound, *digits = value
         if pound == "#" and all(d in string.hexdigits for d in digits):
-            values = None
-
             if len(digits) in {3, 4}:
-                values = [f"{d}{d}" for d in digits]
+                r, b, g, *a = digits
+                return rgb(
+                    r=int(f"{r}{r}", 16),
+                    g=int(f"{b}{b}", 16),
+                    b=int(f"{g}{g}", 16),
+                    a=(int(f"{a[0]}{a[0]}", 16) / 0xFF) if a else 1.0,
+                )
 
             elif len(digits) in {6, 8}:
-                values = [f"{d1}{d2}" for d1, d2 in batched(digits, 2)]
-
-            if values:
-                r, g, b, *a = values
+                r1, r2, b1, b2, g1, g2, *a = digits
                 return rgb(
-                    r=int(r, 16),
-                    g=int(g, 16),
-                    b=int(b, 16),
-                    a=(int(a[0], 16) / 0xFF) if a else 1.0,
+                    r=int(f"{r1}{r2}", 16),
+                    g=int(f"{b1}{b2}", 16),
+                    b=int(f"{g1}{g2}", 16),
+                    a=(int(f"{a[0]}{a[1]}", 16) / 0xFF) if a else 1.0,
                 )
 
     raise ValueError(f"Unknown color: {value!r}")
