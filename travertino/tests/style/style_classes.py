@@ -4,7 +4,7 @@ from warnings import catch_warnings, filterwarnings
 
 from travertino.properties.aliased import Condition, aliased_property
 from travertino.properties.choices import Choices
-from travertino.properties.shorthand import directional_property
+from travertino.properties.shorthand import composite_property, directional_property
 from travertino.properties.validated import list_property, validated_property
 from travertino.style import BaseStyle
 
@@ -13,12 +13,17 @@ from ..utils import apply_dataclass, mock_apply
 VALUE1 = "value1"
 VALUE2 = "value2"
 VALUE3 = "value3"
+VALUE4 = "value4"
 VALUES = [VALUE1, VALUE2, VALUE3, None]
 
 
 @mock_apply
 @apply_dataclass
 class Style(BaseStyle):
+    #############################
+    # Simple validated properties
+    #############################
+
     # Some properties with explicit initial values
     explicit_const: str | int = validated_property(
         *VALUES, integer=True, initial=VALUE1
@@ -34,7 +39,10 @@ class Style(BaseStyle):
         VALUE1, VALUE2, VALUE3, integer=True
     )
 
-    # A set of directional properties
+    #############
+    # Directional
+    #############
+
     thing: tuple[str | int] | str | int = directional_property("thing{}")
     thing_top: str | int = validated_property(*VALUES, integer=True, initial=0)
     thing_right: str | int = validated_property(*VALUES, integer=True, initial=0)
@@ -42,9 +50,37 @@ class Style(BaseStyle):
     thing_left: str | int = validated_property(*VALUES, integer=True, initial=0)
 
     # Nothing below here needs to be tested in deprecated API:
+
+    ######
+    # List
+    ######
+
     list_prop: list[str] = list_property(*VALUES, integer=True, initial=(VALUE2,))
 
-    # A variety of aliases to other properties
+    ###########
+    # Composite
+    ###########
+
+    different_values_prop: str = validated_property(
+        VALUE2, VALUE3, VALUE4, initial=VALUE2
+    )
+
+    composite_no_optional: tuple[str] = composite_property(
+        optional=(), required=("explicit_const", "explicit_value")
+    )
+    composite_optional: tuple[str] = composite_property(
+        optional=("explicit_none", "different_values_prop"),
+        required=("explicit_const", "explicit_value"),
+    )
+    composite_different_lengths: tuple[str] = composite_property(
+        optional=("explicit_none", "different_values_prop", "explicit_const"),
+        required=("explicit_value",),
+    )
+
+    #########
+    # Aliases
+    #########
+
     plain_alias: str | int = aliased_property(source="explicit_const")
     plain_alias_deprecated: str | int = aliased_property(
         source="explicit_const", deprecated=True
@@ -69,6 +105,10 @@ class Style(BaseStyle):
         deprecated=True,
     )
 
+
+########################################
+# Backwards compatibility for Toga < 0.5
+########################################
 
 VALUE_CHOICES = Choices(*VALUES, integer=True)
 
