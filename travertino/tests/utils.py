@@ -5,7 +5,7 @@ from unittest.mock import Mock
 
 import pytest
 
-from travertino.colors import hsl, hsla, rgb, rgba
+from travertino.colors import hsl, rgb
 
 if sys.version_info < (3, 10):
     _DATACLASS_KWARGS = {"init": False, "repr": False}
@@ -46,26 +46,20 @@ class CopyingMock(Mock):
 
 
 def assert_equal_color(actual, expected, abs=1e-6):
-    if {type(actual), type(expected)} == {rgba}:
-        assert actual.rgba.r == pytest.approx(expected.rgba.r, abs=abs)
-        assert actual.rgba.g == pytest.approx(expected.rgba.g, abs=abs)
-        assert actual.rgba.b == pytest.approx(expected.rgba.b, abs=abs)
-        assert actual.rgba.a == pytest.approx(expected.rgba.a, abs=abs)
-    elif {type(actual), type(expected)} == {rgb}:
-        assert actual.rgb.r == pytest.approx(expected.rgb.r, abs=abs)
-        assert actual.rgb.g == pytest.approx(expected.rgb.g, abs=abs)
-        assert actual.rgb.b == pytest.approx(expected.rgb.b, abs=abs)
-    elif {type(actual), type(expected)} == {hsla}:
-        assert actual.hsla.h == pytest.approx(expected.hsla.h, abs=abs)
-        assert actual.hsla.s == pytest.approx(expected.hsla.s, abs=abs)
-        assert actual.hsla.l == pytest.approx(expected.hsla.l, abs=abs)
-        assert actual.hsla.a == pytest.approx(expected.hsla.a, abs=abs)
-    elif {type(actual), type(expected)} == {hsl}:
-        assert actual.hsl.h == pytest.approx(expected.hsl.h, abs=abs)
-        assert actual.hsl.s == pytest.approx(expected.hsl.s, abs=abs)
-        assert actual.hsl.l == pytest.approx(expected.hsl.l, abs=abs)
+    if type(actual) is type(expected) is rgb:
+        assert actual.r == pytest.approx(expected.r, abs=abs)
+        assert actual.g == pytest.approx(expected.g, abs=abs)
+        assert actual.b == pytest.approx(expected.b, abs=abs)
+        assert actual.a == pytest.approx(expected.a, abs=abs)
+    elif type(actual) is type(expected) is hsl:
+        if not (actual.s == 0 or actual.l in {0, 1}):
+            # Don't test hue if color is white/black/grey.
+            assert actual.h == pytest.approx(expected.h, abs=abs)
+        assert actual.s == pytest.approx(expected.s, abs=abs)
+        assert actual.l == pytest.approx(expected.l, abs=abs)
+        assert actual.a == pytest.approx(expected.a, abs=abs)
     else:
         raise ValueError(
             "Actual color and expected color should be of the same type. "
-            f"But got actual:{type(actual)} and expected:{type(expected)}."
+            f"But got actual: {type(actual)} and expected: {type(expected)}."
         )
