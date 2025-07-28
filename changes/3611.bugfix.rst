@@ -1,0 +1,1 @@
+The ``rgb`` and ``hsl`` classes, in addition to their copy-pasteable-into-Python ``__repr__``, gain a ``__str__`` that uses modern CSS syntax. For ``rgb`` this is simply a nice update, but for ``hsl`` it corrects color rendering issues when using the web backend.
