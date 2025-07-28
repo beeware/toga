@@ -2,28 +2,17 @@ import pytest
 
 from travertino.colors import color, hsl, rgb, rgba
 
-
-def assert_equal_hsl(value, expected):
-    # Nothing fancy - a color is equal if the attributes are all the same
-    actual = color(value)
-    assert actual.h == expected.h
-    assert actual.s == pytest.approx(expected.s, abs=0.001)
-    assert actual.l == pytest.approx(expected.l, abs=0.001)
-    assert actual.a == pytest.approx(expected.a, abs=0.001)
+from ..utils import assert_equal_color
 
 
-def assert_equal_rgb(value, expected):
-    # Nothing fancy - a color is equal if the attributes are all the same
-    actual = color(value)
-    assert actual.r == expected.r
-    assert actual.g == expected.g
-    assert actual.b == expected.b
-    assert actual.a == pytest.approx(expected.a, abs=0.001)
+def assert_parsed_equal_color(actual, expected):
+    actual = color(actual)
+    assert_equal_color(actual, expected, abs=0.001)
 
 
 def test_noop():
-    assert_equal_rgb(rgba(1, 2, 3, 0.5), rgba(1, 2, 3, 0.5))
-    assert_equal_hsl(hsl(1, 0.2, 0.3), hsl(1, 0.2, 0.3))
+    assert_parsed_equal_color(rgba(1, 2, 3, 0.5), rgba(1, 2, 3, 0.5))
+    assert_parsed_equal_color(hsl(1, 0.2, 0.3), hsl(1, 0.2, 0.3))
 
 
 @pytest.mark.parametrize(
@@ -45,7 +34,7 @@ def test_noop():
     ],
 )
 def test_hex_rgb(value, expected):
-    assert_equal_rgb(value, rgb(*expected))
+    assert_parsed_equal_color(value, rgb(*expected))
 
 
 @pytest.mark.parametrize(
@@ -63,7 +52,7 @@ def test_hex_rgb(value, expected):
     ],
 )
 def test_named_color(value, expected):
-    assert_equal_rgb(value, rgb(*expected))
+    assert_parsed_equal_color(value, rgb(*expected))
 
 
 def test_named_color_invalid():

@@ -41,7 +41,7 @@ def test_aliases():
 
 
 def test_rgb_hash():
-    """Hashes are consistent for the same color and uneqaul otherwise."""
+    """Hashes are consistent for the same color and unequal otherwise."""
     assert hash(rgb(10, 20, 30)) == hash(rgb(10, 20, 30))
     assert hash(rgb(10, 20, 30)) != hash(rgb(30, 20, 10))
     assert hash(rgb(10, 20, 30, 0.5)) == hash(rgb(10, 20, 30, 0.5))
@@ -50,7 +50,7 @@ def test_rgb_hash():
 
 
 def test_hsl_hash():
-    """Hashes are consistent for the same color and uneqaul otherwise."""
+    """Hashes are consistent for the same color and unequal otherwise."""
     assert hash(hsl(10, 0.2, 0.3)) == hash(hsl(10, 0.2, 0.3))
     assert hash(hsl(10, 0.3, 0.2)) != hash(hsl(10, 0.2, 0.3))
     assert hash(hsl(10, 0.2, 0.3, 0.5)) == hash(hsl(10, 0.2, 0.3, 0.5))

@@ -29,6 +29,7 @@ def test_conversion_caching(color, method):
     """Conversions (hsl.rgb and rgb.hsl) are cached after first call."""
     assert getattr(color, method) is getattr(color, method)
     assert getattr(color, f"{method}a") is getattr(color, f"{method}a")
+    assert getattr(color, method) is getattr(color, f"{method}a")
 
 
 equivalent_colors = pytest.mark.parametrize(
