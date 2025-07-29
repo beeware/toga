@@ -91,12 +91,8 @@ class MultilineTextInput(Widget):
             else:
                 self.native_textview.set_buffer(self.buffer)
 
-        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
-            # Wait until the text change is fully completed
-            while Gtk.events_pending():
-                Gtk.main_iteration_do(blocking=False)
-        else:  # pragma: no-cover-if-gtk3
-            pass
+        # Wait until the text change is fully completed
+        self.flush_gtk_events()
 
     def get_readonly(self):
         return not self.native_textview.get_property("editable")

@@ -4,6 +4,7 @@ from travertino.size import at_least
 
 from ..libs import (
     GTK_VERSION,
+    GLib,
     Gtk,
     get_background_color_css,
     get_color_css,
@@ -221,3 +222,11 @@ class Widget:
             # print("REHINT", self, f"{width_info[0]}x{height_info[0]}")
             self.interface.intrinsic.width = at_least(min_size.width)
             self.interface.intrinsic.height = at_least(min_size.height)
+
+    def flush_gtk_events(self):
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            while Gtk.events_pending():
+                Gtk.main_iteration_do(blocking=False)
+        else:  # pragma: no-cover-if-gtk3
+            while GLib.main_context_default().pending():
+                GLib.main_context_default().iteration(may_block=False)
