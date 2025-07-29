@@ -307,20 +307,20 @@ def color(value: str) -> Color:
         pound, *digits = value
         if pound == "#" and all(d in string.hexdigits for d in digits):
             if len(digits) in {3, 4}:
-                r, b, g, *a = digits
+                r, g, b, *a = digits
                 return rgb(
                     r=int(f"{r}{r}", 16),
-                    g=int(f"{b}{b}", 16),
-                    b=int(f"{g}{g}", 16),
+                    g=int(f"{g}{g}", 16),
+                    b=int(f"{b}{b}", 16),
                     a=(int(f"{a[0]}{a[0]}", 16) / 0xFF) if a else 1.0,
                 )
 
             elif len(digits) in {6, 8}:
-                r1, r2, b1, b2, g1, g2, *a = digits
+                r1, r2, g1, g2, b1, b2, *a = digits
                 return rgb(
                     r=int(f"{r1}{r2}", 16),
-                    g=int(f"{b1}{b2}", 16),
-                    b=int(f"{g1}{g2}", 16),
+                    g=int(f"{g1}{g2}", 16),
+                    b=int(f"{b1}{b2}", 16),
                     a=(int(f"{a[0]}{a[1]}", 16) / 0xFF) if a else 1.0,
                 )
 
