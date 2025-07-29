@@ -180,8 +180,8 @@ def test_zero_to_one_normalization(value, expected, constructor, attribute):
 @pytest.mark.parametrize(
     "color, attributes",
     [
-        (rgb(10, 10, 10), ("r", "g", "b", "a")),
-        (hsl(10, 1, 1), ("h", "s", "l", "a")),
+        (rgb(10, 10, 10), ["r", "g", "b", "a", "rgb", "rgba", "hsl", "hsla"]),
+        (hsl(10, 1, 1), ["h", "s", "l", "a", "rgb", "rgba", "hsl", "hsla"]),
     ],
 )
 def test_read_only(color, attributes):

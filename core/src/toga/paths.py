@@ -1,5 +1,5 @@
+import functools
 import sys
-from functools import cached_property
 from pathlib import Path
 
 import toga
@@ -11,7 +11,11 @@ class Paths:
         self.factory = get_platform_factory()
         self._impl = self.factory.Paths(self)
 
-    @cached_property
+    # cached_property isn't read-only; this alternative is. With multiple instances,
+    # this would cause a memory leak because it would hold onto all the "self"s in the
+    # arguments cache, but for a singleton like this it's fine.
+    @property
+    @functools.cache  # noqa: B019
     def toga(self) -> Path:
         """The path that contains the core Toga resources.
 
@@ -20,7 +24,8 @@ class Paths:
         """
         return Path(toga.__file__).parent
 
-    @cached_property
+    @property
+    @functools.cache  # noqa: B019
     def app(self) -> Path:
         """The path of the folder that contains the definition of the app class.
 
@@ -36,7 +41,8 @@ class Paths:
         else:
             return Path(app_file).parent
 
-    @cached_property
+    @property
+    @functools.cache  # noqa: B019
     def config(self) -> Path:
         """The platform-appropriate location for storing user configuration
         files associated with this app.
@@ -45,7 +51,8 @@ class Paths:
         path.mkdir(parents=True, exist_ok=True)
         return path
 
-    @cached_property
+    @property
+    @functools.cache  # noqa: B019
     def data(self) -> Path:
         """The platform-appropriate location for storing user data associated
         with this app.
@@ -54,7 +61,8 @@ class Paths:
         path.mkdir(parents=True, exist_ok=True)
         return path
 
-    @cached_property
+    @property
+    @functools.cache  # noqa: B019
     def cache(self) -> Path:
         """The platform-appropriate location for storing cache files associated
         with this app.
@@ -66,7 +74,8 @@ class Paths:
         path.mkdir(parents=True, exist_ok=True)
         return path
 
-    @cached_property
+    @property
+    @functools.cache  # noqa: B019
     def logs(self) -> Path:
         """The platform-appropriate location for storing log files associated
         with this app.
