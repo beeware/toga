@@ -1,0 +1,1 @@
+App path attributes were unintentionally made writeable in 0.5.2, e.g. one could reassign ``app.paths.config = <something>``. This has been fixed.
