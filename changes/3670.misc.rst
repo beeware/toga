@@ -1,0 +1,1 @@
+A typo in the global Tox target was corrected, and Python 3.14 support for Tox was added.
