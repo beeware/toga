@@ -1,0 +1,1 @@
+Disabled the edit mode of table cells (by e.g. pressing return when cell is selected)

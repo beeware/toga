@@ -1,0 +1,1 @@
+Added a tooltip containing the full text of a cell, if text is clipped by cell width.
