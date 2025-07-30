@@ -45,6 +45,7 @@ class TogaIconView(NSTableCellView):
         self.textField.cell.lineBreakMode = NSLineBreakMode.byTruncatingTail
         self.textField.bordered = False
         self.textField.drawsBackground = False
+        self.textField.allowsExpansionToolTips = True
 
         self.imageView.translatesAutoresizingMaskIntoConstraints = False
         self.textField.translatesAutoresizingMaskIntoConstraints = False
