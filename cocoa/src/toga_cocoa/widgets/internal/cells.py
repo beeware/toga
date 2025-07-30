@@ -46,6 +46,7 @@ class TogaIconView(NSTableCellView):
         self.textField.bordered = False
         self.textField.drawsBackground = False
         self.textField.allowsExpansionToolTips = True
+        self.textField.editable = False
 
         self.imageView.translatesAutoresizingMaskIntoConstraints = False
         self.textField.translatesAutoresizingMaskIntoConstraints = False
