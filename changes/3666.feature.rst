@@ -1,1 +1,1 @@
-Toga can now define its own web runtime configuration and styling using a new `web/deploy/` structure.
+Toga can now define its own web runtime configuration and styling using a new `web\src\toga_web\deploy` structure.
