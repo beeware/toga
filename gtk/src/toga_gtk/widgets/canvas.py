@@ -83,7 +83,7 @@ class Canvas(Widget):
     def mouse_move(self, obj, event):
         """Handles mouse movement by calling the drag and/or alternative drag
         methods. Modifier keys have no effect."""
-        if event.state & ~Gdk.ModifierType.BUTTON3_MASK & Gdk.ModifierType.BUTTON1_MASK:
+        if event.state & Gdk.ModifierType.BUTTON1_MASK:
             self.interface.on_drag(event.x, event.y)
         if event.state & Gdk.ModifierType.BUTTON3_MASK:
             self.interface.on_alt_drag(event.x, event.y)

@@ -1,1 +1,1 @@
-Mouse drag now works when modifier keys (e.g. Num Lock, Shift) are active.
+On GTK, mouse drag events are now triggered when modifier keys (e.g. Num Lock, Shift) are active.
