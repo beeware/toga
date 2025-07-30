@@ -1,1 +1,1 @@
-multilinetextinput: wait until the text change is fully completed on Gtk, this is necessary to make scroll_to_bottom() after text change to work.
+On GTK, the scroll position will now be correctly reflected if a MultilineTextInput is programmatically scrolled immediately after changing text content. 
