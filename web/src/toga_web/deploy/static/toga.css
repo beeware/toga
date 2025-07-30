@@ -10,9 +10,11 @@
 html, body {
     height: 100%;
     margin: 0;
-    display: flex;
-    flex-direction: column;
-    font-family: sans-serif;
+}
+
+#app-placeholder {
+    font-family: var(--sl-font-sans);
+    font-size: var(--sl-font-size-medium);
 }
 
 /* If a custom element hasn't been defined yet, hide it from rendering */
@@ -82,7 +84,6 @@ main.toga.window {
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    flex-grow: 1;
 }
 
 main.toga.window > .container {

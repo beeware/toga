@@ -1,2 +1,4 @@
-pyscript_version = "2024.11.1"
 backend = "pyscript"
+
+[pyscript]
+version = "2024.11.1"
