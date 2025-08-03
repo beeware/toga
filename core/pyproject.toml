@@ -71,7 +71,7 @@ dev = [
     "pytest-freezer == 0.4.9",
     "pytest-xdist == 3.8.0",
     "setuptools-scm == 8.3.1",
-    "tox == 4.28.3",
+    "tox == 4.28.4",
     # typing-extensions 4.12.2+ needed for TypeAlias added in Py 3.10.
     # Tox dependencies force us to pin a newer version.
     "typing-extensions == 4.14.1 ; python_version < '3.10'",
