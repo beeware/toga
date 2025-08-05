@@ -67,11 +67,11 @@ class ScrollContainer(Widget):
             height = max(self.interface.content.layout.height, height)
 
         self.native.contentSize = NSMakeSize(width, height)
-        
-        # Fix for issue #2411: Update the document container frame to match
-        # the content size so that buttons outside the original scroll view
-        # frame can receive touch events. Without this, hit testing fails
-        # for views outside the original container bounds.
+
+        # Update the document container frame to match the content size so that
+        # buttons outside the original scroll view frame can receive touch events.
+        # Without this, hit testing fails for views outside the original container
+        # bounds
         self.document_container.native.frame = CGRectMake(0, 0, width, height)
 
     def rehint(self):
