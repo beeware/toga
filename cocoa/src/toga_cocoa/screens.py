@@ -29,9 +29,11 @@ class Screen:
         # macOS screen coordinates have the origin at the bottom left.
         frame_native = self.native.frame
         return Position(
-            frame_native.origin.x,
-            NSScreen.screens[0].frame.size.height
-            - (frame_native.origin.y + frame_native.size.height),
+            int(frame_native.origin.x),
+            int(
+                NSScreen.screens[0].frame.size.height
+                - (frame_native.origin.y + frame_native.size.height)
+            ),
         )
 
     def get_size(self) -> Size:
