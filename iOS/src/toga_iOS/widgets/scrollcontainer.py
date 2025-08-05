@@ -1,4 +1,11 @@
-from rubicon.objc import SEL, NSMakePoint, NSMakeSize, CGRectMake, objc_method, objc_property
+from rubicon.objc import (
+    SEL,
+    CGRectMake,
+    NSMakePoint,
+    NSMakeSize,
+    objc_method,
+    objc_property,
+)
 from travertino.size import at_least
 
 from toga_iOS.container import Container
