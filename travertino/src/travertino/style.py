@@ -75,29 +75,66 @@ class BaseStyle:
         self._assigned_applicator = value
 
         if value is not None:
+            ######################################################################
+            # 8-2025: Backwards compatibility for Toga < 0.5.0
+            ######################################################################
+
+            # Once this shim is removed, it still wouldn't be a bad idea to raise the
+            # more specific Runtime Error.
+
             try:
-                self.apply()
-            ######################################################################
-            # 10-2024: Backwards compatibility for Toga < 0.5.0
-            ######################################################################
-            except Exception:
-                warn(
-                    (
-                        "Failed to apply style when assigning applicator, or when "
-                        "assigning a new style once applicator is present. Node should "
-                        "be sufficiently initialized to apply its style before it is "
-                        "assigned an applicator. This will be an exception in a future "
-                        "version.\n"
-                        "This error probably means you've updated Travertino to 0.5.0 "
-                        "but are still using Toga <= 0.4.8; to fix, either update Toga "
-                        "to >= 0.5.0, or pin Travertino to 0.3.0."
-                    ),
-                    RuntimeWarning,
-                    stacklevel=2,
+                try:
+                    self.apply()
+                except TypeError as type_exc:  # pragma: no cover
+                    if str(type_exc) == (
+                        "Pack.apply() missing 2 required positional arguments: "
+                        "'prop' and 'value'"
+                    ):
+                        self.reapply()
+
+            except Exception as runtime_exc:
+                msg = (
+                    "Failed to apply style when assigning applicator, or when "
+                    "assigning a new style once applicator is present. Node should "
+                    "be sufficiently initialized to apply its style before it is "
+                    "assigned an applicator."
                 )
-            ######################################################################
-            # End backwards compatibility
-            ######################################################################
+
+                from importlib.metadata import PackageNotFoundError, version
+
+                try:
+                    major, minor, patch = version("toga_core").split(".", maxsplit=2)
+                except PackageNotFoundError:  # pragma: no cover
+                    pass
+                else:
+                    import toga
+
+                    if (
+                        not patch.startswith("dev")
+                        and int(minor) < 5
+                        and isinstance(value.node, toga.Widget)
+                    ):  # pragma: no cover
+                        warn(
+                            (
+                                f"{msg}\n"
+                                "This appears to be because you've updated Travertino "
+                                "to 0.5.x but are still using Toga <= 0.4.8; to fix, "
+                                "either update Toga to >= 0.5.0, or pin Travertino to "
+                                "0.3.0.\n"
+                                "This will be an exception in a future version."
+                            ),
+                            RuntimeWarning,
+                            stacklevel=2,
+                        )
+                        return
+
+                # If we've made it here, then either Toga's >= 0.5, or the node
+                # isn't a Toga widget.
+                raise RuntimeError(msg) from runtime_exc
+
+                ######################################################################
+                # End backwards compatibility
+                ######################################################################
 
     def copy(self, applicator=None):
         """Create a duplicate of this style declaration."""
@@ -113,9 +150,9 @@ class BaseStyle:
                 (
                     "Providing an applicator to BaseStyle.copy() is deprecated. Set "
                     "applicator afterward on the returned copy.\n"
-                    "This error probably means you've updated Travertino to 0.5.0 but "
-                    "are still using Toga <= 0.4.8; to fix, either update Toga to >= "
-                    "0.5.0, or pin Travertino to 0.3.0."
+                    "You're probably seeing this because you've updated Travertino to "
+                    "0.5.x but are still using Toga <= 0.4.8; to fix, either update "
+                    "Toga to >= 0.5.0, or pin Travertino to 0.3.0."
                 ),
                 DeprecationWarning,
                 stacklevel=2,
@@ -305,7 +342,7 @@ class BaseStyle:
         return f"{type(self).__name__}({properties})"
 
     ######################################################################
-    # Backwards compatibility
+    # Backwards compatibility for Toga < 0.5.0
     ######################################################################
 
     def reapply(self):
@@ -313,14 +350,15 @@ class BaseStyle:
             (
                 "BaseStyle.reapply() is deprecated; call .apply with no arguments "
                 "instead.\n"
-                "This error probably means you've updated Travertino to 0.5.0 but are "
-                "still using Toga <= 0.4.8; to fix, either update Toga to >= 0.5.0, or "
-                "pin Travertino to 0.3.0."
+                "You're probably seeing this because you've updated Travertino to "
+                "0.5.x but are still using Toga <= 0.4.8; to fix, either update Toga "
+                "to >= 0.5.0, or pin Travertino to 0.3.0."
             ),
             DeprecationWarning,
             stacklevel=2,
         )
-        self.apply()
+        for style in self:
+            self.apply(style, getattr(self, style))
 
     @classmethod
     def validated_property(cls, name, choices, initial=None):
@@ -328,9 +366,9 @@ class BaseStyle:
             (
                 "Defining style properties with class methods is deprecated; use class "
                 "attributes instead.\n"
-                "This error probably means you've updated Travertino to 0.5.0 but are "
-                "still using Toga <= 0.4.8; to fix, either update Toga to >= 0.5.0, or "
-                "pin Travertino to 0.3.0."
+                "You're probably seeing this because you've updated Travertino to "
+                "0.5.x but are still using Toga <= 0.4.8; to fix, either update Toga "
+                "to >= 0.5.0, or pin Travertino to 0.3.0."
             ),
             DeprecationWarning,
             stacklevel=2,
@@ -352,9 +390,9 @@ class BaseStyle:
             (
                 "Defining style properties with class methods is deprecated; use class "
                 "attributes instead.\n"
-                "This error probably means you've updated Travertino to 0.5.0 but are "
-                "still using Toga <= 0.4.8; to fix, either update Toga to >= 0.5.0, or "
-                "pin Travertino to 0.3.0."
+                "You're probably seeing this because you've updated Travertino to "
+                "0.5.x but are still using Toga <= 0.4.8; to fix, either update Toga "
+                "to >= 0.5.0, or pin Travertino to 0.3.0."
             ),
             DeprecationWarning,
             stacklevel=2,

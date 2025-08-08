@@ -1,4 +1,4 @@
-from unittest.mock import Mock
+from unittest.mock import Mock, call
 
 import pytest
 
@@ -50,11 +50,15 @@ def test_deprecated_class_methods():
 
 def test_deprecated_reapply():
     """Reapply() is deprecated (but still calls apply()."""
-    style = Style()
+    style = Style(explicit_const=5)
     with pytest.warns(DeprecationWarning):
         style.reapply()
 
-    style.apply.assert_called_once_with()
+    # Called first the modern way, then rerouted to the older API
+    assert style.apply.call_args_list == [
+        call("explicit_const"),
+        call("explicit_const", 5),
+    ]
 
 
 def test_deprecated_import():

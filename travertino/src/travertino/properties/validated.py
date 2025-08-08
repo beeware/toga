@@ -57,7 +57,20 @@ class validated_property:
 
         setattr(style, f"_{self.name}", value)
         if value != current:
-            style.apply(self.name)
+            ######################################################################
+            # 03-2025: Backwards compatibility for Toga 0.5.1
+            ######################################################################
+            try:
+                style.apply(self.name)
+            except TypeError as exc:  # pragma: no cover
+                if str(exc) == (
+                    "Pack.apply() missing 1 required positional argument: 'value'"
+                ):
+                    style.apply(self.name, value)
+
+            ######################################################################
+            # End backwards compatibility
+            ######################################################################
 
     def __delete__(self, style):
         try:
@@ -67,7 +80,20 @@ class validated_property:
             pass
         else:
             if current != self.initial:
-                style.apply(self.name)
+                ######################################################################
+                # 03-2025: Backwards compatibility for Toga 0.5.1
+                ######################################################################
+                try:
+                    style.apply(self.name)
+                except TypeError as exc:  # pragma: no cover
+                    if str(exc) == (
+                        "Pack.apply() missing 1 required positional argument: 'value'"
+                    ):
+                        style.apply(self.name, self.initial)
+
+                ######################################################################
+                # End backwards compatibility
+                ######################################################################
 
     @property
     def _name_if_set(self):
