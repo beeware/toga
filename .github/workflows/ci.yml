@@ -190,6 +190,37 @@ jobs:
         name: html-coverage-report
         path: ${{ matrix.package }}/htmlcov
 
+  travertino-backwards-compatibility:
+    name: Test Travertino backwards compatibility with Toga 0.4.8
+    runs-on: "ubuntu-latest"
+    needs: [ pre-commit, towncrier, package ]
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4.2.2
+      with:
+        fetch-depth: 0
+
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v5.6.0
+      with:
+        python-version: "3.10"
+
+    - name: Get Package
+      uses: actions/download-artifact@v4.3.0
+      with:
+        pattern: ${{ format('{0}-*', needs.package.outputs.artifact-basename) }}
+        merge-multiple: true
+        path: dist
+
+    - name: Test
+      run: |
+        export TOGA_BACKEND=dummy
+        python -m pip install toga_core==0.4.8 toga_dummy==0.4.8 toga_demo==0.4.8
+        python -m pip install -e ./$(ls dist/travertino-*.whl)
+        # Nothing fancy, just a quick sanity check to make sure it runs without error.
+        python -m toga_demo
+
   testbed:
     name: Testbed
     needs: [ package, core-and-travertino ]
