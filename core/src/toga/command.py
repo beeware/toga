@@ -114,17 +114,17 @@ class Group:
         return hash(self.key)
 
     def __lt__(self, other: object) -> bool:
-        if not isinstance(other, (Group, Command)):
+        if not isinstance(other, Group | Command):
             return False
         return self.key < other.key
 
     def __gt__(self, other: object) -> bool:
-        if not isinstance(other, (Group, Command)):
+        if not isinstance(other, Group | Command):
             return False
         return other < self
 
     def __eq__(self, other: object) -> bool:
-        if not isinstance(other, (Group, Command)):
+        if not isinstance(other, Group | Command):
             return False
         return self.key == other.key
 
@@ -360,12 +360,12 @@ class Command:
         self._action = wrapped_handler(self, action)
 
     def __lt__(self, other: object) -> bool:
-        if not isinstance(other, (Group, Command)):
+        if not isinstance(other, Group | Command):
             return False
         return self.key < other.key
 
     def __gt__(self, other: object) -> bool:
-        if not isinstance(other, (Group, Command)):
+        if not isinstance(other, Group | Command):
             return False
         return other < self
 

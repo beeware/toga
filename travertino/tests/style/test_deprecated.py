@@ -1,10 +1,11 @@
+from dataclasses import dataclass
 from unittest.mock import Mock
 
 import pytest
 
 from travertino.properties.choices import Choices
 
-from ..utils import apply_dataclass, mock_apply
+from ..utils import mock_apply
 from .style_classes import (
     VALUE1,
     VALUE2,
@@ -19,7 +20,7 @@ from .style_classes import (
 
 
 @mock_apply
-@apply_dataclass
+@dataclass(kw_only=True, repr=False)
 class MockedApplyStyle(BaseStyle):
     pass
 

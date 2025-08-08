@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
 from warnings import catch_warnings, filterwarnings
 
 from travertino.properties.aliased import Condition, aliased_property
@@ -8,7 +9,7 @@ from travertino.properties.shorthand import composite_property, directional_prop
 from travertino.properties.validated import list_property, validated_property
 from travertino.style import BaseStyle
 
-from ..utils import apply_dataclass, mock_apply
+from ..utils import mock_apply
 
 VALUE1 = "value1"
 VALUE2 = "value2"
@@ -18,7 +19,7 @@ VALUES = [VALUE1, VALUE2, VALUE3, None]
 
 
 @mock_apply
-@apply_dataclass
+@dataclass(kw_only=True, repr=False)
 class Style(BaseStyle):
     #############################
     # Simple validated properties

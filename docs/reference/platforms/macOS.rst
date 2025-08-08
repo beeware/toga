@@ -14,7 +14,7 @@ The Toga backend for macOS is `toga-cocoa
 Prerequisites
 -------------
 
-``toga-cocoa`` requires Python 3.9+, and macOS 11 (Big Sur) or newer.
+``toga-cocoa`` requires Python 3.10+, and macOS 11 (Big Sur) or newer.
 
 Installation
 ------------

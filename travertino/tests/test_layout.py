@@ -1,3 +1,5 @@
+from dataclasses import dataclass
+
 import pytest
 
 from travertino.layout import BaseBox, Viewport
@@ -5,10 +7,8 @@ from travertino.node import Node
 from travertino.size import BaseIntrinsicSize
 from travertino.style import BaseStyle
 
-from .utils import apply_dataclass
 
-
-@apply_dataclass
+@dataclass(kw_only=True, repr=False)
 class Style(BaseStyle):
     class IntrinsicSize(BaseIntrinsicSize):
         pass
