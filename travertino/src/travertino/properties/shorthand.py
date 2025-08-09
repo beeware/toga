@@ -72,7 +72,7 @@ class directional_property(shorthand_property):
 
         if order := self.ASSIGNMENT_SCHEMES.get(len(value)):
             with style.batch_apply():
-                for name, index in zip(self.property_names, order, strict=False):
+                for name, index in zip(self.property_names, order, strict=True):
                     style[name] = value[index]
         else:
             raise ValueError(
@@ -129,7 +129,7 @@ class composite_property(shorthand_property):
         # whole assignment is invalid.
         required_values = composite_value[-self.min_num :]
 
-        for name, value in zip(self.required, required_values, strict=False):
+        for name, value in zip(self.required, required_values, strict=True):
             # Let error propagate if it raises.
             staged[name] = getattr(style.__class__, name).validate(value)
 
