@@ -131,7 +131,7 @@ class ListSource(Source):
         """Returns the number of items in the list."""
         return len(self._data)
 
-    def __getitem__(self, index: int) -> Row:
+    def __getitem__(self, index: int | slice) -> Row:
         """Returns the item at position ``index`` of the list."""
         return self._data[index]
 

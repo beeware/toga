@@ -3,12 +3,8 @@ import random
 import toga
 from toga.constants import COLUMN, ROW
 
-headings = ["Title", "Year", "Rating", "Genre"]
-
 
 class TableApp(toga.App):
-    lbl_fontsize = None
-
     def load_data(self):
         yak = toga.Icon.DEFAULT_ICON
         red = toga.Icon("icons/red")
@@ -25,170 +21,151 @@ class TableApp(toga.App):
             ((None, "Bees in Paradise"), 1944, (red, 5.4), None),  # None genre
             ((yak, "Keeper of the Bees"), 1947, (red, 6.3), "Drama"),
         ]
+        self.initial_data = self.bee_movies * 10
 
     # Table callback functions
-    def on_select_handler1(self, widget, **kwargs):
-        row = self.table1.selection
-        self.label_table1.text = (
-            f"You selected row: {row.title[1]}"
-            if row is not None
-            else "No row selected"
-        )
-
-    def on_select_handler2(self, widget, **kwargs):
-        if self.table2.selection is not None:
-            self.label_table2.text = f"Rows selected: {len(self.table2.selection)}"
-        else:
-            self.label_table2.text = "No row selected"
-
-    async def on_activate1(self, widget, row, **kwargs):
-        await self.main_window.dialog(
-            toga.InfoDialog(
-                title="movie selection",
-                message=self.build_activate_message(row=row, table_index=1),
+    def on_select_handler(self, widget, **kwargs):
+        if selection := self.table.selection:
+            number = len(selection)
+            titles = ", ".join(row.title[1] for row in selection[:3])
+            self.selection_label.text = (
+                f"Rows selected: {number} ({titles}{'...' if number > 3 else ''})"
             )
-        )
+            self.btn_delete.enabled = True
+            self.btn_insert.text = "Insert random row before selection"
+        else:
+            self.selection_label.text = "No rows selected"
+            self.btn_delete.enabled = False
+            self.btn_insert.text = "Insert random row at top"
 
-    async def on_activate2(self, widget, row, **kwargs):
+    async def on_activate(self, widget, row, **kwargs):
+        adjective = random.choice(
+            ["magnificent", "amazing", "awesome", "life-changing"]
+        )
+        genre = (getattr(row, "genre", "") or "no-genre").lower()
+        msg = f"You selected the {adjective} {genre} movie {row.title[1]} ({row.year})"
+
         await self.main_window.dialog(
             toga.InfoDialog(
                 title="movie selection",
-                message=self.build_activate_message(row=row, table_index=2),
+                message=msg,
             )
         )
 
     # Button callback functions
     def insert_handler(self, widget, **kwargs):
-        self.table1.data.insert(0, random.choice(self.bee_movies))
+        if selection := self.table.selection:
+            index = self.table.data.index(selection[0])
+        else:
+            index = 0
+        self.table.data.insert(index, random.choice(self.bee_movies))
 
     def delete_handler(self, widget, **kwargs):
-        if self.table1.selection:
-            self.table1.data.remove(self.table1.selection)
-        elif len(self.table1.data) > 0:
-            self.table1.data.remove(self.table1.data[0])
-        else:
-            print("Table is empty!")
+        for row in self.table.selection:
+            self.table.data.remove(row)
 
     def clear_handler(self, widget, **kwargs):
-        self.table1.data.clear()
+        self.table.data.clear()
+        # Make sure any selection is cleared.
+        self.on_select_handler(self.table)
 
     def reset_handler(self, widget, **kwargs):
-        self.table1.data = self.bee_movies
+        self.table.data = self.initial_data
+        # Make sure any selection is cleared.
+        self.on_select_handler(self.table)
 
     def toggle_handler(self, widget, **kwargs):
         try:
             # Try to delete the "genre" column by accessor.
             # If the column doesn't exist, this will raise a ValueError,
             # which means we need to add it.
-            self.table1.remove_column("genre")
+            self.table.remove_column("genre")
+            self.btn_toggle.text = "Restore genre column"
         except ValueError:
             # Add the genre column. We provide the column *title*,
             # which is automatically converted into the data accessor `genre`.
             # If the data accessor can't be determined from the column title,
             # you could manually specify the accessor here, too.
-            self.table1.add_column("Genre")
+            self.table.append_column("Genre")
+            self.btn_toggle.text = "Remove genre column"
 
     def top_handler(self, widget, **kwargs):
-        self.table1.scroll_to_top()
+        self.table.scroll_to_top()
 
     def bottom_handler(self, widget, **kwargs):
-        self.table1.scroll_to_bottom()
+        self.table.scroll_to_bottom()
 
     def startup(self):
         self.main_window = toga.MainWindow()
 
-        # Label to show which row is currently selected.
-        self.label_table1 = toga.Label("Ready.", flex=1, margin_right=5)
-        self.label_table2 = toga.Label(
-            "Try multiple row selection.", flex=1, margin_left=5
-        )
-        labelbox = toga.Box(
-            children=[self.label_table1, self.label_table2],
-            flex=0,
-            margin_top=5,
+        # Label to show which rows are currently selected
+        self.selection_label = toga.Label(
+            "Try multiple row selection.", flex=0, margin=5
         )
 
-        # Change font size
-        lbl_fontlabel = toga.Label("Font size =")
-        self.lbl_fontsize = toga.Label("10")
-        btn_reduce_size = toga.Button(" - ", on_press=self.reduce_fontsize, width=40)
-        btn_increase_size = toga.Button(
-            " + ", on_press=self.increase_fontsize, width=40
-        )
-        font_box = toga.Box(
-            children=[
-                toga.Box(
-                    children=[btn_reduce_size, btn_increase_size],
-                    direction=ROW,
-                ),
-                toga.Box(
-                    children=[lbl_fontlabel, self.lbl_fontsize],
-                    direction=ROW,
-                ),
-            ],
-            direction=COLUMN,
-        )
-
-        # Data to populate the table.
+        # The table and its data
         self.load_data()
-        if toga.platform.current_platform == "android":
-            # FIXME: beeware/toga#1392 - Android Table doesn't allow lots of content
-            table_data = self.bee_movies * 10
-        else:
-            table_data = self.bee_movies * 1000
 
-        self.table1 = toga.Table(
-            headings=headings,
-            data=table_data,
+        self.table = toga.Table(
+            headings=["Title", "Year", "Rating", "Genre"],
+            data=self.initial_data,
             flex=1,
-            margin_right=5,
-            font_family="monospace",
-            font_size=int(self.lbl_fontsize.text),
-            font_style="italic",
-            multiple_select=False,
-            on_select=self.on_select_handler1,
-            on_activate=self.on_activate1,
+            margin=5,
+            multiple_select=True,
+            on_select=self.on_select_handler,
+            on_activate=self.on_activate,
             missing_value="Unknown",
         )
 
-        self.table2 = toga.Table(
-            headings=None,
-            accessors=[h.lower() for h in headings],
-            data=self.table1.data,
-            multiple_select=True,
-            flex=1,
-            margin_left=5,
-            on_select=self.on_select_handler2,
-            on_activate=self.on_activate2,
-            missing_value="?",
-        )
-
-        tablebox = toga.Box(children=[self.table1, self.table2], flex=1)
-
         # Buttons
-        btn_insert = toga.Button("Insert", on_press=self.insert_handler, flex=1)
-        btn_delete = toga.Button("Delete", on_press=self.delete_handler, flex=1)
-        btn_clear = toga.Button("Clear", on_press=self.clear_handler, flex=1)
-        btn_reset = toga.Button("Reset", on_press=self.reset_handler, flex=1)
-        btn_toggle = toga.Button("Column", on_press=self.toggle_handler, flex=1)
-        btn_top = toga.Button("Top", on_press=self.top_handler, flex=1)
-        btn_bottom = toga.Button("Bottom", on_press=self.bottom_handler, flex=1)
+        btn_style = {"flex": 1, "margin": 3}
+
+        self.btn_insert = toga.Button(
+            "Insert random movie at top", on_press=self.insert_handler, **btn_style
+        )
+        self.btn_delete = toga.Button(
+            "Delete selected row(s)",
+            on_press=self.delete_handler,
+            enabled=False,
+            **btn_style,
+        )
+        btn_clear = toga.Button(
+            "Clear table data", on_press=self.clear_handler, **btn_style
+        )
+        btn_reset = toga.Button(
+            "Reset table data", on_press=self.reset_handler, **btn_style
+        )
+        self.btn_toggle = toga.Button(
+            "Remove genre column", on_press=self.toggle_handler, **btn_style
+        )
+        btn_top = toga.Button("Scroll to top", on_press=self.top_handler, **btn_style)
+        btn_bottom = toga.Button(
+            "Scroll to bottom", on_press=self.bottom_handler, **btn_style
+        )
 
         controls_1 = toga.Box(
-            children=[font_box, btn_insert, btn_delete, btn_clear],
+            children=[self.btn_insert, self.btn_delete],
             direction=ROW,
-            margin_bottom=5,
         )
         controls_2 = toga.Box(
-            children=[btn_reset, btn_toggle, btn_top, btn_bottom],
+            children=[self.btn_toggle, btn_clear, btn_reset],
             direction=ROW,
-            margin_bottom=5,
         )
 
-        # Most outer box
+        controls_3 = toga.Box(
+            children=[btn_top, btn_bottom],
+            direction=ROW,
+        )
+
+        # Outermost box
         outer_box = toga.Box(
-            children=[controls_1, controls_2, tablebox, labelbox],
-            flex=1,
+            children=[
+                controls_1,
+                controls_2,
+                controls_3,
+                self.table,
+                self.selection_label,
+            ],
             direction=COLUMN,
             margin=10,
         )
@@ -198,29 +175,6 @@ class TableApp(toga.App):
 
         # Show the main window
         self.main_window.show()
-
-    def reduce_fontsize(self, widget):
-        font_size = int(self.lbl_fontsize.text) - 1
-        self.lbl_fontsize.text = str(font_size)
-        font = toga.Font(family="monospace", size=font_size, style="italic")
-        self.table1._impl.set_font(font)
-
-    def increase_fontsize(self, widget):
-        font_size = int(self.lbl_fontsize.text) + 1
-        self.lbl_fontsize.text = str(font_size)
-        font = toga.Font(family="monospace", size=font_size, style="italic")
-        self.table1._impl.set_font(font)
-
-    @classmethod
-    def build_activate_message(cls, row, table_index):
-        adjective = random.choice(
-            ["magnificent", "amazing", "awesome", "life-changing"]
-        )
-        genre = (getattr(row, "genre", "") or "no-genre").lower()
-        return (
-            f"You selected the {adjective} {genre} movie "
-            f"{row.title[1]} ({row.year}) from Table {table_index}"
-        )
 
 
 def main():
