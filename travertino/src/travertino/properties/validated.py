@@ -58,7 +58,7 @@ class validated_property:
         setattr(style, f"_{self.name}", value)
         if value != current:
             ######################################################################
-            # 03-2025: Backwards compatibility for Toga 0.5.1
+            # 08-2025: Backwards compatibility for Toga < 0.5.0
             ######################################################################
             try:
                 style.apply(self.name)
@@ -83,7 +83,7 @@ class validated_property:
         else:
             if current != self.initial:
                 ######################################################################
-                # 03-2025: Backwards compatibility for Toga 0.5.1
+                # 08-2025: Backwards compatibility for Toga < 0.5.0
                 ######################################################################
                 try:
                     style.apply(self.name)
