@@ -50,7 +50,6 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
                 raise RuntimeError(
                     "Cannot run the event loop while another loop is running"
                 )
-            self._set_coroutine_origin_tracking(self._debug)
             self._thread_id = threading.get_ident()
             self._old_agen_hooks = sys.get_asyncgen_hooks()
             sys.set_asyncgen_hooks(

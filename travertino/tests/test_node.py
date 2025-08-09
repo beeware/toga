@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from unittest.mock import Mock, call
 from warnings import catch_warnings, filterwarnings
 
@@ -9,11 +10,11 @@ from travertino.properties.validated import validated_property
 from travertino.size import BaseIntrinsicSize
 from travertino.style import BaseStyle
 
-from .utils import apply_dataclass, mock_apply
+from .utils import mock_apply
 
 
 @mock_apply
-@apply_dataclass
+@dataclass(kw_only=True, repr=False)
 class Style(BaseStyle):
     int_prop: int = validated_property(integer=True)
 
@@ -30,7 +31,7 @@ class Style(BaseStyle):
 
 
 @mock_apply
-@apply_dataclass
+@dataclass(kw_only=True, repr=False)
 class OldStyle(Style):
     # Uses two-argument layout(), as in Toga <= 0.4.8
     def layout(self, node, viewport):
@@ -39,7 +40,7 @@ class OldStyle(Style):
 
 
 @mock_apply
-@apply_dataclass
+@dataclass(kw_only=True, repr=False)
 class TypeErrorStyle(Style):
     # Uses the correct signature, but raises an unrelated TypeError in layout
     def layout(self, viewport):
@@ -47,14 +48,14 @@ class TypeErrorStyle(Style):
 
 
 @mock_apply
-@apply_dataclass
+@dataclass(kw_only=True, repr=False)
 class OldTypeErrorStyle(Style):
     # Just to be extra safe...
     def layout(self, node, viewport):
         raise TypeError("An unrelated TypeError has occurred somewhere in layout()")
 
 
-@apply_dataclass
+@dataclass(kw_only=True, repr=False)
 class BrokenStyle(BaseStyle):
     def apply(self):
         raise AttributeError("Missing attribute, node not ready for style application")
@@ -71,7 +72,7 @@ class BrokenStyle(BaseStyle):
         self._applicator.node.layout.content_height = viewport.height * 2
 
 
-@apply_dataclass
+@dataclass(kw_only=True, repr=False)
 class AttributeTestStyle(BaseStyle):
     class IntrinsicSize(BaseIntrinsicSize):
         pass

@@ -1,9 +1,10 @@
-import importlib.metadata
 import sys
+from importlib.metadata import EntryPoint
 from unittest.mock import Mock
 
 import pytest
 
+import toga.platform
 import toga_dummy
 from toga.platform import current_platform, get_current_platform, get_platform_factory
 
@@ -32,7 +33,7 @@ def patch_platforms(monkeypatch, platforms):
 
     group = "toga.backends"
     entry_points = [
-        importlib.metadata.EntryPoint(
+        EntryPoint(
             name=current_platform if is_current else name,
             value=f"{name}_module",
             group=group,
@@ -40,13 +41,9 @@ def patch_platforms(monkeypatch, platforms):
         for name, _, is_current in platforms
     ]
     monkeypatch.setattr(
-        importlib.metadata,
+        toga.platform,
         "entry_points",
-        Mock(
-            return_value=(
-                {group: entry_points} if sys.version_info < (3, 10) else entry_points
-            )
-        ),
+        Mock(return_value=entry_points),
     )
 
 

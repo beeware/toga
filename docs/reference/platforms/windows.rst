@@ -14,7 +14,7 @@ The Toga backend for Windows is `toga-winforms
 Prerequisites
 -------------
 
-``toga-winforms`` requires Python 3.9+, and Windows 10 or newer.
+``toga-winforms`` requires Python 3.10+, and Windows 10 or newer.
 
 If you are using Windows 10 and want to use a WebView to display web content, you will
 also need to install the `Edge WebView2 Evergreen Runtime.

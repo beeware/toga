@@ -18,9 +18,6 @@ class BaseStyle:
     Exposes a dict-like interface. Designed for subclasses to be decorated
     with @dataclass(kw_only=True, repr=False).
 
-    The kw_only parameter was added in Python 3.10; for 3.9, init=False can be used
-    instead to still get the keyword-only behavior from the included __init__.
-
     Most IDEs should see the dataclass decorator and provide autocompletion / type hints
     for parameters to the constructor.
     """
@@ -35,12 +32,12 @@ class BaseStyle:
         cls._PROPERTIES = cls._BASE_PROPERTIES[cls]
         cls._ALL_PROPERTIES = cls._BASE_ALL_PROPERTIES[cls]
 
-    ########################################################################
-    # 03-2025: Backwards compatibility for Toga < 0.5.0 *and* for Python 3.9
-    ########################################################################
+    ###################################################
+    # 03-2025: Backwards compatibility for Toga < 0.5.0
+    ###################################################
 
     # Fallback in case subclass isn't decorated as dataclass (probably from using
-    # previous API) or for pre-3.10, before kw_only argument existed.
+    # previous API).
     def __init__(self, **properties):
         try:
             self.update(**properties)

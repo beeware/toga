@@ -4,17 +4,8 @@ import importlib
 import os
 import sys
 from functools import cache
-from importlib import metadata
+from importlib.metadata import entry_points
 from types import ModuleType
-
-
-# Emulate the Python 3.10+ entry_points API on older Python versions.
-def entry_points(*, group):
-    if sys.version_info < (3, 10):  # pragma: no-cover-if-gte-py310
-        return metadata.entry_points()[group]
-    else:  # pragma: no-cover-if-lt-py310
-        return metadata.entry_points(group=group)
-
 
 # Map python sys.platform with toga platforms names
 _TOGA_PLATFORMS = {
