@@ -216,7 +216,8 @@ jobs:
     - name: Test
       run: |
         export TOGA_BACKEND=toga_dummy
-        python -m pip install toga_core==0.4.8 toga_dummy==0.4.8
+        # Install pytest just so dummy is happy, see #2290
+        python -m pip install toga_core==0.4.8 toga_dummy==0.4.8 pytest
         # Install demo without dependencies to skip the backend, and overwrite the
         # installed version of Travertino with the one being tested.
         python -m pip install --no-dependencies toga_demo==0.4.8 ./$(ls dist/travertino-*.whl)
