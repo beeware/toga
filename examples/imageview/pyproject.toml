@@ -50,8 +50,7 @@ requires = [
 [tool.briefcase.app.imageview.android]
 requires = [
     "../../android",
-    "Pillow==9.2.0; python_version=='3.10' or python_version=='3.9'",
-    "Pillow==8.4.0; python_version=='3.8'",
+    "Pillow==9.2.0",
 ]
 
 base_theme = "Theme.MaterialComponents.Light.DarkActionBar"

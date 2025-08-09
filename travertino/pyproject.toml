@@ -10,7 +10,7 @@ dynamic = ["version"]
 name = "travertino"
 description = "A set of constants and base classes for describing user interface layouts."
 readme = "README.rst"
-requires-python = ">= 3.9"
+requires-python = ">= 3.10"
 license = "BSD-3-Clause"
 license-files = [
     "LICENSE"
@@ -31,7 +31,6 @@ classifiers = [
     "Intended Audience :: Developers",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",

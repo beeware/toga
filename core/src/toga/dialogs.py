@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import asyncio
 from pathlib import Path
-from typing import TYPE_CHECKING, Generic, Literal, TypeVar, Union, overload
+from typing import TYPE_CHECKING, Generic, Literal, TypeVar, overload
 
 from toga.platform import get_platform_factory
 
@@ -151,7 +151,7 @@ class StackTraceDialog(Dialog[DialogResultT]):
         )
 
 
-class SaveFileDialog(Dialog[Union[Path, None]]):
+class SaveFileDialog(Dialog[Path | None]):
     def __init__(
         self,
         title: str,

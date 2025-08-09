@@ -1,21 +1,9 @@
-import sys
 from copy import deepcopy
-from dataclasses import dataclass
 from unittest.mock import Mock
 
 import pytest
 
 from travertino.colors import hsl, rgb
-
-if sys.version_info < (3, 10):
-    _DATACLASS_KWARGS = {"init": False, "repr": False}
-else:
-    _DATACLASS_KWARGS = {"kw_only": True, "repr": False}
-
-
-def apply_dataclass(cls):
-    """Decorator to apply dataclass with arguments depending on Python version"""
-    return dataclass(**_DATACLASS_KWARGS)(cls)
 
 
 def mock_apply(cls):

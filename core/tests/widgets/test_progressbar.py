@@ -1,5 +1,3 @@
-import sys
-
 import pytest
 
 import toga
@@ -127,11 +125,7 @@ def test_set_max(progressbar, value, actual, determinate):
         (
             object(),
             TypeError,
-            (
-                r"must be a string or a number"
-                if sys.version_info < (3, 10)
-                else r"must be a string or a real number"
-            ),
+            r"must be a string or a real number",
         ),  # Non-coercible to float
         (
             -42,

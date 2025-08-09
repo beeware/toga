@@ -29,7 +29,7 @@ The Toga backend for Linux (and other Unix-like operating systems) is `toga-gtk
 Prerequisites
 -------------
 
-``toga-gtk`` requires Python 3.9+, and GTK 3.22 or newer.
+``toga-gtk`` requires Python 3.10+, and GTK 3.22 or newer.
 
 Most testing occurs with GTK 3.24 as this is the version that has shipped with all
 versions of Ubuntu since Ubuntu 20.04, and all versions of Fedora since Fedora 32.

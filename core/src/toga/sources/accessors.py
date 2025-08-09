@@ -30,9 +30,9 @@ def to_accessor(heading: str) -> str:
     :raises ValueError: If the heading cannot be converted into an accessor.
     """
     value = WHITESPACE.sub(
-        " ",
+        "_",
         NON_ACCESSOR_CHARS.sub("", heading.lower()),
-    ).replace(" ", "_")
+    )
 
     try:
         if value[0].isdigit():
@@ -65,19 +65,16 @@ def build_accessors(
     """
     if accessors is not None:
         if isinstance(accessors, Mapping):
-            result = [
+            return [
                 accessors[h] if h in accessors else to_accessor(h) for h in headings
             ]
         else:
-            # TODO: use zip(..., strict=True) instead once Python 3.9 support is dropped
-            if len(headings := list(headings)) != len(accessors := list(accessors)):
-                raise ValueError("Number of accessors must match number of headings")
-
-            result = [
-                a if a is not None else to_accessor(h)
-                for h, a in zip(headings, accessors)
-            ]
+            try:
+                zipped = list(zip(headings, accessors, strict=True))
+            except ValueError as exc:
+                raise ValueError(
+                    "Number of accessors must match number of headings"
+                ) from exc
+            return [a if a is not None else to_accessor(h) for h, a in zipped]
     else:
-        result = [to_accessor(h) for h in headings]
-
-    return result
+        return [to_accessor(h) for h in headings]
