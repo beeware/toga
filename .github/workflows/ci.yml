@@ -219,7 +219,7 @@ jobs:
         python -m pip install toga_core==0.4.8 toga_dummy==0.4.8
         # Install demo without dependencies to skip the backend, and overwrite the
         # installed version of Travertino with the one being tested.
-        python -m pip install --no-dependencies toga_demo==0.4.8 -e ./$(ls dist/travertino-*.whl)
+        python -m pip install --no-dependencies toga_demo==0.4.8 ./$(ls dist/travertino-*.whl)
         # Nothing fancy, just a quick sanity check to make sure it runs without error.
         python -m toga_demo
 
