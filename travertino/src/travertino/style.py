@@ -80,7 +80,7 @@ class BaseStyle:
             ######################################################################
 
             # Once this shim is removed, it still wouldn't be a bad idea to raise the
-            # more specific Runtime Error.
+            # more specific RuntimeError.
 
             try:
                 try:

@@ -67,6 +67,8 @@ class validated_property:
                     "Pack.apply() missing 1 required positional argument: 'value'"
                 ):
                     style.apply(self.name, value)
+                else:
+                    raise
 
             ######################################################################
             # End backwards compatibility
@@ -90,6 +92,8 @@ class validated_property:
                         "Pack.apply() missing 1 required positional argument: 'value'"
                     ):
                         style.apply(self.name, self.initial)
+                    else:
+                        raise
 
                 ######################################################################
                 # End backwards compatibility
