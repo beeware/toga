@@ -5,7 +5,6 @@ from collections.abc import Iterable, Mapping
 
 NON_ACCESSOR_CHARS = re.compile(r"[^\w ]")
 WHITESPACE = re.compile(r"\s+")
-ZIP_MISMATCH = re.compile(r"zip\(\) argument 2 is (shorter|longer) than argument 1")
 
 
 def to_accessor(heading: str) -> str:
@@ -71,16 +70,11 @@ def build_accessors(
             ]
         else:
             try:
-                return [
-                    a if a is not None else to_accessor(h)
-                    for h, a in zip(headings, accessors, strict=True)
-                ]
+                zipped = list(zip(headings, accessors, strict=True))
             except ValueError as exc:
-                if ZIP_MISMATCH.fullmatch(str(exc)):
-                    raise ValueError(
-                        "Number of accessors must match number of headings"
-                    ) from exc
-                else:
-                    raise
+                raise ValueError(
+                    "Number of accessors must match number of headings"
+                ) from exc
+            return [a if a is not None else to_accessor(h) for h, a in zipped]
     else:
         return [to_accessor(h) for h in headings]
