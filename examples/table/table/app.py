@@ -29,7 +29,7 @@ class TableApp(toga.App):
             number = len(selection)
             titles = ", ".join(row.title[1] for row in selection[:3])
             self.selection_label.text = (
-                f"Rows selected: {number}: ({titles}{'...' if number > 3 else ''})"
+                f"Rows selected: {number} ({titles}{'...' if number > 3 else ''})"
             )
             self.btn_delete.enabled = True
             self.btn_insert.text = "Insert random row before selection"
