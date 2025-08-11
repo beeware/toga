@@ -1,1 +1,1 @@
-A functionally innocuous but incorrect ordering of R, G, and B was corrected in travertino.colors.color.
+Updated coverage[toml] from 7.10.1 to 7.10.2 in /core.
