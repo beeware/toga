@@ -209,6 +209,19 @@ async def test_unsupported_widget(app):
             "org.beeware.explicit-app",
             "override-app",
         ),
+        ###########################################################################
+        # Invoking as python -m pdb my_app.py.
+        # This causes a main module of "my_app", but `__package__` isn't set.
+        ###########################################################################
+        # No app name provided; falls back to app_id
+        (
+            EXPLICIT_MIN_APP_KWARGS,
+            None,
+            Mock(),
+            "Explicit App",
+            "org.beeware.explicit-app",
+            "explicit-app",
+        ),
     ],
 )
 async def test_create(
