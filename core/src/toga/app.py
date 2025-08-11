@@ -215,7 +215,7 @@ class App:
             #
             # If the code is contained in appname.py, and you start the app using
             # `python appname.py`, then __main__.__package__ will be None - unless
-            # the app has been run under pdb, in which case `__package__` not exist.
+            # the app has been run under pdb, in which case `__package__` doesn't exist.
             #
             # If the code is contained in appname/__main__.py, and you start the app
             # using `python -m appname`, then __main__.__package__ will be "appname".
