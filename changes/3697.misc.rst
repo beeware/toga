@@ -1,0 +1,1 @@
+The GitHub Actions configuration was updated to account for changes in the macos-15 image.
