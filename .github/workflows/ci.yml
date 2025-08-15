@@ -345,7 +345,15 @@ jobs:
         - backend: "iOS"
           platform: "iOS"
           runs-on: "macos-latest"
-          briefcase-run-args: "--device 'iPhone SE (3rd generation)'"
+          pre-command: |
+            # 2025-08-15 - Github Actions are in the process of switching how they
+            # manage Xcode, so they can save disk space.
+            # See https://github.com/actions/runner-images/issues/12541
+            # and https://github.com/actions/runner-images/issues/12751; see
+            # also https://github.com/actions/runner-images/issues/12758 for
+            # a discussion of transition issues.
+            sudo xcode-select --switch /Applications/Xcode_16.4.app
+          briefcase-run-args: "--device 'iPhone SE (3rd generation)::iOS 18.5'"
           app-user-data-path: "$(xcrun simctl get_app_container booted org.beeware.toga.testbed data)/Documents"
 
         - backend: "android"
