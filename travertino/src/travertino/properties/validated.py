@@ -57,7 +57,22 @@ class validated_property:
 
         setattr(style, f"_{self.name}", value)
         if value != current:
-            style.apply(self.name)
+            ######################################################################
+            # 08-2025: Backwards compatibility for Toga < 0.5.0
+            ######################################################################
+            try:
+                style.apply(self.name)
+            except TypeError as exc:  # pragma: no cover
+                if str(exc) == (
+                    "Pack.apply() missing 1 required positional argument: 'value'"
+                ):
+                    style.apply(self.name, value)
+                else:
+                    raise
+
+            ######################################################################
+            # End backwards compatibility
+            ######################################################################
 
     def __delete__(self, style):
         try:
@@ -67,7 +82,22 @@ class validated_property:
             pass
         else:
             if current != self.initial:
-                style.apply(self.name)
+                ######################################################################
+                # 08-2025: Backwards compatibility for Toga < 0.5.0
+                ######################################################################
+                try:
+                    style.apply(self.name)
+                except TypeError as exc:  # pragma: no cover
+                    if str(exc) == (
+                        "Pack.apply() missing 1 required positional argument: 'value'"
+                    ):
+                        style.apply(self.name, self.initial)
+                    else:
+                        raise
+
+                ######################################################################
+                # End backwards compatibility
+                ######################################################################
 
     @property
     def _name_if_set(self):
