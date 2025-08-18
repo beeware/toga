@@ -221,7 +221,7 @@ jobs:
     - name: Test
       run: |
         export TRAVERINO_INSTALL_COMMAND="python -m pip install ../$(ls dist/travertino-*.whl)"
-        tox -e travertino-compat
+        tox -e trav-compat
 
   testbed:
     name: Testbed
