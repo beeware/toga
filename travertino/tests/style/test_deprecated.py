@@ -50,15 +50,23 @@ def test_deprecated_class_methods():
 
 
 def test_deprecated_reapply():
-    """Reapply() is deprecated (but still calls apply()."""
-    style = Style(explicit_const=5)
+    """Reapply() is deprecated, and calls the old apply(name, value) signature."""
+    style = Style()
     with pytest.warns(DeprecationWarning):
         style.reapply()
 
-    # Called first the modern way, then rerouted to the older API
-    assert style.apply.call_args_list == [
-        call("explicit_const"),
-        call("explicit_const", 5),
+    # Applies all properties
+    assert sorted(style.apply.call_args_list) == [
+        call("different_values_prop", "value2"),
+        call("explicit_const", VALUE1),
+        call("explicit_none", None),
+        call("explicit_value", 0),
+        call("implicit", None),
+        call("list_prop", ["value2"]),
+        call("thing_bottom", 0),
+        call("thing_left", 0),
+        call("thing_right", 0),
+        call("thing_top", 0),
     ]
 
 
