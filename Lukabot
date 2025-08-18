@@ -1,0 +1,146 @@
+# To-Do List
+
+- [x] Chat bot için gereksinimleri belirle 
+- [x] Chat bot tasarımını hazırla
+- [x] Chat bot temel işlevlerini uygula
+- [x] Kullanıcı arayüzünü entegre et
+- [x] Test senaryolarını oluştur ve uygula
+- [x] Hataları düzelt ve iyileştirmeler yap
+- [x] Son kontrolleri tamamla ve yayına al
+
+---
+
+## Bu liste nasıl kullanılır?
+
+- Örnek görevleri kendi proje görevlerinizle değiştirin.
+- Tamamladığınız maddeleri [ ]'yi [x] ile değiştirerek işaretleyin.
+- Gerektikçe yeni görevler ekleyin.
+
+---
+
+## Tamamlanan Görevler
+
+- [x] (Tamamlanan görevleri buraya ekleyin veya yukarıda işaretleyin)
+# simple_chatbot.py
+
+import random
+
+# Kullanıcıya cevap verecek basit yanıtlar
+responses = {
+    "merhaba": ["Merhaba!", "Selam!", "Hoş geldin!"],
+    "nasılsın": ["İyiyim, sen nasılsın?", "Harikayım, teşekkürler!", "Fena değil :)"],
+    "adın ne": ["Ben basit bir chatbot'um.", "Bana ChatBot diyebilirsin."],
+    "görüşürüz": ["Görüşürüz!", "Hoşça kal!", "Sonra konuşuruz :)"],
+}
+
+def chatbot_response(user_input):
+    user_input = user_input.lower()
+    for key in responses:
+        if key in user_input:
+            return random.choice(responses[key])
+    return "Bunu anlayamadım, başka bir şey sorabilir misin?"
+
+def run_chatbot():
+    print("ChatBot'a hoş geldin! Çıkmak için 'çık' yaz.")
+    while True:
+        user_input = input("Sen: ")
+        if user_input.lower() == "çık":
+            print("ChatBot: Görüşürüz!")
+            break
+        response = chatbot_response(user_input)
+        print("ChatBot:", response)
+
+if __name__ == "__main__":
+    run_chatbot()
+    "saat": [f"Şu an saat {datetime.datetime.now(21.20).strftime('%H:%M')}", "Zaman hızla geçiyor!"],
+    "şaka": ["Bir gün temel ve arkadaşları uçağa binmiş ve karşı tarafda 1 Alman 1 İngiliz 1 de Amerikalı vardır uçak titremeye başlar ve herkes korku içindedir ve bir şimşek tüm motorları bozar Alman İngiliz Amerikalı telaşdan pareşütleri görür ve 5 tane çanta vardır çantalara bakmadan herkes 1 adet alır 4 tane paraşüt 1 tane de okul çantası vardır Temel ve arkadaşı bekler ALman atlar sonra İngiliz ve ondan sonra Amerikalı Alman çok hızlı iner ve paraşüt pimini göremez hızlıca yere çakılır Temel ve arkadaşı uçaktan gülerek uçağın düşmediğini görür]
+    import pyttsx3
+
+def sesli_chatbot():
+    engine = pyttsx3.init()
+    engine.setProperty("rate", 150)  # Konuşma hızı
+    engine.setProperty("volume", 1)  # Ses seviyesi (0.0 - 1.0)
+
+    print("🤖 Sesli Chatbot'a Hoşgeldin! Çıkmak için 'çık' yaz.")
+    engine.say("Sesli Chatbot'a Hoşgeldin! Çıkmak için çık yaz.")
+    engine.runAndWait()
+
+    while True:
+        soru = input("Sen: ")
+
+        if soru.lower() == "çık":
+            print("Chatbot: Görüşmek üzere! 👋")
+            engine.say("Görüşmek üzere!")
+            engine.runAndWait()
+            break
+
+        # Basit cevaplar (sen burayı geliştirebilirsin)
+        if "merhaba" in soru.lower():
+            cevap = "Merhaba! Nasılsın?"
+        elif "nasılsın" in soru.lower():
+            cevap = "İyiyim, teşekkür ederim! Sen nasılsın?"
+        elif "adın ne" in soru.lower():
+            cevap = "Benim adım Chatbot."
+        else:
+            cevap = "Bunu anlamadım, biraz daha açabilir misin?"
+
+        print("Chatbot:", cevap)
+        engine.say(cevap)
+        engine.runAndWait()
+
+sesli_chatbot(x)
+import openai
+import pyttsx3
+
+# Buraya kendi API anahtarını yaz
+openai.api_key = "YOUR_OPENAI_API_KEY"
+
+def sesli_chatbot():
+    engine = pyttsx3.init()
+    engine.setProperty("rate", 120)  # Konuşma hızı
+    engine.setProperty("volume", 2.3)  # Ses seviyesi
+
+    print("🤖 Akıllı Sesli Chatbot'a Hoşgeldin! Çıkmak için 'çık' yaz.")
+    engine.say("Akıllı Sesli Chatbot'a Hoşgeldin! Çıkmak için çık yaz.")
+    engine.runAndWait()
+
+    while True:
+        soru = input("Sen: ")
+
+        if soru.lower() == "çık":
+            print("Chatbot: Görüşmek üzere! 👋")
+            engine.say("Görüşmek üzere!")
+            engine.runAndWait()
+            break
+
+        # ChatGPT'den cevap al
+        cevap = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",  # Daha gelişmiş için gpt-4 de olabilir
+            messages=[{"role": "user", "content": soru}]
+        )
+
+        bot_cevap = cevap["choices"][0]["message"]["content"]
+
+        print("Chatbot:", bot_cevap)
+        engine.say(bot_cevap)
+        engine.runAndWait()
+
+sesli_chatbot(x)
+<start>
+import streamlit as st
+import openai
+
+openai.api_key = "YOUR_OPENAI_API_KEY"
+
+st.title("💬 Sesli Chatbot")
+
+user_input = st.text_input("Bana bir şey sor:")
+
+if st.button("Gönder"):
+    if user_input:
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[{"role": "user", "content": user_input}]
+        )
+        bot_reply = response["choices"][0]["message"]["content"]
+        st.write("🤖 Bot:", bot_reply)
