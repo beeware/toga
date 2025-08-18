@@ -204,6 +204,13 @@ jobs:
       with:
         python-version: "3.10"
 
+    - name: Install Tox
+      uses: beeware/.github/.github/actions/install-requirement@main
+      with:
+        requirements: tox
+        extra: dev
+        project-root: core
+
     - name: Get Package
       uses: actions/download-artifact@v4.3.0
       with:
