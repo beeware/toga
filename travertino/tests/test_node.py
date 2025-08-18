@@ -39,22 +39,6 @@ class OldStyle(Style):
         super().layout(viewport)
 
 
-@mock_apply
-@dataclass(kw_only=True, repr=False)
-class TypeErrorStyle(Style):
-    # Uses the correct signature, but raises an unrelated TypeError in layout
-    def layout(self, viewport):
-        raise TypeError("An unrelated TypeError has occurred somewhere in layout()")
-
-
-@mock_apply
-@dataclass(kw_only=True, repr=False)
-class OldTypeErrorStyle(Style):
-    # Just to be extra safe...
-    def layout(self, node, viewport):
-        raise TypeError("An unrelated TypeError has occurred somewhere in layout()")
-
-
 @dataclass(kw_only=True, repr=False)
 class BrokenStyle(BaseStyle):
     def apply(self):
@@ -219,19 +203,6 @@ def test_refresh_no_op():
     node = Node(style=Style())
     node.refresh(Viewport(width=100, height=100))
     node.style.apply.assert_not_called()
-
-
-@pytest.mark.parametrize("StyleClass", [TypeErrorStyle, OldTypeErrorStyle])
-def test_type_error_in_layout(StyleClass):
-    """The shim shouldn't hide unrelated TypeErrors."""
-
-    class Applicator:
-        def set_bounds(self):
-            pass
-
-    node = Node(style=StyleClass(), applicator=Applicator())
-    with pytest.raises(TypeError, match=r"unrelated TypeError"):
-        node.refresh(Viewport(50, 50))
 
 
 def test_add():

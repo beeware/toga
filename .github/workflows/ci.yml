@@ -125,9 +125,7 @@ jobs:
       run: |
         # The $(ls ...) shell expansion is done in the GitHub environment; the value of
         # TOGA_INSTALL_COMMAND will be a literal string without any shell expansions to
-        # perform. We don't *explicitly* install the Travertino wheel; we provide the
-        # dist dir as a source of wheels, and rely on pip to resolve the explicit
-        # version match to the Travertino wheel in that folder.
+        # perform.
         export TOGA_INSTALL_COMMAND="python -m pip install ../$(ls dist/toga_core-*.whl)[dev] ../$(ls dist/travertino-*.whl) ../$(ls dist/toga_dummy-*.whl)"
         tox -e py-cov${{ matrix.tox-suffix }}
         tox -qe coverage$(tr -dc "0-9" <<< "${{ matrix.python-version }}")${{ matrix.tox-suffix }}
@@ -215,14 +213,8 @@ jobs:
 
     - name: Test
       run: |
-        export TOGA_BACKEND=toga_dummy
-        # Install pytest (and PIL) so dummy is happy, see #2290
-        python -m pip install toga_core==0.4.8 toga_dummy==0.4.8 pytest pillow
-        # Install demo without dependencies to skip the backend, and overwrite the
-        # installed version of Travertino with the one being tested.
-        python -m pip install --no-dependencies toga_demo==0.4.8 ./$(ls dist/travertino-*.whl)
-        # Nothing fancy, just a quick sanity check to make sure it runs without error.
-        python -m toga_demo
+        export TRAVERINO_INSTALL_COMMAND="python -m pip install ../$(ls dist/travertino-*.whl)"
+        tox -e travertino-compat
 
   testbed:
     name: Testbed

@@ -1,5 +1,6 @@
 from collections.abc import Sequence
 
+from ..compat import _toga_lt_5
 from .choices import Choices
 from .immutablelist import ImmutableList
 
@@ -62,10 +63,8 @@ class validated_property:
             ######################################################################
             try:
                 style.apply(self.name)
-            except TypeError as exc:  # pragma: no cover
-                if str(exc) == (
-                    "Pack.apply() missing 1 required positional argument: 'value'"
-                ):
+            except TypeError:
+                if _toga_lt_5():  # pragma: no cover
                     style.apply(self.name, value)
                 else:
                     raise
@@ -87,10 +86,8 @@ class validated_property:
                 ######################################################################
                 try:
                     style.apply(self.name)
-                except TypeError as exc:  # pragma: no cover
-                    if str(exc) == (
-                        "Pack.apply() missing 1 required positional argument: 'value'"
-                    ):
+                except TypeError:
+                    if _toga_lt_5():  # pragma: no cover
                         style.apply(self.name, self.initial)
                     else:
                         raise
