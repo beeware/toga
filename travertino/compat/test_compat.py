@@ -59,7 +59,7 @@ def test_validated_set_delete():
 
 
 def test_invalid_property_in_init():
-    """"""
+    """An invalid keyword raises a TypeError, like it would in the dataclass."""
     with pytest.raises(
         TypeError,
         match=r"Pack.__init__\(\) got an unexpected keyword argument 'fake_name'",
@@ -72,7 +72,7 @@ def test_demo():
 
     This doesn't actually generate any deprecation warnings, because they've already
     been emitted when importing Toga. But this confirms that, at the very least, the
-    demo app can run through its startup app without generating any uncaught
+    demo app can run through its startup method without generating any uncaught
     exceptions.
     """
     app.main().main_loop()

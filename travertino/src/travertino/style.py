@@ -87,10 +87,9 @@ class BaseStyle:
             # more specific RuntimeError.
 
             try:
-                # By default, call the modern apply() signature. In the event of a
-                # TypeError, if Toga's < 0.5.0, fall back to reapply(), since the
-                # signature mismatch is likely the culprit; otherwise we don't want to
-                # mask the error.
+                # By default, call the apply(). In the event of a TypeError, if Toga's <
+                # 0.5.0, silently pass, since properties can't be successfully applied
+                # yet. (They'll all get applied later, in each backend.)
                 try:
                     self.apply()
                 except TypeError:
