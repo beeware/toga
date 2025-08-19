@@ -14,8 +14,8 @@ filterwarnings("default", category=DeprecationWarning)
 
 _DEPRECATION_MSG = (
     "You're probably seeing this because you've updated Travertino to 0.5.x but are "
-    "still using Toga <= 0.4.8; to fix, either update Toga to >= 0.5.0, or pin "
-    "Travertino to 0.3.0."
+    "using Toga <= 0.4.8; to fix, either update Toga to >= 0.5.0, or pin Travertino to "
+    "0.3.0."
 )
 
 

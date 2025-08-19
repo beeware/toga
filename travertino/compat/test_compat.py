@@ -74,5 +74,9 @@ def test_demo():
     been emitted when importing Toga. But this confirms that, at the very least, the
     demo app can run through its startup method without generating any uncaught
     exceptions.
+
+    The dummy backend is set via environment variable (and the actual backend shouldn't
+    even be installed), so this is nonblocking; it simply runs through the startup
+    process, goes through the motions of calculating layout and such, then exits.
     """
     app.main().main_loop()
