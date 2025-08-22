@@ -1,0 +1,10 @@
+INHERIT: config.yml
+site_name: BeeWare Docs Tools Demo
+site_url: https://beeware-docs-tools.readthedocs.io/en/latest/
+docs_dir: en
+
+theme:
+  language: en
+
+extra:
+  translation_type: original
