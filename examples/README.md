@@ -7,11 +7,10 @@ It also contains working copies of the tutorial code.
 
 # Running the examples
 
-Each of the examples should run by installing Toga, and running the
-application as a Python module:
-
+Each of the examples can run by copying the example code to your computer
+(either by cloning this repository, or by manually duplicating the specific
+files), installing Toga, and running the application as a Python module:
 ```
-$ python -m pip install toga
 $ cd <example name>
 $ python -m <example name>
 ```
