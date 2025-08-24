@@ -9,8 +9,8 @@ version: 2
 build:
   os: ubuntu-22.04
   tools:
-    # Docs are always built on Python 3.13. See also the tox config.
-    python: "3.13"
+    # Docs are always built on Python 3.12. See also the tox config.
+    python: "3.12"
   jobs:
     pre_install:
       - python -m pip install --upgrade pip
