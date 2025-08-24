@@ -42,7 +42,7 @@ General widgets
                                                                          characters they have typed, but not the actual characters.
  :doc:`ProgressBar </reference/api/widgets/progressbar>`                 A horizontal bar to visualize task progress. The task being monitored
                                                                          can be of known or indeterminate length.
- :doc:`Selection </reference/api/widgets/selection>`                     A widget to select an single option from a list of alternatives.
+ :doc:`Selection </reference/api/widgets/selection>`                     A widget to select a single option from a list of alternatives.
  :doc:`Slider </reference/api/widgets/slider>`                           A widget for selecting a value within a range. The range is shown as a
                                                                          horizontal line, and the selected value is shown as a draggable marker.
  :doc:`Switch </reference/api/widgets/switch>`                           A clickable button with two stable states: True (on, checked); and
