@@ -7,17 +7,17 @@ A data source describing an ordered list of data.
 Data sources are abstractions that allow you to define the data being
 managed by your application independent of the GUI representation of
 that data. For details on the use of data sources, see the
-`topic guide </topics/data-sources>`{.interpreted-text role="doc"}.
+[topic guide](topics/data-sources).
 
 ListSource is an implementation of an ordered list of data. When a
 ListSource is created, it is given a list of `accessors` - these are the
 attributes that all items managed by the ListSource will have. The API
-provided by ListSource is `list`{.interpreted-text role="any"}-like; the
+provided by ListSource is [`list`][]-like; the
 operations you'd expect on a normal Python list, such as `insert`,
 `remove`, `index`, and indexing with `[]`, are also possible on a
 ListSource:
 
-``` python
+```python
 from toga.sources import ListSource
 
 source = ListSource(
@@ -43,12 +43,10 @@ source.remove(item)
 source.insert(0, {"name": "Bettong", "weight": 1.2})
 ```
 
-::: {#listsource-item}
-The ListSource manages a list of `~toga.sources.Row`{.interpreted-text
-role="class"} objects. Each Row has all the attributes described by the
+The ListSource manages a list of [`Row`][toga.sources.Row] objects. Each Row has all the attributes described by the
 source's `accessors`. A Row object will be constructed for each item
 that is added to the ListSource, and each item can be:
-:::
+
 
 - A dictionary, with the accessors mapping to the keys in the
   dictionary.
@@ -59,19 +57,18 @@ that is added to the ListSource, and each item can be:
 Although Toga provides ListSource, you are not required to create one
 directly. A ListSource will be transparently constructed if you provide
 an iterable object to a GUI widget that displays list-like data (i.e.,
-`toga.Table`{.interpreted-text role="class"},
-`toga.Selection`{.interpreted-text role="class"}, or
-`toga.DetailedList`{.interpreted-text role="class"}).
+[`toga.Table`][],
+[`toga.Selection`][], or
+[`toga.DetailedList`][]).
 
 ## Custom List Sources
 
 For more complex applications, you can replace ListSource with a
-`custom data
-source <custom-data-sources>`{.interpreted-text role="ref"} class. Such
+[custom data source][custom-data-sources] class. Such
 a class must:
 
-- Inherit from `Source`{.interpreted-text role="any"}
-- Provide the same methods as `ListSource`{.interpreted-text role="any"}
+- Inherit from [Source][]
+- Provide the same methods as [ListSource][]
 - Return items whose attributes match the accessors expected by the
   widget
 - Generate a `change` notification when any of those attributes change
@@ -80,10 +77,12 @@ a class must:
 
 ## Reference
 
-::: {.autoclass special-members="__setattr__"}
-toga.sources.Row
-:::
+::: toga.sources.Row
+    options:
+        members:
+            TODO: Add explicit members list *excluding* special members *except* for "__setattr__"
 
-::: {.autoclass special-members="__len__, __getitem__, __setitem__, __delitem__"}
-toga.sources.ListSource
-:::
+::: toga.sources.ListSource
+    options:
+        members:
+            TODO: Add explicit members list *excluding* special members *except* for "__len__, __getitem__, __setitem__, __delitem__"

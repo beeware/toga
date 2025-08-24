@@ -20,40 +20,35 @@ changes in the data, providing an appropriate visualization.
 
 There are three built-in data source types in Toga:
 
-- `Value Sources </reference/api/resources/sources/value_source>`{.interpreted-text
-  role="doc"}: For managing a single value. A ValueSource has a single
+- [Value Sources](/reference/api/resources/sources/value_source): For managing a single value. A ValueSource has a single
   attribute, (by default, `value`), which is what will be rendered for
   display purposes.
-- `List Sources </reference/api/resources/sources/list_source>`{.interpreted-text
-  role="doc"}: For managing a list of items, each of which has one or
+- [List Sources](../reference/api/resources/sources/list_source): For managing a list of items, each of which has one or
   more values. List data sources support the data manipulation methods
-  you'd expect of a `list`{.interpreted-text role="any"}, and return
-  `~toga.sources.Row`{.interpreted-text role="class"} objects. The
-  attributes of each `~toga.sources.Row`{.interpreted-text role="class"}
+  you'd expect of a [`list`][], and return
+  [`Row`][toga.sources.Row] objects. The
+  attributes of each [`Row`][toga.sources.Row]
   object are the values that should be displayed.
-- `Tree Sources </reference/api/resources/sources/tree_source>`{.interpreted-text
-  role="doc"}: For managing a hierarchy of items, each of which has one
+- [Tree Sources](../reference/api/resources/sources/tree_source): For managing a hierarchy of items, each of which has one
   or more values. Tree data sources also behave like a
-  `list`{.interpreted-text role="any"}, except that each item returned
-  is a `~toga.sources.Node`{.interpreted-text role="class"}. The
-  attributes of the `~toga.sources.Node`{.interpreted-text role="class"}
+  [`list`][], except that each item returned
+  is a [`Node`][toga.sources.Node]. The
+  attributes of the [`Node`][toga.sources.Node]
   are the values that should be displayed; a
-  `~toga.sources.Node`{.interpreted-text role="class"} also has
-  children, accessible using the `list`{.interpreted-text role="any"}
-  interface on the `~toga.sources.Node`{.interpreted-text role="class"}.
+  [`Node`][toga.sources.Node] also has
+  children, accessible using the [`list`][]
+  interface on the [`Node`][toga.sources.Node].
 
 Although Toga provides these built-in data sources, in general, *you
 shouldn't use them directly*. Toga's data sources are wrappers around
-Python's primitive collection types -`list`{.interpreted-text
-role="any"}, `dict`{.interpreted-text role="any"}, and so on. While this
+Python's primitive collection types -[`list`][], [dict][], and so on. While this
 is useful for quick demonstrations, or to visualize simple data, more
-complex applications should define their own `custom
-data sources <custom-data-sources>`{.interpreted-text role="ref"}.
+complex applications should define their own [custom data sources][custom-data-sources].
 
 ### Listeners
 
 Data sources communicate using a
-`~toga.sources.Listener`{.interpreted-text role="class"} interface. When
+[`Listener`][toga.sources.Listener] interface. When
 any significant event occurs to the data source, all listeners will be
 notified. This includes:
 
@@ -62,9 +57,8 @@ notified. This includes:
 - Changing an attribute of an existing item
 - Clearing an entire data source
 
-If any attribute of a `~toga.sources.ValueSource`{.interpreted-text
-role="class"}, `~toga.sources.Row`{.interpreted-text role="class"} or
-`~toga.sources.Node`{.interpreted-text role="class"} is modified, the
+If any attribute of a [`ValueSource`][toga.sources.ValueSource], [`Row`][toga.sources.Row] or
+[`Node`][toga.sources.Node] is modified, the
 source will generate a change event.
 
 When you create a widget like Selection or Table, and provide a data
@@ -84,7 +78,7 @@ A custom data source enables you to provide a data manipulation API that
 makes sense for your application. For example, if you were writing an
 application to display files on a file system, you shouldn't just build
 a dictionary of files, and use that to construct a
-`~toga.sources.TreeSource`{.interpreted-text role="class"}. Instead, you
+[`TreeSource`][toga.sources.TreeSource]. Instead, you
 should write your own `FileSystemSource` that reflects the files on the
 file system. Your file system data source doesn't need to expose
 `insert()` or `remove()` methods - because the end user doesn't need an
@@ -96,6 +90,5 @@ Custom data sources are also required to emit notifications whenever
 notable events occur. This allows the widgets rendering the data source
 to respond to changes in data. If a data source doesn't emit
 notifications, widgets may not reflect changes in data. Toga provides a
-`Source </reference/api/resources/sources/source>`{.interpreted-text
-role="doc"} base class for custom data source implementations. This base
+[Source](reference/api/resources/sources/source) base class for custom data source implementations. This base
 class implements the notification API.

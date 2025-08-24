@@ -1,53 +1,27 @@
 # Toga APIs by platform
 
-## Key {#api-status-key}
+## Key  { id="api-status-key" }
 
-|  |  |
-|----|----|
-| [\|b\|](##SUBST##|b|) | Partly supported: functionality or testing is incomplete |
-| [\|y\|](##SUBST##|y|) | Fully supported |
+| {{ partly_supported }} | Partly supported: functionality or testing is incomplete |
+|------------------------|----|
+| {{ fully_supported }}  | **Fully supported** |
 
 ## Core Components
 
-::: {.rst-class}
-widget-descriptions
-:::
-
-::: {.csv-filter .longtable file="data/widgets_by_platform.csv" header-rows="1" exclude="{1: '(?!(Type|Core Component))'}" included_cols="2,4,5,6,7,8,9,10" stub-columns="1" widths="3 1 1 1 1 1 1 1"}
-:::
+{{ pd_read_csv("data/widgets_by_platform.csv", na_filter=False, usecols=[2,4,5,6,7,8,9,10])[pd_read_csv("data/widgets_by_platform.csv")[["Type"]].isin(["Core Component"]).all(axis=1)] | convert_to_md_table }}
 
 ## General Widgets
 
-::: {.rst-class}
-widget-descriptions
-:::
-
-::: {.csv-filter .longtable file="data/widgets_by_platform.csv" header-rows="1" exclude="{1: '(?!(Type|General Widget))'}" included_cols="2,4,5,6,7,8,9,10" stub-columns="1" widths="3 1 1 1 1 1 1 1"}
-:::
+{{ pd_read_csv("data/widgets_by_platform.csv", na_filter=False, usecols=[2,4,5,6,7,8,9,10])[pd_read_csv("data/widgets_by_platform.csv")[["Type"]].isin(["General Widget"]).all(axis=1)] | convert_to_md_table }}
 
 ## Layout Widgets
 
-::: {.rst-class}
-widget-descriptions
-:::
-
-::: {.csv-filter .longtable file="data/widgets_by_platform.csv" header-rows="1" exclude="{1: '(?!(Type|Layout Widget))'}" included_cols="2,4,5,6,7,8,9,10" stub-columns="1" widths="3 1 1 1 1 1 1 1"}
-:::
+{{ pd_read_csv("data/widgets_by_platform.csv", na_filter=False, usecols=[2,4,5,6,7,8,9,10])[pd_read_csv("data/widgets_by_platform.csv")[["Type"]].isin(["Layout Widget"]).all(axis=1)] | convert_to_md_table }}
 
 ## Hardware
 
-::: {.rst-class}
-widget-descriptions
-:::
-
-::: {.csv-filter .longtable file="data/widgets_by_platform.csv" header-rows="1" exclude="{1: '(?!(Type|Hardware))'}" included_cols="2,4,5,6,7,8,9,10" stub-columns="1" widths="3 1 1 1 1 1 1 1"}
-:::
+{{ pd_read_csv("data/widgets_by_platform.csv", na_filter=False, usecols=[2,4,5,6,7,8,9,10])[pd_read_csv("data/widgets_by_platform.csv")[["Type"]].isin(["Hardware"]).all(axis=1)] | convert_to_md_table }}
 
 ## Resources
 
-::: {.rst-class}
-widget-descriptions
-:::
-
-::: {.csv-filter .longtable file="data/widgets_by_platform.csv" header-rows="1" exclude="{1: '(?!(Type|Resource))'}" included_cols="2,4,5,6,7,8,9,10" stub-columns="1" widths="3 1 1 1 1 1 1 1"}
-:::
+{{ pd_read_csv("data/widgets_by_platform.csv", na_filter=False, usecols=[2,4,5,6,7,8,9,10])[pd_read_csv("data/widgets_by_platform.csv")[["Type"]].isin(["Resource"]).all(axis=1)] | convert_to_md_table }}

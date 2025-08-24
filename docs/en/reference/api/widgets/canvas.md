@@ -2,64 +2,82 @@
 
 A drawing area for 2D vector graphics.
 
-:::::::::: {.tabs}
-::: {.group-tab}
-macOS
+/// tab | macOS
 
-<figure class="align-center">
-<img src="/reference/images/canvas-cocoa.png" width="300"
-alt="/reference/images/canvas-cocoa.png" />
-</figure>
-:::
+![/reference/images/canvas-cocoa.png](/reference/images/canvas-cocoa.png){ width="300" }
 
-::: {.group-tab}
-Linux
+/// caption
 
-<figure class="align-center">
-<img src="/reference/images/canvas-gtk.png" width="300"
-alt="/reference/images/canvas-gtk.png" />
-</figure>
-:::
+///
 
-::: {.group-tab}
-Windows
 
-<figure class="align-center">
-<img src="/reference/images/canvas-winforms.png" width="300"
-alt="/reference/images/canvas-winforms.png" />
-</figure>
-:::
+<!-- TODO: Update alt text -->
 
-::: {.group-tab}
-Android
+///
 
-<figure class="align-center">
-<img src="/reference/images/canvas-android.png" width="300"
-alt="/reference/images/canvas-android.png" />
-</figure>
-:::
+/// tab | Linux
 
-::: {.group-tab}
-iOS
+![/reference/images/canvas-gtk.png](/reference/images/canvas-gtk.png){ width="300" }
 
-<figure class="align-center">
-<img src="/reference/images/canvas-iOS.png" width="300"
-alt="/reference/images/canvas-iOS.png" />
-</figure>
-:::
+/// caption
 
-::: {.group-tab}
-Web [\|no\|](##SUBST##|no|)
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Windows
+
+![/reference/images/canvas-winforms.png](/reference/images/canvas-winforms.png){ width="300" }
+
+/// caption
+
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Android
+
+![/reference/images/canvas-android.png](/reference/images/canvas-android.png){ width="300" }
+
+/// caption
+
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | iOS
+
+![/reference/images/canvas-iOS.png](/reference/images/canvas-iOS.png){ width="300" }
+
+/// caption
+
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Web {{ not_supported }}
 
 Not supported
-:::
 
-::: {.group-tab}
-Textual [\|no\|](##SUBST##|no|)
+///
+
+/// tab | Textual {{ not_supported }}
 
 Not supported
-:::
-::::::::::
+
+///
 
 ## Usage
 
@@ -68,12 +86,11 @@ the [HTML5 Canvas
 API](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API). The
 Canvas provides a drawing Context; drawing instructions are then added
 to that context by calling methods on the context. All positions and
-sizes are measured in `CSS pixels
-<css-units>`{.interpreted-text role="ref"}.
+sizes are measured in [CSS pixels][css-units].
 
 For example, the following code will draw an orange horizontal line:
 
-``` python
+```python
 import toga
 canvas = toga.Canvas()
 context = canvas.context
@@ -88,7 +105,7 @@ Toga adds an additional layer of convenience to the base HTML5 API by
 providing context managers for operations that have a natural open/close
 life cycle. For example, the previous example could be replaced with:
 
-``` python
+```python
 import toga
 canvas = toga.Canvas()
 
@@ -99,12 +116,12 @@ with canvas.context.Stroke(20, 20, color="orange") as stroke:
 Any argument provided to a drawing operation or context object becomes a
 property of that object. Those properties can be modified after
 creation, after which you should invoke
-`Canvas.redraw`{.interpreted-text role="any"} to request a redraw of the
+[`Canvas.redraw`][toga.Canvas.redraw] to request a redraw of the
 canvas.
 
 Drawing operations can also be added to or removed from a context using
 the `list` operations `append`, `insert`, `remove` and `clear`. In this
-case, `Canvas.redraw`{.interpreted-text role="any"} will be called
+case, [`Canvas.redraw`][toga.Canvas.redraw] will be called
 automatically.
 
 For example, if you were drawing a bar chart where the height of the
@@ -115,7 +132,7 @@ the height of existing bars, or adding and removing bars as required.
 In this example, we create 2 filled drawing objects, then manipulate
 those objects, requesting a redraw after each set of changes.
 
-``` python
+```python
 import toga
 
 canvas = toga.Canvas()
@@ -158,36 +175,38 @@ very similar.
 
 ## Reference
 
-::: {.autoclass exclude-members="new_path, move_to, line_to, bezier_curve_to, quadratic_curve_to,
-arc, ellipse, rect, write_text, rotate, scale, translate, reset_transform,
-closed_path, fill, stroke"}
-toga.Canvas
-:::
+::: toga.Canvas
+    options:
+        members:
+            - ClosedPath
+            - Context
+            - Fill
+            - Stroke
+            - as_image
+            - context
+            - enabled
+            - focus
+            - measure_text
+            - on_activate
+            - on_alt_drag
+            - on_alt_press
+            - on_alt_release
+            - on_drag
+            - on_press
+            - on_release
+            - on_resize
+            - redraw
 
-::: {.autoclass special-members="__getitem__, __len__"}
-toga.widgets.canvas.Context
-:::
+::: toga.widgets.canvas.Context
 
-::: {.autoclass}
-toga.widgets.canvas.DrawingObject
-:::
+::: toga.widgets.canvas.DrawingObject
 
-::: {.autoclass}
-toga.widgets.canvas.ClosedPathContext
-:::
+::: toga.widgets.canvas.ClosedPathContext
 
-::: {.autoclass}
-toga.widgets.canvas.FillContext
-:::
+::: toga.widgets.canvas.FillContext
 
-::: {.autoclass}
-toga.widgets.canvas.StrokeContext
-:::
+::: toga.widgets.canvas.StrokeContext
 
-::: {.autoprotocol}
-toga.widgets.canvas.OnTouchHandler
-:::
+::: toga.widgets.canvas.OnTouchHandler
 
-::: {.autoprotocol}
-toga.widgets.canvas.OnResizeHandler
-:::
+::: toga.widgets.canvas.OnResizeHandler

@@ -2,67 +2,89 @@
 
 A button that can be pressed or clicked.
 
-:::::::::: {.tabs}
-::: {.group-tab}
-macOS
+/// tab | macOS
 
-<figure class="align-center">
-<img src="/reference/images/button-cocoa.png" width="300"
-alt="/reference/images/button-cocoa.png" />
-</figure>
-:::
+![/reference/images/button-cocoa.png](/reference/images/button-cocoa.png){ width="300" }
 
-::: {.group-tab}
-Linux
+/// caption
 
-<figure class="align-center">
-<img src="/reference/images/button-gtk.png" width="300"
-alt="/reference/images/button-gtk.png" />
-</figure>
-:::
+///
 
-::: {.group-tab}
-Windows
 
-<figure class="align-center">
-<img src="/reference/images/button-winforms.png" width="300"
-alt="/reference/images/button-winforms.png" />
-</figure>
-:::
+<!-- TODO: Update alt text -->
 
-::: {.group-tab}
-Android
+///
 
-<figure class="align-center">
-<img src="/reference/images/button-android.png" width="300"
-alt="/reference/images/button-android.png" />
-</figure>
-:::
+/// tab | Linux
 
-::: {.group-tab}
-iOS
+![/reference/images/button-gtk.png](/reference/images/button-gtk.png){ width="300" }
 
-<figure class="align-center">
-<img src="/reference/images/button-iOS.png" width="300"
-alt="/reference/images/button-iOS.png" />
-</figure>
-:::
+/// caption
 
-::: {.group-tab}
-Web [\|beta\|](##SUBST##|beta|)
+///
 
-<figure class="align-center">
-<img src="/reference/images/button-web.png" width="300"
-alt="/reference/images/button-web.png" />
-</figure>
-:::
 
-::: {.group-tab}
-Textual [\|beta\|](##SUBST##|beta|)
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Windows
+
+![/reference/images/button-winforms.png](/reference/images/button-winforms.png){ width="300" }
+
+/// caption
+
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Android
+
+![/reference/images/button-android.png](/reference/images/button-android.png){ width="300" }
+
+/// caption
+
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | iOS
+
+![/reference/images/button-iOS.png](/reference/images/button-iOS.png){ width="300" }
+
+/// caption
+
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Web {{ beta_support }}
+
+![/reference/images/button-web.png](/reference/images/button-web.png){ width="300" }
+
+/// caption
+
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Textual {{ beta_support }}
 
 Screenshot not available
-:::
-::::::::::
+
+///
 
 ## Usage
 
@@ -70,7 +92,7 @@ A button has a text label, or an icon (but not both). If an icon is
 specified, it will be resized to a size appropriate for the platform. A
 handler can be associated with button press events.
 
-``` python
+```python
 import toga
 
 def my_callback(button):
@@ -93,10 +115,6 @@ icon_button = toga.Button(icon=toga.Icon("resources/my_icon"), on_press=my_callb
 
 ## Reference
 
-::: {.autoclass}
-toga.Button
-:::
+::: toga.Button
 
-::: {.autoprotocol}
-toga.widgets.button.OnPressHandler
-:::
+::: toga.widgets.button.OnPressHandler

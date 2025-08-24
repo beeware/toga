@@ -8,7 +8,7 @@ local clone of the Toga repository, pointing at the official repository.
 If all you have is a checkout of a personal fork of the Toga repository,
 you can configure that checkout by running:
 
-``` console
+```console
 $ git remote add upstream https://github.com/beeware/toga.git
 ```
 
@@ -16,7 +16,7 @@ The procedure for cutting a new release is as follows:
 
 1.  Check the contents of the upstream repository's main branch:
 
-    ``` console
+    ```console
     $ git fetch upstream
     $ git checkout --detach upstream/main
     ```
@@ -25,13 +25,13 @@ The procedure for cutting a new release is as follows:
 
 2.  Ensure that the release notes are up to date. Run:
 
-    ``` console
+    ```console
     $ tox -e towncrier -- --draft
     ```
 
     to review the release notes that will be included, and then:
 
-    ``` console
+    ```console
     $ tox -e towncrier
     ```
 
@@ -40,13 +40,13 @@ The procedure for cutting a new release is as follows:
 3.  Build the documentation to ensure that the new release notes don't
     include any spelling errors or markup problems:
 
-    ``` console
+    ```console
     $ tox -e docs-lint,docs
     ```
 
 4.  Tag the release, and push the branch and tag upstream:
 
-    ``` console
+    ```console
     $ git tag v1.2.3
     $ git push upstream HEAD:main
     $ git push upstream v1.2.3
@@ -78,7 +78,7 @@ The procedure for cutting a new release is as follows:
     Test PyPI, and perform any pre-release testing that may be
     appropriate:
 
-    ``` console
+    ```console
     $ python3 -m venv testvenv
     $ . ./testvenv/bin/activate
     (testvenv) $ pip install --extra-index-url https://test.pypi.org/simple/ toga==1.2.3

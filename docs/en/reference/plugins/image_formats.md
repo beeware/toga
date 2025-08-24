@@ -4,15 +4,14 @@
 
 Toga can be extended, via plugins, to understand externally defined
 image types, gaining the ability to convert them to and from its own
-`Image`{.interpreted-text role="any"} class. Toga's
-[Pillow](https://pillow.readthedocs.io/en/stable/index.html) support is,
+[`toga.Image`][] class. Toga's
+[`Pillow](https://pillow.readthedocs.io/en/stable/index.html) support is,
 in fact, implemented as a plugin that's included as part of the core
 Toga package.
 
 An image format plugin consists of two things:
 
-- a converter class conforming to the `ImageConverter`{.interpreted-text
-  role="any"} protocol, with methods defining how to convert to and from
+- a converter class conforming to the [`toga.images.ImageConverter`][] protocol, with methods defining how to convert to and from
   your image class
 - an [entry
   point](https://packaging.python.org/en/latest/guides/creating-and-discovering-plugins/#using-package-metadata)
@@ -21,14 +20,13 @@ An image format plugin consists of two things:
 
 Let's say you want to tell Toga how to handle an image class called
 `MyImage`, and you're publishing your plugin as a package named
-`togax-myimage` (see `package
-prefixes <package_prefixes>`{.interpreted-text role="ref"}) that
+`togax-myimage` (see [package prefixes][package_prefixes]) that
 contains a `plugins.py` module that defines your `MyImageConverter`
 plugin class. Your `pyproject.toml` might include something like the
 following:
 
-``` toml
-[project.entry-points."toga.image_formats"]
+```toml
+[`project.entry-points."toga.image_formats"]
 myimage = "togax_myimage.plugins.MyImageConverter"
 ```
 
@@ -36,9 +34,9 @@ The variable name being assigned to (`myimage` in this case) can be
 whatever you like (although it should probably have some relationship to
 the image format name) What matters is the string assigned to it, which
 represents where Toga can find (and import) your
-`ImageConverter`{.interpreted-text role="any"} class.
+[`toga.images.ImageConverter`][] class.
 
-### Package prefixes {#package_prefixes}
+### Package prefixes  { id="package_prefixes" }
 
 An image plugin can be registered from any Python module. If you
 maintain a package defining an image format, you could include a Toga
@@ -50,8 +48,6 @@ prefix for "official" packages.
 
 ## Reference
 
-> Any class that represents an image.
+Any class that represents an image.
 
-::: {.autoprotocol}
-toga.images.ImageConverter
-:::
+::: toga.images.ImageConverter

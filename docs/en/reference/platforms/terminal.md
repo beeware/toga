@@ -12,7 +12,7 @@ macOS, Windows or Linux.
 
 `toga-textual` must be manually installed by running:
 
-``` console
+```console
 $ python -m pip install toga-textual
 ```
 
@@ -28,7 +28,7 @@ backend.
 The `toga-textual` backend uses the [Textual
 API](https://textual.textualize.io).
 
-### macOS Terminal.app limitations {#macos-terminal.app-limitations}
+### macOS Terminal.app limitations  { id="macos-terminal.app-limitations" }
 
 There are some [known issues with the default macOS
 Terminal.app](https://github.com/Textualize/textual/blob/main/FAQ.md#why-doesnt-textual-look-good-on-macos).

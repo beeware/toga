@@ -3,6 +3,5 @@
 These guides are for the maintainers of the Toga project, documenting
 internal project procedures.
 
-::: {.toctree maxdepth="2" glob=""}
-release
-:::
+[Release](./release)
+TODO: Check on links, add page headings?

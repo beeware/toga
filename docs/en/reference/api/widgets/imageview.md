@@ -2,72 +2,90 @@
 
 A widget that displays an image.
 
-:::::::::: {.tabs}
-::: {.group-tab}
-macOS
+/// tab | macOS
 
-<figure class="align-center">
-<img src="/reference/images/imageview.png" width="150"
-alt="/reference/images/imageview.png" />
-</figure>
-:::
+![`/reference/images/imageview.png](/reference/images/imageview.png){ width="150" }
 
-::: {.group-tab}
-Linux
+/// caption
 
-<figure class="align-center">
-<img src="/reference/images/imageview.png" width="150"
-alt="/reference/images/imageview.png" />
-</figure>
-:::
+///
 
-::: {.group-tab}
-Windows
 
-<figure class="align-center">
-<img src="/reference/images/imageview.png" width="150"
-alt="/reference/images/imageview.png" />
-</figure>
-:::
+<!-- TODO: Update alt text -->
 
-::: {.group-tab}
-Android
+///
 
-<figure class="align-center">
-<img src="/reference/images/imageview.png" width="150"
-alt="/reference/images/imageview.png" />
-</figure>
-:::
+/// tab | Linux
 
-::: {.group-tab}
-iOS
+![/reference/images/imageview.png](/reference/images/imageview.png){ width="150" }
 
-<figure class="align-center">
-<img src="/reference/images/imageview.png" width="150"
-alt="/reference/images/imageview.png" />
-</figure>
-:::
+/// caption
 
-::: {.group-tab}
-Web [\|no\|](##SUBST##|no|)
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Windows
+
+![/reference/images/imageview.png](/reference/images/imageview.png){ width="150" }
+
+/// caption
+
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Android
+
+![/reference/images/imageview.png](/reference/images/imageview.png){ width="150" }
+
+/// caption
+
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | iOS
+
+![/reference/images/imageview.png](/reference/images/imageview.png){ width="150" }
+
+/// caption
+
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Web {{ not_supported }}
 
 Not supported
-:::
 
-::: {.group-tab}
-Textual [\|no\|](##SUBST##|no|)
+///
+
+/// tab | Textual {{ not_supported }}
 
 Not supported
-:::
-::::::::::
+
+///
 
 ## Usage
 
-An `~toga.ImageView`{.interpreted-text role="class"} provides a
-mechanism to display an `~toga.Image`{.interpreted-text role="class"} as
+An [`ImageView`][toga.ImageView] provides a
+mechanism to display an [`Image`][toga.Image] as
 part of an interface.
 
-``` python
+```python
 import toga
 
 my_image = toga.Image(self.paths.app / "brutus.png")
@@ -78,8 +96,8 @@ view = toga.ImageView(my_image)
 
 - An ImageView **is not** an interactive element - there is no
   `on_press` handler for ImageView. If you want a graphical element that
-  can be clicked or pressed, try using a `toga.Button`{.interpreted-text
-  role="any"} that uses an `toga.Icon`{.interpreted-text role="any"}.
+  can be clicked or pressed, try using a [`toga.Button`][] that uses an
+  [`toga.Icon`][].
 - The default size of the view is the size of the image, or 0x0 if
   `image` is `None`.
 - If an explicit width *or* height is specified, the size of the image
@@ -91,16 +109,17 @@ view = toga.ImageView(my_image)
   explicit size set along its container's main axis, it will be allowed
   to expand and contract along that axis, with the size determined by
   the flex allocation.
-  - If the cross axis size is unspecified, it will be determined by
-    applying the image's aspect ratio to the size allocated on the main
-    axis.
-  - If the cross axis has an explicit size, the image will be scaled to
-    fill the available space so that the entire image can be seen, while
-    preserving its aspect ratio. Any extra space will be distributed
-    equally between both sides.
+    - If the cross axis size is unspecified, it will be determined by
+      applying the image's aspect ratio to the size allocated on the main
+      axis.
+    - If the cross axis has an explicit size, the image will be scaled to
+      fill the available space so that the entire image can be seen, while
+      preserving its aspect ratio. Any extra space will be distributed
+      equally between both sides.
 
 ## Reference
 
-::: {.autoclass}
-toga.ImageView
-:::
+::: toga.ImageView
+    options:
+        show_signature: false
+        separate_signature: false

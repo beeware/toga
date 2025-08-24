@@ -3,68 +3,86 @@
 A scrollable panel that allows for the display and editing of multiple
 lines of text.
 
-:::::::::: {.tabs}
-::: {.group-tab}
-macOS
+/// tab | macOS
 
-<figure class="align-center">
-<img src="/reference/images/multilinetextinput-cocoa.png" width="300"
-alt="/reference/images/multilinetextinput-cocoa.png" />
-</figure>
-:::
+![/reference/images/multilinetextinput-cocoa.png](/reference/images/multilinetextinput-cocoa.png){ width="300" }
 
-::: {.group-tab}
-Linux
+/// caption
 
-<figure class="align-center">
-<img src="/reference/images/multilinetextinput-gtk.png" width="300"
-alt="/reference/images/multilinetextinput-gtk.png" />
-</figure>
-:::
+///
 
-::: {.group-tab}
-Windows
 
-<figure class="align-center">
-<img src="/reference/images/multilinetextinput-winforms.png" width="300"
-alt="/reference/images/multilinetextinput-winforms.png" />
-</figure>
-:::
+<!-- TODO: Update alt text -->
 
-::: {.group-tab}
-Android
+///
 
-<figure class="align-center">
-<img src="/reference/images/multilinetextinput-android.png" width="300"
-alt="/reference/images/multilinetextinput-android.png" />
-</figure>
-:::
+/// tab | Linux
 
-::: {.group-tab}
-iOS
+![/reference/images/multilinetextinput-gtk.png](/reference/images/multilinetextinput-gtk.png){ width="300" }
 
-<figure class="align-center">
-<img src="/reference/images/multilinetextinput-iOS.png" width="300"
-alt="/reference/images/multilinetextinput-iOS.png" />
-</figure>
-:::
+/// caption
 
-::: {.group-tab}
-Web [\|no\|](##SUBST##|no|)
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Windows
+
+![/reference/images/multilinetextinput-winforms.png](/reference/images/multilinetextinput-winforms.png){ width="300" }
+
+/// caption
+
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Android
+
+![/reference/images/multilinetextinput-android.png](/reference/images/multilinetextinput-android.png){ width="300" }
+
+/// caption
+
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | iOS
+
+![/reference/images/multilinetextinput-iOS.png](/reference/images/multilinetextinput-iOS.png){ width="300" }
+
+/// caption
+
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Web {{ not_supported }}
 
 Not supported
-:::
 
-::: {.group-tab}
-Textual [\|no\|](##SUBST##|no|)
+///
+
+/// tab | Textual {{ not_supported }}
 
 Not supported
-:::
-::::::::::
+
+///
 
 ## Usage
 
-``` python
+```python
 import toga
 
 textbox = toga.MultilineTextInput()
@@ -86,10 +104,6 @@ programmatically), the placeholder content will be hidden.
 
 ## Reference
 
-::: {.autoclass}
-toga.MultilineTextInput
-:::
+::: toga.MultilineTextInput
 
-::: {.autoprotocol}
-toga.widgets.multilinetextinput.OnChangeHandler
-:::
+::: toga.widgets.multilinetextinput.OnChangeHandler

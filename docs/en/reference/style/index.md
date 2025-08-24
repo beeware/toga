@@ -1,5 +1,3 @@
 # Style
 
-::: {.toctree maxdepth="1"}
-pack
-:::
+[The Pack Style Engine](pack.md)

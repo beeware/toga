@@ -3,20 +3,15 @@
 A representation of app functionality that the user can invoke from
 menus or toolbars.
 
-::: {.rst-class}
-widget-support
-:::
+**Availability ([Key][api-status-key])**
 
-::: {.csv-filter header-rows="1" file="../../data/widgets_by_platform.csv" included_cols="4,5,6,7,8,9,10" include="{0: '^Command$'}"}
-Availability (`Key <api-status-key>`{.interpreted-text role="ref"})
-:::
+{{ pd_read_csv("reference/data/widgets_by_platform.csv", na_filter=False, usecols=[4,5,6,7,8,9,10])[pd_read_csv("reference/data/widgets_by_platform.csv")[["ComponentName"]].isin(["Command"]).all(axis=1)] | convert_to_md_table }}
 
 ## Usage
 
 Aside from event handlers on widgets, most GUI toolkits also provide
 other ways for the user to give instructions to an app. In Toga, these
-UI patterns are supported by the `~toga.Command`{.interpreted-text
-role="class"} class.
+UI patterns are supported by the [`Command`][toga.Command] class.
 
 A command encapsulates a piece of functionality that the user can
 invoke - no matter how they invoke it. It doesn't matter if they select
@@ -26,20 +21,19 @@ functionality is wrapped up in a Command.
 ## Adding commands
 
 Commands are added to an app using the properties
-`toga.App.commands`{.interpreted-text role="any"} and
-`toga.MainWindow.toolbar`{.interpreted-text role="any"}. Toga then takes
+[`toga.App.commands`][] and
+[`toga.MainWindow.toolbar`][]. Toga then takes
 control of ensuring that the command is exposed to the user in a way
 that they can access. On desktop platforms, this may result in a command
 being added to a menu.
 
-Commands can be organized into a `~toga.Group`{.interpreted-text
-role="class"} of similar commands. Groups are hierarchical, so a group
+Commands can be organized into a [`Group`][toga.Group] of similar commands. Groups are hierarchical, so a group
 can contain a sub-group, which can contain a sub-group, and so on.
 Inside a group, commands can be organized into sections.
 
 For example:
 
-``` python
+```python
 import toga
 
 def callback(sender, **kwargs):
@@ -87,55 +81,54 @@ Commands can be removed using set-like and dictionary-like APIs. The
 set-like APIs use the command instance; the dictionary-like APIs use the
 command ID:
 
-``` python
+```python
 # Remove the app using the instance
 app.commands.remove(cmd_1)
 
 # Remove a command by ID
-del app.commands["Some-Command-ID"]
+del app.commands[`"Some-Command-ID"]
 ```
 
 ## Standard commands
 
-Each command has an `~toga.Command.id`{.interpreted-text role="attr"}
+Each command has an [`id`][toga.Command.id]
 attribute. This is set when the command is defined; if no ID is
 provided, a random ID will be generated for the Command. This identifier
 can be used to retrieve a command from
-`toga.App.commands`{.interpreted-text role="any"} and
-`toga.MainWindow.toolbar`{.interpreted-text role="any"}.
+[`toga.App.commands`][] and
+[`toga.MainWindow.toolbar`][].
 
 These command IDs are also used to create *standard* commands. These are
 commands that are expected functionality in most applications, such as
-`~toga.Command.ABOUT`{.interpreted-text role="attr"} and
-`~toga.Command.EXIT`{.interpreted-text role="attr"}, as well as document
-management commands such as `~toga.Command.NEW`{.interpreted-text
-role="attr"}, `~toga.Command.OPEN`{.interpreted-text role="attr"} and
-`~toga.Command.SAVE`{.interpreted-text role="attr"}.
+[`ABOUT`][toga.Command.ABOUT] and
+[`EXIT`][toga.Command.EXIT], as well as document
+management commands such as [`NEW`][toga.Command.NEW], [`OPEN`][toga.Command.OPEN] and
+[`SAVE`][toga.Command.SAVE].
 
 These commands are automatically added to your app, depending on
 platform requirements and app definition. For example, mobile apps won't
 have an Exit command as mobile apps don't have a concept of "exiting".
 Document management commands will be automatically added if your app
-defines `document types <./document>`{.interpreted-text role="doc"}.
+defines [document types](./document).
 
 The label, shortcut, grouping and ordering of these commands is platform
 dependent. For example, on macOS, the
-`~toga.Command.EXIT`{.interpreted-text role="attr"} command will be
+[`EXIT`][toga.Command.EXIT] command will be
 labeled "Quit My App", and have a shortcut of Command-q; on Windows, the
 command will be labeled "Exit", and won't have a keyboard shortcut.
 
 Any automatically added standard commands will be installed *before*
-your app's `~toga.App.startup()`{.interpreted-text role="meth"} method
+your app's [`startup()`][toga.App.startup] method
 is invoked. If you wish to remove or modify and a standard app command,
 you can use the standard command's ID to retrieve the command instance
-from `toga.App.commands`{.interpreted-text role="attr"}. If you wish to
+from [`toga.App.commands`][]. If you wish to
 add or override a standard command that hasn't been installed by default
 (for example, to add an Open command without defining a document type),
-you can use the `toga.Command.standard()`{.interpreted-text role="meth"}
+you can use the [toga.Command.standard()][toga.Command.standard]
 method to create an instance of the standard command, and add that
 command to your app:
 
-``` python
+```python
 import toga
 
 class MyApp(toga.app):
@@ -159,22 +152,18 @@ class MyApp(toga.app):
 
 ## Reference
 
-::: {.autoclass exclude-members="key"}
-toga.Command
-:::
+::: toga.Command
+    options:
+        members:
+            TODO: Add explicit members list excluding "key"
 
-::: {.autoclass exclude-members="key"}
-toga.Group
-:::
+::: toga.Group
+    options:
+        members:
+            TODO: Add explicit members list excluding "key"
 
-::: {.autoclass}
-toga.command.CommandSet
-:::
+::: toga.command.CommandSet
 
-::: {.autoclass}
-toga.command.Separator
-:::
+::: toga.command.Separator
 
-::: {.autoprotocol}
-toga.command.ActionHandler
-:::
+::: toga.command.ActionHandler

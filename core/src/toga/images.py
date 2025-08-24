@@ -25,6 +25,31 @@ if TYPE_CHECKING:
     BytesLikeT: TypeAlias = bytes | bytearray | memoryview
     ImageLikeT: TypeAlias = Any
     ImageContentT: TypeAlias = PathLikeT | BytesLikeT | ImageLikeT
+    """
+    When specifying content for an [`toga.Image`][],
+    you can provide:
+
+    - a string specifying an absolute or relative path to a file in a
+      [known image format][known-image-formats];
+    - an absolute or relative [`pathlib.Path`][] object describing a file in a
+      [known image format][known-image-formats];
+    - a "blob of bytes" data type ([`bytes`][],
+      [`bytearray`][], or
+      [`memoryview`][]) containing raw image
+      data in a
+      [known image format][known-image-formats];
+    - an instance of [toga.Image][];
+    - if [Pillow](https://pillow.readthedocs.io/) is installed, an
+      instance of [`PIL.Image.Image`][];
+    - an image of a class registered via an
+      [image format plugin][image-format-plugins]
+      (or a subclass of such a class); or
+    - an instance of the
+      [native platform image representation][native-image-rep].
+
+    If a relative path is provided, it will be anchored relative to the
+    module that defines your Toga application class.
+    """
 
     # Define a type variable representing an image of an externally defined type.
     ExternalImageT = TypeVar("ExternalImageT")
@@ -32,21 +57,24 @@ if TYPE_CHECKING:
 
 class ImageConverter(Protocol):
     """A class to convert between an externally defined image type and
-    :any:`toga.Image`.
+    [`toga.Image`][].
     """
 
-    #: The base image class this plugin can interpret.
     image_class: type[ExternalImageT]
+    """The base image class this plugin can interpret."""
 
     @staticmethod
     def convert_from_format(image_in_format: ExternalImageT) -> BytesLikeT:
-        """Convert from :any:`image_class` to data in a :ref:`known image format
-        <known-image-formats>`.
+        """Convert from [`image_class`][toga.images.ImageConverter.image_class] to
+        data in a [known image format][known-image-formats].
 
-        Will accept an instance of :any:`image_class`, or subclass of that class.
+        Will accept an instance of
+        [`image_class`][toga.images.ImageConverter.image_class],
+        or subclass of that class.
 
-        :param image_in_format: An instance of :any:`image_class` (or a subclass).
-        :returns: The image data, in a :ref:`known image format <known-image-formats>`.
+        :param image_in_format: An instance of
+            [`image_class`][toga.images.ImageConverter.image_class] (or a subclass).
+        :returns: The image data, in a [known image format][known-image-formats].
         """
 
     @staticmethod
@@ -54,14 +82,16 @@ class ImageConverter(Protocol):
         data: BytesLikeT,
         image_class: type[ExternalImageT],
     ) -> ExternalImageT:
-        """Convert from data to :any:`image_class` or specified subclass.
+        """Convert from data to [`image_class`][toga.images.ImageConverter.image_class]
+        or specified subclass.
 
         Accepts a bytes-like object representing the image in a
-        :ref:`known image format <known-image-formats>`, and returns an instance of the
+        [known image format][known-image-formats], and returns an instance of the
         image class specified. This image class is guaranteed to be either the
-        :any:`image_class` registered by the plugin, or a subclass of that class.
+        [`image_class`][toga.images.ImageConverter.image_class] registered by the
+        plugin, or a subclass of that class.
 
-        :param data: Image data in a :ref:`known image format <known-image-formats>`.
+        :param data: Image data in a [known image format][known-image-formats].
         :param image_class: The class of image to return.
         :returns: The image, as an instance of the image class specified.
         """
@@ -81,7 +111,7 @@ class Image:
         """Create a new image.
 
         :param src: The source from which to load the image. Can be any valid
-            :any:`image content <ImageContentT>` type.
+            [`ImageContentT`][toga.images.ImageContentT] type.
         :param path: **DEPRECATED** - Use ``src``.
         :param data: **DEPRECATED** - Use ``src``.
         :raises FileNotFoundError: If a path is provided, but that path does not exist.
@@ -197,10 +227,10 @@ class Image:
     def as_format(self, format: type[ImageT]) -> ImageT:
         """Return the image, converted to the image format specified.
 
-        :param format: Format to provide. Defaults to :class:`~toga.images.Image`; also
-             supports :any:`PIL.Image.Image` if Pillow is installed, as well as any
-             image types defined by installed :doc:`image format plugins
-             </reference/plugins/image_formats>`.
+        :param format: Format to provide. Defaults to [`Image`][toga.images.Image]; also
+             supports [`PIL.Image.Image`][] if Pillow is installed, as well as any
+             image types defined by installed
+             [image format plugin][image-format-plugins].
         :returns: The image in the requested format
         :raises TypeError: If the format supplied is not recognized.
         """

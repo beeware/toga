@@ -2,64 +2,82 @@
 
 A zoomable map that can be annotated with location pins.
 
-:::::::::: {.tabs}
-::: {.group-tab}
-macOS
+/// tab | macOS
 
-<figure class="align-center">
-<img src="/reference/images/mapview-cocoa.png" width="450"
-alt="/reference/images/mapview-cocoa.png" />
-</figure>
-:::
+![/reference/images/mapview-cocoa.png](/reference/images/mapview-cocoa.png){ width="450" }
 
-::: {.group-tab}
-Linux
+/// caption
 
-<figure class="align-center">
-<img src="/reference/images/mapview-gtk.png" width="450"
-alt="/reference/images/mapview-gtk.png" />
-</figure>
-:::
+///
 
-::: {.group-tab}
-Windows
 
-<figure class="align-center">
-<img src="/reference/images/mapview-winforms.png" width="450"
-alt="/reference/images/mapview-winforms.png" />
-</figure>
-:::
+<!-- TODO: Update alt text -->
 
-::: {.group-tab}
-Android
+///
 
-<figure class="align-center">
-<img src="/reference/images/mapview-android.png" width="450"
-alt="/reference/images/mapview-android.png" />
-</figure>
-:::
+/// tab | Linux
 
-::: {.group-tab}
-iOS
+![/reference/images/mapview-gtk.png](/reference/images/mapview-gtk.png){ width="450" }
 
-<figure class="align-center">
-<img src="/reference/images/mapview-iOS.png" width="450"
-alt="/reference/images/mapview-iOS.png" />
-</figure>
-:::
+/// caption
 
-::: {.group-tab}
-Web [\|no\|](##SUBST##|no|)
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Windows
+
+![/reference/images/mapview-winforms.png](/reference/images/mapview-winforms.png){ width="450" }
+
+/// caption
+
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Android
+
+![/reference/images/mapview-android.png](/reference/images/mapview-android.png){ width="450" }
+
+/// caption
+
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | iOS
+
+![/reference/images/mapview-iOS.png](/reference/images/mapview-iOS.png){ width="450" }
+
+/// caption
+
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Web {{ not_supported }}
 
 Not supported
-:::
 
-::: {.group-tab}
-Textual [\|no\|](##SUBST##|no|)
+///
+
+/// tab | Textual {{ not_supported }}
 
 Not supported
-:::
-::::::::::
+
+///
 
 ## Usage
 
@@ -68,7 +86,7 @@ detail, from nation-level to street level. The map can be centered at a
 given coordinate, and zoomed to the required level of detail using an
 integer from 0 (for global detail) to 20 (for building level detail):
 
-``` python
+```python
 import toga
 
 # Create a map centered in London, UK.
@@ -86,7 +104,7 @@ optionally have a subtitle. Pins can be added at time of map
 construction, or can be dynamically added, updated and removed at
 runtime:
 
-``` python
+```python
 import toga
 
 mapview = toga.MapView(
@@ -113,7 +131,7 @@ mapview.pins.clear()
 Pins can respond to being pressed. When a pin is pressed, the map
 generates an `on_select` event, which receives the pin as an argument.
 
-## System requirements {#mapview-system-requires}
+## System requirements  { id="mapview-system-requires" }
 
 - Using MapView on Windows 10 requires that your users have installed
   the [Edge WebView2 Evergreen
@@ -161,18 +179,10 @@ generates an `on_select` event, which receives the pin as an argument.
 
 ## Reference
 
-::: {.autoclass}
-toga.MapView
-:::
+::: toga.MapView
 
-::: {.autoclass}
-toga.MapPin
-:::
+::: toga.MapPin
 
-::: {.autoclass}
-toga.widgets.mapview.MapPinSet
-:::
+::: toga.widgets.mapview.MapPinSet
 
-::: {.autoprotocol}
-toga.widgets.mapview.OnSelectHandler
-:::
+::: toga.widgets.mapview.OnSelectHandler

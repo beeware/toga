@@ -1,4 +1,4 @@
-# You put the box inside another box... {#you-put-the-box-inside-another-box...}
+# You put the box inside another box...
 
 If you've done any GUI programming before, you will know that one of the
 biggest problems that any widget toolkit solves is how to put widgets on
@@ -17,29 +17,27 @@ tree-like hierarchy. GUI widgets are an example of one such structure.
 To see how this works in practice, lets look at a more complex example,
 involving layouts, scrollers, and containers inside other containers:
 
-![image](screenshots/tutorial-2.png)
+![`image](screenshots/tutorial-2.png)
 
 Here's the source code:
 
-::: {.literalinclude language="python"}
-/../examples/tutorial2/tutorial/app.py
-:::
+```python
+-8<-  "https://github.com/beeware/toga/blob/main/examples/tutorial2/tutorial/app.py"
+```
 
 In order to render the icons, you will need to move the icons folder
 into the same directory as your app file.
 
-Here are the `Icons <./resources/icons.zip>`{.interpreted-text
-role="download"}
+Here are the[Icons](./resources/icons.zip)
 
 In this example, we see a couple of new Toga widgets -
-`.Table`{.interpreted-text role="class"},
-`.SplitContainer`{.interpreted-text role="class"}, and
-`.ScrollContainer`{.interpreted-text role="class"}. You can also see
+[.Table`][],
+[.SplitContainer][], and
+[.ScrollContainer][]. You can also see
 that CSS styles can be added in the widget constructor. Lastly, you can
 see that windows can have toolbars.
 
-You'll also see that we're not creating a `toga.App`{.interpreted-text
-role="class"} directly. Instead, we're declaring a subclass of
+You'll also see that we're not creating a [`toga.App`][] directly. Instead, we're declaring a subclass of
 <span class="title-ref">toga.App</span>, and instantiating that class.
 This also changes the startup sequence of the app - instead of a
 function called `build()`, the app invokes a method on the app class

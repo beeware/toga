@@ -7,19 +7,19 @@ A data source describing an ordered hierarchical tree of values.
 Data sources are abstractions that allow you to define the data being
 managed by your application independent of the GUI representation of
 that data. For details on the use of data sources, see the
-`topic guide </topics/data-sources>`{.interpreted-text role="doc"}.
+[topic guide](topics/data-sources).
 
 TreeSource is an implementation of an ordered hierarchical tree of
 values. When a TreeSource is created, it is given a list of
 `accessors` - these are the attributes that all items managed by the
 TreeSource will have. The API provided by TreeSource is
-`list`{.interpreted-text role="any"}-like; the operations you'd expect
+[`list`][]-like; the operations you'd expect
 on a normal Python list, such as `insert`, `remove`, `index`, and
 indexing with `[]`, are also possible on a TreeSource. These methods are
 available on the TreeSource itself to manipulate root nodes, and also on
 each node within the tree.
 
-``` python
+```python
 from toga.sources import TreeSource
 
 source = TreeSource(
@@ -59,8 +59,7 @@ group.insert(0, {"name": "Bettong", "height": 0.35})
 source.insert(1, {"name": "Minerals"})
 ```
 
-The TreeSource manages a tree of `~toga.sources.Node`{.interpreted-text
-role="class"} objects. Each Node has all the attributes described by the
+The TreeSource manages a tree of [`Node`][toga.sources.Node] objects. Each Node has all the attributes described by the
 source's `accessors`. A Node object will be constructed for each item
 that is added to the TreeSource.
 
@@ -73,10 +72,9 @@ directories on a file system: a file is a leaf Node, as it cannot have
 children; a directory *can* contain files and other directories in it,
 but it can also be empty. An empty directory would *not* be a leaf Node.
 
-::: {#treesource-item}
 When creating a single Node for a TreeSource (e.g., when inserting a new
 item), the data for the Node can be specified as:
-:::
+
 
 - A dictionary, with the accessors mapping to the keys in the dictionary
 - Any iterable object (except for a string), with the accessors being
@@ -94,28 +92,24 @@ When constructing an entire TreeSource, the data can be specified as:
 - Any other object will be converted into a single node with no
   children.
 
-When specifying children, a value of `None`{.interpreted-text
-role="any"} for the children will result in the creation of a leaf node.
+When specifying children, a value of [`None`][] for the children will result in the creation of a leaf node.
 Any other value will be processed recursively - so, a child specifier
 can itself be a dictionary, an iterable of 2-tuples, or data for a
 single child, and so on.
 
 Although Toga provides TreeSource, you are not required to create one
 directly. A TreeSource will be transparently constructed for you if you
-provide one of the items listed above (e.g. `list`{.interpreted-text
-role="any"}, `dict`{.interpreted-text role="any"}, etc) to a GUI widget
-that displays tree-like data (i.e., `toga.Tree`{.interpreted-text
-role="class"}).
+provide one of the items listed above (e.g. [`list`][], [dict][], etc) to a GUI widget
+that displays tree-like data (i.e., [`toga.Tree`][]).
 
 ## Custom TreeSources
 
 For more complex applications, you can replace TreeSource with a
-`custom data
-source <custom-data-sources>`{.interpreted-text role="ref"} class. Such
+[custom data source][custom-data-sources] class. Such
 a class must:
 
-- Inherit from `Source`{.interpreted-text role="any"}
-- Provide the same methods as `TreeSource`{.interpreted-text role="any"}
+- Inherit from [Source][]
+- Provide the same methods as [TreeSource][]
 - Return items whose attributes match the accessors expected by the
   widget
 - Generate a `change` notification when any of those attributes change
@@ -124,10 +118,12 @@ a class must:
 
 ## Reference
 
-::: {.autoclass special-members="__len__, __getitem__, __setitem__, __delitem__"}
-toga.sources.Node
-:::
+::: toga.sources.Node
+    options:
+        members:
+            TODO: Add explicit members list *excluding* special members *except* for "__len__, __getitem__, __setitem__, __delitem__"
 
-::: {.autoclass special-members="__len__, __getitem__, __setitem__, __delitem__"}
-toga.sources.TreeSource
-:::
+::: toga.sources.TreeSource
+    options:
+        members:
+            TODO: Add explicit members list *excluding* special members *except* for "__len__, __getitem__, __setitem__, __delitem__"

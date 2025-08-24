@@ -3,55 +3,61 @@
 A widget for displaying a hierarchical tree of tabular data. Scroll bars
 will be provided if necessary.
 
-:::::::::: {.tabs}
-::: {.group-tab}
-macOS
+/// tab | macOS
 
-<figure class="align-center">
-<img src="/reference/images/tree-cocoa.png" width="450"
-alt="/reference/images/tree-cocoa.png" />
-</figure>
-:::
+![/reference/images/tree-cocoa.png](/reference/images/tree-cocoa.png){ width="450" }
 
-::: {.group-tab}
-Linux
+/// caption
 
-<figure class="align-center">
-<img src="/reference/images/tree-gtk.png" width="450"
-alt="/reference/images/tree-gtk.png" />
-</figure>
-:::
+///
 
-::: {.group-tab}
-Windows [\|no\|](##SUBST##|no|)
 
-Not supported
-:::
+<!-- TODO: Update alt text -->
 
-::: {.group-tab}
-Android [\|no\|](##SUBST##|no|)
+///
 
-Not supported
-:::
+/// tab | Linux
 
-::: {.group-tab}
-iOS [\|no\|](##SUBST##|no|)
+![/reference/images/tree-gtk.png](/reference/images/tree-gtk.png){ width="450" }
+
+/// caption
+
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Windows {{ not_supported }}
 
 Not supported
-:::
 
-::: {.group-tab}
-Web [\|no\|](##SUBST##|no|)
+///
 
-Not supported
-:::
-
-::: {.group-tab}
-Textual [\|no\|](##SUBST##|no|)
+/// tab | Android {{ not_supported }}
 
 Not supported
-:::
-::::::::::
+
+///
+
+/// tab | iOS {{ not_supported }}
+
+Not supported
+
+///
+
+/// tab | Web {{ not_supported }}
+
+Not supported
+
+///
+
+/// tab | Textual {{ not_supported }}
+
+Not supported
+
+///
 
 ## Usage
 
@@ -67,7 +73,7 @@ have 2 root nodes; the first root node will have 1 child node; the
 second root node will have 2 children. The root nodes will only populate
 the "name" column; the other column will be blank:
 
-``` python
+```python
 import toga
 
 tree = toga.Tree(
@@ -96,7 +102,7 @@ data source that won't be displayed in the tree. It also allows you to
 control the display order of columns independent of the storage of that
 data.
 
-``` python
+```python
 import toga
 
 tree = toga.Tree(
@@ -121,20 +127,14 @@ node = tree.data[1][0]
 print(f"{node.name}, who is age {node.age}, is {node.status}")
 ```
 
-The attribute names used on each row (called "accessors") are created
-automatically from the headings, by:
-
-1.  Converting the heading to lower case
-2.  Removing any character that can't be used in a Python identifier
-3.  Replacing all whitespace with `_`
-4.  Prepending `_` if the first character is a digit
+-8<- "reference/api/widgets/table-accessors.md"
 
 If you want to use different attributes, you can override them by
 providing an `accessors` argument. In this example, the tree will use
 "Name" as the visible header, but internally, the attribute "character"
 will be used:
 
-``` python
+```python
 import toga
 
 tree = toga.Tree(
@@ -160,22 +160,7 @@ node = tree.data[1][0]
 print(f"{node.character}, who is age {node.age}, is {node.status}")
 ```
 
-The value provided by an accessor is interpreted as follows:
-
-- If the value is a `Widget`{.interpreted-text role="any"}, that widget
-  will be displayed in the cell. Note that this is currently a beta API:
-  see the Notes section.
-- If the value is a `tuple`{.interpreted-text role="any"}, it must have
-  two elements: an icon, and a second element which will be interpreted
-  as one of the options below.
-- If the value is `None`, then `missing_value` will be displayed.
-- Any other value will be converted into a string. If an icon has not
-  already been provided in a tuple, it can also be provided using the
-  value's `icon` attribute.
-
-Icon values must either be an `Icon`{.interpreted-text role="any"},
-which will be displayed on the left of the cell, or `None` to display no
-icon.
+-8<- "reference/api/widgets/table-values.md"
 
 ## Notes
 
@@ -185,14 +170,8 @@ icon.
 
 ## Reference
 
-::: {.autoclass}
-toga.Tree
-:::
+::: toga.Tree
 
-::: {.autoprotocol}
-toga.widgets.tree.OnSelectHandler
-:::
+::: toga.widgets.tree.OnSelectHandler
 
-::: {.autoprotocol}
-toga.widgets.tree.OnActivateHandler
-:::
+::: toga.widgets.tree.OnActivateHandler

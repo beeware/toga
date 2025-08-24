@@ -22,7 +22,7 @@ Want to see examples of Toga in use? Here's some:
 - [ChariotGazer](https://insanesharpness.gitlab.io/ChariotGazer/) is a
   Toga based app for Android and Windows, which provides detailed
   information about UK registered vehicles.
-- [Patent Toolkit](https://patenttk.com/) is a Toga based app for
+- [Patent Toolkit](https://patenttk.com) is a Toga based app for
   Windows and MacOS, which contains a suite of tools for patent
   professionals.
 - [Easy Media Server](https://apps.rsmail.co/easy-media-server) is a

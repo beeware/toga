@@ -8,9 +8,9 @@ converter:
 
 Here's the source code:
 
-::: {.literalinclude language="python"}
-/../examples/tutorial1/tutorial/app.py
-:::
+```python
+-8<- "tutorial1/tutorial/app.py"
+```
 
 This example shows off some more features of Toga's Pack style engine.
 In this example app, we've set up an outer box that stacks vertically;

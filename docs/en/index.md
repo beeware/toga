@@ -7,68 +7,65 @@ simplify platform-agnostic GUI development.
 Toga is available on macOS, Windows, Linux (GTK), Android, iOS, for
 single-page web apps, and console apps.
 
-:::::: {.tabs}
-::: {.group-tab}
-macOS
+/// tab | macOS
 
-<figure class="align-center">
-<img src="/images/toga-demo-cocoa.png" width="450"
-alt="/images/toga-demo-cocoa.png" />
-</figure>
-:::
+![/images/toga-demo-cocoa.png](/images/toga-demo-cocoa.png){ width="450" }
 
-::: {.group-tab}
-Linux
+/// caption
 
-<figure class="align-center">
-<img src="/images/toga-demo-gtk.png" width="450"
-alt="/images/toga-demo-gtk.png" />
-</figure>
-:::
+///
 
-::: {.group-tab}
-Windows
+<!-- TODO: Update alt text -->
 
-<figure class="align-center">
-<img src="/images/toga-demo-winforms.png" width="450"
-alt="/images/toga-demo-winforms.png" />
-</figure>
-:::
-::::::
+///
 
-## `Tutorial <tutorial>`{.interpreted-text role="ref"}
+/// tab | Linux
 
-`A quick Toga demonstration <tutorial/get-started>`{.interpreted-text
-role="doc"} and a
-`a hands-on introduction to Toga </tutorial/index>`{.interpreted-text
-role="doc"}.
+![/images/toga-demo-gtk.png](/images/toga-demo-gtk.png){ width="450" }
 
-## `How-to guides <how-to>`{.interpreted-text role="ref"}
+/// caption
+
+///
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Windows
+
+![/images/toga-demo-winforms.png](/images/toga-demo-winforms.png){ width="450" }
+
+/// caption
+
+///
+
+<!-- TODO: Update alt text -->
+
+///
+
+## [Tutorial](tutorial)
+
+[A quick Toga demonstration](tutorial/get-started) and a
+[a hands-on introduction to Toga](tutorial).
+
+## [How-to guides](how-to) { id="how-to" }
 
 Guides and recipes for common problems and tasks, including how to
-`contribute to Toga <how-to/contribute/index>`{.interpreted-text
-role="doc"}.
+[contribute to Toga](how-to/contribute).
 
-## `Topic Guides <topics>`{.interpreted-text role="ref"}
+## [Topic Guides](topics) { id="topics" }
 
 Deeper explorations of concepts and issues related to Toga usage.
 
-## `Reference <reference>`{.interpreted-text role="ref"}
+## [Reference](reference)
 
 Technical documentation such as
-`Toga's API <reference/api/index>`{.interpreted-text role="doc"},
-details on
-`platform support <reference/platforms/index>`{.interpreted-text
-role="doc"}, and other detailed reference information (including
-`overall architectural details </reference/internals/index>`{.interpreted-text
-role="doc"}).
+[Toga's API](reference/api), details on [platform support](reference/platforms),
+and other detailed reference information (including
+[overall architectural details](reference/internals)).
 
-## `About Toga <about>`{.interpreted-text role="ref"}
+## [About Toga](about) { id="about" }
 
-`Frequently asked questions </about/faq>`{.interpreted-text role="doc"},
-`success stories </about/success>`{.interpreted-text role="doc"}, and
+[Frequently asked questions](about/faq),
+[success stories](about/success), and
 other details about Toga as a project.
-
-::: {.toctree maxdepth="2" hidden="" titlesonly=""}
-tutorial/index how-to/index topics/index reference/index about/index
-:::

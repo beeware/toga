@@ -1,7 +1,7 @@
 # Android
 
 The Toga backend for Android is
-[toga-android](https://github.com/beeware/toga/tree/main/android).
+[`toga-android](https://github.com/beeware/toga/tree/main/android).
 
 ## Prerequisites
 
@@ -28,9 +28,9 @@ native Android Java libraries and implement Java interfaces from Python.
 On Android, some interactions are managed using Activities, which are
 started using Intents.
 
-Android's implementation of the `toga.App`{.interpreted-text role="any"}
+Android's implementation of the [`toga.App`][]
 class includes the method
-`~toga_android.App.start_activity()`{.interpreted-text role="meth"},
+[`start_activity()`][toga_android.App.start_activity],
 which can be used to start an activity.
 
 > Start a native Android activity.

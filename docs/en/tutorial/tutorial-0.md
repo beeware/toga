@@ -14,97 +14,90 @@ is to install a virtual environment, install the required dependencies
 and start coding. To set up a virtual environment, open a fresh terminal
 session, and run:
 
-:::::: {.tabs}
-::: {.group-tab}
-macOS
+/// tab | macOS
 
-``` console
+```console
 $ mkdir toga-tutorial
 $ cd toga-tutorial
 $ python3 -m venv venv
 $ source venv/bin/activate
 ```
-:::
 
-::: {.group-tab}
-Linux
+///
 
-``` console
+/// tab | Linux
+
+```console
 $ mkdir toga-tutorial
 $ cd toga-tutorial
 $ python3 -m venv venv
 $ source venv/bin/activate
 ```
-:::
 
-::: {.group-tab}
-Windows
+///
 
-``` doscon
+/// tab | Windows
+
+```doscon
 C:\...>mkdir toga-tutorial
 C:\...>cd toga-tutorial
 C:\...>py -m venv venv
 C:\...>venv\Scripts\activate
 ```
-:::
-::::::
+
+///
 
 Your prompt should now have a `(venv)` prefix in front of it.
 
 In addition, make sure that you have the platform-specific dependencies
 for your platform:
 
-:::::: {.tabs}
-::: {.group-tab}
-macOS
+/// tab | macOS
 
 No additional dependencies are necessary.
-:::
 
-::: {.group-tab}
-Linux
+///
+
+/// tab | Linux
 
 Before you install Toga, you'll need to install some system packages.
-:::
 
-::: {.group-tab}
-Windows
+///
 
-Confirm that your system meets the `Windows prerequisites
-<windows-prerequisites>`{.interpreted-text role="ref"}.
-:::
-::::::
+/// tab | Windows
+
+Confirm that your system meets the [Windows prerequisites][windows-prerequisites].
+
+///
 
 Next, install Toga into your virtual environment:
 
-:::::: {.tabs}
-::: {.group-tab}
-macOS
+/// tab | macOS
 
-``` console
+```console
 (venv) $ python -m pip install toga
 ```
-:::
 
-::: {.group-tab}
-Linux
+///
 
-``` console
+/// tab | Linux
+
+```console
 (venv) $ python -m pip install toga
 ```
 
 If you get an error when installing Toga, please ensure that you have
 fully installed all the platform prerequisites.
-:::
 
-::: {.group-tab}
-Windows
+///
 
-``` doscon
+/// tab | Windows
+
+```doscon
 (venv) C:\...>python -m pip install toga
 ```
-:::
-::::::
+
+///
 
 After a successful installation of Toga you are ready to get coding.
 
@@ -113,9 +106,9 @@ After a successful installation of Toga you are ready to get coding.
 Create a new file called `helloworld.py` in your `toga-tutorial`
 directory, and add the following code for the "Hello world" app:
 
-::: {.literalinclude language="python"}
-/../examples/tutorial0/tutorial/app.py
-:::
+```python
+-8<- "tutorial0/tutorial/app.py"
+```
 
 Let's walk through this one line at a time.
 
@@ -223,31 +216,29 @@ script name.
 Here is the command to run for your platform from your working
 directory:
 
-:::::: {.tabs}
-::: {.group-tab}
-macOS
+/// tab | macOS
 
-``` console
+```console
 (venv) $ python -m helloworld
 ```
-:::
 
-::: {.group-tab}
-Linux
+///
 
-``` console
+/// tab | Linux
+
+```console
 (venv) $ python -m helloworld
 ```
-:::
 
-::: {.group-tab}
-Windows
+///
 
-``` doscon
+/// tab | Windows
+
+```doscon
 (venv) C:\...>python -m helloworld
 ```
-:::
-::::::
+
+///
 
 This should pop up a window with a button:
 
@@ -267,7 +258,7 @@ Occasionally you might run into issues running Toga on your computer.
 Before you run the app, you'll need to install toga. Although you *can*
 install toga by just running:
 
-``` console
+```console
 $ python -m pip install toga
 ```
 
@@ -278,6 +269,6 @@ the top of this guide.
 
 Once you've got Toga installed, you can run your script:
 
-``` console
+```console
 (venv) $ python -m helloworld
 ```

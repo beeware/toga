@@ -2,72 +2,94 @@
 
 A widget to select a single option from a list of alternatives.
 
-:::::::::: {.tabs}
-::: {.group-tab}
-macOS
+/// tab | macOS
 
-<figure class="align-center">
-<img src="/reference/images/selection-cocoa.png" width="300"
-alt="/reference/images/selection-cocoa.png" />
-</figure>
-:::
+![`/reference/images/selection-cocoa.png](/reference/images/selection-cocoa.png){ width="300" }
 
-::: {.group-tab}
-Linux
+/// caption
 
-<figure class="align-center">
-<img src="/reference/images/selection-gtk.png" width="300"
-alt="/reference/images/selection-gtk.png" />
-</figure>
-:::
+///
 
-::: {.group-tab}
-Windows
 
-<figure class="align-center">
-<img src="/reference/images/selection-winforms.png" width="300"
-alt="/reference/images/selection-winforms.png" />
-</figure>
-:::
+<!-- TODO: Update alt text -->
 
-::: {.group-tab}
-Android
+///
 
-<figure class="align-center">
-<img src="/reference/images/selection-android.png" width="300"
-alt="/reference/images/selection-android.png" />
-</figure>
-:::
+/// tab | Linux
 
-::: {.group-tab}
-iOS
+![/reference/images/selection-gtk.png](/reference/images/selection-gtk.png){ width="300" }
 
-<figure class="align-center">
-<img src="/reference/images/selection-iOS.png" width="300"
-alt="/reference/images/selection-iOS.png" />
-</figure>
-:::
+/// caption
 
-::: {.group-tab}
-Web
+///
 
-<figure class="align-center">
-<img src="/reference/images/selection-web.png" width="300"
-alt="/reference/images/selection-web.png" />
-</figure>
-:::
 
-::: {.group-tab}
-Textual [\|no\|](##SUBST##|no|)
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Windows
+
+![/reference/images/selection-winforms.png](/reference/images/selection-winforms.png){ width="300" }
+
+/// caption
+
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Android
+
+![/reference/images/selection-android.png](/reference/images/selection-android.png){ width="300" }
+
+/// caption
+
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | iOS
+
+![/reference/images/selection-iOS.png](/reference/images/selection-iOS.png){ width="300" }
+
+/// caption
+
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Web
+
+![/reference/images/selection-web.png](/reference/images/selection-web.png){ width="300" }
+
+/// caption
+
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Textual {{ not_supported }}
 
 Not supported
-:::
-::::::::::
+
+///
 
 ## Usage
 
-The Selection uses a `~toga.sources.ListSource`{.interpreted-text
-role="class"} to manage the list of options. If `items` is not specified
+The Selection uses a [`ListSource`][toga.sources.ListSource] to manage
+the list of options. If `items` is not specified
 as a ListSource, it will be converted into a ListSource at runtime.
 
 The simplest instantiation of a Selection is to use a list of strings.
@@ -76,7 +98,7 @@ into a string for display purposes, but the original data type will be
 retained when returning the current value. If the string value contains
 newlines, only the substring up to the first newline will be displayed.
 
-``` python
+```python
 import toga
 
 selection = toga.Selection(items=["Alice", "Bob", "Charlie"])
@@ -96,7 +118,7 @@ data as attributes on the Row. In the following example, the GUI will
 only display the names in the list of items, but the age will be
 available as an attribute on the selected item.
 
-``` python
+```python
 import toga
 
 selection = toga.Selection(
@@ -134,6 +156,4 @@ selection.value = selection.items.find(name="Charlie")
 
 ## Reference
 
-::: {.autoclass}
-toga.Selection
-:::
+::: toga.Selection

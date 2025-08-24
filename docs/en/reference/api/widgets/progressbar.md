@@ -3,67 +3,89 @@
 A horizontal bar to visualize task progress. The task being monitored
 can be of known or indeterminate length.
 
-:::::::::: {.tabs}
-::: {.group-tab}
-macOS
+/// tab | macOS
 
-<figure class="align-center">
-<img src="/reference/images/progressbar-cocoa.png" width="300"
-alt="/reference/images/progressbar-cocoa.png" />
-</figure>
-:::
+![/reference/images/progressbar-cocoa.png](/reference/images/progressbar-cocoa.png){ width="300" }
 
-::: {.group-tab}
-Linux
+/// caption
 
-<figure class="align-center">
-<img src="/reference/images/progressbar-gtk.png" width="300"
-alt="/reference/images/progressbar-gtk.png" />
-</figure>
-:::
+///
 
-::: {.group-tab}
-Windows
 
-<figure class="align-center">
-<img src="/reference/images/progressbar-winforms.png" width="300"
-alt="/reference/images/progressbar-winforms.png" />
-</figure>
-:::
+<!-- TODO: Update alt text -->
 
-::: {.group-tab}
-Android
+///
 
-<figure class="align-center">
-<img src="/reference/images/progressbar-android.png" width="300"
-alt="/reference/images/progressbar-android.png" />
-</figure>
-:::
+/// tab | Linux
 
-::: {.group-tab}
-iOS
+![/reference/images/progressbar-gtk.png](/reference/images/progressbar-gtk.png){ width="300" }
 
-<figure class="align-center">
-<img src="/reference/images/progressbar-iOS.png" width="300"
-alt="/reference/images/progressbar-iOS.png" />
-</figure>
-:::
+/// caption
 
-::: {.group-tab}
-Web [\|beta\|](##SUBST##|beta|)
+///
 
-<figure class="align-center">
-<img src="/reference/images/progressbar-web.png" width="300"
-alt="/reference/images/progressbar-web.png" />
-</figure>
-:::
 
-::: {.group-tab}
-Textual [\|no\|](##SUBST##|no|)
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Windows
+
+![/reference/images/progressbar-winforms.png](/reference/images/progressbar-winforms.png){ width="300" }
+
+/// caption
+
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Android
+
+![/reference/images/progressbar-android.png](/reference/images/progressbar-android.png){ width="300" }
+
+/// caption
+
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | iOS
+
+![/reference/images/progressbar-iOS.png](/reference/images/progressbar-iOS.png){ width="300" }
+
+/// caption
+
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Web {{ beta_support }}
+
+![/reference/images/progressbar-web.png](/reference/images/progressbar-web.png){ width="300" }
+
+/// caption
+
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Textual {{ not_supported }}
 
 Not supported
-:::
-::::::::::
+
+///
 
 ## Usage
 
@@ -73,7 +95,7 @@ progress on a task. The visual indicator of the progress bar will be
 filled indicating the proportion of `value` relative to `max`. `max` can
 be any positive numerical value.
 
-``` python
+```python
 import toga
 
 progress = toga.ProgressBar(max=100, value=1)
@@ -94,7 +116,7 @@ indeterminate progress bar will be ignored. When started, an
 indeterminate progress bar animates as a throbbing or "ping pong"
 animation.
 
-``` python
+```python
 import toga
 
 progress = toga.ProgressBar(max=None)
@@ -115,6 +137,4 @@ progress.stop()
 
 ## Reference
 
-::: {.autoclass}
-toga.ProgressBar
-:::
+::: toga.ProgressBar

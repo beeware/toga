@@ -2,71 +2,93 @@
 
 A widget for the display and editing of a single line of text.
 
-:::::::::: {.tabs}
-::: {.group-tab}
-macOS
+/// tab | macOS
 
-<figure class="align-center">
-<img src="/reference/images/textinput-cocoa.png" width="300"
-alt="/reference/images/textinput-cocoa.png" />
-</figure>
-:::
+![`/reference/images/textinput-cocoa.png](/reference/images/textinput-cocoa.png){ width="300" }
 
-::: {.group-tab}
-Linux
+/// caption
 
-<figure class="align-center">
-<img src="/reference/images/textinput-gtk.png" width="300"
-alt="/reference/images/textinput-gtk.png" />
-</figure>
-:::
+///
 
-::: {.group-tab}
-Windows
 
-<figure class="align-center">
-<img src="/reference/images/textinput-winforms.png" width="300"
-alt="/reference/images/textinput-winforms.png" />
-</figure>
-:::
+<!-- TODO: Update alt text -->
 
-::: {.group-tab}
-Android
+///
 
-<figure class="align-center">
-<img src="/reference/images/textinput-android.png" width="300"
-alt="/reference/images/textinput-android.png" />
-</figure>
-:::
+/// tab | Linux
 
-::: {.group-tab}
-iOS
+![/reference/images/textinput-gtk.png](/reference/images/textinput-gtk.png){ width="300" }
 
-<figure class="align-center">
-<img src="/reference/images/textinput-iOS.png" width="300"
-alt="/reference/images/textinput-iOS.png" />
-</figure>
-:::
+/// caption
 
-::: {.group-tab}
-Web [\|beta\|](##SUBST##|beta|)
+///
 
-<figure class="align-center">
-<img src="/reference/images/textinput-web.png" width="300"
-alt="/reference/images/textinput-web.png" />
-</figure>
-:::
 
-::: {.group-tab}
-Textual [\|beta\|](##SUBST##|beta|)
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Windows
+
+![/reference/images/textinput-winforms.png](/reference/images/textinput-winforms.png){ width="300" }
+
+/// caption
+
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Android
+
+![/reference/images/textinput-android.png](/reference/images/textinput-android.png){ width="300" }
+
+/// caption
+
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | iOS
+
+![/reference/images/textinput-iOS.png](/reference/images/textinput-iOS.png){ width="300" }
+
+/// caption
+
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Web {{ beta_support }}
+
+![/reference/images/textinput-web.png](/reference/images/textinput-web.png){ width="300" }
+
+/// caption
+
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Textual {{ beta_support }}
 
 Screenshot not available
-:::
-::::::::::
+
+///
 
 ## Usage
 
-``` python
+```python
 import toga
 
 text_input = toga.TextInput()
@@ -80,7 +102,7 @@ content; as soon as a value is provided (either by the user, or
 programmatically), the placeholder content will be hidden.
 
 The input can also be provided a list of
-`validators <validators>`{.interpreted-text role="ref"}. A validator is
+[`validators`][]. A validator is
 a function that will be invoked whenever the content of the input
 changes. The function should return `None` if the current value of the
 input is valid; if the current value is invalid, it should return an
@@ -103,22 +125,12 @@ be validated based on specified validators.
 
 ## Reference
 
-::: {.autoclass}
-toga.TextInput
-:::
+::: toga.TextInput
 
-::: {.autoprotocol}
-toga.widgets.textinput.OnChangeHandler
-:::
+::: toga.widgets.textinput.OnChangeHandler
 
-::: {.autoprotocol}
-toga.widgets.textinput.OnConfirmHandler
-:::
+::: toga.widgets.textinput.OnConfirmHandler
 
-::: {.autoprotocol}
-toga.widgets.textinput.OnGainFocusHandler
-:::
+::: toga.widgets.textinput.OnGainFocusHandler
 
-::: {.autoprotocol}
-toga.widgets.textinput.OnLoseFocusHandler
-:::
+::: toga.widgets.textinput.OnLoseFocusHandler

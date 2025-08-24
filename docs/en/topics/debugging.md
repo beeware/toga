@@ -3,7 +3,7 @@
 Debugging is the process of finding, understanding, and fixing bugs in
 your code.
 
-## Debugging Widget Layout {#debug-layout}
+## Debugging Widget Layout  { id="debug-layout" }
 
 The debug layout colors tool is designed to give all containers distinct
 colors, which enables you to better see what might be happening with the
@@ -17,16 +17,15 @@ want to alter. Setting environment variables varies by operating system.
 Alternatively, you can enable it from within your code by including the
 following in your app file or your `app.py`:
 
-``` python
+```python
 toga.Widget.DEBUG_LAYOUT_ENABLED = True
 ```
 
-### Debug layout colors with the `toga-demo`
+### Debug layout colors with the  { id="-demo" }
 
 To use the debug layout with the `toga-demo`, set the environment
 variable, and
-`install and run the demo <../tutorial/get-started>`{.interpreted-text
-role="doc"}.
+[install and run the demo](../tutorial/get-started).
 
 You should see the following.
 
@@ -41,7 +40,7 @@ others, and so it only shows two colors.
 This example uses a series of nested boxes to show a variety of
 available colors. The tool is enabled here in the code.
 
-``` python
+```python
 import toga
 
 toga.Widget.DEBUG_LAYOUT_ENABLED = True

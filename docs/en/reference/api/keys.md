@@ -11,65 +11,16 @@ Instead, Toga provides three generic modifier constants, and maps those
 to the modifier keys, matching the precedence with which they are used
 on the underlying platforms:
 
-<table>
-<thead>
-<tr>
-<th>Platform</th>
-<th><code class="interpreted-text" role="any">MOD_1</code></th>
-<th><code class="interpreted-text" role="any">MOD_2</code></th>
-<th><code class="interpreted-text" role="any">MOD_3</code></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><blockquote>
-<p>Linux</p>
-</blockquote></td>
-<td><blockquote>
-<p>Control</p>
-</blockquote></td>
-<td><blockquote>
-<p>Alt</p>
-</blockquote></td>
-<td><blockquote>
-<p>Tux/Windows/Meta</p>
-</blockquote></td>
-</tr>
-<tr>
-<td><blockquote>
-<p>macOS</p>
-</blockquote></td>
-<td><blockquote>
-<p>Command (⌘)</p>
-</blockquote></td>
-<td><blockquote>
-<p>Option</p>
-</blockquote></td>
-<td><blockquote>
-<p>Control (^)</p>
-</blockquote></td>
-</tr>
-<tr>
-<td><blockquote>
-<p>Windows</p>
-</blockquote></td>
-<td><blockquote>
-<p>Control</p>
-</blockquote></td>
-<td><blockquote>
-<p>Alt</p>
-</blockquote></td>
-<td><blockquote>
-<p>Not supported</p>
-</blockquote></td>
-</tr>
-</tbody>
-</table>
+| Platform | MOD_1       | MOD_2  | MOD_3            |
+|----------|-------------|--------|------------------|
+| Linux    | Control     | Alt    | Tux/Windows/Meta |
+| macOS    | Command (⌘) | Option | Control (^)      |
+| Windows  | Control     | Alt    | Not supported    |
 
 Key combinations can be expressed by combining multiple `Key` values
 with the `+` operator.
 
-``` python
+```python
 from toga import Key
 
 just_an_a = Key.A
@@ -84,6 +35,4 @@ The order of addition is not significant. `Key.SHIFT + Key.A` and
 
 ## Reference
 
-::: {.autoclass}
-toga.Key
-:::
+::: toga.Key

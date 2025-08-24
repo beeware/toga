@@ -2,68 +2,86 @@
 
 An embedded web browser.
 
-:::::::::: {.tabs}
-::: {.group-tab}
-macOS
+/// tab | macOS
 
-<figure class="align-center">
-<img src="/reference/images/webview-cocoa.png" width="450"
-alt="/reference/images/webview-cocoa.png" />
-</figure>
-:::
+![/reference/images/webview-cocoa.png](/reference/images/webview-cocoa.png){ width="450" }
 
-::: {.group-tab}
-Linux
+/// caption
 
-<figure class="align-center">
-<img src="/reference/images/webview-gtk.png" width="450"
-alt="/reference/images/webview-gtk.png" />
-</figure>
-:::
+///
 
-::: {.group-tab}
-Windows
 
-<figure class="align-center">
-<img src="/reference/images/webview-winforms.png" width="450"
-alt="/reference/images/webview-winforms.png" />
-</figure>
-:::
+<!-- TODO: Update alt text -->
 
-::: {.group-tab}
-Android
+///
 
-<figure class="align-center">
-<img src="/reference/images/webview-android.png" width="450"
-alt="/reference/images/webview-android.png" />
-</figure>
-:::
+/// tab | Linux
 
-::: {.group-tab}
-iOS
+![/reference/images/webview-gtk.png](/reference/images/webview-gtk.png){ width="450" }
 
-<figure class="align-center">
-<img src="/reference/images/webview-iOS.png" width="450"
-alt="/reference/images/webview-iOS.png" />
-</figure>
-:::
+/// caption
 
-::: {.group-tab}
-Web [\|no\|](##SUBST##|no|)
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Windows
+
+![/reference/images/webview-winforms.png](/reference/images/webview-winforms.png){ width="450" }
+
+/// caption
+
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Android
+
+![/reference/images/webview-android.png](/reference/images/webview-android.png){ width="450" }
+
+/// caption
+
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | iOS
+
+![/reference/images/webview-iOS.png](/reference/images/webview-iOS.png){ width="450" }
+
+/// caption
+
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Web {{ not_supported }}
 
 Not supported
-:::
 
-::: {.group-tab}
-Textual [\|no\|](##SUBST##|no|)
+///
+
+/// tab | Textual {{ not_supported }}
 
 Not supported
-:::
-::::::::::
+
+///
 
 ## Usage
 
-``` python
+```python
 import toga
 
 webview = toga.WebView()
@@ -78,7 +96,7 @@ await webview.load_url("https://beeware.org")
 webview.set_content("https://example.com", "<html>...</html>")
 ```
 
-## System requirements {#webview-system-requires}
+## System requirements  { id="webview-system-requires" }
 
 - Using WebView on Windows 10 requires that your users have installed
   the [Edge WebView2 Evergreen
@@ -118,7 +136,7 @@ webview.set_content("https://example.com", "<html>...</html>")
   enabled by default, and is only available when your code is packaged
   as a full macOS app (e.g., with Briefcase). To enable debugging, run:
 
-  > ``` console
+  > ```console
   > $ defaults write com.example.appname WebKitDeveloperExtras -bool true
   > ```
   >
@@ -127,10 +145,6 @@ webview.set_content("https://example.com", "<html>...</html>")
 
 ## Reference
 
-::: {.autoclass}
-toga.WebView
-:::
+::: toga.WebView
 
-::: {.autoprotocol}
-toga.widgets.webview.OnWebViewLoadHandler
-:::
+::: toga.widgets.webview.OnWebViewLoadHandler

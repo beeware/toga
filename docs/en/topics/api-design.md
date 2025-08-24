@@ -26,11 +26,11 @@ always return a string when when retrieved.
 Any of a class's writable properties can be initialized in its
 constructor by passing keyword arguments with the same names. The
 constructor may also accept read-only properties such as
-`Widget.id`{.interpreted-text role="any"}, which cannot be changed
+[Widget.id][], which cannot be changed
 later.
 
 If a constructor has a single required argument, such as the text of a
-`Label`{.interpreted-text role="any"}, it may be passed as a positional
+[Label][], it may be passed as a positional
 argument.
 
 ## Events
@@ -41,8 +41,7 @@ event handler property. These can be identified by their names, which
 always begin with `on_`.
 
 Events are named for the general purpose of the interaction, not the
-specific mechanism. For example, a `Button`{.interpreted-text
-role="any"}'s event is called `on_press`, not `on_click`, because
+specific mechanism. For example, a [Button][]'s event is called `on_press`, not `on_click`, because
 "click" implies a mouse is used.
 
 When the event occurs, your handler will be passed the widget as a
@@ -61,12 +60,11 @@ If an event is triggered by a change in a property:
 ## Common names
 
 When a widget allows the user to control a simple value (e.g. the `str`
-of a `TextInput`{.interpreted-text role="any"}, or the `bool` of a
-`Switch`{.interpreted-text role="any"}), then its property is called
+of a [TextInput][], or the `bool` of a
+[Switch][]), then its property is called
 `value`, and the corresponding event is called `on_change`.
 
 When a widget has a non-editable caption, (e.g. a
-`Button`{.interpreted-text role="any"} or `Switch`{.interpreted-text
-role="any"}), then its property is called `text`.
+[Button][] or [Switch][]), then its property is called `text`.
 
 Ranges of numbers are expressed as separate `min` and `max` properties.

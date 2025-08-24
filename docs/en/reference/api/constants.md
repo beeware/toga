@@ -1,5 +1,6 @@
 # Constants
 
-::: {.automodule member-order="bysource"}
-toga.constants
-:::
+::: toga.constants
+    options:
+        members:
+            TODO: Add explicit members list in the following order "bysource"

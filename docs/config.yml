@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=https://squidfunk.github.io/mkdocs-material/schema.json
+copyright: © Russell Keith-Magee
 
 not_in_nav: |
   /index.md
@@ -9,80 +9,103 @@ validation:
   anchors: warn
   unrecognized_links: warn
 
+extra:
+  project_name: toga
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/beeware
+      name: BeeWare on GitHub
+    - icon: fontawesome/brands/mastodon
+      link: https://fosstodon.org/@beeware
+      name: BeeWare on Mastodon
+    - icon: fontawesome/brands/discord
+      link: https://beeware.org/bee/chat/
+      name: BeeWare on Discord
+  "beta_support": ^&beta;^
+  "not_supported": ^&#x274C;^
+  "fully_supported": ●
+  "partly_supported": ○
+
 theme:
   name: material
   language: en
+  logo: assets/images/brutus-256.png
+  favicon: assets/images/brutus-256.png
   features:
     - content.tabs.link
     - toc.follow
-    - navigation.path
-    - content.code.copy
     - navigation.indexes
+    - navigation.footer
+    - search.suggest
+    - search.highlight
+    - search.share
+  custom_dir: overrides
   palette:
-    # Palette toggle for light mode
-    - scheme: default
-      primary: deep purple
+    # Palette toggle for automatic mode
+    - media: "(prefers-color-scheme)"
       toggle:
-       icon: material/brightness-7
-       name: Switch to dark mode
+        icon: material/brightness-auto
+        name: Switch to light mode
+
+    # Palette toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
 
     # Palette toggle for dark mode
-    - scheme: slate
-      primary: deep purple
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
       toggle:
-       icon: material/brightness-4
-       name: Switch to light mode
+        icon: material/brightness-4
+        name: Switch to system preference
 
 markdown_extensions:
-  pymdownx.highlight:
-    anchor_linenums: true
+  pymdownx.highlight: {}
   pymdownx.superfences: {}
   pymdownx.blocks.admonition: {}
+  pymdownx.blocks.caption: {}
   pymdownx.caret: {}
   pymdownx.blocks.tab:
     alternate_style: true
+  pymdownx.snippets:
+    base_path: ["docs/en", "examples"]
+    url_download: true
+    check_paths: true
   toc:
     permalink: true
     title: On this page
   attr_list: {}
-
-extra:
-  "beta_support": ^&beta;^
-  "not_supported": ^&#x274C;^
+  footnotes: {}
 
 plugins:
   search: {}
   autorefs: {}
-  include-markdown: {}
   literate-nav:
     nav_file: SUMMARY.md
-  macros:
-    # Remove the below customisations after markdown is cleaned up
-    j2_comment_start_string: '[#'  # Set temporarily to deal with title anchors
-    j2_comment_end_string: '#]'  # Set temporarily to deal with title anchors
+  macros: {}
   table-reader: {}
   mkdocstrings:
       enable_inventory: true
       default_handler: python
       handlers:
         python:
-          paths:
-            [../core/src]
+          paths: [core/src]
           inventories:
             - https://docs.python.org/3/objects.inv
             - https://pillow.readthedocs.io/en/stable/objects.inv
           options:
-            docstring_style: sphinx  # Parses docstrings from Sphinx formatting
+            docstring_style: sphinx  # Parses docstrings from Sphinx formatting - the `:param` formatting, not parsing rST links
+            allow_inspection: false  # True includes dunder methods, can be enabled on individual class entries if you want them
             show_source: false  # Otherwise, source code is shown collapsed for all
-            members_order: source  # Orders thing based on the source code
+            members_order: alphabetical  # Orders things based on the source code
             annotations_path: brief  # This is desired per current docs
-            merge_init_into_class: true  # Otherwise, init is its own thing
+            merge_init_into_class: true  # Otherwise, init is displayed separately
             separate_signature: true  # Shows the `function(args)` separately from name
-            show_signature: true  # Includes () and (args) along with the function
+            show_signature: true  # Displays () or (args) along with the function name in the signature
             show_signature_annotations: false  # Removes annotations from initial line
-            signature_crossrefs: true  # Renders crossrefs for type annotations in sig
             show_root_heading: true  # Show heading of object at root, otherwise nothing
-            show_docstring_yields: true  # Does not appear to be doing anything
-            docstring_section_style: spacy  # Better info layout
-            line_length: 80  # Requires black, forces longer signatures to be stacked
-            show_symbol_type_toc: true  # ENABLED TEMPORARILY FOR TROUBLESHOOTING
+            docstring_section_style: spacy  # Better info layout than the other options
+            line_length: 80  # Requires black, forces longer signatures to be stacked, if signatures aren't used, can be removed
+            show_symbol_type_toc: true  # This is what they added on place of function() (parens) being displayed in the sidebar ToC

@@ -3,71 +3,93 @@
 A clickable button with two stable states: True (on, checked); and False
 (off, unchecked). The button has a text label.
 
-:::::::::: {.tabs}
-::: {.group-tab}
-macOS
+/// tab | macOS
 
-<figure class="align-center">
-<img src="/reference/images/switch-cocoa.png" width="300"
-alt="/reference/images/switch-cocoa.png" />
-</figure>
-:::
+![/reference/images/switch-cocoa.png](/reference/images/switch-cocoa.png){ width="300" }
 
-::: {.group-tab}
-Linux
+/// caption
 
-<figure class="align-center">
-<img src="/reference/images/switch-gtk.png" width="300"
-alt="/reference/images/switch-gtk.png" />
-</figure>
-:::
+///
 
-::: {.group-tab}
-Windows
 
-<figure class="align-center">
-<img src="/reference/images/switch-winforms.png" width="300"
-alt="/reference/images/switch-winforms.png" />
-</figure>
-:::
+<!-- TODO: Update alt text -->
 
-::: {.group-tab}
-Android
+///
 
-<figure class="align-center">
-<img src="/reference/images/switch-android.png" width="300"
-alt="/reference/images/switch-android.png" />
-</figure>
-:::
+/// tab | Linux
 
-::: {.group-tab}
-iOS
+![/reference/images/switch-gtk.png](/reference/images/switch-gtk.png){ width="300" }
 
-<figure class="align-center">
-<img src="/reference/images/switch-iOS.png" width="300"
-alt="/reference/images/switch-iOS.png" />
-</figure>
-:::
+/// caption
 
-::: {.group-tab}
-Web [\|beta\|](##SUBST##|beta|)
+///
 
-<figure class="align-center">
-<img src="/reference/images/switch-web.png" width="300"
-alt="/reference/images/switch-web.png" />
-</figure>
-:::
 
-::: {.group-tab}
-Textual [\|no\|](##SUBST##|no|)
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Windows
+
+![/reference/images/switch-winforms.png](/reference/images/switch-winforms.png){ width="300" }
+
+/// caption
+
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Android
+
+![/reference/images/switch-android.png](/reference/images/switch-android.png){ width="300" }
+
+/// caption
+
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | iOS
+
+![/reference/images/switch-iOS.png](/reference/images/switch-iOS.png){ width="300" }
+
+/// caption
+
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Web {{ beta_support }}
+
+![/reference/images/switch-web.png](/reference/images/switch-web.png){ width="300" }
+
+/// caption
+
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Textual {{ not_supported }}
 
 Not supported
-:::
-::::::::::
+
+///
 
 ## Usage
 
-``` python
+```python
 import toga
 
 switch = toga.Switch()
@@ -95,10 +117,6 @@ print(f"The switch is {switch.value}")
 
 ## Reference
 
-::: {.autoclass}
-toga.Switch
-:::
+::: toga.Switch
 
-::: {.autoprotocol}
-toga.widgets.switch.OnChangeHandler
-:::
+::: toga.widgets.switch.OnChangeHandler

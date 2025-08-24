@@ -24,7 +24,7 @@ user.
 
   Mobile platforms don't provide a native "Table" widget; however,
   table-like data could be rendered by using a
-  `~toga.DetailedList`{.interpreted-text role="class"}, where the title
+  [`DetailedList`][toga.DetailedList], where the title
   and subtitle are the "important" columns selected by the user, and
   selecting a row on the table navigates to a sub-page showing the full
   row detail.
@@ -50,7 +50,7 @@ user.
 - `RadioButton` - a set of mutually exclusive options.
 
   Functionally, the use case of "select one from a list of options" can
-  be met with a `~toga.Selection`{.interpreted-text role="class"};
+  be met with a [`Selection`][toga.Selection];
   however, from a UI design perspective, a radio button is a common
   design pattern.
 

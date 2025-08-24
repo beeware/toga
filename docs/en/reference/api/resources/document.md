@@ -3,39 +3,33 @@
 A representation of a file on disk that will be displayed in one or more
 windows.
 
-::: {.rst-class}
-widget-support
-:::
+**Availability ([Key][api-status-key])**
 
-::: {.csv-filter header-rows="1" file="../../data/widgets_by_platform.csv" included_cols="4,5,6,7,8,9,10" include="{0: '^Document$'}"}
-Availability (`Key <api-status-key>`{.interpreted-text role="ref"})
-:::
+{{ pd_read_csv("reference/data/widgets_by_platform.csv", na_filter=False, usecols=[4,5,6,7,8,9,10])[pd_read_csv("reference/data/widgets_by_platform.csv")[["ComponentName"]].isin(["Document"]).all(axis=1)] | convert_to_md_table }}
 
 ## Usage
 
 A common requirement for apps is to view or edit a particular type of
-file. In Toga, you define a `toga.Document`{.interpreted-text
-role="class"} class to represent each type of content that your app is
-able to manipulate. This `~toga.Document`{.interpreted-text
-role="class"} class is then registered with your app when the
-`~toga.App`{.interpreted-text role="class"} instance is created.
+file. In Toga, you define a [`toga.Document`][] class to represent each type of content that your app is
+able to manipulate. This [`Document`][toga.Document] class is then registered with your app when the
+[`App`][toga.App] instance is created.
 
-The `toga.Document`{.interpreted-text role="class"} class describes how
+The [`toga.Document`][] class describes how
 your document can be read, displayed, and saved. It also tracks whether
 the document has been modified. In this example, the code declares an
 "Example Document" document type, which will create files with the
 extensions `.mydoc` and `.mydocument`; because it is listed first, the
 `.mydoc` extension will be the default for documents of this type. The
 main window for this document type contains a
-`~toga.MultilineTextInput`{.interpreted-text role="class"}. Whenever the
+[`MultilineTextInput`][toga.MultilineTextInput]. Whenever the
 content of that widget changes, the document is marked as modified:
 
-``` python
+```python
 import toga
 
 class ExampleDocument(toga.Document):
     description = "Example Document"
-    extensions = ["mydoc", "mydocument"]
+    extensions = [`"mydoc", "mydocument"]
 
     def create(self):
         # Create the main window for the document. The window has a single widget;
@@ -64,14 +58,14 @@ be asked if they want to save changes to the document.
 ### Registering document types
 
 A document type is used by registering it with an app instance. The
-constructor for `toga.App`{.interpreted-text role="class"} allows you to
+constructor for [`toga.App`][] allows you to
 declare the collection of document types that your app supports. The
 first declared document type is treated as the default document type for
 your app; this is the type that will be connected to the keyboard
-shortcut of the `~toga.Command.NEW`{.interpreted-text role="attr"}
+shortcut of the [`NEW`][toga.Command.NEW]
 command.
 
-After `~toga.App.startup`{.interpreted-text role="meth"} returns, any
+After [`startup()`][toga.App.startup] returns, any
 filenames which were passed to the app by the operating system will be
 opened using the registered document types. If after this the app still
 has no windows, then:
@@ -83,11 +77,10 @@ has no windows, then:
 In the following example, the app will be able to manage documents of
 type `ExampleDocument` or `OtherDocument`, with `ExampleDocument` being
 the default content type. The app is configured
-`to not have a single "main" window
-<assigning-main-window>`{.interpreted-text role="ref"}, so the life
+[to not have a single "main" window][assigning-main-window], so the life
 cycle of the app is not tied to a specific window.
 
-``` python
+```python
 import toga
 
 class ExampleApp(toga.App):
@@ -109,10 +102,6 @@ management commands (New, Open, Save, etc) added.
 
 ## Reference
 
-::: {.autoclass}
-toga.Document
-:::
+::: toga.Document
 
-::: {.autoclass}
-toga.documents.DocumentSet
-:::
+::: toga.documents.DocumentSet

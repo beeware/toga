@@ -2,64 +2,82 @@
 
 A container that can display multiple labeled tabs of content.
 
-:::::::::: {.tabs}
-::: {.group-tab}
-macOS
+/// tab | macOS
 
-<figure class="align-center">
-<img src="/reference/images/optioncontainer-cocoa.png" width="450"
-alt="/reference/images/optioncontainer-cocoa.png" />
-</figure>
-:::
+![`/reference/images/optioncontainer-cocoa.png](/reference/images/optioncontainer-cocoa.png){ width="450" }
 
-::: {.group-tab}
-Linux
+/// caption
 
-<figure class="align-center">
-<img src="/reference/images/optioncontainer-gtk.png" width="450"
-alt="/reference/images/optioncontainer-gtk.png" />
-</figure>
-:::
+///
 
-::: {.group-tab}
-Windows
 
-<figure class="align-center">
-<img src="/reference/images/optioncontainer-winforms.png" width="450"
-alt="/reference/images/optioncontainer-winforms.png" />
-</figure>
-:::
+<!-- TODO: Update alt text -->
 
-::: {.group-tab}
-Android
+///
 
-<figure class="align-center">
-<img src="/reference/images/optioncontainer-android.png" width="450"
-alt="/reference/images/optioncontainer-android.png" />
-</figure>
-:::
+/// tab | Linux
 
-::: {.group-tab}
-iOS
+![/reference/images/optioncontainer-gtk.png](/reference/images/optioncontainer-gtk.png){ width="450" }
 
-<figure class="align-center">
-<img src="/reference/images/optioncontainer-iOS.png" width="450"
-alt="/reference/images/optioncontainer-iOS.png" />
-</figure>
-:::
+/// caption
 
-::: {.group-tab}
-Web [\|no\|](##SUBST##|no|)
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Windows
+
+![/reference/images/optioncontainer-winforms.png](/reference/images/optioncontainer-winforms.png){ width="450" }
+
+/// caption
+
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Android
+
+![/reference/images/optioncontainer-android.png](/reference/images/optioncontainer-android.png){ width="450" }
+
+/// caption
+
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | iOS
+
+![/reference/images/optioncontainer-iOS.png](/reference/images/optioncontainer-iOS.png){ width="450" }
+
+/// caption
+
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Web {{ not_supported }}
 
 Not supported
-:::
 
-::: {.group-tab}
-Textual [\|no\|](##SUBST##|no|)
+///
+
+/// tab | Textual {{ not_supported }}
 
 Not supported
-:::
-::::::::::
+
+///
 
 ## Usage
 
@@ -68,7 +86,7 @@ discrete tabs in the display. Each tab can be identified by a label,
 and, optionally, an icon. This list of content can be modified after
 initial construction:
 
-``` python
+```python
 import toga
 
 pizza = toga.Box()
@@ -89,12 +107,12 @@ container.content.append("Ice Cream", icecream, toga.Icon("icecream"))
 ```
 
 OptionContainer content can also be specified by using
-`toga.OptionItem`{.interpreted-text role="any"} instances instead of
+[`toga.OptionItem`][] instances instead of
 tuples. This enables you to be explicit when setting an icon or enabled
 status; it also allows you to set the initial enabled status *without*
 setting an icon:
 
-``` python
+```python
 import toga
 
 pizza = toga.Box()
@@ -102,7 +120,7 @@ pasta = toga.Box()
 
 # Create 2 initial tabs; one with an icon, and one without.
 container = toga.OptionContainer(
-    content=[
+    content=[`
       toga.OptionItem("Pizza", pizza),
       toga.OptionItem("Pasta", pasta, icon=toga.Icon("pasta"))
     ]
@@ -118,7 +136,7 @@ selected item, you can specify an item using:
 
 - The index of the item in the list of content:
 
-  ``` python
+  ```python
   # Insert a new second tab
   container.content.insert(1, "Soup", toga.Box())
   # Make the third tab the currently active tab
@@ -129,7 +147,7 @@ selected item, you can specify an item using:
 
 - The string label of the tab:
 
-  ``` python
+  ```python
   # Insert a tab at the index currently occupied by a tab labeled "Pasta"
   container.content.insert("Pasta", "Soup", toga.Box())
   # Make the tab labeled "Pasta" the currently active tab
@@ -138,9 +156,9 @@ selected item, you can specify an item using:
   del container.content["Pasta"]
   ```
 
-- A reference to an `toga.OptionItem`{.interpreted-text role="any"}:
+- A reference to an [`toga.OptionItem`][]:
 
-  ``` python
+  ```python
   # Get a reference to the "Pasta" tab
   pasta_tab = container.content["Pasta"]
   # Insert content at the index currently occupied by the pasta tab
@@ -184,34 +202,30 @@ selected item, you can specify an item using:
 - Icons for Android OptionContainer tabs should be 24x24px alpha masks.
 
 ## Reference
-
-> An item of `OptionContainer`{.interpreted-text role="any"} content can
+TODO: Verify the below text is not meant to be in the source code:
+> An item of [OptionContainer`][] content can
 > be:
 >
 > - a 2-tuple, containing the title for the tab, and the content widget;
 > - a 3-tuple, containing the title, content widget, and
->   `icon <IconContentT>`{.interpreted-text role="any"} for the tab;
+>   [icon][IconContentT] - TODO: Manually fix this for the tab;
 > - a 4-tuple, containing the title, content widget,
->   `icon <IconContentT>`{.interpreted-text role="any"} for the tab, and
+>   [icon][IconContentT] for the tab, and
 >   enabled status; or
-> - an `toga.OptionItem`{.interpreted-text role="any"} instance.
+> - an [`toga.OptionItem`][] instance.
 
-::: {.autoclass exclude-members="app, window"}
-toga.OptionContainer
-:::
+::: toga.OptionContainer
+    options:
+        members:
+            TODO: Add explicit members list excluding "app, window"
 
-::: {.autoclass}
-toga.OptionItem
-:::
+::: toga.OptionItem
 
-::: {.autoclass special-members="__getitem__, __delitem__"}
-toga.widgets.optioncontainer.OptionList
-:::
+::: toga.widgets.optioncontainer.OptionList
+    options:
+        members:
+            TODO: Add explicit members list *excluding* special members *except* for "__getitem__, __delitem__"
 
-::: {.autoclass}
-toga.widgets.optioncontainer.OptionItem
-:::
+::: toga.widgets.optioncontainer.OptionItem
 
-::: {.autoprotocol}
-toga.widgets.optioncontainer.OnSelectHandler
-:::
+::: toga.widgets.optioncontainer.OnSelectHandler

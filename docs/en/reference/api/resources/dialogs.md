@@ -2,13 +2,9 @@
 
 A short-lived window asking the user for input.
 
-::: {.rst-class}
-widget-support
-:::
+**Availability ([Key][api-status-key])**
 
-::: {.csv-filter header-rows="1" file="../../data/widgets_by_platform.csv" included_cols="4,5,6,7,8,9,10" include="{0: '^Dialogs$'}"}
-Availability (`Key <api-status-key>`{.interpreted-text role="ref"})
-:::
+{{ pd_read_csv("reference/data/widgets_by_platform.csv", na_filter=False, usecols=[4,5,6,7,8,9,10])[pd_read_csv("reference/data/widgets_by_platform.csv")[["ComponentName"]].isin(["Dialogs"]).all(axis=1)] | convert_to_md_table }}
 
 ## Usage
 
@@ -23,7 +19,7 @@ interact with anything in the window until the dialog is dismissed. When
 presented as an app-modal dialog, the user will be restricted from
 interacting with the rest of the app (there are some platform-specific
 variations in this behavior; see the
-`platform notes <dialog-notes>`{.interpreted-text role="ref"} for
+[platform notes][dialog-notes] for
 details).
 
 When a dialog is presented, the app's event loop will continue to run,
@@ -35,17 +31,17 @@ type will vary depending on the type of dialog being displayed.
 
 To display a dialog, create an instance of the dialog type you want to
 display, and `await` the `dialog()` method in the context that you want
-to display the dialog (either `toga.Window.dialog`{.interpreted-text
-role="meth"} or `toga.App.dialog`{.interpreted-text role="meth"}). In
+to display the dialog (either [`toga.Window.dialog()`][toga.Window.dialog]
+or [`toga.App.dialog()`][toga.App.dialog]). In
 the following example, `my_handler` is an asynchronous method defined on
-an `~toga.App`{.interpreted-text role="class"} subclass that would be
+an [`App`][toga.App] subclass that would be
 installed as an event handler (e.g., as an
-`~toga.Button.on_press`{.interpreted-text role="meth"} handler on a
-`~toga.Button`{.interpreted-text role="class"}). The dialog is displayed
+[`on_press()`][toga.Button.on_press] handler on a
+[`Button`][toga.Button]). The dialog is displayed
 as window-modal against the app's main window; the dialog returns `True`
 or `False` depending on the user's response:
 
-``` python
+```python
 async def my_handler(self, widget, **kwargs):
     ask_a_question = toga.QuestionDialog("Hello!", "Is this OK!")
 
@@ -63,10 +59,10 @@ would use `self.dialog(ask_a_question)`, instead of
 
 If you need to display a dialog in a synchronous context (i.e., in a
 normal, non-`async` event handler), you must create a
-`asyncio.Task`{.interpreted-text role="any"} for the dialog, and install
+[`asyncio.Task`][] for the dialog, and install
 a callback that will be invoked when the dialog is dismissed:
 
-``` python
+```python
 def my_sync_handler(self, widget, **kwargs):
     ask_a_question = toga.QuestionDialog("Hello!", "Is this OK!")
 
@@ -88,41 +84,25 @@ When the user responds, the `dialog_dismissed` callback will be invoked,
 with the dialog task provided as an argument. The result of the task can
 then be interrogated to handle the response.
 
-## Notes {#dialog-notes}
+## Notes  { id="dialog-notes" }
 
 - On macOS, app-modal dialogs will *not* prevent the user from
   interacting with the rest of the app.
 
 ## Reference
 
-::: {.autoclass}
-toga.InfoDialog
-:::
+::: toga.InfoDialog
 
-::: {.autoclass}
-toga.QuestionDialog
-:::
+::: toga.QuestionDialog
 
-::: {.autoclass}
-toga.ConfirmDialog
-:::
+::: toga.ConfirmDialog
 
-::: {.autoclass}
-toga.ErrorDialog
-:::
+::: toga.ErrorDialog
 
-::: {.autoclass}
-toga.StackTraceDialog
-:::
+::: toga.StackTraceDialog
 
-::: {.autoclass}
-toga.SaveFileDialog
-:::
+::: toga.SaveFileDialog
 
-::: {.autoclass}
-toga.OpenFileDialog
-:::
+::: toga.OpenFileDialog
 
-::: {.autoclass}
-toga.SelectFolderDialog
-:::
+::: toga.SelectFolderDialog

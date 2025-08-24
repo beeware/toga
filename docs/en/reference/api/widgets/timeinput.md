@@ -2,68 +2,86 @@
 
 A widget to select a clock time.
 
-:::::::::: {.tabs}
-::: {.group-tab}
-macOS
+/// tab | macOS
 
-<figure class="align-center">
-<img src="/reference/images/timeinput-cocoa.png" width="300"
-alt="/reference/images/timeinput-cocoa.png" />
-</figure>
-:::
+![`/reference/images/timeinput-cocoa.png](/reference/images/timeinput-cocoa.png){ width="300" }
 
-::: {.group-tab}
-Linux [\|no\|](##SUBST##|no|)
+/// caption
 
-Not supported
-:::
+///
 
-::: {.group-tab}
-Windows
 
-<figure class="align-center">
-<img src="/reference/images/timeinput-winforms.png" width="300"
-alt="/reference/images/timeinput-winforms.png" />
-</figure>
-:::
+<!-- TODO: Update alt text -->
 
-::: {.group-tab}
-Android
+///
 
-<figure class="align-center">
-<img src="/reference/images/timeinput-android.png" width="300"
-alt="/reference/images/timeinput-android.png" />
-</figure>
-:::
-
-::: {.group-tab}
-iOS
-
-<figure class="align-center">
-<img src="/reference/images/timeinput-iOS.png" width="300"
-alt="/reference/images/timeinput-iOS.png" />
-</figure>
-:::
-
-::: {.group-tab}
-Web [\|no\|](##SUBST##|no|)
-
-<figure class="align-center">
-<img src="/reference/images/timeinput-web.png" width="300"
-alt="/reference/images/timeinput-web.png" />
-</figure>
-:::
-
-::: {.group-tab}
-Textual [\|no\|](##SUBST##|no|)
+/// tab | Linux {{ not_supported }}
 
 Not supported
-:::
-::::::::::
+
+///
+
+/// tab | Windows
+
+![/reference/images/timeinput-winforms.png](/reference/images/timeinput-winforms.png){ width="300" }
+
+/// caption
+
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Android
+
+![/reference/images/timeinput-android.png](/reference/images/timeinput-android.png){ width="300" }
+
+/// caption
+
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | iOS
+
+![/reference/images/timeinput-iOS.png](/reference/images/timeinput-iOS.png){ width="300" }
+
+/// caption
+
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Web {{ not_supported }}
+
+![/reference/images/timeinput-web.png](/reference/images/timeinput-web.png){ width="300" }
+
+/// caption
+
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Textual {{ not_supported }}
+
+Not supported
+
+///
 
 ## Usage
 
-``` python
+```python
 import toga
 
 current_time = toga.TimeInput()
@@ -75,19 +93,15 @@ current_time = toga.TimeInput()
   always be returned as zero.
   - On Android and iOS, seconds will also be returned as zero, and any
     second component of a minimum or maximum value will be ignored.
-- Properties that return `datetime.time`{.interpreted-text role="any"}
+- Properties that return [`datetime.time`][]
   objects can also accept:
-  - `datetime.datetime`{.interpreted-text role="any"}: The time portion
+  - [`datetime.datetime`][]: The time portion
     will be extracted.
-  - `str`{.interpreted-text role="any"}: Will be parsed as an ISO8601
+  - [`str`][]: Will be parsed as an ISO8601
     format time string (e.g., "06:12").
 
 ## Reference
 
-::: {.autoclass}
-toga.TimeInput
-:::
+::: toga.TimeInput
 
-::: {.autoprotocol}
-toga.widgets.timeinput.OnChangeHandler
-:::
+::: toga.widgets.timeinput.OnChangeHandler

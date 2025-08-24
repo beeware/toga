@@ -1,5 +1,3 @@
 # Plugins
 
-::: {.toctree maxdepth="1"}
-image_formats
-:::
+[Image Format Plugins](image_formats.md)

@@ -1,4 +1,4 @@
-# Why Toga? {#philosophy}
+# Why Toga? { id="philosophy" }
 
 Toga isn't the world's first widget toolkit - there are dozens of other
 options. So why build a new one?
@@ -21,7 +21,7 @@ widget. After all, you're using native system capability that has been
 tuned and optimized, not a drawing engine that's been layered on top of
 a generic widget.
 
-## Abstract the broad concepts {#abstract-broad-concepts}
+## Abstract the broad concepts  { id="abstract-broad-concepts" }
 
 It's not enough to just look like a native app, though - you need to
 *feel* like a native app as well.

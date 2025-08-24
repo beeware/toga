@@ -11,6 +11,8 @@ backend
 backends
 Beancount
 BeeWare
+Beeware's
+beeware
 Bézier
 Bugfixes
 Cairo
@@ -31,6 +33,7 @@ dotfiles
 draggable
 Flatpak
 Flexbox
+fosstodon
 GBulb
 GeoClue
 geolocation
@@ -110,6 +113,7 @@ triaged
 Triaging
 tvOS
 Ubuntu
+UI
 unminimized
 unselectable
 validator

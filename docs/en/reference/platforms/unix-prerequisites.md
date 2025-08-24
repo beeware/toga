@@ -3,14 +3,14 @@ Unix; here are some of the common alternatives:
 
 **Ubuntu 24.04+ / Debian 13+**
 
-``` console
+```console
 (venv) $ sudo apt update
 (venv) $ sudo apt install git build-essential pkg-config python3-dev libgirepository-2.0-dev libcairo2-dev gir1.2-gtk-3.0 libcanberra-gtk3-module
 ```
 
 **Ubuntu 22.04 / Debian 11, 12**
 
-``` console
+```console
 (venv) $ sudo apt update
 (venv) $ sudo apt install git build-essential pkg-config python3-dev libgirepository1.0-dev libcairo2-dev gir1.2-gtk-3.0 libcanberra-gtk3-module
 ```
@@ -22,25 +22,25 @@ older Debian-based distributions.
 
 **Fedora**
 
-``` console
+```console
 (venv) $ sudo dnf install git gcc make pkg-config python3-devel gobject-introspection-devel cairo-gobject-devel gtk3 libcanberra-gtk3
 ```
 
 **Arch / Manjaro**
 
-``` console
+```console
 (venv) $ sudo pacman -Syu git base-devel pkgconf python3 gobject-introspection cairo gtk3 libcanberra
 ```
 
 **OpenSUSE Tumbleweed**
 
-``` console
+```console
 (venv) $ sudo zypper install git patterns-devel-base-devel_basis pkgconf-pkg-config python3-devel gobject-introspection-devel cairo-devel gtk3 'typelib(Gtk)=3.0' libcanberra-gtk3-module
 ```
 
 **FreeBSD**
 
-``` console
+```console
 (venv) $ sudo pkg update
 (venv) $ sudo pkg install git gcc cmake pkgconf python3 gobject-introspection cairo gtk3 libcanberra-gtk3
 ```
@@ -56,11 +56,10 @@ on Ubuntu/Debian, or `gtk4` on Fedora or Arch. For other distributions,
 consult your distributions's platform documentation.
 
 Some widgets (most notably, the
-`WebView <webview-system-requires>`{.interpreted-text role="ref"} and
-`MapView <mapview-system-requires>`{.interpreted-text role="ref"}
+[WebView][webview-system-requires] and
+[MapView][mapview-system-requires]
 widgets) have additional system requirements. Likewise, certain hardware
-features (`Location <location-system-requires>`{.interpreted-text
-role="ref"}) have system requirements.
+features ([Location][location-system-requires]) have system requirements.
 
 See the documentation of those widgets and hardware features for
 details.

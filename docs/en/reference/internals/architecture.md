@@ -11,8 +11,7 @@ three internal layers that make up every widget. They are:
 
 The interface layer is the public, documented interface for each widget.
 Following
-`Toga's design philosophy <abstract-broad-concepts>`{.interpreted-text
-role="ref"}, these widgets reflect high-level design concepts, rather
+[Toga's design philosophy][abstract-broad-concepts], these widgets reflect high-level design concepts, rather
 than specific common widgets. It forms the public API for creating apps,
 windows, widgets, and so on.
 

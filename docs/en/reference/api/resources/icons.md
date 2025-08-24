@@ -3,26 +3,21 @@
 A small, square image, used to provide easily identifiable visual
 context to a widget.
 
-::: {.rst-class}
-widget-support
-:::
+**Availability ([Key][api-status-key])**
 
-::: {.csv-filter header-rows="1" file="../../data/widgets_by_platform.csv" included_cols="4,5,6,7,8,9,10" include="{0: '^Icon$'}"}
-Availability (`Key <api-status-key>`{.interpreted-text role="ref"})
-:::
+{{ pd_read_csv("reference/data/widgets_by_platform.csv", na_filter=False, usecols=[4,5,6,7,8,9,10])[pd_read_csv("reference/data/widgets_by_platform.csv")[["ComponentName"]].isin(["Icon"]).all(axis=1)] | convert_to_md_table }}
 
 ## Usage
 
-::: {.admonition}
-Icons and Images are *not* the same!
+/// admonition | Icons and Images are *not* the same!
 
 Toga draws a distinction between an *Icon* and an *Image*. An
-`~toga.Icon`{.interpreted-text role="class"} is small, square, and might
+[`Icon`][toga.Icon] is small, square, and might
 vary between platforms. It is a visual element that is often used as
 part of an interactive element such as a button, toolbar item, or tab
 selector - but the Icon *itself* isn't an interactive element.
 
-An `~toga.Image`{.interpreted-text role="class"}, on the other hand, can
+An [`Image`][toga.Image], on the other hand, can
 have an arbitrary size or aspect ratio, and is *not* platform
 dependent - the same image will be used on *every* platform. An Image is
 *not* an interactive element, because there is no visual cue to the user
@@ -30,10 +25,12 @@ that the image *can* be interacted with.
 
 If you are looking for a widget that the user can click on, you're
 looking for a widget configured to use an Icon (probably
-`~toga.Button`{.interpreted-text role="class"}), *not* an `on_press`
-handler on an `~toga.Image`{.interpreted-text role="class"} or
-`~toga.ImageView`{.interpreted-text role="class"}.
-:::
+[`Button`][toga.Button]), *not* an `on_press`
+handler on an [`Image`][toga.Image] or
+[`ImageView`][toga.ImageView].
+
+
+///
 
 The filename specified for an icon should be specified *without* an
 extension; the platform will determine an appropriate extension, and may
@@ -82,24 +79,22 @@ created by scaling the highest resolution variant that *is* available).
 An icon is **guaranteed** to have an implementation, regardless of the
 path specified. If you specify a path and no matching icon can be found,
 Toga will output a warning to the console, and return
-`~toga.Icon.DEFAULT_ICON`{.interpreted-text role="attr"}. The only
+[`DEFAULT_ICON`][toga.Icon.DEFAULT_ICON]. The only
 exception to this is if an icon file is *found*, but it cannot be loaded
 (e.g., due to a file format or permission error). In this case, an error
 will be raised.
 
 ## Reference
-
-> When specifying an `Icon`{.interpreted-text role="any"}, you can
+TODO: Verify the below text is not meant to be in the source code:
+> When specifying an [Icon][], you can
 > provide:
 >
 > - a string specifying an absolute or relative path;
-> - an absolute or relative `pathlib.Path`{.interpreted-text role="any"}
+> - an absolute or relative [`pathlib.Path`][]
 >   object; or
-> - an instance of `toga.Icon`{.interpreted-text role="any"}.
+> - an instance of [`toga.Icon`][].
 >
 > If a relative path is provided, it will be anchored relative to the
 > module that defines your Toga application class.
 
-::: {.autoclass}
-toga.Icon
-:::
+::: toga.Icon

@@ -1,13 +1,7 @@
 # Types
 
-::: {.autonamedtuple}
-toga.LatLng
-:::
+::: toga.LatLng
 
-::: {.autonamedtuple}
-toga.Position
-:::
+::: toga.Position
 
-::: {.autonamedtuple}
-toga.Size
-:::
+::: toga.Size

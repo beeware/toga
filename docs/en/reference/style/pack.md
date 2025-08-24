@@ -23,8 +23,7 @@ form, are more liberal in what they accept, and will convert as
 necessary when assigned alternate forms. Where relevant, these are
 listed under **Accepts**.
 
-Toga has a `layout debug mode <debug-layout>`{.interpreted-text
-role="ref"} to aid in visually debugging or exploring Pack layouts.
+Toga has a [layout debug mode][debug-layout] to aid in visually debugging or exploring Pack layouts.
 
 ## Pack style properties
 
@@ -58,7 +57,7 @@ widget with a visibility of `"hidden"` will remain hidden. Any
 descendants of the hidden child will also remain hidden, regardless of
 their visibility.
 
-### `direction` {#pack-direction}
+### `direction` { id="pack-direction" }
 
 **Value:** `"row"` or `"column"`
 
@@ -110,8 +109,7 @@ make no difference to the layout.
 **Initial value:** `0`
 
 The amount of space to allocate between adjacent children, in
-`CSS pixels
-<css-units>`{.interpreted-text role="ref"}.
+[CSS pixels][css-units].
 
 ### `width`
 
@@ -120,7 +118,7 @@ The amount of space to allocate between adjacent children, in
 **Initial value:** `"none"`
 
 Specify a fixed width for the box, in
-`CSS pixels <css-units>`{.interpreted-text role="ref"}.
+[CSS pixels][css-units].
 
 The final width for the box may be larger, if the children of the box
 cannot fit inside the specified space.
@@ -132,7 +130,7 @@ cannot fit inside the specified space.
 **Initial value:** `"none"`
 
 Specify a fixed height for the box, in
-`CSS pixels <css-units>`{.interpreted-text role="ref"}.
+[CSS pixels][css-units].
 
 The final height for the box may be larger, if the children of the box
 cannot fit inside the specified space.
@@ -163,8 +161,7 @@ space in the direction of the parent's layout.
 **Initial value:** `0`
 
 The amount of space to allocate outside the edge of the box, in
-`CSS pixels
-<css-units>`{.interpreted-text role="ref"}.
+[CSS pixels][css-units].
 
 ### `margin`
 
@@ -229,7 +226,7 @@ Defines the alignment of text in the object being rendered.
 
 Defines the natural direction of horizontal content.
 
-### `font_family` {#pack-font-family}
+### `font_family` { id="pack-font-family" }
 
 **Value**: a list of strings
 
@@ -252,14 +249,14 @@ description (e.g. Times New Roman for `"serif"`, Courier New for
 `"monospace"`).
 
 Any other value will be checked against the family names previously
-registered with `Font.register`{.interpreted-text role="any"}.
+registered with [Font.register][].
 
 On supported platforms (currently Windows and Linux), if Toga doesn't
 recognize the family as one of its predefined builtins or as a font
 you've registered, it will attempt to load the requested font from your
 system before falling back to the default system font.
 
-### `font_style` {#pack-font-style}
+### `font_style` { id="pack-font-style" }
 
 **Value:** `"normal"`, `"italic"`, or `"oblique"`
 
@@ -270,7 +267,7 @@ The style of the font to be used.
 **Note:** Windows and Android do not support the oblique font style. A
 request for an `"oblique"` font will be interpreted as `"italic"`.
 
-### `font_variant` {#pack-font-variant}
+### `font_variant` { id="pack-font-variant" }
 
 **Value:** `"normal"` or `"small_caps"`
 
@@ -281,7 +278,7 @@ The variant of the font to be used.
 **Note:** Windows and Android do not support the small caps variant. A
 request for a `"small_caps"` font will be interpreted as `"normal"`.
 
-### `font_weight` {#pack-font-weight}
+### `font_weight` { id="pack-font-weight" }
 
 **Value:** `"normal"` or `"bold"`
 
@@ -289,7 +286,7 @@ request for a `"small_caps"` font will be interpreted as `"normal"`.
 
 The weight of the font to be used.
 
-### `font_size` {#pack-font-size}
+### `font_size` { id="pack-font-size" }
 
 **Value:** an integer
 
@@ -297,7 +294,7 @@ The weight of the font to be used.
 stored as a constant named `SYSTEM_DEFAULT_FONT_SIZE`.
 
 The size of the font to be used, in
-`CSS points <css-units>`{.interpreted-text role="ref"}.
+[CSS points][css-units].
 
 ### `font`
 
@@ -331,7 +328,7 @@ is:
   mode](https://developer.mozilla.org/en-US/docs/Web/HTML/Quirks_Mode_and_Standards_Mode),
   with a default CSS stylesheet:
 
-  ``` html
+  ```html
   <!DOCTYPE html>
   <html>
      <head>

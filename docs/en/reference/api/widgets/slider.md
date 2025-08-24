@@ -3,67 +3,89 @@
 A widget for selecting a value within a range. The range is shown as a
 horizontal line, and the selected value is shown as a draggable marker.
 
-:::::::::: {.tabs}
-::: {.group-tab}
-macOS
+/// tab | macOS
 
-<figure class="align-center">
-<img src="/reference/images/slider-cocoa.png" width="300"
-alt="/reference/images/slider-cocoa.png" />
-</figure>
-:::
+![/reference/images/slider-cocoa.png](/reference/images/slider-cocoa.png){ width="300" }
 
-::: {.group-tab}
-Linux
+/// caption
 
-<figure class="align-center">
-<img src="/reference/images/slider-gtk.png" width="300"
-alt="/reference/images/slider-gtk.png" />
-</figure>
-:::
+///
 
-::: {.group-tab}
-Windows
 
-<figure class="align-center">
-<img src="/reference/images/slider-winforms.png" width="300"
-alt="/reference/images/slider-winforms.png" />
-</figure>
-:::
+<!-- TODO: Update alt text -->
 
-::: {.group-tab}
-Android
+///
 
-<figure class="align-center">
-<img src="/reference/images/slider-android.png" width="300"
-alt="/reference/images/slider-android.png" />
-</figure>
-:::
+/// tab | Linux
 
-::: {.group-tab}
-iOS
+![/reference/images/slider-gtk.png](/reference/images/slider-gtk.png){ width="300" }
 
-<figure class="align-center">
-<img src="/reference/images/slider-iOS.png" width="300"
-alt="/reference/images/slider-iOS.png" />
-</figure>
-:::
+/// caption
 
-::: {.group-tab}
-Web
+///
 
-<figure class="align-center">
-<img src="/reference/images/slider-web.png" width="300"
-alt="/reference/images/slider-web.png" />
-</figure>
-:::
 
-::: {.group-tab}
-Textual [\|no\|](##SUBST##|no|)
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Windows
+
+![/reference/images/slider-winforms.png](/reference/images/slider-winforms.png){ width="300" }
+
+/// caption
+
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Android
+
+![/reference/images/slider-android.png](/reference/images/slider-android.png){ width="300" }
+
+/// caption
+
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | iOS
+
+![/reference/images/slider-iOS.png](/reference/images/slider-iOS.png){ width="300" }
+
+/// caption
+
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Web
+
+![/reference/images/slider-web.png](/reference/images/slider-web.png){ width="300" }
+
+/// caption
+
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Textual {{ not_supported }}
 
 Not supported
-:::
-::::::::::
+
+///
 
 ## Usage
 
@@ -71,7 +93,7 @@ A slider can either be continuous (allowing any value within the range),
 or discrete (allowing a fixed number of equally-spaced values). For
 example:
 
-``` python
+```python
 import toga
 
 def my_callback(slider):
@@ -86,18 +108,10 @@ toga.Slider(min=0, max=7.5, tick_count=6)
 
 ## Reference
 
-::: {.autoclass}
-toga.Slider
-:::
+::: toga.Slider
 
-::: {.autoprotocol}
-toga.widgets.slider.OnChangeHandler
-:::
+::: toga.widgets.slider.OnChangeHandler
 
-::: {.autoprotocol}
-toga.widgets.slider.OnPressHandler
-:::
+::: toga.widgets.slider.OnPressHandler
 
-::: {.autoprotocol}
-toga.widgets.slider.OnReleaseHandler
-:::
+::: toga.widgets.slider.OnReleaseHandler

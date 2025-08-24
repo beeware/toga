@@ -2,13 +2,9 @@
 
 The top-level representation of an application.
 
-::: {.rst-class}
-widget-support
-:::
+**Availability ([Key][api-status-key])**
 
-::: {.csv-filter header-rows="1" file="../data/widgets_by_platform.csv" included_cols="4,5,6,7,8,9,10" include="{0: '^Application$'}"}
-Availability (`Key <api-status-key>`{.interpreted-text role="ref"})
-:::
+{{ pd_read_csv("../data/widgets_by_platform.csv", na_filter=False, usecols=[4,5,6,7,8,9,10])[pd_read_csv("../data/widgets_by_platform.csv")[["ComponentName"]].isin(["Application"]).all(axis=1)] | convert_to_md_table }}
 
 ## Usage
 
@@ -16,14 +12,14 @@ The App class is the top level representation of all application
 activity. It is a singleton object - any given process can only have a
 single App. That application may manage multiple windows, but it will
 generally have at least one window (called the
-`~toga.App.main_window`{.interpreted-text role="attr"}).
+[`main_window`][toga.App.main_window]).
 
 The application is started by calling
-`~toga.App.main_loop()`{.interpreted-text role="meth"}. This will invoke
-the `~toga.App.startup()`{.interpreted-text role="meth"} method of the
+[`main_loop()`][toga.App.main_loop]. This will invoke
+the [`startup()`][toga.App.startup] method of the
 app.
 
-``` python
+```python
 import toga
 
 app = toga.App("Simplest App", "com.example.simplest")
@@ -31,11 +27,11 @@ app.main_loop()
 ```
 
 You can populate an app's main window by passing a callable as the
-`startup` argument to the `toga.App`{.interpreted-text role="class"}
+`startup` argument to the [`toga.App`][]
 constructor. This `startup` method must return the content that will be
 added to the main window of the app.
 
-``` python
+```python
 import toga
 
 def create_content(app):
@@ -46,23 +42,20 @@ app.main_loop()
 ```
 
 This approach to app construction is most useful with simple apps. For
-most complex apps, you should subclass `toga.App`{.interpreted-text
-role="class"}, and provide an implementation of
-`~toga.App.startup()`{.interpreted-text role="meth"}. This
+most complex apps, you should subclass [`toga.App`][], and provide an implementation of
+[`startup()`][toga.App.startup]. This
 implementation *must* assign a value to
-`~toga.App.main_window`{.interpreted-text role="attr"} for the app. The
-possible values are `discussed
-below <assigning-main-window>`{.interpreted-text role="ref"}; most apps
-will assign an instance of `toga.MainWindow`{.interpreted-text
-role="any"}:
+[`main_window`][toga.App.main_window] for the app. The
+possible values are [discussed below][assigning-main-window]; most apps
+will assign an instance of [`toga.MainWindow`][]:
 
-``` python
+```python
 import toga
 
 class MyApp(toga.App):
     def startup(self):
         self.main_window = toga.MainWindow()
-        self.main_window.content = toga.Box(children=[toga.Label("Hello!")])
+        self.main_window.content = toga.Box(children=[`toga.Label("Hello!")])
         self.main_window.show()
 
 if __name__ == '__main__':
@@ -75,36 +68,34 @@ Every app must have a formal name (a human readable name), and an app ID
 examples above, these are provided as constructor arguments. However,
 you can also provide these details, along with many of the other
 constructor arguments, as packaging metadata in a format compatible with
-`importlib.metadata`{.interpreted-text role="any"}. If you deploy your
-app with [Briefcase](https://briefcase.readthedocs.io/en/stable), this
+[`importlib.metadata`][]. If you deploy your
+app with [`Briefcase](https://briefcase.readthedocs.io/en/stable), this
 will be done automatically.
 
 A Toga app will install a number of default commands to reflect core
 application functionality (such as the Quit/Exit menu item, and the
 About menu item). The IDs for these commands are defined as constants on
-the `~toga.Command`{.interpreted-text role="class"} class. These
+the [`Command`][toga.Command] class. These
 commands are automatically installed *before*
-`~toga.App.startup()`{.interpreted-text role="meth"} is invoked. If you
+[`startup()`][toga.App.startup] is invoked. If you
 wish to customize the menu items exposed by your app, you can add or
-remove commands in your `~toga.App.startup()`{.interpreted-text
-role="meth"} implementation.
+remove commands in your [`startup()`][toga.App.startup] implementation.
 
-## Assigning a main window {#assigning-main-window}
+## Assigning a main window  { id="assigning-main-window" }
 
 An app *must* assign `main_window` as part of the startup process.
 However, the value that is assigned as the main window will affect the
 behavior of the app.
 
-### `~toga.Window`{.interpreted-text role="class"} {#toga.window}
+### `toga.Window`
 
-Most apps will assign an instance of `toga.Window`{.interpreted-text
-role="class"} (or a subclass, such as
-`toga.MainWindow`{.interpreted-text role="class"}) as the main window.
+Most apps will assign an instance of [`toga.Window`][] (or a subclass, such as
+[`toga.MainWindow`][]) as the main window.
 This window will control the life cycle of the app. When the window
 assigned as the main window is closed, the app will exit.
 
 If you create an `App` by passing a `startup` argument to the
-constructor, a `~toga.MainWindow`{.interpreted-text role="class"} will
+constructor, a [`MainWindow`][toga.MainWindow] will
 be automatically created and assigned to `main_window`.
 
 ### `None`
@@ -112,7 +103,7 @@ be automatically created and assigned to `main_window`.
 If your app doesn't have a single "main" window, but instead has
 multiple windows that are equally important (e.g., a document editor, or
 a web browser), you can assign a value of `None` to
-`~toga.App.main_window`{.interpreted-text role="attr"}. The resulting
+[`main_window`][toga.App.main_window]. The resulting
 behavior is slightly different on each platform, reflecting platform
 differences.
 
@@ -125,16 +116,14 @@ representation for the document will be given focus.
 
 On Linux and Windows, when an app closes the last window it is managing,
 the app will automatically exit. Attempting to close the last window
-will trigger any app-level `~toga.App.on_exit`{.interpreted-text
-role="meth"} handling in addition to any window-specific
-`~toga.Window.on_close`{.interpreted-text role="meth"} handling.
+will trigger any app-level [`on_exit()`][toga.App.on_exit] handling in addition to any window-specific
+[`on_close()`][toga.Window.on_close] handling.
 
 Mobile, web and console platforms *must* define a main window.
 
-### `~toga.App.BACKGROUND`{.interpreted-text role="attr"} {#toga.app.background}
+### `toga.App.BACKGROUND`
 
-Assigning a value of `toga.App.BACKGROUND`{.interpreted-text
-role="attr"} as the main window will allow your app to persist even if
+Assigning a value of [`toga.App.BACKGROUND`][] as the main window will allow your app to persist even if
 it doesn't have any open windows. It will also hide any app-level icon
 from your taskbar.
 
@@ -146,25 +135,25 @@ Regardless of what an application does, every application goes through
 the same life cycle of starting, running, and shutting down.
 
 Application startup is handled by the
-`~toga.App.startup`{.interpreted-text role="meth"} method described
-above. `~toga.App.startup`{.interpreted-text role="meth"} *cannot* be an
+[`startup()`][toga.App.startup] method described
+above. [`startup()`][toga.App.startup] *cannot* be an
 asynchronous method, as it runs *before* the App's event loop is
 started.
 
 All other events in the life cycle of the app can be managed with event
-handlers. `toga.App`{.interpreted-text role="class"} defines the
+handlers. [`toga.App`][] defines the
 following event handlers:
 
-- `~toga.App.on_running`{.interpreted-text role="meth"} occurs as soon
+- [`on_running()`][toga.App.on_running] occurs as soon
   as the app's event loop has started.
-- `~toga.App.on_exit`{.interpreted-text role="meth"} occurs when the
+- [`on_exit()`][toga.App.on_exit] occurs when the
   user tries to exit. The handler for this event must return a Boolean
   value: `True` if the app is allowed to exit; `False` otherwise. This
   allows an app to abort the exit process (for example, to prevent exit
   if there are unsaved changes).
 
 Event handlers can be defined by subclassing
-`toga.App`{.interpreted-text role="class"} and overriding the event
+[`toga.App`][] and overriding the event
 handler method, by assigning a value to the event handler when the app
 instance is constructed, or by assigning the event handler attribute on
 an existing app instance. When the event handler is set by assigning a
@@ -180,12 +169,11 @@ that your app is able to manage by providing a value for
 `document_types`. When an app declares that it can manage document
 types, the app will automatically create file management menu items
 (such as New, Open and Save), and the app will process command line
-arguments, creating a `toga.Document`{.interpreted-text role="class"}
+arguments, creating a [`toga.Document`][]
 instance for each argument matching a registered document type.
 
-For details on how to define and register document types, refer to `the
-documentation on document handling <./resources/document>`{.interpreted-text
-role="doc"}.
+For details on how to define and register document types, refer to
+[the documentation on document handling](resources/document.md).
 
 ## Notes
 
@@ -199,27 +187,17 @@ role="doc"}.
   as a result, some API requests will be ignored under a Wayland
   environment. Correctly displaying the app's formal name requires the
   use of a desktop metadata that Wayland can read. Packaging your app
-  with [Briefcase](https://briefcase.readthedocs.io/en/stable) is one
+  with [Briefcase](https://briefcase.beeware.org/en/stable) is one
   way to produce this metadata.
 
 ## Reference
 
-::: {.autoclass}
-toga.App
-:::
+::: toga.App
 
-::: {.autoprotocol}
-toga.app.AppStartupMethod
-:::
+::: toga.app.AppStartupMethod
 
-::: {.autoprotocol}
-toga.app.BackgroundTask
-:::
+::: toga.app.BackgroundTask
 
-::: {.autoprotocol}
-toga.app.OnRunningHandler
-:::
+::: toga.app.OnRunningHandler
 
-::: {.autoprotocol}
-toga.app.OnExitHandler
-:::
+::: toga.app.OnExitHandler

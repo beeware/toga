@@ -2,87 +2,99 @@
 
 A text input that is limited to numeric input.
 
-:::::::::: {.tabs}
-::: {.group-tab}
-macOS
+/// tab | macOS
 
-<figure class="align-center">
-<img src="/reference/images/numberinput-cocoa.png" width="300"
-alt="/reference/images/numberinput-cocoa.png" />
-</figure>
-:::
+![`/reference/images/numberinput-cocoa.png](/reference/images/numberinput-cocoa.png){ width="300" }
 
-::: {.group-tab}
-Linux
+/// caption
 
-<figure class="align-center">
-<img src="/reference/images/numberinput-gtk.png" width="300"
-alt="/reference/images/numberinput-gtk.png" />
-</figure>
-:::
+///
 
-::: {.group-tab}
-Windows
 
-<figure class="align-center">
-<img src="/reference/images/numberinput-winforms.png" width="300"
-alt="/reference/images/numberinput-winforms.png" />
-</figure>
-:::
+<!-- TODO: Update alt text -->
 
-::: {.group-tab}
-Android
+///
 
-<figure class="align-center">
-<img src="/reference/images/numberinput-android.png" width="300"
-alt="/reference/images/numberinput-android.png" />
-</figure>
-:::
+/// tab | Linux
 
-::: {.group-tab}
-iOS
+![/reference/images/numberinput-gtk.png](/reference/images/numberinput-gtk.png){ width="300" }
 
-<figure class="align-center">
-<img src="/reference/images/numberinput-iOS.png" width="300"
-alt="/reference/images/numberinput-iOS.png" />
-</figure>
-:::
+/// caption
 
-::: {.group-tab}
-Web [\|no\|](##SUBST##|no|)
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Windows
+
+![/reference/images/numberinput-winforms.png](/reference/images/numberinput-winforms.png){ width="300" }
+
+/// caption
+
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Android
+
+![/reference/images/numberinput-android.png](/reference/images/numberinput-android.png){ width="300" }
+
+/// caption
+
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | iOS
+
+![/reference/images/numberinput-iOS.png](/reference/images/numberinput-iOS.png){ width="300" }
+
+/// caption
+
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Web {{ not_supported }}
 
 Not supported
-:::
 
-::: {.group-tab}
-Textual [\|no\|](##SUBST##|no|)
+///
+
+/// tab | Textual {{ not_supported }}
 
 Not supported
-:::
-::::::::::
+
+///
 
 ## Usage
 
-``` python
+```python
 import toga
 
 widget = toga.NumberInput(min=1, max=10, step=0.001)
 widget.value = 2.718
 ```
 
-NumberInput's properties can accept `~decimal.Decimal`{.interpreted-text
-role="class"}, `int`{.interpreted-text role="any"},
-`float`{.interpreted-text role="any"}, or `str`{.interpreted-text
-role="any"} containing numbers, but they always return
-`~decimal.Decimal`{.interpreted-text role="class"} objects to ensure
+NumberInput's properties can accept [`Decimal`][decimal], [`int`][],
+[`float`][], or [`str`][] containing numbers, but they always return
+[`Decimal`][decimal] objects to ensure
 precision is retained.
 
 ## Reference
 
-::: {.autoclass}
-toga.NumberInput
-:::
+::: toga.NumberInput
 
-::: {.autoprotocol}
-toga.widgets.numberinput.OnChangeHandler
-:::
+::: toga.widgets.numberinput.OnChangeHandler

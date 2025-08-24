@@ -11,9 +11,9 @@ primitive web browser, in less than 40 lines of code!
 
 Here's the source code:
 
-::: {.literalinclude language="python"}
-/../examples/tutorial3/tutorial/app.py
-:::
+```python
+-8<- "tutorial3/tutorial/app.py"
+```
 
 In this example, you can see an application being developed as a class,
 rather than as a build method. You can also see boxes defined in a

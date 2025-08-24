@@ -3,20 +3,15 @@
 The abstract base class of all widgets. This class should not be be
 instantiated directly.
 
-::: {.rst-class}
-widget-support
-:::
+**Availability ([Key][api-status-key])**
 
-::: {.csv-filter header-rows="1" file="../../data/widgets_by_platform.csv" included_cols="4,5,6,7,8,9,10" include="{0: '^Widget$'}"}
-Availability (`Key <api-status-key>`{.interpreted-text role="ref"})
-:::
+{{ pd_read_csv("reference/data/widgets_by_platform.csv", na_filter=False, usecols=[4,5,6,7,8,9,10])[pd_read_csv("reference/data/widgets_by_platform.csv")[["ComponentName"]].isin(["Widget"]).all(axis=1)] | convert_to_md_table }}
 
 ## Reference
 
-::: {.autoclass inherited-members="object, PackMixin"}
-toga.Widget
-:::
-
-::: {.autoclass no-members=""}
-toga.widgets.base.PackMixin
-:::
+::: toga.Widget
+<!--
+    options:
+        members:
+            TODO: Do I need to add inherited members list including "object, PackMixin"?
+-->

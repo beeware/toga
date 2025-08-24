@@ -2,18 +2,14 @@
 
 A sensor that can capture the geographical location of the device.
 
-::: {.rst-class}
-widget-support
-:::
+**Availability ([Key][api-status-key])**
 
-::: {.csv-filter header-rows="1" file="../../data/widgets_by_platform.csv" included_cols="4,5,6,7,8,9,10" include="{0: '^Location$'}"}
-Availability (`Key <api-status-key>`{.interpreted-text role="ref"})
-:::
+{{ pd_read_csv("../../data/widgets_by_platform.csv", na_filter=False, usecols=[4,5,6,7,8,9,10])[pd_read_csv("../../data/widgets_by_platform.csv")[["ComponentName"]].isin(["Location"]).all(axis=1)] | convert_to_md_table }}
 
 ## Usage
 
 The location services of a device can be accessed using the
-`toga.App.location`{.interpreted-text role="attr"} attribute. This
+[`toga.App.location`][] attribute. This
 attribute exposes an API that allows you to check if you have have
 permission to access location services; if permission exists, you can
 capture the current location of the device, and/or set a handler to be
@@ -24,7 +20,7 @@ long-running behavior (such as requesting permissions and requesting a
 location) must be `await`-ed, rather than being invoked directly. This
 means they must be invoked from inside an asynchronous handler:
 
-``` python
+```python
 import toga
 
 class MyApp(toga.App):
@@ -36,30 +32,29 @@ class MyApp(toga.App):
 All platforms require some form of permission to access the location
 service. To confirm if you have permission to use the location service
 while the app is running, you can call
-`Location.has_permission`{.interpreted-text role="any"}; you can request
-permission using `Location.request_permission()`{.interpreted-text
-role="any"}.
+[Location.has_permission][]; you can request
+permission using [Location.request_permission][].
 
 If you wish to track the location of the user while the app is in the
 background, you must make a separate request for background location
 permissions using
-`Location.request_background_permission()`{.interpreted-text role="any"}
+[Location.request_background_permission][]
 . This request must be made *after* foreground permissions have been
 requested and confirmed. To confirm if you have permission to use
 location while the app is in the background, you can call
-`Location.has_background_permission`{.interpreted-text role="any"}.
+[Location.has_background_permission][].
 
 Toga will confirm whether the app has been granted permission to use
 Location services before invoking any location API. If permission has
 not yet been granted, or if permission has been denied by the user, a
-`PermissionError`{.interpreted-text role="any"} will be raised.
+[`PermissionError`][] will be raised.
 
 To continuously track location, add an `on_change` handler to the
 location service, then call
-`Location.start_tracking()`{.interpreted-text role="any"}. The handler
+[Location.start_tracking][]. The handler
 will be invoked whenever a new location is obtained:
 
-``` python
+```python
 class MyApp(toga.App):
     ...
     async def location_update(self, location, altitude, **kwargs):
@@ -77,9 +72,9 @@ class MyApp(toga.App):
 ```
 
 If you no longer wish to receive location updates, call
-`Location.stop_tracking()`{.interpreted-text role="any"}.
+[Location.stop_tracking][].
 
-## System requirements {#location-system-requires}
+## System requirements  { id="location-system-requires" }
 
 - Using location services on Linux requires that the user has installed
   the system packages for GeoClue2, plus the GObject Introspection
@@ -142,10 +137,6 @@ If you no longer wish to receive location updates, call
 
 ## Reference
 
-::: {.autoclass}
-toga.hardware.location.Location
-:::
+::: toga.hardware.location.Location
 
-::: {.autoprotocol}
-toga.hardware.location.OnLocationChangeHandler
-:::
+::: toga.hardware.location.OnLocationChangeHandler

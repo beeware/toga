@@ -1,10 +1,23 @@
 - [Tutorials](tutorial/index.md)
     - ./tutorial/*
 - [How-to Guides](how-to/index.md)
-    - ./how-to/*
+    - [Contributing to Toga](how-to/contribute/index.md)
+        - ./how-to/contribute/*
+    - [Internal How-to guides](how-to/internal/index.md)
+        - ./how-to/internal/*
 - [Topic guides](topics/index.md)
     - ./topics/*
 - [Reference](reference/index.md)
-    - ./reference/*
+    - [API Reference](reference/api/index.md)
+        - ./reference/api/*
+    - [Supported Platforms](reference/platforms/index.md)
+        - ./reference/platforms/*
+    - [Toga APIs by platform](reference/widgets_by_platform.md)
+    - [Style](reference/style/index.md)
+        - ./reference/style/*
+    - [Plugins](reference/plugins/index.md)
+        - ./reference/plugins/*
+    - [Toga's internals](reference/internals/index.md)
+        - ./reference/internals/*
 - [About Toga](about/index.md)
     - ./about/*

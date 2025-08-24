@@ -2,21 +2,20 @@
 
 ## Desktop
 
-::: {.toctree maxdepth="1"}
-macOS windows linux
-:::
+* [macOS](./macOS.md)
+* [Windows](./windows.md)
+* [Linux](./linux.md)
 
 ## Mobile
 
-::: {.toctree maxdepth="1"}
-android iOS
-:::
+* [Android](./android.md)
+* [iOS](./iOS.md)
 
 ## Other
 
-::: {.toctree maxdepth="1"}
-web terminal testing
-:::
+* [Web](./web.md)
+* [Terminal](./terminal.md)
+* [Testing](./testing.md)
 
 ## Future Plans
 

@@ -108,6 +108,7 @@ type = [
 # We're not doing anything Python-related at the root level of the repo, but if this
 # declaration isn't here, tox commands run from the root directory raise a warning that
 # pyproject.toml doesn't contain a setuptools_scm section.
+
 [dependency-groups]
 # Extras used by developers *of* Toga are pinned to specific versions to
 # ensure environment consistency.
@@ -119,6 +120,14 @@ town-crier = [
     "towncrier==24.8.0",
 ]
 
+tox-uv = [
+    "tox-uv == 1.28.0",
+]
+
+setuptools-scm = [
+    "setuptools-scm==9.2.0",
+]
+
 dev = [
     "coverage[toml] == 7.10.4",
     "coverage-conditional-plugin == 0.9.0",
@@ -127,9 +136,9 @@ dev = [
     "pytest-asyncio == 1.1.0",
     "pytest-freezer == 0.4.9",
     "pytest-xdist == 3.8.0",
-    "setuptools-scm == 8.3.1",
-    "tox-uv == 1.28.0",
     {include-group = "pre-commit"},
+    {include-group = "tox-uv"},
+    {include-group = "setuptools-scm"},
 ]
 # Docs are always built on a specific Python version; see RTD and tox config files,
 # and the docs contribution guide.
@@ -151,6 +160,6 @@ docs = [
     "pyspelling==2.10",
     "python-Levenshtein==0.27.1",
     "PyYAML==6.0.2",
-    "setuptools-scm==9.2.0",
     "translate-toolkit @ git+https://github.com/translate/translate@aa35159f03f53aa536381643dfafbc2a19a24784",
+    {include-group = "setuptools-scm"},
 ]

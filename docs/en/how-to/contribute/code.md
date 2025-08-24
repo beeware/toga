@@ -1,4 +1,4 @@
-# Contributing code to Toga {#contribute}
+# Contributing code to Toga  { id="contribute" }
 
 If you experience problems with Toga, [log them on
 GitHub](https://github.com/beeware/toga/issues). If you want to
@@ -6,43 +6,36 @@ contribute code, please [fork the
 code](https://github.com/beeware/toga/fork) and [submit a pull
 request](https://github.com/beeware/toga/pulls).
 
-## Prerequisites {#dev-environment-prereqs}
+## Prerequisites  { id="dev-environment-prereqs" }
 
 You'll need to install the following prerequisites.
 
-:::::: {.tabs}
-::: {.group-tab}
-macOS
+/// tab | macOS
 
-View the `macOS prerequisites <macos-prerequisites>`{.interpreted-text
-role="ref"}.
-:::
+View the [macOS prerequisites][macos-prerequisites].
 
-::: {.group-tab}
-Linux
+///
 
-View the `Linux prerequisites <linux-prerequisites>`{.interpreted-text
-role="ref"}.
-:::
+/// tab | Linux
 
-::: {.group-tab}
-Windows
+View the [Linux prerequisites][linux-prerequisites].
+
+///
+
+/// tab | Windows
 
 View the
-`Windows prerequisites <windows-prerequisites>`{.interpreted-text
-role="ref"}.
-:::
-::::::
+[Windows prerequisites][windows-prerequisites].
 
-## `tl;dr`{.interpreted-text role="spelling:ignore"} - Dev Quick-Setup {#dev-environment-tldr}
+///
+
+## `tl;dr` - Dev Quick-Setup { id="dev-environment-tldr" }
 
 Set up the dev environment by running:
 
-:::::: {.tabs}
-::: {.group-tab}
-macOS
+/// tab | macOS
 
-``` console
+```console
 $ git clone https://github.com/beeware/toga.git
 $ cd toga
 $ python3 -m venv .venv
@@ -50,12 +43,12 @@ $ . .venv/bin/activate
 (.venv) $ python -m pip install -e "./core[dev]" -e ./dummy -e ./cocoa -e ./travertino
 (.venv) $ pre-commit install
 ```
-:::
 
-::: {.group-tab}
-Linux
+///
 
-``` console
+/// tab | Linux
+
+```console
 $ git clone https://github.com/beeware/toga.git
 $ cd toga
 $ python3 -m venv .venv
@@ -63,12 +56,12 @@ $ . .venv/bin/activate
 (.venv) $ python -m pip install -e "./core[dev]" -e ./dummy -e ./gtk -e ./travertino
 (.venv) $ pre-commit install
 ```
-:::
 
-::: {.group-tab}
-Windows
+///
 
-``` doscon
+/// tab | Windows
+
+```doscon
 C:\...>git clone https://github.com/beeware/toga.git
 C:\...>cd toga
 C:\...>py -m venv .venv
@@ -76,38 +69,36 @@ C:\...>.venv\Scripts\activate
 (.venv) C:\...>python -m  pip install -e "./core[dev]" -e ./dummy -e ./winforms -e ./travertino
 (.venv) C:\...>pre-commit install
 ```
-:::
-::::::
+
+///
 
 Invoke checks and tests by running:
 
-:::::: {.tabs}
-::: {.group-tab}
-macOS
+/// tab | macOS
 
-``` console
+```console
 (.venv) $ tox
 ```
-:::
 
-::: {.group-tab}
-Linux
+///
 
-``` console
+/// tab | Linux
+
+```console
 (.venv) $ tox
 ```
-:::
 
-::: {.group-tab}
-Windows
+///
 
-``` doscon
+/// tab | Windows
+
+```doscon
 (.venv) C:\...>tox
 ```
-:::
-::::::
 
-## Set up your development environment {#setup-dev-environment}
+///
+
+## Set up your development environment  { id="setup-dev-environment" }
 
 The recommended way of setting up your development environment for Toga
 is to use a [virtual
@@ -116,34 +107,32 @@ install the development version of Toga and its dependencies.
 
 First, ensure that you have Python 3 and pip installed. To do this, run:
 
-:::::: {.tabs}
-::: {.group-tab}
-macOS
+/// tab | macOS
 
-``` console
+```console
 $ python --version
 $ python -m pip --version
 ```
-:::
 
-::: {.group-tab}
-Linux
+///
 
-``` console
+/// tab | Linux
+
+```console
 $ python --version
 $ python -m pip --version
 ```
-:::
 
-::: {.group-tab}
-Windows
+///
 
-``` doscon
+/// tab | Windows
+
+```doscon
 C:\...>python --version
 C:\...>python -m pip --version
 ```
-:::
-::::::
+
+///
 
 ### Clone the Toga repository
 
@@ -155,79 +144,75 @@ GitHub desktop application installed on your computer, you can select
 "Open with GitHub Desktop"; otherwise, copy the HTTPS URL provided, and
 use it to clone the repository to your computer using the command line:
 
-:::::: {.tabs}
-::: {.group-tab}
-macOS
+/// tab | macOS
 
 Fork the Toga repository, and then:
 
-``` console
+```console
 $ git clone https://github.com/<your username>/toga.git
 ```
 
 (substituting your GitHub username)
-:::
 
-::: {.group-tab}
-Linux
+///
+
+/// tab | Linux
 
 Fork the Toga repository, and then:
 
-``` console
+```console
 $ git clone https://github.com/<your username>/toga.git
 ```
 
 (substituting your GitHub username)
-:::
 
-::: {.group-tab}
-Windows
+///
+
+/// tab | Windows
 
 Fork the Toga repository, and then:
 
-``` doscon
+```doscon
 C:\...>git clone https://github.com/<your username>/toga.git
 ```
 
 (substituting your GitHub username)
-:::
-::::::
+
+///
 
 ### Create a virtual environment
 
 To set up a virtual environment, run:
 
-:::::: {.tabs}
-::: {.group-tab}
-macOS
+/// tab | macOS
 
-``` console
+```console
 $ cd toga
 $ python3 -m venv .venv
 $ source .venv/bin/activate
 ```
-:::
 
-::: {.group-tab}
-Linux
+///
 
-``` console
+/// tab | Linux
+
+```console
 $ cd toga
 $ python3 -m venv .venv
 $ source .venv/bin/activate
 ```
-:::
 
-::: {.group-tab}
-Windows
+///
 
-``` doscon
+/// tab | Windows
+
+```doscon
 C:\...>cd toga
 C:\...>python -m venv .venv
 C:\...>.venv\Scripts\activate
 ```
-:::
-::::::
+
+///
 
 Your prompt should now have a `(.venv)` prefix in front of it.
 
@@ -240,31 +225,29 @@ contains multiple packages. Since we're installing from source, we can't
 rely on pip to resolve the dependencies to source packages, so we have
 to manually install each package:
 
-:::::: {.tabs}
-::: {.group-tab}
-macOS
+/// tab | macOS
 
-``` console
+```console
 (.venv) $ python -m pip install -e "./core[dev]" -e ./dummy -e ./cocoa -e ./travertino
 ```
-:::
 
-::: {.group-tab}
-Linux
+///
 
-``` console
+/// tab | Linux
+
+```console
 (.venv) $ python -m pip install -e ./core[dev] -e ./dummy -e ./gtk -e ./travertino
 ```
-:::
 
-::: {.group-tab}
-Windows
+///
 
-``` doscon
+/// tab | Windows
+
+```doscon
 (.venv) C:\...>python -m pip install -e ./core[dev] -e ./dummy -e ./winforms -e ./travertino
 ```
-:::
-::::::
+
+///
 
 ### Enable pre-commit
 
@@ -273,34 +256,32 @@ simple issues and standardize code formatting. It does this by
 installing a git hook that automatically runs a series of code linters
 prior to finalizing any git commit. To enable pre-commit, run:
 
-:::::: {.tabs}
-::: {.group-tab}
-macOS
+/// tab | macOS
 
-``` console
+```console
 (.venv) $ pre-commit install
 pre-commit installed at .git/hooks/pre-commit
 ```
-:::
 
-::: {.group-tab}
-Linux
+///
 
-``` console
+/// tab | Linux
+
+```console
 (.venv) $ pre-commit install
 pre-commit installed at .git/hooks/pre-commit
 ```
-:::
 
-::: {.group-tab}
-Windows
+///
 
-``` doscon
+/// tab | Windows
+
+```doscon
 (.venv) C:\...>pre-commit install
 pre-commit installed at .git/hooks/pre-commit
 ```
-:::
-::::::
+
+///
 
 Now you are ready to start hacking on Toga!
 
@@ -358,9 +339,8 @@ UIKit](https://developer.apple.com/documentation/uikit?language=objc),
 what isn't behaving as expected.
 
 If you're able to fix the problem, you'll need to add tests for
-`the core
-API <run-core-test-suite>`{.interpreted-text role="ref"} and/or
-`the testbed backend <run-testbed>`{.interpreted-text role="ref"},
+[the core API][run-core-test-suite] and/or
+[the testbed backend][run-testbed],
 depending on whether the fix was in the core API or to the backend (or
 both), to verify that the problem has been fixed (and to prevent the
 issue from occurring again in future).
@@ -374,8 +354,7 @@ problem) can be a huge help.
 
 ### Contribute improvements to documentation
 
-We've got a `separate contribution guide <./docs>`{.interpreted-text
-role="doc"} for documentation contributions. This covers how to set up
+We've got a [separate contribution guide](./docs) for documentation contributions. This covers how to set up
 your development environment to build Toga's documentation, and separate
 ideas for what to work on.
 
@@ -383,9 +362,8 @@ ideas for what to work on.
 
 If the core library already specifies an interface for a widget, but the
 widget isn't implemented on your platform of choice, implement that
-interface. The `supported
-widgets by platform </reference/widgets_by_platform>`{.interpreted-text
-role="doc"} table can show you the widgets that are missing on various
+interface. The [supported widgets by platform](../../reference/widgets_by_platform)
+table can show you the widgets that are missing on various
 platforms. You can also look for log messages in a running app (or the
 direct `factory.not_implemented()` function calls that produce those log
 messages). At present, the Web and Textual backends have the most
@@ -406,8 +384,7 @@ the process of adding new widgets.
 
 If you implement a new widget, don't forget you'll need to write tests
 for the new core API. If you're extending an existing widget, you may
-need to `add
-a probe for the backend <testbed-probe>`{.interpreted-text role="ref"}.
+need to [add a probe for the backend][testbed-probe].
 
 ### Add a new feature
 
@@ -431,8 +408,7 @@ GTK4 support can be enabled by setting the `TOGA_GTK=4` environment
 variable. To contribute to the update, pick a widget that currently has
 GTK3 support, and try updating the widget's API to support GTK4 as well.
 You can identify a widget that hasn't been ported by looking at the
-`GTK probe for the widget <testbed-probe>`{.interpreted-text
-role="ref"} - widgets that aren't ported yet will have an "if GTK4,
+[GTK probe for the widget][testbed-probe] - widgets that aren't ported yet will have an "if GTK4,
 skip" block at the top of the probe definition.
 
 The code needs to support both GTK3 and GTK4; if there are significant
@@ -479,7 +455,7 @@ Dummy. Think of it as a GUI mock - but one that is baked into Toga as a
 framework. See if you can write a GUI app of your own, and write a test
 suite that uses the Dummy backend to validate the behavior of that app.
 
-## Running tests and coverage {#run-test-suite}
+## Running tests and coverage  { id="run-test-suite" }
 
 Toga uses [tox](https://tox.wiki/en/latest/) to manage the testing
 process and [`pytest`](https://docs.pytest.org/en/latest) for its own
@@ -498,31 +474,29 @@ This is essentially what is run by CI when you submit a pull request.
 
 To run the full test suite, run:
 
-:::::: {.tabs}
-::: {.group-tab}
-macOS
+/// tab | macOS
 
-``` console
+```console
 (.venv) $ tox
 ```
-:::
 
-::: {.group-tab}
-Linux
+///
 
-``` console
+/// tab | Linux
+
+```console
 (.venv) $ tox
 ```
-:::
 
-::: {.group-tab}
-Windows
+///
 
-``` doscon
+/// tab | Windows
+
+```doscon
 (.venv) C:\...>tox
 ```
-:::
-::::::
+
+///
 
 The full test suite can take a while to run. You should get some output
 indicating that tests have been run. You may see `SKIPPED` tests, but
@@ -533,113 +507,103 @@ failure, either there's something odd in your test environment, or
 you've found an edge case that we haven't seen before - either way, let
 us know!
 
-In addition to the tests passing, this should report `100% test coverage
-<code-coverage>`{.interpreted-text role="ref"}.
+In addition to the tests passing, this should report [100% test coverage][code-coverage].
 
-### Testing Core {#run-core-test-suite}
+### Testing Core  { id="run-core-test-suite" }
 
 To run the core test suite:
 
-:::::: {.tabs}
-::: {.group-tab}
-macOS
+/// tab | macOS
 
-``` console
+```console
 (.venv) $ tox -m test-core
 ```
-:::
 
-::: {.group-tab}
-Linux
+///
 
-``` console
+/// tab | Linux
+
+```console
 (.venv) $ tox -m test-core
 ```
-:::
 
-::: {.group-tab}
-Windows
+///
 
-``` doscon
+/// tab | Windows
+
+```doscon
 (.venv) C:\...>tox -m test-core
 ```
-:::
-::::::
 
-As with the full test suite, this should report `100% test coverage
-<code-coverage>`{.interpreted-text role="ref"}.
+///
 
-### Testing Travertino {#run-travertino-test-suite}
+As with the full test suite, this should report [100% test coverage][code-coverage]
+
+### Testing Travertino  { id="run-travertino-test-suite" }
 
 In addition to the core library, the Toga repository also includes
 Travertino, a package that defines the lower-level layout mechanisms and
 style definitions which core then builds on. Its test suite can be run
 just like that of core:
 
-:::::: {.tabs}
-::: {.group-tab}
-macOS
+/// tab | macOS
 
-``` console
+```console
 (.venv) $ tox -m test-trav
 ```
-:::
 
-::: {.group-tab}
-Linux
+///
 
-``` console
+/// tab | Linux
+
+```console
 (.venv) $ tox -m test-trav
 ```
-:::
 
-::: {.group-tab}
-Windows
+///
 
-``` doscon
+/// tab | Windows
+
+```doscon
 (.venv) C:\...>tox -m test-trav
 ```
-:::
-::::::
+
+///
 
 As with the full test suite, and the core, this should report
-`100% test coverage
-<code-coverage>`{.interpreted-text role="ref"}.
+[100% test coverage][code-coverage].
 
 ### Testing Core and Travertino
 
 You can run both the core and Travertino tests with one command:
 
-:::::: {.tabs}
-::: {.group-tab}
-macOS
+/// tab | macOS
 
-``` console
+```console
 (.venv) $ tox -m test
 ```
-:::
 
-::: {.group-tab}
-Linux
+///
 
-``` console
+/// tab | Linux
+
+```console
 (.venv) $ tox -m test
 ```
-:::
 
-::: {.group-tab}
-Windows
+///
 
-``` doscon
+/// tab | Windows
+
+```doscon
 (.venv) C:\...>tox -m test
 ```
-:::
-::::::
+
+///
 
 This will run both test suites, and report the two coverage results one
 after the other. As with the previous tests, this should report
-`100% test coverage
-<code-coverage>`{.interpreted-text role="ref"}.
+[100% test coverage][code-coverage].
 
 ## Running test variations
 
@@ -658,33 +622,31 @@ then tox should be able to find and use it.
 If you're rapidly iterating on a new feature, you don't need to run the
 full test suite; you can run *just* the unit tests. To do this, run:
 
-:::::: {.tabs}
-::: {.group-tab}
-macOS
+/// tab | macOS
 
-``` console
+```console
 (.venv) $ tox -e py
 ```
-:::
 
-::: {.group-tab}
-Linux
+///
 
-``` console
+/// tab | Linux
+
+```console
 (.venv) $ tox -e py
 ```
-:::
 
-::: {.group-tab}
-Windows
+///
 
-``` doscon
+/// tab | Windows
+
+```doscon
 (.venv) C:\...>tox -e py
 ```
-:::
-::::::
 
-### Run a subset of tests {#test-subset}
+///
+
+### Run a subset of tests  { id="test-subset" }
 
 By default, tox will run all tests in the unit test suite. When you're
 developing your new test, it may be helpful to run *just* that one test.
@@ -693,65 +655,61 @@ specifier](https://docs.pytest.org/en/latest/how-to/usage.html#specifying-which-
 as an argument to tox. These test paths are relative to the `core`
 directory. For example, to run only the tests in a single file, run:
 
-:::::: {.tabs}
-::: {.group-tab}
-macOS
+/// tab | macOS
 
-``` console
+```console
 (.venv) $ tox -e py -- tests/path_to_test_file/test_some_test.py
 ```
-:::
 
-::: {.group-tab}
-Linux
+///
 
-``` console
+/// tab | Linux
+
+```console
 (.venv) $ tox -e py -- tests/path_to_test_file/test_some_test.py
 ```
-:::
 
-::: {.group-tab}
-Windows
+///
 
-``` doscon
+/// tab | Windows
+
+```doscon
 (.venv) C:\...>tox -e py -- tests/path_to_test_file/test_some_test.py
 ```
-:::
-::::::
+
+///
 
 To run a Travertino test instead, add `-trav`:
 
-:::::: {.tabs}
-::: {.group-tab}
-macOS
+/// tab | macOS
 
-``` console
+```console
 (.venv) $ tox -e py-trav -- tests/path_to_test_file/test_some_test.py
 ```
-:::
 
-::: {.group-tab}
-Linux
+///
 
-``` console
+/// tab | Linux
+
+```console
 (.venv) $ tox -e py-trav -- tests/path_to_test_file/test_some_test.py
 ```
-:::
 
-::: {.group-tab}
-Windows
+///
 
-``` doscon
+/// tab | Windows
+
+```doscon
 (.venv) C:\...>tox -e py-trav -- tests/path_to_test_file/test_some_test.py
 ```
-:::
-::::::
+
+///
 
 Either way, you'll still get a coverage report when running a part of
 the test suite -but the coverage results will only report the lines of
 code that were executed by the specific tests you ran.
 
-### Run the test suite for a specific Python version {#test-py-version}
+### Run the test suite for a specific Python version  { id="test-py-version" }
 
 By default `tox -e py` will run using whatever interpreter resolves as
 `python3` on your machine. If you have multiple Python versions
@@ -759,33 +717,31 @@ installed, and want to test a specific Python version from the versions
 you have installed, you can specify a specific Python version to use.
 For example, to run the test suite on Python 3.10, run:
 
-:::::: {.tabs}
-::: {.group-tab}
-macOS
+/// tab | macOS
 
-``` console
+```console
 (.venv) $ tox -e py310
 ```
-:::
 
-::: {.group-tab}
-Linux
+///
 
-``` console
+/// tab | Linux
+
+```console
 (.venv) $ tox -e py310
 ```
-:::
 
-::: {.group-tab}
-Windows
+///
 
-``` doscon
+/// tab | Windows
+
+```doscon
 (.venv) C:\...>tox -e py310
 ```
-:::
-::::::
 
-A `subset of tests <test-subset>`{.interpreted-text role="ref"} can be
+///
+
+A [subset of tests][test-subset] can be
 run by adding `--` and a test specification to the command line.
 
 ### Run the test suite without coverage (fast)
@@ -796,36 +752,33 @@ in parallel. This mode does not produce coverage files due to
 complexities in capturing coverage within spawned processes. To run a
 single python version in "fast" mode, run:
 
-:::::: {.tabs}
-::: {.group-tab}
-macOS
+/// tab | macOS
 
-``` console
+```console
 (.venv) $ tox -e py-fast
 ```
-:::
 
-::: {.group-tab}
-Linux
+///
 
-``` console
+/// tab | Linux
+
+```console
 (.venv) $ tox -e py-fast
 ```
-:::
 
-::: {.group-tab}
-Windows
+///
 
-``` doscon
+/// tab | Windows
+
+```doscon
 (.venv) C:\...>tox -e py-fast
 ```
-:::
-::::::
 
-A `subset of tests <test-subset>`{.interpreted-text role="ref"} can be
+///
+
+A [subset of tests][test-subset] can be
 run by adding `--` and a test specification to the command line; a
-`specific Python version
-<test-py-version>`{.interpreted-text role="ref"} can be used by adding
+[specific Python version][test-py-version] can be used by adding
 the version to the test target (e.g., `py310-fast` to run fast on Python
 3.10).
 
@@ -856,7 +809,7 @@ files.
 At the end of the coverage test output there should be a report of the
 coverage data that was gathered:
 
-``` console
+```console
 Name    Stmts   Miss Branch BrPart   Cover   Missing
 ----------------------------------------------------
 TOTAL    4345      0   1040      0  100.0%
@@ -873,7 +826,7 @@ you which lines aren't being executed. For example, lets say we made a
 change to `toga/window.py`, adding some new logic. The coverage report
 might look something like:
 
-``` console
+```console
 Name                 Stmts   Miss Branch BrPart  Cover   Missing
 ----------------------------------------------------------------
 src/toga/window.py     186      2     22      2  98.1%   211, 238-240
@@ -891,95 +844,89 @@ You can generate a coverage report for your platform and version of
 Python. For example, to run the test suite and generate a coverage
 report on Python 3.11, run:
 
-:::::: {.tabs}
-::: {.group-tab}
-macOS
+/// tab | macOS
 
-``` console
+```console
 (.venv) $ tox -m test311
 ```
-:::
 
-::: {.group-tab}
-Linux
+///
 
-``` console
+/// tab | Linux
+
+```console
 (.venv) $ tox -m test311
 ```
-:::
 
-::: {.group-tab}
-Windows
+///
 
-``` doscon
+/// tab | Windows
+
+```doscon
 (.venv) C:\...>tox -m test311
 ```
-:::
-::::::
+
+///
 
 ### Coverage report for host platform
 
 If all supported versions of Python are available to tox, then coverage
 for the host platform can be reported by running:
 
-:::::: {.tabs}
-::: {.group-tab}
-macOS
+/// tab | macOS
 
-``` console
+```console
 (.venv) $ tox p -m test-platform
 ```
-:::
 
-::: {.group-tab}
-Linux
+///
 
-``` console
+/// tab | Linux
+
+```console
 (.venv) $ tox p -m test-platform
 ```
-:::
 
-::: {.group-tab}
-Windows
+///
 
-``` doscon
+/// tab | Windows
+
+```doscon
 (.venv) C:\...>tox p -m test-platform
 ```
-:::
-::::::
+
+///
 
 ### Coverage reporting in HTML
 
 A HTML coverage report can be generated by appending `-html` to any of
 the coverage tox environment names, for instance:
 
-:::::: {.tabs}
-::: {.group-tab}
-macOS
+/// tab | macOS
 
-``` console
+```console
 (.venv) $ tox -e coverage-platform-html
 ```
-:::
 
-::: {.group-tab}
-Linux
+///
 
-``` console
+/// tab | Linux
+
+```console
 (.venv) $ tox -e coverage-platform-html
 ```
-:::
 
-::: {.group-tab}
-Windows
+///
 
-``` doscon
+/// tab | Windows
+
+```doscon
 (.venv) C:\...>tox -e coverage-platform-html
 ```
-:::
-::::::
 
-## The testbed {#run-testbed}
+///
+
+## The testbed  { id="run-testbed" }
 
 The above test suites exercise `toga-core` and `travertino` - but what
 about the backends? To verify the behavior of the backends, Toga has a
@@ -993,37 +940,35 @@ To run the testbed app, install
 [Briefcase](https://briefcase.readthedocs.io/en/latest/), and run the
 app in developer test mode:
 
-:::::: {.tabs}
-::: {.group-tab}
-macOS
+/// tab | macOS
 
-``` console
+```console
 (.venv) $ python -m pip install briefcase
 (.venv) $ cd testbed
 (.venv) $ briefcase dev --test
 ```
-:::
 
-::: {.group-tab}
-Linux
+///
 
-``` console
+/// tab | Linux
+
+```console
 (.venv) $ python -m pip install briefcase
 (.venv) $ cd testbed
 (.venv) $ briefcase dev --test
 ```
-:::
 
-::: {.group-tab}
-Windows
+///
 
-``` doscon
+/// tab | Windows
+
+```doscon
 (.venv) C:\...>python -m pip install briefcase
 (.venv) C:\...>cd testbed
 (.venv) C:\...>briefcase dev --test
 ```
-:::
-::::::
+
+///
 
 This will display a Toga app window, which will flash as it performs all
 the GUI tests. You'll then see a coverage report for the code that has
@@ -1042,31 +987,29 @@ is going on.
 
 So - to run *only* the button tests in slow mode, you could run:
 
-:::::: {.tabs}
-::: {.group-tab}
-macOS
+/// tab | macOS
 
-``` console
+```console
 (.venv) $ briefcase dev --test -- tests/widgets/test_button.py --slow
 ```
-:::
 
-::: {.group-tab}
-Linux
+///
 
-``` console
+/// tab | Linux
+
+```console
 (.venv) $ briefcase dev --test -- tests/widgets/test_button.py --slow
 ```
-:::
 
-::: {.group-tab}
-Windows
+///
 
-``` doscon
+/// tab | Windows
+
+```doscon
 (.venv) C:\...>briefcase dev --test -- tests/widgets/test_button.py --slow
 ```
-:::
-::::::
+
+///
 
 This test will take a lot longer to run, but you'll see the widget
 (Button, in this case) go through various color, format, and size
@@ -1079,47 +1022,45 @@ Developer mode is useful for testing desktop platforms (Cocoa, Winforms
 and GTK); but if you want to test a mobile backend, you'll need to use
 `briefcase run`.
 
-:::::: {.tabs}
-::: {.group-tab}
-macOS
+/// tab | macOS
 
 To run the Android test suite:
 
-``` console
+```console
 (.venv) $ briefcase run android --test
 ```
 
 To run the iOS test suite:
 
-``` console
+```console
 (.venv) $ briefcase run iOS --test
 ```
-:::
 
-::: {.group-tab}
-Linux
+///
+
+/// tab | Linux
 
 To run the Android test suite:
 
-``` console
+```console
 (.venv) $ briefcase run android --test
 ```
 
 iOS tests can't be executed on Linux.
-:::
 
-::: {.group-tab}
-Windows
+///
+
+/// tab | Windows
 
 To run the Android test suite:
 
-``` doscon
+```doscon
 (.venv) C:\...>briefcase run android --test
 ```
 
 iOS tests can't be executed on Windows.
-:::
-::::::
+
+///
 
 You can also use slow mode or pytest specifiers with `briefcase run`,
 using the same `--` syntax as you used in developer mode.
@@ -1131,7 +1072,7 @@ the environmental variable `TOGA_GTK=4`. This is experimental and only
 partially implemented, but we would greatly appreciate your help
 translating widgets from GTK3 to GTK4.
 
-### How the testbed works {#testbed-probe}
+### How the testbed works  { id="testbed-probe" }
 
 The testbed works by providing a generic collection of behavioral tests
 on a live app, and then providing an API to instrument the live app to
@@ -1200,7 +1141,7 @@ text color of buttons; as a result, the Cocoa implementation of the
 probe](https://github.com/beeware/toga/blob/main/cocoa/tests_backend/widgets/button.py#L17)
 performs an `xfail` describing that limitation.
 
-## Submitting a pull request {#pr-housekeeping}
+## Submitting a pull request  { id="pr-housekeeping" }
 
 Before you submit a pull request, there's a few bits of housekeeping to
 do.
@@ -1228,31 +1169,29 @@ that issue number in the branch name (e.g., `fix-1234`).
 
 To create a `fix-layout-bug` feature branch, run:
 
-:::::: {.tabs}
-::: {.group-tab}
-macOS
+/// tab | macOS
 
-``` console
+```console
 (.venv) $ git switch -c fix-layout-bug
 ```
-:::
 
-::: {.group-tab}
-Linux
+///
 
-``` console
+/// tab | Linux
+
+```console
 (.venv) $ git switch -c fix-layout-bug
 ```
-:::
 
-::: {.group-tab}
-Windows
+///
 
-``` doscon
+/// tab | Windows
+
+```doscon
 (.venv) C:\...>git switch -c fix-layout-bug
 ```
-:::
-::::::
+
+///
 
 Commit your changes to this branch, then push to GitHub and create a
 pull request.
@@ -1264,11 +1203,9 @@ are any issues found with the commit, this will cause your commit to
 fail. Where possible, pre-commit will make the changes needed to correct
 the problems it has found:
 
-:::::: {.tabs}
-::: {.group-tab}
-macOS
+/// tab | macOS
 
-``` console
+```console
 (.venv) $ git add some/interesting_file.py
 (.venv) $ git commit -m "Minor change"
 check toml...............................................................Passed
@@ -1286,12 +1223,12 @@ ruff format..............................................................Failed
 ruff check...............................................................Passed
 codespell................................................................Passed
 ```
-:::
 
-::: {.group-tab}
-Linux
+///
 
-``` console
+/// tab | Linux
+
+```console
 (.venv) $ git add some/interesting_file.py
 (.venv) $ git commit -m "Minor change"
 check toml...............................................................Passed
@@ -1309,12 +1246,12 @@ ruff format..............................................................Failed
 ruff check...............................................................Passed
 codespell................................................................Passed
 ```
-:::
 
-::: {.group-tab}
-Windows
+///
 
-``` doscon
+/// tab | Windows
+
+```doscon
 (.venv) C:\...>git add some/interesting_file.py
 (.venv) C:\...>git commit -m "Minor change"
 check toml...............................................................Passed
@@ -1332,17 +1269,15 @@ ruff format..............................................................Failed
 ruff check...............................................................Passed
 codespell................................................................Passed
 ```
-:::
-::::::
+
+///
 
 You can then re-add any files that were modified as a result of the
 pre-commit checks, and re-commit the change.
 
-:::::: {.tabs}
-::: {.group-tab}
-macOS
+/// tab | macOS
 
-``` console
+```console
 (.venv) $ git add some/interesting_file.py
 (.venv) $ git commit -m "Minor change"
 check toml...............................................................Passed
@@ -1357,12 +1292,12 @@ codespell................................................................Passed
 [bugfix e3e0f73] Minor change
 1 file changed, 4 insertions(+), 2 deletions(-)
 ```
-:::
 
-::: {.group-tab}
-Linux
+///
 
-``` console
+/// tab | Linux
+
+```console
 (.venv) $ git add some/interesting_file.py
 (.venv) $ git commit -m "Minor change"
 check toml...............................................................Passed
@@ -1377,12 +1312,12 @@ codespell................................................................Passed
 [bugfix e3e0f73] Minor change
 1 file changed, 4 insertions(+), 2 deletions(-)
 ```
-:::
 
-::: {.group-tab}
-Windows
+///
 
-``` doscon
+/// tab | Windows
+
+```doscon
 (.venv) C:\...>git add some\interesting_file.py
 (.venv) C:\...>git commit -m "Minor change"
 check toml...............................................................Passed
@@ -1395,8 +1330,8 @@ ruff format..............................................................Passed
 ruff check...............................................................Passed
 codespell................................................................Passed
 ```
-:::
-::::::
+
+///
 
 Once everything passes, you're ready for the next steps.
 
@@ -1463,7 +1398,7 @@ You can also see existing examples of news fragments in the `changes`
 directory of the Toga repository. If this folder is empty, it's likely
 because Toga has recently published a new release; change note files are
 deleted and combined to update the
-`release notes </about/releases>`{.interpreted-text role="doc"} with
+[release notes](about/releases) with
 each release. You can look at that file to see the style of comment that
 is required; you can look at [recently merged
 PRs](https://github.com/beeware/toga/pulls?q=is%3Apr+is%3Amerged) to see

@@ -4,77 +4,99 @@ A widget to allow the entry of a password. Any value typed by the user
 will be obscured, allowing the user to see the number of characters they
 have typed, but not the actual characters.
 
-:::::::::: {.tabs}
-::: {.group-tab}
-macOS
+/// tab | macOS
 
-<figure class="align-center">
-<img src="/reference/images/passwordinput-cocoa.png" width="300"
-alt="/reference/images/passwordinput-cocoa.png" />
-</figure>
-:::
+![`/reference/images/passwordinput-cocoa.png](/reference/images/passwordinput-cocoa.png){ width="300" }
 
-::: {.group-tab}
-Linux
+/// caption
 
-<figure class="align-center">
-<img src="/reference/images/passwordinput-gtk.png" width="300"
-alt="/reference/images/passwordinput-gtk.png" />
-</figure>
-:::
+///
 
-::: {.group-tab}
-Windows
 
-<figure class="align-center">
-<img src="/reference/images/passwordinput-winforms.png" width="300"
-alt="/reference/images/passwordinput-winforms.png" />
-</figure>
-:::
+<!-- TODO: Update alt text -->
 
-::: {.group-tab}
-Android
+///
 
-<figure class="align-center">
-<img src="/reference/images/passwordinput-android.png" width="300"
-alt="/reference/images/passwordinput-android.png" />
-</figure>
-:::
+/// tab | Linux
 
-::: {.group-tab}
-iOS
+![/reference/images/passwordinput-gtk.png](/reference/images/passwordinput-gtk.png){ width="300" }
 
-<figure class="align-center">
-<img src="/reference/images/passwordinput-iOS.png" width="300"
-alt="/reference/images/passwordinput-iOS.png" />
-</figure>
-:::
+/// caption
 
-::: {.group-tab}
-Web
+///
 
-<figure class="align-center">
-<img src="/reference/images/passwordinput-web.png" width="300"
-alt="/reference/images/passwordinput-web.png" />
-</figure>
-:::
 
-::: {.group-tab}
-Textual [\|no\|](##SUBST##|no|)
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Windows
+
+![/reference/images/passwordinput-winforms.png](/reference/images/passwordinput-winforms.png){ width="300" }
+
+/// caption
+
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Android
+
+![/reference/images/passwordinput-android.png](/reference/images/passwordinput-android.png){ width="300" }
+
+/// caption
+
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | iOS
+
+![/reference/images/passwordinput-iOS.png](/reference/images/passwordinput-iOS.png){ width="300" }
+
+/// caption
+
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Web
+
+![/reference/images/passwordinput-web.png](/reference/images/passwordinput-web.png){ width="300" }
+
+/// caption
+
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Textual {{ not_supported }}
 
 Not supported
-:::
-::::::::::
+
+///
 
 ## Usage
 
 The `PasswordInput` is functionally identical to a
-`~toga.TextInput`{.interpreted-text role="class"}, except for how the
+[`TextInput`][toga.TextInput], except for how the
 text is displayed. All features supported by
-`~toga.TextInput`{.interpreted-text role="class"} are also supported by
+[`TextInput`][toga.TextInput] are also supported by
 PasswordInput.
 
-``` python
+```python
 import toga
 
 password = toga.PasswordInput()
@@ -94,6 +116,4 @@ password = toga.PasswordInput()
 
 ## Reference
 
-::: {.autoclass}
-toga.PasswordInput
-:::
+::: toga.PasswordInput

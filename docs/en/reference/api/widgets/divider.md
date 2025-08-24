@@ -3,70 +3,88 @@
 A separator used to visually distinguish two sections of content in a
 layout.
 
-:::::::::: {.tabs}
-::: {.group-tab}
-macOS
+/// tab | macOS
 
-<figure class="align-center">
-<img src="/reference/images/divider-cocoa.png" width="300"
-alt="/reference/images/divider-cocoa.png" />
-</figure>
-:::
+![/reference/images/divider-cocoa.png](/reference/images/divider-cocoa.png){ width="300" }
 
-::: {.group-tab}
-Linux
+/// caption
 
-<figure class="align-center">
-<img src="/reference/images/divider-gtk.png" width="300"
-alt="/reference/images/divider-gtk.png" />
-</figure>
-:::
+///
 
-::: {.group-tab}
-Windows
 
-<figure class="align-center">
-<img src="/reference/images/divider-winforms.png" width="300"
-alt="/reference/images/divider-winforms.png" />
-</figure>
-:::
+<!-- TODO: Update alt text -->
 
-::: {.group-tab}
-Android
+///
 
-<figure class="align-center">
-<img src="/reference/images/divider-android.png" width="300"
-alt="/reference/images/divider-android.png" />
-</figure>
-:::
+/// tab | Linux
 
-::: {.group-tab}
-iOS
+![/reference/images/divider-gtk.png](/reference/images/divider-gtk.png){ width="300" }
 
-<figure class="align-center">
-<img src="/reference/images/divider-iOS.png" width="300"
-alt="/reference/images/divider-iOS.png" />
-</figure>
-:::
+/// caption
 
-::: {.group-tab}
-Web [\|beta\|](##SUBST##|beta|)
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Windows
+
+![/reference/images/divider-winforms.png](/reference/images/divider-winforms.png){ width="300" }
+
+/// caption
+
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Android
+
+![/reference/images/divider-android.png](/reference/images/divider-android.png){ width="300" }
+
+/// caption
+
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | iOS
+
+![/reference/images/divider-iOS.png](/reference/images/divider-iOS.png){ width="300" }
+
+/// caption
+
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Web {{ beta_support }}
 
 Screenshot not available
-:::
 
-::: {.group-tab}
-Textual [\|no\|](##SUBST##|no|)
+///
+
+/// tab | Textual {{ not_supported }}
 
 Not supported
-:::
-::::::::::
+
+///
 
 ## Usage
 
 To separate two labels stacked vertically with a horizontal line:
 
-``` python
+```python
 import toga
 from toga.style.pack import Pack, COLUMN
 
@@ -87,6 +105,4 @@ not specified, it will default to horizontal.
 
 ## Reference
 
-::: {.autoclass}
-toga.Divider
-:::
+::: toga.Divider

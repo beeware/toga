@@ -3,68 +3,86 @@
 A small animated indicator showing activity on a task of indeterminate
 length, usually rendered as a "spinner" animation.
 
-:::::::::: {.tabs}
-::: {.group-tab}
-macOS
+/// tab | macOS
 
-<figure class="align-center">
-<img src="/reference/images/activityindicator-cocoa.png" width="100"
-alt="/reference/images/activityindicator-cocoa.png" />
-</figure>
-:::
+![/reference/images/activityindicator-cocoa.png](/reference/images/activityindicator-cocoa.png){ width="100" }
 
-::: {.group-tab}
-Linux
+/// caption
 
-<figure class="align-center">
-<img src="/reference/images/activityindicator-gtk.png" width="100"
-alt="/reference/images/activityindicator-gtk.png" />
-</figure>
-:::
+///
 
-::: {.group-tab}
-Windows
 
-<figure class="align-center">
-<img src="/reference/images/activityindicator-winforms.png" width="100"
-alt="/reference/images/activityindicator-winforms.png" />
-</figure>
-:::
+<!-- TODO: Update alt text -->
 
-::: {.group-tab}
-Android [\|no\|](##SUBST##|no|)
+///
 
-Not supported
-:::
+/// tab | Linux
 
-::: {.group-tab}
-iOS
+![/reference/images/activityindicator-gtk.png](/reference/images/activityindicator-gtk.png){ width="100" }
 
-<figure class="align-center">
-<img src="/reference/images/activityindicator-iOS.png" width="100"
-alt="/reference/images/activityindicator-iOS.png" />
-</figure>
-:::
+/// caption
 
-::: {.group-tab}
-Web [\|beta\|](##SUBST##|beta|)
+///
 
-<figure class="align-center">
-<img src="/reference/images/activityindicator-web.png" width="100"
-alt="/reference/images/activityindicator-web.png" />
-</figure>
-:::
 
-::: {.group-tab}
-Textual [\|no\|](##SUBST##|no|)
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Windows
+
+![/reference/images/activityindicator-winforms.png](/reference/images/activityindicator-winforms.png){ width="100" }
+
+/// caption
+
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Android {{ not_supported }}
 
 Not supported
-:::
-::::::::::
+
+///
+
+/// tab | iOS
+
+![/reference/images/activityindicator-iOS.png](/reference/images/activityindicator-iOS.png){ width="100" }
+
+/// caption
+
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Web {{ beta_support }}
+
+![/reference/images/activityindicator-web.png](/reference/images/activityindicator-web.png){ width="100" }
+
+/// caption
+
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Textual {{ not_supported }}
+
+Not supported
+
+///
 
 ## Usage
 
-``` python
+```python
 import toga
 
 indicator = toga.ActivityIndicator()
@@ -84,6 +102,4 @@ indicator.stop()
 
 ## Reference
 
-::: {.autoclass}
-toga.ActivityIndicator
-:::
+::: toga.ActivityIndicator

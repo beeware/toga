@@ -7,11 +7,11 @@ A data source describing a single value.
 Data sources are abstractions that allow you to define the data being
 managed by your application independent of the GUI representation of
 that data. For details on the use of data sources, see the
-`topic guide </topics/data-sources>`{.interpreted-text role="doc"}.
+[topic guide](topics/data-sources).
 
 ValueSource is an wrapper around a single atomic value.
 
-``` python
+```python
 from toga.sources import ValueSource
 
 source = ValueSource(42)
@@ -33,6 +33,4 @@ A custom ValueSource has 3 requirements:
 
 ## Reference
 
-::: {.autoclass}
-toga.sources.ValueSource
-:::
+::: toga.sources.ValueSource

@@ -1,6 +1,6 @@
-# FAQ {#togas-and-yaks}
+# FAQ  { id="togas-and-yaks" }
 
-## So... why the name Toga? {#so...-why-the-name-toga}
+## So... why the name Toga? { id="so-why-the-name-toga" }
 
 We all know the aphorism that ["When in Rome, do as the Romans
 do."](https://en.wiktionary.org/wiki/when_in_Rome_do_as_the_Romans_do)
@@ -8,7 +8,7 @@ do."](https://en.wiktionary.org/wiki/when_in_Rome_do_as_the_Romans_do)
 So - what does a well dressed Roman wear? A toga, of course! And what
 does a well dressed Python app wear? Toga!
 
-## So... why the yak mascot? {#so...-why-the-yak-mascot}
+## So... why the yak mascot? { id="so-why-the-yak-mascot" }
 
 It's a reflection of the long running joke about [yak
 shaving](https://en.wiktionary.org/wiki/yak_shaving) in computer

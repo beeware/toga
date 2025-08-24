@@ -2,20 +2,16 @@
 
 A generic container for other widgets. Used to construct layouts.
 
-::: {.rst-class}
-widget-support
-:::
+**Availability ([Key][api-status-key])**
 
-::: {.csv-filter header-rows="1" file="../../data/widgets_by_platform.csv" included_cols="4,5,6,7,8,9,10" include="{0: '^Box$'}"}
-Availability (`Key <api-status-key>`{.interpreted-text role="ref"})
-:::
+{{ pd_read_csv("../../data/widgets_by_platform.csv", na_filter=False, usecols=[4,5,6,7,8,9,10])[pd_read_csv("../../data/widgets_by_platform.csv")[["ComponentName"]].isin(["Box"]).all(axis=1)] | convert_to_md_table }}
 
 ## Usage
 
 An empty Box can be constructed without any children, with children
 added to the box after construction:
 
-``` python
+```python
 import toga
 
 box = toga.Box()
@@ -30,7 +26,7 @@ box.add(label2)
 Alternatively, children can be specified at the time the box is
 constructed:
 
-``` python
+```python
 import toga
 
 label1 = toga.Label('Hello')
@@ -40,22 +36,15 @@ box = toga.Box(children=[label1, label2])
 ```
 
 In most apps, a layout is constructed by building a tree of boxes inside
-boxes, with concrete widgets (such as `~toga.Label`{.interpreted-text
-role="class"} or `~toga.Button`{.interpreted-text role="class"}) forming
+boxes, with concrete widgets (such as [`Label`][toga.Label] or [`Button`][toga.Button]) forming
 the leaf nodes of the tree. Style directives can be applied to enforce a
 margin around the outside of the box, direction of child stacking inside
 the box, and background color of the box.
 
 ## Reference
 
-::: {.autoclass}
-toga.Box
-:::
+::: toga.Box
 
-::: {.autofunction}
-toga.Row
-:::
+::: toga.Row
 
-::: {.autofunction}
-toga.Column
-:::
+::: toga.Column

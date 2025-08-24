@@ -2,18 +2,14 @@
 
 A font for displaying text.
 
-::: {.rst-class}
-widget-support
-:::
+**Availability ([Key][api-status-key])**
 
-::: {.csv-filter header-rows="1" file="../../data/widgets_by_platform.csv" included_cols="4,5,6,7,8,9,10" include="{0: '^Font$'}"}
-Availability (`Key <api-status-key>`{.interpreted-text role="ref"})
-:::
+{{ pd_read_csv("reference/data/widgets_by_platform.csv", na_filter=False, usecols=[4,5,6,7,8,9,10])[pd_read_csv("reference/data/widgets_by_platform.csv")[["ComponentName"]].isin(["Font"]).all(axis=1)] | convert_to_md_table }}
 
 ## Usage
 
 For most widget styling, you do not need to create instances of the
-`Font`{.interpreted-text role="class"} class. Fonts are applied to
+[Font][] class. Fonts are applied to
 widgets using style properties:
 
     import toga
@@ -23,9 +19,8 @@ widgets using style properties:
     my_label = toga.Label("Hello World", font_family=SERIF, font_weight=BOLD)
 
 Toga provides a number of
-`built-in system fonts <pack-font-family>`{.interpreted-text
-role="ref"}. Font sizes are specified in
-`CSS points <css-units>`{.interpreted-text role="ref"}; the default size
+[built-in system fonts][pack-font-family]. Font sizes are specified in
+[CSS points][css-units]; the default size
 depends on the platform and the widget.
 
 If you want to use a custom font, the font file must be provided as part
@@ -57,8 +52,8 @@ be registered separately, even if they're stored in the same file:
     Font.register("Bahnschrift", "resources/Bahnschrift.ttf", weight=BOLD)
 
 A small number of Toga APIs (e.g.,
-`Context.write_text`{.interpreted-text role="any"}) *do* require the use
-of `Font`{.interpreted-text role="class"} instance. In these cases, you
+[Context.write_text][]) *do* require the use
+of [Font][] instance. In these cases, you
 can instantiate a Font using similar properties to the ones used for
 widget styling:
 
@@ -72,9 +67,9 @@ widget styling:
     canvas = toga.Canvas()
     canvas.context.write_text("Hello", font=my_font)
 
-When constructing your own `Font`{.interpreted-text role="class"}
+When constructing your own [Font][]
 instance, ensure that the font family you provide is valid; otherwise an
-`UnknownFontError`{.interpreted-text role="any"} will be raised.
+[UnknownFontError][] will be raised.
 
 ## Notes
 
@@ -91,10 +86,6 @@ instance, ensure that the font family you provide is valid; otherwise an
 
 ## Reference
 
-::: {.autoclass}
-toga.Font
-:::
+::: toga.Font
 
-::: {.autoexception}
-toga.fonts.UnknownFontError
-:::
+::: toga.fonts.UnknownFontError

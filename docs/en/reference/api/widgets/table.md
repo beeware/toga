@@ -3,61 +3,75 @@
 A widget for displaying columns of tabular data. Scroll bars will be
 provided if necessary.
 
-:::::::::: {.tabs}
-::: {.group-tab}
-macOS
+/// tab | macOS
 
-<figure class="align-center">
-<img src="/reference/images/table-cocoa.png" width="450"
-alt="/reference/images/table-cocoa.png" />
-</figure>
-:::
+![`/reference/images/table-cocoa.png](/reference/images/table-cocoa.png){ width="450" }
 
-::: {.group-tab}
-Linux
+/// caption
 
-<figure class="align-center">
-<img src="/reference/images/table-gtk.png" width="450"
-alt="/reference/images/table-gtk.png" />
-</figure>
-:::
+///
 
-::: {.group-tab}
-Windows
 
-<figure class="align-center">
-<img src="/reference/images/table-winforms.png" width="450"
-alt="/reference/images/table-winforms.png" />
-</figure>
-:::
+<!-- TODO: Update alt text -->
 
-::: {.group-tab}
-Android [\|beta\|](##SUBST##|beta|)
+///
 
-<figure class="align-center">
-<img src="/reference/images/table-android.png" width="450"
-alt="/reference/images/table-android.png" />
-</figure>
-:::
+/// tab | Linux
 
-::: {.group-tab}
-iOS [\|no\|](##SUBST##|no|)
+![/reference/images/table-gtk.png](/reference/images/table-gtk.png){ width="450" }
+
+/// caption
+
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Windows
+
+![/reference/images/table-winforms.png](/reference/images/table-winforms.png){ width="450" }
+
+/// caption
+
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Android {{ beta_support }}
+
+![/reference/images/table-android.png](/reference/images/table-android.png){ width="450" }
+
+/// caption
+
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | iOS {{ not_supported }}
 
 Not supported
-:::
 
-::: {.group-tab}
-Web [\|no\|](##SUBST##|no|)
+///
 
-Not supported
-:::
-
-::: {.group-tab}
-Textual [\|no\|](##SUBST##|no|)
+/// tab | Web {{ not_supported }}
 
 Not supported
-:::
-::::::::::
+
+///
+
+/// tab | Textual {{ not_supported }}
+
+Not supported
+
+///
 
 ## Usage
 
@@ -68,7 +82,7 @@ values in the tuples will then be mapped sequentially to the columns.
 In this example, we will display a table of 2 columns, with 3 initial
 rows of data:
 
-``` python
+```python
 import toga
 
 table = toga.Table(
@@ -92,7 +106,7 @@ allows you to store data in the data source that won't be displayed in
 the table. It also allows you to control the display order of columns
 independent of the storage of that data.
 
-``` python
+```python
 import toga
 
 table = toga.Table(
@@ -109,20 +123,14 @@ row = table.data[0]
 print(f"{row.name}, who is age {row.age}, is from {row.planet}")
 ```
 
-The attribute names used on each row (called "accessors") are created
-automatically from the headings, by:
-
-1.  Converting the heading to lower case
-2.  Removing any character that can't be used in a Python identifier
-3.  Replacing all whitespace with `_`
-4.  Prepending `_` if the first character is a digit
+-8<- "reference/api/widgets/table-accessors.md"
 
 If you want to use different attributes, you can override them by
 providing an `accessors` argument. In this example, the table will use
 "Name" as the visible header, but internally, the attribute "character"
 will be used:
 
-``` python
+```python
 import toga
 
 table = toga.Table(
@@ -140,22 +148,7 @@ row = table.data[0]
 print(f"{row.character}, who is age {row.age}, is from {row.planet}")
 ```
 
-The value provided by an accessor is interpreted as follows:
-
-- If the value is a `Widget`{.interpreted-text role="any"}, that widget
-  will be displayed in the cell. Note that this is currently a beta API:
-  see the Notes section.
-- If the value is a `tuple`{.interpreted-text role="any"}, it must have
-  two elements: an icon, and a second element which will be interpreted
-  as one of the options below.
-- If the value is `None`, then `missing_value` will be displayed.
-- Any other value will be converted into a string. If an icon has not
-  already been provided in a tuple, it can also be provided using the
-  value's `icon` attribute.
-
-Icon values must either be an `Icon`{.interpreted-text role="any"},
-which will be displayed on the left of the cell, or `None` to display no
-icon.
+-8<- "reference/api/widgets/table-values.md"
 
 ## Notes
 
@@ -170,14 +163,8 @@ icon.
 
 ## Reference
 
-::: {.autoclass}
-toga.Table
-:::
+::: toga.Table
 
-::: {.autoprotocol}
-toga.widgets.table.OnSelectHandler
-:::
+::: toga.widgets.table.OnSelectHandler
 
-::: {.autoprotocol}
-toga.widgets.table.OnActivateHandler
-:::
+::: toga.widgets.table.OnActivateHandler

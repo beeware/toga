@@ -1,12 +1,12 @@
 # Windows
 
-![image](/reference/screenshots/winforms.png){.align-center
-width="300px"}
+![image](/reference/screenshots/winforms.png){ width="300px" }
+<!-- TODO: Update alt text -->
 
 The Toga backend for Windows is
 [toga-winforms](https://github.com/beeware/toga/tree/main/winforms).
 
-## Prerequisites {#windows-prerequisites}
+## Prerequisites  { id="windows-prerequisites" }
 
 `toga-winforms` requires Python 3.10+, and Windows 10 or newer.
 
@@ -21,7 +21,7 @@ Windows 11 has this runtime installed by default.
 that report `sys.platform == 'win32'`), or can be manually installed by
 running:
 
-``` console
+```console
 $ python -m pip install toga-winforms
 ```
 

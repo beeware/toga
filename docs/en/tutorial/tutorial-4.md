@@ -27,9 +27,9 @@ this example we filled two circular eyes with the color white.
         self.canvas = toga.Canvas(flex=1)
 
 That's all there is to! In this example we also add our canvas to the
-MainWindow through use of the Box Widget:
+`MainWindow` through use of the Box Widget:
 
-    box = toga.Box(children=[self.canvas])
+    box = toga.Box(children=[`self.canvas])
     self.main_window.content = box
 
 You'll also notice in the full example below that the drawing operations
@@ -41,9 +41,8 @@ drawing operations so that they can be modified together.
 
 Here's the source code
 
-::: {.literalinclude language="python"}
-/../examples/tutorial4/tutorial/app.py
-:::
+```python
+-8<- "tutorial4/tutorial/app.py"
+```
 
-In this example, we see a new Toga widget - `.Canvas`{.interpreted-text
-role="class"}.
+In this example, we see a new Toga widget - [`Canvas`][].

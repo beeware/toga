@@ -15,7 +15,7 @@ The dummy backend has no prerequisites.
 
 The dummy backend must be installed manually:
 
-``` console
+```console
 $ python -m pip install toga-dummy
 ```
 
@@ -23,28 +23,26 @@ To force Toga to use the dummy backend, it must either be the only
 backend that is installed in the current Python environment, or you must
 define the `TOGA_BACKEND` environment variable:
 
-:::::: {.tabs}
-::: {.group-tab}
-macOS
+/// tab | macOS
 
-``` console
+```console
 (venv) $ export TOGA_BACKEND=toga_dummy
 ```
-:::
 
-::: {.group-tab}
-Linux
+///
 
-``` console
+/// tab | Linux
+
+```console
 (venv) $ export TOGA_BACKEND=toga_dummy
 ```
-:::
 
-::: {.group-tab}
-Windows
+///
 
-``` console
+/// tab | Windows
+
+```console
 (venv) $ set TOGA_BACKEND=toga_dummy
 ```
-:::
-::::::
+
+///

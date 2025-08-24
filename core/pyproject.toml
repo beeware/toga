@@ -68,6 +68,10 @@ town-crier = [
     "towncrier==24.8.0",
 ]
 
+tox-uv = [
+    "tox-uv == 1.28.0",
+]
+
 dev = [
     "coverage[toml] == 7.10.4",
     "coverage-conditional-plugin == 0.9.0",
@@ -77,8 +81,8 @@ dev = [
     "pytest-freezer == 0.4.9",
     "pytest-xdist == 3.8.0",
     "setuptools-scm == 8.3.1",
-    "tox-uv == 1.28.0",
     {include-group = "pre-commit"},
+    {include-group = "tox-uv"},
 ]
 # Docs are always built on a specific Python version; see RTD and tox config files,
 # and the docs contribution guide.

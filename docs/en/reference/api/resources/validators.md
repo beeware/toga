@@ -10,7 +10,7 @@ string will be used as an error message. For example, the following
 example will validate that the user's input starts with the text
 "Hello":
 
-``` python
+```python
 def must_say_hello(value):
     if value.lower().startswith("hello"):
         return None
@@ -22,12 +22,11 @@ types, as well as some base classes that can be used as a starting point
 for custom validators.
 
 A list of validators can then be provided to any widget that performs
-validation, such as the `~toga.TextInput`{.interpreted-text
-role="class"} widget. In the following example, a `TextInput` will
+validation, such as the [`TextInput`][toga.TextInput] widget. In the following example, a `TextInput` will
 validate that the user has entered text that starts with "hello", and
 has provided at least 10 characters of input:
 
-``` python
+```python
 import toga
 from toga.validators import MinLength
 
@@ -44,6 +43,4 @@ validator will be displayed to the user.
 
 ## Reference
 
-::: {.automodule}
-toga.validators
-:::
+::: toga.validators

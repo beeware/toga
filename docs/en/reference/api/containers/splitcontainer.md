@@ -2,62 +2,72 @@
 
 A container that divides an area into two panels with a movable border.
 
-:::::::::: {.tabs}
-::: {.group-tab}
-macOS
+/// tab | macOS
 
-<figure class="align-center">
-<img src="/reference/images/splitcontainer-cocoa.png" width="450"
-alt="/reference/images/splitcontainer-cocoa.png" />
-</figure>
-:::
+![`/reference/images/splitcontainer-cocoa.png](/reference/images/splitcontainer-cocoa.png){ width="450" }
 
-::: {.group-tab}
-Linux
+/// caption
 
-<figure class="align-center">
-<img src="/reference/images/splitcontainer-gtk.png" width="450"
-alt="/reference/images/splitcontainer-gtk.png" />
-</figure>
-:::
+///
 
-::: {.group-tab}
-Windows
 
-<figure class="align-center">
-<img src="/reference/images/splitcontainer-winforms.png" width="450"
-alt="/reference/images/splitcontainer-winforms.png" />
-</figure>
-:::
+<!-- TODO: Update alt text -->
 
-::: {.group-tab}
-Android [\|no\|](##SUBST##|no|)
+///
 
-Not supported
-:::
+/// tab | Linux
 
-::: {.group-tab}
-iOS [\|no\|](##SUBST##|no|)
+![/reference/images/splitcontainer-gtk.png](/reference/images/splitcontainer-gtk.png){ width="450" }
 
-Not supported
-:::
+/// caption
 
-::: {.group-tab}
-Web [\|no\|](##SUBST##|no|)
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Windows
+
+![/reference/images/splitcontainer-winforms.png](/reference/images/splitcontainer-winforms.png){ width="450" }
+
+/// caption
+
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Android {{ not_supported }}
 
 Not supported
-:::
 
-::: {.group-tab}
-Textual [\|no\|](##SUBST##|no|)
+///
+
+/// tab | iOS {{ not_supported }}
 
 Not supported
-:::
-::::::::::
+
+///
+
+/// tab | Web {{ not_supported }}
+
+Not supported
+
+///
+
+/// tab | Textual {{ not_supported }}
+
+Not supported
+
+///
 
 ## Usage
 
-``` python
+```python
 import toga
 
 left_container = toga.Box()
@@ -71,7 +81,7 @@ assigning the `content` attribute. The direction of the split can also
 be configured, either at time of creation, or by setting the `direction`
 attribute:
 
-``` python
+```python
 import toga
 from toga.constants import Direction
 
@@ -88,7 +98,7 @@ between the two panels. To specify an uneven split, you can provide a
 flex value when specifying content. In the following example, there will
 be a 60/40 split between the left and right panels.
 
-``` python
+```python
 import toga
 
 split = toga.SplitContainer()
@@ -102,14 +112,15 @@ This only specifies the initial split; the split can be modified by the
 user once it is displayed.
 
 ## Reference
-
-> An item of `SplitContainer`{.interpreted-text role="any"} content can
+TODO: Verify the below text is not meant to be in the source code:
+> An item of [`SplitContainer`][] content can
 > be:
 >
-> - a `~toga.Widget`{.interpreted-text role="class"}; or
+> - a [`Widget`][toga.Widget]; or
 > - a 2-tuple, containing a `~toga.Widget`{.interpreted-text
->   role="class"}, and an `int`{.interpreted-text role="any"} flex value
+>   role="class"}, and an [`int`][] flex value
 
-::: {.autoclass exclude-members="HORIZONTAL, VERTICAL, window, app"}
-toga.SplitContainer
-:::
+::: toga.SplitContainer
+    options:
+        members:
+            TODO: Add explicit members list excluding "HORIZONTAL, VERTICAL, window, app"

@@ -2,22 +2,18 @@
 
 A representation of a screen attached to a device.
 
-::: {.rst-class}
-widget-support
-:::
+**Availability ([Key][api-status-key])**
 
-::: {.csv-filter header-rows="1" file="../../data/widgets_by_platform.csv" included_cols="4,5,6,7,8,9,10" include="{0: '^Screen$'}"}
-Availability (`Key <api-status-key>`{.interpreted-text role="ref"})
-:::
+{{ pd_read_csv("../../data/widgets_by_platform.csv", na_filter=False, usecols=[4,5,6,7,8,9,10])[pd_read_csv("../../data/widgets_by_platform.csv")[["ComponentName"]].isin(["Screen"]).all(axis=1)] | convert_to_md_table }}
 
 ## Usage
 
 An app will always have access to at least one screen. The
-`toga.App.screens`{.interpreted-text role="any"} attribute will return
+[`toga.App.screens`][] attribute will return
 the list of all available screens; the screen at index 0 will be the
 "primary" screen. Screen sizes and positions are given in CSS pixels.
 
-``` python
+```python
 # Print the size of the primary screen.
 print(my_app.screens[0].size)
 
@@ -33,6 +29,4 @@ print(my_app.screens[1].name)
 
 ## Reference
 
-::: {.autoclass}
-toga.screens.Screen
-:::
+::: toga.screens.Screen

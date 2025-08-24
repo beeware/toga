@@ -20,7 +20,7 @@ If you've worked with accessing files in Python, you're probably used to
 being able to read from a file in the same directory as your Python
 script using something like the following:
 
-``` python
+```python
 with open("file.txt") as f:
     f.read()
 ```
@@ -82,7 +82,7 @@ In this example, we've used a formal name of `Config File Creator`. Once
 the project is created, update `app.py` in the project to contain the
 following:
 
-``` python
+```python
 from pathlib import Path
 
 import toga
@@ -147,7 +147,7 @@ their machine. Create an `initial_config.toml` file containing the
 following content, and place it in the same directory as your
 `pyproject.toml` file:
 
-``` toml
+```toml
 # Update the following to match your configuration
 PROJECT_NAME = "Name"
 PROJECT_VERSION = "v0.0.0"
@@ -156,7 +156,7 @@ AUTHOR_NAME = "Your Name"
 
 Update the `load_button_pressed` handler to the following:
 
-``` python
+```python
 def load_button_pressed(self, button, **kwargs):
   path = Path("initial_config.toml")
   self.text_input.value = path.read_text(encoding="utf-8")
@@ -173,7 +173,7 @@ be the location of the application code. Let's examine this as a
 possibility. Here is a summary of the directory structure of our project
 at this point:
 
-``` console
+```console
 configfilecreator/
 ├── pyproject.toml
 ├── initial_config.toml
@@ -187,7 +187,7 @@ Move the `initial_config.toml` file into the
 `src/configfilecreator/resources` folder, and update the
 `load_button_pressed` handler to the following:
 
-``` python
+```python
 def load_button_pressed(self, button, **kwargs):
   path = Path("resources/initial_config.toml")
   self.text_input.value = path.read_text(encoding="utf-8")
@@ -203,7 +203,7 @@ So - lets build an absolute path, using an anchor that we *do* know -
 the `__file__` attribute of the running code. Update the
 `load_button_pressed` handler to the following:
 
-``` python
+```python
 def load_button_pressed(self, button, **kwargs):
     path = Path(__file__).parent / "resources/initial_config.toml"
     self.text_input.value = path.read_text(encoding="utf-8")
@@ -227,8 +227,7 @@ where Toga can help.
 ## App paths
 
 Toga includes an
-`app paths <../../reference/api/resources/app_paths>`{.interpreted-text
-role="doc"} feature that provides a selection of known locations on the
+[app paths](../reference/api/resources/app_paths) feature that provides a selection of known locations on the
 user's computer. Provided as `pathlib.Path` objects, they are known-safe
 locations for reading and writing files, that are specific to each
 operating system. Each user running an application will have their own
@@ -243,7 +242,7 @@ file.
 
 Update `load_button_pressed` handler to the following:
 
-``` python
+```python
 def load_button_pressed(self, button, **kwargs):
     path = self.paths.app /  "resources/initial_config.toml"
     self.text_input.value = path.read_text(encoding="utf-8")
@@ -314,7 +313,7 @@ from the contents of the `initial_config.toml` file.
 
 Update the `save_button_pressed` handler in `app.py` to the following:
 
-``` python
+```python
 def save_button_pressed(self, button, **kwargs):
    path = self.paths.config / "config.toml"
    path.write_text(self.text_input.value, encoding="utf-8")
@@ -343,7 +342,7 @@ configuration file, and load the contents of that if it exists.
 
 Update the `load_button_pressed` handler in `app.py` to the following:
 
-``` python
+```python
 def load_button_pressed(self, button, **kwargs):
     path = self.paths.config / "config.toml"
     if not path.exists():

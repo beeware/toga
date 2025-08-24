@@ -2,18 +2,14 @@
 
 A sensor that can capture photos and/or video.
 
-::: {.rst-class}
-widget-support
-:::
+**Availability ([Key][api-status-key])**
 
-::: {.csv-filter header-rows="1" file="../../data/widgets_by_platform.csv" included_cols="4,5,6,7,8,9,10" include="{0: '^Camera$'}"}
-Availability (`Key <api-status-key>`{.interpreted-text role="ref"})
-:::
+{{ pd_read_csv("../../data/widgets_by_platform.csv", na_filter=False, usecols=[4,5,6,7,8,9,10])[pd_read_csv("../../data/widgets_by_platform.csv")[["ComponentName"]].isin(["Camera"]).all(axis=1)] | convert_to_md_table }}
 
 ## Usage
 
 Cameras attached to a device running an app can be accessed using the
-`~toga.App.camera`{.interpreted-text role="attr"} attribute. This
+[`camera`][toga.App.camera] attribute. This
 attribute exposes an API that allows you to check if you have have
 permission to access the camera device; and if permission exists,
 capture photographs.
@@ -23,7 +19,7 @@ long-running behavior (such as requesting permissions and taking
 photographs) must be `await`-ed, rather than being invoked directly.
 This means they must be invoked from inside an asynchronous handler:
 
-``` python
+```python
 import toga
 
 class MyApp(toga.App):
@@ -35,9 +31,8 @@ class MyApp(toga.App):
 Most platforms will require some form of device permission to access the
 camera. The permission APIs are paired with the specific actions
 performed on those APIs - that is, to take a photo, you require
-`Camera.has_permission`{.interpreted-text role="any"}, which you can
-request using `Camera.request_permission()`{.interpreted-text
-role="any"}.
+[Camera.has_permission][], which you can
+request using [Camera.request_permission][].
 
 Toga will confirm whether the app has been granted permission to use the
 camera before invoking any camera API. If permission has not yet been
@@ -62,10 +57,6 @@ platforms.
 
 ## Reference
 
-::: {.autoclass}
-toga.hardware.camera.Camera
-:::
+::: toga.hardware.camera.Camera
 
-::: {.autoclass}
-toga.hardware.camera.CameraDevice
-:::
+::: toga.hardware.camera.CameraDevice

@@ -1,5 +1,8 @@
-# About Toga {#about}
+# About Toga  { id="about" }
 
-::: {.toctree maxdepth="1"}
-philosophy faq success releases roadmap community
-:::
+[Why Toga?](philosophy.md)
+[FAQ](faq.md)
+[Success Stories](success.md)
+[Release History](releases.md)
+[Toga's Road Map](roadmap.md)
+[Community](community.md)

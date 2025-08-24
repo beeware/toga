@@ -1,60 +1,70 @@
-# Status Icons {#statusicons}
+# Status Icons  { id="statusicons" }
 
 Icons that appear in the system tray for representing app status while
 the app isn't visible.
 
-:::::::::: {.tabs}
-::: {.group-tab}
-macOS
+/// tab | macOS
 
-<figure class="align-center">
-<img src="/reference/images/statusicons-cocoa.png" width="150"
-alt="/reference/images/statusicons-cocoa.png" />
-</figure>
-:::
+![`/reference/images/statusicons-cocoa.png](/reference/images/statusicons-cocoa.png){ width="150" }
 
-::: {.group-tab}
-Linux
+/// caption
 
-<figure class="align-center">
-<img src="/reference/images/statusicons-gtk.png" width="150"
-alt="/reference/images/statusicons-gtk.png" />
-</figure>
-:::
+///
 
-::: {.group-tab}
-Windows
 
-<figure class="align-center">
-<img src="/reference/images/statusicons-winforms.png" width="150"
-alt="/reference/images/statusicons-winforms.png" />
-</figure>
-:::
+<!-- TODO: Update alt text -->
 
-::: {.group-tab}
-Android [\|no\|](##SUBST##|no|)
+///
 
-Not supported
-:::
+/// tab | Linux
 
-::: {.group-tab}
-iOS [\|no\|](##SUBST##|no|)
+![/reference/images/statusicons-gtk.png](/reference/images/statusicons-gtk.png){ width="150" }
 
-Not supported
-:::
+/// caption
 
-::: {.group-tab}
-Web [\|no\|](##SUBST##|no|)
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Windows
+
+![/reference/images/statusicons-winforms.png](/reference/images/statusicons-winforms.png){ width="150" }
+
+/// caption
+
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Android {{ not_supported }}
 
 Not supported
-:::
 
-::: {.group-tab}
-Textual [\|no\|](##SUBST##|no|)
+///
+
+/// tab | iOS {{ not_supported }}
 
 Not supported
-:::
-::::::::::
+
+///
+
+/// tab | Web {{ not_supported }}
+
+Not supported
+
+///
+
+/// tab | Textual {{ not_supported }}
+
+Not supported
+
+///
 
 ## Usage
 
@@ -76,10 +86,10 @@ will be used as default text. The icon can respond to mouse clicks by
 defining an `on_press` handler.
 
 To define a simple status icon, declare an instance of
-`toga.SimpleStatusIcon`{.interpreted-text role="class"}, and add it to
-your app's `~toga.App.status_icons`{.interpreted-text role="attr"} set:
+[`toga.SimpleStatusIcon`][], and add it to
+your app's [`status_icons`][toga.App.status_icons] set:
 
-``` python
+```python
 import toga
 
 # Define a status icon that uses default values for icon and tooltip,
@@ -105,9 +115,9 @@ app.status_icons.add(status_icon_1, status_icon_2)
 Once a status icon has been added to the app, it can be retrieved by ID
 or by index; and it can be removed from the app:
 
-``` python
+```python
 # Change the icon of the first status icon, retrieved by index:
-app.status_icons[0].icon = "icons/green"
+app.status_icons[`0].icon = "icons/green"
 
 # Change the icon of the second status icon, retrieved by id:
 app.status_icons["second"].icon = "icons/blue"
@@ -119,24 +129,24 @@ app.status_icons.remove(status_icon_1)
 ### Menu status icons
 
 A menu-based status icon is defined by adding a
-`toga.MenuStatusIcon`{.interpreted-text role="class"} instance. A
-`toga.MenuStatusIcon`{.interpreted-text role="class"} behaves almost the
-same as `~toga.SimpleStatusIcon`{.interpreted-text role="class"}, except
+[`toga.MenuStatusIcon`][] instance. A
+[`toga.MenuStatusIcon`][] behaves almost the
+same as [`SimpleStatusIcon`][toga.SimpleStatusIcon], except
 that it *cannot* have an `on_click` handler - but it *can* be used to
 register Commands that will be displayed in a menu when the icon is
 clicked.
 
-The `~toga.MenuStatusIcon`{.interpreted-text role="class"} is a
-`~toga.Group`{.interpreted-text role="class"} for command sorting
+The [`MenuStatusIcon`][toga.MenuStatusIcon] is a
+[`Group`][toga.Group] for command sorting
 purposes. To put a command in a menu associated with a
-`~toga.MenuStatusIcon`{.interpreted-text role="class"}, set the `group`
+[`MenuStatusIcon`][toga.MenuStatusIcon], set the `group`
 associated with that command, then add the command to the
-`~toga.command.CommandSet`{.interpreted-text role="class"} associated
+[`CommandSet`][toga.command.CommandSet] associated
 with status icons. The following example will create a
-`~toga.MenuStatusIcon`{.interpreted-text role="class"} that has a single
+[`MenuStatusIcon`][toga.MenuStatusIcon] that has a single
 top-level menu item, plus a sub-menu that itself has a single menu item:
 
-``` python
+```python
 # Create a MenuStatusIcon
 status_icon = toga.MenuStatusIcon(icon="icons/blue")
 
@@ -166,17 +176,15 @@ app.status_icons.add(status_icon)
 app.status_icons.commands.add(cmd1, cmd2)
 ```
 
-If you add at least one `~toga.MenuStatusIcon`{.interpreted-text
-role="class"} instance to your app, Toga will add some standard commands
+If you add at least one [`MenuStatusIcon`][toga.MenuStatusIcon] instance to your app, Toga will add some standard commands
 to the app's status icon command set. These items will appear at the end
-of the first `~toga.MenuStatusIcon`{.interpreted-text role="class"}'s
+of the first [`MenuStatusIcon`][toga.MenuStatusIcon]'s
 menu. To remove these items, clear the app's status icon command set
 before adding your own commands.
 
 If you add a command to the app's status icon command set that *doesn't*
-belong to a `~toga.MenuStatusIcon`{.interpreted-text role="class"}
-group, or that belongs to a `~toga.MenuStatusIcon`{.interpreted-text
-role="class"} group that hasn't been registered with the app as a status
+belong to a [`MenuStatusIcon`][toga.MenuStatusIcon]
+group, or that belongs to a [`MenuStatusIcon`][toga.MenuStatusIcon] group that hasn't been registered with the app as a status
 icon, a `ValueError` will be raised. An error will also be raised if you
 *remove* a status icon while there status icon commands referencing that
 command.
@@ -200,18 +208,10 @@ command.
 
 ## Reference
 
-::: {.autoclass}
-toga.statusicons.StatusIcon
-:::
+::: toga.statusicons.StatusIcon
 
-::: {.autoclass}
-toga.SimpleStatusIcon
-:::
+::: toga.SimpleStatusIcon
 
-::: {.autoclass}
-toga.MenuStatusIcon
-:::
+::: toga.MenuStatusIcon
 
-::: {.autoclass}
-toga.statusicons.StatusIconSet
-:::
+::: toga.statusicons.StatusIconSet

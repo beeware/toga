@@ -3,71 +3,93 @@
 A container that can display a layout larger than the area of the
 container, with overflow controlled by scroll bars.
 
-:::::::::: {.tabs}
-::: {.group-tab}
-macOS
+/// tab | macOS
 
-<figure class="align-center">
-<img src="/reference/images/scrollcontainer-cocoa.png" width="450"
-alt="/reference/images/scrollcontainer-cocoa.png" />
-</figure>
-:::
+![/reference/images/scrollcontainer-cocoa.png](/reference/images/scrollcontainer-cocoa.png){ width="450" }
 
-::: {.group-tab}
-Linux
+/// caption
 
-<figure class="align-center">
-<img src="/reference/images/scrollcontainer-gtk.png" width="450"
-alt="/reference/images/scrollcontainer-gtk.png" />
-</figure>
-:::
+///
 
-::: {.group-tab}
-Windows
 
-<figure class="align-center">
-<img src="/reference/images/scrollcontainer-winforms.png" width="450"
-alt="/reference/images/scrollcontainer-winforms.png" />
-</figure>
-:::
+<!-- TODO: Update alt text -->
 
-::: {.group-tab}
-Android
+///
 
-<figure class="align-center">
-<img src="/reference/images/scrollcontainer-android.png" width="450"
-alt="/reference/images/scrollcontainer-android.png" />
-</figure>
-:::
+/// tab | Linux
 
-::: {.group-tab}
-iOS
+![/reference/images/scrollcontainer-gtk.png](/reference/images/scrollcontainer-gtk.png){ width="450" }
 
-<figure class="align-center">
-<img src="/reference/images/scrollcontainer-iOS.png" width="450"
-alt="/reference/images/scrollcontainer-iOS.png" />
-</figure>
-:::
+/// caption
 
-::: {.group-tab}
-Web
+///
 
-<figure class="align-center">
-<img src="/reference/images/scrollcontainer-web.png" width="450"
-alt="/reference/images/scrollcontainer-web.png" />
-</figure>
-:::
 
-::: {.group-tab}
-Textual [\|no\|](##SUBST##|no|)
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Windows
+
+![/reference/images/scrollcontainer-winforms.png](/reference/images/scrollcontainer-winforms.png){ width="450" }
+
+/// caption
+
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Android
+
+![/reference/images/scrollcontainer-android.png](/reference/images/scrollcontainer-android.png){ width="450" }
+
+/// caption
+
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | iOS
+
+![/reference/images/scrollcontainer-iOS.png](/reference/images/scrollcontainer-iOS.png){ width="450" }
+
+/// caption
+
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Web
+
+![/reference/images/scrollcontainer-web.png](/reference/images/scrollcontainer-web.png){ width="450" }
+
+/// caption
+
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Textual {{ not_supported }}
 
 Not supported
-:::
-::::::::::
+
+///
 
 ## Usage
 
-``` python
+```python
 import toga
 
 content = toga.Box(children=[...])
@@ -77,10 +99,9 @@ container = toga.ScrollContainer(content=content)
 
 ## Reference
 
-::: {.autoclass exclude-members="window, app"}
-toga.ScrollContainer
-:::
+::: toga.ScrollContainer
+    options:
+        members:
+            TODO: Add explicit members list excluding "window, app"
 
-::: {.autoprotocol}
-toga.widgets.scrollcontainer.OnScrollHandler
-:::
+::: toga.widgets.scrollcontainer.OnScrollHandler

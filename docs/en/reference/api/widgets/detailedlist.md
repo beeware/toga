@@ -1,63 +1,81 @@
 # DetailedList
 
-:::::::::: {.tabs}
-::: {.group-tab}
-macOS
+/// tab | macOS
 
-<figure class="align-center">
-<img src="/reference/images/detailedlist-cocoa.png" width="450"
-alt="/reference/images/detailedlist-cocoa.png" />
-</figure>
-:::
+![`/reference/images/detailedlist-cocoa.png](/reference/images/detailedlist-cocoa.png){ width="450" }
 
-::: {.group-tab}
-Linux
+/// caption
 
-<figure class="align-center">
-<img src="/reference/images/detailedlist-gtk.png" width="450"
-alt="/reference/images/detailedlist-gtk.png" />
-</figure>
-:::
+///
 
-::: {.group-tab}
-Windows [\|beta\|](##SUBST##|beta|)
 
-<figure class="align-center">
-<img src="/reference/images/detailedlist-winforms.png" width="450"
-alt="/reference/images/detailedlist-winforms.png" />
-</figure>
-:::
+<!-- TODO: Update alt text -->
 
-::: {.group-tab}
-Android
+///
 
-<figure class="align-center">
-<img src="/reference/images/detailedlist-android.png" width="450"
-alt="/reference/images/detailedlist-android.png" />
-</figure>
-:::
+/// tab | Linux
 
-::: {.group-tab}
-iOS
+![/reference/images/detailedlist-gtk.png](/reference/images/detailedlist-gtk.png){ width="450" }
 
-<figure class="align-center">
-<img src="/reference/images/detailedlist-iOS.png" width="450"
-alt="/reference/images/detailedlist-iOS.png" />
-</figure>
-:::
+/// caption
 
-::: {.group-tab}
-Web [\|no\|](##SUBST##|no|)
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Windows {{ beta_support }}
+
+![/reference/images/detailedlist-winforms.png](/reference/images/detailedlist-winforms.png){ width="450" }
+
+/// caption
+
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Android
+
+![/reference/images/detailedlist-android.png](/reference/images/detailedlist-android.png){ width="450" }
+
+/// caption
+
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | iOS
+
+![/reference/images/detailedlist-iOS.png](/reference/images/detailedlist-iOS.png){ width="450" }
+
+/// caption
+
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Web {{ not_supported }}
 
 Not supported
-:::
 
-::: {.group-tab}
-Textual [\|no\|](##SUBST##|no|)
+///
+
+/// tab | Textual {{ not_supported }}
 
 Not supported
-:::
-::::::::::
+
+///
 
 ## Usage
 
@@ -65,7 +83,7 @@ The simplest way to create a DetailedList is to pass a list of
 dictionaries, with each dictionary containing three keys: `icon`,
 `title`, and `subtitle`:
 
-``` python
+```python
 import toga
 
 table = toga.DetailedList(
@@ -94,7 +112,7 @@ this by providing an `accessors` argument to the DetailedList when it is
 constructed. `accessors` is a tuple containing the attributes that will
 be used to provide the icon, title, and subtitle, respectively:
 
-``` python
+```python
 import toga
 
 table = toga.DetailedList(
@@ -123,7 +141,7 @@ If the value provided by the title or subtitle accessor is `None`, or
 the accessor isn't defined, the `missing_value` will be displayed. Any
 other value will be converted into a string.
 
-The icon accessor should return an `Icon`{.interpreted-text role="any"}.
+The icon accessor should return an [Icon`][].
 If it returns `None`, or the accessor isn't defined, then no icon will
 be displayed, but space for the icon will remain in the layout.
 
@@ -156,7 +174,7 @@ UI if an `on_refresh` handler has been provided.
   name of "Delete" or "Remove" as destructive, and will render the
   action appropriately.
 - The WinForms implementation currently uses a column layout similar to
-  `Table`{.interpreted-text role="any"}, and does not support the
+  [Table][], and does not support the
   primary, secondary or refresh actions.
 - Using DetailedList on Android requires the AndroidX SwipeRefreshLayout
   widget in your project's Gradle dependencies. Ensure your app declares
@@ -165,22 +183,12 @@ UI if an `on_refresh` handler has been provided.
 
 ## Reference
 
-::: {.autoclass}
-toga.DetailedList
-:::
+::: toga.DetailedList
 
-::: {.autoprotocol}
-toga.widgets.detailedlist.OnPrimaryActionHandler
-:::
+::: toga.widgets.detailedlist.OnPrimaryActionHandler
 
-::: {.autoprotocol}
-toga.widgets.detailedlist.OnSecondaryActionHandler
-:::
+::: toga.widgets.detailedlist.OnSecondaryActionHandler
 
-::: {.autoprotocol}
-toga.widgets.detailedlist.OnRefreshHandler
-:::
+::: toga.widgets.detailedlist.OnRefreshHandler
 
-::: {.autoprotocol}
-toga.widgets.detailedlist.OnSelectHandler
-:::
+::: toga.widgets.detailedlist.OnSelectHandler

@@ -1,11 +1,17 @@
 # macOS
 
-![image](/reference/screenshots/cocoa.png){.align-center width="300px"}
+![image](/reference/screenshots/cocoa.png){ width="300px" }
+
+/// caption
+
+///
+
+<!-- TODO: Update alt text -->
 
 The Toga backend for macOS is
 [toga-cocoa](https://github.com/beeware/toga/tree/main/cocoa).
 
-## Prerequisites {#macos-prerequisites}
+## Prerequisites  { id="macos-prerequisites" }
 
 `toga-cocoa` requires Python 3.10+, and macOS 11 (Big Sur) or newer.
 
@@ -15,7 +21,7 @@ The Toga backend for macOS is
 report `sys.platform == 'darwin'`), or can be manually installed by
 running invoking:
 
-``` console
+```console
 $ python -m pip install toga-cocoa
 ```
 

@@ -3,13 +3,9 @@
 A mechanism for obtaining platform-appropriate file system locations for
 an application.
 
-::: {.rst-class}
-widget-support
-:::
+**Availability ([Key][api-status-key])**
 
-::: {.csv-filter header-rows="1" file="../../data/widgets_by_platform.csv" included_cols="4,5,6,7,8,9,10" include="{0: '^App Paths$'}"}
-Availability (`Key <api-status-key>`{.interpreted-text role="ref"})
-:::
+{{ pd_read_csv("reference/data/widgets_by_platform.csv", na_filter=False, usecols=[4,5,6,7,8,9,10])[pd_read_csv("reference/data/widgets_by_platform.csv")[["ComponentName"]].isin(["App Paths"]).all(axis=1)] | convert_to_md_table }}
 
 ## Usage
 
@@ -31,14 +27,13 @@ pre-approved locations.
 
 To assist with finding an appropriate location to store application
 files, every Toga application instance has a
-`~toga.App.paths`{.interpreted-text role="attr"} attribute that returns
-an instance of `~toga.paths.Paths`{.interpreted-text role="class"}. This
+[`paths`][toga.App.paths] attribute that returns
+an instance of [`Paths`][toga.paths.Paths]. This
 object provides known file system locations that are appropriate for
 storing files of given types, such as configuration files, log files,
 cache files, or user data.
 
-Each location provided by the `~toga.paths.Paths`{.interpreted-text
-role="class"} object is a `pathlib.Path`{.interpreted-text role="class"}
+Each location provided by the [`Paths`][toga.paths.Paths] object is a [`pathlib.Path`][]
 that can be used to construct a full file path. If required, additional
 subdirectories can be created under these locations. Toga will guarantee
 that the path provided *by Toga* will exist, but it is up you to create
@@ -49,6 +44,4 @@ creating the `credentials` subdirectory before saving `user.toml`.
 
 ## Reference
 
-::: {.autoclass}
-toga.paths.Paths
-:::
+::: toga.paths.Paths

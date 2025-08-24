@@ -1,4 +1,4 @@
-# Widget layout {#layout}
+# Widget layout  { id="layout" }
 
 One of the major tasks of a GUI framework is to determine where each
 widget will be displayed within the application window. This
@@ -7,8 +7,7 @@ every time the window changes size (or, on mobile devices, changes
 orientation).
 
 Layout in Toga is performed using a style engine. Toga provides a
-`built-in style engine called Pack </reference/style/pack>`{.interpreted-text
-role="doc"}; however, other style engines can be used. Every widget
+[built-in style engine called Pack](reference/style/pack); however, other style engines can be used. Every widget
 keeps a style object, and it is this style object that is used to
 perform layout operations.
 
@@ -37,7 +36,7 @@ window. However, some widgets (those with "Container" in their name)
 establish sub-containers. When a refresh is requested on a container,
 any sub-containers will also be refreshed.
 
-## Length units {#css-units}
+## Length units  { id="css-units" }
 
 Toga uses CSS units in its public API. Their physical size depends on
 the device type:

@@ -2,68 +2,86 @@
 
 A widget to select a calendar date.
 
-:::::::::: {.tabs}
-::: {.group-tab}
-macOS
+/// tab | macOS
 
-<figure class="align-center">
-<img src="/reference/images/dateinput-cocoa.png" width="300"
-alt="/reference/images/dateinput-cocoa.png" />
-</figure>
-:::
+![`/reference/images/dateinput-cocoa.png](/reference/images/dateinput-cocoa.png){ width="300" }
 
-::: {.group-tab}
-Linux [\|no\|](##SUBST##|no|)
+/// caption
 
-Not supported
-:::
+///
 
-::: {.group-tab}
-Windows
 
-<figure class="align-center">
-<img src="/reference/images/dateinput-winforms.png" width="300"
-alt="/reference/images/dateinput-winforms.png" />
-</figure>
-:::
+<!-- TODO: Update alt text -->
 
-::: {.group-tab}
-Android
+///
 
-<figure class="align-center">
-<img src="/reference/images/dateinput-android.png" width="300"
-alt="/reference/images/dateinput-android.png" />
-</figure>
-:::
-
-::: {.group-tab}
-iOS
-
-<figure class="align-center">
-<img src="/reference/images/dateinput-iOS.png" width="300"
-alt="/reference/images/dateinput-iOS.png" />
-</figure>
-:::
-
-::: {.group-tab}
-Web
-
-<figure class="align-center">
-<img src="/reference/images/dateinput-web.png" width="300"
-alt="/reference/images/dateinput-web.png" />
-</figure>
-:::
-
-::: {.group-tab}
-Textual [\|no\|](##SUBST##|no|)
+/// tab | Linux {{ not_supported }}
 
 Not supported
-:::
-::::::::::
+
+///
+
+/// tab | Windows
+
+![/reference/images/dateinput-winforms.png](/reference/images/dateinput-winforms.png){ width="300" }
+
+/// caption
+
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Android
+
+![/reference/images/dateinput-android.png](/reference/images/dateinput-android.png){ width="300" }
+
+/// caption
+
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | iOS
+
+![/reference/images/dateinput-iOS.png](/reference/images/dateinput-iOS.png){ width="300" }
+
+/// caption
+
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Web
+
+![/reference/images/dateinput-web.png](/reference/images/dateinput-web.png){ width="300" }
+
+/// caption
+
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Textual {{ not_supported }}
+
+Not supported
+
+///
 
 ## Usage
 
-``` python
+```python
 import toga
 
 current_date = toga.DateInput()
@@ -72,11 +90,11 @@ current_date = toga.DateInput()
 ## Notes
 
 - This widget supports years from 1800 to 8999 inclusive.
-- Properties that return `datetime.date`{.interpreted-text role="any"}
+- Properties that return [`datetime.date`][]
   objects can also accept:
-  - `datetime.datetime`{.interpreted-text role="any"}: The date portion
+  - [`datetime.datetime`][]: The date portion
     will be extracted.
-  - `str`{.interpreted-text role="any"}: Will be parsed as an ISO8601
+  - [`str`][]: Will be parsed as an ISO8601
     format date string (e.g., "2023-12-25").
 - On iOS, style directives for changing the widget's color and
   background color will be ignored. Apple advises against customizing
@@ -85,10 +103,6 @@ current_date = toga.DateInput()
 
 ## Reference
 
-::: {.autoclass}
-toga.DateInput
-:::
+::: toga.DateInput
 
-::: {.autoprotocol}
-toga.widgets.dateinput.OnChangeHandler
-:::
+::: toga.widgets.dateinput.OnChangeHandler

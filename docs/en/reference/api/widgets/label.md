@@ -2,71 +2,93 @@
 
 A text label for annotating forms or interfaces.
 
-:::::::::: {.tabs}
-::: {.group-tab}
-macOS
+/// tab | macOS
 
-<figure class="align-center">
-<img src="/reference/images/label-cocoa.png" width="300"
-alt="/reference/images/label-cocoa.png" />
-</figure>
-:::
+![/reference/images/label-cocoa.png](/reference/images/label-cocoa.png){ width="300" }
 
-::: {.group-tab}
-Linux
+/// caption
 
-<figure class="align-center">
-<img src="/reference/images/label-gtk.png" width="300"
-alt="/reference/images/label-gtk.png" />
-</figure>
-:::
+///
 
-::: {.group-tab}
-Windows
 
-<figure class="align-center">
-<img src="/reference/images/label-winforms.png" width="300"
-alt="/reference/images/label-winforms.png" />
-</figure>
-:::
+<!-- TODO: Update alt text -->
 
-::: {.group-tab}
-Android
+///
 
-<figure class="align-center">
-<img src="/reference/images/label-android.png" width="300"
-alt="/reference/images/label-android.png" />
-</figure>
-:::
+/// tab | Linux
 
-::: {.group-tab}
-iOS
+![/reference/images/label-gtk.png](/reference/images/label-gtk.png){ width="300" }
 
-<figure class="align-center">
-<img src="/reference/images/label-iOS.png" width="300"
-alt="/reference/images/label-iOS.png" />
-</figure>
-:::
+/// caption
 
-::: {.group-tab}
-Web [\|beta\|](##SUBST##|beta|)
+///
 
-<figure class="align-center">
-<img src="/reference/images/label-web.png" width="300"
-alt="/reference/images/label-web.png" />
-</figure>
-:::
 
-::: {.group-tab}
-Textual [\|beta\|](##SUBST##|beta|)
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Windows
+
+![/reference/images/label-winforms.png](/reference/images/label-winforms.png){ width="300" }
+
+/// caption
+
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Android
+
+![/reference/images/label-android.png](/reference/images/label-android.png){ width="300" }
+
+/// caption
+
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | iOS
+
+![/reference/images/label-iOS.png](/reference/images/label-iOS.png){ width="300" }
+
+/// caption
+
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Web {{ beta_support }}
+
+![/reference/images/label-web.png](/reference/images/label-web.png){ width="300" }
+
+/// caption
+
+///
+
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Textual {{ beta_support }}
 
 Screenshot not available
-:::
-::::::::::
+
+///
 
 ## Usage
 
-``` python
+```python
 import toga
 
 label = toga.Label("Hello world")
@@ -80,6 +102,4 @@ label = toga.Label("Hello world")
 
 ## Reference
 
-::: {.autoclass}
-toga.Label
-:::
+::: toga.Label
