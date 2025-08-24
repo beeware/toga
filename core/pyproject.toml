@@ -69,7 +69,7 @@ dev = [
     "pytest-asyncio == 1.1.0",
     "pytest-freezer == 0.4.9",
     "pytest-xdist == 3.8.0",
-    "setuptools-scm == 8.3.1",
+    "setuptools-scm == 9.2.0",
     "tox == 4.28.4",
 ]
 # Docs are always built on a specific Python version; see RTD and tox config files,
