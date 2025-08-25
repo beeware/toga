@@ -171,7 +171,7 @@ class ProxyEventLoop(asyncio.AbstractEventLoop):
         # underlying event loop will shut down its own async generators.
         pass
 
-    async def shutdown_default_executor(self, timeout):
+    async def shutdown_default_executor(self, timeout=None):
         # The proxy event loop doesn't need to shut anything down; the
         # underlying event loop will shut down its own executor.
         pass
