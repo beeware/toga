@@ -55,6 +55,7 @@ root = ".."
 parallel = true
 branch = true
 relative_files = true
+omit = ["test_compat.py"]
 
 # See notes in the root pyproject.toml file.
 source = ["src"]
@@ -68,6 +69,8 @@ source = [
 
 [tool.pytest.ini_options]
 asyncio_default_fixture_loop_scope = "function"
+# Excludes collecting tests in compat
+norecursedirs = "compat"
 
 [tool.ruff]
 extend = "../pyproject.toml"
