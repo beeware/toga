@@ -199,10 +199,10 @@ jobs:
       with:
         fetch-depth: 0
 
-    - name: Set up Python 3.10
+    - name: Set up Python
       uses: actions/setup-python@v5.6.0
       with:
-        python-version: "3.10"
+        python-version: ${{ env.min_python_version }}
 
     - name: Install Tox
       uses: beeware/.github/.github/actions/install-requirement@main
@@ -220,7 +220,7 @@ jobs:
 
     - name: Test
       run: |
-        export TRAVERINO_INSTALL_COMMAND="python -m pip install ../$(ls dist/travertino-*.whl)"
+        export TRAVERTINO_INSTALL_COMMAND="python -m pip install ../$(ls dist/travertino-*.whl)"
         tox -e trav-compat
 
   testbed:
