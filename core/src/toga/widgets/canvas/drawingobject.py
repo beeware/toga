@@ -50,11 +50,11 @@ def _determine_counterclockwise(anticlockwise, counterclockwise):
 class DrawingObject(ABC):
     """A drawing operation in a [`Context`][toga.widgets.canvas.Context].
 
-    Every context drawing method creates a ``DrawingObject``, adds it to the context,
+    Every context drawing method creates a `DrawingObject`, adds it to the context,
     and returns it. Each argument passed to the method becomes a property of the
-    ``DrawingObject``, which can be modified as shown in the [Usage][] section.
+    `DrawingObject`, which can be modified as shown in the [Usage][] section.
 
-    ``DrawingObjects`` can also be created manually, then added to a context using the
+    `DrawingObjects` can also be created manually, then added to a context using the
     [`append()`][toga.widgets.canvas.Context.append] or
     [`insert()`][toga.widgets.canvas.Context.append] methods. Their constructors take
     the same arguments as the corresponding [`Context`][toga.widgets.canvas.Context]
