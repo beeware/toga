@@ -52,7 +52,7 @@ class DrawingObject(ABC):
 
     Every context drawing method creates a ``DrawingObject``, adds it to the context,
     and returns it. Each argument passed to the method becomes a property of the
-    ``DrawingObject``, which can be modified as shown in the `Usage`_ section.
+    ``DrawingObject``, which can be modified as shown in the [Usage][] section.
 
     ``DrawingObjects`` can also be created manually, then added to a context using the
     [`append()`][toga.widgets.canvas.Context.append] or

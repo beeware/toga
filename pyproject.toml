@@ -145,22 +145,8 @@ dev = [
 docs = [
     "beeware-docs-tools @ git+https://github.com/beeware/beeware-docs-tools",
     "Pillow == 11.3.0",  # Why is this part of the docs?
-    "black==25.1.0",
-    "markdown-checker==0.2.5",
-    "mistletoe==1.4.0",
-    "mkdocs-autorefs==1.4.2",
-    "mkdocs-literate-nav==0.6.2",
-    "mkdocs-macros-plugin==1.3.9",
-    "mkdocs-material==9.6.18",
     "mkdocs-table-reader-plugin==3.1.0",
-    "mkdocs==1.6.1",
-    "mkdocstrings-python==1.17.0",
-    "pymdown-extensions==10.16.1",
-    "pyspelling==2.10",
-    "python-Levenshtein==0.27.1",
-    "PyYAML==6.0.2",
     "toga-core @ ./core",
-    "translate-toolkit @ git+https://github.com/translate/translate@aa35159f03f53aa536381643dfafbc2a19a24784",
     "travertino @ ./travertino",
     {include-group = "setuptools-scm"},
 ]

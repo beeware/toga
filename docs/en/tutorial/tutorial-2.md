@@ -22,7 +22,7 @@ involving layouts, scrollers, and containers inside other containers:
 Here's the source code:
 
 ```python
--8<-  "https://github.com/beeware/toga/blob/main/examples/tutorial2/tutorial/app.py"
+-8<-  "tutorial2/tutorial/app.py"
 ```
 
 In order to render the icons, you will need to move the icons folder

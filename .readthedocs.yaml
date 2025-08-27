@@ -7,10 +7,10 @@ version: 2
 
 # Set the version of Python and other tools you might need
 build:
-  os: ubuntu-22.04
+  os: ubuntu-24.04
   tools:
     # Docs are always built on Python 3.12. See also the tox config.
-    python: "3.12"
+    python: "3.13"
   jobs:
     pre_install:
       - python -m pip install --upgrade pip
