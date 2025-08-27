@@ -2,6 +2,8 @@ copyright: © Russell Keith-Magee
 
 not_in_nav: |
   /index.md
+  topics/index.md
+  reference/index.md
 
 validation:
   omitted_files: warn
@@ -11,6 +13,7 @@ validation:
 
 extra:
   project_name: toga
+  package_name: toga-core
   social:
     - icon: fontawesome/brands/github
       link: https://github.com/beeware

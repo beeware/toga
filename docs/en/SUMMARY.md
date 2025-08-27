@@ -1,23 +1,29 @@
 - [Tutorials](tutorial/index.md)
     - ./tutorial/*
-- [How-to Guides](how-to/index.md)
-    - [Contributing to Toga](how-to/contribute/index.md)
-        - ./how-to/contribute/*
-    - [Internal How-to guides](how-to/internal/index.md)
-        - ./how-to/internal/*
-- [Topic guides](topics/index.md)
+- How-to Guides
+    - Contributing to Toga
+        - [Contributing to Toga](how-to/contribute/code.md)
+        - [Contributing to Toga's documentation](how-to/contribute/docs.md)
+    - Internal How-to guides
+        - [How to cut a Toga release](how-to/internal/release.md)
+- Topic guides
     - ./topics/*
-- [Reference](reference/index.md)
+- Reference
     - [API Reference](reference/api/index.md)
         - ./reference/api/*
     - [Supported Platforms](reference/platforms/index.md)
         - ./reference/platforms/*
     - [Toga APIs by platform](reference/widgets_by_platform.md)
-    - [Style](reference/style/index.md)
-        - ./reference/style/*
-    - [Plugins](reference/plugins/index.md)
-        - ./reference/plugins/*
-    - [Toga's internals](reference/internals/index.md)
-        - ./reference/internals/*
-- [About Toga](about/index.md)
-    - ./about/*
+    - Style
+        - [The Pack Style Engine](reference/style/pack.md)
+    - Plugins
+        - [Image Format Plugins](reference/plugins/image_formats.md)
+    - Toga's internals
+        - [Architecture](reference/internals/architecture.md)
+- About Toga
+    - [Why Toga?](about/philosophy.md)
+    - [FAQ](about/faq.md)
+    - [Success Stories](about/success.md)
+    - [Release History](about/releases.md)
+    - [Toga's Road Map](about/roadmap.md)
+    - [Community](about/community.md)

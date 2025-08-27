@@ -104,7 +104,7 @@ type = [
     { directory = "misc", name = "Misc", showcontent = false },
 ]
 
-[tool.setuptools_scm]
+# [tool.setuptools_scm]
 # We're not doing anything Python-related at the root level of the repo, but if this
 # declaration isn't here, tox commands run from the root directory raise a warning that
 # pyproject.toml doesn't contain a setuptools_scm section.
@@ -160,6 +160,8 @@ docs = [
     "pyspelling==2.10",
     "python-Levenshtein==0.27.1",
     "PyYAML==6.0.2",
+    "toga-core @ ./core",
     "translate-toolkit @ git+https://github.com/translate/translate@aa35159f03f53aa536381643dfafbc2a19a24784",
+    "travertino @ ./travertino",
     {include-group = "setuptools-scm"},
 ]
