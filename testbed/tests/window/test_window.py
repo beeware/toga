@@ -999,10 +999,6 @@ else:
     ):
         """When a window is hidden using hide(), the window.state getter should
         continue to report the same state as it did when the window was last visible."""
-        if state == WindowState.MINIMIZED and not second_window_probe.supports_minimize:
-            pytest.xfail(
-                "This backend doesn't reliably support minimized window state."
-            )
         second_window.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
         second_window.show()
         # Wait for window animation before assertion.

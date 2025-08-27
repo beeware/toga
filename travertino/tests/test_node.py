@@ -39,22 +39,6 @@ class OldStyle(Style):
         super().layout(viewport)
 
 
-@mock_apply
-@dataclass(kw_only=True, repr=False)
-class TypeErrorStyle(Style):
-    # Uses the correct signature, but raises an unrelated TypeError in layout
-    def layout(self, viewport):
-        raise TypeError("An unrelated TypeError has occurred somewhere in layout()")
-
-
-@mock_apply
-@dataclass(kw_only=True, repr=False)
-class OldTypeErrorStyle(Style):
-    # Just to be extra safe...
-    def layout(self, node, viewport):
-        raise TypeError("An unrelated TypeError has occurred somewhere in layout()")
-
-
 @dataclass(kw_only=True, repr=False)
 class BrokenStyle(BaseStyle):
     def apply(self):
@@ -219,19 +203,6 @@ def test_refresh_no_op():
     node = Node(style=Style())
     node.refresh(Viewport(width=100, height=100))
     node.style.apply.assert_not_called()
-
-
-@pytest.mark.parametrize("StyleClass", [TypeErrorStyle, OldTypeErrorStyle])
-def test_type_error_in_layout(StyleClass):
-    """The shim shouldn't hide unrelated TypeErrors."""
-
-    class Applicator:
-        def set_bounds(self):
-            pass
-
-    node = Node(style=StyleClass(), applicator=Applicator())
-    with pytest.raises(TypeError, match=r"unrelated TypeError"):
-        node.refresh(Viewport(50, 50))
 
 
 def test_add():
@@ -483,18 +454,24 @@ def test_assign_style_with_no_applicator():
 
 
 def test_apply_before_node_is_ready():
-    """Triggering an apply raises a warning if the node is not ready to apply style."""
+    """The < 0.5 shim doesn't swallow the error when applying an unready style."""
     style = BrokenStyle()
     applicator = Mock()
+    node = Node(style=style)
 
-    with pytest.warns(RuntimeWarning):
-        node = Node(style=style)
+    match = (
+        r"Failed to apply style when assigning applicator, or when assigning a new "
+        r"style once applicator is present\. Node should be sufficiently initialized "
+        r"to apply its style before it is assigned an applicator\."
+    )
+
+    with pytest.raises(RuntimeError, match=match):
         node.applicator = applicator
 
-    with pytest.warns(RuntimeWarning):
+    with pytest.raises(RuntimeError, match=match):
         node.style = BrokenStyle()
 
-    with pytest.warns(RuntimeWarning):
+    with pytest.raises(RuntimeError, match=match):
         Node(style=style, applicator=applicator)
 
 

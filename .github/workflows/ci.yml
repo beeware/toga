@@ -125,9 +125,7 @@ jobs:
       run: |
         # The $(ls ...) shell expansion is done in the GitHub environment; the value of
         # TOGA_INSTALL_COMMAND will be a literal string without any shell expansions to
-        # perform. We don't *explicitly* install the Travertino wheel; we provide the
-        # dist dir as a source of wheels, and rely on pip to resolve the explicit
-        # version match to the Travertino wheel in that folder.
+        # perform.
         export TOGA_INSTALL_COMMAND="python -m pip install ../$(ls dist/toga_core-*.whl)[dev] ../$(ls dist/travertino-*.whl) ../$(ls dist/toga_dummy-*.whl)"
         tox -e py-cov${{ matrix.tox-suffix }}
         tox -qe coverage$(tr -dc "0-9" <<< "${{ matrix.python-version }}")${{ matrix.tox-suffix }}
@@ -189,6 +187,41 @@ jobs:
       with:
         name: html-coverage-report
         path: ${{ matrix.package }}/htmlcov
+
+  travertino-backwards-compatibility:
+    name: Test Travertino backwards compatibility with Toga 0.4.8
+    runs-on: "ubuntu-latest"
+    needs: [ pre-commit, towncrier, package ]
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4.2.2
+      with:
+        fetch-depth: 0
+
+    - name: Set up Python
+      uses: actions/setup-python@v5.6.0
+      with:
+        python-version: ${{ env.min_python_version }}
+
+    - name: Install Tox
+      uses: beeware/.github/.github/actions/install-requirement@main
+      with:
+        requirements: tox
+        extra: dev
+        project-root: core
+
+    - name: Get Package
+      uses: actions/download-artifact@v4.3.0
+      with:
+        pattern: ${{ format('{0}-*', needs.package.outputs.artifact-basename) }}
+        merge-multiple: true
+        path: dist
+
+    - name: Test
+      run: |
+        export TRAVERTINO_INSTALL_COMMAND="python -m pip install ../$(ls dist/travertino-*.whl)"
+        tox -e trav-compat
 
   testbed:
     name: Testbed

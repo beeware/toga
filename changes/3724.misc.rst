@@ -1,0 +1,1 @@
+Visual separation is added when showing and hiding window when testing for current window in slow mode.
