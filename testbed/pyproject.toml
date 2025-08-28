@@ -1,0 +1,7 @@
+# Attempted integrating async operations, but it required calls like 'widget.text'
+# to need 'await' when calling, which is not the case in Toga test methods.
+
+# Uncomment below if using async.
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
