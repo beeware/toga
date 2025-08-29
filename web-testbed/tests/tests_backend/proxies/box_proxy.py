@@ -1,11 +1,13 @@
 from ..page_singleton import BackgroundPage
 
+
 class BoxProxy:
     """Proxy for toga.Box(children=[...])."""
+
     def __init__(self, children=None):
-        #Create box object remotely
+        # Create box object remotely
         self.id = self._create_remote_box()
-        #If there's children, add them
+        # If there's children, add them
         if children:
             for child in children:
                 self.add(child)
@@ -27,7 +29,5 @@ class BoxProxy:
 
     def add(self, widget):
         page = BackgroundPage.get()
-        code = (
-            f"self.my_widgets['{self.id}'].add(self.my_widgets['{widget.id}'])"
-        )
+        code = f"self.my_widgets['{self.id}'].add(self.my_widgets['{widget.id}'])"
         page.eval_js("(code) => window.test_cmd(code)", code)

@@ -41,6 +41,10 @@ classifiers = [
     "Topic :: Software Development :: User Interfaces",
 ]
 
+dependencies = [
+    "packaging",
+]
+
 [project.urls]
 Homepage = "https://beeware.org/travertino"
 Funding = "https://beeware.org/contributing/membership/"

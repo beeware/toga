@@ -1,5 +1,6 @@
 from ..page_singleton import BackgroundPage
 
+
 class ButtonProbe:
     def __init__(self, widget):
         object.__setattr__(self, "id", widget.id)
@@ -10,14 +11,19 @@ class ButtonProbe:
 
         match name:
             case "text":
-                # was inner_text, but it trims leading/trailing spaces and removes only whitespace.
-                return page.run_coro(lambda page: page.locator(f"#{self.dom_id}").text_content())
+                # was inner_text, but it trims leading/trailing spaces and removes only
+                # whitespace.
+                return page.run_coro(
+                    lambda page: page.locator(f"#{self.dom_id}").text_content()
+                )
             case "height":
-                box = page.run_coro(lambda page: page.locator(f"#{self.dom_id}").bounding_box())
+                box = page.run_coro(
+                    lambda page: page.locator(f"#{self.dom_id}").bounding_box()
+                )
                 return None if box is None else box["height"]
-    
+
         return "No match"
-        #raise AttributeError(name)
+        # raise AttributeError(name)
 
         """ ALTERNATIVE METHOD - Keep just in case
         sel = f"#{self.dom_id}"
@@ -33,7 +39,3 @@ class ButtonProbe:
                 return None if box is None else box["height"]
             return w.run_coro(_height)
         """
-
-
-
-

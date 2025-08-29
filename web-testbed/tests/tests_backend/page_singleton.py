@@ -1,5 +1,8 @@
-import asyncio, threading
+import asyncio
+import threading
+
 from playwright.async_api import async_playwright
+
 
 class BackgroundPage:
     _inst = None
@@ -48,13 +51,17 @@ class BackgroundPage:
             self._page = await self._context.new_page()
 
             await self._page.goto("http://localhost:8080")
-            #await self._page.goto("http://localhost:8080", wait_until="load", timeout=30_000)
+            # await self._page.goto(
+            #     "http://localhost:8080", wait_until="load", timeout=30_000
+            # )
             await self._page.wait_for_timeout(5000)
 
-            await self._page.evaluate("(code) => window.test_cmd(code)", "self.my_widgets = {}")
+            await self._page.evaluate(
+                "(code) => window.test_cmd(code)", "self.my_widgets = {}"
+            )
 
             self._alock = asyncio.Lock()
-        except Exception as e:
+        except Exception:
             self._alock = asyncio.Lock()
         finally:
             self._ready.set()

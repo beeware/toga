@@ -1,6 +1,7 @@
 from ..page_singleton import BackgroundPage
 from .box_proxy import BoxProxy
 
+
 class MainWindowProxy:
     """Proxy that can get/set content. Content must be a BoxProxy."""
 

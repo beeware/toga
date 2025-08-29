@@ -1,6 +1,6 @@
 import toga
 from toga.style import Pack
-from toga.style.pack import COLUMN, ROW, CENTER
+from toga.style.pack import COLUMN
 
 try:
     import js
@@ -10,6 +10,7 @@ try:
     from pyodide.ffi import create_proxy
 except ModuleNotFoundError:
     pyodide = None
+
 
 class HelloWorld(toga.App):
     def startup(self):
@@ -23,14 +24,15 @@ class HelloWorld(toga.App):
         self.main_window = toga.MainWindow(title=self.formal_name)
         self.main_window.content = main_box
         self.main_window.show()
-    
+
     def cmd_test(self, code):
         local_vars = {}
         try:
-            exec(code, {'self': self, 'toga': toga}, local_vars)
+            exec(code, {"self": self, "toga": toga}, local_vars)
             return local_vars.get("result", "No result")
         except Exception as e:
-            return f'Error: {e}'
-        
+            return f"Error: {e}"
+
+
 def main():
     return HelloWorld()
