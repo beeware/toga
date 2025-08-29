@@ -8,4 +8,6 @@ class ActivityIndicatorProbe(SimpleProbe):
 
     def assert_is_hidden(self, value):
         # GTK automatically hides the widget on stop.
-        assert ((not self.native.get_property("active")) or (not self.native.get_visible())) == value
+        assert (
+            (not self.native.get_property("active")) or (not self.native.get_visible())
+        ) == value
