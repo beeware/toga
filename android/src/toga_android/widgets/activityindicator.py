@@ -1,16 +1,19 @@
 from android import R
-from android.widget import ProgressBar
 from android.view import View
+from android.widget import ProgressBar
+
 from .base import Widget
+
 
 class ActivityIndicator(Widget):
     def create(self):
         self.native = ProgressBar(
-            self._native_activity, 
-            None, 
-            R.attr.progressBarStyle
+            self._native_activity,
+            None,
+            R.attr.progressBarStyleSmall,
         )
-        self.native.setIndeterminate(False)
+        # Always set as running and we just control visibility.
+        self.native.setIndeterminate(True)
         self._running = False
 
     def is_running(self):
@@ -19,17 +22,14 @@ class ActivityIndicator(Widget):
     def start(self):
         self._running = True
         self.native.setVisibility(View.VISIBLE)
-        # Indeterminate means it's animating.
-        self.native.setIndeterminate(True)
 
     def stop(self):
         self._running = False
-        self.native.setVisibility(View.GONE)
-        self.native.setIndeterminate(False)
+        self.native.setVisibility(View.INVISIBLE)
 
     def set_hidden(self, hidden):
         if hidden or not self._running:
-            self.native.setVisibility(View.GONE)
+            self.native.setVisibility(View.INVISIBLE)
         else:
             self.native.setVisibility(View.VISIBLE)
 
