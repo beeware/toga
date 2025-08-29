@@ -2,7 +2,6 @@ import pytest
 
 import toga
 
-from ..conftest import skip_on_platforms
 from .conftest import build_cleanup_test
 from .properties import (  # noqa: F401
     test_enable_noop,
@@ -12,11 +11,10 @@ from .properties import (  # noqa: F401
 
 @pytest.fixture
 async def widget():
-    skip_on_platforms("android")
     return toga.ActivityIndicator()
 
 
-test_cleanup = build_cleanup_test(toga.ActivityIndicator, skip_platforms=("android"))
+test_cleanup = build_cleanup_test(toga.ActivityIndicator)
 
 
 async def test_start_stop(widget, probe):
@@ -68,3 +66,47 @@ async def test_fixed_square_widget_size(widget, probe):
     # Widget hasn't changed size as a result of being made flexible
     assert probe.height == initial_height
     assert probe.width == initial_width
+
+
+async def test_set_hidden(widget, probe):
+    "Hidden Change functions correctly on this widget regardless of started or stopped"
+
+    # Confirm that stopping hides the widget
+    probe.assert_is_hidden(True)
+    widget.start()
+    await probe.redraw("Activity Indicator should be started")
+    probe.assert_is_hidden(False)
+    widget.stop()
+    await probe.redraw("Activity Indicator should be stopped")
+    probe.assert_is_hidden(True)
+
+    # Confirm that setting hidden while running hides the widget even when restarted
+    widget.start()
+    await probe.redraw("Activity Indicator should be started")
+    probe.assert_is_hidden(False)
+    widget.visibility = "hidden"
+    await probe.redraw("Activity Indicator should be hidden")
+    probe.assert_is_hidden(True)
+    widget.stop()
+    await probe.redraw("Activity Indicator should be stopped")
+    probe.assert_is_hidden(True)
+    widget.start()
+    await probe.redraw("Activity Indicator should be started")
+    probe.assert_is_hidden(True)
+    widget.visibility = "visible"
+    await probe.redraw("Activity Indicator should be unhidden")
+    probe.assert_is_hidden(False)
+
+    # Confirm that setting hidden while stopped hides the widget even when restarted
+    widget.visibility = "hidden"
+    await probe.redraw("Activity Indicator should be hidden")
+    probe.assert_is_hidden(True)
+    widget.stop()
+    await probe.redraw("Activity Indicator should be stopped")
+    probe.assert_is_hidden(True)
+    widget.start()
+    await probe.redraw("Activity Indicator should be started")
+    probe.assert_is_hidden(True)
+    widget.visibility = "visible"
+    await probe.redraw("Activity Indicator should be unhidden")
+    probe.assert_is_hidden(False)

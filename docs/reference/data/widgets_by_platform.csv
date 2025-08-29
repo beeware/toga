@@ -3,7 +3,7 @@ Application,Core Component,:class:`~toga.App`,The application itself,|y|,|y|,|y|
 Window,Core Component,:class:`~toga.Window`,An operating system-managed container of widgets.,|y|,|y|,|y|,|y|,|y|,|b|,|b|
 DocumentWindow,Core Component,:class:`~toga.DocumentWindow`,A window that can be used as the main interface to a document-based app.,|y|,|y|,|y|,,,,
 MainWindow,Core Component,:class:`~toga.MainWindow`,A window that can use the full set of window-level user interface elements.,|y|,|y|,|y|,|y|,|y|,|b|,|b|
-ActivityIndicator,General Widget,:class:`~toga.ActivityIndicator`,A spinning activity animation,|y|,|y|,|y|,|y|,,|b|,
+ActivityIndicator,General Widget,:class:`~toga.ActivityIndicator`,A spinning activity animation,|y|,|y|,|y|,|y|,|y|,|b|,
 Button,General Widget,:class:`~toga.Button`,Basic clickable Button,|y|,|y|,|y|,|y|,|y|,|b|,|b|
 Canvas,General Widget,:class:`~toga.Canvas`,A drawing area for 2D vector graphics.,|y|,|y|,|y|,|y|,|y|,,
 DateInput,General Widget,:class:`~toga.DateInput`,A widget to select a calendar date,|y|,|y|,|y|,|y|,|y|,|b|,
