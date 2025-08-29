@@ -11,4 +11,5 @@ def _toga_lt_5():
         # compatibility shim; any exceptions must be from other sources.
         return False
     else:
-        return tuple(int(v) for v in toga_version.split(".")[:2]) < (0, 5)
+        major, minor, *_ = toga_version.split(".")
+        return (int(major), int(minor)) < (0, 5)
