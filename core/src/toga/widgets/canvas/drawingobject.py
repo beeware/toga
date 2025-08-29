@@ -48,34 +48,39 @@ def _determine_counterclockwise(anticlockwise, counterclockwise):
 
 
 class DrawingObject(ABC):
-    """A drawing operation in a :any:`Context`.
+    """A drawing operation in a [`Context`][toga.widgets.canvas.Context].
 
-    Every context drawing method creates a ``DrawingObject``, adds it to the context,
+    Every context drawing method creates a `DrawingObject`, adds it to the context,
     and returns it. Each argument passed to the method becomes a property of the
-    ``DrawingObject``, which can be modified as shown in the `Usage`_ section.
+    `DrawingObject`, which can be modified as shown in the [Usage][] section.
 
-    ``DrawingObjects`` can also be created manually, then added to a context using the
-    :meth:`~Context.append` or :meth:`~Context.insert` methods. Their constructors take
-    the same arguments as the corresponding :any:`Context` method, and their classes
-    have the same names, but capitalized:
+    `DrawingObjects` can also be created manually, then added to a context using the
+    [`append()`][toga.widgets.canvas.Context.append] or
+    [`insert()`][toga.widgets.canvas.Context.append] methods. Their constructors take
+    the same arguments as the corresponding [`Context`][toga.widgets.canvas.Context]
+    method, and their classes have the same names, but capitalized:
 
-    * :meth:`toga.widgets.canvas.Arc <Context.arc>`
-    * :meth:`toga.widgets.canvas.BeginPath <Context.begin_path>`
-    * :meth:`toga.widgets.canvas.BezierCurveTo <Context.bezier_curve_to>`
-    * :meth:`toga.widgets.canvas.ClosePath <Context.close_path>`
-    * :meth:`toga.widgets.canvas.Ellipse <Context.ellipse>`
-    * :meth:`toga.widgets.canvas.Fill <Context.fill>`
-    * :meth:`toga.widgets.canvas.LineTo <Context.line_to>`
-    * :meth:`toga.widgets.canvas.MoveTo <Context.move_to>`
-    * :meth:`toga.widgets.canvas.QuadraticCurveTo <Context.quadratic_curve_to>`
-    * :meth:`toga.widgets.canvas.Rect <Context.rect>`
-    * :meth:`toga.widgets.canvas.ResetTransform <Context.reset_transform>`
-    * :meth:`toga.widgets.canvas.Rotate <Context.rotate>`
-    * :meth:`toga.widgets.canvas.Scale <Context.scale>`
-    * :meth:`toga.widgets.canvas.Stroke <Context.stroke>`
-    * :meth:`toga.widgets.canvas.Translate <Context.translate>`
-    * :meth:`toga.widgets.canvas.WriteText <Context.write_text>`
-    """
+    * [`toga.widgets.canvas.Arc`][toga.widgets.canvas.Context.arc]
+    * [`toga.widgets.canvas.BeginPath`][toga.widgets.canvas.Context.begin_path]
+    * [`toga.widgets.canvas.BezierCurveTo`][toga.widgets.canvas.Context.bezier_curve_to]
+    * [`toga.widgets.canvas.ClosePath`][toga.widgets.canvas.Context.close_path]
+    * [`toga.widgets.canvas.Ellipse`][toga.widgets.canvas.Context.ellipse]
+    * [`toga.widgets.canvas.Fill`][toga.widgets.canvas.Context.fill]
+    * [`toga.widgets.canvas.LineTo`][toga.widgets.canvas.Context.line_to]
+    * [`toga.widgets.canvas.MoveTo`][toga.widgets.canvas.Context.move_to]
+    * [`toga.widgets.canvas.QuadraticCurveTo`][toga.widgets.canvas.Context.quadratic_curve_to]
+    * [`toga.widgets.canvas.Rect`][toga.widgets.canvas.Context.rect]
+    * [`toga.widgets.canvas.ResetTransform`][toga.widgets.canvas.Context.reset_transform]
+    * [`toga.widgets.canvas.Rotate`][toga.widgets.canvas.Context.rotate]
+    * [`toga.widgets.canvas.Scale`][toga.widgets.canvas.Context.scale]
+    * [`toga.widgets.canvas.Stroke`][toga.widgets.canvas.Context.stroke]
+    * [`toga.widgets.canvas.Translate`][toga.widgets.canvas.Context.translate]
+    * [`toga.widgets.canvas.WriteText`][toga.widgets.canvas.Context.write_text]
+    """  # noqa: E501
+
+    # Disable the line-too-long check as there is no way to properly render the list
+    # above with any given list item on multiple lines; an undesired space is added if
+    # the link content is split on two lines.
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}()"
