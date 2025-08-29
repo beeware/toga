@@ -19,10 +19,6 @@ class ActivityIndicator(Widget):
     def is_running(self):
         return self._running
 
-    def set_hidden(self, hidden):
-        super().set_hidden(hidden)
-        self._hidden = hidden
-
     def start(self):
         self._running = True
         self.native.setVisibility(View.INVISIBLE if self._hidden else View.VISIBLE)
@@ -36,6 +32,7 @@ class ActivityIndicator(Widget):
             self.native.setVisibility(View.INVISIBLE)
         else:
             self.native.setVisibility(View.VISIBLE)
+        self._hidden = hidden
 
     def rehint(self):
         self.native.measure(
