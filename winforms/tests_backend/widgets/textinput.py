@@ -54,5 +54,5 @@ class TextInputProbe(SimpleProbe):
         pass
 
     def set_cursor_at_end(self):
-        self.native.SelectionStart = self.native.Text.Length
+        self.native.SelectionStart = len(self.native.Text)
         self.native.SelectionLength = 0
