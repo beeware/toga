@@ -19,7 +19,7 @@ test = [
 project_name = "Toga Testbed"
 bundle = "org.beeware.toga"
 url = "https://beeware.org"
-license = { text = "BSD-3-Clause", file = "LICENSE" }
+license = { text = "BSD-3-Clause" }
 author = "Tiberius Yak"
 author_email = "tiberius@beeware.org"
 
