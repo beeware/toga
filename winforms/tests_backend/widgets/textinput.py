@@ -2,7 +2,6 @@ import ctypes
 from ctypes import c_uint
 from ctypes.wintypes import HWND, LPARAM
 
-import pytest
 from System.Windows.Forms import TextBox
 
 from .base import SimpleProbe
