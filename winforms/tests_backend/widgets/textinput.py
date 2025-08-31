@@ -55,4 +55,5 @@ class TextInputProbe(SimpleProbe):
         pass
 
     def set_cursor_at_end(self):
-        pytest.skip("Cursor positioning not supported on this platform")
+        self.native.SelectionStart = self.native.Text.Length
+        self.native.SelectionLength = 0
