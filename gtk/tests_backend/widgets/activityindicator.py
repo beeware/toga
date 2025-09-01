@@ -8,6 +8,5 @@ class ActivityIndicatorProbe(SimpleProbe):
 
     def assert_spinner_is_hidden(self, value):
         # GTK automatically hides the widget on stop.
-        assert (
-            (not self.native.get_property("active")) or (not self.native.get_visible())
-        ) == value
+        is_visible = self.native.get_property("active") and self.native.get_visible()
+        assert is_visible == (not value)
