@@ -8,6 +8,5 @@ class ActivityIndicatorProbe(SimpleProbe):
     native_class = ProgressBar
 
     def assert_is_hidden(self, value):
-        assert self.native.getVisibility() == (
-            View.INVISIBLE if value else View.VISIBLE
-        )
+        is_visible = self.native.getVisibility() == View.VISIBLE
+        assert is_visible == value

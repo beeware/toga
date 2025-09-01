@@ -15,6 +15,7 @@ class ActivityIndicator(Widget):
         # Always set as running and we just control visibility.
         self.native.setIndeterminate(True)
         self._running = False
+        self._hidden = False
 
     def is_running(self):
         return self._running
