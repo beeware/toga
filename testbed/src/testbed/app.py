@@ -1,4 +1,3 @@
-import sys
 from unittest.mock import Mock
 
 import toga
@@ -48,14 +47,13 @@ class Testbed(toga.App):
     _gc_protector = []
 
     def startup(self):
-        # Ensure that Toga's task factory is tracking all tasks
+        # Toga installs a custom task factory to ensure that a strong reference to
+        # long-lived tasks is retained until the task completes. This task factory is
+        # used to verify that the custom task factory has been installed.
         toga_task_factory = self.loop.get_task_factory()
 
-        def task_factory(loop, coro, context=None):
-            if sys.version_info < (3, 11):
-                task = toga_task_factory(loop, coro)
-            else:
-                task = toga_task_factory(loop, coro, context=context)
+        def task_factory(loop, coro, **kwargs):
+            task = toga_task_factory(loop, coro, **kwargs)
             assert task in self._running_tasks, f"missing task reference for {task}"
             return task
 
