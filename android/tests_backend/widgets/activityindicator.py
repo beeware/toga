@@ -9,4 +9,4 @@ class ActivityIndicatorProbe(SimpleProbe):
 
     def assert_is_hidden(self, value):
         is_visible = self.native.getVisibility() == View.VISIBLE
-        assert is_visible == not value
+        assert is_visible == (not value)
