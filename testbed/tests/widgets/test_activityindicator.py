@@ -74,7 +74,7 @@ async def test_set_hidden(widget, probe):
     # Confirm that stopping hides the widget
     probe.assert_spinner_is_hidden(True)
     widget.start()
-    await probe.redraw("Activity Indicator should be started")
+    await probe.redraw("Activity Indicator should be started and visible")
     probe.assert_spinner_is_hidden(False)
     widget.stop()
     await probe.redraw("Activity Indicator should be stopped")
@@ -82,7 +82,7 @@ async def test_set_hidden(widget, probe):
 
     # Confirm that setting hidden while running hides the widget even when restarted
     widget.start()
-    await probe.redraw("Activity Indicator should be started")
+    await probe.redraw("Activity Indicator should be started and visible")
     probe.assert_spinner_is_hidden(False)
     widget.visibility = "hidden"
     await probe.redraw("Activity Indicator should be hidden")
@@ -91,7 +91,7 @@ async def test_set_hidden(widget, probe):
     await probe.redraw("Activity Indicator should be stopped")
     probe.assert_spinner_is_hidden(True)
     widget.start()
-    await probe.redraw("Activity Indicator should be started")
+    await probe.redraw("Activity Indicator should be started but not visible")
     probe.assert_spinner_is_hidden(True)
     widget.visibility = "visible"
     await probe.redraw("Activity Indicator should be unhidden")
@@ -105,7 +105,7 @@ async def test_set_hidden(widget, probe):
     await probe.redraw("Activity Indicator should be stopped")
     probe.assert_spinner_is_hidden(True)
     widget.start()
-    await probe.redraw("Activity Indicator should be started")
+    await probe.redraw("Activity Indicator should be started but not visible")
     probe.assert_spinner_is_hidden(True)
     widget.visibility = "visible"
     await probe.redraw("Activity Indicator should be unhidden")
