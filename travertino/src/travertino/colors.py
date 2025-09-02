@@ -1,49 +1,49 @@
 from __future__ import annotations
 
+import string
+
 from .constants import *  # noqa: F403
 
 
-def _clamp(value, upper=1):
-    return min(upper, max(0, value))
-
-
-def _clamp_hex(value):
-    return round(_clamp(value, upper=255))
+def _clamp(value, lower, upper):
+    return min(upper, max(lower, value))
 
 
 class Color:
-    "A base class for all colorspace representations."
+    """A base class for all colorspace representations."""
 
     def __eq__(self, other):
         try:
-            c1 = self.rgba
-            c2 = other.rgba
+            c1 = self.rgb
+            c2 = other.rgb
 
             return c1.r == c2.r and c1.g == c2.g and c1.b == c2.b and c1.a == c2.a
         except AttributeError:
             return False
 
-    @classmethod
-    def _validate_between(cls, content_name, value, min_value, max_value):
-        if value < min_value or value > max_value:
-            raise ValueError(
-                f"{content_name} value should be between {min_value}-{max_value}. "
-                f"Got {value}"
-            )
+    @staticmethod
+    def _validate_zero_to_one(name, value):
+        try:
+            return _clamp(float(value), 0.0, 1.0)
+        except (ValueError, TypeError) as exc:
+            raise TypeError(
+                f"Value for {name} must be a number; got {value!r}"
+            ) from exc
 
-    @classmethod
-    def _validate_partial(cls, content_name, value):
-        cls._validate_between(content_name, value, 0, 1)
+    @property
+    def a(self) -> float:
+        return self._a
 
-    @classmethod
-    def _validate_alpha(cls, value):
-        cls._validate_partial("alpha", value)
+    @property
+    def rgba(self) -> rgb:
+        return self.rgb
 
-    def blend_over(
-        self,
-        back_color: Color,
-    ) -> rgba:
-        """Performs the "over" straight alpha blending operation, compositing
+    @property
+    def hsla(self) -> hsl:
+        return self.hsl
+
+    def blend_over(self, back_color: Color) -> rgb:
+        """Perform the "over" straight alpha blending operation, compositing
         the front color over the back color.
 
         **Straight alpha blending** is not the same as
@@ -59,43 +59,44 @@ class Color:
         # https://en.wikipedia.org/wiki/Alpha_compositing#Description
 
         # Convert the input colors to rgba in order to do the calculation.
-        front_color = self.rgba
-        back_color = back_color.rgba
+        front_color = self.rgb
+        back_color = back_color.rgb
 
         if front_color.a == 1:
             # If the front color is fully opaque then the result will be the same as
             # front color.
             return front_color
 
-        blended_alpha = _clamp(front_color.a + ((1 - front_color.a) * back_color.a))
+        blended_alpha = _clamp(
+            front_color.a + ((1 - front_color.a) * back_color.a),
+            0.0,
+            1.0,
+        )
 
         if blended_alpha == 0:
             # Don't further blend the color, to prevent divide by 0.
-            return rgba(0, 0, 0, 0)
+            return rgb(0, 0, 0, 0)
         else:
             bands = {}
             for band in "rgb":
                 front = getattr(front_color, band)
                 back = getattr(back_color, band)
-                bands[band] = _clamp_hex(
-                    (
-                        (front * front_color.a)
-                        + (back * back_color.a * (1 - front_color.a))
-                    )
-                    / blended_alpha
-                )
+                bands[band] = (
+                    (front * front_color.a)
+                    + (back * back_color.a * (1 - front_color.a))
+                ) / blended_alpha
 
-            return rgba(**bands, a=blended_alpha)
+            return rgb(**bands, a=blended_alpha)
 
-    def unblend_over(self, back_color: Color, front_color_alpha: float) -> rgba:
-        """Performs the reverse of the "over" straight alpha blending operation,
+    def unblend_over(self, back_color: Color, front_color_alpha: float) -> rgb:
+        """Perform the reverse of the "over" straight alpha blending operation,
         returning the front color.
 
         Note: Unblending of blended colors might produce front color with slightly
         imprecise component values compared to the original front color. This is
         due to the loss of some amount of precision during the calculation and
         conversion process between the different color formats. For example,
-        unblending of a hsla blended color might might produce a slightly imprecise
+        unblending of an hsla blended color might might produce a slightly imprecise
         original front color, since the alpha blending and unblending is calculated
         after conversion to rgba values.
 
@@ -115,8 +116,8 @@ class Color:
         # are derived from the "over" straight alpha blending operation formula,
         # see: https://en.wikipedia.org/wiki/Alpha_compositing#Description
 
-        blended_color = self.rgba
-        back_color = back_color.rgba
+        blended_color = self.rgb
+        back_color = back_color.rgb
         if not 0 < front_color_alpha <= 1:
             raise ValueError(
                 "The value of front_color_alpha must be within the range of (0, 1]."
@@ -126,54 +127,62 @@ class Color:
             for band in "rgb":
                 blended = getattr(blended_color, band)
                 back = getattr(back_color, band)
-                bands[band] = _clamp_hex(
-                    (
-                        (blended * blended_color.a)
-                        - (back * back_color.a * (1 - front_color_alpha))
-                    )
-                    / front_color_alpha
-                )
+                bands[band] = (
+                    (blended * blended_color.a)
+                    - (back * back_color.a * (1 - front_color_alpha))
+                ) / front_color_alpha
 
-            return rgba(**bands, a=front_color_alpha)
+            return rgb(**bands, a=front_color_alpha)
 
 
-class rgba(Color):
-    "A representation of an RGBA color."
+class rgb(Color):
+    """A representation of an RGB(A) color."""
 
-    def __init__(self, r, g, b, a):
-        self._validate_rgb("red", r)
-        self._validate_rgb("green", g)
-        self._validate_rgb("blue", b)
-        self._validate_alpha(a)
-        self.r = r
-        self.g = g
-        self.b = b
-        self.a = a
+    def __init__(self, r, g, b, a=1.0):
+        self._r = self._validate_band("red", r)
+        self._g = self._validate_band("green", g)
+        self._b = self._validate_band("blue", b)
+        self._a = self._validate_zero_to_one("alpha", a)
 
     def __hash__(self):
-        return hash(("RGBA-color", self.r, self.g, self.b, self.a))
+        return hash(("RGB-color", self.r, self.g, self.b, self.a))
 
     def __repr__(self):
-        return f"rgba({self.r}, {self.g}, {self.b}, {self.a})"
+        return f"rgb({self.r}, {self.g}, {self.b}, {self.a})"
 
-    @classmethod
-    def _validate_rgb(cls, content_name, value):
-        cls._validate_between(content_name, value, 0, 255)
+    def __str__(self):
+        return f"rgb({self.r} {self.g} {self.b} / {self.a})"
 
-    @property
-    def rgba(self):
-        # Explicitly return a rgba value, to ensure that classes which inherit the
-        # parent rgba class, actually return the rgba() value, instead of the child
-        # class. For example, without this fix, doing rgb(20, 20, 20).rgba will
-        # return rgb(20, 20, 20), instead of rgba(20, 20, 20, 1).
-        return rgba(self.r, self.g, self.b, self.a)
-
-    @property
-    def rgb(self):
-        return rgb(self.r, self.g, self.b)
+    @staticmethod
+    def _validate_band(name, value):
+        try:
+            return _clamp(round(value), 0, 255)
+        except TypeError as exc:
+            raise TypeError(
+                f"Value for {name} must be a number; got {value!r}"
+            ) from exc
 
     @property
-    def hsla(self) -> hsla:
+    def r(self) -> int:
+        return self._r
+
+    @property
+    def g(self) -> int:
+        return self._g
+
+    @property
+    def b(self) -> int:
+        return self._b
+
+    @property
+    def rgb(self) -> rgb:
+        return self
+
+    @property
+    def hsl(self) -> hsl:
+        if cached := getattr(self, "_hsl", None):
+            return cached
+
         # Formula used here is from: https://en.wikipedia.org/wiki/HSL_and_HSV#From_RGB
         r_prime = self.r / 255
         g_prime = self.g / 255
@@ -200,61 +209,56 @@ class rgba(Color):
         else:
             saturation = chroma / (1 - abs((2 * value) - chroma - 1))
 
-        return hsla(
-            hue % 360,  # [0,360)
-            _clamp(saturation),  # [0,1]
-            _clamp(lightness),  # [0,1]
-            self.a,  # [0,1]
-        )
-
-    @property
-    def hsl(self):
-        return self.hsla.hsl
+        self._hsl = hsl(hue, saturation, lightness, self.a)
+        return self._hsl
 
 
-class rgb(rgba):
-    "A representation of an RGB color"
-
-    def __init__(self, r, g, b):
-        super().__init__(r, g, b, 1.0)
-
-    def __repr__(self):
-        return f"rgb({self.r}, {self.g}, {self.b})"
+# As in CSS, rgba is simply a direct alias for rgb.
+rgba = rgb
 
 
-class hsla(Color):
-    "A representation of an HSLA color."
+class hsl(Color):
+    """A representation of an HSL(A) color."""
 
     def __init__(self, h, s, l, a=1.0):  # noqa: E741
-        self._validate_between("hue", h, 0, 360)
-        self._validate_partial("saturation", s)
-        self._validate_partial("lightness", l)
-        self._validate_alpha(a)
-        self.h = h
-        self.s = s
-        self.l = l
-        self.a = a
+        try:
+            self._h = round(h) % 360
+        except TypeError as exc:
+            raise TypeError(f"Value for hue must be a number; got {h!r}") from exc
+        self._s = self._validate_zero_to_one("saturation", s)
+        self._l = self._validate_zero_to_one("lightness", l)
+        self._a = self._validate_zero_to_one("alpha", a)
 
     def __hash__(self):
-        return hash(("HSLA-color", self.h, self.s, self.l, self.a))
+        return hash(("HSL-color", self.h, self.s, self.l, self.a))
 
     def __repr__(self):
-        return f"hsla({self.h}, {self.s}, {self.l}, {self.a})"
+        return f"hsl({self.h}, {self.s}, {self.l}, {self.a})"
+
+    def __str__(self):
+        return f"hsl({self.h} {round(self.s * 100)}% {round(self.l * 100)}% / {self.a})"
 
     @property
-    def hsla(self):
-        # Explicitly return a hsla value, to ensure that classes which inherit the
-        # parent hsla class, actually return the hsla() value, instead of the child
-        # class. For example, without this fix, doing hsl(210, 1, 0.5).hsla will
-        # return hsl(210, 1, 0.5), instead of hsla(210, 1, 0.5, 1).
-        return hsla(self.h, self.s, self.l, self.a)
+    def h(self) -> int:
+        return self._h
 
     @property
-    def hsl(self):
-        return hsl(self.h, self.s, self.l)
+    def s(self) -> float:
+        return self._s
 
     @property
-    def rgba(self):
+    def l(self) -> float:  # noqa: E743
+        return self._l
+
+    @property
+    def hsl(self) -> hsl:
+        return self
+
+    @property
+    def rgb(self) -> rgb:
+        if cached := getattr(self, "_rgb", None):
+            return cached
+
         c = (1.0 - abs(2.0 * self.l - 1.0)) * self.s
         h = self.h / 60.0
         x = c * (1.0 - abs(h % 2 - 1.0))
@@ -273,137 +277,54 @@ class hsla(Color):
         else:
             r, g, b = c + m, m, x + m
 
-        return rgba(
-            round(r * 0xFF),
-            round(g * 0xFF),
-            round(b * 0xFF),
-            self.a,
-        )
-
-    @property
-    def rgb(self):
-        return self.rgba.rgb
+        self._rgb = rgb(r * 0xFF, g * 0xFF, b * 0xFF, self.a)
+        return self._rgb
 
 
-class hsl(hsla):
-    "A representation of an HSL color"
-
-    def __init__(self, h, s, l):  # noqa: E741
-        super().__init__(h, s, l, 1.0)
-
-    def __repr__(self):
-        return f"hsl({self.h}, {self.s}, {self.l})"
+# As in CSS, hsla is simply a direct alias for hsl.
+hsla = hsl
 
 
-def color(value):
+def color(value: str) -> Color:
     """Parse a color from a value.
 
     Accepts:
-    * rgb() instances
-    * hsl() instances
+    * An rgb() or hsl() instance
+    * A named color
     * '#rgb'
     * '#rgba'
     * '#rrggbb'
     * '#rrggbbaa'
-    * '#RGB'
-    * '#RGBA'
-    * '#RRGGBB'
-    * '#RRGGBBAA'
-    * 'rgb(0, 0, 0)'
-    * 'rgba(0, 0, 0, 0.0)'
-    * 'hsl(0, 0%, 0%)'
-    * 'hsla(0, 0%, 0%, 0.0)'
-    * A named color
     """
 
     if isinstance(value, Color):
         return value
 
     elif isinstance(value, str):
-        if value[0] == "#":
-            if len(value) == 4:
+        if result := NAMED_COLOR.get(value.lower()):
+            return result
+
+        pound, *digits = value
+        if pound == "#" and all(d in string.hexdigits for d in digits):
+            if len(digits) in {3, 4}:
+                r, g, b, *a = digits
                 return rgb(
-                    r=int(value[1] + value[1], 16),
-                    g=int(value[2] + value[2], 16),
-                    b=int(value[3] + value[3], 16),
+                    r=int(f"{r}{r}", 16),
+                    g=int(f"{g}{g}", 16),
+                    b=int(f"{b}{b}", 16),
+                    a=(int(f"{a[0]}{a[0]}", 16) / 0xFF) if a else 1.0,
                 )
-            elif len(value) == 5:
-                return rgba(
-                    r=int(value[1] + value[1], 16),
-                    g=int(value[2] + value[2], 16),
-                    b=int(value[3] + value[3], 16),
-                    a=int(value[4] + value[4], 16) / 0xFF,
-                )
-            elif len(value) == 7:
+
+            elif len(digits) in {6, 8}:
+                r1, r2, g1, g2, b1, b2, *a = digits
                 return rgb(
-                    r=int(value[1:3], 16),
-                    g=int(value[3:5], 16),
-                    b=int(value[5:7], 16),
+                    r=int(f"{r1}{r2}", 16),
+                    g=int(f"{g1}{g2}", 16),
+                    b=int(f"{b1}{b2}", 16),
+                    a=(int(f"{a[0]}{a[1]}", 16) / 0xFF) if a else 1.0,
                 )
-            elif len(value) == 9:
-                return rgba(
-                    r=int(value[1:3], 16),
-                    g=int(value[3:5], 16),
-                    b=int(value[5:7], 16),
-                    a=int(value[7:9], 16) / 0xFF,
-                )
-        elif value.startswith("rgba"):
-            try:
-                values = value[5:-1].split(",")
-                if len(values) == 4:
-                    return rgba(
-                        int(values[0]),
-                        int(values[1]),
-                        int(values[2]),
-                        float(
-                            values[3],
-                        ),
-                    )
-            except ValueError:
-                pass
-        elif value.startswith("rgb"):
-            try:
-                values = value[4:-1].split(",")
-                if len(values) == 3:
-                    return rgb(
-                        int(values[0]),
-                        int(values[1]),
-                        int(values[2]),
-                    )
-            except ValueError:
-                pass
 
-        elif value.startswith("hsla"):
-            try:
-                values = value[5:-1].split(",")
-                if len(values) == 4:
-                    return hsla(
-                        int(values[0]),
-                        int(values[1].strip().rstrip("%")) / 100.0,
-                        int(values[2].strip().rstrip("%")) / 100.0,
-                        float(values[3]),
-                    )
-            except ValueError:
-                pass
-
-        elif value.startswith("hsl"):
-            try:
-                values = value[4:-1].split(",")
-                if len(values) == 3:
-                    return hsl(
-                        int(values[0]),
-                        int(values[1].strip().rstrip("%")) / 100.0,
-                        int(values[2].strip().rstrip("%")) / 100.0,
-                    )
-            except ValueError:
-                pass
-        else:
-            try:
-                return NAMED_COLOR[value.lower()]
-            except KeyError:
-                pass
-
-    raise ValueError(f"Unknown color {value}")
+    raise ValueError(f"Unknown color: {value!r}")
 
 
 NAMED_COLOR = {

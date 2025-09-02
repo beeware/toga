@@ -93,5 +93,5 @@ __all__ = [
 ]
 
 
-def __getattr__(name):  # pragma: no cover
+def __getattr__(name):
     raise NotImplementedError(f"Toga's Cocoa backend doesn't implement {name}")

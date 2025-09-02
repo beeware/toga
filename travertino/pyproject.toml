@@ -1,7 +1,7 @@
 [build-system]
 requires = [
     "setuptools==80.9.0",
-    "setuptools_scm==8.3.1",
+    "setuptools_scm==9.2.0",
 ]
 build-backend = "setuptools.build_meta"
 
@@ -10,7 +10,7 @@ dynamic = ["version"]
 name = "travertino"
 description = "A set of constants and base classes for describing user interface layouts."
 readme = "README.rst"
-requires-python = ">= 3.9"
+requires-python = ">= 3.10"
 license = "BSD-3-Clause"
 license-files = [
     "LICENSE"
@@ -31,7 +31,6 @@ classifiers = [
     "Intended Audience :: Developers",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
@@ -56,6 +55,7 @@ root = ".."
 parallel = true
 branch = true
 relative_files = true
+omit = ["test_compat.py"]
 
 # See notes in the root pyproject.toml file.
 source = ["src"]
@@ -69,6 +69,8 @@ source = [
 
 [tool.pytest.ini_options]
 asyncio_default_fixture_loop_scope = "function"
+# Excludes collecting tests in compat
+norecursedirs = "compat"
 
 [tool.ruff]
 extend = "../pyproject.toml"

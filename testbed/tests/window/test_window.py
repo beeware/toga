@@ -999,10 +999,6 @@ else:
     ):
         """When a window is hidden using hide(), the window.state getter should
         continue to report the same state as it did when the window was last visible."""
-        if state == WindowState.MINIMIZED and not second_window_probe.supports_minimize:
-            pytest.xfail(
-                "This backend doesn't reliably support minimized window state."
-            )
         second_window.content = toga.Box(style=Pack(background_color=CORNFLOWERBLUE))
         second_window.show()
         # Wait for window animation before assertion.
@@ -1106,9 +1102,12 @@ else:
         assert second_window.position != initial_position
 
         # `position` and `screen_position` will be same as the window will be in
-        # primary screen.
+        # primary screen. They are also 2-tuples of integers
         assert second_window.position == (200, 200)
+        assert all(isinstance(val, int) for val in second_window.position)
+
         assert second_window.screen_position == (200, 200)
+        assert all(isinstance(val, int) for val in second_window.screen_position)
 
         # Move the window between available screens and assert its `screen_position`
         for screen in second_window.app.screens:
@@ -1121,6 +1120,7 @@ else:
                 second_window.position[0] - screen.origin[0],
                 second_window.position[1] - screen.origin[1],
             )
+            assert all(isinstance(val, int) for val in second_window.screen_position)
 
 
 async def test_as_image(main_window, main_window_probe):

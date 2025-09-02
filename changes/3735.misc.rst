@@ -1,0 +1,1 @@
+The probe method for positioning cursor is now implemented on Winforms.

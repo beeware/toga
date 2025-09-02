@@ -119,7 +119,7 @@ class TextInputApp(toga.App):
         self.inputs = [
             child
             for child in children
-            if isinstance(child, (toga.TextInput, toga.NumberInput))
+            if isinstance(child, toga.TextInput | toga.NumberInput)
         ]
 
         # Outermost box

@@ -329,9 +329,11 @@ class Window:
         # macOS origin is bottom left of screen, and the screen might be
         # offset relative to other screens. Adjust for this.
         return Position(
-            window_frame.origin.x,
-            primary_screen.size.height
-            - (window_frame.origin.y + window_frame.size.height),
+            int(window_frame.origin.x),
+            int(
+                primary_screen.size.height
+                - (window_frame.origin.y + window_frame.size.height)
+            ),
         )
 
     def set_position(self, position):

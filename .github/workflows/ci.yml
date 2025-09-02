@@ -16,7 +16,7 @@ on:
         value: ${{ jobs.package.outputs.artifact-basename }}
 
 env:
-  min_python_version: "3.9"
+  min_python_version: "3.10"
   FORCE_COLOR: "1"
 
 defaults:
@@ -81,7 +81,7 @@ jobs:
       fail-fast: false
       matrix:
         platform: [ "macos-latest", "ubuntu-latest", "windows-latest" ]
-        python-version: [ "3.9", "3.10", "3.11", "3.12", "3.13" ]
+        python-version: [ "3.10", "3.11", "3.12", "3.13" ]
         package: ["core", "travertino"]
         exclude:
         - package: travertino
@@ -97,7 +97,7 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v4.2.2
+      uses: actions/checkout@v5.0.0
       with:
         fetch-depth: 0
 
@@ -115,7 +115,7 @@ jobs:
         project-root: core
 
     - name: Get Packages
-      uses: actions/download-artifact@v4.3.0
+      uses: actions/download-artifact@v5.0.0
       with:
         pattern: ${{ format('{0}-*', needs.package.outputs.artifact-basename) }}
         merge-multiple: true
@@ -125,9 +125,7 @@ jobs:
       run: |
         # The $(ls ...) shell expansion is done in the GitHub environment; the value of
         # TOGA_INSTALL_COMMAND will be a literal string without any shell expansions to
-        # perform. We don't *explicitly* install the Travertino wheel; we provide the
-        # dist dir as a source of wheels, and rely on pip to resolve the explicit
-        # version match to the Travertino wheel in that folder.
+        # perform.
         export TOGA_INSTALL_COMMAND="python -m pip install ../$(ls dist/toga_core-*.whl)[dev] ../$(ls dist/travertino-*.whl) ../$(ls dist/toga_dummy-*.whl)"
         tox -e py-cov${{ matrix.tox-suffix }}
         tox -qe coverage$(tr -dc "0-9" <<< "${{ matrix.python-version }}")${{ matrix.tox-suffix }}
@@ -155,7 +153,7 @@ jobs:
             tox-suffix: "-trav"
     steps:
     - name: Checkout
-      uses: actions/checkout@v4.2.2
+      uses: actions/checkout@v5.0.0
       with:
         fetch-depth: 0
 
@@ -174,7 +172,7 @@ jobs:
         project-root: core
 
     - name: Retrieve Coverage Data
-      uses: actions/download-artifact@v4.3.0
+      uses: actions/download-artifact@v5.0.0
       with:
         pattern: ${{ matrix.package }}-coverage-data-*
         path: ${{ matrix.package }}
@@ -189,6 +187,41 @@ jobs:
       with:
         name: html-coverage-report
         path: ${{ matrix.package }}/htmlcov
+
+  travertino-backwards-compatibility:
+    name: Test Travertino backwards compatibility with Toga 0.4.8
+    runs-on: "ubuntu-latest"
+    needs: [ pre-commit, towncrier, package ]
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v5.0.0
+      with:
+        fetch-depth: 0
+
+    - name: Set up Python
+      uses: actions/setup-python@v5.6.0
+      with:
+        python-version: ${{ env.min_python_version }}
+
+    - name: Install Tox
+      uses: beeware/.github/.github/actions/install-requirement@main
+      with:
+        requirements: tox
+        extra: dev
+        project-root: core
+
+    - name: Get Package
+      uses: actions/download-artifact@v5.0.0
+      with:
+        pattern: ${{ format('{0}-*', needs.package.outputs.artifact-basename) }}
+        merge-multiple: true
+        path: dist
+
+    - name: Test
+      run: |
+        export TRAVERTINO_INSTALL_COMMAND="python -m pip install ../$(ls dist/travertino-*.whl)"
+        tox -e trav-compat
 
   testbed:
     name: Testbed
@@ -345,7 +378,15 @@ jobs:
         - backend: "iOS"
           platform: "iOS"
           runs-on: "macos-latest"
-          briefcase-run-args: "--device 'iPhone SE (3rd generation)'"
+          pre-command: |
+            # 2025-08-15 - Github Actions are in the process of switching how they
+            # manage Xcode, so they can save disk space.
+            # See https://github.com/actions/runner-images/issues/12541
+            # and https://github.com/actions/runner-images/issues/12751; see
+            # also https://github.com/actions/runner-images/issues/12758 for
+            # a discussion of transition issues.
+            sudo xcode-select --switch /Applications/Xcode_16.4.app
+          briefcase-run-args: "--device 'iPhone SE (3rd generation)::iOS 18.5'"
           app-user-data-path: "$(xcrun simctl get_app_container booted org.beeware.toga.testbed data)/Documents"
 
         - backend: "android"
@@ -372,7 +413,7 @@ jobs:
       uses: smorimoto/tune-github-hosted-runner-network@v1.0.0
 
     - name: Checkout
-      uses: actions/checkout@v4.2.2
+      uses: actions/checkout@v5.0.0
       with:
         fetch-depth: 0
 
@@ -392,7 +433,7 @@ jobs:
         python -m pip install git+https://github.com/beeware/briefcase.git
 
     - name: Get Packages
-      uses: actions/download-artifact@v4.3.0
+      uses: actions/download-artifact@v5.0.0
       with:
         pattern: ${{ format('{0}-*', needs.package.outputs.artifact-basename) }}
         merge-multiple: true
@@ -456,7 +497,7 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v4.2.2
+      uses: actions/checkout@v5.0.0
       with:
         fetch-depth: 0
 
@@ -466,7 +507,7 @@ jobs:
         python-version: "3.12"
 
     - name: Get Packages
-      uses: actions/download-artifact@v4.3.0
+      uses: actions/download-artifact@v5.0.0
       with:
         pattern: ${{ format('{0}-*', needs.package.outputs.artifact-basename) }}
         merge-multiple: true

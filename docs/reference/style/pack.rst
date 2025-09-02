@@ -320,6 +320,22 @@ constant named ``SYSTEM_DEFAULT_FONT_SIZE``.
 
 The size of the font to be used, in :ref:`CSS points <css-units>`.
 
+``font``
+--------
+
+**Value:** a tuple consisting of ``(font_style, font_variant, font_weight, font_size,
+font_family)``
+
+**Initial value:** ``("normal", "normal", "normal", -1, ["system"])``
+
+**Accepts:** any valid values (in order) for ``font_size`` and ``font_family``, preceded
+by any combination and order of valid values for ``font_style``, ``font_variant``, and
+``font_weight``.
+
+A shorthand for simultaneously setting the style, variant, weight, size, and family of a
+font. Any of the three optional values (style, variant, and weight) not specified will
+be reset to ``"normal"``.
+
 The relationship between Pack and CSS
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

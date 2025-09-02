@@ -75,7 +75,9 @@ class CanvasProbe(SimpleProbe):
 
         event = Gdk.Event.new(Gdk.EventType.MOTION_NOTIFY)
         event.button = 1
-        event.state = Gdk.ModifierType.BUTTON1_MASK
+        # Add an additional modifier to confirm that keyboard modifiers don't
+        # impact event triggering
+        event.state = Gdk.ModifierType.BUTTON1_MASK | Gdk.ModifierType.MOD2_MASK
         event.x = (x1 + x2) // 2
         event.y = (y1 + y2) // 2
         self.native.emit("motion-notify-event", event)
@@ -107,7 +109,9 @@ class CanvasProbe(SimpleProbe):
         self.native.emit("button-press-event", event)
 
         event = Gdk.Event.new(Gdk.EventType.MOTION_NOTIFY)
-        event.state = Gdk.ModifierType.BUTTON3_MASK
+        # Add an additional modifier to confirm that keyboard modifiers don't
+        # impact event triggering
+        event.state = Gdk.ModifierType.BUTTON3_MASK | Gdk.ModifierType.MOD2_MASK
         event.x = (x1 + x2) // 2
         event.y = (y1 + y2) // 2
         self.native.emit("motion-notify-event", event)
