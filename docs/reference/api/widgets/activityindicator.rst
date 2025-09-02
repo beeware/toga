@@ -24,9 +24,11 @@ usually rendered as a "spinner" animation.
        :align: center
        :width: 100px
 
-  .. group-tab:: Android |no|
+  .. group-tab:: Android
 
-    Not supported
+    .. figure:: /reference/images/activityindicator-android.png
+       :align: center
+       :width: 100px
 
   .. group-tab:: iOS
 
