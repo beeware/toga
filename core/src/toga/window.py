@@ -173,7 +173,7 @@ class OnResizeHandler(Protocol):
 
         :param window: The window instance that resizes.
         :param kwargs: Ensures compatibility with additional arguments introduced in
-            future ver
+            future versions.
         """
         ...
 

@@ -1,1 +1,1 @@
-Toga Windows now supports calling user functions on resize events.
+Apps can now register a handler that is notified when a window is resized.
