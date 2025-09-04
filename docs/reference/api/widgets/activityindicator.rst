@@ -67,6 +67,9 @@ Notes
 * The ActivityIndicator will always take up a fixed amount of physical space in
   a layout. However, the widget will not be visible when it is in a "stopped"
   state.
+* On iOS, Android, and WinForms, the background color of the widget itself may
+  not be drawn when the widget is in a stopped state.  In general, it is not
+  recommended to have a non-transparent background color on the spinner itself.
 
 Reference
 ---------
