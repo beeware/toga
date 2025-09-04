@@ -1,0 +1,1 @@
+Tests for handling of unsupported widgets, if needed.

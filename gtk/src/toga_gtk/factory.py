@@ -13,6 +13,7 @@ from .widgets.activityindicator import ActivityIndicator
 from .widgets.box import Box
 from .widgets.button import Button
 from .widgets.canvas import Canvas
+from .widgets.dateinput import DateInput
 from .widgets.detailedlist import DetailedList
 from .widgets.divider import Divider
 from .widgets.imageview import ImageView
@@ -60,6 +61,7 @@ __all__ = [
     "Box",
     "Button",
     "Canvas",
+    "DateInput",
     "DetailedList",
     "Divider",
     "ImageView",
@@ -85,5 +87,5 @@ __all__ = [
 ]
 
 
-def __getattr__(name):  # pragma: no cover
+def __getattr__(name):
     raise NotImplementedError(f"Toga's GTK backend doesn't implement {name}")

@@ -4,7 +4,6 @@ from functools import partial
 
 import toga
 from toga.constants import COLUMN, RIGHT, ROW, WindowState
-from toga.style import Pack
 
 
 class WindowDemoApp(toga.App):
@@ -258,127 +257,123 @@ class WindowDemoApp(toga.App):
         self.window_visible_label = toga.Label("Window visible status")
 
         # Buttons
-        btn_style = Pack(flex=1, margin=5)
+        btn_style = {"flex": 1, "margin": 5}
 
         row_move = toga.Box(
-            style=Pack(direction=ROW),
+            direction=ROW,
             children=[
                 toga.Label("Move: "),
-                toga.Button("Origin", on_press=self.do_origin, style=btn_style),
-                toga.Button("Up", on_press=self.do_up, style=btn_style),
-                toga.Button("Down", on_press=self.do_down, style=btn_style),
-                toga.Button("Left", on_press=self.do_left, style=btn_style),
-                toga.Button("Right", on_press=self.do_right, style=btn_style),
+                toga.Button("Origin", on_press=self.do_origin, **btn_style),
+                toga.Button("Up", on_press=self.do_up, **btn_style),
+                toga.Button("Down", on_press=self.do_down, **btn_style),
+                toga.Button("Left", on_press=self.do_left, **btn_style),
+                toga.Button("Right", on_press=self.do_right, **btn_style),
             ],
         )
 
         row_screen_edge = toga.Box(
-            style=Pack(direction=ROW),
+            direction=ROW,
             children=[
                 toga.Label("Screen edge: "),
-                toga.Button("Top", on_press=self.do_screen_top, style=btn_style),
-                toga.Button("Bottom", on_press=self.do_screen_bottom, style=btn_style),
-                toga.Button("Left", on_press=self.do_screen_left, style=btn_style),
-                toga.Button("Right", on_press=self.do_screen_right, style=btn_style),
+                toga.Button("Top", on_press=self.do_screen_top, **btn_style),
+                toga.Button("Bottom", on_press=self.do_screen_bottom, **btn_style),
+                toga.Button("Left", on_press=self.do_screen_left, **btn_style),
+                toga.Button("Right", on_press=self.do_screen_right, **btn_style),
             ],
         )
 
-        btn_do_small = toga.Button(
-            "Become small", on_press=self.do_small, style=btn_style
-        )
-        btn_do_large = toga.Button(
-            "Become large", on_press=self.do_large, style=btn_style
-        )
+        btn_do_small = toga.Button("Become small", on_press=self.do_small, **btn_style)
+        btn_do_large = toga.Button("Become large", on_press=self.do_large, **btn_style)
         btn_do_current_window_state = toga.Button(
             "Get current window state",
             on_press=self.do_current_window_state,
-            style=btn_style,
+            **btn_style,
         )
         btn_do_window_state_normal = toga.Button(
             "Make window state normal",
             on_press=self.do_window_state_normal,
-            style=btn_style,
+            **btn_style,
         )
         btn_do_window_state_maximize = toga.Button(
             "Make window state maximized",
             on_press=self.do_window_state_maximize,
-            style=btn_style,
+            **btn_style,
         )
         btn_do_window_state_minimize = toga.Button(
             "Make window state minimized",
             on_press=self.do_window_state_minimize,
-            style=btn_style,
+            **btn_style,
         )
         btn_do_window_state_full_screen = toga.Button(
             "Make window state full screen",
             on_press=self.do_window_state_full_screen,
-            style=btn_style,
+            **btn_style,
         )
         btn_do_window_state_presentation = toga.Button(
             "Make window state presentation",
             on_press=self.do_window_state_presentation,
-            style=btn_style,
+            **btn_style,
         )
         btn_do_app_presentation_mode = toga.Button(
             "Toggle app presentation mode",
             on_press=self.do_app_presentation_mode,
-            style=btn_style,
+            **btn_style,
         )
-        btn_do_title = toga.Button(
-            "Change title", on_press=self.do_title, style=btn_style
-        )
+        btn_do_title = toga.Button("Change title", on_press=self.do_title, **btn_style)
         btn_do_new_windows = toga.Button(
-            "Create Window", on_press=self.do_new_windows, style=btn_style
+            "Create Window", on_press=self.do_new_windows, **btn_style
         )
         btn_do_current_window_cycling = toga.Button(
             "Cycle between windows",
             on_press=self.do_current_window_cycling,
-            style=btn_style,
+            **btn_style,
         )
         btn_do_hide_cursor = toga.Button(
             "Hide cursor",
             on_press=self.do_hide_cursor,
-            style=btn_style,
+            **btn_style,
         )
-        btn_do_report = toga.Button("Report", on_press=self.do_report, style=btn_style)
+        btn_do_report = toga.Button("Report", on_press=self.do_report, **btn_style)
         btn_change_content = toga.Button(
-            "Change content", on_press=self.do_next_content, style=btn_style
+            "Change content", on_press=self.do_next_content, **btn_style
         )
-        btn_hide = toga.Button("Hide", on_press=self.do_hide, style=btn_style)
-        btn_beep = toga.Button("Beep", on_press=self.do_beep, style=btn_style)
+        btn_hide = toga.Button("Hide", on_press=self.do_hide, **btn_style)
+        btn_beep = toga.Button("Beep", on_press=self.do_beep, **btn_style)
 
         screen_change_btns_box = toga.Box(
             children=[
                 toga.Label(
                     text="Move current window to:",
-                    style=Pack(width=200, text_align=RIGHT),
+                    width=200,
+                    text_align=RIGHT,
                 )
             ],
-            style=Pack(margin=5),
+            margin=5,
         )
         for index, screen in sorted(enumerate(self.screens), key=lambda s: s[1].origin):
             screen_change_btns_box.add(
                 toga.Button(
                     text=f"{index}: {screen.name}",
                     on_press=partial(self.do_screen_change, screen),
-                    style=Pack(margin_left=5),
+                    margin_left=5,
                 )
             )
         screen_as_image_btns_box = toga.Box(
             children=[
                 toga.Label(
                     text="Take screenshot of screen:",
-                    style=Pack(width=200, text_align=RIGHT),
+                    width=200,
+                    text_align=RIGHT,
                 )
             ],
-            style=Pack(margin=5),
+            margin=5,
         )
         for index, screen in sorted(enumerate(self.screens), key=lambda s: s[1].origin):
             screen_as_image_btns_box.add(
                 toga.Button(
                     text=f"{index}: {screen.name}",
                     on_press=partial(self.do_save_screenshot, screen),
-                    style=Pack(margin_left=5),
+                    margin_left=5,
                 )
             )
 
@@ -409,21 +404,19 @@ class WindowDemoApp(toga.App):
                 screen_change_btns_box,
                 screen_as_image_btns_box,
             ],
-            style=Pack(direction=COLUMN),
+            direction=COLUMN,
         )
         self.main_scroller = toga.ScrollContainer(
             horizontal=False,
             vertical=True,
-            style=Pack(flex=1),
+            flex=1,
         )
         self.main_scroller.content = self.inner_box
 
         btn_change_back = toga.Button(
-            "Go back", on_press=self.do_prev_content, style=btn_style
+            "Go back", on_press=self.do_prev_content, **btn_style
         )
-        self.next_box = toga.Box(
-            children=[btn_change_back], style=Pack(direction=COLUMN)
-        )
+        self.next_box = toga.Box(children=[btn_change_back], direction=COLUMN)
 
         restore_command = toga.Command(
             self.do_prev_content,
@@ -447,5 +440,4 @@ def main():
 
 
 if __name__ == "__main__":
-    app = main()
-    app.main_loop()
+    main().main_loop()

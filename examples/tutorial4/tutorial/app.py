@@ -4,7 +4,6 @@ import toga
 from toga.colors import WHITE, rgb
 from toga.constants import Baseline
 from toga.fonts import SANS_SERIF
-from toga.style import Pack
 
 
 class StartApp(toga.App):
@@ -13,7 +12,7 @@ class StartApp(toga.App):
 
         # Create empty canvas
         self.canvas = toga.Canvas(
-            style=Pack(flex=1),
+            flex=1,
             on_resize=self.on_resize,
             on_press=self.on_press,
         )

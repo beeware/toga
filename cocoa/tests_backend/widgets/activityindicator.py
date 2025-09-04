@@ -6,8 +6,10 @@ from .base import SimpleProbe
 class ActivityIndicatorProbe(SimpleProbe):
     native_class = NSProgressIndicator
 
-    def assert_is_hidden(self, value):
-        # Check that we're not displaying the widget when stopped.
+    def assert_spinner_is_hidden(self, value):
+        # Check that the widget is correctly configured to *not* display the widget when
+        # stopped. We can't verify the *actual* visibility status, as we can't inspect
+        # the internal state of the spinner.
         assert not self.native.isDisplayedWhenStopped()
-        # No other assertion is possible, as there's no way to verify
-        # if the underlying widget is visible.
+        is_visible = self.impl._is_running and not self.native.isHidden()
+        assert is_visible == (not value)

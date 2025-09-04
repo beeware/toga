@@ -264,6 +264,11 @@ New Roman for ``"serif"``, Courier New for ``"monospace"``).
 Any other value will be checked against the family names previously registered with
 :any:`Font.register`.
 
+On supported platforms (currently Windows and Linux), if Toga doesn't recognize the
+family as one of its predefined builtins or as a font you've registered, it will
+attempt to load the requested font from your system before falling back to the default
+system font.
+
 .. _pack-font-style:
 
 ``font_style``
@@ -314,6 +319,22 @@ The weight of the font to be used.
 constant named ``SYSTEM_DEFAULT_FONT_SIZE``.
 
 The size of the font to be used, in :ref:`CSS points <css-units>`.
+
+``font``
+--------
+
+**Value:** a tuple consisting of ``(font_style, font_variant, font_weight, font_size,
+font_family)``
+
+**Initial value:** ``("normal", "normal", "normal", -1, ["system"])``
+
+**Accepts:** any valid values (in order) for ``font_size`` and ``font_family``, preceded
+by any combination and order of valid values for ``font_style``, ``font_variant``, and
+``font_weight``.
+
+A shorthand for simultaneously setting the style, variant, weight, size, and family of a
+font. Any of the three optional values (style, variant, and weight) not specified will
+be reset to ``"normal"``.
 
 The relationship between Pack and CSS
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

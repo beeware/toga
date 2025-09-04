@@ -1,5 +1,5 @@
 import toga
-from toga.style.pack import COLUMN
+from toga.constants import COLUMN
 
 
 class SizeButton(toga.Button):

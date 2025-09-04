@@ -4,6 +4,7 @@ from toga.screens import Screen as ScreenInterface
 from toga.types import Position, Size
 from toga_cocoa.libs import (
     NSImage,
+    NSScreen,
     core_graphics,
 )
 
@@ -25,8 +26,15 @@ class Screen:
         return str(self.native.localizedName)
 
     def get_origin(self) -> Position:
+        # macOS screen coordinates have the origin at the bottom left.
         frame_native = self.native.frame
-        return Position(int(frame_native.origin.x), int(frame_native.origin.y))
+        return Position(
+            int(frame_native.origin.x),
+            int(
+                NSScreen.screens[0].frame.size.height
+                - (frame_native.origin.y + frame_native.size.height)
+            ),
+        )
 
     def get_size(self) -> Size:
         frame_native = self.native.frame

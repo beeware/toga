@@ -1,1 +1,0 @@
-On macOS, document-based apps no longer raise an error on startup about the event loop already running.

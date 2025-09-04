@@ -1,1 +1,0 @@
-The ActivityIndicator tests now check for the correct visibility behavior when started and stopped.

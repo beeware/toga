@@ -1,0 +1,1 @@
+beeware_theme @ git+https://github.com/beeware/beeware-theme

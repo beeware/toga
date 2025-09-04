@@ -1,6 +1,5 @@
 import toga
 from toga.constants import COLUMN, ROW
-from toga.style import Pack
 
 MIN_VAL = -2
 MAX_VAL = 12
@@ -11,57 +10,59 @@ class SliderApp(toga.App):
         self.main_window = toga.MainWindow(size=(1000, 500))
 
         # set up common styles
-        label_style = Pack(flex=1, margin_right=24)
-        box_style = Pack(direction=ROW, margin=10)
-        slider_style = Pack(flex=1)
+        label_style = {"flex": 1, "margin_right": 24}
+        box_style = {"direction": ROW, "margin": 10}
+        slider_style = {"flex": 1}
 
-        self.continuous_label = toga.Label("Continuous", style=label_style)
+        self.continuous_label = toga.Label("Continuous", **label_style)
+        self.slider = toga.Slider()
         self.continuous_slider = toga.Slider(
-            on_change=self.my_continuous_on_change, style=slider_style
+            on_change=self.my_continuous_on_change, **slider_style
         )
 
-        self.disabled_label = toga.Label("Disabled", style=label_style)
-        self.disabled_slider = toga.Slider(enabled=False, style=slider_style)
+        self.disabled_label = toga.Label("Disabled", **label_style)
+        self.disabled_slider = toga.Slider(enabled=False, **slider_style)
 
-        self.discrete_label = toga.Label("Discrete\n(with commands)", style=label_style)
+        self.discrete_label = toga.Label("Discrete\n(with commands)", **label_style)
         self.discrete_slider = toga.Slider(
             on_change=self.my_discrete_on_change,
             min=MIN_VAL,
             max=MAX_VAL,
             tick_count=MAX_VAL - MIN_VAL + 1,
-            style=slider_style,
+            **slider_style,
         )
 
-        self.scared_label = toga.Label("Try to catch me!", style=label_style)
+        self.scared_label = toga.Label("Try to catch me!", **label_style)
         self.scared_slider = toga.Slider(
             min=100,
             max=300.5,
             value=123.4,
             on_press=self.scared_on_press,
             on_release=self.scared_on_release,
-            style=slider_style,
+            **slider_style,
         )
 
         self.main_window.content = toga.Box(
             children=[
                 toga.Box(
-                    style=box_style,
+                    **box_style,
                     children=[self.continuous_label, self.continuous_slider],
                 ),
                 toga.Box(
-                    style=box_style,
+                    **box_style,
                     children=[self.disabled_label, self.disabled_slider],
                 ),
                 toga.Box(
-                    style=box_style,
+                    **box_style,
                     children=[self.discrete_label, self.discrete_slider],
                 ),
                 toga.Box(
-                    style=box_style,
+                    **box_style,
                     children=[self.scared_label, self.scared_slider],
                 ),
             ],
-            style=Pack(direction=COLUMN, margin=24),
+            direction=COLUMN,
+            margin=24,
         )
 
         self.commands.add(
@@ -104,5 +105,8 @@ class SliderApp(toga.App):
 
 
 def main():
-    # App name and namespace
     return SliderApp("Slider", "org.beeware.toga.examples.slider")
+
+
+if __name__ == "__main__":
+    main().main_loop()

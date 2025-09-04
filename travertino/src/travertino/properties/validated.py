@@ -1,5 +1,6 @@
 from collections.abc import Sequence
 
+from ..compat import _toga_lt_5
 from .choices import Choices
 from .immutablelist import ImmutableList
 
@@ -57,7 +58,20 @@ class validated_property:
 
         setattr(style, f"_{self.name}", value)
         if value != current:
-            style.apply(self.name)
+            ######################################################################
+            # 08-2025: Backwards compatibility for Toga < 0.5.0
+            ######################################################################
+            try:
+                style.apply(self.name)
+            except TypeError:
+                if _toga_lt_5():  # pragma: no cover
+                    style.apply(self.name, value)
+                else:
+                    raise
+
+            ######################################################################
+            # End backwards compatibility
+            ######################################################################
 
     def __delete__(self, style):
         try:
@@ -67,7 +81,20 @@ class validated_property:
             pass
         else:
             if current != self.initial:
-                style.apply(self.name)
+                ######################################################################
+                # 08-2025: Backwards compatibility for Toga < 0.5.0
+                ######################################################################
+                try:
+                    style.apply(self.name)
+                except TypeError:
+                    if _toga_lt_5():  # pragma: no cover
+                        style.apply(self.name, self.initial)
+                    else:
+                        raise
+
+                ######################################################################
+                # End backwards compatibility
+                ######################################################################
 
     @property
     def _name_if_set(self):

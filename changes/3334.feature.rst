@@ -1,1 +1,0 @@
-The Web backend now provides Selection and Slider widgets.

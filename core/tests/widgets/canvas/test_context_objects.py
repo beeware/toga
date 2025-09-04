@@ -98,7 +98,7 @@ def test_closed_path(widget, kwargs, args_repr, has_move, properties):
         # Defaults
         (
             {},
-            "x=None, y=None, color=rgb(0, 0, 0), fill_rule=FillRule.NONZERO",
+            "x=None, y=None, color=rgb(0, 0, 0, 1.0), fill_rule=FillRule.NONZERO",
             False,
             {
                 "x": None,
@@ -110,28 +110,31 @@ def test_closed_path(widget, kwargs, args_repr, has_move, properties):
         # X only
         (
             {"x": 10},
-            "x=10, y=None, color=rgb(0, 0, 0), fill_rule=FillRule.NONZERO",
+            "x=10, y=None, color=rgb(0, 0, 0, 1.0), fill_rule=FillRule.NONZERO",
             False,
             {"x": 10, "y": None, "color": rgb(0, 0, 0), "fill_rule": FillRule.NONZERO},
         ),
         # Y only
         (
             {"y": 20},
-            "x=None, y=20, color=rgb(0, 0, 0), fill_rule=FillRule.NONZERO",
+            "x=None, y=20, color=rgb(0, 0, 0, 1.0), fill_rule=FillRule.NONZERO",
             False,
             {"x": None, "y": 20, "color": rgb(0, 0, 0), "fill_rule": FillRule.NONZERO},
         ),
         # X and Y
         (
             {"x": 10, "y": 20},
-            "x=10, y=20, color=rgb(0, 0, 0), fill_rule=FillRule.NONZERO",
+            "x=10, y=20, color=rgb(0, 0, 0, 1.0), fill_rule=FillRule.NONZERO",
             True,
             {"x": 10, "y": 20, "color": rgb(0, 0, 0), "fill_rule": FillRule.NONZERO},
         ),
         # Color
         (
             {"color": REBECCAPURPLE},
-            f"x=None, y=None, color={REBECCA_PURPLE_COLOR}, fill_rule=FillRule.NONZERO",
+            (
+                f"x=None, y=None, color={REBECCA_PURPLE_COLOR!r}, "
+                "fill_rule=FillRule.NONZERO"
+            ),
             False,
             {
                 "x": None,
@@ -143,7 +146,7 @@ def test_closed_path(widget, kwargs, args_repr, has_move, properties):
         # Reset color with None
         (
             {"color": None},
-            "x=None, y=None, color=rgb(0, 0, 0), fill_rule=FillRule.NONZERO",
+            "x=None, y=None, color=rgb(0, 0, 0, 1.0), fill_rule=FillRule.NONZERO",
             False,
             {
                 "x": None,
@@ -155,7 +158,7 @@ def test_closed_path(widget, kwargs, args_repr, has_move, properties):
         # Fill Rule
         (
             {"x": None, "y": None, "fill_rule": FillRule.EVENODD},
-            "x=None, y=None, color=rgb(0, 0, 0), fill_rule=FillRule.EVENODD",
+            "x=None, y=None, color=rgb(0, 0, 0, 1.0), fill_rule=FillRule.EVENODD",
             False,
             {
                 "x": None,
@@ -167,7 +170,7 @@ def test_closed_path(widget, kwargs, args_repr, has_move, properties):
         # All args
         (
             {"x": 10, "y": 20, "color": REBECCAPURPLE, "fill_rule": FillRule.EVENODD},
-            f"x=10, y=20, color={REBECCA_PURPLE_COLOR}, fill_rule=FillRule.EVENODD",
+            f"x=10, y=20, color={REBECCA_PURPLE_COLOR!r}, fill_rule=FillRule.EVENODD",
             True,
             {
                 "x": 10,
@@ -220,7 +223,7 @@ def test_fill(widget, kwargs, args_repr, has_move, properties):
         # Defaults
         (
             {},
-            "x=None, y=None, color=rgb(0, 0, 0), line_width=2.0, line_dash=None",
+            "x=None, y=None, color=rgb(0, 0, 0, 1.0), line_width=2.0, line_dash=None",
             False,
             {
                 "x": None,
@@ -233,7 +236,7 @@ def test_fill(widget, kwargs, args_repr, has_move, properties):
         # X only
         (
             {"x": 10},
-            "x=10, y=None, color=rgb(0, 0, 0), line_width=2.0, line_dash=None",
+            "x=10, y=None, color=rgb(0, 0, 0, 1.0), line_width=2.0, line_dash=None",
             False,
             {
                 "x": 10,
@@ -246,7 +249,7 @@ def test_fill(widget, kwargs, args_repr, has_move, properties):
         # Y only
         (
             {"y": 20},
-            "x=None, y=20, color=rgb(0, 0, 0), line_width=2.0, line_dash=None",
+            "x=None, y=20, color=rgb(0, 0, 0, 1.0), line_width=2.0, line_dash=None",
             False,
             {
                 "x": None,
@@ -259,7 +262,7 @@ def test_fill(widget, kwargs, args_repr, has_move, properties):
         # X and Y
         (
             {"x": 10, "y": 20},
-            "x=10, y=20, color=rgb(0, 0, 0), line_width=2.0, line_dash=None",
+            "x=10, y=20, color=rgb(0, 0, 0, 1.0), line_width=2.0, line_dash=None",
             True,
             {
                 "x": 10,
@@ -273,7 +276,7 @@ def test_fill(widget, kwargs, args_repr, has_move, properties):
         (
             {"color": REBECCAPURPLE},
             (
-                f"x=None, y=None, color={REBECCA_PURPLE_COLOR}, "
+                f"x=None, y=None, color={REBECCA_PURPLE_COLOR!r}, "
                 f"line_width=2.0, line_dash=None"
             ),
             False,
@@ -288,7 +291,7 @@ def test_fill(widget, kwargs, args_repr, has_move, properties):
         # Reset color with None
         (
             {"color": None},
-            "x=None, y=None, color=rgb(0, 0, 0), line_width=2.0, line_dash=None",
+            "x=None, y=None, color=rgb(0, 0, 0, 1.0), line_width=2.0, line_dash=None",
             False,
             {
                 "x": None,
@@ -301,7 +304,7 @@ def test_fill(widget, kwargs, args_repr, has_move, properties):
         # Line width
         (
             {"x": None, "y": None, "line_width": 4.5},
-            "x=None, y=None, color=rgb(0, 0, 0), line_width=4.5, line_dash=None",
+            "x=None, y=None, color=rgb(0, 0, 0, 1.0), line_width=4.5, line_dash=None",
             False,
             {
                 "x": None,
@@ -314,7 +317,7 @@ def test_fill(widget, kwargs, args_repr, has_move, properties):
         # Line dash
         (
             {"x": None, "y": None, "line_dash": [2, 7]},
-            "x=None, y=None, color=rgb(0, 0, 0), line_width=2.0, line_dash=[2, 7]",
+            "x=None, y=None, color=rgb(0, 0, 0, 1.0), line_width=2.0, line_dash=[2, 7]",
             False,
             {
                 "x": None,
@@ -334,7 +337,7 @@ def test_fill(widget, kwargs, args_repr, has_move, properties):
                 "line_dash": [2, 7],
             },
             (
-                f"x=10, y=20, color={REBECCA_PURPLE_COLOR}, "
+                f"x=10, y=20, color={REBECCA_PURPLE_COLOR!r}, "
                 f"line_width=4.5, line_dash=[2, 7]"
             ),
             True,

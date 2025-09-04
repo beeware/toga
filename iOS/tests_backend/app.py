@@ -15,6 +15,7 @@ from .probe import BaseProbe
 
 class AppProbe(BaseProbe, DialogsMixin):
     supports_key = False
+    supports_dark_mode = False
 
     def __init__(self, app):
         super().__init__()

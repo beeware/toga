@@ -29,6 +29,7 @@ pyvenv.cfg
 .envrc
 bin/
 lib/
+.ruff_cache/
 
 # Exclude briefcase packages from the examples dir.
 examples/*/macOS/

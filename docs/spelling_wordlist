@@ -9,6 +9,7 @@ async
 awaitable
 backend
 backends
+Beancount
 BeeWare
 Bézier
 Bugfixes
@@ -34,6 +35,7 @@ GBulb
 GeoClue
 geolocation
 getter
+GLib
 GMail
 GObject
 Gradle

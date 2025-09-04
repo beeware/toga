@@ -10,7 +10,7 @@ from .base import StyleT, Widget
 
 
 class OnChangeHandler(Protocol):
-    def __call__(self, widget: TextInput, **kwargs: Any) -> object:
+    def __call__(self, widget: TextInput, **kwargs: Any) -> None:
         """A handler to invoke when the text input is changed.
 
         :param widget: The TextInput that was changed.
@@ -19,7 +19,7 @@ class OnChangeHandler(Protocol):
 
 
 class OnConfirmHandler(Protocol):
-    def __call__(self, widget: TextInput, **kwargs: Any) -> object:
+    def __call__(self, widget: TextInput, **kwargs: Any) -> None:
         """A handler to invoke when the text input is confirmed.
 
         :param widget: The TextInput that was confirmed.
@@ -28,7 +28,7 @@ class OnConfirmHandler(Protocol):
 
 
 class OnGainFocusHandler(Protocol):
-    def __call__(self, widget: TextInput, **kwargs: Any) -> object:
+    def __call__(self, widget: TextInput, **kwargs: Any) -> None:
         """A handler to invoke when the text input gains focus.
 
         :param widget: The TextInput that gained focus.
@@ -37,7 +37,7 @@ class OnGainFocusHandler(Protocol):
 
 
 class OnLoseFocusHandler(Protocol):
-    def __call__(self, widget: TextInput, **kwargs: Any) -> object:
+    def __call__(self, widget: TextInput, **kwargs: Any) -> None:
         """A handler to invoke when the text input loses focus.
 
         :param widget: The TextInput that lost focus.

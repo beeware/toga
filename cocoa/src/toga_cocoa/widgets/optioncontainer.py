@@ -132,7 +132,7 @@ class OptionContainer(Widget):
 
     def get_option_text(self, index):
         tabview = self.native.tabViewItemAtIndex(index)
-        return tabview.label
+        return str(tabview.label)
 
     def get_current_tab_index(self):
         return self.native.indexOfTabViewItem(self.native.selectedTabViewItem)

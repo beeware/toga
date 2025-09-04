@@ -1,23 +1,22 @@
 import toga
 from toga.constants import CENTER, COLUMN, ROW, Direction
-from toga.style import Pack
 
 
 class ContentControls(toga.Box):
     def __init__(self, split, index):
-        super().__init__(style=Pack(direction=ROW, flex=1))
+        super().__init__(direction=ROW, flex=1)
         self.split = split
         self.index = index
 
         self.sw_content = toga.Switch("Content", value=True, on_change=self.on_change)
         self.sw_flexible = toga.Switch("Flexible", value=True, on_change=self.on_change)
         self.add(
-            toga.Box(style=Pack(flex=1)),  # Spacer
+            toga.Box(flex=1),  # Spacer
             toga.Box(
-                style=Pack(direction=COLUMN),
+                direction=COLUMN,
                 children=[self.sw_content, self.sw_flexible],
             ),
-            toga.Box(style=Pack(flex=1)),  # Spacer
+            toga.Box(flex=1),  # Spacer
         )
         self.on_change(None)
 
@@ -25,7 +24,7 @@ class ContentControls(toga.Box):
         self.sw_flexible.enabled = self.sw_content.value
 
         if self.sw_content.value:
-            box = toga.Box(style=Pack(margin=10, background_color="cyan"))
+            box = toga.Box(margin=10, background_color="cyan")
             if not self.sw_flexible.value:
                 box.style.update(width=100, height=100)
         else:
@@ -38,12 +37,12 @@ class ContentControls(toga.Box):
 
 class SplitControls(toga.Box):
     def __init__(self, split):
-        super().__init__(style=Pack(direction=COLUMN, align_items=CENTER, flex=1))
+        super().__init__(direction=COLUMN, align_items=CENTER, flex=1)
         self.split = split
 
         self.add(
             toga.Box(
-                style=Pack(direction=ROW),
+                direction=ROW,
                 children=[
                     toga.Button(25, on_press=self.on_position),
                     toga.Button(50, on_press=self.on_position),
@@ -51,7 +50,7 @@ class SplitControls(toga.Box):
                 ],
             ),
             toga.Box(
-                style=Pack(direction=ROW),
+                direction=ROW,
                 children=[
                     toga.Button("Direction", on_press=self.on_direction),
                 ],
@@ -73,13 +72,13 @@ class SplitControls(toga.Box):
 
 class SplitContainerApp(toga.App):
     def startup(self):
-        self.split = toga.SplitContainer(style=Pack(margin=10, flex=1))
+        self.split = toga.SplitContainer(margin=10, flex=1)
 
         main_box = toga.Box(
-            style=Pack(direction=COLUMN),
+            direction=COLUMN,
             children=[
                 toga.Box(
-                    style=Pack(direction=ROW),
+                    direction=ROW,
                     children=[
                         ContentControls(self.split, 0),
                         SplitControls(self.split),
@@ -102,5 +101,4 @@ def main():
 
 
 if __name__ == "__main__":
-    app = main()
-    app.main_loop()
+    main().main_loop()

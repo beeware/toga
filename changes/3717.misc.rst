@@ -1,0 +1,1 @@
+A redundant if condition has been removed in the testbed.

@@ -1,4 +1,11 @@
-from rubicon.objc import SEL, NSMakePoint, NSMakeSize, objc_method, objc_property
+from rubicon.objc import (
+    SEL,
+    CGRectMake,
+    NSMakePoint,
+    NSMakeSize,
+    objc_method,
+    objc_property,
+)
 from travertino.size import at_least
 
 from toga_iOS.container import Container
@@ -67,6 +74,12 @@ class ScrollContainer(Widget):
             height = max(self.interface.content.layout.height, height)
 
         self.native.contentSize = NSMakeSize(width, height)
+
+        # Update the document container frame to match the content size so that
+        # buttons outside the original scroll view frame can receive touch events.
+        # Without this, hit testing fails for views outside the original container
+        # bounds
+        self.document_container.native.frame = CGRectMake(0, 0, width, height)
 
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)

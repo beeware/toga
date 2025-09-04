@@ -1,3 +1,5 @@
+import pytest
+
 from toga.fonts import (
     BOLD,
     CURSIVE,
@@ -22,6 +24,9 @@ from toga_iOS.libs import (
 class FontMixin:
     supports_custom_fonts = True
     supports_custom_variable_fonts = False
+
+    def preinstalled_font(self):
+        pytest.skip("Use of arbitrary system fonts is not yet supported on iOS.")
 
     def assert_font_options(self, weight=NORMAL, style=NORMAL, variant=NORMAL):
         # Cocoa's FANTASY (Papyrus) and CURSIVE (Snell Roundhand) system

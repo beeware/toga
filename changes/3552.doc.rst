@@ -1,1 +1,0 @@
-A topic guide on managing file paths has been added.

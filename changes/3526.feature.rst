@@ -1,1 +1,0 @@
-``Pack.font_family`` now accepts a list of possible values; text will be rendered with the first font family that is available.

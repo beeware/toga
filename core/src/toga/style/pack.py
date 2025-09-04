@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import sys
 import warnings
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
@@ -39,7 +38,7 @@ from travertino.constants import (  # noqa: F401
 )
 from travertino.layout import BaseBox
 from travertino.properties.aliased import Condition, aliased_property
-from travertino.properties.shorthand import directional_property
+from travertino.properties.shorthand import composite_property, directional_property
 from travertino.properties.validated import list_property, validated_property
 from travertino.size import BaseIntrinsicSize
 from travertino.style import BaseStyle
@@ -178,13 +177,8 @@ class _alignment_property(validated_property):
 # End backwards compatibility
 ######################################################################
 
-if sys.version_info < (3, 10):
-    _DATACLASS_KWARGS = {"init": False, "repr": False}
-else:
-    _DATACLASS_KWARGS = {"kw_only": True, "repr": False}
 
-
-@dataclass(**_DATACLASS_KWARGS)
+@dataclass(kw_only=True, repr=False)
 class Pack(BaseStyle):
     _doc_link = ":doc:`style properties </reference/style/pack>`"
 
@@ -234,6 +228,15 @@ class Pack(BaseStyle):
     font_variant: str = validated_property(*FONT_VARIANTS, initial=NORMAL)
     font_weight: str = validated_property(*FONT_WEIGHTS, initial=NORMAL)
     font_size: int = validated_property(integer=True, initial=SYSTEM_DEFAULT_FONT_SIZE)
+    font: (
+        tuple[int, list[str] | str]
+        | tuple[str, int, list[str] | str]
+        | tuple[str, str, int, list[str] | str]
+        | tuple[str, str, str, int, list[str] | str]
+    ) = composite_property(
+        optional=("font_style", "font_variant", "font_weight"),
+        required=("font_size", "font_family"),
+    )
 
     ######################################################################
     # Directional aliases

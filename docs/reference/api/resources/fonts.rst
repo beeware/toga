@@ -68,6 +68,9 @@ properties to the ones used for widget styling::
    canvas = toga.Canvas()
    canvas.context.write_text("Hello", font=my_font)
 
+When constructing your own :class:`Font` instance, ensure that the font family you
+provide is valid; otherwise an :any:`UnknownFontError` will be raised.
+
 Notes
 -----
 
