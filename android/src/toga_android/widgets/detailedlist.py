@@ -7,6 +7,26 @@ from android.graphics import Color, Rect
 from android.view import Gravity, View
 from android.widget import ImageView, LinearLayout, RelativeLayout, ScrollView, TextView
 from java import dynamic_proxy
+from android.util import TypedValue
+
+
+def _resolve_theme_color(view, attr_id, fallback):
+    tv = TypedValue()
+    ctx = view.getContext()
+    th = ctx.getTheme()
+    if th.resolveAttribute(attr_id, tv, True):
+        if tv.resourceId:
+            try:
+                return ctx.getColor(tv.resourceId)
+            except Exception:
+                try:
+                    return ctx.getResources().getColor(tv.resourceId)
+                except Exception:
+                    pass
+        if getattr(tv, "data", 0):
+            return tv.data
+    return fallback
+
 
 try:
     from androidx.swiperefreshlayout.widget import SwipeRefreshLayout
@@ -180,15 +200,11 @@ class DetailedList(Widget):
         top_text = TextView(self._native_activity)
         top_text.setText(get_string(title))
         top_text.setTextSize(20.0)
-        top_text.setTextColor(
-            self._native_activity.getResources().getColor(R.color.black)
-        )
+        top_text.setTextColor(_resolve_theme_color(top_text, R.attr.textColorPrimary, Color.BLACK))
         bottom_text = TextView(self._native_activity)
-        bottom_text.setTextColor(
-            self._native_activity.getResources().getColor(R.color.black)
-        )
         bottom_text.setText(get_string(subtitle))
         bottom_text.setTextSize(16.0)
+        bottom_text.setTextColor(_resolve_theme_color(bottom_text, R.attr.textColorSecondary, Color.BLACK))
         top_text_params = LinearLayout.LayoutParams(
             RelativeLayout.LayoutParams.WRAP_CONTENT,
             RelativeLayout.LayoutParams.MATCH_PARENT,
