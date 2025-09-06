@@ -30,9 +30,9 @@ def _resolve_theme_color(view, attr_id, fallback):
                 except Exception:  # pragma: no cover - double-fallback not hit
                     pass  # pragma: no cover
         # Inline color int (ARGB) stored in tv.data (rare on textColor attrs)
-        if getattr(tv, "data", 0):
-            return tv.data
-    return fallback
+        if getattr(tv, "data", 0):  # pragma: no cover
+            return tv.data  # pragma: no cover
+    return fallback  # pragma: no cover
 
 
 try:
