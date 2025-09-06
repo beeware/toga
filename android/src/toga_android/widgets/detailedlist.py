@@ -19,12 +19,17 @@ def _resolve_theme_color(view, attr_id, fallback):
     if th.resolveAttribute(attr_id, tv, True):
         if tv.resourceId:
             try:
+                # API 23+ path used on modern emulators
                 return ctx.getColor(tv.resourceId)
-            except Exception:
+            except Exception:  # pragma: no cover - emulator hits API 23+ path
                 try:
-                    return ctx.getResources().getColor(tv.resourceId)
-                except Exception:
-                    pass
+                    # Legacy path (pre-23); not exercised in CI emulators
+                    return ctx.getResources().getColor(
+                        tv.resourceId
+                    )  # pragma: no cover
+                except Exception:  # pragma: no cover - double-fallback not hit
+                    pass  # pragma: no cover
+        # Inline color int (ARGB) stored in tv.data (rare on textColor attrs)
         if getattr(tv, "data", 0):
             return tv.data
     return fallback
