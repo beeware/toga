@@ -4,9 +4,36 @@ from android import R
 from android.app import AlertDialog
 from android.content import DialogInterface
 from android.graphics import Color, Rect
+from android.util import TypedValue
 from android.view import Gravity, View
 from android.widget import ImageView, LinearLayout, RelativeLayout, ScrollView, TextView
 from java import dynamic_proxy
+
+from .base import Widget
+
+
+def _resolve_theme_color(view, attr_id, fallback):
+    tv = TypedValue()
+    ctx = view.getContext()
+    th = ctx.getTheme()
+    if th.resolveAttribute(attr_id, tv, True):
+        if tv.resourceId:
+            try:
+                # API 23+ path used on modern emulators
+                return ctx.getColor(tv.resourceId)
+            except Exception:  # pragma: no cover - emulator hits API 23+ path
+                try:
+                    # Legacy path (pre-23); not exercised in CI emulators
+                    return ctx.getResources().getColor(
+                        tv.resourceId
+                    )  # pragma: no cover
+                except Exception:  # pragma: no cover - double-fallback not hit
+                    pass  # pragma: no cover
+        # Inline color int (ARGB) stored in tv.data (rare on textColor attrs)
+        if getattr(tv, "data", 0):
+            return tv.data
+    return fallback
+
 
 try:
     from androidx.swiperefreshlayout.widget import SwipeRefreshLayout
@@ -14,9 +41,6 @@ except ImportError:  # pragma: no cover
     # Import will fail if SwipeRefreshLayout is not listed in dependencies
     # No cover due to not being able to test in CI
     SwipeRefreshLayout = None
-
-
-from .base import Widget
 
 
 class DetailedListOnClickListener(dynamic_proxy(View.OnClickListener)):
@@ -181,14 +205,14 @@ class DetailedList(Widget):
         top_text.setText(get_string(title))
         top_text.setTextSize(20.0)
         top_text.setTextColor(
-            self._native_activity.getResources().getColor(R.color.black)
+            _resolve_theme_color(top_text, R.attr.textColorPrimary, Color.BLACK)
         )
         bottom_text = TextView(self._native_activity)
-        bottom_text.setTextColor(
-            self._native_activity.getResources().getColor(R.color.black)
-        )
         bottom_text.setText(get_string(subtitle))
         bottom_text.setTextSize(16.0)
+        bottom_text.setTextColor(
+            _resolve_theme_color(bottom_text, R.attr.textColorSecondary, Color.BLACK)
+        )
         top_text_params = LinearLayout.LayoutParams(
             RelativeLayout.LayoutParams.WRAP_CONTENT,
             RelativeLayout.LayoutParams.MATCH_PARENT,
