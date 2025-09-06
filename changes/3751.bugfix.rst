@@ -1,0 +1,1 @@
+Android: DetailedList now uses theme-resolved text colors (Primary/Secondary) instead of hard-coded black, fixing unreadable text in dark mode.
