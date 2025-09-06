@@ -5,26 +5,13 @@ from playwright.async_api import async_playwright
 
 
 class BackgroundPage:
-    _inst = None
-    _lock = threading.Lock()
-
-    def __new__(cls):
-        with cls._lock:
-            if cls._inst is None:
-                cls._inst = super().__new__(cls)
-        return cls._inst
-
-    @classmethod
-    def get(cls):
-        return cls()
-
     def __init__(self):
         if getattr(self, "_init", False):
             return
         self._init = True
         self._ready = threading.Event()
         self._loop = None
-        self._thread = threading.Thread(target=self._run, name="PageLoop", daemon=True)
+        self._thread = threading.Thread(target=self._run, daemon=True)
         self._thread.start()
         self._ready.wait()
 
@@ -62,8 +49,9 @@ class BackgroundPage:
 
             self._alock = asyncio.Lock()
         except Exception:
-            self._alock = asyncio.Lock()
+            raise
         finally:
+            self._alock = asyncio.Lock()
             self._ready.set()
 
     async def _eval(self, js, *args):

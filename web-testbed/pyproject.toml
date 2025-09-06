@@ -2,7 +2,6 @@
 name = "testbed"
 version = "0.0.1"
 
-#[dependency-groups]
 [project.optional-dependencies]
 test = [
     "briefcase",
