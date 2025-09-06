@@ -1,8 +1,8 @@
-import asyncio
 import datetime
 from math import ceil
 
 from rubicon.objc import SEL, CGSize
+from travertino.size import at_least
 
 from toga_iOS.libs import (
     NSCalendar,
@@ -65,21 +65,16 @@ class TimeInput(Widget):
         # Add the layout constraints
         self.add_constraints()
 
-        asyncio.get_running_loop().call_soon(self.refresh)
-
     def get_value(self):
         return py_time(self.native.date)
 
     def set_value(self, value):
         self.native.date = native_time(value.replace(second=0, microsecond=0))
-        self.interface.on_change()
-        self.refresh()
+        self.native.sendActionsForControlEvents(UIControlEventValueChanged)
 
     def rehint(self):
-        self.native.setNeedsLayout()
-        self.native.layoutIfNeeded()
         fitting_size = self.native.systemLayoutSizeFittingSize(CGSize(0, 0))
-        self.interface.width = ceil(fitting_size.width)
+        self.interface.intrinsic.width = at_least(ceil(fitting_size.width))
         self.interface.intrinsic.height = fitting_size.height
 
     def get_min_time(self):
