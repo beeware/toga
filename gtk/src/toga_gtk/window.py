@@ -115,15 +115,15 @@ class Window:
         def gtk_do_size_allocate(
             self, native, width, height, baseline
         ):  # pragma: no-cover-if-gtk3
+            if self._window_size != (width, height):
+                self._window_size = Size(width, height)
+                self.interface.on_resize()
+
             # Note: Virtual methods can't use super() to access the original
             # implementation, so they must use native.base_class instead.
 
             # Call the parent class's size_allocate via native.base_class.
             native.base_class.do_size_allocate(native, width, height, baseline)
-
-            if self._window_size != (width, height):
-                self._window_size = Size(width, height)
-                self.interface.on_resize()
 
     def gtk_show(self, widget):
         self.interface.on_show()
