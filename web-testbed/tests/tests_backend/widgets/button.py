@@ -1,31 +1,34 @@
-from ..page_singleton import BackgroundPage
-
-
 class ButtonProbe:
+    page_provider = staticmethod(lambda: None)
+
+    def _page(self):
+        return type(self).page_provider()
+
     def __init__(self, widget):
         object.__setattr__(self, "id", widget.id)
         object.__setattr__(self, "dom_id", f"toga_{widget.id}")
 
     def __getattr__(self, name):
-        page = BackgroundPage.get()
+        page = self._page()
 
         match name:
             case "text":
-                # was inner_text, but it trims leading/trailing spaces and removes only
+                # Was inner_text, but it trims leading/trailing spaces and removes only
                 # whitespace.
                 return page.run_coro(
-                    lambda page: page.locator(f"#{self.dom_id}").text_content()
+                    lambda p: p.locator(f"#{self.dom_id}").text_content()
                 )
             case "height":
                 box = page.run_coro(
-                    lambda page: page.locator(f"#{self.dom_id}").bounding_box()
+                    lambda p: p.locator(f"#{self.dom_id}").bounding_box()
                 )
                 return None if box is None else box["height"]
 
         return "No match"
         # raise AttributeError(name)
 
-        """ ALTERNATIVE METHOD - Keep just in case
+        # Alternate Method - Keep just in case
+        """
         sel = f"#{self.dom_id}"
 
         if name == "text":
