@@ -1,4 +1,5 @@
 import datetime
+from math import ceil
 
 from rubicon.objc import SEL, CGSize
 from travertino.size import at_least
@@ -7,7 +8,7 @@ from toga_iOS.libs import (
     NSCalendar,
     NSCalendarUnit,
     NSDateComponents,
-    UIControlContentHorizontalAlignmentLeft,
+    UIControlContentHorizontalAlignmentCenter,
     UIControlEventValueChanged,
     UIDatePickerMode,
 )
@@ -40,7 +41,9 @@ class TimeInput(Widget):
         self.native.delegate = self.native
 
         self.native.datePickerMode = UIDatePickerMode.Time
-        self.native.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft
+        self.native.contentHorizontalAlignment = (
+            UIControlContentHorizontalAlignmentCenter
+        )
 
         self.native.addTarget(
             self.native,
@@ -67,11 +70,11 @@ class TimeInput(Widget):
 
     def set_value(self, value):
         self.native.date = native_time(value.replace(second=0, microsecond=0))
-        self.interface.on_change()
+        self.native.sendActionsForControlEvents(UIControlEventValueChanged)
 
     def rehint(self):
         fitting_size = self.native.systemLayoutSizeFittingSize(CGSize(0, 0))
-        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
+        self.interface.intrinsic.width = at_least(ceil(fitting_size.width))
         self.interface.intrinsic.height = fitting_size.height
 
     def get_min_time(self):
