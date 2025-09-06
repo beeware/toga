@@ -4,10 +4,12 @@ from android import R
 from android.app import AlertDialog
 from android.content import DialogInterface
 from android.graphics import Color, Rect
+from android.util import TypedValue
 from android.view import Gravity, View
 from android.widget import ImageView, LinearLayout, RelativeLayout, ScrollView, TextView
 from java import dynamic_proxy
-from android.util import TypedValue
+
+from .base import Widget
 
 
 def _resolve_theme_color(view, attr_id, fallback):
@@ -34,9 +36,6 @@ except ImportError:  # pragma: no cover
     # Import will fail if SwipeRefreshLayout is not listed in dependencies
     # No cover due to not being able to test in CI
     SwipeRefreshLayout = None
-
-
-from .base import Widget
 
 
 class DetailedListOnClickListener(dynamic_proxy(View.OnClickListener)):
@@ -200,11 +199,15 @@ class DetailedList(Widget):
         top_text = TextView(self._native_activity)
         top_text.setText(get_string(title))
         top_text.setTextSize(20.0)
-        top_text.setTextColor(_resolve_theme_color(top_text, R.attr.textColorPrimary, Color.BLACK))
+        top_text.setTextColor(
+            _resolve_theme_color(top_text, R.attr.textColorPrimary, Color.BLACK)
+        )
         bottom_text = TextView(self._native_activity)
         bottom_text.setText(get_string(subtitle))
         bottom_text.setTextSize(16.0)
-        bottom_text.setTextColor(_resolve_theme_color(bottom_text, R.attr.textColorSecondary, Color.BLACK))
+        bottom_text.setTextColor(
+            _resolve_theme_color(bottom_text, R.attr.textColorSecondary, Color.BLACK)
+        )
         top_text_params = LinearLayout.LayoutParams(
             RelativeLayout.LayoutParams.WRAP_CONTENT,
             RelativeLayout.LayoutParams.MATCH_PARENT,
