@@ -102,7 +102,7 @@ jobs:
         fetch-depth: 0
 
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v5.6.0
+      uses: actions/setup-python@v6.0.0
       with:
         python-version: ${{ matrix.python-version }}
         allow-prereleases: true
@@ -158,7 +158,7 @@ jobs:
         fetch-depth: 0
 
     - name: Set up Python ${{ env.min_python_version }}
-      uses: actions/setup-python@v5.6.0
+      uses: actions/setup-python@v6.0.0
       with:
         # Use minimum version of python for coverage to avoid phantom branches
         # https://github.com/nedbat/coveragepy/issues/1572#issuecomment-1522546425
@@ -200,7 +200,7 @@ jobs:
         fetch-depth: 0
 
     - name: Set up Python
-      uses: actions/setup-python@v5.6.0
+      uses: actions/setup-python@v6.0.0
       with:
         python-version: ${{ env.min_python_version }}
 
@@ -418,7 +418,7 @@ jobs:
         fetch-depth: 0
 
     - name: Set up Python
-      uses: actions/setup-python@v5.6.0
+      uses: actions/setup-python@v6.0.0
       if: matrix.setup-python
       with:
         python-version: "3.12"
@@ -502,7 +502,7 @@ jobs:
         fetch-depth: 0
 
     - name: Set up Python
-      uses: actions/setup-python@v5.6.0
+      uses: actions/setup-python@v6.0.0
       with:
         python-version: "3.12"
 
