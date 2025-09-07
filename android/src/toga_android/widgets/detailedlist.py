@@ -8,6 +8,7 @@ from android.util import TypedValue
 from android.view import Gravity, View
 from android.widget import ImageView, LinearLayout, RelativeLayout, ScrollView, TextView
 from java import dynamic_proxy
+from rubicon.java import JavaException
 
 from .base import Widget
 
@@ -16,22 +17,15 @@ def _resolve_theme_color(view, attr_id, fallback):
     tv = TypedValue()
     ctx = view.getContext()
     th = ctx.getTheme()
-    if th.resolveAttribute(attr_id, tv, True):
-        if tv.resourceId:
-            try:
-                # API 23+ path used on modern emulators
-                return ctx.getColor(tv.resourceId)
-            except Exception:  # pragma: no cover - emulator hits API 23+ path
-                try:
-                    # Legacy path (pre-23); not exercised in CI emulators
-                    return ctx.getResources().getColor(
-                        tv.resourceId
-                    )  # pragma: no cover
-                except Exception:  # pragma: no cover - double-fallback not hit
-                    pass  # pragma: no cover
-        # Inline color int (ARGB) stored in tv.data (rare on textColor attrs)
-        if getattr(tv, "data", 0):  # pragma: no cover
-            return tv.data  # pragma: no cover
+    if not th.resolveAttribute(attr_id, tv, True):
+        return fallback  # pragma: no cover
+    if tv.resourceId:
+        try:
+            return ctx.getColor(tv.resourceId)
+        except (JavaException, AttributeError):  # pragma: no cover
+            return ctx.getResources().getColor(tv.resourceId)  # pragma: no cover
+    if getattr(tv, "data", 0):  # pragma: no branch
+        return tv.data  # pragma: no cover
     return fallback  # pragma: no cover
 
 
