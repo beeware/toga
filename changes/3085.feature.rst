@@ -1,0 +1,1 @@
+Extending location services with the more battery balanced modes like significant location change and reporting of visits.
