@@ -4,32 +4,34 @@ from android import R
 from android.app import AlertDialog
 from android.content import DialogInterface
 from android.graphics import Color, Rect
+from android.os import Build
 from android.util import TypedValue
 from android.view import Gravity, View
 from android.widget import ImageView, LinearLayout, RelativeLayout, ScrollView, TextView
 from java import dynamic_proxy
 
-try:
-    from rubicon.java import JavaException  # type: ignore
-except ModuleNotFoundError:  # pragma: no cover
-    # On non-Android CI, rubicon-java may not be installed; fall back to Exception.
-    JavaException = Exception  # type: ignore[assignment]
-
 from .base import Widget
 
 
 def _resolve_theme_color(view, attr_id, fallback):
-    # No covers due to not being able to test in CI
     tv = TypedValue()
     ctx = view.getContext()
     th = ctx.getTheme()
+    res = ctx.getResources()
+
     if not th.resolveAttribute(attr_id, tv, True):
         return fallback  # pragma: no cover
     if tv.resourceId:
-        try:
+        if Build.VERSION.SDK_INT >= 23:
+            csl = res.getColorStateList(tv.resourceId, None)
+            if csl is not None:
+                return csl.getDefaultColor()
             return ctx.getColor(tv.resourceId)
-        except (JavaException, AttributeError):  # pragma: no cover
-            return ctx.getResources().getColor(tv.resourceId)  # pragma: no cover
+        else:  # pragma: no cover
+            csl = res.getColorStateList(tv.resourceId)
+            if csl is not None:
+                return csl.getDefaultColor()
+            return res.getColor(tv.resourceId)
     if getattr(tv, "data", 0):  # pragma: no branch
         return tv.data  # pragma: no cover
     return fallback  # pragma: no cover
