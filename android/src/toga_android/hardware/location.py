@@ -24,10 +24,18 @@ def toga_location(location):
     else:
         altitude = None
 
-    return {
+    result = {
         "location": latlng,
         "altitude": altitude,
     }
+
+    if location.hasAccuracy():
+        result["accuracy"] = location.getAccuracy()
+
+    if location.hasVerticalAccuracy():
+        result["vertical_accuracy"] = location.getVerticalAccuracyMeters()
+
+    return result
 
 
 class TogaLocationConsumer(dynamic_proxy(Consumer)):
