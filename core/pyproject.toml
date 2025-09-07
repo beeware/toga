@@ -13,34 +13,17 @@ description = "A Python native, OS native GUI toolkit."
 readme = "README.rst"
 requires-python = ">= 3.10"
 license = "BSD-3-Clause"
-license-files = [
-    "LICENSE"
-]
+license-files = ["LICENSE"]
 authors = [
-    {name="Russell Keith-Magee", email="russell@keith-magee.com"},
+    { name = "Russell Keith-Magee", email = "russell@keith-magee.com" },
 ]
 maintainers = [
-    {name="BeeWare Team", email="team@beeware.org"},
+    { name = "BeeWare Team", email = "team@beeware.org" },
 ]
 keywords = [
-    "gui",
-    "widget",
-    "cross-platform",
-    "toga",
-    "desktop",
-    "mobile",
-    "web",
-    "macOS",
-    "cocoa",
-    "iOS",
-    "android",
-    "windows",
-    "winforms",
-    "linux",
-    "freeBSD",
-    "gtk",
-    "console",
-    "web",
+    "gui", "widget", "cross-platform", "toga", "desktop", "mobile", "web",
+    "macOS", "cocoa", "iOS", "android", "windows", "winforms", "linux",
+    "freeBSD", "gtk", "console", "web",
 ]
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -57,9 +40,8 @@ classifiers = [
     "Topic :: Software Development :: Widget Sets",
 ]
 
+# Keep extras here for now so legacy commands like `pip install core[dev]` still work.
 [project.optional-dependencies]
-# Extras used by developers *of* Toga are pinned to specific versions to
-# ensure environment consistency.
 dev = [
     "coverage[toml] == 7.10.6",
     "coverage-conditional-plugin == 0.9.0",
@@ -72,14 +54,8 @@ dev = [
     "setuptools-scm == 9.2.0",
     "tox == 4.29.0",
 ]
-# Docs are always built on a specific Python version; see RTD and tox config files,
-# and the docs contribution guide.
+# Docs are always built on a specific Python version; see RTD/tox configs and docs guide.
 docs = [
-    # Docs requirements are *mostly* handled by the `docs` extra; but we can't include
-    # the theme that way, so the theme is installed using a requirements.txt file,
-    # independent of the docs extra. Ideally, we'd use dependency groups for docs
-    # dependencies, but RTD doesn't support them yet.
-    # "beeware_theme @ git+https://github.com/beeware/beeware-theme",
     "furo == 2025.7.19",
     "Pillow == 11.3.0",
     "pyenchant == 3.2.2",
@@ -115,7 +91,6 @@ dependencies = [
 parallel = true
 branch = true
 relative_files = true
-
 # See notes in the root pyproject.toml file.
 source = ["src"]
 source_pkgs = ["toga"]
@@ -129,6 +104,4 @@ source = [
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "function"
-filterwarnings = [
-    "error",
-]
+filterwarnings = ["error"]

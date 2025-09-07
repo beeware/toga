@@ -1,6 +1,6 @@
 [tool.codespell]
 skip = ".git,*.pdf,*.svg"
-# the way to make case sensitive skips of words etc
+# case-sensitive skip examples
 ignore-regex = "\bNd\b"
 ignore-words-list = "MapPin"
 
@@ -47,11 +47,10 @@ no-cover-if-gte-py311 = "sys_version_info > (3, 11) and os_environ.get('COVERAGE
 [tool.ruff]
 exclude = [
     ".template",  # Ruff fails to run at all if allowed to lint the cookiecutter syntax
-    "core/src/toga/__init__.pyi"
+    "core/src/toga/__init__.pyi",
 ]
 
 [tool.ruff.lint]
-# In addition to the default rules, these additional rules will be used:
 extend-select = [
     "E",      # pycodestyle
     "W",      # pycodestyle
@@ -62,18 +61,15 @@ extend-select = [
     "ASYNC",  # flake8-async
     "C4",     # flake8-comprehensions
     "I",      # isort
-    # The SIM rules are *very* opinionated, and don't necessarily make for better code.
-    # They may be worth occasionally turning on just to see if something could actually
-    # use improvement.
-    # "SIM",    # flake8-simplify
+    # "SIM",  # flake8-simplify (very opinionated)
 ]
 
 [tool.ruff.lint.isort]
 combine-as-imports = true
 known-third-party = [
-    "android",  # isort defaults to making this first-party because it can't be imported.
-    "textual",  # We don't ever import textual, so Ruff doesn't know about it.
-    "travertino", # In this repo, but still a separate package
+    "android",   # isort defaults to making this first-party because it can't be imported.
+    "textual",   # We don't ever import textual, so Ruff doesn't know about it.
+    "travertino",# In this repo, but still a separate package
 ]
 known-first-party = [
     "testbed",
@@ -105,6 +101,44 @@ type = [
 ]
 
 [tool.setuptools_scm]
-# We're not doing anything Python-related at the root level of the repo, but if this
-# declaration isn't here, tox commands run from the root directory raise a warning that
-# pyproject.toml doesn't contain a setuptools_scm section.
+# We do NOT build/publish a Python package from the repo root (no [project]/[build-system]).
+# This section is here to silence a tox warning when run from the root.
+# pyproject.toml doesn't contain a setuptools_scm section otherwise.
+
+# -------------------------------------------------------------------
+# PEP 735 dependency groups (root): used by tox & contributors.
+# These do NOT ship in built wheels.
+# -------------------------------------------------------------------
+[dependency-groups]
+
+"pre-commit" = [
+    "pre-commit == 4.3.0",
+]
+
+"town-crier" = [
+    "towncrier == 25.8.0",
+]
+
+dev = [
+    "coverage[toml] == 7.10.6",
+    "coverage-conditional-plugin == 0.9.0",
+    "Pillow == 11.3.0",
+    "pytest == 8.4.1",
+    "pytest-asyncio == 1.1.0",
+    "pytest-freezer == 0.4.9",
+    "pytest-xdist == 3.8.0",
+    "setuptools-scm == 9.2.0",
+]
+
+docs = [
+    "sphinx == 8.2.3",
+    "furo == 2025.7.19",
+    "sphinx_tabs == 3.4.5",
+    "sphinx-autobuild == 2024.10.3",
+    "sphinx-csv-filter == 0.4.2",
+    "sphinx-copybutton == 0.5.2",
+    "sphinx-toolbox == 4.0.0",
+    "sphinxcontrib-spelling == 8.0.1",
+    "pyenchant == 3.2.2",
+    "Pillow == 11.3.0",
+]
