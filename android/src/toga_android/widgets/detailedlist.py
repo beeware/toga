@@ -8,12 +8,18 @@ from android.util import TypedValue
 from android.view import Gravity, View
 from android.widget import ImageView, LinearLayout, RelativeLayout, ScrollView, TextView
 from java import dynamic_proxy
-from rubicon.java import JavaException
+
+try:
+    from rubicon.java import JavaException  # type: ignore
+except ModuleNotFoundError:  # pragma: no cover
+    # On non-Android CI, rubicon-java may not be installed; fall back to Exception.
+    JavaException = Exception  # type: ignore[assignment]
 
 from .base import Widget
 
 
 def _resolve_theme_color(view, attr_id, fallback):
+    # No covers due to not being able to test in CI
     tv = TypedValue()
     ctx = view.getContext()
     th = ctx.getTheme()
