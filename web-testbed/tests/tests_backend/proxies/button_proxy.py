@@ -1,16 +1,12 @@
-from .base import ProxyBase
+from .base_proxy import BaseProxy
 
 
-class ButtonProxy(ProxyBase):
-    def __init__(self):
-        object.__setattr__(self, "_inited", False)
-
+class ButtonProxy(BaseProxy):
+    def __init__(self, text="Hello"):
         code = (
-            "new_widget = toga.Button('Hello')\n"
+            f"new_widget = toga.Button({repr(text)})\n"
             "self.my_widgets[new_widget.id] = new_widget\n"
             "result = new_widget.id"
         )
-        widget_id = self._page().eval_js("(code) => window.test_cmd(code)", code)
-
-        object.__setattr__(self, "id", widget_id)
-        object.__setattr__(self, "_inited", True)
+        wid = self._page().eval_js("(code) => window.test_cmd(code)", code)
+        super().__init__(wid)
