@@ -1,4 +1,6 @@
 class BoxProxy:
+    # Currently only for use in the 'probe' pytest fixture.
+
     """Proxy for toga.Box(children=[...])."""
 
     page_provider = staticmethod(lambda: None)
