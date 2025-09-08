@@ -2,7 +2,7 @@ from .box_proxy import BoxProxy
 
 
 class MainWindowProxy:
-    """Proxy that can get/set content. Content must be a BoxProxy."""
+    """Minimal proxy that can get/set content. Content must be a BoxProxy."""
 
     page_provider = staticmethod(lambda: None)
 
