@@ -25,6 +25,8 @@ class TogaDatePicker(UIDatePicker):
     @objc_method
     def dateInputDidChange_(self, dateInput) -> None:
         self.interface.on_change()
+        # setNeedsLayout and layoutIfNeeded will ensure that the correct
+        # minimum fitting size will be returned by the native widget
         self.setNeedsLayout()
         self.layoutIfNeeded()
         self.interface.refresh()
