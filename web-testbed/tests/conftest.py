@@ -3,7 +3,7 @@
 
 import pytest
 
-from .tests_backend.page_singleton import BackgroundPage
+from .tests_backend.playwright_page import BackgroundPage
 
 # In future, would only need to be AppProxy, MainWindowProxy, ProxyBase and
 # a SimpleProbe/BaseProbe.
