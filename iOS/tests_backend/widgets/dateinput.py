@@ -6,7 +6,7 @@ import pytest
 from toga_iOS.libs import (
     NSCalendar,
     NSCalendarUnit,
-    UIControlContentHorizontalAlignmentCenter,
+    UIControlContentHorizontalAlignmentLeft,
     UIControlEventValueChanged,
     UIDatePicker,
     UIDatePickerMode,
@@ -23,7 +23,7 @@ class DateTimeInputProbe(SimpleProbe, ABC):
         super().__init__(widget)
         assert (
             self.native.contentHorizontalAlignment
-            == UIControlContentHorizontalAlignmentCenter
+            == UIControlContentHorizontalAlignmentLeft
         )
 
     @abstractmethod

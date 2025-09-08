@@ -8,7 +8,7 @@ from toga_iOS.libs import (
     NSCalendar,
     NSCalendarUnit,
     NSDateComponents,
-    UIControlContentHorizontalAlignmentCenter,
+    UIControlContentHorizontalAlignmentLeft,
     UIControlEventValueChanged,
     UIDatePickerMode,
 )
@@ -41,9 +41,7 @@ class TimeInput(Widget):
         self.native.delegate = self.native
 
         self.native.datePickerMode = UIDatePickerMode.Time
-        self.native.contentHorizontalAlignment = (
-            UIControlContentHorizontalAlignmentCenter
-        )
+        self.native.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft
 
         self.native.addTarget(
             self.native,
