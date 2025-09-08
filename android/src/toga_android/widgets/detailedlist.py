@@ -4,8 +4,6 @@ from android import R
 from android.app import AlertDialog
 from android.content import DialogInterface
 from android.graphics import Color, Rect
-from android.os import Build
-from android.util import TypedValue
 from android.view import Gravity, View
 from android.widget import ImageView, LinearLayout, RelativeLayout, ScrollView, TextView
 from java import dynamic_proxy
@@ -13,28 +11,19 @@ from java import dynamic_proxy
 from .base import Widget
 
 
-def _resolve_theme_color(view, attr_id, fallback):
-    tv = TypedValue()
+def _resolve_theme_color(view, attr_id):
     ctx = view.getContext()
-    th = ctx.getTheme()
-    res = ctx.getResources()
-
-    if not th.resolveAttribute(attr_id, tv, True):
-        return fallback  # pragma: no cover
-    if tv.resourceId:
-        if Build.VERSION.SDK_INT >= 23:
-            csl = res.getColorStateList(tv.resourceId, None)
-            if csl is not None:
-                return csl.getDefaultColor()
-            return ctx.getColor(tv.resourceId)
-        else:  # pragma: no cover
-            csl = res.getColorStateList(tv.resourceId)
-            if csl is not None:
-                return csl.getDefaultColor()
-            return res.getColor(tv.resourceId)
-    if getattr(tv, "data", 0):  # pragma: no branch
-        return tv.data  # pragma: no cover
-    return fallback  # pragma: no cover
+    ta = ctx.getTheme().obtainStyledAttributes([attr_id])
+    try:
+        if not ta.hasValue(0):
+            # CI's emulator theme always defines textColorPrimary/Secondary,
+            # so this path can't be exercised there.
+            raise RuntimeError(  # pragma: no cover
+                f"Required theme color attribute not found: {attr_id}"
+            )
+        return ta.getColor(0, 0)
+    finally:
+        ta.recycle()
 
 
 try:
@@ -206,14 +195,12 @@ class DetailedList(Widget):
         top_text = TextView(self._native_activity)
         top_text.setText(get_string(title))
         top_text.setTextSize(20.0)
-        top_text.setTextColor(
-            _resolve_theme_color(top_text, R.attr.textColorPrimary, Color.BLACK)
-        )
+        top_text.setTextColor(_resolve_theme_color(top_text, R.attr.textColorPrimary))
         bottom_text = TextView(self._native_activity)
         bottom_text.setText(get_string(subtitle))
         bottom_text.setTextSize(16.0)
         bottom_text.setTextColor(
-            _resolve_theme_color(bottom_text, R.attr.textColorSecondary, Color.BLACK)
+            _resolve_theme_color(bottom_text, R.attr.textColorSecondary)
         )
         top_text_params = LinearLayout.LayoutParams(
             RelativeLayout.LayoutParams.WRAP_CONTENT,
