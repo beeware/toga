@@ -25,8 +25,10 @@ class TogaDatePicker(UIDatePicker):
     @objc_method
     def dateInputDidChange_(self, dateInput) -> None:
         self.interface.on_change()
-        # setNeedsLayout and layoutIfNeeded will ensure that the correct
-        # minimum fitting size will be returned by the native widget
+        # The width of the widget is dependent on the date being displayed. If the value
+        # changes, we also need to force the iOS widget to lay itself out again to
+        # ensure minimum size hints are accurate, and then trigger a Toga refresh to
+        # apply the new hints.
         self.setNeedsLayout()
         self.layoutIfNeeded()
         self.interface.refresh()
