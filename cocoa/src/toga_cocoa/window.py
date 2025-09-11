@@ -64,6 +64,7 @@ class TogaWindow(NSWindow):
 
     @objc_method
     def windowDidResize_(self, notification) -> None:
+        self.impl.interface.on_resize()
         if self.interface.content:
             # Set the window to the new size
             self.interface.content.refresh()
@@ -463,10 +464,14 @@ class Window:
             )
 
             # Going presentation mode causes the window content
-            # to be re-homed in a NSFullScreenWindow; teach the
-            # new parent window about its Toga representations.
+            # to be re-homed in a NSFullScreenWindow;
+            # Teach the new parent window about its Toga representations.
             self.container.native.window._impl = self
             self.container.native.window.interface = self.interface
+            # Manually trigger the resize event as the original NSWindow's
+            # size remains unchanged, hence the windowDidResize_ would not
+            # be notified when the window goes into presentation mode.
+            self.interface.on_resize()
             self.interface.content.refresh()
 
             # No need to check for other pending states,
@@ -490,6 +495,10 @@ class Window:
                     NSNumber.numberWithBool(True), forKey="NSFullScreenModeAllScreens"
                 )
                 self.container.native.exitFullScreenModeWithOptions(opts)
+                # Manually trigger the resize event as the original NSWindow's
+                # size remains unchanged, hence the windowDidResize_ would not
+                # be notified when the window goes out of the presentation mode.
+                self.interface.on_resize()
                 self.interface.content.refresh()
 
                 self.interface.screen = self._before_presentation_mode_screen
