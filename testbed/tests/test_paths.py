@@ -12,6 +12,10 @@ async def test_app_paths(app, app_probe, attr):
     assert path == getattr(app_probe, f"{attr}_path")
 
     try:
+        # We can create a folder in the app path
+        tempdir = path / f"testbed-{os.getpid()}"
+        tempdir.mkdir()  # Don't create parent, to confirm it already exists
+
         # We can create and write to a file in the app path
         tempfile = path / f"{attr}-{os.getpid()}.txt"
         with tempfile.open("w", encoding="utf-8") as f:
