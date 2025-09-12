@@ -23,7 +23,8 @@ location to which they can be considered relative.
 Complicating matters further, operating systems have conventions (and in some
 cases, hard restrictions) over where certain file types should be stored. For
 example, macOS provides the ``~/Library/Application Support`` folder; Linux
-encourages use of the ``~/.config`` folder (amongst others), and Windows
+encourages use of the ``~/.config`` folder (amongst others),
+while allowing users to override the defaults; and Windows
 provides the ``AppData/Local`` folder in the user's home directory. Application
 sandbox and security policies will sometimes prevent reading or
 writing files in any location other than these pre-approved locations.
@@ -42,6 +43,16 @@ up you to create any desired subdirectory - if you want to create a
 ``credentials/user.toml`` configuration file, Toga will guarantee that the
 ``apps.path.config`` will exist, but you must take responsibility for
 creating the ``credentials`` subdirectory before saving ``user.toml``.
+
+Notes
+-----
+
+* The GTK backend partially implements the
+  `XDG Base Directory Specification <https://specifications.freedesktop.org/basedir-spec/latest/>`__;
+  specifically, it uses the default XDG paths for data, config, state, and cache
+  directories, and respects the environment variables that allow overriding the
+  default paths. Per the specification, the override paths must be absolute; relative
+  paths will be ignored.
 
 Reference
 ---------
