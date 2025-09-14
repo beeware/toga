@@ -6,8 +6,6 @@ from playwright.async_api import async_playwright
 
 class BackgroundPage:
     def __init__(self):
-        if getattr(self, "_init", False):
-            return
         self._init = True
         self._ready = threading.Event()
         self._loop = None

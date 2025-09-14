@@ -21,7 +21,7 @@ from .tests_backend.widgets.button import ButtonProbe
 @pytest.fixture(scope="session")
 def page():
     p = BackgroundPage()
-    yield p
+    return p
 
 
 @pytest.fixture(scope="session", autouse=True)

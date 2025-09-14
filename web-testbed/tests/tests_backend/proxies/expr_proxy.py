@@ -28,6 +28,7 @@ class ExprProxy:
             )
             # return "{%s}" % items
             return f"{{{items}}}"
+
         return repr(str(value))
 
     def _encode_call(self, *args, **kwargs) -> str:
