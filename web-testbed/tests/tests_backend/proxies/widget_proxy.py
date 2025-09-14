@@ -3,6 +3,7 @@ from .base_proxy import BaseProxy
 
 class WidgetProxy(BaseProxy):
     # In-built widget register
+    # Using my_widgets for all objects for now
     # _storage_expr = "self.widgets"
 
     def _create_with_known_id(self, ctor_expr: str, *args, **kwargs) -> str:

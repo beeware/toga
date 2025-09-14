@@ -2,6 +2,7 @@ from .base_proxy import BaseProxy
 
 
 class NonWidgetProxy(BaseProxy):
+    # Using my_widgets for all objects for now
     # _storage_expr = "self.my_objs"
     # _ctor_expr: str | None = None
 
