@@ -33,3 +33,12 @@ class BoxProxy:
     def add(self, widget):
         code = f"self.my_widgets['{self.id}'].add(self.my_widgets['{widget.id}'])"
         self._page().eval_js("(code) => window.test_cmd(code)", code)
+
+    """
+    def add(self, widget):
+        code = (
+            f"self.my_widgets['{self.id}'].add(self.widgets['{widget.id}'])\n"
+            f"self.my_widgets['{widget.id}'] = self.widgets['{widget.id}']"
+        )
+        self._page().eval_js("(code) => window.test_cmd(code)", code)
+    """

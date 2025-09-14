@@ -5,7 +5,7 @@ from tests.tests_backend.proxies.button_proxy import ButtonProxy
 
 @fixture
 async def widget():
-    return ButtonProxy()
+    return ButtonProxy("Hello")
 
 
 async def test_text(widget, probe):
