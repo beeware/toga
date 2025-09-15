@@ -11,6 +11,29 @@ class ExprProxy:
     def js_ref(self) -> str:
         return object.__getattribute__(self, "_ref_expr")
 
+    def proxy_from_handle(h: dict):
+        if h.get("$t") != "handle":
+            raise TypeError("not a handle")
+        key = h["id"]
+        if h.get("ns", "widgets") == "widgets":
+            from .widget_proxy import WidgetProxy
+
+            return WidgetProxy.from_id(key)
+        else:
+            from .non_widget_proxy import NonWidgetProxy
+
+            return NonWidgetProxy.from_id(key)
+
+    def _unwrap(self, v):
+        if isinstance(v, dict) and v.get("$t") == "handle":
+            return type(self).proxy_from_handle(v)
+        # lists/dicts may contain nested handles
+        if isinstance(v, list):
+            return [self._unwrap(x) for x in v]
+        if isinstance(v, dict):
+            return {k: self._unwrap(x) for k, x in v.items()}
+        return v
+
     def _encode_value(self, value) -> str:
         from .base_proxy import BaseProxy  # local import to avoid cycle
 
@@ -27,8 +50,8 @@ class ExprProxy:
                 f"{repr(k)}: {self._encode_value(v)}" for k, v in value.items()
             )
             return f"{{{items}}}"
-
-        return repr(str(value))
+        # raise error if not any of this, will need to implement in the future if needed
+        raise TypeError(f"Don't know how to encode {type(value).__name__}. ")
 
     def _encode_call(self, *args, **kwargs) -> str:
         parts = [self._encode_value(a) for a in args]
@@ -78,7 +101,12 @@ class ExprProxy:
     def __setattr__(self, name, value):
         if name.startswith("_"):
             return object.__setattr__(self, name, value)
-        code = f"setattr({self.js_ref}, {repr(name)}, {self._encode_value(value)})"
+
+        if name == "text":
+            rhs = repr(str(value))
+        else:
+            rhs = self._encode_value(value)
+        code = f"setattr({self.js_ref}, {repr(name)}, {rhs})"
         self._page().eval_js("(code) => window.test_cmd(code)", code)
 
     def __delattr__(self, name):
