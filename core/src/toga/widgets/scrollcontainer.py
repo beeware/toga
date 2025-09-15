@@ -39,7 +39,7 @@ class ScrollContainer(Widget):
         :param style: A style object. If no style is provided, a default style
             will be applied to the widget.
         :param horizontal: Should horizontal scrolling be permitted?
-        :param vertical: Should horizontal scrolling be permitted?
+        :param vertical: Should vertical scrolling be permitted?
         :param on_scroll: Initial :any:`on_scroll` handler.
         :param content: The content to display in the scroll window.
         :param kwargs: Initial style properties.
