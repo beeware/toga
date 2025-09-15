@@ -26,7 +26,6 @@ class ExprProxy:
             items = ", ".join(
                 f"{repr(k)}: {self._encode_value(v)}" for k, v in value.items()
             )
-            # return "{%s}" % items
             return f"{{{items}}}"
 
         return repr(str(value))

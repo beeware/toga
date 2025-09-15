@@ -35,11 +35,9 @@ class BackgroundPage:
             self._context = await self._browser.new_context()
             self._page = await self._context.new_page()
 
-            # await self._page.goto("http://localhost:8080/")
             await self._page.goto(
                 "http://localhost:8080", wait_until="load", timeout=30_000
             )
-            # await self._page.wait_for_timeout(8000)
 
             await self._page.wait_for_function(
                 "() => typeof window.test_cmd === 'function'"
