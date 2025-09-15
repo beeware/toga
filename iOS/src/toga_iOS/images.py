@@ -36,12 +36,6 @@ class Image:
         else:
             self.native = raw
 
-        self.native.retain()
-
-    def __del__(self):
-        if self.native:
-            self.native.release()
-
     def get_width(self):
         return self.native.size.width
 
@@ -60,8 +54,10 @@ class Image:
                 ".png": uikit.UIImagePNGRepresentation,
             }[path.suffix.lower()]
             str_path = str(path)
-        except KeyError:
-            raise ValueError(f"Don't know how to save image of type {path.suffix!r}")
+        except KeyError as exc:
+            raise ValueError(
+                f"Don't know how to save image of type {path.suffix!r}"
+            ) from exc
 
         data = converter(self.native)
 

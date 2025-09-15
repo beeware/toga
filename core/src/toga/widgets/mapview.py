@@ -121,7 +121,7 @@ class MapPinSet:
 
 
 class OnSelectHandler(Protocol):
-    def __call__(self, widget: MapView, /, *, pin: MapPin, **kwargs: Any) -> object:
+    def __call__(self, widget: MapView, *, pin: MapPin, **kwargs: Any) -> None:
         """A handler that will be invoked when the user selects a map pin.
 
         :param widget: The MapView that was selected.
@@ -139,6 +139,7 @@ class MapView(Widget):
         zoom: int = 11,
         pins: Iterable[MapPin] | None = None,
         on_select: toga.widgets.mapview.OnSelectHandler | None = None,
+        **kwargs,
     ):
         """Create a new MapView widget.
 
@@ -152,10 +153,9 @@ class MapView(Widget):
         :param pins: The initial pins to display on the map.
         :param on_select: A handler that will be invoked when the user selects a map
             pin.
+        :param kwargs: Initial style properties.
         """
-        super().__init__(id=id, style=style)
-
-        self._impl: Any = self.factory.MapView(interface=self)
+        super().__init__(id, style, **kwargs)
 
         self._pins = MapPinSet(self, pins)
 
@@ -168,6 +168,9 @@ class MapView(Widget):
         self.zoom = zoom
 
         self.on_select = on_select
+
+    def _create(self) -> Any:
+        return self.factory.MapView(interface=self)
 
     @property
     def location(self) -> toga.LatLng:

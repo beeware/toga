@@ -1,12 +1,14 @@
+import asyncio
+
 import toga
-from toga.style.pack import COLUMN, Pack
+from toga.constants import COLUMN
 
 
-def button_handler(widget):
+async def button_handler(widget):
     print("button handler")
-    for i in range(0, 10):
+    for i in range(10):
         print("hello", i)
-        yield 1
+        await asyncio.sleep(1)
     print("done", i)
 
 
@@ -39,18 +41,19 @@ class Tutorial2App(toga.App):
         brutus_icon = "icons/brutus"
         cricket_icon = "icons/cricket-72.png"
 
-        data = [("root%s" % i, "value %s" % i) for i in range(1, 100)]
+        data = [(f"root {i}", f"value {i}") for i in range(1, 100)]
 
         left_container = toga.Table(headings=["Hello", "World"], data=data)
 
-        right_content = toga.Box(style=Pack(direction=COLUMN, padding_top=50))
+        right_content = toga.Box(direction=COLUMN, margin_top=50)
 
-        for b in range(0, 10):
+        for b in range(10):
             right_content.add(
                 toga.Button(
-                    "Hello world %s" % b,
+                    f"Hello world {b}",
                     on_press=button_handler,
-                    style=Pack(width=200, padding=20),
+                    width=200,
+                    margin=20,
                 )
             )
 
@@ -154,7 +157,7 @@ class Tutorial2App(toga.App):
 
 
 def main():
-    return Tutorial2App("Tutorial 2", "org.beeware.toga.tutorial")
+    return Tutorial2App("Tutorial 2", "org.beeware.toga.examples.tutorial")
 
 
 if __name__ == "__main__":

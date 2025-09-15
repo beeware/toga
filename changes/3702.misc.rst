@@ -1,0 +1,1 @@
+Updated fonttools from 4.59.0 to 4.59.1 in /testbed.

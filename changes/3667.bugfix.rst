@@ -1,0 +1,1 @@
+On macOS, the origin of non-primary screens is now correctly calculated when screens are not vertically aligned and the same size.

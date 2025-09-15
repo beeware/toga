@@ -2,7 +2,6 @@ from datetime import date, time
 
 import toga
 from toga.constants import COLUMN, RIGHT, ROW
-from toga.style import Pack
 
 
 class DateAndTimeApp(toga.App):
@@ -17,18 +16,18 @@ class DateAndTimeApp(toga.App):
 
         any_date_box = toga.Box(
             children=[
-                toga.Label("Any date:", style=Pack(width=150, text_align=RIGHT)),
+                toga.Label("Any date:", width=150, text_align=RIGHT),
                 toga.DateInput(
                     id="Any",
                     value=None,
                     on_change=self.changed_date,
                 ),
             ],
-            style=Pack(direction=ROW),
+            direction=ROW,
         )
         min_date_box = toga.Box(
             children=[
-                toga.Label("With min:", style=Pack(width=150, text_align=RIGHT)),
+                toga.Label("With min:", width=150, text_align=RIGHT),
                 toga.DateInput(
                     id="Min",
                     value=None,
@@ -36,11 +35,11 @@ class DateAndTimeApp(toga.App):
                     min="2021-01-01",
                 ),
             ],
-            style=Pack(direction=ROW),
+            direction=ROW,
         )
         max_date_box = toga.Box(
             children=[
-                toga.Label("With max:", style=Pack(width=150, text_align=RIGHT)),
+                toga.Label("With max:", width=150, text_align=RIGHT),
                 toga.DateInput(
                     id="Max",
                     value=date(2021, 4, 2),
@@ -48,13 +47,11 @@ class DateAndTimeApp(toga.App):
                     max=date(2022, 2, 1),
                 ),
             ],
-            style=Pack(direction=ROW),
+            direction=ROW,
         )
         min_max_date_box = toga.Box(
             children=[
-                toga.Label(
-                    "With min and max:", style=Pack(width=150, text_align=RIGHT)
-                ),
+                toga.Label("With min and max:", width=150, text_align=RIGHT),
                 toga.DateInput(
                     id="Min-max",
                     value=date(2021, 4, 2),
@@ -63,23 +60,23 @@ class DateAndTimeApp(toga.App):
                     max=date(2022, 2, 1),
                 ),
             ],
-            style=Pack(direction=ROW),
+            direction=ROW,
         )
 
         any_time_box = toga.Box(
             children=[
-                toga.Label("Any time:", style=Pack(width=150, text_align=RIGHT)),
+                toga.Label("Any time:", width=150, text_align=RIGHT),
                 toga.TimeInput(
                     id="Any time",
                     value=None,
                     on_change=self.changed_time,
                 ),
             ],
-            style=Pack(direction=ROW),
+            direction=ROW,
         )
         min_time_box = toga.Box(
             children=[
-                toga.Label("With min:", style=Pack(width=150, text_align=RIGHT)),
+                toga.Label("With min:", width=150, text_align=RIGHT),
                 toga.TimeInput(
                     id="Min time",
                     value=None,
@@ -87,11 +84,11 @@ class DateAndTimeApp(toga.App):
                     min="06:35:00",
                 ),
             ],
-            style=Pack(direction=ROW),
+            direction=ROW,
         )
         max_time_box = toga.Box(
             children=[
-                toga.Label("With max:", style=Pack(width=150, text_align=RIGHT)),
+                toga.Label("With max:", width=150, text_align=RIGHT),
                 toga.TimeInput(
                     id="Max time",
                     value=time(10, 42),
@@ -99,13 +96,11 @@ class DateAndTimeApp(toga.App):
                     max=time(21, 30),
                 ),
             ],
-            style=Pack(direction=ROW),
+            direction=ROW,
         )
         min_max_time_box = toga.Box(
             children=[
-                toga.Label(
-                    "With min and max:", style=Pack(width=150, text_align=RIGHT)
-                ),
+                toga.Label("With min and max:", width=150, text_align=RIGHT),
                 toga.TimeInput(
                     id="Min-max time",
                     value=time(10, 42),
@@ -114,7 +109,7 @@ class DateAndTimeApp(toga.App):
                     max=time(21, 30),
                 ),
             ],
-            style=Pack(direction=ROW),
+            direction=ROW,
         )
 
         self.main_window.content = toga.Box(
@@ -128,7 +123,7 @@ class DateAndTimeApp(toga.App):
                 max_time_box,
                 min_max_time_box,
             ],
-            style=Pack(direction=COLUMN),
+            direction=COLUMN,
         )
 
         # Show the main window
@@ -140,5 +135,4 @@ def main():
 
 
 if __name__ == "__main__":
-    app = main()
-    app.main_loop()
+    main().main_loop()

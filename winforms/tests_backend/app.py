@@ -13,13 +13,13 @@ from toga_winforms.keys import toga_to_winforms_key, winforms_to_toga_key
 
 from .dialogs import DialogsMixin
 from .probe import BaseProbe
-from .window import WindowProbe
 
 
 class AppProbe(BaseProbe, DialogsMixin):
     supports_key = True
     supports_key_mod3 = False
     supports_current_window_assignment = True
+    supports_dark_mode = False
 
     def __init__(self, app):
         super().__init__()
@@ -30,14 +30,7 @@ class AppProbe(BaseProbe, DialogsMixin):
 
     @property
     def config_path(self):
-        return (
-            Path.home()
-            / "AppData"
-            / "Local"
-            / "Tiberius Yak"
-            / "Toga Testbed"
-            / "Config"
-        )
+        return Path.home() / "AppData/Local/Tiberius Yak/Toga Testbed/Config"
 
     @property
     def data_path(self):
@@ -45,14 +38,7 @@ class AppProbe(BaseProbe, DialogsMixin):
 
     @property
     def cache_path(self):
-        return (
-            Path.home()
-            / "AppData"
-            / "Local"
-            / "Tiberius Yak"
-            / "Toga Testbed"
-            / "Cache"
-        )
+        return Path.home() / "AppData/Local/Tiberius Yak/Toga Testbed/Cache"
 
     @property
     def logs_path(self):
@@ -101,23 +87,20 @@ class AppProbe(BaseProbe, DialogsMixin):
         # input through touch or pen instead of the mouse"). hCursor is more reliable.
         return info.hCursor is not None
 
-    def is_full_screen(self, window):
-        return WindowProbe(self.app, window).is_full_screen
-
-    def content_size(self, window):
-        return WindowProbe(self.app, window).content_size
+    def unhide(self):
+        pytest.xfail("This platform doesn't have an app level unhide.")
 
     def assert_app_icon(self, icon):
         for window in self.app.windows:
-            # We have no real way to check we've got the right icon; use pixel peeping as a
-            # guess. Construct a PIL image from the current icon.
+            # We have no real way to check we've got the right icon; use pixel peeping
+            # as a guess. Construct a PIL image from the current icon.
             img = toga.Image(
                 Bitmap.FromHicon(window._impl.native.Icon.Handle)
             ).as_format(PIL.Image.Image)
 
             if icon:
-                # The explicit alt icon has blue background, with green at a point 1/3 into
-                # the image
+                # The explicit alt icon has blue background, with green at a point 1/3
+                # into the image
                 assert img.getpixel((5, 5)) == (211, 230, 245, 255)
                 mid_color = img.getpixel((img.size[0] // 3, img.size[1] // 3))
                 assert mid_color == (0, 204, 9, 255)
@@ -136,7 +119,7 @@ class AppProbe(BaseProbe, DialogsMixin):
                 child_index = child_labels.index(label)
             except ValueError:
                 raise AssertionError(
-                    f"no item named {path[:i+1]}; options are {child_labels}"
+                    f"no item named {path[: i + 1]}; options are {child_labels}"
                 ) from None
             item = children[child_index]
 
@@ -144,6 +127,9 @@ class AppProbe(BaseProbe, DialogsMixin):
 
     def _activate_menu_item(self, path):
         self._menu_item(path).OnClick(EventArgs.Empty)
+
+    def activate_menu_hide(self):
+        pytest.xfail("This platform doesn't present a app level hide option in menu.")
 
     def activate_menu_exit(self):
         self._activate_menu_item(["File", "Exit"])
@@ -156,6 +142,17 @@ class AppProbe(BaseProbe, DialogsMixin):
 
     def activate_menu_visit_homepage(self):
         self._activate_menu_item(["Help", "Visit homepage"])
+
+    def assert_dialog_in_focus(self, dialog):
+        active_window_handle = ctypes.windll.user32.GetForegroundWindow()
+        # The window class name for dialog boxes is "#32770":
+        # https://learn.microsoft.com/en-us/windows/win32/winauto/dialog-box
+        expected_dialog_handle = ctypes.windll.user32.FindWindowW(
+            "#32770", dialog._impl.title
+        )
+        assert expected_dialog_handle == active_window_handle, (
+            "The dialog is not in focus"
+        )
 
     def assert_menu_item(self, path, *, enabled=True):
         item = self._menu_item(path)

@@ -31,7 +31,7 @@ def test_sweepangle():
     assert sweepangle(pi, 0.1 * pi, False) == approx(1.1 * pi)
     assert sweepangle(pi, 2.1 * pi, False) == approx(1.1 * pi)
 
-    # Zero crossings, anticlockwise
+    # Zero crossings, counterclockwise
     assert sweepangle(0, 2 * pi, True) == approx(0)
     assert sweepangle(0, -2 * pi, True) == approx(-2 * pi)
     assert sweepangle(0, 1.9 * pi, True) == approx(-0.1 * pi)

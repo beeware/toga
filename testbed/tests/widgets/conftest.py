@@ -1,19 +1,24 @@
+import gc
+import os
+import weakref
+from contextlib import contextmanager
 from unittest.mock import Mock
 
-from pytest import fixture
+import pytest
 
 import toga
 from toga.style.pack import TOP
 
+from ..conftest import skip_on_platforms, xfail_on_platforms
 from .probe import get_probe
 
 
-@fixture
+@pytest.fixture
 async def widget():
     raise NotImplementedError("test modules must define a `widget` fixture")
 
 
-@fixture
+@pytest.fixture
 async def probe(main_window, widget):
     old_content = main_window.content
 
@@ -27,12 +32,12 @@ async def probe(main_window, widget):
     main_window.content = old_content
 
 
-@fixture
+@pytest.fixture
 async def container_probe(widget):
     return get_probe(widget.parent)
 
 
-@fixture
+@pytest.fixture
 async def other(widget):
     """A separate widget that can take focus"""
     other = toga.TextInput()
@@ -40,12 +45,12 @@ async def other(widget):
     return other
 
 
-@fixture
+@pytest.fixture
 async def other_probe(other):
     return get_probe(other)
 
 
-@fixture(params=[True, False])
+@pytest.fixture(params=[True, False])
 async def focused(request, widget, other):
     if request.param:
         widget.focus()
@@ -54,7 +59,7 @@ async def focused(request, widget, other):
     return request.param
 
 
-@fixture
+@pytest.fixture
 async def on_change(widget):
     on_change = Mock()
     widget.on_change = on_change
@@ -62,19 +67,82 @@ async def on_change(widget):
     return on_change
 
 
-@fixture
+@pytest.fixture
 def verify_font_sizes():
     """Whether the widget's width and height are affected by font size"""
     return True, True
 
 
-@fixture
+@pytest.fixture
 def verify_focus_handlers():
     """Whether the widget has on_gain_focus and on_lose_focus handlers"""
     return False
 
 
-@fixture
-def verify_vertical_alignment():
-    """The widget's default vertical alignment"""
+@pytest.fixture
+def verify_vertical_text_align():
+    """The widget's default vertical text alignment"""
     return TOP
+
+
+@contextmanager
+def safe_create():
+    """A context manager to protect against widgets that can't be instantiated.
+
+    Catches RuntimeErrors, and:
+    * skips if the exception message contains the content "isn't supported on"
+      (e.g., "WebView isn't supported on GTK4");
+    * xfails if running outside a CI environment (this likely indicates a
+      missing system requirement)
+    * re-raises if in CI environment (since the CI environment *should* have
+      all system requirements installed)
+    """
+    try:
+        yield
+    except RuntimeError as e:
+        msg = str(e)
+        if " isn't supported on " in msg:
+            # If the widget fails because the platform doesn't support it, we
+            # can skip the test.
+            pytest.skip(msg)
+        elif os.getenv("CI", None) is None:
+            # If we're on the user's machine (i.e., *not* in a CI environment),
+            # they might not have the required dependencies installed - in which
+            # case that's an expected failure.
+            pytest.xfail(msg)
+        else:
+            raise
+
+
+def build_cleanup_test(
+    widget_constructor,
+    args=None,
+    kwargs=None,
+    skip_platforms=(),
+    xfail_platforms=(),
+):
+    async def test_cleanup():
+        nonlocal args, kwargs
+
+        skip_on_platforms(*skip_platforms)
+        xfail_on_platforms(*xfail_platforms, reason="Leaks memory")
+
+        if args is None:
+            args = ()
+
+        if kwargs is None:
+            kwargs = {}
+
+        with safe_create():
+            widget = widget_constructor(*args, **kwargs)
+
+        ref = weakref.ref(widget)
+
+        # Args or kwargs may hold a backref to the widget itself, for example if they
+        # are widget content. Ensure that they are deleted before garbage collection.
+        del widget, args, kwargs
+        gc.collect()
+
+        assert ref() is None
+
+    return test_cleanup

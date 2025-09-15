@@ -59,7 +59,7 @@ class OptionContainer(Widget, Container):
         if BottomNavigationView is None:  # pragma: no cover
             raise RuntimeError(
                 "Unable to import BottomNavigationView. Ensure that the Material "
-                "system package (com.google.android.material:material:1.11.0) "
+                "system package (com.google.android.material:material:1.12.0) "
                 "is listed in your app's dependencies."
             )
 
@@ -128,15 +128,21 @@ class OptionContainer(Widget, Container):
         # Create a menu item for the tab
         if index >= self.max_items:
             warnings.warn(
-                f"OptionContainer is limited to {self.max_items} items on "
-                "Android. Additional item will be ignored."
+                (
+                    f"OptionContainer is limited to {self.max_items} items on "
+                    "Android. Additional item will be ignored."
+                ),
+                stacklevel=2,
             )
             option.menu_item = None
         else:
             if len(self.options) > self.max_items:
                 warnings.warn(
-                    f"OptionContainer is limited to {self.max_items} items on "
-                    "Android. Excess items will be ignored."
+                    (
+                        f"OptionContainer is limited to {self.max_items} items on "
+                        "Android. Excess items will be ignored."
+                    ),
+                    stacklevel=2,
                 )
                 last_option = self.options[self.max_items - 1]
                 self.native_navigationview.getMenu().removeItem(
@@ -219,7 +225,10 @@ class OptionContainer(Widget, Container):
                 option.menu_item.setChecked(True)
             self.interface.on_select()
         else:
-            warnings.warn("Tab is outside selectable range")
+            warnings.warn(
+                "Tab is outside selectable range",
+                stacklevel=2,
+            )
 
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)

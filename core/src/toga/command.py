@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from collections.abc import Iterator
-from typing import TYPE_CHECKING, MutableMapping, MutableSet, Protocol
+from collections.abc import Iterator, MutableMapping, MutableSet
+from typing import TYPE_CHECKING, Protocol
 
 from toga.handlers import simple_handler, wrapped_handler
 from toga.icons import Icon
@@ -114,17 +114,17 @@ class Group:
         return hash(self.key)
 
     def __lt__(self, other: object) -> bool:
-        if not isinstance(other, (Group, Command)):
+        if not isinstance(other, Group | Command):
             return False
         return self.key < other.key
 
     def __gt__(self, other: object) -> bool:
-        if not isinstance(other, (Group, Command)):
+        if not isinstance(other, Group | Command):
             return False
         return other < self
 
     def __eq__(self, other: object) -> bool:
-        if not isinstance(other, (Group, Command)):
+        if not isinstance(other, Group | Command):
             return False
         return self.key == other.key
 
@@ -141,8 +141,8 @@ class Group:
         """A unique tuple describing the path to this group."""
         self_tuple = (self.section, self.order, self.text)
         if self.parent is None:
-            return tuple([self_tuple])
-        return tuple([*self.parent.key, self_tuple])
+            return (self_tuple,)
+        return self.parent.key + (self_tuple,)
 
     # Standard groups - docstrings can only be provided within the `class` statement,
     # but the objects can't be instantiated here.
@@ -319,7 +319,7 @@ class Command:
         Each element in the tuple describes the (section, order, text) for the
         groups that must be navigated to invoke this action.
         """
-        return tuple([*self.group.key, (self.section, self.order, self.text)])
+        return self.group.key + ((self.section, self.order, self.text),)
 
     @property
     def enabled(self) -> bool:
@@ -360,12 +360,12 @@ class Command:
         self._action = wrapped_handler(self, action)
 
     def __lt__(self, other: object) -> bool:
-        if not isinstance(other, (Group, Command)):
+        if not isinstance(other, Group | Command):
             return False
         return self.key < other.key
 
     def __gt__(self, other: object) -> bool:
-        if not isinstance(other, (Group, Command)):
+        if not isinstance(other, Group | Command):
             return False
         return other < self
 

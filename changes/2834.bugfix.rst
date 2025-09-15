@@ -1,1 +1,0 @@
-The event loop is now guaranteed to be running when your app's ``startup()`` method is invoked. This wasn't previously the case on macOS and Windows.

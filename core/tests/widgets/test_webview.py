@@ -1,4 +1,5 @@
 import asyncio
+from http.cookiejar import Cookie, CookieJar
 from unittest.mock import Mock
 
 import pytest
@@ -35,16 +36,33 @@ def test_create_with_values():
     on_webview_load = Mock()
 
     widget = toga.WebView(
+        id="foobar",
         url="https://beeware.org",
         user_agent="Custom agent",
         on_webview_load=on_webview_load,
+        # A style property
+        width=256,
     )
     assert widget._impl.interface == widget
     assert_action_performed(widget, "create WebView")
 
+    assert widget.id == "foobar"
     assert widget.url == "https://beeware.org"
     assert widget.user_agent == "Custom agent"
     assert widget.on_webview_load._raw == on_webview_load
+    assert widget.style.width == 256
+
+
+def test_create_with_content():
+    """Static HTML content can be loaded into the page at instantiation time."""
+    webview = toga.WebView(url="https://example.com", content="<h1>Hello, World!</h1>")
+
+    assert_action_performed_with(
+        webview,
+        "set content",
+        root_url="https://example.com",
+        content="<h1>Hello, World!</h1>",
+    )
 
 
 def test_webview_load_disabled(monkeypatch):
@@ -177,6 +195,23 @@ def test_set_content(widget):
     )
 
 
+def test_set_content_with_property(widget):
+    """Static HTML content can be loaded into the page, using a setter."""
+    widget.content = "<h1>Fancy page</h1>"
+    assert_action_performed_with(
+        widget,
+        "set content",
+        root_url="",
+        content="<h1>Fancy page</h1>",
+    )
+
+
+def test_get_content_property_error(widget):
+    """Verify that using the getter on widget.content fails."""
+    with pytest.raises(AttributeError):
+        _ = widget.content
+
+
 def test_user_agent(widget):
     """The user agent can be customized."""
     widget.user_agent = "New user agent"
@@ -193,9 +228,11 @@ def test_evaluate_javascript(widget):
     # Attempting to use or compare the result raises an error
     with pytest.raises(
         RuntimeError,
-        match=r"Can't check JavaScript result directly; use await or an on_result handler",
+        match=(
+            r"Can't check JavaScript result directly; use await or an on_result handler"
+        ),
     ):
-        result == 42
+        _ = result == 42
 
 
 async def test_evaluate_javascript_async(widget):
@@ -245,3 +282,51 @@ async def test_evaluate_javascript_sync(widget):
 
     # The async handler was invoked
     on_result_handler.assert_called_once_with(42)
+
+
+async def test_retrieve_cookies(widget):
+    """Cookies can be retrieved."""
+
+    # Simulate backend cookie retrieval
+    cookies = [
+        Cookie(
+            version=0,
+            name="test",
+            value="test_value",
+            port=None,
+            port_specified=False,
+            domain="example.com",
+            domain_specified=True,
+            domain_initial_dot=False,
+            path="/",
+            path_specified=True,
+            secure=True,
+            expires=None,  # Simulating a session cookie
+            discard=True,
+            comment=None,
+            comment_url=None,
+            rest={},
+            rfc2109=False,
+        )
+    ]
+
+    async def delayed_cookie_retrieval():
+        await asyncio.sleep(0.1)
+        widget._impl.simulate_cookie_retrieval(cookies)
+
+    asyncio.create_task(delayed_cookie_retrieval())
+
+    # Get the cookie jar from the future
+    cookie_jar = await widget.cookies
+
+    # The result returned is a cookiejar
+    assert isinstance(cookie_jar, CookieJar)
+
+    # Validate the cookies in the CookieJar
+    cookie = next(iter(cookie_jar))  # Get the first (and only) cookie
+    assert cookie.name == "test"
+    assert cookie.value == "test_value"
+    assert cookie.domain == "example.com"
+    assert cookie.path == "/"
+    assert cookie.secure is True
+    assert cookie.expires is None

@@ -6,8 +6,8 @@ import pytest
 import toga
 
 from ..conftest import skip_on_platforms
+from .conftest import build_cleanup_test
 from .properties import (  # noqa: F401
-    test_alignment,
     test_background_color,
     test_background_color_reset,
     test_background_color_transparent,
@@ -19,9 +19,10 @@ from .properties import (  # noqa: F401
     test_font,
     test_font_attrs,
     test_readonly,
+    test_text_align,
 )
 from .test_textinput import (  # noqa: F401
-    verify_vertical_alignment,
+    verify_vertical_text_align,
 )
 
 
@@ -39,6 +40,9 @@ def verify_font_sizes():
 @pytest.fixture
 def verify_focus_handlers():
     return False
+
+
+test_cleanup = build_cleanup_test(toga.NumberInput, xfail_platforms=("android",))
 
 
 async def test_on_change_handler(widget, probe):
@@ -211,7 +215,7 @@ async def test_increment_decrement(widget, probe):
 
     # Increment several times to make sure rounding works correctly
     expected = Decimal("1.23")
-    for i in range(5):
+    for _ in range(5):
         expected += Decimal("0.01")
         await probe.increment()
         await probe.redraw(f"Widget value should be {expected}")
@@ -220,7 +224,7 @@ async def test_increment_decrement(widget, probe):
         handler.reset_mock()
 
     # And likewise with decrement
-    for i in range(5):
+    for _ in range(5):
         expected -= Decimal("0.01")
         await probe.decrement()
         await probe.redraw(f"Widget value should be {expected}")

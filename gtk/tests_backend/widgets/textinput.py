@@ -1,14 +1,17 @@
 import pytest
 
 from toga.constants import JUSTIFY, LEFT
-from toga_gtk.libs import Gtk
+from toga_gtk.libs import GTK_VERSION, Gtk
 
 from .base import SimpleProbe
-from .properties import toga_xalignment
+from .properties import toga_x_text_align
 
 
 class TextInputProbe(SimpleProbe):
     native_class = Gtk.Entry
+
+    if GTK_VERSION >= (4, 0, 0):
+        pytest.skip("GTK4 doesn't support text input yet")
 
     @property
     def value(self):
@@ -33,16 +36,16 @@ class TextInputProbe(SimpleProbe):
         return False
 
     @property
-    def alignment(self):
-        return toga_xalignment(self.native.get_alignment())
+    def text_align(self):
+        return toga_x_text_align(self.native.get_alignment())
 
-    def assert_alignment(self, expected):
+    def assert_text_align(self, expected):
         if expected == JUSTIFY:
-            assert self.alignment == LEFT
+            assert self.text_align == LEFT
         else:
-            assert self.alignment == expected
+            assert self.text_align == expected
 
-    def assert_vertical_alignment(self, expected):
+    def assert_vertical_text_align(self, expected):
         # GTK.Entry vertical alignment is non-configurable
         pass
 

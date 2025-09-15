@@ -1,1 +1,0 @@
-When the X button is clicked for the About dialog on Gtk, it is now properly destroyed.

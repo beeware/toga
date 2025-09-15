@@ -1,8 +1,10 @@
+from http.cookiejar import CookieJar
+
 from travertino.size import at_least
 
-from toga.widgets.webview import JavaScriptResult
+from toga.widgets.webview import CookiesResult, JavaScriptResult
 
-from ..libs import GLib, WebKit2
+from ..libs import GTK_VERSION, GLib, WebKit2
 from .base import Widget
 
 
@@ -10,11 +12,14 @@ class WebView(Widget):
     """GTK WebView implementation."""
 
     def create(self):
+        if GTK_VERSION >= (4, 0, 0):  # pragma: no-cover-if-gtk3
+            raise RuntimeError("WebView isn't supported on GTK4 (yet!)")
+
         if WebKit2 is None:  # pragma: no cover
             raise RuntimeError(
-                "Unable to import WebKit2. Ensure that the system package "
-                "providing WebKit2 and its GTK bindings have been installed. "
-                "See https://toga.readthedocs.io/en/stable/reference/api/widgets/webview.html#system-requirements "
+                "Unable to import WebKit2. Ensure that the system package providing "
+                "WebKit2 and its GTK bindings have been installed. See "
+                "https://toga.readthedocs.io/en/stable/reference/api/widgets/mapview.html#system-requirements "  # noqa: E501
                 "for details."
             )
 
@@ -75,6 +80,16 @@ class WebView(Widget):
     def set_content(self, root_url, content):
         self.native.load_html(content, root_url)
 
+    def get_cookies(self):
+        # Create the result object
+        result = CookiesResult()
+        result.set_result(CookieJar())
+
+        # Signal that this feature is not implemented on the current platform
+        self.interface.factory.not_implemented("webview.cookies")
+
+        return result
+
     def evaluate_javascript(self, javascript, on_result=None):
         # Construct a future on the event loop
         result = JavaScriptResult(on_result)
@@ -82,8 +97,8 @@ class WebView(Widget):
         # Define a callback that will update the future when
         # the Javascript is complete.
         def gtk_js_finished(webview, task, *user_data):
-            """If `evaluate_javascript_finish` from GTK returns a result, unmarshal it, and
-            call back with the result."""
+            """If `evaluate_javascript_finish` from GTK returns a result, unmarshal it,
+            and call back with the result."""
             try:
                 value = webview.evaluate_javascript_finish(task)
                 if value.is_boolean():
@@ -113,5 +128,8 @@ class WebView(Widget):
         return result
 
     def rehint(self):
-        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
-        self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
+            self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
+        else:  # pragma: no-cover-if-gtk3
+            pass

@@ -1,18 +1,18 @@
 from pytest import skip
 from rubicon.objc import NSPoint
 
+from toga_cocoa.keys import NSEventModifierFlagCommand
 from toga_cocoa.libs import NSEventType, NSScrollView, NSTableView
 
 from .base import SimpleProbe
 from .properties import toga_color
-
-NSEventModifierFlagCommand = 1 << 20
 
 
 class TableProbe(SimpleProbe):
     native_class = NSScrollView
     supports_icons = 2  # All columns
     supports_keyboard_shortcuts = True
+    supports_keyboard_boundary_shortcuts = False
     supports_widgets = True
 
     def __init__(self, widget):
@@ -95,7 +95,7 @@ class TableProbe(SimpleProbe):
         )
 
     async def select_all(self):
-        await self.type_character("A", modifierFlags=NSEventModifierFlagCommand),
+        await self.type_character("A", alt=True)
 
     async def select_row(self, row, add=False):
         point = self.row_position(row)
@@ -144,3 +144,11 @@ class TableProbe(SimpleProbe):
             delay=0.1,
             clickCount=2,
         )
+
+    async def acquire_keyboard_focus(self):
+        self.native_table.window.makeFirstResponder(
+            self.native_table
+        )  # switch to widget.focus() when possible (#2972).
+        # Insure first row is selected.
+        await self.type_character("<down>")
+        await self.type_character("<up>")

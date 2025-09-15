@@ -1,6 +1,7 @@
 import asyncio
 from asyncio import wait_for
 from contextlib import nullcontext
+from http.cookiejar import CookieJar
 from time import time
 from unittest.mock import ANY, Mock
 
@@ -9,6 +10,7 @@ import pytest
 import toga
 from toga.style import Pack
 
+from .conftest import build_cleanup_test, safe_create
 from .properties import (  # noqa: F401
     test_flex_widget_size,
     test_focus,
@@ -21,16 +23,16 @@ WINDOWS_INIT_TIMEOUT = 60
 
 
 async def get_content(widget):
-    try:
-        return await wait_for(
-            widget.evaluate_javascript("document.body.innerHTML"),
-            JS_TIMEOUT,
-        )
-    except asyncio.TimeoutError:
-        # On Android, if you call evaluate_javascript while a page is loading, the
-        # callback may never be called. This seems to be associated with the log message
-        # "Uncaught TypeError: Cannot read property 'innerHTML' of null".
-        return None
+    # On Apple platforms while a page is still loading, document.body might return
+    # null and cause the call to fail and error.  Handle that by returning None
+    # otherwise.
+    # On Android, if the same error happens, the callback will not be called and
+    # cause an asyncio timeout error. This also avoids the error on Android by
+    # returning null if there's no document.body.
+    return await wait_for(
+        widget.evaluate_javascript("document.body ? document.body.innerHTML : null"),
+        JS_TIMEOUT,
+    )
 
 
 async def assert_content_change(widget, probe, message, url, content, on_load):
@@ -78,7 +80,9 @@ async def on_load():
 
 @pytest.fixture
 async def widget(on_load):
-    widget = toga.WebView(style=Pack(flex=1), on_webview_load=on_load)
+    with safe_create():
+        widget = toga.WebView(style=Pack(flex=1), on_webview_load=on_load)
+
     # We shouldn't be able to get a callback until at least one tick of the event loop
     # has completed.
     on_load.assert_not_called()
@@ -112,6 +116,9 @@ async def widget(on_load):
         # garbage collection for the WebView can run in either thread, just defer GC
         # for it until after the testing thread has joined.
         toga.App.app._gc_protector.append(widget)
+
+
+test_cleanup = build_cleanup_test(toga.WebView, xfail_platforms=("linux",))
 
 
 async def test_set_url(widget, probe, on_load):
@@ -293,24 +300,85 @@ async def test_dom_storage_enabled(widget, probe, on_load):
     """Ensure DOM storage is enabled."""
     # a page must be loaded to access local storage
     await wait_for(
-        widget.load_url("https://example.com/"),
+        widget.load_url("https://github.com/"),
         LOAD_TIMEOUT,
     )
-    # small pause to ensure javascript can run without security errors
-    await asyncio.sleep(1)
 
-    expected_value = "Hello World"
-    expression = f"""\
-(function isLocalStorageAvailable(){{
-    var test = 'testkey';
-    try {{
-        localStorage.setItem(test, "{expected_value}");
-        item = localStorage.getItem(test);
-        localStorage.removeItem(test);
-        return item;
-    }} catch(e) {{
-        return String(e);
-    }}
-}})()"""
-    result = await wait_for(widget.evaluate_javascript(expression), JS_TIMEOUT)
-    assert result == expected_value
+    for _ in range(10):
+        expected_value = "Hello World"
+        expression = f"""\
+    (function isLocalStorageAvailable(){{
+        var test = 'testkey';
+        try {{
+            localStorage.setItem(test, "{expected_value}");
+            item = localStorage.getItem(test);
+            localStorage.removeItem(test);
+            return item;
+        }} catch(e) {{
+            return String(e);
+        }}
+    }})()"""
+        result = await wait_for(widget.evaluate_javascript(expression), JS_TIMEOUT)
+        if result == expected_value:
+            # Success!
+            return
+
+        await probe.redraw("Wait for DOM to be ready", delay=0.2)
+
+    pytest.fail(
+        f"Didn't receive expected result ({expected_value!r}) after multiple tries; "
+        f"last attempt returned {result!r}"
+    )
+
+
+async def test_retrieve_cookies(widget, probe, on_load):
+    """Cookies can be retrieved."""
+    # A page must be loaded to set cookies
+    await wait_for(
+        widget.load_url("https://github.com/beeware"),
+        LOAD_TIMEOUT,
+    )
+    # DOM loads aren't instantaneous; wait for the URL to appear
+    await assert_content_change(
+        widget,
+        probe,
+        message="Page has been loaded",
+        url="https://github.com/beeware",
+        content=ANY,
+        on_load=on_load,
+    )
+
+    # On iOS and macOS, setting a cookie can fail if it's done too soon after page load.
+    # Try a couple of times to make sure the cookie is actually set.
+    for _ in range(5):
+        # JavaScript expression to set a cookie and return the current cookies
+        expression = """
+        (function setCookie() {
+            document.cookie = "test=test_value; path=/; Secure; SameSite=None";
+            return document.cookie;
+        })()"""
+
+        await wait_for(widget.evaluate_javascript(expression), JS_TIMEOUT)
+
+        # Retrieve cookies.
+        cookie_jar = await widget.cookies
+
+        assert isinstance(cookie_jar, CookieJar)
+
+        # Cookie retrieval isn't implemented on every backend (yet), so we implement the
+        # retrieval in the probe to provide an opportunity to skip the test.
+        cookie = probe.extract_cookie(cookie_jar, "test")
+
+        if cookie is None:
+            # Cookie wasn't set; wait a little bit before trying again.
+            await probe.redraw("Cookie wasn't set; wait and try again", delay=0.2)
+
+    assert cookie is not None, "Test cookie not found in CookieJar"
+
+    # Validate the test cookie
+    assert cookie.name == "test"
+    assert cookie.value == "test_value"
+    assert cookie.domain == "github.com"
+    assert cookie.path == "/"
+    assert cookie.secure is True
+    assert cookie.expires is None

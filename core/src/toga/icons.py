@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import sys
-import warnings
 from collections.abc import Callable, Iterable
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -10,10 +8,7 @@ import toga
 from toga.platform import get_platform_factory
 
 if TYPE_CHECKING:
-    if sys.version_info < (3, 10):
-        from typing_extensions import TypeAlias
-    else:
-        from typing import TypeAlias
+    from typing import TypeAlias
 
     IconContentT: TypeAlias = str | Path | toga.Icon
 
@@ -21,7 +16,7 @@ if TYPE_CHECKING:
 class cachedicon:
     def __init__(self, f: Callable[..., Icon]):
         self.f = f
-        self.__doc__ = f.__doc__
+        self.__doc__ = getattr(f, "__doc__", None)
 
     def __get__(self, obj: object, owner: type[Icon]) -> Icon:
         # If you ask for Icon.CACHED_ICON, obj is None, and owner is the Icon class
@@ -43,16 +38,6 @@ _APP_ICON = "<app icon>"
 
 
 class Icon:
-    @cachedicon
-    def TOGA_ICON(cls) -> Icon:
-        """**DEPRECATED** - Use ``DEFAULT_ICON``, or your own icon."""
-        warnings.warn(
-            "TOGA_ICON has been deprecated; Use DEFAULT_ICON, or your own icon.",
-            DeprecationWarning,
-        )
-
-        return Icon("toga", system=True)
-
     @cachedicon
     def APP_ICON(cls) -> Icon:
         """The application icon.
@@ -96,8 +81,8 @@ class Icon:
         """
         self.factory = get_platform_factory()
         try:
-            # Try to load the icon with the given path snippet. If the request is for the
-            # app icon, use ``resources/<app name>`` as the path.
+            # Try to load the icon with the given path snippet. If the request is for
+            # the app icon, use ``resources/<app name>`` as the path.
             if path is _APP_ICON:
                 self.path = Path(f"resources/{toga.App.app.app_name}")
             else:
@@ -149,7 +134,8 @@ class Icon:
                     self._impl = self.DEFAULT_ICON._impl
             else:
                 print(
-                    f"WARNING: Can't find icon {self.path}; falling back to default icon"
+                    f"WARNING: Can't find icon {self.path}; "
+                    f"falling back to default icon"
                 )
                 self._impl = self.DEFAULT_ICON._impl
 

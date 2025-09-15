@@ -1,6 +1,9 @@
+from unittest.mock import Mock
+
 import pytest
 
 import toga
+from toga.platform import get_platform_factory
 from toga.style import Pack
 from toga_dummy.utils import (
     EventLog,
@@ -11,28 +14,28 @@ from toga_dummy.utils import (
     attribute_value,
 )
 
+from ..utils import ExampleLeafWidget, ExampleWidget
 
-# Create the simplest possible widget with a concrete implementation that will
-# allow children
-class ExampleWidget(toga.Widget):
+
+# Represent a hypothetical user-created widget class that does create and assign a valid
+# implementation, but doesn't do so in _create(). This is to assist with migration for
+# existing user code written before #2942 reorganized widget initialization.
+#
+# Right now this only issues a warning. Unfortunately it only works if the _impl is
+# set *before* super().__init__; any existing code that does so afterward will raise an
+# exception.
+class WidgetSubclassWithoutCreate(toga.Widget):
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self._impl = self.factory.Widget(self)
-        self._children = []
+        self.factory = get_platform_factory()
+        self._impl = self.factory.Widget(interface=self)
 
-
-# Create the simplest possible widget with a concrete implementation that cannot
-# have children.
-class ExampleLeafWidget(toga.Widget):
-    def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._impl = self.factory.Widget(self)
 
 
 @pytest.fixture
 def widget(app):
     # App fixture is needed to ensure a fresh widget registry is created
-    return ExampleWidget(id="widget_id", style=Pack(padding=666))
+    return ExampleWidget(id="widget_id", style=Pack(margin=666))
 
 
 def test_simple_widget():
@@ -46,7 +49,7 @@ def test_simple_widget():
     # Base properties of the widget have been set
     assert widget.id == str(id(widget))
     assert isinstance(widget.style, Pack)
-    assert widget.style.padding == (0, 0, 0, 0)
+    assert widget.style.margin == (0, 0, 0, 0)
 
 
 def test_widget_created(widget):
@@ -59,7 +62,7 @@ def test_widget_created(widget):
     assert widget.enabled
     assert widget.id == "widget_id"
     assert isinstance(widget.style, Pack)
-    assert widget.style.padding == (666, 666, 666, 666)
+    assert widget.style.margin == (666, 666, 666, 666)
 
 
 def test_add_child_to_leaf():
@@ -917,6 +920,7 @@ def test_remove_from_non_parent(widget):
     other = ExampleWidget(id="other")
     child = ExampleLeafWidget(id="child_id")
     other.add(child)
+    EventLog.reset()
 
     assert widget.children == []
     assert other.children == [child]
@@ -1243,3 +1247,23 @@ def test_tab_index(widget):
 
     assert widget.tab_index == 8
     assert attribute_value(widget, "tab_index") == tab_index
+
+
+def test_one_apply_during_init():
+    """Style's apply() should be called exactly once during widget initialization."""
+
+    class MockedPack(Pack):
+        apply = Mock()
+
+    ExampleWidget(style=MockedPack())
+    # Make sure it was called with no arguments, to apply all properties.
+    MockedPack.apply.assert_called_once_with()
+
+
+def test_widget_with_no_create():
+    """Creating a widget with no _create() method issues a warning."""
+    with pytest.warns(
+        RuntimeWarning,
+        match=r"Widgets should create and return their implementation",
+    ):
+        WidgetSubclassWithoutCreate()

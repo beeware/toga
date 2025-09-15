@@ -1,13 +1,16 @@
 import pytest
 
-from toga_gtk.libs import Gtk
+from toga_gtk.libs import GTK_VERSION, Gtk
 
 from .base import SimpleProbe
-from .properties import toga_alignment_from_justification, toga_color
+from .properties import toga_color, toga_text_align_from_justification
 
 
 class MultilineTextInputProbe(SimpleProbe):
     native_class = Gtk.ScrolledWindow
+
+    if GTK_VERSION >= (4, 0, 0):
+        pytest.skip("GTK4 doesn't support multiline text input yet")
 
     def __init__(self, widget):
         super().__init__(widget)
@@ -88,12 +91,12 @@ class MultilineTextInputProbe(SimpleProbe):
         return sc.get_property("font", sc.get_state())
 
     @property
-    def alignment(self):
-        return toga_alignment_from_justification(
+    def text_align(self):
+        return toga_text_align_from_justification(
             self.native_textview.get_justification(),
         )
 
-    def assert_vertical_alignment(self, expected):
+    def assert_vertical_text_align(self, expected):
         # GTK.TextView vertical alignment is non-configurable
         pass
 

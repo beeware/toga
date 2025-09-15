@@ -5,6 +5,7 @@ from pytest import fixture
 import toga
 
 from ..data import TEXTS
+from .conftest import build_cleanup_test
 from .properties import (  # noqa: F401
     test_color,
     test_color_reset,
@@ -27,13 +28,18 @@ async def widget():
     return toga.Switch("Hello")
 
 
+test_cleanup = build_cleanup_test(
+    toga.Switch, args=("Hello",), xfail_platforms=("android", "linux")
+)
+
+
 async def test_text(widget, probe):
     "The text displayed on a switch can be changed"
     initial_height = probe.height
 
     for text in TEXTS:
         widget.text = text
-        await probe.redraw("Switch text should be %s" % text)
+        await probe.redraw(f"Switch text should be {text}")
 
         # Text after a newline will be stripped.
         expected = str(text).split("\n")[0]

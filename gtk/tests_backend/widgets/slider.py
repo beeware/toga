@@ -1,10 +1,15 @@
-from toga_gtk.libs import Gdk, Gtk
+import pytest
+
+from toga_gtk.libs import GTK_VERSION, Gdk, Gtk
 
 from .base import SimpleProbe
 
 
 class SliderProbe(SimpleProbe):
     native_class = Gtk.Scale
+
+    if GTK_VERSION >= (4, 0, 0):
+        pytest.skip("GTK4 doesn't support sliders yet")
 
     @property
     def position(self):

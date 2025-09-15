@@ -9,7 +9,7 @@ from toga_dummy.utils import assert_action_performed_with
 
 
 def assert_order(*items):
-    for i in range(0, len(items) - 1):
+    for i in range(len(items) - 1):
         for j in range(i + 1, len(items)):
             assert items[i] < items[j]
             assert items[j] > items[i]
@@ -57,9 +57,9 @@ def test_create():
     assert cmd.order == 0
     assert cmd.action._raw is None
 
-    assert (
-        repr(cmd)
-        == "<Command text='Test command' group=<Group text='Commands' order=30> section=0 order=0>"
+    assert repr(cmd) == (
+        "<Command text='Test command' "
+        "group=<Group text='Commands' order=30> section=0 order=0>"
     )
 
 
@@ -152,9 +152,9 @@ def test_create_explicit(app):
 
     assert cmd.action._raw == handler
 
-    assert (
-        repr(cmd)
-        == "<Command text='Test command' group=<Group text='Test group' order=10> section=3 order=4>"
+    assert repr(cmd) == (
+        "<Command text='Test command' "
+        "group=<Group text='Test group' order=10> section=3 order=4>"
     )
 
 

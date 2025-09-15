@@ -95,10 +95,19 @@ Notes
   placement of windows.
 
 * A mobile application can only have a single window (the
-  :attr:`~toga.App.main_window`), and that window cannot be moved, resized, hidden, or
-  made full screen. Toga will raise an exception if you attempt to create a secondary
+  :attr:`~toga.App.main_window`), and that window cannot be moved, resized, or
+  hidden. Toga will raise an exception if you attempt to create a secondary
   window on a mobile platform. If you try to modify the size, position, or visibility of
   the main window, the request will be ignored.
+
+* On mobile platforms, a window's state cannot be :any:`WindowState.MINIMIZED` or
+  :any:`WindowState.MAXIMIZED`. Any request to move to these states will be ignored.
+
+* On Linux, when using Wayland, a request to put a window into a :any:`WindowState.MINIMIZED`
+  state, or to restore from the :any:`WindowState.MINIMIZED` state, will be ignored, and any
+  associated events like :meth:`~toga.Window.on_hide` and :meth:`~toga.Window.on_show`, will
+  not be triggered. This is due to limitations in window management features that Wayland
+  allows apps to use.
 
 Reference
 ---------

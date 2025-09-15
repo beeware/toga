@@ -1,5 +1,5 @@
 import toga
-from toga.style.pack import COLUMN, LEFT, RIGHT, ROW, Pack
+from toga.constants import COLUMN, LEFT, RIGHT, ROW
 
 
 def build(app):
@@ -10,9 +10,9 @@ def build(app):
     c_input = toga.TextInput(readonly=True)
     f_input = toga.TextInput()
 
-    c_label = toga.Label("Celsius", style=Pack(text_align=LEFT))
-    f_label = toga.Label("Fahrenheit", style=Pack(text_align=LEFT))
-    join_label = toga.Label("is equivalent to", style=Pack(text_align=RIGHT))
+    c_label = toga.Label("Celsius", text_align=LEFT)
+    f_label = toga.Label("Fahrenheit", text_align=LEFT)
+    join_label = toga.Label("is equivalent to", text_align=RIGHT)
 
     def calculate(widget):
         try:
@@ -33,23 +33,27 @@ def build(app):
     box.add(c_box)
     box.add(button)
 
-    box.style.update(direction=COLUMN, padding=10)
-    f_box.style.update(direction=ROW, padding=5)
-    c_box.style.update(direction=ROW, padding=5)
+    box.style.update(direction=COLUMN, margin=10, gap=10)
+    f_box.style.update(direction=ROW, gap=10)
+    c_box.style.update(direction=ROW, gap=10)
 
     c_input.style.update(flex=1)
-    f_input.style.update(flex=1, padding_left=210)
-    c_label.style.update(width=100, padding_left=10)
-    f_label.style.update(width=100, padding_left=10)
-    join_label.style.update(width=200, padding_right=10)
+    f_input.style.update(flex=1, margin_left=210)
+    c_label.style.update(width=100)
+    f_label.style.update(width=100)
+    join_label.style.update(width=200)
 
-    button.style.update(padding=15)
+    button.style.update(margin_top=5)
 
     return box
 
 
 def main():
-    return toga.App("Temperature Converter", "org.beeware.toga.tutorial", startup=build)
+    return toga.App(
+        "Temperature Converter",
+        "org.beeware.toga.examples.tutorial",
+        startup=build,
+    )
 
 
 if __name__ == "__main__":

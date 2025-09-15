@@ -3,7 +3,7 @@ import asyncio
 import toga
 
 
-class ExampleStatusIconApp(toga.App):
+class StatusIconApp(toga.App):
     def startup(self):
         # Set app to be a background app
         self.main_window = toga.App.BACKGROUND
@@ -35,7 +35,8 @@ class ExampleStatusIconApp(toga.App):
             order=1,
         )
 
-        # Create a submenu on the first status menu; the status icon is the parent group.
+        # Create a submenu on the first status menu; the status icon
+        # is the parent group.
         sub_menu = toga.Group("Sub Menu", parent=status_1, order=3)
         cmd3 = toga.Command(
             self.do_stuff,
@@ -50,8 +51,8 @@ class ExampleStatusIconApp(toga.App):
             group=sub_menu,
         )
 
-        # Two commands for the second status icon. The status icon can be retrieved by ID,
-        # and by index.
+        # Two commands for the second status icon. The status icon can be retrieved by
+        # ID, and by index.
         cmd5 = toga.Command(
             self.do_stuff,
             text="Action 5",
@@ -81,11 +82,8 @@ class ExampleStatusIconApp(toga.App):
 
 
 def main():
-    return ExampleStatusIconApp(
-        "Status Icon App", "org.beeware.toga.examples.statusiconapp"
-    )
+    return StatusIconApp("Status Icon App", "org.beeware.toga.examples.statusiconapp")
 
 
 if __name__ == "__main__":
-    app = main()
-    app.main_loop()
+    main().main_loop()

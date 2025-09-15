@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import sys
 from collections.abc import Iterable
 from typing import TYPE_CHECKING, Any, Protocol, overload
 
@@ -11,10 +10,8 @@ from toga.platform import get_platform_factory
 from .base import StyleT, Widget
 
 if TYPE_CHECKING:
-    if sys.version_info < (3, 10):
-        from typing_extensions import TypeAlias
-    else:
-        from typing import TypeAlias
+    from typing import TypeAlias
+
     from toga.icons import IconContentT
 
     OptionContainerContentT: TypeAlias = (
@@ -26,8 +23,9 @@ if TYPE_CHECKING:
 
 
 class OnSelectHandler(Protocol):
-    def __call__(self, widget: OptionContainer, /, **kwargs: Any) -> None:
-        """A handler that will be invoked when a new tab is selected in the OptionContainer.
+    def __call__(self, widget: OptionContainer, **kwargs: Any) -> None:
+        """A handler that will be invoked when a new tab is selected
+        in the OptionContainer.
 
         :param widget: The OptionContainer that had a selection change.
         :param kwargs: Ensures compatibility with arguments added in future versions.
@@ -259,8 +257,8 @@ class OptionList:
         else:
             try:
                 return next(filter(lambda item: item.text == str(value), self)).index
-            except StopIteration:
-                raise ValueError(f"No tab named {value!r}")
+            except StopIteration as exc:
+                raise ValueError(f"No tab named {value!r}") from exc
 
     @overload
     def append(
@@ -376,12 +374,15 @@ class OptionList:
 
 
 class OptionContainer(Widget):
+    _USE_DEBUG_BACKGROUND = True
+
     def __init__(
         self,
         id: str | None = None,
         style: StyleT | None = None,
         content: Iterable[OptionContainerContentT] | None = None,
         on_select: toga.widgets.optioncontainer.OnSelectHandler | None = None,
+        **kwargs,
     ):
         """Create a new OptionContainer.
 
@@ -391,12 +392,12 @@ class OptionContainer(Widget):
         :param content: The initial :any:`OptionContainer content
             <OptionContainerContentT>` to display in the OptionContainer.
         :param on_select: Initial :any:`on_select` handler.
+        :param kwargs: Initial style properties.
         """
-        super().__init__(id=id, style=style)
         self._content = OptionList(self)
         self.on_select = None
 
-        self._impl = self.factory.OptionContainer(interface=self)
+        super().__init__(id, style, **kwargs)
 
         if content is not None:
             for item in content:
@@ -422,6 +423,9 @@ class OptionContainer(Widget):
                     self.content.append(text, widget, enabled=enabled, icon=icon)
 
         self.on_select = on_select
+
+    def _create(self) -> Any:
+        return self.factory.OptionContainer(interface=self)
 
     @property
     def enabled(self) -> bool:

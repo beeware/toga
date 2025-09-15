@@ -17,7 +17,9 @@ class BaseDialog:
 
         if self.native:
             # Don't differentiate between app and window-modal dialogs.
-            toga.App.app.current_window._impl.native.rootViewController.presentViewController(
+            (
+                toga.App.app.current_window._impl.native.rootViewController
+            ).presentViewController(
                 self.native,
                 animated=False,
                 completion=None,
@@ -34,7 +36,7 @@ class AlertDialog(BaseDialog):
 
         self.native = UIAlertController.alertControllerWithTitle(
             title, message=message, preferredStyle=UIAlertControllerStyle.Alert
-        ).retain()
+        )
 
         self.populate_dialog()
 

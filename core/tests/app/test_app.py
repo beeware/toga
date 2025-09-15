@@ -9,6 +9,7 @@ from unittest.mock import Mock
 import pytest
 
 import toga
+from toga.constants import WindowState
 from toga_dummy.utils import (
     EventLog,
     assert_action_not_performed,
@@ -16,20 +17,27 @@ from toga_dummy.utils import (
     assert_action_performed_with,
 )
 
-EXPLICIT_FULL_APP_KWARGS = dict(
-    formal_name="Explicit App",
-    app_id="org.beeware.explicit-app",
-    app_name="override-app",
-)
-EXPLICIT_MIN_APP_KWARGS = dict(
-    formal_name="Explicit App",
-    app_id="org.beeware.explicit-app",
-)
+EXPLICIT_FULL_APP_KWARGS = {
+    "formal_name": "Explicit App",
+    "app_id": "org.beeware.explicit-app",
+    "app_name": "override-app",
+}
+EXPLICIT_MIN_APP_KWARGS = {
+    "formal_name": "Explicit App",
+    "app_id": "org.beeware.explicit-app",
+}
 APP_METADATA = {
     "Formal-Name": "Test App",
     "App-ID": "org.beeware.test-app",
     "Name": "test-app",
 }
+
+
+async def test_unsupported_widget(app):
+    """If a widget isn't implemented, the factory raises NotImplementedError."""
+    with pytest.raises(NotImplementedError) as exc:
+        _ = app.factory.NoSuchWidget
+    assert "Toga's Dummy backend doesn't implement NoSuchWidget" in str(exc)
 
 
 @pytest.mark.parametrize(
@@ -63,7 +71,7 @@ APP_METADATA = {
         ),
         # No app properties, with metadata
         (
-            dict(),
+            {},
             APP_METADATA,
             Mock(__package__=None),
             "Test App",
@@ -92,7 +100,8 @@ APP_METADATA = {
             "org.beeware.explicit-app",
             "override-app",
         ),
-        # Explicit app properties, but implied distribution name from app_id, no metadata
+        # Explicit app properties,
+        # but implied distribution name from app_id, no metadata
         (
             EXPLICIT_MIN_APP_KWARGS,
             None,
@@ -103,7 +112,7 @@ APP_METADATA = {
         ),
         # No app properties, with metadata
         (
-            dict(),
+            {},
             APP_METADATA,
             Mock(__package__=""),
             "Test App",
@@ -144,7 +153,7 @@ APP_METADATA = {
         ),
         # No app properties, with metadata
         (
-            dict(),
+            {},
             APP_METADATA,
             Mock(__package__="my_app"),
             "Test App",
@@ -172,7 +181,8 @@ APP_METADATA = {
             "org.beeware.explicit-app",
             "override-app",
         ),
-        # Explicit app properties, but implied distribution name from app_id, no metadata
+        # Explicit app properties,
+        # but implied distribution name from app_id, no metadata
         (
             EXPLICIT_MIN_APP_KWARGS,
             None,
@@ -183,7 +193,7 @@ APP_METADATA = {
         ),
         # No app properties, with metadata
         (
-            dict(),
+            {},
             APP_METADATA,
             None,
             "Test App",
@@ -199,11 +209,23 @@ APP_METADATA = {
             "org.beeware.explicit-app",
             "override-app",
         ),
+        ###########################################################################
+        # Invoking as python -m pdb my_app.py.
+        # This causes a main module of "my_app", but `__package__` isn't set.
+        ###########################################################################
+        # No app name provided; falls back to app_id
+        (
+            EXPLICIT_MIN_APP_KWARGS,
+            None,
+            Mock(),
+            "Explicit App",
+            "org.beeware.explicit-app",
+            "explicit-app",
+        ),
     ],
 )
-def test_create(
+async def test_create(
     monkeypatch,
-    event_loop,
     kwargs,
     metadata,
     main_module,
@@ -251,16 +273,11 @@ def test_create(
 @pytest.mark.parametrize(
     "kwargs, exc_type, message",
     [
-        (dict(), RuntimeError, "Toga application must have a formal name"),
+        ({}, RuntimeError, "Toga application must have a formal name"),
         (
-            dict(formal_name="Something"),
+            {"formal_name": "Something"},
             RuntimeError,
             "Toga application must have an app ID",
-        ),
-        (
-            dict(windows=()),
-            ValueError,
-            "The `windows` constructor argument of toga.App has been removed",
         ),
     ],
 )
@@ -270,7 +287,7 @@ def test_bad_app_creation(kwargs, exc_type, message):
         toga.App(**kwargs)
 
 
-def test_app_metadata(monkeypatch, event_loop):
+async def test_app_metadata(monkeypatch):
     """An app can load metadata from the .dist-info file."""
     monkeypatch.setattr(
         importlib.metadata,
@@ -302,7 +319,7 @@ def test_app_metadata(monkeypatch, event_loop):
     assert app.is_bundled is False
 
 
-def test_explicit_app_metadata(monkeypatch, event_loop):
+async def test_explicit_app_metadata(monkeypatch):
     """App metadata can be provided explicitly, overriding module-level metadata."""
     monkeypatch.setattr(
         importlib.metadata,
@@ -347,7 +364,7 @@ def test_explicit_app_metadata(monkeypatch, event_loop):
 
 
 @pytest.mark.parametrize("construct", [True, False])
-def test_icon_construction(app, construct, event_loop):
+async def test_icon_construction(app, construct):
     """The app icon can be set during construction."""
     if construct:
         icon = toga.Icon("path/to/icon")
@@ -411,8 +428,8 @@ def test_current_window(app):
 
 def test_no_current_window(app):
     """If there's no current window, current_window reflects this."""
-    # If all the windows are deleted, and there's no main window (e.g., if it's a document app)
-    # there might be no current window.
+    # If all the windows are deleted, and there's no main window
+    # (e.g., if it's a document app) there might be no current window.
     app._main_window = None
 
     # The current window evaluates as None
@@ -448,8 +465,9 @@ def test_change_invalid_main_window(app):
     assert_action_not_performed(app, "set_main_window")
 
 
-def test_change_invalid_creation_main_window(event_loop):
-    """If the new main window value provided at creation isn't valid, an exception is raised."""
+async def test_change_invalid_creation_main_window():
+    """If the new main window value provided at creation isn't valid,
+    an exception is raised."""
 
     class BadMainWindowApp(toga.App):
         def startup(self):
@@ -465,57 +483,203 @@ def test_change_invalid_creation_main_window(event_loop):
         BadMainWindowApp(formal_name="Test App", app_id="org.example.test")
 
 
-def test_full_screen(event_loop):
-    """The app can be put into full screen mode."""
+@pytest.mark.parametrize(
+    "windows",
+    [
+        [{}],  # One window
+        [{}, {}],  # Two windows
+    ],
+)
+async def test_presentation_mode_with_windows_list(windows):
+    """The app can enter presentation mode with a windows list."""
+    app = toga.App(formal_name="Test App", app_id="org.example.test")
+    windows_list = [toga.Window() for window in windows]
+
+    assert not app.in_presentation_mode
+
+    # Enter presentation mode with 1 or more windows:
+    app.enter_presentation_mode(windows_list)
+    assert app.in_presentation_mode
+    for window in windows_list:
+        assert_action_performed_with(
+            window,
+            "set window state to WindowState.PRESENTATION",
+            state=WindowState.PRESENTATION,
+        )
+    # Exit presentation mode:
+    app.exit_presentation_mode()
+    assert not app.in_presentation_mode
+    for window in windows_list:
+        assert_action_performed_with(
+            window,
+            "set window state to WindowState.NORMAL",
+            state=WindowState.NORMAL,
+        )
+
+
+@pytest.mark.parametrize(
+    "windows",
+    [
+        [{}],  # One window
+        [{}, {}],  # Two windows
+    ],
+)
+async def test_presentation_mode_with_screen_window_dict(windows):
+    """The app can enter presentation mode with a screen-window paired dict."""
+    app = toga.App(formal_name="Test App", app_id="org.example.test")
+    screen_window_dict = {
+        app.screens[i]: toga.Window() for i, window in enumerate(windows)
+    }
+
+    assert not app.in_presentation_mode
+
+    # Enter presentation mode with a 1 or more elements screen-window dict:
+    app.enter_presentation_mode(screen_window_dict)
+    assert app.in_presentation_mode
+    for window in screen_window_dict.values():
+        assert_action_performed_with(
+            window,
+            "set window state to WindowState.PRESENTATION",
+            state=WindowState.PRESENTATION,
+        )
+
+    # Exit presentation mode:
+    app.exit_presentation_mode()
+    assert not app.in_presentation_mode
+    for window in screen_window_dict.values():
+        assert_action_performed_with(
+            window,
+            "set window state to WindowState.NORMAL",
+            state=WindowState.NORMAL,
+        )
+
+
+async def test_presentation_mode_with_excess_windows_list():
+    """Entering presentation mode limits windows to available displays."""
+    app = toga.App(formal_name="Test App", app_id="org.example.test")
     window1 = toga.Window()
     window2 = toga.Window()
-    app = toga.App(formal_name="Test App", app_id="org.example.test")
+    window3 = toga.Window()
 
-    assert not app.is_full_screen
+    assert not app.in_presentation_mode
 
-    # If we're not full screen, exiting full screen is a no-op
-    app.exit_full_screen()
-    assert_action_not_performed(app, "exit_full_screen")
-
-    # Enter full screen with 2 windows
-    app.set_full_screen(window2, app.main_window)
-    assert app.is_full_screen
+    # Entering presentation mode with 3 windows should drop the last window,
+    # as the app has only 2 screens:
+    app.enter_presentation_mode([window1, window2, window3])
+    assert app.in_presentation_mode
     assert_action_performed_with(
-        app, "enter_full_screen", windows=(window2, app.main_window)
+        window1,
+        "set window state to WindowState.PRESENTATION",
+        state=WindowState.PRESENTATION,
+    )
+    assert_action_performed_with(
+        window2,
+        "set window state to WindowState.PRESENTATION",
+        state=WindowState.PRESENTATION,
+    )
+    assert_action_not_performed(
+        window3,
+        "set window state to WindowState.PRESENTATION",
     )
 
-    # Change the screens that are full screen
-    app.set_full_screen(app.main_window, window1)
-    assert app.is_full_screen
+    # Exit presentation mode:
+    app.exit_presentation_mode()
+    assert not app.in_presentation_mode
     assert_action_performed_with(
-        app, "enter_full_screen", windows=(app.main_window, window1)
+        window1,
+        "set window state to WindowState.NORMAL",
+        state=WindowState.NORMAL,
+    )
+    assert_action_performed_with(
+        window2,
+        "set window state to WindowState.NORMAL",
+        state=WindowState.NORMAL,
+    )
+    assert_action_not_performed(
+        window3,
+        "set window state to WindowState.NORMAL",
     )
 
-    # Exit full screen mode
-    app.exit_full_screen()
-    assert not app.is_full_screen
-    assert_action_performed_with(
-        app, "exit_full_screen", windows=(app.main_window, window1)
-    )
 
-
-def test_set_empty_full_screen_window_list(event_loop):
-    """Setting the full screen window list to [] is an explicit exit."""
+async def test_presentation_mode_with_some_windows():
+    """The app can enter presentation mode for some windows while others stay normal."""
     app = toga.App(formal_name="Test App", app_id="org.example.test")
     window1 = toga.Window()
     window2 = toga.Window()
 
-    assert not app.is_full_screen
+    assert not app.in_presentation_mode
 
-    # Change the screens that are full screen
-    app.set_full_screen(window1, window2)
-    assert app.is_full_screen
-    assert_action_performed_with(app, "enter_full_screen", windows=(window1, window2))
+    # Entering presentation mode with one window should not put the other
+    # window into presentation mode.
+    app.enter_presentation_mode([window1])
+    assert app.in_presentation_mode
+    assert_action_performed_with(
+        window1,
+        "set window state to WindowState.PRESENTATION",
+        state=WindowState.PRESENTATION,
+    )
+    assert_action_not_performed(
+        window2,
+        "set window state to WindowState.PRESENTATION",
+    )
+    assert window1.state == WindowState.PRESENTATION
+    assert window2.state != WindowState.PRESENTATION
 
-    # Exit full screen mode by setting no windows full screen
-    app.set_full_screen()
-    assert not app.is_full_screen
-    assert_action_performed_with(app, "exit_full_screen", windows=(window1, window2))
+    # Exit presentation mode:
+    app.exit_presentation_mode()
+    assert not app.in_presentation_mode
+    assert_action_performed_with(
+        window1,
+        "set window state to WindowState.NORMAL",
+        state=WindowState.NORMAL,
+    )
+    assert_action_not_performed(
+        window2,
+        "set window state to WindowState.NORMAL",
+    )
+    assert window1.state != WindowState.PRESENTATION
+    assert window2.state != WindowState.PRESENTATION
+
+
+async def test_presentation_mode_no_op():
+    """Entering presentation mode with invalid conditions is a no-op."""
+    app = toga.App(formal_name="Test App", app_id="org.example.test")
+
+    assert not app.in_presentation_mode
+
+    # Entering presentation mode without any window is a no-op.
+    with pytest.raises(TypeError):
+        app.enter_presentation_mode()
+    assert not app.in_presentation_mode
+    assert_action_not_performed(
+        app.main_window, "set window state to WindowState.PRESENTATION"
+    )
+
+    # Entering presentation mode with an empty dict, is a no-op:
+    app.enter_presentation_mode({})
+    assert not app.in_presentation_mode
+    assert_action_not_performed(
+        app.main_window, "set window state to WindowState.PRESENTATION"
+    )
+
+    # Entering presentation mode with an empty windows list, is a no-op:
+    app.enter_presentation_mode([])
+    assert not app.in_presentation_mode
+    assert_action_not_performed(
+        app.main_window, "set window state to WindowState.PRESENTATION"
+    )
+
+    # Entering presentation mode without proper type of parameter is a no-op.
+    with pytest.raises(
+        ValueError,
+        match="Presentation layout should be a list of windows, "
+        "or a dict mapping windows to screens.",
+    ):
+        app.enter_presentation_mode(toga.Window())
+    assert not app.in_presentation_mode
+    assert_action_not_performed(
+        app.main_window, "set window state to WindowState.PRESENTATION"
+    )
 
 
 def test_show_hide_cursor(app):
@@ -527,7 +691,7 @@ def test_show_hide_cursor(app):
     assert_action_performed(app, "show_cursor")
 
 
-def test_startup_method(event_loop):
+async def test_startup_method():
     """If an app provides a startup method, it will be invoked during startup."""
 
     def startup_assertions(app):
@@ -557,8 +721,26 @@ def test_startup_method(event_loop):
     # The app has a main window that is a MainWindow
     assert isinstance(app.main_window, toga.MainWindow)
 
+    # The main window has been shown.
+    assert_action_performed(app.main_window, "show")
 
-def test_startup_subclass(event_loop):
+
+def test_startup_method_returns_none():
+    """Test that startup method returning None raises appropriate error"""
+
+    def startup_none(app):
+        pass
+
+    with pytest.raises(
+        ValueError,
+        match=r"Your app's startup method has not provided any content",
+    ):
+        toga.App(
+            formal_name="Test App", app_id="org.example.test", startup=startup_none
+        )
+
+
+async def test_startup_subclass():
     """App can be subclassed."""
 
     class SubclassedApp(toga.App):
@@ -587,7 +769,7 @@ def test_startup_subclass(event_loop):
     assert app._impl.n_menu_items == 3
 
 
-def test_startup_subclass_no_main_window(event_loop):
+async def test_startup_subclass_no_main_window():
     """If a subclassed app doesn't define a main window, an error is raised."""
 
     class SubclassedApp(toga.App):
@@ -598,7 +780,7 @@ def test_startup_subclass_no_main_window(event_loop):
         SubclassedApp(formal_name="Test App", app_id="org.example.test")
 
 
-def test_startup_subclass_unknown_main_window(event_loop):
+async def test_startup_subclass_unknown_main_window():
     """If a subclassed app uses an unknown main window type, an error is raised"""
 
     class SubclassedApp(toga.App):
@@ -615,7 +797,7 @@ def test_about(app):
     assert_action_performed(app, "show_about_dialog")
 
 
-def test_visit_homepage(monkeypatch, event_loop):
+async def test_visit_homepage(monkeypatch):
     """The app's homepage can be opened."""
     app = toga.App(
         formal_name="Test App",
@@ -750,13 +932,13 @@ def test_no_exit_last_window_close(app):
     assert_action_performed(app, "exit")
 
 
-def test_loop(app, event_loop):
+async def test_loop(app):
     """The main thread's event loop can be accessed."""
     assert isinstance(app.loop, asyncio.AbstractEventLoop)
-    assert app.loop is event_loop
+    assert app.loop is asyncio.get_running_loop()
 
 
-def test_running(event_loop):
+def test_running():
     """The running() method is invoked when the main loop starts"""
     running = {}
 
@@ -776,7 +958,7 @@ def test_running(event_loop):
     assert running["called"]
 
 
-def test_async_running_method(event_loop):
+def test_async_running_method():
     """The running() method can be a coroutine."""
     running = {}
 
@@ -796,26 +978,10 @@ def test_async_running_method(event_loop):
     assert running["called"]
 
 
-def test_deprecated_id(event_loop):
-    """The deprecated `id` constructor argument is ignored, and the property of the same
-    name is redirected to `app_id`"""
-    id_warning = r"App.id is deprecated.* Use app_id instead"
-    with pytest.warns(DeprecationWarning, match=id_warning):
-        app = toga.App("Test App", "org.example.test", id="test_app_id")
-
-    assert app.app_id == "org.example.test"
-    with pytest.warns(DeprecationWarning, match=id_warning):
-        assert app.id == "org.example.test"
-
-
-def test_deprecated_name(event_loop):
-    """The deprecated `name` property is redirected to `formal_name`"""
-    name_warning = r"App.name is deprecated. Use formal_name instead"
-    app = toga.App("Test App", "org.example.test")
-
-    assert app.formal_name == "Test App"
-    with pytest.warns(DeprecationWarning, match=name_warning):
-        assert app.name == "Test App"
+def test_dark_mode_state(app):
+    """Dark mode settings can be read through the dark_mode property."""
+    # The dummy backend is currently set to always be True
+    assert app.dark_mode
 
 
 def test_deprecated_background_task(app):
@@ -838,3 +1004,197 @@ def test_deprecated_background_task(app):
 
     # Once the loop has executed, the background task should have executed as well.
     canary.assert_called_once()
+
+
+async def test_deprecated_full_screen():
+    """The app can be put into full screen mode using the deprecated API."""
+    app = toga.App(formal_name="Test App", app_id="org.example.test")
+    app.main_window.content = toga.Box()
+    window1 = toga.Window(content=toga.Box())
+    window2 = toga.Window(content=toga.Box())
+
+    is_full_screen_warning = (
+        r"`App.is_full_screen` is deprecated. Use `App.in_presentation_mode` instead."
+    )
+    set_full_screen_warning = (
+        r"`App.set_full_screen\(\)` is deprecated. "
+        r"Use `App.enter_presentation_mode\(\)` instead."
+    )
+    exit_full_screen_warning = (
+        r"`App.exit_full_screen\(\)` is deprecated. "
+        r"Use `App.exit_presentation_mode\(\)` instead."
+    )
+
+    with pytest.warns(
+        DeprecationWarning,
+        match=is_full_screen_warning,
+    ):
+        assert not app.is_full_screen
+
+    # If we're not full screen, exiting full screen is a no-op
+    with pytest.warns(
+        DeprecationWarning,
+        match=exit_full_screen_warning,
+    ):
+        app.exit_full_screen()
+    with pytest.warns(
+        DeprecationWarning,
+        match=is_full_screen_warning,
+    ):
+        assert not app.is_full_screen
+    assert_action_not_performed(
+        app.main_window,
+        "set window state to WindowState.NORMAL",
+    )
+
+    # Trying to enter full screen with no windows is a no-op
+    with pytest.warns(
+        DeprecationWarning,
+        match=set_full_screen_warning,
+    ):
+        app.set_full_screen()
+
+    with pytest.warns(
+        DeprecationWarning,
+        match=is_full_screen_warning,
+    ):
+        assert not app.is_full_screen
+    assert_action_not_performed(
+        app.main_window,
+        "set window state to WindowState.PRESENTATION",
+    )
+
+    # Enter full screen with 2 windows
+    with pytest.warns(
+        DeprecationWarning,
+        match=set_full_screen_warning,
+    ):
+        app.set_full_screen(window2, app.main_window)
+    with pytest.warns(
+        DeprecationWarning,
+        match=is_full_screen_warning,
+    ):
+        assert app.is_full_screen
+    assert_action_performed_with(
+        window2,
+        "set window state to WindowState.PRESENTATION",
+        state=WindowState.PRESENTATION,
+    )
+    assert_action_performed_with(
+        app.main_window,
+        "set window state to WindowState.PRESENTATION",
+        state=WindowState.PRESENTATION,
+    )
+
+    # Change the screens that are full screen
+    with pytest.warns(
+        DeprecationWarning,
+        match=set_full_screen_warning,
+    ):
+        app.set_full_screen(app.main_window, window1)
+    with pytest.warns(
+        DeprecationWarning,
+        match=is_full_screen_warning,
+    ):
+        assert app.is_full_screen
+    assert_action_performed_with(
+        app.main_window,
+        "set window state to WindowState.PRESENTATION",
+        state=WindowState.PRESENTATION,
+    )
+    assert_action_performed_with(
+        window1,
+        "set window state to WindowState.PRESENTATION",
+        state=WindowState.PRESENTATION,
+    )
+    assert_action_performed_with(
+        window2,
+        "set window state to WindowState.NORMAL",
+        state=WindowState.NORMAL,
+    )
+    # Exit full screen mode
+    with pytest.warns(
+        DeprecationWarning,
+        match=exit_full_screen_warning,
+    ):
+        app.exit_full_screen()
+    with pytest.warns(
+        DeprecationWarning,
+        match=is_full_screen_warning,
+    ):
+        assert not app.is_full_screen
+    assert_action_performed_with(
+        app.main_window,
+        "set window state to WindowState.NORMAL",
+        state=WindowState.NORMAL,
+    )
+    assert_action_performed_with(
+        window1,
+        "set window state to WindowState.NORMAL",
+        state=WindowState.NORMAL,
+    )
+
+
+async def test_deprecated_set_empty_full_screen_window_list():
+    """Setting the full screen window list to [] is an explicit exit."""
+    app = toga.App(formal_name="Test App", app_id="org.example.test")
+    app.main_window.content = toga.Box()
+    window1 = toga.Window(content=toga.Box())
+    window2 = toga.Window(content=toga.Box())
+
+    is_full_screen_warning = (
+        r"`App.is_full_screen` is deprecated. Use `App.in_presentation_mode` instead."
+    )
+    set_full_screen_warning = (
+        r"`App.set_full_screen\(\)` is deprecated. "
+        r"Use `App.enter_presentation_mode\(\)` instead."
+    )
+
+    with pytest.warns(
+        DeprecationWarning,
+        match=is_full_screen_warning,
+    ):
+        assert not app.is_full_screen
+
+    # Change the screens that are full screen
+    with pytest.warns(
+        DeprecationWarning,
+        match=set_full_screen_warning,
+    ):
+        app.set_full_screen(window1, window2)
+    with pytest.warns(
+        DeprecationWarning,
+        match=is_full_screen_warning,
+    ):
+        assert app.is_full_screen
+    assert_action_performed_with(
+        window1,
+        "set window state to WindowState.PRESENTATION",
+        state=WindowState.PRESENTATION,
+    )
+    assert_action_performed_with(
+        window2,
+        "set window state to WindowState.PRESENTATION",
+        state=WindowState.PRESENTATION,
+    )
+    # Exit full screen mode by setting no windows full screen
+    with pytest.warns(
+        DeprecationWarning,
+        match=set_full_screen_warning,
+    ):
+        app.set_full_screen()
+    with pytest.warns(
+        DeprecationWarning,
+        match=is_full_screen_warning,
+    ):
+        assert not app.is_full_screen
+    assert_action_performed_with(
+        window1,
+        "set window state to WindowState.NORMAL",
+        state=WindowState.NORMAL,
+    )
+    assert_action_performed_with(
+        window2,
+        "set window state to WindowState.NORMAL",
+        state=WindowState.NORMAL,
+    )

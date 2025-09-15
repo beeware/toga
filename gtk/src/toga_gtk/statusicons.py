@@ -1,7 +1,7 @@
 import toga
 from toga.command import Group, Separator
 
-from .libs import Gtk, XApp
+from .libs import GTK_VERSION, Gtk, XApp
 
 
 class StatusIcon:
@@ -17,16 +17,19 @@ class StatusIcon:
             self.native.set_icon_name(path)
 
     def create(self):
-        if XApp is None:  # pragma: no cover
-            # Can't replicate this in testbed
-            raise RuntimeError(
-                "Unable to import XApp. Ensure that the system package "
-                "providing libxapp and its GTK bindings have been installed."
-            )
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            if XApp is None:  # pragma: no cover
+                # Can't replicate this in testbed
+                raise RuntimeError(
+                    "Unable to import XApp. Ensure that the system package "
+                    "providing libxapp and its GTK bindings have been installed."
+                )
 
-        self.native = XApp.StatusIcon.new()
-        self.native.set_tooltip_text(self.interface.text)
-        self.set_icon(self.interface.icon)
+            self.native = XApp.StatusIcon.new()
+            self.native.set_tooltip_text(self.interface.text)
+            self.set_icon(self.interface.icon)
+        else:  # pragma: no-cover-if-gtk3
+            self.interface.factory.not_implemented("StatusIcon")
 
     def remove(self):
         del self.native
@@ -36,7 +39,10 @@ class StatusIcon:
 class SimpleStatusIcon(StatusIcon):
     def create(self):
         super().create()
-        self.native.connect("activate", self.gtk_activate)
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            self.native.connect("activate", self.gtk_activate)
+        else:  # pragma: no-cover-if-gtk3
+            pass
 
     def gtk_activate(self, icon, button, time):
         self.interface.on_press()
@@ -54,9 +60,9 @@ class StatusIconSet:
     def _submenu(self, group, group_cache):
         try:
             return group_cache[group]
-        except KeyError:
+        except KeyError as exc:
             if group is None:
-                raise ValueError("Unknown top level item")
+                raise ValueError("Unknown top level item") from exc
             else:
                 parent_menu = self._submenu(group.parent, group_cache)
 
@@ -71,42 +77,46 @@ class StatusIconSet:
         return submenu
 
     def create(self):
-        # Menu status icons are the only icons that have extra construction needs.
-        # Clear existing menus
-        for item in self.interface._menu_status_icons:
-            submenu = Gtk.Menu.new()
-            item._impl.native.set_primary_menu(submenu)
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            # Menu status icons are the only icons that have extra construction needs.
+            # Clear existing menus
+            for item in self.interface._menu_status_icons:
+                submenu = Gtk.Menu.new()
+                item._impl.native.set_primary_menu(submenu)
 
-        # Determine the primary status icon.
-        primary_group = self.interface._primary_menu_status_icon
-        if primary_group is None:  # pragma: no cover
-            # If there isn't at least one menu status icon, then there aren't any menus
-            # to populate. This can't be replicated in the testbed.
-            return
+            # Determine the primary status icon.
+            primary_group = self.interface._primary_menu_status_icon
+            if primary_group is None:  # pragma: no cover
+                # If there isn't at least one menu status icon, then there aren't any
+                # menus to populate. This can't be replicated in the testbed.
+                return
 
-        # Add the menu status items to the cache
-        group_cache = {
-            item: item._impl.native.get_primary_menu()
-            for item in self.interface._menu_status_icons
-        }
-        # Map the COMMANDS group to the primary status icon's menu.
-        group_cache[Group.COMMANDS] = primary_group._impl.native.get_primary_menu()
-        self._menu_items = {}
+            # Add the menu status items to the cache
+            group_cache = {
+                item: item._impl.native.get_primary_menu()
+                for item in self.interface._menu_status_icons
+            }
+            # Map the COMMANDS group to the primary status icon's menu.
+            group_cache[Group.COMMANDS] = primary_group._impl.native.get_primary_menu()
+            self._menu_items = {}
 
-        for cmd in self.interface.commands:
-            try:
-                submenu = self._submenu(cmd.group, group_cache)
-            except ValueError:
-                raise ValueError(
-                    f"Command {cmd.text!r} does not belong to "
-                    "a current status icon group."
-                )
-            else:
-                if isinstance(cmd, Separator):
-                    menu_item = Gtk.SeparatorMenuItem.new()
+            for cmd in self.interface.commands:
+                try:
+                    submenu = self._submenu(cmd.group, group_cache)
+                except ValueError as exc:
+                    raise ValueError(
+                        f"Command {cmd.text!r} does not belong to a current status "
+                        "icon group."
+                    ) from exc
                 else:
-                    menu_item = Gtk.MenuItem.new_with_label(cmd.text)
-                    menu_item.connect("activate", cmd._impl.gtk_activate)
+                    if isinstance(cmd, Separator):
+                        menu_item = Gtk.SeparatorMenuItem.new()
+                    else:
+                        menu_item = Gtk.MenuItem.new_with_label(cmd.text)
+                        menu_item.connect("activate", cmd._impl.gtk_activate)
 
-                submenu.append(menu_item)
-                submenu.show_all()
+                    submenu.append(menu_item)
+                    submenu.show_all()
+
+        else:  # pragma: no-cover-if-gtk3
+            self.interface.factory.not_implemented("StatusIconSet.create()")

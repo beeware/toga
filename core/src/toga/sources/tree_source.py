@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from collections.abc import Iterator
-from typing import Iterable, Mapping, TypeVar
+from collections.abc import Iterable, Iterator, Mapping
+from typing import TypeVar
 
 from .base import Source
 from .list_source import Row, _find_item
@@ -40,7 +40,10 @@ class Node(Row[T]):
         if self._children is not None:
             descriptor += f"; {len(self)} children"
 
-        return f"<{'Leaf ' if self._children is None else ''}Node {id(self):x} {descriptor}>"
+        return (
+            f"<{'Leaf ' if self._children is None else ''}Node "
+            f"{id(self):x} {descriptor}>"
+        )
 
     ######################################################################
     # Methods required by the TreeSource interface
@@ -202,7 +205,7 @@ class TreeSource(Source):
             raise ValueError("accessors should be a list of attribute names")
 
         # Copy the list of accessors
-        self._accessors = [a for a in accessors]
+        self._accessors = list(accessors)
         if len(self._accessors) == 0:
             raise ValueError("TreeSource must be provided a list of accessors")
 

@@ -36,9 +36,11 @@ and the selected value is shown as a draggable marker.
        :align: center
        :width: 300px
 
-  .. group-tab:: Web |no|
+  .. group-tab:: Web
 
-    Not supported
+    .. figure:: /reference/images/slider-web.png
+       :align: center
+       :width: 300px
 
   .. group-tab:: Textual |no|
 
@@ -59,10 +61,10 @@ A slider can either be continuous (allowing any value within the range), or disc
         print(slider.value)
 
     # Continuous slider, with an event handler.
-    toga.Slider(range=(-5, 10), value=7, on_change=my_callback)
+    toga.Slider(min=-5, max=10, value=7, on_change=my_callback)
 
     # Discrete slider, accepting the values [0, 1.5, 3, 4.5, 6, 7.5].
-    toga.Slider(range=(0, 7.5), tick_count=6)
+    toga.Slider(min=0, max=7.5, tick_count=6)
 
 
 Reference

@@ -1,9 +1,8 @@
 import toga
 from toga.constants import BLUE, CENTER, COLUMN, GREEN, RED, ROW, WHITE, YELLOW
-from toga.style import Pack
 
 
-class ExampleBoxApp(toga.App):
+class BoxApp(toga.App):
     def startup(self):
         self.main_window = toga.MainWindow(
             size=(800, 500), resizable=False, minimizable=False
@@ -11,40 +10,41 @@ class ExampleBoxApp(toga.App):
         self.yellow_button = toga.Button(
             text="Set yellow color",
             on_press=self.set_yellow_color,
-            style=Pack(background_color=YELLOW),
+            background_color=YELLOW,
         )
         self.inner_box = toga.Box(
-            style=Pack(direction=ROW),
+            direction=ROW,
             children=[
                 toga.Button(
                     text="Set red color",
                     on_press=self.set_red_color,
-                    style=Pack(background_color=RED),
+                    background_color=RED,
                 ),
                 self.yellow_button,
                 toga.Button(
                     text="Set blue color",
                     on_press=self.set_blue_color,
-                    style=Pack(background_color=BLUE),
+                    background_color=BLUE,
                 ),
                 toga.Button(
                     text="Set green color",
                     on_press=self.set_green_color,
-                    style=Pack(background_color=GREEN),
+                    background_color=GREEN,
                 ),
                 toga.Button(
                     text="Reset color",
                     on_press=self.reset_color,
-                    style=Pack(background_color=WHITE),
+                    background_color=WHITE,
                 ),
             ],
         )
         #  Create the outer box with 2 rows
         self.outer_box = toga.Box(
-            style=Pack(direction=COLUMN, flex=1),
+            direction=COLUMN,
+            flex=1,
             children=[
                 self.inner_box,
-                toga.Label(text="Hello to my world!", style=Pack(text_align=CENTER)),
+                toga.Label(text="Hello to my world!", text_align=CENTER),
                 toga.Switch(
                     "Enable yellow", value=True, on_change=self.toggle_yellow_button
                 ),
@@ -80,12 +80,8 @@ class ExampleBoxApp(toga.App):
 
 
 def main():
-    # Application class
-    #   App name and namespace
-    app = ExampleBoxApp("Box", "org.beeware.toga.examples.boxes")
-    return app
+    return BoxApp("Box", "org.beeware.toga.examples.boxes")
 
 
 if __name__ == "__main__":
-    app = main()
-    app.main_loop()
+    main().main_loop()

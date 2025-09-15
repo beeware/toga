@@ -3,7 +3,6 @@ from math import ceil
 from rubicon.objc import CGRect, NSInteger, NSMakeRect, objc_method, send_super
 from travertino.size import at_least
 
-from toga.colors import TRANSPARENT
 from toga_iOS.colors import native_color
 from toga_iOS.libs import (
     NSLineBreakByClipping,
@@ -41,30 +40,24 @@ class Label(Widget):
         # Add the layout constraints
         self.add_constraints()
 
-    def set_alignment(self, value):
+    def set_text_align(self, value):
         self.native.textAlignment = NSTextAlignment(value)
 
     def set_color(self, value):
         self.native.textColor = native_color(value)
-
-    def set_background_color(self, color):
-        if color == TRANSPARENT or color is None:
-            self.native.backgroundColor = native_color(TRANSPARENT)
-        else:
-            self.native.backgroundColor = native_color(color)
 
     def set_font(self, font):
         self.native.font = font._impl.native
 
     def get_text(self):
         value = str(self.native.text)
-        if value == "\u200B":
+        if value == "\u200b":
             return ""
         return value
 
     def set_text(self, value):
         if value == "":
-            value = "\u200B"
+            value = "\u200b"
         self.native.text = value
         # Tell the text layout algorithm how many lines are allowed
         self.native.numberOfLines = len(self.interface.text.split("\n"))
@@ -77,6 +70,9 @@ class Label(Widget):
             limitedToNumberOfLines=len(self.interface.text.split("\n")),
         ).size
 
-        # print(f"REHINT label {self} {self.get_text()!r} {fitting_size.width} {fitting_size.height}")
+        # print(
+        #     f"REHINT label {self} {self.get_text()!r} "
+        #     f"{fitting_size.width} {fitting_size.height}"
+        # )
         self.interface.intrinsic.width = at_least(ceil(fitting_size.width))
         self.interface.intrinsic.height = ceil(fitting_size.height)

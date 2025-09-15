@@ -6,8 +6,8 @@ import toga
 from toga.constants import CENTER
 from toga.sources import ListSource
 
+from .conftest import build_cleanup_test
 from .properties import (  # noqa: F401
-    test_alignment,
     test_background_color,
     test_background_color_reset,
     test_background_color_transparent,
@@ -17,6 +17,7 @@ from .properties import (  # noqa: F401
     test_flex_horizontal_widget_size,
     test_font,
     test_font_attrs,
+    test_text_align,
 )
 
 # FIXME: 2023-05-31 GTK's focus APIs are completely broken for GTK.ComboBox. The
@@ -47,8 +48,15 @@ def verify_font_sizes():
 
 
 @pytest.fixture
-def verify_vertical_alignment():
+def verify_vertical_text_align():
     return CENTER
+
+
+test_cleanup = build_cleanup_test(
+    toga.Selection,
+    kwargs={"items": ["first", "second", "third"]},
+    xfail_platforms=("android", "windows"),
+)
 
 
 async def test_item_titles(widget, probe):
@@ -190,7 +198,7 @@ async def test_source_changes(widget, probe):
     assert selected_item.name == "first"
 
     # Append a new item
-    source.append(dict(name="new 1", value=999))
+    source.append({"name": "new 1", "value": 999})
     await probe.redraw("New item has been appended to selection")
 
     assert probe.titles == ["first", "second", "third", "new 1"]
@@ -198,7 +206,7 @@ async def test_source_changes(widget, probe):
     on_change_handler.assert_not_called()
 
     # Insert a new item
-    source.insert(0, dict(name="new 2", value=888))
+    source.insert(0, {"name": "new 2", "value": 888})
     await probe.redraw("New item has been inserted into selection")
 
     assert probe.titles == ["new 2", "first", "second", "third", "new 1"]
@@ -253,7 +261,7 @@ async def test_source_changes(widget, probe):
     on_change_handler.reset_mock()
 
     # Insert a new item (the first in the data)
-    source.insert(0, dict(name="new 3", value=777))
+    source.insert(0, {"name": "new 3", "value": 777})
     await probe.redraw("New item has been inserted into empty selection")
 
     assert probe.titles == ["new 3"]

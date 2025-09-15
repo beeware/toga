@@ -8,7 +8,7 @@ from toga import Font
 from toga.constants import Baseline, FillRule
 from toga.fonts import SYSTEM_DEFAULT_FONT_SIZE
 from toga_gtk.colors import native_color
-from toga_gtk.libs import Gdk, Gtk, Pango, PangoCairo, cairo
+from toga_gtk.libs import GTK_VERSION, Gdk, Gtk, Pango, PangoCairo, cairo
 
 from .base import Widget
 
@@ -23,16 +23,19 @@ class Canvas(Widget):
 
         self.native = Gtk.DrawingArea()
 
-        self.native.connect("draw", self.gtk_draw_callback)
-        self.native.connect("size-allocate", self.gtk_on_size_allocate)
-        self.native.connect("button-press-event", self.mouse_down)
-        self.native.connect("button-release-event", self.mouse_up)
-        self.native.connect("motion-notify-event", self.mouse_move)
-        self.native.set_events(
-            Gdk.EventMask.BUTTON_PRESS_MASK
-            | Gdk.EventMask.BUTTON_RELEASE_MASK
-            | Gdk.EventMask.BUTTON_MOTION_MASK
-        )
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            self.native.connect("draw", self.gtk_draw_callback)
+            self.native.connect("size-allocate", self.gtk_on_size_allocate)
+            self.native.connect("button-press-event", self.mouse_down)
+            self.native.connect("button-release-event", self.mouse_up)
+            self.native.connect("motion-notify-event", self.mouse_move)
+            self.native.set_events(
+                Gdk.EventMask.BUTTON_PRESS_MASK
+                | Gdk.EventMask.BUTTON_RELEASE_MASK
+                | Gdk.EventMask.BUTTON_MOTION_MASK
+            )
+        else:  # pragma: no-cover-if-gtk3
+            pass
 
     def gtk_draw_callback(self, widget, cairo_context):
         """Creates a draw callback.
@@ -78,9 +81,11 @@ class Canvas(Widget):
             pass
 
     def mouse_move(self, obj, event):
-        if event.state == Gdk.ModifierType.BUTTON1_MASK:
+        """Handles mouse movement by calling the drag and/or alternative drag
+        methods. Modifier keys have no effect."""
+        if event.state & Gdk.ModifierType.BUTTON1_MASK:
             self.interface.on_drag(event.x, event.y)
-        if event.state == Gdk.ModifierType.BUTTON3_MASK:
+        if event.state & Gdk.ModifierType.BUTTON3_MASK:
             self.interface.on_alt_drag(event.x, event.y)
 
     def mouse_up(self, obj, event):
@@ -141,11 +146,11 @@ class Canvas(Widget):
         radius,
         startangle,
         endangle,
-        anticlockwise,
+        counterclockwise,
         cairo_context,
         **kwargs,
     ):
-        if anticlockwise:
+        if counterclockwise:
             cairo_context.arc_negative(x, y, radius, startangle, endangle)
         else:
             cairo_context.arc(x, y, radius, startangle, endangle)
@@ -159,7 +164,7 @@ class Canvas(Widget):
         rotation,
         startangle,
         endangle,
-        anticlockwise,
+        counterclockwise,
         cairo_context,
         **kwargs,
     ):
@@ -168,10 +173,14 @@ class Canvas(Widget):
         cairo_context.rotate(rotation)
         if radiusx >= radiusy:
             cairo_context.scale(1, radiusy / radiusx)
-            self.arc(0, 0, radiusx, startangle, endangle, anticlockwise, cairo_context)
+            self.arc(
+                0, 0, radiusx, startangle, endangle, counterclockwise, cairo_context
+            )
         else:
             cairo_context.scale(radiusx / radiusy, 1)
-            self.arc(0, 0, radiusy, startangle, endangle, anticlockwise, cairo_context)
+            self.arc(
+                0, 0, radiusy, startangle, endangle, counterclockwise, cairo_context
+            )
         cairo_context.identity_matrix()
         cairo_context.restore()
 
@@ -213,17 +222,19 @@ class Canvas(Widget):
 
     # Text
 
-    def write_text(self, text, x, y, font, baseline, cairo_context, **kwargs):
+    def write_text(
+        self, text, x, y, font, baseline, line_height, cairo_context, **kwargs
+    ):
         for op in ["fill", "stroke"]:
             if color := kwargs.pop(f"{op}_color", None):
-                self._text_path(text, x, y, font, baseline, cairo_context)
+                self._text_path(text, x, y, font, baseline, line_height, cairo_context)
                 getattr(self, op)(color, cairo_context=cairo_context, **kwargs)
 
     # No need to check whether Pango or PangoCairo are None, because if they were, the
     # user would already have received an exception when trying to create a Font.
-    def _text_path(self, text, x, y, font, baseline, cairo_context):
+    def _text_path(self, text, x, y, font, baseline, line_height, cairo_context):
         pango_context = self._pango_context(font)
-        metrics = self._font_metrics(pango_context)
+        metrics = self._font_metrics(pango_context, line_height)
         lines = text.splitlines()
         total_height = metrics.line_height * len(lines)
 
@@ -258,20 +269,27 @@ class Canvas(Widget):
         pango_context.set_font_description(font.native)
         return pango_context
 
-    def _font_metrics(self, pango_context):
-        pango_metrics = pango_context.load_font(
-            pango_context.get_font_description()
-        ).get_metrics()
+    def _font_metrics(self, pango_context, line_height):
+        pango_font = pango_context.load_font(pango_context.get_font_description())
+        pango_metrics = pango_font.get_metrics()
         ascent = pango_metrics.get_ascent() / Pango.SCALE
         descent = pango_metrics.get_descent() / Pango.SCALE
 
-        # get_height was added in Pango 1.44, but Debian Buster comes with 1.42.
-        line_height = ascent + descent
-        return FontMetrics(ascent, descent, line_height)
+        if line_height is None:
+            # get_height was added in Pango 1.44, but Debian Buster comes with 1.42.
+            scaled_line_height = ascent + descent
+        else:
+            font_size = (
+                pango_font.describe_with_absolute_size().get_size() / Pango.SCALE
+            )
+            scaled_line_height = font_size * line_height
 
-    def measure_text(self, text, font):
+        return FontMetrics(ascent, descent, scaled_line_height)
+
+    def measure_text(self, text, font, line_height):
         pango_context = self._pango_context(font)
         layout = Pango.Layout(pango_context)
+        metrics = self._font_metrics(pango_context, line_height)
 
         widths = []
         for line in text.splitlines():
@@ -281,7 +299,7 @@ class Canvas(Widget):
 
         return (
             ceil(max(width for width in widths)),
-            self._font_metrics(pango_context).line_height * len(widths),
+            metrics.line_height * len(widths),
         )
 
     def get_image_data(self):
@@ -299,7 +317,12 @@ class Canvas(Widget):
 
     # Rehint
     def rehint(self):
-        # print("REHINT", self, self.native.get_preferred_width(), self.native.get_preferred_height())
+        # print(
+        #     "REHINT",
+        #     self,
+        #     self.native.get_preferred_width(),
+        #     self.native.get_preferred_height(),
+        # )
         # width = self.native.get_allocation().width
         # height = self.native.get_allocation().height
         width = self.interface._MIN_WIDTH

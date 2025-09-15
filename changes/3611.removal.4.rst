@@ -1,0 +1,1 @@
+Travertino's color-parsing ``color()`` function interprets hex strings, e.g. ``#123``, ``#112233``, as well as predefined named colors. Previously, while this was never documented, it also parsed CSS-like declarations like ``"rgb(...)"``; this feature has been removed.

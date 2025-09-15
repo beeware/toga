@@ -1,1 +1,0 @@
-The Textual backend is now compatible with versions of Textual after v0.63.3.

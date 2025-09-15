@@ -36,8 +36,8 @@ class BaseProbe:
             # this prevents
             await asyncio.sleep(delay)
         else:
-            # Add another event to the queue behind the original event, to notify us once
-            # it's been processed.
+            # Add another event to the queue behind the original event, to notify us
+            # once it's been processed.
             NSRunLoop.currentRunLoop.performSelector(
                 SEL("onEvent"),
                 target=self.event_listener,

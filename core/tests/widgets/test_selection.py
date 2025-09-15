@@ -57,19 +57,24 @@ def test_create_with_value():
     on_change = Mock()
 
     widget = toga.Selection(
+        id="foobar",
         items=["first", "second", "third"],
         value="second",
         on_change=on_change,
         enabled=False,
+        # A style property
+        width=256,
     )
     assert widget._impl.interface == widget
     assert_action_performed(widget, "create Selection")
 
+    assert widget.id == "foobar"
     assert len(widget.items) == 3
     assert widget._accessor is None
     assert widget.value == "second"
     assert widget.on_change._raw == on_change
     assert not widget.enabled
+    assert widget.style.width == 256
 
 
 @pytest.mark.parametrize(
@@ -242,7 +247,7 @@ def test_bad_item_with_accessor():
     )
 
     # Store the bad item
-    item = selection.items.find(dict(value="bad"))
+    item = selection.items.find({"value": "bad"})
 
     # Delete the bad item
     selection.items.remove(item)
@@ -260,7 +265,7 @@ def test_add_item(widget, source, on_change_handler):
     # Store the original selection
     selection = widget.value
 
-    source.append(dict(key="new", value=999))
+    source.append({"key": "new", "value": 999})
 
     # The widget adds the item
     assert_action_performed_with(widget, "insert item", index=3)
@@ -275,7 +280,7 @@ def test_insert_item(widget, source, on_change_handler):
     # Store the original selection
     selection = widget.value
 
-    source.insert(1, dict(key="new", value=999))
+    source.insert(1, {"key": "new", "value": 999})
 
     # The widget adds the item
     assert_action_performed_with(widget, "insert item", index=1)
@@ -364,45 +369,3 @@ def test_change_source(widget, on_change_handler):
     # The widget must have cleared its selection
     on_change_handler.assert_called_once_with(widget)
     assert widget.value.key == "new 1"
-
-
-######################################################################
-# 2023-05: Backwards compatibility
-######################################################################
-
-
-def test_deprecated_names(on_change_handler):
-    """Deprecated names still work."""
-
-    # Can't specify both on_select and on_change
-    with pytest.raises(
-        ValueError,
-        match=r"Cannot specify both on_select and on_change",
-    ):
-        toga.Selection(on_select=Mock(), on_change=Mock())
-
-    # on_select is redirected at construction
-    with pytest.warns(
-        DeprecationWarning,
-        match="Selection.on_select has been renamed Selection.on_change",
-    ):
-        select = toga.Selection(on_select=on_change_handler)
-
-    # on_select accessor is redirected to on_change
-    with pytest.warns(
-        DeprecationWarning,
-        match="Selection.on_select has been renamed Selection.on_change",
-    ):
-        assert select.on_select._raw == on_change_handler
-
-    assert select.on_change._raw == on_change_handler
-
-    # on_select mutator is redirected to on_change
-    new_handler = Mock()
-    with pytest.warns(
-        DeprecationWarning,
-        match="Selection.on_select has been renamed Selection.on_change",
-    ):
-        select.on_select = new_handler
-
-    assert select.on_change._raw == new_handler

@@ -6,15 +6,14 @@ from .base import SimpleProbe
 
 class SelectionProbe(SimpleProbe):
     native_class = System.Windows.Forms.ComboBox
-    background_supports_alpha = False
     fixed_height = 23
 
     def assert_resizes_on_content_change(self):
         xfail("Selection doesn't resize on content changes on this backend")
 
     @property
-    def alignment(self):
-        xfail("Can't change the alignment of Selection on this backend")
+    def text_align(self):
+        xfail("Can't change the text alignment of Selection on this backend")
 
     @property
     def titles(self):

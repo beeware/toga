@@ -1,1 +1,0 @@
-The GTK backend was modified to use PyGObject's native asyncio handling, instead of GBulb.

@@ -47,18 +47,23 @@ def test_widget_created():
 def test_widget_created_with_values(content, on_scroll_handler):
     """A scroll container can be created with arguments."""
     scroll_container = toga.ScrollContainer(
+        id="foobar",
         content=content,
         on_scroll=on_scroll_handler,
         vertical=False,
         horizontal=False,
+        # A style property
+        width=256,
     )
     assert scroll_container._impl.interface == scroll_container
     assert_action_performed(scroll_container, "create ScrollContainer")
 
+    assert scroll_container.id == "foobar"
     assert scroll_container.content == content
     assert not scroll_container.vertical
     assert not scroll_container.horizontal
     assert scroll_container.on_scroll._raw == on_scroll_handler
+    assert scroll_container.style.width == 256
 
     # The content has been assigned to the widget
     assert_action_performed_with(
@@ -233,7 +238,7 @@ def test_clear_content(app, window, scroll_container, content):
 def test_horizontal(scroll_container, on_scroll_handler, content, value, expected):
     """Horizontal scrolling can be enabled/disabled."""
     scroll_container.horizontal = value
-    scroll_container.horizontal == expected
+    assert scroll_container.horizontal == expected
 
     if not expected:
         on_scroll_handler.assert_called_with(scroll_container)
@@ -260,7 +265,7 @@ def test_horizontal(scroll_container, on_scroll_handler, content, value, expecte
 def test_vertical(scroll_container, on_scroll_handler, content, value, expected):
     """Vertical scrolling can be enabled/disabled."""
     scroll_container.vertical = value
-    scroll_container.vertical == expected
+    assert scroll_container.vertical == expected
 
     if not expected:
         on_scroll_handler.assert_called_with(scroll_container)
@@ -321,7 +326,10 @@ def test_horizontal_position_when_not_horizontal(scroll_container):
     scroll_container.horizontal = False
     with pytest.raises(
         ValueError,
-        match=r"Cannot set horizontal position when horizontal scrolling is not enabled.",
+        match=(
+            r"Cannot set horizontal position "
+            r"when horizontal scrolling is not enabled."
+        ),
     ):
         scroll_container.horizontal_position = 37
 

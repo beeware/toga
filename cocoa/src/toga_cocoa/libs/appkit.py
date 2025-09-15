@@ -3,7 +3,7 @@
 ##########################################################################
 import platform
 from ctypes import c_void_p
-from enum import Enum, IntEnum
+from enum import Enum, IntEnum, IntFlag
 
 from rubicon.objc import ObjCClass, objc_const
 from rubicon.objc.api import NSString
@@ -545,6 +545,7 @@ class NSLineBreakMode(Enum):
 
 ######################################################################
 # NSPanel.h
+NSPanel = ObjCClass("NSPanel")
 
 NSUtilityWindowMask = 1 << 4
 
@@ -625,9 +626,7 @@ NSStepper = ObjCClass("NSStepper")
 
 NSStringDrawingUsesLineFragmentOrigin = 1 << 0
 NSStringDrawingUsesFontLeading = 1 << 1
-NSStringDrawingDisableScreenFontSubstitution = 1 << 2  # DEPRECATED
 NSStringDrawingUsesDeviceMetrics = 1 << 3
-NSStringDrawingOneShot = 1 << 4  # DEPRECATED
 NSStringDrawingTruncatesLastVisibleLine = 1 << 5
 
 ######################################################################
@@ -796,3 +795,35 @@ NSCompositingOperationHue = 25
 NSCompositingOperationSaturation = 26
 NSCompositingOperationColor = 27
 NSCompositingOperationLuminosity = 28
+
+######################################################################
+# NSDatePickerCell.h
+
+
+class NSDatePickerElementFlags(IntFlag):
+    # Time Elements
+    HourMinute = 0x000C
+    HourMinuteSecond = 0x000E
+    TimeZone = 0x0010
+
+    # Date Elements
+    YearMonth = 0x00C0
+    YearMonthDay = 0x00E0
+    Era = 0x0100
+
+
+class NSDatePickerMode(IntEnum):
+    Single = 0
+    Range = 1
+
+
+class NSDatePickerStyle(IntEnum):
+    TextFieldAndStepper = 0
+    ClockAndCalendar = 1
+    TextField = 2
+
+
+######################################################################
+# NSDatePicker.h
+
+NSDatePicker = ObjCClass("NSDatePicker")

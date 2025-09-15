@@ -8,6 +8,7 @@ from toga.sources import ListSource
 from toga.style.pack import Pack
 
 from ..conftest import skip_on_platforms
+from .conftest import build_cleanup_test
 from .probe import get_probe
 from .properties import (  # noqa: F401
     test_background_color,
@@ -41,7 +42,7 @@ def source():
         accessors=["a", "b", "c", "d", "e"],
         data=[
             {"a": f"A{i}", "b": f"B{i}", "c": f"C{i}", "d": f"D{i}", "e": f"E{i}"}
-            for i in range(0, 100)
+            for i in range(100)
         ],
     )
 
@@ -111,6 +112,14 @@ async def multiselect_probe(main_window, multiselect_widget):
     main_window.content = old_content
 
 
+test_cleanup = build_cleanup_test(
+    toga.Table,
+    kwargs={"headings": ["A", "B", "C"]},
+    skip_platforms=("iOS",),
+    xfail_platforms=("linux",),
+)
+
+
 async def test_scroll(widget, probe):
     """The table can be scrolled"""
 
@@ -148,6 +157,50 @@ async def test_scroll(widget, probe):
 
     # Due to the interaction of scrolling with the header row, the scroll might be <0.
     assert -100 < probe.scroll_position <= 0
+
+
+async def test_keyboard_navigation(widget, source, probe):
+    """The list can be navigated using a keyboard."""
+    await probe.acquire_keyboard_focus()
+    await probe.redraw("First row selected")
+    assert widget.selection == widget.data[0]
+
+    # Navigate down with letter, arrow, letter.
+    await probe.type_character("a")
+    await probe.redraw("Letter pressed - second row selected")
+    assert widget.selection == widget.data[1]
+    await probe.type_character("<down>")
+    await probe.redraw("Down arrow pressed - third row selected")
+    assert widget.selection == widget.data[2]
+    await probe.type_character("a")
+    await probe.redraw("Letter pressed - forth row selected")
+    assert widget.selection == widget.data[3]
+
+    # Select the last item with the end key if supported then wrap around.
+    if probe.supports_keyboard_boundary_shortcuts:
+        await probe.type_character("<end>")
+        await probe.redraw("Last row is selected")
+        assert widget.selection == widget.data[-1]
+        # Navigate by 1 item, wrapping around.
+        await probe.type_character("a")
+        await probe.redraw("Letter pressed - first row is selected")
+    else:
+        await probe.type_character("<up>")
+        await probe.type_character("<up>")
+        await probe.type_character("<up>")
+        await probe.redraw("Up arrow pressed thrice - first row is selected")
+    assert widget.selection == widget.data[0]
+
+    # Type a letter that no items start with to verify the selection doesn't change.
+    await probe.type_character("x")
+    await probe.redraw("Invalid letter pressed - first row is still selected")
+    assert widget.selection == widget.data[0]
+
+    # clear the table and verify with an empty selection.
+    widget.data.clear()
+    await probe.type_character("a")
+    await probe.redraw("Letter pressed - no row selected")
+    assert not widget.selection
 
 
 async def test_select(widget, probe, source, on_select_handler):
@@ -251,6 +304,54 @@ async def test_multiselect(
         assert len(multiselect_widget.selection) == 100
 
 
+async def test_multiselect_keyboard_control(
+    multiselect_widget,
+    multiselect_probe,
+    source,
+    on_select_handler,
+):
+    """Selection on a multiselect table can be controlled by keyboard.
+
+    Keyboard navigation can produce different events to mouse navigation,
+    so we need to test keyboard selection independent of mouse selection.
+    """
+    await multiselect_probe.redraw("No row is selected in multiselect table")
+
+    # Initial selection is empty
+    assert multiselect_widget.selection == []
+    on_select_handler.assert_not_called()
+
+    await multiselect_probe.acquire_keyboard_focus()
+
+    # A single row can be added to the selection
+    await multiselect_probe.redraw("First row selected")
+    assert multiselect_widget.selection == [source[0]]
+
+    await multiselect_probe.type_character("<down>", shift=True)
+    await multiselect_probe.redraw(
+        "Down arrow pressed - second row added to the selection"
+    )
+    assert multiselect_widget.selection == [source[0], source[1]]
+    on_select_handler.assert_called_with(multiselect_widget)
+    on_select_handler.reset_mock()
+
+    await multiselect_probe.type_character("<down>", shift=True)
+    await multiselect_probe.redraw(
+        "Down arrow pressed - third row added to the selection"
+    )
+    assert multiselect_widget.selection == [source[0], source[1], source[2]]
+    on_select_handler.assert_called_with(multiselect_widget)
+    on_select_handler.reset_mock()
+
+    await multiselect_probe.type_character("<up>", shift=True)
+    await multiselect_probe.redraw(
+        "Up arrow pressed - third row removed from the selection"
+    )
+    assert multiselect_widget.selection == [source[0], source[1]]
+    on_select_handler.assert_called_with(multiselect_widget)
+    on_select_handler.reset_mock()
+
+
 class MyData:
     def __init__(self, text):
         self.text = text
@@ -269,7 +370,7 @@ async def _row_change_test(widget, probe):
             "b": i,  # Integer
             "c": MyData(i),  # Custom type
         }
-        for i in range(0, 5)
+        for i in range(5)
     ]
     await probe.redraw("Data source has been changed")
 
@@ -395,9 +496,9 @@ async def test_column_changes(widget, probe):
     # The specific behavior for resizing is undefined; however, the columns should add
     # up to near the full width (allowing for inter-column padding, etc), and no single
     # column should be tiny.
-    total_width = sum(probe.column_width(i) for i in range(0, 4))
+    total_width = sum(probe.column_width(i) for i in range(4))
     assert total_width == pytest.approx(probe.width, abs=100)
-    for i in range(0, 4):
+    for i in range(4):
         assert probe.column_width(i) > 50
 
 
@@ -411,7 +512,7 @@ async def test_headerless_column_changes(headerless_widget, headerless_probe):
 
 async def test_remove_all_columns(widget, probe):
     assert probe.column_count == 3
-    for i in range(probe.column_count):
+    for _ in range(probe.column_count):
         widget.remove_column(0)
         await probe.redraw("Removed first column")
     assert probe.column_count == 0
@@ -448,7 +549,7 @@ async def test_cell_icon(widget, probe):
             # An object with an icon attribute.
             "c": MyIconData(f"C{i}", {0: red, 1: green, 2: None}[i % 3]),
         }
-        for i in range(0, 50)
+        for i in range(50)
     ]
     await probe.redraw("Table has data with icons")
 
@@ -483,7 +584,7 @@ async def test_cell_widget(widget, probe):
                 else toga.TextInput(value=f"edit C{i}")
             ),
         }
-        for i in range(0, 50)
+        for i in range(50)
     ]
     if probe.supports_widgets:
         warning_check = contextlib.nullcontext()

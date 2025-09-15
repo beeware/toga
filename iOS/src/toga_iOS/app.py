@@ -1,7 +1,5 @@
-import asyncio
-
 from rubicon.objc import objc_method
-from rubicon.objc.eventloop import EventLoopPolicy, iOSLifecycle
+from rubicon.objc.eventloop import RubiconEventLoop, iOSLifecycle
 
 import toga
 from toga_iOS.libs import UIResponder, UIScreen, av_foundation
@@ -13,18 +11,22 @@ class PythonAppDelegate(UIResponder):
     @objc_method
     def applicationDidBecomeActive_(self, application) -> None:
         print("App became active.")
+        App.app.interface.current_window.on_gain_focus()
 
     @objc_method
     def applicationWillResignActive_(self, application) -> None:
         print("App about to leave foreground.", flush=True)
+        App.app.interface.current_window.on_lose_focus()
 
     @objc_method
     def applicationDidEnterBackground_(self, application) -> None:
         print("App entered background.")
+        App.app.interface.current_window.on_hide()
 
     @objc_method
     def applicationWillEnterForeground_(self, application) -> None:
         print("App about to enter foreground.")
+        App.app.interface.current_window.on_show()
 
     @objc_method
     def application_didFinishLaunchingWithOptions_(
@@ -33,6 +35,7 @@ class PythonAppDelegate(UIResponder):
         print("App finished launching.")
         App.app.native = application
         App.app.create()
+        App.app.interface.current_window.on_show()
         return True
 
     @objc_method
@@ -64,8 +67,7 @@ class App:
         # Add a reference for the PythonAppDelegate class to use.
         App.app = self
 
-        asyncio.set_event_loop_policy(EventLoopPolicy())
-        self.loop = asyncio.new_event_loop()
+        self.loop = RubiconEventLoop()
 
     def create(self):
         """Calls the startup method on the interface."""
@@ -113,6 +115,14 @@ class App:
         return [ScreenImpl(UIScreen.mainScreen)]
 
     ######################################################################
+    # App state
+    ######################################################################
+
+    def get_dark_mode_state(self):
+        self.interface.factory.not_implemented("dark mode state")
+        return None
+
+    ######################################################################
     # App capabilities
     ######################################################################
 
@@ -150,16 +160,4 @@ class App:
 
     def set_current_window(self, window):
         # iOS only has a main window, so this is a no-op
-        pass
-
-    ######################################################################
-    # Full screen control
-    ######################################################################
-
-    def enter_full_screen(self, windows):
-        # No-op; mobile doesn't support full screen
-        pass
-
-    def exit_full_screen(self, windows):
-        # No-op; mobile doesn't support full screen
         pass

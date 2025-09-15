@@ -1,24 +1,23 @@
 import toga
 from toga.constants import COLUMN
-from toga.style import Pack
 
 
-class ExampleHardwareApp(toga.App):
+class HardwareApp(toga.App):
     def startup(self):
         #############################################################
         # Camera
         #############################################################
         self.photo = toga.ImageView(
-            image=toga.Image("resources/default.png"), style=Pack(width=200)
+            image=toga.Image("resources/default.png"), width=200
         )
 
         camera_box = toga.Box(
             children=[
                 toga.Box(
                     children=[
-                        toga.Box(style=Pack(flex=1)),
+                        toga.Box(flex=1),
                         self.photo,
-                        toga.Box(style=Pack(flex=1)),
+                        toga.Box(flex=1),
                     ]
                 ),
                 toga.Box(
@@ -27,25 +26,28 @@ class ExampleHardwareApp(toga.App):
                         toga.Button(
                             "Take Photo",
                             on_press=self.take_photo,
-                            style=Pack(flex=1, padding=5),
+                            flex=1,
+                            margin=5,
                         ),
                         # Select a photo from the photo library
                         # toga.Button(
                         #     "Select Photo",
                         #     on_press=self.select_photo,
-                        #     style=Pack(flex=1, padding=5),
+                        #     flex=1,
+                        #     margin=5,
                         # ),
                     ],
                 ),
             ],
-            style=Pack(direction=COLUMN, padding_bottom=20),
+            direction=COLUMN,
+            margin_bottom=20,
         )
 
         #############################################################
         # Location services
         #############################################################
 
-        self.map_view = toga.MapView(style=Pack(flex=1))
+        self.map_view = toga.MapView(flex=1)
         self.pin = None
         self.location.on_change = self.location_changed
 
@@ -54,29 +56,27 @@ class ExampleHardwareApp(toga.App):
                 self.map_view,
                 toga.Box(
                     children=[
-                        toga.Button(
-                            "Update", on_press=self.update_location, style=Pack(flex=1)
-                        ),
+                        toga.Button("Update", on_press=self.update_location, flex=1),
                         toga.Button(
                             "Start",
                             on_press=self.start_location_updates,
-                            style=Pack(flex=1),
+                            flex=1,
                         ),
                         toga.Button(
                             "Stop",
                             on_press=self.stop_location_updates,
-                            style=Pack(flex=1),
+                            flex=1,
                         ),
                         toga.Button(
                             "Background",
                             on_press=self.request_background_location,
-                            style=Pack(flex=1),
+                            flex=1,
                         ),
                     ],
-                    style=Pack(padding=5),
+                    margin=5,
                 ),
             ],
-            style=Pack(direction=COLUMN),
+            direction=COLUMN,
         )
 
         #############################################################
@@ -118,6 +118,9 @@ class ExampleHardwareApp(toga.App):
             )
 
     def location_changed(self, geo, location, altitude, **kwargs):
+        self._set_location(location)
+
+    def _set_location(self, location):
         self.map_view.location = location
 
         if self.pin is None:
@@ -131,8 +134,8 @@ class ExampleHardwareApp(toga.App):
         try:
             await self.location.request_permission()
 
-            # Getting the current location will trigger the on_change handler
-            await self.location.current_location()
+            location = await self.location.current_location()
+            self._set_location(location)
 
         except NotImplementedError:
             await self.main_window.dialog(
@@ -195,7 +198,10 @@ class ExampleHardwareApp(toga.App):
                 await self.main_window.dialog(
                     toga.InfoDialog(
                         "All good!",
-                        "Application has permission to perform background location tracking",
+                        (
+                            "Application has permission to perform background "
+                            "location tracking"
+                        ),
                     )
                 )
             else:
@@ -212,7 +218,10 @@ class ExampleHardwareApp(toga.App):
                     await self.main_window.dialog(
                         toga.InfoDialog(
                             "Oh no!",
-                            "You have not granted permission for background location tracking",
+                            (
+                                "You have not granted permission for background "
+                                "location tracking"
+                            ),
                         )
                     )
         except NotImplementedError:
@@ -225,9 +234,8 @@ class ExampleHardwareApp(toga.App):
 
 
 def main():
-    return ExampleHardwareApp("Hardware", "org.beeware.examples.hardware")
+    return HardwareApp("Hardware", "org.beeware.toga.examples.hardware")
 
 
 if __name__ == "__main__":
-    app = main()
-    app.main_loop()
+    main().main_loop()

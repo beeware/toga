@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Any
 
 # Use the Travertino font definitions as-is
 from travertino import constants
@@ -30,6 +31,11 @@ FONT_STYLES = {NORMAL, ITALIC, OBLIQUE}
 FONT_VARIANTS = {NORMAL, SMALL_CAPS}
 
 _REGISTERED_FONT_CACHE: dict[tuple[str, str, str, str], str] = {}
+_IMPL_CACHE: dict[Font, Any] = {}
+
+
+class UnknownFontError(Exception):
+    """Raised when an unknown font family is requested."""
 
 
 class Font(BaseFont):
@@ -42,7 +48,7 @@ class Font(BaseFont):
         style: str = NORMAL,
         variant: str = NORMAL,
     ):
-        """Constructs a reference to a font.
+        """Construct a reference to a font.
 
         This class should be used when an API requires an explicit font reference (e.g.
         :any:`Context.write_text`). In all other cases, fonts in Toga are controlled
@@ -53,10 +59,32 @@ class Font(BaseFont):
         :param weight: The :ref:`font weight <pack-font-weight>`.
         :param style: The :ref:`font style <pack-font-style>`.
         :param variant: The :ref:`font variant <pack-font-variant>`.
+
+        :raises UnknownFontError: If the font family requested corresponds to neither
+            one of the :ref:`built-in system fonts <pack-font-family>`, nor a
+            user-registered font, nor (depending on platform) a font installed on the
+            system.
+        :raises ValueError: If a user-registered font is used, but the file specified
+            either doesn't exist or a font can't be successfully loaded from it.
         """
         super().__init__(family, size, weight=weight, style=style, variant=variant)
         self.factory = get_platform_factory()
-        self._impl = self.factory.Font(self)
+
+        try:
+            self._impl = _IMPL_CACHE[self]
+
+        except KeyError:
+            self._impl = self.factory.Font(self)
+            try:
+                self._impl.load_predefined_system_font()
+            except UnknownFontError:
+                try:
+                    self._impl.load_user_registered_font()
+                except UnknownFontError:
+                    try:
+                        self._impl.load_arbitrary_system_font()
+                    except UnknownFontError as exc:
+                        raise UnknownFontError(f"Unknown font '{self}'") from exc
 
     def __str__(self) -> str:
         size = (
@@ -64,10 +92,8 @@ class Font(BaseFont):
             if self.size == SYSTEM_DEFAULT_FONT_SIZE
             else f"{self.size}pt"
         )
-        weight = f" {self.weight}" if self.weight != NORMAL else ""
-        variant = f" {self.variant}" if self.variant != NORMAL else ""
-        style = f" {self.style}" if self.style != NORMAL else ""
-        return f"{self.family} {size}{weight}{variant}{style}"
+        string = f"{self.family} {size} {self.weight} {self.variant} {self.style}"
+        return string.replace(" normal", "")
 
     @staticmethod
     def register(
@@ -78,9 +104,7 @@ class Font(BaseFont):
         style: str = NORMAL,
         variant: str = NORMAL,
     ) -> None:
-        """Registers a file-based font.
-
-        **Note:** This is not currently supported on macOS or iOS.
+        """Register a file-based font.
 
         :param family: The :ref:`font family <pack-font-family>`.
         :param path: The path to the font file. This can be an absolute path, or a path

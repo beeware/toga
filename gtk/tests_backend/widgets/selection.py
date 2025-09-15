@@ -1,12 +1,17 @@
+import pytest
 from pytest import skip, xfail
 
-from toga_gtk.libs import Gtk
+from toga_gtk.libs import GTK_VERSION, Gtk
 
 from .base import SimpleProbe
 
 
 class SelectionProbe(SimpleProbe):
-    native_class = Gtk.ComboBoxText
+    if GTK_VERSION < (4, 0, 0):
+        native_class = Gtk.ComboBoxText
+    else:
+        native_class = Gtk.DropDown
+        pytest.skip("GTK4 doesn't support selection probes yet")
 
     def assert_resizes_on_content_change(self):
         pass
@@ -16,8 +21,8 @@ class SelectionProbe(SimpleProbe):
         return False
 
     @property
-    def alignment(self):
-        xfail("Can't change the alignment of Selection on GTK")
+    def text_align(self):
+        xfail("Can't change the text alignment of Selection on GTK")
 
     @property
     def color(self):

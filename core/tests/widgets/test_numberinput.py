@@ -37,22 +37,27 @@ def test_create_with_values():
     on_change = Mock()
 
     widget = toga.NumberInput(
+        id="foobar",
         value=Decimal("2.71828"),
         step=0.001,
         min=-42,
         max=420,
         readonly=True,
         on_change=on_change,
+        # A style property
+        width=256,
     )
     assert widget._impl.interface == widget
     assert_action_performed(widget, "create NumberInput")
 
+    assert widget.id == "foobar"
     assert widget.readonly
     assert widget.value == Decimal("2.718")
     assert widget.step == Decimal("0.001")
     assert widget.min == Decimal("-42")
     assert widget.max == Decimal("420")
     assert widget._on_change._raw == on_change
+    assert widget.style.width == 256
 
     # Change handler hasn't been invoked
     on_change.assert_not_called()
@@ -495,66 +500,3 @@ def test_clean_decimal_str(value, clean):
 )
 def test_clean_decimal(value, step, clean):
     assert _clean_decimal(value, Decimal(step) if step else step) == Decimal(clean)
-
-
-def test_deprecated_names():
-    """The deprecated min_value/max_value names still work."""
-    # Can't specify min and min_value
-    with pytest.raises(
-        ValueError,
-        match=r"Cannot specify both min and min_value",
-    ):
-        toga.NumberInput(min=2, min_value=4)
-
-    # Can't specify min and min_value
-    with pytest.raises(
-        ValueError,
-        match=r"Cannot specify both max and max_value",
-    ):
-        toga.NumberInput(max=2, max_value=4)
-
-    # min_value is deprecated
-    with pytest.warns(
-        DeprecationWarning,
-        match="NumberInput.min_value has been renamed NumberInput.min",
-    ):
-        widget = toga.NumberInput(min_value=2)
-
-    assert widget.min == 2
-
-    with pytest.warns(
-        DeprecationWarning,
-        match="NumberInput.min_value has been renamed NumberInput.min",
-    ):
-        assert widget.min_value == 2
-
-    with pytest.warns(
-        DeprecationWarning,
-        match="NumberInput.min_value has been renamed NumberInput.min",
-    ):
-        widget.min_value = 4
-
-    assert widget.min == 4
-
-    # max_value is deprecated
-    with pytest.warns(
-        DeprecationWarning,
-        match="NumberInput.max_value has been renamed NumberInput.max",
-    ):
-        widget = toga.NumberInput(max_value=2)
-
-    assert widget.max == 2
-
-    with pytest.warns(
-        DeprecationWarning,
-        match="NumberInput.max_value has been renamed NumberInput.max",
-    ):
-        assert widget.max_value == 2
-
-    with pytest.warns(
-        DeprecationWarning,
-        match="NumberInput.max_value has been renamed NumberInput.max",
-    ):
-        widget.max_value = 4
-
-    assert widget.max == 4

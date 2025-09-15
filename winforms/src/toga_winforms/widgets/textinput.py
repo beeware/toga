@@ -12,8 +12,6 @@ from .base import Widget
 
 
 class TextInput(Widget):
-    _background_supports_alpha = False
-
     def create(self):
         self.native = WinForms.TextBox()
         self.native.Multiline = False
@@ -61,7 +59,7 @@ class TextInput(Widget):
     def set_value(self, value):
         self.native.Text = value
 
-    def set_alignment(self, value):
+    def set_text_align(self, value):
         self.native.TextAlign = HorizontalTextAlignment(value)
 
     def set_color(self, color):

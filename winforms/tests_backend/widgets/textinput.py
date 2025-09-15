@@ -2,16 +2,14 @@ import ctypes
 from ctypes import c_uint
 from ctypes.wintypes import HWND, LPARAM
 
-import pytest
 from System.Windows.Forms import TextBox
 
 from .base import SimpleProbe
-from .properties import toga_xalignment
+from .properties import toga_x_text_align
 
 
 class TextInputProbe(SimpleProbe):
     native_class = TextBox
-    background_supports_alpha = False
     fixed_height = 23
 
     @property
@@ -41,19 +39,20 @@ class TextInputProbe(SimpleProbe):
 
     @property
     def placeholder_hides_on_focus(self):
-        False
+        return False
 
     @property
     def readonly(self):
         return self.native.ReadOnly
 
     @property
-    def alignment(self):
-        return toga_xalignment(self.native.TextAlign)
+    def text_align(self):
+        return toga_x_text_align(self.native.TextAlign)
 
-    def assert_vertical_alignment(self, expected):
-        # Vertical alignment isn't configurable in this native widget.
+    def assert_vertical_text_align(self, expected):
+        # Vertical text alignment isn't configurable in this native widget.
         pass
 
     def set_cursor_at_end(self):
-        pytest.skip("Cursor positioning not supported on this platform")
+        self.native.SelectionStart = len(self.native.Text)
+        self.native.SelectionLength = 0

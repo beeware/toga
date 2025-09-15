@@ -17,7 +17,7 @@ class MyApp(toga.App):
 
 
 @pytest.fixture
-def app():
+async def app():
     return MyApp("Icons Test", "org.beeware.toga.icons")
 
 
@@ -216,7 +216,8 @@ def test_create_app_icon_non_script(monkeypatch, app, capsys):
 
 
 def test_create_app_icon_missing_non_script(monkeypatch, app, capsys):
-    """If the icon from binary executable cannot be found, the app icon is reset to the default"""
+    """If the icon from binary executable cannot be found, the app icon is reset to the
+    default."""
     # Prime the dummy so the app icon cannot be found
     monkeypatch.setattr(
         DummyIcon,
@@ -254,13 +255,3 @@ def test_cached_icons(app, name, path):
 
     # Retrieve the icon a second time; The same instance is returned.
     assert id(getattr(toga.Icon, name)) == id(icon)
-
-
-def test_deprecated_icons(app):
-    """Deprecated icons are still available."""
-    with pytest.warns(DeprecationWarning):
-        icon = toga.Icon.TOGA_ICON
-    assert icon.path == Path("toga")
-
-    # Retrieve the icon a second time; The same instance is returned.
-    assert id(toga.Icon.TOGA_ICON) == id(icon)

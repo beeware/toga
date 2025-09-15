@@ -1,8 +1,7 @@
 from __future__ import annotations
 
-import sys
 from collections.abc import Sequence
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from toga.app import App
 from toga.constants import Direction
@@ -11,10 +10,7 @@ from toga.window import Window
 from .base import StyleT, Widget
 
 if TYPE_CHECKING:
-    if sys.version_info < (3, 10):
-        from typing_extensions import TypeAlias
-    else:
-        from typing import TypeAlias
+    from typing import TypeAlias
 
     SplitContainerContentT: TypeAlias = Widget | tuple[Widget, float] | None
 
@@ -22,6 +18,7 @@ if TYPE_CHECKING:
 class SplitContainer(Widget):
     HORIZONTAL = Direction.HORIZONTAL
     VERTICAL = Direction.VERTICAL
+    _USE_DEBUG_BACKGROUND = True
 
     def __init__(
         self,
@@ -29,6 +26,7 @@ class SplitContainer(Widget):
         style: StyleT | None = None,
         direction: Direction = Direction.VERTICAL,
         content: Sequence[SplitContainerContentT] | None = None,
+        **kwargs,
     ):
         """Create a new SplitContainer.
 
@@ -41,16 +39,17 @@ class SplitContainer(Widget):
             :attr:`~toga.constants.Direction.VERTICAL`
         :param content: Initial :any:`SplitContainer content <SplitContainerContentT>`
             of the container. Defaults to both panels being empty.
+        :param kwargs: Initial style properties.
         """
-        super().__init__(id=id, style=style)
         self._content: list[SplitContainerContentT] = [None, None]
-
-        # Create a platform specific implementation of a SplitContainer
-        self._impl = self.factory.SplitContainer(interface=self)
+        super().__init__(id, style, **kwargs)
 
         if content:
             self.content = content
         self.direction = direction
+
+    def _create(self) -> Any:
+        return self.factory.SplitContainer(interface=self)
 
     @property
     def enabled(self) -> bool:
@@ -92,10 +91,10 @@ class SplitContainer(Widget):
         try:
             if len(content) != 2:
                 raise TypeError()
-        except TypeError:
+        except TypeError as exc:
             raise ValueError(
                 "SplitContainer content must be a sequence with exactly 2 elements"
-            )
+            ) from exc
 
         _content = []
         flex = []
@@ -125,7 +124,7 @@ class SplitContainer(Widget):
                 widget.window = self.window
 
         self._impl.set_content(
-            list(w._impl if w is not None else None for w in _content),
+            [w._impl if w is not None else None for w in _content],
             flex,
         )
         self._content = list(_content)

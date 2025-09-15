@@ -38,11 +38,9 @@ unchecked). The button has a text label.
 
   .. group-tab:: Web |beta|
 
-    .. .. figure:: /reference/images/switch-web.png
-    ..    :align: center
-    ..    :width: 300px
-
-    Screenshot not available
+    .. figure:: /reference/images/switch-web.png
+       :align: center
+       :width: 300px
 
   .. group-tab:: Textual |no|
 

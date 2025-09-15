@@ -95,13 +95,11 @@ class TogaTree(NSOutlineView):
         tcv = self.makeViewWithIdentifier(identifier, owner=self)
 
         if not tcv:  # there is no existing view to reuse so create a new one
-            # tcv = TogaIconView.alloc().initWithFrame(CGRectMake(0, 0, column.width, 16))
+            # tcv = TogaIconView.alloc().initWithFrame(
+            #     CGRectMake(0, 0, column.width, 16)
+            # )
             tcv = TogaIconView.alloc().init()
             tcv.identifier = identifier
-
-            # Prevent tcv from being deallocated prematurely when no Python references
-            # are left
-            tcv.autorelease()
 
         tcv.setText(str(value))
         if icon:
@@ -127,7 +125,8 @@ class TogaTree(NSOutlineView):
 
     #     for column in self.tableColumns:
     #         value = getattr(
-    #             item.attrs["node"], str(column.identifier), self.interface.missing_value
+    #             item.attrs["node"], str(column.identifier),
+    #             self.interface.missing_value
     #         )
 
     #         if isinstance(value, toga.Widget):
@@ -144,7 +143,9 @@ class TogaTree(NSOutlineView):
         return None
 
     # @objc_method
-    # def outlineView_sortDescriptorsDidChange_(self, tableView, oldDescriptors) -> None:
+    # def outlineView_sortDescriptorsDidChange_(
+    #     self, tableView, oldDescriptors
+    # ) -> None:
     #
     #     for descriptor in self.sortDescriptors[::-1]:
     #         accessor = descriptor.key
@@ -250,7 +251,7 @@ class Tree(Widget):
             selection = []
 
             current_index = self.native_tree.selectedRowIndexes.firstIndex
-            for i in range(self.native_tree.selectedRowIndexes.count):
+            for _ in range(self.native_tree.selectedRowIndexes.count):
                 selection.append(
                     self.native_tree.itemAtRow(current_index).attrs["node"]
                 )

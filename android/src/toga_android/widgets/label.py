@@ -10,12 +10,12 @@ from travertino.size import at_least
 from toga.constants import JUSTIFY
 from toga_android.colors import native_color
 
-from .base import Widget, align
+from .base import Widget, android_text_align
 
 
-def set_textview_font(tv, font, default_typeface, default_size):
-    tv.setTypeface(font.typeface(default=default_typeface))
-    tv.setTextSize(TypedValue.COMPLEX_UNIT_PX, font.size(default=default_size))
+def set_textview_font(textview, font, default_typeface, default_size):
+    textview.setTypeface(font.typeface(default=default_typeface))
+    textview.setTextSize(TypedValue.COMPLEX_UNIT_PX, font.size(default=default_size))
 
 
 class TextViewWidget(Widget):
@@ -28,12 +28,6 @@ class TextViewWidget(Widget):
         set_textview_font(
             self.native, font._impl, self._default_typeface, self._default_text_size
         )
-
-    def set_background_color(self, value):
-        # In the case of EditText, this causes any custom color to hide the bottom border
-        # line, but it's better than set_background_filter, which affects *only* the
-        # bottom border line.
-        self.set_background_simple(value)
 
     def set_color(self, value):
         if value is None:
@@ -51,7 +45,7 @@ class TextViewWidget(Widget):
                 else Layout.JUSTIFICATION_MODE_NONE
             )
 
-        self.native.setGravity(vertical_gravity | align(value))
+        self.native.setGravity(vertical_gravity | android_text_align(value))
 
 
 class Label(TextViewWidget):
@@ -80,5 +74,5 @@ class Label(TextViewWidget):
             at_least(self.native.getMeasuredWidth()), ROUND_UP
         )
 
-    def set_alignment(self, value):
+    def set_text_align(self, value):
         self.set_textview_alignment(value, Gravity.TOP)

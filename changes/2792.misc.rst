@@ -1,1 +1,0 @@
-Typos in the status icon examples were corrected.

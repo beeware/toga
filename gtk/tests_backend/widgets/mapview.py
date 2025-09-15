@@ -2,7 +2,7 @@ import asyncio
 
 import pytest
 
-from toga_gtk.libs import WebKit2
+from toga_gtk.libs import GTK_VERSION, WebKit2
 
 from .base import SimpleProbe
 
@@ -18,6 +18,9 @@ def region_eq(r1, r2):
 
 class MapViewProbe(SimpleProbe):
     native_class = WebKit2.WebView
+
+    if GTK_VERSION >= (4, 0, 0):
+        pytest.skip("GTK4 doesn't support map view yet")
 
     @property
     def scale_height(self):

@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import sys
 from abc import abstractmethod
-from collections.abc import Iterator
-from typing import TYPE_CHECKING, Mapping, Sequence
+from collections.abc import Iterator, Mapping, Sequence
+from typing import TYPE_CHECKING
 
 import toga
 from toga.command import Command, CommandSet, Group
@@ -183,7 +183,7 @@ class StatusIconSet(Sequence[StatusIcon], Mapping[str, StatusIcon]):
 
     def __contains__(self, value: object) -> bool:
         if isinstance(value, str):
-            return value in self.elements.keys()
+            return value in self.elements
         else:
             return value in self.elements.values()
 
@@ -224,8 +224,8 @@ class StatusIconSet(Sequence[StatusIcon], Mapping[str, StatusIcon]):
 
             if self.commands.on_change:
                 self.commands.on_change()
-        except KeyError:
-            raise ValueError("Not a known status icon.")
+        except KeyError as exc:
+            raise ValueError("Not a known status icon.") from exc
 
     def clear(self):
         """Remove all the icons from the set.

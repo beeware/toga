@@ -1,11 +1,12 @@
 from __future__ import annotations
 
 from collections.abc import Iterable, Mapping, Sequence
-from typing import Generic, TypeVar
+from typing import Any, Generic, TypeVar
 
 from .base import Source
 
 T = TypeVar("T")
+UNDEFINED = object()
 
 
 def _find_item(
@@ -112,7 +113,7 @@ class ListSource(Source):
             raise ValueError("accessors should be a list of attribute names")
 
         # Copy the list of accessors
-        self._accessors = [a for a in accessors]
+        self._accessors = list(accessors)
         if len(self._accessors) == 0:
             raise ValueError("ListSource must be provided a list of accessors")
 
@@ -130,7 +131,7 @@ class ListSource(Source):
         """Returns the number of items in the list."""
         return len(self._data)
 
-    def __getitem__(self, index: int) -> Row:
+    def __getitem__(self, index: int | slice) -> Row:
         """Returns the item at position ``index`` of the list."""
         return self._data[index]
 
@@ -218,7 +219,9 @@ class ListSource(Source):
         """
         return self._data.index(row)
 
-    def find(self, data: object, start: Row | None = None) -> Row:
+    def find(
+        self, data: object, start: Row | None = None, default: Any = UNDEFINED
+    ) -> Row:
         """Find the first item in the data that matches all the provided
         attributes.
 
@@ -233,13 +236,21 @@ class ListSource(Source):
             they won't be considered as part of the match.
         :param start: The instance from which to start the search. Defaults to ``None``,
             indicating that the first match should be returned.
-        :return: The matching Row object
-        :raises ValueError: If no match is found.
+        :param default: If provided, this value will be returned if no match is found.
+        :return: The matching Row object if found, or the value of ``default`` if
+            provided.
+        :raises ValueError: If no match is found and ``default`` is not provided.
         """
-        return _find_item(
-            candidates=self._data,
-            data=data,
-            accessors=self._accessors,
-            start=start,
-            error=f"No row matching {data!r} in data",
-        )
+        try:
+            return _find_item(
+                candidates=self._data,
+                data=data,
+                accessors=self._accessors,
+                start=start,
+                error=f"No row matching {data!r} in data",
+            )
+        except ValueError:
+            if default is UNDEFINED:
+                raise
+            else:
+                return default

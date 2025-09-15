@@ -19,8 +19,6 @@ def native_time(py_time):
 
 
 class TimeInput(Widget):
-    _background_supports_alpha = False
-
     def create(self):
         self.native = WinForms.DateTimePicker()
         self.native.ValueChanged += WeakrefCallable(self.winforms_value_changed)

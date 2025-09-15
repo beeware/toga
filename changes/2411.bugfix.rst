@@ -1,0 +1,1 @@
+Buttons and other interactive widgets in scroll containers now respond properly to touch events on iOS when scrolled into view.

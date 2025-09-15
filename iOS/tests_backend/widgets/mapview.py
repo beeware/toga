@@ -19,7 +19,8 @@ class MapViewProbe(SimpleProbe):
         # MKCoordinateRegion
         assert re.match(
             (
-                r"<MKCoordinateRegion\(<CLLocationCoordinate2D\(-?\d+\.\d{4}, -?\d+\.\d{4}\)>, "
+                r"<MKCoordinateRegion"
+                r"\(<CLLocationCoordinate2D\(-?\d+\.\d{4}, -?\d+\.\d{4}\)>, "
                 r"span=<MKCoordinateSpan\(-?\d+\.\d{4}, -?\d+\.\d{4}\)>\)>"
             ),
             repr(self.native.region),
@@ -60,7 +61,6 @@ class MapViewProbe(SimpleProbe):
         await self.redraw(f"{pin.title} pin has been selected")
 
     async def wait_for_map(self, message, max_delay=0.5):
-
         def region_eq(r1, r2):
             return (
                 pytest.approx(r1.span.latitudeDelta)

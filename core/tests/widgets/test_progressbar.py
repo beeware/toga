@@ -1,5 +1,3 @@
-import sys
-
 import pytest
 
 import toga
@@ -27,6 +25,30 @@ def test_progressbar_created(progressbar):
     assert progressbar.value == pytest.approx(0.0)
     assert progressbar.is_determinate
     assert not progressbar.is_running
+
+
+def test_progressbar_create_with_values():
+    """A progressbar can be created with initial values."""
+    progressbar = toga.ProgressBar(
+        id="foobar",
+        max=42.0,
+        value=37.0,
+        running=True,
+        # A style property
+        width=256,
+    )
+
+    # Round trip the impl/interface
+    assert progressbar._impl.interface == progressbar
+    assert_action_performed(progressbar, "create ProgressBar")
+
+    # Assert the state of the progress bar.
+    assert progressbar.id == "foobar"
+    assert progressbar.max == pytest.approx(42.0)
+    assert progressbar.value == pytest.approx(37.0)
+    assert progressbar.is_determinate
+    assert progressbar.is_running
+    assert progressbar.style.width == 256
 
 
 @pytest.mark.parametrize(
@@ -103,11 +125,7 @@ def test_set_max(progressbar, value, actual, determinate):
         (
             object(),
             TypeError,
-            (
-                r"must be a string or a number"
-                if sys.version_info < (3, 10)
-                else r"must be a string or a real number"
-            ),
+            r"must be a string or a real number",
         ),  # Non-coercible to float
         (
             -42,

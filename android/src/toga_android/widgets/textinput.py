@@ -6,6 +6,7 @@ from android.widget import EditText
 from java import dynamic_proxy
 
 from toga_android.keys import toga_key
+from toga_android.widgets.base import ContainedWidget
 
 from .label import TextViewWidget
 
@@ -55,7 +56,7 @@ class TogaFocusListener(dynamic_proxy(View.OnFocusChangeListener)):
             self.impl._on_lose_focus()
 
 
-class TextInput(TextViewWidget):
+class TextInput(ContainedWidget, TextViewWidget):
     def create(self, input_type=InputType.TYPE_CLASS_TEXT):
         self.native = EditText(self._native_activity)
         self.native.setInputType(input_type)
@@ -98,7 +99,7 @@ class TextInput(TextViewWidget):
     def set_placeholder(self, value):
         self.native.setHint(value)
 
-    def set_alignment(self, value):
+    def set_text_align(self, value):
         self.set_textview_alignment(value, Gravity.CENTER_VERTICAL)
 
     def set_error(self, error_message):

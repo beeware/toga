@@ -1,0 +1,83 @@
+[build-system]
+requires = [
+    "setuptools==80.9.0",
+    "setuptools_scm==9.2.0",
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+dynamic = ["version"]
+name = "travertino"
+description = "A set of constants and base classes for describing user interface layouts."
+readme = "README.rst"
+requires-python = ">= 3.10"
+license = "BSD-3-Clause"
+license-files = [
+    "LICENSE"
+]
+authors = [
+    {name="Russell Keith-Magee", email="russell@keith-magee.com"},
+]
+maintainers = [
+    {name="BeeWare Team", email="team@beeware.org"},
+]
+keywords = [
+    "css",
+    "box model",
+    "layout",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: Software Development",
+    "Topic :: Software Development :: User Interfaces",
+]
+
+[project.urls]
+Homepage = "https://beeware.org/travertino"
+Funding = "https://beeware.org/contributing/membership/"
+# Documentation = "https://travertino.readthedocs.io/en/latest/"
+Tracker = "https://github.com/beeware/travertino/issues"
+Source = "https://github.com/beeware/travertino"
+
+[tool.setuptools_scm]
+root = ".."
+
+[tool.coverage.run]
+parallel = true
+branch = true
+relative_files = true
+omit = ["test_compat.py"]
+
+# See notes in the root pyproject.toml file.
+source = ["src"]
+source_pkgs = ["travertino"]
+
+[tool.coverage.paths]
+source = [
+    "src/travertino",
+    "**/travertino",
+]
+
+[tool.pytest.ini_options]
+asyncio_default_fixture_loop_scope = "function"
+# Excludes collecting tests in compat
+norecursedirs = "compat"
+
+[tool.ruff]
+extend = "../pyproject.toml"
+
+[tool.ruff.lint.isort]
+known-third-party = [
+]
+known-first-party = [
+    "travertino"
+]

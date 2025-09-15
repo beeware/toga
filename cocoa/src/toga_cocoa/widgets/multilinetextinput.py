@@ -45,6 +45,8 @@ class MultilineTextInput(Widget):
         self.native_text.verticallyResizable = True
         self.native_text.horizontallyResizable = False
         self.native_text.usesAdaptiveColorMappingForDarkAppearance = True
+        self.native_text.setAutomaticQuoteSubstitutionEnabled(False)
+        self.native_text.setAutomaticDashSubstitutionEnabled(False)
 
         self.native_text.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable
 
@@ -95,7 +97,7 @@ class MultilineTextInput(Widget):
             self.native_text.drawsBackground = True
             self.native_text.backgroundColor = native_color(color)
 
-    def set_alignment(self, value):
+    def set_text_align(self, value):
         self.native_text.alignment = NSTextAlignment(value)
 
     def set_font(self, font):

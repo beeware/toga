@@ -95,16 +95,20 @@ def test_create_with_values(source, on_select_handler, on_activate_handler):
     """A Tree can be created with initial values."""
     tree = toga.Tree(
         ["First", "Second"],
+        id="foobar",
         data=source,
         accessors=["primus", "secondus"],
         multiple_select=True,
         on_select=on_select_handler,
         on_activate=on_activate_handler,
         missing_value="Boo!",
+        # A style property
+        width=256,
     )
     assert tree._impl.interface == tree
     assert_action_performed(tree, "create Tree")
 
+    assert tree.id == "foobar"
     assert len(tree.data) == 2
     assert tree.headings == ["First", "Second"]
     assert tree.accessors == ["primus", "secondus"]
@@ -112,6 +116,7 @@ def test_create_with_values(source, on_select_handler, on_activate_handler):
     assert tree.missing_value == "Boo!"
     assert tree.on_select._raw == on_select_handler
     assert tree.on_activate._raw == on_activate_handler
+    assert tree.style.width == 256
 
 
 def test_create_with_accessor_overrides():
@@ -567,40 +572,3 @@ def test_remove_column_no_headings(tree):
     )
     assert tree.headings is None
     assert tree.accessors == ["primus"]
-
-
-def test_deprecated_names(on_activate_handler):
-    """Deprecated names still work."""
-
-    # Can't specify both on_double_click and on_activate
-    with pytest.raises(
-        ValueError,
-        match=r"Cannot specify both on_double_click and on_activate",
-    ):
-        toga.Tree(["First", "Second"], on_double_click=Mock(), on_activate=Mock())
-
-    # on_double_click is redirected at construction
-    with pytest.warns(
-        DeprecationWarning,
-        match="Tree.on_double_click has been renamed Tree.on_activate",
-    ):
-        tree = toga.Tree(["First", "Second"], on_double_click=on_activate_handler)
-
-    # on_double_click accessor is redirected to on_activate
-    with pytest.warns(
-        DeprecationWarning,
-        match="Tree.on_double_click has been renamed Tree.on_activate",
-    ):
-        assert tree.on_double_click._raw == on_activate_handler
-
-    assert tree.on_activate._raw == on_activate_handler
-
-    # on_double_click mutator is redirected to on_activate
-    new_handler = Mock()
-    with pytest.warns(
-        DeprecationWarning,
-        match="Tree.on_double_click has been renamed Tree.on_activate",
-    ):
-        tree.on_double_click = new_handler
-
-    assert tree.on_activate._raw == new_handler

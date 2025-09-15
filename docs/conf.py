@@ -11,8 +11,25 @@
 # serve to show the default.
 
 import os
-import sys
 from importlib.metadata import version as metadata_version
+
+import beeware_theme
+
+# BeeWare theme override for Furo Sphinx theme to add BeeWare features.
+templates_path = []
+html_static_path = []
+html_css_files = []
+html_context = {}
+html_theme_options = {}
+
+beeware_theme.init(
+    project_name="toga",
+    templates=templates_path,
+    context=html_context,
+    static=html_static_path,
+    css=html_css_files,
+    theme_options=html_theme_options,
+)
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -35,9 +52,8 @@ extensions = [
     "sphinx_toolbox.more_autodoc.autonamedtuple",
     "sphinx_toolbox.more_autodoc.autoprotocol",
     "sphinx.ext.intersphinx",
+    "sphinxcontrib.spelling",
 ]
-# Add any paths that contain templates here, relative to this directory.
-templates_path = ["_templates"]
 
 # The suffix of source filenames.
 source_suffix = ".rst"
@@ -148,7 +164,7 @@ def autodoc_process_signature(
         bases = [
             base
             for base in obj.__bases__
-            if (base != object) and not base.__module__.startswith("travertino.")
+            if base is not object and not base.__module__.startswith("travertino.")
         ]
         if bases:
             options.show_inheritance = True
@@ -159,9 +175,10 @@ def autodoc_process_signature(
 linkcheck_ignore = [
     # GitHub generates anchors in javascript
     r"https://github.com/.*#",
-    # References to Github issues/pulls should all be safe.
+    # References to GitHub issues/pulls should all be safe.
     r"^https://github.com/beeware/toga/issues/\d+$",
     r"^https://github.com/beeware/toga/pull/\d+$",
+    r"^https://superuser.com/questions/",
 ]
 
 # -- Options for copy button ---------------------------------------------------
@@ -202,7 +219,9 @@ copybutton_copy_empty_lines = False
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
-# html_theme_options = {}
+# html_theme_options = {
+#     "project_baseurl": "https://github.com/beeware/toga",
+# }
 
 # Add any paths that contain custom themes here, relative to this directory.
 # html_theme_path = []
@@ -222,11 +241,6 @@ html_logo = "images/toga.png"
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
 # pixels large.
 # html_favicon = None
-
-# Add any paths that contain custom static files (such as style sheets) here,
-# relative to this directory. They are copied after the builtin static files,
-# so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ["_static"]
 
 # If not '', a 'Last updated on:' timestamp is inserted at every page bottom,
 # using the given strftime format.
@@ -273,10 +287,6 @@ html_static_path = ["_static"]
 htmlhelp_basename = "togadoc"
 
 html_theme = "furo"
-
-html_css_files = [
-    "custom.css",
-]
 
 html_extra_path = ["extra"]
 
@@ -358,8 +368,6 @@ texinfo_documents = [
 
 # Spelling check needs an additional module that is not installed by default.
 # Add it only if spelling check is requested so docs can be generated without it.
-if "spelling" in sys.argv:
-    extensions.append("sphinxcontrib.spelling")
 
 # Spelling language.
 spelling_lang = "en_US"
@@ -369,11 +377,13 @@ spelling_word_list_filename = "spelling_wordlist"
 
 # -- Options for Todos -------------------------------------------
 
-# If this is True, todo and todolist produce output, else they produce nothing. The default is False.
+# If this is True, todo and todolist produce output, else they produce nothing.
+# The default is False.
 todo_include_todos = True
 
 # If this is True, todo emits a warning for each TODO entries. The default is False.
 # todo_emit_warnings = False
 
-# If this is True, todolist produce output without file path and line, The default is False.
+# If this is True, todolist produce output without file path and line,
+# The default is False.
 # todo_link_only = False

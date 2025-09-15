@@ -1,17 +1,32 @@
 from toga.colors import TRANSPARENT
 from toga.fonts import SYSTEM_DEFAULT_FONT_SIZE
 
-TOGA_DEFAULT_STYLES = b"""
-.toga-detailed-list-floating-buttons {
-    min-width: 24px;
-    min-height: 24px;
-    color: white;
-    background: #000000;
-    border-style: none;
-    border-radius: 0;
-    opacity: 0.60;
-}
-"""
+from ..libs import GTK_VERSION
+
+if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+    TOGA_DEFAULT_STYLES = b"""
+    .toga-detailed-list-floating-buttons {
+        min-width: 24px;
+        min-height: 24px;
+        color: white;
+        background: #000000;
+        border-style: none;
+        border-radius: 0;
+        opacity: 0.60;
+    }
+    """
+else:  # pragma: no-cover-if-gtk3
+    TOGA_DEFAULT_STYLES = """
+    .toga-detailed-list-floating-buttons {
+        min-width: 24px;
+        min-height: 24px;
+        color: white;
+        background: #000000;
+        border-style: none;
+        border-radius: 0;
+        opacity: 0.60;
+    }
+    """
 
 
 def get_color_css(value):

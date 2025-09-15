@@ -16,9 +16,12 @@ Building Toga's documentation
 
 .. Docs are always built on Python 3.12. See also the RTD and tox config.
 
-To build Toga's documentation, start by :ref:`setting up a development environment
-<setup-dev-environment>`.You **must** have a Python 3.12 interpreter installed and
-available on your path (i.e., ``python3.12`` must start a Python 3.12 interpreter).
+To build Toga's documentation, start by ensuring you :ref:`have the prerequisites
+<dev-environment-prereqs>`, and then :ref:`set up a development environment
+<dev-environment-tldr>` (or, for a more detailed explanation of dev environment setup,
+:ref:`start here <setup-dev-environment>`).You **must** have a Python 3.12 interpreter
+installed and available on your path (i.e., ``python3.12`` must start a Python 3.12
+interpreter).
 
 You'll also need to install the Enchant spell checking library.
 
@@ -32,8 +35,8 @@ You'll also need to install the Enchant spell checking library.
 
       (venv) $ brew install enchant
 
-    If you're on an M1 machine, you'll also need to manually set the location
-    of the Enchant library:
+    If you're on an Apple Silicon machine (M-series), you'll also need to manually set
+    the location of the Enchant library:
 
     .. code-block:: console
 
@@ -188,6 +191,7 @@ additional "lint" checks. To run the lint checks:
 
 This will validate the documentation does not contain:
 
+* invalid syntax and markup
 * dead hyperlinks
 * misspelled words
 

@@ -46,6 +46,25 @@ virtual environment, open a fresh terminal session, and run:
 
 Your prompt should now have a ``(venv)`` prefix in front of it.
 
+In addition, make sure that you have the platform-specific dependencies for your platform:
+
+.. tabs::
+
+  .. group-tab:: macOS
+
+    No additional dependencies are necessary.
+
+  .. group-tab:: Linux
+
+    Before you install Toga, you'll need to install some system packages.
+
+    .. include:: /reference/platforms/unix-prerequisites.rst
+
+  .. group-tab:: Windows
+
+    Confirm that your system meets the :ref:`Windows prerequisites
+    <windows-prerequisites>`.
+
 Next, install Toga into your virtual environment:
 
 .. tabs::
@@ -58,12 +77,6 @@ Next, install Toga into your virtual environment:
 
   .. group-tab:: Linux
 
-    Before you install Toga, you'll need to install some system packages.
-
-    .. include:: /reference/platforms/unix-prerequisites.rst
-
-    Then, install Toga:
-
     .. code-block:: console
 
       (venv) $ python -m pip install toga
@@ -72,9 +85,6 @@ Next, install Toga into your virtual environment:
     all the platform prerequisites.
 
   .. group-tab:: Windows
-
-    Confirm that your system meets the :ref:`Windows prerequisites
-    <windows-prerequisites>`; then run:
 
     .. code-block:: doscon
 
@@ -119,7 +129,7 @@ fill the entire app window, we can't just put the button into the app window.
 Instead, we need create a box, and put the button in the box.
 
 A box is an object that can be used to hold multiple widgets, and to
-define padding around widgets. So, we define a box::
+define a margin around widgets. So, we define a box::
 
         box = toga.Box()
 
@@ -133,20 +143,20 @@ Now we have to define how the button will appear in the window. By default,
 Toga uses a style algorithm called ``Pack``, which is a bit like "CSS-lite".
 We can set style properties of the button::
 
-        button.style.padding = 50
+        button.style.margin = 50
 
-What we've done here is say that the button will have a padding of 50 pixels
-on all sides. If we wanted to define padding of 20 pixels on top of the
-button, we could have defined ``padding_top = 20``, or we could have specified
-the ``padding = (20, 50, 50, 50)``.
+What we've done here is say that the button will have a margin of 50 pixels
+on all sides. If we wanted to define a margin of 20 pixels on top of the
+button, we could have defined ``margin_top = 20``, or we could have specified
+the ``margin = (20, 50, 50, 50)``.
 
 Now we will make the button take up all the available width::
 
        button.style.flex = 1
 
-The ``flex`` attribute specifies how an element is sized with respect to other
-elements along its direction. The default direction is row (horizontal) and
-since the button is the only element here, it will take up the whole width.
+The ``flex`` attribute specifies how a widget is sized with respect to other
+widgets along its direction. The default direction is row (horizontal) and
+since the button is the only widget here, it will take up the whole width.
 Check out `style docs
 <https://toga.readthedocs.io/en/latest/reference/style/pack.html#flex>`_ for
 more information on how to use the ``flex`` attribute.

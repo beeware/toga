@@ -9,7 +9,7 @@ from .base import StyleT, Widget
 
 
 class OnChangeHandler(Protocol):
-    def __call__(self, widget: Switch, /, **kwargs: Any) -> object:
+    def __call__(self, widget: Switch, **kwargs: Any) -> None:
         """A handler to invoke when the value is changed.
 
         :param widget: The Switch that was changed.
@@ -26,6 +26,7 @@ class Switch(Widget):
         on_change: toga.widgets.switch.OnChangeHandler | None = None,
         value: bool = False,
         enabled: bool = True,
+        **kwargs,
     ):
         """Create a new Switch widget.
 
@@ -38,21 +39,23 @@ class Switch(Widget):
             value.
         :param enabled: Is the switch enabled (i.e., can it be pressed?).
             Optional; by default, switches are created in an enabled state.
+        :param kwargs: Initial style properties.
         """
-        super().__init__(id=id, style=style)
-
-        self._impl = self.factory.Switch(interface=self)
+        super().__init__(id, style, **kwargs)
 
         self.text = text
 
-        # Set a dummy handler before installing the actual on_change, because we do not want
-        # on_change triggered by the initial value being set
+        # Set a dummy handler before installing the actual on_change, because we do not
+        # want on_change triggered by the initial value being set
         self.on_change = None
         self.value = value
 
         self.on_change = on_change
 
         self.enabled = enabled
+
+    def _create(self) -> Any:
+        return self.factory.Switch(interface=self)
 
     @property
     def text(self) -> str:
@@ -69,7 +72,7 @@ class Switch(Widget):
 
     @text.setter
     def text(self, value: object) -> None:
-        if value is None or value == "\u200B":
+        if value is None or value == "\u200b":
             value = ""
         else:
             # Switch text can't include line breaks. Strip any content

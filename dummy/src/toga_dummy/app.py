@@ -94,6 +94,13 @@ class App(LoggedObject):
         self._action("set_icon", icon=icon)
 
     ######################################################################
+    # App state
+    ######################################################################
+
+    def get_dark_mode_state(self):
+        return True
+
+    ######################################################################
     # App capabilities
     ######################################################################
 
@@ -126,18 +133,17 @@ class App(LoggedObject):
         return self._get_value("current_window", main_window)
 
     def set_current_window(self, window):
+        try:
+            previous_current_window = self.get_current_window().interface
+        except AttributeError:
+            previous_current_window = None
+
         self._action("set_current_window", window=window)
         self._set_value("current_window", window._impl)
 
-    ######################################################################
-    # Full screen control
-    ######################################################################
-
-    def enter_full_screen(self, windows):
-        self._action("enter_full_screen", windows=windows)
-
-    def exit_full_screen(self, windows):
-        self._action("exit_full_screen", windows=windows)
+        if previous_current_window and previous_current_window != window:
+            previous_current_window.on_lose_focus()
+            window.on_gain_focus()
 
 
 class DocumentApp(App):

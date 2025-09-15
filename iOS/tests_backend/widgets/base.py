@@ -63,8 +63,8 @@ class SimpleProbe(BaseProbe, FontMixin):
         assert self.widget._impl.container is None
         assert self.native.superview() is None
 
-    def assert_alignment(self, expected):
-        assert self.alignment == expected
+    def assert_text_align(self, expected):
+        assert self.text_align == expected
 
     async def redraw(self, message=None, delay=0):
         """Request a redraw of the app, waiting until that redraw has completed."""
@@ -121,14 +121,14 @@ class SimpleProbe(BaseProbe, FontMixin):
         ) == position
 
     def assert_width(self, min_width, max_width):
-        assert (
-            min_width <= self.width <= max_width
-        ), f"Width ({self.width}) not in range ({min_width}, {max_width})"
+        assert min_width <= self.width <= max_width, (
+            f"Width ({self.width}) not in range ({min_width}, {max_width})"
+        )
 
     def assert_height(self, min_height, max_height):
-        assert (
-            min_height <= self.height <= max_height
-        ), f"Height ({self.height}) not in range ({min_height}, {max_height})"
+        assert min_height <= self.height <= max_height, (
+            f"Height ({self.height}) not in range ({min_height}, {max_height})"
+        )
 
     @property
     def background_color(self):

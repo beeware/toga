@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
 
 class OnPressHandler(Protocol):
-    def __call__(self, widget: Button, /, **kwargs: Any) -> object:
+    def __call__(self, widget: Button, **kwargs: Any) -> None:
         """A handler that will be invoked when a button is pressed.
 
         :param widget: The button that was pressed.
@@ -29,6 +29,7 @@ class Button(Widget):
         style: StyleT | None = None,
         on_press: toga.widgets.button.OnPressHandler | None = None,
         enabled: bool = True,
+        **kwargs,
     ):
         """Create a new button widget.
 
@@ -41,14 +42,12 @@ class Button(Widget):
         :param on_press: A handler that will be invoked when the button is pressed.
         :param enabled: Is the button enabled (i.e., can it be pressed?). Optional; by
             default, buttons are created in an enabled state.
+        :param kwargs: Initial style properties.
         """
-        super().__init__(id=id, style=style)
+        super().__init__(id, style, **kwargs)
 
-        # Create a platform specific implementation of a Button
-        self._impl = self.factory.Button(interface=self)
-
-        # Set a dummy handler before installing the actual on_press, because we do not want
-        # on_press triggered by the initial value being set
+        # Set a dummy handler before installing the actual on_press, because we do not
+        # want on_press triggered by the initial value being set
         self.on_press = None
 
         # Set the content of the button - either an icon, or text, but not both.
@@ -62,6 +61,9 @@ class Button(Widget):
 
         self.on_press = on_press
         self.enabled = enabled
+
+    def _create(self) -> Any:
+        return self.factory.Button(interface=self)
 
     @property
     def text(self) -> str:
@@ -85,7 +87,7 @@ class Button(Widget):
     @text.setter
     def text(self, value: str | None) -> None:
         # \u200B: zero-width space
-        if value is None or value == "\u200B":
+        if value is None or value == "\u200b":
             value = ""
         else:
             # Button text can't include line breaks. Strip any content

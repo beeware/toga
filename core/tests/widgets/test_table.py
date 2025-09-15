@@ -63,16 +63,20 @@ def test_create_with_values(source, on_select_handler, on_activate_handler):
     """A Table can be created with initial values."""
     table = toga.Table(
         ["First", "Second"],
+        id="foobar",
         data=source,
         accessors=["primus", "secondus"],
         multiple_select=True,
         on_select=on_select_handler,
         on_activate=on_activate_handler,
         missing_value="Boo!",
+        # A style property
+        width=256,
     )
     assert table._impl.interface == table
     assert_action_performed(table, "create Table")
 
+    assert table.id == "foobar"
     assert len(table.data) == 3
     assert table.headings == ["First", "Second"]
     assert table.accessors == ["primus", "secondus"]
@@ -80,6 +84,7 @@ def test_create_with_values(source, on_select_handler, on_activate_handler):
     assert table.missing_value == "Boo!"
     assert table.on_select._raw == on_select_handler
     assert table.on_activate._raw == on_activate_handler
+    assert table.style.width == 256
 
 
 def test_create_with_accessor_overrides():
@@ -537,53 +542,3 @@ def test_remove_column_no_headings(table):
     )
     assert table.headings is None
     assert table.accessors == ["primus"]
-
-
-def test_deprecated_names(on_activate_handler):
-    """Deprecated names still work."""
-
-    # Can't specify both on_double_click and on_activate
-    with pytest.raises(
-        ValueError,
-        match=r"Cannot specify both on_double_click and on_activate",
-    ):
-        toga.Table(["First", "Second"], on_double_click=Mock(), on_activate=Mock())
-
-    # on_double_click is redirected at construction
-    with pytest.warns(
-        DeprecationWarning,
-        match="Table.on_double_click has been renamed Table.on_activate",
-    ):
-        table = toga.Table(["First", "Second"], on_double_click=on_activate_handler)
-
-    # on_double_click accessor is redirected to on_activate
-    with pytest.warns(
-        DeprecationWarning,
-        match="Table.on_double_click has been renamed Table.on_activate",
-    ):
-        assert table.on_double_click._raw == on_activate_handler
-
-    assert table.on_activate._raw == on_activate_handler
-
-    # on_double_click mutator is redirected to on_activate
-    new_handler = Mock()
-    with pytest.warns(
-        DeprecationWarning,
-        match="Table.on_double_click has been renamed Table.on_activate",
-    ):
-        table.on_double_click = new_handler
-
-    assert table.on_activate._raw == new_handler
-
-    # add_column redirects to insert
-    table.add_column("New Column", "new_accessor")
-
-    assert_action_performed_with(
-        table,
-        "insert column",
-        index=2,
-        heading="New Column",
-        accessor="new_accessor",
-    )
-    assert table.headings == ["First", "Second", "New Column"]
-    assert table.accessors == ["first", "second", "new_accessor"]

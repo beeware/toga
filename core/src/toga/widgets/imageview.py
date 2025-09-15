@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING, Any, Literal
 
 from travertino.size import at_least
 
@@ -73,21 +73,26 @@ class ImageView(Widget):
         image: ImageContentT | None = None,
         id: str | None = None,
         style: StyleT | None = None,
+        **kwargs,
     ):
-        """
-        Create a new image view.
+        """Create a new image view.
 
         :param image: The image to display. Can be any valid :any:`image content
             <ImageContentT>` type; or :any:`None` to display no image.
         :param id: The ID for the widget.
         :param style: A style object. If no style is provided, a default style will be
             applied to the widget.
+        :param kwargs: Initial style properties.
         """
-        super().__init__(id=id, style=style)
         # Prime the image attribute
         self._image = None
-        self._impl = self.factory.ImageView(interface=self)
+
+        super().__init__(id, style, **kwargs)
+
         self.image = image
+
+    def _create(self) -> Any:
+        return self.factory.ImageView(interface=self)
 
     @property
     def enabled(self) -> Literal[True]:

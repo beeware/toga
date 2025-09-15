@@ -20,7 +20,8 @@ class ExampleDocument(toga.Document):
             # If the object has a "read_error" attribute, raise that exception
             raise self.read_error
         else:
-            # We don't actually care about the file or it's contents, but it needs to exist;
+            # We don't actually care about the file or it's contents,
+            # but it needs to exist;
             # so we open it to verify that behavior.
             with self.path.open():
                 self._mock_read(self.path)
@@ -94,8 +95,8 @@ def test_create_explicit(app):
     # Document reference is preserved
     assert window.doc == doc
 
-    window_content.window == window
-    window_content.app == app
+    assert window_content.window == window
+    assert window_content.app == app
 
     assert window._impl.interface == window
     assert_action_performed(window, "create MainWindow")

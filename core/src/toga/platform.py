@@ -3,16 +3,9 @@ from __future__ import annotations
 import importlib
 import os
 import sys
-from functools import lru_cache
+from functools import cache
+from importlib.metadata import entry_points
 from types import ModuleType
-
-if sys.version_info >= (3, 10):  # pragma: no-cover-if-lt-py310
-    from importlib.metadata import entry_points
-else:  # pragma: no-cover-if-gte-py310
-    # Before Python 3.10, entry_points did not support the group argument;
-    # so, the backport package must be used on older versions.
-    from importlib_metadata import entry_points
-
 
 # Map python sys.platform with toga platforms names
 _TOGA_PLATFORMS = {
@@ -51,7 +44,7 @@ def find_backends():
     return sorted(set(entry_points(group="toga.backends")))
 
 
-@lru_cache(maxsize=1)
+@cache
 def get_platform_factory() -> ModuleType:
     """Determine the current host platform and import the platform factory.
 
@@ -65,7 +58,7 @@ def get_platform_factory() -> ModuleType:
     if backend_value := os.environ.get("TOGA_BACKEND"):
         try:
             factory = importlib.import_module(f"{backend_value}.factory")
-        except ModuleNotFoundError as e:
+        except ModuleNotFoundError as exc:
             toga_backends_values = ", ".join(
                 [f"{backend.value!r}" for backend in find_backends()]
             )
@@ -75,8 +68,9 @@ def get_platform_factory() -> ModuleType:
             # ModuleNotFoundError from one of its internal imports.
             raise RuntimeError(
                 f"The backend specified by TOGA_BACKEND ({backend_value!r}) could "
-                f"not be loaded ({e}). It should be one of: {toga_backends_values}."
-            )
+                f"not be loaded ({exc}). It should be one of: {toga_backends_values}."
+            ) from exc
+
     else:
         toga_backends = find_backends()
         if len(toga_backends) == 0:
@@ -84,7 +78,8 @@ def get_platform_factory() -> ModuleType:
         elif len(toga_backends) == 1:
             backend = toga_backends[0]
         else:
-            # multiple backends are installed: choose the one that matches the host platform
+            # multiple backends are installed: choose the one that
+            # matches the host platform
             matching_backends = [
                 backend for backend in toga_backends if backend.name == current_platform
             ]
@@ -94,9 +89,10 @@ def get_platform_factory() -> ModuleType:
                 )
                 raise RuntimeError(
                     f"Multiple Toga backends are installed ({toga_backends_string}), "
-                    f"but none of them match your current platform ({current_platform!r}). "
-                    "Install a backend for your current platform, or use "
-                    "TOGA_BACKEND to specify a backend."
+                    f"but none of them match your current platform "
+                    f"({current_platform!r}). "
+                    f"Install a backend for your current platform, or use "
+                    f"TOGA_BACKEND to specify a backend."
                 )
             if len(matching_backends) > 1:
                 toga_backends_string = ", ".join(
@@ -106,9 +102,10 @@ def get_platform_factory() -> ModuleType:
                     ]
                 )
                 raise RuntimeError(
-                    f"Multiple candidate toga backends found: ({toga_backends_string}). "
-                    "Uninstall the backends you don't require, or use "
-                    "TOGA_BACKEND to specify a backend."
+                    f"Multiple candidate toga backends found: "
+                    f"({toga_backends_string}). "
+                    f"Uninstall the backends you don't require, or use "
+                    f"TOGA_BACKEND to specify a backend."
                 )
             backend = matching_backends[0]
         factory = importlib.import_module(f"{backend.value}.factory")

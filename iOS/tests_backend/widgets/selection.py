@@ -5,7 +5,7 @@ from pytest import xfail
 from toga_iOS.libs import UIPickerView, UITextField
 
 from .base import SimpleProbe
-from .properties import toga_alignment, toga_color
+from .properties import toga_color, toga_text_align
 
 
 class SelectionProbe(SimpleProbe):
@@ -20,11 +20,11 @@ class SelectionProbe(SimpleProbe):
         xfail("Selection doesn't resize on content changes")
 
     @property
-    def alignment(self):
-        return toga_alignment(self.native.textAlignment)
+    def text_align(self):
+        return toga_text_align(self.native.textAlignment)
 
-    def assert_vertical_alignment(self, expected):
-        # Vertical alignment isn't configurable on UITextField
+    def assert_vertical_text_align(self, expected):
+        # Vertical text alignment isn't configurable on UITextField
         pass
 
     @property
@@ -45,7 +45,7 @@ class SelectionProbe(SimpleProbe):
                     forComponent=0,
                 )
             )
-            for index in range(0, count)
+            for index in range(count)
         ]
         # iOS can't show a completely empty selection
         # For test normalization, convert the "empty" selection to []

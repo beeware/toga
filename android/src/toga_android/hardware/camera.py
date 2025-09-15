@@ -3,7 +3,7 @@ from pathlib import Path
 
 from android.content import Context, Intent
 from android.content.pm import PackageManager
-from android.hardware.camera2 import CameraCharacteristics
+from android.hardware.camera2 import CameraCharacteristics, CameraMetadata
 from android.provider import MediaStore
 from androidx.core.content import FileProvider
 from java.io import File
@@ -20,7 +20,15 @@ class CameraDevice:
         return self._id
 
     def name(self):
-        return f"Camera {self._id}"
+        characteristics = self._manager.getCameraCharacteristics(self._id)
+        facing = {
+            CameraMetadata.LENS_FACING_FRONT: "Front",
+            CameraMetadata.LENS_FACING_BACK: "Back",
+            CameraMetadata.LENS_FACING_EXTERNAL: "External",
+            None: "Unknown",
+        }[characteristics.get(CameraCharacteristics.LENS_FACING)]
+
+        return f"Camera {self._id} ({facing})"
 
     def has_flash(self):
         characteristics = self._manager.getCameraCharacteristics(self._id)
@@ -77,7 +85,10 @@ class Camera:
 
     def take_photo(self, result, device, flash):
         if not self.has_camera:
-            warnings.warn("No camera is available")
+            warnings.warn(
+                "No camera is available",
+                stacklevel=2,
+            )
             result.set_result(None)
         elif self.has_permission():
             # We have permission; go directly to taking the photo.

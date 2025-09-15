@@ -72,13 +72,18 @@ class Container(BaseContainer):
 
         self.layout_native = self.native if layout_native is None else layout_native
 
+    def __del__(self):
+        # Mark the contained native object as explicitly None so that the
+        # constraints know the object has been deleted.
+        self.native = None
+
     @property
     def width(self):
         return self.layout_native.bounds.size.width
 
     @property
     def height(self):
-        return self.layout_native.bounds.size.height
+        return self.layout_native.bounds.size.height - self.top_offset
 
     @property
     def top_offset(self):
@@ -148,11 +153,6 @@ class RootContainer(Container):
 
         # Set the controller's view to be the root content widget
         self.controller.view = self.native
-
-    # The testbed app won't instantiate a simple app, so we can't test these properties
-    @property
-    def height(self):  # pragma: no cover
-        return self.layout_native.bounds.size.height - self.top_offset
 
     # The testbed app won't instantiate a simple app, so we can't test these properties
     @property

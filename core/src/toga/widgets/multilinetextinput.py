@@ -9,7 +9,7 @@ from .base import StyleT, Widget
 
 
 class OnChangeHandler(Protocol):
-    def __call__(self, widget: MultilineTextInput, /, **kwargs: Any) -> object:
+    def __call__(self, widget: MultilineTextInput, **kwargs: Any) -> None:
         """A handler to invoke when the value is changed.
 
         :param widget: The MultilineTextInput that was changed.
@@ -26,6 +26,7 @@ class MultilineTextInput(Widget):
         readonly: bool = False,
         placeholder: str | None = None,
         on_change: toga.widgets.multilinetextinput.OnChangeHandler | None = None,
+        **kwargs,
     ):
         """Create a new multi-line text input widget.
 
@@ -38,15 +39,12 @@ class MultilineTextInput(Widget):
             there is no user content to display.
         :param on_change: A handler that will be invoked when the value of
             the widget changes.
+        :param kwargs: Initial style properties.
         """
+        super().__init__(id, style, **kwargs)
 
-        super().__init__(id=id, style=style)
-
-        # Create a platform specific implementation of a MultilineTextInput
-        self._impl = self.factory.MultilineTextInput(interface=self)
-
-        # Set a dummy handler before installing the actual on_change, because we do not want
-        # on_change triggered by the initial value being set
+        # Set a dummy handler before installing the actual on_change, because we do not
+        # want on_change triggered by the initial value being set
         self.on_change = None
         self.value = value
 
@@ -54,6 +52,9 @@ class MultilineTextInput(Widget):
         self.readonly = readonly
         self.placeholder = placeholder
         self.on_change = on_change
+
+    def _create(self) -> Any:
+        return self.factory.MultilineTextInput(interface=self)
 
     @property
     def placeholder(self) -> str:

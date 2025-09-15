@@ -5,13 +5,16 @@ import pytest
 
 import toga
 import toga_gtk
-from toga_gtk.libs import GdkPixbuf
+from toga_gtk.libs import GTK_VERSION, GdkPixbuf
 
 from .probe import BaseProbe
 
 
 class IconProbe(BaseProbe):
     alternate_resource = "resources/icons/orange"
+
+    if GTK_VERSION >= (4, 0, 0):
+        pytest.skip("GTK4 doesn't support icons yet")
 
     def __init__(self, app, icon):
         super().__init__()
@@ -38,10 +41,10 @@ class IconProbe(BaseProbe):
             }
         elif path == "resources/icons/orange":
             # All icons match the single size .ico
-            assert self.icon._impl.paths == {
-                size: self.app.paths.app / "resources/icons/orange.ico"
-                for size in [16, 32, 64, 72, 128, 256, 512]
-            }
+            assert self.icon._impl.paths == dict.fromkeys(
+                [16, 32, 64, 72, 128, 256, 512],
+                self.app.paths.app / "resources/icons/orange.ico",
+            )
         else:
             pytest.fail("Unknown icon resource")
 

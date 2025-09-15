@@ -1,12 +1,12 @@
 from pathlib import Path
 
-from toga_textual.window import TitleBar
-
-import toga
 from textual.app import ComposeResult
 from textual.containers import Horizontal, Vertical, VerticalScroll
 from textual.screen import ModalScreen
 from textual.widgets import Button, DirectoryTree, Input, Label, Static
+
+import toga
+from toga_textual.window import TitleBar
 
 
 class TextualDialog(ModalScreen[bool]):
@@ -152,7 +152,8 @@ class StackTraceDialog(BaseDialog):
             ]
 
     def style_content(self, dialog):
-        # Textual apps must have a current window, so we can style relative to that window.
+        # Textual apps must have a current window, so we can style
+        # relative to that window.
         dialog.content.styles.margin = 1
         dialog.content.styles.height = toga.App.app.current_window.size[1] - 18
 
@@ -259,7 +260,8 @@ class SaveFileDialog(BaseDialog):
         ]
 
     def style_content(self, dialog):
-        # Textual apps must have a current window, so we can style relative to that window.
+        # Textual apps must have a current window, so we can style
+        # relative to that window.
         dialog.content.styles.margin = 1
         dialog.content.styles.height = toga.App.app.current_window.size[1] - 18
 
@@ -318,7 +320,8 @@ class OpenFileDialog(BaseDialog):
         ]
 
     def style_content(self, dialog):
-        # Textual apps must have a current window, so we can style relative to that window.
+        # Textual apps must have a current window, so we can style
+        # relative to that window.
         dialog.content.styles.margin = 1
         dialog.content.styles.height = toga.App.app.current_window.size[1] - 18
 
@@ -372,7 +375,8 @@ class SelectFolderDialog(BaseDialog):
         ]
 
     def style_content(self, dialog):
-        # Textual apps must have a current window, so we can style relative to that window.
+        # Textual apps must have a current window, so we can style
+        # relative to that window.
         dialog.content.styles.margin = 1
         dialog.content.styles.height = toga.App.app.current_window.size[1] - 19
 

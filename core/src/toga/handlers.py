@@ -6,51 +6,24 @@ import sys
 import traceback
 import warnings
 from abc import ABC
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Awaitable,
-    Callable,
-    Generator,
-    NoReturn,
-    Protocol,
-    TypeVar,
-    Union,
-)
+from collections.abc import Awaitable, Callable, Generator
+from typing import TYPE_CHECKING, Any, NoReturn, Protocol, TypeVar
 
 if TYPE_CHECKING:
-    if sys.version_info < (3, 10):
-        from typing_extensions import TypeAlias
-    else:
-        from typing import TypeAlias
+    from typing import TypeAlias
 
     T = TypeVar("T")
 
     GeneratorReturnT = TypeVar("GeneratorReturnT")
     HandlerGeneratorReturnT: TypeAlias = Generator[
-        Union[float, None], object, GeneratorReturnT
+        float | None, object, GeneratorReturnT
     ]
 
     HandlerSyncT: TypeAlias = Callable[..., object]
     HandlerAsyncT: TypeAlias = Callable[..., Awaitable[object]]
     HandlerGeneratorT: TypeAlias = Callable[..., HandlerGeneratorReturnT[object]]
-    HandlerT: TypeAlias = Union[HandlerSyncT, HandlerAsyncT, HandlerGeneratorT]
+    HandlerT: TypeAlias = HandlerSyncT | HandlerAsyncT | HandlerGeneratorT
     WrappedHandlerT: TypeAlias = Callable[..., object]
-
-
-def overridable(method: T) -> T:
-    """Decorate the method as being user-overridable"""
-    method._overridden = True
-    return method
-
-
-def overridden(coroutine_or_method: Callable) -> bool:
-    """Has the user overridden this method?
-
-    This is based on the method *not* having a ``_overridden`` attribute. Overridable
-    default methods have this attribute; user-defined method will not.
-    """
-    return not hasattr(coroutine_or_method, "_overridden")
 
 
 class NativeHandler:
@@ -63,7 +36,21 @@ async def long_running_task(
     generator: HandlerGeneratorReturnT[object],
     cleanup: HandlerSyncT | None,
 ) -> object | None:
-    """Run a generator as an asynchronous coroutine."""
+    """Run a generator as an asynchronous coroutine.
+
+    **DEPRECATED** - use async co-routines instead of generators.
+    """
+    ######################################################################
+    # 2025-02: Deprecated in 0.5.0
+    ######################################################################
+    warnings.warn(
+        (
+            "Use of generators for async handlers has been deprecated; convert "
+            "the handler to an async co-routine that uses `asyncio.sleep()`."
+        ),
+        DeprecationWarning,
+        stacklevel=2,
+    )
     try:
         try:
             while True:
@@ -209,9 +196,7 @@ def wrapped_handler(
 
 
 class OnResultT(Protocol):
-    def __call__(
-        self, result: Any, /, exception: Exception | None = None
-    ) -> object: ...
+    def __call__(self, result: Any, exception: Exception | None = None) -> object: ...
 
 
 class AsyncResult(ABC):
@@ -222,14 +207,17 @@ class AsyncResult(ABC):
         self.future = loop.create_future()
 
         ######################################################################
-        # 2023-12: Backwards compatibility
+        # 2023-12: Backwards compatibility for <= 0.4.0
         ######################################################################
         self.on_result: OnResultT | None
         if on_result:
             warnings.warn(
-                "Synchronous `on_result` handlers have been deprecated; "
-                "use `await` on the asynchronous result",
+                (
+                    "Synchronous `on_result` handlers have been deprecated; "
+                    "use `await` on the asynchronous result"
+                ),
                 DeprecationWarning,
+                stacklevel=2,
             )
 
             self.on_result = on_result
@@ -260,7 +248,8 @@ class AsyncResult(ABC):
     # All the comparison dunder methods are disabled
     def __bool__(self, other: object) -> NoReturn:
         raise RuntimeError(
-            f"Can't check {self.RESULT_TYPE} result directly; use await or an on_result handler"
+            f"Can't check {self.RESULT_TYPE} result directly; "
+            "use await or an on_result handler"
         )
 
     __lt__ = __bool__

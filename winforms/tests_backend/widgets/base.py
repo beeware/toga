@@ -1,26 +1,21 @@
 import pytest
 from pytest import approx
 from System import EventArgs, Object
-from System.Drawing import Color, SystemColors
+from System.Drawing import SystemColors
 from System.Windows.Forms import MouseButtons, MouseEventArgs
 
-from toga.colors import TRANSPARENT
 from toga.style.pack import JUSTIFY, LEFT
 
-from ..fonts import FontMixin
 from ..probe import BaseProbe
 from .properties import toga_color
 
 
-class SimpleProbe(BaseProbe, FontMixin):
-    fixed_height = None
-
+class SimpleProbe(BaseProbe):
     def __init__(self, widget):
-        super().__init__()
         self.app = widget.app
         self.widget = widget
         self.impl = widget._impl
-        self.native = self.impl.native
+        super().__init__(self.impl.native)
         assert isinstance(self.native, self.native_class)
 
     def assert_container(self, container):
@@ -35,9 +30,9 @@ class SimpleProbe(BaseProbe, FontMixin):
         assert self.widget._impl.container is None
         assert self.native.Parent is None
 
-    def assert_alignment(self, expected):
-        # Winforms doesn't have a "Justified" alignment; it falls back to LEFT
-        actual = self.alignment
+    def assert_text_align(self, expected):
+        # Winforms doesn't have a "Justified" text alignment; it falls back to LEFT
+        actual = self.text_align
         if expected == JUSTIFY:
             assert actual == LEFT
         else:
@@ -56,37 +51,20 @@ class SimpleProbe(BaseProbe, FontMixin):
 
     @property
     def background_color(self):
-        if self.native.BackColor == Color.Transparent:
-            return TRANSPARENT
-        else:
-            return toga_color(self.native.BackColor)
-
-    @property
-    def font(self):
-        return self.native.Font
+        return (
+            toga_color(self.native.BackColor),
+            toga_color(self.widget.parent._impl.native.BackColor),
+            (
+                # self.impl.interface.style.background_color can be None or TRANSPARENT
+                # and so there will be no alpha value on them. In such cases return 0
+                # as the original alpha value.
+                getattr(self.widget.style.background_color, "a", 0)
+            ),
+        )
 
     @property
     def hidden(self):
         return not self.native.Visible
-
-    @property
-    def width(self):
-        return round(self.native.Width / self.scale_factor)
-
-    @property
-    def height(self):
-        return round(self.native.Height / self.scale_factor)
-
-    def assert_width(self, min_width, max_width):
-        assert (
-            min_width <= self.width <= max_width
-        ), f"Width ({self.width}) not in range ({min_width}, {max_width})"
-
-    def assert_height(self, min_height, max_height):
-        if self.fixed_height is not None:
-            assert self.height == approx(self.fixed_height, rel=0.1)
-        else:
-            assert min_height <= self.height <= max_height
 
     @property
     def shrink_on_resize(self):
@@ -99,16 +77,13 @@ class SimpleProbe(BaseProbe, FontMixin):
 
         # size and position is as expected.
         assert (self.width, self.height) == approx(size, abs=1)
-        assert (
-            self.native.Left / self.scale_factor,
-            self.native.Top / self.scale_factor,
-        ) == approx(position, abs=1)
+        assert (self.x, self.y) == approx(position, abs=1)
 
     async def press(self):
         self.native.OnClick(EventArgs.Empty)
 
     def mouse_event(self, x=0, y=0, **kwargs):
-        kwargs = {**dict(button=MouseButtons.Left, clicks=1, delta=0), **kwargs}
+        kwargs = {"button": MouseButtons.Left, "clicks": 1, "delta": 0, **kwargs}
         return MouseEventArgs(
             x=round(x * self.scale_factor), y=round(y * self.scale_factor), **kwargs
         )

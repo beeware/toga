@@ -1,3 +1,5 @@
+from toga_web.libs import create_proxy
+
 from .base import Widget
 
 
@@ -5,11 +7,15 @@ class TextInput(Widget):
     def create(self):
         self._return_listener = None
         self.native = self._create_native_widget("sl-input")
-        self.native.onkeyup = self.dom_keyup
+        self.native.onkeyup = self.dom_onkeyup
+        self.native.addEventListener("onkeyup", create_proxy(self.dom_onkeyup))
+        self.native.addEventListener("sl-change", create_proxy(self.dom_sl_change))
 
-    def dom_keyup(self, event):
-        if event.key == "Enter":
-            self.interface.on_confirm()
+    def dom_onkeyup(self, event):
+        self.interface.on_change()
+
+    def dom_sl_change(self, event):
+        self.interface.on_confirm()
 
     def set_readonly(self, value):
         self.native.readOnly = value
@@ -27,7 +33,7 @@ class TextInput(Widget):
     def set_font(self, font):
         pass
 
-    def set_alignment(self, value):
+    def set_text_align(self, value):
         pass
 
     def rehint(self):

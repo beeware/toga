@@ -35,14 +35,19 @@ def test_widget_created_explicit(switch):
 
     switch = toga.Switch(
         "Explicit Switch",
+        id="foobar",
         value=True,
         enabled=False,
         on_change=change_handler,
+        # A style property
+        width=256,
     )
 
+    assert switch.id == "foobar"
     assert switch.text == "Explicit Switch"
     assert switch.on_change._raw == change_handler
     assert not switch.enabled
+    assert switch.style.width == 256
 
 
 @pytest.mark.parametrize(
@@ -51,7 +56,7 @@ def test_widget_created_explicit(switch):
         ("New Text", "New Text"),
         ("", ""),
         (None, ""),
-        ("\u200B", ""),
+        ("\u200b", ""),
         (12345, "12345"),
         ("Contains\nnewline", "Contains"),
     ],

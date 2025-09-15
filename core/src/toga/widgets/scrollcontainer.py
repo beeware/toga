@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
 
 class OnScrollHandler(Protocol):
-    def __call__(self, widget: ScrollContainer, /, **kwargs: Any) -> object:
+    def __call__(self, widget: ScrollContainer, **kwargs: Any) -> None:
         """A handler to invoke when the container is scrolled.
 
         :param widget: The ScrollContainer that was scrolled.
@@ -21,6 +21,8 @@ class OnScrollHandler(Protocol):
 
 
 class ScrollContainer(Widget):
+    _USE_DEBUG_BACKGROUND = True
+
     def __init__(
         self,
         id: str | None = None,
@@ -29,6 +31,7 @@ class ScrollContainer(Widget):
         vertical: bool = True,
         on_scroll: OnScrollHandler | None = None,
         content: Widget | None = None,
+        **kwargs,
     ):
         """Create a new Scroll Container.
 
@@ -36,23 +39,25 @@ class ScrollContainer(Widget):
         :param style: A style object. If no style is provided, a default style
             will be applied to the widget.
         :param horizontal: Should horizontal scrolling be permitted?
-        :param vertical: Should horizontal scrolling be permitted?
+        :param vertical: Should vertical scrolling be permitted?
         :param on_scroll: Initial :any:`on_scroll` handler.
         :param content: The content to display in the scroll window.
+        :param kwargs: Initial style properties.
         """
-        super().__init__(id=id, style=style)
 
         self._content: Widget | None = None
         self.on_scroll = None
 
-        # Create a platform specific implementation of a Scroll Container
-        self._impl = self.factory.ScrollContainer(interface=self)
+        super().__init__(id, style, **kwargs)
 
         # Set all attributes
         self.vertical = vertical
         self.horizontal = horizontal
         self.content = content
         self.on_scroll = on_scroll
+
+    def _create(self) -> Any:
+        return self.factory.ScrollContainer(interface=self)
 
     @Widget.app.setter
     def app(self, app) -> None:
@@ -168,7 +173,8 @@ class ScrollContainer(Widget):
     def horizontal_position(self, horizontal_position: SupportsInt) -> None:
         if not self.horizontal:
             raise ValueError(
-                "Cannot set horizontal position when horizontal scrolling is not enabled."
+                "Cannot set horizontal position when "
+                "horizontal scrolling is not enabled."
             )
 
         self.position = (horizontal_position, self._impl.get_vertical_position())

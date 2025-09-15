@@ -20,7 +20,7 @@ Fonts are applied to widgets using style properties::
    from toga.style.pack import pack, SERIF, BOLD
 
    # Create a bold label in the system's serif font at default system size.
-   my_label = toga.Label("Hello World", style=Pack(font_family=SERIF, font_weight=BOLD))
+   my_label = toga.Label("Hello World", font_family=SERIF, font_weight=BOLD)
 
 Toga provides a number of :ref:`built-in system fonts <pack-font-family>`. Font sizes
 are specified in :ref:`CSS points <css-units>`; the default size depends on the platform
@@ -35,7 +35,7 @@ resources, and registered before first use::
    toga.Font.register("Roboto", "resources/Roboto-Regular.ttf")
 
    # Create a label with the new font.
-   my_label = toga.Label("Hello World", style=Pack(font_family="Roboto")
+   my_label = toga.Label("Hello World", font_family="Roboto")
 
 When registering a font, if an invalid value is provided for the style, variant or
 weight, ``NORMAL`` will be used.
@@ -68,6 +68,9 @@ properties to the ones used for widget styling::
    canvas = toga.Canvas()
    canvas.context.write_text("Hello", font=my_font)
 
+When constructing your own :class:`Font` instance, ensure that the font family you
+provide is valid; otherwise an :any:`UnknownFontError` will be raised.
+
 Notes
 -----
 
@@ -85,3 +88,4 @@ Reference
 ---------
 
 .. autoclass:: toga.Font
+.. autoexception:: toga.fonts.UnknownFontError

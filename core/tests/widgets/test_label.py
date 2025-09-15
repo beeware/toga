@@ -21,13 +21,30 @@ def test_label_created(label):
     assert_action_performed(label, "create Label")
 
 
+def test_label_create_with_values():
+    """A label can be created with initial values."""
+    label = toga.Label(
+        "Test Label",
+        id="foobar",
+        # A style property
+        width=256,
+    )
+    # Round trip the impl/interface
+    assert label._impl.interface == label
+    assert_action_performed(label, "create Label")
+
+    assert label.id == "foobar"
+    assert label.text == "Test Label"
+    assert label.style.width == 256
+
+
 @pytest.mark.parametrize(
     "value, expected",
     [
         ("New Text", "New Text"),
         (12345, "12345"),
         (None, ""),
-        ("\u200B", ""),
+        ("\u200b", ""),
         ("Contains\nsome\nnewlines", "Contains\nsome\nnewlines"),
     ],
 )

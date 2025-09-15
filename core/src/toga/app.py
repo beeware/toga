@@ -7,34 +7,33 @@ import sys
 import warnings
 import webbrowser
 from collections.abc import Coroutine, Iterator
-from email.message import Message
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Protocol
-from weakref import WeakValueDictionary
 
 from toga.command import Command, CommandSet
+from toga.constants import WindowState
 from toga.documents import Document, DocumentSet
 from toga.handlers import simple_handler, wrapped_handler
-from toga.hardware.camera import Camera
-from toga.hardware.location import Location
 from toga.icons import Icon
 from toga.paths import Paths
 from toga.platform import get_platform_factory
-from toga.screens import Screen
 from toga.statusicons import StatusIconSet
-from toga.widgets.base import Widget
 from toga.window import MainWindow, Window, WindowSet
 
 if TYPE_CHECKING:
     from toga.dialogs import Dialog
+    from toga.hardware.camera import Camera
+    from toga.hardware.location import Location
     from toga.icons import IconContentT
+    from toga.screens import Screen
+    from toga.widgets.base import Widget
 
 # Make sure deprecation warnings are shown by default
 warnings.filterwarnings("default", category=DeprecationWarning)
 
 
 class AppStartupMethod(Protocol):
-    def __call__(self, app: App, /, **kwargs: Any) -> Widget:
+    def __call__(self, app: App, **kwargs: Any) -> Widget:
         """The startup method of the app.
 
         Called during app startup to set the initial main window content.
@@ -47,7 +46,7 @@ class AppStartupMethod(Protocol):
 
 
 class OnRunningHandler(Protocol):
-    def __call__(self, app: App, /, **kwargs: Any) -> None:
+    def __call__(self, app: App, **kwargs: Any) -> None:
         """A handler to invoke when the app event loop is running.
 
         :param app: The app instance that is running.
@@ -57,7 +56,7 @@ class OnRunningHandler(Protocol):
 
 
 class OnExitHandler(Protocol):
-    def __call__(self, app: App, /, **kwargs: Any) -> bool:
+    def __call__(self, app: App, **kwargs: Any) -> bool:
         """A handler to invoke when the app is about to exit.
 
         The return value of this callback controls whether the app is allowed to exit.
@@ -72,7 +71,7 @@ class OnExitHandler(Protocol):
 
 
 class BackgroundTask(Protocol):
-    def __call__(self, app: App, /, **kwargs: Any) -> object:
+    def __call__(self, app: App, **kwargs: Any) -> object:
         """Code that should be executed as a background task.
 
         :param app: The app that is handling the background task.
@@ -82,16 +81,13 @@ class BackgroundTask(Protocol):
 
 
 class WidgetRegistry:
-    # WidgetRegistry is implemented as a wrapper around a WeakValueDictionary, because
-    # it provides a mapping from ID to widget. The mapping is weak so the registry
-    # doesn't retain a strong reference to the widget, preventing memory cleanup.
-    #
+    # WidgetRegistry is implemented as a wrapper around a dict.
     # The lookup methods (__getitem__(), __iter__(), __len()__, keys(), items(), and
-    # values()) are all proxied to underlying data store. Private methods exist for
+    # values()) are all proxied to the underlying data store. Mutation methods exist for
     # internal use, but those methods shouldn't be used by end-users.
 
     def __init__(self, *args: Any, **kwargs: Any):
-        self._registry = WeakValueDictionary(*args, **kwargs)
+        self._registry = dict(*args, **kwargs)
 
     def __len__(self) -> int:
         return len(self._registry)
@@ -103,10 +99,14 @@ class WidgetRegistry:
         return key in self._registry
 
     def __iter__(self) -> Iterator[Widget]:
-        return self.values()
+        return iter(self.values())
 
     def __repr__(self) -> str:
-        return f"{{{', '.join(f'{k!r}: {v!r}' for k, v in sorted(self._registry.items()))}}}"
+        return (
+            "{"
+            + ", ".join(f"{k!r}: {v!r}" for k, v in sorted(self._registry.items()))
+            + "}"
+        )
 
     def items(self) -> Iterator[tuple[str, Widget]]:
         return self._registry.items()
@@ -134,8 +134,9 @@ class WidgetRegistry:
 
 class App:
     #: The currently running :class:`~toga.App`. Since there can only be one running
-    #: Toga app in a process, this is available as a class property via ``toga.App.app``.
-    app: App
+    #: Toga app in a process, this is available as a class property via
+    #: ``toga.App.app``. If no app has been created yet, this is set to ``None``.
+    app: App | None = None
     _impl: Any
     _camera: Camera
     _location: Location
@@ -163,8 +164,6 @@ class App:
         document_types: list[type[Document]] | None = None,
         on_running: OnRunningHandler | None = None,
         on_exit: OnExitHandler | None = None,
-        id: None = None,  # DEPRECATED
-        windows: None = None,  # DEPRECATED
     ):
         """Create a new App instance.
 
@@ -202,30 +201,7 @@ class App:
         :param on_exit: The initial :any:`on_exit` handler.
         :param document_types: A list of :any:`Document` classes that this app
             can manage.
-        :param id: **DEPRECATED** - This argument will be ignored. If you need a
-            machine-friendly identifier, use ``app_id``.
-        :param windows: **DEPRECATED** – Windows are now automatically added to the
-            current app. Passing this argument will cause an exception.
         """
-        ######################################################################
-        # 2023-10: Backwards compatibility
-        ######################################################################
-        if id is not None:
-            warnings.warn(
-                "App.id is deprecated and will be ignored. Use app_id instead",
-                DeprecationWarning,
-                stacklevel=2,
-            )
-
-        if windows is not None:
-            raise ValueError(
-                "The `windows` constructor argument of toga.App has been removed. "
-                "Windows are now automatically added to the current app."
-            )
-        ######################################################################
-        # End backwards compatibility
-        ######################################################################
-
         # Initialize empty widgets registry
         self._widgets = WidgetRegistry()
 
@@ -238,12 +214,13 @@ class App:
             # `python -m appname`, then __main__.__package__ will be an empty string.
             #
             # If the code is contained in appname.py, and you start the app using
-            # `python appname.py`, then __main__.__package__ will be None.
+            # `python appname.py`, then __main__.__package__ will be None - unless
+            # the app has been run under pdb, in which case `__package__` doesn't exist.
             #
             # If the code is contained in appname/__main__.py, and you start the app
             # using `python -m appname`, then __main__.__package__ will be "appname".
             try:
-                main_module_pkg = sys.modules["__main__"].__package__
+                main_module_pkg = getattr(sys.modules["__main__"], "__package__", None)
                 if main_module_pkg:
                     app_name = main_module_pkg
             except KeyError:
@@ -264,7 +241,7 @@ class App:
         try:
             self.metadata = importlib.metadata.metadata(app_name)
         except importlib.metadata.PackageNotFoundError:
-            self.metadata = Message()
+            self.metadata = {}
 
         # If a formal name has been provided, use it; otherwise, look to
         # the metadata. However, a formal name *must* be provided.
@@ -346,8 +323,6 @@ class App:
         self._main_window = App._UNDEFINED
         self._windows = WindowSet(self)
 
-        self._full_screen_windows: tuple[Window, ...] | None = None
-
         # Create the implementation. This will trigger any startup logic.
         self.factory.App(interface=self)
 
@@ -391,6 +366,15 @@ class App:
         return self._home_page
 
     @property
+    def dark_mode(self) -> bool | None:
+        """Whether the user has dark mode enabled in their environment (read-only).
+
+        :returns: A Boolean describing if the app is in dark mode; ``None`` if Toga
+            cannot determine if the app is in dark mode.
+        """
+        return self._impl.get_dark_mode_state()
+
+    @property
     def icon(self) -> Icon:
         """The Icon for the app.
 
@@ -413,21 +397,14 @@ class App:
             pass
 
     @property
-    def id(self) -> str:
-        """**DEPRECATED** – Use :any:`app_id`."""
-        warnings.warn(
-            "App.id is deprecated. Use app_id instead", DeprecationWarning, stacklevel=2
-        )
-        return self._app_id
-
-    @property
     def version(self) -> str | None:
         """The version number of the app (read-only)."""
         return self._version
 
     @property
     def is_bundled(self) -> bool:
-        """Has the app been bundled as a standalone binary, or is it running as a Python script?"""
+        """Has the app been bundled as a standalone binary,
+        or is it running as a Python script?"""
         return Path(sys.executable).stem not in {
             "python",
             f"python{sys.version_info.major}",
@@ -491,17 +468,11 @@ class App:
         """
         platform_task_factory = self.loop.get_task_factory()
 
-        def factory(loop, coro, context=None):
+        def factory(loop, coro, **kwargs):
             if platform_task_factory is not None:
-                if sys.version_info < (3, 11):
-                    task = platform_task_factory(loop, coro)
-                else:
-                    task = platform_task_factory(loop, coro, context=context)
+                task = platform_task_factory(loop, coro, **kwargs)
             else:
-                if sys.version_info < (3, 11):
-                    task = asyncio.Task(coro, loop=loop)
-                else:
-                    task = asyncio.Task(coro, loop=loop, context=context)
+                task = asyncio.Task(coro, loop=loop, **kwargs)
 
             self._running_tasks.add(task)
             task.add_done_callback(self._running_tasks.discard)
@@ -608,28 +579,30 @@ class App:
 
     def _create_initial_windows(self):
         """Internal utility method for creating initial windows based on command line
-        arguments. This method is used when the platform doesn't provide its own
-        command-line handling interface.
+        arguments.
 
-        If document types are defined, try to open every argument on the command line as
-        a document (unless the backend manages the command line arguments).
+        If document types are defined, and the backend doesn't have native command line
+        handling, try to open every argument on the command line as a document (unless
+        the backend manages the command line arguments).
+
+        If, after processing all command line arguments, the app doesn't have at least
+        one window, the app's default initial document handling will be triggered.
         """
-        # If the backend handles the command line, don't do any command line processing.
-        if self._impl.HANDLES_COMMAND_LINE:
-            return
-        doc_count = len(self.windows)
-        if self.documents.types:
-            for filename in sys.argv[1:]:
-                if self._open_initial_document(filename):
-                    doc_count += 1
+        # Process command line arguments if the backend doesn't handle them
+        if not self._impl.HANDLES_COMMAND_LINE:
+            if self.documents.types:
+                for filename in sys.argv[1:]:
+                    self._open_initial_document(filename)
 
-        # Safety check: Do we have at least one document?
-        if self.main_window is None and doc_count == 0:
-            try:
-                # Pass in the first document type as the default
-                default_doc_type = self.documents.types[0]
-                self.documents.new(default_doc_type)
-            except IndexError:
+        # Ensure there is at least one window
+        if self.main_window is None and len(self.windows) == 0:
+            if self.documents.types:
+                if self._impl.CLOSE_ON_LAST_WINDOW:
+                    # Pass in the first document type as the default
+                    self.documents.new(self.documents.types[0])
+                else:
+                    self.loop.create_task(self.documents.request_open())
+            else:
                 # No document types defined.
                 raise RuntimeError(
                     "App didn't create any windows, or register any document types."
@@ -644,8 +617,8 @@ class App:
         self._create_standard_commands()
         self._impl.create_standard_commands()
 
-        # Install the standard status icon commands. Again, this is done *before* startup
-        # so that the user's code can remove/change the defaults.
+        # Install the standard status icon commands. Again, this is done *before*
+        # startup so that the user's code can remove/change the defaults.
         self.status_icons._create_standard_commands()
 
         # Invoke the user's startup method (or the default implementation)
@@ -691,7 +664,14 @@ class App:
         self.main_window = MainWindow(title=self.formal_name, id="main")
 
         if self._startup_method:
-            self.main_window.content = self._startup_method(self)
+            content = self._startup_method(self)
+            if content is None:
+                raise ValueError(
+                    "Your app's startup method has not provided any content for your "
+                    "app's main window. Did you remember to return the main content "
+                    "container in your startup method?"
+                )
+            self.main_window.content = content
 
         self.main_window.show()
 
@@ -708,8 +688,10 @@ class App:
             # Instantiate the camera instance for this app on first access
             # This will raise an exception if the platform doesn't implement
             # the Camera API.
+            from .hardware.camera import Camera
+
             self._camera = Camera(self)
-        return self._camera
+            return self._camera
 
     @property
     def commands(self) -> CommandSet:
@@ -730,8 +712,10 @@ class App:
             # Instantiate the location service for this app on first access
             # This will raise an exception if the platform doesn't implement
             # the Location API.
+            from .hardware.location import Location
+
             self._location = Location(self)
-        return self._location
+            return self._location
 
     @property
     def paths(self) -> Paths:
@@ -836,35 +820,57 @@ class App:
         self._impl.set_current_window(window)
 
     ######################################################################
-    # Full screen control
+    # Presentation mode controls
     ######################################################################
 
-    def exit_full_screen(self) -> None:
-        """Exit full screen mode."""
-        if self.is_full_screen:
-            self._impl.exit_full_screen(self._full_screen_windows)
-            self._full_screen_windows = None
-
     @property
-    def is_full_screen(self) -> bool:
-        """Is the app currently in full screen mode?"""
-        return self._full_screen_windows is not None
+    def in_presentation_mode(self) -> bool:
+        """Is the app currently in presentation mode?"""
+        return any(window.state == WindowState.PRESENTATION for window in self.windows)
 
-    def set_full_screen(self, *windows: Window) -> None:
-        """Make one or more windows full screen.
+    def enter_presentation_mode(
+        self,
+        windows: list[Window] | dict[Screen, Window],
+    ) -> None:
+        """Enter into presentation mode with one or more windows on different screens.
 
-        Full screen is not the same as "maximized"; full screen mode is when all window
-        borders and other window decorations are no longer visible.
+        Presentation mode is not the same as "Full Screen" mode; presentation mode is
+        when window borders, other window decorations, app menu and toolbars are no
+        longer visible.
 
-        :param windows: The list of windows to go full screen, in order of allocation to
-            screens. If the number of windows exceeds the number of available displays,
-            those windows will not be visible. If no windows are specified, the app will
-            exit full screen mode.
+        :param windows: A list of windows, or a dictionary
+            mapping screens to windows, to go into presentation, in order of
+            allocation to screens. If the number of windows exceeds the number
+            of available displays, those windows will not be visible. The windows
+            must have a content set on them.
+
+        :raises ValueError: If the presentation layout supplied is not a list of
+            windows or a dict mapping windows to screens, or if any window does
+            not have content.
         """
-        self.exit_full_screen()
         if windows:
-            self._impl.enter_full_screen(windows)
-            self._full_screen_windows = windows
+            screen_window_dict = {}
+            if isinstance(windows, list):
+                for window, screen in zip(windows, self.screens):
+                    screen_window_dict[screen] = window
+            elif isinstance(windows, dict):
+                screen_window_dict = windows
+            else:
+                raise ValueError(
+                    "Presentation layout should be a list of windows,"
+                    " or a dict mapping windows to screens."
+                )
+
+            for screen, window in screen_window_dict.items():
+                window._impl._before_presentation_mode_screen = window.screen
+                window.screen = screen
+                window._impl.set_window_state(WindowState.PRESENTATION)
+
+    def exit_presentation_mode(self) -> None:
+        """Exit presentation mode."""
+        for window in self.windows:
+            if window.state == WindowState.PRESENTATION:
+                window._impl.set_window_state(WindowState.NORMAL)
 
     ######################################################################
     # App events
@@ -885,41 +891,24 @@ class App:
         return True
 
     def on_running(self) -> None:
-        """The event handler that will be invoked when the app's event loop starts running.
+        """The event handler that will be invoked
+        when the app's event loop starts running.
 
         If necessary, the overridden method can be defined as an ``async`` coroutine.
         """
 
     ######################################################################
-    # 2023-10: Backwards compatibility
-    ######################################################################
-
-    @property
-    def name(self) -> str:
-        """**DEPRECATED** – Use :any:`formal_name`."""
-        warnings.warn(
-            "App.name is deprecated. Use formal_name instead",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        return self._formal_name
-
-    # Support WindowSet __iadd__ and __isub__
-    @windows.setter
-    def windows(self, windows: WindowSet) -> None:
-        if windows is not self._windows:
-            raise AttributeError("can't set attribute 'windows'")
-
-    ######################################################################
-    # 2024-06: Backwards compatibility
+    # 2024-06: Backwards compatibility for <= 0.4.5
     ######################################################################
 
     def add_background_task(self, handler: BackgroundTask) -> None:
         """**DEPRECATED** – Use :any:`asyncio.create_task`, or override/assign
         :meth:`~toga.App.on_running`."""
         warnings.warn(
-            "App.add_background_task is deprecated. Use asyncio.create_task(), "
-            "or set an App.on_running() handler",
+            (
+                "App.add_background_task is deprecated. Use asyncio.create_task(), "
+                "or set an App.on_running() handler"
+            ),
             DeprecationWarning,
             stacklevel=2,
         )
@@ -927,12 +916,57 @@ class App:
         self.loop.call_soon_threadsafe(wrapped_handler(self, handler))
 
     ######################################################################
+    # 2024-12: Backwards compatibility for < 0.5.0
+    ######################################################################
+
+    def exit_full_screen(self) -> None:
+        """**DEPRECATED** – Use :any:`App.exit_presentation_mode()`."""
+        warnings.warn(
+            (
+                "`App.exit_full_screen()` is deprecated. "
+                "Use `App.exit_presentation_mode()` instead."
+            ),
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        if self.in_presentation_mode:
+            self.exit_presentation_mode()
+
+    @property
+    def is_full_screen(self) -> bool:
+        """**DEPRECATED** – Use :any:`App.in_presentation_mode`."""
+        warnings.warn(
+            (
+                "`App.is_full_screen` is deprecated. "
+                "Use `App.in_presentation_mode` instead."
+            ),
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.in_presentation_mode
+
+    def set_full_screen(self, *windows: Window) -> None:
+        """**DEPRECATED** – Use :any:`App.enter_presentation_mode()` and
+        :any:`App.exit_presentation_mode()`."""
+        warnings.warn(
+            (
+                "`App.set_full_screen()` is deprecated. "
+                "Use `App.enter_presentation_mode()` instead."
+            ),
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        self.exit_presentation_mode()
+        if windows:
+            self.enter_presentation_mode(list(windows))
+
+    ######################################################################
     # End backwards compatibility
     ######################################################################
 
 
 ######################################################################
-# 2024-08: Backwards compatibility
+# 2024-08: Backwards compatibility for <= 0.4.5
 ######################################################################
 
 

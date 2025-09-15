@@ -4,14 +4,19 @@ import pytest
 
 from toga.constants import FlashMode
 
-from ..conftest import skip_on_platforms
-from .probe import get_probe
+from .probe import list_probes
 
 
-@pytest.fixture
-async def camera_probe(monkeypatch, app_probe):
-    skip_on_platforms("linux", "windows")
-    probe = get_probe(monkeypatch, app_probe, "Camera")
+@pytest.fixture(
+    params=list_probes(
+        "camera",
+        skip_platforms=("linux", "windows"),
+        skip_unbundled=True,
+    )
+)
+async def camera_probe(monkeypatch, app_probe, request):
+    probe_cls = request.param
+    probe = probe_cls(monkeypatch, app_probe)
     yield probe
     probe.cleanup()
 
@@ -42,7 +47,8 @@ async def test_grant_permission(app, camera_probe):
 
 async def test_deny_permission(app, camera_probe):
     """A user can deny permission to use the camera"""
-    # Initiate the permission request. As permissions are not primed, they will be denied.
+    # Initiate the permission request. As permissions are not primed,
+    # they will be denied.
     assert not await app.camera.request_permission()
 
     # Permission has been denied
@@ -92,7 +98,8 @@ async def test_flash_mode(app, camera_probe):
 
 
 async def test_take_photo_unknown_permission(app, camera_probe):
-    """If a user hasn't explicitly granted permissions, they can take a photo with the camera"""
+    """If a user hasn't explicitly granted permissions,
+    they can take a photo with the camera"""
     if not camera_probe.request_permission_on_first_use:
         pytest.xfail("Platform does not request permission on first use")
 

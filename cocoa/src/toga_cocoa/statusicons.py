@@ -30,13 +30,12 @@ class StatusIcon:
     def create(self):
         self.native = NSStatusBar.systemStatusBar.statusItemWithLength(
             NSSquareStatusItemLength
-        ).retain()
+        )
         self.native.button.toolTip = self.interface.text
         self.set_icon(self.interface.icon)
 
     def remove(self):
         NSStatusBar.systemStatusBar.removeStatusItem(self.native)
-        self.native.release()
         self.native = None
 
 
@@ -100,11 +99,11 @@ class StatusIconSet:
         for cmd in self.interface.commands:
             try:
                 submenu = submenu_for_group(cmd.group, group_cache)
-            except ValueError:
+            except ValueError as exc:
                 raise ValueError(
-                    f"Command {cmd.text!r} does not belong to "
-                    "a current status icon group."
-                )
+                    f"Command {cmd.text!r} does not belong to a current status icon "
+                    "group."
+                ) from exc
             else:
                 if isinstance(cmd, Separator):
                     menu_item = NSMenuItem.separatorItem()

@@ -1,5 +1,6 @@
 from concurrent.futures import ThreadPoolExecutor
 
+import pytest
 from android.graphics import Typeface
 from android.graphics.fonts import FontFamily
 from android.util import TypedValue
@@ -61,6 +62,9 @@ class FontMixin:
     supports_custom_fonts = True
     supports_custom_variable_fonts = True
 
+    def preinstalled_font(self):
+        pytest.skip("Use of arbitrary system fonts is not yet supported on Android.")
+
     def assert_font_options(self, weight=NORMAL, style=NORMAL, variant=NORMAL):
         assert (BOLD if self.typeface.isBold() else NORMAL) == weight
 
@@ -73,7 +77,7 @@ class FontMixin:
         if variant == SMALL_CAPS:
             print("Ignoring SMALL CAPS font test")
         else:
-            assert NORMAL == variant
+            assert variant == NORMAL
 
     def assert_font_size(self, expected):
         if expected == SYSTEM_DEFAULT_FONT_SIZE:

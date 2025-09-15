@@ -25,25 +25,32 @@ class TogaMapView(MKMapView):
 
     @objc_method
     def mapView_didSelectAnnotationView_(self, mapView, view) -> None:
-        pin = self.impl.pins[view.annotation]
-        self.interface.on_select(pin=pin)
+        # It's possible for this handler to be invoked *after* the interface/impl object
+        # has been destroyed. If the interface/impl doesn't exist there's no handler to
+        # invoke either, so ignore the edge case. This can't be reproduced reliably, so
+        # don't check coverage on the `is None` case.
+        if self.interface:  # pragma: no branch
+            pin = self.impl.pins[view.annotation]
+            self.interface.on_select(pin=pin)
 
     @objc_method
     def mapView_regionDidChangeAnimated_(self, mapView, animated: bool) -> None:
         # Once an animation finishes, compare the currently viewable region with any
-        # future values
-        region = self.impl.native.region
-        if (
-            self.impl.future_location
-            and approx(region.center.latitude, self.impl.future_location.latitude)
-            and approx(region.center.longitude, self.impl.future_location.longitude)
-        ):
-            self.impl.future_location = None
+        # future values. As with didSelectAnnotationView, it's possible to be invoked
+        # after the impl has been destroyed.
+        if self.impl:  # pragma: no branch
+            region = self.impl.native.region
+            if (
+                self.impl.future_location
+                and approx(region.center.latitude, self.impl.future_location.latitude)
+                and approx(region.center.longitude, self.impl.future_location.longitude)
+            ):
+                self.impl.future_location = None
 
-        if self.impl.future_delta and approx(
-            region.span.longitudeDelta, self.impl.future_delta
-        ):
-            self.impl.future_delta = None
+            if self.impl.future_delta and approx(
+                region.span.longitudeDelta, self.impl.future_delta
+            ):
+                self.impl.future_delta = None
 
 
 class MapView(Widget):
@@ -131,9 +138,9 @@ class MapView(Widget):
 
     def set_zoom(self, zoom):
         if self.backlog is None:
-            # The zoom level indicates how many degrees of longitude will be displayed in a
-            # 256 pixel horizontal range. Determine how many degrees of longitude that is,
-            # and scale to the size of the visible horizontal space.
+            # The zoom level indicates how many degrees of longitude will be displayed
+            # in a 256 pixel horizontal range. Determine how many degrees of longitude
+            # that is, and scale to the size of the visible horizontal space.
 
             # The horizontal axis can't show more than 360 degrees of longitude, so clip
             # the range to that value. The OSM zoom level is based on 360 degrees of
@@ -144,8 +151,8 @@ class MapView(Widget):
             )
 
             # If we're currently panning to a new location, use the desired *future*
-            # location as the center of the zoom region. Otherwise use the current center
-            # coordinate.
+            # location as the center of the zoom region. Otherwise use the current
+            # center coordinate.
             center = (
                 self.future_location
                 if self.future_location is not None

@@ -37,11 +37,9 @@ A text label for annotating forms or interfaces.
 
   .. group-tab:: Web |beta|
 
-    .. .. figure:: /reference/images/label-web.png
-    ..    :align: center
-    ..    :width: 300px
-
-    Screenshot not available
+    .. figure:: /reference/images/label-web.png
+       :align: center
+       :width: 300px
 
   .. group-tab:: Textual |beta|
 
@@ -63,7 +61,7 @@ Usage
 Notes
 -----
 
-* Winforms does not support an alignment value of ``JUSTIFIED``. If this
+* Winforms does not support a text alignment value of ``JUSTIFIED``. If this
   alignment value is used, the label will default to left alignment.
 
 Reference

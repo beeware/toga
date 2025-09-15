@@ -8,6 +8,7 @@ from toga.sources import TreeSource
 from toga.style.pack import Pack
 
 from ..conftest import skip_on_platforms
+from .conftest import build_cleanup_test
 from .probe import get_probe
 from .properties import (  # noqa: F401
     test_background_color,
@@ -88,12 +89,12 @@ def source():
                                 },
                                 None,
                             )
-                            for y in range(0, 3)
+                            for y in range(3)
                         ],
                     ),
                 ],
             )
-            for x in range(0, 10)
+            for x in range(10)
         ],
     )
 
@@ -162,6 +163,18 @@ async def multiselect_probe(main_window, multiselect_widget):
     yield probe
 
     main_window.content = old_content
+
+
+test_cleanup = build_cleanup_test(
+    toga.Tree,
+    kwargs={"headings": ["A", "B", "C"]},
+    skip_platforms=(
+        "iOS",
+        "android",
+        "windows",
+    ),
+    xfail_platforms=("linux",),
+)
 
 
 async def test_select(widget, probe, source, on_select_handler):
@@ -526,7 +539,7 @@ async def _row_change_test(widget, probe):
     small_data = [
         (
             {"a": "A0", "b": "", "c": ""},
-            [({"a": f"A{i}", "b": i, "c": MyData(i)}, None) for i in range(0, 5)],
+            [({"a": f"A{i}", "b": i, "c": MyData(i)}, None) for i in range(5)],
         )
     ]
 
@@ -754,9 +767,9 @@ async def test_column_changes(widget, probe):
     # The specific behavior for resizing is undefined; however, the columns should add
     # up to near the full width (allowing for inter-column padding, etc), and no single
     # column should be tiny.
-    total_width = sum(probe.column_width(i) for i in range(0, 4))
+    total_width = sum(probe.column_width(i) for i in range(4))
     assert total_width == pytest.approx(probe.width, abs=100)
-    assert all(probe.column_width(i) > 80 for i in range(0, 4))
+    assert all(probe.column_width(i) > 80 for i in range(4))
 
 
 async def test_headerless_column_changes(headerless_widget, headerless_probe):
@@ -795,7 +808,7 @@ async def test_cell_icon(widget, probe):
                     },
                     None,
                 )
-                for i in range(0, 50)
+                for i in range(50)
             ],
         )
     ]
@@ -836,7 +849,7 @@ async def test_cell_widget(widget, probe):
                     },
                     None,
                 )
-                for i in range(0, 50)
+                for i in range(50)
             ],
         ),
     ]

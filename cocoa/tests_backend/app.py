@@ -10,13 +10,13 @@ from toga_cocoa.libs import (
     NSEvent,
     NSEventModifierFlagShift,
     NSEventType,
+    NSPanel,
     NSWindow,
 )
 
 from .dialogs import DialogsMixin
 from .probe import BaseProbe, NSRunLoop
 
-NSPanel = ObjCClass("NSPanel")
 NSDate = ObjCClass("NSDate")
 
 
@@ -24,6 +24,7 @@ class AppProbe(BaseProbe, DialogsMixin):
     supports_key = True
     supports_key_mod3 = True
     supports_current_window_assignment = True
+    supports_dark_mode = True
 
     def __init__(self, app):
         super().__init__()
@@ -55,14 +56,8 @@ class AppProbe(BaseProbe, DialogsMixin):
         # fall back to the implementation's proxy variable.
         return self.app._impl._cursor_visible
 
-    def is_full_screen(self, window):
-        return window._impl.container.native.isInFullScreenMode()
-
-    def content_size(self, window):
-        return (
-            window.content._impl.native.frame.size.width,
-            window.content._impl.native.frame.size.height,
-        )
+    def unhide(self):
+        self.app._impl.native.unhide(self.app._impl.native)
 
     def assert_app_icon(self, icon):
         # We have no real way to check we've got the right icon; use pixel peeping as a
@@ -138,6 +133,18 @@ class AppProbe(BaseProbe, DialogsMixin):
             argtypes=[objc_id],
         )
 
+    def activate_menu_hide(self):
+        item = self._menu_item(["*", "Hide Toga Testbed"])
+        # To activate the "Hide" in global app menu, we need call the native
+        # handler on the NSApplication instead of the NSApplicationDelegate.
+        send_message(
+            self.app._impl.native,
+            item.action,
+            self.app._impl.native,
+            restype=None,
+            argtypes=[objc_id],
+        )
+
     def activate_menu_exit(self):
         self._activate_menu_item(["*", "Quit Toga Testbed"])
 
@@ -189,6 +196,11 @@ class AppProbe(BaseProbe, DialogsMixin):
 
     def activate_menu_minimize(self):
         self._activate_menu_item(["Window", "Minimize"])
+
+    def assert_dialog_in_focus(self, dialog):
+        assert dialog._impl.native.window == self.app._impl.native.keyWindow, (
+            "The dialog is not in focus"
+        )
 
     def assert_menu_item(self, path, enabled):
         item = self._menu_item(path)
@@ -247,7 +259,7 @@ class AppProbe(BaseProbe, DialogsMixin):
         self.app._impl.native.activateIgnoringOtherApps(True)
         await self.redraw("Restore to standard app", delay=0.1)
 
-    def _setup_alert_dialog_result(self, dialog, result):
+    def _setup_alert_dialog_result(self, dialog, result, pre_close_test_method=None):
         # Replace the dialog polling mechanism with an implementation that polls
         # 5 times, then returns the required result.
         _poll_modal_session = dialog._impl._poll_modal_session

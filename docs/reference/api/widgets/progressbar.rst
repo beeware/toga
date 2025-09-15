@@ -38,11 +38,9 @@ known or indeterminate length.
 
   .. group-tab:: Web |beta|
 
-    .. .. figure:: /reference/images/progressbar-web.png
-    ..    :align: center
-    ..    :width: 300px
-
-    Screenshot not available
+    .. figure:: /reference/images/progressbar-web.png
+       :align: center
+       :width: 300px
 
   .. group-tab:: Textual |no|
 

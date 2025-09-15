@@ -34,14 +34,12 @@ class TogaNumericTextField(UITextField):
         # chars will be zero length in the case of a deletion
         # otherwise, accept any number, or '.' (as long as this is the first one)
         # or `-` if it is the first character
-        if (
+        return (
             len(chars) == 0
             or chars.isdigit()
             or (chars == "." and "." not in self.text)
             or (chars == "-" and textRange.location == 0)
-        ):
-            return True
-        return False
+        )
 
     @objc_method
     def textFieldDidEndEditing_(self, textField) -> None:
@@ -108,7 +106,7 @@ class NumberInput(Widget):
             self.native.text = str(value)
         self.interface.on_change()
 
-    def set_alignment(self, value):
+    def set_text_align(self, value):
         self.native.textAlignment = NSTextAlignment(value)
 
     def set_font(self, font):
@@ -117,11 +115,8 @@ class NumberInput(Widget):
     def set_color(self, color):
         self.native.textColor = native_color(color)
 
-    def set_background_color(self, color):
-        self.set_background_color_simple(color)
-
     def rehint(self):
-        # Height of a text input is known.
+        # Height of a number input is known.
         fitting_size = self.native.systemLayoutSizeFittingSize(CGSize(0, 0))
         self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
         self.interface.intrinsic.height = fitting_size.height

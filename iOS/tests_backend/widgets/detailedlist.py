@@ -105,7 +105,7 @@ class DetailedListProbe(SimpleProbe):
             )
 
             # Wait for the scroll to relax after reload completion
-            while self.scroll_position < 0:
+            while self.scroll_position < 0:  # noqa: ASYNC110
                 await asyncio.sleep(0.01)
         else:
             assert self.native_controller.refreshControl is None
@@ -140,8 +140,11 @@ class DetailedListProbe(SimpleProbe):
         path = NSIndexPath.indexPathForRow(row, inSection=0)
         # Need to use the long form of this method because the first argument when used
         # as a selector is ambiguous with a property of the same name on the object.
-        config = self.native.delegate.tableView_trailingSwipeActionsConfigurationForRowAtIndexPath_(
-            self.native, path
+        config = (
+            self.native.delegate
+        ).tableView_trailingSwipeActionsConfigurationForRowAtIndexPath_(
+            self.native,
+            path,
         )
 
         if active:
@@ -159,8 +162,11 @@ class DetailedListProbe(SimpleProbe):
         path = NSIndexPath.indexPathForRow(row, inSection=0)
         # Need to use the long form of this method because the first argument when used
         # as a selector is ambiguous with a property of the same name on the object.
-        config = self.native.delegate.tableView_leadingSwipeActionsConfigurationForRowAtIndexPath_(
-            self.native, path
+        config = (
+            self.native.delegate
+        ).tableView_leadingSwipeActionsConfigurationForRowAtIndexPath_(
+            self.native,
+            path,
         )
 
         if active:

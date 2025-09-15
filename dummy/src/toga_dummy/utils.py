@@ -1,9 +1,9 @@
 from unittest.mock import Mock
 
 import pytest
-from travertino.declaration import BaseStyle
 from travertino.layout import BaseBox
 from travertino.size import BaseIntrinsicSize
+from travertino.style import BaseStyle
 
 
 class EventLog:
@@ -373,6 +373,7 @@ def assert_action_performed_with(_widget, _action, **test_data):
                         # No raw attribute; use the provided value as-is
                         if data[key] != value:
                             found = False
+
                 except KeyError:
                     found = False
 

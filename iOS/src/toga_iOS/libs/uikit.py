@@ -297,7 +297,8 @@ UIImage = ObjCClass("UIImage")
 # Camera
 UIImagePickerController = ObjCClass("UIImagePickerController")
 
-# PhotoLibrary and SavedPhotosAlbumn constants also exist, but they're marked as deprecated
+# PhotoLibrary and SavedPhotosAlbumn constants also exist, but they're
+# marked as deprecated
 UIImagePickerControllerSourceTypeCamera = 1
 
 
@@ -530,3 +531,15 @@ UIKeyboardWillChangeFrameNotification = objc_const(
 UIKeyboardDidChangeFrameNotification = objc_const(
     uikit, "UIKeyboardDidChangeFrameNotification"
 )
+
+######################################################################
+# UIDatePicker.h
+UIDatePicker = ObjCClass("UIDatePicker")
+
+
+class UIDatePickerMode(IntEnum):
+    Time = 0
+    Date = 1
+    DateAndTime = 2
+    CountDownTimer = 3
+    YearAndMonth = 4

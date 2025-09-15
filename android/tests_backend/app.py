@@ -13,6 +13,7 @@ from .window import WindowProbe
 
 class AppProbe(BaseProbe, DialogsMixin):
     supports_key = False
+    supports_dark_mode = True
 
     def __init__(self, app):
         super().__init__(app)
@@ -42,6 +43,9 @@ class AppProbe(BaseProbe, DialogsMixin):
     def assert_app_icon(self, icon):
         pytest.xfail("Android apps don't have app icons at runtime")
 
+    def assert_dialog_in_focus(self, dialog):
+        assert dialog._impl.native.isShowing() is True, "The dialog is not in focus"
+
     def _menu_item(self, path):
         menu = self.main_window_probe._native_menu()
         for i_path, label in enumerate(path):
@@ -54,7 +58,7 @@ class AppProbe(BaseProbe, DialogsMixin):
                 if item.getTitle() == label and not item.requiresActionButton():
                     break
             else:
-                raise AssertionError(f"no item named {path[:i_path+1]}")
+                raise AssertionError(f"no item named {path[: i_path + 1]}")
 
             if i_path < len(path) - 1:
                 # Simulate opening the submenu.

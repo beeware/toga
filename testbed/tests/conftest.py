@@ -8,6 +8,7 @@ from pytest import fixture, register_assert_rewrite, skip
 
 import toga
 from toga.colors import GOLDENROD
+from toga.constants import WindowState
 from toga.style import Pack
 
 # Ideally, we'd register rewrites for "tests" and get all the submodules
@@ -17,20 +18,37 @@ register_assert_rewrite("tests.widgets")
 register_assert_rewrite("tests_backend")
 
 
-# Use this for widgets or tests which are not supported on some platforms, but could be
-# supported in the future.
-def skip_on_platforms(*platforms):
+# Use this for widgets or tests which are not supported on some platforms,
+# but could be supported in the future.
+def skip_on_platforms(*platforms, reason=None, allow_module_level=False):
     current_platform = toga.platform.current_platform
     if current_platform in platforms:
-        skip(f"not yet implemented on {current_platform}")
+        skip(
+            reason or f"not yet implemented on {current_platform}",
+            allow_module_level=allow_module_level,
+        )
 
 
-# Use this for widgets or tests which are not supported on some platforms, and will not
-# be supported in the foreseeable future.
-def xfail_on_platforms(*platforms):
+# Use this for widgets or tests which are not supported on some platforms,
+# and will not be supported in the foreseeable future.
+def xfail_on_platforms(*platforms, reason=None):
     current_platform = toga.platform.current_platform
     if current_platform in platforms:
-        skip(f"not applicable on {current_platform}")
+        skip(reason or f"not applicable on {current_platform}")
+
+
+# Use this for widgets or tests which trip up macOS privacy controls, and requires
+# properties or entitlements defined in Info.plist
+def skip_if_unbundled_app(reason=None, allow_module_level=False):
+    if not toga.App.app.is_bundled:
+        skip(
+            reason
+            or (
+                "test requires a full application, "
+                "use 'briefcase run' instead of 'briefcase dev'"
+            ),
+            allow_module_level=allow_module_level,
+        )
 
 
 @fixture(autouse=True)
@@ -70,7 +88,7 @@ def main_window(app):
 
 
 @fixture(autouse=True)
-async def window_cleanup(app, main_window):
+async def window_cleanup(app, app_probe, main_window, main_window_probe):
     # Ensure that at the end of every test, all windows that aren't the
     # main window have been closed and deleted. This needs to be done in
     # 2 passes because we can't modify the list while iterating over it.
@@ -82,12 +100,19 @@ async def window_cleanup(app, main_window):
     # Then purge everything on the kill list.
     while kill_list:
         window = kill_list.pop()
-        window.close()
+        probe = import_module("tests_backend.window").WindowProbe(app, window)
+        await probe.cleanup()
         del window
 
     # Force a GC pass on the main thread. This isn't perfect, but it helps
     # minimize garbage collection on the test thread.
     gc.collect()
+
+    main_window.state = WindowState.NORMAL
+    app.current_window = main_window
+    await main_window_probe.wait_for_window(
+        "Resetting main_window", state=WindowState.NORMAL
+    )
 
 
 @fixture(scope="session")
@@ -129,8 +154,8 @@ class ProxyEventLoop(asyncio.AbstractEventLoop):
     closed: bool = False
 
     # Used by ensure_future.
-    def create_task(self, coro):
-        return ProxyTask(coro)
+    def create_task(self, coro, **kwargs):
+        return ProxyTask(coro, kwargs)
 
     def run_until_complete(self, future):
         if inspect.iscoroutine(future):
@@ -140,6 +165,16 @@ class ProxyEventLoop(asyncio.AbstractEventLoop):
         else:
             raise TypeError(f"Future type {type(future)} is not currently supported")
         return asyncio.run_coroutine_threadsafe(coro, self.loop).result()
+
+    async def shutdown_asyncgens(self):
+        # The proxy event loop doesn't need to shut anything down; the
+        # underlying event loop will shut down its own async generators.
+        pass
+
+    async def shutdown_default_executor(self, timeout=None):
+        # The proxy event loop doesn't need to shut anything down; the
+        # underlying event loop will shut down its own executor.
+        pass
 
     def is_closed(self):
         return self.closed
@@ -151,6 +186,7 @@ class ProxyEventLoop(asyncio.AbstractEventLoop):
 @dataclass
 class ProxyTask:
     coro: object
+    kwargs: dict
 
     # Used by ensure_future.
     _source_traceback = None
