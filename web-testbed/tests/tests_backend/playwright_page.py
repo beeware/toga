@@ -6,8 +6,6 @@ from playwright.async_api import async_playwright
 
 class BackgroundPage:
     def __init__(self):
-        if getattr(self, "_init", False):
-            return
         self._init = True
         self._ready = threading.Event()
         self._loop = None
@@ -37,14 +35,19 @@ class BackgroundPage:
             self._context = await self._browser.new_context()
             self._page = await self._context.new_page()
 
-            await self._page.goto("http://localhost:8080/")
-            # await self._page.goto(
-            #     "http://localhost:8080", wait_until="load", timeout=30_000
-            # )
-            await self._page.wait_for_timeout(7000)
+            await self._page.goto(
+                "http://localhost:8080", wait_until="load", timeout=30_000
+            )
+
+            await self._page.wait_for_function(
+                "() => typeof window.test_cmd === 'function'"
+            )
 
             await self._page.evaluate(
                 "(code) => window.test_cmd(code)", "self.my_widgets = {}"
+            )
+            await self._page.evaluate(
+                "(code) => window.test_cmd(code)", "self.my_objs = {}"
             )
 
             self._alock = asyncio.Lock()
