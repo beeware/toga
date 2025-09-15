@@ -4,6 +4,7 @@ from . import dialogs
 from .app import App
 from .command import Command
 from .fonts import Font
+from .hardware.camera import Camera
 from .hardware.location import Location
 from .icons import Icon
 from .images import Image
@@ -51,6 +52,7 @@ __all__ = [
     "Paths",
     "dialogs",
     # Hardware
+    "Camera",
     "Location",
     # Status icons
     "MenuStatusIcon",
