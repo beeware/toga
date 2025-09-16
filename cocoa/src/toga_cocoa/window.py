@@ -307,8 +307,11 @@ class Window:
     ######################################################################
 
     def get_size(self) -> Size:
-        frame = self.native.frame
-        return Size(frame.size.width, frame.size.height)
+        if self.interface.state == WindowState.PRESENTATION:
+            native_frame = self.container.native.frame
+        else:
+            native_frame = self.native.frame
+        return Size(native_frame.size.width, native_frame.size.height)
 
     def set_size(self, size):
         frame = self.native.frame
