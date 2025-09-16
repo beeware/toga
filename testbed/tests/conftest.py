@@ -176,6 +176,11 @@ class ProxyEventLoop(asyncio.AbstractEventLoop):
         # underlying event loop will shut down its own executor.
         pass
 
+    def set_debug(self, enabled):
+        # The proxy event loop doesn't need to manage debug, but `set_debug()` is a
+        # required method on the loop.
+        pass
+
     def is_closed(self):
         return self.closed
 
