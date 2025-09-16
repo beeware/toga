@@ -237,11 +237,10 @@ class Window(Container, Scalable):
     # Window.size is scaled according to the DPI of the current screen, to be consistent
     # with the scaling of its content.
     def get_size(self) -> Size:
-        size = (
-            self.native.Size
-            if self.interface.state != WindowState.MINIMIZED
-            else self._cached_window_size
-        )
+        if self.interface.state == WindowState.MINIMIZED:
+            return self._cached_window_size
+
+        size = self.native.Size
         return Size(
             self.scale_out(size.Width - self._decor_width()),
             self.scale_out(size.Height - self._decor_height()),
@@ -346,7 +345,7 @@ class Window(Container, Scalable):
                 # On minimization, winforms reports window size as 0 x 0, hence
                 # cache the previous window size to make the API behavior
                 # uniform on all platforms.
-                self._cached_window_size = self.native.Size
+                self._cached_window_size = self.interface.size
                 self.native.WindowState = WinForms.FormWindowState.Minimized
 
             elif state == WindowState.FULLSCREEN:
