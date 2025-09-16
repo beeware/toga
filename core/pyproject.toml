@@ -82,7 +82,7 @@ docs = [
     # "beeware_theme @ git+https://github.com/beeware/beeware-theme",
     "furo == 2025.7.19",
     "Pillow == 11.3.0",
-    "pyenchant == 3.2.2",
+    "pyenchant == 3.3.0",
     "sphinx == 8.2.3",
     "sphinx_tabs == 3.4.5",
     "sphinx-autobuild == 2024.10.3",
