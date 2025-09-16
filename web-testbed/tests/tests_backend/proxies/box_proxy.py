@@ -1,17 +1,12 @@
-class BoxProxy:
-    # Currently only for use in the 'probe' pytest fixture.
+from .widget_proxy import WidgetProxy
 
-    """Proxy for toga.Box(children=[...])."""
 
-    page_provider = staticmethod(lambda: None)
+class BoxProxy(WidgetProxy):
+    _ctor_expr = "toga.Box"
 
-    def _page(self):
-        return type(self).page_provider()
-
-    def __init__(self, children=None):
-        # Create box object remotely
-        self.id = self._create_remote_box()
-        # If there's children, add them
+    def __init__(self, children=None, *args, **kwargs):
+        key = self._create_with_known_id(self._ctor_expr, *args, **kwargs)
+        super().__init__(key)
         if children:
             for child in children:
                 self.add(child)
@@ -19,17 +14,14 @@ class BoxProxy:
     @classmethod
     def _from_id(cls, box_id: str):
         obj = cls.__new__(cls)
-        object.__setattr__(obj, "id", box_id)
+        WidgetProxy.__init__(obj, box_id)
         return obj
 
-    def _create_remote_box(self):
-        code = (
-            "new_box = toga.Box()\n"
-            "self.my_widgets[new_box.id] = new_box\n"
-            "result = new_box.id"
-        )
-        return self._page().eval_js("(code) => window.test_cmd(code)", code)
-
     def add(self, widget):
-        code = f"self.my_widgets['{self.id}'].add(self.my_widgets['{widget.id}'])"
-        self._page().eval_js("(code) => window.test_cmd(code)", code)
+        child_js = getattr(widget, "js_ref", None)
+        if child_js is None:
+            child_js = f"{type(self)._storage_expr}[{repr(widget)}]"
+        self._page().eval_js(
+            "(code) => window.test_cmd(code)",
+            f"{self.js_ref}.add({child_js})",
+        )
