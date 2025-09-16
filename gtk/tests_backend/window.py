@@ -33,6 +33,8 @@ class WindowProbe(BaseProbe, DialogsMixin):
         supports_minimize = False
         supports_placement = False
 
+    fullscreen_presentation_size_equal = False
+
     def __init__(self, app, window):
         super().__init__()
         self.app = app
