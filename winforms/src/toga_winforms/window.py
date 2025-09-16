@@ -48,6 +48,12 @@ class Window(Container, Scalable):
         # Required to detect if the window has been un-minimized, and to prevent
         # double triggering of visibility events.
         self._previous_state = WindowState.NORMAL
+        # On minimization, winforms returns window size as 0 x 0, but this behavior
+        # is inconsistent with other platforms as minimization does not constitute a
+        # window resize operation. Therefore, it should return the same size as
+        # before minimization. So, cache the previous window size before performing
+        # minimization.
+        self._cached_window_size = None
 
         self.set_title(title)
         self.set_size(size)
@@ -231,7 +237,11 @@ class Window(Container, Scalable):
     # Window.size is scaled according to the DPI of the current screen, to be consistent
     # with the scaling of its content.
     def get_size(self) -> Size:
-        size = self.native.Size
+        size = (
+            self.native.Size
+            if self.interface.state != WindowState.MINIMIZED
+            else self._cached_window_size
+        )
         return Size(
             self.scale_out(size.Width - self._decor_width()),
             self.scale_out(size.Height - self._decor_height()),
@@ -322,6 +332,8 @@ class Window(Container, Scalable):
                 WinForms.FormBorderStyle,
                 "Sizable" if self.interface.resizable else "FixedSingle",
             )
+            # Clear the cached window size.
+            self._cached_window_size = None
             self.native.WindowState = WinForms.FormWindowState.Normal
 
             self.set_window_state(state)
@@ -331,6 +343,10 @@ class Window(Container, Scalable):
                 self.native.WindowState = WinForms.FormWindowState.Maximized
 
             elif state == WindowState.MINIMIZED:
+                # On minimization, winforms reports window size as 0 x 0, hence
+                # cache the previous window size to make the API behavior
+                # uniform on all platforms.
+                self._cached_window_size = self.native.Size
                 self.native.WindowState = WinForms.FormWindowState.Minimized
 
             elif state == WindowState.FULLSCREEN:
