@@ -785,7 +785,11 @@ else:
                         else:
                             assert current_size > previous_state_window_size
                     elif initial_state == WindowState.FULLSCREEN:
-                        if final_state in {WindowState.NORMAL, WindowState.MINIMIZED, WindowState.MAXIMIZED}:
+                        if final_state in {
+                            WindowState.NORMAL,
+                            WindowState.MINIMIZED,
+                            WindowState.MAXIMIZED,
+                        }:
                             assert current_size < previous_state_window_size
                         elif (
                             final_state == WindowState.FULLSCREEN
