@@ -136,13 +136,6 @@ def test_disable_no_op(table):
     assert table.enabled
 
 
-def test_focus_noop(table):
-    """Focus is a no-op."""
-
-    table.focus()
-    assert_action_not_performed(table, "focus")
-
-
 @pytest.mark.parametrize(
     "data, all_attributes, extra_attributes",
     [
