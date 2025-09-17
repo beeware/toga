@@ -24,6 +24,7 @@ class WindowProbe(BaseProbe, DialogsMixin):
     supports_minimizable = False
     supports_move_while_hidden = False
     supports_unminimize = False
+    fullscreen_presentation_size_equal = True
 
     if GTK_VERSION < (4, 0, 0):
         # Wayland mostly prohibits interaction with the larger windowing environment
@@ -32,8 +33,6 @@ class WindowProbe(BaseProbe, DialogsMixin):
     else:
         supports_minimize = False
         supports_placement = False
-
-    fullscreen_presentation_size_equal = False
 
     def __init__(self, app, window):
         super().__init__()

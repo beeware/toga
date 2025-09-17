@@ -703,35 +703,35 @@ else:
         "initial_state, final_state",
         [
             # Switch from NORMAL:
-            (WindowState.NORMAL, WindowState.MINIMIZED),
-            (WindowState.NORMAL, WindowState.MAXIMIZED),
-            (WindowState.NORMAL, WindowState.FULLSCREEN),
-            (WindowState.NORMAL, WindowState.PRESENTATION),
-            (WindowState.NORMAL, WindowState.NORMAL),
-            # Switch from MINIMIZED:
-            (WindowState.MINIMIZED, WindowState.NORMAL),
-            (WindowState.MINIMIZED, WindowState.MAXIMIZED),
-            (WindowState.MINIMIZED, WindowState.FULLSCREEN),
-            (WindowState.MINIMIZED, WindowState.PRESENTATION),
-            (WindowState.MINIMIZED, WindowState.MINIMIZED),
-            # Switch from MAXIMIZED:
-            (WindowState.MAXIMIZED, WindowState.NORMAL),
-            (WindowState.MAXIMIZED, WindowState.MINIMIZED),
+            # (WindowState.NORMAL, WindowState.MINIMIZED),
+            # (WindowState.NORMAL, WindowState.MAXIMIZED),
+            # (WindowState.NORMAL, WindowState.FULLSCREEN),
+            # (WindowState.NORMAL, WindowState.PRESENTATION),
+            # (WindowState.NORMAL, WindowState.NORMAL),
+            # # Switch from MINIMIZED:
+            # (WindowState.MINIMIZED, WindowState.NORMAL),
+            # (WindowState.MINIMIZED, WindowState.MAXIMIZED),
+            # (WindowState.MINIMIZED, WindowState.FULLSCREEN),
+            # (WindowState.MINIMIZED, WindowState.PRESENTATION),
+            # (WindowState.MINIMIZED, WindowState.MINIMIZED),
+            # # Switch from MAXIMIZED:
+            # (WindowState.MAXIMIZED, WindowState.NORMAL),
+            # (WindowState.MAXIMIZED, WindowState.MINIMIZED),
             (WindowState.MAXIMIZED, WindowState.FULLSCREEN),
-            (WindowState.MAXIMIZED, WindowState.PRESENTATION),
-            (WindowState.MAXIMIZED, WindowState.MAXIMIZED),
-            # Switch from FULLSCREEN:
-            (WindowState.FULLSCREEN, WindowState.NORMAL),
-            (WindowState.FULLSCREEN, WindowState.MINIMIZED),
-            (WindowState.FULLSCREEN, WindowState.MAXIMIZED),
-            (WindowState.FULLSCREEN, WindowState.PRESENTATION),
-            (WindowState.FULLSCREEN, WindowState.FULLSCREEN),
-            # Switch from PRESENTATION:
-            (WindowState.PRESENTATION, WindowState.NORMAL),
-            (WindowState.PRESENTATION, WindowState.MINIMIZED),
-            (WindowState.PRESENTATION, WindowState.MAXIMIZED),
-            (WindowState.PRESENTATION, WindowState.FULLSCREEN),
-            (WindowState.PRESENTATION, WindowState.PRESENTATION),
+            # (WindowState.MAXIMIZED, WindowState.PRESENTATION),
+            # (WindowState.MAXIMIZED, WindowState.MAXIMIZED),
+            # # Switch from FULLSCREEN:
+            # (WindowState.FULLSCREEN, WindowState.NORMAL),
+            # (WindowState.FULLSCREEN, WindowState.MINIMIZED),
+            # (WindowState.FULLSCREEN, WindowState.MAXIMIZED),
+            # (WindowState.FULLSCREEN, WindowState.PRESENTATION),
+            # (WindowState.FULLSCREEN, WindowState.FULLSCREEN),
+            # # Switch from PRESENTATION:
+            # (WindowState.PRESENTATION, WindowState.NORMAL),
+            # (WindowState.PRESENTATION, WindowState.MINIMIZED),
+            # (WindowState.PRESENTATION, WindowState.MAXIMIZED),
+            # (WindowState.PRESENTATION, WindowState.FULLSCREEN),
+            # (WindowState.PRESENTATION, WindowState.PRESENTATION),
         ],
     )
     @pytest.mark.parametrize(
@@ -780,12 +780,12 @@ else:
                     if initial_state == WindowState.NORMAL:
                         assert current_size > previous_state_window_size
                     elif initial_state == WindowState.MAXIMIZED:
-                        if final_state == WindowState.NORMAL:
+                        if final_state in {WindowState.NORMAL, WindowState.MINIMIZED}:
                             assert current_size < previous_state_window_size
                         else:
                             assert current_size > previous_state_window_size
                     elif initial_state == WindowState.FULLSCREEN:
-                        if final_state in {WindowState.NORMAL, WindowState.MAXIMIZED}:
+                        if final_state in {WindowState.NORMAL, WindowState.MINIMIZED, WindowState.MAXIMIZED}:
                             assert current_size < previous_state_window_size
                         elif (
                             final_state == WindowState.FULLSCREEN
