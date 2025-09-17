@@ -32,6 +32,10 @@ class TableProbe(SimpleProbe):
             return None
 
     @property
+    def has_focus(self):
+        return self.native.window.firstResponder == self.native_table
+
+    @property
     def row_count(self):
         return int(self.native_table.numberOfRowsInTableView(self.native_table))
 
@@ -145,10 +149,7 @@ class TableProbe(SimpleProbe):
             clickCount=2,
         )
 
-    async def acquire_keyboard_focus(self):
-        self.native_table.window.makeFirstResponder(
-            self.native_table
-        )  # switch to widget.focus() when possible (#2972).
-        # Insure first row is selected.
+    async def select_first_row_keyboard(self):
+        # Use the keyboard to ensure first row is selected.
         await self.type_character("<down>")
         await self.type_character("<up>")
