@@ -174,10 +174,14 @@ if toga.platform.current_platform in {"iOS", "android"}:
             final_state,
         }:
             pytest.xfail("This backend doesn't support fullscreen window state.")
-        if not main_window_probe.supports_presentation and WindowState.PRESENTATION in {
-            initial_state,
-            final_state,
-        }:
+        if (
+            not main_window_probe.supports_presentation
+            and WindowState.PRESENTATION
+            in {
+                initial_state,
+                final_state,
+            }
+        ):
             pytest.xfail("This backend doesn't support presentation window state.")
 
         # Set to initial state
@@ -703,35 +707,35 @@ else:
         "initial_state, final_state",
         [
             # Switch from NORMAL:
-            # (WindowState.NORMAL, WindowState.MINIMIZED),
-            # (WindowState.NORMAL, WindowState.MAXIMIZED),
-            # (WindowState.NORMAL, WindowState.FULLSCREEN),
-            # (WindowState.NORMAL, WindowState.PRESENTATION),
-            # (WindowState.NORMAL, WindowState.NORMAL),
-            # # Switch from MINIMIZED:
-            # (WindowState.MINIMIZED, WindowState.NORMAL),
-            # (WindowState.MINIMIZED, WindowState.MAXIMIZED),
-            # (WindowState.MINIMIZED, WindowState.FULLSCREEN),
-            # (WindowState.MINIMIZED, WindowState.PRESENTATION),
-            # (WindowState.MINIMIZED, WindowState.MINIMIZED),
-            # # Switch from MAXIMIZED:
-            # (WindowState.MAXIMIZED, WindowState.NORMAL),
-            # (WindowState.MAXIMIZED, WindowState.MINIMIZED),
+            (WindowState.NORMAL, WindowState.MINIMIZED),
+            (WindowState.NORMAL, WindowState.MAXIMIZED),
+            (WindowState.NORMAL, WindowState.FULLSCREEN),
+            (WindowState.NORMAL, WindowState.PRESENTATION),
+            (WindowState.NORMAL, WindowState.NORMAL),
+            # Switch from MINIMIZED:
+            (WindowState.MINIMIZED, WindowState.NORMAL),
+            (WindowState.MINIMIZED, WindowState.MAXIMIZED),
+            (WindowState.MINIMIZED, WindowState.FULLSCREEN),
+            (WindowState.MINIMIZED, WindowState.PRESENTATION),
+            (WindowState.MINIMIZED, WindowState.MINIMIZED),
+            # Switch from MAXIMIZED:
+            (WindowState.MAXIMIZED, WindowState.NORMAL),
+            (WindowState.MAXIMIZED, WindowState.MINIMIZED),
             (WindowState.MAXIMIZED, WindowState.FULLSCREEN),
-            # (WindowState.MAXIMIZED, WindowState.PRESENTATION),
-            # (WindowState.MAXIMIZED, WindowState.MAXIMIZED),
-            # # Switch from FULLSCREEN:
-            # (WindowState.FULLSCREEN, WindowState.NORMAL),
-            # (WindowState.FULLSCREEN, WindowState.MINIMIZED),
-            # (WindowState.FULLSCREEN, WindowState.MAXIMIZED),
-            # (WindowState.FULLSCREEN, WindowState.PRESENTATION),
-            # (WindowState.FULLSCREEN, WindowState.FULLSCREEN),
-            # # Switch from PRESENTATION:
-            # (WindowState.PRESENTATION, WindowState.NORMAL),
-            # (WindowState.PRESENTATION, WindowState.MINIMIZED),
-            # (WindowState.PRESENTATION, WindowState.MAXIMIZED),
-            # (WindowState.PRESENTATION, WindowState.FULLSCREEN),
-            # (WindowState.PRESENTATION, WindowState.PRESENTATION),
+            (WindowState.MAXIMIZED, WindowState.PRESENTATION),
+            (WindowState.MAXIMIZED, WindowState.MAXIMIZED),
+            # Switch from FULLSCREEN:
+            (WindowState.FULLSCREEN, WindowState.NORMAL),
+            (WindowState.FULLSCREEN, WindowState.MINIMIZED),
+            (WindowState.FULLSCREEN, WindowState.MAXIMIZED),
+            (WindowState.FULLSCREEN, WindowState.PRESENTATION),
+            (WindowState.FULLSCREEN, WindowState.FULLSCREEN),
+            # Switch from PRESENTATION:
+            (WindowState.PRESENTATION, WindowState.NORMAL),
+            (WindowState.PRESENTATION, WindowState.MINIMIZED),
+            (WindowState.PRESENTATION, WindowState.MAXIMIZED),
+            (WindowState.PRESENTATION, WindowState.FULLSCREEN),
+            (WindowState.PRESENTATION, WindowState.PRESENTATION),
         ],
     )
     @pytest.mark.parametrize(

@@ -64,7 +64,10 @@ class TogaWindow(NSWindow):
 
     @objc_method
     def windowDidResize_(self, notification) -> None:
-        self.impl.interface.on_resize()
+        # Triggering on_resize here in case of fullscreen, gives
+        # incorrect window size. Hence, exclude it for fullscreen.
+        if self.interface.state != WindowState.FULLSCREEN:
+            self.impl.interface.on_resize()
         if self.interface.content:
             # Set the window to the new size
             self.interface.content.refresh()
@@ -108,6 +111,9 @@ class TogaWindow(NSWindow):
             )
         else:
             self.impl._pending_state_transition = None
+            # Manually trigger on_resize here, as it is excluded for fullscreen in
+            # windowDidResize_.
+            self.impl.interface.on_resize()
 
     @objc_method
     def delayedFullScreenExit_(self, sender) -> None:
