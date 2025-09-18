@@ -4,6 +4,7 @@ import sys
 from unittest.mock import Mock
 
 import toga
+from toga.platform import current_platform
 
 
 class ExampleDoc(toga.Document):
@@ -64,15 +65,13 @@ class Testbed(toga.App):
 
         # Toga's Qt backend is packaged the same as GTK Linux; substitute
         # the Qt backend tests if running on Qt.
-        qt_module_name = "tests_backend_qt"
-        alias_module_name = "tests_backend"
-        spec = importlib.util.find_spec(qt_module_name)
-        if spec is None:
-            raise FileNotFoundError("Could not find Qt backend tests")
-        qt_module = importlib.import_module(qt_module_name)
+        if current_platform == "linux-qt":
+            spec = importlib.util.find_spec("tests_backend_qt")
+            if spec is None:
+                raise FileNotFoundError("Could not find Qt backend tests")
+            qt_module = importlib.import_module("tests_backend_qt")
 
-        sys.modules[alias_module_name] = qt_module
-        return True
+            sys.modules["tests_backend"] = qt_module
 
         # Set a default return code for the app, so that a value is
         # available if the app exits for a reason other than the test
