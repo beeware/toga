@@ -34,10 +34,10 @@ class cachedicon:
 
 class NativeIcon:
     """
-    For internal use only
+    For internal use for Qt backend only
     """
 
-    def __init__(self, native):
+    def __init__(self, native):  # pragma: no cover
         self.factory = get_platform_factory()
         self._impl = self.factory.NativeIcon(native)
 
