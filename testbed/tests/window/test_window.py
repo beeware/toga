@@ -769,11 +769,11 @@ else:
         closure_exception = None
 
         def check_initial_state_size(window):
-            if second_window.state == initial_state:
+            if second_window_probe.instantaneous_state == initial_state:
                 assert second_window.size > previous_state_window_size
 
         def check_final_state_size(window):
-            if second_window.state == final_state:
+            if second_window_probe.instantaneous_state == final_state:
                 current_size = second_window.size
                 nonlocal closure_exception
                 try:
