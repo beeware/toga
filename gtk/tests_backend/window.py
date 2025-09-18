@@ -24,7 +24,7 @@ class WindowProbe(BaseProbe, DialogsMixin):
     supports_minimizable = False
     supports_move_while_hidden = False
     supports_unminimize = False
-    fullscreen_presentation_size_equal = True
+    fullscreen_presentation_size_equal = not IS_WAYLAND
 
     if GTK_VERSION < (4, 0, 0):
         # Wayland mostly prohibits interaction with the larger windowing environment
