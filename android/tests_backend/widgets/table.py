@@ -19,6 +19,10 @@ class TableProbe(SimpleProbe):
         assert isinstance(self.native_table, TableLayout)
 
     @property
+    def has_focus(self):
+        pytest.xfail("This widget cannot gain focus on this platform")
+
+    @property
     def row_count(self):
         count = self.native_table.getChildCount()
         if (count > 0) and self.header_visible:

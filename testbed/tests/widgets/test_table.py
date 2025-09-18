@@ -7,7 +7,7 @@ import toga
 from toga.sources import ListSource
 from toga.style.pack import Pack
 
-from ..conftest import skip_on_platforms, xfail_on_platforms
+from ..conftest import skip_on_platforms
 from .conftest import build_cleanup_test
 from .probe import get_probe
 from .properties import (  # noqa: F401
@@ -161,10 +161,6 @@ async def test_scroll(widget, probe):
 
 async def test_keyboard_navigation(widget, source, probe):
     """The list can be navigated using a keyboard."""
-
-    skip_on_platforms("linux")
-    xfail_on_platforms("android")
-
     widget.focus()
     assert probe.has_focus
 
@@ -322,9 +318,6 @@ async def test_multiselect_keyboard_control(
     Keyboard navigation can produce different events to mouse navigation,
     so we need to test keyboard selection independent of mouse selection.
     """
-    skip_on_platforms("linux")
-    xfail_on_platforms("android")
-
     await multiselect_probe.redraw("No row is selected in multiselect table")
 
     # Initial selection is empty
