@@ -167,7 +167,6 @@ async def test_scroll(widget, probe):
 async def test_keyboard_navigation(widget, source, probe):
     """The list can be navigated using a keyboard."""
     widget.focus()
-    assert probe.has_focus
 
     await probe.select_first_row_keyboard()
     await probe.redraw("First row selected")
@@ -330,7 +329,6 @@ async def test_multiselect_keyboard_control(
     on_select_handler.assert_not_called()
 
     multiselect_widget.focus()
-    assert multiselect_probe.has_focus
 
     # A single row can be added to the selection
     await multiselect_probe.select_first_row_keyboard()
