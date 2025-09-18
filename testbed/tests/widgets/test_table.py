@@ -15,9 +15,14 @@ from .properties import (  # noqa: F401
     test_background_color_reset,
     test_enable_noop,
     test_flex_widget_size,
-    test_focus_noop,
     test_font,
 )
+
+# Tables can't be given focus on mobile
+if toga.platform.current_platform in {"android", "iOS"}:
+    from .properties import test_focus_noop  # noqa: F401
+else:
+    from .properties import test_focus  # noqa: F401
 
 
 @pytest.fixture
@@ -161,7 +166,9 @@ async def test_scroll(widget, probe):
 
 async def test_keyboard_navigation(widget, source, probe):
     """The list can be navigated using a keyboard."""
-    await probe.acquire_keyboard_focus()
+    widget.focus()
+
+    await probe.select_first_row_keyboard()
     await probe.redraw("First row selected")
     assert widget.selection == widget.data[0]
 
@@ -321,9 +328,10 @@ async def test_multiselect_keyboard_control(
     assert multiselect_widget.selection == []
     on_select_handler.assert_not_called()
 
-    await multiselect_probe.acquire_keyboard_focus()
+    multiselect_widget.focus()
 
     # A single row can be added to the selection
+    await multiselect_probe.select_first_row_keyboard()
     await multiselect_probe.redraw("First row selected")
     assert multiselect_widget.selection == [source[0]]
 

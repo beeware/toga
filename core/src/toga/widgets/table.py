@@ -122,10 +122,6 @@ class Table(Widget):
     def enabled(self, value: object) -> None:
         pass
 
-    def focus(self) -> None:
-        """No-op; Table cannot accept input focus."""
-        pass
-
     @property
     def data(self) -> SourceT | ListSource:
         """The data to display in the table.

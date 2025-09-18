@@ -24,6 +24,10 @@ class TreeProbe(SimpleProbe):
     def background_color(self):
         pytest.skip("Can't set background color on GTK Tables")
 
+    @property
+    def has_focus(self):
+        return self.native_tree.has_focus()
+
     async def expand_tree(self):
         self.native_tree.expand_all()
         await asyncio.sleep(0.1)

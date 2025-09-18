@@ -97,6 +97,9 @@ class Table(Widget):
 
             self.native_table.append_column(column)
 
+    def focus(self):
+        self.native_table.grab_focus()
+
     def gtk_on_row_activated(self, widget, path, column):
         row = self.store[path][0].value
         self.interface.on_activate(row=row)
