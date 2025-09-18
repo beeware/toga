@@ -33,3 +33,6 @@ class ButtonProbe(SimpleProbe):
 
     async def press(self):
         self.native.clicked()
+
+    def assert_taller_than(self, initial_height):
+        assert self.height > initial_height

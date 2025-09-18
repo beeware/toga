@@ -95,3 +95,6 @@ class Button(Widget):
         content_size = self.native.intrinsicContentSize()
         self.interface.intrinsic.width = at_least(content_size.width)
         self.interface.intrinsic.height = content_size.height
+
+    def assert_taller_than(self, initial_height):
+        assert self.height > initial_height
