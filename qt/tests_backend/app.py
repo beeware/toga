@@ -1,0 +1,148 @@
+"""
+Written with haste. Expect hundreds of errors.
+"""
+
+from pathlib import Path
+
+import pytest
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QCursor
+from PySide6.QtWidgets import QApplication, QDialog
+from toga_qt.keys import qt_to_toga_key, toga_to_qt_key
+from toga_qt.libs import get_is_wayland
+
+from .probe import BaseProbe
+
+
+class AppProbe(BaseProbe):
+    supports_key = True
+    supports_key_mod3 = True
+    supports_current_window_assignment = True
+    supports_dark_mode = True
+
+    def __init__(self, app):
+        super().__init__()
+        self.app = app
+        self.main_window = app.main_window
+        self.native = self.app._impl.native
+        self.impl = self.app._impl
+        assert isinstance(QApplication.instance(), QApplication)
+        # and the clouds are moving on with every autumn...
+        assert self.native.style().objectName() == "breeze"
+        # KWin supports this but not mutter which is used in CI.
+        if get_is_wayland():
+            self.supports_current_window_assignment = False
+
+    @property
+    def config_path(self):
+        return Path.home() / ".config/testbed"
+
+    @property
+    def data_path(self):
+        return Path.home() / ".local/share/testbed"
+
+    @property
+    def cache_path(self):
+        return Path.home() / ".cache/testbed"
+
+    @property
+    def logs_path(self):
+        return Path.home() / ".local/state/testbed/log"
+
+    @property
+    def is_cursor_visible(self):
+        return self.native.overrideCursor() != QCursor(Qt.BlankCursor)
+
+    def unhide(self):
+        self.main_window._impl.native.show()
+
+    def assert_app_icon(self, icon):
+        raise pytest.skip("Not implemented in probe yet")
+
+    def _menu_item(self, path):
+        menu_bar = self.main_window._impl.native.menuBar()
+        current_menu = menu_bar
+        for label in path:
+            for action in current_menu.actions():
+                if action.text() == label:
+                    if action.menu():
+                        current_menu = action.menu()
+                    else:
+                        return action
+                    break
+            else:
+                raise AssertionError(f"Menu path {path} not found")
+        return current_menu
+
+    def _activate_menu_item(self, path):
+        item = self._menu_item(path)
+        item.trigger()
+
+    def activate_menu_hide(self):
+        pytest.xfail("No hide in menu for KDE apps")
+
+    def activate_menu_exit(self):
+        self._activate_menu_item(["File", "Quit"])
+
+    def activate_menu_about(self):
+        self._activate_menu_item(["Help", "About Toga Testbed"])
+
+    async def close_about_dialog(self):
+        self.impl._about_dialog.done(QDialog.DialogCode.Accepted)
+
+    def activate_menu_visit_homepage(self):
+        raise pytest.xfail("Qt apps do not have Visit Homepage")
+
+    def assert_dialog_in_focus(self, dialog):
+        active_window = QApplication.activeWindow()
+        assert active_window.windowTitle() == dialog._impl.native.windowTitle()
+
+    def assert_menu_item(self, path, *, enabled=True):
+        item = self._menu_item(path)
+        assert item.isEnabled() == enabled
+
+    def assert_menu_order(self, path, expected):
+        menu = self._menu_item(path)
+        actual_titles = [
+            action.text() if action.isSeparator() is False else "---"
+            for action in menu.actions()
+        ]
+        assert actual_titles == expected
+
+    def assert_system_menus(self):
+        # Incomplete
+        self.assert_menu_item(["File", "Quit"])
+        self.assert_menu_item(["Help", "About Toga Testbed"])
+
+    def activate_menu_close_window(self):
+        pytest.xfail("Menu close is not typical of Qt")
+
+    def activate_menu_close_all_windows(self):
+        pytest.xfail("Menu close all windows is not typical of Qt")
+
+    def activate_menu_minimize(self):
+        pytest.xfail("Menu Minimize is not typical of Qt")
+
+    def keystroke(self, combination):
+        return qt_to_toga_key(toga_to_qt_key(combination))
+
+    async def restore_standard_app(self):
+        pytest.skip("not impld")
+
+    async def open_initial_document(self, monkeypatch, document_path):
+        pytest.skip("not impld")
+
+    def open_document_by_drag(self, document_path):
+        pytest.skip("Not impld")
+
+    def has_status_icon(self, status_icon):
+        pytest.skip("Not impld")
+
+    def status_menu_items(self, status_icon):
+        pytest.skip("Not impld")
+
+    def activate_status_icon_button(self, item_id):
+        pytest.skip("Not impld")
+
+    def activate_status_menu_item(self, item_id, title):
+        pytest.skip("Not impld")

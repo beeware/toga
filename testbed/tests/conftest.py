@@ -3,7 +3,6 @@ import gc
 import inspect
 from dataclasses import dataclass
 from importlib import import_module
-import os
 
 from pytest import fixture, register_assert_rewrite, skip
 

@@ -29,8 +29,11 @@ def get_current_platform() -> str | None:
         return "android"
     elif sys.platform.startswith("freebsd"):
         return "freeBSD"
-    elif "kde" in os.environ.get("XDG_CURRENT_DESKTOP", "").lower() or os.environ.get("TOGA_QT","") == "1":
-        current_platform = "linux-qt"
+    elif (
+        "kde" in os.environ.get("XDG_CURRENT_DESKTOP", "").lower()
+        or os.environ.get("TOGA_QT", "") == "1"
+    ):
+        return "linux-qt"
     else:
         return _TOGA_PLATFORMS.get(sys.platform)
 
