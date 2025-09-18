@@ -22,6 +22,7 @@ from toga.documents import Document as Document
 from toga.documents import DocumentWindow as DocumentWindow
 from toga.fonts import Font as Font
 from toga.icons import Icon as Icon
+from toga.icons import NativeIcon as NativeIcon
 from toga.images import Image as Image
 from toga.keys import Key as Key
 from toga.statusicons import MenuStatusIcon as MenuStatusIcon

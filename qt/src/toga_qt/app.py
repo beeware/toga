@@ -6,10 +6,10 @@ from PySide6.QtWidgets import QApplication, QMessageBox
 from qasync import QEventLoop
 
 import toga
+from toga import NativeIcon
 from toga.command import Command, Group
 
 from .screens import Screen as ScreenImpl
-from .togax import NativeIcon
 
 
 def operate_on_focus(method_name, interface, needwrite=False):

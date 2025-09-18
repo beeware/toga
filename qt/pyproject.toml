@@ -34,7 +34,6 @@ keywords = [
 classifiers = [
     "Development Status :: 1 - Planning",
     "Intended Audience :: Developers",
-    "License :: OSI Approved :: BSD License",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
@@ -53,7 +52,7 @@ classifiers = [
 linux-qt = "toga_qt"
 
 [tool.setuptools_scm]
-root = "."
+root = ".."
 
 [tool.setuptools_dynamic_dependencies]
 dependencies = [

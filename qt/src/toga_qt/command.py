@@ -2,10 +2,9 @@ import sys
 
 from PySide6.QtGui import QAction, QIcon
 
-from toga import Command as StandardCommand, Group, Key
+from toga import Command as StandardCommand, Group, Key, NativeIcon
 
 from .keys import toga_to_qt_key
-from .togax import NativeIcon  # also patches to add Group.SETTINGS. adds icon changing
 
 
 class Command:

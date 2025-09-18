@@ -4,7 +4,7 @@ from collections.abc import Iterator, MutableMapping, MutableSet
 from typing import TYPE_CHECKING, Protocol
 
 from toga.handlers import simple_handler, wrapped_handler
-from toga.icons import Icon
+from toga.icons import Icon, NativeIcon
 from toga.keys import Key
 from toga.platform import get_platform_factory
 
@@ -153,6 +153,7 @@ class Group:
     COMMANDS: Group  #: Default group for user-provided commands
     WINDOW: Group  #: Window management commands
     HELP: Group  #: Help commands
+    SETTINGS: Group  #: Preferences menu group for KDE-based apps
 
 
 Group.APP = Group("*", order=-100)
@@ -162,6 +163,7 @@ Group.VIEW = Group("View", order=-10)
 Group.COMMANDS = Group("Commands", order=30)
 Group.WINDOW = Group("Window", order=90)
 Group.HELP = Group("Help", order=100)
+Group.SETTINGS = Group("Settings", order=80)
 
 
 class ActionHandler(Protocol):
@@ -341,7 +343,11 @@ class Command:
 
     @icon.setter
     def icon(self, icon_or_name: IconContentT | None) -> None:
-        if isinstance(icon_or_name, Icon) or icon_or_name is None:
+        if (
+            isinstance(icon_or_name, Icon)
+            or isinstance(icon_or_name, NativeIcon)
+            or icon_or_name is None
+        ):
             self._icon = icon_or_name
         else:
             self._icon = Icon(icon_or_name)
