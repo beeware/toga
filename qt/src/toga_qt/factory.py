@@ -8,7 +8,7 @@ from .app import App
 from .command import Command
 from .container import Container
 from .fonts import Font
-from .icons import Icon
+from .icons import Icon, NativeIcon
 from .images import Image
 from .paths import Paths
 from .statusicons import MenuStatusIcon, SimpleStatusIcon, StatusIconSet
@@ -25,6 +25,7 @@ __all__ = [
     "App",
     "Paths",
     "Icon",
+    "NativeIcon",
     "Image",
     "MenuStatusIcon",
     "SimpleStatusIcon",
