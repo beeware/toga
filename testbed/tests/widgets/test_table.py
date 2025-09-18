@@ -15,9 +15,14 @@ from .properties import (  # noqa: F401
     test_background_color_reset,
     test_enable_noop,
     test_flex_widget_size,
-    test_focus,
     test_font,
 )
+
+# Tables can't be given focus on mobile
+if toga.platform.current_platform in {"android", "iOS"}:
+    from .properties import test_focus_noop  # noqa: F401
+else:
+    from .properties import test_focus  # noqa: F401
 
 
 @pytest.fixture
