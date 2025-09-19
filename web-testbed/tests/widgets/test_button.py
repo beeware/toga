@@ -19,8 +19,7 @@ async def test_text(widget, probe):
     for text in TEXTS:
         widget.text = text
 
-        # no-op
-        # await probe.redraw(f"Button text should be {text}")
+        await probe.redraw(f"Button text should be {text}")
 
         # Text after a newline will be stripped.
         assert isinstance(widget.text, str)
@@ -40,10 +39,9 @@ async def test_press(widget, probe):
     # to one in the remote web app.
     handler = MockProxy()
     widget.on_press = handler
-    await probe.press()  # Includes a no-op tick, not needed though
+    await probe.press()
 
-    # no-op
-    # await probe.redraw("Button should be pressed")
+    await probe.redraw("Button should be pressed")
 
     handler.assert_called_once_with(widget)
 
@@ -54,5 +52,5 @@ async def test_background_color_transparent(widget, probe):
     original_background_color = probe.background_color
 
     widget.style.background_color = TRANSPARENT
-    # await probe.redraw("Button background color should be reset to the default color")
+    await probe.redraw("Button background color should be reset to the default color")
     assert_background_color(probe.background_color, original_background_color)

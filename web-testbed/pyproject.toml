@@ -2,7 +2,7 @@
 name = "testbed"
 version = "0.0.1"
 
-[project.optional-dependencies]
+[dependency-groups]
 test = [
     "briefcase",
     "playwright == 1.51.0",

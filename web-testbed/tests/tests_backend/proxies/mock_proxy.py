@@ -1,9 +1,5 @@
-from .non_widget_proxy import NonWidgetProxy
+from .object_proxy import ObjectProxy
 
 
-class MockProxy(NonWidgetProxy):
+class MockProxy(ObjectProxy):
     _ctor_expr = "Mock"
-
-    def __init__(self, *args, **kwargs):
-        key = self._create(self._ctor_expr, *args, **kwargs)
-        super().__init__(key)

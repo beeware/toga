@@ -43,8 +43,8 @@ class ButtonProbe:
         return type(self).page_provider()
 
     def __init__(self, widget):
-        object.__setattr__(self, "id", widget.id)
-        object.__setattr__(self, "dom_id", f"toga_{widget.id}")
+        self.id = widget.id
+        self.dom_id = f"toga_{widget.id}"
 
     @property
     def text(self):
@@ -60,8 +60,11 @@ class ButtonProbe:
     async def press(self):
         page = self._page()
 
-        # Click
+        # Click/press
         page.run_coro(lambda p: p.locator(f"#{self.dom_id}").click())
+
+    async def redraw(self, text):
+        page = self._page()
 
         # Yield to the event loop so on_press handler runs before assertions
         # (wait_for_timeout(0) is a no-op tick in Playwright)
@@ -69,10 +72,9 @@ class ButtonProbe:
 
     @property
     def background_color(self):
-        """
-        Return a Color-like object with .r/.g/.b/.a so the stock assertions
-        (which expect Toga Color objects) work unchanged.
-        """
+        # Return a Color-like object with .r/.g/.b/.a so the stock assertions
+        # (which expect Toga Color objects) work unchanged.
+
         page = self._page()
         css = page.run_coro(
             lambda p: p.evaluate(

@@ -4,32 +4,23 @@
 import pytest
 
 from .tests_backend.playwright_page import BackgroundPage
-
-# In future, would only need to be ExprProxy and SimpleProbe/BaseProbe.
 from .tests_backend.proxies.app_proxy import AppProxy
+
+# In future, would only need to be BaseProxy and SimpleProbe/BaseProbe.
 from .tests_backend.proxies.base_proxy import BaseProxy
-from .tests_backend.proxies.box_proxy import BoxProxy
-from .tests_backend.proxies.expr_proxy import ExprProxy
-from .tests_backend.proxies.main_window_proxy import MainWindowProxy
 from .tests_backend.widgets.button import ButtonProbe
 
 
-# With this page injection method, we could possibly extend so that
-# multiple pages can be created and be running at once (if it is ever
-# needed in the future). Would need to add a method/fixture to store
-# and switch between them.
 @pytest.fixture(scope="session")
 def page():
     p = BackgroundPage()
     return p
 
 
+# In future, will only be BaseProxy and BaseProbe/SimpleProbe
 @pytest.fixture(scope="session", autouse=True)
 def _wire_page(page):
     BaseProxy.page_provider = staticmethod(lambda: page)
-    BoxProxy.page_provider = staticmethod(lambda: page)
-    ExprProxy.page_provider = staticmethod(lambda: page)
-    MainWindowProxy.page_provider = staticmethod(lambda: page)
     ButtonProbe.page_provider = staticmethod(lambda: page)
 
 
