@@ -50,8 +50,8 @@ async def test_text(widget, probe):
         expected = str(text).split("\n")[0]
         assert widget.text == expected
         assert probe.text == expected
-        # GTK rendering can result in a very minor change in button height
-        assert probe.height == approx(initial_height, abs=1)
+        # GTK/Qt rendering can result in a very minor change in button height
+        assert probe.height == approx(initial_height, abs=2)
 
 
 async def test_icon(widget, probe):
@@ -71,8 +71,7 @@ async def test_icon(widget, probe):
     # Icon now exists
     assert widget.icon is not None
     probe.assert_icon_size()
-    # Button is now taller.
-    assert probe.height > initial_height
+    probe.assert_taller_than(initial_height)
 
     # Move back to text
     widget.text = "Goodbye"

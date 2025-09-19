@@ -1,0 +1,39 @@
+from pathlib import Path
+
+from PySide6.QtCore import Qt
+from PySide6.QtQuickWidgets import QQuickWidget
+
+from .base import Widget
+
+
+class ActivityIndicator(Widget):
+    def create(self):
+        self.native = QQuickWidget()
+        self.native.setSource(
+            str(Path(__file__).parent.parent / "resources/activityindicator.qml")
+        )
+        self.native.setResizeMode(QQuickWidget.SizeRootObjectToView)
+        self.running = False
+        self.native.setAttribute(Qt.WA_AlwaysStackOnTop)
+        self.native.setAttribute(Qt.WA_TranslucentBackground)
+        self.native.setClearColor(Qt.transparent)
+
+    def _apply_hidden(self, hidden):
+        print(hidden)
+        self.native.setVisible(self.running and not hidden)
+        self.ai_hidden = hidden
+
+    def is_running(self):
+        return self.running
+
+    def start(self):
+        self.running = True
+        self.native.setVisible(not self.ai_hidden)
+
+    def stop(self):
+        self.native.setVisible(False)
+        self.running = False
+
+    def rehint(self):
+        self.interface.intrinsic.width = 32
+        self.interface.intrinsic.height = 32

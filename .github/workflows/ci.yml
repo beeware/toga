@@ -60,6 +60,7 @@ jobs:
         - "demo"
         - "dummy"
         - "gtk"
+        - "qt"
         - "iOS"
         - "toga"
         - "positron"
