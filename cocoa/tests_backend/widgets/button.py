@@ -56,3 +56,6 @@ class ButtonProbe(SimpleProbe):
             assert self.native.bezelStyle == NSBezelStyle.Rounded
 
         return super().height
+
+    def assert_taller_than(self, initial_height):
+        assert self.height > initial_height
