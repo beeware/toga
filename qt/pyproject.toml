@@ -7,7 +7,7 @@ requires = [
 build-backend = "setuptools.build_meta"
 
 [project]
-dynamic = ["version"]
+dynamic = ["version", "dependencies"]
 name = "toga-qt"
 description = "An Qt (KDE) backend for the Toga widget toolkit."
 readme = "README.rst"
