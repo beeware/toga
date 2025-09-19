@@ -1,9 +1,25 @@
+# ruff: noqa: E402
+
+import site
+import sys
+
+
+def import_pyside6():
+    """Temporarily break isolation to import system PySide6."""
+    system_site = site.getsitepackages()
+    print(system_site)
+    old_path = sys.path.copy()
+    sys.path.extend(system_site)
+    import PySide6  # noqa
+
+    sys.path = old_path
+
+
+import_pyside6()
+
 from toga import NotImplementedWarning
 
-from . import (
-    dialogs,  # noqa
-    initialization,  # noqa: F401
-)
+from . import dialogs
 from .app import App
 from .command import Command
 from .container import Container
