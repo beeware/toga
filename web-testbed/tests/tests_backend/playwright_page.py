@@ -43,13 +43,6 @@ class BackgroundPage:
                 "() => typeof window.test_cmd === 'function'"
             )
 
-            await self._page.evaluate(
-                "(code) => window.test_cmd(code)", "self.my_widgets = {}"
-            )
-            await self._page.evaluate(
-                "(code) => window.test_cmd(code)", "self.my_objs = {}"
-            )
-
             self._alock = asyncio.Lock()
         except Exception:
             raise

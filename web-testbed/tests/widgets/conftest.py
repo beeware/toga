@@ -2,7 +2,7 @@ import pytest
 
 # import toga
 from probe import get_probe
-from tests.tests_backend.proxies.box_proxy import BoxProxy
+from tests.tests_backend.proxies.object_proxies import BoxProxy
 
 
 @pytest.fixture
