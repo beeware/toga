@@ -1,3 +1,4 @@
+import os
 import types
 from unittest.mock import Mock
 
@@ -15,12 +16,34 @@ except ModuleNotFoundError:
     pyodide = None
 
 
+def _truthy(v) -> bool:
+    return str(v).strip().lower() in {"1", "true", "yes", "on"}
+
+
+def _web_testing_enabled() -> bool:
+    if _truthy(os.getenv("TOGA_WEB_TESTING")):
+        return True
+
+    if js is not None:
+        try:
+            if _truthy(getattr(js.window, "TOGA_WEB_TESTING", "")):
+                return True
+            qs = str(getattr(js.window, "location", None).search or "")
+            # enable if ?toga_web_testing=1 in url
+            if "toga_web_testing" in qs.lower():
+                return True
+        except Exception:
+            pass
+
+    return False
+
+
 class HelloWorld(toga.App):
     def startup(self):
         main_box = toga.Box(style=Pack(direction=COLUMN))
         self.label = toga.Label(id="myLabel", text="Test App - Toga Web Testing")
 
-        if js is not None:
+        if _web_testing_enabled() and js is not None and create_proxy is not None:
             self.my_objs = {}
             js.window.test_cmd = create_proxy(self.cmd_test)
 
