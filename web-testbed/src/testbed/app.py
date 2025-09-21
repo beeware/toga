@@ -35,14 +35,14 @@ class HelloWorld(toga.App):
         try:
             exec(code, env, local)
             result = local.get("result", env.get("result"))
-            envelope = self._serialize(result)
+            envelope = self._serialise_payload(result)
             return to_js(envelope, dict_converter=js.Object.fromEntries)
         except Exception as e:
             return to_js(
                 {"type": "error", "value": str(e)}, dict_converter=js.Object.fromEntries
             )
 
-    def _serialize(self, x):
+    def _serialise_payload(self, x):
         # primitives
         if x is None:
             return {"type": "none", "value": None}
@@ -57,9 +57,9 @@ class HelloWorld(toga.App):
 
         # containers
         if isinstance(x, list):
-            return {"type": "list", "items": [self._serialize(i) for i in x]}
+            return {"type": "list", "items": [self._serialise_payload(i) for i in x]}
         if isinstance(x, tuple):
-            return {"type": "tuple", "items": [self._serialize(i) for i in x]}
+            return {"type": "tuple", "items": [self._serialise_payload(i) for i in x]}
         if isinstance(x, dict):
             items = []
             for k, v in x.items():
@@ -75,7 +75,7 @@ class HelloWorld(toga.App):
                     key_env = {"type": "str", "value": k}
                 else:
                     key_env = {"type": "str", "value": str(k)}
-                items.append([key_env, self._serialize(v)])
+                items.append([key_env, self._serialise_payload(v)])
             return {"type": "dict", "items": items}
 
         # references by id

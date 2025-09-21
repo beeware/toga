@@ -1,8 +1,7 @@
 from pytest import approx, fixture
 from tests.assertions import assert_background_color
 from tests.data import TEXTS
-from tests.tests_backend.proxies.button_proxy import ButtonProxy
-from tests.tests_backend.proxies.mock_proxy import MockProxy
+from tests.tests_backend.proxies.object_proxies import ButtonProxy, MockProxy
 
 TRANSPARENT = "transparent"
 

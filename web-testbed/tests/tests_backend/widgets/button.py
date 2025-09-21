@@ -1,5 +1,7 @@
 import re
 
+from .base import SimpleProbe
+
 
 class _ColorLike:
     __slots__ = ("r", "g", "b", "a")
@@ -36,16 +38,7 @@ def _parse_css_rgba(s: str) -> "_ColorLike | None | str":
     return _ColorLike(r, g, b, a)
 
 
-class ButtonProbe:
-    page_provider = staticmethod(lambda: None)
-
-    def _page(self):
-        return type(self).page_provider()
-
-    def __init__(self, widget):
-        self.id = widget.id
-        self.dom_id = f"toga_{widget.id}"
-
+class ButtonProbe(SimpleProbe):
     @property
     def text(self):
         page = self._page()
@@ -62,13 +55,6 @@ class ButtonProbe:
 
         # Click/press
         page.run_coro(lambda p: p.locator(f"#{self.dom_id}").click())
-
-    async def redraw(self, text):
-        page = self._page()
-
-        # Yield to the event loop so on_press handler runs before assertions
-        # (wait_for_timeout(0) is a no-op tick in Playwright)
-        page.run_coro(lambda p: p.wait_for_timeout(0))
 
     @property
     def background_color(self):

@@ -99,7 +99,7 @@ class BaseProxy:
         payload = page.eval_js(
             "(code) => window.test_cmd(code)", f"result = {expr_src}"
         )
-        return self._decode_payload(payload)
+        return self._deserialise_payload(payload)
 
     def _try_realise_value(self, expr_src: str):
         # Used by __getattr__, try to get a concrete value for primitives/containers.
@@ -118,8 +118,8 @@ class BaseProxy:
         return False, None
 
     # Decode payload
-    def _decode_payload(self, payload):
-        # Decode strict typed envelopes:
+    def _deserialise_payload(self, payload):
+        # Des-serialise strict typed envelopes:
         #   - none/bool/int/float/str
         #   - list/tuple/dict (recursive)
         #   - object/callable -> proxy reference (my_objs[id])
