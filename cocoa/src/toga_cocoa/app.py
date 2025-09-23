@@ -138,10 +138,6 @@ class App:
         for window in list(self.interface.windows):
             window._impl.native.performClose(None)
 
-    def _menu_close_window(self, command, **kwargs):
-        if self.interface.current_window:
-            self.interface.current_window._impl.native.performClose(None)
-
     def create_standard_commands(self):
         # macOS defines some default management commands that aren't
         # exposed as standard commands.
