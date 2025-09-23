@@ -188,13 +188,14 @@ class AppProbe(BaseProbe, DialogsMixin):
 
         self.assert_menu_item(["Help", "Visit homepage"], enabled=True)
 
-    def activate_menu_close_window(self):
-        item = self._menu_item(["File", "Close"])
+    def _activate_menu_window_item(self, path):
+        item = self._menu_item(path)
         # don't send the action if it's supposed to be grayed out
         if self.app.current_window is None:
             return
-        # To activate the "Close" in global app menu, we need call the native
-        # handler on the NSWindow instead of the NSApplicationDelegate.
+        # To activate the window-related things in global app menu, we need
+        # call the native handler on the NSWindow instead of the
+        # NSApplicationDelegate.
         send_message(
             self.app.current_window._impl.native,
             item.action,
@@ -202,24 +203,15 @@ class AppProbe(BaseProbe, DialogsMixin):
             restype=None,
             argtypes=[objc_id],
         )
+
+    def activate_menu_close_window(self):
+        self._activate_menu_window_item(["File", "Close"])
 
     def activate_menu_close_all_windows(self):
         self._activate_menu_item(["File", "Close All"])
 
     def activate_menu_minimize(self):
-        item = self._menu_item(["Window", "Minimize"])
-        # don't send the action if it's supposed to be grayed out
-        if self.app.current_window is None:
-            return
-        # To activate the "Minimize" in global app menu, we need call the native
-        # handler on the NSWindow instead of the NSApplicationDelegate.
-        send_message(
-            self.app.current_window._impl.native,
-            item.action,
-            self.app.current_window._impl.native,
-            restype=None,
-            argtypes=[objc_id],
-        )
+        self._activate_menu_window_item(["Window", "Minimize"])
 
     def assert_dialog_in_focus(self, dialog):
         assert dialog._impl.native.window == self.app._impl.native.keyWindow, (
