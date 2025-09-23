@@ -1,0 +1,1 @@
+Icons attached by the operating system on macOS are now shown for Hide and minimize actions.
