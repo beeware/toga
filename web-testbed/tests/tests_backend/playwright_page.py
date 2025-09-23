@@ -33,6 +33,8 @@ class BackgroundPage:
             self._play = await async_playwright().start()
             self._browser = await self._play.chromium.launch(headless=True)
             self._context = await self._browser.new_context()
+            await self._context.add_init_script("window.TOGA_WEB_TESTING = true;")
+
             self._page = await self._context.new_page()
 
             await self._page.goto(
@@ -41,13 +43,6 @@ class BackgroundPage:
 
             await self._page.wait_for_function(
                 "() => typeof window.test_cmd === 'function'"
-            )
-
-            await self._page.evaluate(
-                "(code) => window.test_cmd(code)", "self.my_widgets = {}"
-            )
-            await self._page.evaluate(
-                "(code) => window.test_cmd(code)", "self.my_objs = {}"
             )
 
             self._alock = asyncio.Lock()

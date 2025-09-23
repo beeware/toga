@@ -1,9 +1,6 @@
-from .main_window_proxy import MainWindowProxy
+from .base_proxy import BaseProxy
 
 
-class AppProxy:
-    """Minimal app proxy: only expose main_window."""
-
-    @property
-    def main_window(self):
-        return MainWindowProxy()
+class AppProxy(BaseProxy):
+    def __init__(self):
+        super().__init__("self")
