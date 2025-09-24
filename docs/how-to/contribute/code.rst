@@ -1052,7 +1052,7 @@ the Toga public API doesn't provide a way to determine the physical size of a
 widget, or interrogate the font being used to render a widget; the probe
 implementation does. This allows a testbed test case to verify that a widget has
 been laid out correctly inside the Toga window, is drawn using the right font,
-and has any other other appropriate physical properties or internal state.
+and has any other appropriate physical properties or internal state.
 
 The probe also provides a programmatic interface for interacting *with* a
 widget. For example, in order to test a button, you need to be able to press
