@@ -4,12 +4,11 @@ A container that can display multiple labeled tabs of content.
 
 /// tab | macOS
 
-![`/reference/images/optioncontainer-cocoa.png](/reference/images/optioncontainer-cocoa.png){ width="450" }
+![/reference/images/optioncontainer-cocoa.png](/reference/images/optioncontainer-cocoa.png){ width="450" }
 
 /// caption
 
 ///
-
 
 <!-- TODO: Update alt text -->
 
@@ -23,7 +22,6 @@ A container that can display multiple labeled tabs of content.
 
 ///
 
-
 <!-- TODO: Update alt text -->
 
 ///
@@ -35,7 +33,6 @@ A container that can display multiple labeled tabs of content.
 /// caption
 
 ///
-
 
 <!-- TODO: Update alt text -->
 
@@ -49,7 +46,6 @@ A container that can display multiple labeled tabs of content.
 
 ///
 
-
 <!-- TODO: Update alt text -->
 
 ///
@@ -61,7 +57,6 @@ A container that can display multiple labeled tabs of content.
 /// caption
 
 ///
-
 
 <!-- TODO: Update alt text -->
 

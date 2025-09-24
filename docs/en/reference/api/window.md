@@ -10,7 +10,6 @@ An operating system-managed container of widgets.
 
 ///
 
-
 <!-- TODO: Update alt text -->
 
 ///
@@ -22,7 +21,6 @@ An operating system-managed container of widgets.
 /// caption
 
 ///
-
 
 <!-- TODO: Update alt text -->
 
@@ -36,7 +34,6 @@ An operating system-managed container of widgets.
 
 ///
 
-
 <!-- TODO: Update alt text -->
 
 ///
@@ -49,7 +46,6 @@ An operating system-managed container of widgets.
 
 ///
 
-
 <!-- TODO: Update alt text -->
 
 ///
@@ -61,7 +57,6 @@ An operating system-managed container of widgets.
 /// caption
 
 ///
-
 
 <!-- TODO: Update alt text -->
 

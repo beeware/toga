@@ -2,7 +2,8 @@
 
 Graphical content of arbitrary size.
 
-**Availability ([Key][api-status-key])**
+Availability ([Key][api-status-key])
+{: .availability-title }
 
 {{ pd_read_csv("reference/data/widgets_by_platform.csv", na_filter=False, usecols=[4,5,6,7,8,9,10])[pd_read_csv("reference/data/widgets_by_platform.csv")[["ComponentName"]].isin(["Image"]).all(axis=1)] | convert_to_md_table }}
 
@@ -61,7 +62,7 @@ represent images via
 
 ## Notes
 
-[](){ id="known-image-formats" }
+[](){ #known-image-formats }
 
 - PNG and JPEG formats are guaranteed to be supported. Other formats are
   available on some platforms:
@@ -69,7 +70,7 @@ represent images via
     - macOS: GIF, BMP, TIFF
     - Windows: GIF, BMP, TIFF
 
-[](){ id="native-image-rep" }
+[](){ #native-image-rep }
 
 - The native platform representations for images are:
     - Android: `android.graphics.Bitmap`
@@ -78,7 +79,7 @@ represent images via
     - macOS: `NSImage`
     - Windows: `System.Drawing.Image`
 
-[](){ id="toga_image_subclassing" }
+[](){ #toga_image_subclassing }
 
 - If you subclass [`toga.Image`][], you can supply
   that subclass as the requested format to any `as_format()` method in

@@ -1,6 +1,6 @@
 # macOS
 
-![image](/reference/screenshots/cocoa.png){ width="300px" }
+![image](../images/cocoa.png){ width="300px" }
 
 /// caption
 
@@ -11,7 +11,7 @@
 The Toga backend for macOS is
 [toga-cocoa](https://github.com/beeware/toga/tree/main/cocoa).
 
-## Prerequisites  { id="macos-prerequisites" }
+## Prerequisites  { #macos-prerequisites }
 
 `toga-cocoa` requires Python 3.10+, and macOS 11 (Big Sur) or newer.
 

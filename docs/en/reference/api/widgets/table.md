@@ -11,7 +11,6 @@ provided if necessary.
 
 ///
 
-
 <!-- TODO: Update alt text -->
 
 ///
@@ -23,7 +22,6 @@ provided if necessary.
 /// caption
 
 ///
-
 
 <!-- TODO: Update alt text -->
 
@@ -37,7 +35,6 @@ provided if necessary.
 
 ///
 
-
 <!-- TODO: Update alt text -->
 
 ///
@@ -49,7 +46,6 @@ provided if necessary.
 /// caption
 
 ///
-
 
 <!-- TODO: Update alt text -->
 

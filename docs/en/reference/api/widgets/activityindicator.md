@@ -11,7 +11,6 @@ length, usually rendered as a "spinner" animation.
 
 ///
 
-
 <!-- TODO: Update alt text -->
 
 ///
@@ -24,7 +23,6 @@ length, usually rendered as a "spinner" animation.
 
 ///
 
-
 <!-- TODO: Update alt text -->
 
 ///
@@ -36,7 +34,6 @@ length, usually rendered as a "spinner" animation.
 /// caption
 
 ///
-
 
 <!-- TODO: Update alt text -->
 
@@ -56,7 +53,6 @@ Not supported
 
 ///
 
-
 <!-- TODO: Update alt text -->
 
 ///
@@ -68,7 +64,6 @@ Not supported
 /// caption
 
 ///
-
 
 <!-- TODO: Update alt text -->
 

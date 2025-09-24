@@ -1,4 +1,4 @@
-# Status Icons  { id="statusicons" }
+# Status Icons  { #statusicons }
 
 Icons that appear in the system tray for representing app status while
 the app isn't visible.
@@ -10,7 +10,6 @@ the app isn't visible.
 /// caption
 
 ///
-
 
 <!-- TODO: Update alt text -->
 
@@ -24,7 +23,6 @@ the app isn't visible.
 
 ///
 
-
 <!-- TODO: Update alt text -->
 
 ///
@@ -36,7 +34,6 @@ the app isn't visible.
 /// caption
 
 ///
-
 
 <!-- TODO: Update alt text -->
 

@@ -1,7 +1,7 @@
 # Android
 
 The Toga backend for Android is
-[`toga-android](https://github.com/beeware/toga/tree/main/android).
+[`toga-android`](https://github.com/beeware/toga/tree/main/android).
 
 ## Prerequisites
 
@@ -30,38 +30,32 @@ started using Intents.
 
 Android's implementation of the [`toga.App`][]
 class includes the method
-[`start_activity()`][toga_android.App.start_activity],
+[`start_activity()`][toga_android.app.App.start_activity],
 which can be used to start an activity.
 
-> Start a native Android activity.
->
-> param activity
-> :   The `android.content.Intent` instance to start
->
-> param options
-> :   Any additional arguments to pass to the native
->     `android.app.Activity.startActivityForResult()` call.
->
-> param on_complete
-> :   A callback to invoke when the activity completes. The callback
->     will be invoked with 2 arguments: the result code, and the result
->     data.
+### `toga_android.App.start_activity()`
+
+::: toga_android.app.App.start_activity
+    options:
+        show_root_heading: false
 
 To use this method, instantiate an instance of `android.content.Intent`;
 optionally, provide additional arguments, and a callback that will be
 invoked when the activity completes. For example, to dial a phone number
 with the `Intent.ACTION_DIAL` intent:
 
-    from android.content import Intent
-    from android.net import Uri
+```python
+from android.content import Intent
+from android.net import Uri
 
-    intent = Intent(Intent.ACTION_DIAL)
-    intent.setData(Uri.parse("tel:0123456789"))
+intent = Intent(Intent.ACTION_DIAL)
+intent.setData(Uri.parse("tel:0123456789"))
 
-    def number_dialed(result, data):
-        # result is the status code (e.g., Activity.RESULT_OK)
-        # data is the value returned by the activity.
-        ...
+def number_dialed(result, data):
+    # result is the status code (e.g., Activity.RESULT_OK)
+    # data is the value returned by the activity.
+    ...
 
-    # Assuming your toga.App app instance is called `app`
-    app._impl.start_activity(intent, on_complete=number_dialed)
+# Assuming your toga.App app instance is called `app`
+app._impl.start_activity(intent, on_complete=number_dialed)
+```

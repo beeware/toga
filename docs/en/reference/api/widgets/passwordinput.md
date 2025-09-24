@@ -12,7 +12,6 @@ have typed, but not the actual characters.
 
 ///
 
-
 <!-- TODO: Update alt text -->
 
 ///
@@ -24,7 +23,6 @@ have typed, but not the actual characters.
 /// caption
 
 ///
-
 
 <!-- TODO: Update alt text -->
 
@@ -38,7 +36,6 @@ have typed, but not the actual characters.
 
 ///
 
-
 <!-- TODO: Update alt text -->
 
 ///
@@ -50,7 +47,6 @@ have typed, but not the actual characters.
 /// caption
 
 ///
-
 
 <!-- TODO: Update alt text -->
 
@@ -64,7 +60,6 @@ have typed, but not the actual characters.
 
 ///
 
-
 <!-- TODO: Update alt text -->
 
 ///
@@ -76,7 +71,6 @@ have typed, but not the actual characters.
 /// caption
 
 ///
-
 
 <!-- TODO: Update alt text -->
 

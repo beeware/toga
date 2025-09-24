@@ -144,7 +144,7 @@ dev = [
 # and the docs contribution guide.
 docs = [
     "beeware-docs-tools @ git+https://github.com/beeware/beeware-docs-tools",
-    "Pillow == 11.3.0",  # Why is this part of the docs?
+    "Pillow == 11.3.0",  # TODO: Why is this part of the docs?
     "mkdocs-table-reader-plugin==3.1.0",
     "toga-core @ ./core",
     "travertino @ ./travertino",

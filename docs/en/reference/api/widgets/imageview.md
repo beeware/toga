@@ -10,7 +10,6 @@ A widget that displays an image.
 
 ///
 
-
 <!-- TODO: Update alt text -->
 
 ///
@@ -22,7 +21,6 @@ A widget that displays an image.
 /// caption
 
 ///
-
 
 <!-- TODO: Update alt text -->
 
@@ -36,7 +34,6 @@ A widget that displays an image.
 
 ///
 
-
 <!-- TODO: Update alt text -->
 
 ///
@@ -49,7 +46,6 @@ A widget that displays an image.
 
 ///
 
-
 <!-- TODO: Update alt text -->
 
 ///
@@ -61,7 +57,6 @@ A widget that displays an image.
 /// caption
 
 ///
-
 
 <!-- TODO: Update alt text -->
 

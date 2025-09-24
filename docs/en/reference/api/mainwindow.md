@@ -11,7 +11,6 @@ elements.
 
 ///
 
-
 <!-- TODO: Update alt text -->
 
 ///
@@ -23,7 +22,6 @@ elements.
 /// caption
 
 ///
-
 
 <!-- TODO: Update alt text -->
 
@@ -37,7 +35,6 @@ elements.
 
 ///
 
-
 <!-- TODO: Update alt text -->
 
 ///
@@ -50,7 +47,6 @@ elements.
 
 ///
 
-
 <!-- TODO: Update alt text -->
 
 ///
@@ -62,7 +58,6 @@ elements.
 /// caption
 
 ///
-
 
 <!-- TODO: Update alt text -->
 

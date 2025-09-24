@@ -1,4 +1,4 @@
-# Toga quick start  { id="get-started" }
+# Toga quick start  { #get-started }
 
 Create a new virtual environment. In your virtual environment, install
 Toga, and then run it:

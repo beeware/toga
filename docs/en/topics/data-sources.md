@@ -70,7 +70,7 @@ object can register as a listener. For example, a second data source
 might register as a listener to an initial source to implement a
 filtered source. When an item is added to the first data source, the
 second data source will be notified, and can choose whether to include
-the new item in it's own data representation.
+the new item in its own data representation.
 
 ## Custom data sources
 
@@ -90,5 +90,5 @@ Custom data sources are also required to emit notifications whenever
 notable events occur. This allows the widgets rendering the data source
 to respond to changes in data. If a data source doesn't emit
 notifications, widgets may not reflect changes in data. Toga provides a
-[Source](reference/api/resources/sources/source) base class for custom data source implementations. This base
+[Source][source] base class for custom data source implementations. This base
 class implements the notification API.

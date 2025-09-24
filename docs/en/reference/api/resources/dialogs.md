@@ -2,7 +2,8 @@
 
 A short-lived window asking the user for input.
 
-**Availability ([Key][api-status-key])**
+Availability ([Key][api-status-key])
+{: .availability-title }
 
 {{ pd_read_csv("reference/data/widgets_by_platform.csv", na_filter=False, usecols=[4,5,6,7,8,9,10])[pd_read_csv("reference/data/widgets_by_platform.csv")[["ComponentName"]].isin(["Dialogs"]).all(axis=1)] | convert_to_md_table }}
 
@@ -84,7 +85,7 @@ When the user responds, the `dialog_dismissed` callback will be invoked,
 with the dialog task provided as an argument. The result of the task can
 then be interrogated to handle the response.
 
-## Notes  { id="dialog-notes" }
+## Notes  { #dialog-notes }
 
 - On macOS, app-modal dialogs will *not* prevent the user from
   interacting with the rest of the app.

@@ -11,7 +11,6 @@ will be provided if necessary.
 
 ///
 
-
 <!-- TODO: Update alt text -->
 
 ///
@@ -23,7 +22,6 @@ will be provided if necessary.
 /// caption
 
 ///
-
 
 <!-- TODO: Update alt text -->
 

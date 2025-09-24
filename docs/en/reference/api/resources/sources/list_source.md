@@ -7,7 +7,7 @@ A data source describing an ordered list of data.
 Data sources are abstractions that allow you to define the data being
 managed by your application independent of the GUI representation of
 that data. For details on the use of data sources, see the
-[topic guide](topics/data-sources).
+[topic guide][data-sources].
 
 ListSource is an implementation of an ordered list of data. When a
 ListSource is created, it is given a list of `accessors` - these are the

@@ -1,4 +1,4 @@
-# Why Toga? { id="philosophy" }
+# Why Toga? { #philosophy }
 
 Toga isn't the world's first widget toolkit - there are dozens of other
 options. So why build a new one?
@@ -21,7 +21,7 @@ widget. After all, you're using native system capability that has been
 tuned and optimized, not a drawing engine that's been layered on top of
 a generic widget.
 
-## Abstract the broad concepts  { id="abstract-broad-concepts" }
+## Abstract the broad concepts  { #abstract-broad-concepts }
 
 It's not enough to just look like a native app, though - you need to
 *feel* like a native app as well.
@@ -68,10 +68,10 @@ library wouldn't be able to (at least, not easily).
 This also means supporting Python 3, and 3 only because that's where the
 future of Python is at.
 
-## <span class="title-ref">pip install</span> and nothing more
+## `pip install` and nothing more
 
-Toga aims to be no more than a <span class="title-ref">pip
-install</span> away from use. It doesn't require the compilation of C
+Toga aims to be no more than a `pip
+install` away from use. It doesn't require the compilation of C
 extensions. There's no need to install a binary support library. There's
 no need to change system paths and environment variables. Just install
 it, import it, and start writing (or running) code.

@@ -4,7 +4,7 @@ Most applications require a little more than a button on a page. Lets
 build a slightly more complex example - a Fahrenheit to Celsius
 converter:
 
-![image](screenshots/tutorial-1.png)
+![image](images/tutorial-1.png)
 
 Here's the source code:
 

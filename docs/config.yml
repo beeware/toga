@@ -29,6 +29,9 @@ extra:
   "fully_supported": ●
   "partly_supported": ○
 
+extra_css:
+  - stylesheets/toga.css
+
 theme:
   name: material
   language: en
@@ -84,9 +87,10 @@ markdown_extensions:
 
 plugins:
   search: {}
-  autorefs: {}
+  autorefs:
+      resolve_closest: true  # autorefs warns of the Usage headings begin duplicates without this - we will have to assign unique ids to all of them otherwise
   literate-nav:
-    nav_file: SUMMARY.md
+       nav_file: SUMMARY.md
   macros: {}
   table-reader: {}
   mkdocstrings:
@@ -94,13 +98,13 @@ plugins:
       default_handler: python
       handlers:
         python:
-          paths: [core/src]
+          paths: [android/src, core/src]
           inventories:
             - https://docs.python.org/3/objects.inv
             - https://pillow.readthedocs.io/en/stable/objects.inv
           options:
             docstring_style: sphinx  # Parses docstrings from Sphinx formatting - the `:param` formatting, not parsing rST links
-            allow_inspection: false  # True includes dunder methods, can be enabled on individual class entries if you want them
+            allow_inspection: false  # True includes *more* dunder methods, can be enabled on individual class entries if you want them
             show_source: false  # Otherwise, source code is shown collapsed for all
             members_order: alphabetical  # Orders things based on the source code
             annotations_path: brief  # This is desired per current docs
@@ -110,5 +114,5 @@ plugins:
             show_signature_annotations: false  # Removes annotations from initial line
             show_root_heading: true  # Show heading of object at root, otherwise nothing
             docstring_section_style: spacy  # Better info layout than the other options
-            line_length: 80  # Requires black, forces longer signatures to be stacked, if signatures aren't used, can be removed
+            line_length: 80  # Requires ruff, forces longer signatures to be stacked, if signatures aren't used, can be removed
             show_symbol_type_toc: true  # This is what they added on place of function() (parens) being displayed in the sidebar ToC

@@ -8,7 +8,6 @@
 
 ///
 
-
 <!-- TODO: Update alt text -->
 
 ///
@@ -20,7 +19,6 @@
 /// caption
 
 ///
-
 
 <!-- TODO: Update alt text -->
 
@@ -34,7 +32,6 @@
 
 ///
 
-
 <!-- TODO: Update alt text -->
 
 ///
@@ -47,7 +44,6 @@
 
 ///
 
-
 <!-- TODO: Update alt text -->
 
 ///
@@ -59,7 +55,6 @@
 /// caption
 
 ///
-
 
 <!-- TODO: Update alt text -->
 

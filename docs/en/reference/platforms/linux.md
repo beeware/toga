@@ -1,6 +1,6 @@
 # Linux/Unix
 
-![image](/reference/screenshots/gtk.png){ width="300px" }
+![image](../images/gtk.png){ width="300px" }
 
 /// caption
 
@@ -27,12 +27,12 @@ would like to contribute, please get in touch on that ticket, on
 Although GTK *can* be installed on Windows and macOS, and the `toga-gtk`
 backend *may* work on those platforms, this is not officially supported
 by Toga. We recommend using `toga-winforms` on
-[.][windows], and `toga-cocoa` on
+[windows][], and `toga-cocoa` on
 [macOS][].
 
 ///
 
-## Prerequisites  { id="linux-prerequisites" }
+## Prerequisites  { #linux-prerequisites }
 
 `toga-gtk` requires Python 3.10+, and GTK 3.22 or newer.
 

@@ -1,9 +1,6 @@
-tocdepth
-:   2
-
 # Release History
 
-## 0.5.2 (2025-07-10) { id="section" }
+## 0.5.2 (2025-07-10)
 
 ### Features
 
@@ -215,7 +212,7 @@ tocdepth
   [\#3629](https://github.com/beeware/toga/issues/3629),
   [\#3633](https://github.com/beeware/toga/issues/3633)
 
-## 0.5.1 (2025-05-08) { id="section-1" }
+## 0.5.1 (2025-05-08)
 
 ### Features
 
@@ -372,7 +369,7 @@ tocdepth
   [\#3418](https://github.com/beeware/toga/issues/3418),
   [\#3419](https://github.com/beeware/toga/issues/3419)
 
-## 0.5.0 (2025-03-14) { id="section-2" }
+## 0.5.0 (2025-03-14)
 
 ### Features
 
@@ -744,7 +741,7 @@ tocdepth
   [\#3257](https://github.com/beeware/toga/issues/3257),
   [\#3258](https://github.com/beeware/toga/issues/3258)
 
-## 0.4.9 (2025-02-07) { id="section-3" }
+## 0.4.9 (2025-02-07)
 
 This release contains no new features. The primary purpose of this
 release is to add an upper version pin to Toga's Travertino requirement,
@@ -766,7 +763,7 @@ backwards incompatible changes in Travertino.
 - [\#2476](https://github.com/beeware/toga/issues/2476),
   [\#2913](https://github.com/beeware/toga/issues/2913)
 
-## 0.4.8 (2024-10-16) { id="section-4" }
+## 0.4.8 (2024-10-16)
 
 ### Bugfixes
 
@@ -815,7 +812,7 @@ backwards incompatible changes in Travertino.
   [\#2906](https://github.com/beeware/toga/issues/2906),
   [\#2912](https://github.com/beeware/toga/issues/2912)
 
-## 0.4.7 (2024-09-18) { id="section-5" }
+## 0.4.7 (2024-09-18)
 
 ### Features
 
@@ -879,7 +876,7 @@ backwards incompatible changes in Travertino.
   [\#2847](https://github.com/beeware/toga/issues/2847),
   [\#2848](https://github.com/beeware/toga/issues/2848)
 
-## 0.4.6 (2024-08-28) { id="section-6" }
+## 0.4.6 (2024-08-28)
 
 ### Features
 
@@ -1067,7 +1064,7 @@ backwards incompatible changes in Travertino.
   [\#2789](https://github.com/beeware/toga/issues/2789),
   [\#2790](https://github.com/beeware/toga/issues/2790)
 
-## 0.4.5 (2024-06-11) { id="section-7" }
+## 0.4.5 (2024-06-11)
 
 ### Features
 
@@ -1140,7 +1137,7 @@ backwards incompatible changes in Travertino.
   [\#2631](https://github.com/beeware/toga/issues/2631),
   [\#2632](https://github.com/beeware/toga/issues/2632)
 
-## 0.4.4 (2024-05-08) { id="section-8" }
+## 0.4.4 (2024-05-08)
 
 ### Bugfixes
 
@@ -1154,7 +1151,7 @@ backwards incompatible changes in Travertino.
   [\#2557](https://github.com/beeware/toga/issues/2557),
   [\#2560](https://github.com/beeware/toga/issues/2560)
 
-## 0.4.3 (2024-05-06) { id="section-9" }
+## 0.4.3 (2024-05-06)
 
 ### Features
 
@@ -1315,7 +1312,7 @@ backwards incompatible changes in Travertino.
   [\#2546](https://github.com/beeware/toga/issues/2546),
   [\#2552](https://github.com/beeware/toga/issues/2552)
 
-## 0.4.2 (2024-02-06) { id="section-10" }
+## 0.4.2 (2024-02-06)
 
 ### Features
 
@@ -1402,7 +1399,7 @@ backwards incompatible changes in Travertino.
   [\#2375](https://github.com/beeware/toga/issues/2375),
   [\#2376](https://github.com/beeware/toga/issues/2376)
 
-## 0.4.1 (2023-12-21) { id="section-11" }
+## 0.4.1 (2023-12-21)
 
 ### Features
 
@@ -1504,7 +1501,7 @@ backwards incompatible changes in Travertino.
   [\#2287](https://github.com/beeware/toga/issues/2287),
   [\#2294](https://github.com/beeware/toga/issues/2294)
 
-## 0.4.0 (2023-11-03) { id="section-12" }
+## 0.4.0 (2023-11-03)
 
 ### Features
 
@@ -2006,7 +2003,7 @@ backwards incompatible changes in Travertino.
   [\#2184](https://github.com/beeware/toga/issues/2184),
   [\#2186](https://github.com/beeware/toga/issues/2186)
 
-## 0.3.1 (2023-04-12) { id="section-13" }
+## 0.3.1 (2023-04-12)
 
 ### Features
 
@@ -2096,7 +2093,7 @@ backwards incompatible changes in Travertino.
   [\#1854](https://github.com/beeware/toga/pull/1854),
   [\#1861](https://github.com/beeware/toga/pull/1861)
 
-## 0.3.0 (2023-01-30) { id="section-14" }
+## 0.3.0 (2023-01-30)
 
 ### Features
 
@@ -2110,44 +2107,44 @@ backwards incompatible changes in Travertino.
 
 - Too many to count!
 
-## 0.2.15  { id="section-15" }
+## 0.2.15
 
 - Added more widgets and cross-platform support, especially for GTK+ and
   Winforms
 
-## 0.2.14  { id="section-16" }
+## 0.2.14
 
 - Removed use of `namedtuple`
 
-## 0.2.13  { id="section-17" }
+## 0.2.13
 
 - Various fixes in preparation for PyCon AU demo
 
-## 0.2.12  { id="section-18" }
+## 0.2.12
 
 - Migrated to CSS-based layout, rather than Cassowary/constraint layout.
 - Added Windows backend
 - Added Django backend
 - Added Android backend
 
-## 0.2.0 - 0.2.11  { id="section-19" }
+## 0.2.0 - 0.2.11
 
 Internal development releases.
 
-## 0.1.2  { id="section-20" }
+## 0.1.2
 
 - Further improvements to multiple-repository packaging strategy.
 - Ensure Ctrl-C is honored by apps.
 - **Cocoa:** Added runtime warnings when minimum OS X version is not
   met.
 
-## 0.1.1  { id="section-21" }
+## 0.1.1
 
 - Refactored code into multiple repositories, so that users of one
   backend don't have to carry the overhead of other installed platforms
 - Corrected a range of bugs, mostly related to problems under Python 3.
 
-## 0.1.0  { id="section-22" }
+## 0.1.0
 
 Initial public release. Includes:
 

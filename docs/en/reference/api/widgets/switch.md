@@ -11,7 +11,6 @@ A clickable button with two stable states: True (on, checked); and False
 
 ///
 
-
 <!-- TODO: Update alt text -->
 
 ///
@@ -23,7 +22,6 @@ A clickable button with two stable states: True (on, checked); and False
 /// caption
 
 ///
-
 
 <!-- TODO: Update alt text -->
 
@@ -37,7 +35,6 @@ A clickable button with two stable states: True (on, checked); and False
 
 ///
 
-
 <!-- TODO: Update alt text -->
 
 ///
@@ -49,7 +46,6 @@ A clickable button with two stable states: True (on, checked); and False
 /// caption
 
 ///
-
 
 <!-- TODO: Update alt text -->
 
@@ -63,7 +59,6 @@ A clickable button with two stable states: True (on, checked); and False
 
 ///
 
-
 <!-- TODO: Update alt text -->
 
 ///
@@ -75,7 +70,6 @@ A clickable button with two stable states: True (on, checked); and False
 /// caption
 
 ///
-
 
 <!-- TODO: Update alt text -->
 

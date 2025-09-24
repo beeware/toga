@@ -7,7 +7,7 @@ that are native on modern platforms.
 So - let's build a tool that lets our pet yak graze the web - a
 primitive web browser, in less than 40 lines of code!
 
-![image](screenshots/tutorial-3.png)
+![image](images/tutorial-3.png)
 
 Here's the source code:
 

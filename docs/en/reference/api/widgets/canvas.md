@@ -10,7 +10,6 @@ A drawing area for 2D vector graphics.
 
 ///
 
-
 <!-- TODO: Update alt text -->
 
 ///
@@ -22,7 +21,6 @@ A drawing area for 2D vector graphics.
 /// caption
 
 ///
-
 
 <!-- TODO: Update alt text -->
 
@@ -36,7 +34,6 @@ A drawing area for 2D vector graphics.
 
 ///
 
-
 <!-- TODO: Update alt text -->
 
 ///
@@ -49,7 +46,6 @@ A drawing area for 2D vector graphics.
 
 ///
 
-
 <!-- TODO: Update alt text -->
 
 ///
@@ -61,7 +57,6 @@ A drawing area for 2D vector graphics.
 /// caption
 
 ///
-
 
 <!-- TODO: Update alt text -->
 

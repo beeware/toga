@@ -43,29 +43,29 @@ single-page web apps, and console apps.
 
 ///
 
-## [Tutorial](tutorial)
+## Tutorial
 
-[A quick Toga demonstration](tutorial/get-started) and a
-[a hands-on introduction to Toga](tutorial).
+[A quick Toga demonstration](tutorial/get-started.md) and a
+[a hands-on introduction to Toga](tutorial/index.md).
 
-## [How-to guides](how-to) { id="how-to" }
+## How-to guides { #how-to }
 
 Guides and recipes for common problems and tasks, including how to
-[contribute to Toga](how-to/contribute).
+[contribute to Toga](how-to/contribute/code.md).
 
-## [Topic Guides](topics) { id="topics" }
+## Topic Guides { #topics }
 
 Deeper explorations of concepts and issues related to Toga usage.
 
-## [Reference](reference)
+## Reference
 
 Technical documentation such as
-[Toga's API](reference/api), details on [platform support](reference/platforms),
+[Toga's API](reference/api/index.md), details on [platform support](reference/platforms/index.md),
 and other detailed reference information (including
-[overall architectural details](reference/internals)).
+[overall architectural details](reference/internals/architecture.md)).
 
-## [About Toga](about) { id="about" }
+## About Toga { #about }
 
-[Frequently asked questions](about/faq),
-[success stories](about/success), and
+[Frequently asked questions](about/faq.md),
+[success stories](about/success.md), and
 other details about Toga as a project.

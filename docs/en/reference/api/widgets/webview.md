@@ -10,7 +10,6 @@ An embedded web browser.
 
 ///
 
-
 <!-- TODO: Update alt text -->
 
 ///
@@ -22,7 +21,6 @@ An embedded web browser.
 /// caption
 
 ///
-
 
 <!-- TODO: Update alt text -->
 
@@ -36,7 +34,6 @@ An embedded web browser.
 
 ///
 
-
 <!-- TODO: Update alt text -->
 
 ///
@@ -49,7 +46,6 @@ An embedded web browser.
 
 ///
 
-
 <!-- TODO: Update alt text -->
 
 ///
@@ -61,7 +57,6 @@ An embedded web browser.
 /// caption
 
 ///
-
 
 <!-- TODO: Update alt text -->
 
@@ -96,7 +91,7 @@ await webview.load_url("https://beeware.org")
 webview.set_content("https://example.com", "<html>...</html>")
 ```
 
-## System requirements  { id="webview-system-requires" }
+## System requirements  { #webview-system-requires }
 
 - Using WebView on Windows 10 requires that your users have installed
   the [Edge WebView2 Evergreen

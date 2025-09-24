@@ -1,4 +1,4 @@
-# Contributing code to Toga  { id="contribute" }
+# Contributing code to Toga  { #contribute }
 
 If you experience problems with Toga, [log them on
 GitHub](https://github.com/beeware/toga/issues). If you want to
@@ -6,7 +6,7 @@ contribute code, please [fork the
 code](https://github.com/beeware/toga/fork) and [submit a pull
 request](https://github.com/beeware/toga/pulls).
 
-## Prerequisites  { id="dev-environment-prereqs" }
+## Prerequisites  { #dev-environment-prereqs }
 
 You'll need to install the following prerequisites.
 
@@ -29,7 +29,7 @@ View the
 
 ///
 
-## `tl;dr` - Dev Quick-Setup { id="dev-environment-tldr" }
+## `tl;dr` - Dev Quick-Setup { #dev-environment-tldr }
 
 Set up the dev environment by running:
 
@@ -98,7 +98,7 @@ Invoke checks and tests by running:
 
 ///
 
-## Set up your development environment  { id="setup-dev-environment" }
+## Set up your development environment  { #setup-dev-environment }
 
 The recommended way of setting up your development environment for Toga
 is to use a [virtual
@@ -455,7 +455,7 @@ Dummy. Think of it as a GUI mock - but one that is baked into Toga as a
 framework. See if you can write a GUI app of your own, and write a test
 suite that uses the Dummy backend to validate the behavior of that app.
 
-## Running tests and coverage  { id="run-test-suite" }
+## Running tests and coverage  { #run-test-suite }
 
 Toga uses [tox](https://tox.wiki/en/latest/) to manage the testing
 process and [`pytest`](https://docs.pytest.org/en/latest) for its own
@@ -463,12 +463,12 @@ test suite.
 
 The default `tox` command includes running:
 
-:   - pre-commit hooks
-    - `towncrier` release note check
-    - documentation linting
-    - test suite for available Python versions for the core and
-      Travertino
-    - code coverage reporting for the core and Travertino
+- pre-commit hooks
+- `towncrier` release note check
+- documentation linting
+- test suite for available Python versions for the core and
+  Travertino
+- code coverage reporting for the core and Travertino
 
 This is essentially what is run by CI when you submit a pull request.
 
@@ -509,7 +509,7 @@ us know!
 
 In addition to the tests passing, this should report [100% test coverage][code-coverage].
 
-### Testing Core  { id="run-core-test-suite" }
+### Testing Core  { #run-core-test-suite }
 
 To run the core test suite:
 
@@ -539,7 +539,7 @@ To run the core test suite:
 
 As with the full test suite, this should report [100% test coverage][code-coverage]
 
-### Testing Travertino  { id="run-travertino-test-suite" }
+### Testing Travertino  { #run-travertino-test-suite }
 
 In addition to the core library, the Toga repository also includes
 Travertino, a package that defines the lower-level layout mechanisms and
@@ -646,7 +646,7 @@ full test suite; you can run *just* the unit tests. To do this, run:
 
 ///
 
-### Run a subset of tests  { id="test-subset" }
+### Run a subset of tests  { #test-subset }
 
 By default, tox will run all tests in the unit test suite. When you're
 developing your new test, it may be helpful to run *just* that one test.
@@ -709,7 +709,7 @@ Either way, you'll still get a coverage report when running a part of
 the test suite -but the coverage results will only report the lines of
 code that were executed by the specific tests you ran.
 
-### Run the test suite for a specific Python version  { id="test-py-version" }
+### Run the test suite for a specific Python version  { #test-py-version }
 
 By default `tox -e py` will run using whatever interpreter resolves as
 `python3` on your machine. If you have multiple Python versions
@@ -926,7 +926,7 @@ the coverage tox environment names, for instance:
 
 ///
 
-## The testbed  { id="run-testbed" }
+## The testbed  { #run-testbed }
 
 The above test suites exercise `toga-core` and `travertino` - but what
 about the backends? To verify the behavior of the backends, Toga has a
@@ -1072,7 +1072,7 @@ the environmental variable `TOGA_GTK=4`. This is experimental and only
 partially implemented, but we would greatly appreciate your help
 translating widgets from GTK3 to GTK4.
 
-### How the testbed works  { id="testbed-probe" }
+### How the testbed works  { #testbed-probe }
 
 The testbed works by providing a generic collection of behavioral tests
 on a live app, and then providing an API to instrument the live app to
@@ -1141,7 +1141,7 @@ text color of buttons; as a result, the Cocoa implementation of the
 probe](https://github.com/beeware/toga/blob/main/cocoa/tests_backend/widgets/button.py#L17)
 performs an `xfail` describing that limitation.
 
-## Submitting a pull request  { id="pr-housekeeping" }
+## Submitting a pull request  { #pr-housekeeping }
 
 Before you submit a pull request, there's a few bits of housekeeping to
 do.

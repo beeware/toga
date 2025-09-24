@@ -11,7 +11,6 @@ horizontal line, and the selected value is shown as a draggable marker.
 
 ///
 
-
 <!-- TODO: Update alt text -->
 
 ///
@@ -23,7 +22,6 @@ horizontal line, and the selected value is shown as a draggable marker.
 /// caption
 
 ///
-
 
 <!-- TODO: Update alt text -->
 
@@ -37,7 +35,6 @@ horizontal line, and the selected value is shown as a draggable marker.
 
 ///
 
-
 <!-- TODO: Update alt text -->
 
 ///
@@ -49,7 +46,6 @@ horizontal line, and the selected value is shown as a draggable marker.
 /// caption
 
 ///
-
 
 <!-- TODO: Update alt text -->
 
@@ -63,7 +59,6 @@ horizontal line, and the selected value is shown as a draggable marker.
 
 ///
 
-
 <!-- TODO: Update alt text -->
 
 ///
@@ -75,7 +70,6 @@ horizontal line, and the selected value is shown as a draggable marker.
 /// caption
 
 ///
-
 
 <!-- TODO: Update alt text -->
 

@@ -11,6 +11,18 @@ if TYPE_CHECKING:
     from typing import TypeAlias
 
     IconContentT: TypeAlias = str | Path | toga.Icon
+    """
+    When specifying an [Icon][], you can
+    provide:
+
+    - a string specifying an absolute or relative path;
+    - an absolute or relative [`pathlib.Path`][]
+      object; or
+    - an instance of [`toga.Icon`][].
+
+    If a relative path is provided, it will be anchored relative to the
+    module that defines your Toga application class.
+    """
 
 
 class cachedicon:

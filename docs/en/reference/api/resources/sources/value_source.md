@@ -7,7 +7,7 @@ A data source describing a single value.
 Data sources are abstractions that allow you to define the data being
 managed by your application independent of the GUI representation of
 that data. For details on the use of data sources, see the
-[topic guide](topics/data-sources).
+[topic guide][data-sources].
 
 ValueSource is an wrapper around a single atomic value.
 

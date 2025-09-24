@@ -17,7 +17,7 @@ tree-like hierarchy. GUI widgets are an example of one such structure.
 To see how this works in practice, lets look at a more complex example,
 involving layouts, scrollers, and containers inside other containers:
 
-![`image](screenshots/tutorial-2.png)
+![`image](images/tutorial-2.png)
 
 Here's the source code:
 

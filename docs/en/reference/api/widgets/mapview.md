@@ -10,7 +10,6 @@ A zoomable map that can be annotated with location pins.
 
 ///
 
-
 <!-- TODO: Update alt text -->
 
 ///
@@ -22,7 +21,6 @@ A zoomable map that can be annotated with location pins.
 /// caption
 
 ///
-
 
 <!-- TODO: Update alt text -->
 
@@ -36,7 +34,6 @@ A zoomable map that can be annotated with location pins.
 
 ///
 
-
 <!-- TODO: Update alt text -->
 
 ///
@@ -49,7 +46,6 @@ A zoomable map that can be annotated with location pins.
 
 ///
 
-
 <!-- TODO: Update alt text -->
 
 ///
@@ -61,7 +57,6 @@ A zoomable map that can be annotated with location pins.
 /// caption
 
 ///
-
 
 <!-- TODO: Update alt text -->
 
@@ -131,7 +126,7 @@ mapview.pins.clear()
 Pins can respond to being pressed. When a pin is pressed, the map
 generates an `on_select` event, which receives the pin as an argument.
 
-## System requirements  { id="mapview-system-requires" }
+## System requirements  { #mapview-system-requires }
 
 - Using MapView on Windows 10 requires that your users have installed
   the [Edge WebView2 Evergreen

@@ -1,4 +1,4 @@
-# Tutorials  { id="tutorial" }
+# Tutorials  { #tutorial }
 
 /// note | Note
 
@@ -35,12 +35,11 @@ In [Tutorial 2](tutorial-2.md), you will discover how to
 use the [`SplitContainer`][toga.SplitContainer] widget to
 display some components, a toolbar and a table.
 
-![screenshots/tutorial-2.png](screenshots/tutorial-2.png){ width="300" }
+![images/tutorial-2.png](images/tutorial-2.png){ width="300" }
 
 /// caption
 
 ///
-
 
 <!-- TODO: Update alt text -->
 
@@ -50,12 +49,11 @@ In [Tutorial 3](tutorial-3.md), you will discover how to
 use the [`WebView`][toga.WebView] widget to
 display a simple browser.
 
-![screenshots/tutorial-3.png](screenshots/tutorial-3.png){ width="300" }
+![images/tutorial-3.png](images/tutorial-3.png){ width="300" }
 
 /// caption
 
 ///
-
 
 <!-- TODO: Update alt text -->
 
@@ -65,11 +63,10 @@ In [Tutorial 4](tutorial-4.md), you will discover how to
 use the [`Canvas`][toga.Canvas] widget to draw
 lines and shapes on a canvas.
 
-![screenshots/tutorial-4.png](screenshots/tutorial-4.png){ width="300" }
+![images/tutorial-4.png](images/tutorial-4.png){ width="300" }
 
 /// caption
 
 ///
-
 
 <!-- TODO: Update alt text -->

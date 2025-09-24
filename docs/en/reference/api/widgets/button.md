@@ -10,7 +10,6 @@ A button that can be pressed or clicked.
 
 ///
 
-
 <!-- TODO: Update alt text -->
 
 ///
@@ -22,7 +21,6 @@ A button that can be pressed or clicked.
 /// caption
 
 ///
-
 
 <!-- TODO: Update alt text -->
 
@@ -36,7 +34,6 @@ A button that can be pressed or clicked.
 
 ///
 
-
 <!-- TODO: Update alt text -->
 
 ///
@@ -48,7 +45,6 @@ A button that can be pressed or clicked.
 /// caption
 
 ///
-
 
 <!-- TODO: Update alt text -->
 
@@ -62,7 +58,6 @@ A button that can be pressed or clicked.
 
 ///
 
-
 <!-- TODO: Update alt text -->
 
 ///
@@ -74,7 +69,6 @@ A button that can be pressed or clicked.
 /// caption
 
 ///
-
 
 <!-- TODO: Update alt text -->
 

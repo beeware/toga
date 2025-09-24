@@ -7,7 +7,7 @@ A base class for data source implementations.
 Data sources are abstractions that allow you to define the data being
 managed by your application independent of the GUI representation of
 that data. For details on the use of data sources, see the
-[topic guide](topics/data-sources).
+[topic guide][data-sources]
 
 Source isn't useful on its own; it is a base class for data source
 implementations. It is used by ListSource, TreeSource and ValueSource,

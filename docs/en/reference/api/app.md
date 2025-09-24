@@ -2,7 +2,8 @@
 
 The top-level representation of an application.
 
-**Availability ([Key][api-status-key])**
+Availability ([Key][api-status-key])
+{: .availability-title }
 
 {{ pd_read_csv("../data/widgets_by_platform.csv", na_filter=False, usecols=[4,5,6,7,8,9,10])[pd_read_csv("../data/widgets_by_platform.csv")[["ComponentName"]].isin(["Application"]).all(axis=1)] | convert_to_md_table }}
 
@@ -18,6 +19,7 @@ The application is started by calling
 [`main_loop()`][toga.App.main_loop]. This will invoke
 the [`startup()`][toga.App.startup] method of the
 app.
+
 
 ```python
 import toga
@@ -81,7 +83,7 @@ commands are automatically installed *before*
 wish to customize the menu items exposed by your app, you can add or
 remove commands in your [`startup()`][toga.App.startup] implementation.
 
-## Assigning a main window  { id="assigning-main-window" }
+## Assigning a main window  { #assigning-main-window }
 
 An app *must* assign `main_window` as part of the startup process.
 However, the value that is assigned as the main window will affect the

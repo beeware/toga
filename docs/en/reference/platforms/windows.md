@@ -1,12 +1,12 @@
 # Windows
 
-![image](/reference/screenshots/winforms.png){ width="300px" }
+![image](../images/winforms.png){ width="300px" }
 <!-- TODO: Update alt text -->
 
 The Toga backend for Windows is
 [toga-winforms](https://github.com/beeware/toga/tree/main/winforms).
 
-## Prerequisites  { id="windows-prerequisites" }
+## Prerequisites  { #windows-prerequisites }
 
 `toga-winforms` requires Python 3.10+, and Windows 10 or newer.
 

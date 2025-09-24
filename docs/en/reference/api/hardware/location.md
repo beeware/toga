@@ -2,7 +2,8 @@
 
 A sensor that can capture the geographical location of the device.
 
-**Availability ([Key][api-status-key])**
+Availability ([Key][api-status-key])
+{: .availability-title }
 
 {{ pd_read_csv("../../data/widgets_by_platform.csv", na_filter=False, usecols=[4,5,6,7,8,9,10])[pd_read_csv("../../data/widgets_by_platform.csv")[["ComponentName"]].isin(["Location"]).all(axis=1)] | convert_to_md_table }}
 
@@ -74,7 +75,7 @@ class MyApp(toga.App):
 If you no longer wish to receive location updates, call
 [Location.stop_tracking][].
 
-## System requirements  { id="location-system-requires" }
+## System requirements  { #location-system-requires }
 
 - Using location services on Linux requires that the user has installed
   the system packages for GeoClue2, plus the GObject Introspection

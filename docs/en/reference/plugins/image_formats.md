@@ -36,7 +36,7 @@ the image format name) What matters is the string assigned to it, which
 represents where Toga can find (and import) your
 [`toga.images.ImageConverter`][] class.
 
-### Package prefixes  { id="package_prefixes" }
+### Package prefixes  { #package_prefixes }
 
 An image plugin can be registered from any Python module. If you
 maintain a package defining an image format, you could include a Toga

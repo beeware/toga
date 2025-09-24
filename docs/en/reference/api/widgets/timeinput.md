@@ -10,7 +10,6 @@ A widget to select a clock time.
 
 ///
 
-
 <!-- TODO: Update alt text -->
 
 ///
@@ -29,7 +28,6 @@ Not supported
 
 ///
 
-
 <!-- TODO: Update alt text -->
 
 ///
@@ -41,7 +39,6 @@ Not supported
 /// caption
 
 ///
-
 
 <!-- TODO: Update alt text -->
 
@@ -55,7 +52,6 @@ Not supported
 
 ///
 
-
 <!-- TODO: Update alt text -->
 
 ///
@@ -67,7 +63,6 @@ Not supported
 /// caption
 
 ///
-
 
 <!-- TODO: Update alt text -->
 

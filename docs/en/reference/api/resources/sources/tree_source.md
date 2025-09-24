@@ -7,7 +7,7 @@ A data source describing an ordered hierarchical tree of values.
 Data sources are abstractions that allow you to define the data being
 managed by your application independent of the GUI representation of
 that data. For details on the use of data sources, see the
-[topic guide](topics/data-sources).
+[topic guide][data-sources].
 
 TreeSource is an implementation of an ordered hierarchical tree of
 values. When a TreeSource is created, it is given a list of

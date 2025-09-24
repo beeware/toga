@@ -10,7 +10,6 @@ A widget to select a single option from a list of alternatives.
 
 ///
 
-
 <!-- TODO: Update alt text -->
 
 ///
@@ -22,7 +21,6 @@ A widget to select a single option from a list of alternatives.
 /// caption
 
 ///
-
 
 <!-- TODO: Update alt text -->
 
@@ -36,7 +34,6 @@ A widget to select a single option from a list of alternatives.
 
 ///
 
-
 <!-- TODO: Update alt text -->
 
 ///
@@ -48,7 +45,6 @@ A widget to select a single option from a list of alternatives.
 /// caption
 
 ///
-
 
 <!-- TODO: Update alt text -->
 
@@ -62,7 +58,6 @@ A widget to select a single option from a list of alternatives.
 
 ///
 
-
 <!-- TODO: Update alt text -->
 
 ///
@@ -74,7 +69,6 @@ A widget to select a single option from a list of alternatives.
 /// caption
 
 ///
-
 
 <!-- TODO: Update alt text -->
 

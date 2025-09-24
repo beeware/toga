@@ -10,7 +10,6 @@ A container that divides an area into two panels with a movable border.
 
 ///
 
-
 <!-- TODO: Update alt text -->
 
 ///
@@ -23,7 +22,6 @@ A container that divides an area into two panels with a movable border.
 
 ///
 
-
 <!-- TODO: Update alt text -->
 
 ///
@@ -35,7 +33,6 @@ A container that divides an area into two panels with a movable border.
 /// caption
 
 ///
-
 
 <!-- TODO: Update alt text -->
 

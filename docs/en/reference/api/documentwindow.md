@@ -10,7 +10,6 @@ A window that can be used as the main interface to a document-based app.
 
 ///
 
-
 <!-- TODO: Update alt text -->
 
 ///
@@ -23,7 +22,6 @@ A window that can be used as the main interface to a document-based app.
 
 ///
 
-
 <!-- TODO: Update alt text -->
 
 ///
@@ -35,7 +33,6 @@ A window that can be used as the main interface to a document-based app.
 /// caption
 
 ///
-
 
 <!-- TODO: Update alt text -->
 

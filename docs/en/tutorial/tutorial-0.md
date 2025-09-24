@@ -114,7 +114,9 @@ Let's walk through this one line at a time.
 
 The code starts with imports. First, we import toga:
 
-    import toga
+```python
+import toga
+```
 
 Then we set up a handler, which is a wrapper around behavior that we
 want to activate when the button is pressed. A handler is just a
@@ -123,15 +125,19 @@ argument; depending on the type of event that is being handled, other
 arguments may also be provided. In the case of a simple button press,
 however, there are no extra arguments:
 
-    def button_handler(widget):
-        print("hello")
+```python
+def button_handler(widget):
+    print("hello")
+```
 
 When the app gets instantiated (in `main()`, discussed below), Toga will
 create a window with a menu. We need to provide a method that tells Toga
 what content to display in the window. The method can be named anything,
 it just needs to accept an app instance:
 
-    def build(app):
+```python
+def build(app):
+```
 
 We want to put a button in the window. However, unless we want the
 button to fill the entire app window, we can't just put the button into
@@ -141,19 +147,25 @@ box.
 A box is an object that can be used to hold multiple widgets, and to
 define a margin around widgets. So, we define a box:
 
-    box = toga.Box()
+```python
+box = toga.Box()
+```
 
 We can then define a button. When we create the button, we can set the
 button text, and we also set the behavior that we want to invoke when
 the button is pressed, referencing the handler that we defined earlier:
 
-    button = toga.Button("Hello world", on_press=button_handler)
+```python
+button = toga.Button("Hello world", on_press=button_handler)
+```
 
 Now we have to define how the button will appear in the window. By
 default, Toga uses a style algorithm called `Pack`, which is a bit like
 "CSS-lite". We can set style properties of the button:
 
-    button.style.margin = 50
+```python
+button.style.margin = 50
+```
 
 What we've done here is say that the button will have a margin of 50
 pixels on all sides. If we wanted to define a margin of 20 pixels on top
@@ -162,7 +174,9 @@ specified the `margin = (20, 50, 50, 50)`.
 
 Now we will make the button take up all the available width:
 
-    button.style.flex = 1
+```python
+button.style.flex = 1
+```
 
 The `flex` attribute specifies how a widget is sized with respect to
 other widgets along its direction. The default direction is row
@@ -173,7 +187,9 @@ for more information on how to use the `flex` attribute.
 
 The next step is to add the button to the box:
 
-    box.add(button)
+```python
+box.add(button)
+```
 
 The button has a default height, defined by the way that the underlying
 platform draws buttons. As a result, this means we'll see a single
@@ -183,7 +199,9 @@ has a 50 pixel space surrounding it.
 Now we've set up the box, we return the outer box that holds all the UI
 content. This box will be the content of the app's main window:
 
-    return box
+```python
+return box
+```
 
 Lastly, we instantiate the app itself. The app is a high level container
 representing the executable. The app has a name and a unique identifier.
@@ -193,15 +211,19 @@ The app also accepts our method defining the main window contents. We
 wrap this creation process into a method called `main()`, which returns
 a new instance of our application:
 
-    def main():
-        return toga.App("First App", "org.beeware.toga.tutorial", startup=build)
+```python
+def main():
+    return toga.App("First App", "org.beeware.toga.tutorial", startup=build)
+```
 
 The entry point for the project then needs to instantiate this entry
 point and start the main app loop. The call to `main_loop()` is a
 blocking call; it won't return until you quit the main app:
 
-    if __name__ == "__main__":
-        main().main_loop()
+```python
+if __name__ == "__main__":
+    main().main_loop()
+```
 
 And that's it! Save this script as `helloworld.py`, and you're ready to
 go.
@@ -242,7 +264,7 @@ directory:
 
 This should pop up a window with a button:
 
-![image](screenshots/tutorial-0.png)
+![image](images/tutorial-0.png)
 
 If you click on the button, you should see messages appear in the
 console. Even though we didn't define anything about menus, the app will

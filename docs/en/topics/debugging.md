@@ -3,7 +3,7 @@
 Debugging is the process of finding, understanding, and fixing bugs in
 your code.
 
-## Debugging Widget Layout  { id="debug-layout" }
+## Debugging Widget Layout  { #debug-layout }
 
 The debug layout colors tool is designed to give all containers distinct
 colors, which enables you to better see what might be happening with the
@@ -21,7 +21,7 @@ following in your app file or your `app.py`:
 toga.Widget.DEBUG_LAYOUT_ENABLED = True
 ```
 
-### Debug layout colors with the  { id="-demo" }
+### Debug layout colors with the  { #-demo }
 
 To use the debug layout with the `toga-demo`, set the environment
 variable, and

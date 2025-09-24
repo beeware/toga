@@ -57,7 +57,7 @@ widget with a visibility of `"hidden"` will remain hidden. Any
 descendants of the hidden child will also remain hidden, regardless of
 their visibility.
 
-### `direction` { id="pack-direction" }
+### `direction` { #pack-direction }
 
 **Value:** `"row"` or `"column"`
 
@@ -226,7 +226,7 @@ Defines the alignment of text in the object being rendered.
 
 Defines the natural direction of horizontal content.
 
-### `font_family` { id="pack-font-family" }
+### `font_family` { #pack-font-family }
 
 **Value**: a list of strings
 
@@ -256,7 +256,7 @@ recognize the family as one of its predefined builtins or as a font
 you've registered, it will attempt to load the requested font from your
 system before falling back to the default system font.
 
-### `font_style` { id="pack-font-style" }
+### `font_style` { #pack-font-style }
 
 **Value:** `"normal"`, `"italic"`, or `"oblique"`
 
@@ -267,7 +267,7 @@ The style of the font to be used.
 **Note:** Windows and Android do not support the oblique font style. A
 request for an `"oblique"` font will be interpreted as `"italic"`.
 
-### `font_variant` { id="pack-font-variant" }
+### `font_variant` { #pack-font-variant }
 
 **Value:** `"normal"` or `"small_caps"`
 
@@ -278,7 +278,7 @@ The variant of the font to be used.
 **Note:** Windows and Android do not support the small caps variant. A
 request for a `"small_caps"` font will be interpreted as `"normal"`.
 
-### `font_weight` { id="pack-font-weight" }
+### `font_weight` { #pack-font-weight }
 
 **Value:** `"normal"` or `"bold"`
 
@@ -286,7 +286,7 @@ request for a `"small_caps"` font will be interpreted as `"normal"`.
 
 The weight of the font to be used.
 
-### `font_size` { id="pack-font-size" }
+### `font_size` { #pack-font-size }
 
 **Value:** an integer
 
@@ -367,19 +367,19 @@ is:
 - The following Pack declarations can be mapped to equivalent CSS
   declarations:
 
-  > | Pack property | CSS property |
-  > |----|----|
-  > | `direction: <str>` | `flex-direction: <str>` |
-  > | `display: pack` | `display: flex` |
-  > | `flex: <int>` | If `direction == "row"` and `width` is set, or `direction == "column"` and `height` is set, ignore. Otherwise, `flex: <int> 0 auto`. |
-  > | `font_size: <int>` | `font-size: <int>pt` |
-  > | `height: <value>` | `height: <value>px` if value is an integer; `height: auto` if value is `"none"`. |
-  > | `margin_top: <int>` | `margin-top: <int>px` |
-  > | `margin_bottom: <int>` | `margin-bottom: <int>px` |
-  > | `margin_left: <int>` | `margin-left: <int>px` |
-  > | `margin_right: <int>` | `margin-right: <int>px` |
-  > | `text_direction: <str>` | `direction: <str>` |
-  > | `width: <value>` | `width: <value>px` if value is an integer; `width: auto` if value is `"none"`. |
+    | Pack property           | CSS property                                                                                                                         |
+    |-------------------------|--------------------------------------------------------------------------------------------------------------------------------------|
+    | `direction: <str>`      | `flex-direction: <str>`                                                                                                              |
+    | `display: pack`         | `display: flex`                                                                                                                      |
+    | `flex: <int>`           | If `direction == "row"` and `width` is set, or `direction == "column"` and `height` is set, ignore. Otherwise, `flex: <int> 0 auto`. |
+    | `font_size: <int>`      | `font-size: <int>pt`                                                                                                                 |
+    | `height: <value>`       | `height: <value>px` if value is an integer; `height: auto` if value is `"none"`.                                                     |
+    | `margin_top: <int>`     | `margin-top: <int>px`                                                                                                                |
+    | `margin_bottom: <int>`  | `margin-bottom: <int>px`                                                                                                             |
+    | `margin_left: <int>`    | `margin-left: <int>px`                                                                                                               |
+    | `margin_right: <int>`   | `margin-right: <int>px`                                                                                                              |
+    | `text_direction: <str>` | `direction: <str>`                                                                                                                   |
+    | `width: <value>`        | `width: <value>px` if value is an integer; `width: auto` if value is `"none"`.                                                       |
 
 - All other Pack declarations should be used as-is as CSS declarations,
   with underscores being converted to dashes (e.g., `background_color`

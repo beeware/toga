@@ -1,4 +1,4 @@
-# Widget layout  { id="layout" }
+# Widget layout  { #layout }
 
 One of the major tasks of a GUI framework is to determine where each
 widget will be displayed within the application window. This
@@ -36,7 +36,7 @@ window. However, some widgets (those with "Container" in their name)
 establish sub-containers. When a refresh is requested on a container,
 any sub-containers will also be refreshed.
 
-## Length units  { id="css-units" }
+## Length units  { #css-units }
 
 Toga uses CSS units in its public API. Their physical size depends on
 the device type:

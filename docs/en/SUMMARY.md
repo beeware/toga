@@ -10,7 +10,21 @@
     - ./topics/*
 - Reference
     - [API Reference](reference/api/index.md)
-        - ./reference/api/*
+        - [App](./reference/api/app.md)
+        - [Window](./reference/api/window.md)
+        - [MainWindow](./reference/api/mainwindow.md)
+        - [DocumentWindow](./reference/api/documentwindow.md)
+        - Containers
+            - ./reference/api/containers/*
+        - Hardware
+            - ./reference/api/hardware/*
+        - Resources
+            - ./reference/api/resources/*
+        - Widgets
+            - ./reference/api/widgets/*
+        - [Constants](./reference/api/constants.md)
+        - [Keys](./reference/api/keys.md)
+        - [Types](./reference/api/types.md)
     - [Supported Platforms](reference/platforms/index.md)
         - ./reference/platforms/*
     - [Toga APIs by platform](reference/widgets_by_platform.md)

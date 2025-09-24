@@ -3,7 +3,8 @@
 A small, square image, used to provide easily identifiable visual
 context to a widget.
 
-**Availability ([Key][api-status-key])**
+Availability ([Key][api-status-key])
+{: .availability-title }
 
 {{ pd_read_csv("reference/data/widgets_by_platform.csv", na_filter=False, usecols=[4,5,6,7,8,9,10])[pd_read_csv("reference/data/widgets_by_platform.csv")[["ComponentName"]].isin(["Icon"]).all(axis=1)] | convert_to_md_table }}
 
@@ -28,7 +29,6 @@ looking for a widget configured to use an Icon (probably
 [`Button`][toga.Button]), *not* an `on_press`
 handler on an [`Image`][toga.Image] or
 [`ImageView`][toga.ImageView].
-
 
 ///
 
@@ -85,16 +85,7 @@ exception to this is if an icon file is *found*, but it cannot be loaded
 will be raised.
 
 ## Reference
-TODO: Verify the below text is not meant to be in the source code:
-> When specifying an [Icon][], you can
-> provide:
->
-> - a string specifying an absolute or relative path;
-> - an absolute or relative [`pathlib.Path`][]
->   object; or
-> - an instance of [`toga.Icon`][].
->
-> If a relative path is provided, it will be anchored relative to the
-> module that defines your Toga application class.
+
+::: toga.icons.IconContentT
 
 ::: toga.Icon
