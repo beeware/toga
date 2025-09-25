@@ -76,7 +76,7 @@ markdown_extensions:
   pymdownx.blocks.tab:
     alternate_style: true
   pymdownx.snippets:
-    base_path: ["docs/en", "examples"]
+    base_path: ["docs", "examples"]
     url_download: true
     check_paths: true
   toc:

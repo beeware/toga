@@ -125,7 +125,7 @@ node = tree.data[1][0]
 print(f"{node.name}, who is age {node.age}, is {node.status}")
 ```
 
--8<- "reference/api/widgets/table-accessors.md"
+-8<- "en/reference/api/widgets/table-accessors.md"
 
 If you want to use different attributes, you can override them by
 providing an `accessors` argument. In this example, the tree will use
@@ -158,7 +158,7 @@ node = tree.data[1][0]
 print(f"{node.character}, who is age {node.age}, is {node.status}")
 ```
 
--8<- "reference/api/widgets/table-values.md"
+-8<- "en/reference/api/widgets/table-values.md"
 
 ## Notes
 
