@@ -42,6 +42,19 @@ invoking any camera API. If permission has not yet been granted, the platform *m
 request access at the time of first camera access; however, this is not guaranteed to be
 the behavior on all platforms.
 
+System requirements
+-------------------
+
+The Camera API on Linux uses the XDG Camera portal, even if the application
+is running outside of Flatpak. Linux users must install a XDG Desktop Portal
+implementation. Most desktop environments provide an implementation and
+many popular distros will work out-of-the-box.
+
+Additionally, GStreamer and WirePlumber must be installed, along with their
+GObject introspection type libraries.
+
+``TODO``
+
 Notes
 -----
 
