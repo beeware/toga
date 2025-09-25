@@ -74,21 +74,25 @@ def test_create_with_values(pins):
 def test_latlng_properties():
     """LatLng objects behave like tuples."""
     # Create a LatLng object.
-    pos = toga.LatLng(37.42, 42.37123456)
+    pos = toga.LatLng(37.42, 42.37123456, 1.0, 2.0)
 
     # String representation is clean, and clipped to 6dp
-    assert str(pos) == "(37.420000, 42.371235)"
+    assert str(pos) == "(37.420000, 42.371235, 1.000000, 2.000000)"
 
     # Values can be accessed by attribute
     assert pos.lat == pytest.approx(37.42)
     assert pos.lng == pytest.approx(42.37123456)
+    assert pos.horizontal_accuracy == pytest.approx(1.0)
+    assert pos.vertical_accuracy == pytest.approx(2.0)
 
     # Values can be accessed by position
     assert pos[0] == pytest.approx(37.42)
     assert pos[1] == pytest.approx(42.37123456)
+    assert pos[2] == pytest.approx(1.0)
+    assert pos[3] == pytest.approx(2.0)
 
     # LatLng can be compared with tuples
-    assert pos == pytest.approx((37.42, 42.37123456))
+    assert pos == pytest.approx((37.42, 42.37123456, 1.0, 2.0))
 
 
 @pytest.mark.parametrize(
@@ -114,21 +118,21 @@ def test_pin_location(widget):
     pin = toga.MapPin((37.42, 42.37), title="TheTitle", subtitle="TheSubtitle")
 
     assert isinstance(pin.location, toga.LatLng)
-    assert pin.location == (37.42, 42.37)
+    assert pin.location == (37.42, 42.37, None, None)
 
     # Change the pin location before the pin is on the map
     EventLog.reset()
 
     # Pin Location can be changed with a tuple
-    pin.location = (23.45, 67.89)
+    pin.location = (23.45, 67.89, 5.0, 6.0)
     assert isinstance(pin.location, toga.LatLng)
-    assert pin.location == (23.45, 67.89)
+    assert pin.location == (23.45, 67.89, 5.0, 6.0)
     assert_action_not_performed(widget, "update pin")
 
     # Pin Location can be changed with a LatLng
-    pin.location = toga.LatLng(12.34, 56.78)
+    pin.location = toga.LatLng(12.34, 56.78, 5.0, 6.0)
     assert isinstance(pin.location, toga.LatLng)
-    assert pin.location == (12.34, 56.78)
+    assert pin.location == (12.34, 56.78, 5.0, 6.0)
     assert_action_not_performed(widget, "update pin")
 
     # Add the pin to a map
@@ -136,9 +140,9 @@ def test_pin_location(widget):
     assert_action_performed_with(widget, "add pin", pin=pin)
 
     # Pin Location can be changed while on the map
-    pin.location = (23.45, 67.89)
+    pin.location = (23.45, 67.89, None, None)
     assert isinstance(pin.location, toga.LatLng)
-    assert pin.location == (23.45, 67.89)
+    assert pin.location == (23.45, 67.89, None, None)
     assert_action_performed_with(widget, "update pin", pin=pin)
 
     # Remove the pin from the map
@@ -147,9 +151,9 @@ def test_pin_location(widget):
     assert_action_performed_with(widget, "remove pin", pin=pin)
 
     # Updating the location doesn't modify the map
-    pin.location = toga.LatLng(12.34, 56.78)
+    pin.location = toga.LatLng(12.34, 56.78, 1.0, 2.0)
     assert isinstance(pin.location, toga.LatLng)
-    assert pin.location == (12.34, 56.78)
+    assert pin.location == (12.34, 56.78, 1.0, 2.0)
     assert_action_not_performed(widget, "update pin")
 
 
