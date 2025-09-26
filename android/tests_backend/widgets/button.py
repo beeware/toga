@@ -21,3 +21,6 @@ class ButtonProbe(LabelProbe):
             assert (icon.getIntrinsicWidth(), icon.getIntrinsicHeight()) == scaled_size
         else:
             pytest.fail("Icon does not exist")
+
+    def assert_taller_than(self, initial_height):
+        assert self.height > initial_height
