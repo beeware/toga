@@ -10,7 +10,7 @@ from toga.platform import get_platform_factory
 if TYPE_CHECKING:
     from typing import TypeAlias
 
-    IconContentT: TypeAlias = str | Path | toga.Icon | toga.NativeIcon
+    IconContentT: TypeAlias = str | Path | toga.Icon
 
 
 class cachedicon:
@@ -30,16 +30,6 @@ class cachedicon:
             value = self.f(owner)
             setattr(cls, f"__{self.f.__name__}", value)
         return value
-
-
-class NativeIcon:
-    """
-    For internal use for Qt backend only
-    """
-
-    def __init__(self, native):  # pragma: no cover
-        self.factory = get_platform_factory()
-        self._impl = self.factory.NativeIcon(native)
 
 
 # A sentinel value that is type compatible with the `path` argument,

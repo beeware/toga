@@ -4,7 +4,7 @@ from collections.abc import Iterator, MutableMapping, MutableSet
 from typing import TYPE_CHECKING, Protocol
 
 from toga.handlers import simple_handler, wrapped_handler
-from toga.icons import Icon, NativeIcon
+from toga.icons import Icon
 from toga.keys import Key
 from toga.platform import get_platform_factory
 
@@ -343,11 +343,7 @@ class Command:
 
     @icon.setter
     def icon(self, icon_or_name: IconContentT | None) -> None:
-        if (
-            isinstance(icon_or_name, Icon)
-            or isinstance(icon_or_name, NativeIcon)
-            or icon_or_name is None
-        ):
+        if isinstance(icon_or_name, Icon) or icon_or_name is None:
             self._icon = icon_or_name
         else:
             self._icon = Icon(icon_or_name)

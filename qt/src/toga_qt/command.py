@@ -2,7 +2,7 @@ import sys
 
 from PySide6.QtGui import QAction, QIcon
 
-from toga import Command as StandardCommand, Group, Key, NativeIcon
+from toga import Command as StandardCommand, Group, Key
 
 from .keys import toga_to_qt_key
 
@@ -35,7 +35,6 @@ class Command:
                 "shortcut": Key.MOD_1 + "q",
                 "group": Group.FILE,
                 "section": sys.maxsize,
-                "icon": NativeIcon(QIcon.fromTheme("application-exit")),
             }
 
         # ---- File menu -----------------------------------
@@ -104,6 +103,12 @@ class Command:
     def create_menu_item(self):
         item = QAction(self.interface.text)
 
+        if hasattr(self.interface.action, "icon_name"):
+            item.setIcon(QIcon.fromTheme(self.interface.action.icon_name))
+
+        if self.interface.text == "Quit":  # Apply the quit icon for application exit.
+            item.setIcon(QIcon.fromTheme("application-exit"))
+
         if self.interface.icon:
             item.setIcon(self.interface.icon._impl.native)
 
@@ -117,7 +122,3 @@ class Command:
         self.native.append(item)
 
         return item
-
-    def set_icon(self):
-        for item in self.native:
-            item.setIcon(self.interface.icon._impl.native)

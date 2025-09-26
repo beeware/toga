@@ -81,6 +81,9 @@ class Widget:
     def _apply_hidden(self, hidden):
         self.native.setHidden(hidden)
 
+    def set_text_align(self, alignment):
+        pass  # If appropriate, a widget subclass will implement this.
+
     def set_color(self, color):
         # Not implemented yet
         pass

@@ -1,18 +1,18 @@
 import asyncio
 
 from PySide6.QtCore import QObject, QSize, Qt, QTimer, Signal
-from PySide6.QtGui import QCursor, QGuiApplication, QIcon
+from PySide6.QtGui import QCursor, QGuiApplication
 from PySide6.QtWidgets import QApplication, QMessageBox
 from qasync import QEventLoop
 
 import toga
-from toga import NativeIcon
 from toga.command import Command, Group
+from toga.handlers import NativeHandler
 
 from .screens import Screen as ScreenImpl
 
 
-def operate_on_focus(method_name, interface, needwrite=False):
+class EditOperation:
     """
     Perform a menu item property onto the focused widget, similar to
     SEL in Objective-C.  This is used to implement the Edit, Copy, etc.
@@ -22,16 +22,25 @@ def operate_on_focus(method_name, interface, needwrite=False):
         widget.
     """
 
-    fw = QApplication.focusWidget()
-    if not fw:
-        return
-    if needwrite:
-        fnwrite = getattr(fw, "isReadOnly", None)
-        if callable(fnwrite) and fnwrite():
+    def __init__(self, method_name, needwrite=False):
+        self.method_name = method_name
+        self.needwrite = needwrite
+
+    def __call__(self, interface):
+        fw = QApplication.focusWidget()
+        if not fw:
             return
-    fn = getattr(fw, method_name, None)
-    if callable(fn):
-        fn()
+        if self.needwrite:
+            fnwrite = getattr(fw, "isReadOnly", None)
+            if callable(fnwrite) and fnwrite():
+                return
+        fn = getattr(fw, self.method_name, None)
+        if callable(fn):
+            fn()
+
+    @property
+    def icon_name(self):
+        return "edit-" + self.method_name
 
 
 def _create_about_dialog(app):
@@ -118,49 +127,47 @@ class App:
         # There's not a satisfying way to implement that in Qt though...
         # I've referenced https://stackoverflow.com/questions/2047456, so
         # we omit the enabled detection for now.
+
+        # NativeHandler is (ab)used here to ensure that the function stays
+        # of type EditOperation, to provide the appropriate icon.
         self.interface.commands.add(
             Command(
-                lambda interface: operate_on_focus("undo", interface),
+                NativeHandler(EditOperation("undo")),
                 "Undo",
                 shortcut=toga.Key.MOD_1 + "z",
                 group=Group.EDIT,
                 order=10,
-                icon=NativeIcon(QIcon.fromTheme("edit-undo")),
             ),
             Command(
-                lambda interface: operate_on_focus("redo", interface),
+                NativeHandler(EditOperation("redo")),
                 "Redo",
                 shortcut=toga.Key.SHIFT + toga.Key.MOD_1 + "z",
                 group=Group.EDIT,
                 order=20,
-                icon=NativeIcon(QIcon.fromTheme("edit-redo")),
             ),
             Command(
-                lambda interface: operate_on_focus("cut", interface, True),
+                NativeHandler(EditOperation("cut", True)),
                 "Cut",
                 shortcut=toga.Key.MOD_1 + "x",
                 group=Group.EDIT,
                 section=10,
                 order=10,
-                icon=NativeIcon(QIcon.fromTheme("edit-cut")),
             ),
             Command(
-                lambda interface: operate_on_focus("copy", interface),
+                NativeHandler(EditOperation("copy")),
                 "Copy",
                 shortcut=toga.Key.MOD_1 + "c",
                 group=Group.EDIT,
                 section=10,
                 order=20,
-                icon=NativeIcon(QIcon.fromTheme("edit-copy")),
             ),
             Command(
-                lambda interface: operate_on_focus("paste", interface, True),
+                NativeHandler(EditOperation("paste", True)),
                 "Paste",
                 shortcut=toga.Key.MOD_1 + "v",
                 group=Group.EDIT,
                 section=10,
                 order=30,
-                icon=NativeIcon(QIcon.fromTheme("edit-paste")),
             ),
         )
 
