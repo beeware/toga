@@ -133,7 +133,7 @@ class TogaTable(NSTableView):
     def performKeyEquivalent_(self, event) -> bool:
         if toga_key(event)["key"] in {Key.ENTER, Key.NUMPAD_ENTER}:
             row = self.interface._selection_single
-            if row:
+            if row is not None:
                 self.interface.on_activate(row=row)
                 return True
         return False

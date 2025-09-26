@@ -2,6 +2,8 @@ from rubicon.objc import SEL, at, objc_method, objc_property
 from travertino.size import at_least
 
 import toga
+from toga.keys import Key
+from toga_cocoa.keys import toga_key
 from toga_cocoa.libs import (
     NSBezelBorder,
     NSIndexSet,
@@ -168,6 +170,15 @@ class TogaTree(NSOutlineView):
     def onDoubleClick_(self, sender) -> None:
         node = self.itemAtRow(self.clickedRow).attrs["node"]
         self.interface.on_activate(node=node)
+
+    @objc_method
+    def performKeyEquivalent_(self, event) -> bool:
+        if toga_key(event)["key"] in {Key.ENTER, Key.NUMPAD_ENTER}:
+            node = self.interface._selection_single
+            if node is not None:
+                self.interface.on_activate(node=node)
+                return True
+        return False
 
 
 class Tree(Widget):
