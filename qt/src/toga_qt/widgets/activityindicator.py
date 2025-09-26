@@ -15,6 +15,15 @@ from .base import Widget
 #######################################################################################
 
 
+#######################################################################################
+# Implementation note:
+#
+# Qt does not provide a Widget for an Activity Indicator; however, it does
+# provide a QML type; set up a pre-initialized QML file that can be embedded
+# into a Qt Widgets Application to represent the spinner.
+#######################################################################################
+
+
 class ActivityIndicator(Widget):
     def create(self):
         self.native = QQuickWidget()
