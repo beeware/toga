@@ -129,7 +129,9 @@ class Window:
 
     def hide(self):
         # https://forum.qt.io/topic/163064/delayed-window-state-read-after-hide-gives-wrong-results-even-in-x11/
-        # The window state when a window is hidden is unreliable; pull our own logic to cache.
+        # The window state when a window is hidden is unreliable in
+        # regards to preserving normal vs. maximized state, so caching
+        # is done for window states when the window is hidden.
         if self._hidden_window_state is None:
             self._hidden_window_state = self.get_window_state(in_progress_state=True)
             self._pending_state_transition = None
@@ -146,8 +148,8 @@ class Window:
 
     def show(self):
         # Restore cached state before we show as the docs indicate that window states
-        # set when a window is hidden will be applied on show, to avoid any brief flashing
-        # or failure to apply.
+        # set when a window is hidden will be applied on show, to avoid any brief
+        # flashing or failure to apply.
         if self._hidden_window_state is not None:
             self.set_window_state(self._hidden_window_state)
             self._hidden_window_state = None

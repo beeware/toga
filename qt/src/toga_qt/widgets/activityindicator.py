@@ -5,7 +5,6 @@ from PySide6.QtQuickWidgets import QQuickWidget
 
 from .base import Widget
 
-
 #######################################################################################
 # Implementation note:
 #

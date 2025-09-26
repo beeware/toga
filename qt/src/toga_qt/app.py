@@ -17,7 +17,7 @@ def operate_on_focus(method_name, interface, needwrite=False):
     Perform a menu item property onto the focused widget, similar to
     SEL in Objective-C.  This is used to implement the Edit, Copy, etc.
     actions.
-    
+
     :param: needwrite:  Whether write access is required for the focus
         widget.
     """

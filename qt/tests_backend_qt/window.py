@@ -16,9 +16,8 @@ class WindowProbe(BaseProbe):
     supports_closable = False
     supports_as_image = False  # not impld yet
     supports_focus = True
-    supports_minimizable = (
-        False  # cannot be impl'd on Qt, the minimize button will show even if hinted away
-    )
+    # Cannot be implemented on Qt, the minimize button will show even if hinted away
+    supports_minimizable = False
     supports_move_while_hidden = False
     supports_unminimize = True
     supports_minimize = True

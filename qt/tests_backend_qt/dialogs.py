@@ -35,9 +35,7 @@ class DialogsMixin:
                             # an explicit redraw with a delay to have Qt realize
                             # the dialog before closing it, so the appearance
                             # of the dialog may be verified.
-                            await self.redraw(
-                                "Qt: Dialog display", delay=0.1
-                            )
+                            await self.redraw("Qt: Dialog display", delay=0.1)
                             self._default_close_handler(dialog, qt_result)
                     except Exception as e:
                         future.set_exception(e)
