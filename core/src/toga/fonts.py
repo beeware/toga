@@ -126,7 +126,7 @@ class Font(BaseFont):
             SERIF,
             SYSTEM,
         ):
-            raise ValueError("Font family names cannot coincide with standard font types")
+            raise ValueError("Family names cannot coincide with standard font types")
         font_key = Font._registered_font_key(family, weight, style, variant)
         _REGISTERED_FONT_CACHE[font_key] = str(toga.App.app.paths.app / path)
 

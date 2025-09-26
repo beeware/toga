@@ -5,17 +5,15 @@ import pytest
 import toga
 from toga.fonts import (
     _REGISTERED_FONT_CACHE,
+    BOLD,
     CURSIVE,
     FANTASY,
+    ITALIC,
     MESSAGE,
     MONOSPACE,
-    SANS_SERIF,
-    SERIF,
-    SYSTEM,
-    BOLD,
-    ITALIC,
     NORMAL,
     SANS_SERIF,
+    SERIF,
     SMALL_CAPS,
     SYSTEM,
     SYSTEM_DEFAULT_FONT_SIZE,
@@ -177,6 +175,7 @@ def test_register_font(app, path, registered):
         == registered.resolve()
     )
 
+
 @pytest.mark.parametrize(
     "family",
     [
@@ -192,6 +191,7 @@ def test_register_font(app, path, registered):
 def test_register_shadowed_font(app, family):
     with pytest.raises(ValueError):
         toga.Font.register(family)
+
 
 @pytest.mark.parametrize(
     "path, registered",
