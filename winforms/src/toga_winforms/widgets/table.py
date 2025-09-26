@@ -72,6 +72,7 @@ class Table(Widget):
 
     def add_action_events(self):
         self.native.MouseDoubleClick += WeakrefCallable(self.winforms_double_click)
+        self.native.KeyPress += WeakrefCallable(self.winforms_key_press)
 
     def set_bounds(self, x, y, width, height):
         super().set_bounds(x, y, width, height)
@@ -179,6 +180,13 @@ class Table(Widget):
             # Double clicking outside of an item apparently doesn't raise the event, but
             # that isn't guaranteed by the documentation.
             pass
+
+    def winforms_key_press(self, sender, e):
+        if ord(e.KeyChar) == int(WinForms.Keys.Enter):
+            row = self.interface._selection_single
+            if row:
+                self.interface.on_activate(row=row)
+                e.Handled = True
 
     def _create_column(self, heading, accessor):
         col = WinForms.ColumnHeader()
