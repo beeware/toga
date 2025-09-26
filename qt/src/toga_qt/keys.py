@@ -13,8 +13,10 @@ QT_MODIFIERS = {
     Key.SHIFT: Qt.ShiftModifier,
 }
 
-# [sweating intensifies]
-# TODO: Refs https://forum.qt.io/topic/162828/how-do-i-check-for-shift-tab
+# Note: In Qt's key combos there's certain ones like Key_Copy or Key_BackTab.
+# Empirical evidence shows that they exists to abstracts the shortcuts in a
+# cross-platform way; they are not needed since the Qt backend is for Linux
+# only.
 QT_KEYS = {
     Key.ESCAPE.value: Qt.Key_Escape,
     Key.BACK_QUOTE.value: Qt.Key_QuoteLeft,  # Why quoteleft, are the Qt devs up to TeX?
@@ -26,7 +28,7 @@ QT_KEYS = {
     Key.CLOSE_BRACKET.value: Qt.Key_BracketRight,
     Key.BACKSLASH.value: Qt.Key_Backslash,
     Key.SEMICOLON.value: Qt.Key_Semicolon,
-    Key.QUOTE.value: Qt.Key_QuoteDbl,  # why shifted form?
+    Key.QUOTE.value: Qt.Key_QuoteDbl,
     Key.COMMA.value: Qt.Key_Comma,
     Key.FULL_STOP.value: Qt.Key_Period,
     Key.SLASH.value: Qt.Key_Slash,

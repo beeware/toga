@@ -11,12 +11,13 @@ from .probe import BaseProbe
 
 class WindowProbe(BaseProbe):
     # There *is* a close button hint but it doesn't seem to work
-    # under KDE so we take similar handling as winforms here.
+    # under KDE so we take similar handling as winforms here: disable
+    # the action of the close button.
     supports_closable = False
     supports_as_image = False  # not impld yet
     supports_focus = True
     supports_minimizable = (
-        False  # cannot be impld on Qt, at least you hint it but it still show on KDE
+        False  # cannot be impl'd on Qt, the minimize button will show even if hinted away
     )
     supports_move_while_hidden = False
     supports_unminimize = True
@@ -98,22 +99,18 @@ class WindowProbe(BaseProbe):
     def unminimize(self):
         self.native.showNormal()
 
-    # @property
-    # def is_minimizable(self):
-    # return bool(self.native.windowFlags() & Qt.WindowMinimizeButtonHint)
-
     @property
     def instantaneous_state(self):
         return self.window._impl.get_window_state(in_progress_state=False)
 
     def has_toolbar(self):
-        raise pytest.skip("toolbar no impl")
+        raise pytest.skip("Toolbar is not implemented on Qt yet")
 
     def assert_is_toolbar_separator(self, index, section=False):
-        raise pytest.skip("toolbar no impl")
+        raise pytest.skip("Toolbar is not implemented on Qt yet")
 
     def assert_toolbar_item(self, index, label, tooltip, has_icon, enabled):
-        raise pytest.skip("toolbar no impl")
+        raise pytest.skip("Toolbar is not implemented on Qt yet")
 
     def press_toolbar_button(self, index):
-        raise pytest.skip("toolbar no impl")
+        raise pytest.skip("Toolbar is not implemented on Qt yet")

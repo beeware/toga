@@ -10,7 +10,7 @@ from toga.types import Position, Size
 
 from .container import Container
 from .libs import (
-    AnyWithin,  # tests hackery...
+    AnyWithin,
     get_is_wayland,
     get_testing,
 )
@@ -38,7 +38,8 @@ def process_change(native, event):
             native.interface.on_show()
         impl = native.impl
         # Handle this later as the states etc may not have been fully realized.
-        # I have no idea why 100ms is needed here.
+        # Starting the next transition now will cause extra window events to be
+        # generated, and sometimes the window ends up in an incorrect state.
         impl._changeventid += 1
         if get_is_wayland():
             QTimer.singleShot(
@@ -109,47 +110,44 @@ class Window:
         if position is not None:
             self.native.move(position[0], position[1])
 
-        # This does not actually work on KDE!
-        # self._set_minimizable(self.interface.minimizable)
+        # Note:  KDE's default theme does not respond to minimize button
+        # window hints, so minimizable cannot be implemented.
 
         self.native.resizeEvent = self.resizeEvent
 
     def qt_close_event(self, event):
         if not self.prog_close:
+            # Subtlety: If on_close approves the closing
+            # this handler doesn't get called again.  Therefore
+            # the event is always rejected.
             event.ignore()
             if self.interface.closable:
-                # Subtlety: If on_close approves the closing
-                # this handler doesn't get called again
                 self.interface.on_close()
 
     def create(self):
         self.native = wrap_container(self.container.native, self)
 
-    # def _set_minimizable(self, enabled):
-    #     flags = self.native.windowFlags()
-    #     if enabled:
-    #         flags |= Qt.WindowMinimizeButtonHint
-    #     else:
-    #         flags &= ~Qt.WindowMinimizeButtonHint
-    #     self.native.setWindowFlags(flags)
-
     def hide(self):
         # https://forum.qt.io/topic/163064/delayed-window-state-read-after-hide-gives-wrong-results-even-in-x11/
-        # Sorta unreliable window state when hidden here, pull our own logic.
+        # The window state when a window is hidden is unreliable; pull our own logic to cache.
         if self._hidden_window_state is None:
             self._hidden_window_state = self.get_window_state(in_progress_state=True)
             self._pending_state_transition = None
 
         self.native.hide()
-        # Ideally we'd love to be able to use showEvent but AFAICT
-        # it also gets triggered on deminimization and sometimes even
-        # TWICE so it's unreliable.  Hack this around, no way to hide
-        # window through system in KDE AFAICT anyways.
+        # Ideally, showEvent and hideEvent should be used on Qt; however,
+        # due to some unknown subtleties to me, these events are unreliable
+        # and sometimes emits multiple times during window state changes;
+        # therefore, emit on_hide here, on_show when programmatically showing,
+        # and use the window state change events to handle show/hide from
+        # window states, since there isn't a way to hide windows by the user
+        # as far as I know of on KDE.
         self.interface.on_hide()
 
     def show(self):
-        # Do this bee-fore we show as the docs indicate it'd be applied on show
-        # and also to avoid brief flashing / failure to apply
+        # Restore cached state before we show as the docs indicate that window states
+        # set when a window is hidden will be applied on show, to avoid any brief flashing
+        # or failure to apply.
         if self._hidden_window_state is not None:
             self.set_window_state(self._hidden_window_state)
             self._hidden_window_state = None
@@ -157,11 +155,6 @@ class Window:
         self.interface.on_show()
 
     def close(self):
-        # OK, this is a bit of a stretch, since
-        # this could've been a user-induced close
-        # on_closed as well, however this flag
-        # is only used for qt_close_event and you
-        # can check out the subtlety there.
         self.prog_close = True
         self.native.close()
 
@@ -227,16 +220,14 @@ class Window:
 
     def set_app(self, app):
         # All windows instantiated belongs to your only QApplication
-        # but we need to set the icon
+        # and no need to explicitly set app, but the app icon needs to be
+        # applied onto the window.
         self.native.setWindowIcon(app.interface.icon._impl.native)
 
     def get_visible(self):
         return self.native.isVisible()
 
     # =============== WINDOW STATES ================
-    # non-minimizable is not implemented as the minimize button
-    # still exists at least when using Breeze theme even if it
-    # is hinted away.
     def get_window_state(self, in_progress_state=False):
         # NOTE - MINIMIZED does not round-trip on Wayland
         if self._hidden_window_state:
@@ -267,8 +258,6 @@ class Window:
         if self._pending_state_transition:
             self._pending_state_transition = state
             return
-
-        # print("SET WINDOW STATE")
 
         # Exit app presentation mode if another window is in it
         if any(
@@ -304,7 +293,6 @@ class Window:
             self.native.showMaximized()
 
         elif state == WindowState.MINIMIZED:
-            print("SHOW MIN")
             if not get_is_wayland():
                 self.native.showNormal()
             self.native.showMinimized()
@@ -336,10 +324,8 @@ class Window:
 
         QApplication.processEvents()
 
-    # ============== STUB =============
-
     def get_image_data(self):
-        pass
+        self.interface.factory.not_implemented("Window.get_image_data")
 
     def set_content(self, widget):
         self.container.content = widget
@@ -375,4 +361,5 @@ class MainWindow(Window):
                 submenu.addAction(cmd._impl.create_menu_item())
 
     def create_toolbar(self):
+        # Not implemented
         pass

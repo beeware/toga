@@ -17,8 +17,6 @@ class ButtonProbe(SimpleProbe):
         assert self.native.icon().isNull()
 
     def assert_icon_size(self):
-        # No assertion needed here.  It is handled by theme.
-        # [better not write anything more here just in case of
-        # anything about size accidentally being an inappropriate
-        # joke]
+        # Icons sizes in Qt are handled by the system theme;
+        # no assertion is needed here.
         pass

@@ -15,6 +15,6 @@ class ScreenProbe(BaseProbe):
 
     def get_screenshot(self, format=TogaImage):
         if get_is_wayland():
-            pytest.xfail("Cannot get image in Qt using conventional APIs of screen")
+            pytest.xfail("Cannot get image in Qt using APIs of screen in Wayland")
         else:
             return self.screen.as_image(format=format)

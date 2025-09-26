@@ -16,9 +16,10 @@ class Icon:
         self.interface = interface
 
         if path is None:
-            SIZES = [512, 256, 128, 72, 64, 32, 16]  # same as GTK for now.
-            # Use the executable location to find the share folder; look for icons
-            # matching the app bundle in that location.
+            # Briefcase's Linux application packaging still yields sized icons;
+            # look for the highest size, since Qt icon sizing is handled by the
+            # theme, and from Toga's perspective, they're unsized.
+            SIZES = [512, 256, 128, 72, 64, 32, 16]
             hicolor = Path(sys.executable).parent.parent / "share/icons/hicolor"
             sizes = {
                 size: hicolor / f"{size}x{size}/apps/{toga.App.app.app_id}.png"
@@ -33,6 +34,7 @@ class Icon:
 
         self.native = QIcon(str(path))
 
+        # A lot of Qt's APIs simply results in null when anything is wrong.
         if self.native.isNull():
             raise ValueError(f"Unable to load icon from {path}")
 

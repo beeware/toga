@@ -63,5 +63,5 @@ def not_implemented(feature):
     NotImplementedWarning.warn("Qt", feature)
 
 
-def __getattr__(name):  # pragma: no cover
+def __getattr__(name):
     raise NotImplementedError(f"Toga's Qt backend doesn't implement {name}")

@@ -73,10 +73,6 @@ class Widget:
     def set_bounds(self, x, y, width, height):
         self.native.setGeometry(x, y, width, height)
 
-    def set_text_align(self, alignment):
-        # Not implemented yet
-        pass
-
     def set_hidden(self, hidden):
         if self.container is not None:
             self._apply_hidden(hidden)

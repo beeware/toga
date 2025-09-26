@@ -11,8 +11,8 @@ class MessageDialog:
             icon,
             buttons,
         )
-        # Mote that AFAICT you have to pass the parent in at creation time.
-        # So I guess we'd have to do this.'
+        # Note: The parent of the dialog must be passed in at creation time.
+        # Therefore, the native must be initially None.
         self.native = None
 
     def show(self, parent, future):

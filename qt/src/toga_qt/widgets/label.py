@@ -10,12 +10,6 @@ class Label(Widget):
     def create(self):
         self.native = QLabel()
 
-    def set_color(self, value):
-        pass
-
-    def set_font(self, font):
-        pass
-
     def get_text(self):
         return self.native.text()
 

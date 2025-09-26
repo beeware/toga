@@ -1,6 +1,6 @@
 import toga
 
-# STUB IMPL
+# Not implemented on Qt yet.
 
 
 class StatusIcon:
@@ -12,7 +12,7 @@ class StatusIcon:
         pass
 
     def create(self):
-        toga.NotImplementedWarning.warn("Web", "Status Icons")
+        toga.NotImplementedWarning.warn("Qt", "Status Icons")
 
     def remove(self):
         pass

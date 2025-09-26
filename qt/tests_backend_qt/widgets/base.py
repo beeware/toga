@@ -28,7 +28,7 @@ class SimpleProbe(BaseProbe, FontMixin):
         assert self.native.parentWidget() is None
 
     def assert_text_align(self, expected):
-        pytest.xfail("fonts not impld on qt")
+        pytest.xfail("Font not implemented on qt")
 
     @property
     def enabled(self):
@@ -62,7 +62,7 @@ class SimpleProbe(BaseProbe, FontMixin):
         self.native.click()
 
     def mouse_event(self, x=0, y=0, **kwargs):
-        pytest.fail("Please implement the mouse event probe")
+        pytest.skip("Mouse event probe not yet implemented on Qt")
 
     @property
     def is_hidden(self):

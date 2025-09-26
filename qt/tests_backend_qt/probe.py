@@ -31,7 +31,6 @@ class BaseProbe(DialogsMixin):
         for widget in QApplication.allWidgets():
             widget.repaint()  # this is immediate and will block
 
-        # Wait a second... (pun intended)
         if toga.App.app.run_slow:
             delay = max(1, delay)
 

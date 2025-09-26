@@ -2,6 +2,12 @@ import os
 
 
 class AnyWithin:
+    """
+    An alternative to pytest.approx to use in tests that supports
+    comparisons; used to work around the fact that Qt window
+    size does not round-trip exactly.
+    """
+
     def __init__(self, low, high):
         self.low = low
         self.high = high

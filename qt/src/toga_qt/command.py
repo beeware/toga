@@ -30,7 +30,6 @@ class Command:
                 "icon": app.icon,
             }
         elif id == StandardCommand.EXIT:
-            # File > Quit??
             return {
                 "text": "Quit",
                 "shortcut": Key.MOD_1 + "q",
@@ -83,12 +82,7 @@ class Command:
             }
         # ---- Help menu -----------------------------------
         elif id == StandardCommand.VISIT_HOMEPAGE:
-            return None  # Code this info into the About menu.
-            # return {
-            #    "text": "Visit homepage",
-            #    "enabled": app.home_page is not None,
-            #    "group": Group.HELP,
-            # }
+            return None  # KDE apps have homepage link in about dialog
         elif id == StandardCommand.ABOUT:
             return {
                 "text": f"About {app.formal_name}",
@@ -105,7 +99,7 @@ class Command:
             widget.setEnabled(enabled)
 
     def qt_click(self):
-        self.interface.action()  # interface call
+        self.interface.action()
 
     def create_menu_item(self):
         item = QAction(self.interface.text)
@@ -116,13 +110,7 @@ class Command:
         item.triggered.connect(self.qt_click)
 
         if self.interface.shortcut is not None:
-            # try:
             item.setShortcut(toga_to_qt_key(self.interface.shortcut))
-        #            except (???) as e:  # pragma: no cover
-        #                # Make this a non-fatal warning, because different backends may
-        #                # accept different shortcuts.
-        #                print(f"WARNING: invalid shortcut {self.interface.shortcut!r}:"
-        #                      f"{e}")
 
         item.setEnabled(self.interface.enabled)
 

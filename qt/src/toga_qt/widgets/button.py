@@ -30,7 +30,7 @@ class Button(Widget):
             self.native.setIcon(icon._impl.native)
         else:
             self.native.setIcon(QIcon())
-        # Somehow Qt copies into different memory address when I pass icon
+        # Qt does not round-trip the same instance of the icon back.
         self._icon = icon
 
     def rehint(self):
@@ -38,4 +38,5 @@ class Button(Widget):
         height = self.native.sizeHint().height()
 
         self.interface.intrinsic.width = at_least(width)
-        self.interface.intrinsic.height = height  # height of a button is known
+        # Height of a button is known.
+        self.interface.intrinsic.height = height

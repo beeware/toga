@@ -13,6 +13,15 @@ from .screens import Screen as ScreenImpl
 
 
 def operate_on_focus(method_name, interface, needwrite=False):
+    """
+    Perform a menu item property onto the focused widget, similar to
+    SEL in Objective-C.  This is used to implement the Edit, Copy, etc.
+    actions.
+    
+    :param: needwrite:  Whether write access is required for the focus
+        widget.
+    """
+
     fw = QApplication.focusWidget()
     if not fw:
         return
@@ -26,6 +35,12 @@ def operate_on_focus(method_name, interface, needwrite=False):
 
 
 def _create_about_dialog(app):
+    """
+    Qt has an API, namely QMessageBox.about etc, to produce these
+    dialogs.  However, these static APIs are blocking and modal, which
+    is unlike native apps on KDE where the About dialogs are non-modal.
+    """
+
     message = (
         f'<h2 style="font-weight: normal; margin-bottom: 0px">'
         f"{app.interface.formal_name}</h2>"
@@ -94,16 +109,15 @@ class App:
 
     ######################################################################
     # Commands and menus
-    # Impl incomplete.  See GitHub thread.
     ######################################################################
 
     def create_standard_commands(self):
-        # This is sorta weird.  On KDE, default bundled apps have these stuff
-        # and they automatically enable / disable based on if this functionality
-        # is available... there's not a satisfying way to implement that in Qt
-        # though... see https://stackoverflow.com/questions/2047456, so we omit
-        # the enabled detection for now.  Most people just use Ctrl + Z etc.
-        # anyways...
+        # On KDE, default bundled apps have the following extra commands,
+        # and they automatically enable / disable based on if the associated
+        # functionality is available for the current focused widget.
+        # There's not a satisfying way to implement that in Qt though...
+        # I've referenced https://stackoverflow.com/questions/2047456, so
+        # we omit the enabled detection for now.
         self.interface.commands.add(
             Command(
                 lambda interface: operate_on_focus("undo", interface),
@@ -172,7 +186,6 @@ class App:
         self.interface.commands[Command.ABOUT].icon = icon
         self.interface.commands[Command.PREFERENCES].icon = icon
 
-    # Not implemented yet
     def set_main_window(self, window):
         self.interface.factory.not_implemented("App.set_main_window()")
 
@@ -180,7 +193,6 @@ class App:
     # App resources
     ######################################################################
 
-    # ScreenImpl not impl'd yet
     def get_screens(self):
         screens = QGuiApplication.screens()
         primary = QGuiApplication.primaryScreen()
@@ -205,8 +217,9 @@ class App:
         QApplication.beep()
 
     def show_about_dialog(self):
-        # Storing property to facilitate testing
-        # Not creating at start to ensure correct parent
+        # A reference to the about dialog is stored for facilitate testing.
+        # A new instance is created each time to ensure correct window
+        # membership.
         self._about_dialog = _create_about_dialog(self)
         self._about_dialog.show()
 

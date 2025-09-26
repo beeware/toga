@@ -1,7 +1,3 @@
-"""
-Written with haste. Expect hundreds of errors.
-"""
-
 from pathlib import Path
 
 import pytest
@@ -27,7 +23,6 @@ class AppProbe(BaseProbe):
         self.native = self.app._impl.native
         self.impl = self.app._impl
         assert isinstance(QApplication.instance(), QApplication)
-        # and the clouds are moving on with every autumn...
         assert self.native.style().objectName() == "breeze"
         # KWin supports this but not mutter which is used in CI.
         if get_is_wayland():
@@ -79,7 +74,7 @@ class AppProbe(BaseProbe):
         item.trigger()
 
     def activate_menu_hide(self):
-        pytest.xfail("No hide in menu for KDE apps")
+        pytest.xfail("KDE apps do not include a Hide in the menu bar")
 
     def activate_menu_exit(self):
         self._activate_menu_item(["File", "Quit"])
@@ -91,7 +86,7 @@ class AppProbe(BaseProbe):
         self.impl._about_dialog.done(QDialog.DialogCode.Accepted)
 
     def activate_menu_visit_homepage(self):
-        raise pytest.xfail("Qt apps do not have Visit Homepage")
+        raise pytest.xfail("Qt apps do not have a Visit Homepage menu action")
 
     def assert_dialog_in_focus(self, dialog):
         active_window = QApplication.activeWindow()
@@ -115,13 +110,13 @@ class AppProbe(BaseProbe):
         self.assert_menu_item(["Help", "About Toga Testbed"])
 
     def activate_menu_close_window(self):
-        pytest.xfail("Menu close is not typical of Qt")
+        pytest.xfail("KDE apps do not include a Close in the menu bar")
 
     def activate_menu_close_all_windows(self):
-        pytest.xfail("Menu close all windows is not typical of Qt")
+        pytest.xfail("KDE apps do not include a Close All in the menu bar")
 
     def activate_menu_minimize(self):
-        pytest.xfail("Menu Minimize is not typical of Qt")
+        pytest.xfail("KDE apps do not include a Minimize in the menu bar")
 
     def keystroke(self, combination):
         return qt_to_toga_key(toga_to_qt_key(combination))
@@ -136,13 +131,13 @@ class AppProbe(BaseProbe):
         pytest.skip("Not impld")
 
     def has_status_icon(self, status_icon):
-        pytest.skip("Not impld")
+        pytest.skip("Status Icons not yet implemented on Qt")
 
     def status_menu_items(self, status_icon):
-        pytest.skip("Not impld")
+        pytest.skip("Status Icons not yet implemented on Qt")
 
     def activate_status_icon_button(self, item_id):
-        pytest.skip("Not impld")
+        pytest.skip("Status Icons not yet implemented on Qt")
 
     def activate_status_menu_item(self, item_id, title):
-        pytest.skip("Not impld")
+        pytest.skip("Status Icons not yet implemented on Qt")
