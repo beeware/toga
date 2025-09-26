@@ -24,6 +24,10 @@ class TableProbe(SimpleProbe):
         pytest.skip("Can't set background color on GTK Tables")
 
     @property
+    def has_focus(self):
+        return self.native_table.has_focus()
+
+    @property
     def row_count(self):
         return len(self.native_table.get_model())
 
@@ -88,5 +92,5 @@ class TableProbe(SimpleProbe):
             self.native_table.get_columns()[0],
         )
 
-    async def acquire_keyboard_focus(self):
+    async def select_first_row_keyboard(self):
         pytest.skip("test not implemented for this platform")

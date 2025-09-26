@@ -120,10 +120,6 @@ class Tree(Widget):
     def enabled(self, value: object) -> None:
         pass
 
-    def focus(self) -> None:
-        """No-op; Tree cannot accept input focus."""
-        pass
-
     @property
     def data(self) -> SourceT | TreeSource:
         """The data to display in the tree.
