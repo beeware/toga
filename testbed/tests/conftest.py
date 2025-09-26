@@ -12,7 +12,7 @@ from pytest import fixture, register_assert_rewrite, skip
 import toga
 from toga.colors import GOLDENROD
 from toga.constants import WindowState
-from toga.platform import current_platform
+from toga.platform import get_platform_factory
 from toga.style import Pack
 
 # Ideally, we'd register rewrites for "tests" and get all the submodules
@@ -20,10 +20,11 @@ from toga.style import Pack
 register_assert_rewrite("tests.assertions")
 register_assert_rewrite("tests.widgets")
 register_assert_rewrite("tests_backend")
+register_assert_rewrite("tests_backend_qt")
 
 # Toga's Qt backend is packaged the same as GTK Linux; substitute
 # the Qt backend tests if running on Qt.
-if current_platform == "linux-qt":
+if get_platform_factory().__name__ == "toga_qt.factory":
     spec = importlib.util.find_spec("tests_backend_qt")
     if spec is None:
         raise FileNotFoundError("Could not find Qt backend tests")

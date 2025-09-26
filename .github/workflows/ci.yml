@@ -287,7 +287,7 @@ jobs:
             echo "Start window manager..."
             DISPLAY=:99 blackbox &
             sleep 1
-          briefcase-run-prefix: 'DISPLAY=:99'
+          briefcase-run-prefix: 'DISPLAY=:99 TOGA_BACKEND=toga_gtk'
           setup-python: false  # Use the system Python packages
           app-user-data-path: "$HOME/.local/share/testbed"
 
@@ -314,7 +314,7 @@ jobs:
             DISPLAY=:99 MUTTER_DEBUG_DUMMY_MODE_SPECS=2048x1536 \
               mutter --nested --wayland --no-x11 --wayland-display toga &
             sleep 1
-          briefcase-run-prefix: "WAYLAND_DISPLAY=toga"
+          briefcase-run-prefix: "WAYLAND_DISPLAY=toga TOGA_BACKEND=toga_gtk"
           setup-python: false  # Use the system Python packages
           app-user-data-path: "$HOME/.local/share/testbed"
 
