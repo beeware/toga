@@ -114,8 +114,8 @@ class Font(BaseFont):
         :param variant: The :ref:`font variant <pack-font-variant>`.
 
         :raises ValueError: When the registered family has the same name as the standard
-            font families "cursive", "fantasy", "message", "monospace", "sans-serif",
-            "serif", or "system".
+            font families ``"cursive"``, ``"fantasy"``, ``"message"``, ``"monospace"``,
+            `"sans-serif"``, "serif", or "system".
         """
         if family in (
             CURSIVE,
