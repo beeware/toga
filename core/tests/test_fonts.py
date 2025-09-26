@@ -190,7 +190,7 @@ def test_register_font(app, path, registered):
 )
 def test_register_shadowed_font(app, family):
     with pytest.raises(ValueError):
-        toga.Font.register(family)
+        toga.Font.register(family, Path("path/to/custom/font.otf"))
 
 
 @pytest.mark.parametrize(
