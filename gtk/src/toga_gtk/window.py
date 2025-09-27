@@ -436,6 +436,7 @@ class Window:
                 if getattr(self, "native_toolbar", None):
                     self.native_toolbar.set_visible(True)
                 self.native.unfullscreen()
+                self._window_state_flags = None
                 self.interface.screen = self._before_presentation_mode_screen
                 del self._before_presentation_mode_screen
                 self._in_presentation = False
