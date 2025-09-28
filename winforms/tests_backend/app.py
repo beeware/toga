@@ -52,6 +52,8 @@ class AppProbe(BaseProbe, DialogsMixin):
         # The following code is based on https://stackoverflow.com/a/12467292, but it
         # only works when the cursor is over the window.
         form = self.main_window._impl.native
+        print("CURSOR POSITION", Cursor.Position)
+        print("FORM POSITION", form.Location, form.Size)
         Cursor.Position = Point(
             form.Location.X + (form.Size.Width // 2),
             form.Location.Y + (form.Size.Height // 2),
@@ -59,6 +61,7 @@ class AppProbe(BaseProbe, DialogsMixin):
 
         # A small delay is apparently required for the new position to take effect.
         sleep(0.1)
+        print("AFTER CURSOR POSITION", Cursor.Position)
 
         class POINT(ctypes.Structure):
             _fields_ = [
@@ -81,6 +84,10 @@ class AppProbe(BaseProbe, DialogsMixin):
         info.cbSize = ctypes.sizeof(info)
         if not GetCursorInfo(ctypes.byref(info)):
             raise RuntimeError("GetCursorInfo failed")
+
+        print("IS CURSOR VISIBLE?")
+        print(f"- {info.hCursor=}")
+        print(f"- {info.flags=}")
 
         # `flags` is 0 or 1 in local testing, but the GitHub Actions runner always
         # returns 2 ("the system is not drawing the cursor because the user is providing

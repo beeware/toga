@@ -251,14 +251,22 @@ class App:
     ######################################################################
 
     def hide_cursor(self):
+        print("HIDE CURSOR")
         if self._cursor_visible:
+            print("- is visible")
             WinForms.Cursor.Hide()
+            print("- hide called ")
         self._cursor_visible = False
+        print("- now hidden")
 
     def show_cursor(self):
+        print("SHOW CURSOR")
         if not self._cursor_visible:
+            print("- is visible")
             WinForms.Cursor.Show()
+            print("- show called ")
         self._cursor_visible = True
+        print("- now visible")
 
     ######################################################################
     # Window control
