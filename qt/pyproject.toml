@@ -49,7 +49,7 @@ classifiers = [
 
 
 [project.entry-points."toga.backends"]
-linux-qt = "toga_qt"
+linux = "toga_qt"
 
 [tool.setuptools_scm]
 root = ".."

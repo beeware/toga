@@ -223,6 +223,5 @@ class Testbed(toga.App):
 
 def main():
     return Testbed(
-        app_name="testbed",
         document_types=[ExampleDoc, ReadonlyDoc],
     )

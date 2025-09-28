@@ -1,9 +1,6 @@
 import asyncio
 import gc
-import importlib
-import importlib.util
 import inspect
-import sys
 from dataclasses import dataclass
 from importlib import import_module
 
@@ -12,7 +9,6 @@ from pytest import fixture, register_assert_rewrite, skip
 import toga
 from toga.colors import GOLDENROD
 from toga.constants import WindowState
-from toga.platform import get_platform_factory
 from toga.style import Pack
 
 # Ideally, we'd register rewrites for "tests" and get all the submodules
@@ -20,17 +16,6 @@ from toga.style import Pack
 register_assert_rewrite("tests.assertions")
 register_assert_rewrite("tests.widgets")
 register_assert_rewrite("tests_backend")
-register_assert_rewrite("tests_backend_qt")
-
-# Toga's Qt backend is packaged the same as GTK Linux; substitute
-# the Qt backend tests if running on Qt.
-if get_platform_factory().__name__ == "toga_qt.factory":
-    spec = importlib.util.find_spec("tests_backend_qt")
-    if spec is None:
-        raise FileNotFoundError("Could not find Qt backend tests")
-    qt_module = importlib.import_module("tests_backend_qt")
-
-    sys.modules["tests_backend"] = qt_module
 
 
 # Use this for widgets or tests which are not supported on some platforms,

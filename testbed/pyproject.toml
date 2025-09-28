@@ -68,11 +68,9 @@ test_sources = [
 [tool.briefcase.app.testbed.linux]
 test_sources = [
     "../gtk/tests_backend",
-    "../qt/tests_backend_qt",  # Will be substituted in Python tests
 ]
 requires = [
     "../gtk",
-    "../qt",  # Toga will choose right backend automatically
 ]
 
 [tool.briefcase.app.testbed.windows]
@@ -122,4 +120,42 @@ android.defaultConfig.python {
 [tool.briefcase.app.testbed.web]
 requires = [
     "../web"
+]
+
+[tool.briefcase.app.testbed-qt]
+formal_name = "Toga Testbed"
+description = "A testbed for Toga visual tests"
+icon = "icons/testbed"
+sources = [
+    "src/testbed_qt",
+]
+test_sources = [
+    "tests",
+]
+requires = [
+    "../travertino",
+    "../core",
+]
+
+# Some CI configurations (e.g., Textual) manually override `requires` to specify
+# installation via the wheels built as part of the CI run. Adding `--find-links` allows
+# those wheels to be found. However, in most CI builds, these wheels will be .devX
+# wheels, so we need to add `--pre` to ensure they are found as solutions to pip's
+# solver.
+requirement_installer_args=[
+    "--pre",
+    "--find-links", "../dist",
+]
+
+permission.camera = "The testbed needs to exercise Camera APIs"
+permission.fine_location = "The testbed needs to exercise fine-grained geolocation services."
+permission.coarse_location = "The testbed needs to exercise coarse-grained geolocation services."
+permission.background_location = "The testbed needs to exercise capturing your location while in the background"
+
+[tool.briefcase.app.testbed-qt.linux]
+test_sources = [
+    "../qt/tests_backend",
+]
+requires = [
+    "../qt",
 ]
