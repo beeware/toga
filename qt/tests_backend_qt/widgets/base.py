@@ -1,4 +1,5 @@
 import pytest
+from toga_qt.colors import toga_color
 
 from ..fonts import FontMixin
 from ..probe import BaseProbe
@@ -36,11 +37,11 @@ class SimpleProbe(BaseProbe, FontMixin):
 
     @property
     def color(self):
-        pytest.skip("Colors not implemented on Qt")
+        return toga_color(self.native.palette().color(self.native.foregroundRole()))
 
     @property
     def background_color(self):
-        pytest.skip("Colors not implemented on Qt")
+        return toga_color(self.native.palette().color(self.native.backgroundRole()))
 
     @property
     def hidden(self):

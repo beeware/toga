@@ -20,3 +20,9 @@ class ButtonProbe(SimpleProbe):
         # Icons sizes in Qt are handled by the system theme;
         # no assertion is needed here.
         pass
+
+    def assert_taller_than(self, initial_height):
+        # Icons sizes in Qt are handled by the system theme;
+        # no assertion is needed here, as whether the icon is
+        # smaller or larger than text height does not matter.
+        pass

@@ -36,12 +36,12 @@ def process_change(native, event):
             native.interface.on_hide()
         elif old & Qt.WindowMinimized and not new & Qt.WindowMinimized:
             native.interface.on_show()
-        impl = native.impl
-        # Handle this later as the states etc may not have been fully realized.
-        # Starting the next transition now will cause extra window events to be
-        # generated, and sometimes the window ends up in an incorrect state.
-        impl._changeventid += 1
         if get_is_wayland():
+            impl = native.impl
+            impl._changeventid += 1
+            # Handle this later as the states etc may not have been fully realized.
+            # Starting the next transition now will cause extra window events to be
+            # generated, and sometimes the window ends up in an incorrect state.
             QTimer.singleShot(
                 100, partial(_handle_statechange, impl, impl._changeventid)
             )
@@ -231,7 +231,7 @@ class Window:
 
     # =============== WINDOW STATES ================
     def get_window_state(self, in_progress_state=False):
-        # NOTE - MINIMIZED does not round-trip on Wayland
+        # print("GET STATE")
         if self._hidden_window_state:
             return self._hidden_window_state
         if in_progress_state and self._pending_state_transition:
@@ -251,6 +251,11 @@ class Window:
             return WindowState.NORMAL
 
     def set_window_state(self, state):
+        # NOTE - MINIMIZED does not round-trip on Wayland
+        # and will cause infinite recursion. Don't support it
+        if get_is_wayland() and state == WindowState.MINIMIZED:
+            return
+
         if (
             self._hidden_window_state
         ):  # skip all the logic and simply do this on next show if currently hidden

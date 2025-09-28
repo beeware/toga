@@ -3,6 +3,8 @@ from abc import abstractmethod
 from PySide6.QtCore import Qt
 from travertino.size import at_least
 
+from ..colors import native_color, toga_color
+
 
 class Widget:
     def __init__(self, interface):
@@ -12,6 +14,12 @@ class Widget:
         self.create()
         self.native.hide()
         self._hidden = True
+        self._default_background_color = toga_color(
+            self.native.palette().color(self.native.backgroundRole())
+        )
+        self._default_foreground_color = toga_color(
+            self.native.palette().color(self.native.foregroundRole())
+        )
 
     @property
     def container(self):
@@ -85,12 +93,18 @@ class Widget:
         pass  # If appropriate, a widget subclass will implement this.
 
     def set_color(self, color):
-        # Not implemented yet
-        pass
+        if color is None:
+            color = self._default_foreground_color
+        palette = self.native.palette()
+        palette.setColor(self.native.foregroundRole(), native_color(color))
+        self.native.setPalette(palette)
 
     def set_background_color(self, color):
-        # Not implemented yet
-        pass
+        if color is None:
+            color = self._default_background_color
+        palette = self.native.palette()
+        palette.setColor(self.native.backgroundRole(), native_color(color))
+        self.native.setPalette(palette)
 
     def set_font(self, font):
         # Not implemented yet
