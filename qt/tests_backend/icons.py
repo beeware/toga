@@ -50,5 +50,5 @@ class IconProbe(BaseProbe):
             assert (
                 self.icon._impl.path
                 == Path(sys.executable).parent.parent
-                / "share/icons/hicolor/512x512/apps/org.beeware.toga.testbed.png"
+                / "share/icons/hicolor/512x512/apps/org.beeware.toga.testbed-qt.png"
             )

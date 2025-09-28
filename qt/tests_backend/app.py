@@ -30,19 +30,19 @@ class AppProbe(BaseProbe):
 
     @property
     def config_path(self):
-        return Path.home() / ".config/testbed"
+        return Path.home() / ".config/testbed_qt"
 
     @property
     def data_path(self):
-        return Path.home() / ".local/share/testbed"
+        return Path.home() / ".local/share/testbed_qt"
 
     @property
     def cache_path(self):
-        return Path.home() / ".cache/testbed"
+        return Path.home() / ".cache/testbed_qt"
 
     @property
     def logs_path(self):
-        return Path.home() / ".local/state/testbed/log"
+        return Path.home() / ".local/state/testbed_qt/log"
 
     @property
     def is_cursor_visible(self):

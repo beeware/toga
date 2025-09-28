@@ -26,6 +26,7 @@ from .container import Container
 from .fonts import Font
 from .icons import Icon, NativeIcon
 from .images import Image
+from .libs import get_testing
 from .paths import Paths
 from .statusicons import MenuStatusIcon, SimpleStatusIcon, StatusIconSet
 from .widgets.activityindicator import ActivityIndicator
@@ -64,4 +65,8 @@ def not_implemented(feature):
 
 
 def __getattr__(name):
+    if get_testing():
+        import pytest
+
+        pytest.skip("Widget not implemented on qt", allow_module_level=True)
     raise NotImplementedError(f"Toga's Qt backend doesn't implement {name}")
