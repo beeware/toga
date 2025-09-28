@@ -10,7 +10,7 @@ class BaseProxy:
     # Remote pure expression proxy
     # Attribute reads auto-realise primitives/containers, everything else stays proxied.
 
-    _storage_expr = "my_objs"
+    _storage_expr = "self.my_objs"
 
     page_provider = staticmethod(lambda: None)
 
@@ -119,7 +119,7 @@ class BaseProxy:
 
     # Decode payload
     def _deserialise_payload(self, payload):
-        # Des-serialise strict typed envelopes:
+        # De-serialise strict typed envelopes:
         #   - none/bool/int/float/str
         #   - list/tuple/dict (recursive)
         #   - object/callable -> proxy reference (my_objs[id])
