@@ -7,6 +7,7 @@ from .base import Widget
 class Box(Widget):
     def create(self):
         self.native = QWidget()
+        self.native.setAutoFillBackground(True)
 
     def rehint(self):
         self.interface.intrinsic.width = at_least(0)

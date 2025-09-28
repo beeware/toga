@@ -9,6 +9,7 @@ from .base import Widget
 class Label(Widget):
     def create(self):
         self.native = QLabel()
+        self.native.setAutoFillBackground(True)
 
     def get_text(self):
         return self.native.text()
