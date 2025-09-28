@@ -248,6 +248,7 @@ jobs:
           briefcase-run-prefix: ""
           briefcase-run-args: ""
           setup-python: true
+          testbed-app: testbed
 
         - backend: "macOS-x86_64"
           platform: "macOS"
@@ -445,7 +446,8 @@ jobs:
       timeout-minutes: 15
       run: |
         ${{ matrix.briefcase-run-prefix }} \
-          briefcase run ${{ matrix.platform }} --log --test ${{ matrix.briefcase-run-args }} -- --ci
+          briefcase run ${{ matrix.platform }} --log --test \
+          ${{ matrix.briefcase-run-args }} --app ${{ matrix.testbed-app }} -- --ci
 
     - name: Upload Logs
       uses: actions/upload-artifact@v4.6.2
