@@ -82,10 +82,16 @@ class AppProbe(BaseProbe, DialogsMixin):
         if not GetCursorInfo(ctypes.byref(info)):
             raise RuntimeError("GetCursorInfo failed")
 
-        # `flags` is 0 or 1 in local testing, but the GitHub Actions runner always
-        # returns 2 ("the system is not drawing the cursor because the user is providing
-        # input through touch or pen instead of the mouse"). hCursor is more reliable.
-        return info.hCursor is not None
+        # Visibility *should* be exposed by CursorInfo.flags; but in CI,
+        # CursorInfo.flags returns 2 ("the system is not drawing the cursor
+        # because the user is providing input through touch or pen instead of
+        # the mouse"). In that case, we have to fall back to the backend's
+        # boolean representation, because there doesn't appear to be any
+        # more reliable mechanism for determining cursor state.
+        if info.flags == 2:
+            return self.app._impl._cursor_visible
+        else:
+            return info.flags == 1
 
     def unhide(self):
         pytest.xfail("This platform doesn't have an app level unhide.")
