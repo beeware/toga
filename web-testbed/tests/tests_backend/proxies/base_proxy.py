@@ -10,7 +10,7 @@ class BaseProxy:
     # Remote pure expression proxy
     # Attribute reads auto-realise primitives/containers, everything else stays proxied.
 
-    _storage_expr = "my_objs"
+    _storage_expr = "self.my_objs"
 
     page_provider = staticmethod(lambda: None)
 
@@ -26,10 +26,11 @@ class BaseProxy:
         return cls.page_provider()
 
     # Core methods
+
     def __getattr__(self, name: str):
-        attr_expr = AttributeProxy(self, name)
-        ok, value = self._try_realise_value(attr_expr.js_ref)
-        return value if ok else attr_expr
+        expr = BaseProxy(f"getattr({self.js_ref}, {repr(name)})")  # attribute handle
+        ok, value = self._try_realise_value(expr.js_ref)
+        return value if ok else expr
 
     def __setattr__(self, name: str, value):
         if name.startswith("_"):
@@ -119,7 +120,7 @@ class BaseProxy:
 
     # Decode payload
     def _deserialise_payload(self, payload):
-        # Des-serialise strict typed envelopes:
+        # De-serialise strict typed envelopes:
         #   - none/bool/int/float/str
         #   - list/tuple/dict (recursive)
         #   - object/callable -> proxy reference (my_objs[id])
@@ -161,13 +162,3 @@ class BaseProxy:
             return BaseProxy(f"{self._storage_expr}[{repr(obj_id)}]")
 
         raise ProxyProtocolError(f"Unknown payload type: {t!r}")
-
-
-# In this file to avoid circular imports
-class AttributeProxy(BaseProxy):
-    def __init__(self, owner: "BaseProxy", name: str):
-        self._js_ref = f"getattr({owner.js_ref}, {repr(name)})"
-
-    @property
-    def js_ref(self) -> str:
-        return self._js_ref

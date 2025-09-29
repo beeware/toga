@@ -1,14 +1,17 @@
+from unittest.mock import Mock
+
 from pytest import approx, fixture
 from tests.assertions import assert_background_color
 from tests.data import TEXTS
-from tests.tests_backend.proxies.object_proxies import ButtonProxy, MockProxy
+
+import toga
 
 TRANSPARENT = "transparent"
 
 
 @fixture
 async def widget():
-    return ButtonProxy("Hello")
+    return toga.Button("Hello")
 
 
 async def test_text(widget, probe):
@@ -36,7 +39,7 @@ async def test_press(widget, probe):
     # Set up a mock handler, and press the button again.
     # Changed to MockProxy - objects created in test suite need a proxy
     # to one in the remote web app.
-    handler = MockProxy()
+    handler = Mock()
     widget.on_press = handler
     await probe.press()
 

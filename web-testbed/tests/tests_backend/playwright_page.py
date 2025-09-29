@@ -29,28 +29,23 @@ class BackgroundPage:
         self._loop.close()
 
     async def _bootstrap(self):
-        try:
-            self._play = await async_playwright().start()
-            self._browser = await self._play.chromium.launch(headless=True)
-            self._context = await self._browser.new_context()
-            await self._context.add_init_script("window.TOGA_WEB_TESTING = true;")
+        self._play = await async_playwright().start()
+        self._browser = await self._play.chromium.launch(headless=True)
+        self._context = await self._browser.new_context()
+        await self._context.add_init_script("window.TOGA_WEB_TESTING = true;")
 
-            self._page = await self._context.new_page()
+        self._page = await self._context.new_page()
 
-            await self._page.goto(
-                "http://localhost:8080", wait_until="load", timeout=30_000
-            )
+        await self._page.goto(
+            "http://localhost:8080", wait_until="load", timeout=30_000
+        )
 
-            await self._page.wait_for_function(
-                "() => typeof window.test_cmd === 'function'"
-            )
+        await self._page.wait_for_function(
+            "() => typeof window.test_cmd === 'function'"
+        )
 
-            self._alock = asyncio.Lock()
-        except Exception:
-            raise
-        finally:
-            self._alock = asyncio.Lock()
-            self._ready.set()
+        self._alock = asyncio.Lock()
+        self._ready.set()
 
     async def _eval(self, js, *args):
         async with self._alock:
