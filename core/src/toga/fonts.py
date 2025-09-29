@@ -129,7 +129,7 @@ class Font(BaseFont):
             raise ValueError(
                 "Custom fonts cannot be registered with a built-in font family name"
             )
-            font_key = Font._registered_font_key(family, weight, style, variant)
+        font_key = Font._registered_font_key(family, weight, style, variant)
         _REGISTERED_FONT_CACHE[font_key] = str(toga.App.app.paths.app / path)
 
     @staticmethod
