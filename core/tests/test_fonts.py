@@ -191,7 +191,7 @@ def test_register_font(app, path, registered):
 def test_register_shadowed_font(app, family):
     with pytest.raises(
         ValueError,
-        match="Custom fonts cannot be registered with a built-in font family name"
+        match="Custom fonts cannot be registered with a built-in font family name",
     ):
         toga.Font.register(family, Path("path/to/custom/font.otf"))
 
