@@ -6,16 +6,37 @@ class ProxyProtocolError(RuntimeError):
     pass
 
 
+def _contains_callable(x):
+    if isinstance(x, BaseProxy):  # allow remote refs through
+        return False
+    if callable(x):
+        return True
+    if isinstance(x, (list, tuple, set)):
+        return any(_contains_callable(i) for i in x)
+    if isinstance(x, dict):
+        return any(_contains_callable(k) or _contains_callable(v) for k, v in x.items())
+    return False
+
+
 class BaseProxy:
     # Remote pure expression proxy
     # Attribute reads auto-realise primitives/containers, everything else stays proxied.
 
-    _storage_expr = "self.my_objs"
+    _storage_expr = "self.my_objs"  # change later
 
     page_provider = staticmethod(lambda: None)
 
+    # cache: js_ref to proxy instance
+    _instances = {}
+
+    # per-class default local names
+    _local_whitelist = frozenset()
+
     def __init__(self, js_ref: str):
         self._js_ref = js_ref
+        self._local_attrs = {}
+        self._local_names = set()
+        BaseProxy._instances[js_ref] = self
 
     @property
     def js_ref(self) -> str:
@@ -28,6 +49,11 @@ class BaseProxy:
     # Core methods
 
     def __getattr__(self, name: str):
+        # local shadow
+        local = self._local_attrs
+        if name in local:
+            return local[name]
+
         expr = BaseProxy(f"getattr({self.js_ref}, {repr(name)})")  # attribute handle
         ok, value = self._try_realise_value(expr.js_ref)
         return value if ok else expr
@@ -35,6 +61,17 @@ class BaseProxy:
     def __setattr__(self, name: str, value):
         if name.startswith("_"):
             return super().__setattr__(name, value)
+
+        # respect data descriptors on the class (e.g. @property setter)
+        cls_attr = getattr(type(self), name, None)
+        if hasattr(cls_attr, "__set__"):
+            return object.__setattr__(self, name, value)
+
+        # local vs remote decision
+        if self._is_declared_local(name) or _contains_callable(value):
+            self._local_attrs[name] = value
+            return
+
         code = f"setattr({self.js_ref}, {repr(name)}, {encode_value(value)})"
         self._eval_and_return(code)
 
@@ -43,6 +80,12 @@ class BaseProxy:
             if hasattr(self, name):
                 return super().__delattr__(name)
             raise AttributeError(name)
+
+        local = self._local_attrs
+        if name in local:
+            del local[name]
+            return
+
         code = f"delattr({self.js_ref}, {repr(name)})"
         self._eval_and_return(code)
 
@@ -118,6 +161,7 @@ class BaseProxy:
             return True, val
         return False, None
 
+    # Decode payload
     def _deserialise_payload(self, payload):
         # De-serialise strict typed envelopes:
         #   - none/bool/int/float/str
@@ -142,7 +186,9 @@ class BaseProxy:
 
         # containers
         if t == "list":
-            return [self._deserialise_payload(item) for item in payload.get("items", [])]
+            return [
+                self._deserialise_payload(item) for item in payload.get("items", [])
+            ]
         if t == "tuple":
             return tuple(
                 self._deserialise_payload(item) for item in payload.get("items", [])
@@ -158,7 +204,31 @@ class BaseProxy:
         # references
         if t in ("object", "callable"):
             obj_id = payload["id"]
-            return BaseProxy(f"{self._storage_expr}[{repr(obj_id)}]")
+            js_ref = f"{self._storage_expr}[{repr(obj_id)}]"
+            # return existing proxy if we already have one
+            existing = BaseProxy._instances.get(js_ref)
+            return existing if existing is not None else BaseProxy(js_ref)
+
+        if t == "error":
+            raise ProxyProtocolError(payload.get("value"))
 
         raise ProxyProtocolError(f"Unknown payload type: {t!r}")
 
+    # local policy - keep Python-only stuff local
+    # private names, explicitly declared names, and any value containing Python
+    # callables stay in _local_attrs
+    # only primitives/containers and remote proxies are forwarded.
+    def _is_declared_local(self, name: str) -> bool:
+        return (
+            name in object.__getattribute__(self, "_local_names")
+            or name in type(self)._local_whitelist
+        )
+
+    def declare_local(self, *names: str):
+        object.__getattribute__(self, "_local_names").update(names)
+
+    @classmethod
+    def declare_local_class(cls, *names: str):
+        wl = set(cls._local_whitelist)
+        wl.update(names)
+        cls._local_whitelist = wl
