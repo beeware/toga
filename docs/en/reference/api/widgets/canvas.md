@@ -140,7 +140,9 @@ For detailed tutorials on the use of Canvas drawing instructions, see the MDN do
 
 ## Reference
 
-::: toga.Canvas     options:         members:
+::: toga.Canvas
+    options:
+        members:
             - ClosedPath
             - Context
             - Fill
