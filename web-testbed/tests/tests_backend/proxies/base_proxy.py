@@ -118,7 +118,6 @@ class BaseProxy:
             return True, val
         return False, None
 
-    # Decode payload
     def _deserialise_payload(self, payload):
         # De-serialise strict typed envelopes:
         #   - none/bool/int/float/str
@@ -143,16 +142,16 @@ class BaseProxy:
 
         # containers
         if t == "list":
-            return [self._decode_payload(item) for item in payload.get("items", [])]
+            return [self._deserialise_payload(item) for item in payload.get("items", [])]
         if t == "tuple":
             return tuple(
-                self._decode_payload(item) for item in payload.get("items", [])
+                self._deserialise_payload(item) for item in payload.get("items", [])
             )
         if t == "dict":
             out = {}
             for k_env, v_env in payload.get("items", []):
-                k = self._decode_payload(k_env)
-                v = self._decode_payload(v_env)
+                k = self._deserialise_payload(k_env)
+                v = self._deserialise_payload(v_env)
                 out[k] = v
             return out
 
@@ -162,3 +161,4 @@ class BaseProxy:
             return BaseProxy(f"{self._storage_expr}[{repr(obj_id)}]")
 
         raise ProxyProtocolError(f"Unknown payload type: {t!r}")
+
