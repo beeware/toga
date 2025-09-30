@@ -66,7 +66,7 @@ When constructing an entire TreeSource, the data can be specified as:
 
 When specifying children, a value of [`None`][] for the children will result in the creation of a leaf node. Any other value will be processed recursively - so, a child specifier can itself be a dictionary, an iterable of 2-tuples, or data for a single child, and so on.
 
-Although Toga provides TreeSource, you are not required to create one directly. A TreeSource will be transparently constructed for you if you provide one of the items listed above (e.g. [`list`][], [dict][], etc) to a GUI widget that displays tree-like data (i.e., [`toga.Tree`][]).
+Although Toga provides TreeSource, you are not required to create one directly. A TreeSource will be transparently constructed for you if you provide one of the items listed above (e.g. [`list`][], [`dict`][], etc) to a GUI widget that displays tree-like data (i.e., [`toga.Tree`][]).
 
 ## Custom TreeSources
 
