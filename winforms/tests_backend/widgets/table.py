@@ -100,8 +100,6 @@ class TableProbe(SimpleProbe):
             )
         )
 
-    async def acquire_keyboard_focus(self):
-        await self.type_character(
-            "\t"
-        )  # switch to widget.focus() when possible (#2972)
-        await self.type_character(" ")  # select first row
+    async def select_first_row_keyboard(self):
+        # Use the keyboard to ensure first row is selected.
+        await self.type_character(" ")

@@ -45,6 +45,7 @@ class TogaOnLongClickListener(dynamic_proxy(View.OnLongClickListener)):
 
 
 class Table(Widget):
+    focusable = False
     table_layout = None
     color_selected = None
     _font_impl = None

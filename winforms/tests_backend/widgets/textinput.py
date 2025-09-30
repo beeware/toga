@@ -2,7 +2,6 @@ import ctypes
 from ctypes import c_uint
 from ctypes.wintypes import HWND, LPARAM
 
-import pytest
 from System.Windows.Forms import TextBox
 
 from .base import SimpleProbe
@@ -55,4 +54,5 @@ class TextInputProbe(SimpleProbe):
         pass
 
     def set_cursor_at_end(self):
-        pytest.skip("Cursor positioning not supported on this platform")
+        self.native.SelectionStart = len(self.native.Text)
+        self.native.SelectionLength = 0
