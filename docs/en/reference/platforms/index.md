@@ -21,14 +21,12 @@
 
 Eventually, the Toga project would like to provide support for:
 
-- WinUI (for Modern Windows look and feel)
-- Qt (for KDE-based Unix desktops)
-- tvOS (for AppleTV devices)
-- watchOS (for Apple Watch devices)
+* WinUI (for Modern Windows look and feel)
+* Qt (for KDE-based Unix desktops)
+* tvOS (for AppleTV devices)
+* watchOS (for Apple Watch devices)
 
-If you are interested in these platforms and would like to contribute,
-please get in touch on [Mastodon](https://fosstodon.org/@beeware) or
-[Discord](https://beeware.org/bee/chat/).
+If you are interested in these platforms and would like to contribute, please get in touch on [Mastodon](https://fosstodon.org/@beeware) or [Discord](https://beeware.org/bee/chat/).
 
 ## Unofficial support
 

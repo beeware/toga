@@ -9,7 +9,6 @@
 | [MainWindow](mainwindow.md)         | A window that can use the full set of window-level user interface elements. |
 | [DocumentWindow](documentwindow.md) | A window that can be used as the main interface to a document-based app.    |
 
-
 ## General widgets
 
 | Component                                                            | Description                                                                                                                                                                                  |
@@ -36,7 +35,6 @@
 | Tree &lt;/reference/api/widgets/tree&gt;                             | A widget for displaying a hierarchical tree of tabular data.                                                                                                                                 |
 | WebView &lt;/reference/api/widgets/webview&gt;                       | An embedded web browser.                                                                                                                                                                     |
 | Widget &lt;/reference/api/widgets/widget&gt;                         | The abstract base class of all widgets. This class should not be be instantiated directly.                                                                                                   |
-
 
 ## Layout widgets
 
@@ -65,7 +63,6 @@
 | WebView &lt;/reference/api/widgets/webview&gt;                       | An embedded web browser.                                                                                                                                                                   |
 | Widget &lt;/reference/api/widgets/widget&gt;                         | The abstract base class of all widgets. This class should not be be instantiated directly.                                                                                                 |
 
-
 ## Resources
 
 | Component                                                         | Description                                                                                   |
@@ -84,7 +81,6 @@
 | ValueSource &lt;/reference/api/resources/sources/value_source&gt; | A data source describing a single value.                                                      |
 | Validators &lt;/reference/api/resources/validators&gt;            | A mechanism for validating that input meets a given set of criteria.                          |
 
-
 ## Hardware
 
 | Usage                                             | Description                                                        |
@@ -92,7 +88,6 @@
 | Camera &lt;/reference/api/hardware/camera&gt;     | A sensor that can capture photos and/or video.                     |
 | Location &lt;/reference/api/hardware/location&gt; | A sensor that can capture the geographical location of the device. |
 | Screen &lt;/reference/api/hardware/screens&gt;    | A representation of a screen attached to a device.                 |
-
 
 ## Other
 

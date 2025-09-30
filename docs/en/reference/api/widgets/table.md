@@ -1,7 +1,6 @@
 # Table
 
-A widget for displaying columns of tabular data. Scroll bars will be
-provided if necessary.
+A widget for displaying columns of tabular data. Scroll bars will be provided if necessary.
 
 /// tab | macOS
 
@@ -71,12 +70,9 @@ Not supported
 
 ## Usage
 
-The simplest way to create a Table is to pass a list of tuples
-containing the items to display, and a list of column headings. The
-values in the tuples will then be mapped sequentially to the columns.
+The simplest way to create a Table is to pass a list of tuples containing the items to display, and a list of column headings. The values in the tuples will then be mapped sequentially to the columns.
 
-In this example, we will display a table of 2 columns, with 3 initial
-rows of data:
+In this example, we will display a table of 2 columns, with 3 initial rows of data:
 
 ```python
 import toga
@@ -97,10 +93,7 @@ print(f"{table.data[0].name} is age {table.data[0].age}")
 table.data.append(("Zaphod Beeblebrox", 47))
 ```
 
-You can also specify data for a Table using a list of dictionaries. This
-allows you to store data in the data source that won't be displayed in
-the table. It also allows you to control the display order of columns
-independent of the storage of that data.
+You can also specify data for a Table using a list of dictionaries. This allows you to store data in the data source that won't be displayed in the table. It also allows you to control the display order of columns independent of the storage of that data.
 
 ```python
 import toga
@@ -121,10 +114,7 @@ print(f"{row.name}, who is age {row.age}, is from {row.planet}")
 
 -8<- "reference/api/widgets/table-accessors.md"
 
-If you want to use different attributes, you can override them by
-providing an `accessors` argument. In this example, the table will use
-"Name" as the visible header, but internally, the attribute "character"
-will be used:
+If you want to use different attributes, you can override them by providing an `accessors` argument. In this example, the table will use "Name" as the visible header, but internally, the attribute "character" will be used:
 
 ```python
 import toga
@@ -148,14 +138,10 @@ print(f"{row.character}, who is age {row.age}, is from {row.planet}")
 
 ## Notes
 
-- Widgets in cells is a beta API which may change in future, and is
-  currently only supported on macOS.
+- Widgets in cells is a beta API which may change in future, and is currently only supported on macOS.
 - macOS does not support changing the font used to render table content.
-- On Winforms, icons are only supported in the first column. On Android,
-  icons are not supported at all.
-- The Android implementation is [not
-  scalable](https://github.com/beeware/toga/issues/1392) beyond about
-  1,000 cells.
+- On Winforms, icons are only supported in the first column. On Android, icons are not supported at all.
+- The Android implementation is [not scalable](https://github.com/beeware/toga/issues/1392) beyond about 1,000 cells.
 
 ## Reference
 

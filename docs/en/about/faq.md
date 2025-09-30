@@ -8,10 +8,7 @@ So - what does a well-dressed Roman wear? A toga, of course! And what does a wel
 
 ## So... why the yak mascot? { #so-why-the-yak-mascot }
 
-It's a reflection of the long-running joke about [yak shaving](https://en.wiktionary.org/wiki/yak_shaving) in computer
-programming. The story originally comes from MIT, and is related to a
-Ren and Stimpy episode; over the years, the story has evolved, and now
-goes something like this:
+It's a reflection of the long-running joke about [yak shaving](https://en.wiktionary.org/wiki/yak_shaving) in computer programming. The story originally comes from MIT, and is related to a Ren and Stimpy episode; over the years, the story has evolved, and now goes something like this:
 
 > You want to borrow your neighbor's hose so you can wash your car. But
 > you remember that last week, you broke their rake, so you need to go
@@ -26,7 +23,4 @@ goes something like this:
 > The next thing you know, you're standing on a hillside in Tibet
 > shaving a yak. And all you wanted to do was wash your car.
 
-An easy-to-use widget toolkit is the yak standing in the way of progress
-of a number of [BeeWare](https://beeware.org/) projects, and the
-original creator of Toga has been tinkering with various widget toolkits
-for over 20 years, so the metaphor seemed appropriate.
+An easy-to-use widget toolkit is the yak standing in the way of progress of a number of [BeeWare](https://beeware.org/) projects, and the original creator of Toga has been tinkering with various widget toolkits for over 20 years, so the metaphor seemed appropriate.

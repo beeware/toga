@@ -76,10 +76,7 @@ Not supported
 
 ## Usage
 
-The content of an OptionContainer is a list of widgets that will form
-discrete tabs in the display. Each tab can be identified by a label,
-and, optionally, an icon. This list of content can be modified after
-initial construction:
+The content of an OptionContainer is a list of widgets that will form discrete tabs in the display. Each tab can be identified by a label, and, optionally, an icon. This list of content can be modified after initial construction:
 
 ```python
 import toga
@@ -101,11 +98,7 @@ icecream = toga.Box()
 container.content.append("Ice Cream", icecream, toga.Icon("icecream"))
 ```
 
-OptionContainer content can also be specified by using
-[`toga.OptionItem`][] instances instead of
-tuples. This enables you to be explicit when setting an icon or enabled
-status; it also allows you to set the initial enabled status *without*
-setting an icon:
+OptionContainer content can also be specified by using [`toga.OptionItem`][] instances instead of tuples. This enables you to be explicit when setting an icon or enabled status; it also allows you to set the initial enabled status *without* setting an icon:
 
 ```python
 import toga
@@ -126,8 +119,7 @@ salad = toga.Box()
 container.content.append(toga.OptionItem("Salad", salad, enabled=False))
 ```
 
-When retrieving or deleting items, or when specifying the currently
-selected item, you can specify an item using:
+When retrieving or deleting items, or when specifying the currently selected item, you can specify an item using:
 
 - The index of the item in the list of content:
 
@@ -166,37 +158,20 @@ selected item, you can specify an item using:
 
 ## System requirements
 
-- Using OptionContainer on Android requires the Material package in your
-  project's Gradle dependencies. Ensure your app declares a dependency
-  on `com.google.android.material:material:1.12.0` or later.
+- Using OptionContainer on Android requires the Material package in your project's Gradle dependencies. Ensure your app declares a dependency on `com.google.android.material:material:1.12.0` or later.
 
 ## Notes
 
-- The use of icons on tabs varies between platforms. If the platform
-  requires icons, and no icon is provided, a default icon will be used.
-  If the platform does not support icons, any icon provided will be
-  ignored, and requests to retrieve the icon will return `None`.
-- The behavior of disabled tabs varies between platforms. Some platforms
-  will display the tab, but put it in an unselectable state; some will
-  hide the tab. A hidden tab can still be referenced by index - the tab
-  index refers to the logical order, not the visible order.
-- iOS can only display 5 tabs. If there are more than 5 visible tabs in
-  an OptionContainer, the last item will be converted into a "More"
-  option that will allow the user to select the additional items. While
-  the "More" menu is displayed, the current tab will return as `None`.
-- Android can only display 5 tabs. The API will allow you to add more
-  than 5 tabs, and will allow you to programmatically control tabs past
-  the 5-item limit, but any tabs past the limit will not be displayed or
-  be selectable by user interaction. If the OptionContainer has more
-  than 5 tabs, and one of the visible tabs is removed, one of the
-  previously unselectable tabs will become visible and selectable.
-- iOS allows the user to rearrange icons on an OptionContainer. When
-  referring to tabs by index, user re-ordering is ignored; the logical
-  order as configured in Toga itself is used to identify tabs.
+- The use of icons on tabs varies between platforms. If the platform requires icons, and no icon is provided, a default icon will be used. If the platform does not support icons, any icon provided will be ignored, and requests to retrieve the icon will return `None`.
+- The behavior of disabled tabs varies between platforms. Some platforms will display the tab, but put it in an unselectable state; some will hide the tab. A hidden tab can still be referenced by index - the tab index refers to the logical order, not the visible order.
+- iOS can only display 5 tabs. If there are more than 5 visible tabs in an OptionContainer, the last item will be converted into a "More" option that will allow the user to select the additional items. While the "More" menu is displayed, the current tab will return as `None`.
+- Android can only display 5 tabs. The API will allow you to add more than 5 tabs, and will allow you to programmatically control tabs past the 5-item limit, but any tabs past the limit will not be displayed or be selectable by user interaction. If the OptionContainer has more than 5 tabs, and one of the visible tabs is removed, one of the previously unselectable tabs will become visible and selectable.
+- iOS allows the user to rearrange icons on an OptionContainer. When referring to tabs by index, user re-ordering is ignored; the logical order as configured in Toga itself is used to identify tabs.
 - Icons for iOS OptionContainer tabs should be 25x25px alpha masks.
 - Icons for Android OptionContainer tabs should be 24x24px alpha masks.
 
 ## Reference
+
 TODO: Verify the below text is not meant to be in the source code:
 > An item of [OptionContainer`][] content can
 > be:

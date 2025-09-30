@@ -1,7 +1,6 @@
 # Divider
 
-A separator used to visually distinguish two sections of content in a
-layout.
+A separator used to visually distinguish two sections of content in a layout.
 
 /// tab | macOS
 
@@ -95,8 +94,7 @@ box = toga.Box(
 )
 ```
 
-The direction (horizontal or vertical) can be given as an argument. If
-not specified, it will default to horizontal.
+The direction (horizontal or vertical) can be given as an argument. If not specified, it will default to horizontal.
 
 ## Reference
 

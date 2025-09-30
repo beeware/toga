@@ -76,12 +76,7 @@ Not supported
 
 ## Usage
 
-Canvas is a 2D vector graphics drawing area, whose API broadly follows
-the [HTML5 Canvas
-API](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API). The
-Canvas provides a drawing Context; drawing instructions are then added
-to that context by calling methods on the context. All positions and
-sizes are measured in [CSS pixels][css-units].
+Canvas is a 2D vector graphics drawing area, whose API broadly follows the [HTML5 Canvas API](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API). The Canvas provides a drawing Context; drawing instructions are then added to that context by calling methods on the context. All positions and sizes are measured in [CSS pixels][css-units].
 
 For example, the following code will draw an orange horizontal line:
 
@@ -96,9 +91,7 @@ context.line_to(160, 20)
 context.stroke(color="orange")
 ```
 
-Toga adds an additional layer of convenience to the base HTML5 API by
-providing context managers for operations that have a natural open/close
-life cycle. For example, the previous example could be replaced with:
+Toga adds an additional layer of convenience to the base HTML5 API by providing context managers for operations that have a natural open/close life cycle. For example, the previous example could be replaced with:
 
 ```python
 import toga
@@ -108,24 +101,13 @@ with canvas.context.Stroke(20, 20, color="orange") as stroke:
     stroke.line_to(160, 20)
 ```
 
-Any argument provided to a drawing operation or context object becomes a
-property of that object. Those properties can be modified after
-creation, after which you should invoke
-[`Canvas.redraw`][toga.Canvas.redraw] to request a redraw of the
-canvas.
+Any argument provided to a drawing operation or context object becomes a property of that object. Those properties can be modified after creation, after which you should invoke [`Canvas.redraw`][toga.Canvas.redraw] to request a redraw of the canvas.
 
-Drawing operations can also be added to or removed from a context using
-the `list` operations `append`, `insert`, `remove` and `clear`. In this
-case, [`Canvas.redraw`][toga.Canvas.redraw] will be called
-automatically.
+Drawing operations can also be added to or removed from a context using the `list` operations `append`, `insert`, `remove` and `clear`. In this case, [`Canvas.redraw`][toga.Canvas.redraw] will be called automatically.
 
-For example, if you were drawing a bar chart where the height of the
-bars changed over time, you don't need to completely reset the canvas
-and redraw all the objects; you can use the same objects, only modifying
-the height of existing bars, or adding and removing bars as required.
+For example, if you were drawing a bar chart where the height of the bars changed over time, you don't need to completely reset the canvas and redraw all the objects; you can use the same objects, only modifying the height of existing bars, or adding and removing bars as required.
 
-In this example, we create 2 filled drawing objects, then manipulate
-those objects, requesting a redraw after each set of changes.
+In this example, we create 2 filled drawing objects, then manipulate those objects, requesting a redraw after each set of changes.
 
 ```python
 import toga
@@ -150,29 +132,15 @@ canvas.redraw()
 fill.remove(rect)
 ```
 
-For detailed tutorials on the use of Canvas drawing instructions, see
-the MDN documentation for the [HTML5 Canvas
-API](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API). Other
-than the change in naming conventions for methods - the HTML5 API uses
-`lowerCamelCase`, whereas the Toga API uses `snake_case` - both APIs are
-very similar.
+For detailed tutorials on the use of Canvas drawing instructions, see the MDN documentation for the [HTML5 Canvas API](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API). Other than the change in naming conventions for methods - the HTML5 API uses `lowerCamelCase`, whereas the Toga API uses `snake_case` - both APIs are very similar.
 
 ## Notes
 
-- The Canvas API allows the use of handlers to respond to mouse/pointer
-  events. These event handlers differentiate between "primary" and
-  "alternate" modes of activation. When a mouse is in use, alternate
-  activation will usually be interpreted as a "right click"; however,
-  platforms may not implement an alternate activation mode. To ensure
-  cross-platform compatibility, applications should not use the
-  alternate press handlers as the sole mechanism for accessing critical
-  functionality.
+- The Canvas API allows the use of handlers to respond to mouse/pointer events. These event handlers differentiate between "primary" and "alternate" modes of activation. When a mouse is in use, alternate activation will usually be interpreted as a "right click"; however, platforms may not implement an alternate activation mode. To ensure cross-platform compatibility, applications should not use the alternate press handlers as the sole mechanism for accessing critical functionality.
 
 ## Reference
 
-::: toga.Canvas
-    options:
-        members:
+::: toga.Canvas     options:         members:
             - ClosedPath
             - Context
             - Fill

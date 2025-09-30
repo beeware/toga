@@ -3,6 +3,7 @@
 Graphical content of arbitrary size.
 
 Availability ([Key][api-status-key])
+
 {: .availability-title }
 
 {{ pd_read_csv("reference/data/widgets_by_platform.csv", na_filter=False, usecols=[4,5,6,7,8,9,10])[pd_read_csv("reference/data/widgets_by_platform.csv")[["ComponentName"]].isin(["Image"]).all(axis=1)] | convert_to_md_table }}
@@ -11,25 +12,11 @@ Availability ([Key][api-status-key])
 
 /// admonition | Images and Icons are *not* the same!
 
-Toga draws a distinction between an *Image* and an *Icon*. An
-[`Image`][toga.Image] can have an arbitrary size
-or aspect ratio, and is *not* platform dependent - the same image will
-be used on *every* platform. An Image is *not* an interactive element,
-because there is no visual cue to the user that the image *can* be
-interacted with.
+Toga draws a distinction between an *Image* and an *Icon*. An [`Image`][toga.Image] can have an arbitrary size or aspect ratio, and is *not* platform dependent - the same image will be used on *every* platform. An Image is *not* an interactive element, because there is no visual cue to the user that the image *can* be interacted with.
 
-An [`Icon`][toga.Icon], on the other hand, is
-small, square, and might vary between platforms. It is a visual element
-that is often used as part of an interactive element such as a button, a
-toolbar item, or a tab selector - but the Icon *itself* isn't an
-interactive element.
+An [`Icon`][toga.Icon], on the other hand, is small, square, and might vary between platforms. It is a visual element that is often used as part of an interactive element such as a button, a toolbar item, or a tab selector - but the Icon *itself* isn't an interactive element.
 
-If you are looking for a widget that the user can click on, you're
-looking for a widget configured to use an Icon (probably
-[`Button`][toga.Button]), *not* an `on_press`
-handler on an [`Image`][toga.Image] or
-[`ImageView`][toga.ImageView].
-
+If you are looking for a widget that the user can click on, you're looking for a widget configured to use an Icon (probably [`Button`][toga.Button]), *not* an `on_press` handler on an [`Image`][toga.Image] or [`ImageView`][toga.ImageView].
 
 ///
 
@@ -56,16 +43,13 @@ my_pil_image = PIL.Image.new("L", (30, 30))
 my_toga_image = toga.Image(my_pil_image)
 ```
 
-You can also tell Toga how to convert from (and to) other classes that
-represent images via
-[image format plugin][image-format-plugins].
+You can also tell Toga how to convert from (and to) other classes that represent images via [image format plugin][image-format-plugins].
 
 ## Notes
 
 [](){ #known-image-formats }
 
-- PNG and JPEG formats are guaranteed to be supported. Other formats are
-  available on some platforms:
+- PNG and JPEG formats are guaranteed to be supported. Other formats are available on some platforms:
     - GTK: BMP
     - macOS: GIF, BMP, TIFF
     - Windows: GIF, BMP, TIFF
@@ -81,10 +65,7 @@ represent images via
 
 [](){ #toga_image_subclassing }
 
-- If you subclass [`toga.Image`][], you can supply
-  that subclass as the requested format to any `as_format()` method in
-  Toga, provided that your subclass has a constructor signature
-  compatible with the base [`toga.Image`][] class.
+- If you subclass [`toga.Image`][], you can supply that subclass as the requested format to any `as_format()` method in Toga, provided that your subclass has a constructor signature compatible with the base [`toga.Image`][] class.
 
 ## Reference
 

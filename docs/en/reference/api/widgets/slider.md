@@ -1,7 +1,6 @@
 # Slider
 
-A widget for selecting a value within a range. The range is shown as a
-horizontal line, and the selected value is shown as a draggable marker.
+A widget for selecting a value within a range. The range is shown as a horizontal line, and the selected value is shown as a draggable marker.
 
 /// tab | macOS
 
@@ -83,9 +82,7 @@ Not supported
 
 ## Usage
 
-A slider can either be continuous (allowing any value within the range),
-or discrete (allowing a fixed number of equally-spaced values). For
-example:
+A slider can either be continuous (allowing any value within the range), or discrete (allowing a fixed number of equally-spaced values). For example:
 
 ```python
 import toga

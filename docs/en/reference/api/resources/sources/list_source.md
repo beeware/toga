@@ -4,18 +4,9 @@ A data source describing an ordered list of data.
 
 ## Usage
 
-Data sources are abstractions that allow you to define the data being
-managed by your application independent of the GUI representation of
-that data. For details on the use of data sources, see the
-[topic guide][data-sources].
+Data sources are abstractions that allow you to define the data being managed by your application independent of the GUI representation of that data. For details on the use of data sources, see the [topic guide][data-sources].
 
-ListSource is an implementation of an ordered list of data. When a
-ListSource is created, it is given a list of `accessors` - these are the
-attributes that all items managed by the ListSource will have. The API
-provided by ListSource is [`list`][]-like; the
-operations you'd expect on a normal Python list, such as `insert`,
-`remove`, `index`, and indexing with `[]`, are also possible on a
-ListSource:
+ListSource is an implementation of an ordered list of data. When a ListSource is created, it is given a list of `accessors` - these are the attributes that all items managed by the ListSource will have. The API provided by ListSource is [`list`][]-like; the operations you'd expect on a normal Python list, such as `insert`, `remove`, `index`, and indexing with `[]`, are also possible on a ListSource:
 
 ```python
 from toga.sources import ListSource
@@ -43,37 +34,23 @@ source.remove(item)
 source.insert(0, {"name": "Bettong", "weight": 1.2})
 ```
 
-The ListSource manages a list of [`Row`][toga.sources.Row] objects. Each Row has all the attributes described by the
-source's `accessors`. A Row object will be constructed for each item
-that is added to the ListSource, and each item can be:
+The ListSource manages a list of [`Row`][toga.sources.Row] objects. Each Row has all the attributes described by the source's `accessors`. A Row object will be constructed for each item that is added to the ListSource, and each item can be:
 
-
-- A dictionary, with the accessors mapping to the keys in the
-  dictionary.
-- Any other iterable object (except for a string), with the accessors
-  being mapped onto the items in the iterable in order of definition.
+- A dictionary, with the accessors mapping to the keys in the dictionary.
+- Any other iterable object (except for a string), with the accessors being mapped onto the items in the iterable in order of definition.
 - Any other object, which will be mapped onto the *first* accessor.
 
-Although Toga provides ListSource, you are not required to create one
-directly. A ListSource will be transparently constructed if you provide
-an iterable object to a GUI widget that displays list-like data (i.e.,
-[`toga.Table`][],
-[`toga.Selection`][], or
-[`toga.DetailedList`][]).
+Although Toga provides ListSource, you are not required to create one directly. A ListSource will be transparently constructed if you provide an iterable object to a GUI widget that displays list-like data (i.e., [`toga.Table`][], [`toga.Selection`][], or [`toga.DetailedList`][]).
 
 ## Custom List Sources
 
-For more complex applications, you can replace ListSource with a
-[custom data source][custom-data-sources] class. Such
-a class must:
+For more complex applications, you can replace ListSource with a [custom data source][custom-data-sources] class. Such a class must:
 
 - Inherit from [Source][]
 - Provide the same methods as [ListSource][]
-- Return items whose attributes match the accessors expected by the
-  widget
+- Return items whose attributes match the accessors expected by the widget
 - Generate a `change` notification when any of those attributes change
-- Generate `insert`, `remove` and `clear` notifications when items are
-  added or removed
+- Generate `insert`, `remove` and `clear` notifications when items are added or removed
 
 ## Reference
 
