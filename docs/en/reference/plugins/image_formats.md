@@ -2,7 +2,7 @@
 
 ## Usage
 
-Toga can be extended, via plugins, to understand externally defined image types, gaining the ability to convert them to and from its own [`toga.Image`][] class. Toga's [`Pillow](https://pillow.readthedocs.io/en/stable/index.html) support is, in fact, implemented as a plugin that's included as part of the core Toga package.
+Toga can be extended, via plugins, to understand externally defined image types, gaining the ability to convert them to and from its own [`toga.Image`][] class. Toga's [`Pillow`](https://pillow.readthedocs.io/en/stable/index.html) support is, in fact, implemented as a plugin that's included as part of the core Toga package.
 
 An image format plugin consists of two things:
 
@@ -12,7 +12,7 @@ An image format plugin consists of two things:
 Let's say you want to tell Toga how to handle an image class called `MyImage`, and you're publishing your plugin as a package named `togax-myimage` (see [package prefixes][package_prefixes]) that contains a `plugins.py` module that defines your `MyImageConverter` plugin class. Your `pyproject.toml` might include something like the following:
 
 ```toml
-[`project.entry-points."toga.image_formats"]
+[project.entry-points."toga.image_formats"]
 myimage = "togax_myimage.plugins.MyImageConverter"
 ```
 

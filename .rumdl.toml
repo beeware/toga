@@ -1,7 +1,7 @@
 [global]
 flavor = "mkdocs"
 include = ["**/*.md"]
-exclude = ["examples/", "textual/", "gtk", "positron", "winforms", "travertino", "web", "iOS", "core", "toga", "dummy", "android", "CONTRIBUTING.md",]  # Worry about fixing the CONTRIBUTING/READMEs at a later time.
+exclude = ["examples", "textual", "gtk", "positron", "winforms", "travertino", "web", "iOS", "core", "toga", "dummy", "android", "CONTRIBUTING.md",]  # Worry about fixing the CONTRIBUTING/READMEs at a later time.
 respect-gitignore = true
 
 # Disable rules:
@@ -11,11 +11,9 @@ respect-gitignore = true
 # MD011*: Reversed link syntax - flags the CSV tables, need to see if I can configure this to ignore specific formatting.
 # MD014: Forces commands in codeblocks to show output
 # MD026*: Removes punctuation from headings - bug, it's supposed to leave ! alone.
-# MD027*: Multiple spaces after quote marker, I believe this is an incorrect flagging
-# MD032*: List preceded/followed by blank line.
 # MD042*: Empty link found - bug, it shouldn't be flagging these links.
 # MD046*: Use fenced code blocks - possible bug, it's seeing code where there is none.
-disable = ["MD005", "MD006", "MD007", "MD011", "MD014", "MD026", "MD027", "MD032", "MD042", "MD046",]
+disable = ["MD005", "MD006", "MD007", "MD011", "MD014", "MD026", "MD042", "MD046",]
 
 [MD033]  # No inline HTML
 allowed_elements = ["nospell",]  # pyspelling inline disable tag

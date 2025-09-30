@@ -104,12 +104,11 @@ This only specifies the initial split; the split can be modified by the user onc
 ## Reference
 
 TODO: Verify the below text is not meant to be in the source code:
-> An item of [`SplitContainer`][] content can
-> be:
->
-> - a [`Widget`][toga.Widget]; or
-> - a 2-tuple, containing a `~toga.Widget`{.interpreted-text
->   role="class"}, and an [`int`][] flex value
+
+An item of [`SplitContainer`][] content can be:
+
+- a [`Widget`][toga.Widget]; or
+- a 2-tuple, containing a `~toga.Widget`{.interpreted-text role="class"}, and an [`int`][] flex value
 
 ::: toga.SplitContainer
     options:
