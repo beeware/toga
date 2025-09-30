@@ -4,7 +4,7 @@ A widget to select a calendar date.
 
 /// tab | macOS
 
-![`/reference/images/dateinput-cocoa.png](/reference/images/dateinput-cocoa.png){ width="300" }
+![/reference/images/dateinput-cocoa.png](/reference/images/dateinput-cocoa.png){ width="300" }
 
 /// caption
 

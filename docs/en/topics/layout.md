@@ -7,7 +7,7 @@ every time the window changes size (or, on mobile devices, changes
 orientation).
 
 Layout in Toga is performed using a style engine. Toga provides a
-[built-in style engine called Pack](reference/style/pack); however, other style engines can be used. Every widget
+[built-in style engine called Pack](../../reference/style/pack); however, other style engines can be used. Every widget
 keeps a style object, and it is this style object that is used to
 perform layout operations.
 

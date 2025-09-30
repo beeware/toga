@@ -1,3 +1,7 @@
+<!-- rumdl-disable-line MD041 -->
+
+<!-- rumdl-disable MD007 -->
+
 - [Tutorials](tutorial/index.md)
     - ./tutorial/*
 - How-to Guides

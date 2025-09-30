@@ -4,7 +4,7 @@ A container that divides an area into two panels with a movable border.
 
 /// tab | macOS
 
-![`/reference/images/splitcontainer-cocoa.png](/reference/images/splitcontainer-cocoa.png){ width="450" }
+![/reference/images/splitcontainer-cocoa.png](/reference/images/splitcontainer-cocoa.png){ width="450" }
 
 /// caption
 

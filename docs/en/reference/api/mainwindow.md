@@ -5,7 +5,7 @@ elements.
 
 /// tab | macOS
 
-![`/reference/images/mainwindow-cocoa.png](/reference/images/mainwindow-cocoa.png){ width="450" }
+![/reference/images/mainwindow-cocoa.png](/reference/images/mainwindow-cocoa.png){ width="450" }
 
 /// caption
 

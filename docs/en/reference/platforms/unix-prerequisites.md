@@ -1,3 +1,5 @@
+<!-- rumdl-disable-line MD041 -->
+
 These instructions are different on almost every version of Linux and
 Unix; here are some of the common alternatives:
 

@@ -2,7 +2,7 @@
 
 /// tab | macOS
 
-![`/reference/images/detailedlist-cocoa.png](/reference/images/detailedlist-cocoa.png){ width="450" }
+![/reference/images/detailedlist-cocoa.png](/reference/images/detailedlist-cocoa.png){ width="450" }
 
 /// caption
 
@@ -136,7 +136,7 @@ If the value provided by the title or subtitle accessor is `None`, or
 the accessor isn't defined, the `missing_value` will be displayed. Any
 other value will be converted into a string.
 
-The icon accessor should return an [Icon`][].
+The icon accessor should return an [`Icon`][].
 If it returns `None`, or the accessor isn't defined, then no icon will
 be displayed, but space for the icon will remain in the layout.
 

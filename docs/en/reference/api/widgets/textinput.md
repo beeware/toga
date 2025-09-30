@@ -4,7 +4,7 @@ A widget for the display and editing of a single line of text.
 
 /// tab | macOS
 
-![`/reference/images/textinput-cocoa.png](/reference/images/textinput-cocoa.png){ width="300" }
+![/reference/images/textinput-cocoa.png](/reference/images/textinput-cocoa.png){ width="300" }
 
 /// caption
 

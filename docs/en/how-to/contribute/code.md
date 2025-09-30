@@ -1,4 +1,4 @@
-# Contributing code to Toga  { #contribute }
+# Contributing code to Toga
 
 If you experience problems with Toga, [log them on
 GitHub](https://github.com/beeware/toga/issues). If you want to
@@ -354,7 +354,7 @@ problem) can be a huge help.
 
 ### Contribute improvements to documentation
 
-We've got a [separate contribution guide](./docs) for documentation contributions. This covers how to set up
+We've got a [separate contribution guide](docs.md) for documentation contributions. This covers how to set up
 your development environment to build Toga's documentation, and separate
 ideas for what to work on.
 
@@ -362,7 +362,7 @@ ideas for what to work on.
 
 If the core library already specifies an interface for a widget, but the
 widget isn't implemented on your platform of choice, implement that
-interface. The [supported widgets by platform](../../reference/widgets_by_platform)
+interface. The [supported widgets by platform](../../reference/widgets_by_platform.md)
 table can show you the widgets that are missing on various
 platforms. You can also look for log messages in a running app (or the
 direct `factory.not_implemented()` function calls that produce those log
@@ -1398,7 +1398,7 @@ You can also see existing examples of news fragments in the `changes`
 directory of the Toga repository. If this folder is empty, it's likely
 because Toga has recently published a new release; change note files are
 deleted and combined to update the
-[release notes](about/releases) with
+[release notes](../../about/releases.md) with
 each release. You can look at that file to see the style of comment that
 is required; you can look at [recently merged
 PRs](https://github.com/beeware/toga/pulls?q=is%3Apr+is%3Amerged) to see

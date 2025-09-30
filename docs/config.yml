@@ -2,8 +2,6 @@ copyright: © Russell Keith-Magee
 
 not_in_nav: |
   /index.md
-  topics/index.md
-  reference/index.md
 
 validation:
   omitted_files: warn
@@ -76,7 +74,7 @@ markdown_extensions:
   pymdownx.blocks.tab:
     alternate_style: true
   pymdownx.snippets:
-    base_path: ["docs", "examples"]
+    base_path: ["docs/en", "examples"]
     url_download: true
     check_paths: true
   toc:

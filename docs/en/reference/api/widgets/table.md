@@ -5,7 +5,7 @@ provided if necessary.
 
 /// tab | macOS
 
-![`/reference/images/table-cocoa.png](/reference/images/table-cocoa.png){ width="450" }
+![/reference/images/table-cocoa.png](/reference/images/table-cocoa.png){ width="450" }
 
 /// caption
 
@@ -119,7 +119,7 @@ row = table.data[0]
 print(f"{row.name}, who is age {row.age}, is from {row.planet}")
 ```
 
--8<- "en/reference/api/widgets/table-accessors.md"
+-8<- "reference/api/widgets/table-accessors.md"
 
 If you want to use different attributes, you can override them by
 providing an `accessors` argument. In this example, the table will use
@@ -144,7 +144,7 @@ row = table.data[0]
 print(f"{row.character}, who is age {row.age}, is from {row.planet}")
 ```
 
--8<- "en/reference/api/widgets/table-values.md"
+-8<- "reference/api/widgets/table-values.md"
 
 ## Notes
 

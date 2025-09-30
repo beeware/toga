@@ -110,7 +110,7 @@ These commands are automatically added to your app, depending on
 platform requirements and app definition. For example, mobile apps won't
 have an Exit command as mobile apps don't have a concept of "exiting".
 Document management commands will be automatically added if your app
-defines [document types](./document).
+defines [document types](document.md).
 
 The label, shortcut, grouping and ordering of these commands is platform
 dependent. For example, on macOS, the

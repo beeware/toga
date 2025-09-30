@@ -5,7 +5,7 @@ the app isn't visible.
 
 /// tab | macOS
 
-![`/reference/images/statusicons-cocoa.png](/reference/images/statusicons-cocoa.png){ width="150" }
+![/reference/images/statusicons-cocoa.png](/reference/images/statusicons-cocoa.png){ width="150" }
 
 /// caption
 

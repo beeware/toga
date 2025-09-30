@@ -4,7 +4,7 @@ A widget to select a clock time.
 
 /// tab | macOS
 
-![`/reference/images/timeinput-cocoa.png](/reference/images/timeinput-cocoa.png){ width="300" }
+![/reference/images/timeinput-cocoa.png](/reference/images/timeinput-cocoa.png){ width="300" }
 
 /// caption
 

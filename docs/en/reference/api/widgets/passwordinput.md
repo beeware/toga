@@ -6,7 +6,7 @@ have typed, but not the actual characters.
 
 /// tab | macOS
 
-![`/reference/images/passwordinput-cocoa.png](/reference/images/passwordinput-cocoa.png){ width="300" }
+![/reference/images/passwordinput-cocoa.png](/reference/images/passwordinput-cocoa.png){ width="300" }
 
 /// caption
 

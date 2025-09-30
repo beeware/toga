@@ -1,3 +1,5 @@
+<!-- rumdl-disable-line MD041 -->
+
 The attribute names used on each row (called "accessors") are created
 automatically from the headings, by:
 

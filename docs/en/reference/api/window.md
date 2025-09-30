@@ -4,7 +4,7 @@ An operating system-managed container of widgets.
 
 /// tab | macOS
 
-![`/reference/images/window-cocoa.png](/reference/images/window-cocoa.png){ width="300" }
+![/reference/images/window-cocoa.png](/reference/images/window-cocoa.png){ width="300" }
 
 /// caption
 

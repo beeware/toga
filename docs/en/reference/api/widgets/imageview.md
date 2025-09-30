@@ -4,7 +4,7 @@ A widget that displays an image.
 
 /// tab | macOS
 
-![`/reference/images/imageview.png](/reference/images/imageview.png){ width="150" }
+![/reference/images/imageview.png](/reference/images/imageview.png){ width="150" }
 
 /// caption
 

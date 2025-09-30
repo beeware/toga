@@ -4,7 +4,7 @@ A window that can be used as the main interface to a document-based app.
 
 /// tab | macOS
 
-![`/reference/images/mainwindow-cocoa.png](/reference/images/mainwindow-cocoa.png){ width="450" }
+![/reference/images/mainwindow-cocoa.png](/reference/images/mainwindow-cocoa.png){ width="450" }
 
 /// caption
 

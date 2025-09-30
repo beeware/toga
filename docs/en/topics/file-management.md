@@ -11,8 +11,7 @@ regardless of how an app is deployed.
 For this guide, we're going to use Briefcase to package our application.
 However, the same path-related issues outlined here exist regardless of
 what tool you use to deploy your code, whether that is Setuptools,
-`py2app`{.interpreted-text role="spelling:ignore"}, PyInstaller, or
-something else.
+`py2app`, PyInstaller, or something else.
 
 ## File access
 

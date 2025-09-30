@@ -3,7 +3,7 @@
 Most widgets in a user interface will need to interact with data -
 either displaying it, or providing a way to manipulate it.
 
-Well designed GUI applications will maintain a strong separation between
+Well-designed GUI applications will maintain a strong separation between
 the storage and manipulation of data, and how that data is displayed.
 This separation allows developers to radically change how data is
 visualized without changing the underlying interface for interacting
@@ -41,7 +41,7 @@ There are three built-in data source types in Toga:
 
 Although Toga provides these built-in data sources, in general, *you
 shouldn't use them directly*. Toga's data sources are wrappers around
-Python's primitive collection types -[`list`][], [dict][], and so on. While this
+Python's primitive collection types -[`list`][], [`dict`][], and so on. While this
 is useful for quick demonstrations, or to visualize simple data, more
 complex applications should define their own [custom data sources][custom-data-sources].
 
@@ -90,5 +90,5 @@ Custom data sources are also required to emit notifications whenever
 notable events occur. This allows the widgets rendering the data source
 to respond to changes in data. If a data source doesn't emit
 notifications, widgets may not reflect changes in data. Toga provides a
-[Source][source] base class for custom data source implementations. This base
+[`Source`][source] base class for custom data source implementations. This base
 class implements the notification API.

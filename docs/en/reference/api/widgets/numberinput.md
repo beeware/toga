@@ -4,7 +4,7 @@ A text input that is limited to numeric input.
 
 /// tab | macOS
 
-![`/reference/images/numberinput-cocoa.png](/reference/images/numberinput-cocoa.png){ width="300" }
+![/reference/images/numberinput-cocoa.png](/reference/images/numberinput-cocoa.png){ width="300" }
 
 /// caption
 

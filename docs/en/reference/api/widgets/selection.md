@@ -4,7 +4,7 @@ A widget to select a single option from a list of alternatives.
 
 /// tab | macOS
 
-![`/reference/images/selection-cocoa.png](/reference/images/selection-cocoa.png){ width="300" }
+![/reference/images/selection-cocoa.png](/reference/images/selection-cocoa.png){ width="300" }
 
 /// caption
 
