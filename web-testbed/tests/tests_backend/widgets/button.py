@@ -1,41 +1,22 @@
 import re
 
+from travertino.colors import rgba
+
 from .base import SimpleProbe
 
-
-class _ColorLike:
-    __slots__ = ("r", "g", "b", "a")
-
-    def __init__(self, r, g, b, a=1.0):
-        self.r = int(r)
-        self.g = int(g)
-        self.b = int(b)
-        self.a = float(a)
-
-    def __repr__(self):
-        return f"_ColorLike(r={self.r}, g={self.g}, b={self.b}, a={self.a})"
+_rgb_re = re.compile(r"rgba?\(([^)]+)\)")
 
 
-_CSS_RGBA_RE = re.compile(
-    r"rgba?\(\s*(\d+)\s*[, ]\s*(\d+)\s*[, ]\s*(\d+)(?:\s*[/,]\s*([0-9.]+))?\s*\)",
-    re.IGNORECASE,
-)
-
-
-def _parse_css_rgba(s: str) -> "_ColorLike | None | str":
-    if s is None:
+def css_to_travertino(css: str):
+    if not css or css == "transparent":
         return None
-    s = s.strip().lower()
-    # Treat literal 'transparent' as fully transparent black
-    if s == "transparent":
-        return _ColorLike(0, 0, 0, 0.0)
-    m = _CSS_RGBA_RE.match(s)
+    m = _rgb_re.search(css)
     if not m:
-        # Unknown format, return as-is
-        return s
-    r, g, b = int(m.group(1)), int(m.group(2)), int(m.group(3))
-    a = float(m.group(4)) if m.group(4) is not None else 1.0
-    return _ColorLike(r, g, b, a)
+        return None
+    parts = [p.strip() for p in m.group(1).split(",")]
+    r, g, b = map(int, parts[:3])
+    a = float(parts[3]) if len(parts) == 4 else 1.0
+    return rgba(r, g, b, a)
 
 
 class ButtonProbe(SimpleProbe):
@@ -68,9 +49,9 @@ class ButtonProbe(SimpleProbe):
                     const el = document.querySelector(selector);
                     if (!el) return null;
                     const cs = getComputedStyle(el);
-                    return cs.backgroundColor; // 'rgb(...)' or 'rgba(...)'
+                    return cs.backgroundColor;
                 }""",
                 f"#{self.dom_id}",
             )
         )
-        return _parse_css_rgba(css)
+        return css_to_travertino(css)

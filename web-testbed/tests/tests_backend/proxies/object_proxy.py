@@ -8,7 +8,7 @@ from .encoding import encode_value
 class ObjectProxy(BaseProxy):
     def __init__(self, *args, **kwargs):
         key = self._create(self._ctor_expr, *args, **kwargs)
-        super().__init__(f"my_objs[{repr(key)}]")
+        super().__init__(f"self.my_objs[{repr(key)}]")
 
     @classmethod
     def _create(cls, ctor_expr: str, *args, **kwargs) -> str:
