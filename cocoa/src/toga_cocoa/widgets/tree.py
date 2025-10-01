@@ -173,11 +173,13 @@ class TogaTree(NSOutlineView):
 
     @objc_method
     def performKeyEquivalent_(self, event) -> bool:
-        if toga_key(event)["key"] in {Key.ENTER, Key.NUMPAD_ENTER}:
-            node = self.interface._selection_single
-            if node is not None:
-                self.interface.on_activate(node=node)
-                return True
+        if self.impl.has_focus:
+            key = toga_key(event)
+            if key["key"] in {Key.ENTER, Key.NUMPAD_ENTER} and not key["modifiers"]:
+                node = self.interface._selection_single
+                if node is not None:
+                    self.interface.on_activate(node=node)
+                    return True
         return False
 
 
@@ -226,6 +228,13 @@ class Tree(Widget):
 
         # Add the layout constraints
         self.add_constraints()
+
+    @property
+    def has_focus(self):
+        return (
+            self.native.window is not None
+            and self.native.window.firstResponder == self.native_tree
+        )
 
     def change_source(self, source):
         self.native_tree.reloadData()

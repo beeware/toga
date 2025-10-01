@@ -197,7 +197,7 @@ async def test_keyboard_navigation(
     # Activate row
     assert widget.selection == source[3]
     await probe.type_character("\n")
-    await probe.redraw("Return key pressed - forth row selected")
+    await probe.redraw("Return key pressed - forth row activated")
     on_activate_handler.assert_called_once_with(widget, row=source[3])
     on_activate_handler.reset_mock()
 
@@ -285,6 +285,31 @@ async def test_activate(
     on_activate_handler.reset_mock()
 
 
+async def test_activate_keyboard(
+    widget,
+    probe,
+    other,
+    other_probe,
+    source,
+    on_activate_handler,
+):
+    """Rows are activated by keyboard"""
+
+    widget.focus()
+    await probe.select_first_row_keyboard()
+
+    assert probe.has_focus
+    await probe.type_character("\n")
+    await probe.redraw("Return key pressed - first row is activated")
+    on_activate_handler.assert_called_once_with(widget, row=source[0])
+    on_activate_handler.reset_mock()
+
+    other.focus()
+    assert not probe.has_focus
+    await probe.type_character("\n")
+    on_activate_handler.assert_not_called()
+
+
 async def test_multiselect(
     multiselect_widget,
     multiselect_probe,
@@ -358,7 +383,7 @@ async def test_multiselect_keyboard_control(
 
     # Activate row
     await multiselect_probe.type_character("\n")
-    await multiselect_probe.redraw("Return key pressed - a single row is selected")
+    await multiselect_probe.redraw("Return key pressed - a single row is activated")
     on_activate_handler.assert_called_once_with(multiselect_widget, row=source[0])
     on_activate_handler.reset_mock()
 
@@ -390,7 +415,9 @@ async def test_multiselect_keyboard_control(
     # Activate is not fired when multiple rows are selected
     assert len(multiselect_widget.selection) > 1
     await multiselect_probe.type_character("\n")
-    await multiselect_probe.redraw("Return key pressed - multiple rows selected")
+    await multiselect_probe.redraw(
+        "Return key pressed - multiple rows were selected - no activation"
+    )
     on_activate_handler.assert_not_called()
     on_activate_handler.reset_mock()
 

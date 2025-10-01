@@ -475,6 +475,31 @@ async def test_activate(
     on_activate_handler.reset_mock()
 
 
+async def test_activate_keyboard(
+    widget,
+    probe,
+    other,
+    other_probe,
+    source,
+    on_activate_handler,
+):
+    """Rows are activated by keyboard"""
+
+    widget.focus()
+    await probe.select_first_row_keyboard()
+
+    assert probe.has_focus
+    await probe.type_character("\n")
+    await probe.redraw("Return key pressed - first row is activated")
+    on_activate_handler.assert_called_once_with(widget, node=source[0])
+    on_activate_handler.reset_mock()
+
+    other.focus()
+    assert not probe.has_focus
+    await probe.type_character("\n")
+    on_activate_handler.assert_not_called()
+
+
 async def test_keyboard_navigation(
     widget, source, probe, on_select_handler, on_activate_handler
 ):

@@ -131,11 +131,13 @@ class TogaTable(NSTableView):
 
     @objc_method
     def performKeyEquivalent_(self, event) -> bool:
-        if toga_key(event)["key"] in {Key.ENTER, Key.NUMPAD_ENTER}:
-            row = self.interface._selection_single
-            if row is not None:
-                self.interface.on_activate(row=row)
-                return True
+        if self.impl.has_focus:
+            key = toga_key(event)
+            if key["key"] in {Key.ENTER, Key.NUMPAD_ENTER} and not key["modifiers"]:
+                row = self.interface._selection_single
+                if row is not None:
+                    self.interface.on_activate(row=row)
+                    return True
         return False
 
 
@@ -181,6 +183,13 @@ class Table(Widget):
 
         # Add the layout constraints
         self.add_constraints()
+
+    @property
+    def has_focus(self):
+        return (
+            self.native.window is not None
+            and self.native.window.firstResponder == self.native_table
+        )
 
     def change_source(self, source):
         self.native_table.reloadData()
