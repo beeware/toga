@@ -60,53 +60,15 @@ classifiers = [
 [dependency-groups]
 # Extras used by developers *of* Toga are pinned to specific versions to
 # ensure environment consistency.
-pre-commit = [
-    "pre-commit == 4.3.0",
-    ]
-
-town-crier = [
-    "towncrier==24.8.0",
-]
-
-tox-uv = [
-    "tox-uv == 1.28.0",
-]
-
 dev = [
-    "coverage[toml] == 7.10.7",
+    "coverage[toml] == 7.10.4",
     "coverage-conditional-plugin == 0.9.0",
     "Pillow == 11.3.0",
-    "pre-commit == 4.3.0",
-    "pytest == 8.4.2",
-    "pytest-asyncio == 1.2.0",
+    "pytest == 8.4.1",
+    "pytest-asyncio == 1.1.0",
     "pytest-freezer == 0.4.9",
     "pytest-xdist == 3.8.0",
-    "setuptools-scm == 9.2.0",
-    {include-group = "pre-commit"},
-    {include-group = "tox-uv"},
-]
-# Docs are always built on a specific Python version; see RTD and tox config files,
-# and the docs contribution guide.
-docs = [
-    "beeware-docs-tools @ git+https://github.com/beeware/beeware-docs-tools",
-    "Pillow == 11.3.0",  # Why is this part of the docs?
-    "black==25.1.0",
-    "markdown-checker==0.2.5",
-    "mistletoe==1.4.0",
-    "mkdocs-autorefs==1.4.2",
-    "mkdocs-include-markdown-plugin==7.1.6",
-    "mkdocs-literate-nav==0.6.2",
-    "mkdocs-macros-plugin==1.3.9",
-    "mkdocs-material==9.6.17",
-    "mkdocs-table-reader-plugin==3.1.0",
-    "mkdocs==1.6.1",
-    "mkdocstrings-python==1.16.12",
-    "pymdown-extensions==10.16.1",
-    "pyspelling==2.10",
-    "python-Levenshtein==0.27.1",
-    "PyYAML==6.0.2",
     "setuptools-scm==9.2.0",
-    "translate-toolkit @ git+https://github.com/translate/translate@aa35159f03f53aa536381643dfafbc2a19a24784",
 ]
 
 [project.urls]

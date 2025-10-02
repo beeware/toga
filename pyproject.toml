@@ -114,7 +114,7 @@ type = [
 # ensure environment consistency.
 pre-commit = [
     "pre-commit == 4.3.0",
-    ]
+]
 
 towncrier = [
     "towncrier==24.8.0",
@@ -124,29 +124,15 @@ tox-uv = [
     "tox-uv == 1.28.0",
 ]
 
-setuptools-scm = [
-    "setuptools-scm==9.2.0",
-]
-
 dev = [
-    "coverage[toml] == 7.10.4",
-    "coverage-conditional-plugin == 0.9.0",
-    "Pillow == 11.3.0",
-    "pytest == 8.4.1",
-    "pytest-asyncio == 1.1.0",
-    "pytest-freezer == 0.4.9",
-    "pytest-xdist == 3.8.0",
     {include-group = "pre-commit"},
     {include-group = "tox-uv"},
-    {include-group = "setuptools-scm"},
 ]
+
 # Docs are always built on a specific Python version; see RTD and tox config files,
 # and the docs contribution guide.
 docs = [
     "beeware-docs-tools @ git+https://github.com/beeware/beeware-docs-tools",
-    "Pillow == 11.3.0",  # TODO: Why is this part of the docs?
     "mkdocs-table-reader-plugin==3.1.0",
-    "toga-core @ ./core",
-    "travertino @ ./travertino",
-    {include-group = "setuptools-scm"},
+    "setuptools-scm==9.2.0",
 ]

@@ -33,17 +33,13 @@ jobs:
     name: Pre-commit checks
     uses: beeware/.github/.github/workflows/pre-commit-run.yml@main
     with:
-      # Although we only want to install the dev dependencies, we have to install the
-      # core, which means we need travertino as well.
-      pre-commit-source: "./travertino ./core[dev]"
+      pre-commit-source: "--group pre-commit"
 
   towncrier:
     name: Check towncrier
     uses: beeware/.github/.github/workflows/towncrier-run.yml@main
     with:
-      # Although we only want to install the dev dependencies, we have to install the
-      # core, which means we need travertino as well.
-      tox-source: "./travertino ./core[dev]"
+      tox-source: "--group tox-uv"
 
   package:
     name: Package Toga
@@ -108,11 +104,7 @@ jobs:
         allow-prereleases: true
 
     - name: Install Tox
-      uses: beeware/.github/.github/actions/install-requirement@main
-      with:
-        requirements: tox
-        extra: dev
-        project-root: core
+      run: python -m pip install --group tox-uv
 
     - name: Get Packages
       uses: actions/download-artifact@v5.0.0
@@ -126,7 +118,7 @@ jobs:
         # The $(ls ...) shell expansion is done in the GitHub environment; the value of
         # TOGA_INSTALL_COMMAND will be a literal string without any shell expansions to
         # perform.
-        export TOGA_INSTALL_COMMAND="python -m pip install ../$(ls dist/toga_core-*.whl)[dev] ../$(ls dist/travertino-*.whl) ../$(ls dist/toga_dummy-*.whl)"
+        export TOGA_INSTALL_COMMAND="uv pip install ../$(ls dist/toga_core-*.whl) ../$(ls dist/travertino-*.whl) ../$(ls dist/toga_dummy-*.whl) --group dev"
         tox -e py-cov${{ matrix.tox-suffix }}
         tox -qe coverage$(tr -dc "0-9" <<< "${{ matrix.python-version }}")${{ matrix.tox-suffix }}
         mv ${{ matrix.package }}/.coverage ${{ matrix.package }}/.coverage.${{ matrix.platform }}.${{ matrix.python-version }}
@@ -165,11 +157,7 @@ jobs:
         python-version: ${{ env.min_python_version }}
 
     - name: Install Tox
-      uses: beeware/.github/.github/actions/install-requirement@main
-      with:
-        requirements: tox
-        extra: dev
-        project-root: core
+      run: python -m pip install --group tox-uv
 
     - name: Retrieve Coverage Data
       uses: actions/download-artifact@v5.0.0
@@ -205,11 +193,7 @@ jobs:
         python-version: ${{ env.min_python_version }}
 
     - name: Install Tox
-      uses: beeware/.github/.github/actions/install-requirement@main
-      with:
-        requirements: tox
-        extra: dev
-        project-root: core
+      run: python -m pip install --group tox-uv
 
     - name: Get Package
       uses: actions/download-artifact@v5.0.0
@@ -220,7 +204,7 @@ jobs:
 
     - name: Test
       run: |
-        export TRAVERTINO_INSTALL_COMMAND="python -m pip install ../$(ls dist/travertino-*.whl)"
+        export TRAVERTINO_INSTALL_COMMAND="uv pip install ../$(ls dist/travertino-*.whl)"
         tox -e trav-compat
 
   testbed:
