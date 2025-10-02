@@ -1,3 +1,5 @@
+from unittest.mock import Mock
+
 import pytest
 from probe import get_probe
 
@@ -17,3 +19,28 @@ async def probe(main_window, widget):
     probe = get_probe(widget)
     yield probe
     main_window.content = old_content
+
+
+@pytest.fixture
+async def other(widget):
+    """A separate widget that can take focus"""
+    other = toga.TextInput()
+    widget.parent.add(other)
+    return other
+
+
+@pytest.fixture(params=[True, False])
+async def focused(request, widget, other):
+    if request.param:
+        widget.focus()
+    else:
+        other.focus()
+    return request.param
+
+
+@pytest.fixture
+async def on_change(widget):
+    handler = Mock()
+    widget.on_change = handler
+    handler.assert_not_called()
+    return handler
