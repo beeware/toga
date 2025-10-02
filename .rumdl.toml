@@ -1,7 +1,7 @@
 [global]
 flavor = "mkdocs"
 include = ["**/*.md"]
-exclude = ["examples", "textual", "gtk", "positron", "winforms", "travertino", "web", "iOS", "core", "toga", "dummy", "android", "CONTRIBUTING.md",]  # Worry about fixing the CONTRIBUTING/READMEs at a later time.
+exclude = ["examples", "textual", "gtk", "positron", "winforms", "travertino", "web", "iOS", "core", "toga", "dummy", "android", "CONTRIBUTING.md", "template.md"]  # Worry about fixing the CONTRIBUTING/READMEs at a later time.
 respect-gitignore = true
 
 # Disable rules:
@@ -13,12 +13,15 @@ respect-gitignore = true
 # MD026*: Removes punctuation from headings - bug, it's supposed to leave ! alone.
 # MD042*: Empty link found - bug, it shouldn't be flagging these links.
 # MD046*: Use fenced code blocks - possible bug, it's seeing code where there is none.
-disable = ["MD005", "MD006", "MD007", "MD011", "MD014", "MD026", "MD042", "MD046",]
-
-[MD033]  # No inline HTML
-allowed_elements = ["nospell",]  # pyspelling inline disable tag
+disable = ["MD014",]
 
 [MD013]  # Line length
 line_length = 999999  # Force reflow to paragraph content to remove linebreaks
 reflow = true
 reflow_mode = "normalize"
+
+[MD026]  # Remove punctuation at the end of headings
+punctuation = "!?"
+
+[MD033]  # No inline HTML
+allowed_elements = ["nospell",]  # pyspelling inline disable tag

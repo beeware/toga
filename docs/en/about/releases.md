@@ -35,7 +35,7 @@
 
 ### Backward Incompatible Changes
 
-- `toga.Font` objects now raise an <span class="title-ref">UnknownFontError</span> instead of silently falling back to system font if the font family can't be successfully loaded. ([#3526](https://github.com/beeware/toga/issues/3526))
+- `toga.Font` objects now raise an *UnknownFontError* instead of silently falling back to system font if the font family can't be successfully loaded. ([#3526](https://github.com/beeware/toga/issues/3526))
 
 ### Documentation
 
@@ -52,7 +52,7 @@
 ### Features
 
 - The WebView widget now supports specifying static content on instantiation. ([#2851](https://github.com/beeware/toga/issues/2851))
-- The content of a WebView can now be assigned using the <span class="title-ref">content</span> property, without providing a root URL for the content. ([#2854](https://github.com/beeware/toga/issues/2854))
+- The content of a WebView can now be assigned using the *content* property, without providing a root URL for the content. ([#2854](https://github.com/beeware/toga/issues/2854))
 - Application of style properties has been streamlined to reduce redundant font creation and widget-refreshing. ([#3273](https://github.com/beeware/toga/issues/3273))
 - The Canvas example app's UI controls have been reorganized and more clearly labeled. ([#3321](https://github.com/beeware/toga/issues/3321))
 - The Web backend now supports the DateInput, ScrollContainer and TimeInput widgets. ([#3334](https://github.com/beeware/toga/issues/3334))
@@ -165,7 +165,7 @@ This release contains no new features. The primary purpose of this release is to
 
 ### Bugfixes
 
-- On macOS, apps that specify both <span class="title-ref">document_types</span> and a <span class="title-ref">main_window</span> no longer display the document selection dialog on startup. ([#2860](https://github.com/beeware/toga/issues/2860))
+- On macOS, apps that specify both *document_types* and a *main_window* no longer display the document selection dialog on startup. ([#2860](https://github.com/beeware/toga/issues/2860))
 - The integration with Android's event loop has been updated to support Python 3.13. ([#2907](https://github.com/beeware/toga/issues/2907))
 
 ### Backward Incompatible Changes
@@ -510,7 +510,7 @@ This release contains no new features. The primary purpose of this release is to
 - Winforms now returns `%USERPROFILE%/AppData/Local/<Author Name>/<App Name>/Data` as the user data file location, rather than `%USERPROFILE%/AppData/Local/<Author Name>/<App Name>`. ([#1964](https://github.com/beeware/toga/issues/1964))
 - Support for SplitContainers with more than 2 panels of content has been removed. ([#1984](https://github.com/beeware/toga/issues/1984))
 - Support for 3-tuple form of specifying SplitContainer items, used to prevent panels from resizing, has been removed. ([#1984](https://github.com/beeware/toga/issues/1984))
-- The ability to increment and decrement the current OptionContainer tab was removed. Instead of <span class="title-ref">container.current_tab += 1</span>, use <span class="title-ref">container.current_tab = container.current_tab.index + 1</span> ([#1996](https://github.com/beeware/toga/issues/1996))
+- The ability to increment and decrement the current OptionContainer tab was removed. Instead of *container.current_tab += 1*, use *container.current_tab = container.current_tab.index + 1* ([#1996](https://github.com/beeware/toga/issues/1996))
 - `OptionContainer.add()`, `OptionContainer.remove()` and `OptionContainer.insert()` have been removed, due to being ambiguous with base widget methods of the same name. Use the `OptionContainer.content.append()`, `OptionContainer.content.remove()` and `OptionContainer.content.insert()` APIs instead. ([#1996](https://github.com/beeware/toga/issues/1996))
 - The `on_select` handler for OptionContainer no longer receives the `option` argument providing the selected tab. Use `current_tab` to obtain the currently selected tab. ([#1996](https://github.com/beeware/toga/issues/1996))
 - `TimePicker.min_time` and `TimePicker.max_time` has been renamed `TimeInput.min` and `TimeInput.max`, respectively. ([#1999](https://github.com/beeware/toga/issues/1999))
@@ -532,7 +532,7 @@ This release contains no new features. The primary purpose of this release is to
 - Methods that generate new contexts have been renamed: `context()`, `closed_path()`, `fill()` and `stroke()` have become `Context()`, `ClosedPath()`, `Fill()` and `Stroke()` respectively. This has been done to make it easier to differentiate between primitive drawing operations and context-generating operations. ([#2029](https://github.com/beeware/toga/issues/2029))
 - A Canvas is no longer implicitly a context object. The `Canvas.context` property now returns the root context of the canvas. If you were previously using `Canvas.context()` to generate an empty context, it should be replaced with `Canvas.Context()`. Any operations to `remove()` drawing objects from the canvas or `clear()` the canvas of drawing objects should be made on `Canvas.context`. Invoking these methods on `Canvas` will now call the base `Widget` implementations, which will throw an exception because `Canvas` widgets cannot have children. ([#2029](https://github.com/beeware/toga/issues/2029))
 - The `preserve` option on `Fill()` operations has been deprecated. It was required for an internal optimization and can be safely removed without impact. ([#2029](https://github.com/beeware/toga/issues/2029))
-- Drawing operations (e.g., `arc`, `line_to`, etc) can no longer be invoked directly on a Canvas. Instead, they should be invoked on the root context of the canvas, retrieved with via the <span class="title-ref">canvas</span> property. Context creating operations (`Fill`, `Stroke` and `ClosedPath`) are not affected. ([#2029](https://github.com/beeware/toga/issues/2029))
+- Drawing operations (e.g., `arc`, `line_to`, etc) can no longer be invoked directly on a Canvas. Instead, they should be invoked on the root context of the canvas, retrieved with via the *canvas* property. Context creating operations (`Fill`, `Stroke` and `ClosedPath`) are not affected. ([#2029](https://github.com/beeware/toga/issues/2029))
 - The `tight` argument to `Canvas.measure_text()` has been deprecated. It was a GTK implementation detail, and can be safely removed without impact. ([#2029](https://github.com/beeware/toga/issues/2029))
 - The `multiselect` argument to Open File and Select Folder dialogs has been renamed `multiple_select`, for consistency with other widgets that have multiple selection capability. ([#2058](https://github.com/beeware/toga/issues/2058))
 - `Window.resizeable` and `Window.closeable` have been renamed `Window.resizable` and `Window.closable`, to adhere to US spelling conventions. ([#2058](https://github.com/beeware/toga/issues/2058))

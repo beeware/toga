@@ -18,6 +18,6 @@ In order to render the icons, you will need to move the icons folder into the sa
 
 Here are the[Icons](./resources/icons.zip)
 
-In this example, we see a couple of new Toga widgets - [.Table`][], [.SplitContainer][], and [.ScrollContainer][]. You can also see that CSS styles can be added in the widget constructor. Lastly, you can see that windows can have toolbars.
+In this example, we see a couple of new Toga widgets - [`Table`][], [`SplitContainer`][], and [`ScrollContainer`][]. You can also see that CSS styles can be added in the widget constructor. Lastly, you can see that windows can have toolbars.
 
-You'll also see that we're not creating a [`toga.App`][] directly. Instead, we're declaring a subclass of <span class="title-ref">toga.App</span>, and instantiating that class. This also changes the startup sequence of the app - instead of a function called `build()`, the app invokes a method on the app class named `startup()`. This method behaves slightly differently to our `build()` method - whereas previously the `build()` method returned the content that we wanted to put into our main window, the `startup()` method is responsible for creating and showing the main window of the app.
+You'll also see that we're not creating a [`toga.App`][] directly. Instead, we're declaring a subclass of [`toga.App`][], and instantiating that class. This also changes the startup sequence of the app - instead of a function called `build()`, the app invokes a method on the app class named `startup()`. This method behaves slightly differently to our `build()` method - whereas previously the `build()` method returned the content that we wanted to put into our main window, the `startup()` method is responsible for creating and showing the main window of the app.
