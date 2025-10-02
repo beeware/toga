@@ -30,6 +30,7 @@ class WindowProbe(BaseProbe, DialogsMixin):
         supports_placement = False
         # When the test is run under xvfb + nested mutter, as in the CI, the window
         # size of maximized state remains the same as in the fullscreen & presentation.
+        # However, this is not the case when test is run on a normal ubuntu system.
         if os.environ.get("WAYLAND_DISPLAY") == "toga":
             equal_window_size_states.add(WindowState.MAXIMIZED)
     supports_minimizable = False
