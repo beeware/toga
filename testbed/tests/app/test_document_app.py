@@ -1,13 +1,9 @@
-import importlib
 from pathlib import Path
 
 import pytest
 
 import toga
-
-app_module = importlib.import_module(toga.App.app.__module__)
-
-ExampleDoc = app_module.ExampleDoc
+from testbed.app import ExampleDoc
 
 ####################################################################################
 # Document API tests

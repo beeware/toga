@@ -21,7 +21,6 @@ from toga.constants import Baseline, FillRule
 from toga.fonts import BOLD
 from toga.style.pack import SYSTEM, Pack
 
-from ..conftest import skip_on_platforms
 from .conftest import build_cleanup_test
 from .properties import (  # noqa: F401
     test_background_color,
@@ -84,7 +83,6 @@ async def widget(
     on_alt_release_handler,
     on_alt_drag_handler,
 ):
-    skip_on_platforms("linux-kde")
     return toga.Canvas(
         on_resize=on_resize_handler,
         on_press=on_press_handler,
@@ -113,7 +111,6 @@ def assert_pixel(image, x, y, color):
 
 test_cleanup = build_cleanup_test(
     toga.Canvas,
-    skip_platforms=("linux-kde",),
     xfail_platforms=("android",),
 )
 
