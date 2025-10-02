@@ -17,22 +17,25 @@ class WindowProbe(BaseProbe, DialogsMixin):
         supports_closable = True
         supports_as_image = True
         supports_focus = True
+        # Wayland mostly prohibits interaction with the larger windowing environment
+        supports_minimize = not IS_WAYLAND
+        supports_placement = not IS_WAYLAND
+        equal_window_size_states = {WindowState.FULLSCREEN, WindowState.PRESENTATION}
     else:
         supports_closable = False
         supports_as_image = False
         supports_focus = False
+        supports_minimize = False
+        supports_placement = False
+        equal_window_size_states = {
+            WindowState.MAXIMIZED,
+            WindowState.FULLSCREEN,
+            WindowState.PRESENTATION,
+        }
     supports_minimizable = False
     supports_move_while_hidden = False
     supports_unminimize = False
     fullscreen_presentation_size_equal = True
-
-    if GTK_VERSION < (4, 0, 0):
-        # Wayland mostly prohibits interaction with the larger windowing environment
-        supports_minimize = not IS_WAYLAND
-        supports_placement = not IS_WAYLAND
-    else:
-        supports_minimize = False
-        supports_placement = False
 
     def __init__(self, app, window):
         super().__init__()
@@ -58,6 +61,11 @@ class WindowProbe(BaseProbe, DialogsMixin):
                 try:
                     assert self.instantaneous_state == state
                     assert self.window._impl._pending_state_transition is None
+                    if GTK_VERSION < (4, 0, 0) and IS_WAYLAND:
+                        if state in {WindowState.FULLSCREEN, WindowState.PRESENTATION}:
+                            # Add a slight delay to ensure window properties like
+                            # `size` are updated according to the new state.
+                            await self.redraw(delay=0.2)
                     return
                 except AssertionError as e:
                     exception = e
@@ -70,7 +78,11 @@ class WindowProbe(BaseProbe, DialogsMixin):
         # window state after closing the window is unreliable.
         pre_close_window_state = self.window.state
         self.window.close()
-        if pre_close_window_state in {WindowState.FULLSCREEN, WindowState.MINIMIZED}:
+        if pre_close_window_state in {
+            WindowState.PRESENTATION,
+            WindowState.FULLSCREEN,
+            WindowState.MINIMIZED,
+        }:
             delay = 0.5
         else:
             delay = 0.1

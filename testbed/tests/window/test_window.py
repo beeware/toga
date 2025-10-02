@@ -777,7 +777,12 @@ else:
                 current_size = second_window.size
                 nonlocal closure_exception
                 try:
-                    if initial_state == WindowState.NORMAL:
+                    if (
+                        initial_state in second_window_probe.equal_window_size_states
+                        and final_state in second_window_probe.equal_window_size_states
+                    ):
+                        assert current_size == previous_state_window_size
+                    elif initial_state == WindowState.NORMAL:
                         assert current_size > previous_state_window_size
                     elif initial_state == WindowState.MAXIMIZED:
                         if final_state in {WindowState.NORMAL, WindowState.MINIMIZED}:
@@ -792,18 +797,9 @@ else:
                         }:
                             assert current_size < previous_state_window_size
                         elif final_state == WindowState.PRESENTATION:
-                            if second_window_probe.fullscreen_presentation_size_equal:
-                                assert current_size == previous_state_window_size
-                            else:
-                                assert current_size > previous_state_window_size
+                            assert current_size > previous_state_window_size
                     elif initial_state == WindowState.PRESENTATION:
-                        if (
-                            final_state == WindowState.FULLSCREEN
-                            and second_window_probe.fullscreen_presentation_size_equal
-                        ):
-                            assert current_size == previous_state_window_size
-                        else:
-                            assert current_size < previous_state_window_size
+                        assert current_size < previous_state_window_size
                 except Exception as e:
                     closure_exception = e
 
