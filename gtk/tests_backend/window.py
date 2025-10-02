@@ -1,4 +1,5 @@
 import asyncio
+import os
 
 import pytest
 
@@ -13,6 +14,7 @@ class WindowProbe(BaseProbe, DialogsMixin):
     # GTK defers a lot of window behavior to the window manager, which means some
     # features either don't exist, or we can't guarantee they behave the way Toga would
     # like.
+    equal_window_size_states = {WindowState.FULLSCREEN, WindowState.PRESENTATION}
     if GTK_VERSION < (4, 0, 0):
         supports_closable = True
         supports_as_image = True
@@ -20,22 +22,19 @@ class WindowProbe(BaseProbe, DialogsMixin):
         # Wayland mostly prohibits interaction with the larger windowing environment
         supports_minimize = not IS_WAYLAND
         supports_placement = not IS_WAYLAND
-        equal_window_size_states = {WindowState.FULLSCREEN, WindowState.PRESENTATION}
     else:
         supports_closable = False
         supports_as_image = False
         supports_focus = False
         supports_minimize = False
         supports_placement = False
-        equal_window_size_states = {
-            WindowState.MAXIMIZED,
-            WindowState.FULLSCREEN,
-            WindowState.PRESENTATION,
-        }
+        # When the test is run under xvfb + nested mutter, as in the CI, the window
+        # size of maximized state remains the same as in the fullscreen & presentation.
+        if os.environ.get("WAYLAND_DISPLAY") == "toga":
+            equal_window_size_states.add(WindowState.MAXIMIZED)
     supports_minimizable = False
     supports_move_while_hidden = False
     supports_unminimize = False
-    fullscreen_presentation_size_equal = True
 
     def __init__(self, app, window):
         super().__init__()

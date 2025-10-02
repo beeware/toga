@@ -777,9 +777,8 @@ else:
                 current_size = second_window.size
                 nonlocal closure_exception
                 try:
-                    if (
-                        initial_state in second_window_probe.equal_window_size_states
-                        and final_state in second_window_probe.equal_window_size_states
+                    if second_window_probe.equal_window_size_states.issuperset(
+                        {initial_state, final_state}
                     ):
                         assert current_size == previous_state_window_size
                     elif initial_state == WindowState.NORMAL:
