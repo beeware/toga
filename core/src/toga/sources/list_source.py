@@ -5,7 +5,7 @@ from typing import Any, Generic, TypeVar
 
 from .base import Source
 
-T = TypeVar("T")
+T = TypeVar("T")  # TODO: Include in documentation?
 UNDEFINED = object()
 
 

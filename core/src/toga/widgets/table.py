@@ -10,7 +10,7 @@ from toga.sources.accessors import build_accessors, to_accessor
 
 from .base import StyleT, Widget
 
-SourceT = TypeVar("SourceT", bound=Source)
+SourceT = TypeVar("SourceT", bound=Source)  # TODO: Include in documentation?
 
 
 class OnSelectHandler(Protocol):

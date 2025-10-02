@@ -21,7 +21,7 @@ __all__ = [
     "SelectFolderDialog",
 ]
 
-DialogResultT = TypeVar("DialogResultT")
+DialogResultT = TypeVar("DialogResultT")  # TODO: Include in documentation?
 
 
 class Dialog(Generic[DialogResultT]):

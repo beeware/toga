@@ -6,7 +6,7 @@ from typing import TypeVar
 from .base import Source
 from .list_source import Row, _find_item
 
-T = TypeVar("T")
+T = TypeVar("T")  # TODO: Include in documentation?
 
 
 class Node(Row[T]):

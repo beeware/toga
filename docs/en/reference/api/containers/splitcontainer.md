@@ -105,12 +105,9 @@ This only specifies the initial split; the split can be modified by the user onc
 
 TODO: Verify the below text is not meant to be in the source code:
 
-An item of [`SplitContainer`][] content can be:
+An item of [`SplitContainer`][toga.SplitContainer] content can be:
 
 - a [`Widget`][toga.Widget]; or
-- a 2-tuple, containing a `~toga.Widget`{.interpreted-text role="class"}, and an [`int`][] flex value
+- a 2-tuple, containing a [`Widget`][toga.Widget], and an [`int`][] flex value
 
 ::: toga.SplitContainer
-    options:
-        members:
-            TODO: Add explicit members list excluding "HORIZONTAL, VERTICAL, window, app"

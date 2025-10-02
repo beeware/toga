@@ -9,7 +9,7 @@ from toga.sources import ListSource, Row, Source
 
 from .base import StyleT, Widget
 
-SourceT = TypeVar("SourceT", bound=Source)
+SourceT = TypeVar("SourceT", bound=Source)  # TODO: Include in documentation?
 
 
 class OnPrimaryActionHandler(Protocol):

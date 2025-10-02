@@ -55,11 +55,5 @@ For more complex applications, you can replace ListSource with a [custom data so
 ## Reference
 
 ::: toga.sources.Row
-    options:
-        members:
-            TODO: Add explicit members list *excluding* special members *except* for "__setattr__"
 
 ::: toga.sources.ListSource
-    options:
-        members:
-            TODO: Add explicit members list *excluding* special members *except* for "__len__, __getitem__, __setitem__, __delitem__"

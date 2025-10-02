@@ -93,8 +93,5 @@ container = toga.ScrollContainer(content=content)
 ## Reference
 
 ::: toga.ScrollContainer
-    options:
-        members:
-            TODO: Add explicit members list excluding "window, app"
 
 ::: toga.widgets.scrollcontainer.OnScrollHandler

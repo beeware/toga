@@ -18,13 +18,17 @@ if TYPE_CHECKING:
     from typing import TypeAlias
 
     # Define a type variable for generics where an Image type is required.
-    ImageT = TypeVar("ImageT")
+    ImageT = TypeVar("ImageT")  # TODO: Include in documentation?
 
     # Define the types that can be used as Image content
-    PathLikeT: TypeAlias = str | os.PathLike
-    BytesLikeT: TypeAlias = bytes | bytearray | memoryview
-    ImageLikeT: TypeAlias = Any
-    ImageContentT: TypeAlias = PathLikeT | BytesLikeT | ImageLikeT
+    PathLikeT: TypeAlias = str | os.PathLike  # TODO: Include in documentation?
+    BytesLikeT: TypeAlias = (
+        bytes | bytearray | memoryview
+    )  # TODO: Include in documentation?
+    ImageLikeT: TypeAlias = Any  # TODO: Include in documentation?
+    ImageContentT: TypeAlias = (
+        PathLikeT | BytesLikeT | ImageLikeT
+    )  # TODO: Include in documentation?
     """
     When specifying content for an [`toga.Image`][],
     you can provide:
@@ -52,7 +56,7 @@ if TYPE_CHECKING:
     """
 
     # Define a type variable representing an image of an externally defined type.
-    ExternalImageT = TypeVar("ExternalImageT")
+    ExternalImageT = TypeVar("ExternalImageT")  # TODO: Include in documentation?
 
 
 class ImageConverter(Protocol):

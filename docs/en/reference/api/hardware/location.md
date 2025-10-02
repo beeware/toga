@@ -22,13 +22,13 @@ class MyApp(toga.App):
         location = await self.location.current_location()
 ```
 
-All platforms require some form of permission to access the location service. To confirm if you have permission to use the location service while the app is running, you can call [Location.has_permission][]; you can request permission using [Location.request_permission][].
+All platforms require some form of permission to access the location service. To confirm if you have permission to use the location service while the app is running, you can call [`Location.has_permission`][toga.hardware.location.Location.has_permission]; you can request permission using [`Location.request_permission()`][toga.hardware.location.Location.request_permission].
 
-If you wish to track the location of the user while the app is in the background, you must make a separate request for background location permissions using [Location.request_background_permission][] . This request must be made *after* foreground permissions have been requested and confirmed. To confirm if you have permission to use location while the app is in the background, you can call [Location.has_background_permission][].
+If you wish to track the location of the user while the app is in the background, you must make a separate request for background location permissions using [`Location.request_background_permission()`][toga.hardware.location.Location.request_background_permission] . This request must be made *after* foreground permissions have been requested and confirmed. To confirm if you have permission to use location while the app is in the background, you can call [`Location.has_background_permission`][toga.hardware.location.Location.has_background_permission].
 
 Toga will confirm whether the app has been granted permission to use Location services before invoking any location API. If permission has not yet been granted, or if permission has been denied by the user, a [`PermissionError`][] will be raised.
 
-To continuously track location, add an `on_change` handler to the location service, then call [Location.start_tracking][]. The handler will be invoked whenever a new location is obtained:
+To continuously track location, add an `on_change` handler to the location service, then call [`Location.start_tracking()`][toga.hardware.location.Location.start_tracking]. The handler will be invoked whenever a new location is obtained:
 
 ```python
 class MyApp(toga.App):
@@ -47,7 +47,7 @@ class MyApp(toga.App):
             print("User has not permitted location tracking.")
 ```
 
-If you no longer wish to receive location updates, call [Location.stop_tracking][].
+If you no longer wish to receive location updates, call [`Location.stop_tracking()`][toga.hardware.location.Location.stop_tracking].
 
 ## System requirements  { #location-system-requires }
 

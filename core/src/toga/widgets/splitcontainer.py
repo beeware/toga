@@ -12,7 +12,9 @@ from .base import StyleT, Widget
 if TYPE_CHECKING:
     from typing import TypeAlias
 
-    SplitContainerContentT: TypeAlias = Widget | tuple[Widget, float] | None
+    SplitContainerContentT: TypeAlias = (
+        Widget | tuple[Widget, float] | None
+    )  # TODO: Include in documentation?
 
 
 class SplitContainer(Widget):

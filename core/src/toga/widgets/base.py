@@ -16,7 +16,7 @@ if TYPE_CHECKING:
     from toga.app import App
     from toga.window import Window
 
-StyleT = TypeVar("StyleT", bound=BaseStyle)
+StyleT = TypeVar("StyleT", bound=BaseStyle)  # TODO: Include in documentation?
 PackMixin = style_mixin(Pack)
 
 

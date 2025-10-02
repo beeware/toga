@@ -19,7 +19,7 @@ if TYPE_CHECKING:
         | tuple[str, Widget, IconContentT | None]
         | tuple[str, Widget, IconContentT | None, bool]
         | toga.OptionItem
-    )
+    )  # TODO: Include in documentation?
 
 
 class OnSelectHandler(Protocol):

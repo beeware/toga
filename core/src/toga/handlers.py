@@ -14,16 +14,24 @@ if TYPE_CHECKING:
 
     T = TypeVar("T")
 
-    GeneratorReturnT = TypeVar("GeneratorReturnT")
+    GeneratorReturnT = TypeVar("GeneratorReturnT")  # TODO: Include in documentation?
     HandlerGeneratorReturnT: TypeAlias = Generator[
         float | None, object, GeneratorReturnT
-    ]
+    ]  # TODO: Include in documentation?
 
-    HandlerSyncT: TypeAlias = Callable[..., object]
-    HandlerAsyncT: TypeAlias = Callable[..., Awaitable[object]]
-    HandlerGeneratorT: TypeAlias = Callable[..., HandlerGeneratorReturnT[object]]
-    HandlerT: TypeAlias = HandlerSyncT | HandlerAsyncT | HandlerGeneratorT
-    WrappedHandlerT: TypeAlias = Callable[..., object]
+    HandlerSyncT: TypeAlias = Callable[..., object]  # TODO: Include in documentation?
+    HandlerAsyncT: TypeAlias = Callable[
+        ..., Awaitable[object]
+    ]  # TODO: Include in documentation?
+    HandlerGeneratorT: TypeAlias = Callable[
+        ..., HandlerGeneratorReturnT[object]
+    ]  # TODO: Include in documentation?
+    HandlerT: TypeAlias = (
+        HandlerSyncT | HandlerAsyncT | HandlerGeneratorT
+    )  # TODO: Include in documentation?
+    WrappedHandlerT: TypeAlias = Callable[
+        ..., object
+    ]  # TODO: Include in documentation?
 
 
 class NativeHandler:

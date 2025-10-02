@@ -121,40 +121,40 @@ container.content.append(toga.OptionItem("Salad", salad, enabled=False))
 
 When retrieving or deleting items, or when specifying the currently selected item, you can specify an item using:
 
-- The index of the item in the list of content:
+  - The index of the item in the list of content:
 
-  ```python
-  # Insert a new second tab
-  container.content.insert(1, "Soup", toga.Box())
-  # Make the third tab the currently active tab
-  container.current_tab = 2
-  # Delete the second tab
-  del container.content[1]
-  ```
+    ```python
+    # Insert a new second tab
+    container.content.insert(1, "Soup", toga.Box())
+    # Make the third tab the currently active tab
+    container.current_tab = 2
+    # Delete the second tab
+    del container.content[1]
+    ```
 
-- The string label of the tab:
+  - The string label of the tab:
 
-  ```python
-  # Insert a tab at the index currently occupied by a tab labeled "Pasta"
-  container.content.insert("Pasta", "Soup", toga.Box())
-  # Make the tab labeled "Pasta" the currently active tab
-  container.current_tab = "Pasta"
-  # Delete tab labeled "Pasta"
-  del container.content["Pasta"]
-  ```
+    ```python
+    # Insert a tab at the index currently occupied by a tab labeled "Pasta"
+    container.content.insert("Pasta", "Soup", toga.Box())
+    # Make the tab labeled "Pasta" the currently active tab
+    container.current_tab = "Pasta"
+    # Delete tab labeled "Pasta"
+    del container.content["Pasta"]
+    ```
 
-- A reference to an [`toga.OptionItem`][]:
+  - A reference to an [`toga.OptionItem`][]:
 
-  ```python
-  # Get a reference to the "Pasta" tab
-  pasta_tab = container.content["Pasta"]
-  # Insert content at the index currently occupied by the pasta tab
-  container.content.insert(pasta_tab, "Soup", toga.Box())
-  # Make the pasta tab the currently active tab
-  container.current_tab = pasta_tab
-  # Delete the pasta tab
-  del container.content[pasta_tab]
-  ```
+    ```python
+    # Get a reference to the "Pasta" tab
+    pasta_tab = container.content["Pasta"]
+    # Insert content at the index currently occupied by the pasta tab
+    container.content.insert(pasta_tab, "Soup", toga.Box())
+    # Make the pasta tab the currently active tab
+    container.current_tab = pasta_tab
+    # Delete the pasta tab
+    del container.content[pasta_tab]
+    ```
 
 ## System requirements
 
@@ -174,24 +174,18 @@ When retrieving or deleting items, or when specifying the currently selected ite
 
 TODO: Verify the below text is not meant to be in the source code:
 
-An item of [OptionContainer`][] content can be:
+An item of [`OptionContainer`][toga.OptionContainer] content can be:
 
 - a 2-tuple, containing the title for the tab, and the content widget;
-- a 3-tuple, containing the title, content widget, and [icon][IconContentT] - TODO: Manually fix this for the tab;
-- a 4-tuple, containing the title, content widget, [icon][IconContentT] for the tab, and enabled status; or
+- a 3-tuple, containing the title, content widget, and [icon][toga.icons.IconContentT] for the tab;
+- a 4-tuple, containing the title, content widget, [icon][toga.icons.IconContentT] for the tab, and enabled status; or
 - an [`toga.OptionItem`][] instance.
 
 ::: toga.OptionContainer
-    options:
-        members:
-            TODO: Add explicit members list excluding "app, window"
 
 ::: toga.OptionItem
 
 ::: toga.widgets.optioncontainer.OptionList
-    options:
-        members:
-            TODO: Add explicit members list *excluding* special members *except* for "__getitem__, __delitem__"
 
 ::: toga.widgets.optioncontainer.OptionItem
 

@@ -1,6 +1,6 @@
 # Widget
 
-The abstract base class of all widgets. This class should not be be instantiated directly.
+The abstract base class of all widgets. This class should not be instantiated directly.
 
 Availability ([Key][api-status-key])  <!-- rumdl-disable-line MD013 -->
 {: .availability-title }

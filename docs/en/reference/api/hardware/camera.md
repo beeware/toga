@@ -22,7 +22,7 @@ class MyApp(toga.App):
         photo = await self.camera.take_photo()
 ```
 
-Most platforms will require some form of device permission to access the camera. The permission APIs are paired with the specific actions performed on those APIs - that is, to take a photo, you require [Camera.has_permission][], which you can request using [Camera.request_permission][].
+Most platforms will require some form of device permission to access the camera. The permission APIs are paired with the specific actions performed on those APIs - that is, to take a photo, you require [`Camera.has_permission`][toga.hardware.camera.Camera.has_permission], which you can request using [`Camera.request_permission()`][toga.hardware.camera.Camera.request_permission].
 
 Toga will confirm whether the app has been granted permission to use the camera before invoking any camera API. If permission has not yet been granted, the platform *may* request access at the time of first camera access; however, this is not guaranteed to be the behavior on all platforms.
 

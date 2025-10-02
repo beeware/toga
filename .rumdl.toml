@@ -21,7 +21,7 @@ reflow = true
 reflow_mode = "normalize"
 
 [MD026]  # Remove punctuation at the end of headings
-punctuation = "!?"
+punctuation = ",;:"
 
 [MD033]  # No inline HTML
 allowed_elements = ["nospell",]  # pyspelling inline disable tag

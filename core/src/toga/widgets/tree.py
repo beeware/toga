@@ -11,7 +11,7 @@ from toga.style import Pack
 
 from .base import Widget
 
-SourceT = TypeVar("SourceT", bound=Source)
+SourceT = TypeVar("SourceT", bound=Source)  # TODO: Include in documentation?
 
 
 class OnSelectHandler(Protocol):

@@ -1,5 +1,7 @@
 # Release History
 
+<!-- rumdl-disable MD024 -->
+
 ## 0.5.2 (2025-07-10)
 
 ### Features

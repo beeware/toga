@@ -72,8 +72,8 @@ Although Toga provides TreeSource, you are not required to create one directly. 
 
 For more complex applications, you can replace TreeSource with a [custom data source][custom-data-sources] class. Such a class must:
 
-- Inherit from [Source][]
-- Provide the same methods as [TreeSource][]
+- Inherit from [`Source`][toga.sources.Source]
+- Provide the same methods as [`TreeSource`][toga.sources.TreeSource]
 - Return items whose attributes match the accessors expected by the widget
 - Generate a `change` notification when any of those attributes change
 - Generate `insert`, `remove` and `clear` notifications when nodes are added or removed
@@ -81,11 +81,5 @@ For more complex applications, you can replace TreeSource with a [custom data so
 ## Reference
 
 ::: toga.sources.Node
-    options:
-        members:
-            TODO: Add explicit members list *excluding* special members *except* for "__len__, __getitem__, __setitem__, __delitem__"
 
 ::: toga.sources.TreeSource
-    options:
-        members:
-            TODO: Add explicit members list *excluding* special members *except* for "__len__, __getitem__, __setitem__, __delitem__"
