@@ -4,7 +4,8 @@ from .object_proxy import ObjectProxy
 
 class AppProxy(BaseProxy):
     def __init__(self):
-        super().__init__("self")
+        super().__init__("self.my_objs['__app__']")
+        # super().__init__("self")
 
 
 AppProxy.__name__ = AppProxy.__qualname__ = "App"

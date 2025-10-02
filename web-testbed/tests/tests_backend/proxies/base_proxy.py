@@ -1,6 +1,3 @@
-from .encoding import encode_value
-
-
 class ProxyProtocolError(RuntimeError):
     # Raised when the remote bridge returns an invalid or unexpected payload.
     pass
@@ -22,7 +19,7 @@ class BaseProxy:
     # Remote pure expression proxy
     # Attribute reads auto-realise primitives/containers, everything else stays proxied.
 
-    _storage_expr = "self.my_objs"  # change later
+    _storage_expr = "self.my_objs"
 
     page_provider = staticmethod(lambda: None)
 
@@ -49,31 +46,28 @@ class BaseProxy:
     # Core methods
 
     def __getattr__(self, name: str):
-        # local shadow
         local = self._local_attrs
         if name in local:
             return local[name]
-
-        expr = BaseProxy(f"getattr({self.js_ref}, {repr(name)})")  # attribute handle
-        ok, value = self._try_realise_value(expr.js_ref)
-        return value if ok else expr
+        return self._rpc("getattr", obj=self._ref(), name=name)
 
     def __setattr__(self, name: str, value):
         if name.startswith("_"):
             return super().__setattr__(name, value)
 
-        # respect data descriptors on the class (e.g. @property setter)
+        # respect data descriptors (e.g., @property setter)
         cls_attr = getattr(type(self), name, None)
         if hasattr(cls_attr, "__set__"):
             return object.__setattr__(self, name, value)
 
-        # local vs remote decision
+        # keep local policy intact
         if self._is_declared_local(name) or _contains_callable(value):
             self._local_attrs[name] = value
             return
 
-        code = f"setattr({self.js_ref}, {repr(name)}, {encode_value(value)})"
-        self._eval_and_return(code)
+        # RPC setattr
+        env = self._serialise_for_rpc(value, self._storage_expr)
+        self._rpc("setattr", obj=self._ref(), name=name, value=env)
 
     def __delattr__(self, name: str):
         if name.startswith("_"):
@@ -86,17 +80,14 @@ class BaseProxy:
             del local[name]
             return
 
-        code = f"delattr({self.js_ref}, {repr(name)})"
-        self._eval_and_return(code)
+        self._rpc("delattr", obj=self._ref(), name=name)
 
     def __call__(self, *args, **kwargs):
-        parts = []
-        if args:
-            parts += [encode_value(a) for a in args]
-        if kwargs:
-            parts += [f"{k}={encode_value(v)}" for k, v in kwargs.items()]
-        expr = f"{self.js_ref}({', '.join(parts)})"
-        return self._eval_and_return(expr)
+        args_env = [self._serialise_for_rpc(a, self._storage_expr) for a in args]
+        kwargs_env = {
+            k: self._serialise_for_rpc(v, self._storage_expr) for k, v in kwargs.items()
+        }
+        return self._rpc("call", fn=self._ref(), args=args_env, kwargs=kwargs_env)
 
     # Resolve/guard
     def resolve(self):
@@ -145,23 +136,6 @@ class BaseProxy:
         )
         return self._deserialise_payload(payload)
 
-    def _try_realise_value(self, expr_src: str):
-        # Used by __getattr__, try to get a concrete value for primitives/containers.
-        # Returns (True, value) for str/int/float/bool/None,
-        # list/tuple/dict; else (False, None).
-        try:
-            val = self._eval_and_return(expr_src)
-        except Exception:
-            return False, None
-        if (
-            isinstance(val, (str, int, float, bool))
-            or val is None
-            or isinstance(val, (list, tuple, dict))
-        ):
-            return True, val
-        return False, None
-
-    # Decode payload
     def _deserialise_payload(self, payload):
         # De-serialise strict typed envelopes:
         #   - none/bool/int/float/str
@@ -205,9 +179,13 @@ class BaseProxy:
         if t in ("object", "callable"):
             obj_id = payload["id"]
             js_ref = f"{self._storage_expr}[{repr(obj_id)}]"
-            # return existing proxy if we already have one
             existing = BaseProxy._instances.get(js_ref)
-            return existing if existing is not None else BaseProxy(js_ref)
+            if existing is not None:
+                return existing
+            p = BaseProxy(js_ref)
+            # cache the parsed id to avoid re-parsing js_ref later
+            p.__dict__["_ref_cache"] = str(obj_id)
+            return p
 
         if t == "error":
             raise ProxyProtocolError(payload.get("value"))
@@ -232,3 +210,80 @@ class BaseProxy:
         wl = set(cls._local_whitelist)
         wl.update(names)
         cls._local_whitelist = wl
+
+    @staticmethod
+    def _extract_ref_from_expr(expr: str, storage_expr: str = "self.my_objs") -> str:
+        prefix = f"{storage_expr}["
+        if expr.startswith(prefix) and expr.endswith("]"):
+            inner = expr[len(prefix) : -1].strip()
+            if (inner.startswith("'") and inner.endswith("'")) or (
+                inner.startswith('"') and inner.endswith('"')
+            ):
+                inner = inner[1:-1]
+            return inner
+        return expr  # fallback
+
+    def _serialise_for_rpc(self, v, storage_expr="self.my_objs"):
+        # proxies first (no getattr!)
+        if isinstance(v, BaseProxy):
+            return {"type": "ref", "id": v._ref()}
+        if hasattr(v, "js_ref"):  # duck-typed proxy
+            return {
+                "type": "ref",
+                "id": self._extract_ref_from_expr(v.js_ref, storage_expr),
+            }
+        # primitives
+        if v is None:
+            return {"type": "none", "value": None}
+        if isinstance(v, bool):
+            return {"type": "bool", "value": v}
+        if isinstance(v, int):
+            return {"type": "int", "value": v}
+        if isinstance(v, float):
+            return {"type": "float", "value": v}
+        if isinstance(v, str):
+            return {"type": "str", "value": v}
+        # containers
+        if isinstance(v, list):
+            return {
+                "type": "list",
+                "items": [self._serialise_for_rpc(i, storage_expr) for i in v],
+            }
+        if isinstance(v, tuple):
+            return {
+                "type": "tuple",
+                "items": [self._serialise_for_rpc(i, storage_expr) for i in v],
+            }
+        if isinstance(v, dict):
+            items = []
+            for k, val in v.items():
+                if k is None:
+                    k_env = {"type": "none", "value": None}
+                elif isinstance(k, bool):
+                    k_env = {"type": "bool", "value": k}
+                elif isinstance(k, int):
+                    k_env = {"type": "int", "value": k}
+                elif isinstance(k, float):
+                    k_env = {"type": "float", "value": k}
+                elif isinstance(k, str):
+                    k_env = {"type": "str", "value": k}
+                else:
+                    k_env = {"type": "str", "value": str(k)}
+                items.append([k_env, self._serialise_for_rpc(val, storage_expr)])
+            return {"type": "dict", "items": items}
+        # final fallback: encoding unknowns as text
+        return {"type": "str", "value": str(v)}
+
+    def _ref(self) -> str:
+        r = self.__dict__.get("_ref_cache")
+        if r is None:
+            r = self._extract_ref_from_expr(self.js_ref, self._storage_expr)
+            self.__dict__["_ref_cache"] = r
+        return r
+
+    def _rpc(self, op, **kwargs):
+        page = self._page()
+        payload = page.eval_js(
+            "(msg) => window.test_cmd_rpc(msg)", {"op": op, **kwargs}
+        )
+        return self._deserialise_payload(payload)

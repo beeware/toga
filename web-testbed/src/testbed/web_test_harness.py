@@ -13,8 +13,7 @@ except ModuleNotFoundError:
 
 try:
     from pyodide.ffi import create_proxy, to_js
-except ModuleNotFoundError:
-    pyodide = None
+except Exception:
     create_proxy = None
     to_js = None
 
@@ -45,11 +44,14 @@ class WebTestHarness:
         self.my_objs = {}
         self.app.my_objs = self.my_objs
 
+        self.my_objs["__app__"] = self.app
+
         self._js_available = (
             js is not None and create_proxy is not None and to_js is not None
         )
         if self._js_available and web_testing_enabled():
             js.window.test_cmd = create_proxy(self.cmd_test)
+            js.window.test_cmd_rpc = create_proxy(self.cmd_test_rpc)
 
     def cmd_test(self, code):
         try:
@@ -121,3 +123,86 @@ class WebTestHarness:
         k = str(id(x))
         self.my_objs[k] = x
         return k
+
+    def _deserialise(self, env):
+        if env is None:
+            return None
+        if not isinstance(env, dict):
+            return env
+
+        t = env.get("type")
+        if t in (None, "none"):
+            return None
+        if t == "bool":
+            return bool(env["value"])
+        if t == "int":
+            return int(env["value"])
+        if t == "float":
+            return float(env["value"])
+        if t == "str":
+            return str(env["value"])
+        if t == "list":
+            return [self._deserialise(i) for i in env["items"]]
+        if t == "tuple":
+            return tuple(self._deserialise(i) for i in env["items"])
+        if t == "dict":
+            out = {}
+            for k_env, v_env in env["items"]:
+                k = self._deserialise(k_env)
+                v = self._deserialise(v_env)
+                out[k] = v
+            return out
+        if t == "ref":
+            return self.my_objs[str(env["id"])]
+        return env
+
+    def cmd_test_rpc(self, msg):
+        m = msg.to_py() if hasattr(msg, "to_py") else msg
+
+        op = m["op"]
+
+        if op == "getattr":
+            obj = self.my_objs[str(m["obj"])]
+            value = getattr(obj, m["name"])
+            return to_js(
+                self._serialise_payload(value), dict_converter=js.Object.fromEntries
+            )
+
+        if op == "setattr":
+            obj = self.my_objs[str(m["obj"])]
+            setattr(obj, m["name"], self._deserialise(m["value"]))
+            return to_js(
+                self._serialise_payload(None), dict_converter=js.Object.fromEntries
+            )
+
+        if op == "delattr":
+            obj = self.my_objs[str(m["obj"])]
+            delattr(obj, m["name"])
+            return to_js(
+                self._serialise_payload(None), dict_converter=js.Object.fromEntries
+            )
+
+        if op == "call":
+            fn = self.my_objs[str(m["fn"])]
+            args = [self._deserialise(a) for a in m.get("args", [])]
+            kwargs = {k: self._deserialise(v) for k, v in m.get("kwargs", {}).items()}
+            out = fn(*args, **kwargs)
+            return to_js(
+                self._serialise_payload(out), dict_converter=js.Object.fromEntries
+            )
+
+        # Potential use for future, instead of '_create'
+        if op == "new":
+            ctor = m["ctor"]
+            args = [self._deserialise(a) for a in m.get("args", [])]
+            kwargs = {k: self._deserialise(v) for k, v in m.get("kwargs", {}).items()}
+            module_name, _, name = ctor.rpartition(".")
+            mod = __import__(module_name, fromlist=[name]) if module_name else globals()
+            cls = getattr(mod, name) if module_name else globals()[name]
+            obj = cls(*args, **kwargs)
+            key = self._key_for(obj)
+            return to_js(
+                self._serialise_payload(key), dict_converter=js.Object.fromEntries
+            )
+
+        raise ValueError(f"Unknown op {op!r}")
