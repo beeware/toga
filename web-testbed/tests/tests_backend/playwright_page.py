@@ -43,6 +43,9 @@ class BackgroundPage:
         await self._page.wait_for_function(
             "() => typeof window.test_cmd === 'function'"
         )
+        await self._page.wait_for_function(
+            "() => typeof window.test_cmd_rpc === 'function'"
+        )
 
         self._alock = asyncio.Lock()
         self._ready.set()
