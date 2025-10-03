@@ -1,13 +1,11 @@
 from unittest.mock import Mock, call
-import toga
+
 import pytest
-
-
-from toga.constants import CENTER
-from toga.style import Pack
-from toga.style.pack import RIGHT, SERIF
-
 from tests.data import TEXTS
+
+import toga
+from toga.constants import CENTER
+from toga.style.pack import RIGHT, SERIF
 
 
 @pytest.fixture
@@ -68,6 +66,7 @@ async def test_on_change_programmatic(widget, probe, on_change, focused, placeho
     await probe.redraw("Value has been set programmatically")
     on_change.assert_called_once_with(widget)
     on_change.reset_mock()
+
 
 async def test_on_change_user(widget, probe, on_change):
     "The on_change handler is triggered on user input"
@@ -265,6 +264,7 @@ async def test_no_event_on_initialization(widget, probe, on_change):
     parent.add(widget)
     on_change.assert_not_called()
     on_change.reset_mock()
+
 
 async def test_no_event_on_style_change(widget, probe, on_change):
     "The widget doesn't fire on_change events on text style changes."

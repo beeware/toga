@@ -3,7 +3,6 @@ import pytest
 import toga
 
 
-
 @pytest.fixture
 async def widget():
     return toga.PasswordInput(value="sekrit")
