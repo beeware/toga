@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import textwrap
 import types
 from unittest.mock import Mock
 
@@ -43,6 +44,8 @@ class WebTestHarness:
         self.app = app
         self.my_objs = {}
         self.app.my_objs = self.my_objs
+        self._capabilities = {}
+        self.my_objs["__caps__"] = self._capabilities
 
         self.my_objs["__app__"] = self.app
 
@@ -152,8 +155,27 @@ class WebTestHarness:
                 v = self._deserialise(v_env)
                 out[k] = v
             return out
-        if t == "ref":
-            return self.my_objs[str(env["id"])]
+        # reconstruct functions from source
+        if t == "callable_source":
+            try:
+                scope = {}
+                exec(textwrap.dedent(env["source"]), scope, scope)
+                fn = scope.get(env["name"])
+            except Exception as e:
+                raise ValueError(
+                    f"Failed to exec callable source for {env.get('name')!r}"
+                ) from e
+
+            if not callable(fn):
+                raise ValueError(
+                    f"Callable {env.get('name')!r} not found or not callable after exec"
+                )
+            return fn
+        if t in ("ref", "object"):
+            ref = env.get("ref")
+            if ref is None:
+                ref = env.get("id")
+            return self.my_objs[str(ref)]
         return env
 
     def cmd_test_rpc(self, msg):
@@ -190,6 +212,23 @@ class WebTestHarness:
             return to_js(
                 self._serialise_payload(out), dict_converter=js.Object.fromEntries
             )
+
+        if op == "hostcall":
+            fn = self._capabilities.get(m["name"])
+            if not fn:
+                return to_js(
+                    {"type": "error", "value": f"Unknown capability: {m['name']}"},
+                    dict_converter=js.Object.fromEntries,
+                )
+            try:
+                out = fn(
+                    *[self._deserialise(a) for a in m.get("args", [])],
+                    **{k: self._deserialise(v) for k, v in m.get("kwargs", {}).items()},
+                )
+                env = self._serialise_payload(out)
+            except Exception as e:
+                env = {"type": "error", "value": f"{type(e).__name__}: {e}"}
+            return to_js(env, dict_converter=js.Object.fromEntries)
 
         # Potential use for future, instead of '_create'
         if op == "new":

@@ -1,18 +1,9 @@
+import inspect
+
+
 class ProxyProtocolError(RuntimeError):
     # Raised when the remote bridge returns an invalid or unexpected payload.
     pass
-
-
-def _contains_callable(x):
-    if isinstance(x, BaseProxy):  # allow remote refs through
-        return False
-    if callable(x):
-        return True
-    if isinstance(x, (list, tuple, set)):
-        return any(_contains_callable(i) for i in x)
-    if isinstance(x, dict):
-        return any(_contains_callable(k) or _contains_callable(v) for k, v in x.items())
-    return False
 
 
 class BaseProxy:
@@ -61,12 +52,17 @@ class BaseProxy:
             return object.__setattr__(self, name, value)
 
         # keep local policy intact
-        if self._is_declared_local(name) or _contains_callable(value):
+        if self._is_declared_local(name):
             self._local_attrs[name] = value
             return
 
         # RPC setattr
-        env = self._serialise_for_rpc(value, self._storage_expr)
+        try:
+            env = self._serialise_for_rpc(value, self._storage_expr)
+        except Exception:
+            # if something truly can't be serialized, keep it local.
+            self._local_attrs[name] = value
+            return
         self._rpc("setattr", obj=self._ref(), name=name, value=env)
 
     def __delattr__(self, name: str):
@@ -202,15 +198,6 @@ class BaseProxy:
             or name in type(self)._local_whitelist
         )
 
-    def declare_local(self, *names: str):
-        object.__getattribute__(self, "_local_names").update(names)
-
-    @classmethod
-    def declare_local_class(cls, *names: str):
-        wl = set(cls._local_whitelist)
-        wl.update(names)
-        cls._local_whitelist = wl
-
     @staticmethod
     def _extract_ref_from_expr(expr: str, storage_expr: str = "self.my_objs") -> str:
         prefix = f"{storage_expr}["
@@ -271,6 +258,16 @@ class BaseProxy:
                     k_env = {"type": "str", "value": str(k)}
                 items.append([k_env, self._serialise_for_rpc(val, storage_expr)])
             return {"type": "dict", "items": items}
+
+        if callable(v):
+            src = inspect.getsource(v)
+            name = getattr(v, "__name__", None) or "anonymous"
+            return {
+                "type": "callable_source",
+                "name": name,
+                "source": src,
+            }
+
         # final fallback: encoding unknowns as text
         return {"type": "str", "value": str(v)}
 
@@ -287,3 +284,19 @@ class BaseProxy:
             "(msg) => window.test_cmd_rpc(msg)", {"op": op, **kwargs}
         )
         return self._deserialise_payload(payload)
+
+    @classmethod
+    def call_host(cls, name: str, *args, **kwargs):
+        temp = cls("self.my_objs['__app__']")
+
+        args_env = [temp._serialise_for_rpc(a, temp._storage_expr) for a in args]
+        kwargs_env = {
+            k: temp._serialise_for_rpc(v, temp._storage_expr) for k, v in kwargs.items()
+        }
+
+        page = cls._page()
+        payload = page.eval_js(
+            "(m) => window.test_cmd_rpc(m)",
+            {"op": "hostcall", "name": name, "args": args_env, "kwargs": kwargs_env},
+        )
+        return temp._deserialise_payload(payload)
