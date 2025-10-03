@@ -64,7 +64,7 @@ Commands can be removed using set-like and dictionary-like APIs. The set-like AP
 app.commands.remove(cmd_1)
 
 # Remove a command by ID
-del app.commands[`"Some-Command-ID"]
+del app.commands["Some-Command-ID"]
 ```
 
 ## Standard commands

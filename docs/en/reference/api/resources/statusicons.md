@@ -101,7 +101,7 @@ Once a status icon has been added to the app, it can be retrieved by ID or by in
 
 ```python
 # Change the icon of the first status icon, retrieved by index:
-app.status_icons[`0].icon = "icons/green"
+app.status_icons[0].icon = "icons/green"
 
 # Change the icon of the second status icon, retrieved by id:
 app.status_icons["second"].icon = "icons/blue"
