@@ -12,8 +12,10 @@ from .container import TogaContainer
 from .libs import GTK_VERSION, IS_WAYLAND, Gdk, GLib, Gtk
 
 if GTK_VERSION >= (4, 0, 0):  # pragma: no-cover-if-gtk3
+    from toga.handlers import WeakrefCallable
+
     from .libs import VFuncInfo, hook_up_vfunc_implementation
-    from .libs.utils import WeakrefCallable, create_toga_native
+    from .libs.utils import create_toga_native
 
 from .screens import Screen as ScreenImpl
 

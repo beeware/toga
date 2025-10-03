@@ -1,9 +1,16 @@
 import asyncio
+import gc
 from unittest.mock import Mock
 
 import pytest
 
-from toga.handlers import AsyncResult, NativeHandler, simple_handler, wrapped_handler
+from toga.handlers import (
+    AsyncResult,
+    NativeHandler,
+    WeakrefCallable,
+    simple_handler,
+    wrapped_handler,
+)
 
 
 class ExampleAsyncResult(AsyncResult):
@@ -628,6 +635,82 @@ async def test_simple_handler_coroutine():
         "args": ("arg1", "arg2"),
         "kwargs": {"kwarg1": 3, "kwarg2": 4},
     }
+
+
+async def test_weakrefcallable_bound_method():
+    """A WeakrefCallable wrapped bound method can be invoked."""
+
+    class ExampleClass:
+        def example_method(self, *args, **kwargs):
+            return [*args, *kwargs.values()]
+
+    example_obj = ExampleClass()
+    weakrefcallable_wrapped_bound_method = WeakrefCallable(example_obj.example_method)
+    weakrefcallable_ref = weakrefcallable_wrapped_bound_method.ref
+
+    assert weakrefcallable_wrapped_bound_method("arg1", "arg2", kwarg1=3, kwarg2=4) == [
+        "arg1",
+        "arg2",
+        3,
+        4,
+    ]
+    assert weakrefcallable_ref()("arg1", "arg2", kwarg1=3, kwarg2=4) == [
+        "arg1",
+        "arg2",
+        3,
+        4,
+    ]
+
+    # Delete the original object
+    del example_obj
+    gc.collect()
+
+    # The wrapped method & the reference both should return None, now that the original
+    # object is garbage collected.
+    assert (
+        weakrefcallable_wrapped_bound_method("arg1", "arg2", kwarg1=3, kwarg2=4) is None
+    )
+    assert weakrefcallable_ref() is None
+
+
+async def test_weakrefcallable_function():
+    """A WeakrefCallable wrapped function can be invoked."""
+
+    def example_function(*args, **kwargs):
+        return [*args, *kwargs.values()]
+
+    weakrefcallable_wrapped_function = WeakrefCallable(example_function)
+    weakrefcallable_ref = weakrefcallable_wrapped_function.ref
+
+    assert weakrefcallable_wrapped_function("arg1", "arg2", kwarg1=3, kwarg2=4) == [
+        "arg1",
+        "arg2",
+        3,
+        4,
+    ]
+    assert weakrefcallable_ref()("arg1", "arg2", kwarg1=3, kwarg2=4) == [
+        "arg1",
+        "arg2",
+        3,
+        4,
+    ]
+
+    gc.collect()
+
+    # The wrapped function & the reference both should still remain callable even after
+    # garbage collection.
+    assert weakrefcallable_wrapped_function("arg1", "arg2", kwarg1=3, kwarg2=4) == [
+        "arg1",
+        "arg2",
+        3,
+        4,
+    ]
+    assert weakrefcallable_ref()("arg1", "arg2", kwarg1=3, kwarg2=4) == [
+        "arg1",
+        "arg2",
+        3,
+        4,
+    ]
 
 
 ######################################################################

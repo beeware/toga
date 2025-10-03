@@ -2,8 +2,7 @@ import System.Windows.Forms as WinForms
 
 import toga
 from toga.command import Group, Separator
-
-from .libs.wrapper import WeakrefCallable
+from toga.handlers import WeakrefCallable
 
 
 class StatusIcon:
