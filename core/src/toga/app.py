@@ -133,19 +133,21 @@ class WidgetRegistry:
 
 
 class App:
-    #: The currently running :class:`~toga.App`. Since there can only be one running
-    #: Toga app in a process, this is available as a class property via
-    #: ``toga.App.app``. If no app has been created yet, this is set to ``None``.
     app: App | None = None
+    """
+    The currently running :class:`~toga.App`. Since there can only be one running
+    Toga app in a process, this is available as a class property via
+    `toga.App.app`. If no app has been created yet, this is set to `None`.
+    """
     _impl: Any
     _camera: Camera
     _location: Location
     _main_window: Window | str | None
     _running_tasks: set[asyncio.Task] = set()
 
-    #: A constant that can be used as the main window to indicate that an app will
-    #: run in the background without a main window.
     BACKGROUND: str = "background app"
+    """A constant that can be used as the main window to indicate that an app will
+    run in the background without a main window."""
 
     _UNDEFINED: str = "<main window not assigned>"
 

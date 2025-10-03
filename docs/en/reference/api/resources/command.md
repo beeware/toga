@@ -104,14 +104,8 @@ class MyApp(toga.app):
 ## Reference
 
 ::: toga.Command
-    options:
-        members:
-            TODO: Add explicit members list excluding "key"
 
 ::: toga.Group
-    options:
-        members:
-            TODO: Add explicit members list excluding "key"
 
 ::: toga.command.CommandSet
 

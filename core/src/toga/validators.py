@@ -537,12 +537,14 @@ class Email(MatchRegex):
     ):
         """A validator confirming that the string is an email address.
 
-        .. note::
+        /// note | Note
 
-            It's impossible to do *true* RFC-compliant email validation with a regex.
-            This validator does a "best effort" validation. It will inevitably allow
-            some email addresses that aren't *technically* valid. However, it shouldn't
-            *exclude* any valid email addresses.
+        It's impossible to do *true* RFC-compliant email validation with a regex.
+        This validator does a "best effort" validation. It will inevitably allow
+        some email addresses that aren't *technically* valid. However, it shouldn't
+        *exclude* any valid email addresses.
+
+        ///
 
         :param error_message: Optional; the error message to display when the input
             isn't a number.

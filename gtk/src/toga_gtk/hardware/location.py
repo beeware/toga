@@ -105,8 +105,8 @@ class State(IntEnum):
 
 
 class Location(GObject.Object):
-    #: State of GeoClue location service initialisation and communication
     state = GObject.Property(type=int, default=State.INITIAL)
+    """State of GeoClue location service initialisation and communication"""
 
     def __init__(self, interface):
         if Geoclue is None:

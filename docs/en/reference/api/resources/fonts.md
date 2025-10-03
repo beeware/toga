@@ -9,7 +9,7 @@ Availability ([Key][api-status-key])  <!-- rumdl-disable-line MD013 -->
 
 ## Usage
 
-For most widget styling, you do not need to create instances of the [Font][] class. Fonts are applied to widgets using style properties:
+For most widget styling, you do not need to create instances of the [`Font`][toga.Font] class. Fonts are applied to widgets using style properties:
 
 ```python
 import toga
@@ -50,7 +50,7 @@ Font.register("Bahnschrift", "resources/Bahnschrift.ttf")
 Font.register("Bahnschrift", "resources/Bahnschrift.ttf", weight=BOLD)
 ```
 
-A small number of Toga APIs (e.g., [Context.write_text][]) *do* require the use of [Font][] instance. In these cases, you can instantiate a Font using similar properties to the ones used for widget styling:
+A small number of Toga APIs (e.g., [`Context.write_text`][toga.widgets.canvas.Context.write_text]) *do* require the use of [`Font`][toga.Font] instance. In these cases, you can instantiate a Font using similar properties to the ones used for widget styling:
 
 ```python
 import toga
@@ -64,7 +64,7 @@ canvas = toga.Canvas()
 canvas.context.write_text("Hello", font=my_font)
 ```
 
-When constructing your own [Font][] instance, ensure that the font family you provide is valid; otherwise an [UnknownFontError][] will be raised.
+When constructing your own [`Font`][toga.Font] instance, ensure that the font family you provide is valid; otherwise an [`UnknownFontError`][toga.fonts.UnknownFontError] will be raised.
 
 ## Notes
 

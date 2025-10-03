@@ -55,6 +55,6 @@ An icon is **guaranteed** to have an implementation, regardless of the path spec
 
 ## Reference
 
-::: toga.icons.IconContentT
-
 ::: toga.Icon
+
+::: toga.icons.IconContentT
