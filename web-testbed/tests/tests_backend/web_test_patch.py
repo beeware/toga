@@ -1,3 +1,4 @@
+import importlib
 import sys
 import types
 
@@ -5,7 +6,16 @@ import pytest
 
 from .playwright_page import BackgroundPage
 from .proxies.base_proxy import BaseProxy
-from .proxies.object_proxies import AppProxy, BoxProxy, ButtonProxy, MockProxy
+from .proxies.object_proxies import (
+    AppProxy,
+    BoxProxy,
+    ButtonProxy,
+    LabelProxy,
+    MockProxy,
+    PasswordInputProxy,
+    SwitchProxy,
+    TextInputProxy,
+)
 from .widgets.base import SimpleProbe
 
 # Playwright Page injection
@@ -29,16 +39,24 @@ SHIMS = [
     ("toga", "App.app", AppProxy),
     ("toga", "Button", ButtonProxy),
     ("toga", "Box", BoxProxy),
+    ("toga", "Label", LabelProxy),
+    ("toga", "Switch", SwitchProxy),
+    ("toga", "TextInput", TextInputProxy),
+    ("toga", "PasswordInput", PasswordInputProxy),
     ("unittest.mock", "Mock", MockProxy),
 ]
 
 
 def apply():
     for mod_name, dotted_attr, spec in SHIMS:
-        mod = sys.modules.get(mod_name)
-        if mod is None:
-            mod = types.ModuleType(mod_name)
-            sys.modules[mod_name] = mod
+        try:
+            mod = importlib.import_module(mod_name)
+        except Exception:
+            if mod_name.startswith(("toga", "yourpackageprefix")):
+                mod = types.ModuleType(mod_name)
+                sys.modules[mod_name] = mod
+            else:
+                raise
 
         parts = dotted_attr.split(".")
         target = mod
