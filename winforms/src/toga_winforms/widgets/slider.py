@@ -3,9 +3,9 @@ from decimal import ROUND_UP
 import System.Windows.Forms as WinForms
 
 from toga.colors import TRANSPARENT
+from toga.handlers import WeakrefCallable
 from toga.widgets.slider import IntSliderImpl
 
-from ..libs.wrapper import WeakrefCallable
 from .base import Widget
 
 # Implementation notes

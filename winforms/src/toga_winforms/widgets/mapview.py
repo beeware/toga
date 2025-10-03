@@ -8,6 +8,7 @@ from System.Drawing import Color
 from System.Threading.Tasks import Task, TaskScheduler
 
 import toga
+from toga.handlers import WeakrefCallable
 from toga.types import LatLng
 from toga_winforms.libs.extensions import (
     CoreWebView2CreationProperties,
@@ -15,7 +16,6 @@ from toga_winforms.libs.extensions import (
     WebView2RuntimeNotFoundException,
 )
 
-from ..libs.wrapper import WeakrefCallable
 from .base import Widget
 
 MAPVIEW_HTML_CONTENT = """<!DOCTYPE html>
