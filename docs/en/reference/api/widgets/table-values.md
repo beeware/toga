@@ -1,4 +1,4 @@
-# Title
+<!-- rumdl-disable-line MD041 -->
 
 Accessor names (whether explicitly provided, or automatically generated from the header names) should be unique. If they are not, column data will be duplicated, as Toga has no way to tell which version of an accessor to use when populating data for a column.
 

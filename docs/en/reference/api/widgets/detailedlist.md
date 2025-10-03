@@ -129,7 +129,7 @@ table = toga.DetailedList(
 
 If the value provided by the title or subtitle accessor is `None`, or the accessor isn't defined, the `missing_value` will be displayed. Any other value will be converted into a string.
 
-The icon accessor should return an [`Icon`][]. If it returns `None`, or the accessor isn't defined, then no icon will be displayed, but space for the icon will remain in the layout.
+The icon accessor should return an [`Icon`][toga.Icon]. If it returns `None`, or the accessor isn't defined, then no icon will be displayed, but space for the icon will remain in the layout.
 
 Items in a DetailedList can respond to a primary and secondary action. On platforms that use swipe interactions, the primary action will be associated with "swipe left", and the secondary action will be associated with "swipe right". Other platforms may implement the primary and secondary actions using a different UI interaction (e.g., a right-click context menu). The primary and secondary actions will only be enabled in the DetailedList UI if a handler has been provided.
 
@@ -140,7 +140,7 @@ The DetailedList as a whole can also respond to a refresh UI action. This is usu
 ## Notes
 
 - The iOS Human Interface Guidelines differentiate between "Normal" and "Destructive" actions on a row. Toga will interpret any action with a name of "Delete" or "Remove" as destructive, and will render the action appropriately.
-- The WinForms implementation currently uses a column layout similar to [Table][], and does not support the primary, secondary or refresh actions.
+- The WinForms implementation currently uses a column layout similar to [`Table`][toga.Table], and does not support the primary, secondary or refresh actions.
 - Using DetailedList on Android requires the AndroidX SwipeRefreshLayout widget in your project's Gradle dependencies. Ensure your app declares a dependency on `androidx.swiperefreshlayout:swiperefreshlayout:1.1.0` or later.
 
 ## Reference

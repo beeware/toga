@@ -126,7 +126,7 @@ selection.value = selection.items.find(name="Charlie")
 
 - On macOS and Android, you cannot change the font of a Selection.
 - On macOS, GTK and Android, you cannot change the text color, background color, or text alignment of labels in a Selection.
-- On GTK, a Selection widget with flexible sizing will expand its width (to the extent possible possible) to accommodate any changes in content (for example, to accommodate a long label). However, if the content subsequently *decreases* in width, the Selection widget *will not* shrink. It will retain the size necessary to accommodate the longest label it has historically contained.
+- On GTK, a Selection widget with flexible sizing will expand its width (to the extent possible) to accommodate any changes in content (for example, to accommodate a long label). However, if the content subsequently *decreases* in width, the Selection widget *will not* shrink. It will retain the size necessary to accommodate the longest label it has historically contained.
 - On iOS, the size of the Selection widget does not adapt to the size of the currently displayed content, or the potential list of options.
 
 ## Reference
