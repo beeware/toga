@@ -1,6 +1,6 @@
 # Testing
 
-Toga provides a [toga-dummy](https://github.com/beeware/toga/tree/main/dummy) backend that can be used for testing purposes. This backend implements the full interface required by a platform backend, but does not display any widgets visually. It provides an API that can be used to verify widget operation.
+Toga provides a [`toga-dummy`](https://github.com/beeware/toga/tree/main/dummy) backend that can be used for testing purposes. This backend implements the full interface required by a platform backend, but does not display any widgets visually. It provides an API that can be used to verify widget operation.
 
 ## Prerequisites
 

@@ -51,7 +51,14 @@
             - [Keys](./reference/api/keys.md)
             - [Types](./reference/api/types.md)
     - [Supported Platforms](reference/platforms/index.md)
-        - ./reference/platforms/*
+        - [macOS](./reference/platforms/macOS.md)
+        - [Windows](./reference/platforms/windows.md)
+        - [Linux/Unix](./reference/platforms/linux.md)
+        - [Android](./reference/platforms/android.md)
+        - [iOS](./reference/platforms/iOS.md)
+        - [Web](./reference/platforms/web.md)
+        - [Terminal](./reference/platforms/terminal.md)
+        - [Testing](./reference/platforms/testing.md)
     - [Toga APIs by platform](reference/widgets_by_platform.md)
     - Style
         - [The Pack Style Engine](reference/style/pack.md)

@@ -1,6 +1,6 @@
 # iOS
 
-The Toga backend for iOS is [toga-iOS](https://github.com/beeware/toga/tree/main/iOS).
+The Toga backend for iOS is [`toga-iOS`](https://github.com/beeware/toga/tree/main/iOS).
 
 ## Prerequisites
 
@@ -12,6 +12,6 @@ The Toga backend for iOS is [toga-iOS](https://github.com/beeware/toga/tree/main
 
 ## Implementation details
 
-The `toga-iOS` backend uses the [UIKit Objective C API](https://developer.apple.com/documentation/uikit).
+The `toga-iOS` backend uses the [UIKit Objective-C API](https://developer.apple.com/documentation/uikit).
 
-The native APIs are accessed using [Rubicon Objective C](https://rubicon-objc.readthedocs.io/).
+The native APIs are accessed using [Rubicon Objective-C](https://rubicon-objc.readthedocs.io/).

@@ -1,6 +1,6 @@
 # Terminal
 
-The Toga backend for terminal applications is [toga-textual](https://github.com/beeware/toga/tree/main/textual).
+The Toga backend for terminal applications is [`toga-textual`](https://github.com/beeware/toga/tree/main/textual).
 
 ## Prerequisites
 

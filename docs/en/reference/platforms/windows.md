@@ -2,7 +2,7 @@
 
 ![image](../images/winforms.png){ width="300px" } <!-- TODO: Update alt text -->
 
-The Toga backend for Windows is [toga-winforms](https://github.com/beeware/toga/tree/main/winforms).
+The Toga backend for Windows is [`toga-winforms`](https://github.com/beeware/toga/tree/main/winforms).
 
 ## Prerequisites  { #windows-prerequisites }
 

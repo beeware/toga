@@ -8,7 +8,7 @@
 
 <!-- TODO: Update alt text -->
 
-The Toga backend for macOS is [toga-cocoa](https://github.com/beeware/toga/tree/main/cocoa).
+The Toga backend for macOS is [`toga-cocoa`](https://github.com/beeware/toga/tree/main/cocoa).
 
 ## Prerequisites  { #macos-prerequisites }
 
@@ -26,4 +26,4 @@ $ python -m pip install toga-cocoa
 
 The `toga-cocoa` backend uses the [AppKit Objective-C API](https://developer.apple.com/documentation/appkit/), also known as Cocoa.
 
-The native APIs are accessed using [Rubicon Objective C](https://rubicon-objc.readthedocs.io/).
+The native APIs are accessed using [Rubicon Objective-C](https://rubicon-objc.readthedocs.io/).
