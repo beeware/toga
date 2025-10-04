@@ -182,7 +182,7 @@ A value of `"system"` indicates that whatever is a system-appropriate font shoul
 
 A value of `"serif"`, `"sans-serif"`, `"cursive"`, `"fantasy"`, or `"monospace"` will use a system-defined font that matches the description (e.g. Times New Roman for `"serif"`, Courier New for `"monospace"`).
 
-Any other value will be checked against the family names previously registered with [Font.register][].
+Any other value will be checked against the family names previously registered with [`Font.register`][toga.Font.register].
 
 On supported platforms (currently Windows and Linux), if Toga doesn't recognize the family as one of its predefined builtins or as a font you've registered, it will attempt to load the requested font from your system before falling back to the default system font.
 

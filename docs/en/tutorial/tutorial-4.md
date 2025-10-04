@@ -39,4 +39,4 @@ Here's the source code
 -8<- "tutorial4/tutorial/app.py"
 ```
 
-In this example, we see a new Toga widget - [`Canvas`][].
+In this example, we see a new Toga widget - [`Canvas`][toga.Canvas].

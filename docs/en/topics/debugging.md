@@ -14,11 +14,11 @@ toga.Widget.DEBUG_LAYOUT_ENABLED = True
 
 ### Debug layout colors with the  { #-demo }
 
-To use the debug layout with the `toga-demo`, set the environment variable, and [install and run the demo](../tutorial/get-started).
+To use the debug layout with the `toga-demo`, set the environment variable, and [install and run the demo](/tutorial/get-started).
 
 You should see the following.
 
-![image](../images/toga-demo-debug-layout-enabled.png)
+![image](../images/toga-demo-debug-layout-enabled.png)  <!-- TODO: Update alt text -->
 
 If a box or other widget expands to fill its entire parent, you won't see the parent widget behind it. The `toga-demo` has two widgets hiding others, and so it only shows two colors.
 
@@ -52,4 +52,4 @@ if __name__ == "__main__":
 
 Save the example as a Python file on your computer. When you run the file, you should see the following.
 
-![image](../images/concentric-boxes-debug-layout-enabled.png)
+![image](../images/concentric-boxes-debug-layout-enabled.png)  <!-- TODO: Update alt text -->
