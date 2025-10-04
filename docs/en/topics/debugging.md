@@ -14,7 +14,7 @@ toga.Widget.DEBUG_LAYOUT_ENABLED = True
 
 ### Debug layout colors with the  { #-demo }
 
-To use the debug layout with the `toga-demo`, set the environment variable, and [install and run the demo](/tutorial/get-started).
+To use the debug layout with the `toga-demo`, set the environment variable, and [install and run the demo](/tutorial/get-started.md).
 
 You should see the following.
 

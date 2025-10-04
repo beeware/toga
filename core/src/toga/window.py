@@ -597,7 +597,8 @@ class Window:
     ) -> dialogs.DialogResultT:
         """Display a dialog to the user, modal to this window.
 
-        :param: The :doc:`dialog <resources/dialogs>` to display to the user.
+        :param dialog: The [dialog](/reference/api/resources/dialogs.md) to
+            display to the user.
         :returns: The result of the dialog.
         """
         return await dialog._show(self)
