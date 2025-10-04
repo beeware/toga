@@ -102,3 +102,25 @@ try:
     from gi.repository import Flatpak  # noqa: F401
 except (ImportError, ValueError):  # pragma: no cover
     Flatpak = None
+
+try:
+    gi.require_version("Gst", "1.0")
+    from gi.repository import Gst  # noqa: F401
+except (ImportError, ValueError):  # pragma: no cover
+    Gst = None
+
+try:
+    gi.require_version("Wp", "0.5")
+    from gi.repository import Wp  # noqa: F401
+except (ImportError, ValueError):  # pragma: no cover
+    Wp = None
+
+
+class FeatureRequiresMissingDependency(RuntimeError):
+    def __init__(self, feature: str, library: str, docs_path: str):
+        docs_url = f"https://toga.readthedocs.io/en/stable/reference/api/{docs_path}"
+        super().__init__(
+            f"{feature.title()} requires the missing dependency {library}. Ensure "
+            f"that the system package providing {library} and its GTK bindings have "
+            f"been installed. See {docs_url} for details."
+        )
