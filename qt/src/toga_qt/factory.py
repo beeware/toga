@@ -1,23 +1,6 @@
 # ruff: noqa: E402
 
-# noqa for initializing some Qt stuff and setting up QApplication
-
-import site
-import sys
-
-
-def import_pyside6():
-    """Temporarily break isolation to import system PySide6."""
-    system_site = site.getsitepackages()
-    print(system_site)
-    old_path = sys.path.copy()
-    sys.path.extend(system_site)
-    import PySide6  # noqa
-
-    sys.path = old_path
-
-
-import_pyside6()
+# noqa for setting up QApplication before importing
 
 from PySide6.QtWidgets import QApplication
 
