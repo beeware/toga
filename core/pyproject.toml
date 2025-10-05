@@ -70,7 +70,7 @@ dev = [
     "pytest-freezer == 0.4.9",
     "pytest-xdist == 3.8.0",
     "setuptools-scm == 9.2.0",
-    "tox == 4.30.2",
+    "tox == 4.30.3",
 ]
 # Docs are always built on a specific Python version; see RTD and tox config files,
 # and the docs contribution guide.
