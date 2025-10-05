@@ -1,11 +1,14 @@
 import os
 
 
-class AnyWithin:
+class AnyWithin:  # pragma: no cover
     """
     An alternative to pytest.approx to use in tests that supports
     comparisons; used to work around the fact that Qt window
     size does not round-trip exactly.
+
+    no-cover for test utility.  We never know when some of these
+    functions gets actually used.
     """
 
     def __init__(self, low, high):

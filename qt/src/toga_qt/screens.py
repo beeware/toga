@@ -43,12 +43,12 @@ class Screen:
         return Size(geometry.width(), geometry.height())
 
     def get_image_data(self):
-        if not get_is_wayland():
+        if not get_is_wayland():  # pragma: no-cover-if-linux-wayland
             grabbed = self.native.grabWindow(0)
             byte_array = QByteArray()
             buffer = QBuffer(byte_array)
             buffer.open(QIODevice.WriteOnly)
             grabbed.save(buffer, "PNG")
             return byte_array.data()
-        else:
+        else:  # pragma: no-cover-if-linux-x
             self.interface.factory.not_implemented("Screen.get_image_data() on Wayland")

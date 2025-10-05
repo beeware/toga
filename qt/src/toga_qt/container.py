@@ -25,7 +25,7 @@ class Container:
 
     @content.setter
     def content(self, widget):
-        if self._content:
+        if self.content:
             self._content.container = None
             self._content.native.setParent(None)
 
@@ -36,5 +36,4 @@ class Container:
             widget.native.setParent(self.native)
 
     def refreshed(self):
-        if self.on_refresh is not None:
-            self.on_refresh(self)
+        self.on_refresh(self)
