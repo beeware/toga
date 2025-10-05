@@ -288,7 +288,7 @@ jobs:
             echo "Start window manager..."
             DISPLAY=:99 blackbox &
             sleep 1
-          briefcase-run-prefix: 'DISPLAY=:99 TOGA_BACKEND=toga_gtk'
+          briefcase-run-prefix: 'DISPLAY=:99'
           setup-python: false  # Use the system Python packages
           app-user-data-path: "$HOME/.local/share/testbed"
 
