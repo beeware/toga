@@ -196,10 +196,12 @@ class Slider(Widget):
         :raises ValueError: If set to a count which is not at least 2 (for the min and
             max).
 
-        .. note::
+        /// note | Note
 
-            On iOS, tick marks are not currently displayed, but discrete mode will
-            otherwise work correctly.
+        On iOS, tick marks are not currently displayed, but discrete mode will
+        otherwise work correctly.
+
+        ///
         """
         return self._impl.get_tick_count()
 

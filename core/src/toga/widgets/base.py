@@ -133,9 +133,11 @@ class Widget(Node, PackMixin):
     def tab_index(self) -> int | None:
         """The position of the widget in the focus chain for the window.
 
-        .. note::
+        /// note | Note
 
-            This is a beta feature. The ``tab_index`` API may change in the future.
+        This is a beta feature. The ``tab_index`` API may change in the future.
+
+        ///
         """
         return self._impl.get_tab_index()
 
