@@ -28,4 +28,9 @@ The order of addition is not significant. `Key.SHIFT + Key.A` and `Key.A + Key.S
 
 ## Reference
 
-::: toga.Key     options:         show_if_no_docstring: true         members_order: source         separate_signature: false         show_labels: false
+::: toga.Key
+    options:
+        show_if_no_docstring: true
+        members_order: source
+        separate_signature: false
+        show_labels: false

@@ -11,28 +11,36 @@ $ git remote add upstream https://github.com/beeware/toga.git
 The procedure for cutting a new release is as follows:
 
 1. Check the contents of the upstream repository's main branch:
+
    ```console
    $ git fetch upstream
    $ git checkout --detach upstream/main
    ```
+
    Check that the HEAD of release now matches upstream/main.
 
 2. Ensure that the release notes are up to date. Run:
+
    ```console
     $ tox -e towncrier -- --draft
    ```
+
    to review the release notes that will be included, and then:
+
    ```console
     $ tox -e towncrier
    ```
+
    to generate the updated release notes.
 
 3. Build the documentation to ensure that the new release notes don't include any spelling errors or markup problems:
+
    ```console
     $ tox -e docs-lint,docs
    ```
 
 4. Tag the release, and push the branch and tag upstream:
+
    ```console
     $ git tag v1.2.3
    $ git push upstream HEAD:main
@@ -44,6 +52,7 @@ The procedure for cutting a new release is as follows:
    b. Something else fails in the build process. If the problem can be fixed without a code change to the Toga repository (e.g., a transient problem with build machines not being available), you can re-run the action that failed through the GitHub Actions GUI. If the fix requires a code change, delete the old tag, make the code change, and re-tag the release.
 
 6. Create a clean virtual environment, install the new release from Test PyPI, and perform any pre-release testing that may be appropriate:
+
    ```console
    $ python3 -m venv testvenv
    $ . ./testvenv/bin/activate (testvenv)

@@ -97,4 +97,7 @@ view = toga.ImageView(my_image)
 
 ## Reference
 
-::: toga.ImageView     options:         show_signature: false         separate_signature: false
+::: toga.ImageView
+    options:
+        show_signature: false
+        separate_signature: false

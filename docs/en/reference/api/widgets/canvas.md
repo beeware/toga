@@ -140,26 +140,27 @@ For detailed tutorials on the use of Canvas drawing instructions, see the MDN do
 
 ## Reference
 
-::: toga.Canvas     options:         members:
-
-- ClosedPath
-- Context
-- Fill
-- Stroke
-- as_image
-- context
-- enabled
-- focus
-- measure_text
-- on_activate
-- on_alt_drag
-- on_alt_press
-- on_alt_release
-- on_drag
-- on_press
-- on_release
-- on_resize
-- redraw
+::: toga.Canvas
+    options:
+        members:
+            - ClosedPath
+            - Context
+            - Fill
+            - Stroke
+            - as_image
+            - context
+            - enabled
+            - focus
+            - measure_text
+            - on_activate
+            - on_alt_drag
+            - on_alt_press
+            - on_alt_release
+            - on_drag
+            - on_press
+            - on_release
+            - on_resize
+            - redraw
 
 ::: toga.widgets.canvas.Context
 

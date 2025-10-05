@@ -114,9 +114,6 @@ class Font(BaseFont):
         :param style: The [font style][pack-font-style].
         :param variant: The [font variant][pack-font-variant].
             relative to the module that defines your :any:`App` class.
-        :param weight: The :ref:`font weight <pack-font-weight>`.
-        :param style: The :ref:`font style <pack-font-style>`.
-        :param variant: The :ref:`font variant <pack-font-variant>`.
 
         :raises ValueError: When the registered family has the same name as the standard
             font families ``"cursive"``, ``"fantasy"``, ``"message"``, ``"monospace"``,
