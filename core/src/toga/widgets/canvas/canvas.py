@@ -75,14 +75,15 @@ class Canvas(Widget):
         :param id: The ID for the widget.
         :param style: A style object. If no style is provided, a default style will be
             applied to the widget.
-        :param on_resize: Initial :any:`on_resize` handler.
-        :param on_press: Initial :any:`on_press` handler.
-        :param on_activate: Initial :any:`on_activate` handler.
-        :param on_release: Initial :any:`on_release` handler.
-        :param on_drag: Initial :any:`on_drag` handler.
-        :param on_alt_press: Initial :any:`on_alt_press` handler.
-        :param on_alt_release: Initial :any:`on_alt_release` handler.
-        :param on_alt_drag: Initial :any:`on_alt_drag` handler.
+        :param on_resize: Initial [`on_resize`][toga.Canvas.on_resize] handler.
+        :param on_press: Initial [`on_press`][toga.Canvas.on_press] handler.
+        :param on_activate: Initial [`on_activate`][toga.Canvas.on_activate] handler.
+        :param on_release: Initial [`on_release`][toga.Canvas.on_release] handler.
+        :param on_drag: Initial [`on_drag`][toga.Canvas.on_drag] handler.
+        :param on_alt_press: Initial [`on_alt_press`][toga.Canvas.on_alt_press] handler.
+        :param on_alt_release: Initial [`on_alt_release`][toga.Canvas.on_alt_release]
+            handler.
+        :param on_alt_drag: Initial [`on_alt_drag`][toga.Canvas.on_alt_drag] handler.
         :param kwargs: Initial style properties.
         """
         self._context = Context(canvas=self)
@@ -128,7 +129,7 @@ class Canvas(Widget):
 
         The Canvas will be automatically redrawn after adding or removing a drawing
         object, or when the Canvas resizes. However, when you modify the properties of a
-        drawing object, you must call ``redraw`` manually.
+        drawing object, you must call `redraw` manually.
         """
         self._impl.redraw()
 
@@ -170,7 +171,7 @@ class Canvas(Widget):
         the current fill rule.
 
         If both an x and y coordinate is provided, the drawing context will begin with
-        a ``move_to`` operation in that context.
+        a `move_to` operation in that context.
 
         :param x: The x coordinate of the path's starting point.
         :param y: The y coordinate of the path's starting point.
@@ -195,7 +196,7 @@ class Canvas(Widget):
         root context of this canvas.
 
         If both an x and y coordinate is provided, the drawing context will begin with
-        a ``move_to`` operation in that context.
+        a `move_to` operation in that context.
 
         :param x: The x coordinate of the path's starting point.
         :param y: The y coordinate of the path's starting point.
@@ -311,7 +312,7 @@ class Canvas(Widget):
         :param font: The font in which to draw the text. The default is the system font.
         :param line_height: Height of the line box as a multiple of the font size
             when multiple lines are present.
-        :returns: A tuple of ``(width, height)``.
+        :returns: A tuple of `(width, height)`.
         """
         if font is None:
             font = Font(family=SYSTEM, size=SYSTEM_DEFAULT_FONT_SIZE)

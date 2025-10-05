@@ -52,6 +52,8 @@ The TreeSource manages a tree of [`Node`][toga.sources.Node] objects. Each Node 
 
 Each Node object in the TreeSource can have children; those children can in turn have their own children. A child that *cannot* have children is called a *leaf Node*. Whether a child *can* have children is independent of whether it *does* have children - it is possible for a Node to have no children and *not* be a leaf node. This is analogous to files and directories on a file system: a file is a leaf Node, as it cannot have children; a directory *can* contain files and other directories in it, but it can also be empty. An empty directory would *not* be a leaf Node.
 
+[](){ #treesource-item }
+
 When creating a single Node for a TreeSource (e.g., when inserting a new item), the data for the Node can be specified as:
 
 - A dictionary, with the accessors mapping to the keys in the dictionary

@@ -16,8 +16,8 @@ def _find_item(
     start: T | None,
     error: str,
 ) -> T:
-    """Find-by-value implementation helper; find an item matching ``data`` in
-    ``candidates``, starting with item ``start``."""
+    """Find-by-value implementation helper; find an item matching `data` in
+    `candidates`, starting with item `start`."""
     if start is not None:
         start_index = candidates.index(start) + 1
     else:
@@ -53,7 +53,7 @@ class Row(Generic[T]):
         attributes on the new Row object.
 
         When any public attributes of the Row are modified (i.e., any attribute whose
-        name doesn't start with ``_``), the source to which the row belongs will be
+        name doesn't start with `_`), the source to which the row belongs will be
         notified.
         """
         self._source: Source | None = None
@@ -106,7 +106,7 @@ class ListSource(Source):
         :param accessors: A list of attribute names for accessing the value
             in each column of the row.
         :param data: The initial list of items in the source. Items are converted as
-            shown :ref:`above <listsource-item>`.
+            shown [above][listsource-item].
         """
         super().__init__()
         if isinstance(accessors, str) or not hasattr(accessors, "__iter__"):
@@ -132,11 +132,11 @@ class ListSource(Source):
         return len(self._data)
 
     def __getitem__(self, index: int | slice) -> Row:
-        """Returns the item at position ``index`` of the list."""
+        """Returns the item at position `index` of the list."""
         return self._data[index]
 
     def __delitem__(self, index: int) -> None:
-        """Deletes the item at position ``index`` of the list."""
+        """Deletes the item at position `index` of the list."""
         row = self._data[index]
         del self._data[index]
         self.notify("remove", index=index, item=row)
@@ -211,7 +211,7 @@ class ListSource(Source):
         This search uses Row instances, and searches for an *instance* match.
         If two Row instances have the same values, only the Row that is the
         same Python instance will match. To search for values based on equality,
-        use :meth:`~toga.sources.ListSource.find`.
+        use [`ListSource.find()`][toga.sources.ListSource.find].
 
         :param row: The row to find in the data source.
         :returns: The index of the row in the data source.
@@ -228,18 +228,18 @@ class ListSource(Source):
         This is a value based search, rather than an instance search. If two Row
         instances have the same values, the first instance that matches will be
         returned. To search for a second instance, provide the first found instance
-        as the ``start`` argument. To search for a specific Row instance, use the
-        :meth:`~toga.sources.ListSource.index`.
+        as the `start` argument. To search for a specific Row instance, use the
+        [`ListSource.index()`][toga.sources.ListSource.index].
 
         :param data: The data to search for. Only the values specified in data will be
             used as matching criteria; if the row contains additional data attributes,
             they won't be considered as part of the match.
-        :param start: The instance from which to start the search. Defaults to ``None``,
+        :param start: The instance from which to start the search. Defaults to `None`,
             indicating that the first match should be returned.
         :param default: If provided, this value will be returned if no match is found.
-        :return: The matching Row object if found, or the value of ``default`` if
+        :return: The matching Row object if found, or the value of `default` if
             provided.
-        :raises ValueError: If no match is found and ``default`` is not provided.
+        :raises ValueError: If no match is found and `default` is not provided.
         """
         try:
             return _find_item(

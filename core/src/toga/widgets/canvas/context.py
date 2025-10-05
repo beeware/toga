@@ -119,7 +119,7 @@ class Context(DrawingObject):
     def begin_path(self) -> BeginPath:
         """Start a new path in the canvas context.
 
-        :returns: The ``BeginPath``
+        :returns: The `BeginPath`
             [`DrawingObject`][toga.widgets.canvas.DrawingObject] for the operation.
         """
         begin_path = BeginPath()
@@ -134,7 +134,7 @@ class Context(DrawingObject):
         to complete a complete closed path, use the
         [`ClosedPath()`][toga.widgets.canvas.Context.ClosedPath] context manager.
 
-        :returns: The ``ClosePath``
+        :returns: The `ClosePath`
             [`DrawingObject`][toga.widgets.canvas.DrawingObject] for the operation.
         """
         close_path = ClosePath()
@@ -146,7 +146,7 @@ class Context(DrawingObject):
 
         :param x: The x coordinate of the new current point.
         :param y: The y coordinate of the new current point.
-        :returns: The ``MoveTo`` [`DrawingObject`][toga.widgets.canvas.DrawingObject]
+        :returns: The `MoveTo` [`DrawingObject`][toga.widgets.canvas.DrawingObject]
             for the operation.
         """
         move_to = MoveTo(x, y)
@@ -158,7 +158,7 @@ class Context(DrawingObject):
 
         :param x: The x coordinate for the end point of the line segment.
         :param y: The y coordinate for the end point of the line segment.
-        :returns: The ``LineTo`` [`DrawingObject`][toga.widgets.canvas.DrawingObject]
+        :returns: The `LineTo` [`DrawingObject`][toga.widgets.canvas.DrawingObject]
             for the operation.
         """
         line_to = LineTo(x, y)
@@ -187,7 +187,7 @@ class Context(DrawingObject):
         :param cp2y: The y coordinate for the second control point of the Bézier curve.
         :param x: The x coordinate for the end point.
         :param y: The y coordinate for the end point.
-        :returns: The ``BezierCurveTo``
+        :returns: The `BezierCurveTo`
             [`DrawingObject`][toga.widgets.canvas.DrawingObject] for the operation.
         """
         bezier_curve_to = BezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y)
@@ -205,7 +205,7 @@ class Context(DrawingObject):
 
         A quadratic curve requires two points. The first point is a control point; the
         second is the end point. The starting point of the curve is the last point in
-        the current path, which can be changed using ``moveTo()`` before creating the
+        the current path, which can be changed using `moveTo()` before creating the
         quadratic curve.
 
         :param cpx: The x axis of the coordinate for the control point of the quadratic
@@ -214,7 +214,7 @@ class Context(DrawingObject):
             curve.
         :param x: The x axis of the coordinate for the end point.
         :param y: The y axis of the coordinate for the end point.
-        :returns: The ``QuadraticCurveTo``
+        :returns: The `QuadraticCurveTo`
             [`DrawingObject`][toga.widgets.canvas.DrawingObject] for the operation.
         """
         quadratic_curve_to = QuadraticCurveTo(cpx, cpy, x, y)
@@ -244,8 +244,8 @@ class Context(DrawingObject):
             X axis.
         :param counterclockwise: If true, the arc is swept counterclockwise. The default
             is clockwise.
-        :param anticlockwise: **DEPRECATED** - Use ``counterclockwise``.
-        :returns: The ``Arc`` [`DrawingObject`][toga.widgets.canvas.DrawingObject]
+        :param anticlockwise: **DEPRECATED** - Use `counterclockwise`.
+        :returns: The `Arc` [`DrawingObject`][toga.widgets.canvas.DrawingObject]
             for the operation.
         """
         arc = Arc(x, y, radius, startangle, endangle, counterclockwise, anticlockwise)
@@ -281,8 +281,8 @@ class Context(DrawingObject):
             X axis.
         :param counterclockwise: If true, the arc is swept counterclockwise. The default
             is clockwise.
-        :param anticlockwise: **DEPRECATED** - Use ``counterclockwise``.
-        :returns: The ``Ellipse`` [`DrawingObject`][toga.widgets.canvas.DrawingObject]
+        :param anticlockwise: **DEPRECATED** - Use `counterclockwise`.
+        :returns: The `Ellipse` [`DrawingObject`][toga.widgets.canvas.DrawingObject]
             for the operation.
         """
         ellipse = Ellipse(
@@ -306,7 +306,7 @@ class Context(DrawingObject):
         :param y: The vertical coordinate of the top of the rectangle.
         :param width: The width of the rectangle.
         :param height: The height of the rectangle.
-        :returns: The ``Rect`` [`DrawingObject`][toga.widgets.canvas.DrawingObject]
+        :returns: The `Rect` [`DrawingObject`][toga.widgets.canvas.DrawingObject]
             for the operation.
         """
         rect = Rect(x, y, width, height)
@@ -328,7 +328,7 @@ class Context(DrawingObject):
         :param fill_rule: `nonzero` is the non-zero winding rule; `evenodd` is the
             even-odd winding rule.
         :param color: The fill color.
-        :returns: The ``Fill`` [`DrawingObject`][toga.widgets.canvas.DrawingObject]
+        :returns: The `Fill` [`DrawingObject`][toga.widgets.canvas.DrawingObject]
             for the operation.
         """
         fill = Fill(color, fill_rule)
@@ -347,7 +347,7 @@ class Context(DrawingObject):
         :param line_width: The width of the stroke.
         :param line_dash: The dash pattern to follow when drawing the line, expressed as
             alternating lengths of dashes and spaces. The default is a solid line.
-        :returns: The ``Stroke`` [`DrawingObject`][toga.widgets.canvas.DrawingObject]
+        :returns: The `Stroke` [`DrawingObject`][toga.widgets.canvas.DrawingObject]
             for the operation.
         """
         stroke = Stroke(color, line_width, line_dash)
@@ -375,12 +375,12 @@ class Context(DrawingObject):
         :param text: The text to draw. Newlines will cause line breaks, but long lines
             will not be wrapped.
         :param x: The X coordinate of the text's left edge.
-        :param y: The Y coordinate: its meaning depends on ``baseline``.
+        :param y: The Y coordinate: its meaning depends on `baseline`.
         :param font: The font in which to draw the text. The default is the system font.
         :param baseline: Alignment of text relative to the Y coordinate.
         :param line_height: Height of the line box as a multiple of the font size
             when multiple lines are present.
-        :returns: The ``WriteText`` [`DrawingObject`][toga.widgets.canvas.DrawingObject]
+        :returns: The `WriteText` [`DrawingObject`][toga.widgets.canvas.DrawingObject]
             for the operation.
         """
         write_text = WriteText(text, x, y, font, baseline, line_height)
@@ -394,7 +394,7 @@ class Context(DrawingObject):
         """Add a rotation to the canvas context.
 
         :param radians: The angle to rotate clockwise in radians.
-        :returns: The ``Rotate`` [`DrawingObject`][toga.widgets.canvas.DrawingObject]
+        :returns: The `Rotate` [`DrawingObject`][toga.widgets.canvas.DrawingObject]
             for the transformation.
         """
         rotate = Rotate(radians)
@@ -408,7 +408,7 @@ class Context(DrawingObject):
             image horizontally.
         :param sy: Scale factor for the Y dimension. A negative value flips the
             image vertically.
-        :returns: The ``Scale`` [`DrawingObject`][toga.widgets.canvas.DrawingObject]
+        :returns: The `Scale` [`DrawingObject`][toga.widgets.canvas.DrawingObject]
             for the transformation.
         """
         scale = Scale(sx, sy)
@@ -420,7 +420,7 @@ class Context(DrawingObject):
 
         :param tx: Translation for the X dimension.
         :param ty: Translation for the Y dimension.
-        :returns: The ``Translate`` [`DrawingObject`][toga.widgets.canvas.DrawingObject]
+        :returns: The `Translate` [`DrawingObject`][toga.widgets.canvas.DrawingObject]
             for the transformation.
         """
         translate = Translate(tx, ty)
@@ -430,7 +430,7 @@ class Context(DrawingObject):
     def reset_transform(self) -> ResetTransform:
         """Reset all transformations in the canvas context.
 
-        :returns: A ``ResetTransform``
+        :returns: A `ResetTransform`
             [`DrawingObject`][toga.widgets.canvas.DrawingObject].
         """
         reset_transform = ResetTransform()
@@ -496,7 +496,7 @@ class Context(DrawingObject):
         [`fill`][toga.widgets.canvas.Context.fill].
 
         If both an x and y coordinate is provided, the drawing context will begin with
-        a ``move_to`` operation in that context.
+        a `move_to` operation in that context.
 
         :param x: The x coordinate of the path's starting point.
         :param y: The y coordinate of the path's starting point.
@@ -537,7 +537,7 @@ class Context(DrawingObject):
         [`stroke`][toga.widgets.canvas.Context.stroke].
 
         If both an x and y coordinate is provided, the drawing context will begin with
-        a ``move_to`` operation in that context.
+        a `move_to` operation in that context.
 
         :param x: The x coordinate of the path's starting point.
         :param y: The y coordinate of the path's starting point.
@@ -571,7 +571,7 @@ class ClosedPathContext(Context):
     [`close_path`][toga.widgets.canvas.Context.close_path].
 
     If both an x and y coordinate is provided, the drawing context will begin with
-    a ``move_to`` operation in that context.
+    a `move_to` operation in that context.
 
     You should not create a [`ClosedPathContext`][toga.widgets.canvas.ClosedPathContext]
     context directly; instead, you should use the
@@ -623,7 +623,7 @@ class FillContext(ClosedPathContext):
     [`fill`][toga.widgets.canvas.Context.fill].
 
     If both an x and y coordinate is provided, the drawing context will begin with
-    a ``move_to`` operation in that context.
+    a `move_to` operation in that context.
 
     You should not create a [`FillContext`][toga.widgets.canvas.FillContext] context
     directly; instead, you should use the [`Fill()`][toga.widgets.canvas.Context.Fill]
@@ -694,7 +694,7 @@ class StrokeContext(ClosedPathContext):
     [`stroke`][toga.widgets.canvas.Context.stroke].
 
     If both an x and y coordinate is provided, the drawing context will begin with
-    a ``move_to`` operation in that context.
+    a `move_to` operation in that context.
 
     You should not create a [`StrokeContext`][toga.widgets.canvas.StrokeContext] context
     directly; instead, you should use the

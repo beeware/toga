@@ -71,17 +71,20 @@ class DetailedList(Widget):
         :param id: The ID for the widget.
         :param style: A style object. If no style is provided, a default style will be
             applied to the widget.
-        :param data: Initial :any:`data` to be displayed in the list.
+        :param data: Initial [`data`][toga.DetailedList.data] to be displayed in the
+            list.
         :param accessors: The accessors to use to retrieve the data for each item, in
             the form (title, subtitle, icon).
         :param missing_value: The text that will be shown when a row doesn't provide a
             value for its title or subtitle.
-        :param on_select: Initial :any:`on_select` handler.
+        :param on_select: Initial [`on_select`][toga.DetailedList.on_select] handler.
         :param primary_action: The name for the primary action.
-        :param on_primary_action: Initial :any:`on_primary_action` handler.
+        :param on_primary_action: Initial
+            [`on_primary_action`][toga.DetailedList.on_primary_action] handler.
         :param secondary_action: The name for the secondary action.
-        :param on_secondary_action: Initial :any:`on_secondary_action` handler.
-        :param on_refresh: Initial :any:`on_refresh` handler.
+        :param on_secondary_action: Initial
+            [`on_secondary_action`][toga.DetailedList.on_secondary_action] handler.
+        :param on_refresh: Initial [`on_refresh`][toga.DetailedList.on_refresh] handler.
         :param kwargs: Initial style properties.
         """
         # Prime the attributes and handlers that need to exist when the widget is
@@ -127,13 +130,14 @@ class DetailedList(Widget):
 
         When setting this property:
 
-        * A :any:`Source` will be used as-is. It must either be a :any:`ListSource`, or
+        * A [`Source`][toga.sources.Source] will be used as-is. It must either be a
+        [`ListSource`][toga.sources.ListSource], or
           a custom class that provides the same methods.
 
         * A value of None is turned into an empty ListSource.
 
         * Otherwise, the value must be an iterable, which is copied into a new
-          ListSource. Items are converted as shown :ref:`here <listsource-item>`.
+          ListSource. Items are converted as shown [here][listsource-item].
         """
         return self._data
 
@@ -185,7 +189,7 @@ class DetailedList(Widget):
     def selection(self) -> Row | None:
         """The current selection of the table.
 
-        Returns the selected Row object, or :any:`None` if no row is currently selected.
+        Returns the selected Row object, or [`None`][] if no row is currently selected.
         """
         try:
             return self.data[self._impl.get_selection()]
@@ -200,7 +204,7 @@ class DetailedList(Widget):
         The primary action is "swipe left" on platforms that use swipe interactions;
         other platforms may manifest this action in other ways (e.g, a context menu).
 
-        If no ``on_primary_action`` handler is provided, the primary action will be
+        If no `on_primary_action` handler is provided, the primary action will be
         disabled in the UI.
         """
         return self._on_primary_action
@@ -218,7 +222,7 @@ class DetailedList(Widget):
         The secondary action is "swipe right" on platforms that use swipe interactions;
         other platforms may manifest this action in other ways (e.g, a context menu).
 
-        If no ``on_secondary_action`` handler is provided, the secondary action will be
+        If no `on_secondary_action` handler is provided, the secondary action will be
         disabled in the UI.
         """
         return self._on_secondary_action
@@ -233,7 +237,7 @@ class DetailedList(Widget):
         """The callback function to invoke when the user performs a refresh action
         (usually "pull down") on the DetailedList.
 
-        If no ``on_refresh`` handler is provided, the refresh UI action will be
+        If no `on_refresh` handler is provided, the refresh UI action will be
         disabled.
         """
         return self._on_refresh

@@ -38,13 +38,14 @@ class Selection(Widget):
         :param id: The ID for the widget.
         :param style: A style object. If no style is provided, a default style will be
             applied to the widget.
-        :param items: Initial :any:`items` to display for selection.
+        :param items: Initial [`items`][toga.Selection.items] to display for selection.
         :param accessor: The accessor to use to extract display values from the list of
-            items. See :any:`items` and :any:`value` for details on how
-            ``accessor`` alters the interpretation of data in the Selection.
+            items. See [`items`][toga.Selection.items] and
+            [`value`][toga.Selection.value] for details on how
+            `accessor` alters the interpretation of data in the Selection.
         :param value: Initial value for the selection. If unspecified, the first item in
-            ``items`` will be selected.
-        :param on_change: Initial :any:`on_change` handler.
+            `items` will be selected.
+        :param on_change: Initial [`on_change`][toga.Selection.on_change] handler.
         :param enabled: Whether the user can interact with the widget.
         :param kwargs: Initial style properties.
         """
@@ -72,14 +73,15 @@ class Selection(Widget):
 
         When setting this property:
 
-        * A :any:`Source` will be used as-is. It must either be a :any:`ListSource`, or
+        * A [`Source`][toga.sources.Source] will be used as-is. It must either be a
+        [`ListSource`][toga.sources.ListSource], or
           a custom class that provides the same methods.
 
         * A value of None is turned into an empty ListSource.
 
         * Otherwise, the value must be an iterable, which is copied into a new
           ListSource using the widget's accessor, or "value" if no accessor was
-          specified. Items are converted as shown :ref:`here <listsource-item>`.
+          specified. Items are converted as shown [here][listsource-item].
         """
         return self._items
 
@@ -131,14 +133,14 @@ class Selection(Widget):
 
         Returns None if there are no items in the selection.
 
-        If an ``accessor`` was specified when the Selection was constructed, the value
+        If an `accessor` was specified when the Selection was constructed, the value
         returned will be Row objects from the ListSource; to change the selection, a Row
         object from the ListSource must be provided.
 
-        If no ``accessor`` was specified when the Selection was constructed, the value
-        returned will be the value stored as the ``value`` attribute on the Row object.
+        If no `accessor` was specified when the Selection was constructed, the value
+        returned will be the value stored as the `value` attribute on the Row object.
         When setting the value, the widget will search for the first Row object whose
-        ``value`` attribute matches the provided value. In practice, this means that you
+        `value` attribute matches the provided value. In practice, this means that you
         can treat the selection as containing a list of literal values, rather than a
         ListSource containing Row objects.
         """

@@ -180,7 +180,7 @@ class _alignment_property(validated_property):
 
 @dataclass(kw_only=True, repr=False)
 class Pack(BaseStyle):
-    _doc_link = ":doc:`style properties </reference/style/pack>`"
+    _doc_link = "[style properties](/reference/style/pack)"
 
     class Box(BaseBox):
         pass

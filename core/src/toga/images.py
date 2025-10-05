@@ -116,8 +116,8 @@ class Image:
 
         :param src: The source from which to load the image. Can be any valid
             [`ImageContentT`][toga.images.ImageContentT] type.
-        :param path: **DEPRECATED** - Use ``src``.
-        :param data: **DEPRECATED** - Use ``src``.
+        :param path: **DEPRECATED** - Use `src`.
+        :param data: **DEPRECATED** - Use `src`.
         :raises FileNotFoundError: If a path is provided, but that path does not exist.
         :raises ValueError: If the source cannot be loaded as an image.
         """
@@ -222,7 +222,7 @@ class Image:
         """Save image to given path.
 
         The file format of the saved image will be determined by the extension of
-        the filename provided (e.g ``path/to/mypicture.png`` will save a PNG file).
+        the filename provided (e.g `path/to/mypicture.png` will save a PNG file).
 
         :param path: Path to save the image to.
         """

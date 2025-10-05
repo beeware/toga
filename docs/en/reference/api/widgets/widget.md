@@ -10,8 +10,5 @@ Availability ([Key][api-status-key])  <!-- rumdl-disable-line MD013 -->
 ## Reference
 
 ::: toga.Widget
-<!--
     options:
-        members:
-            TODO: Do I need to add inherited members list including "object, PackMixin"?
--->
+        show_if_no_docstring: true

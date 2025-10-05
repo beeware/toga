@@ -15,7 +15,7 @@ def to_accessor(heading: str) -> str:
     1. Converting the heading to lower case;
     2. Removing any character that can't be used in a Python identifier
     3. Replacing all whitespace with "_"
-    4. Prepending ``_`` if the first character is a digit.
+    4. Prepending `_` if the first character is a digit.
 
     Examples:
 
@@ -56,7 +56,7 @@ def build_accessors(
     :param accessors: The list of accessor overrides. Can be specified as:
 
         * A list the same length as headings. Each entry in the list is a string that
-          is the override name for the accessor, or :any:`None` if the default accessor
+          is the override name for the accessor, or [`None`][] if the default accessor
           for the heading at that index should be used.
         * A dictionary mapping heading names to accessor names. If a heading name isn't
           present in the dictionary, the default accessor will be used.

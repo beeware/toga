@@ -135,7 +135,7 @@ class Widget(Node, PackMixin):
 
         /// note | Note
 
-        This is a beta feature. The ``tab_index`` API may change in the future.
+        This is a beta feature. The `tab_index` API may change in the future.
 
         ///
         """
@@ -309,8 +309,8 @@ class Widget(Node, PackMixin):
         When setting the window for a widget, all children of this widget will be
         recursively assigned to the same window.
 
-        If the widget has a value for :any:`window`, it *must* also have a value for
-        :any:`app`.
+        If the widget has a value for [`window`][toga.Widget.window], it *must* also
+        have a value for [`app`][toga.Widget.app].
         """
         return self._window
 

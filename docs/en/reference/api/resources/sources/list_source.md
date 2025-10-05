@@ -34,6 +34,8 @@ source.remove(item)
 source.insert(0, {"name": "Bettong", "weight": 1.2})
 ```
 
+[](){ #listsource-item }
+
 The ListSource manages a list of [`Row`][toga.sources.Row] objects. Each Row has all the attributes described by the source's `accessors`. A Row object will be constructed for each item that is added to the ListSource, and each item can be:
 
 - A dictionary, with the accessors mapping to the keys in the dictionary.
