@@ -11,20 +11,13 @@ class Container:
 
         self.content = content  # Set initial content
 
-    def __del__(self):
-        self.native = None
-
     @property
     def width(self):
         return self.layout_native.width()
 
     @property
     def height(self):
-        return self.layout_native.height() - self.top_offset
-
-    @property
-    def top_offset(self):
-        return 0  ## Stub (?)
+        return self.layout_native.height()
 
     @property
     def content(self):

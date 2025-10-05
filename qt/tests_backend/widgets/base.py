@@ -88,7 +88,9 @@ class SimpleProbe(BaseProbe, FontMixin):
         return self.native.height()
 
     async def undo(self):
-        pytest.skip("Undo not supported by default on widgets")
+        # Few literate computer users do this; however,
+        # this is the most complex case that shall be tested.
+        self._activate_menu_item(["Edit", "Undo"])
 
     async def redo(self):
-        pytest.skip("Redo not supported by default on widgets")
+        self._activate_menu_item(["Edit", "Redo"])

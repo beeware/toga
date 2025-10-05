@@ -15,6 +15,7 @@ class AppProbe(BaseProbe):
     supports_key_mod3 = True
     supports_current_window_assignment = True
     supports_dark_mode = True
+    edit_menu_noop_enabled = True
 
     def __init__(self, app):
         super().__init__()
@@ -53,25 +54,6 @@ class AppProbe(BaseProbe):
 
     def assert_app_icon(self, icon):
         raise pytest.skip("Not implemented in probe yet")
-
-    def _menu_item(self, path):
-        menu_bar = self.main_window._impl.native.menuBar()
-        current_menu = menu_bar
-        for label in path:
-            for action in current_menu.actions():
-                if action.text() == label:
-                    if action.menu():
-                        current_menu = action.menu()
-                    else:
-                        return action
-                    break
-            else:
-                raise AssertionError(f"Menu path {path} not found")
-        return current_menu
-
-    def _activate_menu_item(self, path):
-        item = self._menu_item(path)
-        item.trigger()
 
     def activate_menu_hide(self):
         pytest.xfail("KDE apps do not include a Hide in the menu bar")
@@ -141,3 +123,6 @@ class AppProbe(BaseProbe):
 
     def activate_status_menu_item(self, item_id, title):
         pytest.skip("Status Icons not yet implemented on Qt")
+
+    def perform_edit_action(self, action):
+        self._activate_menu_item(["Edit", action])

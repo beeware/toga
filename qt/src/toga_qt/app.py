@@ -1,6 +1,6 @@
 import asyncio
 
-from PySide6.QtCore import QObject, QSize, Qt, QTimer, Signal
+from PySide6.QtCore import QSize, Qt, QTimer
 from PySide6.QtGui import QCursor, QGuiApplication
 from PySide6.QtWidgets import QApplication, QMessageBox
 from qasync import QEventLoop
@@ -26,7 +26,7 @@ class EditOperation:
         self.method_name = method_name
         self.needwrite = needwrite
 
-    def __call__(self, interface):
+    def __call__(self):
         fw = QApplication.focusWidget()
         if not fw:
             return
@@ -78,23 +78,6 @@ def _create_about_dialog(app):
     return dialog
 
 
-class AppSignalsListener(QObject):
-    appStarting = Signal()
-
-    def __init__(self, impl):
-        super().__init__()
-        self.impl = impl
-        self.interface = impl.interface
-        self.appStarting.connect(self.on_app_starting)
-        QTimer.singleShot(0, self.appStarting.emit)
-
-    def on_app_starting(self):
-        self.interface._startup()
-
-
-appsingle = QApplication()
-
-
 class App:
     # GTK apps exit when the last window is closed
     CLOSE_ON_LAST_WINDOW = True
@@ -105,14 +88,15 @@ class App:
         self.interface = interface
         self.interface._impl = self
 
-        self.native = appsingle
+        self.native = QApplication.instance()
         self.loop = QEventLoop(self.native)
         asyncio.set_event_loop(self.loop)
         self.app_close_event = asyncio.Event()
         self.native.aboutToQuit.connect(self.app_close_event.set)
-
-        # no idea what to name this... or should i put this into the main class
-        self.signalslistener = AppSignalsListener(self)
+        # By this point our app is already up and running.  Everything is set up,
+        # so we run this manually without need to use native mechanisms.
+        # Also, somehow if we don't QTimer.singleShot we end up with dangling Tasks.
+        QTimer.singleShot(0, self.interface._startup)
 
         self.cursorhidden = False
 
@@ -207,7 +191,7 @@ class App:
             s for s in screens if s != primary
         ]  # Ensure first is primary
 
-        return [ScreenImpl(native=monitor) for monitor in QGuiApplication.screens()]
+        return [ScreenImpl(native=monitor) for monitor in screens]
 
     ######################################################################
     # App state

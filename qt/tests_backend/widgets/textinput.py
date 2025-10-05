@@ -43,3 +43,9 @@ class TextInputProbe(SimpleProbe):
 
     def set_cursor_at_end(self):
         self.native.setCursorPosition(len(self.native.text()))
+
+    def select_range(self, start, length):  # Start after the start-th character
+        self.native.setSelection(start, length)
+
+    def end_undo_block(self):
+        self.native.editingFinished.emit()

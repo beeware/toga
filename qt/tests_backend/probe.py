@@ -65,3 +65,26 @@ class BaseProbe(DialogsMixin):
         release = QKeyEvent(QEvent.KeyRelease, key, modifiers, char)
         QApplication.sendEvent(widget, press)
         QApplication.sendEvent(widget, release)
+
+    def _menu_item(self, path):
+        # Do not let the test fail if there is no focussed window,
+        # though we'd prefer that because users do it.
+        menu_bar = (
+            toga.App.app.current_window or toga.App.app.main_window
+        )._impl.native.menuBar()
+        current_menu = menu_bar
+        for label in path:
+            for action in current_menu.actions():
+                if action.text() == label:
+                    if action.menu():
+                        current_menu = action.menu()
+                    else:
+                        return action
+                    break
+            else:
+                raise AssertionError(f"Menu path {path} not found")
+        return current_menu
+
+    def _activate_menu_item(self, path):
+        item = self._menu_item(path)
+        item.trigger()

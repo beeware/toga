@@ -2,7 +2,7 @@ from functools import partial
 
 from PySide6.QtCore import QEvent, Qt, QTimer
 from PySide6.QtGui import QWindowStateChangeEvent
-from PySide6.QtWidgets import QApplication, QMainWindow, QMenu, QVBoxLayout, QWidget
+from PySide6.QtWidgets import QApplication, QMainWindow, QMenu
 
 from toga.command import Separator
 from toga.constants import WindowState
@@ -28,41 +28,6 @@ def _handle_statechange(impl, changeid):
             impl._pending_state_transition = None
 
 
-def process_change(native, event):
-    if event.type() == QEvent.WindowStateChange:
-        old = event.oldState()
-        new = native.windowState()
-        if not old & Qt.WindowMinimized and new & Qt.WindowMinimized:
-            native.interface.on_hide()
-        elif old & Qt.WindowMinimized and not new & Qt.WindowMinimized:
-            native.interface.on_show()
-        if get_is_wayland():
-            impl = native.impl
-            impl._changeventid += 1
-            # Handle this later as the states etc may not have been fully realized.
-            # Starting the next transition now will cause extra window events to be
-            # generated, and sometimes the window ends up in an incorrect state.
-            QTimer.singleShot(
-                100, partial(_handle_statechange, impl, impl._changeventid)
-            )
-    elif event.type() == QEvent.ActivationChange:
-        if native.isActiveWindow():
-            native.interface.on_gain_focus()
-        else:
-            native.interface.on_lose_focus()
-
-
-class TogaTLWidget(QWidget):
-    def __init__(self, impl, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.interface = impl.interface
-        self.impl = impl
-
-    def changeEvent(self, event):
-        process_change(self, event)
-        super().changeEvent(event)
-
-
 class TogaMainWindow(QMainWindow):
     def __init__(self, impl, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -70,17 +35,28 @@ class TogaMainWindow(QMainWindow):
         self.impl = impl
 
     def changeEvent(self, event):
-        process_change(self, event)
+        if event.type() == QEvent.WindowStateChange:
+            old = event.oldState()
+            new = self.windowState()
+            if not old & Qt.WindowMinimized and new & Qt.WindowMinimized:
+                self.interface.on_hide()
+            elif old & Qt.WindowMinimized and not new & Qt.WindowMinimized:
+                self.interface.on_show()
+            if get_is_wayland():  # pragma: no-cover-if-linux-x
+                self.impl._changeventid += 1
+                # Handle this later as the states etc may not have been fully realized.
+                # Starting the next transition now will cause extra window events to be
+                # generated, and sometimes the window ends up in an incorrect state.
+                QTimer.singleShot(
+                    100,
+                    partial(_handle_statechange, self.impl, self.impl._changeventid),
+                )
+        elif event.type() == QEvent.ActivationChange:
+            if self.isActiveWindow():
+                self.interface.on_gain_focus()
+            else:
+                self.interface.on_lose_focus()
         super().changeEvent(event)
-
-
-def wrap_container(widget, impl):
-    wrapper = TogaTLWidget(impl)
-    layout = QVBoxLayout(wrapper)
-    layout.setContentsMargins(0, 0, 0, 0)
-    layout.setSpacing(0)
-    layout.addWidget(widget)
-    return wrapper
 
 
 class Window:
@@ -125,7 +101,13 @@ class Window:
                 self.interface.on_close()
 
     def create(self):
-        self.native = wrap_container(self.container.native, self)
+        # QMainWindow is used in order to save duplication for
+        # subclassing;  QMainWindow does not *require* a menubar,
+        # and if there are no items, it is not displayed.
+        # This also allows us to simplify menubar hiding logic
+        # by not requiring us to check hasattr.
+        self.native = TogaMainWindow(self)
+        self.native.setCentralWidget(self.container.native)
 
     def hide(self):
         # https://forum.qt.io/topic/163064/delayed-window-state-read-after-hide-gives-wrong-results-even-in-x11/
@@ -253,7 +235,9 @@ class Window:
     def set_window_state(self, state):
         # NOTE - MINIMIZED does not round-trip on Wayland
         # and will cause infinite recursion. Don't support it
-        if get_is_wayland() and state == WindowState.MINIMIZED:
+        if (
+            get_is_wayland() and state == WindowState.MINIMIZED
+        ):  # pragma: no-cover-if-linux-x
             return
 
         if (
@@ -273,17 +257,22 @@ class Window:
         ):
             self.interface.app.exit_presentation_mode()
 
-        if get_is_wayland():
+        if get_is_wayland():  # pragma: no-cover-if-linux-x
             self._pending_state_transition = state
         self._apply_state(state)
 
     def _apply_state(self, state):
-        if state is None:
+        # Stop the chain immediately if hidden.
+        if not self.get_visible():
+            self._hidden_window_state = self._pending_state_transition
+            self._pending_state_transition = None
             return
 
         current_state = self.get_window_state()
         current_native_state = self.native.windowState()
-        if current_state == WindowState.MINIMIZED and not get_is_wayland():
+        if (
+            current_state == WindowState.MINIMIZED and not get_is_wayland()
+        ):  # pragma: no-cover-if-linux-wayland
             self.native.showNormal()
         if current_state == state:
             self._pending_state_transition = None
@@ -291,8 +280,7 @@ class Window:
 
         if current_state == WindowState.PRESENTATION:
             self.interface.screen = self._before_presentation_mode_screen
-            if hasattr(self.native, "menuBar"):
-                self.native.menuBar().show()
+            self.native.menuBar().show()
             del self._before_presentation_mode_screen
             self._in_presentation_mode = False
 
@@ -300,7 +288,7 @@ class Window:
             self.native.showMaximized()
 
         elif state == WindowState.MINIMIZED:
-            if not get_is_wayland():
+            if not get_is_wayland():  # pragma: no-cover-if-linux-wayland
                 self.native.showNormal()
             self.native.showMinimized()
 
@@ -313,8 +301,7 @@ class Window:
 
         elif state == WindowState.PRESENTATION:
             self._before_presentation_mode_screen = self.interface.screen
-            if hasattr(self.native, "menuBar"):
-                self.native.menuBar().hide()
+            self.native.menuBar().hide()
             # Do this bee-fore showFullScreen bee-cause
             # showFullScreen might immediately trigger the event
             # and the window state read there might read a non-
@@ -339,10 +326,6 @@ class Window:
 
 
 class MainWindow(Window):
-    def create(self):
-        self.native = TogaMainWindow(self)
-        self.native.setCentralWidget(self.container.native)
-
     def _submenu(self, group, group_cache):
         try:
             return group_cache[group]

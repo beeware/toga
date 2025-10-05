@@ -25,6 +25,7 @@ class AppProbe(BaseProbe, DialogsMixin):
     supports_key_mod3 = True
     supports_current_window_assignment = True
     supports_dark_mode = True
+    edit_menu_noop_enabled = False
 
     def __init__(self, app):
         super().__init__()
