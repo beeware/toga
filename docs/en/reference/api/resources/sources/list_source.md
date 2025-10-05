@@ -48,8 +48,8 @@ Although Toga provides ListSource, you are not required to create one directly. 
 
 For more complex applications, you can replace ListSource with a [custom data source][custom-data-sources] class. Such a class must:
 
-- Inherit from [Source][]
-- Provide the same methods as [ListSource][]
+- Inherit from [`Source`][toga.sources.Source]
+- Provide the same methods as [`ListSource`][toga.sources.ListSource]
 - Return items whose attributes match the accessors expected by the widget
 - Generate a `change` notification when any of those attributes change
 - Generate `insert`, `remove` and `clear` notifications when items are added or removed

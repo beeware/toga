@@ -1,19 +1,18 @@
 [global]
 flavor = "mkdocs"
 include = ["**/*.md"]
-exclude = ["examples", "textual", "gtk", "positron", "winforms", "travertino", "web", "iOS", "core", "toga", "dummy", "android", "CONTRIBUTING.md", "template.md"]  # Worry about fixing the CONTRIBUTING/READMEs at a later time.
+exclude = ["CONTRIBUTING.md", "README.md", "changes/template.md", "winforms"]
 respect-gitignore = true
+force-exclude = true
 
 # Disable rules:
-# * means it's disabled to avoid autofix until I can sort out bugs/features
-# MD005*, MD006*: List indentation - flagging the mkdocstrings class documentation members list, need to sort out if this can be ignored.
-# MD007*: Begin lists at beginning of line - see above.
-# MD011*: Reversed link syntax - flags the CSV tables, need to see if I can configure this to ignore specific formatting.
 # MD014: Forces commands in codeblocks to show output
-# MD026*: Removes punctuation from headings - bug, it's supposed to leave ! alone.
-# MD042*: Empty link found - bug, it shouldn't be flagging these links.
-# MD046*: Use fenced code blocks - possible bug, it's seeing code where there is none.
-disable = ["MD014",]
+# MD042: Empty link - buggy, still flagging on valid MkDocs formatting
+# MD052: Reference link not found - buggy, flagging on valis MkDocs links
+disable = ["MD014", "MD042", "MD052"]
+
+[per-file-ignores]
+"changes/**/*.md" = ["MD041"]
 
 [MD013]  # Line length
 line_length = 999999  # Force reflow to paragraph content to remove linebreaks
@@ -25,3 +24,6 @@ punctuation = ",;:"
 
 [MD033]  # No inline HTML
 allowed_elements = ["nospell",]  # pyspelling inline disable tag
+
+[MD046]
+style = "fenced"

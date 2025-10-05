@@ -24,9 +24,9 @@ Android's implementation of the [`toga.App`][] class includes the method [`start
 
 ### `toga_android.App.start_activity()`
 
-::: toga_android.app.App.start_activity
+::: toga_android.app.App.start_activity <!-- rumdl-disable-line MD013 -->
     options:
-        show_root_heading: false
+        show_root_heading: false  <!-- rumdl-disable-line MD031 -->
 
 To use this method, instantiate an instance of `android.content.Intent`; optionally, provide additional arguments, and a callback that will be invoked when the activity completes. For example, to dial a phone number with the `Intent.ACTION_DIAL` intent:
 

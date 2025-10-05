@@ -1,7 +1,6 @@
 # Web
 
-Toga is able to deploy apps as a single-page web app using the [`toga-web](https://github.com/beeware/toga/tree/main/web) backend.
-`
+Toga is able to deploy apps as a single-page web app using the [`toga-web](https://github.com/beeware/toga/tree/main/web) backend. `
 /// note | Note
 
 The Web backend is currently proof-of-concept only. Most widgets have not been implemented.

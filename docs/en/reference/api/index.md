@@ -45,7 +45,6 @@
 | [ScrollContainer](/reference/api/containers/scrollcontainer.md) | A container that can display a layout larger that the area of the container, with overflow controlled by scroll bars. |
 | [SplitContainer](/reference/api/containers/splitcontainer.md)   | A container that divides an area into two panels with a movable border.                                               |
 
-
 ## Resources { #api-reference-resources }
 
 | Component                                                       | Description                                                                                   |
