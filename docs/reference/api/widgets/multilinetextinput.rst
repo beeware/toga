@@ -35,9 +35,11 @@ A scrollable panel that allows for the display and editing of multiple lines of 
        :align: center
        :width: 300px
 
-  .. group-tab:: Web |no|
+  .. group-tab:: Web
 
-    Not supported
+    .. figure:: /reference/images/multilinetextinput-web.png
+       :align: center
+       :width: 300px
 
   .. group-tab:: Textual |no|
 
