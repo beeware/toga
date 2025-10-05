@@ -5,7 +5,9 @@ A sensor that can capture photos and/or video.
 Availability ([Key][api-status-key])  <!-- rumdl-disable-line MD013 -->
 {: .availability-title }
 
+<nospell>
 {{ pd_read_csv[pd_read_csv("../../data/widgets_by_platform.csv")[["ComponentName"]("../../data/widgets_by_platform.csv", na_filter=False, usecols=[4,5,6,7,8,9,10])].isin(["Camera"]).all(axis=1)] | convert_to_md_table }}
+</nospell>
 
 ## Usage
 

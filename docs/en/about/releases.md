@@ -338,7 +338,7 @@ This release contains no new features. The primary purpose of this release is to
 - Documentation for the class property `toga.App.app` was added. ([#2413](https://github.com/beeware/toga/issues/2413))
 - The documentation landing page and some documentation sections were reorganized. ([#2463](https://github.com/beeware/toga/issues/2463))
 - The README badges were updated to display correctly on GitHub. ([#2491](https://github.com/beeware/toga/issues/2491))
-- The links to ReadTheDocs were updated to better arbitrate between linking to the stable version or the latest version. ([#2510](https://github.com/beeware/toga/issues/2510))
+- The links to Read the Docs were updated to better arbitrate between linking to the stable version or the latest version. ([#2510](https://github.com/beeware/toga/issues/2510))
 - An explicit system requirements section was added to the documentation for widgets that require the installation of additional system components. ([#2544](https://github.com/beeware/toga/issues/2544))
 - The system requirements were updated to be more explicit and now include details for OpenSUSE Tumbleweed. ([#2549](https://github.com/beeware/toga/issues/2549))
 

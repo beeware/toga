@@ -36,6 +36,10 @@ matrix:
           content: '[\d\D]*'
           close: '%}'
         # Ignore the mkdocstrings syntax and its content
+        - open: '\['
+          content: '[\d\D]*\]\[[\d\D]*'
+          close: '\]'
+        # Ignore the mkdocstrings syntax and its content
         - open: ':::'
           content: '[\d\D]*'
           close: '\n'
