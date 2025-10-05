@@ -315,7 +315,7 @@ jobs:
             DISPLAY=:99 MUTTER_DEBUG_DUMMY_MODE_SPECS=2048x1536 \
               mutter --nested --wayland --no-x11 --wayland-display toga &
             sleep 1
-          briefcase-run-prefix: "WAYLAND_DISPLAY=toga TOGA_BACKEND=toga_gtk"
+          briefcase-run-prefix: "WAYLAND_DISPLAY=toga"
           setup-python: false  # Use the system Python packages
           app-user-data-path: "$HOME/.local/share/testbed"
 
