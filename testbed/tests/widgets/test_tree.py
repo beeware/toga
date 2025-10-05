@@ -139,7 +139,7 @@ async def headerless_probe(main_window, headerless_widget):
 
 
 @pytest.fixture
-def multiselect_widget(source, on_select_handler):
+def multiselect_widget(source, on_select_handler, on_activate_handler):
     # Although Android *has* a table implementation, it needs to be rebuilt.
     skip_on_platforms("iOS", "android", "windows")
     return toga.Tree(
@@ -147,6 +147,7 @@ def multiselect_widget(source, on_select_handler):
         data=source,
         multiple_select=True,
         on_select=on_select_handler,
+        on_activate=on_activate_handler,
         style=Pack(flex=1),
     )
 
@@ -474,6 +475,94 @@ async def test_activate(
     on_activate_handler.reset_mock()
 
 
+async def test_activate_keyboard(
+    widget,
+    probe,
+    other,
+    other_probe,
+    source,
+    on_activate_handler,
+):
+    """Rows are activated by keyboard"""
+
+    widget.focus()
+    await probe.select_first_row_keyboard()
+
+    assert probe.has_focus
+    await probe.type_character("\n")
+    await probe.redraw("Return key pressed - first row is activated")
+    on_activate_handler.assert_called_once_with(widget, node=source[0])
+    on_activate_handler.reset_mock()
+
+    other.focus()
+    assert not probe.has_focus
+    await probe.type_character("\n")
+    on_activate_handler.assert_not_called()
+
+
+async def test_keyboard_navigation(
+    widget, source, probe, on_select_handler, on_activate_handler
+):
+    """The list can be navigated using a keyboard."""
+    widget.focus()
+
+    await probe.select_first_row_keyboard()
+    on_select_handler.assert_called_once_with(widget)
+    on_select_handler.reset_mock()
+    await probe.redraw("First row selected")
+    assert widget.selection == widget.data[0]
+
+    # Navigate down with letter, arrow, letter.
+    await probe.type_character("a")
+    await probe.redraw("Letter pressed - second row selected")
+    assert widget.selection == widget.data[1]
+    on_select_handler.assert_called_once_with(widget)
+    on_select_handler.reset_mock()
+    await probe.type_character("<down>")
+    await probe.redraw("Down arrow pressed - third row selected")
+    assert widget.selection == widget.data[2]
+    on_select_handler.assert_called_once_with(widget)
+    on_select_handler.reset_mock()
+    await probe.type_character("a")
+    await probe.redraw("Letter pressed - forth row selected")
+    assert widget.selection == widget.data[3]
+    on_select_handler.assert_called_once_with(widget)
+    on_select_handler.reset_mock()
+
+    # Activate row
+    assert widget.selection == source[3]
+    await probe.type_character("\n")
+    await probe.redraw("Return key pressed - forth row selected")
+    on_activate_handler.assert_called_once_with(widget, node=source[3])
+    on_activate_handler.reset_mock()
+
+    # Select the last item with the end key if supported then wrap around.
+    if probe.supports_keyboard_boundary_shortcuts:
+        await probe.type_character("<end>")
+        await probe.redraw("Last row is selected")
+        assert widget.selection == widget.data[-1]
+        # Navigate by 1 item, wrapping around.
+        await probe.type_character("a")
+        await probe.redraw("Letter pressed - first row is selected")
+    else:
+        await probe.type_character("<up>")
+        await probe.type_character("<up>")
+        await probe.type_character("<up>")
+        await probe.redraw("Up arrow pressed thrice - first row is selected")
+    assert widget.selection == widget.data[0]
+
+    # Type a letter that no items start with to verify the selection doesn't change.
+    await probe.type_character("x")
+    await probe.redraw("Invalid letter pressed - first row is still selected")
+    assert widget.selection == widget.data[0]
+
+    # clear the table and verify with an empty selection.
+    widget.data.clear()
+    await probe.type_character("a")
+    await probe.redraw("Letter pressed - no row selected")
+    assert not widget.selection
+
+
 async def test_multiselect(
     multiselect_widget,
     multiselect_probe,
@@ -522,6 +611,72 @@ async def test_multiselect(
         await multiselect_probe.select_all()
         await multiselect_probe.redraw("All rows selected by keyboard")
         assert len(multiselect_widget.selection) == 70
+
+
+async def test_multiselect_keyboard_control(
+    multiselect_widget,
+    multiselect_probe,
+    source,
+    on_select_handler,
+    on_activate_handler,
+):
+    """Selection on a multiselect table can be controlled by keyboard.
+
+    Keyboard navigation can produce different events to mouse navigation,
+    so we need to test keyboard selection independent of mouse selection.
+    """
+    await multiselect_probe.redraw("No row is selected in multiselect table")
+
+    # Initial selection is empty
+    assert multiselect_widget.selection == []
+    on_select_handler.assert_not_called()
+
+    multiselect_widget.focus()
+
+    # A single row can be added to the selection
+    await multiselect_probe.select_first_row_keyboard()
+    await multiselect_probe.redraw("First row selected")
+    on_select_handler.assert_called_once_with(multiselect_widget)
+    on_select_handler.reset_mock()
+    assert multiselect_widget.selection == [source[0]]
+
+    # Activate row
+    await multiselect_probe.type_character("\n")
+    await multiselect_probe.redraw("Return key pressed - a single row is selected")
+    on_activate_handler.assert_called_once_with(multiselect_widget, node=source[0])
+    on_activate_handler.reset_mock()
+
+    # The selection can be extended
+    await multiselect_probe.type_character("<down>", shift=True)
+    await multiselect_probe.redraw(
+        "Down arrow pressed - second row added to the selection"
+    )
+    assert multiselect_widget.selection == [source[0], source[1]]
+    on_select_handler.assert_called_once_with(multiselect_widget)
+    on_select_handler.reset_mock()
+
+    await multiselect_probe.type_character("<down>", shift=True)
+    await multiselect_probe.redraw(
+        "Down arrow pressed - third row added to the selection"
+    )
+    assert multiselect_widget.selection == [source[0], source[1], source[2]]
+    on_select_handler.assert_called_once_with(multiselect_widget)
+    on_select_handler.reset_mock()
+
+    await multiselect_probe.type_character("<up>", shift=True)
+    await multiselect_probe.redraw(
+        "Up arrow pressed - third row removed from the selection"
+    )
+    assert multiselect_widget.selection == [source[0], source[1]]
+    on_select_handler.assert_called_once_with(multiselect_widget)
+    on_select_handler.reset_mock()
+
+    # Activate is not fired when multiple rows are selected
+    assert len(multiselect_widget.selection) > 1
+    await multiselect_probe.type_character("\n")
+    await multiselect_probe.redraw("Return key pressed - multiple rows selected")
+    on_activate_handler.assert_not_called()
+    on_activate_handler.reset_mock()
 
 
 class MyData:

@@ -1,0 +1,1 @@
+Table and Tree widgets on desktop platforms will invoke `on_activate` when the Enter key is pressed and a single row/node is selected.
