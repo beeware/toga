@@ -143,15 +143,6 @@ When retrieving or deleting items, or when specifying the currently selected ite
 
 ## Reference
 
-TODO: Verify the below text is not meant to be in the source code:
-
-An item of [`OptionContainer`][toga.OptionContainer] content can be:
-
-- a 2-tuple, containing the title for the tab, and the content widget;
-- a 3-tuple, containing the title, content widget, and [icon][toga.icons.IconContentT] for the tab;
-- a 4-tuple, containing the title, content widget, [icon][toga.icons.IconContentT] for the tab, and enabled status; or
-- an [`toga.OptionItem`][] instance.
-
 ::: toga.OptionContainer
 
 ::: toga.OptionItem

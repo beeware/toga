@@ -13,7 +13,12 @@ if TYPE_CHECKING:
     from typing import TypeAlias
 
     SplitContainerContentT: TypeAlias = Widget | tuple[Widget, float] | None
-    """"""  # TODO: Update docstring content.
+    """
+    An item of [`SplitContainer`][toga.SplitContainer] content can be:
+
+    - a [`Widget`][toga.Widget]; or
+    - a 2-tuple, containing a [`Widget`][toga.Widget], and an [`int`][] flex value
+    """  # TODO: Update docstring content.
 
 
 class SplitContainer(Widget):
