@@ -166,8 +166,8 @@ class DialogResultHandler(Protocol[_DialogResultT]):
         """A handler to invoke when a dialog is closed.
 
         :param window: The window that opened the dialog.
-        :param kwargs: Ensures compatibility with arguments added in future versions.
         :param result: The result returned by the dialog.
+        :param kwargs: Ensures compatibility with arguments added in future versions.
         """
 
 

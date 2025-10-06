@@ -12,6 +12,8 @@ build:
     # Docs are always built on Python 3.12. See also the tox config.
     python: "3.13"
   jobs:
+    post_checkout:
+      - git fetch --unshallow
     pre_install:
       - python -m pip install --upgrade pip
       - python -m pip install --group 'tox-uv'
