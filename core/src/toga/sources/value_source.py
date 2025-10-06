@@ -4,6 +4,11 @@ from .base import Source
 
 
 class ValueSource(Source):
+    """
+    :param value:
+    :param accessor:
+    """
+
     def __init__(self, value: object = None, accessor: str = "value"):
         super().__init__()
         self.accessor = accessor

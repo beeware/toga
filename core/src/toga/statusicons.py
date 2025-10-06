@@ -39,8 +39,8 @@ class StatusIcon:
     def icon(self) -> Icon | None:
         """The Icon to display in the status bar.
 
-        When setting the icon, you can provide either an :any:`Icon` instance, or a
-        path that will be passed to the ``Icon`` constructor.
+        When setting the icon, you can provide either an [`Icon`][toga.Icon] instance,
+        or a path that will be passed to the `Icon` constructor.
         """
         return self._icon
 
@@ -65,7 +65,7 @@ class SimpleStatusIcon(StatusIcon):
         """
         An button in a status bar or system tray.
 
-        When pressed, the ``on_press`` handler will be activated.
+        When pressed, the `on_press` handler will be activated.
 
         :param id: An identifier for the status icon.
         :param icon: The icon, or icon resource, that will be displayed in the status
@@ -111,8 +111,8 @@ class MenuStatusIcon(Group, StatusIcon):
         """
         An item in a status bar or system tray that displays a menu when pressed.
 
-        A ``MenuStatusIcon`` can be used as a :class:`~toga.Group` when defining
-        :class:`toga.Command` instances.
+        A `MenuStatusIcon` can be used as a [`Group`][toga.Group] when defining
+        [`toga.Command`][] instances.
 
         :param id: An identifier for the status icon.
         :param icon: The icon, or icon resource, that will be displayed in the status
@@ -153,7 +153,7 @@ class StatusIconSet(Sequence[StatusIcon], Mapping[str, StatusIcon]):
     def _primary_menu_status_icon(self):
         """The first menu status icon that has been registered.
 
-        Returns ``None`` if no menu status icons have been registered.
+        Returns `None` if no menu status icons have been registered.
         """
         try:
             return next(self._menu_status_icons)

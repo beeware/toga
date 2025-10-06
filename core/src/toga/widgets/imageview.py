@@ -77,8 +77,9 @@ class ImageView(Widget):
     ):
         """Create a new image view.
 
-        :param image: The image to display. Can be any valid :any:`image content
-            <ImageContentT>` type; or :any:`None` to display no image.
+        :param image: The image to display. Can be any valid
+            [image content][toga.images.ImageContentT] type; or [`None`][] to
+            display no image.
         :param id: The ID for the widget.
         :param style: A style object. If no style is provided, a default style will be
             applied to the widget.
@@ -115,8 +116,9 @@ class ImageView(Widget):
     def image(self) -> toga.Image | None:
         """The image to display.
 
-        When setting an image, you can provide any valid :any:`image content
-        <ImageContentT>` type; or :any:`None` to clear the image view.
+        When setting an image, you can provide any valid
+        [image content][toga.images.ImageContentT] type;
+        or [`None`][] to clear the image view.
         """
         return self._image
 
@@ -135,10 +137,9 @@ class ImageView(Widget):
     def as_image(self, format: type[ImageT] = toga.Image) -> ImageT:
         """Return the image in the specified format.
 
-        :param format: Format to provide. Defaults to :class:`~toga.images.Image`; also
-            supports :any:`PIL.Image.Image` if Pillow is installed, as well as any image
-            types defined by installed :doc:`image format plugins
-            </reference/plugins/image_formats>`.
+        :param format: Format to provide. Defaults to [`Image`][toga.images.Image]; also
+            supports [`PIL.Image.Image`][] if Pillow is installed, as well as any image
+            types defined by installed [image format plugins][image-format-plugins].
         :returns: The image in the specified format.
         """
         return self.image.as_format(format)

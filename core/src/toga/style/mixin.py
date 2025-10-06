@@ -19,8 +19,8 @@ def style_mixin(style_cls):
     mixin_dict = {
         "__doc__": (
             f"""Allows accessing the {style_cls.__name__} {style_cls._doc_link} directly
-            on the widget. For example, instead of ``widget.style.color``, you can
-            simply write ``widget.color``.
+            on the widget. For example, instead of `widget.style.color`, you can
+            simply write `widget.color`.
             """
         ),
         **{name: StyleProperty() for name in style_cls._ALL_PROPERTIES},
