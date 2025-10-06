@@ -1,6 +1,8 @@
+from contextlib import contextmanager
 from pathlib import Path
 
 import PIL.Image
+import pytest
 from rubicon.objc import SEL, NSPoint, ObjCClass, objc_id, send_message
 
 import toga
@@ -35,26 +37,23 @@ class AppProbe(BaseProbe, DialogsMixin):
         assert isinstance(self.app._impl.native, NSApplication)
 
     @property
-    def config_path(self):
-        return Path.home() / "Library/Preferences/org.beeware.toga.testbed"
-
-    @property
-    def data_path(self):
-        return Path.home() / "Library/Application Support/org.beeware.toga.testbed"
-
-    @property
-    def cache_path(self):
-        return Path.home() / "Library/Caches/org.beeware.toga.testbed"
-
-    @property
-    def logs_path(self):
-        return Path.home() / "Library/Logs/org.beeware.toga.testbed"
-
-    @property
     def is_cursor_visible(self):
         # There's no API level mechanism to detect cursor visibility;
         # fall back to the implementation's proxy variable.
         return self.app._impl._cursor_visible
+
+    @contextmanager
+    def prepare_paths(self, *, custom):
+        if custom:
+            pytest.xfail("This backend doesn't implement app path customization.")
+
+        yield {
+            "config": Path.home() / "Library/Preferences/org.beeware.toga.testbed",
+            "data": Path.home()
+            / "Library/Application Support/org.beeware.toga.testbed",
+            "cache": Path.home() / "Library/Caches/org.beeware.toga.testbed",
+            "logs": Path.home() / "Library/Logs/org.beeware.toga.testbed",
+        }
 
     def unhide(self):
         self.app._impl.native.unhide(self.app._impl.native)
