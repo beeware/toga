@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Iterable
-from typing import TYPE_CHECKING, Any, Literal, Protocol, TypeVar
+from typing import Any, Literal, Protocol, TypeVar
 
 import toga
 from toga.handlers import wrapped_handler
@@ -11,9 +11,8 @@ from toga.style import Pack
 
 from .base import Widget
 
-if TYPE_CHECKING:
-    SourceT = TypeVar("SourceT", bound=Source)
-    """"""  # TODO: Update docstring content.
+SourceT = TypeVar("SourceT", bound=Source)
+""""""  # TODO: Update docstring content.
 
 
 class OnSelectHandler(Protocol):
