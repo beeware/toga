@@ -10,11 +10,13 @@ from .proxies.object_proxies import (
     AppProxy,
     BoxProxy,
     ButtonProxy,
+    DateInputProxy,
     LabelProxy,
     MockProxy,
     PasswordInputProxy,
     SwitchProxy,
     TextInputProxy,
+    TimeInputProxy,
 )
 from .widgets.base import SimpleProbe
 
@@ -43,6 +45,8 @@ SHIMS = [
     ("toga", "Switch", SwitchProxy),
     ("toga", "TextInput", TextInputProxy),
     ("toga", "PasswordInput", PasswordInputProxy),
+    ("toga", "TimeInput", TimeInputProxy),
+    ("toga", "DateInput", DateInputProxy),
     ("unittest.mock", "Mock", MockProxy),
 ]
 
