@@ -1,3 +1,4 @@
+import datetime as _dt
 import inspect
 
 
@@ -37,9 +38,10 @@ class BaseProxy:
     # Core methods
 
     def __getattr__(self, name: str):
-        local = self._local_attrs
-        if name in local:
-            return local[name]
+        if self._is_declared_local(name):
+            local = self._local_attrs
+            if name in local:
+                return local[name]
         return self._rpc("getattr", obj=self._ref(), name=name)
 
     def __setattr__(self, name: str, value):
@@ -64,6 +66,7 @@ class BaseProxy:
             self._local_attrs[name] = value
             return
         self._rpc("setattr", obj=self._ref(), name=name, value=env)
+        self._local_attrs.clear()
 
     def __delattr__(self, name: str):
         if name.startswith("_"):
@@ -77,6 +80,7 @@ class BaseProxy:
             return
 
         self._rpc("delattr", obj=self._ref(), name=name)
+        self._local_attrs.clear()
 
     def __call__(self, *args, **kwargs):
         args_env = [self._serialise_for_rpc(a, self._storage_expr) for a in args]
@@ -171,6 +175,23 @@ class BaseProxy:
                 out[k] = v
             return out
 
+        if t == "time":
+            s = payload.get("value", "")
+            parts = [int(p) for p in s.split(":")]
+            if len(parts) == 2:
+                h, m = parts
+                sec = 0
+            else:
+                h, m, sec = (parts + [0, 0, 0])[:3]
+            return _dt.time(h, m, sec)
+
+        if t == "date":
+            s = payload.get("value", "")
+            try:
+                return _dt.datetime.strptime(s, "%m/%d/%Y").date()
+            except ValueError:
+                return _dt.date.fromisoformat(s)
+
         # references
         if t in ("object", "callable"):
             obj_id = payload["id"]
@@ -258,6 +279,14 @@ class BaseProxy:
                     k_env = {"type": "str", "value": str(k)}
                 items.append([k_env, self._serialise_for_rpc(val, storage_expr)])
             return {"type": "dict", "items": items}
+
+        if isinstance(v, _dt.time):
+            # use “HH:MM:SS”
+            return {"type": "time", "value": v.strftime("%H:%M:%S")}
+
+        if isinstance(v, _dt.date) and not isinstance(v, _dt.datetime):
+            # use “YYYY/MM/DD”
+            return {"type": "date", "value": v.strftime("%m/%d/%Y")}
 
         if callable(v):
             src = inspect.getsource(v)
