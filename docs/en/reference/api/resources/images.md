@@ -5,7 +5,7 @@ Graphical content of arbitrary size.
 Availability ([Key][api-status-key])  <!-- rumdl-disable-line MD013 -->
 {: .availability-title }
 
-<nospell>{{ pd_read_csv("reference/data/widgets_by_platform.csv", na_filter=False, usecols=[4,5,6,7,8,9,10])[pd_read_csv("reference/data/widgets_by_platform.csv")[["ComponentName"]].isin(["Image"]).all(axis=1)] | convert_to_md_table }}</nospell>
+{{ pd_read_csv("reference/data/widgets_by_platform.csv", na_filter=False, usecols=[4,5,6,7,8,9,10])[pd_read_csv("reference/data/widgets_by_platform.csv")[["ComponentName"]].isin(["Image"]).all(axis=1)] | convert_to_md_table }}
 
 ## Usage
 
@@ -71,3 +71,7 @@ You can also tell Toga how to convert from (and to) other classes that represent
 ::: toga.Image
 
 ::: toga.images.ImageContentT
+
+::: toga.images.ImageT
+
+::: toga.images.ExternalImageT

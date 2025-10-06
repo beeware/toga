@@ -14,3 +14,7 @@
     options:
         separate_signature: false
         show_labels: false
+
+::: toga.types.PositionT
+
+::: toga.types.SizeT

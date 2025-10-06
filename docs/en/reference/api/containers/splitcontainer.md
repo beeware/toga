@@ -111,3 +111,5 @@ An item of [`SplitContainer`][toga.SplitContainer] content can be:
 - a 2-tuple, containing a [`Widget`][toga.Widget], and an [`int`][] flex value
 
 ::: toga.SplitContainer
+
+::: toga.widgets.splitcontainer.SplitContainerContentT

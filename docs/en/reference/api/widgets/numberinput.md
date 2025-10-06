@@ -90,3 +90,5 @@ NumberInput's properties can accept [`Decimal`][decimal], [`int`][], [`float`][]
 ::: toga.NumberInput
 
 ::: toga.widgets.numberinput.OnChangeHandler
+
+::: toga.widgets.numberinput.NumberInputT

@@ -156,3 +156,5 @@ print(f"{node.character}, who is age {node.age}, is {node.status}")
 ::: toga.widgets.tree.OnSelectHandler
 
 ::: toga.widgets.tree.OnActivateHandler
+
+::: toga.widgets.tree.SourceT

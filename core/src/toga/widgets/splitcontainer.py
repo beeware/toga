@@ -12,9 +12,8 @@ from .base import StyleT, Widget
 if TYPE_CHECKING:
     from typing import TypeAlias
 
-    SplitContainerContentT: TypeAlias = (
-        Widget | tuple[Widget, float] | None
-    )  # TODO: Include in documentation?
+    SplitContainerContentT: TypeAlias = Widget | tuple[Widget, float] | None
+    """"""  # TODO: Update docstring content.
 
 
 class SplitContainer(Widget):
@@ -39,8 +38,8 @@ class SplitContainer(Widget):
             [`Direction.HORIZONTAL`][toga.constants.Direction.HORIZONTAL] or
             [`Direction.VERTICAL`][toga.constants.Direction.VERTICAL]; defaults to
             [`Direction.VERTICAL`][toga.constants.Direction.VERTICAL]
-        :param content: Initial [SplitContainer content][SplitContainerContentT]
-            (TODO: Update or remove based on inclusion in docs)
+        :param content: Initial
+            [SplitContainer content][toga.widgets.splitcontainer.SplitContainerContentT]
             of the container. Defaults to both panels being empty.
         :param kwargs: Initial style properties.
         """

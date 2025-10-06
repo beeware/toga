@@ -5,7 +5,7 @@ A short-lived window asking the user for input.
 Availability ([Key][api-status-key])  <!-- rumdl-disable-line MD013 -->
 {: .availability-title }
 
-<nospell>{{ pd_read_csv("reference/data/widgets_by_platform.csv", na_filter=False, usecols=[4,5,6,7,8,9,10])[pd_read_csv("reference/data/widgets_by_platform.csv")[["ComponentName"]].isin(["Dialogs"]).all(axis=1)] | convert_to_md_table }}</nospell>
+{{ pd_read_csv("reference/data/widgets_by_platform.csv", na_filter=False, usecols=[4,5,6,7,8,9,10])[pd_read_csv("reference/data/widgets_by_platform.csv")[["ComponentName"]].isin(["Dialogs"]).all(axis=1)] | convert_to_md_table }}
 
 ## Usage
 
@@ -69,3 +69,5 @@ In this example, when `my_sync_handler` is triggered, a dialog will be created, 
 ::: toga.OpenFileDialog
 
 ::: toga.SelectFolderDialog
+
+::: toga.dialogs.DialogResultT

@@ -19,7 +19,8 @@ if TYPE_CHECKING:
         | tuple[str, Widget, IconContentT | None]
         | tuple[str, Widget, IconContentT | None, bool]
         | toga.OptionItem
-    )  # TODO: Include in documentation?
+    )
+    """"""  # TODO: Update docstring content.
 
 
 class OnSelectHandler(Protocol):
@@ -399,12 +400,12 @@ class OptionContainer(Widget):
         :param id: The ID for the widget.
         :param style: A style object. If no style is provided, a default style will be
             applied to the widget.
-        :param content: The initial [OptionContainer content][OptionContainerContentT]
-            (TODO: Update link or remove if not including) to display in the
-            OptionContainer.
+        :param content: The initial
+            [OptionContainer content][toga.widgets.optioncontainer.OptionContainerContentT]
+            to display in the OptionContainer.
         :param on_select: Initial [`on_select`][toga.OptionContainer.on_select] handler.
         :param kwargs: Initial style properties.
-        """
+        """  # noqa: E501
         self._content = OptionList(self)
         self.on_select = None
 

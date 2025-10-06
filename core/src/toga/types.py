@@ -7,10 +7,10 @@ import toga
 if TYPE_CHECKING:
     from typing import TypeAlias
 
-    PositionT: TypeAlias = (
-        toga.Position | tuple[int, int]
-    )  # TODO: Include in documentation?
-    SizeT: TypeAlias = toga.Size | tuple[int, int]  # TODO: Include in documentation?
+    PositionT: TypeAlias = toga.Position | tuple[int, int]
+    """"""  # TODO: Update docstring content.
+    SizeT: TypeAlias = toga.Size | tuple[int, int]
+    """"""  # TODO: Update docstring content.
 
 
 class LatLng(NamedTuple):

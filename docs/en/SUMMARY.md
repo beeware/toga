@@ -6,7 +6,7 @@
     - ./tutorial/*
 - How-to Guides
     - Contributing to Toga
-        - [Contributing to Toga](how-to/contribute/code.md)
+        - [Contributing code to Toga](how-to/contribute/code.md)
         - [Contributing to Toga's documentation](how-to/contribute/docs.md)
     - Internal How-to guides
         - [How to cut a Toga release](how-to/internal/release.md)

@@ -12,9 +12,8 @@ from .base import StyleT, Widget
 if TYPE_CHECKING:
     from typing import TypeAlias
 
-    NumberInputT: TypeAlias = (
-        Decimal | int | float | str
-    )  # TODO: Include in documentation?
+    NumberInputT: TypeAlias = Decimal | int | float | str
+    """"""  # TODO: Update docstring content.
 
 # Implementation notes
 # ====================

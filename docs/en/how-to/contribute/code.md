@@ -327,7 +327,7 @@ The dummy backend exists to validate that Toga's internal API works as expected.
 
 ## Running tests and coverage  { #run-test-suite }
 
-Toga uses [tox](https://tox.wiki/en/latest/) to manage the testing process and [`pytest`](https://docs.pytest.org/en/latest) for its own test suite.
+Toga uses [`tox`](https://tox.wiki/en/latest/) to manage the testing process and [`pytest`](https://docs.pytest.org/en/latest) for its own test suite.
 
 The default `tox` command includes running:
 
@@ -495,7 +495,7 @@ If you're rapidly iterating on a new feature, you don't need to run the full tes
 
 ### Run a subset of tests  { #test-subset }
 
-By default, tox will run all tests in the unit test suite. When you're developing your new test, it may be helpful to run *just* that one test. To do this, you can pass in [any pytest specifier](https://docs.pytest.org/en/latest/how-to/usage.html#specifying-which-tests-to-run) as an argument to tox. These test paths are relative to the `core` directory. For example, to run only the tests in a single file, run:
+By default, tox will run all tests in the unit test suite. When you're developing your new test, it may be helpful to run *just* that one test. To do this, you can pass in [any `pytest` specifier](https://docs.pytest.org/en/latest/how-to/usage.html#specifying-which-tests-to-run) as an argument to tox. These test paths are relative to the `core` directory. For example, to run only the tests in a single file, run:
 
 /// tab | macOS
 
@@ -581,7 +581,7 @@ A [subset of tests][test-subset] can be run by adding `--` and a test specificat
 
 ### Run the test suite without coverage (fast)
 
-By default, tox will run the pytest suite in single threaded mode. You can speed up the execution of the test suite by running the test suite in parallel. This mode does not produce coverage files due to complexities in capturing coverage within spawned processes. To run a single python version in "fast" mode, run:
+By default, `tox` will run the `pytest` suite in single threaded mode. You can speed up the execution of the test suite by running the test suite in parallel. This mode does not produce coverage files due to complexities in capturing coverage within spawned processes. To run a single python version in "fast" mode, run:
 
 /// tab | macOS
 
@@ -767,7 +767,7 @@ This will display a Toga app window, which will flash as it performs all the GUI
 
 ### Running a subset of the testbed suite and slow mode
 
-If you want to run a subset of the entire test suite, Briefcase honors [pytest specifiers](https://docs.pytest.org/en/latest/how-to/usage.html) in the same way as the main test suite.
+If you want to run a subset of the entire test suite, Briefcase honors [`pytest` specifiers](https://docs.pytest.org/en/latest/how-to/usage.html) in the same way as the main test suite.
 
 The testbed app provides one additional feature that the core tests don't have --slow mode. Slow mode runs the same tests, but deliberately pauses for 1 second between each GUI action so that you can observe what is going on.
 
@@ -843,7 +843,7 @@ iOS tests can't be executed on Windows.
 
 ///
 
-You can also use slow mode or pytest specifiers with `briefcase run`, using the same `--` syntax as you used in developer mode.
+You can also use slow mode or `pytest` specifiers with `briefcase run`, using the same `--` syntax as you used in developer mode.
 
 ### Running testbed against GTK4 on Linux
 

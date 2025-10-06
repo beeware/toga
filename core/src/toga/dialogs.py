@@ -9,6 +9,9 @@ from toga.platform import get_platform_factory
 if TYPE_CHECKING:
     from toga.window import Window
 
+    DialogResultT = TypeVar("DialogResultT")
+    """"""  # TODO: Update docstring content.
+
 
 __all__ = [
     "InfoDialog",
@@ -20,8 +23,6 @@ __all__ = [
     "OpenFileDialog",
     "SelectFolderDialog",
 ]
-
-DialogResultT = TypeVar("DialogResultT")  # TODO: Include in documentation?
 
 
 class Dialog(Generic[DialogResultT]):

@@ -16,7 +16,9 @@ if TYPE_CHECKING:
     from toga.app import App
     from toga.window import Window
 
-StyleT = TypeVar("StyleT", bound=BaseStyle)  # TODO: Include in documentation?
+    StyleT = TypeVar("StyleT", bound=BaseStyle)
+    """"""  # TODO: Update docstring content.
+
 PackMixin = style_mixin(Pack)
 
 

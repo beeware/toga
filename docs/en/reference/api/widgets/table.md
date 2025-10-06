@@ -150,3 +150,5 @@ print(f"{row.character}, who is age {row.age}, is from {row.planet}")
 ::: toga.widgets.table.OnSelectHandler
 
 ::: toga.widgets.table.OnActivateHandler
+
+::: toga.widgets.table.SourceT

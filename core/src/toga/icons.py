@@ -10,7 +10,7 @@ from toga.platform import get_platform_factory
 if TYPE_CHECKING:
     from typing import TypeAlias
 
-    IconContentT: TypeAlias = str | Path | toga.Icon  # TODO: Include in documentation?
+    IconContentT: TypeAlias = str | Path | toga.Icon
     """
     When specifying an [Icon][], you can
     provide:

@@ -161,3 +161,5 @@ An item of [`OptionContainer`][toga.OptionContainer] content can be:
 ::: toga.widgets.optioncontainer.OptionItem
 
 ::: toga.widgets.optioncontainer.OnSelectHandler
+
+::: toga.widgets.optioncontainer.OptionContainerContentT

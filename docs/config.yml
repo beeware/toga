@@ -108,7 +108,7 @@ plugins:
             allow_inspection: false  # True includes *more* dunder methods, can be enabled on individual class entries if you want them
             show_source: false  # Otherwise, source code is shown collapsed for all
             members_order: alphabetical  # Orders things based on the source code
-            annotations_path: brief  # This is desired per current docs
+            annotations_path: brief  # Keeps type annotation links more concise
             merge_init_into_class: true  # Otherwise, init is displayed separately
             separate_signature: true  # Shows the `function(args)` separately from name
             show_signature: true  # Displays () or (args) along with the function name in the signature
@@ -117,3 +117,4 @@ plugins:
             docstring_section_style: spacy  # Better info layout than the other options
             line_length: 80  # Requires ruff, forces longer signatures to be stacked, if signatures aren't used, can be removed
             show_symbol_type_toc: true  # This is what they added on place of function() (parens) being displayed in the sidebar ToC
+            show_attribute_values: false  # Suppresses the values of attributes in the signature
