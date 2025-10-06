@@ -24,7 +24,7 @@ View the [Windows prerequisites][windows-prerequisites].
 
 ///
 
-## `tl;dr` - Dev Quick-Setup { #dev-environment-tldr }
+## <nospell>tl;dr</nospell> - Dev Quick-Setup { #dev-environment-tldr }
 
 Set up the dev environment by running:
 
