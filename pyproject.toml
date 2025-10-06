@@ -104,7 +104,7 @@ type = [
     { directory = "misc", name = "Misc", showcontent = false },
 ]
 
-# [tool.setuptools_scm]
+[tool.setuptools_scm]
 # We're not doing anything Python-related at the root level of the repo, but if this
 # declaration isn't here, tox commands run from the root directory raise a warning that
 # pyproject.toml doesn't contain a setuptools_scm section.
