@@ -10,7 +10,7 @@ build:
   os: ubuntu-24.04
   tools:
     # Docs are always built on Python 3.12. See also the tox config.
-    python: "3.13"
+    python: "3.12"
   jobs:
     post_checkout:
       - git fetch --unshallow
