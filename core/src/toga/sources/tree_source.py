@@ -8,6 +8,12 @@ from .list_source import Row, _find_item
 
 T = TypeVar("T")
 
+TreeSourceT = TypeVar("TreeSourceT", bound=Source)
+"""
+A type describing any object adhering to the same interface as
+[TreeSource][toga.sources.TreeSource].
+"""
+
 
 class Node(Row[T]):
     _source: TreeSource

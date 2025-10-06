@@ -8,9 +8,19 @@ if TYPE_CHECKING:
     from typing import TypeAlias
 
     PositionT: TypeAlias = toga.Position | tuple[int, int]
-    """"""  # TODO: Update docstring content.
+    """
+    A representation of a 2D position, in CSS pixels. This can be:
+
+    * A tuple of 2 integers `(x,y)`; or
+    * An instance of [toga.Position][].
+    """
     SizeT: TypeAlias = toga.Size | tuple[int, int]
-    """"""  # TODO: Update docstring content.
+    """
+    A representation of a 2D size, in CSS pixels. This can be:
+
+    * A tuple of 2 integers `(x,y)`; or
+    * An instance of [toga.Size][].
+    """
 
 
 class LatLng(NamedTuple):

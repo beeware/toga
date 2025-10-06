@@ -8,6 +8,12 @@ from .base import Source
 T = TypeVar("T")
 UNDEFINED = object()
 
+ListSourceT = TypeVar("ListSourceT", bound=Source)
+"""
+A type describing any object adhering to the same interface as
+[ListSource][toga.sources.ListSource].
+"""
+
 
 def _find_item(
     candidates: Sequence[T],

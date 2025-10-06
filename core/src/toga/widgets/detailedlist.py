@@ -1,16 +1,13 @@
 from __future__ import annotations
 
 from collections.abc import Iterable
-from typing import Any, Literal, Protocol, TypeVar
+from typing import Any, Literal, Protocol
 
 import toga
 from toga.handlers import wrapped_handler
-from toga.sources import ListSource, Row, Source
+from toga.sources import ListSource, ListSourceT, Row, Source
 
 from .base import StyleT, Widget
-
-SourceT = TypeVar("SourceT", bound=Source)
-""""""  # TODO: Update docstring content.
 
 
 class OnPrimaryActionHandler(Protocol):
@@ -56,7 +53,7 @@ class DetailedList(Widget):
         self,
         id: str | None = None,
         style: StyleT | None = None,
-        data: SourceT | Iterable | None = None,
+        data: ListSourceT | Iterable | None = None,
         accessors: tuple[str, str, str] = ("title", "subtitle", "icon"),
         missing_value: str = "",
         primary_action: str | None = "Delete",
@@ -96,7 +93,7 @@ class DetailedList(Widget):
         self._secondary_action = secondary_action
         self.on_select = None
 
-        self._data: SourceT | ListSource = None
+        self._data: ListSourceT | ListSource = None
 
         super().__init__(id, style, **kwargs)
 
@@ -126,7 +123,7 @@ class DetailedList(Widget):
         pass
 
     @property
-    def data(self) -> SourceT | ListSource:
+    def data(self) -> ListSourceT | ListSource:
         """The data to display in the table.
 
         When setting this property:
@@ -143,7 +140,7 @@ class DetailedList(Widget):
         return self._data
 
     @data.setter
-    def data(self, data: SourceT | Iterable | None) -> None:
+    def data(self, data: ListSourceT | Iterable | None) -> None:
         if data is None:
             self._data = ListSource(data=[], accessors=self.accessors)
         elif isinstance(data, Source):

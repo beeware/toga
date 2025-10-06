@@ -69,5 +69,3 @@ In this example, when `my_sync_handler` is triggered, a dialog will be created, 
 ::: toga.OpenFileDialog
 
 ::: toga.SelectFolderDialog
-
-::: toga.dialogs.DialogResultT

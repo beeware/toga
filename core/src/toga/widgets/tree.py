@@ -1,18 +1,15 @@
 from __future__ import annotations
 
 from collections.abc import Iterable
-from typing import Any, Literal, Protocol, TypeVar
+from typing import Any, Literal, Protocol
 
 import toga
 from toga.handlers import wrapped_handler
-from toga.sources import Node, Source, TreeSource
+from toga.sources import Node, Source, TreeSource, TreeSourceT
 from toga.sources.accessors import build_accessors, to_accessor
 from toga.style import Pack
 
 from .base import Widget
-
-SourceT = TypeVar("SourceT", bound=Source)
-""""""  # TODO: Update docstring content.
 
 
 class OnSelectHandler(Protocol):
@@ -39,7 +36,7 @@ class Tree(Widget):
         headings: Iterable[str] | None = None,
         id: str | None = None,
         style: Pack | None = None,
-        data: SourceT | object | None = None,
+        data: TreeSourceT | object | None = None,
         accessors: Iterable[str] | None = None,
         multiple_select: bool = False,
         on_select: toga.widgets.tree.OnSelectHandler | None = None,
@@ -79,7 +76,7 @@ class Tree(Widget):
         :param kwargs: Initial style properties.
         """
         self._headings: list[str] | None
-        self._data: SourceT | TreeSource
+        self._data: TreeSourceT | TreeSource
 
         if headings is not None:
             self._headings = [heading.split("\n")[0] for heading in headings]
@@ -122,7 +119,7 @@ class Tree(Widget):
         pass
 
     @property
-    def data(self) -> SourceT | TreeSource:
+    def data(self) -> TreeSourceT | TreeSource:
         """The data to display in the tree.
 
         When setting this property:
@@ -139,7 +136,7 @@ class Tree(Widget):
         return self._data
 
     @data.setter
-    def data(self, data: SourceT | object | None) -> None:
+    def data(self, data: TreeSourceT | object | None) -> None:
         if data is None:
             self._data = TreeSource(accessors=self._accessors, data=[])
         elif isinstance(data, Source):

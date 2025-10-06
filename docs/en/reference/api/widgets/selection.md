@@ -132,5 +132,3 @@ selection.value = selection.items.find(name="Charlie")
 ## Reference
 
 ::: toga.Selection
-
-::: toga.widgets.selection.SourceT

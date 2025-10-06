@@ -1,17 +1,14 @@
 from __future__ import annotations
 
 from collections.abc import Iterable
-from typing import Any, Literal, Protocol, TypeVar
+from typing import Any, Literal, Protocol
 
 import toga
 from toga.handlers import wrapped_handler
-from toga.sources import ListSource, Row, Source
+from toga.sources import ListSource, ListSourceT, Row, Source
 from toga.sources.accessors import build_accessors, to_accessor
 
 from .base import StyleT, Widget
-
-SourceT = TypeVar("SourceT", bound=Source)
-""""""  # TODO: Update docstring content.
 
 
 class OnSelectHandler(Protocol):
@@ -39,7 +36,7 @@ class Table(Widget):
         headings: Iterable[str] | None = None,
         id: str | None = None,
         style: StyleT | None = None,
-        data: SourceT | Iterable | None = None,
+        data: ListSourceT | Iterable | None = None,
         accessors: Iterable[str] | None = None,
         multiple_select: bool = False,
         on_select: toga.widgets.table.OnSelectHandler | None = None,
@@ -80,7 +77,7 @@ class Table(Widget):
         """
         self._headings: list[str] | None
         self._accessors: list[str]
-        self._data: SourceT | ListSource
+        self._data: ListSourceT | ListSource
 
         if headings is not None:
             self._headings = [heading.split("\n")[0] for heading in headings]
@@ -124,7 +121,7 @@ class Table(Widget):
         pass
 
     @property
-    def data(self) -> SourceT | ListSource:
+    def data(self) -> ListSourceT | ListSource:
         """The data to display in the table.
 
         When setting this property:
@@ -141,7 +138,7 @@ class Table(Widget):
         return self._data
 
     @data.setter
-    def data(self, data: SourceT | Iterable | None) -> None:
+    def data(self, data: ListSourceT | Iterable | None) -> None:
         if data is None:
             self._data = ListSource(accessors=self._accessors, data=[])
         elif isinstance(data, Source):

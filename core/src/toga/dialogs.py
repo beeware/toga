@@ -22,7 +22,6 @@ __all__ = [
 ]
 
 DialogResultT = TypeVar("DialogResultT")
-""""""  # TODO: Update docstring content.
 
 
 class Dialog(Generic[DialogResultT]):

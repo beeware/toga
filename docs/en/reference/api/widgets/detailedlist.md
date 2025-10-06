@@ -154,5 +154,3 @@ The DetailedList as a whole can also respond to a refresh UI action. This is usu
 ::: toga.widgets.detailedlist.OnRefreshHandler
 
 ::: toga.widgets.detailedlist.OnSelectHandler
-
-::: toga.widgets.detailedlist.SourceT

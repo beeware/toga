@@ -17,9 +17,14 @@ warnings.filterwarnings("default", category=DeprecationWarning)
 if TYPE_CHECKING:
     from typing import TypeAlias
 
-    # Define a type variable for generics where an Image type is required.
     ImageT = TypeVar("ImageT")
-    """"""  # TODO: Update docstring content.
+    """
+    Toga is able to receive and return content in a wide range of image formats.
+    ``ImageT`` describes any "image-like" object. This could be an instance of
+    [toga.Image][], an image type from a third party library (such as
+    [`PIL.Image.Image`][] from Pillow), or the platform's native type for representing
+    images.
+    """
 
     # Define the types that can be used as Image content
     PathLikeT: TypeAlias = str | os.PathLike
@@ -52,9 +57,11 @@ if TYPE_CHECKING:
     module that defines your Toga application class.
     """
 
-    # Define a type variable representing an image of an externally defined type.
     ExternalImageT = TypeVar("ExternalImageT")
-    """"""  # TODO: Update docstring content.
+    """
+    A type describing an image-like object provided by a third-party library,
+    such as [`PIL.Image.Image`][] from Pillow.
+    """
 
 
 class ImageConverter(Protocol):

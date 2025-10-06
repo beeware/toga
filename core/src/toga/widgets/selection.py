@@ -1,16 +1,13 @@
 from __future__ import annotations
 
 from collections.abc import Iterable
-from typing import Any, Protocol, TypeVar
+from typing import Any, Protocol
 
 import toga
 from toga.handlers import wrapped_handler
-from toga.sources import ListSource, Source
+from toga.sources import ListSource, ListSourceT, Source
 
 from .base import StyleT, Widget
-
-SourceT = TypeVar("SourceT", bound=Source)
-""""""  # TODO: Update docstring content.
 
 
 class OnChangeHandler(Protocol):
@@ -27,7 +24,7 @@ class Selection(Widget):
         self,
         id: str | None = None,
         style: StyleT | None = None,
-        items: SourceT | Iterable | None = None,
+        items: ListSourceT | Iterable | None = None,
         accessor: str | None = None,
         value: object | None = None,
         on_change: toga.widgets.selection.OnChangeHandler | None = None,
@@ -51,7 +48,7 @@ class Selection(Widget):
         :param kwargs: Initial style properties.
         """
 
-        self._items: SourceT | ListSource
+        self._items: ListSourceT | ListSource
 
         self.on_change = None  # needed for _impl initialization
 
@@ -69,7 +66,7 @@ class Selection(Widget):
         return self.factory.Selection(interface=self)
 
     @property
-    def items(self) -> SourceT | ListSource:
+    def items(self) -> ListSourceT | ListSource:
         """The items to display in the selection.
 
         When setting this property:
@@ -87,7 +84,7 @@ class Selection(Widget):
         return self._items
 
     @items.setter
-    def items(self, items: SourceT | Iterable | None) -> None:
+    def items(self, items: ListSourceT | Iterable | None) -> None:
         if self._accessor is None:
             accessors = ["value"]
         else:

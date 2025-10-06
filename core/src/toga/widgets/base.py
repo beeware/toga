@@ -18,7 +18,10 @@ if TYPE_CHECKING:
 
 
 StyleT = TypeVar("StyleT", bound=BaseStyle)
-""""""  # TODO: Update docstring content.
+"""
+A type describing a style object. By default, this will be
+[Pack](/reference/style/pack.md), but Toga allows for other style representations.
+"""
 PackMixin = style_mixin(Pack)
 
 

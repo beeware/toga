@@ -14,11 +14,13 @@ if TYPE_CHECKING:
 
     SplitContainerContentT: TypeAlias = Widget | tuple[Widget, float] | None
     """
-    An item of [`SplitContainer`][toga.SplitContainer] content can be:
+    An item of content that can be added to a [`SplitContainer`][toga.SplitContainer].
+    This content can be:
 
     - a [`Widget`][toga.Widget]; or
-    - a 2-tuple, containing a [`Widget`][toga.Widget], and an [`int`][] flex value
-    """  # TODO: Update docstring content.
+    - a 2-tuple, containing a [`Widget`][toga.Widget], and a 0-1 [`float`][] value
+      describing the percentage of the available area should be taken up by the widget.
+    """
 
 
 class SplitContainer(Widget):

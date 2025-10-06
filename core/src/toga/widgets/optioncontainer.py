@@ -21,7 +21,8 @@ if TYPE_CHECKING:
         | toga.OptionItem
     )
     """
-    An item of [`OptionContainer`][toga.OptionContainer] content can be:
+    An item of content to add to an [`OptionContainer`][toga.OptionContainer]. This
+    content can be:
 
     - a 2-tuple, containing the title for the tab, and the content widget;
     - a 3-tuple, containing the title, content widget, and
@@ -29,7 +30,7 @@ if TYPE_CHECKING:
     - a 4-tuple, containing the title, content widget, [icon][toga.icons.IconContentT]
       for the tab, and enabled status; or
     - an [`toga.OptionItem`][] instance.
-    """  # TODO: Update docstring content.
+    """
 
 
 class OnSelectHandler(Protocol):
