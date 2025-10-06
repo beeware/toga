@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import datetime as _dt
 import os
 import textwrap
 import types
@@ -110,6 +111,10 @@ class WebTestHarness:
                     key_env = {"type": "str", "value": str(k)}
                 items.append([key_env, self._serialise_payload(v)])
             return {"type": "dict", "items": items}
+        if isinstance(x, _dt.time):
+            return {"type": "time", "value": x.strftime("%H:%M:%S")}
+        if isinstance(x, _dt.date) and not isinstance(x, _dt.datetime):
+            return {"type": "date", "value": x.strftime("%m/%d/%Y")}
 
         # references by id
         obj_id = self._key_for(x)
@@ -155,6 +160,17 @@ class WebTestHarness:
                 v = self._deserialise(v_env)
                 out[k] = v
             return out
+        if t == "time":
+            s = env["value"]
+            h, m, *rest = s.split(":")
+            sec = int(rest[0]) if rest else 0
+            return _dt.time(int(h), int(m), sec)
+        if t == "date":
+            s = env["value"]
+            try:
+                return _dt.datetime.strptime(s, "%m/%d/%Y").date()
+            except ValueError:
+                return _dt.date.fromisoformat(s)
         # reconstruct functions from source
         if t == "callable_source":
             try:

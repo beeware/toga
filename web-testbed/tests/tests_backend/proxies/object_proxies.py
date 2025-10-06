@@ -58,3 +58,17 @@ class PasswordInputProxy(ObjectProxy):
 
 
 PasswordInputProxy.__name__ = PasswordInputProxy.__qualname__ = "PasswordInput"
+
+
+class TimeInputProxy(ObjectProxy):
+    _ctor_expr = "toga.TimeInput"
+
+
+TimeInputProxy.__name__ = TimeInputProxy.__qualname__ = "TimeInput"
+
+
+class DateInputProxy(ObjectProxy):
+    _ctor_expr = "toga.DateInput"
+
+
+DateInputProxy.__name__ = DateInputProxy.__qualname__ = "DateInput"
