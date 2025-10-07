@@ -40,7 +40,7 @@ class ScrollContainer(Widget):
             will be applied to the widget.
         :param horizontal: Should horizontal scrolling be permitted?
         :param vertical: Should vertical scrolling be permitted?
-        :param on_scroll: Initial :any:`on_scroll` handler.
+        :param on_scroll: Initial [`on_scroll`][toga.ScrollContainer.on_scroll] handler.
         :param content: The content to display in the scroll window.
         :param kwargs: Initial style properties.
         """
