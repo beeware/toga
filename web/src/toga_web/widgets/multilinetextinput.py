@@ -1,4 +1,5 @@
 from travertino.colors import TRANSPARENT
+from travertino.size import at_least
 
 from toga_web.libs import create_proxy
 
@@ -92,12 +93,8 @@ class MultilineTextInput(Widget):
         pass
 
     def rehint(self):
-        self.interface.intrinsic.width = max(
-            self.interface.intrinsic.width, self.interface._MIN_WIDTH
-        )
-        self.interface.intrinsic.height = max(
-            self.interface.intrinsic.height, self.interface._MIN_HEIGHT
-        )
+        self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
+        self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
 
     def scroll_to_top(self):
         def _go(_):
