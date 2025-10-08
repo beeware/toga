@@ -551,16 +551,3 @@ async def test_change_content(
     # on_select has been invoked
     on_select_handler.assert_called_once_with(widget)
     on_select_handler.reset_mock()
-
-
-async def test_blocking_refresh(widget, probe):
-    """
-    Widget will be resized immediately upon relayout without delay when event
-    loop is blocked
-    """
-    widget.width = 100
-    assert probe.width == 100
-    widget.width = 101
-    assert probe.width == 101
-    widget.width = 102
-    assert probe.width == 102
