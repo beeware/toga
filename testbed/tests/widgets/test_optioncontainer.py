@@ -556,7 +556,7 @@ async def test_change_content(
 async def test_blocking_refresh(widget, probe):
     """
     Widget will be resized immediately upon relayout without delay when event
-    loop is blocked
+    loop is blocked (#3787)
     """
     widget.width = 100
     assert probe.width == 100

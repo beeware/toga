@@ -510,3 +510,16 @@ async def test_no_content(widget, probe, content):
     widget.parent.remove(other)
     await probe.redraw("Scroll container size has been restored")
     assert probe.width == original_width
+
+
+async def test_blocking_refresh(widget, probe):
+    """
+    Widget will be resized immediately upon relayout without delay when event
+    loop is blocked (#3787)
+    """
+    widget.width = 100
+    assert probe.width == 100
+    widget.width = 101
+    assert probe.width == 101
+    widget.width = 102
+    assert probe.width == 102
