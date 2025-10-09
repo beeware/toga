@@ -302,7 +302,7 @@ class Window:
         elif state == WindowState.PRESENTATION:
             self._before_presentation_mode_screen = self.interface.screen
             self.native.menuBar().hide()
-            # Do this bee-fore showFullScreen bee-cause
+            # Do this before showFullScreen because
             # showFullScreen might immediately trigger the event
             # and the window state read there might read a non-
             # presentation mode
