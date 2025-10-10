@@ -79,7 +79,7 @@ def _create_about_dialog(app):
 
 
 class App:
-    # GTK apps exit when the last window is closed
+    # Qt apps exit when the last window is closed
     CLOSE_ON_LAST_WINDOW = True
     # GTK apps use default command line handling
     HANDLES_COMMAND_LINE = False
