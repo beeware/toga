@@ -35,3 +35,4 @@ The order of addition is not significant. `Key.SHIFT + Key.A` and `Key.A + Key.S
         separate_signature: false
         show_labels: false
         members: true
+        show_attribute_values: true
