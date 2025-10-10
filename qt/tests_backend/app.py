@@ -87,30 +87,46 @@ class AppProbe(BaseProbe):
         assert actual_titles == expected
 
     def assert_system_menus(self):
-        # Incomplete
-        self.assert_menu_item(["File", "Quit"])
-        self.assert_menu_item(["Help", "About Toga Testbed"])
+        self.assert_menu_item(["Settings", "Configure Toga Testbed"], enabled=False)
+        self.assert_menu_item(["File", "Quit"], enabled=True)
+
+        self.assert_menu_item(["File", "New Example Document"], enabled=True)
+        self.assert_menu_item(["File", "New Read-only Document"], enabled=True)
+        self.assert_menu_item(["File", "Open..."], enabled=True)
+        self.assert_menu_item(["File", "Save"], enabled=True)
+        self.assert_menu_item(["File", "Save As..."], enabled=True)
+        self.assert_menu_item(["File", "Save All"], enabled=True)
+
+        self.assert_menu_item(["Help", "Visit homepage"], enabled=True)
+        self.assert_menu_item(["Help", "About Toga Testbed"], enabled=True)
+
+        self.assert_menu_item(["Edit", "Undo"])
+        self.assert_menu_item(["Edit", "Redo"])
+        self.assert_menu_item(["Edit", "Cut"])
+        self.assert_menu_item(["Edit", "Copy"])
+        self.assert_menu_item(["Edit", "Paste"])
 
     def activate_menu_close_window(self):
-        pytest.xfail("KDE apps do not include a Close in the menu bar")
+        pytest.xfail("KDE apps do not include Close in the menu bar")
 
     def activate_menu_close_all_windows(self):
-        pytest.xfail("KDE apps do not include a Close All in the menu bar")
+        pytest.xfail("KDE apps do not include Close All in the menu bar")
 
     def activate_menu_minimize(self):
-        pytest.xfail("KDE apps do not include a Minimize in the menu bar")
+        pytest.xfail("KDE apps do not include Minimize in the menu bar")
 
     def keystroke(self, combination):
         return qt_to_toga_key(toga_to_qt_key(combination))
 
     async def restore_standard_app(self):
-        pytest.skip("not impld")
+        # No special handling needed to restore standard app.
+        await self.redraw("Restore to standard app")
 
     async def open_initial_document(self, monkeypatch, document_path):
-        pytest.skip("not impld")
+        pytest.xfail("Qt doesn't require initial document support")
 
     def open_document_by_drag(self, document_path):
-        pytest.skip("Not impld")
+        pytest.xfail("Qt doesn't support opening documents by drag")
 
     def has_status_icon(self, status_icon):
         pytest.skip("Status Icons not yet implemented on Qt")
