@@ -5,7 +5,6 @@ import pytest
 import toga
 from toga.sources import TreeSource
 from toga_dummy.utils import (
-    assert_action_not_performed,
     assert_action_performed,
     assert_action_performed_with,
 )
@@ -166,13 +165,6 @@ def test_disable_no_op(tree):
 
     # Still enabled.
     assert tree.enabled
-
-
-def test_focus_noop(tree):
-    """Focus is a no-op."""
-
-    tree.focus()
-    assert_action_not_performed(tree, "focus")
 
 
 @pytest.mark.parametrize(

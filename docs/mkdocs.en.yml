@@ -1,0 +1,7 @@
+INHERIT: config.yml
+site_name: Toga
+site_url: https://toga.beeware.org/
+docs_dir: en
+
+theme:
+  language: en

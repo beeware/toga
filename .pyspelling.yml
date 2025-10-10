@@ -1,0 +1,57 @@
+matrix:
+- name: markdown
+  dictionary:
+    wordlists:
+    - docs/spelling_wordlist
+    output: _build/dictionary/python.dic
+  sources:
+  - 'docs/**/*.md'
+  pipeline:
+  - pyspelling.filters.markdown:
+      markdown_extensions:
+      - markdown.extensions.toc
+      - markdown.extensions.admonition
+      - markdown.extensions.attr_list
+      - pymdownx.superfences
+      - pymdownx.blocks.admonition
+      - pymdownx.blocks.caption
+      - pymdownx.blocks.tab
+      - pymdownx.snippets
+  - pyspelling.filters.html:
+      comments: true
+      attributes:
+        - title
+        - alt
+      ignores:
+        - 'code'
+        - 'pre'
+        - 'figure'  # Can be removed once all <figure>s are replaced with Markdown
+        - 'nospell'  # Allows for ignoring a word or words inline.
+  - pyspelling.filters.context:
+      context_visible_first: true
+      escapes: '\\[\\`~]'
+      delimiters:
+        # Ignores the Jinja directives and their contents
+        - open: '{%'
+          content: '[\d\D]*'
+          close: '%}'
+        # Ignores the Jinja directives and their contents
+        - open: '{{'
+          content: '[\d\D]*'
+          close: '}}'
+        # Ignore the mkdocstrings syntax and its content
+        - open: '\['
+          content: '[\d\D]*\]\[[\d\D]*'
+          close: '\]'
+        # Ignore the mkdocstrings syntax and its content
+        - open: ':::'
+          content: '[\d\D]*'
+          close: '\n'
+        # Ignore the single line Snippets syntax
+        - open: '-8<\-'
+          content: '[\d\D]*'
+          close: '\n'
+        # Ignore the multiline Snippets syntax
+        - open: '-8<\-\n'
+          content: '[\d\D]*'
+          close: '-8<-\n'

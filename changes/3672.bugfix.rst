@@ -1,1 +1,0 @@
-An issue with the text of OptionContainer tab labels being returned as a ``rubicon.objc.collections.ObjCStrInstance`` on macOS instead of a Python ``str`` has been fixed.
