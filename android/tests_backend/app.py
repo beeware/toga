@@ -14,6 +14,7 @@ from .window import WindowProbe
 class AppProbe(BaseProbe, DialogsMixin):
     supports_key = False
     supports_dark_mode = True
+    edit_menu_noop_enabled = False
 
     def __init__(self, app):
         super().__init__(app)

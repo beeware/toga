@@ -9,6 +9,7 @@ import toga
 from toga.command import Command, Group
 from toga.handlers import NativeHandler
 
+from .libs import create_qapplication
 from .screens import Screen as ScreenImpl
 
 
@@ -88,7 +89,7 @@ class App:
         self.interface = interface
         self.interface._impl = self
 
-        self.native = QApplication.instance()
+        self.native = create_qapplication()
         self.loop = QEventLoop(self.native)
         asyncio.set_event_loop(self.loop)
         self.app_close_event = asyncio.Event()

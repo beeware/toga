@@ -5,6 +5,8 @@ from PySide6.QtGui import QIcon
 
 import toga
 
+from .libs import create_qapplication
+
 IMPL_DICT = {}
 
 
@@ -13,6 +15,8 @@ class Icon:
     SIZES = None
 
     def __init__(self, interface, path):
+        # A QApplication must exist before pixmaps can be manipulated
+        create_qapplication()
         self.interface = interface
 
         if path is None:

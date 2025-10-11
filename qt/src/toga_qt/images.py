@@ -3,11 +3,16 @@ from pathlib import Path
 from PySide6.QtCore import QBuffer, QIODevice
 from PySide6.QtGui import QImage
 
+from .libs import create_qapplication
+
 
 class Image:
     RAW_TYPE = QImage
 
     def __init__(self, interface, path=None, data=None, raw=None):
+        # A QApplication must exist before pixmaps can be manipulated
+        create_qapplication()
+
         self.interface = interface
 
         if path:

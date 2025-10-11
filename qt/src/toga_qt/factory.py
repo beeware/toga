@@ -2,12 +2,10 @@
 
 # noqa for setting up QApplication before importing
 
-from PySide6.QtWidgets import QApplication
 
 # In Qt, most operations, even manipulating icons, must be done
 # after QApplication has been initialized.  Therefore, initialize
 # it and also the event loop as early as possible.
-QApplication()
 
 from toga import NotImplementedWarning
 
