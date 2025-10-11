@@ -51,8 +51,8 @@ class Command:
                 "text": "Open...",
                 "shortcut": Key.MOD_1 + "o",
                 "group": Group.FILE,
-                "section": 0,
-                "order": 10,
+                "section": 10,
+                "order": 0,
             }
 
         elif id == StandardCommand.SAVE:
@@ -60,24 +60,24 @@ class Command:
                 "text": "Save",
                 "shortcut": Key.MOD_1 + "s",
                 "group": Group.FILE,
-                "section": 0,
-                "order": 20,
+                "section": 20,
+                "order": 0,
             }
         elif id == StandardCommand.SAVE_AS:
             return {
                 "text": "Save As...",
                 "shortcut": Key.MOD_1 + "S",
                 "group": Group.FILE,
-                "section": 0,
-                "order": 21,
+                "section": 20,
+                "order": 10,
             }
         elif id == StandardCommand.SAVE_ALL:
             return {
                 "text": "Save All",
-                "shortcut": Key.MOD_1 + Key.MOD_2 + "s",
+                "shortcut": Key.MOD_1 + "l",
                 "group": Group.FILE,
-                "section": 0,
-                "order": 21,
+                "section": 20,
+                "order": 20,
             }
         # ---- Help menu -----------------------------------
         elif id == StandardCommand.VISIT_HOMEPAGE:
@@ -105,9 +105,18 @@ class Command:
 
         if hasattr(self.interface.action, "icon_name"):
             item.setIcon(QIcon.fromTheme(self.interface.action.icon_name))
-
-        if self.interface.text == "Quit":  # Apply the quit icon for application exit.
+        elif self.interface.shortcut == Key.MOD_1 + "q":
             item.setIcon(QIcon.fromTheme("application-exit"))
+        elif self.interface.shortcut == Key.MOD_1 + "n":
+            item.setIcon(QIcon.fromTheme("document-new"))
+        elif self.interface.shortcut == Key.MOD_1 + "o":
+            item.setIcon(QIcon.fromTheme("document-open"))
+        elif self.interface.shortcut == Key.MOD_1 + "s":
+            item.setIcon(QIcon.fromTheme("document-save"))
+        elif self.interface.shortcut == Key.MOD_1 + "S":
+            item.setIcon(QIcon.fromTheme("document-save-as"))
+        elif self.interface.shortcut == Key.MOD_1 + "l":
+            item.setIcon(QIcon.fromTheme("document-save-all"))
 
         if self.interface.icon:
             item.setIcon(self.interface.icon._impl.native)

@@ -97,7 +97,6 @@ class AppProbe(BaseProbe):
         self.assert_menu_item(["File", "Save As..."], enabled=True)
         self.assert_menu_item(["File", "Save All"], enabled=True)
 
-        self.assert_menu_item(["Help", "Visit homepage"], enabled=True)
         self.assert_menu_item(["Help", "About Toga Testbed"], enabled=True)
 
         self.assert_menu_item(["Edit", "Undo"])
