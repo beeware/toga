@@ -85,6 +85,8 @@ class App:
         # There's not a satisfying way to implement that in Qt though...
         # I've referenced https://stackoverflow.com/questions/2047456, so
         # we omit the enabled detection for now.
+        # Those KDE bundled apps only have one textfield in the application,
+        # so it's trivial for them to implement it.
 
         # NativeHandler is (ab)used here to ensure that the function stays
         # of type EditOperation, to provide the appropriate icon.
@@ -131,7 +133,11 @@ class App:
 
     def create_menus(self):
         for window in self.interface.windows:
-            if hasattr(window._impl, "create_menus"):
+            # It's difficult to trigger this on a simple window, because we can't easily
+            # modify the set of app-level commands that are registered, and a simple
+            # window doesn't exist when the app starts up. Therefore, no-branch the else
+            # case.
+            if hasattr(window._impl, "create_menus"):  # prgama: no branch
                 window._impl.create_menus()
 
     ######################################################################
@@ -152,7 +158,7 @@ class App:
         self.interface.commands[Command.PREFERENCES].icon = icon
 
     def set_main_window(self, window):
-        self.interface.factory.not_implemented("App.set_main_window()")
+        pass
 
     ######################################################################
     # App resources
