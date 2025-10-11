@@ -10,9 +10,7 @@ from toga.types import Position, Size
 
 from .container import Container
 from .libs import (
-    AnyWithin,
     get_is_wayland,
-    get_testing,
 )
 from .screens import Screen as ScreenImpl
 
@@ -38,11 +36,17 @@ class TogaMainWindow(QMainWindow):
         if event.type() == QEvent.WindowStateChange:
             old = event.oldState()
             new = self.windowState()
-            if not old & Qt.WindowMinimized and new & Qt.WindowMinimized:
+            # Those branches cannot be triggered reliably on Wayland, as
+            # Minimized is not a reliable window state.
+            if (  # pragma: no-cover-if-linux-wayland
+                not old & Qt.WindowMinimized and new & Qt.WindowMinimized
+            ):
                 self.interface.on_hide()
-            elif old & Qt.WindowMinimized and not new & Qt.WindowMinimized:
+            elif (  # pragma: no-cover-if-linux-wayland
+                old & Qt.WindowMinimized and not new & Qt.WindowMinimized
+            ):
                 self.interface.on_show()
-            if get_is_wayland():  # pragma: no-cover-if-linux-x
+            if get_is_wayland():  # pragma: no-cover-if-linux-x  # pragma: no branch
                 self.impl._changeventid += 1
                 # Handle this later as the states etc may not have been fully realized.
                 # Starting the next transition now will cause extra window events to be
@@ -148,24 +152,10 @@ class Window:
         self.native.setWindowTitle(title)
 
     def get_size(self):
-        if get_testing():
-            # Upstream glitch.  Try making a window, set its size, read it after a sec,
-            # it changes by 1 or 2.  Reproducible with 300x200 as the size
-            # Ideally we should use pytest.approx; however that doesn't support compar-
-            # sions.
-            return Size(
-                AnyWithin(
-                    self.native.size().width() - 2, self.native.size().width() + 2
-                ),
-                AnyWithin(
-                    self.native.size().height() - 2, self.native.size().height() + 2
-                ),
-            )
-        else:
-            return Size(
-                self.native.size().width(),
-                self.native.size().height(),
-            )
+        return Size(
+            self.native.size().width(),
+            self.native.size().height(),
+        )
 
     def set_size(self, size):
         if not self.interface.resizable:

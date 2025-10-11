@@ -2,7 +2,7 @@ import asyncio
 
 import pytest
 from PySide6.QtCore import Qt
-from toga_qt.libs import AnyWithin, get_is_wayland
+from toga_qt.libs import get_is_wayland
 
 from toga.constants import WindowState
 
@@ -73,9 +73,7 @@ class WindowProbe(BaseProbe):
     @property
     def content_size(self):
         size = self.container.native.size()
-        return AnyWithin(size.width() - 2, size.width() + 2), AnyWithin(
-            size.height() - 2, size.height() + 2
-        )
+        return (size.width(), size.height())
 
     @property
     def is_resizable(self):
