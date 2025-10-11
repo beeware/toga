@@ -46,7 +46,7 @@ class TogaMainWindow(QMainWindow):
                 old & Qt.WindowMinimized and not new & Qt.WindowMinimized
             ):
                 self.interface.on_show()
-            if get_is_wayland():  # pragma: no-cover-if-linux-x  # pragma: no branch
+            if get_is_wayland():  # pragma: no-cover-if-linux-x
                 self.impl._changeventid += 1
                 # Handle this later as the states etc may not have been fully realized.
                 # Starting the next transition now will cause extra window events to be
@@ -203,7 +203,9 @@ class Window:
     def get_window_state(self, in_progress_state=False):
         if self._hidden_window_state:
             return self._hidden_window_state
-        if in_progress_state and self._pending_state_transition:
+        if (
+            in_progress_state and self._pending_state_transition
+        ):  # pragma: no-cover-if-linux-x
             return self._pending_state_transition
         window_state = self.native.windowState()
 
@@ -227,7 +229,7 @@ class Window:
         ):  # pragma: no-cover-if-linux-x
             return
 
-        if self._pending_state_transition:
+        if self._pending_state_transition:  # pragma: no-cover-if-linux-x
             self._pending_state_transition = state
             return
 
@@ -238,7 +240,7 @@ class Window:
         ):
             self.interface.app.exit_presentation_mode()
 
-        if get_is_wayland():  # pragma: no-cover-if-linux-x  # pragma: no branch
+        if get_is_wayland():  # pragma: no-cover-if-linux-x
             self._pending_state_transition = state
         self._apply_state(state)
 
