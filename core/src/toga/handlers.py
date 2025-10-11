@@ -98,13 +98,13 @@ def simple_handler(fn: T, *args: object, **kwargs: object) -> T:
     """Wrap a function (with args and kwargs) so it can be used as a command handler.
 
     This essentially accepts and ignores the handler-related arguments (i.e., the
-    required ``command`` argument passed to handlers), so that you can use a method like
-    :meth:`~toga.App.about()` as a command handler.
+    required `command` argument passed to handlers), so that you can use a method like
+    [`App.about()`][toga.App.about] as a command handler.
 
     It can accept either a function or a coroutine. Arguments that will be passed to the
     function/coroutine are provided at the time the wrapper is defined. It is assumed
     that the mechanism invoking the handler will add no additional arguments other than
-    the ``command`` that is invoking the handler.
+    the `command` that is invoking the handler.
 
     :param fn: The callable to invoke as a handler.
     :param args: Positional arguments that should be passed to the invoked handler.

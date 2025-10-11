@@ -48,10 +48,10 @@ def find_backends():
 def get_platform_factory() -> ModuleType:
     """Determine the current host platform and import the platform factory.
 
-    If the ``TOGA_BACKEND`` environment variable is set, the factory will be loaded
+    If the `TOGA_BACKEND` environment variable is set, the factory will be loaded
     from that module.
 
-    Raises :any:`RuntimeError` if an appropriate host platform cannot be identified.
+    Raises [`RuntimeError`][] if an appropriate host platform cannot be identified.
 
     :returns: The factory for the host platform.
     """

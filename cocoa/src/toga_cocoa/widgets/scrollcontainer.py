@@ -75,11 +75,10 @@ class ScrollContainer(Widget):
         super().set_bounds(x, y, width, height)
 
         # Setting the bounds changes the constraints, but that doesn't mean
-        # the constraints have been fully applied. Schedule a refresh to be done
-        # as soon as possible in the future
-        self.native.performSelector(
-            SEL("refreshContent"), withObject=None, afterDelay=0
-        )
+        # the constraints have been fully applied. Force realization of the
+        # new layout, and then refresh the content.
+        self.interface.window._impl.native.layoutIfNeeded()
+        self.native.refreshContent()
 
     def content_refreshed(self, container):
         width = self.native.frame.size.width

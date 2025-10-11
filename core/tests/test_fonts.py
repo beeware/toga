@@ -6,9 +6,14 @@ import toga
 from toga.fonts import (
     _REGISTERED_FONT_CACHE,
     BOLD,
+    CURSIVE,
+    FANTASY,
     ITALIC,
+    MESSAGE,
+    MONOSPACE,
     NORMAL,
     SANS_SERIF,
+    SERIF,
     SMALL_CAPS,
     SYSTEM,
     SYSTEM_DEFAULT_FONT_SIZE,
@@ -169,6 +174,26 @@ def test_register_font(app, path, registered):
         Path(_REGISTERED_FONT_CACHE[("Custom Font", NORMAL, NORMAL, NORMAL)]).resolve()
         == registered.resolve()
     )
+
+
+@pytest.mark.parametrize(
+    "family",
+    [
+        CURSIVE,
+        FANTASY,
+        MESSAGE,
+        MONOSPACE,
+        SANS_SERIF,
+        SERIF,
+        SYSTEM,
+    ],
+)
+def test_register_shadowed_font(app, family):
+    with pytest.raises(
+        ValueError,
+        match="Custom fonts cannot be registered with a built-in font family name",
+    ):
+        toga.Font.register(family, Path("path/to/custom/font.otf"))
 
 
 @pytest.mark.parametrize(

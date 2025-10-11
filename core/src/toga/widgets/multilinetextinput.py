@@ -60,8 +60,8 @@ class MultilineTextInput(Widget):
     def placeholder(self) -> str:
         """The placeholder text for the widget.
 
-        A value of ``None`` will be interpreted and returned as an empty string.
-        Any other object will be converted to a string using ``str()``.
+        A value of `None` will be interpreted and returned as an empty string.
+        Any other object will be converted to a string using `str()`.
         """
         return self._impl.get_placeholder()
 
@@ -76,7 +76,7 @@ class MultilineTextInput(Widget):
 
         This only controls manual changes by the user (i.e., typing at the
         keyboard). Programmatic changes are permitted while the widget has
-        ``readonly`` enabled.
+        `readonly` enabled.
         """
         return self._impl.get_readonly()
 
@@ -88,8 +88,8 @@ class MultilineTextInput(Widget):
     def value(self) -> str:
         """The text to display in the widget.
 
-        A value of ``None`` will be interpreted and returned as an empty string.
-        Any other object will be converted to a string using ``str()``.
+        A value of `None` will be interpreted and returned as an empty string.
+        Any other object will be converted to a string using `str()`.
         """
         return self._impl.get_value()
 
