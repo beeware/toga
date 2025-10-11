@@ -64,6 +64,10 @@ class TogaWindow(NSWindow):
 
     @objc_method
     def windowDidResize_(self, notification) -> None:
+        # Triggering on_resize here in case of fullscreen, gives
+        # incorrect window size. Hence, exclude it for fullscreen.
+        if self.interface.state != WindowState.FULLSCREEN:
+            self.impl.interface.on_resize()
         if self.interface.content:
             # Set the window to the new size
             self.interface.content.refresh()
@@ -107,6 +111,9 @@ class TogaWindow(NSWindow):
             )
         else:
             self.impl._pending_state_transition = None
+            # Manually trigger on_resize here, as it is excluded for fullscreen in
+            # windowDidResize_.
+            self.impl.interface.on_resize()
 
     @objc_method
     def delayedFullScreenExit_(self, sender) -> None:
@@ -306,8 +313,11 @@ class Window:
     ######################################################################
 
     def get_size(self) -> Size:
-        frame = self.native.frame
-        return Size(frame.size.width, frame.size.height)
+        if self.interface.state == WindowState.PRESENTATION:
+            native_frame = self.container.native.frame
+        else:
+            native_frame = self.native.frame
+        return Size(native_frame.size.width, native_frame.size.height)
 
     def set_size(self, size):
         frame = self.native.frame
@@ -463,10 +473,14 @@ class Window:
             )
 
             # Going presentation mode causes the window content
-            # to be re-homed in a NSFullScreenWindow; teach the
-            # new parent window about its Toga representations.
+            # to be re-homed in a NSFullScreenWindow;
+            # Teach the new parent window about its Toga representations.
             self.container.native.window._impl = self
             self.container.native.window.interface = self.interface
+            # Manually trigger the resize event as the original NSWindow's
+            # size remains unchanged, hence the windowDidResize_ would not
+            # be notified when the window goes into presentation mode.
+            self.interface.on_resize()
             self.interface.content.refresh()
 
             # No need to check for other pending states,
@@ -490,6 +504,10 @@ class Window:
                     NSNumber.numberWithBool(True), forKey="NSFullScreenModeAllScreens"
                 )
                 self.container.native.exitFullScreenModeWithOptions(opts)
+                # Manually trigger the resize event as the original NSWindow's
+                # size remains unchanged, hence the windowDidResize_ would not
+                # be notified when the window goes out of the presentation mode.
+                self.interface.on_resize()
                 self.interface.content.refresh()
 
                 self.interface.screen = self._before_presentation_mode_screen

@@ -12,6 +12,7 @@ from System.Windows.Forms import (
 )
 
 from toga import Size
+from toga.constants import WindowState
 
 from .dialogs import DialogsMixin
 from .probe import BaseProbe
@@ -29,6 +30,7 @@ class WindowProbe(BaseProbe, DialogsMixin):
     supports_placement = True
     supports_as_image = True
     supports_focus = True
+    equal_window_size_states = {WindowState.FULLSCREEN, WindowState.PRESENTATION}
 
     def __init__(self, app, window):
         self.app = app
