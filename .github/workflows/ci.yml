@@ -366,7 +366,7 @@ jobs:
           setup-python: false  # Use the system Python packages
           app-user-data-path: "$HOME/.local/share/testbed"
 
-        - backend: "linux-wayland-gtk3"
+        - backend: "linux-wayland-qt"
           platform: "linux"
           runs-on: "ubuntu-24.04"
           testbed-app: "testbed-qt"
