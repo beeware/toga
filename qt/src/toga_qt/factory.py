@@ -14,7 +14,7 @@ from .app import App
 from .command import Command
 from .container import Container
 from .fonts import Font
-from .icons import Icon, NativeIcon
+from .icons import Icon
 from .images import Image
 from .libs import get_testing
 from .paths import Paths
@@ -32,7 +32,6 @@ __all__ = [
     "App",
     "Paths",
     "Icon",
-    "NativeIcon",
     "Image",
     "MenuStatusIcon",
     "SimpleStatusIcon",

@@ -1,4 +1,5 @@
 import asyncio
+import subprocess
 
 from PySide6.QtCore import QSize, Qt, QTimer
 from PySide6.QtGui import QCursor, QGuiApplication
@@ -63,6 +64,8 @@ class App:
         self.loop = QEventLoop(self.native)
         asyncio.set_event_loop(self.loop)
         self.app_close_event = asyncio.Event()
+        # Connect the native signal to an asyncio Event in order
+        # for the main event loop to finish running upon app exit
         self.native.aboutToQuit.connect(self.app_close_event.set)
         # By this point our app is already up and running.  Everything is set up,
         # so we run this manually without need to use native mechanisms.
@@ -176,7 +179,7 @@ class App:
     ######################################################################
 
     def beep(self):
-        QApplication.beep()
+        subprocess.run(["canberra-gtk-play", "-i", "bell"])
 
     def show_about_dialog(self):
         # A reference to the about dialog is stored for facilitate testing.
