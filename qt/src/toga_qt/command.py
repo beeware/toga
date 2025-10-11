@@ -1,10 +1,42 @@
 import sys
 
 from PySide6.QtGui import QAction, QIcon
+from PySide6.QtWidgets import QApplication
 
 from toga import Command as StandardCommand, Group, Key
 
 from .keys import toga_to_qt_key
+
+
+class EditOperation:
+    """
+    Perform a menu item property onto the focused widget, similar to
+    SEL in Objective-C.  This is used to implement the Edit, Copy, etc.
+    actions.
+
+    :param: needwrite:  Whether write access is required for the focus
+        widget.
+    """
+
+    def __init__(self, method_name, needwrite=False):
+        self.method_name = method_name
+        self.needwrite = needwrite
+
+    def __call__(self):
+        fw = QApplication.focusWidget()
+        if not fw:
+            return
+        if self.needwrite:
+            fnwrite = getattr(fw, "isReadOnly", None)
+            if callable(fnwrite) and fnwrite():
+                return
+        fn = getattr(fw, self.method_name, None)
+        if callable(fn):
+            fn()
+
+    @property
+    def icon_name(self):
+        return "edit-" + self.method_name
 
 
 class Command:
