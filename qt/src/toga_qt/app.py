@@ -133,11 +133,7 @@ class App:
 
     def create_menus(self):
         for window in self.interface.windows:
-            # It's difficult to trigger this on a simple window, because we can't easily
-            # modify the set of app-level commands that are registered, and a simple
-            # window doesn't exist when the app starts up. Therefore, no-branch the else
-            # case.
-            if hasattr(window._impl, "create_menus"):  # prgama: no branch
+            if hasattr(window._impl, "create_menus"):  # pragma: no branch
                 window._impl.create_menus()
 
     ######################################################################

@@ -31,7 +31,7 @@ class Icon:
                 if (hicolor / f"{size}x{size}/apps/{toga.App.app.app_id}.png").is_file()
             }
 
-            if not sizes:
+            if not sizes:  # pragma: no cover
                 raise FileNotFoundError("No icon variants found")
 
             path = sizes[max(sizes)]

@@ -1,7 +1,6 @@
 from abc import abstractmethod
 
 from PySide6.QtCore import Qt
-from travertino.size import at_least
 
 from ..colors import native_color, toga_color
 
@@ -126,9 +125,4 @@ class Widget:
     def refresh(self):
         self.rehint()
 
-    def rehint(self):
-        width = self.native.sizeHint().width()
-        height = self.native.sizeHint().height()
-
-        self.interface.intrinsic.width = at_least(width)
-        self.interface.intrinsic.height = at_least(height)
+    # A subclass will implement rehint

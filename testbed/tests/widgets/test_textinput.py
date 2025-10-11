@@ -335,6 +335,7 @@ async def test_edit_readonly_noop(widget, probe, app_probe, action, select, undo
     await probe.redraw("Typed y")
     if undo:
         await probe.undo()  # Undo once so Redo has potential to do things
+    initial_text = widget.value
 
     widget.readonly = True
     if select:
@@ -342,4 +343,12 @@ async def test_edit_readonly_noop(widget, probe, app_probe, action, select, undo
         await probe.redraw("Range selected")
     app_probe.perform_edit_action(action)
     await probe.redraw("Edit action performed; should be no-op")
-    assert widget.value == "About to be readonly" + "" if undo else "xy"
+    assert widget.value == initial_text
+
+    widget.readonly = False
+    await probe.redraw("Widget is no longer readonly")
+    app_probe.perform_edit_action(action)
+    await probe.redraw("Widget is no longer readonly")
+
+    # Non-readonly performs an action.
+    assert widget.value != initial_text

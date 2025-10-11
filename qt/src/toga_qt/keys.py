@@ -1,4 +1,3 @@
-import re
 from string import ascii_lowercase
 
 from PySide6.QtCore import Qt
@@ -119,13 +118,8 @@ def toga_to_qt_key(key):
 
     try:
         codes |= QT_KEYS[key]
-    except KeyError:
-        if match := re.fullmatch(r"<(.+)>", key):
-            key = match[1]
-        try:
-            codes |= getattr(Qt, key.title())
-        except AttributeError:  # pragma: no cover
-            raise ValueError(f"unknown key: {key!r}") from None
+    except AttributeError:  # pragma: no cover
+        raise ValueError(f"unknown key: {key!r}") from None
 
     return QKeySequence(codes)
 

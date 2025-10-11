@@ -28,11 +28,10 @@ class EditOperation:
             return
         if self.needwrite:
             fnwrite = getattr(fw, "isReadOnly", None)
-            if callable(fnwrite) and fnwrite():
+            if fnwrite():
                 return
         fn = getattr(fw, self.method_name, None)
-        if callable(fn):
-            fn()
+        fn()
 
     @property
     def icon_name(self):

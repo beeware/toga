@@ -38,12 +38,6 @@ class InfoDialog(MessageDialog):
         super().__init__(title, message, icon=QMessageBox.Icon.Information)
 
 
-class AlertDialog:
-    def __init__(self, *args, **kwargs):
-        toga.App.app.factory.not_implemented("dialogs.AlertDialog()")
-        self.native = None
-
-
 class QuestionDialog:
     def __init__(self, *args, **kwargs):
         toga.App.app.factory.not_implemented("dialogs.QuestionDialog()")

@@ -36,7 +36,7 @@ class Image:
     def get_data(self):
         buffer = QBuffer()
         buffer.open(QIODevice.WriteOnly)
-        if not self.native.save(buffer, "PNG"):
+        if not self.native.save(buffer, "PNG"):  # pragma: no cover
             raise ValueError("Unable to get PNG data for image")
         return buffer.data().data()
 
@@ -52,5 +52,5 @@ class Image:
         if not filetype:
             raise ValueError(f"Don't know how to save image of type {path.suffix!r}")
 
-        if not self.native.save(str(path), filetype):
+        if not self.native.save(str(path), filetype):  # pragma: no cover
             raise ValueError(f"Failed to save image to {path}")

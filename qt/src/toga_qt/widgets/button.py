@@ -44,8 +44,6 @@ class Button(Widget):
         self.interface.intrinsic.height = height
 
     def set_color(self, color):
-        if color == "transparent":
-            color = None
         super().set_color(color)
 
     def set_background_color(self, color):

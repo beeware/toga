@@ -1016,6 +1016,10 @@ else:
         await second_window_probe.wait_for_window("Secondary window is hidden")
         assert second_window.state == window_state_before_hidden
 
+        second_window.show()
+        await second_window_probe.wait_for_window("Secondary window shown")
+        assert second_window.state == window_state_before_hidden
+
     @pytest.mark.parametrize(
         "second_window_class, second_window_kwargs",
         [

@@ -14,7 +14,8 @@ class StatusIcon:
     def create(self):
         toga.NotImplementedWarning.warn("Qt", "Status Icons")
 
-    def remove(self):
+    # Remove no-cover when this is implemented
+    def remove(self):  # pragma: no cover
         pass
 
 

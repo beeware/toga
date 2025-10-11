@@ -17,7 +17,7 @@ from .libs import (
 from .screens import Screen as ScreenImpl
 
 
-def _handle_statechange(impl, changeid):
+def _handle_statechange(impl, changeid):  # pragma: no-cover-if-linux-x
     current_state = impl.get_window_state()
     if changeid != impl._changeventid:  # not the latest state change
         pass  # handle it after the next state change event is ready to process
@@ -114,9 +114,8 @@ class Window:
         # The window state when a window is hidden is unreliable in
         # regards to preserving normal vs. maximized state, so caching
         # is done for window states when the window is hidden.
-        if self._hidden_window_state is None:
-            self._hidden_window_state = self.get_window_state(in_progress_state=True)
-            self._pending_state_transition = None
+        self._hidden_window_state = self.get_window_state(in_progress_state=True)
+        self._pending_state_transition = None
 
         self.native.hide()
         # Ideally, showEvent and hideEvent should be used on Qt; however,
@@ -213,7 +212,6 @@ class Window:
 
     # =============== WINDOW STATES ================
     def get_window_state(self, in_progress_state=False):
-        # print("GET STATE")
         if self._hidden_window_state:
             return self._hidden_window_state
         if in_progress_state and self._pending_state_transition:
@@ -240,12 +238,6 @@ class Window:
         ):  # pragma: no-cover-if-linux-x
             return
 
-        if (
-            self._hidden_window_state
-        ):  # skip all the logic and simply do this on next show if currently hidden
-            self._hidden_window_state = state
-            return
-
         if self._pending_state_transition:
             self._pending_state_transition = state
             return
@@ -262,12 +254,6 @@ class Window:
         self._apply_state(state)
 
     def _apply_state(self, state):
-        # Stop the chain immediately if hidden.
-        if not self.get_visible():
-            self._hidden_window_state = self._pending_state_transition
-            self._pending_state_transition = None
-            return
-
         current_state = self.get_window_state()
         current_native_state = self.native.windowState()
         if (
