@@ -12,7 +12,7 @@ Enabling the tool can be done two ways. You can enable it by setting the `TOGA_D
 toga.Widget.DEBUG_LAYOUT_ENABLED = True
 ```
 
-### Debug layout colors with the  { #-demo }
+### Debug layout colors with the `toga-demo`
 
 To use the debug layout with the `toga-demo`, set the environment variable, and [install and run the demo](/tutorial/get-started.md).
 
