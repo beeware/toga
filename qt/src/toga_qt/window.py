@@ -158,8 +158,6 @@ class Window:
         )
 
     def set_size(self, size):
-        if not self.interface.resizable:
-            self.native.setFixedSize(size[0], size[1])
         self.native.resize(size[0], size[1])
 
     def resizeEvent(self, event):
@@ -173,7 +171,6 @@ class Window:
         min_width = self.interface.content.layout.min_width
         min_height = self.interface.content.layout.min_height
         size = self.container.native.size()
-        # Calling self.set_size here to trigger logic about fixed size windows.
         if size.width() < min_width and size.height() < min_height:
             self.set_size((min_width, min_height + self._extra_height()))
         elif size.width() < min_width:
@@ -181,6 +178,8 @@ class Window:
         elif size.height() < min_height:
             self.set_size((size.width(), size.height() + self._extra_height()))
         self.container.native.setMinimumSize(min_width, min_height)
+        self.container.min_width = min_width
+        self.container.min_height = min_height
 
     def get_current_screen(self):
         return ScreenImpl(self.native.screen())
@@ -215,7 +214,7 @@ class Window:
                 return WindowState.FULLSCREEN
         elif window_state & Qt.WindowMaximized:
             return WindowState.MAXIMIZED
-        elif window_state & Qt.WindowMinimized:
+        elif window_state & Qt.WindowMinimized:  # pragma: no-cover-if-linux-wayland
             return WindowState.MINIMIZED
         else:
             return WindowState.NORMAL
@@ -239,7 +238,7 @@ class Window:
         ):
             self.interface.app.exit_presentation_mode()
 
-        if get_is_wayland():  # pragma: no-cover-if-linux-x
+        if get_is_wayland():  # pragma: no-cover-if-linux-x  # pragma: no branch
             self._pending_state_transition = state
         self._apply_state(state)
 
@@ -263,8 +262,8 @@ class Window:
         if state == WindowState.MAXIMIZED:
             self.native.showMaximized()
 
-        elif state == WindowState.MINIMIZED:
-            if not get_is_wayland():  # pragma: no-cover-if-linux-wayland
+        elif state == WindowState.MINIMIZED:  # pragma: no-cover-if-linux-wayland
+            if not get_is_wayland():  # pragma: no branch
                 self.native.showNormal()
             self.native.showMinimized()
 

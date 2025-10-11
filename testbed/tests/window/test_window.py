@@ -8,7 +8,7 @@ import pytest
 from pytest import approx
 
 import toga
-from toga.colors import CORNFLOWERBLUE, GOLDENROD, REBECCAPURPLE
+from toga.colors import CORNFLOWERBLUE, GOLDENROD, LIGHTBLUE, REBECCAPURPLE
 from toga.constants import WindowState
 from toga.style.pack import COLUMN, Pack
 
@@ -701,7 +701,17 @@ else:
         assert second_window.size == approx(
             (250 + extra_width, 210 + extra_height), abs=2
         )
-        assert second_window_probe.content_size == approx((250, 210), abs=2)
+
+        # Alter both height and width to exceed window size at once
+        box3 = toga.Box(style=Pack(background_color=LIGHTBLUE, width=300, height=90))
+        second_window.content.add(box3)
+        await second_window_probe.wait_for_window(
+            "Secondary window has had width and height adjusted due to content"
+        )
+        assert second_window.size == approx(
+            (300 + extra_width, 300 + extra_height), abs=2
+        )
+        assert second_window_probe.content_size == approx((300, 300), abs=2)
 
         # Try to resize to a size less than the content size
         second_window.size = (200, 150)
@@ -709,9 +719,9 @@ else:
             "Secondary window forced resize fails"
         )
         assert second_window.size == approx(
-            (250 + extra_width, 210 + extra_height), abs=2
+            (300 + extra_width, 300 + extra_height), abs=2
         )
-        assert second_window_probe.content_size == approx((250, 210), abs=2)
+        assert second_window_probe.content_size == approx((300, 300), abs=2)
 
     @pytest.mark.parametrize(
         "initial_state, final_state",
