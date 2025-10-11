@@ -351,7 +351,7 @@ jobs:
             sudo apt install -y --no-install-recommends \
               blackbox python3-dev xvfb qt6-base-dev
 
-            pip install --break-system-packages PySide6
+            sudo pip install --break-system-packages PySide6
 
             # Start Virtual X Server
             echo "Start X server..."
@@ -377,7 +377,7 @@ jobs:
             sudo apt install -y --no-install-recommends \
               mutter python3-dev xvfb qt6-base-dev
 
-            pip install --break-system-packages PySide6
+            sudo pip install --break-system-packages PySide6
 
             # Start Virtual X Server
             echo "Start X server..."
