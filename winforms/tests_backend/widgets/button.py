@@ -23,6 +23,3 @@ class ButtonProbe(SimpleProbe):
             assert (icon.Size.Width, icon.Size.Height) == (32, 32)
         else:
             pytest.fail("Icon does not exist")
-
-    def assert_taller_than(self, initial_height):
-        assert self.height > initial_height

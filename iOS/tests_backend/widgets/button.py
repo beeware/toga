@@ -30,6 +30,3 @@ class ButtonProbe(SimpleProbe):
     @property
     def font(self):
         return self.native.titleLabel.font
-
-    def assert_taller_than(self, initial_height):
-        assert self.height > initial_height

@@ -1,3 +1,4 @@
+from PySide6.QtCore import QSize
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QPushButton
 from travertino.size import at_least
@@ -8,6 +9,7 @@ from .base import Widget
 class Button(Widget):
     def create(self):
         self.native = QPushButton()
+        self.native.setIconSize(QSize(32, 32))
 
         self.native.clicked.connect(self.clicked)
 
