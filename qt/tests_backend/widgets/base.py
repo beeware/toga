@@ -88,9 +88,7 @@ class SimpleProbe(BaseProbe, FontMixin):
         return self.native.height()
 
     async def undo(self):
-        # Few literate computer users do this; however,
-        # this is the most complex case that shall be tested.
-        self._activate_menu_item(["Edit", "Undo"])
+        await self.type_character("z", ctrl=True)
 
     async def redo(self):
-        self._activate_menu_item(["Edit", "Redo"])
+        await self.type_character("z", ctrl=True, shift=True)
