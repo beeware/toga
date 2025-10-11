@@ -1,0 +1,1 @@
+The Toga Web backend now supports the MultilineTextInput widget.
