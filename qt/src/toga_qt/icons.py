@@ -45,8 +45,3 @@ class Icon:
         IMPL_DICT[self.native] = self
 
         self.path = path
-
-
-class NativeIcon:
-    def __init__(self, native):
-        self.native = native
