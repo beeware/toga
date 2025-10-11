@@ -129,9 +129,6 @@ class Command:
         for widget in self.native:
             widget.setEnabled(enabled)
 
-    def qt_click(self):
-        self.interface.action()
-
     def create_menu_item(self):
         item = QAction(self.interface.text)
 
@@ -153,7 +150,7 @@ class Command:
         if self.interface.icon:
             item.setIcon(self.interface.icon._impl.native)
 
-        item.triggered.connect(self.qt_click)
+        item.triggered.connect(self.interface.action)
 
         if self.interface.shortcut is not None:
             item.setShortcut(toga_to_qt_key(self.interface.shortcut))
