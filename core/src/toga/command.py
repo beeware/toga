@@ -160,6 +160,8 @@ class Group:
     """Window management commands"""
     HELP: Group
     """Help commands"""
+    SETTINGS: Group
+    """Preferences menu group, idiomatic for KDE-based apps"""
 
 
 Group.APP = Group("*", order=-100)
@@ -169,6 +171,7 @@ Group.VIEW = Group("View", order=-10)
 Group.COMMANDS = Group("Commands", order=30)
 Group.WINDOW = Group("Window", order=90)
 Group.HELP = Group("Help", order=100)
+Group.SETTINGS = Group("Settings", order=80)
 
 
 class ActionHandler(Protocol):
