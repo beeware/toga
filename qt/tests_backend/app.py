@@ -27,7 +27,6 @@ class AppProbe(BaseProbe):
         self.native = self.app._impl.native
         self.impl = self.app._impl
         assert isinstance(QApplication.instance(), QApplication)
-        assert self.native.style().objectName() == "breeze"
         # KWin supports this but not mutter which is used in CI.
         if get_is_wayland():
             self.supports_current_window_assignment = False

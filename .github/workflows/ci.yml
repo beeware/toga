@@ -232,7 +232,7 @@ jobs:
           briefcase-run-prefix: ""
           briefcase-run-args: ""
           setup-python: true
-          testbed-app: testbed
+          testbed-app: "testbed"
 
         - backend: "macOS-x86_64"
           platform: "macOS"
@@ -332,6 +332,66 @@ jobs:
               mutter --nested --wayland --no-x11 --wayland-display toga &
             sleep 1
           briefcase-run-prefix: "WAYLAND_DISPLAY=toga TOGA_GTK=4"
+          setup-python: false  # Use the system Python packages
+          app-user-data-path: "$HOME/.local/share/testbed"
+
+        - backend: "linux-x11-qt"
+          platform: "linux"
+          runs-on: "ubuntu-24.04"
+          testbed-app: "testbed-qt"
+          # The package list should be testing basics and qt, plus we need a window
+          # manager that is reasonably lightweight, honors full screen mode, and
+          # treats the window position as the top-left corner of the *window*, not the
+          # top-left corner of the window *content*. The default GNOME window managers of
+          # most distros meet these requirements, but they're heavyweight; flwm doesn't
+          # work either. Blackbox is the lightest WM we've found that works.
+          # PySide6 must be installed in VM to test that system-pyside6 works properly.
+          pre-command: |
+            sudo apt update -y
+            sudo apt install -y --no-install-recommends \
+              blackbox python3-dev xvfb qt6-base-dev
+
+            pip install --break-system-packages PySide6
+
+            # Start Virtual X Server
+            echo "Start X server..."
+            Xvfb :99 -screen 0 2048x1536x24 &
+            sleep 1
+
+            # Start Window Mmanager
+            echo "Start window manager..."
+            DISPLAY=:99 blackbox &
+            sleep 1
+          briefcase-run-prefix: 'DISPLAY=:99'
+          setup-python: false  # Use the system Python packages
+          app-user-data-path: "$HOME/.local/share/testbed"
+
+        - backend: "linux-wayland-gtk3"
+          platform: "linux"
+          runs-on: "ubuntu-24.04"
+          testbed-app: "testbed-qt"
+          # The package list should be testing basics and qt, plus mutter to provide a window
+          # manager.
+          pre-command: |
+            sudo apt update -y
+            sudo apt install -y --no-install-recommends \
+              mutter python3-dev xvfb qt6-base-dev
+
+            pip install --break-system-packages PySide6
+
+            # Start Virtual X Server
+            echo "Start X server..."
+            Xvfb :99 -screen 0 2048x1536x24 &
+            sleep 1
+
+            # Start Window Manager
+            echo "Start window manager..."
+            # mutter is being run inside a virtual X server because mutter's headless
+            # mode does not provide a Gdk.Display
+            DISPLAY=:99 MUTTER_DEBUG_DUMMY_MODE_SPECS=2048x1536 \
+              mutter --nested --wayland --no-x11 --wayland-display toga &
+            sleep 1
+          briefcase-run-prefix: "WAYLAND_DISPLAY=toga"
           setup-python: false  # Use the system Python packages
           app-user-data-path: "$HOME/.local/share/testbed"
 
