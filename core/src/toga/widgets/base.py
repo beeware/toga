@@ -25,7 +25,6 @@ A type describing a style object. By default, this will be
 PackMixin = style_mixin(Pack)
 
 
-<<<<<<< HEAD
 # based on colors from https://davidmathlogic.com/colorblind
 DEBUG_BACKGROUND_PALETTE = [
     "#d0e2ed",  # very light blue
@@ -360,7 +359,8 @@ class Widget(Node, PackMixin):
             # No need to do anything if the widget hasn't been added to a window.
             return
 
-        self._impl.refresh()
+        # Is this needed here? Things seem to work fine without it.
+        # self._impl.refresh()
 
         # Refresh the layout
         if self._root:
@@ -373,10 +373,6 @@ class Widget(Node, PackMixin):
 
             # self._refresh_layout()
             # return
-
-            if self.window._currently_laying_out:
-                self._refresh_layout()
-                return
 
             print(TAB * self._level + f"Adding {name} to dirty set")
             self.window._dirty_root_widgets.add(self)
