@@ -14,7 +14,7 @@ from .libs import GTK_VERSION, IS_WAYLAND, Gdk, GLib, Gtk
 if GTK_VERSION >= (4, 0, 0):  # pragma: no-cover-if-gtk3
     from toga.handlers import WeakrefCallable
 
-    from .libs import VFuncInfo, hook_up_vfunc_implementation
+    from .libs import hook_up_vfunc_implementation
     from .libs.utils import create_toga_native
 
 from .screens import Screen as ScreenImpl
@@ -58,16 +58,8 @@ class Window:
             self.native.connect("notify::maximized", self.gtk_window_state_event)
             self.native.connect("notify::minimized", self.gtk_window_state_event)
             # do_size_allocate is a virtual function, used to track window resize.
-            do_size_allocate_vfuncinfo = (
-                # On some versions of pygobject, self.native.do_size_allocate may
-                # return VFuncInfo object directly, while on others it may return
-                # a bound method. Hence, extract the VFuncInfo accordingly.
-                self.native.do_size_allocate
-                if isinstance(self.native.do_size_allocate, VFuncInfo)
-                else self.native.do_size_allocate.__func__
-            )
             hook_up_vfunc_implementation(
-                do_size_allocate_vfuncinfo,
+                self.native.do_size_allocate.__func__,
                 self.native.__gtype__,
                 WeakrefCallable(self.gtk_do_size_allocate),
             )

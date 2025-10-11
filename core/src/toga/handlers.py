@@ -279,10 +279,10 @@ class WeakrefCallable:
     def __init__(self, function):
         try:
             self.ref = weakref.WeakMethod(function)
-        except TypeError:  # pragma: no cover
+        except TypeError:
             self.ref = weakref.ref(function)
 
     def __call__(self, *args, **kwargs):
         function = self.ref()
-        if function:  # pragma: no branch
+        if function:
             return function(*args, **kwargs)

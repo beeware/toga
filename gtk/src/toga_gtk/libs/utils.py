@@ -16,7 +16,7 @@ def gtk_text_align(alignment):
 
 if GTK_VERSION >= (4, 0, 0):  # pragma: no-cover-if-gtk3
 
-    def create_toga_native(native_gtk_class):  # pragma: no-cover-if-gtk3
+    def create_toga_native(native_gtk_class):
         """Create a new native class from a native gtk class, whose virtual functions
         could be safely overridden."""
         toga_native_class = type(

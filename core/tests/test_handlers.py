@@ -646,15 +646,8 @@ async def test_weakrefcallable_bound_method():
 
     example_obj = ExampleClass()
     weakrefcallable_wrapped_bound_method = WeakrefCallable(example_obj.example_method)
-    weakrefcallable_ref = weakrefcallable_wrapped_bound_method.ref
 
     assert weakrefcallable_wrapped_bound_method("arg1", "arg2", kwarg1=3, kwarg2=4) == [
-        "arg1",
-        "arg2",
-        3,
-        4,
-    ]
-    assert weakrefcallable_ref()("arg1", "arg2", kwarg1=3, kwarg2=4) == [
         "arg1",
         "arg2",
         3,
@@ -665,22 +658,19 @@ async def test_weakrefcallable_bound_method():
     del example_obj
     gc.collect()
 
-    # The wrapped method & the reference both should return None, now that the original
-    # object is garbage collected.
+    # The wrapped method should return None, now that the original object has been
+    # garbage collected.
     assert (
         weakrefcallable_wrapped_bound_method("arg1", "arg2", kwarg1=3, kwarg2=4) is None
     )
-    assert weakrefcallable_ref() is None
 
 
 async def test_weakrefcallable_function():
     """A WeakrefCallable wrapped function can be invoked."""
 
-    def example_function(*args, **kwargs):
-        return [*args, *kwargs.values()]
+    data = {"func": (lambda *args, **kwargs: [*args, *kwargs.values()])}
 
-    weakrefcallable_wrapped_function = WeakrefCallable(example_function)
-    weakrefcallable_ref = weakrefcallable_wrapped_function.ref
+    weakrefcallable_wrapped_function = WeakrefCallable(data["func"])
 
     assert weakrefcallable_wrapped_function("arg1", "arg2", kwarg1=3, kwarg2=4) == [
         "arg1",
@@ -688,29 +678,14 @@ async def test_weakrefcallable_function():
         3,
         4,
     ]
-    assert weakrefcallable_ref()("arg1", "arg2", kwarg1=3, kwarg2=4) == [
-        "arg1",
-        "arg2",
-        3,
-        4,
-    ]
 
+    # Remove the original function from the dict
+    del data["func"]
     gc.collect()
 
-    # The wrapped function & the reference both should still remain callable even after
-    # garbage collection.
-    assert weakrefcallable_wrapped_function("arg1", "arg2", kwarg1=3, kwarg2=4) == [
-        "arg1",
-        "arg2",
-        3,
-        4,
-    ]
-    assert weakrefcallable_ref()("arg1", "arg2", kwarg1=3, kwarg2=4) == [
-        "arg1",
-        "arg2",
-        3,
-        4,
-    ]
+    # The wrapped function should return None, now that the original function has been
+    # garbage collected.
+    assert weakrefcallable_wrapped_function("arg1", "arg2", kwarg1=3, kwarg2=4) is None
 
 
 ######################################################################
