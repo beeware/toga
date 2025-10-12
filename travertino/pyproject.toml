@@ -49,7 +49,7 @@ dev = [
     "coverage-conditional-plugin == 0.9.0",
     "Pillow == 11.3.0",
     "pytest == 8.4.1",
-    "pytest-asyncio == 1.1.0",
+    "pytest-asyncio == 1.2.0",
     "pytest-freezer == 0.4.9",
     "pytest-xdist == 3.8.0",
     "setuptools-scm==9.2.0",
