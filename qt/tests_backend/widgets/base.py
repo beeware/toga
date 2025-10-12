@@ -6,6 +6,10 @@ from ..probe import BaseProbe
 
 
 class SimpleProbe(BaseProbe, FontMixin):
+    async def redraw(self, message=None, delay=0):
+        self.native.repaint()
+        await super().redraw(message=message, delay=delay)
+
     def __init__(self, widget):
         super().__init__()
         self.app = widget.app
