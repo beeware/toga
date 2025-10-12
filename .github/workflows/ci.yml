@@ -349,7 +349,8 @@ jobs:
           pre-command: |
             sudo apt update -y
             sudo apt install -y --no-install-recommends \
-              blackbox python3-dev xvfb qt6-base-dev xcb libcanberra
+              blackbox python3-dev xvfb qt6-base-dev xcb \
+              libcanberra-gtk-module
 
             sudo pip install --break-system-packages PySide6
 
@@ -370,12 +371,13 @@ jobs:
           platform: "linux"
           runs-on: "ubuntu-24.04"
           testbed-app: "testbed-qt"
-          # The package list should be testing basics and qt, plus mutter to provide a window
+          # The package list should be [TODO DOCS], plus mutter to provide a window
           # manager.
           pre-command: |
             sudo apt update -y
             sudo apt install -y --no-install-recommends \
-              mutter python3-dev xvfb qt6-base-dev libcanberra
+              mutter python3-dev xvfb qt6-base-dev \
+              libcanberra-gtk-module
 
             sudo pip install --break-system-packages PySide6
 
