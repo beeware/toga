@@ -58,7 +58,6 @@ root = ".."
 dependencies = [
     "qasync",
     "toga-core == {version}",
-    "system-pyside6 @ git+https://github.com/johnzhou721/system-pyside6.git",
 ]
 
 [tool.coverage.run]
