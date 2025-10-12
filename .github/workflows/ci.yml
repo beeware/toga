@@ -209,7 +209,7 @@ jobs:
         tox -e trav-compat
 
   testbed:
-    name: Testbed
+    name: Testbed (${{ matrix.backend }})
     needs: [ package, core-and-travertino ]
     runs-on: ${{ matrix.runs-on }}
     strategy:
