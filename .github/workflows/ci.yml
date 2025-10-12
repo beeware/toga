@@ -350,7 +350,7 @@ jobs:
             sudo apt update -y
             sudo apt install -y --no-install-recommends \
               blackbox python3-dev xvfb qt6-base-dev libxcb-cursor0 \
-              libcanberra
+              gnome-session-canberra
 
             sudo pip install --break-system-packages PySide6
 
@@ -377,7 +377,7 @@ jobs:
             sudo apt update -y
             sudo apt install -y --no-install-recommends \
               mutter python3-dev xvfb qt6-base-dev \
-              libcanberra
+              gnome-session-canberra
 
             sudo pip install --break-system-packages PySide6
 
