@@ -1,7 +1,7 @@
 import asyncio
 import subprocess
 
-from PySide6.QtCore import QSize, Qt, QTimer
+from PySide6.QtCore import QSize, Qt
 from PySide6.QtGui import QCursor, QGuiApplication
 from PySide6.QtWidgets import QApplication, QMessageBox
 from qasync import QEventLoop
@@ -67,10 +67,10 @@ class App:
         # Connect the native signal to an asyncio Event in order
         # for the main event loop to finish running upon app exit
         self.native.aboutToQuit.connect(self.app_close_event.set)
-        # By this point our app is already up and running.  Everything is set up,
-        # so we run this manually without need to use native mechanisms.
-        # Also, somehow if we don't QTimer.singleShot we end up with dangling Tasks.
-        QTimer.singleShot(0, self.interface._startup)
+        # Qt does not have a native "applicaction started" signal;
+        # however, tasks scheduled on the event loop will only start
+        # as soon as the application is running.
+        self.loop.call_soon_threadsafe(self.interface._startup)
 
         self.cursorhidden = False
 
