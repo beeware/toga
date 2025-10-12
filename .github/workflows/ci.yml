@@ -349,8 +349,8 @@ jobs:
           pre-command: |
             sudo apt update -y
             sudo apt install -y --no-install-recommends \
-              blackbox python3-dev xvfb qt6-base-dev xcb \
-              libcanberra-gtk-module
+              blackbox python3-dev xvfb qt6-base-dev libxcb-cursor0 \
+              libcanberra
 
             sudo pip install --break-system-packages PySide6
 
@@ -377,7 +377,7 @@ jobs:
             sudo apt update -y
             sudo apt install -y --no-install-recommends \
               mutter python3-dev xvfb qt6-base-dev \
-              libcanberra-gtk-module
+              libcanberra
 
             sudo pip install --break-system-packages PySide6
 
