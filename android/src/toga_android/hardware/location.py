@@ -98,7 +98,7 @@ class Location:
     def request_permission(self, future):
         def request_complete(permissions, results):
             # Map the permissions to their result
-            perms = dict(zip(permissions, results))
+            perms = dict(zip(permissions, results, strict=False))
             try:
                 result = (
                     perms[Manifest.permission.ACCESS_COARSE_LOCATION]
@@ -125,7 +125,7 @@ class Location:
     def request_background_permission(self, future):
         def request_complete(permissions, results):
             # Map the permissions to their result
-            perms = dict(zip(permissions, results))
+            perms = dict(zip(permissions, results, strict=False))
             try:
                 result = (
                     perms[Manifest.permission.ACCESS_BACKGROUND_LOCATION]

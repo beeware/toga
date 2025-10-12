@@ -272,7 +272,7 @@ def assert_reference(probe, reference, threshold=0.0):
                 actual = scaled_image.getpixel((x, y))
                 expected = reference_image.getpixel((x, y))
 
-                for act, exp in zip(actual, expected):
+                for act, exp in zip(actual, expected, strict=False):
                     err = (act / 255) - (exp / 255)
                     total += err * err
 
