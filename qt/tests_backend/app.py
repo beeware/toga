@@ -6,7 +6,7 @@ from PySide6.QtCore import QSize, Qt
 from PySide6.QtGui import QCursor
 from PySide6.QtWidgets import QApplication, QDialog
 from toga_qt.keys import qt_to_toga_key, toga_to_qt_key
-from toga_qt.libs import get_is_wayland
+from toga_qt.libs import IS_WAYLAND
 
 import toga
 
@@ -28,7 +28,7 @@ class AppProbe(BaseProbe):
         self.impl = self.app._impl
         assert isinstance(QApplication.instance(), QApplication)
         # KWin supports this but not mutter which is used in CI.
-        if get_is_wayland():
+        if IS_WAYLAND:
             self.supports_current_window_assignment = False
 
     @property

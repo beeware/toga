@@ -2,7 +2,7 @@ import asyncio
 
 import pytest
 from PySide6.QtCore import Qt
-from toga_qt.libs import get_is_wayland
+from toga_qt.libs import IS_WAYLAND
 
 from toga.constants import WindowState
 
@@ -29,7 +29,7 @@ class WindowProbe(BaseProbe):
         self.native = window._impl.native
         self.container = window._impl.container
         assert self.native.isWindow()
-        if get_is_wayland():
+        if IS_WAYLAND:
             self.supports_placement = (
                 False  # returns all sorts of messy values in CI in mutter
             )
@@ -44,7 +44,7 @@ class WindowProbe(BaseProbe):
         # 0.2 seconds to allow window size tests to ensure
         # the correct size amd retain correct focus.
         await self.redraw(message, 0.2)
-        if state == WindowState.MINIMIZED and get_is_wayland():
+        if state == WindowState.MINIMIZED and IS_WAYLAND:
             state = WindowState.NORMAL
 
         if state:

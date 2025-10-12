@@ -3,7 +3,7 @@ from PySide6.QtCore import QBuffer, QByteArray, QIODevice
 from toga.screens import Screen as ScreenInterface
 from toga.types import Position, Size
 
-from .libs import get_is_wayland
+from .libs import IS_WAYLAND
 
 
 class Screen:
@@ -43,7 +43,7 @@ class Screen:
         return Size(geometry.width(), geometry.height())
 
     def get_image_data(self):
-        if not get_is_wayland():  # pragma: no-cover-if-linux-wayland
+        if not IS_WAYLAND:  # pragma: no-cover-if-linux-wayland
             grabbed = self.native.grabWindow(0)
             byte_array = QByteArray()
             buffer = QBuffer(byte_array)

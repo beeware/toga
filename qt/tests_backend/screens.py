@@ -1,5 +1,5 @@
 import pytest
-from toga_qt.libs import get_is_wayland
+from toga_qt.libs import IS_WAYLAND
 
 from toga.images import Image as TogaImage
 
@@ -14,7 +14,7 @@ class ScreenProbe(BaseProbe):
         self.native = screen._impl.native
 
     def get_screenshot(self, format=TogaImage):
-        if get_is_wayland():
+        if IS_WAYLAND:
             pytest.xfail("Cannot get image in Qt using APIs of screen in Wayland")
         else:
             return self.screen.as_image(format=format)

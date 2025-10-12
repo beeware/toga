@@ -10,7 +10,7 @@ from toga.types import Position, Size
 
 from .container import Container
 from .libs import (
-    get_is_wayland,
+    IS_WAYLAND,
 )
 from .screens import Screen as ScreenImpl
 
@@ -46,7 +46,7 @@ class TogaMainWindow(QMainWindow):
                 old & Qt.WindowMinimized and not new & Qt.WindowMinimized
             ):
                 self.interface.on_show()
-            if get_is_wayland():  # pragma: no-cover-if-linux-x  # pragma: no branch
+            if IS_WAYLAND:  # pragma: no-cover-if-linux-x  # pragma: no branch
                 self.impl._changeventid += 1
                 # Handle this later as the states etc may not have been fully realized.
                 # Starting the next transition now will cause extra window events to be
@@ -224,9 +224,7 @@ class Window:
     def set_window_state(self, state):
         # NOTE - MINIMIZED does not round-trip on Wayland
         # and will cause infinite recursion. Don't support it
-        if (
-            get_is_wayland() and state == WindowState.MINIMIZED
-        ):  # pragma: no-cover-if-linux-x
+        if IS_WAYLAND and state == WindowState.MINIMIZED:  # pragma: no-cover-if-linux-x
             return
 
         if self._pending_state_transition:  # pragma: no-cover-if-linux-x
@@ -240,7 +238,7 @@ class Window:
         ):
             self.interface.app.exit_presentation_mode()
 
-        if get_is_wayland():  # pragma: no-cover-if-linux-x  # pragma: no branch
+        if IS_WAYLAND:  # pragma: no-cover-if-linux-x  # pragma: no branch
             self._pending_state_transition = state
         self._apply_state(state)
 
@@ -248,7 +246,7 @@ class Window:
         current_state = self.get_window_state()
         current_native_state = self.native.windowState()
         if (
-            current_state == WindowState.MINIMIZED and not get_is_wayland()
+            current_state == WindowState.MINIMIZED and not IS_WAYLAND
         ):  # pragma: no-cover-if-linux-wayland
             self.native.showNormal()
         if current_state == state:
@@ -265,7 +263,7 @@ class Window:
             self.native.showMaximized()
 
         elif state == WindowState.MINIMIZED:  # pragma: no-cover-if-linux-wayland
-            if not get_is_wayland():  # pragma: no branch
+            if not IS_WAYLAND:  # pragma: no branch
                 self.native.showNormal()
             self.native.showMinimized()
 
