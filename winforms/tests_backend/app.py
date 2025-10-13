@@ -182,7 +182,7 @@ class AppProbe(BaseProbe, DialogsMixin):
         menu = self._menu_item(path)
 
         assert len(menu.DropDownItems) == len(expected)
-        for item, title in zip(menu.DropDownItems, expected):
+        for item, title in zip(menu.DropDownItems, expected, strict=False):
             if title == "---":
                 assert isinstance(item, ToolStripSeparator)
             else:

@@ -46,7 +46,7 @@ def test_sweepangle():
 
 def assert_arc_to_bezier(sweepangle, expected):
     actual = arc_to_bezier(sweepangle)
-    for a, e in zip(actual, expected):
+    for a, e in zip(actual, expected, strict=False):
         assert a == approx(e, abs=0.000001)
 
 

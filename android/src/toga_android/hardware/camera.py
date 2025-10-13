@@ -56,7 +56,7 @@ class Camera:
     def request_permission(self, future):
         def request_complete(permissions, results):
             # Map the permissions to their result
-            perms = dict(zip(permissions, results))
+            perms = dict(zip(permissions, results, strict=False))
             try:
                 result = (
                     perms[Camera.CAMERA_PERMISSION] == PackageManager.PERMISSION_GRANTED

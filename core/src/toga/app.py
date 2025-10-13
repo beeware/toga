@@ -855,7 +855,7 @@ class App:
         if windows:
             screen_window_dict = {}
             if isinstance(windows, list):
-                for window, screen in zip(windows, self.screens):
+                for window, screen in zip(windows, self.screens, strict=False):
                     screen_window_dict[screen] = window
             elif isinstance(windows, dict):
                 screen_window_dict = windows

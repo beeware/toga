@@ -57,7 +57,7 @@ class TextInput(Widget):
         on_confirm: OnConfirmHandler | None = None,
         on_gain_focus: OnGainFocusHandler | None = None,
         on_lose_focus: OnLoseFocusHandler | None = None,
-        validators: Iterable[Callable[[str], bool]] | None = None,
+        validators: Iterable[Callable[[str], str | None]] | None = None,
         **kwargs,
     ):
         """Create a new single-line text input widget.
@@ -169,7 +169,7 @@ class TextInput(Widget):
         self._on_change = wrapped_handler(self, handler)
 
     @property
-    def validators(self) -> list[Callable[[str], bool]]:
+    def validators(self) -> list[Callable[[str], str | None]]:
         """The list of validators being used to check input on the widget.
 
         Changing the list of validators will cause validation to be performed.
@@ -177,7 +177,9 @@ class TextInput(Widget):
         return self._validators
 
     @validators.setter
-    def validators(self, validators: Iterable[Callable[[str], bool]] | None) -> None:
+    def validators(
+        self, validators: Iterable[Callable[[str], str | None]] | None
+    ) -> None:
         replacing = hasattr(self, "_validators")
         if validators is None:
             self._validators = []

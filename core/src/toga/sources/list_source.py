@@ -37,7 +37,8 @@ def _find_item(
                 )
             elif hasattr(data, "__iter__") and not isinstance(data, str):
                 found = all(
-                    getattr(item, attr) == value for value, attr in zip(data, accessors)
+                    getattr(item, attr) == value
+                    for value, attr in zip(data, accessors, strict=False)
                 )
             else:
                 found = getattr(item, accessors[0]) == data
@@ -156,7 +157,7 @@ class ListSource(Source):
         if isinstance(data, Mapping):
             row = Row(**data)
         elif hasattr(data, "__iter__") and not isinstance(data, str):
-            row = Row(**dict(zip(self._accessors, data)))
+            row = Row(**dict(zip(self._accessors, data, strict=False)))
         else:
             row = Row(**{self._accessors[0]: data})
         row._source = self

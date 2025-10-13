@@ -43,7 +43,7 @@ class SplitContainer(Widget):
         for panel in self.panels:
             panel.clear_content()
 
-        for panel, widget in zip(self.panels, content):
+        for panel, widget in zip(self.panels, content, strict=False):
             panel.set_content(widget)
 
         self.pending_position = flex[0] / sum(flex)

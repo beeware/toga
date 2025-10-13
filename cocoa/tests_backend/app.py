@@ -227,7 +227,7 @@ class AppProbe(BaseProbe, DialogsMixin):
         menu = self._menu_item(path).submenu
 
         assert menu.numberOfItems == len(expected)
-        for item, title in zip(menu.itemArray, expected):
+        for item, title in zip(menu.itemArray, expected, strict=False):
             if title == "---":
                 assert item.isSeparatorItem
             else:
