@@ -22,6 +22,7 @@ class ActivityIndicator(Widget):
         )
         self.native.setResizeMode(QQuickWidget.SizeRootObjectToView)
         self.running = False
+        self.ai_hidden = True
         self.native.setAttribute(Qt.WA_AlwaysStackOnTop)
         self.native.setAttribute(Qt.WA_TranslucentBackground)
         self.native.setClearColor(Qt.transparent)

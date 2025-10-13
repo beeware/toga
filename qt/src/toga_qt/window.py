@@ -1,6 +1,6 @@
 from functools import partial
 
-from PySide6.QtCore import QEvent, Qt, QTimer
+from PySide6.QtCore import QBuffer, QEvent, QIODevice, Qt, QTimer
 from PySide6.QtGui import QWindowStateChangeEvent
 from PySide6.QtWidgets import QApplication, QMainWindow, QMenu
 
@@ -294,7 +294,13 @@ class Window:
         QApplication.processEvents()
 
     def get_image_data(self):
-        self.interface.factory.not_implemented("Window.get_image_data")
+        pixmap = self.container.native.grab()
+        buffer = QBuffer()
+        buffer.open(QIODevice.WriteOnly)
+        pixmap.save(buffer, "PNG")
+        img_bytes = bytes(buffer.data())
+        buffer.close()
+        return img_bytes
 
     def set_content(self, widget):
         self.container.content = widget

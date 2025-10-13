@@ -77,9 +77,29 @@ Next, install Toga into your virtual environment:
 
 /// tab | Linux
 
+For using the GTK backend:
+
 ```console
 (venv) $ python -m pip install toga
 ```
+
+For using the Qt backend:
+
+```console
+(venv) $ python -m pip install toga-core toga-qt system-pyside6
+```
+
+
+/// note | The role of ``system-pyside6``
+
+PySide6 installed through pip inside a ``venv`` will not be able to
+see the system Qt runtime, so system themes will not apply properly.
+``system-pyside6`` is a shim that hacks the import machinery to expose
+the system PySide6 runtime into a venv -- if your distro does not
+support a system PySide6 installation, you may replace it with a regular
+PySide6 with the caveat that system themes will not integrate.
+
+///
 
 If you get an error when installing Toga, please ensure that you have fully installed all the platform prerequisites.
 

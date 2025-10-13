@@ -41,9 +41,9 @@ class WindowProbe(BaseProbe):
             self.supports_minimize = False
 
     async def wait_for_window(self, message, state=None):
-        # 0.13 seconds to allow window size tests to ensure
+        # 0.15 seconds to allow window size tests to ensure
         # the correct size amd retain correct focus.
-        await self.redraw(message, 0.13)
+        await self.redraw(message, 0.15)
         if state == WindowState.MINIMIZED and IS_WAYLAND:
             state = WindowState.NORMAL
 

@@ -8,27 +8,31 @@
 
 <!-- TODO: Update alt text -->
 
-The Toga backend for Linux (and other Unix-like operating systems) is [`toga-gtk`](https://github.com/beeware/toga/tree/main/gtk).
+The Toga backend for Linux (and other Unix-like operating systems) is [`toga-gtk`](https://github.com/beeware/toga/tree/main/gtk) for
+GNOME-based Desktops or [`toga-qt`](https://github.com/beeware/toga/tree/main/qt) for KDE-based desktops.
 
 /// admonition | Qt support
 
-Toga does not currently have a Qt backend for KDE-based desktops. However, we would like to add one; see [this ticket](https://github.com/beeware/toga/issues/1142) for details. If you would like to contribute, please get in touch on that ticket, on [Mastodon](https://fosstodon.org/@beeware), or on [Discord](https://beeware.org/bee/chat/).
+The Qt backend is relatively new, and most widgets are missing.  To get started on
+contributing, refer to our [Contributing Code to Toga](/how-to/contribute/code.md) guide.
 
 ///
 
-/// admonition | GTK on Windows and macOS
+/// admonition | GTK and/or on Windows and macOS
 
-Although GTK *can* be installed on Windows and macOS, and the `toga-gtk` backend *may* work on those platforms, this is not officially supported by Toga. We recommend using `toga-winforms` on [Windows][], and `toga-cocoa` on [macOS][].
+Although GTK or Qt *can* be installed on Windows and macOS, and the `toga-gtk` and `toga-qt` backends *may* work on those platforms, this is not officially supported by Toga. We recommend using `toga-winforms` on [Windows][], and `toga-cocoa` on [macOS][].
 
 ///
 
 ## Prerequisites  { #linux-prerequisites }
 
-`toga-gtk` requires Python 3.10+, and GTK 3.22 or newer.
+`toga-gtk` requires Python 3.10+, and GTK 3.22 or newer.  `toga-qt` requires Python 3.10+, and Qt 6.4 or newer.
 
-Most testing occurs with GTK 3.24 as this is the version that has shipped with all versions of Ubuntu since Ubuntu 20.04, and all versions of Fedora since Fedora 32.
+Most GTK testing occurs with GTK 3.24 as this is the version that has shipped with all versions of Ubuntu since Ubuntu 20.04, and all versions of Fedora since Fedora 32.
 
-The system packages that provide GTK must be installed manually:
+Most Qt testing occurs with Qt 6.4.2 as this is the version that has shipped with Ubuntu 24.04.
+
+The system packages that provide GTK or Qt must be installed manually:
 
 -8<- "reference/platforms/unix-prerequisites.md"
 
@@ -42,8 +46,18 @@ Toga does not currently support GTK 4.
 $ python -m pip install toga-gtk
 ```
 
+`toga-qt` must be manually installed along with ``toga-core`` if its usage is desired:
+
+```console
+$ python -m pip install toga-core
+```
+
 ## Implementation details
 
 The `toga-gtk` backend uses the [GTK3 API](https://docs.gtk.org/gtk3/).
 
 The native APIs are accessed using the [PyGObject binding](https://pygobject.readthedocs.io).
+
+The `toga-qt` backend uses Qt 6.
+
+The native APIs are accessed using the [PySide6 bindings](https://www.qt.io/development/qt-framework/python-bindings).

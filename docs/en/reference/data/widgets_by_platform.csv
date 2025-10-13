@@ -1,47 +1,47 @@
-ComponentName,Type,Component,Description,macOS,GTK,Windows,iOS,Android,Web,Terminal
-Application,Core Component,[`App`][toga.App],The application itself,●,●,●,●,●,○,○
-Window,Core Component,[`Window`][toga.Window],An operating system-managed container of widgets.,●,●,●,●,●,○,○
-DocumentWindow,Core Component,[`DocumentWindow`][toga.DocumentWindow],A window that can be used as the main interface to a document-based app.,●,●,●,,,,
-MainWindow,Core Component,[`MainWindow`][toga.MainWindow],A window that can use the full set of window-level user interface elements.,●,●,●,●,●,○,○
-ActivityIndicator,General Widget,[`ActivityIndicator`][toga.ActivityIndicator],A spinning activity animation,●,●,●,●,●,○,
-Button,General Widget,[`Button`][toga.Button],Basic clickable Button,●,●,●,●,●,○,○
-Canvas,General Widget,[`Canvas`][toga.Canvas],A drawing area for 2D vector graphics.,●,●,●,●,●,,
-DateInput,General Widget,[`DateInput`][toga.DateInput],A widget to select a calendar date,●,●,●,●,●,○,
-DetailedList,General Widget,[`DetailedList`][toga.DetailedList],"An ordered list of content where each item has an icon, a main heading, and a line of supplementary text.",●,●,○,●,●,,
-Divider,General Widget,[`Divider`][toga.Divider],A horizontal or vertical line,●,●,●,●,●,○,
-ImageView,General Widget,[`ImageView`][toga.ImageView],A widget that displays an image,●,●,●,●,●,,
-Label,General Widget,[`Label`][toga.Label],Text label,●,●,●,●,●,○,○
-MapView,General Widget,[`MapView`][toga.MapView],A zoomable map that can be annotated with location pins,●,●,●,●,●,,
-MultilineTextInput,General Widget,[`MultilineTextInput`][toga.MultilineTextInput],Multi-line Text Input field,●,●,●,●,●,,
-NumberInput,General Widget,[`NumberInput`][toga.NumberInput],A text input that is limited to numeric input,●,●,●,●,●,,
-PasswordInput,General Widget,[`PasswordInput`][toga.PasswordInput],A text input that hides its input,●,●,●,●,●,○,
-ProgressBar,General Widget,[`ProgressBar`][toga.ProgressBar],Progress Bar,●,●,●,●,●,○,
-Selection,General Widget,[`Selection`][toga.Selection],A widget to select a single option from a list of alternatives.,●,●,●,●,●,○,
-Slider,General Widget,[`Slider`][toga.Slider],Slider,●,●,●,●,●,○,
-Switch,General Widget,[`Switch`][toga.Switch],Switch,●,●,●,●,●,○,
-Table,General Widget,[`Table`][toga.Table],A widget for displaying columns of tabular data.,●,●,●,,○,,
-TextInput,General Widget,[`TextInput`][toga.TextInput],A widget for the display and editing of a single line of text.,●,●,●,●,●,○,○
-TimeInput,General Widget,[`TimeInput`][toga.TimeInput],A widget to select a clock time,●,,●,●,●,○,
-Tree,General Widget,[`Tree`][toga.Tree],A widget for displaying a hierarchical tree of tabular data.,●,●,,,,,
-WebView,General Widget,[`WebView`][toga.WebView],A panel for displaying HTML,●,●,●,●,●,,
-Widget,General Widget,[`Widget`][toga.Widget],The base widget,●,●,●,●,●,○,○
-Box,Layout Widget,[`Box`][toga.Box],Container for components,●,●,●,●,●,○,○
-ScrollContainer,Layout Widget,[`ScrollContainer`][toga.ScrollContainer],A container that can display a layout larger than the area of the container,●,●,●,●,●,○,
-SplitContainer,Layout Widget,[`SplitContainer`][toga.SplitContainer],A container that divides an area into two panels with a movable border,●,●,●,,,,
-OptionContainer,Layout Widget,[`OptionContainer`][toga.OptionContainer],A container that can display multiple labeled tabs of content,●,●,●,●,●,,
-Camera,Hardware,[`Camera`][toga.hardware.camera.Camera],A sensor that can capture photos and/or video.,●,,,●,●,,
-Location,Hardware,[`Location`][toga.hardware.location.Location],A sensor that can capture the geographical location of the device.,●,●,,●,●,,
-Screen,Hardware,[`Screen`][toga.screens.Screen],A representation of a screen attached to a device.,●,●,●,●,●,○,○
-App Paths,Resource,[`Paths`][toga.paths.Paths],A mechanism for obtaining platform-appropriate filesystem locations for an application.,●,●,●,●,●,,○
-Command,Resource,[`Command`][toga.Command],Command,●,●,●,,●,,
-Dialogs,Resource,[Dialogs][dialogs],A short-lived window asking the user for input,●,●,●,●,●,○,○
-Document,Resource,[`Document`][toga.Document],A representation of a file on disk that will be displayed in one or more windows.,●,●,●,,,,
-Font,Resource,[`Font`][toga.Font],A text font,●,●,●,●,●,,
-Icon,Resource,[`Icon`][toga.Icon],"A small, square image, used to provide easily identifiable visual context to a widget.",●,●,●,●,●,,○
-Image,Resource,[`Image`][toga.Image],Graphical content of arbitrary size.,●,●,●,●,●,,
-ListSource,Resource,[`ListSource`][toga.sources.ListSource],A data source describing an ordered list of data.,●,●,●,●,●,●,●
-Source,Resource,[`Source`][toga.sources.Source],A base class for data source implementations.,●,●,●,●,●,●,●
-StatusIcons,Resource,[Status Icons][statusicons],Icons that appear in the system tray for representing app status while the app isn't visible.,●,●,●,,,,
-TreeSource,Resource,[`TreeSource`][toga.sources.TreeSource],A data source describing an ordered hierarchical tree of data.,●,●,●,●,●,●,●
-Validators,Resource,[Validators][validators],A mechanism for validating that input meets a given set of criteria.,●,●,●,●,●,●,●
-ValueSource,Resource,[`ValueSource`][toga.sources.ValueSource],A data source describing a single value.,●,●,●,●,●,●,●
+ComponentName,Type,Component,Description,macOS,Qt,GTK,Windows,iOS,Android,Web,Terminal
+Application,Core Component,[`App`][toga.App],The application itself,●,●,●,●,●,●,○,○
+Window,Core Component,[`Window`][toga.Window],An operating system-managed container of widgets.,●,●,●,●,●,●,○,○
+DocumentWindow,Core Component,[`DocumentWindow`][toga.DocumentWindow],A window that can be used as the main interface to a document-based app.,●,●,●,●,,,,
+MainWindow,Core Component,[`MainWindow`][toga.MainWindow],A window that can use the full set of window-level user interface elements.,●,○,●,●,●,●,○,○
+ActivityIndicator,General Widget,[`ActivityIndicator`][toga.ActivityIndicator],A spinning activity animation,●,●,●,●,●,●,○,
+Button,General Widget,[`Button`][toga.Button],Basic clickable Button,●,●,●,●,●,●,○,○
+Canvas,General Widget,[`Canvas`][toga.Canvas],A drawing area for 2D vector graphics.,●,,●,●,●,●,,
+DateInput,General Widget,[`DateInput`][toga.DateInput],A widget to select a calendar date,●,,●,●,●,●,○,
+DetailedList,General Widget,[`DetailedList`][toga.DetailedList],"An ordered list of content where each item has an icon, a main heading, and a line of supplementary text.",●,,●,○,●,●,,
+Divider,General Widget,[`Divider`][toga.Divider],A horizontal or vertical line,●,,●,●,●,●,○,
+ImageView,General Widget,[`ImageView`][toga.ImageView],A widget that displays an image,●,,●,●,●,●,,
+Label,General Widget,[`Label`][toga.Label],Text label,●,●,●,●,●,●,○,○
+MapView,General Widget,[`MapView`][toga.MapView],A zoomable map that can be annotated with location pins,●,,●,●,●,●,,
+MultilineTextInput,General Widget,[`MultilineTextInput`][toga.MultilineTextInput],Multi-line Text Input field,●,,●,●,●,●,,
+NumberInput,General Widget,[`NumberInput`][toga.NumberInput],A text input that is limited to numeric input,●,,●,●,●,●,,
+PasswordInput,General Widget,[`PasswordInput`][toga.PasswordInput],A text input that hides its input,●,,●,●,●,●,○,
+ProgressBar,General Widget,[`ProgressBar`][toga.ProgressBar],Progress Bar,●,,●,●,●,●,○,
+Selection,General Widget,[`Selection`][toga.Selection],A widget to select a single option from a list of alternatives.,●,,●,●,●,●,○,
+Slider,General Widget,[`Slider`][toga.Slider],Slider,●,,●,●,●,●,○,
+Switch,General Widget,[`Switch`][toga.Switch],Switch,●,,●,●,●,●,○,
+Table,General Widget,[`Table`][toga.Table],A widget for displaying columns of tabular data.,●,,●,●,,○,,
+TextInput,General Widget,[`TextInput`][toga.TextInput],A widget for the display and editing of a single line of text.,●,●,●,●,●,●,○,○
+TimeInput,General Widget,[`TimeInput`][toga.TimeInput],A widget to select a clock time,●,,,●,●,●,○,
+Tree,General Widget,[`Tree`][toga.Tree],A widget for displaying a hierarchical tree of tabular data.,●,,●,,,,,
+WebView,General Widget,[`WebView`][toga.WebView],A panel for displaying HTML,●,,●,●,●,●,,
+Widget,General Widget,[`Widget`][toga.Widget],The base widget,●,●,●,●,●,●,○,○
+Box,Layout Widget,[`Box`][toga.Box],Container for components,●,●,●,●,●,●,○,○
+ScrollContainer,Layout Widget,[`ScrollContainer`][toga.ScrollContainer],A container that can display a layout larger than the area of the container,●,,●,●,●,●,○,
+SplitContainer,Layout Widget,[`SplitContainer`][toga.SplitContainer],A container that divides an area into two panels with a movable border,●,,●,●,,,,
+OptionContainer,Layout Widget,[`OptionContainer`][toga.OptionContainer],A container that can display multiple labeled tabs of content,●,,●,●,●,●,,
+Camera,Hardware,[`Camera`][toga.hardware.camera.Camera],A sensor that can capture photos and/or video.,●,,,,●,●,,
+Location,Hardware,[`Location`][toga.hardware.location.Location],A sensor that can capture the geographical location of the device.,●,,●,,●,●,,
+Screen,Hardware,[`Screen`][toga.screens.Screen],A representation of a screen attached to a device.,●,●,●,●,●,●,○,○
+App Paths,Resource,[`Paths`][toga.paths.Paths],A mechanism for obtaining platform-appropriate filesystem locations for an application.,●,●,●,●,●,●,,○
+Command,Resource,[`Command`][toga.Command],Command,●,●,●,●,,●,,
+Dialogs,Resource,[Dialogs][dialogs],A short-lived window asking the user for input,●,○,●,●,●,●,○,○
+Document,Resource,[`Document`][toga.Document],A representation of a file on disk that will be displayed in one or more windows.,●,●,●,●,,,,
+Font,Resource,[`Font`][toga.Font],A text font,●,,●,●,●,●,,
+Icon,Resource,[`Icon`][toga.Icon],"A small, square image, used to provide easily identifiable visual context to a widget.",●,●,●,●,●,●,,○
+Image,Resource,[`Image`][toga.Image],Graphical content of arbitrary size.,●,●,●,●,●,●,,
+ListSource,Resource,[`ListSource`][toga.sources.ListSource],A data source describing an ordered list of data.,●,,●,●,●,●,●,●
+Source,Resource,[`Source`][toga.sources.Source],A base class for data source implementations.,●,,●,●,●,●,●,●
+StatusIcons,Resource,[Status Icons][statusicons],Icons that appear in the system tray for representing app status while the app isn't visible.,●,,●,●,,,,
+TreeSource,Resource,[`TreeSource`][toga.sources.TreeSource],A data source describing an ordered hierarchical tree of data.,●,,●,●,●,●,●,●
+Validators,Resource,[Validators][validators],A mechanism for validating that input meets a given set of criteria.,●,,●,●,●,●,●,●
+ValueSource,Resource,[`ValueSource`][toga.sources.ValueSource],A data source describing a single value.,●,,●,●,●,●,●,●
