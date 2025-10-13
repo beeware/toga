@@ -6,7 +6,10 @@ import time
 from shutil import which
 
 SERVER_CMD = ["briefcase", "run", "web", "--no-browser"]
-TEST_CMD = ["pytest", "tests"]
+# TEST_CMD = ["pytest", "tests"]
+
+# Quieter output ('-rN' to remove 'short test summary info')
+TEST_CMD = ["pytest", "--tb=no", "--disable-warnings", "-rN", "tests"]
 STARTUP_WAIT_SECS = float(os.getenv("SERVER_STARTUP_SECS", "5.0"))
 
 IS_WINDOWS = os.name == "nt"
