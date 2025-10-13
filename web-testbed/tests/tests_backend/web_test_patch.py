@@ -56,7 +56,7 @@ def apply():
         try:
             mod = importlib.import_module(mod_name)
         except Exception:
-            if mod_name.startswith(("toga", "yourpackageprefix")):
+            if mod_name.startswith("toga"):
                 mod = types.ModuleType(mod_name)
                 sys.modules[mod_name] = mod
             else:
