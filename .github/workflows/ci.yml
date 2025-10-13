@@ -350,7 +350,7 @@ jobs:
             sudo apt update -y
             sudo apt install -y --no-install-recommends \
               blackbox python3-dev xvfb libxcb-cursor0 \
-              gnome-session-canberra
+              gnome-session-canberra libegl-dev
 
             # Ubuntu 24.04 does not provide PySide6
             # so we fake it like this to test system-pyside6.
@@ -380,7 +380,7 @@ jobs:
             sudo apt update -y
             sudo apt install -y --no-install-recommends \
               mutter python3-dev xvfb \
-              gnome-session-canberra
+              gnome-session-canberra libegl-dev
 
             # Ubuntu 24.04 does not provide PySide6
             # so we fake it like this to test system-pyside6.
