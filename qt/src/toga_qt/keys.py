@@ -74,7 +74,7 @@ NUMPAD_KEYS.update(
 
 NUMPAD_KEYS_REV = {v: k for k, v in NUMPAD_KEYS.items()}
 
-SHIFTED_KEYS = dict(zip("!@#$%^&*()", "1234567890"))
+SHIFTED_KEYS = dict(zip("!@#$%^&*()", "1234567890", strict=False))
 SHIFTED_KEYS.update(
     {
         "~": "`",
