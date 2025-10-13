@@ -349,9 +349,12 @@ jobs:
           pre-command: |
             sudo apt update -y
             sudo apt install -y --no-install-recommends \
-              blackbox python3-dev xvfb qt6-base-dev libxcb-cursor0 \
+              blackbox python3-dev xvfb libxcb-cursor0 \
               gnome-session-canberra
 
+            # Ubuntu 24.04 does not provide PySide6
+            # so we fake it like this to test system-pyside6.
+            # This bundles its own Qt.
             sudo pip install --break-system-packages PySide6
 
             # Start Virtual X Server
@@ -376,9 +379,12 @@ jobs:
           pre-command: |
             sudo apt update -y
             sudo apt install -y --no-install-recommends \
-              mutter python3-dev xvfb qt6-base-dev \
+              mutter python3-dev xvfb \
               gnome-session-canberra
 
+            # Ubuntu 24.04 does not provide PySide6
+            # so we fake it like this to test system-pyside6.
+            # This bundles its own Qt.
             sudo pip install --break-system-packages PySide6
 
             # Start Virtual X Server
