@@ -349,8 +349,12 @@ jobs:
           pre-command: |
             sudo apt update -y
             sudo apt install -y --no-install-recommends \
-              blackbox python3-dev xvfb libxcb1-dev \
-              gnome-session-canberra libegl-dev
+              blackbox python3-dev xvfb \
+              gnome-session-canberra build-essential \
+              libx11-dev libxext-dev libxrender-dev libxi-dev libxfixes-dev \
+              libfontconfig1-dev libfreetype6-dev libgl1-mesa-dev \
+              libxkbcommon-dev libxkbcommon-x11-dev \
+              'libxcb*-dev'
 
             # Ubuntu 24.04 does not provide PySide6
             # so we fake it like this to test system-pyside6.
