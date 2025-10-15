@@ -52,7 +52,7 @@ $ python -m pip install toga-gtk
 $ python -m pip install toga-core[system]
 ```
 
-Or, if your distro does not provide system PySide6 packages:
+Or, if your distribution does not provide system PySide6 packages:
 
 ```console
 $ python -m pip install toga-core[pyside6]
