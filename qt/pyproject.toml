@@ -56,7 +56,7 @@ root = ".."
 
 [tool.setuptools_dynamic_dependencies]
 dependencies = [
-    "qasync",
+    "qasync == 0.28.0",
     "toga-core == {version}",
 ]
 
