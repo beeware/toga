@@ -14,7 +14,7 @@ A zoomable map that can be annotated with location pins.
 
 ///
 
-/// tab | Linux
+/// tab | GTK
 
 ![/reference/images/mapview-gtk.png](/reference/images/mapview-gtk.png){ width="450" }
 
@@ -23,6 +23,12 @@ A zoomable map that can be annotated with location pins.
 ///
 
 <!-- TODO: Update alt text -->
+
+///
+
+/// tab | Qt {{ not_supported }}
+
+Not supported
 
 ///
 

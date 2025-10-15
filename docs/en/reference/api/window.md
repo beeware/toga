@@ -14,9 +14,21 @@ An operating system-managed container of widgets.
 
 ///
 
-/// tab | Linux
+/// tab | GTK
 
 ![/reference/images/window-gtk.png](/reference/images/window-gtk.png){ width="300" }
+
+/// caption
+
+///
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Qt
+
+![/reference/images/window-qt.png](/reference/images/window-qt.png){ width="300" }
 
 /// caption
 

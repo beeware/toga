@@ -12,7 +12,7 @@
 
 ///
 
-/// tab | Linux
+/// tab | GTK
 
 ![/reference/images/detailedlist-gtk.png](/reference/images/detailedlist-gtk.png){ width="450" }
 
@@ -21,6 +21,12 @@
 ///
 
 <!-- TODO: Update alt text -->
+
+///
+
+/// tab | Qt {{ not_supported }}
+
+Not supported
 
 ///
 

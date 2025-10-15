@@ -14,7 +14,7 @@ An embedded web browser.
 
 ///
 
-/// tab | Linux
+/// tab | GTK
 
 ![/reference/images/webview-gtk.png](/reference/images/webview-gtk.png){ width="450" }
 
@@ -23,6 +23,12 @@ An embedded web browser.
 ///
 
 <!-- TODO: Update alt text -->
+
+///
+
+/// tab | Qt {{ not_supported }}
+
+Not supported
 
 ///
 

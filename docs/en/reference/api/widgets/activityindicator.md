@@ -14,7 +14,7 @@ A small animated indicator showing activity on a task of indeterminate length, u
 
 ///
 
-/// tab | Linux
+/// tab | GTK
 
 ![/reference/images/activityindicator-gtk.png](/reference/images/activityindicator-gtk.png){ width="100" }
 
@@ -23,6 +23,16 @@ A small animated indicator showing activity on a task of indeterminate length, u
 ///
 
 <!-- TODO: Update alt text -->
+
+///
+
+/// tab | Qt
+
+![An ActivityIndicator widget, running on Toga's Qt backend](/reference/images/activityindicator-qt.png){ width="100" }
+
+/// caption
+
+///
 
 ///
 

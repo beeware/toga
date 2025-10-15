@@ -14,7 +14,7 @@ A button that can be pressed or clicked.
 
 ///
 
-/// tab | Linux
+/// tab | GTK
 
 ![/reference/images/button-gtk.png](/reference/images/button-gtk.png){ width="300" }
 
@@ -23,6 +23,16 @@ A button that can be pressed or clicked.
 ///
 
 <!-- TODO: Update alt text -->
+
+///
+
+/// tab | Qt
+
+![An Button with text "Launch Rocket", displayed on Toga's Qt backend](/reference/images/button-qt.png){ width="300" }
+
+/// caption
+
+///
 
 ///
 

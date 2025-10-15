@@ -14,7 +14,7 @@ A clickable button with two stable states: True (on, checked); and False (off, u
 
 ///
 
-/// tab | Linux
+/// tab | GTK
 
 ![/reference/images/switch-gtk.png](/reference/images/switch-gtk.png){ width="300" }
 
@@ -23,6 +23,12 @@ A clickable button with two stable states: True (on, checked); and False (off, u
 ///
 
 <!-- TODO: Update alt text -->
+
+///
+
+/// tab | Qt {{ not_supported }}
+
+Not supported
 
 ///
 

@@ -14,7 +14,7 @@ A container that divides an area into two panels with a movable border.
 
 ///
 
-/// tab | Linux
+/// tab | GTK
 
 ![/reference/images/splitcontainer-gtk.png](/reference/images/splitcontainer-gtk.png){ width="450" }
 
@@ -23,6 +23,12 @@ A container that divides an area into two panels with a movable border.
 ///
 
 <!-- TODO: Update alt text -->
+
+///
+
+/// tab | Qt {{ not_supported }}
+
+Not supported
 
 ///
 

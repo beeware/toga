@@ -14,7 +14,7 @@ A widget that displays an image.
 
 ///
 
-/// tab | Linux
+/// tab | GTK
 
 ![/reference/images/imageview.png](/reference/images/imageview.png){ width="150" }
 
@@ -23,6 +23,12 @@ A widget that displays an image.
 ///
 
 <!-- TODO: Update alt text -->
+
+///
+
+/// tab | Qt {{ not_supported }}
+
+Not supported
 
 ///
 

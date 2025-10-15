@@ -14,9 +14,21 @@ A window that can use the full set of window-level user interface elements.
 
 ///
 
-/// tab | Linux
+/// tab | GTK
 
 ![/reference/images/mainwindow-gtk.png](/reference/images/mainwindow-gtk.png){ width="450" }
+
+/// caption
+
+///
+
+<!-- TODO: Update alt text -->
+
+///
+
+/// tab | Qt
+
+![/reference/images/mainwindow-qt.png](/reference/images/mainwindow-qt.png){ width="450" }
 
 /// caption
 

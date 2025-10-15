@@ -14,7 +14,7 @@ Icons that appear in the system tray for representing app status while the app i
 
 ///
 
-/// tab | Linux
+/// tab | GTK
 
 ![/reference/images/statusicons-gtk.png](/reference/images/statusicons-gtk.png){ width="150" }
 
@@ -23,6 +23,12 @@ Icons that appear in the system tray for representing app status while the app i
 ///
 
 <!-- TODO: Update alt text -->
+
+///
+
+/// tab | Qt {{ not_supported }}
+
+Not supported
 
 ///
 

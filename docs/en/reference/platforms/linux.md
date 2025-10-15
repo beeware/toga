@@ -18,7 +18,7 @@ contributing, refer to our [Contributing Code to Toga](/how-to/contribute/code.m
 
 ///
 
-/// admonition | GTK and/or on Windows and macOS
+/// admonition | GTK and/or Qt on Windows and macOS
 
 Although GTK or Qt *can* be installed on Windows and macOS, and the `toga-gtk` and `toga-qt` backends *may* work on those platforms, this is not officially supported by Toga. We recommend using `toga-winforms` on [Windows][], and `toga-cocoa` on [macOS][].
 
@@ -26,11 +26,11 @@ Although GTK or Qt *can* be installed on Windows and macOS, and the `toga-gtk` a
 
 ## Prerequisites  { #linux-prerequisites }
 
-`toga-gtk` requires Python 3.10+, and GTK 3.22 or newer.  `toga-qt` requires Python 3.10+, and Qt 6.4 or newer.
+`toga-gtk` requires Python 3.10+, and GTK 3.22 or newer.  `toga-qt` requires Python 3.10+, and Qt 6.8 or newer.
 
 Most GTK testing occurs with GTK 3.24 as this is the version that has shipped with all versions of Ubuntu since Ubuntu 20.04, and all versions of Fedora since Fedora 32.
 
-Most Qt testing occurs with Qt 6.4.2 as this is the version that has shipped with Ubuntu 24.04.
+Most Qt testing occurs with Qt 6.10 as this is the version that is installable through ``pip``'s PySide6 which we must use since Ubuntu 24.04 does not yet provide PySide6 through the system.
 
 The system packages that provide GTK or Qt must be installed manually:
 
@@ -51,6 +51,8 @@ $ python -m pip install toga-gtk
 ```console
 $ python -m pip install toga-core
 ```
+
+In addition, if the system Qt runtime is desired to be integrated with, you must additionally install ``system-pyside6`` in ``venv``.  Otherwise, you need to manually install ``PySide6`` in ``venv``, but that means system Qt themes will not be integrated with.
 
 ## Implementation details
 

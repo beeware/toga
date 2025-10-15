@@ -14,7 +14,7 @@ A horizontal bar to visualize task progress. The task being monitored can be of 
 
 ///
 
-/// tab | Linux
+/// tab | GTK
 
 ![/reference/images/progressbar-gtk.png](/reference/images/progressbar-gtk.png){ width="300" }
 
@@ -23,6 +23,12 @@ A horizontal bar to visualize task progress. The task being monitored can be of 
 ///
 
 <!-- TODO: Update alt text -->
+
+///
+
+/// tab | Qt {{ not_supported }}
+
+Not supported
 
 ///
 
