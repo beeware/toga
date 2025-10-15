@@ -46,7 +46,7 @@ Toga is available on macOS, Windows, Linux (GTK), Android, iOS, for single-page 
 
 ## [How-to guides](how-to/index.md) { #how-to }
 
-Guides and recipes for common problems and tasks, including how to [contribute to Toga](how-to/contribute/code.md).
+Guides and recipes for common problems and tasks, including how to [contribute to Toga](how-to/contribute/index.md).
 
 ## Topic Guides { #topics }
 
