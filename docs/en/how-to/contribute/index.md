@@ -8,4 +8,4 @@ Is there a feature you'd like to see in Toga? Have you found a bug that you'd li
 
 ## [Contributing to Toga's documentation](docs.md)
 
-You might have the best software in the world - but if nobody knows how to use it, what's the point? Documentation can always be improved - and we need need your help!
+You might have the best software in the world - but if nobody knows how to use it, what's the point? Documentation can always be improved - and we need your help!
