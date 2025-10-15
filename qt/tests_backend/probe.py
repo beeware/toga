@@ -38,8 +38,8 @@ class BaseProbe(DialogsMixin):
             QApplication.processEvents()
 
     def assert_image_size(self, image_size, size, screen):
-        assert (
-            approx(image_size, abs=1) == size * screen._impl.native.devicePixelRatio()
+        assert [s * screen._impl.native.devicePixelRatio() for s in size] == approx(
+            image_size, abs=1
         )
 
     async def type_character(self, char, *, shift=False, ctrl=False, alt=False):
