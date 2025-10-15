@@ -1,6 +1,6 @@
 import sys
 
-from PySide6.QtGui import QAction, QIcon
+from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QApplication
 
 from toga import Command as StandardCommand, Group, Key
@@ -32,10 +32,6 @@ class EditOperation:
                 return
         fn = getattr(fw, self.method_name, None)
         fn()
-
-    @property
-    def icon_name(self):
-        return "edit-" + self.method_name
 
 
 class Command:
@@ -130,21 +126,6 @@ class Command:
 
     def create_menu_item(self):
         item = QAction(self.interface.text)
-
-        if hasattr(self.interface.action, "icon_name"):
-            item.setIcon(QIcon.fromTheme(self.interface.action.icon_name))
-        elif self.interface.shortcut == Key.MOD_1 + "q":
-            item.setIcon(QIcon.fromTheme("application-exit"))
-        elif self.interface.shortcut == Key.MOD_1 + "n":
-            item.setIcon(QIcon.fromTheme("document-new"))
-        elif self.interface.shortcut == Key.MOD_1 + "o":
-            item.setIcon(QIcon.fromTheme("document-open"))
-        elif self.interface.shortcut == Key.MOD_1 + "s":
-            item.setIcon(QIcon.fromTheme("document-save"))
-        elif self.interface.shortcut == Key.MOD_1 + "S":
-            item.setIcon(QIcon.fromTheme("document-save-as"))
-        elif self.interface.shortcut == Key.MOD_1 + "l":
-            item.setIcon(QIcon.fromTheme("document-save-all"))
 
         if self.interface.icon:
             item.setIcon(self.interface.icon._impl.native)

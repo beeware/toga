@@ -1,12 +1,3 @@
-# ruff: noqa: E402
-
-# noqa for setting up QApplication before importing
-
-
-# In Qt, most operations, even manipulating icons, must be done
-# after QApplication has been initialized.  Therefore, initialize
-# it and also the event loop as early as possible.
-
 from toga import NotImplementedWarning
 
 from . import dialogs
