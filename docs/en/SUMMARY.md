@@ -32,7 +32,7 @@
             - [DetailedList](./reference/api/widgets/detailedlist.md)
             - [Divider](./reference/api/widgets/divider.md)
             - [ImageView](./reference/api/widgets/imageview.md)
-            - [Image](./reference/api/widgets/label.md)
+            - [Label](./reference/api/widgets/label.md)
             - [MapView](./reference/api/widgets/mapview.md)
             - [MultilineTextInput](./reference/api/widgets/multilinetextinput.md)
             - [NumberInput](./reference/api/widgets/numberinput.md)
