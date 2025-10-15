@@ -59,6 +59,14 @@ dependencies = [
     "toga-core == {version}",
 ]
 
+[project.optional-dependencies]
+pyside6 = [
+    "PySide6-Essentials == 6.10.0",
+]
+system = [
+    "system-pyside6 @ git+https://github.com/johnzhou721/system-pyside6.git",
+]
+
 [tool.coverage.run]
 parallel = true
 branch = true

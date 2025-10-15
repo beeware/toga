@@ -58,7 +58,8 @@ These instructions are different on almost every version of Linux and Unix; here
 ### Ubuntu 24.10+ / Debian 13+
 
 For Ubuntu 24.10+, the necessary PySide6 modules should be installed through the system package manager in addition to the dependencies
-above, and then the ``system-pyside6`` hack should be used in your virtual environment.  Installing PySide6 automatically installs Qt itself.
+above, and then the ``system`` extra of ``toga_qt`` should be installed in the virtual environment.  Installing PySide6 automatically
+installs Qt itself.
 
 ```console
 (venv) $ sudo apt install git python3-dev build-essential \
@@ -76,7 +77,7 @@ above, and then the ``system-pyside6`` hack should be used in your virtual envir
 
 PySide6 (Python bindings for Qt) cannot be installed through the system; therefore installing it in your virtual environment (described
 later) is required.  This means that we can just install the dependencies for Qt here, as Qt itself will be provided
-by PySide6 in ``pip`` with the caveat that it does not integrate with system themes:
+by PySide6 in ``pip`` with the caveat that it does not integrate with system themes.  The ``pyside6`` extra of ``toga_qt`` should be used.
 
 ```console
 (venv) $ sudo apt update
@@ -93,10 +94,11 @@ by PySide6 in ``pip`` with the caveat that it does not integrate with system the
 
 /// warning | Requirement to Update System Packages
 
-Fedora's packaging of some Qt and KDE-related packages lists incorrect dependencies; installing PySide6 components
+Fedora's packaging of some Qt and KDE-related packages lists incorrect dependency versions; installing PySide6 components
 will force some of those packages to upgrade incorrectly and lead to missing symbols upon boot.  Therefore it is
 extremely important to **upgrade all packages** after installing PySide6.  If you do not want this risk to be taken,
-install PySide6 in a virtual environment only (remove ``python3-pyside6`` from the list below), and use that instead of ``system-pyside6``.
+install PySide6 in a virtual environment only (remove ``python3-pyside6`` from the list below), and use the ``pyside6``
+extra instead of ``system`` extra when installing ``toga_qt``.
 
 ///
 
@@ -110,7 +112,7 @@ install PySide6 in a virtual environment only (remove ``python3-pyside6`` from t
 (venv) $ sudo dnf upgrade --refresh
 ```
 
-Again, a ``system-pyside6`` package must be installed in the virtual environment.
+Again, the ``system`` extra of ``toga_qt`` shall be used.
 
 If you're not using one of these, you'll need to work out how to install the developer libraries for `python3`, [Qt's X11 dependencies](https://doc.qt.io/qt-6/linux-requirements.html), [Qt's Wayland dependencies](https://doc.qt.io/qt-6/wayland-requirements.html), and the executable ``canberra-gtk-play`` (and please let us know so we can improve this documentation!)
 

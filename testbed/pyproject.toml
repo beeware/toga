@@ -137,6 +137,5 @@ test_sources = [
     "../qt/tests_backend",
 ]
 requires = [
-    "../qt",
-    "system-pyside6 @ git+https://github.com/johnzhou721/system-pyside6.git",
+    "../qt[system]",
 ]

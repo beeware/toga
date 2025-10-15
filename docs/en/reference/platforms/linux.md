@@ -49,10 +49,14 @@ $ python -m pip install toga-gtk
 `toga-qt` must be manually installed along with ``toga-core`` if its usage is desired:
 
 ```console
-$ python -m pip install toga-core
+$ python -m pip install toga-core[system]
 ```
 
-In addition, if the system Qt runtime is desired to be integrated with, you must additionally install ``system-pyside6`` in ``venv``.  Otherwise, you need to manually install ``PySide6`` in ``venv``, but that means system Qt themes will not be integrated with.
+Or, if your distro does not provide system PySide6 packages:
+
+```console
+$ python -m pip install toga-core[pyside6]
+```
 
 ## Implementation details
 
