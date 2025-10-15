@@ -17,7 +17,6 @@ license-files = [
     "LICENSE"
 ]
 authors = [
-    {name="John", email="johnzhou721@gmail.com"},
     {name="Russell Keith-Magee", email="russell@keith-magee.com"},
 ]
 maintainers = [
