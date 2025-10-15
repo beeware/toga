@@ -339,7 +339,7 @@ jobs:
           platform: "linux"
           runs-on: "ubuntu-24.04"
           testbed-app: "testbed-qt"
-          # The package list should be dependencies listed in [TODO DOCS], plus we need a window
+          # The package list should be dependencies listed in unix-prerequsites.md, plus we need a window
           # manager that is reasonably lightweight, honors full screen mode, and
           # treats the window position as the top-left corner of the *window*, not the
           # top-left corner of the window *content*. The default GNOME window managers of
@@ -351,10 +351,13 @@ jobs:
             sudo apt install -y --no-install-recommends \
               blackbox python3-dev xvfb \
               gnome-session-canberra build-essential \
-              libx11-dev libxext-dev libxrender-dev libxi-dev libxfixes-dev \
-              libfontconfig1-dev libfreetype6-dev libgl1-mesa-dev \
-              libxkbcommon-dev libxkbcommon-x11-dev \
-              'libxcb*-dev'
+              libfontconfig1-dev libfreetype-dev libgtk-3-dev \
+              libx11-dev libx11-xcb-dev libxext-dev \
+              libxfixes-dev libxi-dev libxkbcommon-dev \
+              libxkbcommon-x11-dev libxrender-dev 'libxcb*-dev' \
+              libwayland-dev libwayland-egl1-mesa libwayland-server0 \
+              libgles2-mesa-dev libxkbcommon-dev
+
 
             # Ubuntu 24.04 does not provide PySide6
             # so we fake it like this to test system-pyside6.
@@ -378,13 +381,19 @@ jobs:
           platform: "linux"
           runs-on: "ubuntu-24.04"
           testbed-app: "testbed-qt"
-          # The package list should be [TODO DOCS], plus mutter to provide a window
+          # The package list should be unix-prerequisites.md, plus mutter to provide a window
           # manager.
           pre-command: |
             sudo apt update -y
             sudo apt install -y --no-install-recommends \
               mutter python3-dev xvfb \
-              gnome-session-canberra libegl-dev
+              gnome-session-canberra \
+              libfontconfig1-dev libfreetype-dev libgtk-3-dev \
+              libx11-dev libx11-xcb-dev libxext-dev \
+              libxfixes-dev libxi-dev libxkbcommon-dev \
+              libxkbcommon-x11-dev libxrender-dev 'libxcb*-dev' \
+              libwayland-dev libwayland-egl1-mesa libwayland-server0 \
+              libgles2-mesa-dev libxkbcommon-dev
 
             # Ubuntu 24.04 does not provide PySide6
             # so we fake it like this to test system-pyside6.
