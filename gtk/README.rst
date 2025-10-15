@@ -20,7 +20,7 @@ A GTK backend for the `Toga widget toolkit`_.
 This package isn't much use by itself; it needs to be combined with `the core Toga library`_.
 
 For platform requirements, see the `Linux platform documentation
-<https://toga.readthedocs.io/en/latest/reference/platforms/linux.html#prerequisites>`__.
+<https://toga.readthedocs.io/en/latest/reference/platforms/linux#prerequisites>`__.
 
 For more details, see the `Toga project on GitHub`_.
 
@@ -53,6 +53,6 @@ If you experience problems with Toga, `log them on GitHub
 <https://github.com/beeware/toga/issues>`__.
 
 If you'd like to contribute to Toga development, our `contribution guide
-<https://toga.readthedocs.io/en/latest/how-to/contribute/index.html>`__
+<https://toga.readthedocs.io/en/latest/how-to/contribute/>`__
 details how to set up a development environment, and other requirements we have
 as part of our contribution process.

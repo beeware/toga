@@ -4,8 +4,8 @@
 
 - [Tutorials](tutorial/index.md)
     - ./tutorial/*
-- How-to Guides
-    - Contributing to Toga
+- [How-to Guides](how-to/index.md)
+    - [Contributing to Toga](how-to/contribute/index.md)
         - [Contributing code to Toga](how-to/contribute/code.md)
         - [Contributing to Toga's documentation](how-to/contribute/docs.md)
     - Internal How-to guides

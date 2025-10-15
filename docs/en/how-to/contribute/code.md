@@ -1,6 +1,6 @@
 # Contributing code to Toga
 
-If you experience problems with Toga, [log them on GitHub](https://github.com/beeware/toga/issues). If you want to contribute code, please [fork the code](https://github.com/beeware/toga/fork) and [submit a pull request](https://github.com/beeware/toga/pulls).
+Is there a feature you'd like to see in Toga? Have you found a bug that you'd like to fix? Or are you just looking for a challenge to exercise your Python skills? Here's how to get involved!
 
 ## Prerequisites  { #dev-environment-prereqs }
 
