@@ -14,7 +14,7 @@ class WindowProbe(BaseProbe):
     # under KDE so we take similar handling as winforms here: disable
     # the action of the close button.
     supports_closable = False
-    supports_as_image = False  # not impld yet
+    supports_as_image = True
     supports_focus = True
     # Cannot be implemented on Qt, the minimize button will show even if hinted away
     supports_minimizable = False
