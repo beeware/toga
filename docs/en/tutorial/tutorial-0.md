@@ -95,9 +95,10 @@ For using the Qt backend:
 PySide6 installed through pip inside a ``venv`` will not be able to
 see the system Qt runtime, so system themes will not apply properly.
 ``system-pyside6`` is a shim that hacks the import machinery to expose
-the system PySide6 runtime into a venv -- if your distro does not
-support a system PySide6 installation, you may replace it with a regular
-PySide6 with the caveat that system themes will not integrate.
+the system PySide6 runtime into a virtual environment -- if your Linux
+distribution does not support a system PySide6 installation, you may
+replace it with a regular PySide6 with the caveat that system themes
+will not integrate.
 
 ///
 
