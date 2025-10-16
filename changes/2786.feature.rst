@@ -1,0 +1,1 @@
+Introduced `IFileOpenDialog`, replacing `SHBrowseForFolder` for improved file selection dialogs.
