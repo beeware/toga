@@ -14,7 +14,7 @@ A widget for displaying columns of tabular data. Scroll bars will be provided if
 
 ///
 
-/// tab | GTK
+/// tab | Linux (GTK)
 
 ![/reference/images/table-gtk.png](/reference/images/table-gtk.png){ width="450" }
 
@@ -26,7 +26,7 @@ A widget for displaying columns of tabular data. Scroll bars will be provided if
 
 ///
 
-/// tab | Qt {{ not_supported }}
+/// tab | Linux (Qt) {{ not_supported }}
 
 Not supported
 

@@ -14,7 +14,7 @@ A separator used to visually distinguish two sections of content in a layout.
 
 ///
 
-/// tab | GTK
+/// tab | Linux (GTK)
 
 ![/reference/images/divider-gtk.png](/reference/images/divider-gtk.png){ width="300" }
 
@@ -26,7 +26,7 @@ A separator used to visually distinguish two sections of content in a layout.
 
 ///
 
-/// tab | Qt {{ not_supported }}
+/// tab | Linux (Qt) {{ not_supported }}
 
 Not supported
 

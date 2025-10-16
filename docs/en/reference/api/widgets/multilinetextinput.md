@@ -14,7 +14,7 @@ A scrollable panel that allows for the display and editing of multiple lines of 
 
 ///
 
-/// tab | GTK
+/// tab | Linux (GTK)
 
 ![/reference/images/multilinetextinput-gtk.png](/reference/images/multilinetextinput-gtk.png){ width="300" }
 
@@ -26,7 +26,7 @@ A scrollable panel that allows for the display and editing of multiple lines of 
 
 ///
 
-/// tab | Qt {{ not_supported }}
+/// tab | Linux (Qt) {{ not_supported }}
 
 Not supported
 

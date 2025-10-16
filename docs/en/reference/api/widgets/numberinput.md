@@ -14,7 +14,7 @@ A text input that is limited to numeric input.
 
 ///
 
-/// tab | GTK
+/// tab | Linux (GTK)
 
 ![/reference/images/numberinput-gtk.png](/reference/images/numberinput-gtk.png){ width="300" }
 
@@ -26,7 +26,7 @@ A text input that is limited to numeric input.
 
 ///
 
-/// tab | Qt {{ not_supported }}
+/// tab | Linux (Qt) {{ not_supported }}
 
 Not supported
 

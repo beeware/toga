@@ -14,7 +14,7 @@ A widget to select a calendar date.
 
 ///
 
-/// tab | GTK
+/// tab | Linux (GTK)
 
 ![A calendar-style date picker on Toga's GTK backend](/reference/images/dateinput-gtk.png){ width="300" }
 
@@ -24,7 +24,7 @@ A widget to select a calendar date.
 
 ///
 
-/// tab | Qt {{ not_supported }}
+/// tab | Linux (Qt) {{ not_supported }}
 
 Not supported
 

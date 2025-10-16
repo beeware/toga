@@ -14,7 +14,7 @@ A container that can display a layout larger than the area of the container, wit
 
 ///
 
-/// tab | GTK
+/// tab | Linux (GTK)
 
 ![/reference/images/scrollcontainer-gtk.png](/reference/images/scrollcontainer-gtk.png){ width="450" }
 
@@ -26,7 +26,7 @@ A container that can display a layout larger than the area of the container, wit
 
 ///
 
-/// tab | Qt {{ not_supported }}
+/// tab | Linux (Qt) {{ not_supported }}
 
 Not supported
 

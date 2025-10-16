@@ -12,7 +12,7 @@
 
 ///
 
-/// tab | GTK
+/// tab | Linux (GTK)
 
 ![/reference/images/detailedlist-gtk.png](/reference/images/detailedlist-gtk.png){ width="450" }
 
@@ -24,7 +24,7 @@
 
 ///
 
-/// tab | Qt {{ not_supported }}
+/// tab | Linux (Qt) {{ not_supported }}
 
 Not supported
 

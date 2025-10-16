@@ -14,7 +14,7 @@ A container that can display multiple labeled tabs of content.
 
 ///
 
-/// tab | GTK
+/// tab | Linux (GTK)
 
 ![/reference/images/optioncontainer-gtk.png](/reference/images/optioncontainer-gtk.png){ width="450" }
 
@@ -26,7 +26,7 @@ A container that can display multiple labeled tabs of content.
 
 ///
 
-/// tab | Qt {{ not_supported }}
+/// tab | Linux (Qt) {{ not_supported }}
 
 Not supported
 

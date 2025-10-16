@@ -14,7 +14,7 @@ A widget to select a single option from a list of alternatives.
 
 ///
 
-/// tab | GTK
+/// tab | Linux (GTK)
 
 ![/reference/images/selection-gtk.png](/reference/images/selection-gtk.png){ width="300" }
 
@@ -26,7 +26,7 @@ A widget to select a single option from a list of alternatives.
 
 ///
 
-/// tab | Qt {{ not_supported }}
+/// tab | Linux (Qt) {{ not_supported }}
 
 Not supported
 

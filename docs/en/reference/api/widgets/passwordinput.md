@@ -14,7 +14,7 @@ A widget to allow the entry of a password. Any value typed by the user will be o
 
 ///
 
-/// tab | GTK
+/// tab | Linux (GTK)
 
 ![/reference/images/passwordinput-gtk.png](/reference/images/passwordinput-gtk.png){ width="300" }
 
@@ -26,7 +26,7 @@ A widget to allow the entry of a password. Any value typed by the user will be o
 
 ///
 
-/// tab | Qt {{ not_supported }}
+/// tab | Linux (Qt) {{ not_supported }}
 
 Not supported
 

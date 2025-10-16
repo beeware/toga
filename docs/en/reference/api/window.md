@@ -14,7 +14,7 @@ An operating system-managed container of widgets.
 
 ///
 
-/// tab | GTK
+/// tab | Linux (GTK)
 
 ![/reference/images/window-gtk.png](/reference/images/window-gtk.png){ width="300" }
 
@@ -26,7 +26,7 @@ An operating system-managed container of widgets.
 
 ///
 
-/// tab | Qt
+/// tab | Linux (Qt)
 
 ![/reference/images/window-qt.png](/reference/images/window-qt.png){ width="300" }
 

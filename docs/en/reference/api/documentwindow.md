@@ -14,7 +14,7 @@ A window that can be used as the main interface to a document-based app.
 
 ///
 
-/// tab | GTK
+/// tab | Linux (GTK)
 
 ![/reference/images/mainwindow-gtk.png](/reference/images/mainwindow-gtk.png){ width="450" }
 
@@ -26,7 +26,7 @@ A window that can be used as the main interface to a document-based app.
 
 ///
 
-/// tab | Qt {{ beta_support }}
+/// tab | Linux (Qt) {{ beta_support }}
 
 ![/reference/images/mainwindow-qt.png](/reference/images/mainwindow-qt.png){ width="450" }
 

@@ -14,7 +14,7 @@ A widget for the display and editing of a single line of text.
 
 ///
 
-/// tab | GTK
+/// tab | Linux (GTK)
 
 ![/reference/images/textinput-gtk.png](/reference/images/textinput-gtk.png){ width="300" }
 
@@ -26,7 +26,7 @@ A widget for the display and editing of a single line of text.
 
 ///
 
-/// tab | Qt
+/// tab | Linux (Qt)
 
 ![A textfield, displayed on Toga's Qt backend](/reference/images/textinput-qt.png){ width="300" }
 

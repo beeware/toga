@@ -14,7 +14,7 @@ A drawing area for 2D vector graphics.
 
 ///
 
-/// tab | GTK
+/// tab | Linux (GTK)
 
 ![/reference/images/canvas-gtk.png](/reference/images/canvas-gtk.png){ width="300" }
 
@@ -26,7 +26,7 @@ A drawing area for 2D vector graphics.
 
 ///
 
-/// tab | Qt {{ not_supported }}
+/// tab | Linux (Qt) {{ not_supported }}
 
 Not supported
 

@@ -14,13 +14,13 @@ A widget to select a clock time.
 
 ///
 
-/// tab | GTK {{ not_supported }}
+/// tab | Linux (GTK) {{ not_supported }}
 
 Not supported
 
 ///
 
-/// tab | Qt {{ not_supported }}
+/// tab | Linux (Qt) {{ not_supported }}
 
 Not supported
 

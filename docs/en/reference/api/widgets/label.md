@@ -14,7 +14,7 @@ A text label for annotating forms or interfaces.
 
 ///
 
-/// tab | GTK
+/// tab | Linux (GTK)
 
 ![/reference/images/label-gtk.png](/reference/images/label-gtk.png){ width="300" }
 
@@ -26,7 +26,7 @@ A text label for annotating forms or interfaces.
 
 ///
 
-/// tab | Qt
+/// tab | Linux (Qt)
 
 ![An label with text "Brutus Was Here!", displayed on Toga's Qt backend](/reference/images/label-qt.png){ width="300" }
 
