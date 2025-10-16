@@ -6,7 +6,7 @@
 
 A Qt backend for the [Toga widget toolkit](https://beeware.org/toga).
 
-This package isn\'t much use by itself; it needs to be combined with
+This package isn't much use by itself; it needs to be combined with
 [the core Toga library](https://pypi.python.org/pypi/toga-core).
 
 For platform requirements, see the Qt platform documentation (TODO).
@@ -19,7 +19,7 @@ GitHub](https://github.com/beeware/toga).
 Toga is part of the [BeeWare suite](https://beeware.org). You can talk
 to the community through:
 
--   [\@beeware@fosstodon.org on
+-   [@beeware@fosstodon.org on
     Mastodon](https://fosstodon.org/@beeware)
 -   [Discord](https://beeware.org/bee/chat/)
 -   The Toga [GitHub Discussions
@@ -34,7 +34,7 @@ Conduct](https://beeware.org/community/behavior/).
 If you experience problems with Toga, [log them on
 GitHub](https://github.com/beeware/toga/issues).
 
-If you\'d like to contribute to Toga development, our [contribution
+If you'd like to contribute to Toga development, our [contribution
 guide](https://toga.readthedocs.io/en/latest/how-to/contribute/index.html)
 details how to set up a development environment, and other requirements
 we have as part of our contribution process.
