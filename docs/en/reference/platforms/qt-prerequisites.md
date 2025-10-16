@@ -1,61 +1,8 @@
 <!-- rumdl-disable-line MD041 -->
 
-/// tab | GTK
-
 These instructions are different on almost every version of Linux and Unix; here are some of the common alternatives:
 
-### Ubuntu 24.04+ / Debian 13+
-
-```console
-(venv) $ sudo apt update
-(venv) $ sudo apt install git build-essential pkg-config python3-dev libgirepository-2.0-dev libcairo2-dev gir1.2-gtk-3.0 libcanberra-gtk3-module
-```
-
-### Ubuntu 22.04 / Debian 11, 12
-
-```console
-(venv) $ sudo apt update
-(venv) $ sudo apt install git build-essential pkg-config python3-dev libgirepository1.0-dev libcairo2-dev gir1.2-gtk-3.0 libcanberra-gtk3-module
-```
-
-If you're running on Ubuntu 22.04, Debian 11 or Debian 12, you'll also need to add a pin for `PyGObject==3.50.0`. Later versions of PyGObject require the `libgirepository-2.0-dev` library, which isn't available on older Debian-based distributions.
-
-### Fedora 41+
-
-```console
-(venv) $ sudo dnf install git gcc make pkg-config python3-devel gobject-introspection-devel cairo-gobject-devel gtk3 libcanberra-gtk3
-```
-
-### Arch / Manjaro
-
-```console
-(venv) $ sudo pacman -Syu git base-devel pkgconf python3 gobject-introspection cairo gtk3 libcanberra
-```
-
-### OpenSUSE Tumbleweed
-
-```console
-(venv) $ sudo zypper install git patterns-devel-base-devel_basis pkgconf-pkg-config python3-devel gobject-introspection-devel cairo-devel gtk3 'typelib(Gtk)=3.0' libcanberra-gtk3-module
-```
-
-### FreeBSD
-
-```console
-(venv) $ sudo pkg update
-(venv) $ sudo pkg install git gcc cmake pkgconf python3 gobject-introspection cairo gtk3 libcanberra-gtk3
-```
-
-If you're not using one of these, you'll need to work out how to install the developer libraries for `python3`, `cairo`, and `gobject-introspection` (and please let us know so we can improve this documentation!)
-
-In addition to the dependencies above, if you would like to help add additional support for GTK4, you need to also install `gir1.2-gtk-4.0` on Ubuntu/Debian, or `gtk4` on Fedora or Arch. For other distributions, consult your distribution's platform documentation.
-
-///
-
-/// tab | Qt
-
-These instructions are different on almost every version of Linux and Unix; here are some of the common alternatives:
-
-### Ubuntu 24.10+ / Debian 13+
+#### Ubuntu 24.10+ / Debian 13+
 
 For Ubuntu 24.10+, the necessary PySide6 modules should be installed through the system package manager in addition to the dependencies
 above, and then the ``system`` extra of ``toga_qt`` should be installed in the virtual environment.  Installing PySide6 automatically
@@ -70,10 +17,10 @@ installs Qt itself.
              libxfixes-dev libxi-dev libxkbcommon-dev \
              libxkbcommon-x11-dev libxrender-dev 'libxcb*-dev' \
              libwayland-dev libwayland-egl1-mesa libwayland-server0 \
-             libgles2-mesa-dev libxkbcommon-dev
+             libgles2-mesa-dev libxkbcommon-dev gnome-session-canberra
 ```
 
-### Ubuntu 22.04 to 24.04 / Debian 11, 12
+#### Ubuntu 22.04 to 24.04 / Debian 11, 12
 
 PySide6 (Python bindings for Qt) cannot be installed through the system; therefore installing it in your virtual environment (described
 later) is required.  This means that we can just install the dependencies for Qt here, as Qt itself will be provided
@@ -87,10 +34,10 @@ by PySide6 in ``pip`` with the caveat that it does not integrate with system the
              libxfixes-dev libxi-dev libxkbcommon-dev \
              libxkbcommon-x11-dev libxrender-dev 'libxcb*-dev' \
              libwayland-dev libwayland-egl1-mesa libwayland-server0 \
-             libgles2-mesa-dev libxkbcommon-dev
+             libgles2-mesa-dev libxkbcommon-dev gnome-session-canberra
 ```
 
-### Fedora 41+
+#### Fedora 41+
 
 /// warning | Requirement to Update System Packages
 
@@ -115,9 +62,3 @@ extra instead of ``system`` extra when installing ``toga_qt``.
 Again, the ``system`` extra of ``toga_qt`` shall be used.
 
 If you're not using one of these, you'll need to work out how to install the developer libraries for `python3`, [Qt's X11 dependencies](https://doc.qt.io/qt-6/linux-requirements.html), [Qt's Wayland dependencies](https://doc.qt.io/qt-6/wayland-requirements.html), and the executable ``canberra-gtk-play`` (and please let us know so we can improve this documentation!)
-
-///
-
-Some widgets (most notably, the [WebView][webview-system-requires] and [MapView][mapview-system-requires] widgets) have additional system requirements. Likewise, certain hardware features ([Location][location-system-requires]) have system requirements.
-
-See the documentation of those widgets and hardware features for details.

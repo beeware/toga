@@ -1,5 +1,5 @@
 from PySide6.QtWidgets import QLabel
-from travertino.constants import TOP
+from travertino.constants import TOP, TRANSPARENT
 from travertino.size import at_least
 
 from ..libs import qt_text_align
@@ -10,6 +10,10 @@ class Label(Widget):
     def create(self):
         self.native = QLabel()
         self.native.setAutoFillBackground(True)
+        # Background is not autofilled by default; but since we're
+        # enabling it here, let the default color be transparent
+        # so it autofills nothing.
+        self._default_background_color = TRANSPARENT
 
     def get_text(self):
         return self.native.text()

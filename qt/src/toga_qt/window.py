@@ -46,21 +46,17 @@ class TogaMainWindow(QMainWindow):
                 old & Qt.WindowMinimized and not new & Qt.WindowMinimized
             ):
                 self.interface.on_show()
+            print(self.impl.get_window_state())
             if IS_WAYLAND:  # pragma: no-cover-if-linux-x  # pragma: no branch
-                if self.impl._pending_state_transition == self.impl.get_window_state():
-                    self.impl._pending_state_transition = None
-                else:
-                    self.impl._changeventid += 1
-                    # Check and handle this later as the states etc may not have been
-                    # fully realized. Starting the next transition now will cause
-                    # extra window events to be generated, and sometimes the window
-                    # ends up in an incorrect state.
-                    QTimer.singleShot(
-                        100,
-                        partial(
-                            _handle_statechange, self.impl, self.impl._changeventid
-                        ),
-                    )
+                self.impl._changeventid += 1
+                # Check and handle this later as the states etc may not have been
+                # fully realized. Starting the next transition now will cause
+                # extra window events to be generated, and sometimes the window
+                # ends up in an incorrect state.
+                QTimer.singleShot(
+                    100,
+                    partial(_handle_statechange, self.impl, self.impl._changeventid),
+                )
         elif event.type() == QEvent.ActivationChange:
             if self.isActiveWindow():
                 self.interface.on_gain_focus()
@@ -73,7 +69,7 @@ class Window:
     def __init__(self, interface, title, position, size):
         self.interface = interface
         self.interface._impl = self
-        self.container = Container(on_refresh=self.container_refreshed)
+        self.container = Container(on_refresh=self.content_refreshed)
         self.container.native.show()
         self._changeventid = 0
 
@@ -173,16 +169,9 @@ class Window:
     def _extra_height(self):
         return self.native.size().height() - self.container.native.size().height()
 
-    def container_refreshed(self, container):
+    def content_refreshed(self, container):
         min_width = self.interface.content.layout.min_width
         min_height = self.interface.content.layout.min_height
-        size = self.container.native.size()
-        if size.width() < min_width and size.height() < min_height:
-            self.set_size((min_width, min_height + self._extra_height()))
-        elif size.width() < min_width:
-            self.set_size((min_width, size.height() + self._extra_height()))
-        elif size.height() < min_height:
-            self.set_size((size.width(), size.height() + self._extra_height()))
         self.container.native.setMinimumSize(min_width, min_height)
         self.container.min_width = min_width
         self.container.min_height = min_height

@@ -55,7 +55,17 @@ No additional dependencies are necessary.
 
 Before you install Toga, you'll need to install some system packages.
 
--8<- "reference/platforms/unix-prerequisites.md"
+/// tab | GTK
+
+-8<- "reference/platforms/gtk-prerequisites.md"
+
+///
+
+/// tab | Qt
+
+-8<- "reference/platforms/qt-prerequisites.md"
+
+///
 
 ///
 
