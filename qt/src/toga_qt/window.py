@@ -263,10 +263,9 @@ class Window:
         if state == WindowState.MAXIMIZED:
             self.native.showMaximized()
 
+        # no-covered because MINIMIZED window state cannot be round-tripped
+        # or asserted on Wayland.
         elif state == WindowState.MINIMIZED:  # pragma: no-cover-if-linux-wayland
-            # Qt on Wayland does not return minimized state; however,
-            # explicit is better than implicit, so check for IS_WAYLAND
-            # here and no-branch it.
             if not IS_WAYLAND:  # pragma: no branch
                 self.native.showNormal()
             self.native.showMinimized()
