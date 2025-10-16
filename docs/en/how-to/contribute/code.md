@@ -14,7 +14,7 @@ View the [macOS prerequisites][macos-prerequisites].
 
 /// tab | Linux
 
-View the [Linux prerequisites][linux-prerequisites].
+View the [GTK prerequisites][linux-prerequisites] or the [Qt prerequisites][qt-prerequisites].
 
 ///
 
