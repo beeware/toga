@@ -321,10 +321,10 @@ async def test_no_event_on_style_change(widget, probe, on_change):
     ],
 )
 async def test_edit_readonly_noop(widget, probe, app_probe, action, select, undo):
+    """Attempting to invoke edit actions with a readonly TextInput should
+    not change anything"""
     if not app_probe.edit_menu_noop_enabled:
         pytest.xfail("Platform does not have Edit menu that enables but no-ops")
-    """Attempting to invoke edit actions with a readonly TextInput should
-       not change anything"""
     widget.focus()
     await probe.redraw("Widget focused")
     widget.value = "About to be readonly"
