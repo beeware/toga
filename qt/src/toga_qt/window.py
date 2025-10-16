@@ -166,9 +166,6 @@ class Window:
         if self.interface.content:
             self.interface.content.refresh()
 
-    def _extra_height(self):
-        return self.native.size().height() - self.container.native.size().height()
-
     def content_refreshed(self, container):
         min_width = self.interface.content.layout.min_width
         min_height = self.interface.content.layout.min_height
