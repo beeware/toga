@@ -25,6 +25,7 @@ jobs:
         - "toga_demo"
         - "toga_dummy"
         - "toga_gtk"
+        - "toga_qt"
         - "toga_positron"
         - "toga_textual"
         - "toga_ios"
