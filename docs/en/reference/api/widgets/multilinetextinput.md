@@ -62,9 +62,15 @@ A scrollable panel that allows for the display and editing of multiple lines of 
 
 ///
 
-/// tab | Web {{ not_supported }}
+/// tab | Web
 
-Not supported
+![/reference/images/multilinetextinput-web.png](/reference/images/multilinetextinput-web.png){ width="300" }
+
+/// caption
+
+///
+
+<!-- TODO: Update alt text -->
 
 ///
 

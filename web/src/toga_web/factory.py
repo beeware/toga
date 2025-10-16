@@ -19,8 +19,8 @@ from .widgets.divider import Divider
 # from .widgets.detailedlist import DetailedList
 # from .widgets.imageview import ImageView
 from .widgets.label import Label
+from .widgets.multilinetextinput import MultilineTextInput
 
-# from .widgets.multilinetextinput import MultilineTextInput
 # from .widgets.numberinput import NumberInput
 # from .widgets.optioncontainer import OptionContainer
 from .widgets.passwordinput import PasswordInput
@@ -69,7 +69,7 @@ __all__ = [
     # 'DetailedList',
     # 'ImageView',
     "Label",
-    # 'MultilineTextInput',
+    "MultilineTextInput",
     # 'NumberInput',
     # 'OptionContainer',
     "PasswordInput",
