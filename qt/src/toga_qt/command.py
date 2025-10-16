@@ -22,7 +22,7 @@ class EditOperation:
         self.method_name = method_name
         self.needwrite = needwrite
 
-    def __call__(self):
+    def __call__(self, interface):
         fw = QApplication.focusWidget()
         if not fw:
             return

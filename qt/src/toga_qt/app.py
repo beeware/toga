@@ -1,5 +1,4 @@
 import asyncio
-import subprocess
 
 from PySide6.QtCore import QSize, Qt
 from PySide6.QtGui import QCursor, QGuiApplication
@@ -8,7 +7,6 @@ from qasync import QEventLoop
 
 import toga
 from toga.command import Command, Group
-from toga.handlers import NativeHandler
 
 from .command import EditOperation
 from .libs import create_qapplication
@@ -87,26 +85,23 @@ class App:
         # we omit the enabled detection for now.
         # Those KDE bundled apps only have one textfield in the application,
         # so it's trivial for them to implement it.
-
-        # NativeHandler is (ab)used here to ensure that the function stays
-        # of type EditOperation, to provide the appropriate icon.
         self.interface.commands.add(
             Command(
-                NativeHandler(EditOperation("undo")),
+                EditOperation("undo"),
                 "Undo",
                 shortcut=toga.Key.MOD_1 + "z",
                 group=Group.EDIT,
                 order=10,
             ),
             Command(
-                NativeHandler(EditOperation("redo")),
+                EditOperation("redo"),
                 "Redo",
                 shortcut=toga.Key.SHIFT + toga.Key.MOD_1 + "z",
                 group=Group.EDIT,
                 order=20,
             ),
             Command(
-                NativeHandler(EditOperation("cut", True)),
+                EditOperation("cut", True),
                 "Cut",
                 shortcut=toga.Key.MOD_1 + "x",
                 group=Group.EDIT,
@@ -114,7 +109,7 @@ class App:
                 order=10,
             ),
             Command(
-                NativeHandler(EditOperation("copy")),
+                EditOperation("copy"),
                 "Copy",
                 shortcut=toga.Key.MOD_1 + "c",
                 group=Group.EDIT,
@@ -122,7 +117,7 @@ class App:
                 order=20,
             ),
             Command(
-                NativeHandler(EditOperation("paste", True)),
+                EditOperation("paste", True),
                 "Paste",
                 shortcut=toga.Key.MOD_1 + "v",
                 group=Group.EDIT,
@@ -180,8 +175,14 @@ class App:
     # App capabilities
     ######################################################################
 
+    async def _beep(self):
+        process = await asyncio.create_subprocess_exec(
+            "canberra-gtk-play", "-i", "bell"
+        )
+        await process.wait()
+
     def beep(self):
-        subprocess.Popen(["canberra-gtk-play", "-i", "bell"])
+        asyncio.create_task(self._beep())
 
     def show_about_dialog(self):
         # A reference to the about dialog is stored for facilitate testing.
