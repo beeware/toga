@@ -181,7 +181,7 @@ class App:
     ######################################################################
 
     def beep(self):
-        subprocess.run(["canberra-gtk-play", "-i", "bell"])
+        subprocess.Popen(["canberra-gtk-play", "-i", "bell"])
 
     def show_about_dialog(self):
         # A reference to the about dialog is stored for facilitate testing.
