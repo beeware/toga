@@ -47,14 +47,20 @@ class TogaMainWindow(QMainWindow):
             ):
                 self.interface.on_show()
             if IS_WAYLAND:  # pragma: no-cover-if-linux-x  # pragma: no branch
-                self.impl._changeventid += 1
-                # Handle this later as the states etc may not have been fully realized.
-                # Starting the next transition now will cause extra window events to be
-                # generated, and sometimes the window ends up in an incorrect state.
-                QTimer.singleShot(
-                    100,
-                    partial(_handle_statechange, self.impl, self.impl._changeventid),
-                )
+                if self.impl._pending_state_transition == self.impl.get_window_state():
+                    self.impl._pending_state_transition = None
+                else:
+                    self.impl._changeventid += 1
+                    # Check and handle this later as the states etc may not have been
+                    # fully realized. Starting the next transition now will cause
+                    # extra window events to be generated, and sometimes the window
+                    # ends up in an incorrect state.
+                    QTimer.singleShot(
+                        100,
+                        partial(
+                            _handle_statechange, self.impl, self.impl._changeventid
+                        ),
+                    )
         elif event.type() == QEvent.ActivationChange:
             if self.isActiveWindow():
                 self.interface.on_gain_focus()
@@ -222,11 +228,6 @@ class Window:
             return WindowState.NORMAL
 
     def set_window_state(self, state):
-        # NOTE - MINIMIZED does not round-trip on Wayland
-        # and will cause infinite recursion. Don't support it
-        if IS_WAYLAND and state == WindowState.MINIMIZED:  # pragma: no-cover-if-linux-x
-            return
-
         if self._pending_state_transition:  # pragma: no-cover-if-linux-x
             self._pending_state_transition = state
             return
