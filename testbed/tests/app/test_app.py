@@ -231,7 +231,7 @@ async def test_beep(app, app_probe):
     # can be invoked without raising an error, but there's no way to verify that the app
     # actually made a noise.
     app.beep()
-    await app_probe.redraw("Application has sounded bell", delay=1.5)
+    await app_probe.redraw("Application has sounded bell", delay=2)
 
 
 async def test_screens(app, app_probe):
