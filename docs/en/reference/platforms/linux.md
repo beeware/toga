@@ -30,6 +30,8 @@ Most testing occurs with GTK 3.24 as this is the version that has shipped with a
 
 The system packages that provide GTK must be installed manually:
 
+-8<- "reference/platforms/gtk-prerequisites.md"
+
 Toga does not currently support GTK 4.
 
 ### Installation
@@ -69,6 +71,8 @@ Although Qt *can* be installed on Windows and macOS, and the `toga-qt` backend *
 ### Prerequisites  { #qt-prerequisites }
 
 Most Qt testing occurs with Qt 6.10 as this is the version that is installable through ``pip``'s PySide6 which we must use since Ubuntu 24.04 does not yet provide PySide6 through the system.
+
+The system packages that provide Qt must be installed manually:
 
 -8<- "reference/platforms/qt-prerequisites.md"
 
