@@ -19,7 +19,7 @@ class DialogsMixin:
                 # Give the inner event loop a chance to start. The MessageBox dialogs
                 # work with sleep(0), but the file dialogs require it to be positive
                 # for some reason.
-                await asyncio.sleep(0.001)
+                await asyncio.sleep(0.01)
 
                 try:
                     if pre_close_test_method:
