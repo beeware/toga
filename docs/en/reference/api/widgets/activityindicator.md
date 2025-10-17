@@ -50,7 +50,7 @@ A small animated indicator showing activity on a task of indeterminate length, u
 
 /// tab | Android
 
-![/reference/images/activityindicator-android.png](/reference/images/activityindicator-iOS.png){ width="100" }
+![/reference/images/activityindicator-android.png](/reference/images/activityindicator-android.png){ width="100" }
 
 /// caption
 
