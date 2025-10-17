@@ -14,7 +14,8 @@ class WindowProbe(BaseProbe, DialogsMixin):
     # GTK defers a lot of window behavior to the window manager, which means some
     # features either don't exist, or we can't guarantee they behave the way Toga would
     # like.
-    equal_window_size_states = {WindowState.FULLSCREEN, WindowState.PRESENTATION}
+    fullscreen_presentation_equal_size = True
+    maximize_fullscreen_presentation_equal_size = False
     if GTK_VERSION < (4, 0, 0):
         supports_closable = True
         supports_as_image = True
@@ -32,7 +33,7 @@ class WindowProbe(BaseProbe, DialogsMixin):
         # size of maximized state remains the same as in the fullscreen & presentation.
         # However, this is not the case when test is run on a normal ubuntu system.
         if os.environ.get("WAYLAND_DISPLAY") == "toga":
-            equal_window_size_states.add(WindowState.MAXIMIZED)
+            maximize_fullscreen_presentation_equal_size = True
     supports_minimizable = False
     supports_move_while_hidden = False
     supports_unminimize = False
