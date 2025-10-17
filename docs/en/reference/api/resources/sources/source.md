@@ -1,6 +1,4 @@
-# Source
-
-A base class for data source implementations.
+{{ component_header("Source") }}
 
 ## Usage
 

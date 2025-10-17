@@ -1,4 +1,4 @@
-# Types
+{{ component_header("Types") }}
 
 ::: toga.LatLng
     options:
