@@ -3,13 +3,11 @@ import asyncio
 import toga
 from toga_gtk.libs import GTK_VERSION, GLib, Gtk
 
-
 class BaseProbe:
-    def repaint_needed(self):
-        if GTK_VERSION < (4, 0, 0):
-            return Gtk.events_pending()
-        else:
-            return GLib.main_context_default().pending()
+    def _queue_draw(self, data):
+        widget, event = data
+        widget.queue_draw()
+        event.set()
 
     async def redraw(self, message=None, delay=0):
         """Request a redraw of the app, waiting until that redraw has completed."""
@@ -19,11 +17,21 @@ class BaseProbe:
             and self.native
             and hasattr(self.native, "queue_draw")
         ):
-            print(
-                f"[DEBUG REDRAW] Native widget available, "
-                f"calling queue_draw on {self.native}"
-            )
-            self.native.queue_draw()
+            draw_queued = asyncio.Event()
+            GLib.idle_add(self._queue_draw, (self.native, draw_queued))
+            await draw_queued
+
+            if frame_clock := self.native.get_frame_clock():
+                handler_id = None
+                with contextlib.suppress(asyncio.TimeoutError):
+                    redraw_complete = asyncio.Future()
+
+                    def on_after_paint(*args):
+                        if not redraw_complete.done():
+                            redraw_complete.set_result(True)
+                        return False
+
+                    handler_id = frame_clock.connect("after-paint", on_after_paint)
 
         print("[DEBUG REDRAW] Processing events to ensure UI is fully updated")
         events_processed = 0
