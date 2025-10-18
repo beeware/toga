@@ -14,7 +14,7 @@ class BaseProbe:
             and self.native
             and hasattr(self.native, "queue_draw")
         ):
-            self.native.queue_draw()
+            GLib.g_idle_add(Gtk.Widget.queue_draw, self.native)
 
             if frame_clock := self.native.get_frame_clock():
                 handler_id = None
