@@ -10,15 +10,21 @@ license.file = "LICENSE"
 author = "Tiberius Yak"
 author_email = "tiberius@beeware.org"
 
-[tool.briefcase.app.screenshot]
 formal_name = "Screenshot Generator"
 description = "A testing app"
-sources = ["screenshot"]
 requires = [
     "../../travertino",
     "../../core",
     "pillow",
 ]
+
+[tool.briefcase.app.screenshot]
+sources = ["screenshot"]
+
+
+[tool.briefcase.app.screenshot-qt]
+sources = ["screenshot", "screenshot_qt"]
+
 
 
 [tool.briefcase.app.screenshot.macOS]
@@ -30,6 +36,12 @@ requires = [
 [tool.briefcase.app.screenshot.linux]
 requires = [
     "../../gtk",
+]
+
+[tool.briefcase.app.screenshot-qt.linux]
+requires = [
+    "../../qt",
+    "system-pyside6 @ git+https://github.com/johnzhou721/system-pyside6.git"
 ]
 
 [tool.briefcase.app.screenshot.windows]

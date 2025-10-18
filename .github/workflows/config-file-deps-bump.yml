@@ -11,4 +11,4 @@ jobs:
     uses: beeware/.github/.github/workflows/dep-version-bump.yml@main
     secrets: inherit
     with:
-      subdirectory: . core dummy android cocoa demo dummy gtk iOS positron testbed textual toga travertino web winforms
+      subdirectory: . core dummy android cocoa demo dummy gtk qt iOS positron testbed textual toga travertino web winforms
