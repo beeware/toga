@@ -161,7 +161,7 @@ class Group:
     HELP: Group
     """Help commands"""
     SETTINGS: Group
-    """Preferences menu group, idiomatic for KDE-based apps"""
+    """Preferences commands (used only for Qt backend by default)"""
 
 
 Group.APP = Group("*", order=-100)
