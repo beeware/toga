@@ -19,7 +19,7 @@ class BaseProbe:
         ):
             draw_queued = asyncio.Event()
             GLib.idle_add(self._queue_draw, (self.native, draw_queued))
-            await draw_queued
+            await draw_queued.wait()
 
             if frame_clock := self.native.get_frame_clock():
                 handler_id = None
