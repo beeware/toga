@@ -4,8 +4,12 @@ import contextlib
 import toga
 from toga_gtk.libs import GTK_VERSION, GLib, Gtk
 
-
 class BaseProbe:
+    def _queue_draw(self, data):
+        widget, event = data
+        widget.queue_draw()
+        event.set()
+
     async def redraw(self, message=None, delay=0):
         """Request a redraw of the app, waiting until that redraw has completed."""
         if (
@@ -13,8 +17,9 @@ class BaseProbe:
             and self.native
             and hasattr(self.native, "queue_draw")
         ):
-            GLib.idle_add(Gtk.Widget.queue_draw, self.native)
-            await asyncio.sleep(0.1)  # Wait until it's queued
+            draw_queued = asyncio.Event()
+            GLib.idle_add(self._queue_draw, (self.native, draw_queued))
+            await draw_queued
 
             if frame_clock := self.native.get_frame_clock():
                 handler_id = None
