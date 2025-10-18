@@ -4,6 +4,7 @@ import contextlib
 import toga
 from toga_gtk.libs import GTK_VERSION, GLib, Gtk
 
+
 class BaseProbe:
     def _queue_draw(self, data):
         widget, event = data
