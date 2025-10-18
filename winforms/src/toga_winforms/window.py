@@ -10,11 +10,11 @@ from System.IO import MemoryStream
 from toga import App
 from toga.command import Separator
 from toga.constants import WindowState
+from toga.handlers import WeakrefCallable
 from toga.types import Position, Size
 
 from .container import Container
 from .fonts import DEFAULT_FONT
-from .libs.wrapper import WeakrefCallable
 from .screens import Screen as ScreenImpl
 from .widgets.base import Scalable
 
