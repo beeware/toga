@@ -14,6 +14,7 @@ class BaseProbe:
             and hasattr(self.native, "queue_draw")
         ):
             GLib.idle_add(Gtk.Widget.queue_draw, self.native)
+            await asyncio.sleep(0.1)  # Wait until it's queued
 
             if frame_clock := self.native.get_frame_clock():
                 handler_id = None
