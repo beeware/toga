@@ -15,7 +15,7 @@ def to_accessor(heading: str) -> str:
     1. Converting the heading to lower case;
     2. Removing any character that can't be used in a Python identifier
     3. Replacing all whitespace with "_"
-    4. Prepending ``_`` if the first character is a digit.
+    4. Prepending `_` if the first character is a digit.
 
     Examples:
 
@@ -30,17 +30,17 @@ def to_accessor(heading: str) -> str:
     :raises ValueError: If the heading cannot be converted into an accessor.
     """
     value = WHITESPACE.sub(
-        " ",
+        "_",
         NON_ACCESSOR_CHARS.sub("", heading.lower()),
-    ).replace(" ", "_")
+    )
 
     try:
         if value[0].isdigit():
             value = f"_{value}"
-    except IndexError:
+    except IndexError as exc:
         raise ValueError(
             f"Unable to automatically generate accessor from heading {heading!r}."
-        )
+        ) from exc
 
     return value
 
@@ -56,7 +56,7 @@ def build_accessors(
     :param accessors: The list of accessor overrides. Can be specified as:
 
         * A list the same length as headings. Each entry in the list is a string that
-          is the override name for the accessor, or :any:`None` if the default accessor
+          is the override name for the accessor, or [`None`][] if the default accessor
           for the heading at that index should be used.
         * A dictionary mapping heading names to accessor names. If a heading name isn't
           present in the dictionary, the default accessor will be used.
@@ -65,19 +65,16 @@ def build_accessors(
     """
     if accessors is not None:
         if isinstance(accessors, Mapping):
-            result = [
+            return [
                 accessors[h] if h in accessors else to_accessor(h) for h in headings
             ]
         else:
-            # TODO: use zip(..., strict=True) instead once Python 3.9 support is dropped
-            if len(headings := list(headings)) != len(accessors := list(accessors)):
-                raise ValueError("Number of accessors must match number of headings")
-
-            result = [
-                a if a is not None else to_accessor(h)
-                for h, a in zip(headings, accessors)
-            ]
+            try:
+                zipped = list(zip(headings, accessors, strict=True))
+            except ValueError as exc:
+                raise ValueError(
+                    "Number of accessors must match number of headings"
+                ) from exc
+            return [a if a is not None else to_accessor(h) for h, a in zipped]
     else:
-        result = [to_accessor(h) for h in headings]
-
-    return result
+        return [to_accessor(h) for h in headings]

@@ -39,7 +39,7 @@ async def test_text(widget, probe):
 
     for text in TEXTS:
         widget.text = text
-        await probe.redraw("Switch text should be %s" % text)
+        await probe.redraw(f"Switch text should be {text}")
 
         # Text after a newline will be stripped.
         expected = str(text).split("\n")[0]

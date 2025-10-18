@@ -1,1 +1,0 @@
-Add a missing __init__.py to travertino.properties.

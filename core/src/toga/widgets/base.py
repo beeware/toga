@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from builtins import id as identifier
+from os import environ
 from typing import TYPE_CHECKING, Any, TypeVar
 from warnings import warn
 
@@ -15,13 +16,38 @@ if TYPE_CHECKING:
     from toga.app import App
     from toga.window import Window
 
+
 StyleT = TypeVar("StyleT", bound=BaseStyle)
+"""
+A type describing a style object. By default, this will be
+[Pack](/reference/style/pack.md), but Toga allows for other style representations.
+"""
 PackMixin = style_mixin(Pack)
+
+
+# based on colors from https://davidmathlogic.com/colorblind
+DEBUG_BACKGROUND_PALETTE = [
+    "#d0e2ed",  # very light blue
+    "#f6d3be",  # soft orange
+    "#c7e7b2",  # light green
+    "#f0b2d6",  # light pink
+    "#b8d2e9",  # light blue
+    "#e5dab0",  # light yellow
+    "#d5c2ea",  # light lavender
+    "#b2e4e5",  # light teal
+    "#f8ccb0",  # light orange
+    "#e5e4af",  # light cream
+    "#bde2dc",  # soft turquoise
+]
 
 
 class Widget(Node, PackMixin):
     _MIN_WIDTH = 100
     _MIN_HEIGHT = 100
+
+    DEBUG_LAYOUT_ENABLED = False
+    _USE_DEBUG_BACKGROUND = False
+    _debug_color_index = 0
 
     def __init__(
         self,
@@ -43,7 +69,16 @@ class Widget(Node, PackMixin):
         elif kwargs:
             style = style.copy()
             style.update(**kwargs)
-        super().__init__(style)
+
+        if self._USE_DEBUG_BACKGROUND:
+            if environ.get("TOGA_DEBUG_LAYOUT") == "1" or self.DEBUG_LAYOUT_ENABLED:
+                style.background_color = DEBUG_BACKGROUND_PALETTE[
+                    Widget._debug_color_index
+                ]
+                Widget._debug_color_index += 1
+                Widget._debug_color_index %= len(DEBUG_BACKGROUND_PALETTE)
+
+        super().__init__(style=style)
 
         self._id = str(id if id else identifier(self))
         self._window: Window | None = None
@@ -80,8 +115,10 @@ class Widget(Node, PackMixin):
         A subclass of Widget should redefine this method to return its implementation.
         """
         warn(
-            "Widgets should create and return their implementation in ._create(). This "
-            "will be an exception in a future version.",
+            (
+                "Widgets should create and return their implementation in ._create(). "
+                "This will be an exception in a future version."
+            ),
             RuntimeWarning,
             stacklevel=2,
         )
@@ -101,9 +138,11 @@ class Widget(Node, PackMixin):
     def tab_index(self) -> int | None:
         """The position of the widget in the focus chain for the window.
 
-        .. note::
+        /// note | Note
 
-            This is a beta feature. The ``tab_index`` API may change in the future.
+        This is a beta feature. The `tab_index` API may change in the future.
+
+        ///
         """
         return self._impl.get_tab_index()
 
@@ -275,8 +314,8 @@ class Widget(Node, PackMixin):
         When setting the window for a widget, all children of this widget will be
         recursively assigned to the same window.
 
-        If the widget has a value for :any:`window`, it *must* also have a value for
-        :any:`app`.
+        If the widget has a value for [`window`][toga.Widget.window], it *must* also
+        have a value for [`app`][toga.Widget.app].
         """
         return self._window
 

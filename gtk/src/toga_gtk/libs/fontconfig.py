@@ -36,11 +36,7 @@ class _FontConfig:
                 "Can't load custom fonts without a working Fontconfig library"
             )
 
-        result = fontconfig.FcConfigAppFontAddFile(
-            self.config, str(path).encode("utf-8")
-        )
-        if result == 0:
-            raise ValueError(f"Unable to load font file {path}")
+        return fontconfig.FcConfigAppFontAddFile(self.config, str(path).encode("utf-8"))
 
 
 # Instantiate and configure a singleton FontConfig instance

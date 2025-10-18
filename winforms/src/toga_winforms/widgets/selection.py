@@ -22,7 +22,6 @@ class TogaComboBox(WinForms.ComboBox):
 
 
 class Selection(Widget):
-
     def create(self):
         self.native = TogaComboBox(self)
         self._send_notifications = True

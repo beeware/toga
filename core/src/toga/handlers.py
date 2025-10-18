@@ -8,25 +8,22 @@ import warnings
 import weakref
 from abc import ABC
 from collections.abc import Awaitable, Callable, Generator
-from typing import TYPE_CHECKING, Any, NoReturn, Protocol, TypeVar, Union
+from typing import TYPE_CHECKING, Any, NoReturn, Protocol, TypeVar
 
 if TYPE_CHECKING:
-    if sys.version_info < (3, 10):
-        from typing_extensions import TypeAlias
-    else:
-        from typing import TypeAlias
+    from typing import TypeAlias
 
     T = TypeVar("T")
 
     GeneratorReturnT = TypeVar("GeneratorReturnT")
     HandlerGeneratorReturnT: TypeAlias = Generator[
-        Union[float, None], object, GeneratorReturnT
+        float | None, object, GeneratorReturnT
     ]
 
     HandlerSyncT: TypeAlias = Callable[..., object]
     HandlerAsyncT: TypeAlias = Callable[..., Awaitable[object]]
     HandlerGeneratorT: TypeAlias = Callable[..., HandlerGeneratorReturnT[object]]
-    HandlerT: TypeAlias = Union[HandlerSyncT, HandlerAsyncT, HandlerGeneratorT]
+    HandlerT: TypeAlias = HandlerSyncT | HandlerAsyncT | HandlerGeneratorT
     WrappedHandlerT: TypeAlias = Callable[..., object]
 
 
@@ -48,9 +45,12 @@ async def long_running_task(
     # 2025-02: Deprecated in 0.5.0
     ######################################################################
     warnings.warn(
-        "Use of generators for async handlers has been deprecated; convert "
-        "the handler to an async co-routine that uses `asyncio.sleep()`.",
+        (
+            "Use of generators for async handlers has been deprecated; convert "
+            "the handler to an async co-routine that uses `asyncio.sleep()`."
+        ),
         DeprecationWarning,
+        stacklevel=2,
     )
     try:
         try:
@@ -98,13 +98,13 @@ def simple_handler(fn: T, *args: object, **kwargs: object) -> T:
     """Wrap a function (with args and kwargs) so it can be used as a command handler.
 
     This essentially accepts and ignores the handler-related arguments (i.e., the
-    required ``command`` argument passed to handlers), so that you can use a method like
-    :meth:`~toga.App.about()` as a command handler.
+    required `command` argument passed to handlers), so that you can use a method like
+    [`App.about()`][toga.App.about] as a command handler.
 
     It can accept either a function or a coroutine. Arguments that will be passed to the
     function/coroutine are provided at the time the wrapper is defined. It is assumed
     that the mechanism invoking the handler will add no additional arguments other than
-    the ``command`` that is invoking the handler.
+    the `command` that is invoking the handler.
 
     :param fn: The callable to invoke as a handler.
     :param args: Positional arguments that should be passed to the invoked handler.
@@ -213,9 +213,12 @@ class AsyncResult(ABC):
         self.on_result: OnResultT | None
         if on_result:
             warnings.warn(
-                "Synchronous `on_result` handlers have been deprecated; "
-                "use `await` on the asynchronous result",
+                (
+                    "Synchronous `on_result` handlers have been deprecated; "
+                    "use `await` on the asynchronous result"
+                ),
                 DeprecationWarning,
+                stacklevel=2,
             )
 
             self.on_result = on_result

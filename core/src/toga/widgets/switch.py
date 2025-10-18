@@ -9,7 +9,7 @@ from .base import StyleT, Widget
 
 
 class OnChangeHandler(Protocol):
-    def __call__(self, widget: Switch, **kwargs: Any) -> object:
+    def __call__(self, widget: Switch, **kwargs: Any) -> None:
         """A handler to invoke when the value is changed.
 
         :param widget: The Switch that was changed.
@@ -61,9 +61,9 @@ class Switch(Widget):
     def text(self) -> str:
         """The text label for the Switch.
 
-        ``None``, and the Unicode codepoint U+200B (ZERO WIDTH SPACE), will be
+        `None`, and the Unicode codepoint U+200B (ZERO WIDTH SPACE), will be
         interpreted and returned as an empty string. Any other object will be
-        converted to a string using ``str()``.
+        converted to a string using `str()`.
 
         Only one line of text can be displayed. Any content after the first
         newline will be ignored.

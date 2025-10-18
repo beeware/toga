@@ -41,8 +41,8 @@ class Icon:
                         Gdk.Texture.new_from_filename(str(path))
                     )
                 self._native[size] = native
-        except GLib.GError:
-            raise ValueError(f"Unable to load icon from {path}")
+        except GLib.GError as exc:
+            raise ValueError(f"Unable to load icon from {path}") from exc
 
     def native(self, size):
         try:

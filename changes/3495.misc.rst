@@ -1,1 +1,0 @@
-Updated coverage from 7.8.0 to 7.8.2 in /testbed.

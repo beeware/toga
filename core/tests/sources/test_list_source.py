@@ -169,7 +169,7 @@ def test_flat_list():
             self.info = info
 
         def __str__(self):
-            return "string value %s" % self.info
+            return f"string value {self.info}"
 
     data = [
         MyObject(True),
@@ -256,7 +256,7 @@ def test_insert_kwarg(source):
     source.add_listener(listener)
 
     # Insert the new element
-    row = source.insert(1, dict(val1="new element", val2=999))
+    row = source.insert(1, {"val1": "new element", "val2": 999})
 
     assert len(source) == 4
     assert source[1] == row
@@ -290,7 +290,7 @@ def test_append_dict(source):
     source.add_listener(listener)
 
     # Append the new element
-    row = source.append(dict(val1="new element", val2=999))
+    row = source.append({"val1": "new element", "val2": 999})
 
     assert len(source) == 4
     assert source[3] == row
@@ -385,10 +385,10 @@ def test_find(source):
     """You can find the index of any matching row within a list source."""
 
     # Duplicate row 1 of the data.
-    source.append(dict(val1="second", val2=222))
+    source.append({"val1": "second", "val2": 222})
 
     # A unique row can be found
-    assert source.find(dict(val1="third", val2=333)) == source[2]
+    assert source.find({"val1": "third", "val2": 333}) == source[2]
 
     # A unique row can be found, using implied accessor order
     assert source.find(("third", 333)) == source[2]
@@ -397,20 +397,20 @@ def test_find(source):
     assert source.find("third") == source[2]
 
     # If data isn't unique, the first match is returned
-    assert source.find(dict(val1="second", val2=222)) == source[1]
+    assert source.find({"val1": "second", "val2": 222}) == source[1]
 
     # The search can start after a given instance
-    assert source.find(dict(val1="second", val2=222), start=source[1]) == source[3]
+    assert source.find({"val1": "second", "val2": 222}, start=source[1]) == source[3]
 
     # A partial match is enough
-    assert source.find(dict(val1="third")) == source[2]
+    assert source.find({"val1": "third"}) == source[2]
 
-    # find will fail if the object doesn't exist
+    # find will raise ValueError if no match is found and no default is provided
     with pytest.raises(
         ValueError,
         match=r"No row matching {'val1': 'not there', 'val2': 999} in data",
     ):
-        source.find(dict(val1="not there", val2=999))
+        source.find({"val1": "not there", "val2": 999})
 
     # An overspecified search will fail
     with pytest.raises(
@@ -420,4 +420,17 @@ def test_find(source):
             r"{'val1': 'first', 'val2': 111, 'value': 'overspecified'} in data"
         ),
     ):
-        source.find(dict(val1="first", val2=111, value="overspecified"))
+        source.find({"val1": "first", "val2": 111, "value": "overspecified"})
+
+
+def test_find_with_default(source):
+    """You can provide a default return value to the find method."""
+
+    # Duplicate row 1 of the data.
+    source.append({"val1": "second", "val2": 222})
+
+    # If a default is provided, it will be returned if no match is found
+    assert source.find({"val1": "not there", "val2": 999}, default=-1) == -1
+
+    # If the given default value is None, None will be returned if no match is found
+    assert source.find({"val1": "not there", "val2": 999}, default=None) is None

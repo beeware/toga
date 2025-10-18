@@ -5,7 +5,6 @@ from pytest import fixture
 
 import toga
 
-from ..conftest import skip_on_platforms
 from .conftest import build_cleanup_test
 from .properties import (  # noqa: F401
     test_background_color,
@@ -79,20 +78,17 @@ def assert_none_value(normalize):
 
 @fixture
 async def widget():
-    skip_on_platforms("macOS", "iOS", "linux")
     return toga.DateInput()
 
 
 test_cleanup = build_cleanup_test(
     toga.DateInput,
-    skip_platforms=("macOS", "iOS", "linux"),
     xfail_platforms=("android",),
 )
 
 
 async def test_init():
     "Properties can be set in the constructor"
-    skip_on_platforms("macOS", "iOS", "linux")
 
     value = date(1999, 12, 31)
     min = date(1999, 12, 30)
@@ -165,11 +161,11 @@ async def test_min(widget, probe, initial_value, min_value, values, normalize):
     "The minimum can be changed"
     value = normalize(initial_value)
     if probe.supports_limits:
-        assert probe.min_value == min_value
+        assert probe.min_value == normalize(min_value)
 
     for min in values:
         widget.min = min
-        assert widget.min == min
+        assert widget.min == normalize(min)
 
         if value < min:
             value = normalize(min)
@@ -177,18 +173,18 @@ async def test_min(widget, probe, initial_value, min_value, values, normalize):
 
         await probe.redraw(f"Minimum set to {min}")
         if probe.supports_limits:
-            assert probe.min_value == min
+            assert probe.min_value == normalize(min)
 
 
 async def test_max(widget, probe, initial_value, max_value, values, normalize):
     "The maximum can be changed"
     value = normalize(initial_value)
     if probe.supports_limits:
-        assert probe.max_value == max_value
+        assert probe.max_value == normalize(max_value)
 
     for max in reversed(values):
         widget.max = max
-        assert widget.max == max
+        assert widget.max == normalize(max)
 
         if value > max:
             value = normalize(max)
@@ -196,4 +192,4 @@ async def test_max(widget, probe, initial_value, max_value, values, normalize):
 
         await probe.redraw(f"Maximum set to {max}")
         if probe.supports_limits:
-            assert probe.max_value == max
+            assert probe.max_value == normalize(max)

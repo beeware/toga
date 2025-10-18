@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import sys
 from collections.abc import Callable, Iterable
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -9,12 +8,21 @@ import toga
 from toga.platform import get_platform_factory
 
 if TYPE_CHECKING:
-    if sys.version_info < (3, 10):
-        from typing_extensions import TypeAlias
-    else:
-        from typing import TypeAlias
+    from typing import TypeAlias
 
     IconContentT: TypeAlias = str | Path | toga.Icon
+    """
+    When specifying an [Icon][], you can
+    provide:
+
+    - a string specifying an absolute or relative path;
+    - an absolute or relative [`pathlib.Path`][]
+      object; or
+    - an instance of [`toga.Icon`][].
+
+    If a relative path is provided, it will be anchored relative to the
+    module that defines your Toga application class.
+    """
 
 
 class cachedicon:
@@ -46,13 +54,13 @@ class Icon:
     def APP_ICON(cls) -> Icon:
         """The application icon.
 
-        The application icon will be loaded from ``resources/<app name>`` (where ``<app
-        name>`` is the value of :attr:`toga.App.app_name`).
+        The application icon will be loaded from `resources/<app name>` (where `<app
+        name>` is the value of [`toga.App.app_name`][]).
 
         If this resource cannot be found, and the app has been packaged as a binary, the
         icon from the application binary will be used as a fallback.
 
-        Otherwise, :attr:`~toga.Icon.DEFAULT_ICON` will be used.
+        Otherwise, [`Icon.DEFAULT_ICON`][toga.Icon.DEFAULT_ICON] will be used.
         """
         return Icon(_APP_ICON)
 
@@ -78,15 +86,16 @@ class Icon:
             path, or a path relative to the module that defines your Toga application
             class. This base filename should *not* contain an extension. If an extension
             is specified, it will be ignored. If the icon cannot be found, the default
-            icon will be :attr:`~toga.Icon.DEFAULT_ICON`. If an icon file is found, but
-            it cannot be loaded (due to a file format or permission error), an exception
+            icon will be [`Icon.DEFAULT_ICON`][toga.Icon.DEFAULT_ICON]. If an icon file
+            is found, but it cannot be loaded (due to a file format or permission
+            error), an exception
             will be raised.
         :param system: **For internal use only**
         """
         self.factory = get_platform_factory()
         try:
             # Try to load the icon with the given path snippet. If the request is for
-            # the app icon, use ``resources/<app name>`` as the path.
+            # the app icon, use `resources/<app name>` as the path.
             if path is _APP_ICON:
                 self.path = Path(f"resources/{toga.App.app.app_name}")
             else:

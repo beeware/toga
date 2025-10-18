@@ -15,9 +15,14 @@ from .properties import (  # noqa: F401
     test_background_color_reset,
     test_enable_noop,
     test_flex_widget_size,
-    test_focus_noop,
     test_font,
 )
+
+# Tables can't be given focus on mobile
+if toga.platform.current_platform in {"android", "iOS"}:
+    from .properties import test_focus_noop  # noqa: F401
+else:
+    from .properties import test_focus  # noqa: F401
 
 
 @pytest.fixture
@@ -42,7 +47,7 @@ def source():
         accessors=["a", "b", "c", "d", "e"],
         data=[
             {"a": f"A{i}", "b": f"B{i}", "c": f"C{i}", "d": f"D{i}", "e": f"E{i}"}
-            for i in range(0, 100)
+            for i in range(100)
         ],
     )
 
@@ -161,7 +166,9 @@ async def test_scroll(widget, probe):
 
 async def test_keyboard_navigation(widget, source, probe):
     """The list can be navigated using a keyboard."""
-    await probe.acquire_keyboard_focus()
+    widget.focus()
+
+    await probe.select_first_row_keyboard()
     await probe.redraw("First row selected")
     assert widget.selection == widget.data[0]
 
@@ -321,9 +328,10 @@ async def test_multiselect_keyboard_control(
     assert multiselect_widget.selection == []
     on_select_handler.assert_not_called()
 
-    await multiselect_probe.acquire_keyboard_focus()
+    multiselect_widget.focus()
 
     # A single row can be added to the selection
+    await multiselect_probe.select_first_row_keyboard()
     await multiselect_probe.redraw("First row selected")
     assert multiselect_widget.selection == [source[0]]
 
@@ -370,7 +378,7 @@ async def _row_change_test(widget, probe):
             "b": i,  # Integer
             "c": MyData(i),  # Custom type
         }
-        for i in range(0, 5)
+        for i in range(5)
     ]
     await probe.redraw("Data source has been changed")
 
@@ -496,9 +504,9 @@ async def test_column_changes(widget, probe):
     # The specific behavior for resizing is undefined; however, the columns should add
     # up to near the full width (allowing for inter-column padding, etc), and no single
     # column should be tiny.
-    total_width = sum(probe.column_width(i) for i in range(0, 4))
+    total_width = sum(probe.column_width(i) for i in range(4))
     assert total_width == pytest.approx(probe.width, abs=100)
-    for i in range(0, 4):
+    for i in range(4):
         assert probe.column_width(i) > 50
 
 
@@ -512,7 +520,7 @@ async def test_headerless_column_changes(headerless_widget, headerless_probe):
 
 async def test_remove_all_columns(widget, probe):
     assert probe.column_count == 3
-    for i in range(probe.column_count):
+    for _ in range(probe.column_count):
         widget.remove_column(0)
         await probe.redraw("Removed first column")
     assert probe.column_count == 0
@@ -549,7 +557,7 @@ async def test_cell_icon(widget, probe):
             # An object with an icon attribute.
             "c": MyIconData(f"C{i}", {0: red, 1: green, 2: None}[i % 3]),
         }
-        for i in range(0, 50)
+        for i in range(50)
     ]
     await probe.redraw("Table has data with icons")
 
@@ -584,7 +592,7 @@ async def test_cell_widget(widget, probe):
                 else toga.TextInput(value=f"edit C{i}")
             ),
         }
-        for i in range(0, 50)
+        for i in range(50)
     ]
     if probe.supports_widgets:
         warning_check = contextlib.nullcontext()

@@ -49,9 +49,9 @@ class StatusIconSet:
     def _submenu(self, group, group_cache):
         try:
             return group_cache[group]
-        except KeyError:
+        except KeyError as exc:
             if group is None:
-                raise ValueError("Unknown top level item")
+                raise ValueError("Unknown top level item") from exc
             else:
                 parent_menu = self._submenu(group.parent, group_cache)
 
@@ -88,11 +88,11 @@ class StatusIconSet:
         for cmd in self.interface.commands:
             try:
                 submenu = self._submenu(cmd.group, group_cache)
-            except ValueError:
+            except ValueError as exc:
                 raise ValueError(
-                    f"Command {cmd.text!r} does not belong to "
-                    "a current status icon group."
-                )
+                    f"Command {cmd.text!r} does not belong to a current status icon "
+                    "group."
+                ) from exc
             else:
                 if isinstance(cmd, Separator):
                     menu_item = "-"

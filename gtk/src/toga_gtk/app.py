@@ -130,7 +130,7 @@ class App:
                 submenu.append_section(None, section)
                 self._menu_groups[cmd.group] = (submenu, section)
             else:
-                cmd_id = "command-%s" % id(cmd)
+                cmd_id = f"command-{id(cmd)}"
                 action = Gio.SimpleAction.new(cmd_id, None)
                 action.connect("activate", cmd._impl.gtk_activate)
 
@@ -217,8 +217,9 @@ class App:
     ######################################################################
 
     def get_dark_mode_state(self):
-        self.interface.factory.not_implemented("dark mode state")
-        return None
+        return Gtk.Settings.get_default().get_property(
+            "gtk-application-prefer-dark-theme"
+        )
 
     ######################################################################
     # App capabilities
@@ -270,8 +271,13 @@ class App:
     ######################################################################
 
     def get_current_window(self):  # pragma: no-cover-if-linux-wayland
-        current_window = self.native.get_active_window()._impl
-        return current_window if current_window.interface.visible else None
+        active_window = self.native.get_active_window()
+        if active_window and active_window._impl.interface.visible:
+            return active_window._impl
+        else:  # pragma: no cover
+            # Can't test the case of having no window, as the testbed
+            # must always have a window.
+            return None
 
     def set_current_window(self, window):
         window._impl.native.present()

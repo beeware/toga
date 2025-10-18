@@ -1,5 +1,6 @@
 from collections.abc import Sequence
 
+from ..compat import _toga_lt_5
 from .choices import Choices
 from .immutablelist import ImmutableList
 
@@ -57,7 +58,20 @@ class validated_property:
 
         setattr(style, f"_{self.name}", value)
         if value != current:
-            style.apply(self.name)
+            ######################################################################
+            # 08-2025: Backwards compatibility for Toga < 0.5.0
+            ######################################################################
+            try:
+                style.apply(self.name)
+            except TypeError:
+                if _toga_lt_5():  # pragma: no cover
+                    style.apply(self.name, value)
+                else:
+                    raise
+
+            ######################################################################
+            # End backwards compatibility
+            ######################################################################
 
     def __delete__(self, style):
         try:
@@ -67,7 +81,20 @@ class validated_property:
             pass
         else:
             if current != self.initial:
-                style.apply(self.name)
+                ######################################################################
+                # 08-2025: Backwards compatibility for Toga < 0.5.0
+                ######################################################################
+                try:
+                    style.apply(self.name)
+                except TypeError:
+                    if _toga_lt_5():  # pragma: no cover
+                        style.apply(self.name, self.initial)
+                    else:
+                        raise
+
+                ######################################################################
+                # End backwards compatibility
+                ######################################################################
 
     @property
     def _name_if_set(self):
@@ -76,11 +103,11 @@ class validated_property:
     def validate(self, value):
         try:
             return self.choices.validate(value)
-        except ValueError:
+        except ValueError as error:
             raise ValueError(
                 f"Invalid value {value!r} for property{self._name_if_set}; "
                 f"Valid values are: {self.choices}"
-            )
+            ) from error
 
     def is_set_on(self, style):
         return hasattr(style, f"_{self.name}")
@@ -108,11 +135,11 @@ class list_property(validated_property):
         for item in value:
             try:
                 item = self.choices.validate(item)
-            except ValueError:
+            except ValueError as error:
                 raise ValueError(
                     f"Invalid item value {item!r} for list "
                     f"property{self._name_if_set}; Valid values are: {self.choices}"
-                )
+                ) from error
             result.append(item)
 
         return ImmutableList(result)

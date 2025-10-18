@@ -1,19 +1,14 @@
 import random
 
 import toga
-from toga.colors import BLUE, RED
-from toga.constants import COLUMN, ROW
-from toga.style import Pack
+from toga.constants import BLUE, COLUMN, RED, ROW
 
 
-class ExampleButtonApp(toga.App):
+class ButtonApp(toga.App):
     def startup(self):
         self.main_window = toga.MainWindow(
             size=(800, 500), resizable=False, minimizable=False
         )
-
-        # Common style of the inner boxes
-        style_inner_box = Pack(direction=COLUMN)
 
         # Button class
         #   Simple button with text and callback function called when
@@ -21,7 +16,7 @@ class ExampleButtonApp(toga.App):
         button1 = toga.Button(
             "Change Text",
             on_press=self.callback_text,
-            style=Pack(flex=1),
+            flex=1,
         )
 
         # Button with text and enable option
@@ -29,12 +24,12 @@ class ExampleButtonApp(toga.App):
         self.button2 = toga.Button(
             "Button is disabled!",
             enabled=False,
-            style=Pack(flex=1),
+            flex=1,
             on_press=self.callback_disable,
         )
 
         # Button with text and style option
-        button3 = toga.Button("Bigger", style=Pack(width=200))
+        button3 = toga.Button("Bigger", width=200)
 
         # Button with text and callback function called
         button4a = toga.Button("Make window larger", on_press=self.callback_larger)
@@ -44,7 +39,7 @@ class ExampleButtonApp(toga.App):
         # Container of components
         #   Add components for the first row of the outer box
         inner_box1 = toga.Box(
-            style=style_inner_box,
+            direction=COLUMN,
             children=[
                 button1,
                 self.button2,
@@ -55,18 +50,20 @@ class ExampleButtonApp(toga.App):
         )
 
         # Button with text and margin style
-        button5 = toga.Button("Far from home", style=Pack(margin=50, color=BLUE))
+        button5 = toga.Button("Far from home", margin=50, color=BLUE)
 
         # Button with text and RGB color
-        button6 = toga.Button("RGB : Fashion", style=Pack(background_color=RED))
+        button6 = toga.Button("RGB : Fashion", background_color=RED)
 
         # Button with text and string color
-        button7 = toga.Button("String : Fashion", style=Pack(background_color=BLUE))
+        button7 = toga.Button("String : Fashion", background_color=BLUE)
 
         # Button with text and string color
         button8 = toga.Button(
             "Big Font",
-            style=Pack(font_family="serif", font_size=20, font_weight="bold"),
+            font_family="serif",
+            font_size=20,
+            font_weight="bold",
         )
 
         # Button with icon
@@ -76,14 +73,12 @@ class ExampleButtonApp(toga.App):
 
         # Add components for the second row of the outer box
         inner_box2 = toga.Box(
-            style=style_inner_box,
+            direction=COLUMN,
             children=[button5, button6, button7, button8, button9],
         )
 
         #  Create the outer box with 2 rows
-        outer_box = toga.Box(
-            style=Pack(direction=ROW), children=[inner_box1, inner_box2]
-        )
+        outer_box = toga.Box(direction=ROW, children=[inner_box1, inner_box2])
 
         # Add the content on the main window
         self.main_window.content = outer_box
@@ -117,12 +112,8 @@ class ExampleButtonApp(toga.App):
 
 
 def main():
-    # Application class
-    #   App name and namespace
-    app = ExampleButtonApp("Button", "org.beeware.toga.examples.buttons")
-    return app
+    return ButtonApp("Button", "org.beeware.toga.examples.buttons")
 
 
 if __name__ == "__main__":
-    app = main()
-    app.main_loop()
+    main().main_loop()

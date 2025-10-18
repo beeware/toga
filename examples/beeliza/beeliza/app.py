@@ -3,7 +3,6 @@ import random
 
 import toga
 from toga.constants import COLUMN, ROW
-from toga.style import Pack
 
 from .bot import Eliza
 
@@ -58,28 +57,29 @@ class BeelizaApp(toga.App):
                     "subtitle": "Hello. How are you feeling today?",
                 }
             ],
-            style=Pack(flex=1),
+            flex=1,
         )
 
         # Buttons
         self.text_input = toga.TextInput(
-            style=Pack(flex=1, margin=5),
+            flex=1,
+            margin=5,
             on_confirm=self.handle_input,
         )
         send_button = toga.Button(
             "Send",
             on_press=self.handle_input,
-            style=Pack(margin=5),
+            margin=5,
         )
         input_box = toga.Box(
             children=[self.text_input, send_button],
-            style=Pack(direction=ROW),
+            direction=ROW,
         )
 
         # Outermost box
         outer_box = toga.Box(
             children=[self.chat, input_box],
-            style=Pack(direction=COLUMN),
+            direction=COLUMN,
         )
 
         # Add the content on the main window
@@ -97,5 +97,4 @@ def main():
 
 
 if __name__ == "__main__":
-    app = main()
-    app.main_loop()
+    main().main_loop()

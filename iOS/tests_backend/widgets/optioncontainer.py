@@ -24,7 +24,7 @@ class OptionContainerProbe(SimpleProbe):
             # selectedIndex doesn't account for disabled tabs, so
             # reduce index by the number of disabled tabs less than index
             n_disabled = sum(
-                not self.impl.sub_containers[i].enabled for i in range(0, index)
+                not self.impl.sub_containers[i].enabled for i in range(index)
             )
 
             self.impl.native_controller.selectedIndex = index - n_disabled

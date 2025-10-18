@@ -36,7 +36,7 @@ Finally navigate to the demo directory and run the application::
     $ cd demo
     $ python -m toga_demo
 
-.. _Toga project on Github: https://github.com/beeware/toga
+.. _Toga project on GitHub: https://github.com/beeware/toga
 
 Community
 ---------
@@ -45,7 +45,7 @@ Toga Demo is part of the `BeeWare suite`_. You can talk to the community through
 
 * `@beeware@fosstodon.org on Mastodon`_
 * `Discord`_
-* The Toga `Github Discussions forum`_
+* The Toga `GitHub Discussions forum`_
 
 We foster a welcoming and respectful community as described in our
 `BeeWare Community Code of Conduct`_.
@@ -53,7 +53,7 @@ We foster a welcoming and respectful community as described in our
 .. _BeeWare suite: https://beeware.org
 .. _@beeware@fosstodon.org on Mastodon: https://fosstodon.org/@beeware
 .. _Discord: https://beeware.org/bee/chat/
-.. _Github Discussions forum: https://github.com/beeware/toga/discussions
+.. _GitHub Discussions forum: https://github.com/beeware/toga/discussions
 .. _BeeWare Community Code of Conduct: https://beeware.org/community/behavior/
 
 Contributing
@@ -63,6 +63,6 @@ If you experience problems with Toga, `log them on GitHub
 <https://github.com/beeware/toga/issues>`__.
 
 If you'd like to contribute to Toga development, our `contribution guide
-<https://toga.readthedocs.io/en/latest/how-to/contribute/index.html>`__
+<https://toga.readthedocs.io/en/latest/how-to/contribute/>`__
 details how to set up a development environment, and other requirements we have
 as part of our contribution process.

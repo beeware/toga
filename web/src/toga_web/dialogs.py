@@ -1,10 +1,8 @@
-from abc import ABC
-
 import toga
 from toga_web.libs import create_element
 
 
-class BaseDialog(ABC):
+class BaseDialog:
     def show(self, host_window, future):
         self.future = future
 

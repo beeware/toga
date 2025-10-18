@@ -1,1 +1,0 @@
-References to the minimum Python version in READMEs have been removed.

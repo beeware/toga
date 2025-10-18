@@ -6,6 +6,11 @@ from toga_gtk.libs import GTK_VERSION, GLib, Gtk
 
 
 class BaseProbe:
+    def repaint_needed(self):
+        if GTK_VERSION < (4, 0, 0):
+            return Gtk.events_pending()
+        else:
+            return GLib.main_context_default().pending()
 
     async def redraw(self, message=None, delay=0):
         """Request a redraw of the app, waiting until that redraw has completed."""

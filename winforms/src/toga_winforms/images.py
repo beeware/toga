@@ -18,16 +18,16 @@ class Image:
         if path:
             try:
                 self.native = WinImage.FromFile(str(path))
-            except OutOfMemoryException:
+            except OutOfMemoryException as exc:
                 # OutOfMemoryException is what Winforms raises when a file
                 # isn't a valid image file.
-                raise ValueError(f"Unable to load image from {path}")
+                raise ValueError(f"Unable to load image from {path}") from exc
         elif data:
             try:
                 stream = MemoryStream(data)
                 self.native = WinImage.FromStream(stream)
-            except ArgumentException:
-                raise ValueError("Unable to load image from data")
+            except ArgumentException as exc:
+                raise ValueError("Unable to load image from data") from exc
         else:
             self.native = raw
 
@@ -54,7 +54,9 @@ class Image:
                 ".tiff": ImageFormat.Tiff,
             }[path.suffix.lower()]
             str_path = str(path)
-        except KeyError:
-            raise ValueError(f"Don't know how to save image of type {path.suffix!r}")
+        except KeyError as exc:
+            raise ValueError(
+                f"Don't know how to save image of type {path.suffix!r}"
+            ) from exc
 
         self.native.Save(str_path, filetype)

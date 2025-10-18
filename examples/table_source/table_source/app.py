@@ -3,7 +3,6 @@ from random import choice
 import toga
 from toga.constants import COLUMN, ROW
 from toga.sources import Source
-from toga.style import Pack
 
 bee_movies = [
     ("The Secret Life of Bees", "2008", "7.3", "Drama"),
@@ -115,7 +114,7 @@ class GoodMovieSource(Source):
         self.notify("clear")
 
 
-class ExampleTableSourceApp(toga.App):
+class TableSourceApp(toga.App):
     # Table callback functions
     def on_select_handler(self, widget, **kwargs):
         row = widget.selection
@@ -150,45 +149,34 @@ class ExampleTableSourceApp(toga.App):
         self.table1 = toga.Table(
             headings=["Year", "Title", "Rating", "Genre"],
             data=MovieSource(),
-            style=Pack(flex=1),
+            flex=1,
             on_select=self.on_select_handler,
         )
 
         self.table2 = toga.Table(
             headings=["Rating", "Title", "Year", "Genre"],
             data=GoodMovieSource(self.table1.data),
-            style=Pack(flex=1),
+            flex=1,
         )
 
         # Populate the table
         for entry in bee_movies:
             self.table1.data.add(entry)
 
-        tablebox = toga.Box(children=[self.table1, self.table2], style=Pack(flex=1))
+        tablebox = toga.Box(children=[self.table1, self.table2], flex=1)
 
         # Buttons
-        btn_style = Pack(flex=1)
-        btn_insert = toga.Button(
-            "Insert Row", on_press=self.insert_handler, style=btn_style
-        )
-        btn_delete = toga.Button(
-            "Delete Row", on_press=self.delete_handler, style=btn_style
-        )
-        btn_clear = toga.Button(
-            "Clear Table", on_press=self.clear_handler, style=btn_style
-        )
-        btn_box = toga.Box(
-            children=[btn_insert, btn_delete, btn_clear], style=Pack(direction=ROW)
-        )
+        btn_insert = toga.Button("Insert Row", on_press=self.insert_handler, flex=1)
+        btn_delete = toga.Button("Delete Row", on_press=self.delete_handler, flex=1)
+        btn_clear = toga.Button("Clear Table", on_press=self.clear_handler, flex=1)
+        btn_box = toga.Box(children=[btn_insert, btn_delete, btn_clear], direction=ROW)
 
         # Most outer box
         outer_box = toga.Box(
             children=[btn_box, tablebox, self.label],
-            style=Pack(
-                flex=1,
-                direction=COLUMN,
-                margin=10,
-            ),
+            flex=1,
+            direction=COLUMN,
+            margin=10,
         )
 
         # Add the content on the main window
@@ -199,11 +187,8 @@ class ExampleTableSourceApp(toga.App):
 
 
 def main():
-    return ExampleTableSourceApp(
-        "Table Source", "org.beeware.toga.examples.table_source"
-    )
+    return TableSourceApp("Table Source", "org.beeware.toga.examples.table_source")
 
 
 if __name__ == "__main__":
-    app = main()
-    app.main_loop()
+    main().main_loop()

@@ -1,9 +1,8 @@
 import toga
 from toga.constants import CENTER, ROW
-from toga.style import Pack
 
 
-class ExampleActivityIndicatorApp(toga.App):
+class ActivityIndicatorApp(toga.App):
     # Button callback functions
     def do_stuff(self, widget, **kwargs):
         if self.spinner.is_running:
@@ -17,14 +16,16 @@ class ExampleActivityIndicatorApp(toga.App):
         # Set up main window
         self.main_window = toga.MainWindow()
 
-        self.spinner = toga.ActivityIndicator(style=Pack(margin_left=10))
-        self.button = toga.Button(
-            "Start", on_press=self.do_stuff, style=Pack(margin_right=10)
-        )
+        self.spinner = toga.ActivityIndicator(margin_left=10)
+        self.button = toga.Button("Start", on_press=self.do_stuff, margin_right=10)
 
         box = toga.Box(
             children=[self.button, self.spinner],
-            style=Pack(direction=ROW, height=20, margin=20, align_items=CENTER, flex=1),
+            direction=ROW,
+            height=20,
+            margin=20,
+            align_items=CENTER,
+            flex=1,
         )
 
         # Add the content on the main window
@@ -36,11 +37,10 @@ class ExampleActivityIndicatorApp(toga.App):
 
 
 def main():
-    return ExampleActivityIndicatorApp(
+    return ActivityIndicatorApp(
         "Activity Indicator", "org.beeware.toga.examples.activityindicator"
     )
 
 
 if __name__ == "__main__":
-    app = main()
-    app.main_loop()
+    main().main_loop()

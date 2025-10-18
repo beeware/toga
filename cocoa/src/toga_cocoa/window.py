@@ -139,9 +139,12 @@ class TogaWindow(NSWindow):
         for item in self.interface.toolbar:
             # If there's been a group change, and this item isn't a separator,
             # add a separator between groups.
-            if prev_group is not None:
-                if item.group != prev_group and not isinstance(item, Separator):
-                    default.addObject_(toolbar_identifier(prev_group))
+            if (
+                prev_group is not None
+                and item.group != prev_group
+                and not isinstance(item, Separator)
+            ):
+                default.addObject_(toolbar_identifier(prev_group))
             default.addObject_(toolbar_identifier(item))
             prev_group = item.group
 
@@ -326,9 +329,11 @@ class Window:
         # macOS origin is bottom left of screen, and the screen might be
         # offset relative to other screens. Adjust for this.
         return Position(
-            window_frame.origin.x,
-            primary_screen.size.height
-            - (window_frame.origin.y + window_frame.size.height),
+            int(window_frame.origin.x),
+            int(
+                primary_screen.size.height
+                - (window_frame.origin.y + window_frame.size.height)
+            ),
         )
 
     def set_position(self, position):
@@ -541,7 +546,7 @@ class MainWindow(Window):
                     self._toolbar_items[toolbar_identifier(cmd)] = cmd
 
             self.native_toolbar = NSToolbar.alloc().initWithIdentifier(
-                "Toolbar-%s" % id(self)
+                f"Toolbar-{id(self)}"
             )
             self.native_toolbar.setDelegate(self.native)
         else:

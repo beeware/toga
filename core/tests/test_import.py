@@ -35,4 +35,4 @@ def test_lazy_fail():
     with pytest.raises(
         AttributeError, match="module 'toga' has no attribute 'nonexistent'"
     ):
-        toga.nonexistent
+        _ = toga.nonexistent

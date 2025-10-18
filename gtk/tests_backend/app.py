@@ -17,6 +17,7 @@ class AppProbe(BaseProbe, DialogsMixin):
     supports_key_mod3 = True
     # Gtk 3.24.41 ships with Ubuntu 24.04 where present() works on Wayland
     supports_current_window_assignment = not (IS_WAYLAND and GTK_VERSION < (3, 24, 41))
+    supports_dark_mode = True
 
     def __init__(self, app):
         super().__init__()
@@ -104,8 +105,8 @@ class AppProbe(BaseProbe, DialogsMixin):
                 menu = item[0].get_item_link(item[1], "submenu")
         except IndexError:
             pass
-        except AttributeError:
-            raise AssertionError(f"Menu {' > '.join(orig_path)} not found")
+        except AttributeError as exc:
+            raise AssertionError(f"Menu {' > '.join(orig_path)} not found") from exc
 
         action = item[0].get_item_attribute_value(item[1], "action")
         if action:
@@ -228,7 +229,7 @@ class AppProbe(BaseProbe, DialogsMixin):
                 "!": Gdk.KEY_exclam,
                 "<home>": Gdk.KEY_Home,
                 "F5": Gdk.KEY_F5,
-            }.get(accel, None),
+            }.get(accel),
         )
 
         event = Gdk.Event.new(Gdk.EventType.KEY_PRESS)

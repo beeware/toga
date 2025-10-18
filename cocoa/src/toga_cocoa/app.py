@@ -9,7 +9,7 @@ from rubicon.objc import (
     objc_method,
     objc_property,
 )
-from rubicon.objc.eventloop import CocoaLifecycle, EventLoopPolicy
+from rubicon.objc.eventloop import CocoaLifecycle, RubiconEventLoop
 
 import toga
 from toga.command import Command, Group, Separator
@@ -105,8 +105,7 @@ class App:
 
         self._cursor_visible = True
 
-        asyncio.set_event_loop_policy(EventLoopPolicy())
-        self.loop = asyncio.new_event_loop()
+        self.loop = RubiconEventLoop()
 
         self.native = NSApplication.sharedApplication
 
@@ -138,14 +137,6 @@ class App:
         # Convert to a list to so that we're not altering a set while iterating
         for window in list(self.interface.windows):
             window._impl.native.performClose(None)
-
-    def _menu_close_window(self, command, **kwargs):
-        if self.interface.current_window:
-            self.interface.current_window._impl.native.performClose(None)
-
-    def _menu_minimize(self, command, **kwargs):
-        if self.interface.current_window:
-            self.interface.current_window._impl.native.miniaturize(None)
 
     def create_standard_commands(self):
         # macOS defines some default management commands that aren't
@@ -183,7 +174,7 @@ class App:
             # (MOD_2). That behavior isn't something we're currently set up to
             # implement, so we live with a separate menu item for now.
             Command(
-                self._menu_close_window,
+                NativeHandler(SEL("performClose:")),
                 "Close",
                 shortcut=toga.Key.MOD_1 + "w",
                 group=Group.FILE,
@@ -262,7 +253,7 @@ class App:
             ),
             # ---- Window menu ----------------------------------
             Command(
-                self._menu_minimize,
+                NativeHandler(SEL("performMiniaturize:")),
                 "Minimize",
                 shortcut=toga.Key.MOD_1 + "m",
                 group=Group.WINDOW,

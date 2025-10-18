@@ -60,6 +60,9 @@ class Tree(Widget):
 
             self.native_tree.append_column(column)
 
+    def focus(self):
+        self.native_tree.grab_focus()
+
     def gtk_on_select(self, selection):
         self.interface.on_select()
 
@@ -77,9 +80,7 @@ class Tree(Widget):
                 self.native_tree.remove_column(column)
             self._create_columns()
 
-            types = [TogaRow]
-            for accessor in self.interface._accessors:
-                types.extend([GdkPixbuf.Pixbuf, str])
+            types = [TogaRow] + [GdkPixbuf.Pixbuf, str] * len(self.interface._accessors)
             self.store = Gtk.TreeStore(*types)
 
             for i, row in enumerate(self.interface.data):

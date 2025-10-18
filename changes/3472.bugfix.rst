@@ -1,1 +1,0 @@
-Table Widget on Windows now only fires one event on item selection.

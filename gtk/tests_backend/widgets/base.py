@@ -95,14 +95,14 @@ class SimpleProbe(BaseProbe, FontMixin):
         ) == position
 
     def assert_width(self, min_width, max_width):
-        assert (
-            min_width <= self.width <= max_width
-        ), f"Width ({self.width}) not in range ({min_width}, {max_width})"
+        assert min_width <= self.width <= max_width, (
+            f"Width ({self.width}) not in range ({min_width}, {max_width})"
+        )
 
     def assert_height(self, min_height, max_height):
-        assert (
-            min_height <= self.height <= max_height
-        ), f"Height ({self.height}) not in range ({min_height}, {max_height})"
+        assert min_height <= self.height <= max_height, (
+            f"Height ({self.height}) not in range ({min_height}, {max_height})"
+        )
 
     @property
     def shrink_on_resize(self):
@@ -180,6 +180,8 @@ class SimpleProbe(BaseProbe, FontMixin):
                 ".": Gdk.KEY_period,
                 "\n": Gdk.KEY_Return,
                 "<esc>": Gdk.KEY_Escape,
+                "'": Gdk.KEY_apostrophe,
+                '"': Gdk.KEY_quotedbl,
             }.get(char, Gdk.KEY_question),
         )
 

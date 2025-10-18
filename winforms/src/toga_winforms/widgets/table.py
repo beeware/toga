@@ -9,7 +9,6 @@ from .base import Widget
 
 
 class Table(Widget):
-
     # The following methods are overridden in DetailedList.
     @property
     def _headings(self):
@@ -233,7 +232,10 @@ class Table(Widget):
     def _item_text(self, item, attr):
         val = getattr(item, attr, None)
         if isinstance(val, toga.Widget):
-            warn("Winforms does not support the use of widgets in cells")
+            warn(
+                "Winforms does not support the use of widgets in cells",
+                stacklevel=2,
+            )
             val = None
         if isinstance(val, tuple):
             val = val[1]

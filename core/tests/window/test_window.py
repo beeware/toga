@@ -63,8 +63,8 @@ def test_window_created_explicit(app):
     assert window.app == app
     assert window.content == window_content
 
-    window_content.window == window
-    window_content.app == app
+    assert window_content.window == window
+    assert window_content.app == app
 
     assert window._impl.interface == window
     assert_action_performed(window, "create Window")
@@ -192,7 +192,7 @@ def test_position_cascade(app):
     """The initial position of windows will cascade."""
     windows = [app.main_window]
 
-    for i in range(0, 14):
+    for i in range(14):
         win = toga.Window(title=f"Window {i}")
         # The for the first 14 new windows (the app creates the first window)
         # the x and y coordinates must be the same
@@ -898,14 +898,17 @@ def test_deprecated_info_dialog(window, app):
     # Prime the user's response
     window._impl.dialog_responses["InfoDialog"] = [None]
 
-    with pytest.warns(
-        DeprecationWarning,
-        match=r"Synchronous `on_result` handlers have been deprecated;",
-    ), pytest.warns(
-        DeprecationWarning,
-        match=(
-            r"info_dialog\(...\) has been deprecated; "
-            r"use dialog\(toga.InfoDialog\(...\)\)"
+    with (
+        pytest.warns(
+            DeprecationWarning,
+            match=r"Synchronous `on_result` handlers have been deprecated;",
+        ),
+        pytest.warns(
+            DeprecationWarning,
+            match=(
+                r"info_dialog\(...\) has been deprecated; "
+                r"use dialog\(toga.InfoDialog\(...\)\)"
+            ),
         ),
     ):
         dialog = window.info_dialog("Title", "Body", on_result=on_result_handler)
@@ -918,7 +921,7 @@ def test_deprecated_info_dialog(window, app):
         match=r"Can't check dialog result directly; use await or an on_result handler",
     ):
         # Perform a synchronous comparison; this will raise a runtime error
-        dialog == 1
+        _ = dialog == 1
 
     assert app._impl.loop.run_until_complete(dialog) is None
 
@@ -942,14 +945,17 @@ def test_deprecated_question_dialog(window, app):
     # Prime the user's response
     window._impl.dialog_responses["QuestionDialog"] = [True]
 
-    with pytest.warns(
-        DeprecationWarning,
-        match=r"Synchronous `on_result` handlers have been deprecated;",
-    ), pytest.warns(
-        DeprecationWarning,
-        match=(
-            r"question_dialog\(...\) has been deprecated; "
-            r"use dialog\(toga.QuestionDialog\(...\)\)"
+    with (
+        pytest.warns(
+            DeprecationWarning,
+            match=r"Synchronous `on_result` handlers have been deprecated;",
+        ),
+        pytest.warns(
+            DeprecationWarning,
+            match=(
+                r"question_dialog\(...\) has been deprecated; "
+                r"use dialog\(toga.QuestionDialog\(...\)\)"
+            ),
         ),
     ):
         dialog = window.question_dialog("Title", "Body", on_result=on_result_handler)
@@ -962,7 +968,7 @@ def test_deprecated_question_dialog(window, app):
         match=r"Can't check dialog result directly; use await or an on_result handler",
     ):
         # Perform a synchronous comparison; this will raise a runtime error
-        dialog == 1
+        _ = dialog == 1
 
     assert app._impl.loop.run_until_complete(dialog)
 
@@ -986,14 +992,17 @@ def test_deprecated_confirm_dialog(window, app):
     # Prime the user's response
     window._impl.dialog_responses["ConfirmDialog"] = [True]
 
-    with pytest.warns(
-        DeprecationWarning,
-        match=r"Synchronous `on_result` handlers have been deprecated;",
-    ), pytest.warns(
-        DeprecationWarning,
-        match=(
-            r"confirm_dialog\(...\) has been deprecated; "
-            r"use dialog\(toga.ConfirmDialog\(...\)\)"
+    with (
+        pytest.warns(
+            DeprecationWarning,
+            match=r"Synchronous `on_result` handlers have been deprecated;",
+        ),
+        pytest.warns(
+            DeprecationWarning,
+            match=(
+                r"confirm_dialog\(...\) has been deprecated; "
+                r"use dialog\(toga.ConfirmDialog\(...\)\)"
+            ),
         ),
     ):
         dialog = window.confirm_dialog("Title", "Body", on_result=on_result_handler)
@@ -1006,7 +1015,7 @@ def test_deprecated_confirm_dialog(window, app):
         match=r"Can't check dialog result directly; use await or an on_result handler",
     ):
         # Perform a synchronous comparison; this will raise a runtime error
-        dialog == 1
+        _ = dialog == 1
 
     assert app._impl.loop.run_until_complete(dialog)
 
@@ -1030,14 +1039,17 @@ def test_deprecated_error_dialog(window, app):
     # Prime the user's response
     window._impl.dialog_responses["ErrorDialog"] = [None]
 
-    with pytest.warns(
-        DeprecationWarning,
-        match=r"Synchronous `on_result` handlers have been deprecated;",
-    ), pytest.warns(
-        DeprecationWarning,
-        match=(
-            r"error_dialog\(...\) has been deprecated; "
-            r"use dialog\(toga.ErrorDialog\(...\)\)"
+    with (
+        pytest.warns(
+            DeprecationWarning,
+            match=r"Synchronous `on_result` handlers have been deprecated;",
+        ),
+        pytest.warns(
+            DeprecationWarning,
+            match=(
+                r"error_dialog\(...\) has been deprecated; "
+                r"use dialog\(toga.ErrorDialog\(...\)\)"
+            ),
         ),
     ):
         dialog = window.error_dialog("Title", "Body", on_result=on_result_handler)
@@ -1050,7 +1062,7 @@ def test_deprecated_error_dialog(window, app):
         match=r"Can't check dialog result directly; use await or an on_result handler",
     ):
         # Perform a synchronous comparison; this will raise a runtime error
-        dialog == 1
+        _ = dialog == 1
 
     assert app._impl.loop.run_until_complete(dialog) is None
 
@@ -1074,14 +1086,17 @@ def test_deprecated_stack_trace_dialog(window, app):
     # Prime the user's response
     window._impl.dialog_responses["StackTraceDialog"] = [None]
 
-    with pytest.warns(
-        DeprecationWarning,
-        match=r"Synchronous `on_result` handlers have been deprecated;",
-    ), pytest.warns(
-        DeprecationWarning,
-        match=(
-            r"stack_trace_dialog\(...\) has been deprecated; "
-            r"use dialog\(toga.StackTraceDialog\(...\)\)"
+    with (
+        pytest.warns(
+            DeprecationWarning,
+            match=r"Synchronous `on_result` handlers have been deprecated;",
+        ),
+        pytest.warns(
+            DeprecationWarning,
+            match=(
+                r"stack_trace_dialog\(...\) has been deprecated; "
+                r"use dialog\(toga.StackTraceDialog\(...\)\)"
+            ),
         ),
     ):
         dialog = window.stack_trace_dialog(
@@ -1099,7 +1114,7 @@ def test_deprecated_stack_trace_dialog(window, app):
         match=r"Can't check dialog result directly; use await or an on_result handler",
     ):
         # Perform a synchronous comparison; this will raise a runtime error
-        dialog == 1
+        _ = dialog == 1
 
     assert app._impl.loop.run_until_complete(dialog) is None
 
@@ -1126,14 +1141,17 @@ def test_deprecated_save_file_dialog(window, app):
     saved_file = Path("/saved/path/filename.txt")
     window._impl.dialog_responses["SaveFileDialog"] = [saved_file]
 
-    with pytest.warns(
-        DeprecationWarning,
-        match=r"Synchronous `on_result` handlers have been deprecated;",
-    ), pytest.warns(
-        DeprecationWarning,
-        match=(
-            r"save_file_dialog\(...\) has been deprecated; "
-            r"use dialog\(toga.SaveFileDialog\(...\)\)"
+    with (
+        pytest.warns(
+            DeprecationWarning,
+            match=r"Synchronous `on_result` handlers have been deprecated;",
+        ),
+        pytest.warns(
+            DeprecationWarning,
+            match=(
+                r"save_file_dialog\(...\) has been deprecated; "
+                r"use dialog\(toga.SaveFileDialog\(...\)\)"
+            ),
         ),
     ):
         dialog = window.save_file_dialog(
@@ -1150,7 +1168,7 @@ def test_deprecated_save_file_dialog(window, app):
         match=r"Can't check dialog result directly; use await or an on_result handler",
     ):
         # Perform a synchronous comparison; this will raise a runtime error
-        dialog == 1
+        _ = dialog == 1
 
     assert app._impl.loop.run_until_complete(dialog) is saved_file
 
@@ -1177,14 +1195,17 @@ def test_deprecated_save_file_dialog_default_directory(window, app):
     saved_file = Path("/saved/path/filename.txt")
     window._impl.dialog_responses["SaveFileDialog"] = [saved_file]
 
-    with pytest.warns(
-        DeprecationWarning,
-        match=r"Synchronous `on_result` handlers have been deprecated;",
-    ), pytest.warns(
-        DeprecationWarning,
-        match=(
-            r"save_file_dialog\(...\) has been deprecated; "
-            r"use dialog\(toga.SaveFileDialog\(...\)\)"
+    with (
+        pytest.warns(
+            DeprecationWarning,
+            match=r"Synchronous `on_result` handlers have been deprecated;",
+        ),
+        pytest.warns(
+            DeprecationWarning,
+            match=(
+                r"save_file_dialog\(...\) has been deprecated; "
+                r"use dialog\(toga.SaveFileDialog\(...\)\)"
+            ),
         ),
     ):
         dialog = window.save_file_dialog(
@@ -1202,7 +1223,7 @@ def test_deprecated_save_file_dialog_default_directory(window, app):
         match=r"Can't check dialog result directly; use await or an on_result handler",
     ):
         # Perform a synchronous comparison; this will raise a runtime error
-        dialog == 1
+        _ = dialog == 1
 
     assert app._impl.loop.run_until_complete(dialog) is saved_file
 
@@ -1229,14 +1250,17 @@ def test_deprecated_open_file_dialog(window, app):
     opened_file = Path("/opened/path/filename.txt")
     window._impl.dialog_responses["OpenFileDialog"] = [opened_file]
 
-    with pytest.warns(
-        DeprecationWarning,
-        match=r"Synchronous `on_result` handlers have been deprecated;",
-    ), pytest.warns(
-        DeprecationWarning,
-        match=(
-            r"open_file_dialog\(...\) has been deprecated; "
-            r"use dialog\(toga.OpenFileDialog\(...\)\)"
+    with (
+        pytest.warns(
+            DeprecationWarning,
+            match=r"Synchronous `on_result` handlers have been deprecated;",
+        ),
+        pytest.warns(
+            DeprecationWarning,
+            match=(
+                r"open_file_dialog\(...\) has been deprecated; "
+                r"use dialog\(toga.OpenFileDialog\(...\)\)"
+            ),
         ),
     ):
         dialog = window.open_file_dialog(
@@ -1253,7 +1277,7 @@ def test_deprecated_open_file_dialog(window, app):
         match=r"Can't check dialog result directly; use await or an on_result handler",
     ):
         # Perform a synchronous comparison; this will raise a runtime error
-        dialog == 1
+        _ = dialog == 1
 
     assert app._impl.loop.run_until_complete(dialog) is opened_file
 
@@ -1283,14 +1307,17 @@ def test_deprecated_open_file_dialog_default_directory(window, app):
     ]
     window._impl.dialog_responses["OpenFileDialog"] = [opened_files]
 
-    with pytest.warns(
-        DeprecationWarning,
-        match=r"Synchronous `on_result` handlers have been deprecated;",
-    ), pytest.warns(
-        DeprecationWarning,
-        match=(
-            r"open_file_dialog\(...\) has been deprecated; "
-            r"use dialog\(toga.OpenFileDialog\(...\)\)"
+    with (
+        pytest.warns(
+            DeprecationWarning,
+            match=r"Synchronous `on_result` handlers have been deprecated;",
+        ),
+        pytest.warns(
+            DeprecationWarning,
+            match=(
+                r"open_file_dialog\(...\) has been deprecated; "
+                r"use dialog\(toga.OpenFileDialog\(...\)\)"
+            ),
         ),
     ):
         dialog = window.open_file_dialog(
@@ -1308,7 +1335,7 @@ def test_deprecated_open_file_dialog_default_directory(window, app):
         match=r"Can't check dialog result directly; use await or an on_result handler",
     ):
         # Perform a synchronous comparison; this will raise a runtime error
-        dialog == 1
+        _ = dialog == 1
 
     assert app._impl.loop.run_until_complete(dialog) is opened_files
 
@@ -1335,14 +1362,17 @@ def test_deprecated_select_folder_dialog(window, app):
     opened_folder = Path("/opened/path")
     window._impl.dialog_responses["SelectFolderDialog"] = [opened_folder]
 
-    with pytest.warns(
-        DeprecationWarning,
-        match=r"Synchronous `on_result` handlers have been deprecated;",
-    ), pytest.warns(
-        DeprecationWarning,
-        match=(
-            r"select_folder_dialog\(...\) has been deprecated; "
-            r"use dialog\(toga.SelectFolderDialog\(...\)\)"
+    with (
+        pytest.warns(
+            DeprecationWarning,
+            match=r"Synchronous `on_result` handlers have been deprecated;",
+        ),
+        pytest.warns(
+            DeprecationWarning,
+            match=(
+                r"select_folder_dialog\(...\) has been deprecated; "
+                r"use dialog\(toga.SelectFolderDialog\(...\)\)"
+            ),
         ),
     ):
         dialog = window.select_folder_dialog(
@@ -1359,7 +1389,7 @@ def test_deprecated_select_folder_dialog(window, app):
         match=r"Can't check dialog result directly; use await or an on_result handler",
     ):
         # Perform a synchronous comparison; this will raise a runtime error
-        dialog == 1
+        _ = dialog == 1
 
     assert app._impl.loop.run_until_complete(dialog) is opened_folder
 
@@ -1388,14 +1418,17 @@ def test_deprecated_select_folder_dialog_default_directory(window, app):
     ]
     window._impl.dialog_responses["SelectFolderDialog"] = [opened_paths]
 
-    with pytest.warns(
-        DeprecationWarning,
-        match=r"Synchronous `on_result` handlers have been deprecated;",
-    ), pytest.warns(
-        DeprecationWarning,
-        match=(
-            r"select_folder_dialog\(...\) has been deprecated; "
-            r"use dialog\(toga.SelectFolderDialog\(...\)\)"
+    with (
+        pytest.warns(
+            DeprecationWarning,
+            match=r"Synchronous `on_result` handlers have been deprecated;",
+        ),
+        pytest.warns(
+            DeprecationWarning,
+            match=(
+                r"select_folder_dialog\(...\) has been deprecated; "
+                r"use dialog\(toga.SelectFolderDialog\(...\)\)"
+            ),
         ),
     ):
         dialog = window.select_folder_dialog(
@@ -1412,7 +1445,7 @@ def test_deprecated_select_folder_dialog_default_directory(window, app):
         match=r"Can't check dialog result directly; use await or an on_result handler",
     ):
         # Perform a synchronous comparison; this will raise a runtime error
-        dialog == 1
+        _ = dialog == 1
 
     assert app._impl.loop.run_until_complete(dialog) is opened_paths
 
@@ -1438,17 +1471,20 @@ def test_deprecated_names_open_file_dialog(window, app):
     opened_files = [Path("/opened/path/filename.txt")]
     window._impl.dialog_responses["OpenFileDialog"] = [opened_files]
 
-    with pytest.warns(
-        DeprecationWarning,
-        match=(
-            r"Synchronous `on_result` handlers have been deprecated; "
-            r"use `await` on the asynchronous result"
+    with (
+        pytest.warns(
+            DeprecationWarning,
+            match=(
+                r"Synchronous `on_result` handlers have been deprecated; "
+                r"use `await` on the asynchronous result"
+            ),
         ),
-    ), pytest.warns(
-        DeprecationWarning,
-        match=(
-            r"open_file_dialog\(...\) has been deprecated; "
-            r"use dialog\(toga.OpenFileDialog\(...\)\)"
+        pytest.warns(
+            DeprecationWarning,
+            match=(
+                r"open_file_dialog\(...\) has been deprecated; "
+                r"use dialog\(toga.OpenFileDialog\(...\)\)"
+            ),
         ),
     ):
         dialog = window.open_file_dialog(
@@ -1483,17 +1519,20 @@ def test_deprecated_names_select_folder_dialog(window, app):
     selected_folder = [Path("/opened/path")]
     window._impl.dialog_responses["SelectFolderDialog"] = [selected_folder]
 
-    with pytest.warns(
-        DeprecationWarning,
-        match=(
-            r"Synchronous `on_result` handlers have been deprecated; "
-            r"use `await` on the asynchronous result"
+    with (
+        pytest.warns(
+            DeprecationWarning,
+            match=(
+                r"Synchronous `on_result` handlers have been deprecated; "
+                r"use `await` on the asynchronous result"
+            ),
         ),
-    ), pytest.warns(
-        DeprecationWarning,
-        match=(
-            r"select_folder_dialog\(...\) has been deprecated; "
-            r"use dialog\(toga.SelectFolderDialog\(...\)\)"
+        pytest.warns(
+            DeprecationWarning,
+            match=(
+                r"select_folder_dialog\(...\) has been deprecated; "
+                r"use dialog\(toga.SelectFolderDialog\(...\)\)"
+            ),
         ),
     ):
         dialog = window.select_folder_dialog(

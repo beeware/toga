@@ -81,7 +81,7 @@ class ExampleDocumentApp(toga.App):
 
 
 @pytest.fixture
-def doc_app(monkeypatch, event_loop, example_file):
+async def doc_app(monkeypatch, example_file):
     # Create an instance of an ExampleDocumentApp that has 1 file open.
     monkeypatch.setattr(sys, "argv", ["app-exe", str(example_file)])
     app = ExampleDocumentApp(
@@ -95,7 +95,7 @@ def doc_app(monkeypatch, event_loop, example_file):
     return app
 
 
-def test_create_no_cmdline_no_document_types(monkeypatch):
+async def test_create_no_cmdline_no_document_types(monkeypatch):
     """A app without document types and no windows raises an error."""
     monkeypatch.setattr(sys, "argv", ["app-exe"])
 
@@ -109,7 +109,7 @@ def test_create_no_cmdline_no_document_types(monkeypatch):
         )
 
 
-def test_create_no_cmdline(monkeypatch):
+async def test_create_no_cmdline(monkeypatch):
     """A document app can be created with no command line."""
     monkeypatch.setattr(sys, "argv", ["app-exe"])
 
@@ -152,7 +152,7 @@ def test_create_no_cmdline(monkeypatch):
     assert toga.Command.SAVE_ALL in app.commands
 
 
-def test_create_no_cmdline_default_handling_close_on_last_window(monkeypatch):
+async def test_create_no_cmdline_default_handling_close_on_last_window(monkeypatch):
     """If the backend uses the app's command line handling, no error is raised for an
     empty command line."""
     monkeypatch.setattr(sys, "argv", ["app-exe"])
@@ -176,7 +176,7 @@ def test_create_no_cmdline_default_handling_close_on_last_window(monkeypatch):
     assert len(app.windows) == 1
 
 
-def test_create_no_cmdline_default_handling_no_close_on_last_window(monkeypatch):
+async def test_create_no_cmdline_default_handling_no_close_on_last_window(monkeypatch):
     """If the backend handles the app's command line and the app doesn't exit when
     the last window closes, no error is raised for an empty command line and the
     app shows a document selection dialog on startup."""
@@ -214,7 +214,7 @@ def test_create_no_cmdline_default_handling_no_close_on_last_window(monkeypatch)
     mock_request_open.assert_called_once()
 
 
-def test_create_with_cmdline(monkeypatch, example_file):
+async def test_create_with_cmdline(monkeypatch, example_file):
     """If a document is specified at the command line, it is opened."""
     monkeypatch.setattr(sys, "argv", ["app-exe", str(example_file)])
 
@@ -254,7 +254,7 @@ def test_create_with_cmdline(monkeypatch, example_file):
     assert toga.Command.SAVE_ALL in app.commands
 
 
-def test_create_with_unknown_document_type(monkeypatch, capsys):
+async def test_create_with_unknown_document_type(monkeypatch, capsys):
     """If the document specified at the command line is an unknown type,
     it is ignored."""
     monkeypatch.setattr(sys, "argv", ["app-exe", "/path/to/filename.unknown"])
@@ -280,7 +280,7 @@ def test_create_with_unknown_document_type(monkeypatch, capsys):
     assert_action_performed(app.documents[0].main_window, "show")
 
 
-def test_create_with_missing_file(monkeypatch, capsys):
+async def test_create_with_missing_file(monkeypatch, capsys):
     """If the document specified at the command line is a known type, but not present,
     an error is logged."""
     monkeypatch.setattr(sys, "argv", ["app-exe", "/path/to/filename.foobar"])
@@ -299,14 +299,15 @@ def test_create_with_missing_file(monkeypatch, capsys):
     assert isinstance(app.documents[0], ExampleDocument)
     assert app.documents[0].title == "Example Document: Untitled"
 
-    # Document window has been created and shown
+    # Document window has been created.
+    # However, it will not be shown, as the app will exit.
     assert len(app.windows) == 1
     assert list(app.windows)[0] == app.documents[0].main_window
     assert_action_performed(app.documents[0].main_window, "create MainWindow")
-    assert_action_performed(app.documents[0].main_window, "show")
+    assert_action_not_performed(app.documents[0].main_window, "show")
 
 
-def test_create_with_bad_file(monkeypatch, example_file, capsys):
+async def test_create_with_bad_file(monkeypatch, example_file, capsys):
     """If an error occurs reading the document, an error is logged is raised."""
     monkeypatch.setattr(sys, "argv", ["app-exe", str(example_file)])
     # Mock a reading error.
@@ -326,16 +327,17 @@ def test_create_with_bad_file(monkeypatch, example_file, capsys):
     # An untitled document has been created
     assert len(app.documents) == 1
     assert isinstance(app.documents[0], ExampleDocument)
-    assert app.documents[0].title == "Example Document: Untitled"
+    assert app.documents[0].title == "Example Document: filename"
 
-    # Document window has been created and shown
+    # Document window has been created.
+    # However, it will not be shown, as the app will exit.
     assert len(app.windows) == 1
     assert list(app.windows)[0] == app.documents[0].main_window
     assert_action_performed(app.documents[0].main_window, "create MainWindow")
-    assert_action_performed(app.documents[0].main_window, "show")
+    assert_action_not_performed(app.documents[0].main_window, "show")
 
 
-def test_no_backend_new_support(monkeypatch, example_file):
+async def test_no_backend_new_support(monkeypatch, example_file):
     """If the backend doesn't define support for new, the commands are not created."""
     orig_standard = DummyCommand.standard
 
@@ -370,7 +372,7 @@ def test_no_backend_new_support(monkeypatch, example_file):
     assert toga.Command.SAVE_ALL in app.commands
 
 
-def test_no_backend_other_support(monkeypatch, example_file):
+async def test_no_backend_other_support(monkeypatch, example_file):
     """If the backend doesn't define support for other document commands, those commands
     not are created."""
     orig_standard = DummyCommand.standard
@@ -406,7 +408,9 @@ def test_no_backend_other_support(monkeypatch, example_file):
     assert toga.Command.SAVE_ALL in app.commands
 
 
-def test_close_last_document_non_persistent(monkeypatch, example_file, other_file):
+async def test_close_last_document_non_persistent(
+    monkeypatch, example_file, other_file
+):
     """Non-persistent apps exit when the last document is closed"""
     monkeypatch.setattr(sys, "argv", ["app-exe", str(example_file)])
 
@@ -427,7 +431,7 @@ def test_close_last_document_non_persistent(monkeypatch, example_file, other_fil
     async def close_window(app):
         list(app.windows)[0].close()
 
-    app.loop.run_until_complete(close_window(app))
+    await app.loop.create_task(close_window(app))
 
     # One document window closed.
     assert len(app.documents) == 1
@@ -437,13 +441,13 @@ def test_close_last_document_non_persistent(monkeypatch, example_file, other_fil
     assert_action_not_performed(app, "exit")
 
     # Close the first document window (in a running app loop)
-    app.loop.run_until_complete(close_window(app))
+    await app.loop.create_task(close_window(app))
 
     # App has now exited
     assert_action_performed(app, "exit")
 
 
-def test_close_last_document_persistent(monkeypatch, example_file, other_file):
+async def test_close_last_document_persistent(monkeypatch, example_file, other_file):
     """Persistent apps don't exit when the last document is closed"""
     # Monkeypatch the property that makes the backend persistent
     monkeypatch.setattr(DummyApp, "CLOSE_ON_LAST_WINDOW", False)
@@ -467,7 +471,7 @@ def test_close_last_document_persistent(monkeypatch, example_file, other_file):
     async def close_window(app):
         list(app.windows)[0].close()
 
-    app.loop.run_until_complete(close_window(app))
+    await app.loop.create_task(close_window(app))
 
     # One document window closed.
     assert len(app.documents) == 1
@@ -477,7 +481,7 @@ def test_close_last_document_persistent(monkeypatch, example_file, other_file):
     assert_action_not_performed(app, "exit")
 
     # Close the last remaining document window
-    app.loop.run_until_complete(close_window(app))
+    await app.loop.create_task(close_window(app))
 
     # No document windows.
     assert len(app.documents) == 0
@@ -559,7 +563,7 @@ def test_new_menu(doc_app):
     assert new_doc.main_window in doc_app.windows
 
 
-def test_open_menu(doc_app, example_file, other_file):
+async def test_open_menu(doc_app, example_file, other_file):
     """The open menu item replaces the current document window."""
     # There is initially 1 document, and 1 window
     assert len(doc_app.documents) == 1
@@ -570,8 +574,7 @@ def test_open_menu(doc_app, example_file, other_file):
     # Select the other file as the new document
     doc_app._impl.dialog_responses["OpenFileDialog"] = [other_file]
 
-    future = doc_app.commands[toga.Command.OPEN].action()
-    doc_app.loop.run_until_complete(future)
+    await doc_app.commands[toga.Command.OPEN].action()
 
     # There is still only 1 document, and 1 window
     assert len(doc_app.documents) == 1
@@ -587,7 +590,7 @@ def test_open_menu(doc_app, example_file, other_file):
     assert new_doc.main_window.position == orig_position
 
 
-def test_open_menu_save_existing(doc_app, example_file, other_file):
+async def test_open_menu_save_existing(doc_app, example_file, other_file):
     """The user can choose to save existing changes before opening a new file."""
     # There is initially 1 document, and 1 window
     assert len(doc_app.documents) == 1
@@ -601,8 +604,7 @@ def test_open_menu_save_existing(doc_app, example_file, other_file):
     example_doc.main_window._impl.dialog_responses["QuestionDialog"] = [True]
     doc_app._impl.dialog_responses["OpenFileDialog"] = [other_file]
 
-    future = doc_app.commands[toga.Command.OPEN].action()
-    doc_app.loop.run_until_complete(future)
+    await doc_app.commands[toga.Command.OPEN].action()
 
     # There is still only 1 document, and 1 window
     assert len(doc_app.documents) == 1
@@ -621,7 +623,7 @@ def test_open_menu_save_existing(doc_app, example_file, other_file):
     assert not example_doc.modified
 
 
-def test_open_menu_no_save_existing(doc_app, example_file, other_file):
+async def test_open_menu_no_save_existing(doc_app, example_file, other_file):
     """The user can choose not to save existing changes before opening a new file."""
     # There is initially 1 document, and 1 window
     assert len(doc_app.documents) == 1
@@ -635,8 +637,7 @@ def test_open_menu_no_save_existing(doc_app, example_file, other_file):
     example_doc.main_window._impl.dialog_responses["QuestionDialog"] = [False]
     doc_app._impl.dialog_responses["OpenFileDialog"] = [other_file]
 
-    future = doc_app.commands[toga.Command.OPEN].action()
-    doc_app.loop.run_until_complete(future)
+    await doc_app.commands[toga.Command.OPEN].action()
 
     # There is still only 1 document, and 1 window
     assert len(doc_app.documents) == 1
@@ -655,7 +656,7 @@ def test_open_menu_no_save_existing(doc_app, example_file, other_file):
     assert example_doc.modified
 
 
-def test_open_menu_cancel_save_existing(doc_app, example_file, other_file):
+async def test_open_menu_cancel_save_existing(doc_app, example_file, other_file):
     """If the user cancels the save of existing changes, a new file isn't opened."""
     # There is initially 1 document, and 1 window
     assert len(doc_app.documents) == 1
@@ -670,8 +671,7 @@ def test_open_menu_cancel_save_existing(doc_app, example_file, other_file):
     example_doc.main_window._impl.dialog_responses["QuestionDialog"] = [True]
     example_doc.main_window._impl.dialog_responses["SaveFileDialog"] = [None]
 
-    future = doc_app.commands[toga.Command.OPEN].action()
-    doc_app.loop.run_until_complete(future)
+    await doc_app.commands[toga.Command.OPEN].action()
 
     # There is still only 1 document, and 1 window
     assert len(doc_app.documents) == 1
@@ -684,7 +684,7 @@ def test_open_menu_cancel_save_existing(doc_app, example_file, other_file):
     assert example_doc.modified
 
 
-def test_open_menu_no_replace(monkeypatch, doc_app, example_file, other_file):
+async def test_open_menu_no_replace(monkeypatch, doc_app, example_file, other_file):
     """If the backend doesn't close on last window, open creates a new window."""
     # Monkeypatch the property that makes the backend persistent
     monkeypatch.setattr(DummyApp, "CLOSE_ON_LAST_WINDOW", False)
@@ -699,8 +699,7 @@ def test_open_menu_no_replace(monkeypatch, doc_app, example_file, other_file):
     # Select the other file as the new document
     doc_app._impl.dialog_responses["OpenFileDialog"] = [other_file]
 
-    future = doc_app.commands[toga.Command.OPEN].action()
-    doc_app.loop.run_until_complete(future)
+    await doc_app.commands[toga.Command.OPEN].action()
 
     # There are now 2 documents, and 2 windows
     assert len(doc_app.documents) == 2
@@ -718,12 +717,11 @@ def test_open_menu_no_replace(monkeypatch, doc_app, example_file, other_file):
     assert new_doc.main_window.position != orig_position
 
 
-def test_open_menu_cancel(doc_app):
+async def test_open_menu_cancel(doc_app):
     """The open menu action can be cancelled by not selecting a file."""
     doc_app._impl.dialog_responses["OpenFileDialog"] = [None]
 
-    future = doc_app.commands[toga.Command.OPEN].action()
-    doc_app.loop.run_until_complete(future)
+    await doc_app.commands[toga.Command.OPEN].action()
 
     # No second window was opened
     assert len(doc_app.documents) == 1
@@ -733,15 +731,14 @@ def test_open_menu_cancel(doc_app):
     assert not hasattr(doc_app.documents[0].main_window, "_replace")
 
 
-def test_open_menu_cancel_no_replace(monkeypatch, doc_app):
+async def test_open_menu_cancel_no_replace(monkeypatch, doc_app):
     """If the replace attribute was never set, it won't be removed."""
     # Monkeypatch the property that makes the backend persistent
     monkeypatch.setattr(DummyApp, "CLOSE_ON_LAST_WINDOW", False)
 
     doc_app._impl.dialog_responses["OpenFileDialog"] = [None]
 
-    future = doc_app.commands[toga.Command.OPEN].action()
-    doc_app.loop.run_until_complete(future)
+    await doc_app.commands[toga.Command.OPEN].action()
 
     # No second window was opened
     assert len(doc_app.documents) == 1
@@ -751,30 +748,27 @@ def test_open_menu_cancel_no_replace(monkeypatch, doc_app):
     assert not hasattr(doc_app.documents[0].main_window, "_replace")
 
 
-def test_open_menu_duplicate(doc_app, example_file):
+async def test_open_menu_duplicate(doc_app, example_file):
     """The open menu is modal."""
     # Mock a pre-existing open dialog
     doc_app.documents._open_dialog = Mock()
 
     # Activate the open dialog a second time.
-    future = doc_app.commands[toga.Command.OPEN].action()
-
-    doc_app.loop.run_until_complete(future)
+    await doc_app.commands[toga.Command.OPEN].action()
 
     # There is still only one document
     assert len(doc_app.documents) == 1
     assert len(doc_app.windows) == 1
 
 
-def test_open_menu_read_fail(monkeypatch, doc_app, example_file, other_file):
+async def test_open_menu_read_fail(monkeypatch, doc_app, example_file, other_file):
     """If the new file open fails, the existing window won't be cleaned up."""
     # Mock a reading error.
     monkeypatch.setattr(OtherDocument, "read_error", ValueError("Bad file. No cookie."))
 
     doc_app._impl.dialog_responses["OpenFileDialog"] = [other_file]
 
-    future = doc_app.commands[toga.Command.OPEN].action()
-    doc_app.loop.run_until_complete(future)
+    await doc_app.commands[toga.Command.OPEN].action()
 
     # No second window was opened; the open window is the old file.
     assert len(doc_app.documents) == 1
@@ -785,7 +779,7 @@ def test_open_menu_read_fail(monkeypatch, doc_app, example_file, other_file):
     assert not hasattr(doc_app.documents[0].main_window, "_replace")
 
 
-def test_open_non_document_window(doc_app, example_file, other_file):
+async def test_open_non_document_window(doc_app, example_file, other_file):
     """If the current window isn't a document window,
     commit/cleanup behavior isn't used."""
     # Make a non-document window current.
@@ -801,8 +795,7 @@ def test_open_non_document_window(doc_app, example_file, other_file):
     # Open a new file.
     doc_app._impl.dialog_responses["OpenFileDialog"] = [other_file]
 
-    future = doc_app.commands[toga.Command.OPEN].action()
-    doc_app.loop.run_until_complete(future)
+    await doc_app.commands[toga.Command.OPEN].action()
 
     # There is now 2 documents, and 3 windows
     assert len(doc_app.documents) == 2
@@ -815,7 +808,7 @@ def test_open_non_document_window(doc_app, example_file, other_file):
     assert not hasattr(non_doc_window, "_replace")
 
 
-def test_save_menu(doc_app, example_file):
+async def test_save_menu(doc_app, example_file):
     """The save method is activated by the save menu."""
     current_window = doc_app.current_window
     first_doc = current_window.doc
@@ -825,15 +818,14 @@ def test_save_menu(doc_app, example_file):
     second_doc = doc_app.documents.new(ExampleDocument)
 
     # Activate the save menu
-    future = doc_app.commands[toga.Command.SAVE].action()
-    doc_app.loop.run_until_complete(future)
+    await doc_app.commands[toga.Command.SAVE].action()
 
     # The first document is the one we saved
     first_doc._mock_write.assert_called_once_with(example_file)
     second_doc._mock_write.assert_not_called()
 
 
-def test_save_menu_readonly(doc_app, example_file, other_file, tmp_path):
+async def test_save_menu_readonly(doc_app, example_file, other_file, tmp_path):
     """The save method is a no-op on readonly files."""
     current_window = doc_app.current_window
     first_doc = current_window.doc
@@ -844,15 +836,14 @@ def test_save_menu_readonly(doc_app, example_file, other_file, tmp_path):
     doc_app.current_window = second_doc.main_window
 
     # Activate the save menu
-    future = doc_app.commands[toga.Command.SAVE].action()
-    doc_app.loop.run_until_complete(future)
+    await doc_app.commands[toga.Command.SAVE].action()
 
     # Second document hasn't changed properties updated
     assert second_doc.path == other_file
     assert second_doc.title == "Other Document: other"
 
 
-def test_save_menu_untitled(doc_app, example_file, tmp_path):
+async def test_save_menu_untitled(doc_app, example_file, tmp_path):
     """The save method can can be activated on an untitled file."""
     current_window = doc_app.current_window
     first_doc = current_window.doc
@@ -867,8 +858,7 @@ def test_save_menu_untitled(doc_app, example_file, tmp_path):
     second_doc.main_window._impl.dialog_responses["SaveFileDialog"] = [path]
 
     # Activate the save menu
-    future = doc_app.commands[toga.Command.SAVE].action()
-    doc_app.loop.run_until_complete(future)
+    await doc_app.commands[toga.Command.SAVE].action()
 
     # The second document is the one we saved
     first_doc._mock_write.assert_not_called()
@@ -879,7 +869,7 @@ def test_save_menu_untitled(doc_app, example_file, tmp_path):
     assert second_doc.title == "Example Document: filename2"
 
 
-def test_save_menu_untitled_cancel(doc_app, example_file, tmp_path):
+async def test_save_menu_untitled_cancel(doc_app, example_file, tmp_path):
     """Saving an untitled file can be cancelled."""
     current_window = doc_app.current_window
     first_doc = current_window.doc
@@ -893,15 +883,14 @@ def test_save_menu_untitled_cancel(doc_app, example_file, tmp_path):
     second_doc.main_window._impl.dialog_responses["SaveFileDialog"] = [None]
 
     # Activate the save menu
-    future = doc_app.commands[toga.Command.SAVE].action()
-    doc_app.loop.run_until_complete(future)
+    await doc_app.commands[toga.Command.SAVE].action()
 
     # Neither document is saved.
     first_doc._mock_write.assert_not_called()
     second_doc._mock_write.assert_not_called()
 
 
-def test_save_menu_non_document(doc_app, example_file):
+async def test_save_menu_non_document(doc_app, example_file):
     """On a non-document window, save is ignored."""
     current_window = doc_app.current_window
     first_doc = current_window.doc
@@ -915,15 +904,14 @@ def test_save_menu_non_document(doc_app, example_file):
     doc_app.current_window = third_window
 
     # Activate the save menu
-    future = doc_app.commands[toga.Command.SAVE].action()
-    doc_app.loop.run_until_complete(future)
+    await doc_app.commands[toga.Command.SAVE].action()
 
     # No document is saved; the current window isn't a document.
     first_doc._mock_write.assert_not_called()
     second_doc._mock_write.assert_not_called()
 
 
-def test_save_as_menu(doc_app, example_file, tmp_path):
+async def test_save_as_menu(doc_app, example_file, tmp_path):
     """The save as method is activated by the save as menu."""
     current_window = doc_app.current_window
     first_doc = current_window.doc
@@ -937,8 +925,7 @@ def test_save_as_menu(doc_app, example_file, tmp_path):
     first_doc.main_window._impl.dialog_responses["SaveFileDialog"] = [path]
 
     # Activate the Save As menu
-    future = doc_app.commands[toga.Command.SAVE_AS].action()
-    doc_app.loop.run_until_complete(future)
+    await doc_app.commands[toga.Command.SAVE_AS].action()
 
     # The first document is the one we saved
     first_doc._mock_write.assert_called_once_with(path)
@@ -949,7 +936,7 @@ def test_save_as_menu(doc_app, example_file, tmp_path):
     assert first_doc.title == "Example Document: filename2"
 
 
-def test_save_as_menu_readonly(doc_app, example_file, other_file, tmp_path):
+async def test_save_as_menu_readonly(doc_app, example_file, other_file, tmp_path):
     """The save-as method is a no-op on readonly files."""
     current_window = doc_app.current_window
     first_doc = current_window.doc
@@ -960,15 +947,14 @@ def test_save_as_menu_readonly(doc_app, example_file, other_file, tmp_path):
     doc_app.current_window = second_doc.main_window
 
     # Activate the Save As menu
-    future = doc_app.commands[toga.Command.SAVE_AS].action()
-    doc_app.loop.run_until_complete(future)
+    await doc_app.commands[toga.Command.SAVE_AS].action()
 
     # Second document hasn't changed properties updated
     assert second_doc.path == other_file
     assert second_doc.title == "Other Document: other"
 
 
-def test_save_as_menu_untitled(doc_app, example_file, tmp_path):
+async def test_save_as_menu_untitled(doc_app, example_file, tmp_path):
     """The save as method can can be activated on an untitled file."""
     current_window = doc_app.current_window
     first_doc = current_window.doc
@@ -983,8 +969,7 @@ def test_save_as_menu_untitled(doc_app, example_file, tmp_path):
     second_doc.main_window._impl.dialog_responses["SaveFileDialog"] = [path]
 
     # Activate the Save As menu
-    future = doc_app.commands[toga.Command.SAVE_AS].action()
-    doc_app.loop.run_until_complete(future)
+    await doc_app.commands[toga.Command.SAVE_AS].action()
 
     # The second document is the one we saved
     first_doc._mock_write.assert_not_called()
@@ -995,7 +980,7 @@ def test_save_as_menu_untitled(doc_app, example_file, tmp_path):
     assert second_doc.title == "Example Document: filename2"
 
 
-def test_save_as_menu_cancel(doc_app, example_file, tmp_path):
+async def test_save_as_menu_cancel(doc_app, example_file, tmp_path):
     """A save as request can be cancelled by the user."""
     current_window = doc_app.current_window
     first_doc = current_window.doc
@@ -1008,15 +993,14 @@ def test_save_as_menu_cancel(doc_app, example_file, tmp_path):
     first_doc.main_window._impl.dialog_responses["SaveFileDialog"] = [None]
 
     # Activate the Save As menu
-    future = doc_app.commands[toga.Command.SAVE_AS].action()
-    doc_app.loop.run_until_complete(future)
+    await doc_app.commands[toga.Command.SAVE_AS].action()
 
     # Neither document is saved.
     first_doc._mock_write.assert_not_called()
     second_doc._mock_write.assert_not_called()
 
 
-def test_save_as_menu_non_document(doc_app, example_file):
+async def test_save_as_menu_non_document(doc_app, example_file):
     """On a non-document window, save as is ignored."""
     current_window = doc_app.current_window
     first_doc = current_window.doc
@@ -1030,15 +1014,14 @@ def test_save_as_menu_non_document(doc_app, example_file):
     doc_app.current_window = third_window
 
     # Activate the Save As menu
-    future = doc_app.commands[toga.Command.SAVE_AS].action()
-    doc_app.loop.run_until_complete(future)
+    await doc_app.commands[toga.Command.SAVE_AS].action()
 
     # No document is saved; the current window isn't a document.
     first_doc._mock_write.assert_not_called()
     second_doc._mock_write.assert_not_called()
 
 
-def test_save_all_menu(doc_app, example_file, tmp_path):
+async def test_save_all_menu(doc_app, example_file, tmp_path):
     """The save all method is activated by the save all menu."""
     current_window = doc_app.current_window
     first_doc = current_window.doc
@@ -1056,8 +1039,7 @@ def test_save_all_menu(doc_app, example_file, tmp_path):
     second_doc.main_window._impl.dialog_responses["SaveFileDialog"] = [path]
 
     # Activate the Save All menu
-    future = doc_app.commands[toga.Command.SAVE_ALL].action()
-    doc_app.loop.run_until_complete(future)
+    await doc_app.commands[toga.Command.SAVE_ALL].action()
 
     # Both documents have been saved
     first_doc._mock_write.assert_called_once_with(example_file)
@@ -1068,7 +1050,7 @@ def test_save_all_menu(doc_app, example_file, tmp_path):
     assert second_doc.title == "Example Document: filename2"
 
 
-def test_deprecated_document_app(monkeypatch, event_loop, example_file):
+async def test_deprecated_document_app(monkeypatch, example_file):
     """The deprecated API for creating Document-based apps still works."""
 
     class DeprecatedDocumentApp(toga.DocumentApp):

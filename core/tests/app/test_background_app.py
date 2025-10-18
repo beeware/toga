@@ -13,7 +13,7 @@ class ExampleBackgroundApp(toga.App):
 
 
 @pytest.fixture
-def background_app(event_loop):
+async def background_app():
     app = ExampleBackgroundApp(
         "Test App",
         "org.beeware.background-app",

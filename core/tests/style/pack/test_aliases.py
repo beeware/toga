@@ -81,13 +81,13 @@ def test_align(css_name, row_alias, column_alias, default, style_with, get_fn, d
     def assert_invalid_alias(alias, direction):
         style = style_with(direction=direction)
         correct_direction = ROW if direction == COLUMN else COLUMN
-        raises_kwargs = dict(
-            expected_exception=AttributeError,
-            match=(
+        raises_kwargs = {
+            "expected_exception": AttributeError,
+            "match": (
                 rf"'{alias}' is only supported when "
                 rf"\(direction == {correct_direction}\)"
             ),
-        )
+        }
 
         with raises(**raises_kwargs):
             get_fn(style, alias)
@@ -100,7 +100,7 @@ def test_align(css_name, row_alias, column_alias, default, style_with, get_fn, d
         with raises(**raises_kwargs):
             style.update(**{alias: END, "direction": direction})
         with raises(**raises_kwargs):
-            alias in style
+            _ = alias in style
 
     assert_invalid_alias(column_alias, ROW)
     assert_invalid_alias(row_alias, COLUMN)

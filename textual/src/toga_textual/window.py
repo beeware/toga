@@ -1,10 +1,10 @@
 from rich.text import Text
-
 from textual.app import RenderResult
 from textual.reactive import Reactive
 from textual.screen import Screen as TextualScreen
 from textual.widget import Widget as TextualWidget
 from textual.widgets import Button as TextualButton
+
 from toga import Position, Size
 from toga.constants import WindowState
 

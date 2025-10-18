@@ -31,6 +31,10 @@ class TreeProbe(SimpleProbe):
         else:
             return None
 
+    @property
+    def has_focus(self):
+        return self.native.window.firstResponder == self.native_tree
+
     async def expand_tree(self):
         self.native_tree.expandItem(None, expandChildren=True)
         await asyncio.sleep(0.1)
@@ -131,7 +135,7 @@ class TreeProbe(SimpleProbe):
         )
 
     async def select_all(self):
-        await self.type_character("A", alt=True),
+        await self.type_character("A", alt=True)
 
     async def select_row(self, row_path, add=False):
         point = self.row_position(row_path)

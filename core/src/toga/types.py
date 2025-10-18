@@ -1,28 +1,36 @@
 from __future__ import annotations
 
-import sys
 from typing import TYPE_CHECKING, NamedTuple
 
 import toga
 
 if TYPE_CHECKING:
-    if sys.version_info < (3, 10):
-        from typing_extensions import TypeAlias
-    else:
-        from typing import TypeAlias
+    from typing import TypeAlias
 
     PositionT: TypeAlias = toga.Position | tuple[int, int]
+    """
+    A representation of a 2D position, in CSS pixels. This can be:
+
+    * A tuple of 2 integers `(x,y)`; or
+    * An instance of [toga.Position][].
+    """
     SizeT: TypeAlias = toga.Size | tuple[int, int]
+    """
+    A representation of a 2D size, in CSS pixels. This can be:
+
+    * A tuple of 2 integers `(x,y)`; or
+    * An instance of [toga.Size][].
+    """
 
 
 class LatLng(NamedTuple):
     """A geographic coordinate."""
 
-    #: Latitude
     lat: float
+    """Latitude"""
 
-    #: Longitude
     lng: float
+    """Longitude"""
 
     def __str__(self) -> str:
         return f"({self.lat:6f}, {self.lng:6f})"
@@ -31,11 +39,11 @@ class LatLng(NamedTuple):
 class Position(NamedTuple):
     """A 2D position."""
 
-    #: X coordinate, in CSS pixels.
     x: int
+    """X coordinate, in CSS pixels."""
 
-    #: Y coordinate, in CSS pixels.
     y: int
+    """Y coordinate, in CSS pixels."""
 
     def __str__(self) -> str:
         return f"({self.x}, {self.y})"
@@ -53,11 +61,11 @@ class Position(NamedTuple):
 class Size(NamedTuple):
     """A 2D size."""
 
-    #: Width, in CSS pixels.
     width: int
+    """Width, in CSS pixels."""
 
-    #: Height, in CSS pixels.
     height: int
+    """Height, in CSS pixels."""
 
     def __str__(self) -> str:
         return f"({self.width} x {self.height})"

@@ -13,6 +13,9 @@ class FontMixin:
     supports_custom_fonts = True
     supports_custom_variable_fonts = True
 
+    def preinstalled_font(self):
+        return "Liberation Serif"
+
     def assert_font_family(self, expected):
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             assert self.font.get_family().split(",")[0] == expected

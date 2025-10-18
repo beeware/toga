@@ -56,7 +56,7 @@ class Camera:
     def request_permission(self, future):
         def request_complete(permissions, results):
             # Map the permissions to their result
-            perms = dict(zip(permissions, results))
+            perms = dict(zip(permissions, results, strict=False))
             try:
                 result = (
                     perms[Camera.CAMERA_PERMISSION] == PackageManager.PERMISSION_GRANTED
@@ -85,7 +85,10 @@ class Camera:
 
     def take_photo(self, result, device, flash):
         if not self.has_camera:
-            warnings.warn("No camera is available")
+            warnings.warn(
+                "No camera is available",
+                stacklevel=2,
+            )
             result.set_result(None)
         elif self.has_permission():
             # We have permission; go directly to taking the photo.

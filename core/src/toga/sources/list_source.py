@@ -1,11 +1,18 @@
 from __future__ import annotations
 
 from collections.abc import Iterable, Mapping, Sequence
-from typing import Generic, TypeVar
+from typing import Any, Generic, TypeVar
 
 from .base import Source
 
 T = TypeVar("T")
+UNDEFINED = object()
+
+ListSourceT = TypeVar("ListSourceT", bound=Source)
+"""
+A type describing any object adhering to the same interface as
+[ListSource][toga.sources.ListSource].
+"""
 
 
 def _find_item(
@@ -15,8 +22,8 @@ def _find_item(
     start: T | None,
     error: str,
 ) -> T:
-    """Find-by-value implementation helper; find an item matching ``data`` in
-    ``candidates``, starting with item ``start``."""
+    """Find-by-value implementation helper; find an item matching `data` in
+    `candidates`, starting with item `start`."""
     if start is not None:
         start_index = candidates.index(start) + 1
     else:
@@ -30,7 +37,8 @@ def _find_item(
                 )
             elif hasattr(data, "__iter__") and not isinstance(data, str):
                 found = all(
-                    getattr(item, attr) == value for value, attr in zip(data, accessors)
+                    getattr(item, attr) == value
+                    for value, attr in zip(data, accessors, strict=False)
                 )
             else:
                 found = getattr(item, accessors[0]) == data
@@ -52,7 +60,7 @@ class Row(Generic[T]):
         attributes on the new Row object.
 
         When any public attributes of the Row are modified (i.e., any attribute whose
-        name doesn't start with ``_``), the source to which the row belongs will be
+        name doesn't start with `_`), the source to which the row belongs will be
         notified.
         """
         self._source: Source | None = None
@@ -105,14 +113,14 @@ class ListSource(Source):
         :param accessors: A list of attribute names for accessing the value
             in each column of the row.
         :param data: The initial list of items in the source. Items are converted as
-            shown :ref:`above <listsource-item>`.
+            shown [above][listsource-item].
         """
         super().__init__()
         if isinstance(accessors, str) or not hasattr(accessors, "__iter__"):
             raise ValueError("accessors should be a list of attribute names")
 
         # Copy the list of accessors
-        self._accessors = [a for a in accessors]
+        self._accessors = list(accessors)
         if len(self._accessors) == 0:
             raise ValueError("ListSource must be provided a list of accessors")
 
@@ -130,12 +138,12 @@ class ListSource(Source):
         """Returns the number of items in the list."""
         return len(self._data)
 
-    def __getitem__(self, index: int) -> Row:
-        """Returns the item at position ``index`` of the list."""
+    def __getitem__(self, index: int | slice) -> Row:
+        """Returns the item at position `index` of the list."""
         return self._data[index]
 
     def __delitem__(self, index: int) -> None:
-        """Deletes the item at position ``index`` of the list."""
+        """Deletes the item at position `index` of the list."""
         row = self._data[index]
         del self._data[index]
         self.notify("remove", index=index, item=row)
@@ -149,7 +157,7 @@ class ListSource(Source):
         if isinstance(data, Mapping):
             row = Row(**data)
         elif hasattr(data, "__iter__") and not isinstance(data, str):
-            row = Row(**dict(zip(self._accessors, data)))
+            row = Row(**dict(zip(self._accessors, data, strict=False)))
         else:
             row = Row(**{self._accessors[0]: data})
         row._source = self
@@ -210,7 +218,7 @@ class ListSource(Source):
         This search uses Row instances, and searches for an *instance* match.
         If two Row instances have the same values, only the Row that is the
         same Python instance will match. To search for values based on equality,
-        use :meth:`~toga.sources.ListSource.find`.
+        use [`ListSource.find()`][toga.sources.ListSource.find].
 
         :param row: The row to find in the data source.
         :returns: The index of the row in the data source.
@@ -218,28 +226,38 @@ class ListSource(Source):
         """
         return self._data.index(row)
 
-    def find(self, data: object, start: Row | None = None) -> Row:
+    def find(
+        self, data: object, start: Row | None = None, default: Any = UNDEFINED
+    ) -> Row:
         """Find the first item in the data that matches all the provided
         attributes.
 
         This is a value based search, rather than an instance search. If two Row
         instances have the same values, the first instance that matches will be
         returned. To search for a second instance, provide the first found instance
-        as the ``start`` argument. To search for a specific Row instance, use the
-        :meth:`~toga.sources.ListSource.index`.
+        as the `start` argument. To search for a specific Row instance, use the
+        [`ListSource.index()`][toga.sources.ListSource.index].
 
         :param data: The data to search for. Only the values specified in data will be
             used as matching criteria; if the row contains additional data attributes,
             they won't be considered as part of the match.
-        :param start: The instance from which to start the search. Defaults to ``None``,
+        :param start: The instance from which to start the search. Defaults to `None`,
             indicating that the first match should be returned.
-        :return: The matching Row object
-        :raises ValueError: If no match is found.
+        :param default: If provided, this value will be returned if no match is found.
+        :return: The matching Row object if found, or the value of `default` if
+            provided.
+        :raises ValueError: If no match is found and `default` is not provided.
         """
-        return _find_item(
-            candidates=self._data,
-            data=data,
-            accessors=self._accessors,
-            start=start,
-            error=f"No row matching {data!r} in data",
-        )
+        try:
+            return _find_item(
+                candidates=self._data,
+                data=data,
+                accessors=self._accessors,
+                start=start,
+                error=f"No row matching {data!r} in data",
+            )
+        except ValueError:
+            if default is UNDEFINED:
+                raise
+            else:
+                return default

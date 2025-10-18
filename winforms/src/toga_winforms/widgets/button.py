@@ -10,7 +10,6 @@ from .base import Widget
 
 
 class Button(Widget):
-
     def create(self):
         self.native = WinForms.Button()
         self.native.AutoSizeMode = WinForms.AutoSizeMode.GrowAndShrink

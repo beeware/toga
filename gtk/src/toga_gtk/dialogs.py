@@ -188,10 +188,19 @@ class FileDialog(BaseDialog):
                 self.native.set_current_folder(str(initial_directory))
 
             if file_types:
+                filter_filetype = Gtk.FileFilter()
+                if len(file_types) > 1:
+                    filter_filetype.set_name(
+                        " or ".join(f".{ft}" for ft in file_types) + " files"
+                    )
+                    for file_type in file_types:
+                        filter_filetype.add_pattern(f"*.{file_type}")
+                    self.native.add_filter(filter_filetype)
+
                 for file_type in file_types:
                     filter_filetype = Gtk.FileFilter()
-                    filter_filetype.set_name("." + file_type + " files")
-                    filter_filetype.add_pattern("*." + file_type)
+                    filter_filetype.set_name(f".{file_type} files")
+                    filter_filetype.add_pattern(f"*.{file_type}")
                     self.native.add_filter(filter_filetype)
 
             self.multiple_select = multiple_select

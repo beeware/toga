@@ -26,7 +26,6 @@ def native_time(py_time):
 
 
 class TimeInput(Widget):
-
     def create(self):
         self.native = self._create_native_widget("sl-input")
         self.native.setAttribute("step", "1")  # force seconds to show

@@ -166,7 +166,6 @@ class Node:
             self._root.refresh(viewport)
         else:
             if self.applicator:
-
                 ######################################################################
                 # 2024-12: Backwards compatibility for Toga <= 0.4.8
                 ######################################################################

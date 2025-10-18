@@ -1,1 +1,0 @@
-Apps that use a function-based app startup method now validate that the startup method returns content that can be added to the main window.

@@ -238,7 +238,7 @@ def test_clear_content(app, window, scroll_container, content):
 def test_horizontal(scroll_container, on_scroll_handler, content, value, expected):
     """Horizontal scrolling can be enabled/disabled."""
     scroll_container.horizontal = value
-    scroll_container.horizontal == expected
+    assert scroll_container.horizontal == expected
 
     if not expected:
         on_scroll_handler.assert_called_with(scroll_container)
@@ -265,7 +265,7 @@ def test_horizontal(scroll_container, on_scroll_handler, content, value, expecte
 def test_vertical(scroll_container, on_scroll_handler, content, value, expected):
     """Vertical scrolling can be enabled/disabled."""
     scroll_container.vertical = value
-    scroll_container.vertical == expected
+    assert scroll_container.vertical == expected
 
     if not expected:
         on_scroll_handler.assert_called_with(scroll_container)

@@ -1,1 +1,0 @@
-Older Linux distributions (such as Ubuntu 22.04) that ship with GLib < 2.74 can now use GTK4 with Toga.
