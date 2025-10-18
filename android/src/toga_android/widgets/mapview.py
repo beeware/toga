@@ -36,7 +36,6 @@ if OSMMapView is not None:  # pragma: no branch
 
 
 class MapView(Widget):
-
     def create(self):
         if OSMMapView is None:  # pragma: no cover
             raise RuntimeError(

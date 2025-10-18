@@ -16,8 +16,8 @@ def fill_head(canvas):
 
 
 def stroke_head(canvas):
-    with canvas.Stroke(line_width=4.0) as head_stroker:
-        with head_stroker.ClosedPath(112, 103) as closed_head:
+    with canvas.Stroke(line_width=4.0) as head_outline:
+        with head_outline.ClosedPath(112, 103) as closed_head:
             closed_head.line_to(112, 113)
             closed_head.ellipse(73, 114, 39, 47, 0, 0, math.pi)
             closed_head.line_to(35, 84)

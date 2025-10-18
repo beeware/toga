@@ -1,1 +1,0 @@
-Updated setuptools from 80.4.0 to 80.7.1 in /gtk.

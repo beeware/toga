@@ -3,7 +3,6 @@ from string import ascii_lowercase, ascii_uppercase, digits
 import toga
 from toga import validators
 from toga.constants import COLUMN
-from toga.style import Pack
 
 EMPTY_PASSWORD = "Empty password"
 
@@ -26,7 +25,7 @@ class PasswordInputApp(toga.App):
                 contains.add("digits")
             else:
                 contains.add("special characters")
-        return "Password contains: {}".format(", ".join(contains))
+        return f"Password contains: {', '.join(contains)}"
 
     def startup(self):
         # Set up main window
@@ -34,14 +33,12 @@ class PasswordInputApp(toga.App):
         PADDING = 5
         # Label to show responses.
         self.label = toga.Label("Testing Password")
-        self.password_content_label = toga.Label(
-            EMPTY_PASSWORD, style=Pack(margin_bottom=PADDING)
-        )
+        self.password_content_label = toga.Label(EMPTY_PASSWORD, margin_bottom=PADDING)
 
         # Padding box only
         self.password_input = toga.PasswordInput(
             placeholder="Password...",
-            style=Pack(margin=PADDING),
+            margin=PADDING,
             on_change=self.on_password_change,
             validators=[
                 validators.MinLength(10),
@@ -60,7 +57,11 @@ class PasswordInputApp(toga.App):
         ]
         outer_box = toga.Box(
             children=children,
-            style=Pack(flex=1, direction=COLUMN, margin=10, width=500, height=300),
+            flex=1,
+            direction=COLUMN,
+            margin=10,
+            width=500,
+            height=300,
         )
 
         # Add the content on the main window
@@ -75,5 +76,4 @@ def main():
 
 
 if __name__ == "__main__":
-    app = main()
-    app.main_loop()
+    main().main_loop()

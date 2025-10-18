@@ -2,40 +2,23 @@
 # Read the Docs configuration file
 # See https://docs.readthedocs.io/en/stable/config-file/v2.html for details
 
+# Required
 version: 2
 
+# Set the version of Python and other tools you might need
 build:
-  os: ubuntu-22.04
+  os: ubuntu-24.04
   tools:
-    # Docs are always built on Python 3.12. See also the tox config and contribution docs.
+    # Docs are always built on Python 3.12. See also the tox config.
     python: "3.12"
   jobs:
     post_checkout:
-      # RTD defaults to a depth of 50 but Toga versioning may require
-      # much more git history to accurately determine the SCM version
       - git fetch --unshallow
+    pre_install:
+      - python -m pip install --upgrade pip
+      - python -m pip install --group 'tox-uv'
     pre_build:
-      - tox -e docs-lint
-
-# Build documentation in the docs/ directory with Sphinx
-sphinx:
-  builder: html
-  configuration: docs/conf.py
-  fail_on_warning: true
-
-# Build docs as PDF (other options are epub and htmlzip)
-formats:
-   - pdf
-
-# Install extras for build. Order is significant; each entry is a separate call to
-# `pip`, and we need Travertino to exist before core is installed. core[dev] is needed
-# to run `tox -e docs-lint` as a pre-build step.
-python:
-  install:
-  - method: pip
-    path: travertino
-  - method: pip
-    path: core
-    extra_requirements:
-      - dev
-      - docs
+      - python -m tox -e docs-lint
+    build:
+      html:
+        - python -m tox -e docs-$READTHEDOCS_LANGUAGE -- --output=$READTHEDOCS_OUTPUT/html/

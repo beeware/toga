@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import itertools
-import sys
 from abc import ABC, abstractmethod
 from collections.abc import Iterator, Mapping, Sequence
 from pathlib import Path
@@ -20,17 +19,17 @@ class Document(ABC):
     #: class variable that subclasses should define.
     description: str
 
-    #: A list of extensions that documents of this type might use,
-    # without leading dots (e.g.,
-    #: ``["doc", "txt"]``). The list must have at least one extension; the first is the
-    #: default extension for documents of this type. This is a class variable that
-    #: subclasses should define.
+    #: A list of extensions that documents of this type might use, without leading dots
+    #: (e.g., `["doc", "txt"]`). The list must have at least one extension; the first
+    #: is the default extension for documents of this type. This is a class variable
+    #: that subclasses should define.
     extensions: list[str]
 
     def __init__(self, app: App):
         """Create a new Document. Do not call this constructor directly - use
-        :any:`DocumentSet.new`, :any:`DocumentSet.open` or
-        :any:`DocumentSet.request_open` instead.
+        [`DocumentSet.new`][toga.documents.DocumentSet.new],
+        [`DocumentSet.open`][toga.documents.DocumentSet.open] or
+        [`DocumentSet.request_open`][toga.documents.DocumentSet.request_open] instead.
 
         :param app: The application the document is associated with.
         """
@@ -71,7 +70,7 @@ class Document(ABC):
     def title(self) -> str:
         """The title of the document.
 
-        This will be used as the default title of a :any:`toga.DocumentWindow` that
+        This will be used as the default title of a [`toga.DocumentWindow`][] that
         contains the document.
         """
         return f"{self.description}: {self.path.stem if self.path else 'Untitled'}"
@@ -106,6 +105,7 @@ class Document(ABC):
         if self._path.exists():
             self.read()
         else:
+            self._path = None
             raise FileNotFoundError()
 
         # Set the title of the document window to match the path
@@ -119,8 +119,8 @@ class Document(ABC):
         If a path is provided, the path for the document will be updated. Otherwise, the
         existing path will be used.
 
-        If the :meth:`~toga.Document.write` method has not been implemented, this method
-        is a no-op.
+        If the [`Document.write()`][toga.Document.write] method has not been
+        implemented, this method is a no-op.
 
         :param path: If provided, the new file name for the document.
         """
@@ -135,7 +135,7 @@ class Document(ABC):
 
     # A document is writable if its class overrides the `write` method.
     def _writable(self):
-        return getattr(type(self), "write") is not Document.write
+        return type(self).write is not Document.write
 
     def show(self) -> None:
         """Show the visual representation for this document."""
@@ -145,7 +145,7 @@ class Document(ABC):
         """Mark the document as modified.
 
         This method accepts `*args` and `**kwargs` so that it can be used as an
-        ``on_change`` handler; these arguments are not used.
+        `on_change` handler; these arguments are not used.
         """
         self.modified = True
 
@@ -157,17 +157,18 @@ class Document(ABC):
     def create(self) -> None:
         """Create the window (or windows) for the document.
 
-        This method must, at a minimum, assign the :any:`main_window` property. It
+        This method must, at a minimum, assign the
+        [`main_window`][toga.Document.main_window] property. It
         may also create additional windows or UI elements if desired.
         """
 
     @abstractmethod
     def read(self) -> None:
         """Load a representation of the document into memory from
-        :attr:`~toga.Document.path`, and populate the document window.
+        [`Document.path`][toga.Document.path], and populate the document window.
         """
 
-    def write(self) -> None:
+    def write(self) -> None:  # noqa: B027 (it's intentionally blank)
         """Persist a representation of the current state of the document.
 
         This method is a no-op by default, to allow for read-only document types.
@@ -230,12 +231,7 @@ class DocumentSet(Sequence[Document], Mapping[Path, Document]):
             return self.elements[path_or_index]
 
         # Look up by path
-        if sys.version_info < (3, 10):  # pragma: no-cover-if-gte-py310
-            # resolve() *should* turn the path into an absolute path;
-            # but on Windows, with Python 3.9, it doesn't.
-            path = Path(path_or_index).absolute().resolve()
-        else:  # pragma: no-cover-if-lt-py310
-            path = Path(path_or_index).resolve()
+        path = Path(path_or_index).resolve()
         for item in self.elements:
             if item.path == path:
                 return item
@@ -267,7 +263,7 @@ class DocumentSet(Sequence[Document], Mapping[Path, Document]):
 
     async def request_open(self) -> Document:
         """Present a dialog asking the user for a document to open, and pass the
-        selected path to :meth:`open`.
+        selected path to [`DocumentSet.open()`][toga.documents.DocumentSet.open].
 
         :returns: The document that was opened.
         :raises ValueError: If the path describes a file that is of a type that doesn't
@@ -324,13 +320,9 @@ class DocumentSet(Sequence[Document], Mapping[Path, Document]):
         :raises ValueError: If the path describes a file that is of a type that doesn't
             match a registered document type.
         """
+        path = Path(path).resolve()
+
         try:
-            if sys.version_info < (3, 10):  # pragma: no-cover-if-gte-py310
-                # resolve() *should* turn the path into an absolute path;
-                # but on Windows, with Python 3.9, it doesn't.
-                path = Path(path).absolute().resolve()
-            else:  # pragma: no-cover-if-lt-py310
-                path = Path(path).resolve()
             document = self.app.documents[path]
             document.focus()
             return document
@@ -342,10 +334,10 @@ class DocumentSet(Sequence[Document], Mapping[Path, Document]):
                     for doc_type in self.types
                     for extension in doc_type.extensions
                 }[path.suffix[1:]]
-            except KeyError:
+            except KeyError as exc:
                 raise ValueError(
                     f"Don't know how to open documents with extension {path.suffix}"
-                )
+                ) from exc
             else:
                 prev_window = self.app.current_window
                 document = DocType(app=self.app)
@@ -369,7 +361,7 @@ class DocumentSet(Sequence[Document], Mapping[Path, Document]):
     async def save(self):
         """Save the current content of an app.
 
-        If there isn't a current window, or current window doesn't define a ``save()``
+        If there isn't a current window, or current window doesn't define a `save()`
         method, the save request will be ignored.
         """
         if hasattr(self.app.current_window, "save"):
@@ -379,7 +371,7 @@ class DocumentSet(Sequence[Document], Mapping[Path, Document]):
         """Save the current content of an app under a different filename.
 
         If there isn't a current window, or the current window hasn't defined a
-        ``save_as()`` method, the save-as request will be ignored.
+        `save_as()` method, the save-as request will be ignored.
         """
         if hasattr(self.app.current_window, "save_as"):
             await self.app.current_window.save_as()
@@ -387,8 +379,8 @@ class DocumentSet(Sequence[Document], Mapping[Path, Document]):
     async def save_all(self):
         """Save the state of all content in the app.
 
-        This method will attempt to call ``save()`` on every window associated with the
-        app. Any windows that do not provide a ``save()`` method will be ignored.
+        This method will attempt to call `save()` on every window associated with the
+        app. Any windows that do not provide a `save()` method will be ignored.
         """
         for window in self.app.windows:
             if hasattr(window, "save"):
@@ -402,10 +394,10 @@ class DocumentWindow(MainWindow):
         A document window is a MainWindow (so it will have a menu bar, and *can* have a
         toolbar), bound to a document instance.
 
-        In addition to the required ``doc`` argument, accepts the same arguments as
-        :class:`~toga.Window`.
+        In addition to the required `doc` argument, accepts the same arguments as
+        [`Window`][toga.Window].
 
-        The default ``on_close`` handler will use the document's modification status to
+        The default `on_close` handler will use the document's modification status to
         determine if the document has been modified. It will allow the window to close
         if the document is fully saved, or the user explicitly declines the opportunity
         to save.
@@ -433,8 +425,8 @@ class DocumentWindow(MainWindow):
                 toga.QuestionDialog(
                     "Save changes?",
                     (
-                        "This document has unsaved changes. "
-                        "Do you want to save these changes?"
+                        "This document has unsaved changes. Do you want to save these "
+                        "changes?"
                     ),
                 )
             ):
@@ -460,7 +452,8 @@ class DocumentWindow(MainWindow):
         be prompted to provide a filename.
 
         :returns: True if the save was successful; False if the save was aborted, or the
-            document type doesn't define a :meth:`~toga.Document.write` method.
+            document type doesn't define a [`Document.write()`][toga.Document.write]
+            method.
         """
         if self.doc._writable():
             if self.doc.path:
@@ -478,7 +471,8 @@ class DocumentWindow(MainWindow):
         the document with that new filename.
 
         :returns: True if the save was successful; False if the save was aborted, or the
-            document type doesn't define a :meth:`~toga.Document.write` method.
+            document type doesn't define a [`Document.write()`][toga.Document.write]
+            method.
         """
         if self.doc._writable():
             suggested_path = (

@@ -1,8 +1,7 @@
 import toga
-from toga.style import Pack
 
 
-class ExampleSimpleApp(toga.App):
+class SimpleApp(toga.App):
     def startup(self):
         # Set up a minimalist main window
         self.main_window = toga.Window()
@@ -13,7 +12,7 @@ class ExampleSimpleApp(toga.App):
         # Outermost box
         outer_box = toga.Box(
             children=[self.label],
-            style=Pack(margin=10),
+            margin=10,
         )
 
         # Add the content on the main window
@@ -24,9 +23,8 @@ class ExampleSimpleApp(toga.App):
 
 
 def main():
-    return ExampleSimpleApp("Simple App", "org.beeware.toga.examples.simpleapp")
+    return SimpleApp("Simple App", "org.beeware.toga.examples.simpleapp")
 
 
 if __name__ == "__main__":
-    app = main()
-    app.main_loop()
+    main().main_loop()

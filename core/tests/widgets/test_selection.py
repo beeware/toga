@@ -247,7 +247,7 @@ def test_bad_item_with_accessor():
     )
 
     # Store the bad item
-    item = selection.items.find(dict(value="bad"))
+    item = selection.items.find({"value": "bad"})
 
     # Delete the bad item
     selection.items.remove(item)
@@ -265,7 +265,7 @@ def test_add_item(widget, source, on_change_handler):
     # Store the original selection
     selection = widget.value
 
-    source.append(dict(key="new", value=999))
+    source.append({"key": "new", "value": 999})
 
     # The widget adds the item
     assert_action_performed_with(widget, "insert item", index=3)
@@ -280,7 +280,7 @@ def test_insert_item(widget, source, on_change_handler):
     # Store the original selection
     selection = widget.value
 
-    source.insert(1, dict(key="new", value=999))
+    source.insert(1, {"key": "new", "value": 999})
 
     # The widget adds the item
     assert_action_performed_with(widget, "insert item", index=1)

@@ -24,6 +24,7 @@ class AppProbe(BaseProbe, DialogsMixin):
     supports_key = True
     supports_key_mod3 = True
     supports_current_window_assignment = True
+    supports_dark_mode = True
 
     def __init__(self, app):
         super().__init__()
@@ -187,19 +188,35 @@ class AppProbe(BaseProbe, DialogsMixin):
 
         self.assert_menu_item(["Help", "Visit homepage"], enabled=True)
 
+    def _activate_menu_window_item(self, path):
+        item = self._menu_item(path)
+        # don't send the action if it's supposed to be grayed out
+        if self.app.current_window is None:
+            return
+        # To activate the window-related things in global app menu, we need
+        # call the native handler on the NSWindow instead of the
+        # NSApplicationDelegate.
+        send_message(
+            self.app.current_window._impl.native,
+            item.action,
+            self.app.current_window._impl.native,
+            restype=None,
+            argtypes=[objc_id],
+        )
+
     def activate_menu_close_window(self):
-        self._activate_menu_item(["File", "Close"])
+        self._activate_menu_window_item(["File", "Close"])
 
     def activate_menu_close_all_windows(self):
         self._activate_menu_item(["File", "Close All"])
 
     def activate_menu_minimize(self):
-        self._activate_menu_item(["Window", "Minimize"])
+        self._activate_menu_window_item(["Window", "Minimize"])
 
     def assert_dialog_in_focus(self, dialog):
-        assert (
-            dialog._impl.native.window == self.app._impl.native.keyWindow
-        ), "The dialog is not in focus"
+        assert dialog._impl.native.window == self.app._impl.native.keyWindow, (
+            "The dialog is not in focus"
+        )
 
     def assert_menu_item(self, path, enabled):
         item = self._menu_item(path)
@@ -209,7 +226,7 @@ class AppProbe(BaseProbe, DialogsMixin):
         menu = self._menu_item(path).submenu
 
         assert menu.numberOfItems == len(expected)
-        for item, title in zip(menu.itemArray, expected):
+        for item, title in zip(menu.itemArray, expected, strict=False):
             if title == "---":
                 assert item.isSeparatorItem
             else:
@@ -269,11 +286,7 @@ class AppProbe(BaseProbe, DialogsMixin):
             if count < 5:
                 count += 1
                 return _poll_modal_session(nsapp, session)
-            try:
-                if pre_close_test_method:
-                    pre_close_test_method(dialog)
-            finally:
-                return result
+            return result
 
         dialog._impl._poll_modal_session = auto_poll_modal_session
 

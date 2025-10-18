@@ -327,7 +327,6 @@ class Canvas(Widget):
             )
 
     def get_image_data(self):
-
         bitmap = self.native.bitmapImageRepForCachingDisplayInRect(self.native.bounds)
         self.native.cacheDisplayInRect(self.native.bounds, toBitmapImageRep=bitmap)
 

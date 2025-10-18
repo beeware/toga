@@ -40,7 +40,10 @@ class NotImplementedWarning(RuntimeWarning):
     @classmethod
     def warn(cls, platform: str, feature: str) -> None:
         """Raise a warning that a feature isn't implemented on a platform."""
-        warnings.warn(NotImplementedWarning(f"[{platform}] Not implemented: {feature}"))
+        warnings.warn(
+            NotImplementedWarning(f"[{platform}] Not implemented: {feature}"),
+            stacklevel=2,
+        )
 
 
 # __name__ is "toga" in this file, but the distribution name is "toga-core".

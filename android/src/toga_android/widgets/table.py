@@ -45,6 +45,7 @@ class TogaOnLongClickListener(dynamic_proxy(View.OnLongClickListener)):
 
 
 class Table(Widget):
+    focusable = False
     table_layout = None
     color_selected = None
     _font_impl = None
@@ -168,7 +169,10 @@ class Table(Widget):
             None,
         )
         if isinstance(value, toga.Widget):
-            warn("This backend does not support the use of widgets in cells")
+            warn(
+                "This backend does not support the use of widgets in cells",
+                stacklevel=2,
+            )
             value = None
         if isinstance(value, tuple):  # TODO: support icons
             value = value[1]

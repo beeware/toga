@@ -13,7 +13,7 @@ from java.io import FileDescriptor
 from java.lang import Runnable
 
 # Some methods in this file are based on CPython's implementation. Per
-# https://github.com/python/cpython/blob/master/LICENSE , re-use is permitted via the
+# https://github.com/python/cpython/blob/master/LICENSE , reuse is permitted via the
 # Python Software Foundation License Version 2, which includes inclusion into this
 # project under its BSD license terms so long as we retain this copyright notice:
 #
@@ -81,7 +81,6 @@ class AndroidEventLoop(asyncio.SelectorEventLoop):
             raise RuntimeError(
                 "Event loop is closed. Create a new object."
             )  # pragma: no cover
-        self._set_coroutine_origin_tracking(self._debug)
         self._thread_id = threading.get_ident()
 
         self._old_agen_hooks = sys.get_asyncgen_hooks()
@@ -105,7 +104,6 @@ class AndroidEventLoop(asyncio.SelectorEventLoop):
             self._stopping = False
             self._thread_id = None
             asyncio.events._set_running_loop(None)
-            self._set_coroutine_origin_tracking(False)
             sys.set_asyncgen_hooks(*self._old_agen_hooks)
             # Remove Android event loop interop objects.
             self.android_interop = None
@@ -125,13 +123,6 @@ class AndroidEventLoop(asyncio.SelectorEventLoop):
         # that running delayed tasks can trigger the next wakeup is what makes this
         # event loop a "loop."
         self.android_interop.call_later(self.run_delayed_tasks, timeout * 1000)
-
-    def _set_coroutine_origin_tracking(self, debug):
-        # If running on Python 3.7 or 3.8, integrate with upstream event loop's debug
-        # feature, allowing unawaited coroutines to have some useful info logged.
-        # See https://bugs.python.org/issue32591
-        if hasattr(super(), "_set_coroutine_origin_tracking"):  # pragma: no cover
-            super()._set_coroutine_origin_tracking(debug)
 
     def _get_next_delayed_task_wakeup(self):
         """Compute the time to sleep before we should be woken up
@@ -201,7 +192,7 @@ class AndroidEventLoop(asyncio.SelectorEventLoop):
         # run the next time (after another I/O poll). Use an idiom that is thread-safe
         # without using locks.
         ntodo = len(self._ready)
-        for i in range(ntodo):
+        for _ in range(ntodo):
             handle = self._ready.popleft()
             if handle._cancelled:
                 continue  # pragma: no cover

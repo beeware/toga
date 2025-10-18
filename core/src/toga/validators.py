@@ -8,11 +8,11 @@ class BooleanValidator:
     def __init__(self, error_message: str, allow_empty: bool = True):
         """An abstract base class for defining a simple validator.
 
-        Subclasses should implement the ``is_valid()`` method
+        Subclasses should implement the `is_valid()` method
 
         :param error_message: The error to display to the user when the input isn't
             valid.
-        :param allow_empty: Optional; Is no input considered valid? Defaults to ``True``
+        :param allow_empty: Optional; Is no input considered valid? Defaults to `True`
         """
         self.error_message = error_message
         self.allow_empty = allow_empty
@@ -27,7 +27,7 @@ class BooleanValidator:
         """Is the input string valid?
 
         :param input_string: The string to validate.
-        :returns: ``True`` if the input is valid.
+        :returns: `True` if the input is valid.
         """
 
 
@@ -43,7 +43,7 @@ class CountValidator:
         """An abstract base class for validators that are based on counting
         instances of some content in the overall content.
 
-        Subclasses should implement the ``count()`` method to identify the content of
+        Subclasses should implement the `count()` method to identify the content of
         interest.
 
         :param count: Optional; The expected count.
@@ -53,7 +53,7 @@ class CountValidator:
             not expected, but were found.
         :param expected_count_message: The error message to show if matches were
             expected, but a different number were found.
-        :param allow_empty: Optional; Is no input considered valid? Defaults to ``True``
+        :param allow_empty: Optional; Is no input considered valid? Defaults to `True`
         """
         self.expected_count = count
         self.expected_existence_message = expected_existence_message
@@ -97,7 +97,7 @@ class LengthBetween(BooleanValidator):
         :param max_length: The maximum length of the string (inclusive).
         :param error_message: Optional; the error message to display when the length
             isn't in the given range.
-        :param allow_empty: Optional; Is no input considered valid? Defaults to ``True``
+        :param allow_empty: Optional; Is no input considered valid? Defaults to `True`
         """
         if error_message is None:
             error_message = (
@@ -116,12 +116,11 @@ class LengthBetween(BooleanValidator):
         self.max_length = max_length
 
     def is_valid(self, input_string: str) -> bool:
-        if self.min_length is not None:
-            if len(input_string) < self.min_length:
-                return False
-        if self.max_length is not None:
-            if len(input_string) > self.max_length:
-                return False
+        if self.min_length is not None and len(input_string) < self.min_length:
+            return False
+        if self.max_length is not None and len(input_string) > self.max_length:
+            return False
+
         return True
 
 
@@ -137,7 +136,7 @@ class MinLength(LengthBetween):
         :param length: The minimum length of the string (inclusive).
         :param error_message: Optional; the error message to display when the string
             isn't long enough.
-        :param allow_empty: Optional; Is no input considered valid? Defaults to ``True``
+        :param allow_empty: Optional; Is no input considered valid? Defaults to `True`
         """
         if error_message is None:
             error_message = f"Input is too short (length should be at least {length})"
@@ -183,7 +182,7 @@ class StartsWith(BooleanValidator):
         :param substring: The substring that the input must start with.
         :param error_message: Optional; the error message to display when the string
             doesn't start with the given substring.
-        :param allow_empty: Optional; Is no input considered valid? Defaults to ``True``
+        :param allow_empty: Optional; Is no input considered valid? Defaults to `True`
         """
         if error_message is None:
             error_message = f"Input should start with {substring!r}"
@@ -207,7 +206,7 @@ class EndsWith(BooleanValidator):
         :param substring: The substring that the input must end with.
         :param error_message: Optional; the error message to display when the string
             doesn't end with the given substring.
-        :param allow_empty: Optional; Is no input considered valid? Defaults to ``True``
+        :param allow_empty: Optional; Is no input considered valid? Defaults to `True`
         """
         if error_message is None:
             error_message = f"Input should end with '{substring}'"
@@ -234,7 +233,7 @@ class Contains(CountValidator):
         :param count: Optional; The exact number of matches that are expected.
         :param error_message: Optional; the error message to display when the input
             doesn't contain the substring (or the requested count of substrings).
-        :param allow_empty: Optional; Is no input considered valid? Defaults to ``True``
+        :param allow_empty: Optional; Is no input considered valid? Defaults to `True`
         """
         if error_message is not None:
             expected_non_existence_message = error_message
@@ -291,7 +290,7 @@ class MatchRegex(BooleanValidator):
         :param regex_string: A regular expression that the input must match.
         :param error_message: Optional; the error message to display when the input
             doesn't match the provided regular expression.
-        :param allow_empty: Optional; Is no input considered valid? Defaults to ``True``
+        :param allow_empty: Optional; Is no input considered valid? Defaults to `True`
         """
         if error_message is None:
             error_message = f"Input should match regex: {regex_string!r}"
@@ -318,7 +317,7 @@ class ContainsUppercase(CountValidator):
         :param error_message: Optional; the error message to display when the input
             doesn't contain upper case letters (or the requested count of upper case
             letters).
-        :param allow_empty: Optional; Is no input considered valid? Defaults to ``True``
+        :param allow_empty: Optional; Is no input considered valid? Defaults to `True`
         """
         if error_message is not None:
             expected_non_existence_message = error_message
@@ -362,7 +361,7 @@ class ContainsLowercase(CountValidator):
         :param error_message: Optional; the error message to display when the input
             doesn't contain lower case letters (or the requested count of lower case
             letters).
-        :param allow_empty: Optional; Is no input considered valid? Defaults to ``True``
+        :param allow_empty: Optional; Is no input considered valid? Defaults to `True`
         """
         if error_message is not None:
             expected_non_existence_message = error_message
@@ -404,7 +403,7 @@ class ContainsDigit(CountValidator):
             If not provided, the existence of any digit will make the string valid.
         :param error_message: Optional; the error message to display when the input
             doesn't contain digits (or the requested count of digits).
-        :param allow_empty: Optional; Is no input considered valid? Defaults to ``True``
+        :param allow_empty: Optional; Is no input considered valid? Defaults to `True`
         """
         if error_message is not None:
             expected_non_existence_message = error_message
@@ -443,7 +442,7 @@ class ContainsSpecial(CountValidator):
         :param error_message: Optional; the error message to display when the input
             doesn't contain special characters (or the requested count of special
             characters).
-        :param allow_empty: Optional; Is no input considered valid? Defaults to ``True``
+        :param allow_empty: Optional; Is no input considered valid? Defaults to `True`
         """
         if error_message is not None:
             expected_non_existence_message = error_message
@@ -488,7 +487,7 @@ class Integer(BooleanValidator):
 
         :param error_message: Optional; the error message to display when the input
             isn't an integer.
-        :param allow_empty: Optional; Is no input considered valid? Defaults to ``True``
+        :param allow_empty: Optional; Is no input considered valid? Defaults to `True`
         """
         if error_message is None:
             error_message = "Input should be an integer"
@@ -512,7 +511,7 @@ class Number(BooleanValidator):
 
         :param error_message: Optional; the error message to display when the input
             isn't a number.
-        :param allow_empty: Optional; Is no input considered valid? Defaults to ``True``
+        :param allow_empty: Optional; Is no input considered valid? Defaults to `True`
         """
         if error_message is None:
             error_message = "Input should be a number"
@@ -538,16 +537,18 @@ class Email(MatchRegex):
     ):
         """A validator confirming that the string is an email address.
 
-        .. note::
+        /// note | Note
 
-            It's impossible to do *true* RFC-compliant email validation with a regex.
-            This validator does a "best effort" validation. It will inevitably allow
-            some email addresses that aren't *technically* valid. However, it shouldn't
-            *exclude* any valid email addresses.
+        It's impossible to do *true* RFC-compliant email validation with a regex.
+        This validator does a "best effort" validation. It will inevitably allow
+        some email addresses that aren't *technically* valid. However, it shouldn't
+        *exclude* any valid email addresses.
+
+        ///
 
         :param error_message: Optional; the error message to display when the input
             isn't a number.
-        :param allow_empty: Optional; Is no input considered valid? Defaults to ``True``
+        :param allow_empty: Optional; Is no input considered valid? Defaults to `True`
         """
         if error_message is None:
             error_message = "Input should be a valid email address"

@@ -70,7 +70,7 @@ class WinformContext:
         print(
             "\n".join(
                 str((ptype, point.X, point.Y))
-                for ptype, point in zip(path.PathTypes, path.PathPoints)
+                for ptype, point in zip(path.PathTypes, path.PathPoints, strict=False)
             )
         )
 

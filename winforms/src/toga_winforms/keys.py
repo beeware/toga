@@ -54,7 +54,7 @@ WINFORMS_KEYS.update(
     }
 )
 
-SHIFTED_KEYS = {symbol: number for symbol, number in zip("!@#$%^&*()", "1234567890")}
+SHIFTED_KEYS = dict(zip("!@#$%^&*()", "1234567890", strict=False))
 SHIFTED_KEYS.update(
     {lower.upper(): lower for lower in ascii_lowercase},
 )
@@ -155,8 +155,9 @@ def winforms_to_toga_key(code):
             modifiers.add(toga_mod)
 
     assert len(code_names) == 1
-    for toga_value, code in WINFORMS_KEYS.items():
+    for value, code in WINFORMS_KEYS.items():
         if str(code) == code_names[0]:
+            toga_value = value
             break
     else:
         toga_value = code_names[0].lower()
@@ -165,7 +166,7 @@ def winforms_to_toga_key(code):
 
     if (Key.SHIFT in modifiers) and (toga_value not in ascii_lowercase):
         for symbol, number in SHIFTED_KEYS.items():
-            if toga_value == number:
+            if number == toga_value:
                 toga_value = symbol
                 modifiers.remove(Key.SHIFT)
 

@@ -1,7 +1,9 @@
 from unittest.mock import call
 
+import pytest
+
 from toga.colors import rgb
-from toga.fonts import Font
+from toga.fonts import SYSTEM_DEFAULT_FONT_SIZE, Font
 from toga.style.pack import (
     BOLD,
     CENTER,
@@ -13,6 +15,7 @@ from toga.style.pack import (
     RIGHT,
     RTL,
     SMALL_CAPS,
+    SYSTEM,
     VISIBLE,
     Pack,
 )
@@ -56,23 +59,47 @@ def test_set_background_color():
     root._impl.set_background_color.assert_called_once_with(rgb(255, 255, 255))
 
 
-def test_set_font():
-    root = ExampleNode(
-        "app",
-        style=Pack(
-            font_family="Roboto",
-            font_size=12,
-            font_style="normal",
-            font_variant="small-caps",
-            font_weight="bold",
-        ),
-    )
+@pytest.mark.parametrize(
+    "kwargs",
+    [
+        # Test with both shorthand and with individual properties.
+        {"font": ("normal", "small-caps", "bold", 12, "Roboto")},
+        {
+            "font_family": "Roboto",
+            "font_size": 12,
+            "font_style": "normal",
+            "font_variant": "small-caps",
+            "font_weight": "bold",
+        },
+    ],
+)
+def test_set_font(kwargs):
+    style = Pack(**kwargs)
+    root = ExampleNode("app", style=style)
     root.style.apply()
     # Should only be called once, despite multiple font-related properties being set.
     root._impl.set_font.assert_called_once_with(
         Font("Roboto", 12, style="normal", variant="small-caps", weight="bold")
     )
     root.refresh.assert_called_once_with()
+
+
+@pytest.mark.parametrize(
+    "family, result",
+    [
+        ("Courier", "Courier"),
+        (["Courier", "Helvetica"], "Courier"),
+        (["Bogus Font", "Courier", "Helvetica"], "Courier"),
+        (["Courier", "Bogus Font", "Helvetica"], "Courier"),
+        (["Bogus Font"], SYSTEM),
+        ("Bogus Font", SYSTEM),
+    ],
+)
+def test_set_font_family(family, result):
+    """The first viable family is used. Dummy backend rejects 'Bogus Font'."""
+    node = ExampleNode("app", style=Pack(font_family=family))
+    node.style.apply()
+    node._impl.set_font.assert_called_once_with(Font(result, SYSTEM_DEFAULT_FONT_SIZE))
 
 
 def test_set_multiple_layout_properties():

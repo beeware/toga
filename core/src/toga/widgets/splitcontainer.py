@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import sys
 from collections.abc import Sequence
 from typing import TYPE_CHECKING, Any
 
@@ -11,17 +10,23 @@ from toga.window import Window
 from .base import StyleT, Widget
 
 if TYPE_CHECKING:
-    if sys.version_info < (3, 10):
-        from typing_extensions import TypeAlias
-    else:
-        from typing import TypeAlias
+    from typing import TypeAlias
 
     SplitContainerContentT: TypeAlias = Widget | tuple[Widget, float] | None
+    """
+    An item of content that can be added to a [`SplitContainer`][toga.SplitContainer].
+    This content can be:
+
+    - a [`Widget`][toga.Widget]; or
+    - a 2-tuple, containing a [`Widget`][toga.Widget], and a 0-1 [`float`][] value
+      describing the percentage of the available area should be taken up by the widget.
+    """
 
 
 class SplitContainer(Widget):
     HORIZONTAL = Direction.HORIZONTAL
     VERTICAL = Direction.VERTICAL
+    _USE_DEBUG_BACKGROUND = True
 
     def __init__(
         self,
@@ -37,10 +42,11 @@ class SplitContainer(Widget):
         :param style: A style object. If no style is provided, a default style will be
             applied to the widget.
         :param direction: The direction in which the divider will be drawn. Either
-            :attr:`~toga.constants.Direction.HORIZONTAL` or
-            :attr:`~toga.constants.Direction.VERTICAL`; defaults to
-            :attr:`~toga.constants.Direction.VERTICAL`
-        :param content: Initial :any:`SplitContainer content <SplitContainerContentT>`
+            [`Direction.HORIZONTAL`][toga.constants.Direction.HORIZONTAL] or
+            [`Direction.VERTICAL`][toga.constants.Direction.VERTICAL]; defaults to
+            [`Direction.VERTICAL`][toga.constants.Direction.VERTICAL]
+        :param content: Initial
+            [SplitContainer content][toga.widgets.splitcontainer.SplitContainerContentT]
             of the container. Defaults to both panels being empty.
         :param kwargs: Initial style properties.
         """
@@ -78,9 +84,9 @@ class SplitContainer(Widget):
         This property accepts a sequence of exactly 2 elements, each of which can be
         either:
 
-        * A :any:`Widget` to display in the panel.
-        * ``None``, to make the panel empty.
-        * A tuple consisting of a Widget (or ``None``) and the initial flex value to
+        * A [`Widget`][toga.Widget] to display in the panel.
+        * `None`, to make the panel empty.
+        * A tuple consisting of a Widget (or `None`) and the initial flex value to
           apply to that panel in the split, which must be greater than 0.
 
         If a flex value isn't specified, a value of 1 is assumed.
@@ -94,10 +100,10 @@ class SplitContainer(Widget):
         try:
             if len(content) != 2:
                 raise TypeError()
-        except TypeError:
+        except TypeError as exc:
             raise ValueError(
                 "SplitContainer content must be a sequence with exactly 2 elements"
-            )
+            ) from exc
 
         _content = []
         flex = []
@@ -127,7 +133,7 @@ class SplitContainer(Widget):
                 widget.window = self.window
 
         self._impl.set_content(
-            list(w._impl if w is not None else None for w in _content),
+            [w._impl if w is not None else None for w in _content],
             flex,
         )
         self._content = list(_content)

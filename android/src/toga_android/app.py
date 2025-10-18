@@ -40,17 +40,17 @@ class TogaApp(dynamic_proxy(IPythonApp)):
 
     def onResume(self):  # pragma: no cover
         print("Toga app: onResume")
-        # onTopResumedActivityChanged is not available on android versions less
-        # than Q. onResume is the best indicator for the gain input focus event.
+        # onTopResumedActivityChanged is not available on android versions less than Q
+        # (API level 29). onResume is the best indicator for the gain input focus event.
         # https://developer.android.com/reference/android/app/Activity#onWindowFocusChanged(boolean):~:text=If%20the%20intent,the%20best%20indicator.
-        if Build.VERSION.SDK_INT < Build.VERSION_CODES.Q:
+        if Build.VERSION.SDK_INT < 29:
             self._impl.interface.current_window.on_gain_focus()
 
     def onPause(self):  # pragma: no cover
         print("Toga app: onPause")
-        # onTopResumedActivityChanged is not available on android versions less
-        # than Q. onPause is the best indicator for the lost input focus event.
-        if Build.VERSION.SDK_INT < Build.VERSION_CODES.Q:
+        # onTopResumedActivityChanged is not available on android versions less than Q
+        # (API level 29). onPause is the best indicator for the lost input focus event.
+        if Build.VERSION.SDK_INT < 29:
             self._impl.interface.current_window.on_lose_focus()
 
     def onStop(self):  # pragma: no cover
@@ -358,6 +358,7 @@ class App:
         warnings.warn(
             "intent_result has been deprecated; use start_activity",
             DeprecationWarning,
+            stacklevel=2,
         )
         try:
             result_future = asyncio.Future()
@@ -369,8 +370,10 @@ class App:
 
             await result_future
             return result_future.result()
-        except AttributeError:
-            raise RuntimeError("No appropriate Activity found to handle this intent.")
+        except AttributeError as exc:
+            raise RuntimeError(
+                "No appropriate Activity found to handle this intent."
+            ) from exc
 
     ######################################################################
     # End backwards compatibility

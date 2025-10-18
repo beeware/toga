@@ -45,7 +45,7 @@ class SelectionProbe(SimpleProbe):
                     forComponent=0,
                 )
             )
-            for index in range(0, count)
+            for index in range(count)
         ]
         # iOS can't show a completely empty selection
         # For test normalization, convert the "empty" selection to []

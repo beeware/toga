@@ -17,7 +17,7 @@ MAX_DATE = datetime.date(8999, 12, 31)
 
 
 class OnChangeHandler(Protocol):
-    def __call__(self, widget: DateInput, **kwargs: Any) -> object:
+    def __call__(self, widget: DateInput, **kwargs: Any) -> None:
         """A handler that will be invoked when a change occurs.
 
         :param widget: The DateInput that was changed.
@@ -64,10 +64,10 @@ class DateInput(Widget):
 
     @property
     def value(self) -> datetime.date:
-        """The currently selected date. A value of ``None`` will be converted into
+        """The currently selected date. A value of `None` will be converted into
         today's date.
 
-        If this property is set to a value outside of the min/max range, it will be
+        If this property is set to a value outside the min/max range, it will be
         clipped.
         """
         return self._impl.get_value()
@@ -107,13 +107,14 @@ class DateInput(Widget):
 
     @property
     def min(self) -> datetime.date:
-        """The minimum allowable date (inclusive). A value of ``None`` will be converted
+        """The minimum allowable date (inclusive). A value of `None` will be converted
         into the lowest supported date of 1800-01-01.
 
-        When setting this property, the current :attr:`value` and :attr:`max` will be
+        When setting this property, the current [`value`][toga.DateInput.value] and
+        [`max`][toga.DateInput.max] will be
         clipped against the new minimum value.
 
-        :raises ValueError: If set to a date outside of the supported range.
+        :raises ValueError: If set to a date outside the supported range.
         """
         return self._impl.get_min_date()
 
@@ -132,13 +133,14 @@ class DateInput(Widget):
 
     @property
     def max(self) -> datetime.date:
-        """The maximum allowable date (inclusive). A value of ``None`` will be converted
+        """The maximum allowable date (inclusive). A value of `None` will be converted
         into the highest supported date of 8999-12-31.
 
-        When setting this property, the current :attr:`value` and :attr:`min` will be
+        When setting this property, the current [`value`][toga.DateInput.value] and
+        [`min`][toga.DateInput.min] will be
         clipped against the new maximum value.
 
-        :raises ValueError: If set to a date outside of the supported range.
+        :raises ValueError: If set to a date outside the supported range.
         """
         return self._impl.get_max_date()
 

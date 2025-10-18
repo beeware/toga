@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import importlib
 import os
-import sys
 import warnings
 from functools import cache
 from pathlib import Path
@@ -16,41 +15,75 @@ from toga.platform import entry_points, get_platform_factory
 warnings.filterwarnings("default", category=DeprecationWarning)
 
 if TYPE_CHECKING:
-    if sys.version_info < (3, 10):
-        from typing_extensions import TypeAlias
-    else:
-        from typing import TypeAlias
+    from typing import TypeAlias
 
-    # Define a type variable for generics where an Image type is required.
     ImageT = TypeVar("ImageT")
+    """
+    Toga is able to receive and return content in a wide range of image formats.
+    ``ImageT`` describes any "image-like" object. This could be an instance of
+    [toga.Image][], an image type from a third party library (such as
+    [`PIL.Image.Image`][] from Pillow), or the platform's native type for representing
+    images.
+    """
 
     # Define the types that can be used as Image content
     PathLikeT: TypeAlias = str | os.PathLike
     BytesLikeT: TypeAlias = bytes | bytearray | memoryview
     ImageLikeT: TypeAlias = Any
     ImageContentT: TypeAlias = PathLikeT | BytesLikeT | ImageLikeT
+    """
+    When specifying content for an [`toga.Image`][],
+    you can provide:
 
-    # Define a type variable representing an image of an externally defined type.
+    - a string specifying an absolute or relative path to a file in a
+      [known image format][known-image-formats];
+    - an absolute or relative [`pathlib.Path`][] object describing a file in a
+      [known image format][known-image-formats];
+    - a "blob of bytes" data type ([`bytes`][],
+      [`bytearray`][], or
+      [`memoryview`][]) containing raw image
+      data in a
+      [known image format][known-image-formats];
+    - an instance of [toga.Image][];
+    - if [Pillow](https://pillow.readthedocs.io/) is installed, an
+      instance of [`PIL.Image.Image`][];
+    - an image of a class registered via an
+      [image format plugin][image-format-plugins]
+      (or a subclass of such a class); or
+    - an instance of the
+      [native platform image representation][native-image-rep].
+
+    If a relative path is provided, it will be anchored relative to the
+    module that defines your Toga application class.
+    """
+
     ExternalImageT = TypeVar("ExternalImageT")
+    """
+    A type describing an image-like object provided by a third-party library,
+    such as [`PIL.Image.Image`][] from Pillow.
+    """
 
 
 class ImageConverter(Protocol):
     """A class to convert between an externally defined image type and
-    :any:`toga.Image`.
+    [`toga.Image`][].
     """
 
-    #: The base image class this plugin can interpret.
     image_class: type[ExternalImageT]
+    """The base image class this plugin can interpret."""
 
     @staticmethod
     def convert_from_format(image_in_format: ExternalImageT) -> BytesLikeT:
-        """Convert from :any:`image_class` to data in a :ref:`known image format
-        <known-image-formats>`.
+        """Convert from [`image_class`][toga.images.ImageConverter.image_class] to
+        data in a [known image format][known-image-formats].
 
-        Will accept an instance of :any:`image_class`, or subclass of that class.
+        Will accept an instance of
+        [`image_class`][toga.images.ImageConverter.image_class],
+        or subclass of that class.
 
-        :param image_in_format: An instance of :any:`image_class` (or a subclass).
-        :returns: The image data, in a :ref:`known image format <known-image-formats>`.
+        :param image_in_format: An instance of
+            [`image_class`][toga.images.ImageConverter.image_class] (or a subclass).
+        :returns: The image data, in a [known image format][known-image-formats].
         """
 
     @staticmethod
@@ -58,14 +91,16 @@ class ImageConverter(Protocol):
         data: BytesLikeT,
         image_class: type[ExternalImageT],
     ) -> ExternalImageT:
-        """Convert from data to :any:`image_class` or specified subclass.
+        """Convert from data to [`image_class`][toga.images.ImageConverter.image_class]
+        or specified subclass.
 
         Accepts a bytes-like object representing the image in a
-        :ref:`known image format <known-image-formats>`, and returns an instance of the
+        [known image format][known-image-formats], and returns an instance of the
         image class specified. This image class is guaranteed to be either the
-        :any:`image_class` registered by the plugin, or a subclass of that class.
+        [`image_class`][toga.images.ImageConverter.image_class] registered by the
+        plugin, or a subclass of that class.
 
-        :param data: Image data in a :ref:`known image format <known-image-formats>`.
+        :param data: Image data in a [known image format][known-image-formats].
         :param image_class: The class of image to return.
         :returns: The image, as an instance of the image class specified.
         """
@@ -85,9 +120,9 @@ class Image:
         """Create a new image.
 
         :param src: The source from which to load the image. Can be any valid
-            :any:`image content <ImageContentT>` type.
-        :param path: **DEPRECATED** - Use ``src``.
-        :param data: **DEPRECATED** - Use ``src``.
+            [`ImageContentT`][toga.images.ImageContentT] type.
+        :param path: **DEPRECATED** - Use `src`.
+        :param data: **DEPRECATED** - Use `src`.
         :raises FileNotFoundError: If a path is provided, but that path does not exist.
         :raises ValueError: If the source cannot be loaded as an image.
         """
@@ -123,10 +158,10 @@ class Image:
         self._path = None
 
         # Any "lump of bytes" should be valid here.
-        if isinstance(src, (bytes, bytearray, memoryview)):
+        if isinstance(src, bytes | bytearray | memoryview):
             self._impl = self.factory.Image(interface=self, data=src)
 
-        elif isinstance(src, (str, Path)):
+        elif isinstance(src, str | Path):
             self._path = toga.App.app.paths.app / src
             if not self._path.is_file():
                 raise FileNotFoundError(f"Image file {self._path} does not exist")
@@ -192,7 +227,7 @@ class Image:
         """Save image to given path.
 
         The file format of the saved image will be determined by the extension of
-        the filename provided (e.g ``path/to/mypicture.png`` will save a PNG file).
+        the filename provided (e.g `path/to/mypicture.png` will save a PNG file).
 
         :param path: Path to save the image to.
         """
@@ -201,10 +236,10 @@ class Image:
     def as_format(self, format: type[ImageT]) -> ImageT:
         """Return the image, converted to the image format specified.
 
-        :param format: Format to provide. Defaults to :class:`~toga.images.Image`; also
-             supports :any:`PIL.Image.Image` if Pillow is installed, as well as any
-             image types defined by installed :doc:`image format plugins
-             </reference/plugins/image_formats>`.
+        :param format: Format to provide. Defaults to [`Image`][toga.images.Image]; also
+             supports [`PIL.Image.Image`][] if Pillow is installed, as well as any
+             image types defined by installed
+             [image format plugin][image-format-plugins].
         :returns: The image in the requested format
         :raises TypeError: If the format supplied is not recognized.
         """

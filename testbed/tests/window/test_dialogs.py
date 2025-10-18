@@ -59,7 +59,7 @@ async def test_question_dialog(
     main_window_probe.setup_question_dialog_result(dialog, result)
 
     await main_window_probe.redraw(
-        "Display window modal question dialog; " f"respond {'YES' if result else 'NO'}"
+        f"Display window modal question dialog; respond {'YES' if result else 'NO'}"
     )
     actual = await main_window.dialog(dialog)
 
@@ -80,8 +80,7 @@ async def test_confirm_dialog(
     main_window_probe.setup_confirm_dialog_result(dialog, result)
 
     await main_window_probe.redraw(
-        "Display window modal confirm dialog; "
-        f"respond {'OK' if result else 'CANCEL'}"
+        f"Display window modal confirm dialog; respond {'OK' if result else 'CANCEL'}"
     )
     actual = await main_window.dialog(dialog)
 

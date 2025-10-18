@@ -4,17 +4,8 @@ import importlib
 import os
 import sys
 from functools import cache
-from importlib import metadata
+from importlib.metadata import entry_points
 from types import ModuleType
-
-
-# Emulate the Python 3.10+ entry_points API on older Python versions.
-def entry_points(*, group):
-    if sys.version_info < (3, 10):  # pragma: no-cover-if-gte-py310
-        return metadata.entry_points()[group]
-    else:  # pragma: no-cover-if-lt-py310
-        return metadata.entry_points(group=group)
-
 
 # Map python sys.platform with toga platforms names
 _TOGA_PLATFORMS = {
@@ -57,17 +48,17 @@ def find_backends():
 def get_platform_factory() -> ModuleType:
     """Determine the current host platform and import the platform factory.
 
-    If the ``TOGA_BACKEND`` environment variable is set, the factory will be loaded
+    If the `TOGA_BACKEND` environment variable is set, the factory will be loaded
     from that module.
 
-    Raises :any:`RuntimeError` if an appropriate host platform cannot be identified.
+    Raises [`RuntimeError`][] if an appropriate host platform cannot be identified.
 
     :returns: The factory for the host platform.
     """
     if backend_value := os.environ.get("TOGA_BACKEND"):
         try:
             factory = importlib.import_module(f"{backend_value}.factory")
-        except ModuleNotFoundError as e:
+        except ModuleNotFoundError as exc:
             toga_backends_values = ", ".join(
                 [f"{backend.value!r}" for backend in find_backends()]
             )
@@ -77,8 +68,8 @@ def get_platform_factory() -> ModuleType:
             # ModuleNotFoundError from one of its internal imports.
             raise RuntimeError(
                 f"The backend specified by TOGA_BACKEND ({backend_value!r}) could "
-                f"not be loaded ({e}). It should be one of: {toga_backends_values}."
-            )
+                f"not be loaded ({exc}). It should be one of: {toga_backends_values}."
+            ) from exc
 
     else:
         toga_backends = find_backends()

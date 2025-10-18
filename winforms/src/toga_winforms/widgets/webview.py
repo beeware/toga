@@ -41,7 +41,6 @@ def cookies_completion_handler(result):
     """
 
     def _completion_handler(task):
-
         # Initialize a CookieJar to store cookies
         cookie_jar = CookieJar()
 

@@ -41,8 +41,10 @@ class Image:
                 ".png": Bitmap.CompressFormat.PNG,
             }[path.suffix.lower()]
             str_path = str(path)
-        except KeyError:
-            raise ValueError(f"Don't know how to save image of type {path.suffix!r}")
+        except KeyError as exc:
+            raise ValueError(
+                f"Don't know how to save image of type {path.suffix!r}"
+            ) from exc
 
         out = FileOutputStream(str_path)
         self.native.compress(format, 90, out)

@@ -229,11 +229,10 @@ def test_evaluate_javascript(widget):
     with pytest.raises(
         RuntimeError,
         match=(
-            r"Can't check JavaScript result directly; "
-            r"use await or an on_result handler"
+            r"Can't check JavaScript result directly; use await or an on_result handler"
         ),
     ):
-        result == 42
+        _ = result == 42
 
 
 async def test_evaluate_javascript_async(widget):

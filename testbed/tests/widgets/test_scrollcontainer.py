@@ -31,7 +31,7 @@ async def content():
                     background_color=CORNFLOWERBLUE if i % 2 else REBECCAPURPLE,
                 ),
             )
-            for i in range(0, 100)
+            for i in range(100)
         ],
         style=Pack(
             direction=COLUMN,

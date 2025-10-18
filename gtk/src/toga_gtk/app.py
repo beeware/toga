@@ -6,6 +6,7 @@ from toga.command import Separator
 
 from .keys import gtk_accel
 from .libs import (
+    GLIB_VERSION,
     GTK_VERSION,
     IS_WAYLAND,
     TOGA_DEFAULT_STYLES,
@@ -33,7 +34,11 @@ class App:
         self.loop = self.policy.get_event_loop()
 
         # Stimulate the build of the app
-        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+        # *Note* -- the coverage may be inaccurate if GTK3 is used with
+        # a newer version of glib or if GTK4 is used with an older version
+        # of glib.  On local runs, coverage errors here can be safely
+        # ignored if the version of software is as described above.
+        if GLIB_VERSION < (2, 74, 0):  # pragma: no-cover-if-gtk4
             self.native = Gtk.Application(
                 application_id=self.interface.app_id,
                 flags=Gio.ApplicationFlags.FLAGS_NONE,
@@ -125,7 +130,7 @@ class App:
                 submenu.append_section(None, section)
                 self._menu_groups[cmd.group] = (submenu, section)
             else:
-                cmd_id = "command-%s" % id(cmd)
+                cmd_id = f"command-{id(cmd)}"
                 action = Gio.SimpleAction.new(cmd_id, None)
                 action.connect("activate", cmd._impl.gtk_activate)
 
@@ -212,8 +217,9 @@ class App:
     ######################################################################
 
     def get_dark_mode_state(self):
-        self.interface.factory.not_implemented("dark mode state")
-        return None
+        return Gtk.Settings.get_default().get_property(
+            "gtk-application-prefer-dark-theme"
+        )
 
     ######################################################################
     # App capabilities
@@ -265,8 +271,13 @@ class App:
     ######################################################################
 
     def get_current_window(self):  # pragma: no-cover-if-linux-wayland
-        current_window = self.native.get_active_window()._impl
-        return current_window if current_window.interface.visible else None
+        active_window = self.native.get_active_window()
+        if active_window and active_window._impl.interface.visible:
+            return active_window._impl
+        else:  # pragma: no cover
+            # Can't test the case of having no window, as the testbed
+            # must always have a window.
+            return None
 
     def set_current_window(self, window):
         window._impl.native.present()

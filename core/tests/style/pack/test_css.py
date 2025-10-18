@@ -17,6 +17,7 @@ from toga.style.pack import (
     RIGHT,
     ROW,
     RTL,
+    SERIF,
     SMALL_CAPS,
     START,
     SYSTEM,
@@ -354,7 +355,7 @@ from toga.style.pack import (
         # Color
         pytest.param(
             Pack(color=REBECCAPURPLE),
-            "flex-direction: row; flex: 0.0 0 auto; color: rgb(102, 51, 153);",
+            "flex-direction: row; flex: 0.0 0 auto; color: rgb(102 51 153 / 1.0);",
             id="color",
         ),
         # Background Color
@@ -362,7 +363,7 @@ from toga.style.pack import (
             Pack(background_color=REBECCAPURPLE),
             (
                 "flex-direction: row; flex: 0.0 0 auto; "
-                "background-color: rgb(102, 51, 153);"
+                "background-color: rgb(102 51 153 / 1.0);"
             ),
             id="background-color",
         ),
@@ -407,6 +408,23 @@ from toga.style.pack import (
         pytest.param(
             Pack(font_family="Times New Roman"),
             'flex-direction: row; flex: 0.0 0 auto; font-family: "Times New Roman";',
+            id="font-family",
+        ),
+        pytest.param(
+            Pack(font_family=["Times New Roman"]),
+            'flex-direction: row; flex: 0.0 0 auto; font-family: "Times New Roman";',
+            id="font-family",
+        ),
+        pytest.param(
+            Pack(font_family=["Times New Roman", SERIF]),
+            'flex-direction: row; flex: 0.0 0 auto; font-family: "Times New Roman", '
+            "serif;",
+            id="font-family",
+        ),
+        pytest.param(
+            Pack(font_family=["Times New Roman", "Courier", SERIF]),
+            'flex-direction: row; flex: 0.0 0 auto; font-family: "Times New Roman", '
+            "Courier, serif;",
             id="font-family",
         ),
         pytest.param(

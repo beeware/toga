@@ -22,7 +22,6 @@ if TYPE_CHECKING:
     from toga.types import PositionT, SizeT
     from toga.widgets.base import Widget
 
-
 _window_count = -1
 
 
@@ -101,7 +100,7 @@ class OnCloseHandler(Protocol):
 
         :param window: The window instance that is closing.
         :param kwargs: Ensures compatibility with arguments added in future versions.
-        :returns: ``True`` if the window is allowed to close; ``False`` if the window
+        :returns: `True` if the window is allowed to close; `False` if the window
             is not allowed to close.
         """
         ...
@@ -167,8 +166,8 @@ class DialogResultHandler(Protocol[_DialogResultT]):
         """A handler to invoke when a dialog is closed.
 
         :param window: The window that opened the dialog.
-        :param kwargs: Ensures compatibility with arguments added in future versions.
         :param result: The result returned by the dialog.
+        :param kwargs: Ensures compatibility with arguments added in future versions.
         """
 
 
@@ -189,7 +188,7 @@ class Window:
         id: str | None = None,
         title: str | None = None,
         position: PositionT | None = None,
-        size: SizeT = Size(640, 480),
+        size: SizeT = (640, 480),
         resizable: bool = True,
         closable: bool = True,
         minimizable: bool = True,
@@ -205,14 +204,14 @@ class Window:
         :param id: A unique identifier for the window. If not provided, one will be
             automatically generated.
         :param title: Title for the window. Defaults to the formal name of the app.
-        :param position: Position of the window, as a :any:`toga.Position` or tuple of
-            ``(x, y)`` coordinates, in :ref:`CSS pixels <css-units>`.
-        :param size: Size of the window, as a :any:`toga.Size` or tuple of ``(width,
-            height)``, in :ref:`CSS pixels <css-units>`.
+        :param position: Position of the window, as a [`toga.Position`][] or tuple of
+            `(x, y)` coordinates, in [CSS pixels][css-units].
+        :param size: Size of the window, as a [`toga.Size`][] or tuple of `(width,
+            height)`, in [CSS pixels][css-units].
         :param resizable: Can the window be resized by the user?
         :param closable: Can the window be closed by the user?
         :param minimizable: Can the window be minimized by the user?
-        :param on_close: The initial :any:`on_close` handler.
+        :param on_close: The initial [`on_close`][toga.Window.on_close] handler.
         :param content: The initial content for the window.
         """
         # Needs to be a late import to avoid circular dependencies.
@@ -264,7 +263,7 @@ class Window:
 
     @property
     def app(self) -> App:
-        """The :any:`App` that this window belongs to (read-only).
+        """The [`App`][toga.App] that this window belongs to (read-only).
 
         New windows are automatically associated with the currently active app."""
         return self._app
@@ -321,17 +320,17 @@ class Window:
     def close(self) -> None:
         """Close the window.
 
-        This *does not* invoke the ``on_close`` handler. If the window being closed
-        is the app's main window, it will trigger ``on_exit`` handling; otherwise, the
+        This *does not* invoke the `on_close` handler. If the window being closed
+        is the app's main window, it will trigger `on_exit` handling; otherwise, the
         window will be immediately and unconditionally closed.
 
         Once a window has been closed, it *cannot* be reused. The behavior of any method
-        or property on a :class:`~toga.Window` instance after it has been closed is
-        undefined, except for :attr:`closed` which can be used to check if the window
-        was closed.
+        or property on a [`Window`][toga.Window] instance after it has been closed is
+        undefined, except for [`closed`][toga.Window.closed] which can be used to check
+        if the window was closed.
 
         :returns: True if the window was actually closed; False if closing the window
-            triggered ``on_exit`` handling.
+            triggered `on_exit` handling.
         """
         close_window = True
         if self.app.main_window == self:
@@ -423,7 +422,7 @@ class Window:
     def widgets(self) -> FilteredWidgetRegistry:
         """The widgets contained in the window.
 
-        Can be used to look up widgets by ID (e.g., ``window.widgets["my_id"]``).
+        Can be used to look up widgets by ID (e.g., `window.widgets["my_id"]`).
         """
         return FilteredWidgetRegistry(self)
 
@@ -433,10 +432,11 @@ class Window:
 
     @property
     def size(self) -> Size:
-        """Size of the window, in :ref:`CSS pixels <css-units>`.
+        """Size of the window, in [CSS pixels][css-units].
 
         :raises RuntimeError: If resize is requested while in
-            :any:`WindowState.FULLSCREEN` or :any:`WindowState.PRESENTATION`.
+            [`WindowState.FULLSCREEN`][toga.window.WindowState.FULLSCREEN] or
+            [`WindowState.PRESENTATION`][toga.window.WindowState.PRESENTATION].
         """
         return self._impl.get_size()
 
@@ -455,12 +455,13 @@ class Window:
 
     @property
     def position(self) -> Position:
-        """Absolute position of the window, in :ref:`CSS pixels <css-units>`.
+        """Absolute position of the window, in [CSS pixels][css-units].
 
         The origin is the top left corner of the primary screen.
 
         :raises RuntimeError: If position change is requested while in
-            :any:`WindowState.FULLSCREEN` or :any:`WindowState.PRESENTATION`.
+            [`WindowState.FULLSCREEN`][toga.window.WindowState.FULLSCREEN] or
+            [`WindowState.PRESENTATION`][toga.window.WindowState.PRESENTATION].
         """
         absolute_origin = self._app.screens[0].origin
         absolute_window_position = self._impl.get_position()
@@ -478,7 +479,8 @@ class Window:
 
     @property
     def screen(self) -> Screen:
-        """Instance of the :class:`toga.Screen` on which this window is present."""
+        """Instance of the [`toga.Screen`][toga.screens.Screen] on which this window
+        is present."""
         return self._impl.get_current_screen().interface
 
     @screen.setter
@@ -491,10 +493,11 @@ class Window:
     @property
     def screen_position(self) -> Position:
         """Position of the window with respect to current screen, in
-        :ref:`CSS pixels <css-units>`.
+        [CSS pixels][css-units].
 
         :raises RuntimeError: If position change is requested while in
-            :any:`WindowState.FULLSCREEN` or :any:`WindowState.PRESENTATION`.
+            [`WindowState.FULLSCREEN`][toga.window.WindowState.FULLSCREEN] or
+            [`WindowState.PRESENTATION`][toga.window.WindowState.PRESENTATION].
         """
         return self.position - self.screen.origin
 
@@ -552,8 +555,10 @@ class Window:
         :raises RuntimeError: If state change is requested while the window is
             hidden.
 
-        :raises ValueError: If any state other than :any:`WindowState.MINIMIZED`
-            or :any:`WindowState.NORMAL` is requested on a non-resizable window.
+        :raises ValueError: If any state other than
+            [`WindowState.MINIMIZED`][toga.window.WindowState.MINIMIZED]
+            or [`WindowState.NORMAL`][toga.window.WindowState.NORMAL]
+            is requested on a non-resizable window.
         """
         # There are 2 types of window states that we can get from the backend:
         # * The instantaneous state -- Used internally on implementation side
@@ -584,10 +589,10 @@ class Window:
     def as_image(self, format: type[ImageT] = Image) -> ImageT:
         """Render the current contents of the window as an image.
 
-        :param format: Format to provide. Defaults to :class:`~toga.images.Image`; also
-            supports :any:`PIL.Image.Image` if Pillow is installed, as well as any image
-            types defined by installed :doc:`image format plugins
-            </reference/plugins/image_formats>`.
+        :param format: Format to provide. Defaults to [`Image`][toga.images.Image]; also
+            supports [`PIL.Image.Image`][] if Pillow is installed, as well as any image
+            types defined by installed
+            [image format plugins](/reference/plugins/image_formats.md).
         :returns: An image containing the window content, in the format requested.
         """
         return Image(self._impl.get_image_data()).as_format(format)
@@ -597,7 +602,8 @@ class Window:
     ) -> dialogs.DialogResultT:
         """Display a dialog to the user, modal to this window.
 
-        :param: The :doc:`dialog <resources/dialogs>` to display to the user.
+        :param dialog: The [toga.Window.dialog](/reference/api/resources/dialogs.md) to
+            display to the user.
         :returns: The result of the dialog.
         """
         return await dialog._show(self)
@@ -665,10 +671,12 @@ class Window:
         message: str,
         on_result: DialogResultHandler[None] | None = None,
     ) -> Dialog:
-        """**DEPRECATED** - await :meth:`dialog` with an :any:`InfoDialog`"""
+        """**DEPRECATED** - await [`dialog()`][toga.Window.dialog] with an
+        [`InfoDialog`][toga.InfoDialog]"""
         warnings.warn(
             "info_dialog(...) has been deprecated; use dialog(toga.InfoDialog(...))",
             DeprecationWarning,
+            stacklevel=2,
         )
 
         result = Dialog(
@@ -685,11 +693,15 @@ class Window:
         message: str,
         on_result: DialogResultHandler[bool] | None = None,
     ) -> Dialog:
-        """**DEPRECATED** - await :meth:`dialog` with a :any:`QuestionDialog`"""
+        """**DEPRECATED** - await [`dialog()`][toga.Window.dialog] with a
+        [`QuestionDialog`][toga.QuestionDialog]"""
         warnings.warn(
-            "question_dialog(...) has been deprecated; "
-            "use dialog(toga.QuestionDialog(...))",
+            (
+                "question_dialog(...) has been deprecated; "
+                "use dialog(toga.QuestionDialog(...))"
+            ),
             DeprecationWarning,
+            stacklevel=2,
         )
 
         result = Dialog(
@@ -706,11 +718,15 @@ class Window:
         message: str,
         on_result: DialogResultHandler[bool] | None = None,
     ) -> Dialog:
-        """**DEPRECATED** - await :meth:`dialog` with a :any:`ConfirmDialog`"""
+        """**DEPRECATED** - await [`dialog()`][toga.Window.dialog] with a
+        [`ConfirmDialog`][toga.ConfirmDialog]"""
         warnings.warn(
-            "confirm_dialog(...) has been deprecated; "
-            "use dialog(toga.ConfirmDialog(...))",
+            (
+                "confirm_dialog(...) has been deprecated; "
+                "use dialog(toga.ConfirmDialog(...))"
+            ),
             DeprecationWarning,
+            stacklevel=2,
         )
 
         result = Dialog(
@@ -727,10 +743,12 @@ class Window:
         message: str,
         on_result: DialogResultHandler[None] | None = None,
     ) -> Dialog:
-        """**DEPRECATED** - await :meth:`dialog` with an :any:`ErrorDialog`"""
+        """**DEPRECATED** - await [`dialog()`][toga.Window.dialog] with an
+        [`ErrorDialog`][toga.ErrorDialog]"""
         warnings.warn(
             "error_dialog(...) has been deprecated; use dialog(toga.ErrorDialog(...))",
             DeprecationWarning,
+            stacklevel=2,
         )
 
         result = Dialog(
@@ -749,11 +767,15 @@ class Window:
         retry: bool = False,
         on_result: DialogResultHandler[bool] | DialogResultHandler[None] | None = None,
     ) -> Dialog:
-        """**DEPRECATED** - await :meth:`dialog` with a :any:`StackTraceDialog`"""
+        """**DEPRECATED** - await [`dialog()`][toga.Window.dialog] with a
+        [`StackTraceDialog`][toga.StackTraceDialog]"""
         warnings.warn(
-            "stack_trace_dialog(...) has been deprecated; "
-            "use dialog(toga.StackTraceDialog(...))",
+            (
+                "stack_trace_dialog(...) has been deprecated; "
+                "use dialog(toga.StackTraceDialog(...))"
+            ),
             DeprecationWarning,
+            stacklevel=2,
         )
 
         result = Dialog(
@@ -776,11 +798,15 @@ class Window:
         file_types: list[str] | None = None,
         on_result: DialogResultHandler[Path | None] | None = None,
     ) -> Dialog:
-        """**DEPRECATED** - await :meth:`dialog` with a :any:`SaveFileDialog`"""
+        """**DEPRECATED** - await [`dialog()`][toga.Window.dialog] with a
+        [`SaveFileDialog`][toga.SaveFileDialog]"""
         warnings.warn(
-            "save_file_dialog(...) has been deprecated; "
-            "use dialog(toga.SaveFileDialog(...))",
+            (
+                "save_file_dialog(...) has been deprecated; "
+                "use dialog(toga.SaveFileDialog(...))"
+            ),
             DeprecationWarning,
+            stacklevel=2,
         )
         result = Dialog(
             self,
@@ -807,11 +833,15 @@ class Window:
             | None
         ) = None,
     ) -> Dialog:
-        """**DEPRECATED** - await :meth:`dialog` with an :any:`OpenFileDialog`"""
+        """**DEPRECATED** - await [`dialog()`][toga.Window.dialog] with an
+        [`OpenFileDialog`][toga.OpenFileDialog]"""
         warnings.warn(
-            "open_file_dialog(...) has been deprecated; "
-            "use dialog(toga.OpenFileDialog(...))",
+            (
+                "open_file_dialog(...) has been deprecated; "
+                "use dialog(toga.OpenFileDialog(...))"
+            ),
             DeprecationWarning,
+            stacklevel=2,
         )
         result = Dialog(
             self,
@@ -838,11 +868,15 @@ class Window:
             | None
         ) = None,
     ) -> Dialog:
-        """**DEPRECATED** - await :meth:`dialog` with a :any:`SelectFolderDialog`"""
+        """**DEPRECATED** - await [`dialog()`][toga.Window.dialog] with a
+        [`SelectFolderDialog`][toga.SelectFolderDialog]"""
         warnings.warn(
-            "select_folder_dialog(...) has been deprecated; "
-            "use dialog(toga.SelectFolderDialog(...))",
+            (
+                "select_folder_dialog(...) has been deprecated; "
+                "use dialog(toga.SelectFolderDialog(...))"
+            ),
             DeprecationWarning,
+            stacklevel=2,
         )
         result = Dialog(
             self,
@@ -865,18 +899,20 @@ class Window:
     ######################################################################
     @property
     def full_screen(self) -> bool:
-        """**DEPRECATED** – Use :any:`Window.state`."""
+        """**DEPRECATED** – Use [`Window.state`][toga.Window.state]."""
         warnings.warn(
-            ("`Window.full_screen` is deprecated. Use `Window.state` instead."),
+            "`Window.full_screen` is deprecated. Use `Window.state` instead.",
             DeprecationWarning,
+            stacklevel=2,
         )
         return bool(self.state == WindowState.FULLSCREEN)
 
     @full_screen.setter
     def full_screen(self, is_full_screen: bool) -> None:
         warnings.warn(
-            ("`Window.full_screen` is deprecated. Use `Window.state` instead."),
+            "`Window.full_screen` is deprecated. Use `Window.state` instead.",
             DeprecationWarning,
+            stacklevel=2,
         )
         target_state = WindowState.FULLSCREEN if is_full_screen else WindowState.NORMAL
         if self.state != target_state:
@@ -893,7 +929,7 @@ class MainWindow(Window):
     def __init__(self, *args, **kwargs):
         """Create a new Main Window.
 
-        Accepts the same arguments as :class:`~toga.Window`.
+        Accepts the same arguments as [`Window`][toga.Window].
         """
         super().__init__(*args, **kwargs)
 
@@ -925,7 +961,7 @@ class WindowSet(MutableSet[Window]):
 
         A window is automatically added to the app when it is created, and removed when
         it is closed. Adding a window to an App's window set automatically sets the
-        :attr:`~toga.Window.app` property of the Window.
+        [`Window.app`][toga.Window.app] property of the Window.
         """
         self.app = app
         self.elements: set[Window] = set()

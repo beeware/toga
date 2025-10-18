@@ -1,6 +1,5 @@
 import toga
 from toga.constants import COLUMN, ROW
-from toga.style import Pack
 
 
 class SelectionApp(toga.App):
@@ -18,8 +17,8 @@ class SelectionApp(toga.App):
         self.main_window = toga.MainWindow(size=(640, 400))
 
         # set up common styles
-        label_style = Pack(flex=1, margin_right=24)
-        box_style = Pack(direction=ROW, margin=10)
+        label_style = {"flex": 1, "margin_right": 24}
+        box_style = {"direction": ROW, "margin": 10}
 
         # Add the content on the main window
         self.selection = toga.Selection(items=self.OPTIONS)
@@ -32,28 +31,28 @@ class SelectionApp(toga.App):
         self.main_window.content = toga.Box(
             children=[
                 toga.Box(
-                    style=box_style,
+                    **box_style,
                     children=[
-                        toga.Label("Select an element", style=label_style),
+                        toga.Label("Select an element", **label_style),
                         self.selection,
                     ],
                 ),
                 toga.Box(
-                    style=box_style,
+                    **box_style,
                     children=[
-                        toga.Label("Empty selection", style=label_style),
+                        toga.Label("Empty selection", **label_style),
                         self.empty_selection,
                     ],
                 ),
                 toga.Box(
-                    style=box_style,
+                    **box_style,
                     children=[
-                        toga.Label("Selection from source", style=label_style),
+                        toga.Label("Selection from source", **label_style),
                         self.source_selection,
                     ],
                 ),
                 toga.Box(
-                    style=box_style,
+                    **box_style,
                     children=[
                         toga.Button("Print", on_press=self.report_selection),
                         toga.Button("Carbon", on_press=self.set_carbon),
@@ -62,11 +61,11 @@ class SelectionApp(toga.App):
                     ],
                 ),
                 toga.Box(
-                    style=box_style,
+                    **box_style,
                     children=[
                         toga.Label(
                             "on_change callback",
-                            style=label_style,
+                            **label_style,
                         ),
                         toga.Selection(
                             on_change=self.my_on_change,
@@ -82,26 +81,27 @@ class SelectionApp(toga.App):
                     ],
                 ),
                 toga.Box(
-                    style=box_style,
+                    **box_style,
                     children=[
-                        toga.Label("Long lists should scroll", style=label_style),
+                        toga.Label("Long lists should scroll", **label_style),
                         toga.Selection(items=dir(toga)),
                     ],
                 ),
                 toga.Box(
-                    style=box_style,
+                    **box_style,
                     children=[
-                        toga.Label("Use some style!", style=label_style),
+                        toga.Label("Use some style!", **label_style),
                         toga.Selection(
-                            style=Pack(width=200, margin=24),
+                            width=200,
+                            margin=24,
                             items=["Curium", "Titanium", "Copernicium"],
                         ),
                     ],
                 ),
                 toga.Box(
-                    style=box_style,
+                    **box_style,
                     children=[
-                        toga.Label("Disabled", style=label_style),
+                        toga.Label("Disabled", **label_style),
                         toga.Selection(
                             items=[
                                 "Helium",
@@ -117,7 +117,8 @@ class SelectionApp(toga.App):
                     ],
                 ),
             ],
-            style=Pack(direction=COLUMN, margin=24),
+            direction=COLUMN,
+            margin=24,
         )
 
         self.main_window.show()
@@ -146,10 +147,8 @@ class SelectionApp(toga.App):
 
 
 def main():
-    # App name and namespace
     return SelectionApp("Selection", "org.beeware.toga.examples.selection")
 
 
 if __name__ == "__main__":
-    app = main()
-    app.main_loop()
+    main().main_loop()

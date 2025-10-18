@@ -84,7 +84,7 @@ An app that behaves as a web browser that displays a single, externally served U
 
 If you select this option, you will be asked for the URL that you want to display in the
 app window. For example, if you nominate `https://github.com` as the site URL, you will
-generate an app that, when started, loads the Github homepage.
+generate an app that, when started, loads the GitHub homepage.
 
 ### Static server
 
@@ -101,7 +101,7 @@ community through:
 
 * [@beeware@fosstodon.org on Mastodon](https://fosstodon.org/@beeware)
 * [Discord](https://beeware.org/bee/chat/)
-* [The Toga Github Discussions forum](https://github.com/beeware/toga/discussions)
+* [The Toga GitHub Discussions forum](https://github.com/beeware/toga/discussions)
 
 We foster a welcoming and respectful community as described in our
 [BeeWare Community Code of Conduct](https://beeware.org/community/behavior/)
@@ -112,6 +112,6 @@ If you experience problems with Toga, [log them on
 GitHub](https://github.com/beeware/toga/issues).
 
 If you'd like to contribute to Toga development, our [contribution
-guide](https://toga.readthedocs.io/en/latest/how-to/contribute/index.html) details how
+guide](https://toga.readthedocs.io/en/latest/how-to/contribute/) details how
 to set up a development environment, and other requirements we have as part of our
 contribution process.

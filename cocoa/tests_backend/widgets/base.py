@@ -1,7 +1,11 @@
 from rubicon.objc import NSPoint
 
 from toga.colors import TRANSPARENT
-from toga_cocoa.keys import NSEventModifierFlagCommand, NSEventModifierFlagShift
+from toga_cocoa.keys import (
+    NSEventModifierFlagCommand,
+    NSEventModifierFlagControl,
+    NSEventModifierFlagShift,
+)
 from toga_cocoa.libs import NSEvent, NSEventType
 
 from ..fonts import FontMixin
@@ -74,14 +78,14 @@ class SimpleProbe(BaseProbe, FontMixin):
         assert (self.native.frame.origin.x, self.native.frame.origin.y) == position
 
     def assert_width(self, min_width, max_width):
-        assert (
-            min_width <= self.width <= max_width
-        ), f"Width ({self.width}) not in range ({min_width}, {max_width})"
+        assert min_width <= self.width <= max_width, (
+            f"Width ({self.width}) not in range ({min_width}, {max_width})"
+        )
 
     def assert_height(self, min_height, max_height):
-        assert (
-            min_height <= self.height <= max_height
-        ), f"Height ({self.height}) not in range ({min_height}, {max_height})"
+        assert min_height <= self.height <= max_height, (
+            f"Height ({self.height}) not in range ({min_height}, {max_height})"
+        )
 
     @property
     def background_color(self):
@@ -108,7 +112,7 @@ class SimpleProbe(BaseProbe, FontMixin):
     def has_focus(self):
         return self.native.window.firstResponder == self.native
 
-    async def type_character(self, char, modifierFlags=0):
+    async def type_character(self, char, *, shift=False, ctrl=False, alt=False):
         # Convert the requested character into a Cocoa keycode.
         # This table is incomplete, but covers all the basics.
         key_code = {
@@ -146,7 +150,16 @@ class SimpleProbe(BaseProbe, FontMixin):
             "z": 6,
         }.get(char.lower(), 0)
 
-        if modifierFlags:
+        modifiers = 0
+        if shift:
+            modifiers |= NSEventModifierFlagShift
+        if ctrl:
+            modifiers |= NSEventModifierFlagControl
+        if alt:
+            modifiers |= NSEventModifierFlagCommand
+
+        # if any modifier are in effect, there's no character
+        if modifiers:
             char = None
 
         # This posts a single keyDown followed by a keyUp, matching "normal"
@@ -155,7 +168,7 @@ class SimpleProbe(BaseProbe, FontMixin):
             NSEvent.keyEventWithType(
                 NSEventType.KeyDown,
                 location=NSPoint(0, 0),  # key presses don't have a location.
-                modifierFlags=modifierFlags,
+                modifierFlags=modifiers,
                 timestamp=0,
                 windowNumber=self.native.window.windowNumber,
                 context=None,
@@ -169,7 +182,7 @@ class SimpleProbe(BaseProbe, FontMixin):
             NSEvent.keyEventWithType(
                 NSEventType.KeyUp,
                 location=NSPoint(0, 0),  # key presses don't have a location.
-                modifierFlags=modifierFlags,
+                modifierFlags=modifiers,
                 timestamp=0,
                 windowNumber=self.native.window.windowNumber,
                 context=None,
@@ -204,9 +217,7 @@ class SimpleProbe(BaseProbe, FontMixin):
         )
 
     async def undo(self):
-        await self.type_character("z", modifierFlags=NSEventModifierFlagCommand)
+        await self.type_character("z", alt=True)
 
     async def redo(self):
-        await self.type_character(
-            "z", modifierFlags=NSEventModifierFlagCommand | NSEventModifierFlagShift
-        )
+        await self.type_character("z", alt=True, shift=True)

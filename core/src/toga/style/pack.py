@@ -1,12 +1,11 @@
 from __future__ import annotations
 
-import sys
 import warnings
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
-    from travertino.colors import rgb, hsl
+    from travertino.colors import hsl, rgb
 
 from travertino.constants import (  # noqa: F401
     BOLD,
@@ -39,8 +38,8 @@ from travertino.constants import (  # noqa: F401
 )
 from travertino.layout import BaseBox
 from travertino.properties.aliased import Condition, aliased_property
-from travertino.properties.shorthand import directional_property
-from travertino.properties.validated import validated_property
+from travertino.properties.shorthand import composite_property, directional_property
+from travertino.properties.validated import list_property, validated_property
 from travertino.size import BaseIntrinsicSize
 from travertino.style import BaseStyle
 
@@ -51,6 +50,7 @@ from toga.fonts import (
     SYSTEM_DEFAULT_FONT_SIZE,
     SYSTEM_DEFAULT_FONTS,
     Font,
+    UnknownFontError,
 )
 
 # Make sure deprecation warnings are shown by default
@@ -177,15 +177,10 @@ class _alignment_property(validated_property):
 # End backwards compatibility
 ######################################################################
 
-if sys.version_info < (3, 10):
-    _DATACLASS_KWARGS = {"init": False, "repr": False}
-else:
-    _DATACLASS_KWARGS = {"kw_only": True, "repr": False}
 
-
-@dataclass(**_DATACLASS_KWARGS)
+@dataclass(kw_only=True, repr=False)
 class Pack(BaseStyle):
-    _doc_link = ":doc:`style properties </reference/style/pack>`"
+    _doc_link = "[style properties](/reference/style/pack)"
 
     class Box(BaseBox):
         pass
@@ -226,13 +221,22 @@ class Pack(BaseStyle):
     text_align: str | None = validated_property(LEFT, RIGHT, CENTER, JUSTIFY)
     text_direction: str | None = validated_property(RTL, LTR, initial=LTR)
 
-    font_family: str = validated_property(
-        *SYSTEM_DEFAULT_FONTS, string=True, initial=SYSTEM
+    font_family: str | list[str] = list_property(
+        *SYSTEM_DEFAULT_FONTS, string=True, initial=[SYSTEM]
     )
     font_style: str = validated_property(*FONT_STYLES, initial=NORMAL)
     font_variant: str = validated_property(*FONT_VARIANTS, initial=NORMAL)
     font_weight: str = validated_property(*FONT_WEIGHTS, initial=NORMAL)
     font_size: int = validated_property(integer=True, initial=SYSTEM_DEFAULT_FONT_SIZE)
+    font: (
+        tuple[int, list[str] | str]
+        | tuple[str, int, list[str] | str]
+        | tuple[str, str, int, list[str] | str]
+        | tuple[str, str, str, int, list[str] | str]
+    ) = composite_property(
+        optional=("font_style", "font_variant", "font_weight"),
+        required=("font_size", "font_family"),
+    )
 
     ######################################################################
     # Directional aliases
@@ -319,15 +323,30 @@ class Pack(BaseStyle):
             "font_variant",
             "font_weight",
         }:
-            self._applicator.set_font(
-                Font(
-                    self.font_family,
-                    self.font_size,
-                    style=self.font_style,
-                    variant=self.font_variant,
-                    weight=self.font_weight,
+            font = None
+            font_kwargs = {
+                "size": self.font_size,
+                "style": self.font_style,
+                "variant": self.font_variant,
+                "weight": self.font_weight,
+            }
+
+            for family in self.font_family:
+                try:
+                    font = Font(family, **font_kwargs)
+                    break
+                except UnknownFontError:
+                    pass
+
+            if font is None:
+                # Fall back to system font if no font families were valid
+                font = Font(SYSTEM, **font_kwargs)
+                print(
+                    f"No valid font family in {self.font_family}; using system font as "
+                    "a fallback"
                 )
-            )
+
+            self._applicator.set_font(font)
 
         # Refresh if any properties that could affect layout are being set.
         if names - {
@@ -955,11 +974,12 @@ class Pack(BaseStyle):
             css.append(f"text-direction: {self.text_direction};")
 
         # font-*
-        if self.font_family != SYSTEM:
-            if " " in self.font_family:
-                css.append(f'font-family: "{self.font_family}";')
-            else:
-                css.append(f"font-family: {self.font_family};")
+        if self.font_family != [SYSTEM]:
+            families = [
+                f'"{family}"' if " " in family else family
+                for family in self.font_family
+            ]
+            css.append(f"font-family: {', '.join(families)};")
         if self.font_size != SYSTEM_DEFAULT_FONT_SIZE:
             css.append(f"font-size: {self.font_size}pt;")
         if self.font_weight != NORMAL:

@@ -28,7 +28,7 @@ class Positron(toga.App):
         if user_db.exists():
             print("User already has a database.")
         else:
-            template_db = self.paths.app / "resources" / "db.sqlite3"
+            template_db = self.paths.app / "resources/db.sqlite3"
             if template_db.exists():
                 print("Copying initial database...")
                 shutil.copy(template_db, user_db)

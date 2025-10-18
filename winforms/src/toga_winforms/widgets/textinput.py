@@ -12,7 +12,6 @@ from .base import Widget
 
 
 class TextInput(Widget):
-
     def create(self):
         self.native = WinForms.TextBox()
         self.native.Multiline = False
