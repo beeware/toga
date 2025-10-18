@@ -18,7 +18,6 @@ class TextInput(Widget):
             self.native.connect("focus-out-event", self.gtk_focus_out_event)
             self.native.connect("key-press-event", self.gtk_key_press_event)
         else:  # pragma: no-cover-if-gtk3
-
             # Ideally we would connect to the `changed` signal, but it is
             # emitting two events each time text is changed
             # https://gitlab.gnome.org/GNOME/gtk/-/issues/7077

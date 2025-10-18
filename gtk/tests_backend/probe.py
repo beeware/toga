@@ -1,7 +1,9 @@
 import asyncio
+import contextlib
 
 import toga
 from toga_gtk.libs import GTK_VERSION, GLib, Gtk
+
 
 class BaseProbe:
     def _queue_draw(self, data):
@@ -19,7 +21,7 @@ class BaseProbe:
         ):
             draw_queued = asyncio.Event()
             GLib.idle_add(self._queue_draw, (self.native, draw_queued))
-            await draw_queued
+            await draw_queued.wait()
 
             if frame_clock := self.native.get_frame_clock():
                 handler_id = None
@@ -33,6 +35,11 @@ class BaseProbe:
 
                     handler_id = frame_clock.connect("after-paint", on_after_paint)
 
+                    await asyncio.wait_for(redraw_complete, 0.05)
+                if handler_id is not None:
+                    with contextlib.suppress(SystemError):
+                        frame_clock.disconnect(handler_id)
+
         print("[DEBUG REDRAW] Processing events to ensure UI is fully updated")
         events_processed = 0
         for i in range(15):
@@ -44,7 +51,7 @@ class BaseProbe:
             else:
                 context = GLib.main_context_default()
                 if context.pending():
-                    print(f"[DEBUG REDRAW] GTK4: Processing context iteration {i+1}")
+                    print(f"[DEBUG REDRAW] GTK4: Processing context iteration {i + 1}")
                     context.iteration(may_block=False)
                     events_processed += 1
                 else:
