@@ -10,3 +10,5 @@ jobs:
     name: Dependabot Change Note
     uses: beeware/.github/.github/workflows/dependabot-changenote.yml@main
     secrets: inherit
+    with:
+      changenote-format: "md"

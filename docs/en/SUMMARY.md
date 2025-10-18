@@ -4,8 +4,8 @@
 
 - [Tutorials](tutorial/index.md)
     - ./tutorial/*
-- How-to Guides
-    - Contributing to Toga
+- [How-to Guides](how-to/index.md)
+    - [Contributing to Toga](how-to/contribute/index.md)
         - [Contributing code to Toga](how-to/contribute/code.md)
         - [Contributing to Toga's documentation](how-to/contribute/docs.md)
     - Internal How-to guides
@@ -32,7 +32,7 @@
             - [DetailedList](./reference/api/widgets/detailedlist.md)
             - [Divider](./reference/api/widgets/divider.md)
             - [ImageView](./reference/api/widgets/imageview.md)
-            - [Image](./reference/api/widgets/label.md)
+            - [Label](./reference/api/widgets/label.md)
             - [MapView](./reference/api/widgets/mapview.md)
             - [MultilineTextInput](./reference/api/widgets/multilinetextinput.md)
             - [NumberInput](./reference/api/widgets/numberinput.md)

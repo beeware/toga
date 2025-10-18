@@ -1,7 +1,7 @@
 [build-system]
 requires = [
     "setuptools==80.9.0",
-    "setuptools_scm==9.2.0",
+    "setuptools_scm==9.2.1",
     "setuptools_dynamic_dependencies==1.0.0",
 ]
 build-backend = "setuptools.build_meta"
@@ -52,7 +52,7 @@ Funding = "https://beeware.org/contributing/membership/"
 Documentation = "https://toga.readthedocs.io/"
 Tracker = "https://github.com/beeware/toga/issues"
 Source = "https://github.com/beeware/toga"
-Changelog = "https://toga.readthedocs.io/en/stable/background/project/releases.html"
+Changelog = "https://toga.readthedocs.io/en/stable/background/project/releases"
 
 [project.entry-points."toga.backends"]
 macOS = "toga_cocoa"

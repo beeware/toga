@@ -234,7 +234,7 @@ jobs:
 
         - backend: "macOS-x86_64"
           platform: "macOS"
-          runs-on: "macos-13"
+          runs-on: "macos-15-intel"
           app-user-data-path: "$HOME/Library/Application Support/org.beeware.toga.testbed"
 
         - backend: "macOS-arm64"
