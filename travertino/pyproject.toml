@@ -45,7 +45,7 @@ classifiers = [
 # Extras used by developers *of* Toga are pinned to specific versions to
 # ensure environment consistency.
 dev = [
-    "coverage[toml] == 7.10.7",
+    "coverage[toml] == 7.11.0",
     "coverage-conditional-plugin == 0.9.0",
     "Pillow == 11.3.0",
     "pytest == 8.4.2",
