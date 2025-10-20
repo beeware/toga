@@ -47,7 +47,7 @@ classifiers = [
 dev = [
     "coverage[toml] == 7.11.0",
     "coverage-conditional-plugin == 0.9.0",
-    "Pillow == 11.3.0",
+    "Pillow == 12.0.0",
     "pytest == 8.4.2",
     "pytest-asyncio == 1.2.0",
     "pytest-freezer == 0.4.9",
