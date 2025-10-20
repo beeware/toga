@@ -355,9 +355,6 @@ jobs:
               libx11-dev libx11-xcb-dev libxext-dev \
               libxfixes-dev libxi-dev libxkbcommon-dev \
               libxkbcommon-x11-dev libxrender-dev 'libxcb*-dev' \
-              libwayland-dev libwayland-egl1-mesa libwayland-server0 \
-              libgles2-mesa-dev libxkbcommon-dev
-
 
             # Ubuntu 24.04 does not provide PySide6
             # so we fake it like this to test system-pyside6.
@@ -388,10 +385,6 @@ jobs:
             sudo apt install -y --no-install-recommends \
               mutter python3-dev xvfb \
               gnome-session-canberra \
-              libfontconfig1-dev libfreetype-dev libgtk-3-dev \
-              libx11-dev libx11-xcb-dev libxext-dev \
-              libxfixes-dev libxi-dev libxkbcommon-dev \
-              libxkbcommon-x11-dev libxrender-dev 'libxcb*-dev' \
               libwayland-dev libwayland-egl1-mesa libwayland-server0 \
               libgles2-mesa-dev libxkbcommon-dev
 
