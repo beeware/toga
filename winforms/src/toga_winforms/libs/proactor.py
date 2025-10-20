@@ -141,7 +141,9 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
             # Enqueue the next tick, and make sure there will be *something*
             # to be processed. If you don't ensure there is at least one
             # message on the queue, the select() call will block, locking
-            # the app.
+            # the app.  Determine the delay of the tick by checking if
+            # there are events that can be processed sooner than 5ms, as
+            # we do not want to hold them back from being processed.
             if self._ready:
                 delay = 0
             elif self._scheduled:
