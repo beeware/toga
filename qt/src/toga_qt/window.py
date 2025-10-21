@@ -1,6 +1,6 @@
-from functools import partial
+import asyncio
 
-from PySide6.QtCore import QBuffer, QEvent, QIODevice, Qt, QTimer
+from PySide6.QtCore import QBuffer, QEvent, QIODevice, Qt
 from PySide6.QtGui import QWindowStateChangeEvent
 from PySide6.QtWidgets import QApplication, QMainWindow, QMenu
 
@@ -15,15 +15,12 @@ from .libs import (
 from .screens import Screen as ScreenImpl
 
 
-def _handle_statechange(impl, changeid):  # pragma: no-cover-if-linux-x
-    current_state = impl.get_window_state()
-    if changeid != impl._changeventid:  # not the latest state change
-        pass  # handle it after the next state change event is ready to process
+async def _clear_pending(impl):
+    await asyncio.sleep(0.1)
     if impl._pending_state_transition:
-        if impl._pending_state_transition != current_state:
-            impl._apply_state(impl._pending_state_transition)
-        else:
-            impl._pending_state_transition = None
+        impl._apply_state(impl._pending_state_transition)
+        impl._pending_state_transition = None
+    impl._state_task = None
 
 
 class TogaMainWindow(QMainWindow):
@@ -46,17 +43,12 @@ class TogaMainWindow(QMainWindow):
                 old & Qt.WindowMinimized and not new & Qt.WindowMinimized
             ):
                 self.interface.on_show()
-            print(self.impl.get_window_state())
             if IS_WAYLAND:  # pragma: no-cover-if-linux-x  # pragma: no branch
-                self.impl._changeventid += 1
-                # Check and handle this later as the states etc may not have been
-                # fully realized. Starting the next transition now will cause
-                # extra window events to be generated, and sometimes the window
-                # ends up in an incorrect state.
-                QTimer.singleShot(
-                    100,
-                    partial(_handle_statechange, self.impl, self.impl._changeventid),
-                )
+                # Hold clearing _pending_state_transition by 100ms to ensure that
+                # any window state changes in the meantime get batched.
+                if self._state_task is not None:
+                    self._state_task.cancel()
+                self._state_task = asyncio.create_task(_clear_pending())
         elif event.type() == QEvent.ActivationChange:
             if self.isActiveWindow():
                 self.interface.on_gain_focus()
@@ -77,6 +69,7 @@ class Window:
 
         self._hidden_window_state = None
         self._pending_state_transition = None
+        self._state_task = None
 
         self.native.interface = interface
         self.native.impl = self
@@ -214,7 +207,7 @@ class Window:
             return WindowState.NORMAL
 
     def set_window_state(self, state):
-        if self._pending_state_transition:  # pragma: no-cover-if-linux-x
+        if self._state_task:  # pragma: no-cover-if-linux-x
             self._pending_state_transition = state
             return
 
@@ -226,7 +219,11 @@ class Window:
             self.interface.app.exit_presentation_mode()
 
         if IS_WAYLAND:  # pragma: no-cover-if-linux-x  # pragma: no branch
-            self._pending_state_transition = state
+            # Hold clearing _pending_state_transition by 100ms to ensure that
+            # any window state changes in the meantime get batched.
+            if self._state_task is not None:
+                self._state_task.cancel()
+            self._state_task = asyncio.create_task(_clear_pending())
         self._apply_state(state)
 
     def _apply_state(self, state):
