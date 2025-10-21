@@ -1,21 +1,30 @@
 from toga import NotImplementedWarning
 
-from . import dialogs
-from .app import App
-from .command import Command
-from .container import Container
-from .fonts import Font
-from .icons import Icon
-from .images import Image
-from .libs import get_testing
-from .paths import Paths
-from .statusicons import MenuStatusIcon, SimpleStatusIcon, StatusIconSet
-from .widgets.activityindicator import ActivityIndicator
-from .widgets.box import Box
-from .widgets.button import Button
-from .widgets.label import Label
-from .widgets.textinput import TextInput
-from .window import MainWindow, Window
+try:
+    from . import dialogs
+    from .app import App
+    from .command import Command
+    from .container import Container
+    from .fonts import Font
+    from .icons import Icon
+    from .images import Image
+    from .libs import get_testing
+    from .paths import Paths
+    from .statusicons import MenuStatusIcon, SimpleStatusIcon, StatusIconSet
+    from .widgets.activityindicator import ActivityIndicator
+    from .widgets.box import Box
+    from .widgets.button import Button
+    from .widgets.label import Label
+    from .widgets.textinput import TextInput
+    from .window import MainWindow, Window
+except ModuleNotFoundError as exc:
+    if exc.name == "PySide6":
+        raise ImportError(
+            "Cannot import PySide6.  Did you install toga-qt with either"
+            "[system] or [pyside6]?"
+        ) from exc
+    else:
+        raise
 
 __all__ = [
     "not_implemented",
