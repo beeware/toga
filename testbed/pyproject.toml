@@ -138,5 +138,5 @@ test_sources = [
 ]
 requires = [
     "../qt",
-    "system-pyside6 @ git+https://github.com/johnzhou721/system-pyside6.git",
+    "PySide6-Essentials==6.10.0",
 ]
