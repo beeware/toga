@@ -2,14 +2,14 @@
 
 These instructions are different on almost every version of Linux and Unix; here are some of the common alternatives:
 
-# Ubuntu 24.04+ / Debian 13+
+### Ubuntu 24.04+ / Debian 13+
 
 ```console
 (venv) $ sudo apt update
 (venv) $ sudo apt install git build-essential pkg-config python3-dev libgirepository-2.0-dev libcairo2-dev gir1.2-gtk-3.0 libcanberra-gtk3-module
 ```
 
-## Ubuntu 22.04 / Debian 11, 12
+### Ubuntu 22.04 / Debian 11, 12
 
 ```console
 (venv) $ sudo apt update
@@ -18,25 +18,25 @@ These instructions are different on almost every version of Linux and Unix; here
 
 If you're running on Ubuntu 22.04, Debian 11 or Debian 12, you'll also need to add a pin for `PyGObject==3.50.0`. Later versions of PyGObject require the `libgirepository-2.0-dev` library, which isn't available on older Debian-based distributions.
 
-## Fedora
+### Fedora
 
 ```console
 (venv) $ sudo dnf install git gcc make pkg-config python3-devel gobject-introspection-devel cairo-gobject-devel gtk3 libcanberra-gtk3
 ```
 
-## Arch / Manjaro
+### Arch / Manjaro
 
 ```console
 (venv) $ sudo pacman -Syu git base-devel pkgconf python3 gobject-introspection cairo gtk3 libcanberra
 ```
 
-## OpenSUSE Tumbleweed
+### OpenSUSE Tumbleweed
 
 ```console
 (venv) $ sudo zypper install git patterns-devel-base-devel_basis pkgconf-pkg-config python3-devel gobject-introspection-devel cairo-devel gtk3 'typelib(Gtk)=3.0' libcanberra-gtk3-module
 ```
 
-## FreeBSD
+### FreeBSD
 
 ```console
 (venv) $ sudo pkg update
