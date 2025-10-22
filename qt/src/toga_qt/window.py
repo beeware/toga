@@ -53,7 +53,7 @@ class TogaMainWindow(QMainWindow):
 
 
 class Window:
-    def _clear_pending(self, changeeventid):
+    def _clear_pending(self, changeeventid):  # pragma: no-cover-if-linux-x
         if self._changeeventid != changeeventid:
             return
         if self._pending_state_transition:
@@ -191,9 +191,13 @@ class Window:
     def get_window_state(self, in_progress_state=False):
         if self._hidden_window_state:
             return self._hidden_window_state
-        if (
-            in_progress_state and self._pending_state_transition
-        ):  # pragma: no-cover-if-linux-x
+        # The following is no-covered because it has became an
+        # implementation detail only used by saving window state
+        # when hidden and a window state is in transition, and to
+        # stay consistency with the other backends providing
+        # this impl API.  This functionality is also relatively
+        # minor.
+        if in_progress_state and self._pending_state_transition:  # pragma: no cover
             return self._pending_state_transition
         window_state = self.native.windowState()
 
