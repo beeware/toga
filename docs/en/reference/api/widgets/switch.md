@@ -1,4 +1,4 @@
-{{ component_header("Table", width=300) }}
+{{ component_header("Switch", width=300) }}
 
 ## Usage
 
