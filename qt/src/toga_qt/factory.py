@@ -17,7 +17,7 @@ try:
     from .widgets.label import Label
     from .widgets.textinput import TextInput
     from .window import MainWindow, Window
-except ModuleNotFoundError as exc:
+except ModuleNotFoundError as exc:  # pragma: no cover
     if exc.name == "PySide6":
         raise ImportError(
             "Cannot import PySide6.  Did you install toga-qt with either"
