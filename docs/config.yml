@@ -112,7 +112,8 @@ plugins:
             merge_init_into_class: true  # Otherwise, init is displayed separately
             separate_signature: true  # Shows the `function(args)` separately from name
             show_signature: true  # Displays () or (args) along with the function name in the signature
-            show_signature_annotations: false  # Removes annotations from initial line
+            show_signature_annotations: true  # Includes annotations in signature blocks
+            signature_crossrefs: true  # Enables cross-referencing on signature annotations
             show_root_heading: true  # Show heading of object at root, otherwise nothing
             docstring_section_style: spacy  # Better info layout than the other options
             line_length: 80  # Requires ruff, forces longer signatures to be stacked, if signatures aren't used, can be removed
