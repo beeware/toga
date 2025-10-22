@@ -20,7 +20,7 @@ A Cocoa backend for the `Toga widget toolkit`_.
 This package isn't much use by itself; it needs to be combined with `the core Toga library`_.
 
 For platform requirements, see the `macOS platform documentation
-<https://toga.readthedocs.io/en/latest/reference/platforms/macOS.html#prerequisites>`__.
+<https://toga.readthedocs.io/en/latest/reference/platforms/macOS#prerequisites>`__.
 
 For more details, see the `Toga project on GitHub`_.
 

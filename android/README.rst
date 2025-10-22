@@ -20,7 +20,7 @@ An Android backend for the `Toga widget toolkit`_.
 This package isn't much use by itself; it needs to be combined with `the core Toga library`_,
 
 For platform requirements, see the `Android platform documentation
-<https://toga.readthedocs.io/en/latest/reference/platforms/android.html#prerequisites>`__.
+<https://toga.readthedocs.io/en/latest/reference/platforms/android#prerequisites>`__.
 
 For more details, see the `Toga project on GitHub`_.
 
