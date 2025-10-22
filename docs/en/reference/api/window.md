@@ -1,4 +1,4 @@
-{{ component_header("MainWindow", width=300) }}
+{{ component_header("Window", width=300) }}
 
 ## Usage
 
