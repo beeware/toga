@@ -67,15 +67,15 @@ def component_tab_view(row, width, alt_file):
             if Path(f"docs/en/reference/images/{file_name}").is_file():
                 content = (
                     f"![{name} on {platform}](/reference/images/{file_name})"
-                    f'{{ width="{width}" }}\n'
-                    "/// caption\n///\n"
+                    f'{{ width="{width}" }}\n\n'
+                    "/// caption\n\n///\n\n"
                 )
             else:
                 content = "Screenshot not available"
 
-        tabs.append(f"/// tab | {platform}{status_marker}\n{content}\n///")
+        tabs.append(f"/// tab | {platform}{status_marker}\n\n{content}\n\n///")
 
-    return "\n".join(tabs)
+    return "\n\n".join(tabs)
 
 
 def define_env(env):
