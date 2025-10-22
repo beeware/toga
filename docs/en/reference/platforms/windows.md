@@ -14,7 +14,6 @@ Toga uses the [Python.NET](https://pythonnet.github.io) library to access the un
 
 ///
 
-
 If you are using Windows 10 and want to use a WebView to display web content, you will also need to install the [Edge WebView2 Evergreen Runtime.](https://developer.microsoft.com/en-us/microsoft-edge/webview2/#download) Windows 11 has this runtime installed by default.
 
 ## Installation
