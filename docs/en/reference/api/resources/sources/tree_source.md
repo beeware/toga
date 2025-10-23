@@ -1,6 +1,4 @@
-# TreeSource
-
-A data source describing an ordered hierarchical tree of values.
+{{ component_header("TreeSource") }}
 
 ## Usage
 

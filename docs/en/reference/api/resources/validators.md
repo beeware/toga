@@ -1,6 +1,4 @@
-# Validators
-
-A mechanism for validating that input meets a given set of criteria.
+{{ component_header("Validators") }}
 
 ## Usage
 
