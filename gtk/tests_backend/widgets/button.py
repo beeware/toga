@@ -1,13 +1,15 @@
 import pytest
 
 from toga.colors import TRANSPARENT
-from toga_gtk.libs import Gtk
+from toga_gtk.libs import GTK_VERSION, Gtk
 
 from .base import SimpleProbe
 
 
 class ButtonProbe(SimpleProbe):
     native_class = Gtk.Button
+    if GTK_VERSION >= (4, 0, 0):
+        pytest.skip("Button is not yet fully supported in GTK4")
 
     @property
     def text(self):

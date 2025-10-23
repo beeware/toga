@@ -87,6 +87,9 @@ async def test_focus(widget, probe, other, other_probe, verify_focus_handlers):
     if verify_focus_handlers:
         on_gain_handler.assert_not_called()
 
+        # Reset the mock so it can be tested again
+        on_lose_handler.reset_mock()
+
     other.focus()
     await probe.redraw("Focus has been lost")
     assert not probe.has_focus
@@ -530,7 +533,11 @@ async def test_flex_horizontal_widget_size(widget, probe):
     original_height = probe.height
 
     # Make the widget flexible; it will expand to fill horizontal space
+    print(f"[DEBUG Test] widget intrinsic height {widget.intrinsic.height}")
+    print("[DEBUG Test] Before flex set")
     widget.style.flex = 1
+    print("[DEBUG Test] After flex set")
+    print(f"[DEBUG Test] widget intrinsic height {widget.intrinsic.height}")
 
     # widget has expanded width, but has the same height.
     await probe.redraw(
