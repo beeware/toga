@@ -14,7 +14,7 @@ A widget for displaying a hierarchical tree of tabular data. Scroll bars will be
 
 ///
 
-/// tab | Linux
+/// tab | Linux (GTK)
 
 ![/reference/images/tree-gtk.png](/reference/images/tree-gtk.png){ width="450" }
 
@@ -23,6 +23,12 @@ A widget for displaying a hierarchical tree of tabular data. Scroll bars will be
 ///
 
 <!-- TODO: Update alt text -->
+
+///
+
+/// tab | Linux (Qt) {{ not_supported }}
+
+Not supported
 
 ///
 

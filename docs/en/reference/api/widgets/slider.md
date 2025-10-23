@@ -14,7 +14,7 @@ A widget for selecting a value within a range. The range is shown as a horizonta
 
 ///
 
-/// tab | Linux
+/// tab | Linux (GTK)
 
 ![/reference/images/slider-gtk.png](/reference/images/slider-gtk.png){ width="300" }
 
@@ -23,6 +23,12 @@ A widget for selecting a value within a range. The range is shown as a horizonta
 ///
 
 <!-- TODO: Update alt text -->
+
+///
+
+/// tab | Linux (Qt) {{ not_supported }}
+
+Not supported
 
 ///
 
