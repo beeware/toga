@@ -108,6 +108,7 @@ class Window(LoggedObject):
     def set_size(self, size):
         self._action("set size")
         self._size = size
+        self.interface.on_resize()
 
     ######################################################################
     # Window position
