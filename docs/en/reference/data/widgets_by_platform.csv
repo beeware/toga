@@ -12,7 +12,7 @@ Divider,General Widget,[`Divider`][toga.Divider],A horizontal or vertical line,�
 ImageView,General Widget,[`ImageView`][toga.ImageView],A widget that displays an image,●,●,●,●,●,,
 Label,General Widget,[`Label`][toga.Label],Text label,●,●,●,●,●,○,○
 MapView,General Widget,[`MapView`][toga.MapView],A zoomable map that can be annotated with location pins,●,●,●,●,●,,
-MultilineTextInput,General Widget,[`MultilineTextInput`][toga.MultilineTextInput],Multi-line Text Input field,●,●,●,●,●,,
+MultilineTextInput,General Widget,[`MultilineTextInput`][toga.MultilineTextInput],Multi-line Text Input field,●,●,●,●,●,○,
 NumberInput,General Widget,[`NumberInput`][toga.NumberInput],A text input that is limited to numeric input,●,●,●,●,●,,
 PasswordInput,General Widget,[`PasswordInput`][toga.PasswordInput],A text input that hides its input,●,●,●,●,●,○,
 ProgressBar,General Widget,[`ProgressBar`][toga.ProgressBar],Progress Bar,●,●,●,●,●,○,
