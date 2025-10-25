@@ -122,27 +122,18 @@ def build_cleanup_test(
     xfail_platforms=(),
 ):
     async def test_cleanup():
-        nonlocal args, kwargs
-
         skip_on_platforms(*skip_platforms)
         xfail_on_platforms(*xfail_platforms, reason="Leaks memory")
 
-        if args is None:
-            args = ()
-
-        if kwargs is None:
-            kwargs = {}
+        local_args = () if args is None else args
+        local_kwargs = {} if kwargs is None else kwargs
 
         with safe_create():
-            widget = widget_constructor(*args, **kwargs)
-
+            widget = widget_constructor(*local_args, **local_kwargs)
         ref = weakref.ref(widget)
-
-        # Args or kwargs may hold a backref to the widget itself, for example if they
-        # are widget content. Ensure that they are deleted before garbage collection.
-        del widget, args, kwargs
+        # Break potential reference cycles
+        del widget, local_args, local_kwargs
         gc.collect()
-
         assert ref() is None
 
     return test_cleanup

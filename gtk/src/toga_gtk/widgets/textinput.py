@@ -20,24 +20,25 @@ class TextInput(Widget):
             pass
 
     def gtk_on_change(self, *_args):
-        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
-            self.interface._value_changed()
-        else:  # pragma: no-cover-if-gtk3
-            self.interface._value_changed(self.interface)
+        self.interface._value_changed()
 
     def gtk_focus_in_event(self, *_args):
-        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
-            self.interface.on_gain_focus()
-        else:  # pragma: no-cover-if-gtk3
-            self.interface.on_gain_focus(self.interface)
+        self.interface.on_gain_focus()
 
     def gtk_focus_out_event(self, *_args):
         self.interface.on_lose_focus()
 
-    def gtk_key_press_event(self, _, key_val, *_args):
-        key_pressed = toga_key(key_val)
-        if key_pressed and key_pressed["key"] in {Key.ENTER, Key.NUMPAD_ENTER}:
-            self.interface.on_confirm()
+    if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+
+        def gtk_key_press_event(self, _entry, event):
+            key_pressed = toga_key(event.keyval, event.state)
+            if key_pressed and key_pressed["key"] in {Key.ENTER, Key.NUMPAD_ENTER}:
+                self.interface.on_confirm()
+
+    else:  # pragma: no-cover-if-gtk3
+
+        def gtk_key_pressed(self, _controller, keyval, _keycode, state):
+            pass
 
     def get_readonly(self):
         return not self.native.get_property("editable")
