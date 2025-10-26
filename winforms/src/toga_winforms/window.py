@@ -97,7 +97,7 @@ class Window(Container, Scalable):
     ######################################################################
 
     def winforms_Resize(self, sender, event):
-        if (self.get_window_state() != WindowState.MINIMIZED) or (
+        if (self.get_window_state() != WindowState.MINIMIZED) and (
             {self._previous_state, self.get_window_state()}
             != {WindowState.NORMAL, WindowState.MINIMIZED}
         ):
