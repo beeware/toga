@@ -23,7 +23,7 @@ PLATFORMS_MAPPING = {
 }
 
 with Path("docs/en/reference/data/apis_by_platform.yaml").open() as file:
-    api_data = yaml.load(file, yaml.Loader)
+    api_data = yaml.safe_load(file)
 
 APIS_BY_NAME = {}
 APIS_BY_CATEGORY = defaultdict(list)
