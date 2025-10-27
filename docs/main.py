@@ -4,7 +4,7 @@
 from collections import defaultdict
 from pathlib import Path
 
-import tomllib
+import yaml
 from tabulate import tabulate
 
 
@@ -22,13 +22,13 @@ PLATFORMS_MAPPING = {
     "textual": "Terminal",
 }
 
-with Path("docs/en/reference/data/apis_by_platform.toml").open("rb") as file:
-    api_toml = tomllib.load(file)
+with Path("docs/en/reference/data/apis_by_platform.yaml").open() as file:
+    api_data = yaml.load(file, yaml.Loader)
 
 APIS_BY_NAME = {}
 APIS_BY_CATEGORY = defaultdict(list)
 
-for category_name, category_contents in api_toml.items():
+for category_name, category_contents in api_data.items():
     category_path = Path(category_contents.pop("path"))
     for component_name, component in category_contents.items():
         if str_path := component.get("path"):

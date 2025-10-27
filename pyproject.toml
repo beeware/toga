@@ -135,4 +135,5 @@ docs = [
     "beeware-docs-tools @ git+https://github.com/beeware/beeware-docs-tools",
     "setuptools-scm==9.2.0",
     "tabulate==0.9.0",
+    "PyYAML==6.0.3"
 ]
