@@ -1,4 +1,4 @@
-# Toga APIs by platform
+# Toga APIs by platform { #apis-by-platform }
 
 ## Key  {: .widgets_by_platform_key id="api-status-key" }
 

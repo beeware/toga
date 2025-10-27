@@ -8,3 +8,4 @@
         show_labels: false
         show_root_members_full_path: true
         show_root_heading: false
+        show_attribute_values: true
