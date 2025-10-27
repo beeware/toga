@@ -93,7 +93,6 @@ plugins:
   literate-nav:
        nav_file: SUMMARY.md
   macros: {}
-  table-reader: {}
   mkdocstrings:
       enable_inventory: true
       default_handler: python

@@ -1,5 +1,7 @@
 {{ component_header("Constants") }}
 
+## Reference
+
 ::: toga.constants
     options:
         show_if_no_docstring: true

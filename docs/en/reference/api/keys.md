@@ -1,5 +1,7 @@
 {{ component_header("Keys") }}
 
+## Usage
+
 Most keys have a constant that matches the text on the key, or the name of the key if the text on the key isn't a legal Python identifier.
 
 However, due to differences between platforms, there's no representation of "modifier" keys like Control, Command, Option, or the Windows Key. Instead, Toga provides three generic modifier constants, and maps those to the modifier keys, matching the precedence with which they are used on the underlying platforms:

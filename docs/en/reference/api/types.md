@@ -1,5 +1,7 @@
 {{ component_header("Types") }}
 
+## Reference
+
 ::: toga.LatLng
     options:
         separate_signature: false

@@ -1,56 +1,90 @@
 # Macros module for MkDocs-Macros
 # For more info: https://mkdocs-macros-plugin.readthedocs.io/en/latest/macros/
 
+from collections import defaultdict
 from pathlib import Path
 
-import pandas as pd
+import tomllib
+from tabulate import tabulate
 
-ALL_APIS = pd.read_csv(
-    "docs/en/reference/data/apis_by_platform.csv",
-    quotechar='"',
-    comment="#",
-    na_filter=False,  # Leave blank cells as empty strings instead of NaN
-)
-ALL_APIS["Component"] = "[" + ALL_APIS["Name"] + "](" + ALL_APIS["Link"] + ")"
-# The "by platform" page is one level higher, so the paths need api/ prepended.
-ALL_APIS["Component_from_platforms"] = (
-    "[" + ALL_APIS["Name"] + "](api/" + ALL_APIS["Link"] + ")"
-)
 
-BACKENDS_MAPPING = {
-    "macOS": "cocoa",
-    "GTK": "gtk",
-    "Windows": "winforms",
+def slugify(string):
+    return string.lower().replace(" ", "")
+
+
+PLATFORMS_MAPPING = {
+    "cocoa": "macOS",
+    "gtk": "GTK",
+    "winforms": "Windows",
     "iOS": "iOS",
-    "Android": "android",
-    "Web": "web",
-    "Terminal": "textual",
+    "android": "Android",
+    "web": "Web",
+    "textual": "Terminal",
 }
-PLATFORMS = list(BACKENDS_MAPPING)
+
+with Path("docs/en/reference/data/apis_by_platform.toml").open("rb") as file:
+    api_toml = tomllib.load(file)
+
+APIS_BY_NAME = {}
+APIS_BY_CATEGORY = defaultdict(list)
+
+for category_name, category_contents in api_toml.items():
+    category_path = Path(category_contents.pop("path"))
+    for component_name, component in category_contents.items():
+        if str_path := component.get("path"):
+            path = Path(str_path)
+        else:
+            path = category_path / f"{slugify(component_name)}.md"
+
+        unsupported = component.get("unsupported", [])
+        beta = component.get("beta", [])
+        for backend in unsupported + beta:
+            if backend not in PLATFORMS_MAPPING:
+                raise ValueError(f"Unrecognized backend {backend}")
+
+        platform_support = {
+            platform: "" if backend in unsupported else "○" if backend in beta else "●"
+            for backend, platform in PLATFORMS_MAPPING.items()
+        }
+
+        api = {
+            "link": f"[{component_name}]({path})",
+            "link_from_platforms": f"[{component_name}]({Path('api') / path})",
+            "description": component["description"],
+            "path_from_platforms": Path("api") / path,
+            "platforms": platform_support,
+            "display": component.get("display", "tabs"),
+        }
+
+        APIS_BY_NAME[component_name] = api
+        APIS_BY_CATEGORY[category_name].append(api)
 
 
 def component_support(name, width, alt_file):
     """Render component's support by platform, as a table or tabbed view, as needed."""
-    selection = ALL_APIS[ALL_APIS["Name"] == name]
+    component = APIS_BY_NAME[name]
 
-    if (display := selection["Display"].item()) == "table":
+    if component["display"] == "table":
         return (
             "Availability ([Key][api-status-key])\n{: .availability-title }\n\n"
-            + selection[PLATFORMS].to_markdown(index=False, stralign=None)
+            + tabulate([component["platforms"]], headers="keys", tablefmt="github")
         )
-    elif display == "tabs":
-        return component_tab_view(selection, width, alt_file)
+    elif component["display"] == "tabs":
+        return component_tab_view(name, component, width, alt_file)
     else:
         return ""
 
 
-def component_tab_view(row, width, alt_file):
+def component_tab_view(name, component, width, alt_file):
     """Render component's support by platform as a tabbed view."""
-    name = row["Name"].item()
-    slug = alt_file if alt_file else name.lower().replace(" ", "")
+    slug = alt_file if alt_file else slugify(name)
     tabs = []
-    for platform in PLATFORMS:
-        status = row[platform].item()
+    for (platform, status), backend in zip(
+        # Zip in the keys of PLATFORM_MAPPING to have the backend name.
+        component["platforms"].items(),
+        PLATFORMS_MAPPING,
+        strict=True,
+    ):
         status_marker = {
             # Full support
             "●": "",
@@ -63,7 +97,7 @@ def component_tab_view(row, width, alt_file):
         if not status:
             content = "Not supported"
         else:
-            file_name = f"{slug}-{BACKENDS_MAPPING[platform]}.png"
+            file_name = f"{slug}-{backend}.png"
             if Path(f"docs/en/reference/images/{file_name}").is_file():
                 content = (
                     f"![{name} on {platform}](/reference/images/{file_name})"
@@ -82,25 +116,26 @@ def define_env(env):
     @env.macro
     def api_table(category, platforms=False):
         """Render table of a category of APIs for the two reference pages."""
-        selection = ALL_APIS[ALL_APIS["Category"] == category]
-        if platforms:
-            return selection[["Component_from_platforms", *PLATFORMS]].to_markdown(
-                index=False, headers=["Component", *PLATFORMS], stralign=None
-            )
-        else:
-            return selection[["Component", "Description"]].to_markdown(
-                index=False, stralign=None
-            )
+        components = APIS_BY_CATEGORY[category]
+        rows = [
+            {"Component": component["link_from_platforms"], **component["platforms"]}
+            if platforms
+            else {
+                "Component": component["link"],
+                "Description": component["description"],
+            }
+            for component in components
+        ]
+        return tabulate(rows, headers="keys", tablefmt="github")
 
     @env.macro
     def component_header(name, width=None, alt_file=None):
         """Render top of component page: title, description, and platform support."""
-        selection = ALL_APIS[ALL_APIS["Name"] == name]
-        description = selection["Description"].item()
+        component = APIS_BY_NAME[name]
         return "\n\n".join(
             [
                 f"# {name}",
-                description,
+                component["description"],
                 component_support(name, width=width, alt_file=alt_file),
             ]
         )
