@@ -141,17 +141,27 @@ class Location:
     def on_change(self, handler: OnLocationChangeHandler) -> None:
         self._on_change = wrapped_handler(self, handler)
 
-    def start_tracking(self) -> None:
+    @property
+    def on_visit(self):
+        return self._on_visit
+
+    @on_visit.setter
+    def on_visit(self, handler):
+        self._on_visit = wrapped_handler(self, handler)
+
+    def start_tracking(self, significant=False) -> None:
         """Start monitoring the user's location for changes.
 
         An [`on_change`][toga.hardware.location.Location.on_change] callback will be
         generated when the user's location changes.
 
-        :raises PermissionError: If the app has not requested and received permission to
-            use location services.
         """
         if self.has_permission:
-            self._impl.start_tracking()
+            if not significant:
+                self._impl.start_tracking()
+            elif significant:
+                self._impl.start_significant_tracking()
+
         else:
             raise PermissionError(
                 "App does not have permission to use location services"
@@ -168,6 +178,22 @@ class Location:
         else:
             raise PermissionError(
                 "App does not have permission to use location services"
+            )
+
+    def start_visit_tracking(self):
+        if hasattr(self._impl, "start_visit_tracking"):
+            self._impl.start_visit_tracking()
+        else:
+            raise NotImplementedError(
+                "Visit tracking is not available on this platform."
+            )
+
+    def stop_visit_tracking(self):
+        if hasattr(self._impl, "stop_visit_tracking"):
+            self._impl.stop_visit_tracking()
+        else:
+            raise NotImplementedError(
+                "Visit tracking is not available on this platform."
             )
 
     def current_location(self) -> LocationResult:
