@@ -1,6 +1,4 @@
-# ListSource
-
-A data source describing an ordered list of data.
+{{ component_header("ListSource") }}
 
 ## Usage
 

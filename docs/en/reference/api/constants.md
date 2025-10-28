@@ -1,4 +1,6 @@
-# Constants
+{{ component_header("Constants") }}
+
+## Reference
 
 ::: toga.constants
     options:

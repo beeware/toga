@@ -1,6 +1,6 @@
-# Keys
+{{ component_header("Keys") }}
 
-A symbolic representation of keys used for keyboard shortcuts.
+## Usage
 
 Most keys have a constant that matches the text on the key, or the name of the key if the text on the key isn't a legal Python identifier.
 
