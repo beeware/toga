@@ -1,4 +1,4 @@
-# API design { #api-design-guide }
+# API design
 
 Toga's API is structured around the following principles:
 

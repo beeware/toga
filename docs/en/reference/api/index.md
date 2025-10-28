@@ -1,4 +1,4 @@
-# API Reference { #api }
+# API Reference
 
 ## Core application components { #api-reference-core }
 

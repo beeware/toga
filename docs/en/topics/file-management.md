@@ -1,4 +1,4 @@
-# File management { #file-management-guide }
+# File management
 
 In order to read and write files in a Python project, you need to be able to specify the location of the file you want to use. However, when you're deploying Python code as a packaged app, specifying that location is more complex than it would be when running Python code through the interpreter, or at an interactive Python prompt. Toga's app paths feature is designed to provide a way to reliably locate files, regardless of how an app is deployed.
 

@@ -40,23 +40,23 @@ Toga is available on macOS, Windows, Linux (GTK), Android, iOS, for single-page 
 
 ///
 
-## [Tutorial][tutorials]
+## [Tutorial](tutorial/index.md)
 
 [A quick Toga demonstration](tutorial/get-started.md) and a [a hands-on introduction to Toga](tutorial/index.md).
 
-## [How-to guides][how-to]
+## [How-to guides](how-to/index.md)
 
 Guides and recipes for common problems and tasks, including how to [contribute to Toga](how-to/contribute/index.md).
 
-## [Topic Guides][topics]
+## [Topic Guides](topics/index.md)
 
 Deeper explorations of concepts and issues related to Toga usage.
 
-## [Reference][reference-index]
+## [Reference](reference/index.md)
 
 Technical documentation such as [Toga's API](reference/api/index.md), details on [platform support](reference/platforms/index.md), and other detailed reference information (including [overall architectural details](reference/internals/architecture.md)).
 
-## [About Toga][about]
+## [About Toga](about/index.md)
 
 [Frequently asked questions](about/faq.md), [success stories](about/success.md), and other details about Toga as a project.
 

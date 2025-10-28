@@ -4,7 +4,7 @@ A data source describing an ordered hierarchical tree of values.
 
 ## Usage
 
-Data sources are abstractions that allow you to define the data being managed by your application independent of the GUI representation of that data. For details on the use of data sources, see the [topic guide][data-sources-guide].
+Data sources are abstractions that allow you to define the data being managed by your application independent of the GUI representation of that data. For details on the use of data sources, see the [topic guide][data-sources].
 
 TreeSource is an implementation of an ordered hierarchical tree of values. When a TreeSource is created, it is given a list of `accessors` - these are the attributes that all items managed by the TreeSource will have. The API provided by TreeSource is [`list`][]-like; the operations you'd expect on a normal Python list, such as `insert`, `remove`, `index`, and indexing with `[]`, are also possible on a TreeSource. These methods are available on the TreeSource itself to manipulate root nodes, and also on each node within the tree.
 
