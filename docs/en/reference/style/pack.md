@@ -1,4 +1,4 @@
-# The Pack Style Engine { #pack-style-engine }
+# The Pack Style Engine
 
 Toga's default style engine, **Pack**, is a layout algorithm based around the idea of packing boxes inside boxes. Each box specifies a direction for its children, and each child specifies how it will consume the available space - either as a specific width, or as a proportion of the available width. Other properties exist to control color, text alignment and so on.
 
