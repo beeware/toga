@@ -35,7 +35,8 @@ $ git clone https://github.com/beeware/toga.git
 $ cd toga
 $ python3 -m venv .venv
 $ . .venv/bin/activate
-(.venv) $ python -m pip install -e "./core[dev]" -e ./dummy -e ./cocoa -e ./travertino
+(.venv) $ python -m pip install -U pip
+(.venv) $ python -m pip install -e ./core -e ./dummy -e ./cocoa -e ./travertino --group dev
 (.venv) $ pre-commit install
 ```
 
@@ -48,7 +49,8 @@ $ git clone https://github.com/beeware/toga.git
 $ cd toga
 $ python3 -m venv .venv
 $ . .venv/bin/activate
-(.venv) $ python -m pip install -e "./core[dev]" -e ./dummy -e ./gtk -e ./travertino
+(.venv) $ python -m pip install -U pip
+(.venv) $ python -m pip install -e ./core -e ./dummy -e ./gtk -e ./travertino --group dev
 (.venv) $ pre-commit install
 ```
 
@@ -61,7 +63,8 @@ C:\...>git clone https://github.com/beeware/toga.git
 C:\...>cd toga
 C:\...>py -m venv .venv
 C:\...>.venv\Scripts\activate
-(.venv) C:\...>python -m  pip install -e "./core[dev]" -e ./dummy -e ./winforms -e ./travertino
+(.venv) $ python -m pip install -U pip
+(.venv) C:\...>python -m  pip install -e ./core -e ./dummy -e ./winforms -e ./travertino --group dev
 (.venv) C:\...>pre-commit install
 ```
 
@@ -209,7 +212,8 @@ Now that you have the source code, you can do an [editable install](https://setu
 /// tab | macOS
 
 ```console
-(.venv) $ python -m pip install -e "./core[dev]" -e ./dummy -e ./cocoa -e ./travertino
+(.venv) $ python -m pip install -U pip
+(.venv) $ python -m pip install -e ./core -e ./dummy -e ./cocoa -e ./travertino --group dev
 ```
 
 ///
