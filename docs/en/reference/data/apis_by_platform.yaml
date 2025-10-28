@@ -19,6 +19,7 @@ Core application components:
     beta:
       - web
       - textual
+      - qt
 
   DocumentWindow:
     description: A window that can be used as the main interface to a document-based app.
@@ -27,6 +28,8 @@ Core application components:
       - android
       - web
       - textual
+    beta:
+      - qt
 
 General widgets:
   path: widgets
@@ -49,6 +52,7 @@ General widgets:
     unsupported:
       - web
       - textual
+      - qt
 
   DateInput:
     description: A widget to select a calendar date.
@@ -56,6 +60,7 @@ General widgets:
       - web
     unsupported:
       - textual
+      - qt
 
   DetailedList:
     description: An ordered list of content where each item has an icon, a main heading, and a line of supplementary text.
@@ -64,6 +69,7 @@ General widgets:
     unsupported:
       - web
       - textual
+      - qt
 
   Divider:
     description: A separator used to visually distinguish two sections of content in a layout.
@@ -71,12 +77,14 @@ General widgets:
       - web
     unsupported:
       - textual
+      - qt
 
   ImageView:
     description: A widget that displays an image.
     unsupported:
       - web
       - textual
+      - qt
 
   Label:
     description: A text label for annotating forms or interfaces.
@@ -89,18 +97,21 @@ General widgets:
     unsupported:
       - web
       - textual
+      - qt
 
   MultilineTextInput:
     description: A scrollable panel that allows for the display and editing of multiple lines of text.
     unsupported:
       - web
       - textual
+      - qt
 
   NumberInput:
     description: A text input that is limited to numeric input.
     unsupported:
       - web
       - textual
+      - qt
 
   PasswordInput:
     description: A widget to allow the entry of a password. Any value typed by the user will be obscured, allowing the user to see the number of characters they have typed, but not the actual characters.
@@ -108,6 +119,7 @@ General widgets:
       - web
     unsupported:
       - textual
+      - qt
 
   ProgressBar:
     description: A horizontal bar to visualize task progress. The task being monitored can be of known or indeterminate length.
@@ -115,6 +127,7 @@ General widgets:
       - web
     unsupported:
       - textual
+      - qt
 
   Selection:
     description: A widget to select a single option from a list of alternatives.
@@ -122,6 +135,7 @@ General widgets:
       - web
     unsupported:
       - textual
+      - qt
 
   Slider:
     description: A widget for selecting a value within a range. The range is shown as a horizontal line, and the selected value is shown as a draggable marker.
@@ -129,6 +143,7 @@ General widgets:
       - web
     unsupported:
       - textual
+      - qt
 
   Switch:
     description: 'A clickable button with two stable states: True (on, checked); and False (off, unchecked). The button has a text label.'
@@ -136,6 +151,7 @@ General widgets:
       - web
     unsupported:
       - textual
+      - qt
 
   Table:
     description: A widget for displaying columns of tabular data.
@@ -145,6 +161,7 @@ General widgets:
       - iOS
       - web
       - textual
+      - qt
 
   TextInput:
     description: A widget for the display and editing of a single line of text.
@@ -153,12 +170,14 @@ General widgets:
       - textual
     unsupported:
       - gtk
-      - textual
 
   TimeInput:
     description: A widget to select a clock time.
     beta:
       - web
+    unsupported:
+      - gtk
+      - qt
 
   Tree:
     description: A widget for displaying a hierarchical tree of tabular data.
@@ -168,12 +187,14 @@ General widgets:
       - android
       - web
       - textual
+      - qt
 
   WebView:
     description: An embedded web browser.
     unsupported:
       - web
       - textual
+      - qt
 
   Widget:
     description: The abstract base class of all widgets. This class should not be be instantiated directly.
@@ -198,6 +219,7 @@ Layout widgets:
       - web
     unsupported:
       - textual
+      - qt
 
   SplitContainer:
     description: A container that divides an area into two panels with a movable border.
@@ -206,12 +228,14 @@ Layout widgets:
       - android
       - web
       - textual
+      - qt
 
   OptionContainer:
     description: A container that can display multiple labeled tabs of content.
     unsupported:
       - web
       - textual
+      - qt
 
 Resources:
   path: resources
@@ -240,6 +264,7 @@ Resources:
     beta:
       - web
       - textual
+      - qt
 
   Document:
     description: A representation of a file on disk that will be displayed in one or more windows.
@@ -257,6 +282,7 @@ Resources:
     unsupported:
       - web
       - textual
+      - qt
 
   Icon:
     description: A small, square image used to provide easily identifiable visual context to a widget.
@@ -283,6 +309,7 @@ Resources:
       - android
       - web
       - textual
+      - qt
 
   Source:
     description: A base class for data source implementations.
@@ -319,6 +346,7 @@ Hardware:
       - winforms
       - web
       - textual
+      - qt
 
   Location services:
     description: A sensor that can capture the geographical location of the device.
@@ -328,6 +356,7 @@ Hardware:
       - winforms
       - web
       - textual
+      - qt
 
   Screen:
     description: A representation of a screen attached to a device.
