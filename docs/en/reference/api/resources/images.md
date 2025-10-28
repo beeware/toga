@@ -49,18 +49,18 @@ You can also tell Toga how to convert from (and to) other classes that represent
 [](){ #known-image-formats }
 
 - PNG and JPEG formats are guaranteed to be supported. Other formats are available on some platforms:
-  - GTK: BMP
-  - macOS: GIF, BMP, TIFF
-  - Windows: GIF, BMP, TIFF
+    - GTK: BMP
+    - macOS: GIF, BMP, TIFF
+    - Windows: GIF, BMP, TIFF
 
 [](){ #native-image-rep }
 
 - The native platform representations for images are:
-  - Android: `android.graphics.Bitmap`
-  - GTK: `GdkPixbuf.Pixbuf`
-  - iOS: `UIImage`
-  - macOS: `NSImage`
-  - Windows: `System.Drawing.Image`
+    - Android: `android.graphics.Bitmap`
+    - GTK: `GdkPixbuf.Pixbuf`
+    - iOS: `UIImage`
+    - macOS: `NSImage`
+    - Windows: `System.Drawing.Image`
 
 [](){ #toga_image_subclassing }
 

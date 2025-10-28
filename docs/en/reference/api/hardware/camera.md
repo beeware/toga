@@ -29,9 +29,9 @@ Toga will confirm whether the app has been granted permission to use the camera 
 ## Notes
 
 - Apps that use a camera must be configured to provide permission to the camera device. The permissions required are platform specific:
-  - iOS: `NSCameraUsageDescription` must be defined in the app's `Info.plist` file.
-  - macOS: The `com.apple.security.device.camera` entitlement must be enabled, and `NSCameraUsageDescription` must be defined in the app's `Info.plist` file.
-  - Android: The `android.permission.CAMERA` permission must be declared.
+    - iOS: `NSCameraUsageDescription` must be defined in the app's `Info.plist` file.
+    - macOS: The `com.apple.security.device.camera` entitlement must be enabled, and `NSCameraUsageDescription` must be defined in the app's `Info.plist` file.
+    - Android: The `android.permission.CAMERA` permission must be declared.
 - The iOS simulator implements the iOS Camera APIs, but is not able to take photographs. To test your app's Camera usage, you must use a physical iOS device.
 
 ## Reference
