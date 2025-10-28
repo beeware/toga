@@ -35,7 +35,7 @@ animal = group[1]
 print(f"Animals's name is {animal.name}; it is {animal.height}m tall.")
 
 # Find an animal with a name of "Thylacine"
-row = source.find(parent=source[0], {"name": "Thylacine"})
+row = group.find({"name": "Thylacine"})
 
 # Remove that row from the data. Even though "Thylacine" isn't a root node,
 # remove will find it and remove it from the list of animals.
@@ -79,6 +79,36 @@ For more complex applications, you can replace TreeSource with a [custom data so
 - Return items whose attributes match the accessors expected by the widget
 - Generate a `change` notification when any of those attributes change
 - Generate `insert`, `remove` and `clear` notifications when nodes are added or removed
+
+### API contract
+
+A custom *tree* source must provide the following public interface expected by [`toga.Tree`][] and similar widgets:
+
+- `__len__(self) -> int` – number of root nodes.
+- `__getitem__(self, index: int) -> toga.sources.Node` – retrieve a root node by index.
+- `__setitem__(self, index: int, data: object) -> None` – replace an existing root node.
+- `__delitem__(self, index: int) -> None` – delete a root node (emits a `remove` notification).
+- `insert(self, index: int, data: object, children: object | None = None) -> toga.sources.Node` – insert a new root node.
+- `append(self, data: object, children: object | None = None) -> toga.sources.Node` – shorthand for `insert(len(self), …)`.
+- `remove(self, node: toga.sources.Node) -> None` – delete any node (root or child) in the tree.
+- `clear(self) -> None` – remove *all* root nodes (and therefore all descendants).
+- `index(self, node: toga.sources.Node) -> int` – locate a root node.
+
+Each [`Node`][toga.sources.Node] returned by the source must itself expose a *list-like* interface so that widgets can drill down the hierarchy:
+
+- `__len__`, `__iter__`, `__getitem__`, `__setitem__`, `__delitem__`, `insert`, `append`, `remove`, `index` and `find`.
+- `can_have_children(self) -> bool` – indicates if the node *could* have children (even if it currently has none).
+
+### Notifications
+
+Tree widgets need to know when the underlying data changes. Your source must therefore call `self.notify()` with **exactly** the following message names and kwargs:
+
+- `insert` — kwargs: `parent` (*Node | None*), `index` (*int*), `item` (*Node*). Emitted after a node is inserted (root nodes use `parent=None`).
+- `remove` — kwargs: `parent` (*Node | None*), `index` (*int*), `item` (*Node*). Emitted after a node is removed.
+- `change` — kwargs: `item` (*Node*). Emitted when any public attribute on a node changes.
+- `clear` — *(no kwargs)*. Emitted when the source is wiped clean.
+
+Without these notifications the UI will not update to reflect the current state of your data.
 
 ## Reference
 
