@@ -241,10 +241,10 @@ This release contains no new features. The primary purpose of this release is to
 - The `add_background_task()` API on `toga.App` has been deprecated. Background tasks can be implemented using the new `on_running` event handler, or by using `asyncio.create_task`{.interpreted-text role="any"}. ([#2099](https://github.com/beeware/toga/issues/2099))
 
 - The API for Documents and Document-based apps has been significantly modified. Unfortunately, these changes are not backwards compatible; any existing Document-based app will require modification.  The `DocumentApp` base class is no longer required. Apps can subclass `App` directly, passing the document types as a `list` of `Document` classes, rather than a mapping of extension to document type.  The API for `Document` subclasses has also changed:
-  - A path is no longer provided as an argument to the Document constructor;
-  - The `document_type` is now specified as a class property called `description`; and
-  - Extensions are now defined as a class property of the `Document`; and
-  - The `can_close()` handler is no longer honored. Documents now track if they are modified, and have a default `on_close` handler that uses the modification status of a document to control whether a document can close. Invoking `touch()` on document will mark a document as modified. This modification flag is cleared by saving the document. ([#2209](https://github.com/beeware/toga/issues/2209))
+    - A path is no longer provided as an argument to the Document constructor;
+    - The `document_type` is now specified as a class property called `description`; and
+    - Extensions are now defined as a class property of the `Document`; and
+    - The `can_close()` handler is no longer honored. Documents now track if they are modified, and have a default `on_close` handler that uses the modification status of a document to control whether a document can close. Invoking `touch()` on document will mark a document as modified. This modification flag is cleared by saving the document. ([#2209](https://github.com/beeware/toga/issues/2209))
 
 - It is no longer possible to create a toolbar on a `Window` instance. Toolbars can only be added to `MainWindow` (or subclass). ([#2646](https://github.com/beeware/toga/issues/2646))
 

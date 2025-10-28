@@ -52,19 +52,19 @@ If you no longer wish to receive location updates, call [`Location.stop_tracking
 ## System requirements  { #location-system-requires }
 
 - Using location services on Linux requires that the user has installed the system packages for GeoClue2, plus the GObject Introspection bindings for GeoClue2. The name of the system package required is distribution dependent:
-  - Ubuntu and Debian: `gir1.2-geoclue-2.0`
-  - Fedora: `geoclue2-libs`
-  - Arch/Manjaro: `geoclue`
-  - OpenSUSE Tumbleweed: `geoclue2 typelib(geoclue2)`
-  - FreeBSD: `geoclue`
+    - Ubuntu and Debian: `gir1.2-geoclue-2.0`
+    - Fedora: `geoclue2-libs`
+    - Arch/Manjaro: `geoclue`
+    - OpenSUSE Tumbleweed: `geoclue2 typelib(geoclue2)`
+    - FreeBSD: `geoclue`
 - The GeoClue service must be enabled for Toga GTK location services to work. Some distributions are pre-configured with GeoClue and require no action from users to enable location services. Others, for example, [Ubuntu, have special controls for managing location services, which must be turned on before GeoClue will function](https://help.ubuntu.com/stable/ubuntu-help/privacy-location.html). Refer to your distribution's documentation on GeoClue and location services for details on how to manage and configure the GeoClue service.
 
 ## Notes
 
 - Apps that use location services must be configured to provide permissions to access those services. The permissions required are platform specific:
-  - iOS: `NSLocationWhenInUseUsageDescription` must be defined in the app's `Info.plist` file. If you want to track location while the app is in the background, you must also define `NSLocationAlwaysAndWhenInUseUsageDescription`, and add the `location` and `processing` values to `UIBackgroundModes`.
-  - macOS: The `com.apple.security.personal-information.location` entitlement must be enabled, and `NSLocationUsageDescription` must be defined in the app's `Info.plist` file.
-  - Android: At least one of the permissions `android.permission.ACCESS_FINE_LOCATION` or `android.permission.ACCESS_COARSE_LOCATION` must be declared; if only one is declared, this will impact on the precision available in location results. If you want to track location while the app is in the background, you must also define the permission `android.permission.ACCESS_BACKGROUND_LOCATION`.
+    - iOS: `NSLocationWhenInUseUsageDescription` must be defined in the app's `Info.plist` file. If you want to track location while the app is in the background, you must also define `NSLocationAlwaysAndWhenInUseUsageDescription`, and add the `location` and `processing` values to `UIBackgroundModes`.
+    - macOS: The `com.apple.security.personal-information.location` entitlement must be enabled, and `NSLocationUsageDescription` must be defined in the app's `Info.plist` file.
+    - Android: At least one of the permissions `android.permission.ACCESS_FINE_LOCATION` or `android.permission.ACCESS_COARSE_LOCATION` must be declared; if only one is declared, this will impact on the precision available in location results. If you want to track location while the app is in the background, you must also define the permission `android.permission.ACCESS_BACKGROUND_LOCATION`.
 - On macOS and GTK, there is no distinction between "background" permissions and "while-running" permissions for location tracking.
 - On Linux, there are no reliable permission controls for non-sandboxed applications. Sandboxed applications (e.g., Flatpak apps) request location information via the XDG Portal Location API, which has coarse grained permissions allowing users to reliably disallow location access on a per-app basis. However, [Linux users should be aware of the limitations of location privacy for non-sandboxed applications](https://gitlab.freedesktop.org/geoclue/geoclue/-/issues/111). This applies to all Linux applications, not just ones using Toga GTK's Location implementation.
 

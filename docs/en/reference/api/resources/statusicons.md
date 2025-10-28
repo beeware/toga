@@ -153,8 +153,8 @@ If you add a command to the app's status icon command set that *doesn't* belong 
 ## Notes
 
 - Status icons on GTK are implemented using the [XApp](https://github.com/linuxmint/xapp) library. This requires that the user has installed the system packages for `libxapp`, plus the GObject Introspection bindings for that library. The name of the system package required is distribution dependent:
-  - Ubuntu: `gir1.2-xapp-1.0`
-  - Fedora: `xapps`
+    - Ubuntu: `gir1.2-xapp-1.0`
+    - Fedora: `xapps`
 - The GNOME desktop environment does not provide built-in support for status icons. [This is an explicit design decision on their part](https://blogs.gnome.org/aday/2017/08/31/status-icons-and-gnome/), and they advise against using status icons as part of your app design. However, there are GNOME shell extensions that can add support for status icons. Other GTK-based desktop environments (such as Cinnamon) *do* support status icons.
 
 ## Reference
