@@ -36,8 +36,8 @@ extra_css:
 theme:
   name: material
   language: en
-  logo: assets/images/brutus-256.png
-  favicon: assets/images/brutus-256.png
+  logo: images/toga.png
+  favicon: images/toga.png
   features:
     - content.tabs.link
     - toc.follow
