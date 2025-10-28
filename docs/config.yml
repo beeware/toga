@@ -36,8 +36,8 @@ extra_css:
 theme:
   name: material
   language: en
-  logo: assets/images/brutus-256.png
-  favicon: assets/images/brutus-256.png
+  logo: images/toga.png
+  favicon: images/toga.png
   features:
     - content.tabs.link
     - toc.follow
@@ -116,7 +116,8 @@ plugins:
             signature_crossrefs: true  # Enables cross-referencing on signature annotations
             show_root_heading: true  # Show heading of object at root, otherwise nothing
             docstring_section_style: spacy  # Better info layout than the other options
-            line_length: 80  # Requires ruff, forces longer signatures to be stacked, if signatures aren't used, can be removed
-            show_symbol_type_toc: true  # This is what they added on place of function() (parens) being displayed in the sidebar ToC
+            line_length: 80  # Requires ruff, forces longer signatures to be stacked
+            show_symbol_type_toc: true  # Enables type symbols next to objects in ToC
+            show_symbol_type_heading: true  # Enables type symbols next to object names in content
             show_attribute_values: false  # Suppresses the values of attributes in the signature
             heading_level: 3  # Heading level of 3 to nest under References heading

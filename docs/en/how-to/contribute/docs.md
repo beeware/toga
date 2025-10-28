@@ -1,4 +1,4 @@
-# Contributing to Toga's documentation
+# Contributing to Toga's documentation { #contribute-docs }
 
 You might have the best software in the world - but if nobody knows how to use it, what's the point? Documentation can always be improved - and we need your help!
 
