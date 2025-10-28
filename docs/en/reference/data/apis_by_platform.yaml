@@ -168,8 +168,6 @@ General widgets:
     beta:
       - web
       - textual
-    unsupported:
-      - gtk
 
   TimeInput:
     description: A widget to select a clock time.
