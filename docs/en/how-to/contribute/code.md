@@ -1,4 +1,4 @@
-# Contributing code to Toga
+# Contributing code to Toga { #contribute-code }
 
 Is there a feature you'd like to see in Toga? Have you found a bug that you'd like to fix? Or are you just looking for a challenge to exercise your Python skills? Here's how to get involved!
 
@@ -35,7 +35,8 @@ $ git clone https://github.com/beeware/toga.git
 $ cd toga
 $ python3 -m venv .venv
 $ . .venv/bin/activate
-(.venv) $ python -m pip install -e "./core[dev]" -e ./dummy -e ./cocoa -e ./travertino
+(.venv) $ python -m pip install -U pip
+(.venv) $ python -m pip install -e ./core -e ./dummy -e ./cocoa -e ./travertino --group dev
 (.venv) $ pre-commit install
 ```
 
@@ -48,7 +49,8 @@ $ git clone https://github.com/beeware/toga.git
 $ cd toga
 $ python3 -m venv .venv
 $ . .venv/bin/activate
-(.venv) $ python -m pip install -e "./core[dev]" -e ./dummy -e ./gtk -e ./travertino
+(.venv) $ python -m pip install -U pip
+(.venv) $ python -m pip install -e ./core -e ./dummy -e ./gtk -e ./travertino --group dev
 (.venv) $ pre-commit install
 ```
 
@@ -61,7 +63,8 @@ C:\...>git clone https://github.com/beeware/toga.git
 C:\...>cd toga
 C:\...>py -m venv .venv
 C:\...>.venv\Scripts\activate
-(.venv) C:\...>python -m  pip install -e "./core[dev]" -e ./dummy -e ./winforms -e ./travertino
+(.venv) $ python -m pip install -U pip
+(.venv) C:\...>python -m  pip install -e ./core -e ./dummy -e ./winforms -e ./travertino --group dev
 (.venv) C:\...>pre-commit install
 ```
 
@@ -209,7 +212,8 @@ Now that you have the source code, you can do an [editable install](https://setu
 /// tab | macOS
 
 ```console
-(.venv) $ python -m pip install -e "./core[dev]" -e ./dummy -e ./cocoa -e ./travertino
+(.venv) $ python -m pip install -U pip
+(.venv) $ python -m pip install -e ./core -e ./dummy -e ./cocoa -e ./travertino --group dev
 ```
 
 ///
@@ -1064,7 +1068,7 @@ Once everything passes, you're ready for the next steps.
 
 When you submit this change as a pull request, you need to add a *change note*. Toga uses [`towncrier`](https://pypi.org/project/towncrier/) to automate building the release notes for each release. Every pull request must include at least one file in the `changes/` directory that provides a short description of the change implemented by the pull request.
 
-The change note should be in reStructuredText format, in a file that has name of the format `<id>.<fragment type>.rst`. If the change you are proposing will fix a bug or implement a feature for which there is an existing issue number, the ID will be the number of that ticket. If the change has no corresponding issue, the PR number can be used as the ID. You won't know this PR number until you push the pull request, so the first CI pass will fail the `towncrier` check; add the change note and push a PR update and CI should then pass.
+The change note should be in Markdown format, in a file that has name of the format `<id>.<fragment type>.md`. If the change you are proposing will fix a bug or implement a feature for which there is an existing issue number, the ID will be the number of that ticket. If the change has no corresponding issue, the PR number can be used as the ID. You won't know this PR number until you push the pull request, so the first CI pass will fail the `towncrier` check; add the change note and push a PR update and CI should then pass.
 
 There are five allowed fragment types:
 
@@ -1084,10 +1088,10 @@ The corresponding change note would read something like:
 
 Some PRs will introduce multiple features and fix multiple bugs, or introduce multiple backwards incompatible changes. In that case, the PR may have multiple change note files. If you need to associate two fragment types with the same ID, you can append a numerical suffix. For example, if PR 789 added a feature described by ticket 123, closed a bug described by ticket 234, and also made two backwards incompatible changes, you might have 4 change note files:
 
-- `123.feature.rst`
-- `234.bugfix.rst`
-- `789.removal.1.rst`
-- `789.removal.2.rst`
+- `123.feature.md`
+- `234.bugfix.md`
+- `789.removal.1.md`
+- `789.removal.2.md`
 
 For more information about `towncrier` and fragment types see [News Fragments](https://towncrier.readthedocs.io/en/stable/tutorial.html#creating-news-fragments). You can also see existing examples of news fragments in the `changes` directory of the Toga repository. If this folder is empty, it's likely because Toga has recently published a new release; change note files are deleted and combined to update the [release notes](../../about/releases.md) with each release. You can look at that file to see the style of comment that is required; you can look at [recently merged PRs](https://github.com/beeware/toga/pulls?q=is%3Apr+is%3Amerged) to see how to format your change notes.
 

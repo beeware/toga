@@ -238,7 +238,33 @@ Pack aims to be a functional subset of CSS. Any Pack layout can be converted int
 
 The mapping that can be used to establish the reference implementation is:
 
-- The reference HTML layout document is rendered in [no-quirks mode](https://developer.mozilla.org/en-US/docs/Web/HTML/Quirks_Mode_and_Standards_Mode), with a default CSS stylesheet:  ```html <!DOCTYPE html> <html>    <head>       <meta charset="UTF-8" />       <title>Pack layout testbed</title>       <style>          html, body {             height: 100%;          }          body {             overflow: hidden;             display: flex;             margin: 0;             white-space: pre;          }          div {             display: flex;             white-space: pre;          }       </style>    </head>    <body></body> </html> ```
+- The reference HTML layout document is rendered in [no-quirks mode](https://developer.mozilla.org/en-US/docs/Web/HTML/Quirks_Mode_and_Standards_Mode), with a default CSS stylesheet:
+
+```html
+<!DOCTYPE html>
+<html>
+    <head>
+       <meta charset="UTF-8" />
+       <title>Pack layout testbed</title>
+       <style>
+          html, body {
+             height: 100%;
+          }
+          body {
+             overflow: hidden;
+             display: flex;
+             margin: 0;
+             white-space: pre;
+          }
+          div {
+             display: flex;
+             white-space: pre;
+          }
+       </style>
+    </head>
+    <body></body>
+</html>
+```
 
 - The root widget of the Pack layout can be mapped to the `<body>` element of the HTML reference document. The rendering area of the browser window becomes the view area that Pack will fill.
 
@@ -246,6 +272,20 @@ The mapping that can be used to establish the reference implementation is:
 
 - All other widgets are mapped to `<div>` elements.
 
-- The following Pack declarations can be mapped to equivalent CSS declarations:    | Pack property           | CSS property                                                                                                                         |   |-------------------------|--------------------------------------------------------------------------------------------------------------------------------------|   | `direction: <str>`      | `flex-direction: <str>`                                                                                                              |   | `display: pack`         | `display: flex`                                                                                                                      |   | `flex: <int>`           | If `direction == "row"` and `width` is set, or `direction == "column"` and `height` is set, ignore. Otherwise, `flex: <int> 0 auto`. |   | `font_size: <int>`      | `font-size: <int>pt`                                                                                                                 |   | `height: <value>`       | `height: <value>px` if value is an integer; `height: auto` if value is `"none"`.                                                     |   | `margin_top: <int>`     | `margin-top: <int>px`                                                                                                                |   | `margin_bottom: <int>`  | `margin-bottom: <int>px`                                                                                                             |   | `margin_left: <int>`    | `margin-left: <int>px`                                                                                                               |   | `margin_right: <int>`   | `margin-right: <int>px`                                                                                                              |   | `text_direction: <str>` | `direction: <str>`                                                                                                                   |   | `width: <value>`        | `width: <value>px` if value is an integer; `width: auto` if value is `"none"`.                                                       |
+- The following Pack declarations can be mapped to equivalent CSS declarations:
+
+| Pack property           | CSS property                                                                                                                         |
+|-------------------------|--------------------------------------------------------------------------------------------------------------------------------------|
+| `direction: <str>`      | `flex-direction: <str>`                                                                                                              |
+| `display: pack`         | `display: flex`                                                                                                                      |
+| `flex: <int>`           | If `direction == "row"` and `width` is set, or `direction == "column"` and `height` is set, ignore. Otherwise, `flex: <int> 0 auto`. |
+| `font_size: <int>`      | `font-size: <int>pt`                                                                                                                 |
+| `height: <value>`       | `height: <value>px` if value is an integer; `height: auto` if value is `"none"`.                                                     |
+| `margin_top: <int>`     | `margin-top: <int>px`                                                                                                                |
+| `margin_bottom: <int>`  | `margin-bottom: <int>px`                                                                                                             |
+| `margin_left: <int>`    | `margin-left: <int>px`                                                                                                               |
+| `margin_right: <int>`   | `margin-right: <int>px`                                                                                                              |
+| `text_direction: <str>` | `direction: <str>`                                                                                                                   |
+| `width: <value>`        | `width: <value>px` if value is an integer; `width: auto` if value is `"none"`.                                                       |
 
 - All other Pack declarations should be used as-is as CSS declarations, with underscores being converted to dashes (e.g., `background_color` becomes `background-color`).

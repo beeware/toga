@@ -1,84 +1,4 @@
-# WebView
-
-An embedded web browser.
-
-/// tab | macOS
-
-![/reference/images/webview-cocoa.png](/reference/images/webview-cocoa.png){ width="450" }
-
-/// caption
-
-///
-
-<!-- TODO: Update alt text -->
-
-///
-
-/// tab | Linux (GTK)
-
-![/reference/images/webview-gtk.png](/reference/images/webview-gtk.png){ width="450" }
-
-/// caption
-
-///
-
-<!-- TODO: Update alt text -->
-
-///
-
-/// tab | Linux (Qt) {{ not_supported }}
-
-Not supported
-
-///
-
-/// tab | Windows
-
-![/reference/images/webview-winforms.png](/reference/images/webview-winforms.png){ width="450" }
-
-/// caption
-
-///
-
-<!-- TODO: Update alt text -->
-
-///
-
-/// tab | Android
-
-![/reference/images/webview-android.png](/reference/images/webview-android.png){ width="450" }
-
-/// caption
-
-///
-
-<!-- TODO: Update alt text -->
-
-///
-
-/// tab | iOS
-
-![/reference/images/webview-iOS.png](/reference/images/webview-iOS.png){ width="450" }
-
-/// caption
-
-///
-
-<!-- TODO: Update alt text -->
-
-///
-
-/// tab | Web {{ not_supported }}
-
-Not supported
-
-///
-
-/// tab | Textual {{ not_supported }}
-
-Not supported
-
-///
+{{ component_header("WebView", width=450) }}
 
 ## Usage
 
@@ -102,12 +22,12 @@ webview.set_content("https://example.com", "<html>...</html>")
 - Using WebView on Windows 10 requires that your users have installed the [Edge WebView2 Evergreen Runtime](https://developer.microsoft.com/en-us/microsoft-edge/webview2/#download). This is installed by default on Windows 11.
 
 - Using WebView on Linux requires that the user has installed the system packages for WebKit2, plus the GObject Introspection bindings for WebKit2. The name of the system package required is distribution dependent:
-  - Ubuntu 20.04; Debian 11: `gir1.2-webkit2-4.0`
-  - Ubuntu 22.04+; Debian 12+: `gir1.2-webkit2-4.1`
-  - Fedora: `webkit2gtk4.1`
-  - Arch/Manjaro: `webkit2gtk-4.1`
-  - OpenSUSE Tumbleweed: `libwebkit2gtk3 typelib(WebKit2)`
-  - FreeBSD: `webkit2-gtk3`
+    - Ubuntu 20.04; Debian 11: `gir1.2-webkit2-4.0`
+    - Ubuntu 22.04+; Debian 12+: `gir1.2-webkit2-4.1`
+    - Fedora: `webkit2gtk4.1`
+    - Arch/Manjaro: `webkit2gtk-4.1`
+    - OpenSUSE Tumbleweed: `libwebkit2gtk3 typelib(WebKit2)`
+    - FreeBSD: `webkit2-gtk3`
 
   WebView is not fully supported on GTK4. If you want to contribute to   the GTK4 WebView implementation, you will require v6.0 of the WebKit2   libraries. This is provided by `gir1.2-webkit-6.0` on Ubuntu/Debian,   and `webkitgtk6.0` on Fedora; for other distributions, consult your   distribution's platform documentation.
 

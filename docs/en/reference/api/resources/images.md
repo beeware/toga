@@ -1,11 +1,4 @@
-# Image
-
-Graphical content of arbitrary size.
-
-Availability ([Key][api-status-key])  <!-- rumdl-disable-line MD013 -->
-{: .availability-title }
-
-{{ pd_read_csv("reference/data/widgets_by_platform.csv", na_filter=False, usecols=[4,5,6,7,8,9,10,11])[pd_read_csv("reference/data/widgets_by_platform.csv")[["ComponentName"]].isin(["Image"]).all(axis=1)] | convert_to_md_table }}
+{{ component_header("Image") }}
 
 ## Usage
 
@@ -49,18 +42,18 @@ You can also tell Toga how to convert from (and to) other classes that represent
 [](){ #known-image-formats }
 
 - PNG and JPEG formats are guaranteed to be supported. Other formats are available on some platforms:
-  - GTK: BMP
-  - macOS: GIF, BMP, TIFF
-  - Windows: GIF, BMP, TIFF
+    - GTK: BMP
+    - macOS: GIF, BMP, TIFF
+    - Windows: GIF, BMP, TIFF
 
 [](){ #native-image-rep }
 
 - The native platform representations for images are:
-  - Android: `android.graphics.Bitmap`
-  - GTK: `GdkPixbuf.Pixbuf`
-  - iOS: `UIImage`
-  - macOS: `NSImage`
-  - Windows: `System.Drawing.Image`
+    - Android: `android.graphics.Bitmap`
+    - GTK: `GdkPixbuf.Pixbuf`
+    - iOS: `UIImage`
+    - macOS: `NSImage`
+    - Windows: `System.Drawing.Image`
 
 [](){ #toga_image_subclassing }
 

@@ -74,22 +74,22 @@
 }
 
 /* API Reference tables */
-h2[id^="api-reference-"] + .md-typeset__scrollwrap .md-typeset__table table {
+h2.api-reference + .md-typeset__scrollwrap .md-typeset__table table {
     font-size: 0.73rem;
 }
 
-h2[id^="api-reference-"] + .md-typeset__scrollwrap .md-typeset__table table thead tr th {
+h2.api-reference + .md-typeset__scrollwrap .md-typeset__table th {
     text-align: center;
     padding: 0 0.25em;
     background-color: light-dark(#e8e8e8, #313643);
 }
 
-h2[id^="api-reference-"] + .md-typeset__scrollwrap .md-typeset__table table tbody tr td {
+h2.api-reference + .md-typeset__scrollwrap .md-typeset__table td {
     padding: 0.2em 0.4em;
     vertical-align: middle;
 }
 
-h2[id^="api-reference-"] + .md-typeset__scrollwrap .md-typeset__table table tbody tr td:first-of-type {
+h2.api-reference + .md-typeset__scrollwrap .md-typeset__table td:first-of-type {
     border-right: .05rem solid var(--md-typeset-table-color);
 }
 

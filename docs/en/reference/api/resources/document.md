@@ -1,11 +1,4 @@
-# Document
-
-A representation of a file on disk that will be displayed in one or more windows.
-
-Availability ([Key][api-status-key])  <!-- rumdl-disable-line MD013 -->
-{: .availability-title }
-
-{{ pd_read_csv("reference/data/widgets_by_platform.csv", na_filter=False, usecols=[4,5,6,7,8,9,10,11])[pd_read_csv("reference/data/widgets_by_platform.csv")[["ComponentName"]].isin(["Document"]).all(axis=1)] | convert_to_md_table }}
+{{ component_header("Document") }}
 
 ## Usage
 

@@ -1,4 +1,4 @@
-# Widget layout  { #layout }
+# Widget layout
 
 One of the major tasks of a GUI framework is to determine where each widget will be displayed within the application window. This determination must be made when a window is initially displayed, and every time the window changes size (or, on mobile devices, changes orientation).
 
