@@ -101,12 +101,12 @@ Each [`Node`][toga.sources.Node] returned by the source must itself expose a *li
 
 ### Notifications
 
-Tree widgets need to know when the underlying data changes. Your source must therefore call `self.notify()` with **exactly** the following message names and kwargs:
+Tree widgets need to know when the underlying data changes. Your source must therefore call `self.notify()` with **exactly** the following message names and keyword arguments:
 
-- `insert` — kwargs: `parent` (*Node | None*), `index` (*int*), `item` (*Node*). Emitted after a node is inserted (root nodes use `parent=None`).
-- `remove` — kwargs: `parent` (*Node | None*), `index` (*int*), `item` (*Node*). Emitted after a node is removed.
-- `change` — kwargs: `item` (*Node*). Emitted when any public attribute on a node changes.
-- `clear` — *(no kwargs)*. Emitted when the source is wiped clean.
+- `insert` — keyword arguments: `parent` (*Node | None*), `index` (*int*), `item` (*Node*). Emitted after a node is inserted (root nodes use `parent=None`).
+- `remove` — keyword arguments: `parent` (*Node | None*), `index` (*int*), `item` (*Node*). Emitted after a node is removed.
+- `change` — keyword arguments: `item` (*Node*). Emitted when any public attribute on a node changes.
+- `clear` — *(no keyword arguments)*. Emitted when the source is wiped clean.
 
 Without these notifications the UI will not update to reflect the current state of your data.
 

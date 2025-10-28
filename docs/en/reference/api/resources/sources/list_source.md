@@ -74,10 +74,10 @@ Implementations are free to expose additional helpers (for example, `find()` or 
 
 After mutating its data the source **must** call `self.notify()` with one of the following message names so that connected widgets can refresh:
 
-- `insert` — kwargs: `index` (*int*), `item` (*Row*). Sent after a row is inserted *or replaced*.
-- `remove` — kwargs: `index` (*int*), `item` (*Row*). Sent after a row is removed.
-- `change` — kwargs: `item` (*Row*). Sent when any public attribute on a row object changes.
-- `clear` — *(no kwargs)*. Sent after the source becomes empty.
+- `insert` — keyword arguments: `index` (*int*), `item` (*Row*). Sent after a row is inserted *or replaced*.
+- `remove` — keyword arguments: `index` (*int*), `item` (*Row*). Sent after a row is removed.
+- `change` — keyword arguments: `item` (*Row*). Sent when any public attribute on a row object changes.
+- `clear` — *(no keyword arguments)*. Sent after the source becomes empty.
 
 Omitting these notifications will leave the UI components out of sync with the underlying data.
 
