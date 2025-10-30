@@ -66,7 +66,9 @@ root = ".."
 dependencies = [
     "pycairo >= 1.17.0",
     # PyGObject 3.50.0 is the first version with native GTK asyncio integration.
-    "pygobject >= 3.50.0",
+    # However, from 3.52.1 access to VFuncInfo objects of virtual functions has
+    # been streamlined.
+    "pygobject >= 3.52.1",
     "toga-core == {version}",
 ]
 
