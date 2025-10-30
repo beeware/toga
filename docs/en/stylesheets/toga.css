@@ -2,10 +2,6 @@
     color-scheme: light dark;
 }
 
-/* Indent class/method/etc. contents */
-
-.doc-contents, .doc-signature { margin-left: 2em; }
-
 /* Title for platform availability tables */
 .availability-title {
     text-align: center;
