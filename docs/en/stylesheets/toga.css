@@ -92,9 +92,3 @@ h2.api-reference + .md-typeset__scrollwrap .md-typeset__table td {
 h2.api-reference + .md-typeset__scrollwrap .md-typeset__table td:first-of-type {
     border-right: .05rem solid var(--md-typeset-table-color);
 }
-
-/* Override margins on the signatures of items with no docstring on pages where headings are not included */
-h3.doc-heading {
-    margin-top: 0;
-    margin-bottom: 0.5rem;
-}
