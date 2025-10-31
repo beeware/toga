@@ -14,7 +14,8 @@ def slugify(string):
 
 PLATFORMS_MAPPING = {
     "cocoa": "macOS",
-    "gtk": "GTK",
+    "gtk": "Linux (GTK)",
+    "qt": "Linux (Qt)",
     "winforms": "Windows",
     "iOS": "iOS",
     "android": "Android",

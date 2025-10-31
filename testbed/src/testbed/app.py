@@ -221,8 +221,8 @@ class Testbed(toga.App):
         self.main_window.show()
 
 
-def main():
+def main(appname):
     return Testbed(
-        app_name="testbed",
+        app_name=appname,
         document_types=[ExampleDoc, ReadonlyDoc],
     )
