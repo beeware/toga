@@ -4,10 +4,10 @@ from decimal import ROUND_UP, Decimal, InvalidOperation
 import System.Windows.Forms as WinForms
 from System import Convert, String
 
+from toga.handlers import WeakrefCallable
 from toga.widgets.numberinput import _clean_decimal
 from toga_winforms.libs.fonts import HorizontalTextAlignment
 
-from ..libs.wrapper import WeakrefCallable
 from .base import Widget
 
 
