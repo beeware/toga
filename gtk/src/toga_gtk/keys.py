@@ -187,10 +187,10 @@ GTK_MODIFIER_CODES = {
 }
 
 
-def toga_key(event):
+def toga_key(keyval: int, state: Gdk.ModifierType):
     """Convert a GDK Key Event into a Toga key."""
     try:
-        key = GDK_KEYS[event.keyval]
+        key = GDK_KEYS[keyval]
     except KeyError:  # pragma: no cover
         # Ignore any key event code we can't map. This can happen for weird key
         # combination (ctrl-alt-tux), and if the X server has weird key
@@ -198,15 +198,15 @@ def toga_key(event):
         # need to no-cover this branch.
         return None
 
-    modifiers = set()
+    modifiers: set[Key] = set()
 
-    if event.state & Gdk.ModifierType.SHIFT_MASK:
+    if state & Gdk.ModifierType.SHIFT_MASK:
         modifiers.add(Key.SHIFT)
-    if event.state & Gdk.ModifierType.CONTROL_MASK:
+    if state & Gdk.ModifierType.CONTROL_MASK:
         modifiers.add(Key.MOD_1)
-    if event.state & Gdk.ModifierType.META_MASK:
+    if state & Gdk.ModifierType.META_MASK:
         modifiers.add(Key.MOD_2)
-    if event.state & Gdk.ModifierType.HYPER_MASK:
+    if state & Gdk.ModifierType.HYPER_MASK:
         modifiers.add(Key.MOD_3)
 
     return {"key": key, "modifiers": modifiers}

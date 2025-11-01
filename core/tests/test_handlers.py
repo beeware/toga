@@ -1,9 +1,16 @@
 import asyncio
+import gc
 from unittest.mock import Mock
 
 import pytest
 
-from toga.handlers import AsyncResult, NativeHandler, simple_handler, wrapped_handler
+from toga.handlers import (
+    AsyncResult,
+    NativeHandler,
+    WeakrefCallable,
+    simple_handler,
+    wrapped_handler,
+)
 
 
 class ExampleAsyncResult(AsyncResult):
@@ -721,3 +728,123 @@ async def test_async_exception_cancelled_sync():
 
     # The callback wasn't called
     on_result.assert_not_called()
+
+
+def test_weakref_function_call():
+    """Test that WeakrefCallable correctly calls the wrapped function."""
+
+    def test_func(x, y=2):
+        return x + y
+
+    wrc = WeakrefCallable(test_func)
+
+    # Test with positional arguments
+    assert wrc(3) == 5
+
+    # Test with keyword arguments
+    assert wrc(3, y=3) == 6
+
+    # Test with mixed arguments
+    assert wrc(3, 4) == 7
+
+
+def test_weakref_method_call():
+    """Test that WeakrefCallable correctly calls a method."""
+
+    class TestClass:
+        def __init__(self, value):
+            self.value = value
+
+        def method(self, x):
+            return self.value + x
+
+    obj = TestClass(5)
+    wrc = WeakrefCallable(obj.method)
+
+    # Test method call
+    assert wrc(3) == 8
+
+
+def test_weakref_lambda_call():
+    """Test that WeakrefCallable works with lambda functions."""
+    # Store the lambda in a variable to prevent it from being garbage collected
+    lambda_func = lambda x: x * 2  # noqa: E731
+    wrc = WeakrefCallable(lambda_func)
+    assert wrc(5) == 10
+
+
+def test_weakref_gc_function():
+    """Test that function is garbage collected properly."""
+
+    def create_function_wrapper():
+        def temp_func(x):
+            return x * 3
+
+        return WeakrefCallable(temp_func)
+
+    wrc = create_function_wrapper()
+
+    # Force garbage collection
+    gc.collect()
+
+    # The function should be gone
+    assert wrc.ref() is None
+
+
+def test_weakref_gc_method():
+    """Test that method and its object are garbage collected properly."""
+
+    class TempClass:
+        def method(self, x):
+            return x * 4
+
+    def create_method_wrapper():
+        obj = TempClass()
+        return WeakrefCallable(obj.method), obj
+
+    wrc, obj_ref = create_method_wrapper()
+
+    # Object still exists, method should work
+    assert wrc(2) == 8
+
+    # Delete the reference to the object
+    del obj_ref
+
+    # Force garbage collection
+    gc.collect()
+
+    # The method reference should be gone
+    assert wrc.ref() is None
+
+
+def test_weakref_callable_object():
+    """Test that WeakrefCallable works with callable objects."""
+
+    class CallableObject:
+        def __call__(self, x):
+            return x * 5
+
+    obj = CallableObject()
+    wrc = WeakrefCallable(obj)
+
+    # Test call
+    assert wrc(2) == 10
+
+
+def test_weakref_none_result_when_function_gone():
+    """Test that calling the wrapper after the target is collected doesn't error."""
+
+    def create_function_wrapper():
+        def temp_func(x):
+            return x * 3
+
+        return WeakrefCallable(temp_func)
+
+    wrc = create_function_wrapper()
+
+    # Force garbage collection
+    gc.collect()
+
+    # Calling the wrapper should not raise an error
+    result = wrc(10)
+    assert result is None
