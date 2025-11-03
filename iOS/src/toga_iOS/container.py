@@ -1,3 +1,7 @@
+from rubicon.objc import objc_method, objc_property, send_super
+
+import toga
+
 from .libs import (
     UIApplication,
     UINavigationController,
@@ -5,6 +9,9 @@ from .libs import (
     UIViewAutoresizing,
     UIViewController,
 )
+
+toga.Widget.DEBUG_LAYOUT_ENABLED = True
+
 
 #######################################################################################
 # Implementation notes:
@@ -15,8 +22,19 @@ from .libs import (
 #######################################################################################
 
 
+class TogaContainerView(UIView):
+    container = objc_property(object, weak=True)
+
+    @objc_method
+    def safeAreaInsetsDidChange(self):
+        send_super(__class__, self, "safeAreaInsetsDidChange")
+        if self.container.content:
+            self.container.content.interface.refresh()
+            self.container.refreshed()
+
+
 class BaseContainer:
-    def __init__(self, content=None, on_refresh=None):
+    def __init__(self, content=None, on_refresh=None, safe_bottom=False):
         """A base class for iOS containers.
 
         :param content: The widget impl that is the container's initial content.
@@ -25,6 +43,7 @@ class BaseContainer:
         """
         self._content = content
         self.on_refresh = on_refresh
+        self._safe_bottom = safe_bottom
 
     @property
     def content(self):
@@ -52,7 +71,9 @@ class BaseContainer:
 
 
 class Container(BaseContainer):
-    def __init__(self, content=None, layout_native=None, on_refresh=None):
+    def __init__(
+        self, content=None, layout_native=None, on_refresh=None, safe_bottom=False
+    ):
         """
         :param content: The widget impl that is the container's initial content.
         :param layout_native: The native widget that should be used to provide size
@@ -62,9 +83,14 @@ class Container(BaseContainer):
             the size can be different.
         :param on_refresh: The callback to be notified when this container's layout is
             refreshed.
+        :param safe_bottom: Whether the container should not extend into bottom
+            safe area insets.
         """
-        super().__init__(content=content, on_refresh=on_refresh)
-        self.native = UIView.alloc().init()
+        super().__init__(
+            content=content, on_refresh=on_refresh, safe_bottom=safe_bottom
+        )
+        self.native = TogaContainerView.alloc().init()
+        self.native.container = self
         self.native.translatesAutoresizingMaskIntoConstraints = True
         self.native.autoresizingMask = (
             UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleHeight
@@ -83,7 +109,14 @@ class Container(BaseContainer):
 
     @property
     def height(self):
-        return self.layout_native.bounds.size.height - self.top_offset
+        if self._safe_bottom:
+            return (
+                self.layout_native.bounds.size.height
+                - self.top_offset
+                - self.layout_native.safeAreaInsets.bottom
+            )
+        else:
+            return self.layout_native.bounds.size.height - self.top_offset
 
     @property
     def top_offset(self):
@@ -96,6 +129,7 @@ class ControlledContainer(Container):
         content=None,
         layout_native=None,
         on_refresh=None,
+        safe_bottom=False,
     ):
         """
         :param content: The widget impl that is the container's initial content.
@@ -106,11 +140,14 @@ class ControlledContainer(Container):
             rendered, the source of the size can be different.
         :param on_refresh: The callback to be notified when this container's layout is
             refreshed.
+        :param safe_bottom: Whether the container should not extend into bottom
+            safe area insets.
         """
         super().__init__(
             content=content,
             layout_native=layout_native,
             on_refresh=on_refresh,
+            safe_bottom=safe_bottom,
         )
 
         # Construct a ViewController that provides a navigation bar, and
@@ -128,6 +165,7 @@ class RootContainer(Container):
         content=None,
         layout_native=None,
         on_refresh=None,
+        safe_bottom=False,
     ):
         """A bare content container.
 
@@ -141,11 +179,14 @@ class RootContainer(Container):
             rendered, the source of the size can be different.
         :param on_refresh: The callback to be notified when this container's layout is
             refreshed.
+        :param safe_bottom: Whether the container should not extend into bottom
+            safe area insets.
         """
         super().__init__(
             content=content,
             layout_native=layout_native,
             on_refresh=on_refresh,
+            safe_bottom=safe_bottom,
         )
 
         # Construct a UIViewController to hold the root content
@@ -174,6 +215,7 @@ class NavigationContainer(Container):
         content=None,
         layout_native=None,
         on_refresh=None,
+        safe_bottom=False,
     ):
         """A top level container that provides a navigation/title bar.
 
@@ -190,6 +232,7 @@ class NavigationContainer(Container):
             content=content,
             layout_native=layout_native,
             on_refresh=on_refresh,
+            safe_bottom=safe_bottom,
         )
 
         # Construct a NavigationController that provides a navigation bar, and
