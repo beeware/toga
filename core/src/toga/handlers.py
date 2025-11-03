@@ -152,7 +152,7 @@ def wrapped_handler(
             return handler.native
 
         def _handler(*args: object, **kwargs: object) -> object:
-            if asyncio.iscoroutinefunction(handler):
+            if inspect.iscoroutinefunction(handler):
                 return asyncio.ensure_future(
                     handler_with_cleanup(handler, cleanup, interface, *args, **kwargs)
                 )
