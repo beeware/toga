@@ -97,7 +97,7 @@ def test_window_created_without_app():
         toga.Window()
 
 
-def test_set_app(window, app):
+async def test_set_app(window, app):
     """A window's app cannot be reassigned."""
     assert window.app == app
 

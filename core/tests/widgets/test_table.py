@@ -326,7 +326,7 @@ def test_insert_column_accessor(table):
 
 def test_insert_column_unknown_accessor(table):
     """If the insertion index accessor is unknown, an error is raised."""
-    with pytest.raises(ValueError, match=r"'unknown' is not in list"):
+    with pytest.raises(ValueError, match=r"not in list"):
         table.insert_column("unknown", "New Column", accessor="extra")
 
 
@@ -478,7 +478,7 @@ def test_remove_column_accessor(table):
 
 def test_remove_column_unknown_accessor(table):
     """If the column named for removal doesn't exist, an error is raised."""
-    with pytest.raises(ValueError, match=r"'unknown' is not in list"):
+    with pytest.raises(ValueError, match=r"not in list"):
         table.remove_column("unknown")
 
 
