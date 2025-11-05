@@ -5,7 +5,7 @@ from toga.constants import COLUMN, ROW
 from toga.style import Pack
 
 
-class ExampleWebView(toga.App):
+class WebViewApp(toga.App):
     allowed_base_url = "https://beeware.org/"
 
     async def on_do_async_js(self, widget, **kwargs):
@@ -133,7 +133,7 @@ class ExampleWebView(toga.App):
 
 
 def main():
-    return ExampleWebView("Toga WebView Demo", "org.beeware.toga.examples.webview")
+    return WebViewApp("Toga WebView Demo", "org.beeware.toga.examples.webview")
 
 
 if __name__ == "__main__":
