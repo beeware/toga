@@ -144,15 +144,15 @@ class WebView(Widget):
         return self._on_navigation_starting
 
     @on_navigation_starting.setter
-    def on_navigation_starting(self, handler, url=None):
+    def on_navigation_starting(self, handler):
         """Set the handler to invoke when the webview starts navigating"""
 
-        def cleanup(widget, result):
+        def cleanup(widget, result, **kwargs):
+            url = kwargs.get("url", None)
             try:
                 msg = f"on_navigation_starting.cleanup, url={url}, "
                 msg += f"result={str(result)}"
                 print(msg)
-                print(f"widget._requested_url={widget._requested_url}")
                 if url is None:
                     # The user on_navigation_handler is synchronous - do nothing
                     return

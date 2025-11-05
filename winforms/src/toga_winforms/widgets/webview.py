@@ -200,7 +200,6 @@ class WebView(Widget):
                     allow = result
                 elif isinstance(result, asyncio.Future):
                     # on_navigation_starting handler is asynchronous
-                    self.interface._requested_url = event.Uri  # should not be needed
                     if result.done():
                         allow = result.result()
                         print(f"asynchronous handler, result={str(allow)}")
