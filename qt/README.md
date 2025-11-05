@@ -6,35 +6,24 @@
 
 A Qt backend for the [Toga widget toolkit](https://beeware.org/toga).
 
-This package isn't much use by itself; it needs to be combined with
-[the core Toga library](https://pypi.python.org/pypi/toga-core).
+This package isn't much use by itself; it needs to be combined with [the core Toga library](https://pypi.python.org/pypi/toga-core).
 
 For platform requirements, see the Qt platform documentation (TODO).
 
-For more details, see the [Toga project on
-GitHub](https://github.com/beeware/toga).
+For more details, see the [Toga project on GitHub](https://github.com/beeware/toga).
 
 ## Community
 
-Toga is part of the [BeeWare suite](https://beeware.org). You can talk
-to the community through:
+Toga is part of the [BeeWare suite](https://beeware.org). You can talk to the community through:
 
--   [@beeware@fosstodon.org on
-    Mastodon](https://fosstodon.org/@beeware)
+-   [@beeware@fosstodon.org on Mastodon](https://fosstodon.org/@beeware)
 -   [Discord](https://beeware.org/bee/chat/)
--   The Toga [GitHub Discussions
-    forum](https://github.com/beeware/toga/discussions)
+-   The Toga [GitHub Discussions forum](https://github.com/beeware/toga/discussions)
 
-We foster a welcoming and respectful community as described in our
-[BeeWare Community Code of
-Conduct](https://beeware.org/community/behavior/).
+We foster a welcoming and respectful community as described in our [BeeWare Community Code of Conduct](https://beeware.org/community/behavior/).
 
 ## Contributing
 
-If you experience problems with Toga, [log them on
-GitHub](https://github.com/beeware/toga/issues).
+If you experience problems with Toga, [log them on GitHub](https://github.com/beeware/toga/issues).
 
-If you'd like to contribute to Toga development, our [contribution
-guide](https://toga.beeware.org/en/latest/how-to/contribute)
-details how to set up a development environment, and other requirements
-we have as part of our contribution process.
+If you'd like to contribute to Toga development, our [contribution guide](https://toga.beeware.org/en/latest/how-to/contribute) details how to set up a development environment, and other requirements we have as part of our contribution process.
