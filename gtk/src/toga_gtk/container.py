@@ -231,8 +231,6 @@ if GTK_VERSION >= (4, 0, 0):  # pragma: no-cover-if-gtk3
                 print("[DEBUG CONTAINER] width property: No content, returning 0")
                 return 0
 
-            if self._dirty_widgets and self.needs_redraw:
-                self.recompute()
             width = self.get_width()
             print(f"[DEBUG CONTAINER] width property: returning {width}")
             return width
@@ -247,8 +245,6 @@ if GTK_VERSION >= (4, 0, 0):  # pragma: no-cover-if-gtk3
                 print("[DEBUG CONTAINER] height property: No content, returning 0")
                 return 0
 
-            if self._dirty_widgets and self.needs_redraw:
-                self.recompute()
             height = self.get_height()
             print(f"[DEBUG CONTAINER] height property: returning {height}")
             return height
