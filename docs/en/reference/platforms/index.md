@@ -4,7 +4,8 @@
 
 * [macOS](./macOS.md)
 * [Windows](./windows.md)
-* [Linux](./linux.md)
+* [Linux (GTK)](./gtk.md)
+* [Linux (Qt)](./qt.md)
 
 ## Mobile
 

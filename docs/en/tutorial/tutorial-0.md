@@ -53,19 +53,9 @@ No additional dependencies are necessary.
 
 /// tab | Linux
 
-Before you install Toga, you'll need to install some system packages.
-
-/// tab | GTK
+Before you install Toga, you'll need to install some system packages.  The new beta Qt backend is not sufficient to run this tutorial yet.
 
 -8<- "reference/platforms/gtk-prerequisites.md"
-
-///
-
-/// tab | Qt
-
--8<- "reference/platforms/qt-prerequisites.md"
-
-///
 
 ///
 
@@ -87,25 +77,9 @@ Next, install Toga into your virtual environment:
 
 /// tab | Linux
 
-For using the GTK backend:
-
 ```console
 (venv) $ python -m pip install toga
 ```
-
-For using the Qt backend:
-
-```console
-(venv) $ python -m pip install toga-core toga-qt[system]
-```
-
-Or, if your system does not bundle PySide6:
-
-```console
-(venv) $ python -m pip install toga-core toga-qt[pyside6]
-```
-
-with the caveat that system themes will not integrate properly.
 
 If you get an error when installing Toga, please ensure that you have fully installed all the platform prerequisites.
 

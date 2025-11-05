@@ -356,11 +356,6 @@ jobs:
               libxfixes-dev libxi-dev libxkbcommon-dev \
               libxkbcommon-x11-dev libxrender-dev 'libxcb*-dev' \
 
-            # Ubuntu 24.04 does not provide PySide6
-            # so we fake it like this to test system-pyside6.
-            # This bundles its own Qt.
-            sudo pip install --break-system-packages PySide6
-
             # Start Virtual X Server
             echo "Start X server..."
             Xvfb :99 -screen 0 2048x1536x24 &
@@ -387,11 +382,6 @@ jobs:
               gnome-session-canberra \
               libwayland-dev libwayland-egl1-mesa libwayland-server0 \
               libgles2-mesa-dev libxkbcommon-dev
-
-            # Ubuntu 24.04 does not provide PySide6
-            # so we fake it like this to test system-pyside6.
-            # This bundles its own Qt.
-            sudo pip install --break-system-packages PySide6
 
             # Start Virtual X Server
             echo "Start X server..."
