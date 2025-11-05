@@ -137,5 +137,6 @@ test_sources = [
     "../qt/tests_backend",
 ]
 requires = [
-    "../qt[pyside6]",
+    "../qt",
+    "PySide6-Essentials~=6.10.0",
 ]
