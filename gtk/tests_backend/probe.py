@@ -13,7 +13,6 @@ class BaseProbe:
 
     async def redraw(self, message=None, delay=0):
         """Request a redraw of the app, waiting until that redraw has completed."""
-        print(f"[DEBUG REDRAW] Redraw called with message: {message}, delay: {delay}")
         if (
             hasattr(self, "native")
             and self.native
@@ -40,9 +39,8 @@ class BaseProbe:
                     with contextlib.suppress(SystemError):
                         frame_clock.disconnect(handler_id)
 
-        print("[DEBUG REDRAW] Processing events to ensure UI is fully updated")
-        events_processed = 0
-        for i in range(15):
+        # Process events to ensure the UI is fully updated
+        for _ in range(15):
             if GTK_VERSION < (4, 0, 0):
                 if Gtk.events_pending():
                     Gtk.main_iteration_do(blocking=False)
@@ -51,20 +49,12 @@ class BaseProbe:
             else:
                 context = GLib.main_context_default()
                 if context.pending():
-                    print(f"[DEBUG REDRAW] GTK4: Processing context iteration {i + 1}")
                     context.iteration(may_block=False)
-                    events_processed += 1
                 else:
-                    print(
-                        f"[DEBUG REDRAW] GTK4: "
-                        f"No more events pending after {events_processed} iterations"
-                    )
                     break
 
         # Always yield to let GTK catch up
-        print("[DEBUG REDRAW] Yielding control with asyncio.sleep(0)")
         await asyncio.sleep(0)
-        print("[DEBUG REDRAW] Redraw method complete")
 
         if toga.App.app.run_slow:
             delay = max(1, delay)

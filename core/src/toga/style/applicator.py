@@ -43,15 +43,10 @@ class TogaApplicator:
 
     def refresh(self) -> None:
         # print("RE-EVALUATE LAYOUT", self.widget)
-        print("[DEBUG Applicator] refresh called")
         self.widget.refresh()
 
     def set_bounds(self) -> None:
         # print("  APPLY LAYOUT", self.widget, self.widget.layout)
-        print(
-            f"[DEBUG Applicator] set_bounds called "
-            f"{self.widget} with layout {self.widget.layout}"
-        )
         self.widget._impl.set_bounds(
             self.widget.layout.absolute_content_left,
             self.widget.layout.absolute_content_top,

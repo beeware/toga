@@ -533,11 +533,7 @@ async def test_flex_horizontal_widget_size(widget, probe):
     original_height = probe.height
 
     # Make the widget flexible; it will expand to fill horizontal space
-    print(f"[DEBUG Test] widget intrinsic height {widget.intrinsic.height}")
-    print("[DEBUG Test] Before flex set")
     widget.style.flex = 1
-    print("[DEBUG Test] After flex set")
-    print(f"[DEBUG Test] widget intrinsic height {widget.intrinsic.height}")
 
     # widget has expanded width, but has the same height.
     await probe.redraw(
