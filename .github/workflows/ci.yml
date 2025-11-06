@@ -77,7 +77,7 @@ jobs:
       fail-fast: false
       matrix:
         platform: [ "macos-latest", "ubuntu-latest", "windows-latest" ]
-        python-version: [ "3.10", "3.11", "3.12", "3.13" ]
+        python-version: [ "3.10", "3.11", "3.12", "3.13", "3.14" ]
         package: ["core", "travertino"]
         exclude:
         - package: travertino
@@ -107,7 +107,7 @@ jobs:
       run: python -m pip install --group tox-uv
 
     - name: Get Packages
-      uses: actions/download-artifact@v5.0.0
+      uses: actions/download-artifact@v6.0.0
       with:
         pattern: ${{ format('{0}-*', needs.package.outputs.artifact-basename) }}
         merge-multiple: true
@@ -124,7 +124,7 @@ jobs:
         mv ${{ matrix.package }}/.coverage ${{ matrix.package }}/.coverage.${{ matrix.platform }}.${{ matrix.python-version }}
 
     - name: Store Coverage Data
-      uses: actions/upload-artifact@v4.6.2
+      uses: actions/upload-artifact@v5.0.0
       with:
         name: ${{ matrix.package }}-coverage-data-${{ matrix.platform }}-${{ matrix.python-version }}
         path: "${{ matrix.package }}/.coverage.*"
@@ -160,7 +160,7 @@ jobs:
       run: python -m pip install --group tox-uv
 
     - name: Retrieve Coverage Data
-      uses: actions/download-artifact@v5.0.0
+      uses: actions/download-artifact@v6.0.0
       with:
         pattern: ${{ matrix.package }}-coverage-data-*
         path: ${{ matrix.package }}
@@ -170,7 +170,7 @@ jobs:
       run: tox -e coverage${{ matrix.tox-suffix }}-html-platform
 
     - name: Upload HTML Coverage Report
-      uses: actions/upload-artifact@v4.6.2
+      uses: actions/upload-artifact@v5.0.0
       if: failure()
       with:
         name: html-coverage-report
@@ -196,7 +196,7 @@ jobs:
       run: python -m pip install --group tox-uv
 
     - name: Get Package
-      uses: actions/download-artifact@v5.0.0
+      uses: actions/download-artifact@v6.0.0
       with:
         pattern: ${{ format('{0}-*', needs.package.outputs.artifact-basename) }}
         merge-multiple: true
@@ -417,7 +417,7 @@ jobs:
         python -m pip install git+https://github.com/beeware/briefcase.git
 
     - name: Get Packages
-      uses: actions/download-artifact@v5.0.0
+      uses: actions/download-artifact@v6.0.0
       with:
         pattern: ${{ format('{0}-*', needs.package.outputs.artifact-basename) }}
         merge-multiple: true
@@ -431,7 +431,7 @@ jobs:
           briefcase run ${{ matrix.platform }} --log --test ${{ matrix.briefcase-run-args }} -- --ci
 
     - name: Upload Logs
-      uses: actions/upload-artifact@v4.6.2
+      uses: actions/upload-artifact@v5.0.0
       if: failure()
       with:
         name: testbed-failure-logs-${{ matrix.backend }}
@@ -444,7 +444,7 @@ jobs:
         cp -r "${{ matrix.app-user-data-path }}" testbed/app_data/testbed-app_data-${{ matrix.backend }}
 
     - name: Upload App Data
-      uses: actions/upload-artifact@v4.6.2
+      uses: actions/upload-artifact@v5.0.0
       if: failure() && matrix.backend != 'android'
       with:
         name: testbed-failure-app-data-${{ matrix.backend }}
@@ -491,7 +491,7 @@ jobs:
         python-version: "3.12"
 
     - name: Get Packages
-      uses: actions/download-artifact@v5.0.0
+      uses: actions/download-artifact@v6.0.0
       with:
         pattern: ${{ format('{0}-*', needs.package.outputs.artifact-basename) }}
         merge-multiple: true

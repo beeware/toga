@@ -1,11 +1,4 @@
-# Camera
-
-A sensor that can capture photos and/or video.
-
-Availability ([Key][api-status-key])  <!-- rumdl-disable-line MD013 -->
-{: .availability-title }
-
-{{ pd_read_csv("../../data/widgets_by_platform.csv", na_filter=False, usecols=[4,5,6,7,8,9,10])[pd_read_csv("../../data/widgets_by_platform.csv")[["ComponentName"]].isin(["Camera"]).all(axis=1)] | convert_to_md_table }}
+{{ component_header("Camera") }}
 
 ## Usage
 
@@ -29,9 +22,9 @@ Toga will confirm whether the app has been granted permission to use the camera 
 ## Notes
 
 - Apps that use a camera must be configured to provide permission to the camera device. The permissions required are platform specific:
-  - iOS: `NSCameraUsageDescription` must be defined in the app's `Info.plist` file.
-  - macOS: The `com.apple.security.device.camera` entitlement must be enabled, and `NSCameraUsageDescription` must be defined in the app's `Info.plist` file.
-  - Android: The `android.permission.CAMERA` permission must be declared.
+    - iOS: `NSCameraUsageDescription` must be defined in the app's `Info.plist` file.
+    - macOS: The `com.apple.security.device.camera` entitlement must be enabled, and `NSCameraUsageDescription` must be defined in the app's `Info.plist` file.
+    - Android: The `android.permission.CAMERA` permission must be declared.
 - The iOS simulator implements the iOS Camera APIs, but is not able to take photographs. To test your app's Camera usage, you must use a physical iOS device.
 
 ## Reference

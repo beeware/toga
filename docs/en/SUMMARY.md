@@ -10,9 +10,9 @@
         - [Contributing to Toga's documentation](how-to/contribute/docs.md)
     - Internal How-to guides
         - [How to cut a Toga release](how-to/internal/release.md)
-- Topic guides
+- [Topic guides](topics/index.md)
     - ./topics/*
-- Reference
+- [Reference](reference/index.md)
     - [API Reference](reference/api/index.md)
         - [App](./reference/api/app.md)
         - [Window](./reference/api/window.md)
@@ -66,10 +66,9 @@
         - [Image Format Plugins](reference/plugins/image_formats.md)
     - Toga's internals
         - [Architecture](reference/internals/architecture.md)
-- About Toga
+- [About Toga](about/index.md)
     - [Why Toga?](about/philosophy.md)
     - [FAQ](about/faq.md)
     - [Success Stories](about/success.md)
     - [Release History](about/releases.md)
     - [Toga's Road Map](about/roadmap.md)
-    - [Community](about/community.md)

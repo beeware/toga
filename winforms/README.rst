@@ -20,7 +20,7 @@ A Microsoft .NET backend for the `Toga widget toolkit`_ utilizing the WinForms A
 This package isn't much use by itself; it needs to be combined with `the core Toga library`_.
 
 For platform requirements, see the `Windows platform documentation
-<https://toga.readthedocs.io/en/latest/reference/platforms/windows.html#prerequisites>`__.
+<https://toga.readthedocs.io/en/latest/reference/platforms/windows#prerequisites>`__.
 
 For more details, see the `Toga project on GitHub`_.
 

@@ -1,7 +1,7 @@
 [build-system]
 requires = [
     "setuptools==80.9.0",
-    "setuptools_scm==9.2.1",
+    "setuptools_scm==9.2.2",
     "setuptools_dynamic_dependencies==1.0.0",
 ]
 build-backend = "setuptools.build_meta"
@@ -41,6 +41,7 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Programming Language :: Python :: 3 :: Only",
     "Topic :: Software Development",
     "Topic :: Software Development :: User Interfaces",
