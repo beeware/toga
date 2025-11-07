@@ -39,19 +39,14 @@ class BaseProbe:
                     with contextlib.suppress(SystemError):
                         frame_clock.disconnect(handler_id)
 
-        # Process events to ensure the UI is fully updated
-        for _ in range(15):
-            if GTK_VERSION < (4, 0, 0):
-                if Gtk.events_pending():
-                    Gtk.main_iteration_do(blocking=False)
+                # Process events to ensure the UI is fully updated
+                if GTK_VERSION < (4, 0, 0):
+                    while Gtk.events_pending():
+                        Gtk.main_iteration_do(blocking=False)
                 else:
-                    break
-            else:
-                context = GLib.main_context_default()
-                if context.pending():
-                    context.iteration(may_block=False)
-                else:
-                    break
+                    context = GLib.main_context_default()
+                    while context.pending():
+                        context.iteration(may_block=False)
 
         # Always yield to let GTK catch up
         await asyncio.sleep(0)
