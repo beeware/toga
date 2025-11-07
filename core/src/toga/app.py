@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import importlib.metadata
+import locale
 import signal
 import sys
 import warnings
@@ -204,6 +205,9 @@ class App:
         :param document_types: A list of [`Document`][toga.Document] classes that this
             app can manage.
         """
+        # Sets Python's locale settings to the language settings of the system.
+        locale.setlocale(locale.LC_ALL, "")
+
         # Initialize empty widgets registry
         self._widgets = WidgetRegistry()
 

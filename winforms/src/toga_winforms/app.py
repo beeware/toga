@@ -1,5 +1,4 @@
 import asyncio
-import locale
 import re
 import sys
 import threading
@@ -59,9 +58,6 @@ class App:
     HANDLES_COMMAND_LINE = False
 
     def __init__(self, interface):
-        # Sets Python's locale settings to the language settings of the system.
-        locale.setlocale(locale.LC_ALL, "")
-
         self.interface = interface
         self.interface._impl = self
 
