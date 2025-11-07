@@ -731,7 +731,7 @@ async def test_async_exception_cancelled_sync():
 
 
 def test_weakref_function_call():
-    """Test that WeakrefCallable correctly calls the wrapped function."""
+    """WeakrefCallable correctly calls the wrapped function."""
 
     def test_func(x, y=2):
         return x + y
@@ -749,24 +749,30 @@ def test_weakref_function_call():
 
 
 def test_weakref_method_call():
-    """Test that WeakrefCallable correctly calls a method."""
+    """WeakrefCallable correctly calls a method."""
 
     class TestClass:
         def __init__(self, value):
             self.value = value
 
-        def method(self, x):
-            return self.value + x
+        def method(self, x, y=2):
+            return self.value + x + y
 
     obj = TestClass(5)
     wrc = WeakrefCallable(obj.method)
 
     # Test method call
-    assert wrc(3) == 8
+    assert wrc(3) == 10
+
+    # Test with keyword arguments
+    assert wrc(3, y=3) == 11
+
+    # Test with mixed arguments
+    assert wrc(3, 4) == 12
 
 
 def test_weakref_lambda_call():
-    """Test that WeakrefCallable works with lambda functions."""
+    """WeakrefCallable works with lambda functions."""
     # Store the lambda in a variable to prevent it from being garbage collected
     lambda_func = lambda x: x * 2  # noqa: E731
     wrc = WeakrefCallable(lambda_func)
@@ -774,7 +780,7 @@ def test_weakref_lambda_call():
 
 
 def test_weakref_gc_function():
-    """Test that function is garbage collected properly."""
+    """A function is garbage collected properly."""
 
     def create_function_wrapper():
         def temp_func(x):
@@ -792,7 +798,7 @@ def test_weakref_gc_function():
 
 
 def test_weakref_gc_method():
-    """Test that method and its object are garbage collected properly."""
+    """The method and its object are garbage collected properly."""
 
     class TempClass:
         def method(self, x):
@@ -818,7 +824,7 @@ def test_weakref_gc_method():
 
 
 def test_weakref_callable_object():
-    """Test that WeakrefCallable works with callable objects."""
+    """WeakrefCallable works with callable objects."""
 
     class CallableObject:
         def __call__(self, x):
@@ -832,7 +838,7 @@ def test_weakref_callable_object():
 
 
 def test_weakref_none_result_when_function_gone():
-    """Test that calling the wrapper after the target is collected doesn't error."""
+    """Calling the wrapper after the target is collected doesn't error."""
 
     def create_function_wrapper():
         def temp_func(x):
