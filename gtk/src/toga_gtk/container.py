@@ -41,9 +41,8 @@ if GTK_VERSION >= (4, 0, 0):  # pragma: no-cover-if-gtk3
             # so the min and preferred size are the same.
             if orientation == Gtk.Orientation.HORIZONTAL:
                 return container.min_width, container.min_width, -1, -1
-            elif orientation == Gtk.Orientation.VERTICAL:
+            else:
                 return container.min_height, container.min_height, -1, -1
-            return None
 
         def do_allocate(self, container, width, height, baseline):
             """Perform the actual layout for the all widget's children.
@@ -56,9 +55,10 @@ if GTK_VERSION >= (4, 0, 0):  # pragma: no-cover-if-gtk3
             # print(widget._content, f"Container layout {width}x{height} @ 0x0")
 
             if container._content:
-                current_width = container.width
-                current_height = container.height
-                resized = (width, height) != (current_width, current_height)
+                resized = (width, height) != (
+                    container._refreshed_width,
+                    container._refreshed_height,
+                )
 
                 if resized or container.needs_redraw:
                     # print("REFRESH LAYOUT", width, height)
@@ -100,6 +100,8 @@ if GTK_VERSION >= (4, 0, 0):  # pragma: no-cover-if-gtk3
 
             # The layout has been redrawn
             container.needs_redraw = False
+            container._refreshed_width = width
+            container._refreshed_height = height
 
     class TogaContainer(Gtk.Box):
         """A GTK container widget implementing Toga's layout.
@@ -109,6 +111,11 @@ if GTK_VERSION >= (4, 0, 0):  # pragma: no-cover-if-gtk3
 
         def __init__(self):
             super().__init__()
+
+            # Saves the height and width that the container is last updated for,
+            # in order to detect size changes.
+            self._refreshed_width = 0
+            self._refreshed_height = 0
 
             # Because we don't have access to the existing layout manager, we must
             # create our custom layout manager class.
