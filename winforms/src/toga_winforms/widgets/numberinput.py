@@ -1,6 +1,5 @@
-import sys
 import locale
-
+import sys
 from decimal import ROUND_UP, Decimal, InvalidOperation
 
 import System.Windows.Forms as WinForms
@@ -12,12 +11,14 @@ from toga_winforms.libs.fonts import HorizontalTextAlignment
 from ..libs.wrapper import WeakrefCallable
 from .base import Widget
 
-locale.setlocale(locale.LC_ALL, '')
 
 def native_decimal(value):
     if isinstance(value, Decimal):
         # The explicit type is needed to prevent single-character strings from calling
         # the Char overload, which always throws an exception.
+        # The use of the locale.str() method ensures that the number formatting
+        # used in the conversion from a number to a str is consistent with the OS's
+        # language settings for the formatting of numbers.
         return Convert.ToDecimal.__overloads__[String](locale.str(value))
     else:
         assert isinstance(value, int)
