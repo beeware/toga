@@ -37,7 +37,7 @@ class TogaWebClient(static_proxy(WebViewClient)):
     def shouldOverrideUrlLoading(self, webview, webresourcerequest):
         if self.webview_impl.interface.on_navigation_starting:
             allow = self.webview_impl.interface.on_navigation_starting(
-                webresourcerequest.getUrl().toString()
+                url=webresourcerequest.getUrl().toString()
             )
             if not allow:
                 return True
