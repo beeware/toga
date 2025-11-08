@@ -22,31 +22,33 @@ class BaseProbe:
             GLib.idle_add(self._queue_draw, (self.native, draw_queued))
             await draw_queued.wait()
 
-            if frame_clock := self.native.get_frame_clock():
-                handler_id = None
-                with contextlib.suppress(asyncio.TimeoutError):
-                    redraw_complete = asyncio.Future()
+            if GTK_VERSION < (4, 0, 0):
+                # Force a repaint - process all events until none are pending
+                while Gtk.events_pending():
+                    Gtk.main_iteration_do(blocking=False)
+            else:
+                # GTK4: Use frame clock to wait for actual rendering
+                if frame_clock := self.native.get_frame_clock():
+                    handler_id = None
+                    with contextlib.suppress(asyncio.TimeoutError):
+                        redraw_complete = asyncio.Future()
 
-                    def on_after_paint(*args):
-                        if not redraw_complete.done():
-                            redraw_complete.set_result(True)
-                        return False
+                        def on_after_paint(*args):
+                            if not redraw_complete.done():
+                                redraw_complete.set_result(True)
+                            return False
 
-                    handler_id = frame_clock.connect("after-paint", on_after_paint)
+                        handler_id = frame_clock.connect("after-paint", on_after_paint)
 
-                    await asyncio.wait_for(redraw_complete, 0.05)
-                if handler_id is not None:
-                    with contextlib.suppress(SystemError):
-                        frame_clock.disconnect(handler_id)
+                        await asyncio.wait_for(redraw_complete, 0.05)
+                    if handler_id is not None:
+                        with contextlib.suppress(SystemError):
+                            frame_clock.disconnect(handler_id)
 
                 # Process events to ensure the UI is fully updated
-                if GTK_VERSION < (4, 0, 0):
-                    while Gtk.events_pending():
-                        Gtk.main_iteration_do(blocking=False)
-                else:
-                    context = GLib.main_context_default()
-                    while context.pending():
-                        context.iteration(may_block=False)
+                context = GLib.main_context_default()
+                while context.pending():
+                    context.iteration(may_block=False)
 
         # Always yield to let GTK catch up
         await asyncio.sleep(0)
