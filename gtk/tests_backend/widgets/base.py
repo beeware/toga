@@ -53,9 +53,6 @@ class SimpleProbe(BaseProbe, FontMixin):
     def assert_text_align(self, expected):
         assert self.text_align == expected
 
-    def repaint_needed(self):
-        return self.impl.container.needs_redraw or super().repaint_needed()
-
     @property
     def enabled(self):
         return self.native.get_sensitive()
