@@ -1,10 +1,9 @@
 import asyncio
-import contextlib
 from threading import Event
 
 import pytest
 
-from toga_gtk.libs import GTK_VERSION, Gdk, GLib, Gtk
+from toga_gtk.libs import GTK_VERSION, Gdk, Gtk
 
 from ..fonts import FontMixin
 from ..probe import BaseProbe
@@ -53,35 +52,6 @@ class SimpleProbe(BaseProbe, FontMixin):
 
     def assert_text_align(self, expected):
         assert self.text_align == expected
-
-    def _queue_draw(self, data):
-        widget, event = data
-        widget.queue_draw()
-        event.set()
-
-    async def redraw(self, message=None, delay=0):
-        # Queue a queue_draw, and use frame clock to wait for actual rendering
-        draw_queued = asyncio.Event()
-        GLib.idle_add(self._queue_draw, (self.native, draw_queued))
-        await draw_queued.wait()
-        if frame_clock := self.native.get_frame_clock():
-            handler_id = None
-            with contextlib.suppress(asyncio.TimeoutError):
-                redraw_complete = asyncio.Future()
-
-                def on_after_paint(*args):
-                    if not redraw_complete.done():
-                        redraw_complete.set_result(True)
-                    return False
-
-                handler_id = frame_clock.connect("after-paint", on_after_paint)
-
-                await asyncio.wait_for(redraw_complete, 0.05)
-            if handler_id is not None:
-                with contextlib.suppress(SystemError):
-                    frame_clock.disconnect(handler_id)
-
-        await super().redraw(message=message, delay=delay)
 
     @property
     def enabled(self):
