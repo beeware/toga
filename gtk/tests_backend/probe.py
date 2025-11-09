@@ -23,7 +23,7 @@ class BaseProbe:
             await draw_queued.wait()
             if frame_clock := self.native.get_frame_clock():
                 handler_id = None
-                # TimeoutError is surpressed because GDK only emits the
+                # TimeoutError is suppressed because GDK only emits the
                 # relevant signals when a frame is being requested.  If
                 # the timing is off, after-paint may never get received;
                 # protect against that by using a fixed (0.05s) timeout
