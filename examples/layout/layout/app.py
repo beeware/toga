@@ -2,7 +2,7 @@ import toga
 from toga.constants import CENTER, HIDDEN, VISIBLE
 
 
-class ExampleLayoutApp(toga.App):
+class LayoutApp(toga.App):
     def startup(self):
         self.button_hide = toga.Button(text="Hide label", on_press=self.hide_label)
         self.button_add = toga.Button(text="Add image", on_press=self.add_image)
@@ -52,7 +52,7 @@ class ExampleLayoutApp(toga.App):
 
         # add a couple of labels to get us started
         self.labels = []
-        for i in range(3):
+        for _ in range(3):
             self.add_label()
 
         self.main_window = toga.MainWindow()
@@ -105,9 +105,8 @@ class ExampleLayoutApp(toga.App):
 
 
 def main():
-    return ExampleLayoutApp("Layout", "org.beeware.toga.examples.layout")
+    return LayoutApp("Layout", "org.beeware.toga.examples.layout")
 
 
 if __name__ == "__main__":
-    app = main()
-    app.main_loop()
+    main().main_loop()

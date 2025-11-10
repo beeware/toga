@@ -46,9 +46,9 @@ class SwitchProbe(SimpleProbe):
             f"Label width ({label_width}) not in range "
             f"({min_width - MAX_SWITCH_WIDTH}, {max_width - MAX_SWITCH_WIDTH})"
         )
-        assert (
-            0 <= switch_width <= MAX_SWITCH_WIDTH
-        ), f"Switch width ({switch_width}) not in range (0-60)"
+        assert 0 <= switch_width <= MAX_SWITCH_WIDTH, (
+            f"Switch width ({switch_width}) not in range (0-60)"
+        )
 
     def assert_height(self, min_height, max_height):
         super().assert_height(min_height, max_height)
@@ -57,12 +57,12 @@ class SwitchProbe(SimpleProbe):
         switch_height = self.native_switch.frame.size.height
 
         # label and switch height isn't affected by widget sizing
-        assert (
-            20 <= label_height <= 30
-        ), f"Label height ({label_height}) not in range (20, 30)"
-        assert (
-            30 <= switch_height <= 40
-        ), f"Switch height ({switch_height}) not in range (30, 40)"
+        assert 20 <= label_height <= 30, (
+            f"Label height ({label_height}) not in range (20, 30)"
+        )
+        assert 30 <= switch_height <= 40, (
+            f"Switch height ({switch_height}) not in range (30, 40)"
+        )
 
     async def press(self):
         self.native_switch.sendActionsForControlEvents(UIControlEventValueChanged)

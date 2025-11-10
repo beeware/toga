@@ -215,7 +215,7 @@ async def test_increment_decrement(widget, probe):
 
     # Increment several times to make sure rounding works correctly
     expected = Decimal("1.23")
-    for i in range(5):
+    for _ in range(5):
         expected += Decimal("0.01")
         await probe.increment()
         await probe.redraw(f"Widget value should be {expected}")
@@ -224,7 +224,7 @@ async def test_increment_decrement(widget, probe):
         handler.reset_mock()
 
     # And likewise with decrement
-    for i in range(5):
+    for _ in range(5):
         expected -= Decimal("0.01")
         await probe.decrement()
         await probe.redraw(f"Widget value should be {expected}")

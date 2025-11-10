@@ -7,7 +7,6 @@ from pathlib import Path
 import toga
 from toga.constants import COLUMN
 from toga.sources import Source
-from toga.style import Pack
 
 # This is a slightly less toy example of a tree view to display
 # items in your home directory. To avoid loading everything
@@ -92,8 +91,7 @@ class Node:
 
     def load_children(self):
         try:
-            sub_paths = [p for p in self.path.iterdir()]
-            self._children = [Node(p, self) for p in sub_paths]
+            self._children = [Node(path, self) for path in self.path.iterdir()]
         except NotADirectoryError:
             self._children = []
         except OSError:
@@ -111,7 +109,7 @@ class FileSystemSource(Node, Source):
         super().__init__(path, parent=None)
 
 
-class ExampleTreeSourceApp(toga.App):
+class TreeSourceApp(toga.App):
     def selection_handler(self, widget):
         # If you iterate over widget.selection, you can get the names and the
         # paths of everything selected (if multiple_select is enabled.)
@@ -146,14 +144,12 @@ class ExampleTreeSourceApp(toga.App):
         self.tree = toga.Tree(
             headings=["Name", "Date Modified"],
             data=self.fs_source,
-            style=Pack(flex=1),
+            flex=1,
             multiple_select=True,
             on_select=self.selection_handler,
             on_activate=self.activate_handler,
         )
-        self.label = toga.Label(
-            "A view of the current directory!", style=Pack(margin=10)
-        )
+        self.label = toga.Label("A view of the current directory!", margin=10)
 
         # Outermost box
         outer_box = toga.Box(
@@ -161,7 +157,8 @@ class ExampleTreeSourceApp(toga.App):
                 self.label,
                 self.tree,
             ],
-            style=Pack(flex=1, direction=COLUMN),
+            flex=1,
+            direction=COLUMN,
         )
 
         # Add the content on the main window
@@ -172,9 +169,8 @@ class ExampleTreeSourceApp(toga.App):
 
 
 def main():
-    return ExampleTreeSourceApp("Tree Source", "org.beeware.toga.examples.tree_source")
+    return TreeSourceApp("Tree Source", "org.beeware.toga.examples.tree_source")
 
 
 if __name__ == "__main__":
-    app = main()
-    app.main_loop()
+    main().main_loop()

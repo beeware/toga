@@ -4,7 +4,8 @@ from decimal import ROUND_UP
 import System.Windows.Forms as WinForms
 from System import DateTime as WinDateTime
 
-from ..libs.wrapper import WeakrefCallable
+from toga.handlers import WeakrefCallable
+
 from .base import Widget
 
 
@@ -19,7 +20,6 @@ def native_time(py_time):
 
 
 class TimeInput(Widget):
-
     def create(self):
         self.native = WinForms.DateTimePicker()
         self.native.ValueChanged += WeakrefCallable(self.winforms_value_changed)

@@ -1,11 +1,18 @@
 from http.cookiejar import Cookie, CookieJar
 
-from rubicon.objc import objc_id, objc_method, objc_property, py_from_ns
+from rubicon.objc import ObjCBlock, objc_id, objc_method, objc_property, py_from_ns
 from travertino.size import at_least
 
 from toga.widgets.webview import CookiesResult, JavaScriptResult
 
-from ..libs import NSURL, NSURLRequest, WKWebView
+from ..libs import (
+    NSURL,
+    NSModalResponseOK,
+    NSOpenPanel,
+    NSURLRequest,
+    WKUIDelegate,
+    WKWebView,
+)
 from .base import Widget
 
 
@@ -57,7 +64,7 @@ def cookies_completion_handler(result):
     return _completion_handler
 
 
-class TogaWebView(WKWebView):
+class TogaWebView(WKWebView, protocols=[WKUIDelegate]):
     interface = objc_property(object, weak=True)
     impl = objc_property(object, weak=True)
 
@@ -78,6 +85,48 @@ class TogaWebView(WKWebView):
     def acceptsFirstResponder(self) -> bool:
         return True
 
+    # WKUIDelegate protocol method required to utilize the open file dialog for
+    # uploading a file to a website. Difficult to automatically test because it
+    # uses :param: completionHandler, which is a method utilized by the under-
+    # lying WKWebView objective-C codebase. :param: completionHandler cannot be
+    # created manually for testing because it is difficult to pull it up from
+    # the native codebase.
+    @objc_method
+    def webView_runOpenPanelWithParameters_initiatedByFrame_completionHandler_(
+        self, webView, parameters, frame, completionHandler
+    ) -> None:  # pragma: no cover
+        """Required by the WKUIDelegate protocol.
+
+        Called when the user clicks on an <input type="file"> HTML tag,
+        or something like the js func window.showOpenFilePicker.
+
+        :param webView: The web view invoking the delegate method.
+        :param parameters: The parameters describing the file upload control.
+        Has two attributes: allowsMultipleSelection and allowsDirectories
+        :param frame: The frame whose file upload control initiated the call.
+        :param completionHandler: The completion handler called after the open
+        panel has been dismissed.
+        :returns: Nothing
+        """
+        # Create open file dialog panel and set parameters
+        # Because of the "native" approach required for this method,
+        # the OpenFileDialog and SelectFolderDialog classes were not
+        # reused from dialogs.py
+        open_panel = NSOpenPanel.alloc().init()
+        open_panel.allowsMultipleSelection = parameters.allowsMultipleSelection
+        open_panel.canChooseDirectories = parameters.allowsDirectories
+        open_panel.canCreateDirectories = parameters.allowsDirectories
+        open_panel.canChooseFiles = not parameters.allowsDirectories
+        open_panel.resolvesAliases = parameters.allowsDirectories
+
+        def _completion_handler(res: int) -> None:
+            if res == NSModalResponseOK:
+                ObjCBlock(completionHandler, None, objc_id)(open_panel.URLs)
+            else:
+                ObjCBlock(completionHandler, None, objc_id)(None)
+
+        open_panel.beginWithCompletionHandler(_completion_handler)
+
 
 class WebView(Widget):
     SUPPORTS_ON_NAVIGATION_STARTING = False
@@ -95,6 +144,8 @@ class WebView(Widget):
         # from the command line.
         self.native.inspectable = True
         self.native.navigationDelegate = self.native
+        # Set UIDelegate to self for file dialog support
+        self.native.UIDelegate = self.native
 
         self.loaded_future = None
 

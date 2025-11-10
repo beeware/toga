@@ -24,10 +24,10 @@ from System.IO import MemoryStream
 
 from toga.colors import TRANSPARENT
 from toga.constants import Baseline, FillRule
+from toga.handlers import WeakrefCallable
 from toga.widgets.canvas import arc_to_bezier, sweepangle
 from toga_winforms.colors import native_color
 
-from ..libs.wrapper import WeakrefCallable
 from .box import Box
 
 
@@ -70,7 +70,7 @@ class WinformContext:
         print(
             "\n".join(
                 str((ptype, point.X, point.Y))
-                for ptype, point in zip(path.PathTypes, path.PathPoints)
+                for ptype, point in zip(path.PathTypes, path.PathPoints, strict=False)
             )
         )
 

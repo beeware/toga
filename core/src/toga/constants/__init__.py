@@ -13,10 +13,14 @@ class Direction(Enum):
 class Baseline(Enum):
     """The meaning of a Y coordinate when drawing text."""
 
-    ALPHABETIC = auto()  #: Alphabetic baseline of the first line
-    TOP = auto()  #: Top of text
-    MIDDLE = auto()  #: Middle of text
-    BOTTOM = auto()  #: Bottom of text
+    ALPHABETIC = auto()
+    """Alphabetic baseline of the first line"""
+    TOP = auto()
+    """Top of text"""
+    MIDDLE = auto()
+    """Middle of text"""
+    BOTTOM = auto()
+    """Bottom of text"""
 
 
 class FillRule(Enum):
@@ -46,13 +50,13 @@ class FlashMode(Enum):
 # class VideoQuality(Enum):
 #     """The quality of the video recording.
 #
-#     The values of ``LOW``, ``MEDIUM`` and ``HIGH`` represent specific (platform
+#     The values of `LOW`, `MEDIUM` and `HIGH` represent specific (platform
 #     dependent) resolutions. These resolutions will remain the same over time.
 #
-#     The values of ``CELLULAR`` and ``WIFI`` may change over time to reflect the
+#     The values of `CELLULAR` and `WIFI` may change over time to reflect the
 #     capabilities of network hardware.
 #
-#     ``HIGHEST`` will always refer to the highest quality that the device can
+#     `HIGHEST` will always refer to the highest quality that the device can
 #     record.
 #     """
 #
@@ -73,16 +77,16 @@ class FlashMode(Enum):
 class WindowState(Enum):
     """The possible window states of an app.
 
-    NOTE: Some platforms do not fully support all states; see the :any:`toga.Window`'s
+    NOTE: Some platforms do not fully support all states; see the [`toga.Window`][]'s
     platform notes for details.
     """
 
     NORMAL = 0
-    """The ``NORMAL`` state represents the default state of the window or app when it is
+    """The `NORMAL` state represents the default state of the window or app when it is
     not in any other specific window state."""
 
     MINIMIZED = 1
-    """``MINIMIZED`` state is when the window isn't currently visible, although it will
+    """`MINIMIZED` state is when the window isn't currently visible, although it will
     appear in any operating system's list of active windows.
     """
 
@@ -92,12 +96,12 @@ class WindowState(Enum):
     """
 
     FULLSCREEN = 3
-    """``FULLSCREEN`` state is when the window title bar and window chrome remain
+    """`FULLSCREEN` state is when the window title bar and window chrome remain
     hidden; But app menu and toolbars remain visible.
     """
 
     PRESENTATION = 4
-    """``PRESENTATION`` state is when the window title bar, window chrome, app menu
+    """`PRESENTATION` state is when the window title bar, window chrome, app menu
     and toolbars all remain hidden.
 
     A good example is a slideshow app in presentation mode - the only visible content

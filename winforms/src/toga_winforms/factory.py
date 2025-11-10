@@ -8,6 +8,7 @@ from .icons import Icon
 from .images import Image
 from .paths import Paths
 from .statusicons import MenuStatusIcon, SimpleStatusIcon, StatusIconSet
+from .widgets.activityindicator import ActivityIndicator
 from .widgets.box import Box
 from .widgets.button import Button
 from .widgets.canvas import Canvas
@@ -53,6 +54,7 @@ __all__ = [
     "SimpleStatusIcon",
     "StatusIconSet",
     # Widgets
+    "ActivityIndicator",
     "Box",
     "Button",
     "Canvas",
@@ -82,5 +84,5 @@ __all__ = [
 ]
 
 
-def __getattr__(name):  # pragma: no cover
+def __getattr__(name):
     raise NotImplementedError(f"Toga's Winforms backend doesn't implement {name}")

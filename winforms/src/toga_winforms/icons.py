@@ -22,5 +22,5 @@ class Icon:
             else:
                 self.bitmap = Bitmap(str(path))
                 self.native = WinIcon.FromHandle(self.bitmap.GetHicon())
-        except ArgumentException:
-            raise ValueError(f"Unable to load icon from {path}")
+        except ArgumentException as exc:
+            raise ValueError(f"Unable to load icon from {path}") from exc

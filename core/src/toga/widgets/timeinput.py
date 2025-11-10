@@ -10,7 +10,7 @@ from .base import StyleT, Widget
 
 
 class OnChangeHandler(Protocol):
-    def __call__(self, widget: TimeInput, **kwargs: Any) -> object:
+    def __call__(self, widget: TimeInput, **kwargs: Any) -> None:
         """A handler to invoke when the time input is changed.
 
         :param widget: The TimeInput that was changed.
@@ -55,7 +55,7 @@ class TimeInput(Widget):
 
     @property
     def value(self) -> datetime.time:
-        """The currently selected time. A value of ``None`` will be converted into the
+        """The currently selected time. A value of `None` will be converted into the
         current time.
 
         If this property is set to a value outside of the min/max range, it will be
@@ -90,10 +90,11 @@ class TimeInput(Widget):
 
     @property
     def min(self) -> datetime.time:
-        """The minimum allowable time (inclusive). A value of ``None`` will be converted
+        """The minimum allowable time (inclusive). A value of `None` will be converted
         into 00:00:00.
 
-        When setting this property, the current :attr:`value` and :attr:`max` will be
+        When setting this property, the current [`value`][toga.TimeInput.value] and
+        [`max`][toga.TimeInput.max] will be
         clipped against the new minimum value.
         """
         return self._impl.get_min_time()
@@ -113,10 +114,11 @@ class TimeInput(Widget):
 
     @property
     def max(self) -> datetime.time:
-        """The maximum allowable time (inclusive). A value of ``None`` will be converted
+        """The maximum allowable time (inclusive). A value of `None` will be converted
         into 23:59:59.
 
-        When setting this property, the current :attr:`value` and :attr:`min` will be
+        When setting this property, the current [`value`][toga.TimeInput.value] and
+        [`min`][toga.TimeInput.min] will be
         clipped against the new maximum value.
         """
         return self._impl.get_max_time()

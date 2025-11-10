@@ -153,7 +153,7 @@ class Table(Widget):
         self.columns = []
         if self.interface.headings:
             for index, (heading, accessor) in enumerate(
-                zip(self.interface.headings, self.interface.accessors)
+                zip(self.interface.headings, self.interface.accessors, strict=False)
             ):
                 self._insert_column(index, heading, accessor)
         else:
@@ -208,7 +208,7 @@ class Table(Widget):
             selection = []
 
             current_index = self.native_table.selectedRowIndexes.firstIndex
-            for i in range(self.native_table.selectedRowIndexes.count):
+            for _ in range(self.native_table.selectedRowIndexes.count):
                 selection.append(current_index)
                 current_index = (
                     self.native_table.selectedRowIndexes.indexGreaterThanIndex(

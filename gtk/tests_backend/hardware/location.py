@@ -93,9 +93,9 @@ class LocationProbe(AppProbe):
 
     def _verify_dependencies(self):
         if os.getenv("CI", None) is not None:
-            assert (
-                Geoclue is not None
-            ), "libgeoclue dependency is required to run location tests on linux"
+            assert Geoclue is not None, (
+                "libgeoclue dependency is required to run location tests on linux"
+            )
         elif Geoclue is None:
             pytest.xfail(
                 "Linux location tests require libgeoclue, but it was not available"

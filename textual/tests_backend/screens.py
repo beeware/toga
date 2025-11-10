@@ -1,5 +1,4 @@
 import pytest
-
 from textual.screen import Screen as TextualScreen
 
 

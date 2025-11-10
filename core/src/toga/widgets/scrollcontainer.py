@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
 
 class OnScrollHandler(Protocol):
-    def __call__(self, widget: ScrollContainer, **kwargs: Any) -> object:
+    def __call__(self, widget: ScrollContainer, **kwargs: Any) -> None:
         """A handler to invoke when the container is scrolled.
 
         :param widget: The ScrollContainer that was scrolled.
@@ -21,6 +21,8 @@ class OnScrollHandler(Protocol):
 
 
 class ScrollContainer(Widget):
+    _USE_DEBUG_BACKGROUND = True
+
     def __init__(
         self,
         id: str | None = None,
@@ -37,8 +39,8 @@ class ScrollContainer(Widget):
         :param style: A style object. If no style is provided, a default style
             will be applied to the widget.
         :param horizontal: Should horizontal scrolling be permitted?
-        :param vertical: Should horizontal scrolling be permitted?
-        :param on_scroll: Initial :any:`on_scroll` handler.
+        :param vertical: Should vertical scrolling be permitted?
+        :param on_scroll: Initial [`on_scroll`][toga.ScrollContainer.on_scroll] handler.
         :param content: The content to display in the scroll window.
         :param kwargs: Initial style properties.
         """

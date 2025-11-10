@@ -1,16 +1,16 @@
 import toga
 from toga.constants import COLUMN, ROW
-from toga.style import Pack
 
 
 class Item(toga.Box):
     def __init__(self, width, text):
-        super().__init__(style=Pack(direction=ROW, margin=10, background_color="lime"))
+        super().__init__(direction=ROW, margin=10, background_color="lime")
 
         for x in range(width):
             label = toga.Label(
                 text + "," + str(x),
-                style=Pack(margin_right=10, background_color="cyan"),
+                margin_right=10,
+                background_color="cyan",
             )
             self.add(label)
 
@@ -19,7 +19,7 @@ class ScrollContainerApp(toga.App):
     TOGGLE_CHUNK = 10
 
     def startup(self):
-        main_box = toga.Box(style=Pack(direction=COLUMN))
+        main_box = toga.Box(direction=COLUMN)
 
         self.hswitch = toga.Switch(
             "Horizontal",
@@ -47,13 +47,15 @@ class ScrollContainerApp(toga.App):
         )
 
         self.inner_box = toga.Box(
-            style=Pack(direction=COLUMN, margin=10, background_color="yellow")
+            direction=COLUMN, margin=10, background_color="yellow"
         )
         self.scroller = toga.ScrollContainer(
             horizontal=self.hswitch.value,
             vertical=self.vswitch.value,
             on_scroll=self.on_scroll,
-            style=Pack(flex=1, margin=10, background_color="pink"),
+            flex=1,
+            margin=10,
+            background_color="pink",
         )
         self.update_content()
 
@@ -158,5 +160,4 @@ def main():
 
 
 if __name__ == "__main__":
-    app = main()
-    app.main_loop()
+    main().main_loop()

@@ -1,24 +1,23 @@
 import toga
 from toga.constants import COLUMN
-from toga.style import Pack
 
 
-class ExampleHardwareApp(toga.App):
+class HardwareApp(toga.App):
     def startup(self):
         #############################################################
         # Camera
         #############################################################
         self.photo = toga.ImageView(
-            image=toga.Image("resources/default.png"), style=Pack(width=200)
+            image=toga.Image("resources/default.png"), width=200
         )
 
         camera_box = toga.Box(
             children=[
                 toga.Box(
                     children=[
-                        toga.Box(style=Pack(flex=1)),
+                        toga.Box(flex=1),
                         self.photo,
-                        toga.Box(style=Pack(flex=1)),
+                        toga.Box(flex=1),
                     ]
                 ),
                 toga.Box(
@@ -27,25 +26,28 @@ class ExampleHardwareApp(toga.App):
                         toga.Button(
                             "Take Photo",
                             on_press=self.take_photo,
-                            style=Pack(flex=1, margin=5),
+                            flex=1,
+                            margin=5,
                         ),
                         # Select a photo from the photo library
                         # toga.Button(
                         #     "Select Photo",
                         #     on_press=self.select_photo,
-                        #     style=Pack(flex=1, margin=5),
+                        #     flex=1,
+                        #     margin=5,
                         # ),
                     ],
                 ),
             ],
-            style=Pack(direction=COLUMN, margin_bottom=20),
+            direction=COLUMN,
+            margin_bottom=20,
         )
 
         #############################################################
         # Location services
         #############################################################
 
-        self.map_view = toga.MapView(style=Pack(flex=1))
+        self.map_view = toga.MapView(flex=1)
         self.pin = None
         self.location.on_change = self.location_changed
 
@@ -54,29 +56,27 @@ class ExampleHardwareApp(toga.App):
                 self.map_view,
                 toga.Box(
                     children=[
-                        toga.Button(
-                            "Update", on_press=self.update_location, style=Pack(flex=1)
-                        ),
+                        toga.Button("Update", on_press=self.update_location, flex=1),
                         toga.Button(
                             "Start",
                             on_press=self.start_location_updates,
-                            style=Pack(flex=1),
+                            flex=1,
                         ),
                         toga.Button(
                             "Stop",
                             on_press=self.stop_location_updates,
-                            style=Pack(flex=1),
+                            flex=1,
                         ),
                         toga.Button(
                             "Background",
                             on_press=self.request_background_location,
-                            style=Pack(flex=1),
+                            flex=1,
                         ),
                     ],
-                    style=Pack(margin=5),
+                    margin=5,
                 ),
             ],
-            style=Pack(direction=COLUMN),
+            direction=COLUMN,
         )
 
         #############################################################
@@ -234,9 +234,8 @@ class ExampleHardwareApp(toga.App):
 
 
 def main():
-    return ExampleHardwareApp("Hardware", "org.beeware.toga.examples.hardware")
+    return HardwareApp("Hardware", "org.beeware.toga.examples.hardware")
 
 
 if __name__ == "__main__":
-    app = main()
-    app.main_loop()
+    main().main_loop()

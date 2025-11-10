@@ -23,10 +23,10 @@ class ProgressBar(Widget):
         :param style: A style object. If no style is provided, a default style
             will be applied to the widget.
         :param max: The value that represents completion of the task. Must
-            be > 0.0; defaults to 1.0. A value of ``None`` indicates that the task
+            be > 0.0; defaults to 1.0. A value of `None` indicates that the task
             length is indeterminate.
         :param value: The current progress against the maximum value. Must be
-            between 0.0 and ``max``; any value outside this range will be
+            between 0.0 and `max`; any value outside this range will be
             clipped. Defaults to 0.0.
         :param running: Describes whether the indicator is running at the time
             it is created. Default is False.
@@ -60,7 +60,7 @@ class ProgressBar(Widget):
     def is_running(self) -> bool:
         """Describe if the activity indicator is currently running.
 
-        Use ``start()`` and ``stop()`` to change the running state.
+        Use `start()` and `stop()` to change the running state.
 
         True if this activity indicator is running; False otherwise.
         """
@@ -95,10 +95,10 @@ class ProgressBar(Widget):
         """The current value of the progress indicator.
 
         If the progress bar is determinate, the value must be between 0 and
-        ``max``. Any value outside this range will be clipped.
+        `max`. Any value outside this range will be clipped.
 
         If the progress bar is indeterminate, changes in value will be ignored,
-        and the current value will be returned as ``None``.
+        and the current value will be returned as `None`.
         """
         return self._impl.get_value()
 
@@ -112,7 +112,7 @@ class ProgressBar(Widget):
     def max(self) -> float | None:
         """The value indicating completion of the task being monitored.
 
-        Must be a number > 0, or ``None`` for a task of indeterminate length.
+        Must be a number > 0, or `None` for a task of indeterminate length.
         """
         return self._impl.get_max()
 

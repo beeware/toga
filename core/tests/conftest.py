@@ -50,7 +50,7 @@ class TestApp(toga.App):
 
 
 @pytest.fixture
-def app(event_loop):
+async def app():
     # The app icon is cached; purge the app icon cache if it exists
     try:
         del toga.Icon.__APP_ICON

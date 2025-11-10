@@ -1,1 +1,0 @@
-An incompatibility with Textual 3.0 that caused log messages to be generated on the console on app exit has been resolved.

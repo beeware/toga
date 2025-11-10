@@ -1,1 +1,0 @@
-Support for GTK3 installs that use a GIO release older than 2.72 has been restored. Ubuntu 22.04, and other Debian 12-derived systems are affected by this issue.

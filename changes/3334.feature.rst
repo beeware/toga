@@ -1,1 +1,0 @@
-The Web backend now supports the DateInput, ScrollContainer and TimeInput widgets.

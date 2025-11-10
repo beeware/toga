@@ -198,7 +198,7 @@ async def test_source_changes(widget, probe):
     assert selected_item.name == "first"
 
     # Append a new item
-    source.append(dict(name="new 1", value=999))
+    source.append({"name": "new 1", "value": 999})
     await probe.redraw("New item has been appended to selection")
 
     assert probe.titles == ["first", "second", "third", "new 1"]
@@ -206,7 +206,7 @@ async def test_source_changes(widget, probe):
     on_change_handler.assert_not_called()
 
     # Insert a new item
-    source.insert(0, dict(name="new 2", value=888))
+    source.insert(0, {"name": "new 2", "value": 888})
     await probe.redraw("New item has been inserted into selection")
 
     assert probe.titles == ["new 2", "first", "second", "third", "new 1"]
@@ -261,7 +261,7 @@ async def test_source_changes(widget, probe):
     on_change_handler.reset_mock()
 
     # Insert a new item (the first in the data)
-    source.insert(0, dict(name="new 3", value=777))
+    source.insert(0, {"name": "new 3", "value": 777})
     await probe.redraw("New item has been inserted into empty selection")
 
     assert probe.titles == ["new 3"]

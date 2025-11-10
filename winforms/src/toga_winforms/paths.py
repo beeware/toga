@@ -1,3 +1,4 @@
+from functools import cached_property
 from pathlib import Path
 
 from toga import App
@@ -7,50 +8,23 @@ class Paths:
     def __init__(self, interface):
         self.interface = interface
 
-    @property
-    def author(self):
+    @cached_property
+    def _app_dir(self):
         # No coverage testing of this because we can't easily configure
         # the app to have no author.
-        if App.app.author is None:  # pragma: no cover
-            return "Unknown"
-        return App.app.author
+        author = "Unknown" if App.app.author is None else App.app.author
+        return Path.home() / f"AppData/Local/{author}/{App.app.formal_name}"
+
+    # The rest are cached at the interface level:
 
     def get_config_path(self):
-        return (
-            Path.home()
-            / "AppData"
-            / "Local"
-            / self.author
-            / App.app.formal_name
-            / "Config"
-        )
+        return self._app_dir / "Config"
 
     def get_data_path(self):
-        return (
-            Path.home()
-            / "AppData"
-            / "Local"
-            / self.author
-            / App.app.formal_name
-            / "Data"
-        )
+        return self._app_dir / "Data"
 
     def get_cache_path(self):
-        return (
-            Path.home()
-            / "AppData"
-            / "Local"
-            / self.author
-            / App.app.formal_name
-            / "Cache"
-        )
+        return self._app_dir / "Cache"
 
     def get_logs_path(self):
-        return (
-            Path.home()
-            / "AppData"
-            / "Local"
-            / self.author
-            / App.app.formal_name
-            / "Logs"
-        )
+        return self._app_dir / "Logs"

@@ -9,6 +9,8 @@ class Box(Widget):
     _MIN_WIDTH = 0
     _MIN_HEIGHT = 0
 
+    _USE_DEBUG_BACKGROUND = True
+
     def __init__(
         self,
         id: str | None = None,
@@ -53,10 +55,10 @@ class Box(Widget):
 
 
 def Row(*args, **kwargs):
-    """Shorthand for :any:`Box` with its :ref:`pack-direction` set to "row"."""
+    """Shorthand for [`Box`][toga.Box] with its [pack-direction][] set to "row"."""
     return Box(*args, direction="row", **kwargs)
 
 
 def Column(*args, **kwargs):
-    """Shorthand for :any:`Box` with its :ref:`pack-direction` set to "column"."""
+    """Shorthand for [`Box`][toga.Box] with its [pack-direction][] set to "column"."""
     return Box(*args, direction="column", **kwargs)

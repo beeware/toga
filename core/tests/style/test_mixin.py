@@ -73,12 +73,12 @@ def test_regular_attribute():
     """Regular attributes still work correctly."""
     widget = ExampleWidget()
     with raises(AttributeError):
-        widget.my_attr
+        _ = widget.my_attr
     widget.my_attr = 42
     assert widget.my_attr == 42
     del widget.my_attr
     with raises(AttributeError):
-        widget.my_attr
+        _ = widget.my_attr
 
 
 @pytest.mark.parametrize(*params)

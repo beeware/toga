@@ -5,27 +5,25 @@ import inspect
 import sys
 import traceback
 import warnings
+import weakref
 from abc import ABC
 from collections.abc import Awaitable, Callable, Generator
-from typing import TYPE_CHECKING, Any, NoReturn, Protocol, TypeVar, Union
+from typing import TYPE_CHECKING, Any, NoReturn, Protocol, TypeVar
 
 if TYPE_CHECKING:
-    if sys.version_info < (3, 10):
-        from typing_extensions import TypeAlias
-    else:
-        from typing import TypeAlias
+    from typing import TypeAlias
 
     T = TypeVar("T")
 
     GeneratorReturnT = TypeVar("GeneratorReturnT")
     HandlerGeneratorReturnT: TypeAlias = Generator[
-        Union[float, None], object, GeneratorReturnT
+        float | None, object, GeneratorReturnT
     ]
 
     HandlerSyncT: TypeAlias = Callable[..., object]
     HandlerAsyncT: TypeAlias = Callable[..., Awaitable[object]]
     HandlerGeneratorT: TypeAlias = Callable[..., HandlerGeneratorReturnT[object]]
-    HandlerT: TypeAlias = Union[HandlerSyncT, HandlerAsyncT, HandlerGeneratorT]
+    HandlerT: TypeAlias = HandlerSyncT | HandlerAsyncT | HandlerGeneratorT
     WrappedHandlerT: TypeAlias = Callable[..., object]
 
 
@@ -47,9 +45,12 @@ async def long_running_task(
     # 2025-02: Deprecated in 0.5.0
     ######################################################################
     warnings.warn(
-        "Use of generators for async handlers has been deprecated; convert "
-        "the handler to an async co-routine that uses `asyncio.sleep()`.",
+        (
+            "Use of generators for async handlers has been deprecated; convert "
+            "the handler to an async co-routine that uses `asyncio.sleep()`."
+        ),
         DeprecationWarning,
+        stacklevel=2,
     )
     try:
         try:
@@ -97,13 +98,13 @@ def simple_handler(fn: T, *args: object, **kwargs: object) -> T:
     """Wrap a function (with args and kwargs) so it can be used as a command handler.
 
     This essentially accepts and ignores the handler-related arguments (i.e., the
-    required ``command`` argument passed to handlers), so that you can use a method like
-    :meth:`~toga.App.about()` as a command handler.
+    required `command` argument passed to handlers), so that you can use a method like
+    [`App.about()`][toga.App.about] as a command handler.
 
     It can accept either a function or a coroutine. Arguments that will be passed to the
     function/coroutine are provided at the time the wrapper is defined. It is assumed
     that the mechanism invoking the handler will add no additional arguments other than
-    the ``command`` that is invoking the handler.
+    the `command` that is invoking the handler.
 
     :param fn: The callable to invoke as a handler.
     :param args: Positional arguments that should be passed to the invoked handler.
@@ -152,7 +153,7 @@ def wrapped_handler(
             return handler.native
 
         def _handler(*args: object, **kwargs: object) -> object:
-            if asyncio.iscoroutinefunction(handler):
+            if inspect.iscoroutinefunction(handler):
                 return asyncio.ensure_future(
                     handler_with_cleanup(handler, cleanup, interface, *args, **kwargs)
                 )
@@ -212,9 +213,12 @@ class AsyncResult(ABC):
         self.on_result: OnResultT | None
         if on_result:
             warnings.warn(
-                "Synchronous `on_result` handlers have been deprecated; "
-                "use `await` on the asynchronous result",
+                (
+                    "Synchronous `on_result` handlers have been deprecated; "
+                    "use `await` on the asynchronous result"
+                ),
                 DeprecationWarning,
+                stacklevel=2,
             )
 
             self.on_result = on_result
@@ -259,3 +263,25 @@ class AsyncResult(ABC):
 
 class PermissionResult(AsyncResult):
     RESULT_TYPE = "permission"
+
+
+class WeakrefCallable:
+    """
+    A wrapper for callable that holds a weak reference to it.
+
+    This can be useful in particular when setting winforms event handlers, to avoid
+    cyclical reference cycles between Python and the .NET CLR that are detected neither
+    by the Python garbage collector nor the C# garbage collector. It is also used
+    for some of the GTK4 event controllers.
+    """
+
+    def __init__(self, function):
+        try:
+            self.ref = weakref.WeakMethod(function)
+        except TypeError:  # pragma: no cover
+            self.ref = weakref.ref(function)
+
+    def __call__(self, *args, **kwargs):
+        function = self.ref()
+        if function:  # pragma: no branch
+            return function(*args, **kwargs)

@@ -7,7 +7,7 @@ from toga_dummy.utils import (
 )
 
 
-def test_simple_app(event_loop):
+async def test_simple_app():
     """A simple app can be instantiated."""
 
     class SimpleApp(toga.App):
@@ -40,7 +40,7 @@ def test_simple_app(event_loop):
     assert app._impl.n_menu_items == 3
 
 
-def test_non_closeable_main_window(event_loop):
+async def test_non_closeable_main_window():
     """If the main window isn't closable, an error is raised."""
 
     class SimpleApp(toga.App):

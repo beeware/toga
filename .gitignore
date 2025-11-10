@@ -1,3 +1,7 @@
+# MkDocs
+_build
+comment.md
+
 *.pyc
 *~
 .*.sw[op]
@@ -10,7 +14,6 @@ coverage.xml
 dist
 build
 logs
-_build
 distribute-*
 docs/env
 local
@@ -29,6 +32,7 @@ pyvenv.cfg
 .envrc
 bin/
 lib/
+.ruff_cache/
 
 # Exclude briefcase packages from the examples dir.
 examples/*/macOS/

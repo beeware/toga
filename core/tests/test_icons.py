@@ -17,7 +17,7 @@ class MyApp(toga.App):
 
 
 @pytest.fixture
-def app():
+async def app():
     return MyApp("Icons Test", "org.beeware.toga.icons")
 
 

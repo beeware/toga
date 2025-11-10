@@ -1,1 +1,0 @@
-Updated Toga Documentation to show that password input works (partially) for web

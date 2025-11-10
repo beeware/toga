@@ -3,7 +3,7 @@ import asyncio
 import toga
 
 
-class ExampleStatusIconApp(toga.App):
+class StatusIconApp(toga.App):
     def startup(self):
         # Set app to be a background app
         self.main_window = toga.App.BACKGROUND
@@ -82,11 +82,8 @@ class ExampleStatusIconApp(toga.App):
 
 
 def main():
-    return ExampleStatusIconApp(
-        "Status Icon App", "org.beeware.toga.examples.statusiconapp"
-    )
+    return StatusIconApp("Status Icon App", "org.beeware.toga.examples.statusiconapp")
 
 
 if __name__ == "__main__":
-    app = main()
-    app.main_loop()
+    main().main_loop()

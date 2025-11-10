@@ -26,7 +26,6 @@ from ..utils import ExampleLeafWidget, ExampleWidget
 # exception.
 class WidgetSubclassWithoutCreate(toga.Widget):
     def __init__(self, *args, **kwargs):
-
         self.factory = get_platform_factory()
         self._impl = self.factory.Widget(interface=self)
 
@@ -1038,7 +1037,7 @@ def test_reset_app(app, widget):
     assert attribute_value(widget, "app") is None
 
 
-def test_set_new_app(app, widget):
+async def test_set_new_app(app, widget):
     """A widget can be assigned to a different app."""
     # Assign the widget to an app. It won't appear in the registry, as
     # it hasn't been assigned to a window

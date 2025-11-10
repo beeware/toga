@@ -22,7 +22,6 @@ def js_completion_handler(result):
 
 def cookies_completion_handler(result):
     def _completion_handler(cookies: objc_id) -> None:
-
         # Convert cookies from Objective-C to Python objects
         cookies_array = py_from_ns(cookies)
 

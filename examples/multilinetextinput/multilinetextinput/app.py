@@ -1,9 +1,8 @@
 import toga
 from toga.constants import COLUMN, ROW
-from toga.style import Pack
 
 
-class ExampleMultilineTextInputApp(toga.App):
+class MultilineTextInputApp(toga.App):
     # Button callback functions
     def enable_toggle_pressed(self, widget, **kwargs):
         self.multiline_input.enabled = not self.multiline_input.enabled
@@ -38,29 +37,27 @@ class ExampleMultilineTextInputApp(toga.App):
         self.multiline_input = toga.MultilineTextInput(
             placeholder="Enter text here...",
             value="Initial value",
-            style=Pack(flex=1, font_family="monospace", font_size=14),
+            flex=1,
+            font_family="monospace",
+            font_size=14,
             on_change=self.set_label,
         )
 
         button_toggle_enabled = toga.Button(
-            "Enabled", on_press=self.enable_toggle_pressed, style=Pack(flex=1)
+            "Enabled", on_press=self.enable_toggle_pressed, flex=1
         )
         button_toggle_readonly = toga.Button(
-            "Readonly", on_press=self.readonly_toggle_pressed, style=Pack(flex=1)
+            "Readonly", on_press=self.readonly_toggle_pressed, flex=1
         )
 
         button_add_content = toga.Button(
-            "Add content", on_press=self.add_content_pressed, style=Pack(flex=1)
+            "Add content", on_press=self.add_content_pressed, flex=1
         )
-        button_clear = toga.Button(
-            "Clear", on_press=self.clear_pressed, style=Pack(flex=1)
-        )
+        button_clear = toga.Button("Clear", on_press=self.clear_pressed, flex=1)
 
-        button_scroll_top = toga.Button(
-            "Top", on_press=self.scroll_to_top, style=Pack(flex=1)
-        )
+        button_scroll_top = toga.Button("Top", on_press=self.scroll_to_top, flex=1)
         button_scroll_bottom = toga.Button(
-            "Bottom", on_press=self.scroll_to_bottom, style=Pack(flex=1)
+            "Bottom", on_press=self.scroll_to_bottom, flex=1
         )
 
         btn_box1 = toga.Box(
@@ -68,28 +65,32 @@ class ExampleMultilineTextInputApp(toga.App):
                 button_toggle_enabled,
                 button_toggle_readonly,
             ],
-            style=Pack(direction=ROW, margin_bottom=10),
+            direction=ROW,
+            margin_bottom=10,
         )
         btn_box2 = toga.Box(
             children=[
                 button_add_content,
                 button_clear,
             ],
-            style=Pack(direction=ROW, margin_bottom=10),
+            direction=ROW,
+            margin_bottom=10,
         )
         btn_box3 = toga.Box(
             children=[
                 button_scroll_top,
                 button_scroll_bottom,
-                toga.TextInput(style=Pack(flex=1)),
+                toga.TextInput(flex=1),
             ],
-            style=Pack(direction=ROW, margin_bottom=10),
+            direction=ROW,
+            margin_bottom=10,
         )
         self.label = toga.Label("Nothing has been written yet")
 
         outer_box = toga.Box(
             children=[btn_box1, btn_box2, btn_box3, self.multiline_input, self.label],
-            style=Pack(direction=COLUMN, margin=10),
+            direction=COLUMN,
+            margin=10,
         )
 
         self.main_window.content = outer_box
@@ -97,11 +98,10 @@ class ExampleMultilineTextInputApp(toga.App):
 
 
 def main():
-    return ExampleMultilineTextInputApp(
+    return MultilineTextInputApp(
         "Multiline Text Input", "org.beeware.toga.examples.multilinetextinput"
     )
 
 
 if __name__ == "__main__":
-    app = main()
-    app.main_loop()
+    main().main_loop()

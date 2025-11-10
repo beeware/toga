@@ -1,9 +1,16 @@
 import asyncio
+import gc
 from unittest.mock import Mock
 
 import pytest
 
-from toga.handlers import AsyncResult, NativeHandler, simple_handler, wrapped_handler
+from toga.handlers import (
+    AsyncResult,
+    NativeHandler,
+    WeakrefCallable,
+    simple_handler,
+    wrapped_handler,
+)
 
 
 class ExampleAsyncResult(AsyncResult):
@@ -184,7 +191,7 @@ def test_function_handler_with_cleanup_error(capsys):
 ######################################################################
 
 
-def test_generator_handler(event_loop):
+async def test_generator_handler():
     """A generator can be used as a handler."""
     obj = Mock()
     handler_call = {}
@@ -208,10 +215,7 @@ def test_generator_handler(event_loop):
         DeprecationWarning,
         match=r"Use of generators for async handlers has been deprecated;",
     ):
-        assert (
-            event_loop.run_until_complete(wrapped("arg1", "arg2", kwarg1=3, kwarg2=4))
-            == 42
-        )
+        assert await wrapped("arg1", "arg2", kwarg1=3, kwarg2=4) == 42
 
     # Handler arguments are as expected.
     assert handler_call == {
@@ -222,7 +226,7 @@ def test_generator_handler(event_loop):
     }
 
 
-def test_generator_handler_error(event_loop, capsys):
+async def test_generator_handler_error(capsys):
     """A generator can raise an error."""
     obj = Mock()
     handler_call = {}
@@ -244,10 +248,7 @@ def test_generator_handler_error(event_loop, capsys):
         DeprecationWarning,
         match=r"Use of generators for async handlers has been deprecated;",
     ):
-        assert (
-            event_loop.run_until_complete(wrapped("arg1", "arg2", kwarg1=3, kwarg2=4))
-            is None
-        )
+        assert await wrapped("arg1", "arg2", kwarg1=3, kwarg2=4) is None
 
     # Handler arguments are as expected.
     assert handler_call == {
@@ -262,7 +263,7 @@ def test_generator_handler_error(event_loop, capsys):
     )
 
 
-def test_generator_handler_with_cleanup(event_loop):
+async def test_generator_handler_with_cleanup():
     """A generator can have cleanup."""
     obj = Mock()
     cleanup = Mock()
@@ -287,10 +288,7 @@ def test_generator_handler_with_cleanup(event_loop):
         DeprecationWarning,
         match=r"Use of generators for async handlers has been deprecated;",
     ):
-        assert (
-            event_loop.run_until_complete(wrapped("arg1", "arg2", kwarg1=3, kwarg2=4))
-            == 42
-        )
+        assert await wrapped("arg1", "arg2", kwarg1=3, kwarg2=4) == 42
 
     # Handler arguments are as expected.
     assert handler_call == {
@@ -304,7 +302,7 @@ def test_generator_handler_with_cleanup(event_loop):
     cleanup.assert_called_once_with(obj, 42)
 
 
-def test_generator_handler_with_cleanup_error(event_loop, capsys):
+async def test_generator_handler_with_cleanup_error(capsys):
     """A generator can raise an error during cleanup."""
     obj = Mock()
     cleanup = Mock(side_effect=Exception("Problem in cleanup"))
@@ -329,10 +327,7 @@ def test_generator_handler_with_cleanup_error(event_loop, capsys):
         DeprecationWarning,
         match=r"Use of generators for async handlers has been deprecated;",
     ):
-        assert (
-            event_loop.run_until_complete(wrapped("arg1", "arg2", kwarg1=3, kwarg2=4))
-            == 42
-        )
+        assert await wrapped("arg1", "arg2", kwarg1=3, kwarg2=4) == 42
 
     # Handler arguments are as expected.
     assert handler_call == {
@@ -355,7 +350,7 @@ def test_generator_handler_with_cleanup_error(event_loop, capsys):
 ######################################################################
 
 
-def test_coroutine_handler(event_loop):
+async def test_coroutine_handler():
     """A coroutine can be used as a handler."""
     obj = Mock()
     handler_call = {}
@@ -373,9 +368,7 @@ def test_coroutine_handler(event_loop):
     assert wrapped._raw == handler
 
     # Invoke the handler
-    assert (
-        event_loop.run_until_complete(wrapped("arg1", "arg2", kwarg1=3, kwarg2=4)) == 42
-    )
+    assert await wrapped("arg1", "arg2", kwarg1=3, kwarg2=4) == 42
 
     # Handler arguments are as expected.
     assert handler_call == {
@@ -385,7 +378,7 @@ def test_coroutine_handler(event_loop):
     }
 
 
-def test_coroutine_handler_error(event_loop, capsys):
+async def test_coroutine_handler_error(capsys):
     """A coroutine can raise an error."""
     obj = Mock()
     handler_call = {}
@@ -402,10 +395,7 @@ def test_coroutine_handler_error(event_loop, capsys):
     assert wrapped._raw == handler
 
     # Invoke the handler; return value is None due to exception
-    assert (
-        event_loop.run_until_complete(wrapped("arg1", "arg2", kwarg1=3, kwarg2=4))
-        is None
-    )
+    assert await wrapped("arg1", "arg2", kwarg1=3, kwarg2=4) is None
 
     # Handler arguments are as expected.
     assert handler_call == {
@@ -420,7 +410,7 @@ def test_coroutine_handler_error(event_loop, capsys):
     )
 
 
-def test_coroutine_handler_with_cleanup(event_loop):
+async def test_coroutine_handler_with_cleanup():
     """A coroutine can have cleanup."""
     obj = Mock()
     cleanup = Mock()
@@ -439,9 +429,7 @@ def test_coroutine_handler_with_cleanup(event_loop):
     assert wrapped._raw == handler
 
     # Invoke the handler
-    assert (
-        event_loop.run_until_complete(wrapped("arg1", "arg2", kwarg1=3, kwarg2=4)) == 42
-    )
+    assert await wrapped("arg1", "arg2", kwarg1=3, kwarg2=4) == 42
 
     # Handler arguments are as expected.
     assert handler_call == {
@@ -454,7 +442,7 @@ def test_coroutine_handler_with_cleanup(event_loop):
     cleanup.assert_called_once_with(obj, 42)
 
 
-def test_coroutine_handler_with_cleanup_error(event_loop, capsys):
+async def test_coroutine_handler_with_cleanup_error(capsys):
     """A coroutine can raise an error during cleanup."""
     obj = Mock()
     cleanup = Mock(side_effect=Exception("Problem in cleanup"))
@@ -473,9 +461,7 @@ def test_coroutine_handler_with_cleanup_error(event_loop, capsys):
     assert wrapped._raw == handler
 
     # Invoke the handler; error in cleanup is swallowed
-    assert (
-        event_loop.run_until_complete(wrapped("arg1", "arg2", kwarg1=3, kwarg2=4)) == 42
-    )
+    assert await wrapped("arg1", "arg2", kwarg1=3, kwarg2=4) == 42
 
     # Handler arguments are as expected.
     assert handler_call == {
@@ -507,7 +493,7 @@ def test_native_handler():
     assert wrapped == native_method
 
 
-def test_async_result_non_comparable(event_loop):
+async def test_async_result_non_comparable():
     """An async result can't be compared or evaluated."""
     result = ExampleAsyncResult(None)
 
@@ -520,53 +506,53 @@ def test_async_result_non_comparable(event_loop):
         RuntimeError,
         match=r"Can't check Test result directly; use await or an on_result handler",
     ):
-        result == 42
+        _ = result == 42
 
     with pytest.raises(
         RuntimeError,
         match=r"Can't check Test result directly; use await or an on_result handler",
     ):
-        result < 42
+        _ = result < 42
 
     with pytest.raises(
         RuntimeError,
         match=r"Can't check Test result directly; use await or an on_result handler",
     ):
-        result <= 42
+        _ = result <= 42
 
     with pytest.raises(
         RuntimeError,
         match=r"Can't check Test result directly; use await or an on_result handler",
     ):
-        result > 42
+        _ = result > 42
 
     with pytest.raises(
         RuntimeError,
         match=r"Can't check Test result directly; use await or an on_result handler",
     ):
-        result >= 42
+        _ = result >= 42
 
     with pytest.raises(
         RuntimeError,
         match=r"Can't check Test result directly; use await or an on_result handler",
     ):
-        result != 42
+        _ = result != 42
 
 
-def test_async_result(event_loop):
+async def test_async_result():
     """An async result can be set."""
     result = ExampleAsyncResult()
 
     result.set_result(42)
 
     # Evaluate the future
-    async_answer = event_loop.run_until_complete(result.future)
+    async_answer = await result.future
 
     # The answer was returned, and passed to the callback
     assert async_answer == 42
 
 
-def test_async_result_cancelled(event_loop):
+async def test_async_result_cancelled():
     """An async result can be set even if the future is cancelled."""
     result = ExampleAsyncResult()
 
@@ -577,10 +563,10 @@ def test_async_result_cancelled(event_loop):
 
     # Evaluate the future. This will raise an error
     with pytest.raises(asyncio.CancelledError):
-        event_loop.run_until_complete(result.future)
+        await result.future
 
 
-def test_async_exception(event_loop):
+async def test_async_exception():
     """An async result can raise an exception."""
     result = ExampleAsyncResult()
 
@@ -588,10 +574,10 @@ def test_async_exception(event_loop):
 
     # Evaluate the future; this will raise an exception
     with pytest.raises(ValueError, match=r"Bad stuff"):
-        event_loop.run_until_complete(result.future)
+        await result.future
 
 
-def test_async_exception_cancelled(event_loop):
+async def test_async_exception_cancelled():
     """An async result can raise an exception even if the future is cancelled."""
     result = ExampleAsyncResult()
 
@@ -602,7 +588,7 @@ def test_async_exception_cancelled(event_loop):
 
     # Evaluate the future. This will raise an error
     with pytest.raises(asyncio.CancelledError):
-        event_loop.run_until_complete(result.future)
+        await result.future
 
 
 def test_simple_handler_function():
@@ -628,7 +614,7 @@ def test_simple_handler_function():
     }
 
 
-def test_simple_handler_coroutine(event_loop):
+async def test_simple_handler_coroutine():
     """A coroutine can be wrapped as a simple handler."""
     handler_call = {}
 
@@ -641,7 +627,7 @@ def test_simple_handler_coroutine(event_loop):
 
     # Invoke the handler as if it were a coroutine method handler (i.e., with the extra
     # "widget" argument)
-    assert event_loop.run_until_complete(wrapped("obj")) == 42
+    assert await wrapped("obj") == 42
     assert wrapped._raw == handler
 
     # The "widget" bound argument has been dropped
@@ -656,7 +642,7 @@ def test_simple_handler_coroutine(event_loop):
 ######################################################################
 
 
-def test_async_result_sync(event_loop):
+async def test_async_result_sync():
     """The deprecated behavior of using a synchronous result handler is supported."""
     on_result = Mock()
 
@@ -669,14 +655,14 @@ def test_async_result_sync(event_loop):
     result.set_result(42)
 
     # Evaluate the future
-    async_answer = event_loop.run_until_complete(result.future)
+    async_answer = await result.future
 
     # The answer was returned, and passed to the callback
     assert async_answer == 42
     on_result.assert_called_once_with(42)
 
 
-def test_async_result_cancelled_sync(event_loop):
+async def test_async_result_cancelled_sync():
     """A deprecated on_result handler won't be fired on a cancelled future."""
     on_result = Mock()
 
@@ -693,13 +679,13 @@ def test_async_result_cancelled_sync(event_loop):
 
     # Evaluate the future. This will raise an error
     with pytest.raises(asyncio.CancelledError):
-        event_loop.run_until_complete(result.future)
+        await result.future
 
     # The callback wasn't called
     on_result.assert_not_called()
 
 
-def test_async_exception_sync(event_loop):
+async def test_async_exception_sync():
     """A deprecated on_result handler can raise an exception."""
     on_result = Mock()
 
@@ -713,7 +699,7 @@ def test_async_exception_sync(event_loop):
 
     # Evaluate the future; this will raise an exception
     with pytest.raises(ValueError, match=r"Bad stuff"):
-        event_loop.run_until_complete(result.future)
+        await result.future
 
     # The answer was returned, and passed to the callback
     on_result.assert_called_once()
@@ -721,7 +707,7 @@ def test_async_exception_sync(event_loop):
     assert isinstance(on_result.call_args[1]["exception"], ValueError)
 
 
-def test_async_exception_cancelled_sync(event_loop):
+async def test_async_exception_cancelled_sync():
     """An async result can raise an exception even if the future is cancelled."""
     on_result = Mock()
 
@@ -738,7 +724,133 @@ def test_async_exception_cancelled_sync(event_loop):
 
     # Evaluate the future. This will raise an error
     with pytest.raises(asyncio.CancelledError):
-        event_loop.run_until_complete(result.future)
+        await result.future
 
     # The callback wasn't called
     on_result.assert_not_called()
+
+
+def test_weakref_function_call():
+    """WeakrefCallable correctly calls the wrapped function."""
+
+    def test_func(x, y=2):
+        return x + y
+
+    wrc = WeakrefCallable(test_func)
+
+    # Test with positional arguments
+    assert wrc(3) == 5
+
+    # Test with keyword arguments
+    assert wrc(3, y=3) == 6
+
+    # Test with mixed arguments
+    assert wrc(3, 4) == 7
+
+
+def test_weakref_method_call():
+    """WeakrefCallable correctly calls a method."""
+
+    class TestClass:
+        def __init__(self, value):
+            self.value = value
+
+        def method(self, x, y=2):
+            return self.value + x + y
+
+    obj = TestClass(5)
+    wrc = WeakrefCallable(obj.method)
+
+    # Test method call
+    assert wrc(3) == 10
+
+    # Test with keyword arguments
+    assert wrc(3, y=3) == 11
+
+    # Test with mixed arguments
+    assert wrc(3, 4) == 12
+
+
+def test_weakref_lambda_call():
+    """WeakrefCallable works with lambda functions."""
+    # Store the lambda in a variable to prevent it from being garbage collected
+    lambda_func = lambda x: x * 2  # noqa: E731
+    wrc = WeakrefCallable(lambda_func)
+    assert wrc(5) == 10
+
+
+def test_weakref_gc_function():
+    """A function is garbage collected properly."""
+
+    def create_function_wrapper():
+        def temp_func(x):
+            return x * 3
+
+        return WeakrefCallable(temp_func)
+
+    wrc = create_function_wrapper()
+
+    # Force garbage collection
+    gc.collect()
+
+    # The function should be gone
+    assert wrc.ref() is None
+
+
+def test_weakref_gc_method():
+    """The method and its object are garbage collected properly."""
+
+    class TempClass:
+        def method(self, x):
+            return x * 4
+
+    def create_method_wrapper():
+        obj = TempClass()
+        return WeakrefCallable(obj.method), obj
+
+    wrc, obj_ref = create_method_wrapper()
+
+    # Object still exists, method should work
+    assert wrc(2) == 8
+
+    # Delete the reference to the object
+    del obj_ref
+
+    # Force garbage collection
+    gc.collect()
+
+    # The method reference should be gone
+    assert wrc.ref() is None
+
+
+def test_weakref_callable_object():
+    """WeakrefCallable works with callable objects."""
+
+    class CallableObject:
+        def __call__(self, x):
+            return x * 5
+
+    obj = CallableObject()
+    wrc = WeakrefCallable(obj)
+
+    # Test call
+    assert wrc(2) == 10
+
+
+def test_weakref_none_result_when_function_gone():
+    """Calling the wrapper after the target is collected doesn't error."""
+
+    def create_function_wrapper():
+        def temp_func(x):
+            return x * 3
+
+        return WeakrefCallable(temp_func)
+
+    wrc = create_function_wrapper()
+
+    # Force garbage collection
+    gc.collect()
+
+    # Calling the wrapper should not raise an error
+    result = wrc(10)
+    assert result is None

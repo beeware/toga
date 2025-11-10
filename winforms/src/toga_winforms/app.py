@@ -10,8 +10,10 @@ from System.Media import SystemSounds
 from System.Net import SecurityProtocolType, ServicePointManager
 from System.Windows.Threading import Dispatcher
 
+from toga.dialogs import InfoDialog
+from toga.handlers import WeakrefCallable
+
 from .libs.proactor import WinformsProactorEventLoop
-from .libs.wrapper import WeakrefCallable
 from .screens import Screen as ScreenImpl
 
 
@@ -236,8 +238,12 @@ class App:
             message_parts.append(f"Author: {self.interface.author}")
         if self.interface.description is not None:
             message_parts.append(f"\n{self.interface.description}")
-        self.interface.main_window.info_dialog(
-            f"About {self.interface.formal_name}", "\n".join(message_parts)
+        asyncio.create_task(
+            self.interface.dialog(
+                InfoDialog(
+                    f"About {self.interface.formal_name}", "\n".join(message_parts)
+                )
+            )
         )
 
     ######################################################################

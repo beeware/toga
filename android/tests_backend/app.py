@@ -13,6 +13,7 @@ from .window import WindowProbe
 
 class AppProbe(BaseProbe, DialogsMixin):
     supports_key = False
+    supports_dark_mode = True
 
     def __init__(self, app):
         super().__init__(app)
@@ -57,7 +58,7 @@ class AppProbe(BaseProbe, DialogsMixin):
                 if item.getTitle() == label and not item.requiresActionButton():
                     break
             else:
-                raise AssertionError(f"no item named {path[:i_path+1]}")
+                raise AssertionError(f"no item named {path[: i_path + 1]}")
 
             if i_path < len(path) - 1:
                 # Simulate opening the submenu.

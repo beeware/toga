@@ -194,7 +194,7 @@ class Tree(Widget):
         self.columns = []
         if self.interface.headings:
             for index, (heading, accessor) in enumerate(
-                zip(self.interface.headings, self.interface.accessors)
+                zip(self.interface.headings, self.interface.accessors, strict=False)
             ):
                 self._insert_column(index, heading, accessor)
         else:
@@ -251,7 +251,7 @@ class Tree(Widget):
             selection = []
 
             current_index = self.native_tree.selectedRowIndexes.firstIndex
-            for i in range(self.native_tree.selectedRowIndexes.count):
+            for _ in range(self.native_tree.selectedRowIndexes.count):
                 selection.append(
                     self.native_tree.itemAtRow(current_index).attrs["node"]
                 )

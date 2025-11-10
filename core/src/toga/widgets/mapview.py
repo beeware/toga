@@ -98,7 +98,7 @@ class MapPinSet:
     def add(self, pin: MapPin) -> None:
         """Add a new pin to the map.
 
-        :param pin: The :any:`toga.MapPin` instance to add.
+        :param pin: The [`toga.MapPin`][] instance to add.
         """
         pin.interface = self.interface
         self._pins.add(pin)
@@ -107,7 +107,7 @@ class MapPinSet:
     def remove(self, pin: MapPin) -> None:
         """Remove a pin from the map.
 
-        :param pin: The  :any:`toga.MapPin` instance to remove.
+        :param pin: The  [`toga.MapPin`][] instance to remove.
         """
         self.interface._impl.remove_pin(pin)
         self._pins.remove(pin)
@@ -121,7 +121,7 @@ class MapPinSet:
 
 
 class OnSelectHandler(Protocol):
-    def __call__(self, widget: MapView, *, pin: MapPin, **kwargs: Any) -> object:
+    def __call__(self, widget: MapView, *, pin: MapPin, **kwargs: Any) -> None:
         """A handler that will be invoked when the user selects a map pin.
 
         :param widget: The MapView that was selected.
@@ -176,8 +176,8 @@ class MapView(Widget):
     def location(self) -> toga.LatLng:
         """The latitude/longitude where the map is centered.
 
-        A tuple of ``(latitude, longitude)`` can be provided as input; this will be
-        converted into a :any:`toga.LatLng` object.
+        A tuple of `(latitude, longitude)` can be provided as input; this will be
+        converted into a [`toga.LatLng`][] object.
         """
         return self._impl.get_location()
 
@@ -190,11 +190,14 @@ class MapView(Widget):
         """Set the zoom level for the map.
 
         The zoom level is an integer in the range 0-20 (inclusive). It can be used to
-        set the number of degrees of longitude that will span a 256 :ref:`CSS pixel
-        <css-units>` region in the horizontal axis of the map, following the
-        relationship::
+        set the number of degrees of longitude that will span a 256
+        [CSS pixel][css-units]
+        region in the horizontal axis of the map, following the
+        relationship:
 
-            longitude_per_256_pixels = 360 / (2**zoom)
+        ```
+        longitude_per_256_pixels = 360 / (2**zoom)
+        ```
 
         In practical terms, this means a 256px square will cover:
 
@@ -208,8 +211,9 @@ class MapView(Widget):
         * 20: A single building
 
         These zoom levels use the same mathematical basis as the OpenStreetMap API. See
-        `OpenStreetMap's documentation on zoom levels
-        <https://wiki.openstreetmap.org/wiki/Zoom_levels>`__ for more details.
+        [OpenStreetMap's documentation on zoom
+        levels](https://wiki.openstreetmap.org/wiki/Zoom_levels)
+        for more details.
 
         If the provided zoom value is outside the supported range, it will be clipped.
 

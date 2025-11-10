@@ -1,6 +1,6 @@
 import warnings
 
-from rubicon.objc import SEL, objc_method
+from rubicon.objc import objc_method
 from travertino.size import at_least
 
 from toga_cocoa.container import Container
@@ -58,11 +58,10 @@ class OptionContainer(Widget):
         super().set_bounds(x, y, width, height)
 
         # Setting the bounds changes the constraints, but that doesn't mean
-        # the constraints have been fully applied. Schedule a refresh to be done
-        # as soon as possible in the future
-        self.native.performSelector(
-            SEL("refreshContent"), withObject=None, afterDelay=0
-        )
+        # the constraints have been fully applied. Force realization of the
+        # new layout, and then refresh the content.
+        self.interface.window._impl.native.layoutIfNeeded()
+        self.native.refreshContent()
 
     def content_refreshed(self, container):
         container.min_width = container.content.interface.layout.min_width
@@ -110,7 +109,10 @@ class OptionContainer(Widget):
         try:
             tabview._setTabEnabled(enabled)
         except AttributeError:  # pragma: no cover
-            warnings.warn("Private Cocoa method _setTabEnabled: has been removed!")
+            warnings.warn(
+                "Private Cocoa method _setTabEnabled: has been removed!",
+                stacklevel=2,
+            )
 
     def is_option_enabled(self, index):
         return index not in self._disabled_tabs
@@ -129,7 +131,7 @@ class OptionContainer(Widget):
 
     def get_option_text(self, index):
         tabview = self.native.tabViewItemAtIndex(index)
-        return tabview.label
+        return str(tabview.label)
 
     def get_current_tab_index(self):
         return self.native.indexOfTabViewItem(self.native.selectedTabViewItem)

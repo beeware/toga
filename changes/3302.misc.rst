@@ -1,1 +1,0 @@
-The deprecated ``anticlockwise`` parameter in Canvas was re-added to the relevant docstrings (and marked as deprecated).

@@ -1,0 +1,122 @@
+copyright: © Russell Keith-Magee
+
+not_in_nav: |
+  /index.md
+  reference/api/widgets/table-values.md
+  reference/api/widgets/table-accessors.md
+  reference/platforms/unix-prerequisites.md
+
+validation:
+  omitted_files: warn
+  absolute_links: relative_to_docs
+  anchors: warn
+  unrecognized_links: warn
+
+extra:
+  project_name: toga
+  package_name: toga-core
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/beeware
+      name: BeeWare on GitHub
+    - icon: fontawesome/brands/mastodon
+      link: https://fosstodon.org/@beeware
+      name: BeeWare on Mastodon
+    - icon: fontawesome/brands/discord
+      link: https://beeware.org/bee/chat/
+      name: BeeWare on Discord
+  "beta_support": ^&beta;^
+  "not_supported": ^&#x274C;^
+  "fully_supported": ●
+  "partly_supported": ○
+
+extra_css:
+  - stylesheets/toga.css
+
+theme:
+  name: material
+  language: en
+  logo: images/toga.png
+  favicon: images/toga.png
+  features:
+    - content.tabs.link
+    - toc.follow
+    - navigation.indexes
+    - navigation.footer
+    - search.suggest
+    - search.highlight
+    - search.share
+  custom_dir: overrides
+  palette:
+    # Palette toggle for automatic mode
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/brightness-auto
+        name: Switch to light mode
+
+    # Palette toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to system preference
+
+markdown_extensions:
+  pymdownx.highlight: {}
+  pymdownx.superfences: {}
+  pymdownx.blocks.admonition: {}
+  pymdownx.blocks.caption: {}
+  pymdownx.caret: {}
+  pymdownx.blocks.tab:
+    alternate_style: true
+  pymdownx.snippets:
+    base_path: ["docs/en", "examples"]
+    url_download: true
+    check_paths: true
+  toc:
+    permalink: true
+    title: On this page
+  attr_list: {}
+  footnotes: {}
+
+plugins:
+  search: {}
+  autorefs:
+      resolve_closest: true  # autorefs warns of the Usage headings begin duplicates without this - we will have to assign unique ids to all of them otherwise
+  literate-nav:
+       nav_file: SUMMARY.md
+  macros: {}
+  mkdocstrings:
+      enable_inventory: true
+      default_handler: python
+      handlers:
+        python:
+          paths: [android/src, core/src]
+          inventories:
+            - https://docs.python.org/3/objects.inv
+            - https://pillow.readthedocs.io/en/stable/objects.inv
+          options:
+            docstring_style: sphinx  # Parses docstrings from Sphinx formatting - the `:param` formatting, not parsing rST links
+            allow_inspection: false  # True includes *more* dunder methods, can be enabled on individual class entries if you want them
+            show_source: false  # Otherwise, source code is shown collapsed for all
+            members_order: alphabetical  # Orders things based on the source code
+            annotations_path: brief  # Keeps type annotation links more concise
+            merge_init_into_class: true  # Otherwise, init is displayed separately
+            separate_signature: true  # Shows the `function(args)` separately from name
+            show_signature: true  # Displays () or (args) along with the function name in the signature
+            show_signature_annotations: true  # Includes annotations in signature blocks
+            signature_crossrefs: true  # Enables cross-referencing on signature annotations
+            show_root_heading: true  # Show heading of object at root, otherwise nothing
+            docstring_section_style: spacy  # Better info layout than the other options
+            line_length: 80  # Requires ruff, forces longer signatures to be stacked
+            show_symbol_type_toc: true  # Enables type symbols next to objects in ToC
+            show_symbol_type_heading: true  # Enables type symbols next to object names in content
+            show_attribute_values: false  # Suppresses the values of attributes in the signature
+            heading_level: 3  # Heading level of 3 to nest under References heading

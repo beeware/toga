@@ -21,23 +21,26 @@ class FontMixin:
     supports_custom_fonts = True
     supports_custom_variable_fonts = True
 
+    def preinstalled_font(self):
+        return "Times New Roman"
+
     @property
     def font(self):
         return self.native.Font
 
     def assert_font_options(self, weight=NORMAL, style=NORMAL, variant=NORMAL):
-        assert BOLD if self.font.Bold else NORMAL == weight
+        assert weight == (BOLD if self.font.Bold else NORMAL)
 
         if style == OBLIQUE:
             print("Interpreting OBLIQUE font as ITALIC")
             assert self.font.Italic
         else:
-            assert (ITALIC if self.font.Italic else NORMAL) == style
+            assert style == (ITALIC if self.font.Italic else NORMAL)
 
         if variant == SMALL_CAPS:
             print("Ignoring SMALL CAPS font test")
         else:
-            assert NORMAL == variant
+            assert variant == NORMAL
 
     @property
     def font_size(self):

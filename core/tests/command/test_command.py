@@ -9,7 +9,7 @@ from toga_dummy.utils import assert_action_performed_with
 
 
 def assert_order(*items):
-    for i in range(0, len(items) - 1):
+    for i in range(len(items) - 1):
         for j in range(i + 1, len(items)):
             assert items[i] < items[j]
             assert items[j] > items[i]

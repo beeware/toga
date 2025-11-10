@@ -3,6 +3,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+import pytest
+
 import toga
 
 
@@ -38,22 +40,12 @@ def assert_paths(output, app_path, app_name):
     """Assert the paths for the standalone app are consistent."""
     results = output.splitlines()
     assert f"app.paths.app={app_path.resolve()}" in results
-    assert (
-        f"app.paths.config="
-        f"{(Path.home() / 'config' / f'org.testbed.{app_name}').resolve()}"
-    ) in results
-    assert (
-        f"app.paths.data="
-        f"{(Path.home() / 'user_data' / f'org.testbed.{app_name}').resolve()}"
-    ) in results
-    assert (
-        f"app.paths.cache="
-        f"{(Path.home() / 'cache' / f'org.testbed.{app_name}').resolve()}"
-    ) in results
-    assert (
-        f"app.paths.logs="
-        f"{(Path.home() / 'logs' / f'org.testbed.{app_name}').resolve()}"
-    ) in results
+    home = Path.home()
+    full_name = f"org.testbed.{app_name}"
+    assert f"app.paths.config={home / 'config' / full_name}" in results
+    assert f"app.paths.data={home / 'user_data' / full_name}" in results
+    assert f"app.paths.cache={home / 'cache' / full_name}" in results
+    assert f"app.paths.logs={home / 'logs' / full_name}" in results
     assert f"app.paths.toga={Path(toga.__file__).parent.resolve()}" in results
 
 
@@ -135,3 +127,14 @@ def test_subclassed_as_deep_module():
     cwd = Path(__file__).parent / "testbed"
     output = run_app(["-m", "subclassed"], cwd=cwd)
     assert_paths(output, app_path=cwd / "subclassed", app_name="subclassed-app")
+
+
+@pytest.mark.parametrize(
+    "path_name",
+    ["toga", "app", "config", "data", "cache", "logs"],
+)
+def test_cant_reassign(app, path_name):
+    """App path attributes are read-only."""
+    # Theoretically, this could leak out of this test... but only if it fails!
+    with pytest.raises(AttributeError):
+        setattr(app.paths, path_name, "")

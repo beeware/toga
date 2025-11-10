@@ -1,7 +1,7 @@
 [build-system]
 requires = [
-    "setuptools==80.3.1",
-    "setuptools_scm==8.3.1",
+    "setuptools==80.9.0",
+    "setuptools_scm==9.2.2",
 ]
 build-backend = "setuptools.build_meta"
 
@@ -10,7 +10,7 @@ dynamic = ["version"]
 name = "travertino"
 description = "A set of constants and base classes for describing user interface layouts."
 readme = "README.rst"
-requires-python = ">= 3.9"
+requires-python = ">= 3.10"
 license = "BSD-3-Clause"
 license-files = [
     "LICENSE"
@@ -31,7 +31,6 @@ classifiers = [
     "Intended Audience :: Developers",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
@@ -42,15 +41,18 @@ classifiers = [
     "Topic :: Software Development :: User Interfaces",
 ]
 
-[project.optional-dependencies]
-# These are needed in order to run Travertino's test suite.
+[dependency-groups]
+# Extras used by developers *of* Toga are pinned to specific versions to
+# ensure environment consistency.
 dev = [
-    "coverage[toml] == 7.8.0",
+    "coverage[toml] == 7.11.2",
     "coverage-conditional-plugin == 0.9.0",
-    "pytest == 8.3.5",
-    "tox == 4.25.0",
-    # typing-extensions needed for TypeAlias added in Py 3.10
-    "typing-extensions == 4.12.2 ; python_version < '3.10'",
+    "Pillow == 12.0.0",
+    "pytest == 8.4.2",
+    "pytest-asyncio == 1.2.0",
+    "pytest-freezer == 0.4.9",
+    "pytest-xdist == 3.8.0",
+    "setuptools-scm==9.2.2",
 ]
 
 [project.urls]
@@ -60,11 +62,6 @@ Funding = "https://beeware.org/contributing/membership/"
 Tracker = "https://github.com/beeware/travertino/issues"
 Source = "https://github.com/beeware/travertino"
 
-[tool.isort]
-profile = "black"
-split_on_trailing_comma = true
-combine_as_imports = true
-
 [tool.setuptools_scm]
 root = ".."
 
@@ -72,6 +69,7 @@ root = ".."
 parallel = true
 branch = true
 relative_files = true
+omit = ["test_compat.py"]
 
 # See notes in the root pyproject.toml file.
 source = ["src"]
@@ -85,3 +83,15 @@ source = [
 
 [tool.pytest.ini_options]
 asyncio_default_fixture_loop_scope = "function"
+# Excludes collecting tests in compat
+norecursedirs = "compat"
+
+[tool.ruff]
+extend = "../pyproject.toml"
+
+[tool.ruff.lint.isort]
+known-third-party = [
+]
+known-first-party = [
+    "travertino"
+]

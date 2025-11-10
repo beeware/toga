@@ -1,3 +1,5 @@
+import pytest
+
 from toga.fonts import (
     BOLD,
     CURSIVE,
@@ -23,6 +25,9 @@ class FontMixin:
     supports_custom_fonts = True
     supports_custom_variable_fonts = False
 
+    def preinstalled_font(self):
+        pytest.skip("Use of arbitrary system fonts is not yet supported on iOS.")
+
     def assert_font_options(self, weight=NORMAL, style=NORMAL, variant=NORMAL):
         # Cocoa's FANTASY (Papyrus) and CURSIVE (Snell Roundhand) system
         # fonts don't have any bold/italic variants.
@@ -35,18 +40,18 @@ class FontMixin:
 
         traits = self.font.fontDescriptor.symbolicTraits
 
-        assert (BOLD if traits & UIFontDescriptorTraitBold else NORMAL) == weight
+        assert weight == (BOLD if traits & UIFontDescriptorTraitBold else NORMAL)
 
         if style == OBLIQUE:
             print("Interpreting OBLIQUE font as ITALIC")
             assert bool(traits & UIFontDescriptorTraitItalic)
         else:
-            assert ITALIC if traits & UIFontDescriptorTraitItalic else NORMAL == style
+            assert style == (ITALIC if traits & UIFontDescriptorTraitItalic else NORMAL)
 
         if variant == SMALL_CAPS:
             print("Ignoring SMALL CAPS font test")
         else:
-            assert NORMAL == variant
+            assert variant == NORMAL
 
     def assert_font_size(self, expected):
         if expected == SYSTEM_DEFAULT_FONT_SIZE:

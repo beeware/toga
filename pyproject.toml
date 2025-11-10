@@ -2,7 +2,7 @@
 skip = ".git,*.pdf,*.svg"
 # the way to make case sensitive skips of words etc
 ignore-regex = "\bNd\b"
-ignore-words-list = "te,crate,re-use,MapPin"
+ignore-words-list = "MapPin"
 
 # The coverage settings in this file only control `coverage report`. `coverage run` and
 # `coverage combine` are controlled by the pyproject.toml files in each package's
@@ -39,20 +39,43 @@ exclude_lines = [
 no-cover-if-missing-setuptools_scm = "not is_installed('setuptools_scm')"
 no-cover-if-missing-PIL = "not is_installed('PIL')"
 no-cover-if-PIL-installed = "is_installed('PIL')"
+no-cover-if-lt-py312 = "sys_version_info < (3, 12) and os_environ.get('COVERAGE_EXCLUDE_PYTHON_VERSION') != 'disable'"
+no-cover-if-gte-py312 = "sys_version_info > (3, 12) and os_environ.get('COVERAGE_EXCLUDE_PYTHON_VERSION') != 'disable'"
 no-cover-if-lt-py311 = "sys_version_info < (3, 11) and os_environ.get('COVERAGE_EXCLUDE_PYTHON_VERSION') != 'disable'"
 no-cover-if-gte-py311 = "sys_version_info > (3, 11) and os_environ.get('COVERAGE_EXCLUDE_PYTHON_VERSION') != 'disable'"
-no-cover-if-lt-py310 = "sys_version_info < (3, 10) and os_environ.get('COVERAGE_EXCLUDE_PYTHON_VERSION') != 'disable'"
-no-cover-if-gte-py310 = "sys_version_info > (3, 10) and os_environ.get('COVERAGE_EXCLUDE_PYTHON_VERSION') != 'disable'"
 
-[tool.isort]
-profile = "black"
-split_on_trailing_comma = true
-combine_as_imports = true
-known_third_party = [
-    "android",  # isort defaults to making this first-party for some reason.
+[tool.ruff]
+exclude = [
+    ".template",  # Ruff fails to run at all if allowed to lint the cookiecutter syntax
+    "core/src/toga/__init__.pyi"
+]
+
+[tool.ruff.lint]
+# In addition to the default rules, these additional rules will be used:
+extend-select = [
+    "E",      # pycodestyle
+    "W",      # pycodestyle
+    "F",      # pyflakes
+    "UP",     # pyupgrade
+    "B",      # flake8-bugbear
+    "YTT",    # flake8-2020
+    "ASYNC",  # flake8-async
+    "C4",     # flake8-comprehensions
+    "I",      # isort
+    # The SIM rules are *very* opinionated, and don't necessarily make for better code.
+    # They may be worth occasionally turning on just to see if something could actually
+    # use improvement.
+    # "SIM",    # flake8-simplify
+]
+
+[tool.ruff.lint.isort]
+combine-as-imports = true
+known-third-party = [
+    "android",  # isort defaults to making this first-party because it can't be imported.
+    "textual",  # We don't ever import textual, so Ruff doesn't know about it.
     "travertino", # In this repo, but still a separate package
 ]
-known_first_party = [
+known-first-party = [
     "testbed",
     "toga",
     "toga_android",
@@ -60,19 +83,19 @@ known_first_party = [
     "toga_dummy",
     "toga_gtk",
     "toga_iOS",
+    "toga_textual",
     "toga_web",
     "toga_winforms",
 ]
-extend_skip = ["travertino"]
 
 [tool.towncrier]
 directory = "changes"
 package = "toga"
 package_dir = "core/src"
-filename = "docs/background/project/releases.rst"
-title_format = "{version} ({project_date})"
-issue_format = "`#{issue} <https://github.com/beeware/toga/issues/{issue}>`__"
-template = "changes/template.rst"
+filename = "docs/about/releases.md"
+title_format = "## {version} ({project_date})"
+issue_format = "[#{issue}](https://github.com/beeware/toga/issues/{issue})"
+template = "changes/template.md"
 type = [
     { directory = "feature", name = "Features", showcontent = true },
     { directory = "bugfix", name = "Bugfixes", showcontent = true },
@@ -85,3 +108,32 @@ type = [
 # We're not doing anything Python-related at the root level of the repo, but if this
 # declaration isn't here, tox commands run from the root directory raise a warning that
 # pyproject.toml doesn't contain a setuptools_scm section.
+
+[dependency-groups]
+# Extras used by developers *of* Toga are pinned to specific versions to
+# ensure environment consistency.
+pre-commit = [
+    "pre-commit == 4.3.0",
+]
+
+towncrier = [
+    "towncrier==24.8.0",
+]
+
+tox-uv = [
+    "tox-uv == 1.28.0",
+]
+
+dev = [
+    {include-group = "pre-commit"},
+    {include-group = "tox-uv"},
+]
+
+# Docs are always built on a specific Python version; see RTD and tox config files,
+# and the docs contribution guide.
+docs = [
+    "beeware-docs-tools @ git+https://github.com/beeware/beeware-docs-tools",
+    "setuptools-scm==9.2.0",
+    "tabulate==0.9.0",
+    "PyYAML==6.0.3"
+]

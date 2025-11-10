@@ -16,8 +16,7 @@ on:
         value: ${{ jobs.package.outputs.artifact-basename }}
 
 env:
-  min_python_version: "3.9"
-  max_python_version: "3.12"
+  min_python_version: "3.10"
   FORCE_COLOR: "1"
 
 defaults:
@@ -34,17 +33,13 @@ jobs:
     name: Pre-commit checks
     uses: beeware/.github/.github/workflows/pre-commit-run.yml@main
     with:
-      # Although we only want to install the dev dependencies, we have to install the
-      # core, which means we need travertino as well.
-      pre-commit-source: "./travertino ./core[dev]"
+      pre-commit-source: "--group pre-commit"
 
   towncrier:
     name: Check towncrier
     uses: beeware/.github/.github/workflows/towncrier-run.yml@main
     with:
-      # Although we only want to install the dev dependencies, we have to install the
-      # core, which means we need travertino as well.
-      tox-source: "./travertino ./core[dev]"
+      tox-source: "--group tox-uv"
 
   package:
     name: Package Toga
@@ -82,7 +77,7 @@ jobs:
       fail-fast: false
       matrix:
         platform: [ "macos-latest", "ubuntu-latest", "windows-latest" ]
-        python-version: [ "3.9", "3.10", "3.11", "3.12", "3.13" ]
+        python-version: [ "3.10", "3.11", "3.12", "3.13", "3.14" ]
         package: ["core", "travertino"]
         exclude:
         - package: travertino
@@ -98,25 +93,21 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v4.2.2
+      uses: actions/checkout@v5.0.0
       with:
         fetch-depth: 0
 
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v5.6.0
+      uses: actions/setup-python@v6.0.0
       with:
         python-version: ${{ matrix.python-version }}
         allow-prereleases: true
 
     - name: Install Tox
-      uses: beeware/.github/.github/actions/install-requirement@main
-      with:
-        requirements: tox
-        extra: dev
-        project-root: ${{ matrix.package }}
+      run: python -m pip install --group tox-uv
 
     - name: Get Packages
-      uses: actions/download-artifact@v4.3.0
+      uses: actions/download-artifact@v6.0.0
       with:
         pattern: ${{ format('{0}-*', needs.package.outputs.artifact-basename) }}
         merge-multiple: true
@@ -124,18 +115,16 @@ jobs:
 
     - name: Test
       run: |
-        # The $(ls ...) shell expansion is done in the Github environment; the value of
+        # The $(ls ...) shell expansion is done in the GitHub environment; the value of
         # TOGA_INSTALL_COMMAND will be a literal string without any shell expansions to
-        # perform. We don't *explicitly* install the Travertino wheel; we provide the
-        # dist dir as a source of wheels, and rely on pip to resolve the explicit
-        # version match to the Travertino wheel in that folder.
-        export TOGA_INSTALL_COMMAND="python -m pip install --find-links ../dist ../$(ls dist/toga_core-*.whl)[dev] ../$(ls dist/toga_dummy-*.whl)"
+        # perform.
+        export TOGA_INSTALL_COMMAND="uv pip install ../$(ls dist/toga_core-*.whl) ../$(ls dist/travertino-*.whl) ../$(ls dist/toga_dummy-*.whl) --group dev"
         tox -e py-cov${{ matrix.tox-suffix }}
         tox -qe coverage$(tr -dc "0-9" <<< "${{ matrix.python-version }}")${{ matrix.tox-suffix }}
         mv ${{ matrix.package }}/.coverage ${{ matrix.package }}/.coverage.${{ matrix.platform }}.${{ matrix.python-version }}
 
     - name: Store Coverage Data
-      uses: actions/upload-artifact@v4.6.2
+      uses: actions/upload-artifact@v5.0.0
       with:
         name: ${{ matrix.package }}-coverage-data-${{ matrix.platform }}-${{ matrix.python-version }}
         path: "${{ matrix.package }}/.coverage.*"
@@ -156,41 +145,67 @@ jobs:
             tox-suffix: "-trav"
     steps:
     - name: Checkout
-      uses: actions/checkout@v4.2.2
+      uses: actions/checkout@v5.0.0
       with:
         fetch-depth: 0
 
     - name: Set up Python ${{ env.min_python_version }}
-      uses: actions/setup-python@v5.6.0
+      uses: actions/setup-python@v6.0.0
       with:
         # Use minimum version of python for coverage to avoid phantom branches
         # https://github.com/nedbat/coveragepy/issues/1572#issuecomment-1522546425
         python-version: ${{ env.min_python_version }}
 
     - name: Install Tox
-      uses: beeware/.github/.github/actions/install-requirement@main
-      with:
-        requirements: tox
-        extra: dev
-        project-root: ${{ matrix.package }}
+      run: python -m pip install --group tox-uv
 
     - name: Retrieve Coverage Data
-      uses: actions/download-artifact@v4.3.0
+      uses: actions/download-artifact@v6.0.0
       with:
         pattern: ${{ matrix.package }}-coverage-data-*
         path: ${{ matrix.package }}
         merge-multiple: true
 
     - name: Generate Coverage Report
-      # Even with "fail" on, Travertino will accept <100%.
-      run: tox -e coverage${{ matrix.tox-suffix }}-html-fail-platform
+      run: tox -e coverage${{ matrix.tox-suffix }}-html-platform
 
     - name: Upload HTML Coverage Report
-      uses: actions/upload-artifact@v4.6.2
+      uses: actions/upload-artifact@v5.0.0
       if: failure()
       with:
         name: html-coverage-report
         path: ${{ matrix.package }}/htmlcov
+
+  travertino-backwards-compatibility:
+    name: Test Travertino backwards compatibility with Toga 0.4.8
+    runs-on: "ubuntu-latest"
+    needs: [ pre-commit, towncrier, package ]
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v5.0.0
+      with:
+        fetch-depth: 0
+
+    - name: Set up Python
+      uses: actions/setup-python@v6.0.0
+      with:
+        python-version: ${{ env.min_python_version }}
+
+    - name: Install Tox
+      run: python -m pip install --group tox-uv
+
+    - name: Get Package
+      uses: actions/download-artifact@v6.0.0
+      with:
+        pattern: ${{ format('{0}-*', needs.package.outputs.artifact-basename) }}
+        merge-multiple: true
+        path: dist
+
+    - name: Test
+      run: |
+        export TRAVERTINO_INSTALL_COMMAND="uv pip install ../$(ls dist/travertino-*.whl)"
+        tox -e trav-compat
 
   testbed:
     name: Testbed
@@ -219,7 +234,7 @@ jobs:
 
         - backend: "macOS-x86_64"
           platform: "macOS"
-          runs-on: "macos-13"
+          runs-on: "macos-15-intel"
           app-user-data-path: "$HOME/Library/Application Support/org.beeware.toga.testbed"
 
         - backend: "macOS-arm64"
@@ -347,7 +362,15 @@ jobs:
         - backend: "iOS"
           platform: "iOS"
           runs-on: "macos-latest"
-          briefcase-run-args: "--device 'iPhone SE (3rd generation)'"
+          pre-command: |
+            # 2025-08-15 - Github Actions are in the process of switching how they
+            # manage Xcode, so they can save disk space.
+            # See https://github.com/actions/runner-images/issues/12541
+            # and https://github.com/actions/runner-images/issues/12751; see
+            # also https://github.com/actions/runner-images/issues/12758 for
+            # a discussion of transition issues.
+            sudo xcode-select --switch /Applications/Xcode_16.4.app
+          briefcase-run-args: "--device 'iPhone SE (3rd generation)::iOS 18.5'"
           app-user-data-path: "$(xcrun simctl get_app_container booted org.beeware.toga.testbed data)/Documents"
 
         - backend: "android"
@@ -374,12 +397,12 @@ jobs:
       uses: smorimoto/tune-github-hosted-runner-network@v1.0.0
 
     - name: Checkout
-      uses: actions/checkout@v4.2.2
+      uses: actions/checkout@v5.0.0
       with:
         fetch-depth: 0
 
     - name: Set up Python
-      uses: actions/setup-python@v5.6.0
+      uses: actions/setup-python@v6.0.0
       if: matrix.setup-python
       with:
         python-version: "3.12"
@@ -394,7 +417,7 @@ jobs:
         python -m pip install git+https://github.com/beeware/briefcase.git
 
     - name: Get Packages
-      uses: actions/download-artifact@v4.3.0
+      uses: actions/download-artifact@v6.0.0
       with:
         pattern: ${{ format('{0}-*', needs.package.outputs.artifact-basename) }}
         merge-multiple: true
@@ -408,7 +431,7 @@ jobs:
           briefcase run ${{ matrix.platform }} --log --test ${{ matrix.briefcase-run-args }} -- --ci
 
     - name: Upload Logs
-      uses: actions/upload-artifact@v4.6.2
+      uses: actions/upload-artifact@v5.0.0
       if: failure()
       with:
         name: testbed-failure-logs-${{ matrix.backend }}
@@ -421,7 +444,7 @@ jobs:
         cp -r "${{ matrix.app-user-data-path }}" testbed/app_data/testbed-app_data-${{ matrix.backend }}
 
     - name: Upload App Data
-      uses: actions/upload-artifact@v4.6.2
+      uses: actions/upload-artifact@v5.0.0
       if: failure() && matrix.backend != 'android'
       with:
         name: testbed-failure-app-data-${{ matrix.backend }}
@@ -458,17 +481,17 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v4.2.2
+      uses: actions/checkout@v5.0.0
       with:
         fetch-depth: 0
 
     - name: Set up Python
-      uses: actions/setup-python@v5.6.0
+      uses: actions/setup-python@v6.0.0
       with:
         python-version: "3.12"
 
     - name: Get Packages
-      uses: actions/download-artifact@v4.3.0
+      uses: actions/download-artifact@v6.0.0
       with:
         pattern: ${{ format('{0}-*', needs.package.outputs.artifact-basename) }}
         merge-multiple: true

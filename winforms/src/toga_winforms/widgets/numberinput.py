@@ -1,13 +1,14 @@
+import locale
 import sys
 from decimal import ROUND_UP, Decimal, InvalidOperation
 
 import System.Windows.Forms as WinForms
 from System import Convert, String
 
+from toga.handlers import WeakrefCallable
 from toga.widgets.numberinput import _clean_decimal
 from toga_winforms.libs.fonts import HorizontalTextAlignment
 
-from ..libs.wrapper import WeakrefCallable
 from .base import Widget
 
 
@@ -15,14 +16,16 @@ def native_decimal(value):
     if isinstance(value, Decimal):
         # The explicit type is needed to prevent single-character strings from calling
         # the Char overload, which always throws an exception.
-        return Convert.ToDecimal.__overloads__[String](str(value))
+        # The use of the locale.str() method ensures that the number formatting
+        # used in the conversion from a number to a str is consistent with the OS's
+        # language settings for the formatting of numbers.
+        return Convert.ToDecimal.__overloads__[String](locale.str(value))
     else:
         assert isinstance(value, int)
         return Convert.ToDecimal(value)
 
 
 class NumberInput(Widget):
-
     def create(self):
         self.native = WinForms.NumericUpDown()
         self.native.TextChanged += WeakrefCallable(self.winforms_text_changed)

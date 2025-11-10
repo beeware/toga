@@ -10,13 +10,13 @@
     :target: https://pypi.python.org/pypi/toga
     :alt: Project version
 
+.. |license| image:: https://img.shields.io/pypi/l/toga.svg
+    :target: https://github.com/beeware/toga/blob/main/LICENSE
+    :alt: BSD-3-Clause License
+
 .. |maturity| image:: https://img.shields.io/pypi/status/toga.svg
     :target: https://pypi.python.org/pypi/toga
     :alt: Project status
-
-.. |license| image:: https://img.shields.io/pypi/l/toga.svg
-    :target: https://github.com/beeware/toga/blob/main/LICENSE
-    :alt: BSD License
 
 .. |ci| image:: https://github.com/beeware/toga/workflows/CI/badge.svg?branch=main
    :target: https://github.com/beeware/toga/actions
@@ -31,27 +31,16 @@
 Toga
 ====
 
-|pyversions| |version| |maturity| |license| |ci| |social|
+|pyversions| |license| |version| |maturity| |ci| |social|
 
 A Python native, OS native GUI toolkit.
 
 Minimum requirements
 --------------------
 
-* Toga requires **Python 3.9 or higher**.
-
-* If you're on macOS, you need to be on 11 (Big Sur) or newer.
-
-* If you're on Windows, you'll need Windows 10 or newer. If you are using
-  Windows 10 and want to use a WebView to display web content, you will also
-  need to install the `Edge WebView2 Evergreen Runtime
-  <https://developer.microsoft.com/en-us/microsoft-edge/webview2/#download-section>`__.
-  Windows 11 has this runtime installed by default.
-
-* If you're on Linux (or another Unix-based operating system), you need to have
-  GTK+ >= 3.24 and glib >= 2.64. These are available starting with Ubuntu 20.04 and
-  Fedora 32. You also need to install the system packages listed in `Linux platform
-  documentation <https://toga.readthedocs.io/en/latest/reference/platforms/linux.html#prerequisites>`__.
+Each backend has specific requirements and pre-requisites. See the `platform
+documentation <https://toga.readthedocs.io/en/latest/reference/platforms/>`__ for
+details.
 
 Quickstart
 ----------
@@ -93,7 +82,7 @@ Toga is part of the `BeeWare suite`_. You can talk to the community through:
 
 * `@beeware@fosstodon.org on Mastodon`_
 * `Discord`_
-* The Toga `Github Discussions forum`_
+* The Toga `GitHub Discussions forum`_
 
 We foster a welcoming and respectful community as described in our
 `BeeWare Community Code of Conduct`_.
@@ -101,7 +90,7 @@ We foster a welcoming and respectful community as described in our
 .. _BeeWare suite: https://beeware.org
 .. _@beeware@fosstodon.org on Mastodon: https://fosstodon.org/@beeware
 .. _Discord: https://beeware.org/bee/chat/
-.. _Github Discussions forum: https://github.com/beeware/toga/discussions
+.. _GitHub Discussions forum: https://github.com/beeware/toga/discussions
 .. _BeeWare Community Code of Conduct: https://beeware.org/community/behavior/
 
 Contributing
@@ -111,6 +100,6 @@ If you experience problems with Toga, `log them on GitHub
 <https://github.com/beeware/toga/issues>`__.
 
 If you'd like to contribute to Toga development, our `contribution guide
-<https://toga.readthedocs.io/en/latest/how-to/contribute/index.html>`__
+<https://toga.readthedocs.io/en/latest/how-to/contribute/>`__
 details how to set up a development environment, and other requirements we have
 as part of our contribution process.

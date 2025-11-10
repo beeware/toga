@@ -16,7 +16,8 @@ class WindowProbe(BaseProbe, DialogsMixin):
     if GTK_VERSION < (4, 0, 0):
         supports_closable = True
         supports_as_image = True
-        supports_focus = True
+        # Gtk 3.24.41 ships with Ubuntu 24.04 where present() works on Wayland
+        supports_focus = not (IS_WAYLAND and GTK_VERSION < (3, 24, 41))
     else:
         supports_closable = False
         supports_as_image = False

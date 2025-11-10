@@ -58,8 +58,8 @@ def test_create_explicit(app):
     assert window.app == app
     assert window.content == window_content
 
-    window_content.window == window
-    window_content.app == app
+    assert window_content.window == window
+    assert window_content.app == app
 
     assert window._impl.interface == window
     assert_action_performed(window, "create MainWindow")

@@ -29,7 +29,7 @@ class Group:
         A collection of commands to display together.
 
         :param text: A label for the group.
-        :param parent: The parent of this group; use ``None`` to make a root group.
+        :param parent: The parent of this group; use `None` to make a root group.
         :param section: The section where the group should appear within its parent. A
             section cannot be specified unless a parent is also specified.
         :param order: The position where the group should appear within its section.
@@ -61,7 +61,7 @@ class Group:
 
     @property
     def parent(self) -> Group | None:
-        """The parent of this group; returns ``None`` if the group is a root group."""
+        """The parent of this group; returns `None` if the group is a root group."""
         return self._parent
 
     @parent.setter
@@ -81,7 +81,7 @@ class Group:
     def root(self) -> Group:
         """The root group for this group.
 
-        This will be ``self`` if the group *is* a root group."""
+        This will be `self` if the group *is* a root group."""
         if self.parent is None:
             return self
         return self.parent.root
@@ -114,17 +114,17 @@ class Group:
         return hash(self.key)
 
     def __lt__(self, other: object) -> bool:
-        if not isinstance(other, (Group, Command)):
+        if not isinstance(other, Group | Command):
             return False
         return self.key < other.key
 
     def __gt__(self, other: object) -> bool:
-        if not isinstance(other, (Group, Command)):
+        if not isinstance(other, Group | Command):
             return False
         return other < self
 
     def __eq__(self, other: object) -> bool:
-        if not isinstance(other, (Group, Command)):
+        if not isinstance(other, Group | Command):
             return False
         return self.key == other.key
 
@@ -146,13 +146,20 @@ class Group:
 
     # Standard groups - docstrings can only be provided within the `class` statement,
     # but the objects can't be instantiated here.
-    APP: Group  #: Application-level commands
-    FILE: Group  #: File commands
-    EDIT: Group  #: Editing commands
-    VIEW: Group  #: Content appearance commands
-    COMMANDS: Group  #: Default group for user-provided commands
-    WINDOW: Group  #: Window management commands
-    HELP: Group  #: Help commands
+    APP: Group
+    """Application-level commands"""
+    FILE: Group
+    """File commands"""
+    EDIT: Group
+    """Editing commands"""
+    VIEW: Group
+    """Content appearance commands"""
+    COMMANDS: Group
+    """Default group for user-provided commands"""
+    WINDOW: Group
+    """Window management commands"""
+    HELP: Group
+    """Help commands"""
 
 
 Group.APP = Group("*", order=-100)
@@ -175,44 +182,69 @@ class ActionHandler(Protocol):
 
 
 class Command:
-    #: An identifier for the standard "About" menu item. This command is always
-    #: installed by default. Uses :meth:`toga.App.about` as the default action.
     ABOUT: str = "about"
-    #: An identifier for the standard "Exit" menu item. This command may be installed by
-    #: default, depending on platform requirements. Uses :meth:`toga.App.request_exit`
-    #: as the default action.
+    """
+    An identifier for the standard "About" menu item. This command is always
+    installed by default. Uses [`toga.App.about()`][toga.App.about] as the default
+    action.
+    """
     EXIT: str = "request_exit"
-    #: An identifier for the standard "New" menu item. This constant will be used for
-    #: the default document type for your app; if you specify more than one document
-    #: type, the command for the subsequent commands will have a colon and the first
-    #: extension for that data type appended to the ID. Uses
-    #: :meth:`toga.documents.DocumentSet.new` as the default action.
+    """
+    An identifier for the standard "Exit" menu item. This command may be installed by
+    default, depending on platform requirements. Uses
+    [`toga.App.request_exit()`][toga.App.request_exit]
+    as the default action.
+    """
     NEW: str = "documents.new"
-    #: An identifier for the standard "Open" menu item. This command will be
-    #: automatically installed if your app declares any document types. Uses
-    #: :meth:`toga.documents.DocumentSet.request_open` as the default action.
+    """
+    An identifier for the standard "New" menu item. This constant will be used for
+    the default document type for your app; if you specify more than one document
+    type, the command for the subsequent commands will have a colon and the first
+    extension for that data type appended to the ID. Uses
+    [`toga.documents.DocumentSet.new()`][toga.documents.DocumentSet.new] as the
+    default action.
+    """
     OPEN: str = "documents.request_open"
-    #: An identifier for the standard "Preferences" menu item. The Preferences item is
-    #: not installed by default. If you install it manually, it will attempt to use
-    #: ``toga.App.preferences()`` as the default action; your app will need to define
-    #: this method, or provide an explicit value for the action.
+    """
+    An identifier for the standard "Open" menu item. This command will be
+    automatically installed if your app declares any document types. Uses
+    [`toga.documents.DocumentSet.request_open()`][toga.documents.DocumentSet.request_open]
+    as the default action.
+    """
     PREFERENCES: str = "preferences"
-    #: An identifier for the standard "Save" menu item. This command will be
-    #: automatically installed if your app declares any document types. Uses
-    #: :meth:`toga.documents.DocumentSet.save` as the default action.
+    """
+    An identifier for the standard "Preferences" menu item. The Preferences item is
+    not installed by default. If you install it manually, it will attempt to use
+    `toga.App.preferences()` as the default action; your app will need to define
+    this method, or provide an explicit value for the action.
+    """
     SAVE: str = "documents.save"
-    #: An identifier for the standard "Save As..." menu item. This command will be
-    #: automatically installed if your app declares any document types. Uses
-    #: :meth:`toga.documents.DocumentSet.save_as` as the default action.
+    """
+    An identifier for the standard "Save" menu item. This command will be
+    automatically installed if your app declares any document types. Uses
+    [`toga.documents.DocumentSet.save()`][toga.documents.DocumentSet.save] as the
+    default action.
+    """
     SAVE_AS: str = "documents.save_as"
-    #: An identifier for the standard "Save All" menu item. This command will be
-    #: automatically installed if your app declares any document types. Uses
-    #: :meth:`toga.documents.DocumentSet.save_all` as the default action.
+    """
+    An identifier for the standard "Save As..." menu item. This command will be
+    automatically installed if your app declares any document types. Uses
+    [`toga.documents.DocumentSet.save_as()`][toga.documents.DocumentSet.save_as] as the
+    default action.
+    """
     SAVE_ALL: str = "documents.save_all"
-    #: An identifier for the standard "Visit Homepage" menu item. This command may be
-    #: installed by default, depending on platform requirements. Uses
-    #: :meth:`toga.App.visit_homepage` as the default action.
+    """
+    An identifier for the standard "Save All" menu item. This command will be
+    automatically installed if your app declares any document types. Uses
+    [`toga.documents.DocumentSet.save_all()`][toga.documents.DocumentSet.save_all] as
+    the default action.
+    """
     VISIT_HOMEPAGE: str = "visit_homepage"
+    """
+    An identifier for the standard "Visit Homepage" menu item. This command may be
+    installed by default, depending on platform requirements. Uses
+    [`toga.App.visit_homepage()`][toga.App.visit_homepage] as the default action.
+    """
 
     def __init__(
         self,
@@ -235,12 +267,12 @@ class Command:
         will contain icons; on other platforms they won't.
 
         :param action: A handler to invoke when the command is activated. If this is
-            ``None``, the command will be disabled.
+            `None`, the command will be disabled.
         :param text: A label for the command.
         :param shortcut: A key combination that can be used to invoke the command.
         :param tooltip: A short description of what the command will do.
-        :param icon: The :any:`icon content <IconContentT>` that can be used to decorate
-            the command if the platform requires.
+        :param icon: The [icon content][toga.icons.IconContentT] that can be used to
+            decorate the command if the platform requires.
         :param group: The group to which this command belongs.
         :param section: The section where the command should appear within its group.
         :param order: The position where the command should appear within its section.
@@ -274,13 +306,13 @@ class Command:
 
         The default action for the command will be constructed using the value of the
         command's ID as an attribute of the app object. If a method or co-routine
-        matching that name doesn't exist, a value of ``None`` will be used as the
+        matching that name doesn't exist, a value of `None` will be used as the
         default action.
 
         :param app: The app for which the standard command will be created.
         :param id: The ID of the standard command to create.
         :param kwargs: Overrides for any default properties of the standard command.
-            Accepts the same arguments as the :class:`~toga.Command` constructor.
+            Accepts the same arguments as the [`Command`][toga.Command] constructor.
         """
         # The value of the ID constant is the method on the app instance
         cmd_kwargs = {"id": id}
@@ -335,7 +367,7 @@ class Command:
     def icon(self) -> Icon | None:
         """The Icon for the command.
 
-        Can be specified as any valid :any:`icon content <IconContentT>`.
+        Can be specified as any valid [icon content][toga.icons.IconContentT].
         """
         return self._icon
 
@@ -355,17 +387,17 @@ class Command:
     def action(self, action: ActionHandler | None) -> None:
         """Set the action attached to the command
 
-        Needs to be a valid ActionHandler or ``None``
+        Needs to be a valid ActionHandler or `None`
         """
         self._action = wrapped_handler(self, action)
 
     def __lt__(self, other: object) -> bool:
-        if not isinstance(other, (Group, Command)):
+        if not isinstance(other, Group | Command):
             return False
         return self.key < other.key
 
     def __gt__(self, other: object) -> bool:
-        if not isinstance(other, (Group, Command)):
+        if not isinstance(other, Group | Command):
             return False
         return other < self
 
@@ -418,15 +450,15 @@ class CommandSet(MutableSet[Command], MutableMapping[str, Command]):
         CommandSet of your own; you should use existing app or window level CommandSet
         instances.
 
-        The ``in`` operator can be used to evaluate whether a :class:`~toga.Command` is
+        The `in` operator can be used to evaluate whether a [`Command`][toga.Command] is
         a member of the CommandSet, using either an instance of a Command, or the ID of
         a command.
 
-        Commands can be retrieved from the CommandSet using ``[]`` notation with the
+        Commands can be retrieved from the CommandSet using `[]` notation with the
         requested command's ID.
 
-        When iterated over, a CommandSet returns :class:`~toga.Command` instances in
-        their sort order, with :class:`~toga.command.Separator` instances inserted
+        When iterated over, a CommandSet returns [`Command`][toga.Command] instances in
+        their sort order, with [`Separator`][toga.command.Separator] instances inserted
         between groups.
 
         :param on_change: A method that should be invoked when this CommandSet changes.
@@ -440,7 +472,7 @@ class CommandSet(MutableSet[Command], MutableMapping[str, Command]):
     def add(self, *commands: Command | None):
         """Add a collection of commands to the command set.
 
-        A command value of ``None`` will be ignored. This allows you to add standard
+        A command value of `None` will be ignored. This allows you to add standard
         commands to a command set without first validating that the platform provides an
         implementation of that command.
 

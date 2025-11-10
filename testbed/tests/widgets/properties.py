@@ -87,6 +87,9 @@ async def test_focus(widget, probe, other, other_probe, verify_focus_handlers):
     if verify_focus_handlers:
         on_gain_handler.assert_not_called()
 
+        # Reset the mock so it can be tested again
+        on_lose_handler.reset_mock()
+
     other.focus()
     await probe.redraw("Focus has been lost")
     assert not probe.has_focus
@@ -356,7 +359,7 @@ async def test_color(widget, probe):
     "The foreground color of a widget can be changed"
     for color in COLORS:
         widget.style.color = color
-        await probe.redraw("Widget foreground color should be %s" % color)
+        await probe.redraw(f"Widget foreground color should be {color}")
         assert_color(probe.color, color)
 
 
@@ -380,7 +383,7 @@ async def test_background_color(widget, probe):
     "The background color of a widget can be set"
     for color in COLORS:
         widget.style.background_color = color
-        await probe.redraw("Widget background color should be %s" % color)
+        await probe.redraw(f"Widget background color should be {color}")
         assert_background_color(probe.background_color, color)
 
 
@@ -426,7 +429,7 @@ async def test_text_align(widget, probe, verify_vertical_text_align):
 
     for text_align in [RIGHT, CENTER, JUSTIFY]:
         widget.style.text_align = text_align
-        await probe.redraw("Text alignment should be %s" % text_align)
+        await probe.redraw(f"Text alignment should be {text_align}")
         probe.assert_text_align(text_align)
         probe.assert_vertical_text_align(verify_vertical_text_align)
 
@@ -526,7 +529,7 @@ async def test_flex_horizontal_widget_size(widget, probe):
     # Container is initially a non-flex row box.
     # Initial widget size is small (but non-zero), based on content size.
     probe.assert_width(1, 300)
-    probe.assert_height(1, 55)
+    probe.assert_height(1, getattr(probe, "minimum_required_height", 55))
     original_height = probe.height
 
     # Make the widget flexible; it will expand to fill horizontal space
@@ -549,8 +552,7 @@ async def test_flex_horizontal_widget_size(widget, probe):
     # and the height hasn't changed
     await probe.redraw(
         message=(
-            "Widget width should be still the width of the screen"
-            "without height change"
+            "Widget width should be still the width of the screenwithout height change"
         )
     )
     assert probe.width > 350

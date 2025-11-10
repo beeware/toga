@@ -48,7 +48,7 @@ def source():
                 "c": {0: None, 1: red, 2: green}[i % 3],
                 "d": f"C{i}",
             }
-            for i in range(0, 100)
+            for i in range(100)
         ],
     )
 
@@ -170,7 +170,7 @@ async def test_row_changes(widget, probe):
             "b": i,
             "c": {0: None, 1: red}[i % 2],
         }
-        for i in range(0, 5)
+        for i in range(5)
     ]
     await probe.redraw("Data source has been changed")
 

@@ -11,7 +11,7 @@ from .base import StyleT, Widget
 
 
 class OnChangeHandler(Protocol):
-    def __call__(self, widget: Slider, **kwargs: Any) -> object:
+    def __call__(self, widget: Slider, **kwargs: Any) -> None:
         """A handler to invoke when the value is changed.
 
         :param widget: The Slider that was changed.
@@ -20,7 +20,7 @@ class OnChangeHandler(Protocol):
 
 
 class OnPressHandler(Protocol):
-    def __call__(self, widget: Slider, **kwargs: Any) -> object:
+    def __call__(self, widget: Slider, **kwargs: Any) -> None:
         """A handler to invoke when the slider is pressed.
 
         :param widget: The Slider that was pressed.
@@ -29,7 +29,7 @@ class OnPressHandler(Protocol):
 
 
 class OnReleaseHandler(Protocol):
-    def __call__(self, widget: Slider, **kwargs: Any) -> object:
+    def __call__(self, widget: Slider, **kwargs: Any) -> None:
         """A handler to invoke when the slider is pressed.
 
         :param widget: The Slider that was released.
@@ -59,15 +59,15 @@ class Slider(Widget):
         :param id: The ID for the widget.
         :param style: A style object. If no style is provided, a default style will be
             applied to the widget.
-        :param value: Initial :any:`value` of the slider. Defaults to the mid-point of
-            the range.
+        :param value: Initial [`value`][toga.Slider.value] of the slider. Defaults to
+            the mid-point of the range.
         :param min: Initial minimum value of the slider. Defaults to 0.
         :param max: Initial maximum value of the slider. Defaults to 1.
-        :param tick_count: Initial :any:`tick_count` for the slider. If :any:`None`, the
-            slider will be continuous.
-        :param on_change: Initial :any:`on_change` handler.
-        :param on_press: Initial :any:`on_press` handler.
-        :param on_release: Initial :any:`on_release` handler.
+        :param tick_count: Initial [`tick_count`][toga.Slider.tick_count] for the
+            slider. If [`None`][], the slider will be continuous.
+        :param on_change: Initial [`on_change`][toga.Slider.on_change] handler.
+        :param on_press: Initial [`on_press`][toga.Slider.on_press] handler.
+        :param on_release: Initial [`on_release`][toga.Slider.on_release] handler.
         :param enabled: Whether the user can interact with the widget.
         :param kwargs: Initial style properties.
         """
@@ -111,7 +111,7 @@ class Slider(Widget):
 
         If the slider is discrete, setting the value will round it to the nearest tick.
 
-        :raises ValueError: If set to a value which is outside of the :any:`range`.
+        :raises ValueError: If set to a value which is outside of the [`range`][].
         """
         return self._impl.get_value()
 
@@ -138,7 +138,8 @@ class Slider(Widget):
     def min(self) -> float:
         """Minimum allowed value.
 
-        When setting this property, the current :attr:`value` and :attr:`max` will be
+        When setting this property, the current [`value`][toga.Slider.value] and
+        [`max`][toga.Slider.max] will be
         clipped against the new minimum value.
         """
         return self._impl.get_min()
@@ -162,7 +163,8 @@ class Slider(Widget):
     def max(self) -> float:
         """Maximum allowed value.
 
-        When setting this property, the current :attr:`value` and :attr:`min` will be
+        When setting this property, the current [`value`][toga.Slider.value] and
+        [`min`][toga.Slider.min] will be
         clipped against the new maximum value.
         """
         return self._impl.get_max()
@@ -186,20 +188,22 @@ class Slider(Widget):
     def tick_count(self) -> int | None:
         """Number of tick marks to display on the slider.
 
-        * If this is ``None``, the slider will be continuous.
-        * If this is an ``int``, the slider will be discrete, and will have the given
-          number of possible values, equally spaced within the :any:`range`.
+        * If this is `None`, the slider will be continuous.
+        * If this is an `int`, the slider will be discrete, and will have the given
+          number of possible values, equally spaced within the [`range`][].
 
-        Setting this property to an ``int`` will round the current value to the nearest
+        Setting this property to an `int` will round the current value to the nearest
         tick.
 
         :raises ValueError: If set to a count which is not at least 2 (for the min and
             max).
 
-        .. note::
+        /// note | Note
 
-            On iOS, tick marks are not currently displayed, but discrete mode will
-            otherwise work correctly.
+        On iOS, tick marks are not currently displayed, but discrete mode will
+        otherwise work correctly.
+
+        ///
         """
         return self._impl.get_tick_count()
 
@@ -219,12 +223,12 @@ class Slider(Widget):
     def tick_step(self) -> float | None:
         """Step between adjacent ticks.
 
-        * If the slider is continuous, this property returns ``None``
+        * If the slider is continuous, this property returns `None`
         * If the slider is discrete, it returns the difference in value between adjacent
           ticks.
 
-        This property is read-only, and depends on the values of :any:`tick_count` and
-        :any:`range`.
+        This property is read-only, and depends on the values of
+        [`tick_count`][toga.Slider.tick_count] and [`range`][].
         """
         if self.tick_count is None or self.max == self.min:
             return None
@@ -234,9 +238,10 @@ class Slider(Widget):
     def tick_value(self) -> float | None:
         """Value of the slider, measured in ticks.
 
-        * If the slider is continuous, this property returns ``None``.
+        * If the slider is continuous, this property returns `None`.
         * If the slider is discrete, it returns an integer between 1 (representing
-          :any:`min`) and :any:`tick_count` (representing :any:`max`).
+          [`min`][toga.Slider.min]) and [`tick_count`][toga.Slider.tick_count]
+          (representing [`max`][toga.Slider.max]).
 
         :raises ValueError: If set to anything inconsistent with the rules above.
         """

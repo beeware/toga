@@ -262,13 +262,12 @@ class Camera:
             msg = (
                 "Application metadata does not declare that the app will use "
                 "the camera. See "
-                "https://toga.readthedocs.io/en/stable/reference/api/hardware/camera.html"  # noqa: E501
+                "https://toga.readthedocs.io/en/stable/reference/api/hardware/camera"  # noqa: E501
             )
             if self.interface.app.is_bundled:
                 raise RuntimeError(msg)
             else:
-                warnings.warn(msg)
-
+                warnings.warn(msg, stacklevel=2)
         self.preview_windows = []
 
     def has_permission(self, allow_unknown=False):
