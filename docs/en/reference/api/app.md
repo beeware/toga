@@ -45,6 +45,8 @@ Every app must have a formal name (a human readable name), and an app ID (a mach
 
 A Toga app will install a number of default commands to reflect core application functionality (such as the Quit/Exit menu item, and the About menu item). The IDs for these commands are defined as constants on the [`Command`][toga.Command] class. These commands are automatically installed *before* [`startup()`][toga.App.startup] is invoked. If you wish to customize the menu items exposed by your app, you can add or remove commands in your [`startup()`][toga.App.startup] implementation.
 
+As part of application startup, apps will also ensure that the locale has been set to match the language settings of the operating system.
+
 ## Assigning a main window  { #assigning-main-window }
 
 An app *must* assign `main_window` as part of the startup process. However, the value that is assigned as the main window will affect the behavior of the app.
