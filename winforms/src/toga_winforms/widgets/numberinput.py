@@ -1,3 +1,4 @@
+import locale
 import sys
 from decimal import ROUND_UP, Decimal, InvalidOperation
 
@@ -15,7 +16,10 @@ def native_decimal(value):
     if isinstance(value, Decimal):
         # The explicit type is needed to prevent single-character strings from calling
         # the Char overload, which always throws an exception.
-        return Convert.ToDecimal.__overloads__[String](str(value))
+        # The use of the locale.str() method ensures that the number formatting
+        # used in the conversion from a number to a str is consistent with the OS's
+        # language settings for the formatting of numbers.
+        return Convert.ToDecimal.__overloads__[String](locale.str(value))
     else:
         assert isinstance(value, int)
         return Convert.ToDecimal(value)
