@@ -54,7 +54,7 @@ build_gradle_dependencies = [
 ]
 
 build_gradle_extra_content="""
-chaquopy.defaultConfig.staticProxy("toga_android.widgets.webview")
+chaquopy.defaultConfig.staticProxy("toga_android.widgets.webview_static_proxy")
 """
 
 # Web deployment
