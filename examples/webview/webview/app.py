@@ -2,7 +2,6 @@ import asyncio
 
 import toga
 from toga.constants import COLUMN, ROW
-from toga.style import Pack
 
 
 class WebViewApp(toga.App):
@@ -17,10 +16,13 @@ class WebViewApp(toga.App):
             "+ navigator.userAgent;"
         )
 
-    def on_bad_js(self, widget, **kwargs):
-        self.webview.evaluate_javascript("invalid js", on_result=self.on_bad_js_result)
-
-    def on_bad_js_result(self, result, *, exception=None):
+    async def on_bad_js(self, widget, **kwargs):
+        try:
+            result = await self.webview.evaluate_javascript("invalid js")
+            exception = None
+        except Exception as exc:
+            result = None
+            exception = exc
         self.label.text = f"{result=!r}, {exception=!r}"
 
     def on_webview_load(self, widget, **kwargs):
@@ -78,12 +80,12 @@ class WebViewApp(toga.App):
 
     def startup(self):
         self.main_window = toga.MainWindow()
-        self.label = toga.Label("www is loading |", style=Pack(flex=1, margin=5))
+        self.label = toga.Label("www is loading |", flex=1, margin=5)
 
         button_box = toga.Box(
             children=[
                 toga.Box(
-                    style=Pack(direction=ROW),
+                    direction=ROW,
                     children=[
                         toga.Button("set URL", on_press=self.on_set_url),
                         toga.Button("load URL", on_press=self.on_load_url),
@@ -92,7 +94,7 @@ class WebViewApp(toga.App):
                     ],
                 ),
                 toga.Box(
-                    style=Pack(direction=ROW),
+                    direction=ROW,
                     children=[
                         toga.Button("2 + 2", on_press=self.on_do_async_js),
                         toga.Button("good js", on_press=self.on_good_js),
@@ -101,20 +103,22 @@ class WebViewApp(toga.App):
                     ],
                 ),
                 toga.Box(
-                    style=Pack(direction=ROW),
+                    direction=ROW,
                     children=[
                         toga.Button("set agent", on_press=self.on_set_agent),
                         toga.Button("get agent", on_press=self.on_get_agent),
                     ],
                 ),
             ],
-            style=Pack(flex=0, direction=COLUMN, margin=5),
+            flex=0,
+            direction=COLUMN,
+            margin=5,
         )
 
         self.webview = toga.WebView(
             url="https://beeware.org/",
             on_webview_load=self.on_webview_load,
-            style=Pack(flex=1),
+            flex=1,
             # on_navigation_starting=self.on_navigation_starting_async,
             on_navigation_starting=self.on_navigation_starting_sync,
         )
@@ -125,7 +129,8 @@ class WebViewApp(toga.App):
                 self.label,
                 self.webview,
             ],
-            style=Pack(flex=1, direction=COLUMN),
+            flex=1,
+            direction=COLUMN,
         )
 
         self.main_window.content = box
@@ -137,5 +142,4 @@ def main():
 
 
 if __name__ == "__main__":
-    app = main()
-    app.main_loop()
+    main().main_loop()

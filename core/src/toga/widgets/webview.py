@@ -133,11 +133,12 @@ class WebView(Widget):
     @property
     def on_navigation_starting(self):
         """A handler that will be invoked when the webview is requesting
-        permission to navigate or redirect to a different URI.
+        permission to navigate or redirect to a different URI. This feature is
+        currently only supported on Windows and Android.
 
-        The handler will receive the arguments `widget` and `url` and can
-        be synchronous or async. It must return True for allowing the URL,
-        False for denying the URL or an awaited QuestionDialog
+        The handler will receive the positional argument `widget` and the keyword
+        argument `url` and can be synchronous or async. It must return True for
+        allowing the URL, False for denying the URL or an awaited QuestionDialog
 
         :returns: The function ``callable`` that is called by this navigation event.
         """
