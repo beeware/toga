@@ -154,15 +154,16 @@ class SimpleProbe(BaseProbe, FontMixin):
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             return self.native.has_focus()
         else:  # pragma: no-cover-if-gtk3
+            # In GTK4, certain widgets such as Gtk.Entry are composite
+            # widgets, and the actual focus is held in the sub-widget
+            # used internally (such as Gtk.Text in this case).  Account
+            # for this case by counting having any focussed children as
+            # focussed.
             root = self.native.get_root()
             focus_widget = root.get_focus()
-            if focus_widget:
-                if focus_widget == self.native:
-                    return self.native.has_focus()
-                else:
-                    return focus_widget.is_ancestor(self.native)
-            else:
-                return False
+            return focus_widget and (
+                self.native.has_focus() or focus_widget.is_ancestor(self.native)
+            )
 
     async def type_character(self, char):
         if GTK_VERSION >= (4, 0, 0):

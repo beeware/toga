@@ -40,8 +40,7 @@ class BaseProbe:
 
                     await asyncio.wait_for(redraw_complete, 0.05)
                 if handler_id is not None:
-                    with contextlib.suppress(SystemError):
-                        frame_clock.disconnect(handler_id)
+                    frame_clock.disconnect(handler_id)
 
         # Process events to ensure the UI is fully updated
         context = GLib.main_context_default()
