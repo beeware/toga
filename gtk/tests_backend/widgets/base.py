@@ -7,7 +7,7 @@ from toga_gtk.libs import GTK_VERSION, Gdk, Gtk
 
 from ..fonts import FontMixin
 from ..probe import BaseProbe
-from .properties import toga_color
+from .properties import toga_color, toga_font
 
 
 class SimpleProbe(BaseProbe, FontMixin):
@@ -22,20 +22,29 @@ class SimpleProbe(BaseProbe, FontMixin):
         # Set the target for keypress events
         self._keypress_target = self.native
 
-        if GTK_VERSION >= (4, 0, 0):
-            pytest.skip("GTK4 only has minimal container support")
-
-        # Ensure that the theme isn't using animations for the widget.
-        settings = Gtk.Settings.get_for_screen(self.native.get_screen())
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            # Ensure that the theme isn't using animations for the widget.
+            settings = Gtk.Settings.get_for_screen(self.native.get_screen())
+        else:  # pragma: no-cover-if-gtk3
+            settings = Gtk.Settings.get_for_display(self.native.get_display())
         settings.set_property("gtk-enable-animations", False)
 
     def assert_container(self, container):
         container_native = container._impl.container
-        for control in container_native.get_children():
-            if control == self.native:
-                break
-        else:
-            raise ValueError(f"cannot find {self.native} in {container_native}")
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            for control in container_native.get_children():
+                if control == self.native:
+                    break
+            else:
+                raise ValueError(f"cannot find {self.native} in {container_native}")
+        else:  # pragma: no-cover-if-gtk3
+            control = container_native.get_last_child()
+            while control is not None:
+                if control == self.native:
+                    break
+                control = control.get_prev_sibling()
+            else:
+                raise ValueError(f"cannot find {self.native} in {container_native}")
 
     def assert_not_contained(self):
         assert self.widget._impl.container is None
@@ -44,22 +53,27 @@ class SimpleProbe(BaseProbe, FontMixin):
     def assert_text_align(self, expected):
         assert self.text_align == expected
 
-    def repaint_needed(self):
-        return self.impl.container.needs_redraw or super().repaint_needed()
-
     @property
     def enabled(self):
         return self.native.get_sensitive()
 
     @property
     def width(self):
-        return self.native.get_allocation().width
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            return self.native.get_allocation().width
+        else:  # pragma: no-cover-if-gtk3
+            return self.native.compute_bounds(self.native)[1].get_width()
 
     @property
     def height(self):
-        return self.native.get_allocation().height
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            return self.native.get_allocation().height
+        else:  # pragma: no-cover-if-gtk3
+            return self.native.compute_bounds(self.native)[1].get_height()
 
     def assert_layout(self, size, position):
+        if GTK_VERSION >= (4, 0, 0):
+            pytest.skip("Accurate layout is not yet supported in GTK4")
         # Widget is contained and in a window.
         assert self.widget._impl.container is not None
         assert self.native.get_parent() is not None
@@ -93,18 +107,43 @@ class SimpleProbe(BaseProbe, FontMixin):
 
     @property
     def color(self):
-        sc = self.native.get_style_context()
-        return toga_color(sc.get_property("color", sc.get_state()))
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            sc = self.native.get_style_context()
+            return toga_color(sc.get_property("color", sc.get_state()))
+        else:  # pragma: no-cover-if-gtk3
+            style_provider = self.impl.style_providers.get(("color", id(self.native)))
+            style_value = (
+                style_provider.to_string().split(": ")[1].split(";")[0]
+                if style_provider
+                else None
+            )
+            return toga_color(style_value) if style_value else None
 
     @property
     def background_color(self):
-        sc = self.native.get_style_context()
-        return toga_color(sc.get_property("background-color", sc.get_state()))
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            sc = self.native.get_style_context()
+            return toga_color(sc.get_property("background-color", sc.get_state()))
+        else:  # pragma: no-cover-if-gtk3
+            style_provider = self.impl.style_providers.get(
+                ("background_color", id(self.native))
+            )
+            style_value = (
+                style_provider.to_string().split(": ")[1].split(";")[0]
+                if style_provider
+                else None
+            )
+            return toga_color(style_value) if style_value else None
 
     @property
     def font(self):
-        sc = self.native.get_style_context()
-        return sc.get_property("font", sc.get_state())
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            sc = self.native.get_style_context()
+            return sc.get_property("font", sc.get_state())
+        else:  # pragma: no-cover-if-gtk3
+            style_provider = self.impl.style_providers.get(("font", id(self.native)))
+            font_value = style_provider.to_string() if style_provider else None
+            return toga_font(font_value) if font_value else None
 
     @property
     def is_hidden(self):
@@ -112,9 +151,23 @@ class SimpleProbe(BaseProbe, FontMixin):
 
     @property
     def has_focus(self):
-        return self.native.has_focus()
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            return self.native.has_focus()
+        else:  # pragma: no-cover-if-gtk3
+            # In GTK4, certain widgets such as Gtk.Entry are composite
+            # widgets, and the actual focus is held in the sub-widget
+            # used internally (such as Gtk.Text in this case).  Account
+            # for this case by counting having any focussed children as
+            # focussed.
+            root = self.native.get_root()
+            focus_widget = root.get_focus()
+            return focus_widget and (
+                self.native.has_focus() or focus_widget.is_ancestor(self.native)
+            )
 
     async def type_character(self, char):
+        if GTK_VERSION >= (4, 0, 0):
+            pytest.skip("GDK KeyPress is not implemented in GTK4")
         # Construct a GDK KeyPress event.
         keyval = getattr(
             Gdk,

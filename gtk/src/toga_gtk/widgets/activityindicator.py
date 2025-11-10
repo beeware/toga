@@ -7,7 +7,10 @@ class ActivityIndicator(Widget):
         self.native = Gtk.Spinner()
 
     def is_running(self):
-        return self.native.get_property("active")
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            return self.native.get_property("active")
+        else:  # pragma: no-cover-if-gtk3
+            pass
 
     def start(self):
         self.native.start()
