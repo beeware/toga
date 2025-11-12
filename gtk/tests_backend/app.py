@@ -22,6 +22,7 @@ class AppProbe(BaseProbe, DialogsMixin):
         and (GTK_VERSION < (3, 24, 41) or (4, 0, 0) < GTK_VERSION < (4, 7, 0))
     )
     supports_dark_mode = True
+    edit_menu_noop_enabled = False
 
     def __init__(self, app):
         super().__init__()

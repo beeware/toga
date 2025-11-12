@@ -14,7 +14,7 @@ View the [macOS prerequisites][macos-prerequisites].
 
 /// tab | Linux
 
-View the [Linux prerequisites][linux-prerequisites].
+View the [GTK prerequisites][gtk-prerequisites] or the [Qt prerequisites][qt-prerequisites].
 
 ///
 
@@ -735,24 +735,34 @@ The above test suites exercise `toga-core` and `travertino` - but what about the
 
 ### Running the testbed app
 
-To run the testbed app, install [Briefcase](https://briefcase.readthedocs.io/en/latest/), and run the app in developer test mode:
+To run the testbed app, install [Briefcase](https://briefcase.readthedocs.io/en/latest/), and run the app in developer test mode as described below.  Note that you should have only 1 backend -- the backend that you're planning to test -- installed in your virtual environment when running the test suite in developer mode.
 
 /// tab | macOS
 
 ```console
 (.venv) $ python -m pip install briefcase
 (.venv) $ cd testbed
-(.venv) $ briefcase dev --test
+(.venv) $ briefcase dev --app testbed --test
 ```
 
 ///
 
 /// tab | Linux
 
+For testing the GTK backend:
+
 ```console
 (.venv) $ python -m pip install briefcase
 (.venv) $ cd testbed
-(.venv) $ briefcase dev --test
+(.venv) $ briefcase dev --app testbed --test
+```
+
+For testing the Qt backend:
+
+```console
+(.venv) $ python -m pip install briefcase
+(.venv) $ cd testbed
+(.venv) $ briefcase dev --app testbed-qt --test
 ```
 
 ///
@@ -762,7 +772,7 @@ To run the testbed app, install [Briefcase](https://briefcase.readthedocs.io/en/
 ```doscon
 (.venv) C:\...>python -m pip install briefcase
 (.venv) C:\...>cd testbed
-(.venv) C:\...>briefcase dev --test
+(.venv) C:\...>briefcase dev --app testbed --test
 ```
 
 ///
@@ -780,7 +790,7 @@ So - to run *only* the button tests in slow mode, you could run:
 /// tab | macOS
 
 ```console
-(.venv) $ briefcase dev --test -- tests/widgets/test_button.py --slow
+(.venv) $ briefcase dev --app testbed --test -- tests/widgets/test_button.py --slow
 ```
 
 ///
@@ -788,7 +798,13 @@ So - to run *only* the button tests in slow mode, you could run:
 /// tab | Linux
 
 ```console
-(.venv) $ briefcase dev --test -- tests/widgets/test_button.py --slow
+(.venv) $ briefcase dev --app testbed --test -- tests/widgets/test_button.py --slow
+```
+
+or
+
+```console
+(.venv) $ briefcase dev --app testbed-qt --test -- tests/widgets/test_button.py --slow
 ```
 
 ///
@@ -796,14 +812,14 @@ So - to run *only* the button tests in slow mode, you could run:
 /// tab | Windows
 
 ```doscon
-(.venv) C:\...>briefcase dev --test -- tests/widgets/test_button.py --slow
+(.venv) C:\...>briefcase dev --app testbed --test -- tests/widgets/test_button.py --slow
 ```
 
 ///
 
 This test will take a lot longer to run, but you'll see the widget (Button, in this case) go through various color, format, and size changes as the test runs. You won't get a coverage report if you run a subset of the tests, or if you enable slow mode.
 
-### Running testbed in developer mode
+### Running the testbed for mobile platforms
 
 Developer mode is useful for testing desktop platforms (Cocoa, Winforms and GTK); but if you want to test a mobile backend, you'll need to use `briefcase run`.
 
@@ -812,13 +828,13 @@ Developer mode is useful for testing desktop platforms (Cocoa, Winforms and GTK)
 To run the Android test suite:
 
 ```console
-(.venv) $ briefcase run android --test
+(.venv) $ briefcase run android --app testbed --test
 ```
 
 To run the iOS test suite:
 
 ```console
-(.venv) $ briefcase run iOS --test
+(.venv) $ briefcase run iOS --app testbed --test
 ```
 
 ///
@@ -828,7 +844,7 @@ To run the iOS test suite:
 To run the Android test suite:
 
 ```console
-(.venv) $ briefcase run android --test
+(.venv) $ briefcase run android --app testbed --test
 ```
 
 iOS tests can't be executed on Linux.
@@ -840,7 +856,7 @@ iOS tests can't be executed on Linux.
 To run the Android test suite:
 
 ```doscon
-(.venv) C:\...>briefcase run android --test
+(.venv) C:\...>briefcase run android --app testbed --test
 ```
 
 iOS tests can't be executed on Windows.

@@ -1,6 +1,6 @@
-# Linux/Unix
+# Linux/Unix (GTK)
 
-![image](../images/gtk.png){ width="300px" }
+![image](../../images/gtk.png){ width="300px" }
 
 /// caption
 
@@ -8,13 +8,7 @@
 
 <!-- TODO: Update alt text -->
 
-The Toga backend for Linux (and other Unix-like operating systems) is [`toga-gtk`](https://github.com/beeware/toga/tree/main/gtk).
-
-/// admonition | Qt support
-
-Toga does not currently have a Qt backend for KDE-based desktops. However, we would like to add one; see [this ticket](https://github.com/beeware/toga/issues/1142) for details. If you would like to contribute, please get in touch on that ticket, on [Mastodon](https://fosstodon.org/@beeware), or on [Discord](https://beeware.org/bee/chat/).
-
-///
+The Toga backend for Linux (and other Unix-like operating systems) running the GNOME desktop environment is [`toga-gtk`](https://github.com/beeware/toga/tree/main/gtk).
 
 /// admonition | GTK on Windows and macOS
 
@@ -22,7 +16,11 @@ Although GTK *can* be installed on Windows and macOS, and the `toga-gtk` backend
 
 ///
 
-## Prerequisites  { #linux-prerequisites }
+[](){ #linux-prerequisites }
+
+[](){ #gtk-prerequisites }
+
+## Prerequisites  { #gtk-prerequisites }
 
 `toga-gtk` requires Python 3.10+, and GTK 3.22 or newer.
 
@@ -30,7 +28,7 @@ Most testing occurs with GTK 3.24 as this is the version that has shipped with a
 
 The system packages that provide GTK must be installed manually:
 
--8<- "reference/platforms/unix-prerequisites.md"
+-8<- "reference/platforms/linux/gtk-prerequisites.md"
 
 Toga does not currently support GTK 4.
 
