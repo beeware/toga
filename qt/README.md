@@ -8,7 +8,7 @@ A Qt backend for the [Toga widget toolkit](https://beeware.org/toga).
 
 This package isn't much use by itself; it needs to be combined with [the core Toga library](https://pypi.python.org/pypi/toga-core).
 
-For platform requirements, see the Qt platform documentation (TODO).
+For platform requirements, see the [Qt platform documentation](https://toga.readthedocs.io/en/latest/reference/platforms/linux/qt#prerequisites).
 
 For more details, see the [Toga project on GitHub](https://github.com/beeware/toga).
 

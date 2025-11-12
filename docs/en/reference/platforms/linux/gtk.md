@@ -1,6 +1,6 @@
 # Linux/Unix (GTK)
 
-![image](../images/gtk.png){ width="300px" }
+![image](../../images/gtk.png){ width="300px" }
 
 /// caption
 
@@ -28,7 +28,7 @@ Most testing occurs with GTK 3.24 as this is the version that has shipped with a
 
 The system packages that provide GTK must be installed manually:
 
--8<- "reference/platforms/gtk-prerequisites.md"
+-8<- "reference/platforms/linux/gtk-prerequisites.md"
 
 Toga does not currently support GTK 4.
 

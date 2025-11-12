@@ -53,9 +53,9 @@ No additional dependencies are necessary.
 
 /// tab | Linux
 
-Before you install Toga, you'll need to install some system packages.  The new beta Qt backend is not sufficient to run this tutorial yet.
+Before you install Toga, you'll need to install some system packages.
 
--8<- "reference/platforms/gtk-prerequisites.md"
+-8<- "reference/platforms/linux/gtk-prerequisites.md"
 
 ///
 

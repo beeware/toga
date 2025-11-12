@@ -18,18 +18,18 @@ Although Qt *can* be installed on Windows and macOS, and the `toga-qt` backend *
 
 ## Prerequisites  { #qt-prerequisites }
 
-Most Qt testing occurs with Qt 6.10 as this is the version that is installable through ``pip``'s PySide6.
+Most Qt testing occurs with Qt 6.10 as this is the version that is installable through `pip`.
 
 The system packages that provide Qt must be installed manually:
 
--8<- "reference/platforms/qt-prerequisites.md"
+-8<- "reference/platforms/linux/qt-prerequisites.md"
 
 ## Installation
 
-`toga-qt` must be manually installed along with ``toga-core`` if its usage is desired:
+`toga-qt` must be installed directly using `pip`. The `pyside6` optional extra is used to request the installation of the Python language bindings for Qt.
 
 ```console
-$ python -m pip install toga-core[pyside6]
+$ python -m pip install toga-qt[pyside6]
 ```
 
 ## Implementation Details
