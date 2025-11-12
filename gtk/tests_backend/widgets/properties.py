@@ -102,7 +102,10 @@ def toga_font(font: str) -> Font:
     family_font_value = css_dict.get("font-family", "")
     size_font_value = css_dict.get("font-size", -1)
     style_font_value = css_dict.get("font-style", "normal")
-    variant_font_value = css_dict.get("font-variant", "normal")
+    # GTK4 stores small-caps information in font-variant-caps.
+    variant_font_value = css_dict.get("font-variant-caps", None) or css_dict.get(
+        "font-variant", "normal"
+    )
     weight_font_value = css_dict.get("font-weight", "normal")
 
     if variant_font_value == "initial":

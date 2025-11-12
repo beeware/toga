@@ -1,3 +1,5 @@
+from unittest.mock import ANY
+
 import pytest
 
 import toga
@@ -45,8 +47,13 @@ async def test_visibility(widget, probe):
     assert probe.is_hidden
     assert child_probe.is_hidden
     assert grandchild_probe.is_hidden
-    # Making the widget invisible doesn't affect layout
-    probe.assert_layout(position=(0, 0), size=(100, 200))
+    # Making the widget invisible doesn't affect layout,
+    # except for platforms where size cannot be retrieved
+    # accurately when a widget is hidden.
+    if probe.invalid_size_while_hidden:
+        probe.assert_layout(position=(0, 0), size=(ANY, ANY))
+    else:
+        probe.assert_layout(position=(0, 0), size=(100, 200))
     other_probe.assert_layout(position=(100, 0), size=(100, 200))
 
     # Make widget visible again
