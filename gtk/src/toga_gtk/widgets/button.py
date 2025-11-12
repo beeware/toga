@@ -12,15 +12,25 @@ class Button(Widget):
         self.native.connect("clicked", self.gtk_clicked)
 
         self._icon = None
+        if GTK_VERSION >= (4, 0, 0):  # pragma: no-cover-if-gtk4  # pragma: no branch
+            self._label = self.native.get_child()
 
     def get_text(self):
         text = self.native.get_label()
-        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
-            return text
-        return text if text else ""  # pragma: no-cover-if-gtk3
+        return text if text else ""
 
     def set_text(self, text):
-        self.native.set_label(text)
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            self.native.set_label(text)
+        else:  # pragma: no-cover-if-gtk3
+            # Detects the case where the text is being set as ""
+            # to be cleared.  The interface layer always sets
+            # icon before text, so calls setting no icon and no
+            # text will give no text (since no icon is set first).
+            if text == "" and self._icon:
+                return
+            self.native.set_label(text)
+            self._label = self.native.get_child()
 
     def get_icon(self):
         return self._icon
@@ -36,13 +46,11 @@ class Button(Widget):
                 self.native.set_always_show_image(False)
         else:  # pragma: no-cover-if-gtk3
             if icon:
-                icon._impl.native.set_icon_size(Gtk.IconSize.LARGE)
-                self.native.set_child(icon._impl.native)
+                icon._impl.native().set_icon_size(Gtk.IconSize.LARGE)
+                self.native.set_child(icon._impl.native())
+                print(icon._impl.native())
             else:
-                text = self.native.get_label()
-                if text:
-                    self.native.set_label(text)
-                self.native.set_child(None)
+                self.native.set_child(self._label)
 
     def set_enabled(self, value):
         self.native.set_sensitive(value)
@@ -65,7 +73,16 @@ class Button(Widget):
             self.interface.intrinsic.width = at_least(width[0])
             self.interface.intrinsic.height = height[1]
         else:  # pragma: no-cover-if-gtk3
-            pass
+            # print(
+            #     "REHINT",
+            #     self,
+            #     self.native.get_preferred_size()[0].width,
+            #     self.native.get_preferred_size()[0].height,
+            # )
+            min_size, size = self.native.get_preferred_size()
+
+            self.interface.intrinsic.width = at_least(min_size.width)
+            self.interface.intrinsic.height = size.height
 
     def gtk_clicked(self, event):
         self.interface.on_press()
