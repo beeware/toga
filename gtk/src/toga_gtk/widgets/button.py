@@ -12,7 +12,7 @@ class Button(Widget):
         self.native.connect("clicked", self.gtk_clicked)
 
         self._icon = None
-        if GTK_VERSION >= (4, 0, 0):  # pragma: no-cover-if-gtk4  # pragma: no branch
+        if GTK_VERSION >= (4, 0, 0):  # pragma: no-cover-if-gtk3  # pragma: no branch
             self._label = self.native.get_child()
 
     def get_text(self):
