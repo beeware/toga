@@ -315,7 +315,7 @@ The code needs to support both GTK3 and GTK4; if there are significant differenc
 
 ### Implement an entirely new platform backend
 
-Toga currently has support for 7 backends - but there's room for more! In particular, we'd be interested in seeing a [Qt-based backend](https://github.com/beeware/toga/issues/1142) to support KDE-based Linux desktops.
+Toga currently has support for 8 backends - but there's room for more!
 
 The first steps of any new platform backend are always the same:
 
