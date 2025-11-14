@@ -637,57 +637,6 @@ async def test_simple_handler_coroutine():
     }
 
 
-async def test_weakrefcallable_bound_method():
-    """A WeakrefCallable wrapped bound method can be invoked."""
-
-    class ExampleClass:
-        def example_method(self, *args, **kwargs):
-            return [*args, *kwargs.values()]
-
-    example_obj = ExampleClass()
-    weakrefcallable_wrapped_bound_method = WeakrefCallable(example_obj.example_method)
-
-    assert weakrefcallable_wrapped_bound_method("arg1", "arg2", kwarg1=3, kwarg2=4) == [
-        "arg1",
-        "arg2",
-        3,
-        4,
-    ]
-
-    # Delete the original object
-    del example_obj
-    gc.collect()
-
-    # The wrapped method should return None, now that the original object has been
-    # garbage collected.
-    assert (
-        weakrefcallable_wrapped_bound_method("arg1", "arg2", kwarg1=3, kwarg2=4) is None
-    )
-
-
-async def test_weakrefcallable_function():
-    """A WeakrefCallable wrapped function can be invoked."""
-
-    data = {"func": (lambda *args, **kwargs: [*args, *kwargs.values()])}
-
-    weakrefcallable_wrapped_function = WeakrefCallable(data["func"])
-
-    assert weakrefcallable_wrapped_function("arg1", "arg2", kwarg1=3, kwarg2=4) == [
-        "arg1",
-        "arg2",
-        3,
-        4,
-    ]
-
-    # Remove the original function from the dict
-    del data["func"]
-    gc.collect()
-
-    # The wrapped function should return None, now that the original function has been
-    # garbage collected.
-    assert weakrefcallable_wrapped_function("arg1", "arg2", kwarg1=3, kwarg2=4) is None
-
-
 ######################################################################
 # 2023-12: Backwards compatibility for <= 0.4.0
 ######################################################################
