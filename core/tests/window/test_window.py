@@ -813,8 +813,7 @@ def test_visibility_events(window):
 
 
 def test_resize_event(window):
-    """The window can trigger on_resize() event handler, when the window
-    size is changed."""
+    """The on_resize() event handler is triggered when the window size is changed."""
     window.show()
     assert window.on_resize._raw is None
     window_on_resize_handler = Mock()
