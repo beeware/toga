@@ -32,6 +32,18 @@ GLIB_VERSION: tuple[int, int, int] = (
 if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
     default_display = Gdk.Screen.get_default()
 else:  # pragma: no-cover-if-gtk3
+    from importlib import metadata
+
+    from packaging.version import Version
+
+    if Version(metadata.version("PyGobject")) < Version("3.52.1"):  # pragma: no cover
+        raise RuntimeError(
+            "GTK4 backend requires a newer version of PyGObject. "
+            "Did you install `toga-gtk[gtk4]`?"
+        )
+
+    from gi._gi import hook_up_vfunc_implementation  # noqa: E402, F401
+
     default_display = Gdk.Display.get_default()
 if default_display is None:  # pragma: no cover
     raise RuntimeError(

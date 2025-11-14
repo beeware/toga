@@ -1,0 +1,1 @@
+Apps can now register a handler that is notified when a window is resized.

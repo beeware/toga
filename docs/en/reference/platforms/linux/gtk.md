@@ -30,7 +30,7 @@ The system packages that provide GTK must be installed manually:
 
 -8<- "reference/platforms/linux/gtk-prerequisites.md"
 
-Toga does not currently support GTK 4.
+Toga has experimental support for GTK 4. GTK 4 support requires a Linux distribution that provides `libgirepository 2.0`. This means it is not possible to use the GTK 4 backend on Debian 11, Debian 12, Ubuntu 22.04, or any other older Debian-based distribution.
 
 ## Installation
 
@@ -40,8 +40,22 @@ Toga does not currently support GTK 4.
 $ python -m pip install toga-gtk
 ```
 
+### GTK 4 support (experimental)
+If you want to use the experimental GTK 4 backend, run:
+
+```console
+$ python -m pip install toga-gtk[gtk4]
+```
+
+and set the `TOGA_GTK` environment variable:
+```console
+$ export TOGA_GTK=4
+```
+
 ## Implementation details
 
 The `toga-gtk` backend uses the [GTK3 API](https://docs.gtk.org/gtk3/).
 
 The native APIs are accessed using the [PyGObject binding](https://pygobject.readthedocs.io).
+
+The experimental GTK 4 `toga-gtk` backend uses the [GTK4 API](https://docs.gtk.org/gtk4/).

@@ -1,7 +1,7 @@
 from functools import partial
 
 from PySide6.QtCore import QBuffer, QEvent, QIODevice, Qt, QTimer
-from PySide6.QtGui import QWindowStateChangeEvent
+from PySide6.QtGui import QResizeEvent, QWindowStateChangeEvent
 from PySide6.QtWidgets import QApplication, QMainWindow, QMenu
 
 from toga.command import Separator
@@ -35,6 +35,7 @@ class TogaMainWindow(QMainWindow):
                 old & Qt.WindowMinimized and not new & Qt.WindowMinimized
             ):
                 self.interface.on_show()
+
             if IS_WAYLAND:  # pragma: no-cover-if-linux-x  # pragma: no branch
                 # Hold clearing _pending_state_transition by 100ms to ensure that
                 # any window state changes in the meantime get batched.
@@ -159,6 +160,7 @@ class Window:
         self.native.resize(size[0], size[1])
 
     def resizeEvent(self, event):
+        self.interface.on_resize()
         if self.interface.content:
             self.interface.content.refresh()
 
@@ -263,8 +265,15 @@ class Window:
         elif state == WindowState.FULLSCREEN:
             self.native.showFullScreen()
             if current_state == WindowState.PRESENTATION:
+                # Fullscreen->Presentation doesn't register as a state change or
+                # size change.
                 QApplication.sendEvent(
-                    self.native, QWindowStateChangeEvent(current_native_state)
+                    self.native,
+                    QWindowStateChangeEvent(current_native_state),
+                )
+                QApplication.sendEvent(
+                    self.native,
+                    QResizeEvent(self.native.size(), self.native.size()),
                 )
 
         elif state == WindowState.PRESENTATION:
@@ -277,8 +286,13 @@ class Window:
             self._in_presentation_mode = True
             self.native.showFullScreen()
             if current_state == WindowState.FULLSCREEN:
+                # Presentation->Fullscreen doesn't register as a state change or
+                # size change.
                 QApplication.sendEvent(
                     self.native, QWindowStateChangeEvent(current_native_state)
+                )
+                QApplication.sendEvent(
+                    self.native, QResizeEvent(self.native.size(), self.native.size())
                 )
 
         else:
