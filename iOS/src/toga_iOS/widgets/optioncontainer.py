@@ -1,3 +1,5 @@
+import platform
+
 from rubicon.objc import SEL, objc_method, objc_property
 from travertino.size import at_least
 
@@ -53,8 +55,9 @@ class OptionContainer(Widget):
         self.native_controller.impl = self
         self.native_controller.delegate = self.native_controller
 
-        # Make the tab bar non-translucent, so you can actually see it.
-        self.native_controller.tabBar.setTranslucent(False)
+        if int(platform.release().split(".")[0]) < 26:  # pragma: no branch
+            # Make the tab bar non-translucent, so you can actually see it.
+            self.native_controller.tabBar.setTranslucent(False)
 
         # The native widget representing the container is the view of the native
         # controller. This doesn't change once it's created, so we can cache it.
@@ -66,7 +69,12 @@ class OptionContainer(Widget):
         self.add_constraints()
 
     def set_bounds(self, x, y, width, height):
-        super().set_bounds(x, y, width, height)
+        if y + height == self.container.height and self.container._safe_bottom:
+            super().set_bounds(
+                x, y, width, height + self.container.layout_native.safeAreaInsets.bottom
+            )
+        else:
+            super().set_bounds(x, y, width, height)
 
         # Setting the bounds changes the constraints, but that doesn't mean
         # the constraints have been fully applied. Schedule a refresh to be done
@@ -81,7 +89,9 @@ class OptionContainer(Widget):
 
     def add_option(self, index, text, widget, icon=None):
         # Create the container for the widget
-        sub_container = ControlledContainer(on_refresh=self.content_refreshed)
+        sub_container = ControlledContainer(
+            on_refresh=self.content_refreshed, safe_bottom=True
+        )
         sub_container.content = widget
         sub_container.enabled = True
         self.sub_containers.insert(index, sub_container)
