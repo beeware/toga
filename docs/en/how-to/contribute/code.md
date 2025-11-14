@@ -293,7 +293,7 @@ We've got a [separate contribution guide](docs.md) for documentation contributio
 
 ### Implement a platform native widget
 
-If the core library already specifies an interface for a widget, but the widget isn't implemented on your platform of choice, implement that interface. The [supported widgets by platform](../../reference/widgets_by_platform.md) table can show you the widgets that are missing on various platforms. You can also look for log messages in a running app (or the direct `factory.not_implemented()` function calls that produce those log messages). At present, the Web and Textual backends have the most missing widgets. If you have web skills, or would like to learn more about [PyScript](https://pyscript.net) and [Shoelace](https://shoelace.style), the web backend could be a good place to contribute; if you'd like to learn more about terminal applications or the [Textual](https://textual.textualize.io) API, contributing to the Textual backend could be a good place for you to contribute.
+If the core library already specifies an interface for a widget, but the widget isn't implemented on your platform of choice, implement that interface. The [supported widgets by platform](../../reference/widgets_by_platform.md) table can show you the widgets that are missing on various platforms. You can also look for log messages in a running app (or the direct `factory.not_implemented()` function calls that produce those log messages). At present, Qt, the Web and Textual backends have the most missing widgets. If you have web skills, or would like to learn more about [PyScript](https://pyscript.net) and [Shoelace](https://shoelace.style), the web backend could be a good place to contribute; if you'd like to learn more about terminal applications or the [Textual](https://textual.textualize.io) API, contributing to the Textual backend could be a good place for you to contribute. If you’re interested in desktop GUI development or want to deepen your understanding of the Qt framework, contributing to the [Qt](https://www.qt.io/product/framework) backend is a great option.
 
 Alternatively, if there's a widget that doesn't exist, propose an interface design, and implement it for at least one platform. You may find [this presentation by BeeWare emeritus team member Dan Yeaw](https://www.youtube.com/watch?v=sWt_sEZUiY8) helpful. This talk gives an architectural overview of Toga, as well as providing a guide to the process of adding new widgets.
 
@@ -315,7 +315,7 @@ The code needs to support both GTK3 and GTK4; if there are significant differenc
 
 ### Implement an entirely new platform backend
 
-Toga currently has support for 7 backends - but there's room for more! In particular, we'd be interested in seeing a [Qt-based backend](https://github.com/beeware/toga/issues/1142) to support KDE-based Linux desktops.
+Toga currently has support for 8 backends - but there's room for more!
 
 The first steps of any new platform backend are always the same:
 
