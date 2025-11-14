@@ -2,7 +2,7 @@
 
 Toga is a Python native, OS native, cross-platform GUI toolkit. Toga consists of a library of base components with a shared interface to simplify platform-agnostic GUI development.
 
-Toga is available on macOS, Windows, Linux (GTK), Android, iOS, for single-page web apps, and console apps.
+Toga is available on macOS, Windows, Linux (GTK or Qt), Android, iOS, for single-page web apps, and console apps.
 
 /// tab | macOS
 
@@ -16,7 +16,7 @@ Toga is available on macOS, Windows, Linux (GTK), Android, iOS, for single-page 
 
 ///
 
-/// tab | Linux
+/// tab | Linux (GTK)
 
 ![/images/toga-demo-gtk.png](/images/toga-demo-gtk.png){ width="450" }
 

@@ -4,7 +4,9 @@
 
 * [macOS](./macOS.md)
 * [Windows](./windows.md)
-* [Linux](./linux.md)
+* [Linux](./linux/index.md)
+    * [GTK](./linux/gtk.md)
+    * [Qt](./linux/qt.md)
 
 ## Mobile
 
@@ -22,7 +24,6 @@
 Eventually, the Toga project would like to provide support for:
 
 * WinUI (for Modern Windows look and feel)
-* Qt (for KDE-based Unix desktops)
 * tvOS (for AppleTV devices)
 * watchOS (for Apple Watch devices)
 

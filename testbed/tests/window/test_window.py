@@ -5,9 +5,10 @@ from importlib import import_module
 from unittest.mock import Mock
 
 import pytest
+from pytest import approx
 
 import toga
-from toga.colors import CORNFLOWERBLUE, GOLDENROD, REBECCAPURPLE
+from toga.colors import CORNFLOWERBLUE, GOLDENROD, LIGHTBLUE, REBECCAPURPLE
 from toga.constants import WindowState
 from toga.style.pack import COLUMN, Pack
 
@@ -335,7 +336,8 @@ else:
         assert second_window in app.windows
 
         assert second_window.title == "Toga Testbed"
-        assert second_window.size == (640, 480)
+        # Qt rendering results in a small change in window size
+        assert second_window.size == approx((640, 480), abs=2)
         # Position should be cascaded; the exact position depends on the platform,
         # and how many windows have been created. As long as it's not at (100,100).
         if second_window_probe.supports_placement:
@@ -377,7 +379,8 @@ else:
         assert second_window in app.windows
 
         assert second_window.title == "Secondary Window"
-        assert second_window.size == (300, 200)
+        # Qt rendering can result in a small change in window size
+        assert second_window.size == approx((300, 200), abs=2)
         if second_window_probe.supports_placement:
             assert second_window.position == (200, 300)
 
@@ -565,7 +568,8 @@ else:
         assert second_window in app.windows
 
         assert second_window.visible
-        assert second_window.size == (640, 480)
+        # Qt rendering can result in a small change in window size
+        assert second_window.size == approx((640, 480), abs=2)
         if second_window_probe.supports_placement:
             assert second_window.position == (200, 150)
 
@@ -573,7 +577,7 @@ else:
         second_window.position = (250, 200)
 
         await second_window_probe.wait_for_window("Secondary window has been moved")
-        assert second_window.size == (640, 480)
+        assert second_window.size == approx((640, 480), abs=2)
         if second_window_probe.supports_placement:
             assert second_window.position == (250, 200)
 
@@ -584,7 +588,7 @@ else:
             "Secondary window has been resized; position has not changed"
         )
 
-        assert second_window.size == (300, 250)
+        assert second_window.size == approx((300, 250), abs=2)
         # We can't confirm position here, because it may have changed. macOS rescales
         # windows relative to the bottom-left corner, which means the position of the
         # window has changed relative to the Toga coordinate frame.
@@ -604,7 +608,7 @@ else:
         )
 
         assert second_window.visible
-        assert second_window.size == (250, 200)
+        assert second_window.size == approx((250, 200), abs=2)
         if (
             second_window_probe.supports_move_while_hidden
             and second_window_probe.supports_placement
@@ -631,7 +635,7 @@ else:
 
             assert not second_window_probe.is_minimized
             # Window size hasn't changed as a result of min/unmin cycle
-            assert second_window.size == (250, 200)
+            assert second_window.size == approx((250, 200), abs=2)
 
         second_window_probe.close()
         await second_window_probe.wait_for_window("Secondary window has been closed")
@@ -665,10 +669,14 @@ else:
 
         second_window.size = (200, 150)
         await second_window_probe.wait_for_window("Secondary window has been resized")
-        assert second_window.size == (200, 150)
-        assert second_window_probe.content_size == (
-            200 - extra_width,
-            150 - extra_height,
+        # Qt rendering can result in a small change in window size
+        assert second_window.size == approx((200, 150), abs=2)
+        assert second_window_probe.content_size == approx(
+            (
+                200 - extra_width,
+                150 - extra_height,
+            ),
+            abs=2,
         )
 
         box1 = toga.Box(style=Pack(background_color=REBECCAPURPLE, width=10, height=10))
@@ -680,24 +688,40 @@ else:
         await second_window_probe.wait_for_window(
             "Secondary window has had height adjusted due to content"
         )
-        assert second_window.size == (200, 210 + extra_height)
-        assert second_window_probe.content_size == (200 - extra_width, 210)
+        assert second_window.size == approx((200, 210 + extra_height), abs=2)
+        assert second_window_probe.content_size == approx(
+            (200 - extra_width, 210), abs=2
+        )
 
         # Alter the content width to exceed window size
         box1.style.width = 250
         await second_window_probe.wait_for_window(
             "Secondary window has had width adjusted due to content"
         )
-        assert second_window.size == (250 + extra_width, 210 + extra_height)
-        assert second_window_probe.content_size == (250, 210)
+        assert second_window.size == approx(
+            (250 + extra_width, 210 + extra_height), abs=2
+        )
+
+        # Alter both height and width to exceed window size at once
+        box3 = toga.Box(style=Pack(background_color=LIGHTBLUE, width=300, height=90))
+        second_window.content.add(box3)
+        await second_window_probe.wait_for_window(
+            "Secondary window has had width and height adjusted due to content"
+        )
+        assert second_window.size == approx(
+            (300 + extra_width, 300 + extra_height), abs=2
+        )
+        assert second_window_probe.content_size == approx((300, 300), abs=2)
 
         # Try to resize to a size less than the content size
         second_window.size = (200, 150)
         await second_window_probe.wait_for_window(
             "Secondary window forced resize fails"
         )
-        assert second_window.size == (250 + extra_width, 210 + extra_height)
-        assert second_window_probe.content_size == (250, 210)
+        assert second_window.size == approx(
+            (300 + extra_width, 300 + extra_height), abs=2
+        )
+        assert second_window_probe.content_size == approx((300, 300), abs=2)
 
     @pytest.mark.parametrize(
         "initial_state, final_state",
@@ -1127,6 +1151,10 @@ else:
 
         second_window.hide()
         await second_window_probe.wait_for_window("Secondary window is hidden")
+        assert second_window.state == window_state_before_hidden
+
+        second_window.show()
+        await second_window_probe.wait_for_window("Secondary window shown")
         assert second_window.state == window_state_before_hidden
 
     @pytest.mark.parametrize(

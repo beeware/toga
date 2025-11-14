@@ -4,7 +4,8 @@ not_in_nav: |
   /index.md
   reference/api/widgets/table-values.md
   reference/api/widgets/table-accessors.md
-  reference/platforms/unix-prerequisites.md
+  reference/platforms/linux/gtk-prerequisites.md
+  reference/platforms/linux/qt-prerequisites.md
 
 validation:
   omitted_files: warn

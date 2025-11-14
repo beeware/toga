@@ -21,6 +21,7 @@ from .properties import toga_color, toga_vertical_alignment
 class SimpleProbe(BaseProbe, FontMixin):
     default_font_family = "sans-serif"
     default_font_size = 14
+    invalid_size_while_hidden = False
 
     def __init__(self, widget):
         super().__init__(widget.app)

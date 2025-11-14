@@ -11,6 +11,8 @@ from .properties import toga_color, toga_font
 
 
 class SimpleProbe(BaseProbe, FontMixin):
+    invalid_size_while_hidden = GTK_VERSION >= (4, 0, 0)
+
     def __init__(self, widget):
         super().__init__()
         self.app = widget.app
@@ -72,24 +74,29 @@ class SimpleProbe(BaseProbe, FontMixin):
             return self.native.compute_bounds(self.native)[1].get_height()
 
     def assert_layout(self, size, position):
-        if GTK_VERSION >= (4, 0, 0):
-            pytest.skip("Accurate layout is not yet supported in GTK4")
         # Widget is contained and in a window.
         assert self.widget._impl.container is not None
         assert self.native.get_parent() is not None
 
-        # Measurements are relative to the container as an origin.
-        origin = self.widget._impl.container.get_allocation()
+        if GTK_VERSION < (4, 0, 0):
+            # Measurements are relative to the container as an origin.
+            origin = self.widget._impl.container.get_allocation()
 
-        # size and position is as expected.
-        assert (
-            self.native.get_allocation().width,
-            self.native.get_allocation().height,
-        ) == size
-        assert (
-            self.native.get_allocation().x - origin.x,
-            self.native.get_allocation().y - origin.y,
-        ) == position
+            # Size and position is as expected.
+            assert (
+                self.native.get_allocation().width,
+                self.native.get_allocation().height,
+            ) == size
+            assert (
+                self.native.get_allocation().x - origin.x,
+                self.native.get_allocation().y - origin.y,
+            ) == position
+        else:
+            bounds = self.native.compute_bounds(self.widget._impl.container)[1]
+
+            # Size and position is as expected.
+            assert (bounds.get_width(), bounds.get_height()) == size
+            assert (bounds.get_x(), bounds.get_y()) == position
 
     def assert_width(self, min_width, max_width):
         assert min_width <= self.width <= max_width, (

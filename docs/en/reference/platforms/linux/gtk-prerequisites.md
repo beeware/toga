@@ -18,7 +18,7 @@ These instructions are different on almost every version of Linux and Unix; here
 
 If you're running on Ubuntu 22.04, Debian 11 or Debian 12, you'll also need to add a pin for `PyGObject==3.50.0`. Later versions of PyGObject require the `libgirepository-2.0-dev` library, which isn't available on older Debian-based distributions.
 
-### Fedora
+### Fedora 41+
 
 ```console
 (venv) $ sudo dnf install git gcc make pkg-config python3-devel gobject-introspection-devel cairo-gobject-devel gtk3 libcanberra-gtk3
