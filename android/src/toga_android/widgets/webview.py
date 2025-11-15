@@ -28,9 +28,20 @@ class WebView(Widget):
 
     def create(self):
         self.native = A_WebView(self._native_activity)
+        try:
+            from .webview_static_proxy import TogaWebClient
+
+            client = TogaWebClient(self)
+        except BaseException:
+            client = WebViewClient()
+            msg = "chaquopy.defaultConfig.staticProxy"
+            msg += '("toga_android.widgets.webview_static_proxy") '
+            msg += 'missing in pyproject.toml section "build_gradle_extra_content"\n'
+            msg += "on_navigation_starting handler is therefore not available"
+            print(msg)
         # Set a WebViewClient so that new links open in this activity,
         # rather than triggering the phone's web browser.
-        self.native.setWebViewClient(WebViewClient())
+        self.native.setWebViewClient(client)
 
         self.settings = self.native.getSettings()
         self.default_user_agent = self.settings.getUserAgentString()
