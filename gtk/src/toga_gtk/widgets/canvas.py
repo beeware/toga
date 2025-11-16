@@ -165,7 +165,7 @@ class Canvas(Widget):
                 self.interface.on_alt_drag(x, y)
 
     def redraw(self):
-        GLib.idle_add(Gtk.Widget.queue_draw, self.native)
+        self.native.queue_draw()
 
     # Context management
     def push_context(self, cairo_context, **kwargs):
