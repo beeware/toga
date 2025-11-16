@@ -3,7 +3,7 @@ import pytest
 from toga_gtk.libs import GTK_VERSION, Gtk
 
 from .base import SimpleProbe
-from .properties import toga_color
+from .properties import toga_color, toga_font
 
 
 class SwitchProbe(SimpleProbe):
@@ -27,13 +27,19 @@ class SwitchProbe(SimpleProbe):
 
     @property
     def color(self):
-        sc = self.native_label.get_style_context()
-        return toga_color(sc.get_property("color", sc.get_state()))
+        style_provider = self.impl.style_providers.get(("color", id(self.native_label)))
+        color_value = (
+            style_provider.to_string().split(": ")[1].split(";")[0]
+            if style_provider
+            else None
+        )
+        return toga_color(color_value) if color_value else None
 
     @property
     def font(self):
-        sc = self.native_label.get_style_context()
-        return sc.get_property("font", sc.get_state())
+        style_provider = self.impl.style_providers.get(("font", id(self.native_label)))
+        font_value = style_provider.to_string() if style_provider else None
+        return toga_font(font_value) if font_value else None
 
     def assert_width(self, min_width, max_width):
         super().assert_width(min_width, max_width)

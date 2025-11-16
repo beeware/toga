@@ -1,3 +1,4 @@
+import os
 from io import BytesIO
 
 import pytest
@@ -18,7 +19,12 @@ class CanvasProbe(SimpleProbe):
             else:
                 return f"{reference}-gtk-x11"
         elif reference == "write_text":
-            return f"{reference}-gtk"
+            if GTK_VERSION < (4, 0, 0) or os.environ.get("WAYLAND_DISPLAY") == "toga":
+                return f"{reference}-gtk"
+            else:
+                # Ubuntu 24.04 renders kerning etc. slightly
+                # differently locally compared to CI, only on GTK4.
+                return f"{reference}-gtk4-local"
         else:
             return reference
 
@@ -32,6 +38,8 @@ class CanvasProbe(SimpleProbe):
             event.button = button
             event.x = x
             event.y = y
+            if event_type == Gdk.EventType.MOTION_NOTIFY:
+                state = state | getattr(Gdk.ModifierType, f"BUTTON{button}_MASK")
             event.state = state
 
             self.native.emit(
@@ -90,7 +98,7 @@ class CanvasProbe(SimpleProbe):
                 (x1 + x2) // 2,
                 (y1 + y2) // 2,
                 button=1,
-                state=Gdk.ModifierType.BUTTON1_MASK | Gdk.ModifierType.MOD2_MASK,
+                state=Gdk.ModifierType.MOD2_MASK,
             )
             self._emit_event(Gdk.EventType.BUTTON_RELEASE, x2, y2, button=1)
         else:
@@ -114,7 +122,7 @@ class CanvasProbe(SimpleProbe):
                 (x1 + x2) // 2,
                 (y1 + y2) // 2,
                 button=3,
-                state=Gdk.ModifierType.BUTTON1_MASK | Gdk.ModifierType.MOD2_MASK,
+                state=Gdk.ModifierType.MOD2_MASK,
             )
             self._emit_event(Gdk.EventType.BUTTON_RELEASE, x2, y2, button=3)
         else:

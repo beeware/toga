@@ -3,7 +3,7 @@ import pytest
 from toga_gtk.libs import GTK_VERSION, Gtk
 
 from .base import SimpleProbe
-from .properties import toga_color, toga_text_align_from_justification
+from .properties import toga_color, toga_font, toga_text_align_from_justification
 
 
 class MultilineTextInputProbe(SimpleProbe):
@@ -60,8 +60,15 @@ class MultilineTextInputProbe(SimpleProbe):
             assert ".toga {\n" in css_provider.to_string()
             assert ".toga text {\n" in css_provider.to_string()
 
-        sc = self.native_textview.get_style_context()
-        return toga_color(sc.get_property("color", sc.get_state()))
+        style_provider = self.impl.style_providers.get(
+            ("color", id(self.native_textview))
+        )
+        color_value = (
+            style_provider.to_string().split(": ")[1].split(";")[0]
+            if style_provider
+            else None
+        )
+        return toga_color(color_value) if color_value else None
 
     @property
     def background_color(self):
@@ -82,13 +89,23 @@ class MultilineTextInputProbe(SimpleProbe):
             assert ".toga {\n" in css_provider.to_string()
             assert ".toga text {\n" in css_provider.to_string()
 
-        sc = self.native_textview.get_style_context()
-        return toga_color(sc.get_property("background-color", sc.get_state()))
+        style_provider = self.impl.style_providers.get(
+            ("background_color", id(self.native_textview))
+        )
+        color_value = (
+            style_provider.to_string().split(": ")[1].split(";")[0]
+            if style_provider
+            else None
+        )
+        return toga_color(color_value) if color_value else None
 
     @property
     def font(self):
-        sc = self.native_textview.get_style_context()
-        return sc.get_property("font", sc.get_state())
+        style_provider = self.impl.style_providers.get(
+            ("font", id(self.native_textview))
+        )
+        font_value = style_provider.to_string() if style_provider else None
+        return toga_font(font_value) if font_value else None
 
     @property
     def text_align(self):
