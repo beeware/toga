@@ -11,7 +11,7 @@ test = [
     # that can target Android exclusively until 3.13 lands.
     "fonttools==4.60.1 ; sys.platform == 'linux'",
     "pillow==11.0.0",
-    "pytest==9.0.0",
+    "pytest==9.0.1",
     "pytest-asyncio==1.3.0",
 ]
 
