@@ -36,7 +36,7 @@ class Canvas(Widget):
                 | Gdk.EventMask.BUTTON_MOTION_MASK
             )
         else:  # pragma: no-cover-if-gtk3
-            self.native.set_draw_func(self.gtk_draw_callback)
+            self.native.set_draw_func(WeakrefCallable(self.gtk_draw_callback))
             self.native.connect("resize", self.gtk_resize)
 
             self.main_gesture = Gtk.GestureClick()
