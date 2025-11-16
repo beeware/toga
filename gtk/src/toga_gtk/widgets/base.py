@@ -4,6 +4,7 @@ from travertino.size import at_least
 
 from ..libs import (
     GTK_VERSION,
+    Gdk,
     GLib,
     Gtk,
     get_background_color_css,
@@ -111,8 +112,9 @@ class Widget:
     def apply_css(self, property, css, native=None, selector=".toga"):
         """Apply a CSS style controlling a specific property type.
 
-        GTK controls appearance with CSS; each GTK widget can have an
-        independent style sheet, composed out of multiple providers.
+        GTK controls appearance with CSS; each GTK display (i.e. display server
+        connection) can have a stylesheet, composed out of multiple providers;
+        the functionality to use stylesheets on individual widgets is deprecated.
 
         Toga uses a separate provider for each property that needs to be
         controlled (e.g., color, font, ...). When that property is modified, the
@@ -133,27 +135,49 @@ class Widget:
         if native is None:
             native = self.native
 
-        style_context = native.get_style_context()
-        style_provider = self.style_providers.pop((property, id(native)), None)
-
         # If there was a previous style provider for the given property, remove
-        # it from the GTK widget
-        if style_provider:
-            style_context.remove_provider(style_provider)
+        # it from the GTK screen
+        old_style_provider = self.style_providers.pop((property, id(native)), None)
+        if old_style_provider:
+            if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+                Gtk.StyleContext.remove_provider_for_screen(
+                    Gdk.Screen.get_default(),
+                    old_style_provider,
+                )
+            else:  # pragma: no-cover-if-gtk3
+                Gtk.StyleContext.remove_provider_for_display(
+                    Gdk.Display.get_default(),
+                    old_style_provider,
+                )
 
-        # If there's new CSS to apply, construct a new provider, and install it.
-        if css is not None:
-            # Create a new CSS StyleProvider
+        # If there's new CSS to apply, install it.
+        if css:
             style_provider = Gtk.CssProvider()
             styles = " ".join(f"{key}: {value};" for key, value in css.items())
-            declaration = selector + " {" + styles + "}"
-            style_provider.load_from_data(declaration.encode())
+            declaration = f"#{native.get_name()}" + selector + " {" + styles + "}"
 
-            # Add the provider to the widget
-            style_context.add_provider(
-                style_provider,
-                Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION,
-            )
+            # Backward compatibility fix for different gtk versions ===========
+            if GTK_VERSION > (4, 12, 0):  # pragma: no-cover-if-gtk3
+                style_provider.load_from_string(declaration)
+            elif GTK_VERSION > (4, 8, 0):  # pragma: no cover
+                style_provider.load_from_data(declaration, len(declaration))
+            else:  # pragma: no-cover-if-gtk4
+                style_provider.load_from_data(declaration.encode())
+            # =================================================================
+
+            if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+                Gtk.StyleContext.add_provider_for_screen(
+                    Gdk.Screen.get_default(),
+                    style_provider,
+                    Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION,
+                )
+            else:  # pragma: no-cover-if-gtk3
+                Gtk.StyleContext.add_provider_for_display(
+                    Gdk.Display.get_default(),
+                    style_provider,
+                    Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION,
+                )
+
             # Store the provider so it can be removed later
             self.style_providers[(property, id(native))] = style_provider
 

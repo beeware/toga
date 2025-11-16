@@ -1,35 +1,15 @@
 import pytest
 
-from toga.colors import TRANSPARENT, rgba
+from toga.colors import TRANSPARENT
 from toga.fonts import Font
 from toga.style.pack import BOTTOM, CENTER, JUSTIFY, LEFT, RIGHT, TOP
-from toga_gtk.libs import GTK_VERSION, Gtk
-
-
-def _parse_color(native_string):
-    """Parse a color from a GTK4 native RGB(A) string."""
-    if native_string[:4] == "rgba":
-        native_string = native_string[4:]
-    if native_string[:3] == "rgb":
-        native_string = native_string[3:]
-    r, g, b, *a = map(float, native_string.strip("()").split(","))
-    if a:
-        return rgba(r, g, b, a[0])
-    else:
-        return rgba(r, g, b)
+from toga_gtk.colors import parse_color
+from toga_gtk.libs import Gtk
 
 
 def toga_color(color):
     if color:
-        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
-            c = rgba(
-                int(color.red * 255),
-                int(color.green * 255),
-                int(color.blue * 255),
-                color.alpha,
-            )
-        else:  # pragma: no-cover-if-gtk3
-            c = _parse_color(color)
+        c = parse_color(color)
 
         # Background color of rgba(0,0,0,0.0) is TRANSPARENT.
         if c.r == 0 and c.g == 0 and c.b == 0 and c.a == 0.0:

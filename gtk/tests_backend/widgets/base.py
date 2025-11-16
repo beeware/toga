@@ -128,19 +128,15 @@ class SimpleProbe(BaseProbe, FontMixin):
 
     @property
     def background_color(self):
-        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
-            sc = self.native.get_style_context()
-            return toga_color(sc.get_property("background-color", sc.get_state()))
-        else:  # pragma: no-cover-if-gtk3
-            style_provider = self.impl.style_providers.get(
-                ("background_color", id(self.native))
-            )
-            style_value = (
-                style_provider.to_string().split(": ")[1].split(";")[0]
-                if style_provider
-                else None
-            )
-            return toga_color(style_value) if style_value else None
+        style_provider = self.impl.style_providers.get(
+            ("background_color", id(self.native))
+        )
+        style_value = (
+            style_provider.to_string().split(": ")[1].split(";")[0]
+            if style_provider
+            else None
+        )
+        return toga_color(style_value) if style_value else None
 
     @property
     def font(self):
