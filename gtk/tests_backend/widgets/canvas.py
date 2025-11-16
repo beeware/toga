@@ -18,7 +18,10 @@ class CanvasProbe(SimpleProbe):
             else:
                 return f"{reference}-gtk-x11"
         elif reference == "write_text":
-            return f"{reference}-gtk"
+            if GTK_VERSION > (4, 0, 0):
+                return f"{reference}-gtk4"
+            else:
+                return f"{reference}-gtk3"
         else:
             return reference
 
