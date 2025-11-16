@@ -159,8 +159,6 @@ class Widget:
             # Backward compatibility fix for different gtk versions ===========
             if GTK_VERSION > (4, 12, 0):  # pragma: no-cover-if-gtk3
                 style_provider.load_from_string(declaration)
-            elif GTK_VERSION > (4, 8, 0):  # pragma: no cover
-                style_provider.load_from_data(declaration, len(declaration))
             else:  # pragma: no-cover-if-gtk4
                 style_provider.load_from_data(declaration.encode())
             # =================================================================

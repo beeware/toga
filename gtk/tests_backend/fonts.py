@@ -1,12 +1,8 @@
 from toga.fonts import (
-    BOLD,
-    ITALIC,
     NORMAL,
-    OBLIQUE,
-    SMALL_CAPS,
     SYSTEM_DEFAULT_FONT_SIZE,
 )
-from toga_gtk.libs import GTK_VERSION, Pango
+from toga_gtk.libs import GTK_VERSION
 
 
 class FontMixin:
@@ -17,10 +13,7 @@ class FontMixin:
         return "Liberation Serif"
 
     def assert_font_family(self, expected):
-        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
-            assert self.font.get_family().split(",")[0] == expected
-        else:  # pragma: no-cover-if-gtk3
-            assert self.font.family == expected
+        assert self.font.family == expected
 
     def assert_font_size(self, expected):
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
@@ -32,30 +25,16 @@ class FontMixin:
             # knowing that it must be non-zero. Pick some reasonable bounds instead.
             #
             # See also SYSTEM_DEFAULT_FONT_SIZE in toga_gtk/widgets/canvas.py.
-            if self.font.get_size() == 0:
+            if self.font.size <= 0:
                 assert expected == SYSTEM_DEFAULT_FONT_SIZE
             elif expected == SYSTEM_DEFAULT_FONT_SIZE:
-                assert 8 < int(self.font.get_size() / Pango.SCALE) < 18
+                assert 8 < int(self.font.size) < 18
             else:
-                assert int(self.font.get_size() / Pango.SCALE) == expected
+                assert int(self.font.size) == expected
         else:  # pragma: no-cover-if-gtk3
             assert int(self.font.size) == expected
 
     def assert_font_options(self, weight=NORMAL, style=NORMAL, variant=NORMAL):
-        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
-            assert {
-                Pango.Weight.BOLD: BOLD,
-            }.get(self.font.get_weight(), NORMAL) == weight
-
-            assert {
-                Pango.Style.ITALIC: ITALIC,
-                Pango.Style.OBLIQUE: OBLIQUE,
-            }.get(self.font.get_style(), NORMAL) == style
-
-            assert {
-                Pango.Variant.SMALL_CAPS: SMALL_CAPS,
-            }.get(self.font.get_variant(), NORMAL) == variant
-        else:  # pragma: no-cover-if-gtk3
-            assert self.font.weight == weight
-            assert self.font.style == style
-            assert self.font.variant == variant
+        assert self.font.weight == weight
+        assert self.font.style == style
+        assert self.font.variant == variant

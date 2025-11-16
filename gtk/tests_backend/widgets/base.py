@@ -114,9 +114,7 @@ class SimpleProbe(BaseProbe, FontMixin):
 
     @property
     def color(self):
-        style_provider = self.impl.style_providers.get(
-            ("background_color", id(self.native))
-        )
+        style_provider = self.impl.style_providers.get(("color", id(self.native)))
         style_value = (
             style_provider.to_string().split(": ")[1].split(";")[0]
             if style_provider
