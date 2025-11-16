@@ -10,9 +10,6 @@ from .base import SimpleProbe
 
 
 class CanvasProbe(SimpleProbe):
-    if GTK_VERSION >= (4, 0, 0):
-        pytest.skip("GTK4 doesn't support a canvas yet")
-
     native_class = Gtk.DrawingArea
 
     def reference_variant(self, reference):
