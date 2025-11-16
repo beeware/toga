@@ -9,7 +9,7 @@ from toga.constants import Baseline, FillRule
 from toga.fonts import SYSTEM_DEFAULT_FONT_SIZE
 from toga.handlers import WeakrefCallable
 from toga_gtk.colors import native_color, parse_color
-from toga_gtk.libs import GTK_VERSION, Gdk, GLib, Gtk, Pango, PangoCairo, cairo
+from toga_gtk.libs import GTK_VERSION, Gdk, Gtk, Pango, PangoCairo, cairo
 
 from .base import Widget
 
