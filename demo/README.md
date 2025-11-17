@@ -1,5 +1,9 @@
 # Toga Demo
 
+[![Python Versions](https://img.shields.io/pypi/pyversions/toga-demo.svg)](https://pypi.python.org/pypi/toga-demo)
+[![BSD-3-Clause License](https://img.shields.io/pypi/l/toga-demo.svg)](https://github.com/beeware/toga-demo/blob/main/LICENSE)
+[![Project status](https://img.shields.io/pypi/status/toga-demo.svg)](https://pypi.python.org/pypi/toga-demo)
+
 A demonstration of the capabilities of the [Toga widget toolkit](https://beeware.org/toga).
 
 ## Quickstart
