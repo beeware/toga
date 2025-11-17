@@ -19,7 +19,7 @@ class WebView(Widget):
             raise RuntimeError(
                 "Unable to import WebKit2. Ensure that the system package providing "
                 "WebKit2 and its GTK bindings have been installed. See "
-                "https://toga.readthedocs.io/en/stable/reference/api/widgets/mapview#system-requirements "  # noqa: E501
+                "https://toga.beeware.org/en/stable/reference/api/widgets/mapview#system-requirements "  # noqa: E501
                 "for details."
             )
 
