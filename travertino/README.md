@@ -36,7 +36,7 @@ rgb(0xde, 0xad, 0x00)
 rgb(102, 51, 153)
 ```
 
-# Community
+## Community
 
 Travertino is part of the [BeeWare suite](https://beeware.org). You can talk to the community through:
 
@@ -45,7 +45,7 @@ Travertino is part of the [BeeWare suite](https://beeware.org). You can talk to 
 
 We foster a welcoming and respectful community as described in our [BeeWare Community Code of Conduct](https://beeware.org/community/behavior/).
 
-# Contributing
+## Contributing
 
 If you experience problems with Toga, [log them on GitHub](https://github.com/beeware/toga/issues).
 

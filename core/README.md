@@ -17,11 +17,11 @@ This package provides the core Toga API. In order to use Toga, you'll also need 
 - **Web** [toga-web](https://pypi.org/project/toga-web)
 - **Windows** [toga-winforms](https://pypi.org/project/toga-winforms)
 
-# Minimum requirements
+## Minimum requirements
 
   Each backend has specific requirements and pre-requisites. See the [platform documentation](https://toga.beeware.org/en/latest/reference/platforms/) for details.
 
-# Quickstart
+## Quickstart
 
 To get a demonstration of the capabilities of Toga, run the following:
 
@@ -30,11 +30,11 @@ To get a demonstration of the capabilities of Toga, run the following:
 
 This will pop up a GUI window with some sample widgets.
 
-# Documentation
+## Documentation
 
   Documentation for Toga can be found on [Read The Docs](https://toga.beeware.org).
 
-# Community
+## Community
 
 Toga is part of the [BeeWare suite](https://beeware.org). You can talk to the community through:
 
@@ -44,7 +44,7 @@ Toga is part of the [BeeWare suite](https://beeware.org). You can talk to the co
 
 We foster a welcoming and respectful community as described in our [BeeWare Community Code of Conduct](https://beeware.org/community/behavior/).
 
-# Contributing
+## Contributing
 
 If you experience problems with Toga, [log them on GitHub](https://github.com/beeware/toga/issues).
 

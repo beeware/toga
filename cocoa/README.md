@@ -12,7 +12,7 @@ For platform requirements, see the [macOS platform documentation](https://toga.b
 
 For more details, see [Toga's documentation](https://toga.beeware.org), or the [Toga project on GitHub](https://github.com/beeware/toga).
 
-# Community
+## Community
 
 Toga is part of the [BeeWare suite](https://beeware.org). You can talk to the community through:
 
@@ -22,7 +22,7 @@ Toga is part of the [BeeWare suite](https://beeware.org). You can talk to the co
 
 We foster a welcoming and respectful community as described in our [BeeWare Community Code of Conduct](https://beeware.org/community/behavior/).
 
-# Contributing
+## Contributing
 
 If you experience problems with Toga, [log them on GitHub](https://github.com/beeware/toga/issues).
 

@@ -2,7 +2,7 @@
 
 A demonstration of the capabilities of the [Toga widget toolkit](https://beeware.org/toga).
 
-# Quickstart
+## Quickstart
 
 For details of Toga's pre-requisites, see the [Toga project on GitHub](https://github.com/beeware/toga).
 
@@ -37,7 +37,7 @@ $ cd demo
 $ python -m toga_demo
 ```
 
-# Community
+## Community
 
 Toga Demo is part of the [BeeWare suite](https://beeware.org). You can talk to the community through:
 
@@ -47,7 +47,7 @@ Toga Demo is part of the [BeeWare suite](https://beeware.org). You can talk to t
 
 We foster a welcoming and respectful community as described in our [BeeWare Community Code of Conduct](https://beeware.org/community/behavior/).
 
-# Contributing
+## Contributing
 
 If you experience problems with Toga, [log them on GitHub](https://github.com/beeware/toga/issues).
 
