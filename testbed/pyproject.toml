@@ -13,6 +13,7 @@ test = [
     "pillow==11.0.0",
     "pytest==9.0.0",
     "pytest-asyncio==1.3.0",
+    "pytest-retry==1.7.0",
 ]
 
 [tool.briefcase]

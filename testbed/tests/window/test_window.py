@@ -723,6 +723,8 @@ else:
         )
         assert second_window_probe.content_size == approx((300, 300), abs=2)
 
+    # FULLSCREEN->MAXIMIZED known to be flaky on x86_64 - see #3897
+    @pytest.mark.flaky(retries=3, delay=1)
     @pytest.mark.parametrize(
         "initial_state, final_state",
         [
