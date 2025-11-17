@@ -9,7 +9,7 @@ build-backend = "setuptools.build_meta"
 dynamic = ["version"]
 name = "travertino"
 description = "A set of constants and base classes for describing user interface layouts."
-readme = "README.rst"
+readme = "README.md"
 requires-python = ">= 3.10"
 license = "BSD-3-Clause"
 license-files = [
