@@ -16,6 +16,3 @@ class TogaWebClient(static_proxy(WebViewClient)):
             if not allow:
                 return True
         return False
-
-
-# TogaWebClient

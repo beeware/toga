@@ -73,10 +73,10 @@ class WebView(Widget):
         super().__init__(id, style, **kwargs)
 
         self.user_agent = user_agent
-
+        
         # If URL is allowed by user interaction or user on_navigation_starting
-        # handler, the count will be set to 0
-        self._url_count = 0
+        # handler, this attribute is True
+        self._url_allowed = True
 
         # Set the load handler before loading the first URL.
         self.on_webview_load = on_webview_load
@@ -98,7 +98,7 @@ class WebView(Widget):
         # Utility method for validating and setting the URL with a future.
         if self.on_navigation_starting:
             # mark URL as being allowed
-            self._url_count = 0
+            self._url_allowed = True
         if (url is not None) and not url.startswith(("https://", "http://")):
             raise ValueError("WebView can only display http:// and https:// URLs")
 
@@ -133,7 +133,7 @@ class WebView(Widget):
         return await loaded_future
 
     @property
-    def on_navigation_starting(self):
+    def on_navigation_starting(self) -> OnNavigationStartingHandler:
         """A handler that will be invoked when the webview is requesting
         permission to navigate or redirect to a different URI. This feature is
         currently only supported on Windows and Android.
@@ -141,8 +141,6 @@ class WebView(Widget):
         The handler will receive the positional argument `widget` and the keyword
         argument `url` and can be synchronous or async. It must return True for
         allowing the URL, False for denying the URL or an awaited QuestionDialog
-
-        :returns: The function ``callable`` that is called by this navigation event.
         """
         return self._on_navigation_starting
 
@@ -225,7 +223,7 @@ class WebView(Widget):
         """
         if self.on_navigation_starting:
             # mark URL as being allowed
-            self._url_count = 0
+            self._url_allowed = True
         self._impl.set_content(root_url, content)
 
     @property

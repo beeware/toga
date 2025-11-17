@@ -1,8 +1,10 @@
 import json
 from http.cookiejar import CookieJar
 
+
 from android.webkit import ValueCallback, WebView as A_WebView, WebViewClient
 from java import dynamic_proxy
+from java.lang import NoClassDefFoundError
 
 from toga.widgets.webview import CookiesResult, JavaScriptResult
 
@@ -32,13 +34,17 @@ class WebView(Widget):
             from .webview_static_proxy import TogaWebClient
 
             client = TogaWebClient(self)
-        except BaseException:
+        except NoClassDefFoundError:
             client = WebViewClient()
-            msg = "chaquopy.defaultConfig.staticProxy"
-            msg += '("toga_android.widgets.webview_static_proxy") '
-            msg += 'missing in pyproject.toml section "build_gradle_extra_content"\n'
-            msg += "on_navigation_starting handler is therefore not available"
-            print(msg)
+            if self.interface.on_navigation_starting:
+                import sys
+                print(
+                    'chaquopy.defaultConfig.staticProxy'
+                    '("toga_android.widgets.webview_static_proxy") '
+                    'missing in pyproject.toml section "build_gradle_extra_content". '
+                    'on_navigation_starting handler is therefore not available',
+                    file=sys.stderr
+                )
         # Set a WebViewClient so that new links open in this activity,
         # rather than triggering the phone's web browser.
         self.native.setWebViewClient(client)

@@ -87,7 +87,7 @@ async def handler_with_cleanup(
     else:
         if cleanup:
             try:
-                cleanup(interface, result, **kwargs)
+                cleanup(interface, result, *args, **kwargs)
             except Exception as e:
                 print("Error in async handler cleanup:", e, file=sys.stderr)
                 traceback.print_exc()

@@ -187,11 +187,12 @@ class WebView(Widget):
         print(f"winforms_navigation_starting: {event.Uri}")
         if self.interface.on_navigation_starting:
             print("checking URL permission...")
-            self.interface._url_count += 1
-            if self.interface._url_count == 1:
+            if self.interface._url_allowed:
                 # URL is allowed by user code
                 print("URL is allowed by user code")
                 allow = True
+                # allow the URL only this time
+                self.interface._url_allowed = False
             else:
                 result = self.interface.on_navigation_starting(url=event.Uri)
                 if isinstance(result, bool):
