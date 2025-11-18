@@ -73,7 +73,7 @@ class WebView(Widget):
         super().__init__(id, style, **kwargs)
 
         self.user_agent = user_agent
-        
+
         # If URL is allowed by user interaction or user on_navigation_starting
         # handler, this attribute is True
         self._url_allowed = True
