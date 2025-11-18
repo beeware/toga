@@ -4,6 +4,7 @@ from travertino.size import at_least
 
 from ..libs import (
     GTK_VERSION,
+    Gdk,
     GLib,
     Gtk,
     get_background_color_css,
@@ -133,27 +134,48 @@ class Widget:
         if native is None:
             native = self.native
 
-        style_context = native.get_style_context()
         style_provider = self.style_providers.pop((property, id(native)), None)
 
-        # If there was a previous style provider for the given property, remove
-        # it from the GTK widget
-        if style_provider:
-            style_context.remove_provider(style_provider)
+        # For GTK versions before 4.10, use the native widget's own style context.
+        # For future GTK versions, this functionality is deprecated; therefore,
+        # style providers must be added into the display (with appropriate selector
+        # applied.
+        if GTK_VERSION < (4, 10, 0):  # pragma: no cover
+            style_context = native.get_style_context()
+
+            if style_provider:
+                style_context.remove_provider(style_provider)
+        else:  # pragma: no cover
+            if style_provider:
+                Gtk.StyleContext.remove_provider_for_display(
+                    Gdk.Display.get_default(),
+                    style_provider,
+                )
 
         # If there's new CSS to apply, construct a new provider, and install it.
         if css is not None:
             # Create a new CSS StyleProvider
             style_provider = Gtk.CssProvider()
             styles = " ".join(f"{key}: {value};" for key, value in css.items())
-            declaration = selector + " {" + styles + "}"
-            style_provider.load_from_data(declaration.encode())
+            declaration = f"#{native.get_name()}" + selector + " {" + styles + "}"
+            if GTK_VERSION < (4, 12, 0):  # pragma: no cover
+                style_provider.load_from_data(declaration.encode())
+            else:  # pragma: no cover
+                style_provider.load_from_string(declaration)
 
-            # Add the provider to the widget
-            style_context.add_provider(
-                style_provider,
-                Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION,
-            )
+            if GTK_VERSION < (4, 10, 0):  # pragma: no cover
+                # Add the provider to the widget
+                style_context.add_provider(
+                    style_provider,
+                    Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION,
+                )
+            else:  # pragma: no cover
+                # Add the provider to the display
+                Gtk.StyleContext.add_provider_for_display(
+                    Gdk.Display.get_default(),
+                    style_provider,
+                    Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION,
+                )
             # Store the provider so it can be removed later
             self.style_providers[(property, id(native))] = style_provider
 
