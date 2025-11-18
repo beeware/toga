@@ -119,8 +119,8 @@ class WebViewApp(toga.App):
             url="https://beeware.org/",
             on_webview_load=self.on_webview_load,
             flex=1,
-            # on_navigation_starting=self.on_navigation_starting_async,
-            on_navigation_starting=self.on_navigation_starting_sync,
+            on_navigation_starting=self.on_navigation_starting_async,
+            # on_navigation_starting=self.on_navigation_starting_sync,
         )
 
         box = toga.Box(
