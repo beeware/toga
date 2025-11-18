@@ -171,7 +171,7 @@ def wrapped_handler(
                     else:
                         try:
                             if cleanup:
-                                cleanup(interface, result, **kwargs)
+                                cleanup(interface, result, *args, **kwargs)
                             return result
                         except Exception as e:
                             print("Error in handler cleanup:", e, file=sys.stderr)

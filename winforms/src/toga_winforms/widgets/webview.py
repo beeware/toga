@@ -184,12 +184,10 @@ class WebView(Widget):
             self.loaded_future = None
 
     def winforms_navigation_starting(self, sender, event):
-        print(f"winforms_navigation_starting: {event.Uri}")
         if self.interface.on_navigation_starting:
-            print("checking URL permission...")
+            # check URL permission
             if self.interface._url_allowed:
                 # URL is allowed by user code
-                print("URL is allowed by user code")
                 allow = True
                 # allow the URL only this time
                 self.interface._url_allowed = False
@@ -197,20 +195,17 @@ class WebView(Widget):
                 result = self.interface.on_navigation_starting(url=event.Uri)
                 if isinstance(result, bool):
                     # on_navigation_starting handler is synchronous
-                    print(f"synchronous handler, result={str(result)}")
                     allow = result
                 elif isinstance(result, asyncio.Future):
                     # on_navigation_starting handler is asynchronous
                     if result.done():
                         allow = result.result()
-                        print(f"asynchronous handler, result={str(allow)}")
                     else:
                         # deny the navigation until the user himself or the user
                         # defined on_navigation_starting handler has allowed it
                         allow = False
-                        print("waiting for permission")
             if not allow:
-                print("Denying navigation")
+                # Deny navigation
                 event.Cancel = True
 
     def get_url(self):

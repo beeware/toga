@@ -39,8 +39,8 @@ class WebView(Widget):
             client = WebViewClient()
             print(
                 'chaquopy.defaultConfig.staticProxy("toga_android.widgets'
-                '.webview_static_proxy") missing in pyproject.toml section'
-                ' "build_gradle_extra_content". on_navigation_starting '
+                '.webview_static_proxy") missing in pyproject.toml section '
+                '"build_gradle_extra_content". on_navigation_starting '
                 "handler is therefore not available"
             )
         # Set a WebViewClient so that new links open in this activity,

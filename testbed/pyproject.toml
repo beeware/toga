@@ -115,6 +115,8 @@ android.defaultConfig.python {
     // Pytest's assertion rewriting produces its own .pyc files.
     pyc.src = false
 }
+
+chaquopy.defaultConfig.staticProxy("toga_android.widgets.webview_static_proxy")
 """
 
 [tool.briefcase.app.testbed.web]

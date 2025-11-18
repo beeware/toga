@@ -65,7 +65,9 @@ class WebView(Widget):
             web view is requesting permission to navigate or redirect
             to a different URI. The handler can be synchronous or async and must
             return True for allowing the URL, False for denying the URL or an awaited
-            QuestionDialog
+            QuestionDialog. On Android, this handler needs
+            `chaquopy.defaultConfig.staticProxy("toga_android.widgets.webview_static_proxy")`
+            in the build_gradle_extra_content section of pyproject.toml
         :param on_webview_load: A handler that will be invoked when the web view
             finishes loading.
         :param kwargs: Initial style properties.
@@ -151,14 +153,10 @@ class WebView(Widget):
         def cleanup(widget, result, **kwargs):
             url = kwargs.get("url", None)
             try:
-                msg = f"on_navigation_starting.cleanup, url={url}, "
-                msg += f"result={str(result)}"
-                print(msg)
                 if url is None:
                     # The user on_navigation_handler is synchronous - do nothing
                     return
                 if result is True:
-                    print(f"Navigating to {url}")
                     # navigate to the url, the URL will automatically be marked
                     # as allowed
                     self.url = url
