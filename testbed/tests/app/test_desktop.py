@@ -242,6 +242,8 @@ async def test_app_level_menu_hide(app, app_probe, main_window, main_window_prob
     assert_window_on_show(initially_minimized_window, trigger_expected=False)
 
 
+# FULLSCREEN->MAXIMIZED known to be flaky on macOS - see #3295
+@pytest.mark.flaky(retries=5, delay=1)
 async def test_presentation_mode(app, app_probe, main_window, main_window_probe):
     """The app can enter presentation mode."""
     bg_colors = (CORNFLOWERBLUE, FIREBRICK, REBECCAPURPLE, GOLDENROD)
