@@ -142,12 +142,12 @@ class Widget:
         # applied.
         # Coverage is set at GTK3 and 4 only by virtue of the version used to test
         # in CI; incomplete coverage may be ignored if running on GTK 4.0 to 4.9.
-        if GTK_VERSION < (4, 10, 0):  # pragma: no-cover-if-gtk3
+        if GTK_VERSION < (4, 10, 0):  # pragma: no-cover-if-gtk4
             style_context = native.get_style_context()
 
             if style_provider:
                 style_context.remove_provider(style_provider)
-        else:  # pragma: no-cover-if-gtk4
+        else:  # pragma: no-cover-if-gtk3
             if style_provider:
                 Gtk.StyleContext.remove_provider_for_display(
                     Gdk.Display.get_default(),
@@ -165,18 +165,18 @@ class Widget:
             # cosmetics.
             # Coverage is set at GTK3 and 4 only by virtue of the version used to test
             # in CI; incomplete coverage may be ignored if running on GTK 4.0 to 4.11.
-            if GTK_VERSION < (4, 12, 0):  # pragma: no-cover-if-gtk3
+            if GTK_VERSION < (4, 12, 0):  # pragma: no-cover-if-gtk4
                 style_provider.load_from_data(declaration.encode())
-            else:  # pragma: no-cover-if-gtk4
+            else:  # pragma: no-cover-if-gtk3
                 style_provider.load_from_string(declaration)
 
-            if GTK_VERSION < (4, 10, 0):  # pragma: no-cover-if-gtk3
+            if GTK_VERSION < (4, 10, 0):  # pragma: no-cover-if-gtk4
                 # Add the provider to the widget
                 style_context.add_provider(
                     style_provider,
                     Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION,
                 )
-            else:  # pragma: no-cover-if-gtk4
+            else:  # pragma: no-cover-if-gtk3
                 # Add the provider to the display
                 Gtk.StyleContext.add_provider_for_display(
                     Gdk.Display.get_default(),
