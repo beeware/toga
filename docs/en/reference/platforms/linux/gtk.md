@@ -41,6 +41,9 @@ $ python -m pip install toga-gtk
 ```
 
 ### GTK 4 support (experimental)
+
+The experimental GTK 4 backend requires the use of GTK 4.8 or newer. This requirement is met by Debian 12, Ubuntu 24.04, and Fedora 41. Most testing occurs with GTK 4.14, as this is the version that ships with Ubuntu 24.04.
+
 If you want to use the experimental GTK 4 backend, run:
 
 ```console
@@ -54,8 +57,6 @@ $ export TOGA_GTK=4
 
 ## Implementation details
 
-The `toga-gtk` backend uses the [GTK3 API](https://docs.gtk.org/gtk3/).
+The `toga-gtk` backend uses the [GTK3 API](https://docs.gtk.org/gtk3/). The experimental GTK 4 `toga-gtk` backend uses the [GTK4 API](https://docs.gtk.org/gtk4/).
 
 The native APIs are accessed using the [PyGObject binding](https://pygobject.readthedocs.io).
-
-The experimental GTK 4 `toga-gtk` backend uses the [GTK4 API](https://docs.gtk.org/gtk4/).
