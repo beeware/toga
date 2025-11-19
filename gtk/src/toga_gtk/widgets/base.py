@@ -159,7 +159,7 @@ class Widget:
             # Create a new CSS StyleProvider
             style_provider = Gtk.CssProvider()
             styles = " ".join(f"{key}: {value};" for key, value in css.items())
-            declaration = f"#{native.get_name()}" + selector + " {" + styles + "}"
+            declaration = f"#{native.get_name()}{selector}{{{styles}}}"
             # GTK 4.12 deprecated the API load_from_data, providing a replacement
             # load_from_string.  Both are approximately equivalent except for some
             # cosmetics.
