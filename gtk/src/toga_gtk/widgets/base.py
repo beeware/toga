@@ -140,12 +140,14 @@ class Widget:
         # For future GTK versions, this functionality is deprecated; therefore,
         # style providers must be added into the display (with appropriate selector
         # applied.
-        if GTK_VERSION < (4, 10, 0):  # pragma: no cover
+        # Coverage is set at GTK3 and 4 only by virtue of the version used to test
+        # in CI; incomplete coverage may be ignored if running on GTK 4.0 to 4.9.
+        if GTK_VERSION < (4, 10, 0):  # pragma: no-cover-if-gtk3
             style_context = native.get_style_context()
 
             if style_provider:
                 style_context.remove_provider(style_provider)
-        else:  # pragma: no cover
+        else:  # pragma: no-cover-if-gtk4
             if style_provider:
                 Gtk.StyleContext.remove_provider_for_display(
                     Gdk.Display.get_default(),
@@ -158,18 +160,23 @@ class Widget:
             style_provider = Gtk.CssProvider()
             styles = " ".join(f"{key}: {value};" for key, value in css.items())
             declaration = f"#{native.get_name()}" + selector + " {" + styles + "}"
-            if GTK_VERSION < (4, 12, 0):  # pragma: no cover
+            # GTK 4.12 deprecated the API load_from_data, providing a replacement
+            # load_from_string.  Both are approximately equivalent except for some
+            # cosmetics.
+            # Coverage is set at GTK3 and 4 only by virtue of the version used to test
+            # in CI; incomplete coverage may be ignored if running on GTK 4.0 to 4.11.
+            if GTK_VERSION < (4, 12, 0):  # pragma: no-cover-if-gtk3
                 style_provider.load_from_data(declaration.encode())
-            else:  # pragma: no cover
+            else:  # pragma: no-cover-if-gtk4
                 style_provider.load_from_string(declaration)
 
-            if GTK_VERSION < (4, 10, 0):  # pragma: no cover
+            if GTK_VERSION < (4, 10, 0):  # pragma: no-cover-if-gtk3
                 # Add the provider to the widget
                 style_context.add_provider(
                     style_provider,
                     Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION,
                 )
-            else:  # pragma: no cover
+            else:  # pragma: no-cover-if-gtk4
                 # Add the provider to the display
                 Gtk.StyleContext.add_provider_for_display(
                     Gdk.Display.get_default(),
