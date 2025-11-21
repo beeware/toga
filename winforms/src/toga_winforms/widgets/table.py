@@ -261,6 +261,8 @@ class Table(Widget):
 
     def change(self, item):
         self.update_data()
+        index = self._data.index(item)
+        self.native.RedrawItems(index, index, True)
 
     def remove(self, index, item):
         self.update_data()
