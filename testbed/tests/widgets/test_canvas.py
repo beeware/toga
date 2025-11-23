@@ -172,7 +172,7 @@ async def test_activate(
     await probe.redraw("Activate has been handled")
 
     on_press_handler.assert_called_once_with(canvas, 20, 30)
-    on_release_handler.mock_calls = [call(canvas, 20, 30), call(canvas, 20, 30)]
+    assert on_release_handler.mock_calls == [call(canvas, 20, 30), call(canvas, 20, 30)]
     on_activate_handler.assert_called_once_with(canvas, 20, 30)
 
 
