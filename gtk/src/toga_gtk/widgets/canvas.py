@@ -7,6 +7,7 @@ from travertino.size import at_least
 from toga import Font
 from toga.constants import Baseline, FillRule
 from toga.fonts import SYSTEM_DEFAULT_FONT_SIZE
+from toga.handlers import WeakrefCallable
 from toga_gtk.colors import native_color
 from toga_gtk.libs import GTK_VERSION, Gdk, Gtk, Pango, PangoCairo, cairo
 
@@ -22,9 +23,10 @@ class Canvas(Widget):
             )
 
         self.native = Gtk.DrawingArea()
+        self._background_color = None
 
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
-            self.native.connect("draw", self.gtk_draw_callback)
+            self.native.connect("draw", self.gtk3_draw_callback)
             self.native.connect("size-allocate", self.gtk_on_size_allocate)
             self.native.connect("button-press-event", self.mouse_down)
             self.native.connect("button-release-event", self.mouse_up)
@@ -35,9 +37,46 @@ class Canvas(Widget):
                 | Gdk.EventMask.BUTTON_MOTION_MASK
             )
         else:  # pragma: no-cover-if-gtk3
-            pass
+            self.native.set_draw_func(WeakrefCallable(self.gtk_draw_callback))
+            self.native.connect("resize", self.gtk_resize)
 
-    def gtk_draw_callback(self, widget, cairo_context):
+            self.main_gesture = Gtk.GestureClick()
+            self.native.add_controller(self.main_gesture)
+            self.main_gesture.set_button(1)
+            self.main_gesture.connect("pressed", WeakrefCallable(self.main_down))
+            self.main_gesture.connect("released", WeakrefCallable(self.main_up))
+            self.main_drag = False
+
+            self.alt_gesture = Gtk.GestureClick()
+            self.native.add_controller(self.alt_gesture)
+            self.alt_gesture.set_button(3)
+            self.alt_gesture.connect("pressed", WeakrefCallable(self.alt_down))
+            self.alt_gesture.connect("released", WeakrefCallable(self.alt_up))
+            self.alt_drag = False
+
+            self.motion_controller = Gtk.EventControllerMotion()
+            self.native.add_controller(self.motion_controller)
+            self.motion_controller.connect("motion", WeakrefCallable(self.mouse_move))
+
+    def _size(self):
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            width = self.native.get_allocation().width
+            height = self.native.get_allocation().height
+        else:  # pragma: no-cover-if-gtk3
+            width = self.native.compute_bounds(self.native)[1].get_width()
+            height = self.native.compute_bounds(self.native)[1].get_height()
+        return width, height
+
+    def set_background_color(self, color):
+        super().set_background_color(color)
+        self._background_color = color
+
+    if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4  # pragma: no branch
+
+        def gtk3_draw_callback(self, widget, cairo_context):
+            self.gtk_draw_callback(widget, cairo_context, *self._size())
+
+    def gtk_draw_callback(self, widget, cairo_context, width, height):
         """Creates a draw callback.
 
         Gtk+ uses a drawing callback to draw on a DrawingArea. Assignment of the
@@ -47,55 +86,86 @@ class Canvas(Widget):
         """
 
         # Explicitly render the background
-        sc = self.native.get_style_context()
-        bg = sc.get_property("background-color", sc.get_state())
-        cairo_context.set_source_rgba(
-            255 * bg.red,
-            255 * bg.green,
-            255 * bg.blue,
-            bg.alpha,
-        )
-        width = self.native.get_allocation().width
-        height = self.native.get_allocation().height
-        cairo_context.rectangle(0, 0, width, height)
-        cairo_context.fill()
+        if self._background_color:
+            cairo_context.set_source_rgba(
+                255 * self._background_color.r,
+                255 * self._background_color.g,
+                255 * self._background_color.b,
+                self._background_color.a,
+            )
+            width, height = self._size()
+            cairo_context.rectangle(0, 0, width, height)
+            cairo_context.fill()
 
         self.original_transform_matrix = cairo_context.get_matrix()
         self.interface.context._draw(self, cairo_context=cairo_context)
 
-    def gtk_on_size_allocate(self, widget, allocation):
-        """Called on widget resize, and calls the handler set on the interface, if
-        any."""
-        self.interface.on_resize(width=allocation.width, height=allocation.height)
+    if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
 
-    def mouse_down(self, obj, event):
-        if event.button == 1:
-            if event.type == Gdk.EventType._2BUTTON_PRESS:
-                self.interface.on_activate(event.x, event.y)
+        def gtk_on_size_allocate(self, widget, allocation):
+            """Called on widget resize, and calls the handler set on the interface, if
+            any."""
+            self.interface.on_resize(width=allocation.width, height=allocation.height)
+
+        def mouse_down(self, obj, event):
+            if event.button == 1:
+                if event.type == Gdk.EventType._2BUTTON_PRESS:
+                    self.interface.on_activate(event.x, event.y)
+                else:
+                    self.interface.on_press(event.x, event.y)
+            elif event.button == 3:
+                self.interface.on_alt_press(event.x, event.y)
+            else:  # pragma: no cover
+                # Don't handle other button presses
+                pass
+
+        def mouse_move(self, obj, event):
+            """Handles mouse movement by calling the drag and/or alternative drag
+            methods. Modifier keys have no effect."""
+            if event.state & Gdk.ModifierType.BUTTON1_MASK:
+                self.interface.on_drag(event.x, event.y)
+            if event.state & Gdk.ModifierType.BUTTON3_MASK:
+                self.interface.on_alt_drag(event.x, event.y)
+
+        def mouse_up(self, obj, event):
+            if event.button == 1:
+                self.interface.on_release(event.x, event.y)
+            elif event.button == 3:
+                self.interface.on_alt_release(event.x, event.y)
+            else:  # pragma: no cover
+                # Don't handle other button presses
+                pass
+    else:  # pragma: no-cover-if-gtk3
+
+        def gtk_resize(self, widget, width, height):
+            self.interface.on_resize(width=width, height=height)
+
+        def main_down(self, obj, n_press, x, y):
+            if n_press == 2:
+                self.interface.on_activate(x, y)
             else:
-                self.interface.on_press(event.x, event.y)
-        elif event.button == 3:
-            self.interface.on_alt_press(event.x, event.y)
-        else:  # pragma: no cover
-            # Don't handle other button presses
-            pass
+                self.interface.on_press(x, y)
+            self.main_drag = True
 
-    def mouse_move(self, obj, event):
-        """Handles mouse movement by calling the drag and/or alternative drag
-        methods. Modifier keys have no effect."""
-        if event.state & Gdk.ModifierType.BUTTON1_MASK:
-            self.interface.on_drag(event.x, event.y)
-        if event.state & Gdk.ModifierType.BUTTON3_MASK:
-            self.interface.on_alt_drag(event.x, event.y)
+        def main_up(self, obj, n_press, x, y):
+            self.main_drag = False
+            self.interface.on_release(x, y)
 
-    def mouse_up(self, obj, event):
-        if event.button == 1:
-            self.interface.on_release(event.x, event.y)
-        elif event.button == 3:
-            self.interface.on_alt_release(event.x, event.y)
-        else:  # pragma: no cover
-            # Don't handle other button presses
-            pass
+        def alt_down(self, obj, n_press, x, y):
+            self.interface.on_alt_press(x, y)
+            self.alt_drag = True
+
+        def alt_up(self, obj, n_press, x, y):
+            self.alt_drag = False
+            self.interface.on_alt_release(x, y)
+
+        def mouse_move(self, obj, x, y):
+            """Handles mouse movement by calling the drag and/or alternative drag
+            methods. Modifier keys have no effect."""
+            if self.main_drag:
+                self.interface.on_drag(x, y)
+            if self.alt_drag:
+                self.interface.on_alt_drag(x, y)
 
     def redraw(self):
         self.native.queue_draw()
@@ -204,7 +274,6 @@ class Canvas(Widget):
         if line_dash is not None:
             cairo_context.set_dash(line_dash)
         cairo_context.stroke()
-        cairo_context.set_dash([])
 
     # Transformations
 
@@ -303,13 +372,15 @@ class Canvas(Widget):
         )
 
     def get_image_data(self):
-        width = self.native.get_allocation().width
-        height = self.native.get_allocation().height
+        width, height = self._size()
 
-        surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, width, height)
+        surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, int(width), int(height))
         context = cairo.Context(surface)
 
-        self.native.draw(context)
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            self.native.draw(context)
+        else:  # pragma: no-cover-if-gtk3
+            self.gtk_draw_callback(self.native, context, width, height)
 
         data = BytesIO()
         surface.write_to_png(data)
