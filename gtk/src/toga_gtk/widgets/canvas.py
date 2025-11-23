@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from io import BytesIO
 from math import ceil
 
+from travertino.constants import TRANSPARENT
 from travertino.size import at_least
 
 from toga import Font
@@ -86,7 +87,7 @@ class Canvas(Widget):
         """
 
         # Explicitly render the background
-        if self._background_color:
+        if self._background_color and not self._background_color == TRANSPARENT:
             cairo_context.set_source_rgba(
                 255 * self._background_color.r,
                 255 * self._background_color.g,
