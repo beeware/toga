@@ -336,8 +336,9 @@ class MainWindow(Window):
                 self.toolbar_native.clear()
             else:
                 self.toolbar_native = QToolBar(self.native)
+                self.toolbar_native.setMovable(False)
                 self.native.addToolBar(self.toolbar_native)
-                self.toolbar_native.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
+                self.toolbar_native.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
 
             prev_group = None
 
