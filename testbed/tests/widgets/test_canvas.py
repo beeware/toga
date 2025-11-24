@@ -1,6 +1,6 @@
+import importlib
 import math
 import os
-from importlib import import_module
 from math import pi, radians
 from unittest.mock import Mock, call
 
@@ -631,10 +631,14 @@ async def test_transforms(canvas, probe):
 
 @pytest.mark.xfail(
     condition=os.environ.get("RUNNING_IN_CI") != "true"
-    and getattr(
-        import_module("tests_backend.widgets.canvas").CanvasProbe,
-        "write_text_xfails_local",
-        False,
+    and (
+        getattr(
+            importlib.import_module("tests_backend.widgets.canvas").CanvasProbe,
+            "write_text_xfails_local",
+            False,
+        )
+        if importlib.util.find_spec("tests_backend.widgets.canvas")
+        else False
     ),
     reason="may fail outside of a GitHub runner environment on this platform",
 )
