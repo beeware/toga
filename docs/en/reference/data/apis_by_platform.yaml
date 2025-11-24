@@ -19,7 +19,6 @@ Core application components:
     beta:
       - web
       - textual
-      - qt
 
   DocumentWindow:
     description: A window that can be used as the main interface to a document-based app.
@@ -28,8 +27,6 @@ Core application components:
       - android
       - web
       - textual
-    beta:
-      - qt
 
 General widgets:
   path: widgets
