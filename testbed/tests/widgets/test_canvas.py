@@ -1,11 +1,11 @@
 import math
 import os
+from importlib import import_module
 from math import pi, radians
 from unittest.mock import Mock, call
 
 import pytest
 from PIL import Image
-from tests_backend.widgets.canvas import CanvasProbe
 
 import toga
 from toga import Font
@@ -631,7 +631,11 @@ async def test_transforms(canvas, probe):
 
 @pytest.mark.xfail(
     condition=os.environ.get("RUNNING_IN_CI") != "true"
-    and CanvasProbe.write_text_xfails_local,
+    and getattr(
+        import_module("tests_backend.widgets.canvas").CanvasProbe,
+        "write_text_xfails_local",
+        False,
+    ),
     reason="may fail outside of a GitHub runner environment on this platform",
 )
 async def test_write_text(canvas, probe):
