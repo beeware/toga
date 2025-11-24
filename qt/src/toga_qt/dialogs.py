@@ -31,6 +31,8 @@ class MessageDialog:
 
     def qt_response(self):
         self.future.set_result(None)
+        self.native.deleteLater()
+        self.native = None
 
 
 class InfoDialog(MessageDialog):
