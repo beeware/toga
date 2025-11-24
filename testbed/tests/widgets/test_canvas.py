@@ -5,6 +5,7 @@ from unittest.mock import Mock, call
 
 import pytest
 from PIL import Image
+from tests_backend.widgets.canvas import CanvasProbe
 
 import toga
 from toga import Font
@@ -628,6 +629,11 @@ async def test_transforms(canvas, probe):
     assert_reference(probe, "transforms", threshold=0.02)
 
 
+@pytest.mark.xfail(
+    condition=os.environ.get("RUNNING_IN_CI") != "true"
+    and CanvasProbe.write_text_xfails_local,
+    reason="may fail outside of a GitHub runner environment on this platform",
+)
 async def test_write_text(canvas, probe):
     "Text can be measured and written"
 

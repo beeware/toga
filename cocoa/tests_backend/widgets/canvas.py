@@ -13,6 +13,7 @@ from .properties import toga_color
 
 class CanvasProbe(SimpleProbe):
     native_class = NSView
+    write_text_xfails_local = False
 
     @property
     def background_color(self):

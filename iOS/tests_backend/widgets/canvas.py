@@ -22,6 +22,7 @@ class MockTouch(NSObject):
 
 class CanvasProbe(SimpleProbe):
     native_class = UIView
+    write_text_xfails_local = False
 
     def reference_variant(self, reference):
         # System fonts and sizes are platform specific

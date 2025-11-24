@@ -41,23 +41,25 @@ class Canvas(Widget):
             self.native.set_draw_func(WeakrefCallable(self.gtk_draw_callback))
             self.native.connect("resize", self.gtk_resize)
 
-            self.main_gesture = Gtk.GestureClick()
-            self.native.add_controller(self.main_gesture)
-            self.main_gesture.set_button(1)
-            self.main_gesture.connect("pressed", WeakrefCallable(self.main_down))
-            self.main_gesture.connect("released", WeakrefCallable(self.main_up))
-            self.main_drag = False
+            self.gesture_click = {}
+            self.gesture_drag = {}
+            for button in (1, 3):
+                self.gesture_click[button] = Gtk.GestureClick()
+                self.native.add_controller(self.gesture_click[button])
+                self.gesture_click[button].set_button(button)
+                self.gesture_click[button].connect(
+                    "pressed", WeakrefCallable(self.mouse_down)
+                )
+                self.gesture_click[button].connect(
+                    "released", WeakrefCallable(self.mouse_up)
+                )
 
-            self.alt_gesture = Gtk.GestureClick()
-            self.native.add_controller(self.alt_gesture)
-            self.alt_gesture.set_button(3)
-            self.alt_gesture.connect("pressed", WeakrefCallable(self.alt_down))
-            self.alt_gesture.connect("released", WeakrefCallable(self.alt_up))
-            self.alt_drag = False
-
-            self.motion_controller = Gtk.EventControllerMotion()
-            self.native.add_controller(self.motion_controller)
-            self.motion_controller.connect("motion", WeakrefCallable(self.mouse_move))
+                self.gesture_drag[button] = Gtk.GestureDrag()
+                self.native.add_controller(self.gesture_drag[button])
+                self.gesture_drag[button].set_button(button)
+                self.gesture_drag[button].connect(
+                    "drag-update", WeakrefCallable(self.mouse_drag)
+                )
 
     def _size(self):
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
@@ -94,7 +96,6 @@ class Canvas(Widget):
                 255 * self._background_color.b,
                 self._background_color.a,
             )
-            width, height = self._size()
             cairo_context.rectangle(0, 0, width, height)
             cairo_context.fill()
 
@@ -141,31 +142,25 @@ class Canvas(Widget):
         def gtk_resize(self, widget, width, height):
             self.interface.on_resize(width=width, height=height)
 
-        def main_down(self, obj, n_press, x, y):
-            if n_press == 2:
-                self.interface.on_activate(x, y)
+        def mouse_down(self, obj, n_press, x, y):
+            if obj == self.gesture_click[1]:
+                if n_press == 2:
+                    self.interface.on_activate(x, y)
+                else:
+                    self.interface.on_press(x, y)
             else:
-                self.interface.on_press(x, y)
-            self.main_drag = True
+                self.interface.on_alt_press(x, y)
 
-        def main_up(self, obj, n_press, x, y):
-            self.main_drag = False
-            self.interface.on_release(x, y)
+        def mouse_up(self, obj, n_press, x, y):
+            if obj == self.gesture_click[1]:
+                self.interface.on_release(x, y)
+            else:
+                self.interface.on_alt_release(x, y)
 
-        def alt_down(self, obj, n_press, x, y):
-            self.interface.on_alt_press(x, y)
-            self.alt_drag = True
-
-        def alt_up(self, obj, n_press, x, y):
-            self.alt_drag = False
-            self.interface.on_alt_release(x, y)
-
-        def mouse_move(self, obj, x, y):
-            """Handles mouse movement by calling the drag and/or alternative drag
-            methods. Modifier keys have no effect."""
-            if self.main_drag:
+        def mouse_drag(self, obj, x, y):
+            if obj == self.gesture_drag[1]:
                 self.interface.on_drag(x, y)
-            if self.alt_drag:
+            else:
                 self.interface.on_alt_drag(x, y)
 
     def redraw(self):

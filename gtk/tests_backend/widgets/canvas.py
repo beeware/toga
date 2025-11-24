@@ -1,7 +1,5 @@
-import os
 from io import BytesIO
 
-import pytest
 from PIL import Image
 
 from toga_gtk.libs import GTK_VERSION, IS_WAYLAND, Gdk, Gtk
@@ -11,6 +9,10 @@ from .base import SimpleProbe
 
 class CanvasProbe(SimpleProbe):
     native_class = Gtk.DrawingArea
+    if GTK_VERSION < (4, 0, 0):
+        write_text_xfails_local = False
+    else:
+        write_text_xfails_local = True
 
     def reference_variant(self, reference):
         if reference == "multiline_text":
@@ -19,12 +21,7 @@ class CanvasProbe(SimpleProbe):
             else:
                 return f"{reference}-gtk-x11"
         elif reference == "write_text":
-            if GTK_VERSION < (4, 0, 0) or os.environ.get("WAYLAND_DISPLAY") == "toga":
-                return f"{reference}-gtk"
-            else:
-                # Ubuntu 24.04 renders kerning etc. slightly
-                # differently locally compared to CI, only on GTK4.
-                return f"{reference}-gtk4-local"
+            return f"{reference}-gtk"
         else:
             return reference
 
@@ -51,18 +48,15 @@ class CanvasProbe(SimpleProbe):
         # therefore, get the controller to emit signals, as well as assert that
         # they'll be looking for the correct button presses in production.
         def _controller_emit(self, event_name, times, x, y, button=1):
-            if event_name == "motion":
-                self.impl.motion_controller.emit("motion", x, y)
+            if event_name == "drag-update":
+                controller = self.impl.gesture_drag[button]
+                args = (x, y)
             else:
-                if button == 1:
-                    controller = self.impl.main_gesture
-                elif button == 3:
-                    controller = self.impl.alt_gesture
-                else:
-                    pytest.fail("Unsupported press for controller")
-                assert controller.get_button() == button
+                controller = self.impl.gesture_click[button]
+                args = (times, x, y)
+            assert controller.get_button() == button
 
-                controller.emit(event_name, times, x, y)
+            controller.emit(event_name, *args)
 
     async def mouse_press(self, x, y):
         if GTK_VERSION < (4, 0, 0):
@@ -103,7 +97,9 @@ class CanvasProbe(SimpleProbe):
             self._emit_event(Gdk.EventType.BUTTON_RELEASE, x2, y2, button=1)
         else:
             self._controller_emit("pressed", 1, x1, y1, button=1)
-            self._controller_emit("motion", 1, (x1 + x2) // 2, (y1 + y2) // 2, button=1)
+            self._controller_emit(
+                "drag-update", 1, (x1 + x2) // 2, (y1 + y2) // 2, button=1
+            )
             self._controller_emit("released", 1, x2, y2, button=1)
 
     async def alt_mouse_press(self, x, y):
@@ -127,5 +123,7 @@ class CanvasProbe(SimpleProbe):
             self._emit_event(Gdk.EventType.BUTTON_RELEASE, x2, y2, button=3)
         else:
             self._controller_emit("pressed", 1, x1, y1, button=3)
-            self._controller_emit("motion", 1, (x1 + x2) // 2, (y1 + y2) // 2, button=3)
+            self._controller_emit(
+                "drag-update", 1, (x1 + x2) // 2, (y1 + y2) // 2, button=3
+            )
             self._controller_emit("released", 1, x2, y2, button=3)
