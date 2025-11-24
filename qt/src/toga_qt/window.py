@@ -1,7 +1,7 @@
 from functools import partial
 
 from PySide6.QtCore import QBuffer, QEvent, QIODevice, Qt, QTimer
-from PySide6.QtGui import QAction, QWindowStateChangeEvent
+from PySide6.QtGui import QAction, QResizeEvent, QWindowStateChangeEvent
 from PySide6.QtWidgets import QApplication, QMainWindow, QMenu, QToolBar
 
 from toga.command import Separator
@@ -92,7 +92,7 @@ class Window:
         # Note:  KDE's default theme does not respond to minimize button
         # window hints, so minimizable cannot be implemented.
 
-        self.container.native.resizeEvent = self.resizeEvent
+        self.native.resizeEvent = self.resizeEvent
         self.toolbar_native = None
 
     def qt_close_event(self, event):
@@ -266,15 +266,21 @@ class Window:
         elif state == WindowState.FULLSCREEN:
             self.native.showFullScreen()
             if current_state == WindowState.PRESENTATION:
-                # Fullscreen->Presentation doesn't register as a state change.
+                # Fullscreen->Presentation doesn't register as a state change or
+                # size change.
                 QApplication.sendEvent(
                     self.native,
                     QWindowStateChangeEvent(current_native_state),
+                )
+                QApplication.sendEvent(
+                    self.native, QResizeEvent(self.native.size(), self.native.size())
                 )
 
         elif state == WindowState.PRESENTATION:
             self._before_presentation_mode_screen = self.interface.screen
             self.native.menuBar().hide()
+            if self.toolbar_native:
+                self.toolbar_native.hide()
             # Do this before showFullScreen because
             # showFullScreen might immediately trigger the event
             # and the window state read there might read a non-
@@ -282,9 +288,13 @@ class Window:
             self._in_presentation_mode = True
             self.native.showFullScreen()
             if current_state == WindowState.FULLSCREEN:
-                # Presentation->Fullscreen doesn't register as a state change.
+                # Presentation->Fullscreen doesn't register as a state change or
+                # size change.
                 QApplication.sendEvent(
                     self.native, QWindowStateChangeEvent(current_native_state)
+                )
+                QApplication.sendEvent(
+                    self.native, QResizeEvent(self.native.size(), self.native.size())
                 )
 
         else:
