@@ -1,6 +1,5 @@
 import asyncio
 
-import pytest
 from PySide6.QtCore import Qt
 from toga_qt.libs import IS_WAYLAND
 
@@ -103,13 +102,19 @@ class WindowProbe(BaseProbe):
         return self.window._impl.get_window_state(in_progress_state=False)
 
     def has_toolbar(self):
-        raise pytest.skip("Toolbar is not implemented on Qt yet")
+        return self.window._impl.toolbar_native is not None
 
     def assert_is_toolbar_separator(self, index, section=False):
-        raise pytest.skip("Toolbar is not implemented on Qt yet")
+        assert self.window._impl.toolbar_native.actions()[index].isSeparator()
 
     def assert_toolbar_item(self, index, label, tooltip, has_icon, enabled):
-        raise pytest.skip("Toolbar is not implemented on Qt yet")
+        action = self.window._impl.toolbar_native.actions()[index]
+        assert action.text() == label
+        if tooltip is None:
+            tooltip = "No Tooltip"
+        assert action.toolTip() == tooltip
+        assert not action.icon().isNull() == has_icon
+        assert action.isEnabled() == enabled
 
     def press_toolbar_button(self, index):
-        raise pytest.skip("Toolbar is not implemented on Qt yet")
+        self.window._impl.toolbar_native.actions()[index].trigger()
