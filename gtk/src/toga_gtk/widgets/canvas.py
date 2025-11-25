@@ -2,7 +2,6 @@ from dataclasses import dataclass
 from io import BytesIO
 from math import ceil
 
-from travertino.constants import TRANSPARENT
 from travertino.size import at_least
 
 from toga import Font
@@ -10,7 +9,15 @@ from toga.constants import Baseline, FillRule
 from toga.fonts import SYSTEM_DEFAULT_FONT_SIZE
 from toga.handlers import WeakrefCallable
 from toga_gtk.colors import native_color
-from toga_gtk.libs import GTK_VERSION, Gdk, Gtk, Pango, PangoCairo, cairo
+from toga_gtk.libs import (
+    GTK_VERSION,
+    Gdk,
+    Gtk,
+    Pango,
+    PangoCairo,
+    cairo,
+    parse_css_color,
+)
 
 from .base import Widget
 
@@ -29,9 +36,9 @@ class Canvas(Widget):
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             self.native.connect("draw", self.gtk3_draw_callback)
             self.native.connect("size-allocate", self.gtk_on_size_allocate)
-            self.native.connect("button-press-event", self.mouse_down)
-            self.native.connect("button-release-event", self.mouse_up)
-            self.native.connect("motion-notify-event", self.mouse_move)
+            self.native.connect("button-press-event", self.gtk_button_press)
+            self.native.connect("button-release-event", self.gtk_button_release)
+            self.native.connect("motion-notify-event", self.gtk_motion_notify)
             self.native.set_events(
                 Gdk.EventMask.BUTTON_PRESS_MASK
                 | Gdk.EventMask.BUTTON_RELEASE_MASK
@@ -48,17 +55,17 @@ class Canvas(Widget):
                 self.native.add_controller(self.gesture_click[button])
                 self.gesture_click[button].set_button(button)
                 self.gesture_click[button].connect(
-                    "pressed", WeakrefCallable(self.mouse_down)
+                    "pressed", WeakrefCallable(self.gtk_pressed)
                 )
                 self.gesture_click[button].connect(
-                    "released", WeakrefCallable(self.mouse_up)
+                    "released", WeakrefCallable(self.gtk_released)
                 )
 
                 self.gesture_drag[button] = Gtk.GestureDrag()
                 self.native.add_controller(self.gesture_drag[button])
                 self.gesture_drag[button].set_button(button)
                 self.gesture_drag[button].connect(
-                    "drag-update", WeakrefCallable(self.mouse_drag)
+                    "drag-update", WeakrefCallable(self.gtk_drag_update)
                 )
 
     def _size(self):
@@ -69,10 +76,6 @@ class Canvas(Widget):
             width = self.native.compute_bounds(self.native)[1].get_width()
             height = self.native.compute_bounds(self.native)[1].get_height()
         return width, height
-
-    def set_background_color(self, color):
-        super().set_background_color(color)
-        self._background_color = color
 
     if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4  # pragma: no branch
 
@@ -89,7 +92,11 @@ class Canvas(Widget):
         """
 
         # Explicitly render the background
-        if self._background_color and not self._background_color == TRANSPARENT:
+        sp = self.style_providers.get(("background_color", id(self.native)))
+        bg = (
+            parse_css_color(sp.to_string().split(": ")[1].split(";")[0]) if sp else None
+        )
+        if bg:
             cairo_context.set_source_rgba(
                 255 * self._background_color.r,
                 255 * self._background_color.g,
@@ -109,7 +116,7 @@ class Canvas(Widget):
             any."""
             self.interface.on_resize(width=allocation.width, height=allocation.height)
 
-        def mouse_down(self, obj, event):
+        def gtk_button_press(self, obj, event):
             if event.button == 1:
                 if event.type == Gdk.EventType._2BUTTON_PRESS:
                     self.interface.on_activate(event.x, event.y)
@@ -121,7 +128,7 @@ class Canvas(Widget):
                 # Don't handle other button presses
                 pass
 
-        def mouse_move(self, obj, event):
+        def gtk_motion_notify(self, obj, event):
             """Handles mouse movement by calling the drag and/or alternative drag
             methods. Modifier keys have no effect."""
             if event.state & Gdk.ModifierType.BUTTON1_MASK:
@@ -129,7 +136,7 @@ class Canvas(Widget):
             if event.state & Gdk.ModifierType.BUTTON3_MASK:
                 self.interface.on_alt_drag(event.x, event.y)
 
-        def mouse_up(self, obj, event):
+        def gtk_button_release(self, obj, event):
             if event.button == 1:
                 self.interface.on_release(event.x, event.y)
             elif event.button == 3:
@@ -142,7 +149,7 @@ class Canvas(Widget):
         def gtk_resize(self, widget, width, height):
             self.interface.on_resize(width=width, height=height)
 
-        def mouse_down(self, obj, n_press, x, y):
+        def gtk_pressed(self, obj, n_press, x, y):
             if obj == self.gesture_click[1]:
                 if n_press == 2:
                     self.interface.on_activate(x, y)
@@ -151,13 +158,13 @@ class Canvas(Widget):
             else:
                 self.interface.on_alt_press(x, y)
 
-        def mouse_up(self, obj, n_press, x, y):
+        def gtk_released(self, obj, n_press, x, y):
             if obj == self.gesture_click[1]:
                 self.interface.on_release(x, y)
             else:
                 self.interface.on_alt_release(x, y)
 
-        def mouse_drag(self, obj, x, y):
+        def gtk_drag_update(self, obj, x, y):
             if obj == self.gesture_drag[1]:
                 self.interface.on_drag(x, y)
             else:

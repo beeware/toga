@@ -9,10 +9,6 @@ from .base import SimpleProbe
 
 class CanvasProbe(SimpleProbe):
     native_class = Gtk.DrawingArea
-    if GTK_VERSION < (4, 0, 0):
-        write_text_xfails_local = False
-    else:
-        write_text_xfails_local = True
 
     def reference_variant(self, reference):
         if reference == "multiline_text":

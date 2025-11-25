@@ -1,4 +1,3 @@
-import importlib
 import math
 import os
 from math import pi, radians
@@ -630,17 +629,8 @@ async def test_transforms(canvas, probe):
 
 
 @pytest.mark.xfail(
-    condition=os.environ.get("RUNNING_IN_CI") != "true"
-    and (
-        getattr(
-            importlib.import_module("tests_backend.widgets.canvas").CanvasProbe,
-            "write_text_xfails_local",
-            False,
-        )
-        if importlib.util.find_spec("tests_backend.widgets.canvas")
-        else False
-    ),
-    reason="may fail outside of a GitHub runner environment on this platform",
+    condition=os.environ.get("RUNNING_IN_CI") != "true",
+    reason="Canvas tests are unstable outside of CI. Manual inspection may be required",
 )
 async def test_write_text(canvas, probe):
     "Text can be measured and written"

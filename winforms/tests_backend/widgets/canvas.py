@@ -8,7 +8,6 @@ from .base import SimpleProbe
 
 class CanvasProbe(SimpleProbe):
     native_class = Panel
-    write_text_xfails_local = False
 
     def reference_variant(self, reference):
         if reference in {"multiline_text", "write_text"}:
