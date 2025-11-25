@@ -31,7 +31,6 @@ class Canvas(Widget):
             )
 
         self.native = Gtk.DrawingArea()
-        self._background_color = None
 
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             self.native.connect("draw", self.gtk3_draw_callback)
@@ -98,10 +97,10 @@ class Canvas(Widget):
         )
         if bg:
             cairo_context.set_source_rgba(
-                255 * self._background_color.r,
-                255 * self._background_color.g,
-                255 * self._background_color.b,
-                self._background_color.a,
+                255 * bg.r,
+                255 * bg.g,
+                255 * bg.b,
+                bg.a,
             )
             cairo_context.rectangle(0, 0, width, height)
             cairo_context.fill()
