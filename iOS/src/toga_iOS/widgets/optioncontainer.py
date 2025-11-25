@@ -48,6 +48,7 @@ class TogaTabBarController(UITabBarController):
 
 class OptionContainer(Widget):
     uses_icons = True
+    unsafe_bottom = True
 
     def create(self):
         self.native_controller = TogaTabBarController.alloc().init()
@@ -56,8 +57,10 @@ class OptionContainer(Widget):
         self.native_controller.delegate = self.native_controller
 
         if int(platform.release().split(".")[0]) < 26:  # pragma: no branch
-            # Make the tab bar non-translucent, so you can actually see it.
-            self.native_controller.tabBar.setTranslucent(False)
+            # Make it translucent; without this call, there will not be
+            # a bottom bar at all.
+            self.native_controller.tabBar.setTranslucent(True)
+            self.native_controller.extendedLayoutIncludesOpaqueBars = True
 
         # The native widget representing the container is the view of the native
         # controller. This doesn't change once it's created, so we can cache it.
@@ -69,12 +72,7 @@ class OptionContainer(Widget):
         self.add_constraints()
 
     def set_bounds(self, x, y, width, height):
-        if y + height == self.container.height and self.container._safe_bottom:
-            super().set_bounds(
-                x, y, width, height + self.container.layout_native.safeAreaInsets.bottom
-            )
-        else:
-            super().set_bounds(x, y, width, height)
+        super().set_bounds(x, y, width, height)
 
         # Setting the bounds changes the constraints, but that doesn't mean
         # the constraints have been fully applied. Schedule a refresh to be done

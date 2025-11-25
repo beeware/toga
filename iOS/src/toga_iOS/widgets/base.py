@@ -5,6 +5,8 @@ from toga_iOS.constraints import Constraints
 
 
 class Widget:
+    unsafe_bottom = False
+
     def __init__(self, interface):
         super().__init__()
         self.interface = interface
@@ -78,8 +80,16 @@ class Widget:
     # APPLICATOR
 
     def set_bounds(self, x, y, width, height):
-        # print("SET BOUNDS", self, x, y, width, height, self.container.top_offset)
-        self.constraints.update(x, y, width, height)
+        if (
+            y + height == self.container.height
+            and self.container._safe_bottom
+            and self.unsafe_bottom
+        ):
+            self.constraints.update(
+                x, y, width, height + self.container.layout_native.safeAreaInsets.bottom
+            )
+        else:
+            self.constraints.update(x, y, width, height)
 
     def set_text_align(self, alignment):
         pass

@@ -32,9 +32,7 @@ class TogaScrollView(UIScrollView):
 
 
 class ScrollContainer(Widget):
-    @property
-    def verticalInsets(self):
-        return self.native.safeAreaInsets.bottom
+    unsafe_bottom = True
 
     def create(self):
         self.native = TogaScrollView.alloc().init()
@@ -58,12 +56,7 @@ class ScrollContainer(Widget):
         self.document_container.content = widget
 
     def set_bounds(self, x, y, width, height):
-        if y + height == self.container.height and self.container._safe_bottom:
-            super().set_bounds(
-                x, y, width, height + self.container.layout_native.safeAreaInsets.bottom
-            )
-        else:
-            super().set_bounds(x, y, width, height)
+        super().set_bounds(x, y, width, height)
 
         # Setting the bounds changes the constraints, but that doesn't mean
         # the constraints have been fully applied. Schedule a refresh to be done

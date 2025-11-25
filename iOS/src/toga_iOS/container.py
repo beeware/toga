@@ -1,7 +1,5 @@
 from rubicon.objc import objc_method, objc_property, send_super
 
-import toga
-
 from .libs import (
     UIApplication,
     UINavigationController,
@@ -9,9 +7,6 @@ from .libs import (
     UIViewAutoresizing,
     UIViewController,
 )
-
-toga.Widget.DEBUG_LAYOUT_ENABLED = True
-
 
 #######################################################################################
 # Implementation notes:

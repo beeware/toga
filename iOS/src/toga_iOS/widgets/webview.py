@@ -75,6 +75,8 @@ class TogaWebView(WKWebView):
 
 
 class WebView(Widget):
+    unsafe_bottom = True
+
     def create(self):
         self.native = TogaWebView.alloc().init()
         self.native.interface = self.interface
