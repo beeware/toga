@@ -7,6 +7,10 @@ from .properties import toga_x_text_align, toga_y_text_align
 class LabelProbe(SimpleProbe):
     native_class = QLabel
 
+    def __init__(self, widget):
+        super().__init__(widget)
+        assert self.native.autoFillBackground()
+
     @property
     def text(self):
         return self.native.text()
