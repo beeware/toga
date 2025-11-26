@@ -80,13 +80,6 @@ class OptionContainer(Widget):
         self.native_controller.performSelector(
             SEL("refreshContent"), withObject=None, afterDelay=0
         )
-        for container in self.sub_containers:
-            container.additional_top_offset = self.container.top_offset
-            container.un_top_offset_able = self.container.un_top_offset_able
-
-        self.native_controller.performSelector(
-            SEL("refreshContent"), withObject=None, afterDelay=0
-        )
 
     def top_offset_children(self):
         for container in self.sub_containers:
