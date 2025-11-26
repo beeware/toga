@@ -27,9 +27,10 @@ class TogaContainerView(UIView):
 
     @objc_method
     def refreshContent(self):
-        if self.container.content and self.container._safe_bottom:
-            self.container.content.interface.refresh()
-            self.container.refreshed()
+        if self.container:
+            if self.container.content and self.container._safe_bottom:
+                self.container.content.interface.refresh()
+                self.container.refreshed()
 
 
 class BaseContainer:
