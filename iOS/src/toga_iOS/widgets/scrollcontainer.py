@@ -66,6 +66,16 @@ class ScrollContainer(Widget):
             SEL("refreshContent"), withObject=None, afterDelay=0
         )
 
+    def top_offset_children(self):
+        self.native.performSelector(
+            SEL("refreshContent"), withObject=None, afterDelay=0
+        )
+
+    def un_top_offset_children(self):
+        self.native.performSelector(
+            SEL("refreshContent"), withObject=None, afterDelay=0
+        )
+
     def content_refreshed(self, container):
         width = self.native.frame.size.width
         height = self.native.frame.size.height

@@ -86,10 +86,18 @@ class OptionContainer(Widget):
             container.additional_top_offset = self.container.top_offset
             container.un_top_offset_able = self.container.un_top_offset_able
 
+        self.native_controller.performSelector(
+            SEL("refreshContent"), withObject=None, afterDelay=0
+        )
+
     def un_top_offset_children(self):
         for container in self.sub_containers:
             container.additional_top_offset = 0
             container.un_top_offset_able = False
+
+        self.native_controller.performSelector(
+            SEL("refreshContent"), withObject=None, afterDelay=0
+        )
 
     def content_refreshed(self, container):
         container.min_width = container.content.interface.layout.min_width
