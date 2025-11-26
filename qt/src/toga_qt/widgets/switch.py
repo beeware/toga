@@ -32,7 +32,3 @@ class Switch(Widget):
         content_size = self.native.sizeHint()
         self.interface.intrinsic.width = at_least(content_size.width())
         self.interface.intrinsic.height = content_size.height()
-
-    def focus(self):
-        # We can actually focus in Qt, however, keep it consistent with the GTK backend.
-        pass
