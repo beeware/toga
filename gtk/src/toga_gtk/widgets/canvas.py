@@ -160,7 +160,7 @@ class Canvas(Widget):
         def gtk_released(self, obj, n_press, x, y):
             if obj == self.gesture_click[1]:
                 self.interface.on_release(x, y)
-            else obj == self.gesture_click[3]:  # pragma: no branch
+            elif obj == self.gesture_click[3]:  # pragma: no branch
                 self.interface.on_alt_release(x, y)
 
         def gtk_drag_update(self, obj, x, y):
