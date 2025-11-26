@@ -143,6 +143,7 @@ class Canvas(Widget):
             else:  # pragma: no cover
                 # Don't handle other button presses
                 pass
+
     else:  # pragma: no-cover-if-gtk3
 
         def gtk_resize(self, widget, width, height):
@@ -154,20 +155,29 @@ class Canvas(Widget):
                     self.interface.on_activate(x, y)
                 else:
                     self.interface.on_press(x, y)
-            elif obj == self.gesture_click[3]:  # pragma: no branch
+            elif obj == self.gesture_click[3]:
                 self.interface.on_alt_press(x, y)
+            else:  # pragma: no cover
+                # Don't handle other button presses
+                pass
 
         def gtk_released(self, obj, n_press, x, y):
             if obj == self.gesture_click[1]:
                 self.interface.on_release(x, y)
-            elif obj == self.gesture_click[3]:  # pragma: no branch
+            elif obj == self.gesture_click[3]:
                 self.interface.on_alt_release(x, y)
+            else:  # pragma: no cover
+                # Don't handle other button presses
+                pass
 
         def gtk_drag_update(self, obj, x, y):
             if obj == self.gesture_drag[1]:
                 self.interface.on_drag(x, y)
-            elif obj == self.gesture_drag[3]:  # pragma: no branch
+            elif obj == self.gesture_drag[3]:
                 self.interface.on_alt_drag(x, y)
+            else:  # pragma: no cover
+                # Don't handle other button presses
+                pass
 
     def redraw(self):
         self.native.queue_draw()
