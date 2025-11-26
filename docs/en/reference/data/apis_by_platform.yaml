@@ -81,7 +81,6 @@ General widgets:
     unsupported:
       - web
       - textual
-      - qt
 
   Label:
     description: A text label for annotating forms or interfaces.

@@ -14,6 +14,7 @@ try:
     from .widgets.activityindicator import ActivityIndicator
     from .widgets.box import Box
     from .widgets.button import Button
+    from .widgets.imageview import ImageView
     from .widgets.label import Label
     from .widgets.textinput import TextInput
     from .window import MainWindow, Window
@@ -44,6 +45,7 @@ __all__ = [
     "Box",
     "Label",
     "TextInput",
+    "ImageView",
     "dialogs",
 ]
 
