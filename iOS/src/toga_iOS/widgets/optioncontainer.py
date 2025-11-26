@@ -49,6 +49,7 @@ class TogaTabBarController(UITabBarController):
 class OptionContainer(Widget):
     uses_icons = True
     unsafe_bottom = True
+    un_top_offset = True
 
     def create(self):
         self.native_controller = TogaTabBarController.alloc().init()
@@ -73,10 +74,34 @@ class OptionContainer(Widget):
 
     def set_bounds(self, x, y, width, height):
         super().set_bounds(x, y, width, height)
-
         # Setting the bounds changes the constraints, but that doesn't mean
         # the constraints have been fully applied. Schedule a refresh to be done
         # as soon as possible in the future
+        self.native_controller.performSelector(
+            SEL("refreshContent"), withObject=None, afterDelay=0
+        )
+        for container in self.sub_containers:
+            container.additional_top_offset = self.container.top_offset
+            container.un_top_offset_able = self.container.un_top_offset_able
+
+        self.native_controller.performSelector(
+            SEL("refreshContent"), withObject=None, afterDelay=0
+        )
+
+    def top_offset_children(self):
+        for container in self.sub_containers:
+            container.additional_top_offset = self.container.top_offset
+            container.un_top_offset_able = self.container.un_top_offset_able
+
+        self.native_controller.performSelector(
+            SEL("refreshContent"), withObject=None, afterDelay=0
+        )
+
+    def un_top_offset_children(self):
+        for container in self.sub_containers:
+            container.additional_top_offset = 0
+            container.un_top_offset_able = False
+
         self.native_controller.performSelector(
             SEL("refreshContent"), withObject=None, afterDelay=0
         )

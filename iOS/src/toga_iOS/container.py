@@ -23,7 +23,7 @@ class TogaContainerView(UIView):
     @objc_method
     def safeAreaInsetsDidChange(self):
         send_super(__class__, self, "safeAreaInsetsDidChange")
-        if self.container.content:
+        if self.container.content and self.container._safe_bottom:
             self.container.content.interface.refresh()
             self.container.refreshed()
 
@@ -39,6 +39,8 @@ class BaseContainer:
         self._content = content
         self.on_refresh = on_refresh
         self._safe_bottom = safe_bottom
+        self.un_top_offset_able = False
+        self.additional_top_offset = 0
 
     @property
     def content(self):
@@ -63,6 +65,22 @@ class BaseContainer:
 
     def refreshed(self):
         self.on_refresh(self)
+
+    @property
+    def additional_top_offset(self):
+        return self._additional_top_offset
+
+    @additional_top_offset.setter
+    def additional_top_offset(self, value):
+        self._additional_top_offset = value
+
+    @property
+    def un_top_offset_able(self):
+        return self._un_top_offset_able
+
+    @un_top_offset_able.setter
+    def un_top_offset_able(self, value):
+        self._un_top_offset_able = value
 
 
 class Container(BaseContainer):
@@ -115,7 +133,7 @@ class Container(BaseContainer):
 
     @property
     def top_offset(self):
-        return 0
+        return self.additional_top_offset
 
 
 class ControlledContainer(Container):
@@ -193,7 +211,10 @@ class RootContainer(Container):
     # The testbed app won't instantiate a simple app, so we can't test these properties
     @property
     def top_offset(self):  # pragma: no cover
-        return UIApplication.sharedApplication.statusBarFrame.size.height
+        return (
+            UIApplication.sharedApplication.statusBarFrame.size.height
+            + self.additional_top_offset
+        )
 
     @property
     def title(self):  # pragma: no cover
@@ -237,6 +258,7 @@ class NavigationContainer(Container):
         self.controller = UINavigationController.alloc().initWithRootViewController(
             self.content_controller
         )
+        self.un_top_offset_able = True
 
         # Set the controller's view to be the root content widget
         self.content_controller.view = self.native
@@ -246,6 +268,7 @@ class NavigationContainer(Container):
         return (
             UIApplication.sharedApplication.statusBarFrame.size.height
             + self.controller.navigationBar.frame.size.height
+            + self.additional_top_offset
         )
 
     @property
