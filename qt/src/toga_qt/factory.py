@@ -16,6 +16,7 @@ try:
     from .widgets.button import Button
     from .widgets.imageview import ImageView
     from .widgets.label import Label
+    from .widgets.switch import Switch
     from .widgets.textinput import TextInput
     from .window import MainWindow, Window
 except ModuleNotFoundError as exc:  # pragma: no cover
@@ -44,6 +45,7 @@ __all__ = [
     "Container",
     "Box",
     "Label",
+    "Switch",
     "TextInput",
     "ImageView",
     "dialogs",
