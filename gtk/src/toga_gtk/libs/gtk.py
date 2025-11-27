@@ -6,6 +6,13 @@ gtk_version = "4.0" if os.getenv("TOGA_GTK") == "4" else "3.0"
 gi.require_version("Gdk", gtk_version)
 gi.require_version("Gtk", gtk_version)
 
+if gtk_version == "4.0":
+    if os.getenv("TOGA_GTKLIB") == "Adw":
+        gi.require_version("Adw", "1")
+        from gi.repository import Adw  # noqa: E402, F401
+    else:
+        Adw = None
+
 from gi.events import GLibEventLoopPolicy  # noqa: E402, F401
 from gi.repository import (  # noqa: E402, F401
     Gdk,
@@ -25,8 +32,14 @@ GTK_VERSION: tuple[int, int, int] = (
 
 GLIB_VERSION: tuple[int, int, int] = (
     GLib.MAJOR_VERSION,
-    GLib.MAJOR_VERSION,
-    GLib.MAJOR_VERSION,
+    GLib.MINOR_VERSION,
+    GLib.MICRO_VERSION,
+)
+
+ADW_VERSION: tuple[int, int, int] = (
+    Adw.get_major_version(),
+    Adw.get_minor_version(),
+    Adw.get_micro_version(),
 )
 
 if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
