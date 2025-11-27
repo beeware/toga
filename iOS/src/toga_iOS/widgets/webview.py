@@ -1,7 +1,13 @@
-from ctypes import c_bool
 from http.cookiejar import Cookie, CookieJar
 
-from rubicon.objc import ObjCBlock, objc_id, objc_method, objc_property, py_from_ns
+from rubicon.objc import (
+    Block,
+    ObjCBlock,
+    objc_id,
+    objc_method,
+    objc_property,
+    py_from_ns,
+)
 from travertino.size import at_least
 
 from toga.widgets.webview import CookiesResult, JavaScriptResult
@@ -12,6 +18,7 @@ from toga_iOS.libs import (
     UIAlertActionStyle,
     UIAlertController,
     UIAlertControllerStyle,
+    WKUIDelegate,
     WKWebView,
 )
 from toga_iOS.widgets.base import Widget
@@ -65,7 +72,7 @@ def cookies_completion_handler(result):
     return _completion_handler
 
 
-class TogaWebView(WKWebView):
+class TogaWebView(WKWebView, protocols=[WKUIDelegate]):
     interface = objc_property(object, weak=True)
     impl = objc_property(object, weak=True)
 
@@ -96,15 +103,22 @@ class TogaWebView(WKWebView):
             message=message,
             preferredStyle=UIAlertControllerStyle.Alert,
         )
-        self.native.addAction(
+
+        # Add OK button
+        def _ok(action: objc_id) -> None:
+            ObjCBlock(completionHandler, None)()
+
+        alert.addAction(
             UIAlertAction.actionWithTitle(
                 "OK",
                 style=UIAlertActionStyle.Default,
-                handler=ObjCBlock(completionHandler, None),
+                handler=Block(_ok, None, objc_id),
             )
         )
 
-        (self.interface.window._impl.native.rootViewController).presentViewController(
+        # Display dialog
+        view_controller = self.interface.window._impl.native.rootViewController
+        view_controller.presentViewController(
             alert,
             animated=False,
             completion=None,
@@ -119,24 +133,34 @@ class TogaWebView(WKWebView):
             message=message,
             preferredStyle=UIAlertControllerStyle.Alert,
         )
-        self.native.addAction(
+
+        # Add OK button
+        def _ok(action: objc_id) -> None:
+            ObjCBlock(completionHandler, None, bool)(True)
+
+        alert.addAction(
             UIAlertAction.actionWithTitle(
                 "OK",
                 style=UIAlertActionStyle.Default,
-                handler=ObjCBlock(completionHandler, None, c_bool),
-            )
-        )
-        self.native.addAction(
-            UIAlertAction.actionWithTitle(
-                "Cancel",
-                style=UIAlertActionStyle.Default,
-                handler=ObjCBlock(completionHandler, None, c_bool),
+                handler=Block(_ok, None, objc_id),
             )
         )
 
-        (
-            self.interface.app.current_window._impl.native.rootViewController
-        ).presentViewController(
+        # Add cancel button
+        def _cancel(action: objc_id) -> None:
+            ObjCBlock(completionHandler, None, bool)(False)
+
+        alert.addAction(
+            UIAlertAction.actionWithTitle(
+                "Cancel",
+                style=UIAlertActionStyle.Default,
+                handler=Block(_cancel, None, objc_id),
+            )
+        )
+
+        # Display dialog
+        view_controller = self.interface.window._impl.native.rootViewController
+        view_controller.presentViewController(
             alert,
             animated=False,
             completion=None,
@@ -153,6 +177,8 @@ class WebView(Widget):
         # It is a no-op on earlier versions.
         self.native.inspectable = True
         self.native.navigationDelegate = self.native
+        # Set UIDelegate to self for file dialog support
+        self.native.UIDelegate = self.native
 
         self.loaded_future = None
 
