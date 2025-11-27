@@ -381,10 +381,10 @@ def test_navigation_starting_sync(widget):
     widget.url = None
     widget.on_navigation_starting = handler
     # test allowed URL
-    widget._impl.simulate_navigation("https://beeware.org")
+    widget._impl.simulate_navigation_starting("https://beeware.org")
     assert widget.url == "https://beeware.org"
     # test denied URL
-    widget._impl.simulate_navigation("https://google.com")
+    widget._impl.simulate_navigation_starting("https://google.com")
     assert widget.url == "https://beeware.org"
 
 
@@ -408,14 +408,14 @@ async def test_navigation_starting_async(widget):
     widget._url_allowed = False
     widget.on_navigation_starting = handler
     # test allowed URL
-    widget._impl.simulate_navigation("https://beeware.org")
+    widget._impl.simulate_navigation_starting("https://beeware.org")
     # navigation is denied until user decides
     assert widget.url is None
     # wait for the user response
     asyncio.sleep(0.5)
     assert widget.url == "https://beeware.org"
     # test denied URL
-    widget._impl.simulate_navigation("https://google.com")
+    widget._impl.simulate_navigation_starting("https://google.com")
     # navigation is denied until user decides
     assert widget.url == "https://beeware.org"
     # wait for the user response
