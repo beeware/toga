@@ -412,12 +412,12 @@ async def test_navigation_starting_async(widget):
     # navigation is denied until user decides
     assert widget.url is None
     # wait for the user response
-    asyncio.sleep(0.5)
+    await asyncio.sleep(0.5)
     assert widget.url == "https://beeware.org"
     # test denied URL
     widget._impl.simulate_navigation_starting("https://google.com")
     # navigation is denied until user decides
     assert widget.url == "https://beeware.org"
     # wait for the user response
-    asyncio.sleep(0.5)
+    await asyncio.sleep(0.5)
     assert widget.url == "https://beeware.org"
