@@ -156,7 +156,7 @@ def main(main_package_name, backend_override=None):
             "os_environ.get('TOGA_GTKLIB', '' != '')",
             "cover-if-plain-gtk": "os_environ.get('TOGA_GTKLIB', '' != '')",
             "cover-if-libadwaita": "os_environ.get('TOGA_GTK', '') == '4' and "
-            "os_environ.get('TOGA_GTKLIB', '' != 'ADW')",
+            "os_environ.get('TOGA_GTKLIB', '' != 'Adw')",
         },
     )
     cov.start()
