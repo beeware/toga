@@ -160,9 +160,9 @@ class TogaWebView(WKWebView, protocols=[WKUIDelegate]):
 
         def _completionHandler(result: int) -> None:
             if result == NSAlertFirstButtonReturn:
-                ObjCBlock(completionHandler, None)(True)
+                ObjCBlock(completionHandler, None, int)(True)
             else:
-                ObjCBlock(completionHandler, None)(False)
+                ObjCBlock(completionHandler, None, int)(False)
 
         alert.beginSheetModalForWindow(
             webView.window,
