@@ -36,11 +36,14 @@ GLIB_VERSION: tuple[int, int, int] = (
     GLib.MICRO_VERSION,
 )
 
-ADW_VERSION: tuple[int, int, int] = (
-    Adw.get_major_version(),
-    Adw.get_minor_version(),
-    Adw.get_micro_version(),
-)
+if Adw:  # pragma: cover-if-libadwaita
+    ADW_VERSION: tuple[int, int, int] = (
+        Adw.get_major_version(),
+        Adw.get_minor_version(),
+        Adw.get_micro_version(),
+    )
+else:  # pragma: cover-if-plain-gtk
+    ADW_VERSION = None
 
 if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
     default_display = Gdk.Screen.get_default()
