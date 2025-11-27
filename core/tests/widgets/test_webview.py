@@ -353,8 +353,8 @@ def test_webview_navigationstarting_disabled(monkeypatch):
         ):
             widget.on_navigation_starting = handler
 
-        # But the handler is still installed
-        assert widget.on_navigation_starting._raw == handler
+        # The handler is not installed
+        assert widget.on_navigation_starting is None
     finally:
         # Clear the feature attribute.
         del DummyWebView.SUPPORTS_ON_NAVIGATION_STARTING
@@ -405,6 +405,7 @@ async def test_navigation_starting_async(widget):
         return await dialog_mock(url)
 
     widget.url = None
+    self.interface._url_allowed = False
     widget.on_navigation_starting = handler
     # test allowed URL
     widget._impl.simulate_navigation("https://beeware.org")
