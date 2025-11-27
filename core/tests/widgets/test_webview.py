@@ -405,7 +405,7 @@ async def test_navigation_starting_async(widget):
         return await dialog_mock(url)
 
     widget.url = None
-    self.interface._url_allowed = False
+    widget._url_allowed = False
     widget.on_navigation_starting = handler
     # test allowed URL
     widget._impl.simulate_navigation("https://beeware.org")
