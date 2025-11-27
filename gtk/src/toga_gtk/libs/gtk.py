@@ -6,12 +6,13 @@ gtk_version = "4.0" if os.getenv("TOGA_GTK") == "4" else "3.0"
 gi.require_version("Gdk", gtk_version)
 gi.require_version("Gtk", gtk_version)
 
-if gtk_version == "4.0":
-    if os.getenv("TOGA_GTKLIB") == "Adw":
-        gi.require_version("Adw", "1")
-        from gi.repository import Adw  # noqa: E402, F401
-    else:
-        Adw = None
+if (
+    gtk_version == "4.0" and os.getenv("TOGA_GTKLIB") == "Adw"
+):  # pragma: cover-if-libadwaita
+    gi.require_version("Adw", "1")
+    from gi.repository import Adw  # noqa: E402, F401
+else:  # pragma: cover-if-plain-gtk
+    Adw = None
 
 from gi.events import GLibEventLoopPolicy  # noqa: E402, F401
 from gi.repository import (  # noqa: E402, F401
