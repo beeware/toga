@@ -1,10 +1,19 @@
+from ctypes import c_bool
 from http.cookiejar import Cookie, CookieJar
 
-from rubicon.objc import objc_id, objc_method, objc_property, py_from_ns
+from rubicon.objc import ObjCBlock, objc_id, objc_method, objc_property, py_from_ns
 from travertino.size import at_least
 
 from toga.widgets.webview import CookiesResult, JavaScriptResult
-from toga_iOS.libs import NSURL, NSURLRequest, WKWebView
+from toga_iOS.libs import (
+    NSURL,
+    NSURLRequest,
+    UIAlertAction,
+    UIAlertActionStyle,
+    UIAlertController,
+    UIAlertControllerStyle,
+    WKWebView,
+)
 from toga_iOS.widgets.base import Widget
 
 
@@ -72,6 +81,66 @@ class TogaWebView(WKWebView):
         if self.impl and self.impl.loaded_future:  # pragma: no branch
             self.impl.loaded_future.set_result(None)
             self.impl.loaded_future = None
+
+    # WKUIDelegate protocol methods required to display dialogs to the user.
+    # These are difficult to automatically test because they use
+    # completionHandler, which is a method utilized by the underlying WKWebView
+    # objective-C codebase. completionHandler cannot be created manually for
+    # testing because it is difficult to pull it up from the native codebase.
+    @objc_method
+    def webView_runJavaScriptAlertPanelWithMessage_initiatedByFrame_completionHandler_(
+        self, webView, message, frame, completionHandler
+    ) -> None:  # pragma: no cover
+        alert = UIAlertController.alertControllerWithTitle(
+            "Alert!",
+            message=message,
+            preferredStyle=UIAlertControllerStyle.Alert,
+        )
+        self.native.addAction(
+            UIAlertAction.actionWithTitle(
+                "OK",
+                style=UIAlertActionStyle.Default,
+                handler=ObjCBlock(completionHandler, None),
+            )
+        )
+
+        (self.interface.window._impl.native.rootViewController).presentViewController(
+            alert,
+            animated=False,
+            completion=None,
+        )
+
+    @objc_method
+    def webView_runJavaScriptConfirmPanelWithMessage_initiatedByFrame_completionHandler_(  # noqa: E501
+        self, webView, message, frame, completionHandler
+    ) -> None:  # pragma: no cover
+        alert = UIAlertController.alertControllerWithTitle(
+            "Confirm?",
+            message=message,
+            preferredStyle=UIAlertControllerStyle.Alert,
+        )
+        self.native.addAction(
+            UIAlertAction.actionWithTitle(
+                "OK",
+                style=UIAlertActionStyle.Default,
+                handler=ObjCBlock(completionHandler, None, c_bool),
+            )
+        )
+        self.native.addAction(
+            UIAlertAction.actionWithTitle(
+                "Cancel",
+                style=UIAlertActionStyle.Default,
+                handler=ObjCBlock(completionHandler, None, c_bool),
+            )
+        )
+
+        (
+            self.interface.app.current_window._impl.native.rootViewController
+        ).presentViewController(
+            alert,
+            animated=False,
+            completion=None,
+        )
 
 
 class WebView(Widget):
