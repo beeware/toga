@@ -336,7 +336,7 @@ async def test_retrieve_cookies(widget):
 
 
 def test_webview_navigationstarting_disabled(monkeypatch):
-    """If the backend doesn't support on_navigation_starting, 
+    """If the backend doesn't support on_navigation_starting,
     a warning is raised."""
     try:
         # Temporarily set the feature attribute on the backend
@@ -359,6 +359,7 @@ def test_webview_navigationstarting_disabled(monkeypatch):
         # Clear the feature attribute.
         del DummyWebView.SUPPORTS_ON_NAVIGATION_STARTING
 
+
 def test_navigation_starting_no_handler(widget):
     """When no handler is set, navigation should be allowed"""
 
@@ -366,8 +367,10 @@ def test_navigation_starting_no_handler(widget):
     widget._impl.simulate_navigation_starting("https://beeware.org")
     assert widget.url == "https://beeware.org"
 
+
 def test_navigation_starting_sync(widget):
     """Synchronous handler"""
+
     def handler(widget, **kwargs):
         url = kwargs.get("url", None)
         if url == "https://beeware.org":
@@ -384,8 +387,10 @@ def test_navigation_starting_sync(widget):
     widget._impl.simulate_navigation("https://google.com")
     assert widget.url == "https://beeware.org"
 
+
 async def test_navigation_starting_async(widget):
-    """ Mocking user response"""
+    """Mocking user response"""
+
     async def dialog_mock(url):
         await asyncio.sleep(0.3)
         if url == "https://beeware.org":
@@ -394,6 +399,7 @@ async def test_navigation_starting_async(widget):
             return False
 
     """Asynchronous handler"""
+
     async def handler(widget, **kwargs):
         url = kwargs.get("url", None)
         return await dialog_mock(url)
