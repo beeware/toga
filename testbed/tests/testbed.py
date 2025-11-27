@@ -152,11 +152,11 @@ def main(main_package_name, backend_override=None):
             ),
             "no-cover-if-gtk4": "os_environ.get('TOGA_GTK', '') == '4'",
             "no-cover-if-gtk3": "os_environ.get('TOGA_GTK', '3') == '3'",
-            "cover-if-plain-gtk4": "os_environ.get('TOGA_GTK', '') == '4' and "
-            "os_environ.get('TOGA_GTKLIB', '' != '')",
-            "cover-if-plain-gtk": "os_environ.get('TOGA_GTKLIB', '' != '')",
-            "cover-if-libadwaita": "os_environ.get('TOGA_GTK', '') == '4' and "
-            "os_environ.get('TOGA_GTKLIB', '' != 'Adw')",
+            "cover-if-plain-gtk4": "os_environ.get('TOGA_GTK', '') != '4' or "
+            "os_environ.get('TOGA_GTKLIB', '') != ''",
+            "cover-if-plain-gtk": "os_environ.get('TOGA_GTKLIB', '') != ''",
+            "cover-if-libadwaita": "os_environ.get('TOGA_GTK', '') != '4' or "
+            "os_environ.get('TOGA_GTKLIB', '') != 'Adw'",
         },
     )
     cov.start()
