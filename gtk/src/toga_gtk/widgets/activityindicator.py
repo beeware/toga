@@ -25,6 +25,10 @@ class ActivityIndicator(Widget):
         def is_running(self):
             return self._running
 
+        def rehint(self):
+            self.interface.intrinsic.width = 50
+            self.interface.intrinsic.height = 50
+
     else:
 
         def create(self):
@@ -42,18 +46,18 @@ class ActivityIndicator(Widget):
             else:  # pragma: no-cover-if-gtk3
                 return self.native.get_property("spinning")
 
-    def rehint(self):
-        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
-            # print(
-            #     "REHINT",
-            #     self,
-            #     self.native.get_preferred_width(),
-            #     self.native.get_preferred_height(),
-            # )
-            width = self.native.get_preferred_width()[0]
-            height = self.native.get_preferred_height()[0]
-        else:  # pragma: no-cover-if-gtk3
-            size = self.native.get_preferred_size()[0]
-            width, height = size.width, size.height
-        self.interface.intrinsic.width = width
-        self.interface.intrinsic.height = height
+        def rehint(self):
+            if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+                # print(
+                #     "REHINT",
+                #     self,
+                #     self.native.get_preferred_width(),
+                #     self.native.get_preferred_height(),
+                # )
+                width = self.native.get_preferred_width()[0]
+                height = self.native.get_preferred_height()[0]
+            else:  # pragma: no-cover-if-gtk3
+                size = self.native.get_preferred_size()[0]
+                width, height = size.width, size.height
+            self.interface.intrinsic.width = width
+            self.interface.intrinsic.height = height
