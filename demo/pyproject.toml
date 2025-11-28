@@ -86,23 +86,85 @@ formal_name = "Toga Demo"
 description = "A demonstration of the capabilities of the Toga widget toolkit."
 sources = ["toga_demo"]
 
+requires = [
+    "toga"
+]
+
 [tool.briefcase.app.toga-demo.macOS]
+requires = [
+    "std-nslog>=1.0.0",
+]
 
 [tool.briefcase.app.toga-demo.linux]
+
+[tool.briefcase.app.toga-demo.linux.system.debian]
+system_requires = [
+    "libcairo2-dev",
+    "libgirepository1.0-dev",
+]
+
+system_runtime_requires = [
+    "gir1.2-gtk-3.0",
+    "libgirepository-1.0-1",
+    "libcanberra-gtk3-module",
+]
+
+[tool.briefcase.app.toga-demo.linux.system.rhel]
+system_requires = [
+    "cairo-gobject-devel",
+    "gobject-introspection-devel",
+]
+
+system_runtime_requires = [
+    "gobject-introspection",
+    "gtk3",
+    "libcanberra-gtk3",
+]
+
+[tool.briefcase.app.toga-demo.linux.system.suse]
+system_requires = [
+    "cairo-devel",
+    "gobject-introspection-devel",
+]
+
+system_runtime_requires = [
+    "gtk3",
+    "gobject-introspection", "typelib(Gtk) = 3.0",
+    "libcanberra-gtk3-module",
+]
+
+[tool.briefcase.app.toga-demo.linux.system.arch]
+system_requires = [
+    "cairo",
+    "gobject-introspection",
+    "gtk3",
+    "libcanberra",
+]
+
+system_runtime_requires = [
+    "gtk3",
+    "gobject-introspection-runtime",
+    "libcanberra",
+]
+
+[tool.briefcase.app.toga-demo.linux.flatpak]
+flatpak_runtime = "org.gnome.Platform"
+flatpak_runtime_version = "48"
+flatpak_sdk = "org.gnome.Sdk"
 
 [tool.briefcase.app.toga-demo.windows]
 
 # Mobile deployments
 [tool.briefcase.app.toga-demo.iOS]
+supported = false
 
 [tool.briefcase.app.toga-demo.android]
+supported = false
 
-base_theme = "Theme.MaterialComponents.Light.DarkActionBar"
+# Web deployment
+[tool.briefcase.app.toga-demo.web]
+supported = false
 
-build_gradle_dependencies = [
-    "com.google.android.material:material:1.12.0",
-    "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0",
-]
 
 [tool.check-wheel-contents]
 # WOO2: duplicated files (i.e. resource images)
