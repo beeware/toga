@@ -456,8 +456,8 @@ class Window:
         """Size of the window, in [CSS pixels][css-units].
 
         :raises RuntimeError: If resize is requested while in
-            [`WindowState.FULLSCREEN`][toga.window.WindowState.FULLSCREEN] or
-            [`WindowState.PRESENTATION`][toga.window.WindowState.PRESENTATION].
+            [`WindowState.FULLSCREEN`][toga.constants.WindowState.FULLSCREEN] or
+            [`WindowState.PRESENTATION`][toga.constants.WindowState.PRESENTATION].
         """
         return self._impl.get_size()
 
@@ -481,8 +481,8 @@ class Window:
         The origin is the top left corner of the primary screen.
 
         :raises RuntimeError: If position change is requested while in
-            [`WindowState.FULLSCREEN`][toga.window.WindowState.FULLSCREEN] or
-            [`WindowState.PRESENTATION`][toga.window.WindowState.PRESENTATION].
+            [`WindowState.FULLSCREEN`][toga.constants.WindowState.FULLSCREEN] or
+            [`WindowState.PRESENTATION`][toga.constants.WindowState.PRESENTATION].
         """
         absolute_origin = self._app.screens[0].origin
         absolute_window_position = self._impl.get_position()
@@ -517,8 +517,8 @@ class Window:
         [CSS pixels][css-units].
 
         :raises RuntimeError: If position change is requested while in
-            [`WindowState.FULLSCREEN`][toga.window.WindowState.FULLSCREEN] or
-            [`WindowState.PRESENTATION`][toga.window.WindowState.PRESENTATION].
+            [`WindowState.FULLSCREEN`][toga.constants.WindowState.FULLSCREEN] or
+            [`WindowState.PRESENTATION`][toga.constants.WindowState.PRESENTATION].
         """
         return self.position - self.screen.origin
 
@@ -577,8 +577,8 @@ class Window:
             hidden.
 
         :raises ValueError: If any state other than
-            [`WindowState.MINIMIZED`][toga.window.WindowState.MINIMIZED]
-            or [`WindowState.NORMAL`][toga.window.WindowState.NORMAL]
+            [`WindowState.MINIMIZED`][toga.constants.WindowState.MINIMIZED]
+            or [`WindowState.NORMAL`][toga.constants.WindowState.NORMAL]
             is requested on a non-resizable window.
         """
         # There are 2 types of window states that we can get from the backend:
