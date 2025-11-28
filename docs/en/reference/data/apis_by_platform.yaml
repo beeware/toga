@@ -81,7 +81,6 @@ General widgets:
     unsupported:
       - web
       - textual
-      - qt
 
   Label:
     description: A text label for annotating forms or interfaces.
@@ -148,7 +147,6 @@ General widgets:
       - web
     unsupported:
       - textual
-      - qt
 
   Table:
     description: A widget for displaying columns of tabular data.
