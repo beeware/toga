@@ -3,6 +3,8 @@ from .base import Widget
 
 
 class ActivityIndicator(Widget):
+
+    # libadwaita 1.6.0 is not in Ubuntu 24.04 yet; no-cover it.
     if Adw is not None and ADW_VERSION >= (1, 6, 0):  # pragma: no cover
 
         def create(self):
@@ -26,10 +28,13 @@ class ActivityIndicator(Widget):
             return self._running
 
         def rehint(self):
-            self.interface.intrinsic.width = 50
-            self.interface.intrinsic.height = 50
+            # libadwaita spinners could take on any size;
+            # getting preferred size would not work.  Hardcode
+            # a reasonable size based on documented limits.
+            self.interface.intrinsic.width = 32
+            self.interface.intrinsic.height = 32
 
-    else:
+    else:  # pragma: cover-if-plain-gtk
 
         def create(self):
             self.native = Gtk.Spinner()
