@@ -183,11 +183,11 @@ class App:
             [`importlib.metadata`][]. If not provided, the following will be tried in
             order:
 
+            #. If the `app_id` argument was provided, its last segment will be used. For
+               example, an `app_id` of `com.example.my-app` would yield a distribution
+               name of `my-app`.
             #. If the `__main__` module is contained in a package, that package's name
                will be used.
-            #. If the `app_id` argument was provided, its last segment will be used.
-               For example, an `app_id` of `com.example.my-app` would yield a
-               distribution name of `my-app`.
             #. As a last resort, the name `toga`.
         :param icon: The [icon][toga.icons.IconContentT] for the app. Defaults to
             [`toga.Icon.APP_ICON`][].
@@ -214,6 +214,10 @@ class App:
         # Keep an accessible copy of the app singleton instance
         App.app = self
 
+        # Try deconstructing the distribution name from the app ID
+        if (app_name is None) and app_id:
+            app_name = app_id.split(".")[-1]
+
         # We need a distribution name to load app metadata.
         if app_name is None:
             # If the code is contained in appname.py, and you start the app using
@@ -232,10 +236,6 @@ class App:
             except KeyError:
                 # If there's no __main__ module, we're probably in a test.
                 pass
-
-        # Try deconstructing the distribution name from the app ID
-        if (app_name is None) and app_id:
-            app_name = app_id.split(".")[-1]
 
         # If we still don't have a distribution name, fall back to `toga` as a
         # last resort.

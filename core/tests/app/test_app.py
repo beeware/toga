@@ -149,7 +149,7 @@ async def test_unsupported_widget(app):
             Mock(__package__="my_app"),
             "Explicit App",
             "org.beeware.explicit-app",
-            "my_app",
+            "explicit-app",
         ),
         # No app properties, with metadata
         (
