@@ -1,8 +1,8 @@
 from functools import partial
 
 from PySide6.QtCore import QBuffer, QEvent, QIODevice, Qt, QTimer
-from PySide6.QtGui import QResizeEvent, QWindowStateChangeEvent
-from PySide6.QtWidgets import QApplication, QMainWindow, QMenu
+from PySide6.QtGui import QAction, QResizeEvent, QWindowStateChangeEvent
+from PySide6.QtWidgets import QApplication, QMainWindow, QMenu, QToolBar
 
 from toga.command import Separator
 from toga.constants import WindowState
@@ -93,6 +93,7 @@ class Window:
         # window hints, so minimizable cannot be implemented.
 
         self.native.resizeEvent = self.resizeEvent
+        self.toolbar_native = None
 
     def qt_close_event(self, event):
         if not self.prog_close:
@@ -272,13 +273,14 @@ class Window:
                     QWindowStateChangeEvent(current_native_state),
                 )
                 QApplication.sendEvent(
-                    self.native,
-                    QResizeEvent(self.native.size(), self.native.size()),
+                    self.native, QResizeEvent(self.native.size(), self.native.size())
                 )
 
         elif state == WindowState.PRESENTATION:
             self._before_presentation_mode_screen = self.interface.screen
             self.native.menuBar().hide()
+            if self.toolbar_native:
+                self.toolbar_native.hide()
             # Do this before showFullScreen because
             # showFullScreen might immediately trigger the event
             # and the window state read there might read a non-
@@ -339,5 +341,46 @@ class MainWindow(Window):
                 submenu.addAction(cmd._impl.create_menu_item())
 
     def create_toolbar(self):
-        # Not implemented
-        pass
+        if self.interface.toolbar:
+            if self.toolbar_native:
+                self.toolbar_native.clear()
+            else:
+                self.toolbar_native = QToolBar(self.native)
+                self.toolbar_native.setMovable(False)
+                self.native.addToolBar(self.toolbar_native)
+                self.toolbar_native.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
+
+            prev_group = None
+
+            for cmd in self.interface.toolbar:
+                if isinstance(cmd, Separator):
+                    self.toolbar_native.addSeparator()
+                    prev_group = None
+                    continue
+
+                if prev_group is not None and prev_group != cmd.group:
+                    self.toolbar_native.addSeparator()
+                    prev_group = None
+                else:
+                    prev_group = cmd.group
+
+                action = QAction(cmd.text, self.toolbar_native)
+
+                if cmd.tooltip is not None:
+                    action.setToolTip(cmd.tooltip)
+
+                if cmd.icon is not None:
+                    action.setIcon(cmd.icon._impl.native)
+
+                action.setEnabled(cmd.enabled)
+
+                action.triggered.connect(cmd.action)
+
+                cmd._impl.native.append(action)
+
+                self.toolbar_native.addAction(action)
+
+        elif self.toolbar_native:
+            self.native.removeToolBar(self.toolbar_native)
+            self.toolbar_native.deleteLater()
+            self.toolbar_native = None

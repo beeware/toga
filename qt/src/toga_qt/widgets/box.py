@@ -11,7 +11,7 @@ class Box(Widget):
         self.native.setAutoFillBackground(True)
         # Background is not autofilled by default; but since we're
         # enabling it here, let the default color be transparent
-        # so it autofills nothing.
+        # so it autofills nothing by default.
         self._default_background_color = TRANSPARENT
 
     def rehint(self):

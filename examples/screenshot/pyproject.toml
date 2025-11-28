@@ -41,7 +41,7 @@ requires = [
 [tool.briefcase.app.screenshot-qt.linux]
 requires = [
     "../../qt",
-    "system-pyside6 @ git+https://github.com/johnzhou721/system-pyside6.git"
+    "PySide6",
 ]
 
 [tool.briefcase.app.screenshot.windows]
