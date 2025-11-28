@@ -1,15 +1,15 @@
 import pytest
+from travertino.constants import BLUE
 
 import toga
+from toga.style import Pack
 
 from .conftest import build_cleanup_test
+from .probe import get_probe
 from .properties import (  # noqa: F401
     test_enable_noop,
     test_focus_noop,
 )
-from .probe import get_probe
-from toga.style import Pack
-from travertino.constants import BLUE
 
 
 @pytest.fixture
@@ -42,14 +42,16 @@ async def test_start_stop(widget, probe):
     assert not widget.is_running
     probe.assert_spinner_is_hidden(True)
 
+
 def assert_size(height, width):
     assert height == width
     assert 10 < height < 50
     assert 10 < width < 50
 
+
 async def test_fixed_square_widget_size(widget, probe):
     "The widget has a fixed square size."
-    
+
     # Some platforms implement starting an stopping
     # by hiding the native widget.
     if not probe.invalid_size_while_hidden:
@@ -125,6 +127,7 @@ async def test_set_hidden(widget, probe):
     await probe.redraw("Activity Indicator should be unhidden")
     probe.assert_spinner_is_hidden(False)
 
+
 async def test_stop_no_shift(widget, probe):
     """Stopping a spinner does not modify the layout; alternative test to
     checking spinner size on platforms that returns invalid sizes while
@@ -139,10 +142,9 @@ async def test_stop_no_shift(widget, probe):
 
     spinner_width = probe.width
     other_probe.assert_layout(position=(spinner_width, 0), size=(100, 200))
-    
+
     widget.stop()
     await probe.redraw("Spinner should be stopped")
-    
+
     # Layout has not changed due to the spinner being stopped
     other_probe.assert_layout(position=(spinner_width, 0), size=(100, 200))
-    

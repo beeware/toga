@@ -3,7 +3,6 @@ from .base import Widget
 
 
 class ActivityIndicator(Widget):
-
     # libadwaita 1.6.0 is not in Ubuntu 24.04 yet; no-cover it.
     if Adw is not None and ADW_VERSION >= (1, 6, 0):  # pragma: no cover
 
