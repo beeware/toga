@@ -42,7 +42,7 @@ $ python -m pip install toga-gtk
 
 ### GTK 4 support (experimental)
 
-The experimental GTK 4 backend requires the use of GTK 4.8 or newer. This requirement is met by Debian 12, Ubuntu 24.04, and Fedora 41. Most testing occurs with GTK 4.14, as this is the version that ships with Ubuntu 24.04.
+The experimental GTK 4 backend requires the use of GTK 4.10 or newer. This requirement is met by Debian 13, Ubuntu 24.04, and Fedora 41. Most testing occurs with GTK 4.14, as this is the version that ships with Ubuntu 24.04.
 
 If you want to use the experimental GTK 4 backend, run:
 
@@ -55,10 +55,11 @@ and set the `TOGA_GTK` environment variable:
 $ export TOGA_GTK=4
 ```
 
-The experimental GTK 4 backend also aims to provides support for integrating with desktop environment-specific libraries.  At present, `libadwaita` is the only supported library of this kind.  To enable libadwaita integration support, set:
+The experimental GTK 4 backend also aims to provides support for integrating with desktop environment-specific libraries.  At present, `libadwaita` is the only supported library of this kind.  This functionality requires libadwaita 1.5 or newer.  To enable libadwaita integration support, set:
 ```console
 $ export TOGA_GTKLIB=Adw
 ```
+Most testing occurs with libadwaita 1.5, as this is the version that ships with Ubuntu 24.04.
 
 Integration with libhelium of tauOS and Granite of elementaryOS is planned.
 
