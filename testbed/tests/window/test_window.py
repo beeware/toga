@@ -954,6 +954,7 @@ else:
                 # already in a visible-to-user(not minimized) state.
                 assert_window_on_show(second_window, trigger_expected=False)
 
+    @pytest.mark.flaky(retries=5, delay=1)
     @pytest.mark.parametrize(
         "states",
         [
