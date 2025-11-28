@@ -3,6 +3,7 @@ from __future__ import annotations
 import asyncio
 import importlib.metadata
 import locale
+import re
 import signal
 import sys
 import warnings
@@ -189,6 +190,10 @@ class App:
             #. If the `__main__` module is contained in a package, that package's name
                will be used.
             #. As a last resort, the name `toga`.
+
+            Regardless of whether it is explicitly provided or derived, the name will be
+            converted into [PEP 621 normalized
+            form](https://packaging.python.org/en/latest/specifications/name-normalization).
         :param icon: The [icon][toga.icons.IconContentT] for the app. Defaults to
             [`toga.Icon.APP_ICON`][].
         :param author: The person or organization to be credited as the author of the
@@ -241,6 +246,9 @@ class App:
         # last resort.
         if app_name is None:
             app_name = "toga"
+
+        # However it has been derived, normalize the app name
+        app_name = re.sub(r"[-_.]+", "-", app_name).lower()
 
         # Try to load the app metadata with our best guess of the distribution name.
         self._app_name = app_name
@@ -339,7 +347,11 @@ class App:
     @property
     def app_name(self) -> str:
         """The name of the distribution used to load metadata with
-        [`importlib.metadata`][] (read-only)."""
+        [`importlib.metadata`][] (read-only).
+
+        The name is guaranteed to be in [PEP 621 normalized
+        form](https://packaging.python.org/en/latest/specifications/name-normalization).
+        """
         return self._app_name
 
     @property

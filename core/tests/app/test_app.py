@@ -158,7 +158,7 @@ async def test_unsupported_widget(app):
             Mock(__package__="my_app"),
             "Test App",
             "org.beeware.test-app",
-            "my_app",
+            "my-app",
         ),
         # Explicit app properties, with metadata. Explicit values take precedence.
         (
@@ -220,6 +220,20 @@ async def test_unsupported_widget(app):
             Mock(),
             "Explicit App",
             "org.beeware.explicit-app",
+            "explicit-app",
+        ),
+        ###########################################################################
+        # App name normalization
+        ###########################################################################
+        (
+            {
+                "formal_name": "Explicit App",
+                "app_id": "org.beeware.Explicit_-_App",
+            },
+            None,
+            Mock(),
+            "Explicit App",
+            "org.beeware.Explicit_-_App",
             "explicit-app",
         ),
     ],
