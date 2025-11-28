@@ -209,6 +209,21 @@ def test_set_content_with_property(widget):
     )
 
 
+def test_set_content_with_navigation_starting(widget):
+    """Static HTML content can be loaded into the page, using a setter."""
+    # Set up a navigation_starting handler
+    handler = Mock()
+    widget.on_navigation_starting = handler
+    # Set the content
+    widget.content = "<h1>Fancy page</h1>"
+    assert_action_performed_with(
+        widget,
+        "set content",
+        root_url="",
+        content="<h1>Fancy page</h1>",
+    )
+
+
 def test_get_content_property_error(widget):
     """Verify that using the getter on widget.content fails."""
     with pytest.raises(AttributeError):
@@ -380,6 +395,9 @@ def test_navigation_starting_sync(widget):
 
     widget.url = None
     widget.on_navigation_starting = handler
+    # test None-URL
+    widget._impl.simulate_navigation_starting(None)
+    assert widget.url is None
     # test allowed URL
     widget._impl.simulate_navigation_starting("https://beeware.org")
     assert widget.url == "https://beeware.org"

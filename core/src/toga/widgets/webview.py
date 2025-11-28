@@ -152,16 +152,13 @@ class WebView(Widget):
 
         def cleanup(widget, result, **kwargs):
             url = kwargs.get("url", None)
-            try:
-                if url is None:
-                    # The user on_navigation_handler is synchronous - do nothing
-                    return
-                if result is True:
-                    # navigate to the url, the URL will automatically be marked
-                    # as allowed
-                    self.url = url
-            except Exception as ex:
-                print(f"on_navigation_starting.cleanup exception: {str(ex)}")
+            if url is None:
+                # The user on_navigation_handler is synchronous - do nothing
+                return
+            if result is True:
+                # navigate to the url, the URL will automatically be marked
+                # as allowed
+                self.url = url
 
         self._on_navigation_starting = None
         if handler:

@@ -26,6 +26,8 @@ class WebView(Widget):
     def set_url(self, value, future=None):
         self._set_value("url", value)
         self._set_value("loaded_future", future)
+        # allow the URL only once
+        self.interface._url_allowed = False
 
     def get_cookies(self):
         self._action("cookies")
