@@ -14,6 +14,7 @@ from .probe import BaseProbe
 
 
 class AppProbe(BaseProbe):
+    formal_name = "Toga Testbed (Qt)"
     supports_key = True
     supports_key_mod3 = True
     supports_current_window_assignment = True
@@ -106,7 +107,10 @@ class AppProbe(BaseProbe):
         assert actual_titles == expected
 
     def assert_system_menus(self):
-        self.assert_menu_item(["Settings", "Configure Toga Testbed"], enabled=False)
+        self.assert_menu_item(
+            ["Settings", "Configure Toga Testbed (Qt)"],
+            enabled=False,
+        )
         self.assert_menu_item(["File", "Quit"], enabled=True)
 
         self.assert_menu_item(["File", "New Example Document"], enabled=True)
@@ -116,7 +120,7 @@ class AppProbe(BaseProbe):
         self.assert_menu_item(["File", "Save As..."], enabled=True)
         self.assert_menu_item(["File", "Save All"], enabled=True)
 
-        self.assert_menu_item(["Help", "About Toga Testbed"], enabled=True)
+        self.assert_menu_item(["Help", "About Toga Testbed (Qt)"], enabled=True)
 
         self.assert_menu_item(["Edit", "Undo"])
         self.assert_menu_item(["Edit", "Redo"])

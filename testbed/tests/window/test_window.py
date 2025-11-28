@@ -38,10 +38,11 @@ async def second_window_probe(app, app_probe, second_window):
     return probe
 
 
-async def test_title(main_window, main_window_probe):
+async def test_title(main_window, app_probe, main_window_probe):
     """The title of a window can be changed"""
-    original_title = main_window.title
-    assert original_title == "Toga Testbed"
+    formal_name = getattr(app_probe, "formal_name", "Toga Testbed")
+    original_title = app_probe.main_window.title
+    assert original_title == formal_name
     await main_window_probe.wait_for_window("Window title can be retrieved")
 
     try:
@@ -50,7 +51,7 @@ async def test_title(main_window, main_window_probe):
         await main_window_probe.wait_for_window("Window title can be changed")
     finally:
         main_window.title = original_title
-        assert main_window.title == "Toga Testbed"
+        assert main_window.title == formal_name
         await main_window_probe.wait_for_window("Window title can be reverted")
 
 
