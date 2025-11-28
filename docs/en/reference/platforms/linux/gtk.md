@@ -55,6 +55,13 @@ and set the `TOGA_GTK` environment variable:
 $ export TOGA_GTK=4
 ```
 
+The experimental GTK 4 backend also aims to provides support for integrating with desktop environment-specific libraries.  At present, `libadwaita` is the only supported library of this kind.  To enable libadwaita integration support, set:
+```console
+$ export TOGA_GTKLIB=Adw
+```
+
+Integration with libhelium of tauOS and Granite of elementaryOS is planned.
+
 ## Implementation details
 
 The `toga-gtk` backend uses the [GTK3 API](https://docs.gtk.org/gtk3/). The experimental GTK 4 `toga-gtk` backend uses the [GTK4 API](https://docs.gtk.org/gtk4/).
