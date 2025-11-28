@@ -82,7 +82,7 @@ class AppProbe(BaseProbe):
         self._activate_menu_item(["File", "Quit"])
 
     def activate_menu_about(self):
-        self._activate_menu_item(["Help", "About Toga Testbed"])
+        self._activate_menu_item(["Help", "About Toga Testbed (Qt)"])
 
     async def close_about_dialog(self):
         self.impl._about_dialog.done(QDialog.DialogCode.Accepted)
