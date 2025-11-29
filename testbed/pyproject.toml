@@ -128,6 +128,7 @@ requires = [
 ]
 
 [tool.briefcase.app.testbed-qt]
+formal_name = "Toga Testbed (Qt)"
 sources = [
     "src/testbed_qt",
     "src/testbed",
