@@ -335,11 +335,7 @@ class App:
     @property
     def app_name(self) -> str:
         """The name of the distribution used to load metadata with
-        [`importlib.metadata`][] (read-only).
-
-        The name is guaranteed to be in [PEP 621 normalized
-        form](https://packaging.python.org/en/latest/specifications/name-normalization).
-        """
+        [`importlib.metadata`][] (read-only)."""
         return self._app_name
 
     @property
