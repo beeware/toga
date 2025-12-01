@@ -180,19 +180,11 @@ class App:
             reversed domain name, e.g. `org.beeware.myapp`. If not provided, the
             metadata key `App-ID` must be present.
         :param app_name: The name of the distribution used to load metadata with
-            [`importlib.metadata`][]. If not provided, the following will be tried in
-            order:
-
-            #. If the `app_id` argument was provided, its last segment will be used. For
-               example, an `app_id` of `com.example.my-app` would yield a distribution
-               name of `my-app`.
-            #. If the `__main__` module is contained in a package, that package's name
-               will be used.
-            #. As a last resort, the name `toga`.
-
-            Regardless of whether it is explicitly provided or derived, the name will be
-            converted into [PEP 621 normalized
-            form](https://packaging.python.org/en/latest/specifications/name-normalization).
+            [`importlib.metadata`][]. If `app_name` is not provided, the last segment of
+            the `app_id` argument will be used as a default value (e.g., `my-app` if an
+            app ID of `com.example.my-app` is provided). If `app_id` is not provided,
+            and the `__main__` module for the app is contained in a package, that
+            package's name will be used. As a last resort, the name `toga` will be used.
         :param icon: The [icon][toga.icons.IconContentT] for the app. Defaults to
             [`toga.Icon.APP_ICON`][].
         :param author: The person or organization to be credited as the author of the
@@ -339,6 +331,22 @@ class App:
     ######################################################################
     # App properties
     ######################################################################
+
+    def something(self, foo: str, bar: str) -> str:
+        """Do something.
+
+        :param foo: This is a docstring that is long enough to run onto a second line,
+            because it is quite long.
+
+            A second paragraph is also required.
+        :param bar: This is an example that is quite long, and also requires bullet
+            points to be clear about intent:
+
+                * First thing
+                * Second thing
+                * Third thing
+
+        """
 
     @property
     def app_name(self) -> str:
