@@ -332,22 +332,6 @@ class App:
     # App properties
     ######################################################################
 
-    def something(self, foo: str, bar: str) -> str:
-        """Do something.
-
-        :param foo: This is a docstring that is long enough to run onto a second line,
-            because it is quite long.
-
-            A second paragraph is also required.
-        :param bar: This is an example that is quite long, and also requires bullet
-            points to be clear about intent:
-
-                * First thing
-                * Second thing
-                * Third thing
-
-        """
-
     @property
     def app_name(self) -> str:
         """The name of the distribution used to load metadata with
