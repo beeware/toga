@@ -289,12 +289,18 @@ def color(value: str) -> Color:
     """Parse a color from a value.
 
     Accepts:
-    * An rgb() or hsl() instance
-    * A named color
-    * '#rgb'
-    * '#rgba'
-    * '#rrggbb'
-    * '#rrggbbaa'
+
+    - An `rgb()` or `hsl()` instance
+
+    - A named color
+
+    - `#rgb`
+
+    - `#rgba`
+
+    - `#rrggbb`
+
+    - `#rrggbbaa`
     """
 
     if isinstance(value, Color):

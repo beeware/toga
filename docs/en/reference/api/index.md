@@ -6,7 +6,6 @@
 	"Layout widgets",
 	"Resources",
 	"Hardware",
-	"Other"
 ] %}
 ## {{ category }} { .api-reference }
 
