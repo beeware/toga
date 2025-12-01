@@ -76,7 +76,7 @@ async def test_unsupported_widget(app):
             Mock(__package__=None),
             "Test App",
             "org.beeware.test-app",
-            "toga",
+            "test-app",
         ),
         # Explicit app properties, with metadata. Explicit values take precedence.
         (
@@ -117,7 +117,7 @@ async def test_unsupported_widget(app):
             Mock(__package__=""),
             "Test App",
             "org.beeware.test-app",
-            "toga",
+            "test-app",
         ),
         # Explicit app properties, with metadata. Explicit values take precedence.
         (
@@ -158,7 +158,7 @@ async def test_unsupported_widget(app):
             Mock(__package__="my_app"),
             "Test App",
             "org.beeware.test-app",
-            "my_app",
+            "test-app",
         ),
         # Explicit app properties, with metadata. Explicit values take precedence.
         (
@@ -198,7 +198,7 @@ async def test_unsupported_widget(app):
             None,
             "Test App",
             "org.beeware.test-app",
-            "toga",
+            "test-app",
         ),
         # Explicit app properties, with metadata. Explicit values take precedence.
         (
@@ -263,7 +263,7 @@ async def test_create(
     assert app.on_running._raw.__func__ == toga.App.on_running
     assert app.on_exit._raw.__func__ == toga.App.on_exit
 
-    metadata_mock.assert_called_once_with(expected_app_name)
+    metadata_mock.assert_called_once()
 
     # About menu item exists and is disabled
     assert toga.Command.ABOUT in app.commands

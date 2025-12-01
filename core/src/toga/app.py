@@ -210,12 +210,17 @@ class App:
         # Keep an accessible copy of the app singleton instance
         App.app = self
 
+        self._app_name = None
         # Try deconstructing the distribution name from the app ID
-        if (app_name is None) and app_id:
+        if app_name:
+            # We have an explicitly provided app name
+            self._app_name = app_name
+        elif app_id:
+            # We can guess the app name from the provided app ID
             app_name = app_id.split(".")[-1]
-
-        # We need a distribution name to load app metadata.
-        if app_name is None:
+        else:
+            # We need a distribution name to load app metadata.
+            #
             # If the code is contained in appname.py, and you start the app using
             # `python -m appname`, then __main__.__package__ will be an empty string.
             #
@@ -233,17 +238,26 @@ class App:
                 # If there's no __main__ module, we're probably in a test.
                 pass
 
-        # If we still don't have a distribution name, fall back to `toga` as a
-        # last resort.
-        if app_name is None:
-            app_name = "toga"
+            # If we still don't have a distribution name, fall back to `toga` as a
+            # last resort.
+            if app_name is None:
+                app_name = "toga"
 
         # Try to load the app metadata with our best guess of the distribution name.
-        self._app_name = app_name
         try:
             self.metadata = importlib.metadata.metadata(app_name)
-        except importlib.metadata.PackageNotFoundError:
+            # If the app name has been explicitly set, keep that name. Otherwise, if the
+            # app metadata provides an app name, use it. Fall back to whatever name
+            # has been derived from other sources (app_id, module name, or "toga")
+            if self._app_name is None:
+                self._app_name = self.metadata.get("Name", app_name)
+        except (importlib.metadata.PackageNotFoundError, ValueError):
             self.metadata = {}
+            # If the app name has been explicitly set, keep that name. Otherwise, fall
+            # back to whatever name has been derived from other sources (app_id, module
+            # name, or "toga")
+            if self._app_name is None:
+                self._app_name = app_name
 
         # If a formal name has been provided, use it; otherwise, look to
         # the metadata. However, a formal name *must* be provided.
