@@ -42,10 +42,10 @@ class CachedIcon:
 
         try:
             # Look for a __CACHED_ICON attribute on the class
-            value = getattr(cls, f"__{self.name}")
+            value = getattr(cls, f"_{self.name}")
         except AttributeError:
             value = Icon(self.name, system=self.system)
-            setattr(cls, f"__{self.name}", value)
+            setattr(cls, f"_{self.name}", value)
         return value
 
 
