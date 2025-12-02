@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from collections.abc import Callable, Iterable
+from collections.abc import Iterable
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -25,10 +25,15 @@ if TYPE_CHECKING:
     """
 
 
-class cachedicon:
-    def __init__(self, f: Callable[..., Icon]):
-        self.f = f
-        self.__doc__ = getattr(f, "__doc__", None)
+class CachedIcon:
+    def __init__(self, name: str, system: bool = False):
+        """A wrapper that allows for deferred, cached Icon properties.
+
+        :param name: The name of the icon to cache.
+        :param system: Is the icon a system icon (i.e., one that is provided by Toga)
+        """
+        self.name = name
+        self.system = system
 
     def __get__(self, obj: object, owner: type[Icon]) -> Icon:
         # If you ask for Icon.CACHED_ICON, obj is None, and owner is the Icon class
@@ -37,10 +42,10 @@ class cachedicon:
 
         try:
             # Look for a __CACHED_ICON attribute on the class
-            value = getattr(cls, f"__{self.f.__name__}")
+            value = getattr(cls, f"__{self.name}")
         except AttributeError:
-            value = self.f(owner)
-            setattr(cls, f"__{self.f.__name__}", value)
+            value = Icon(self.name, system=self.system)
+            setattr(cls, f"__{self.name}", value)
         return value
 
 
@@ -50,29 +55,23 @@ _APP_ICON = "<app icon>"
 
 
 class Icon:
-    @cachedicon
-    def APP_ICON(cls) -> Icon:
-        """The application icon.
+    APP_ICON = CachedIcon(_APP_ICON)
+    """The application icon.
 
-        The application icon will be loaded from `resources/<app name>` (where `<app
-        name>` is the value of [`toga.App.app_name`][]).
+    The application icon will be loaded from `resources/<app name>` (where `<app
+    name>` is the value of [`toga.App.app_name`][]).
 
-        If this resource cannot be found, and the app has been packaged as a binary, the
-        icon from the application binary will be used as a fallback.
+    If this resource cannot be found, and the app has been packaged as a binary, the
+    icon from the application binary will be used as a fallback.
 
-        Otherwise, [`Icon.DEFAULT_ICON`][toga.Icon.DEFAULT_ICON] will be used.
-        """
-        return Icon(_APP_ICON)
+    Otherwise, [`Icon.DEFAULT_ICON`][toga.Icon.DEFAULT_ICON] will be used.
+    """
 
-    @cachedicon
-    def DEFAULT_ICON(cls) -> Icon:
-        """The default icon used as a fallback - Toga's "Tiberius the yak" icon."""
-        return Icon("toga", system=True)
+    DEFAULT_ICON = CachedIcon("toga", system=True)
+    """The default icon used as a fallback - Toga's "Tiberius the yak" icon."""
 
-    @cachedicon
-    def OPTION_CONTAINER_DEFAULT_TAB_ICON(cls) -> Icon:
-        """The default icon used to decorate option container tabs."""
-        return Icon("optioncontainer-tab", system=True)
+    OPTION_CONTAINER_DEFAULT_TAB_ICON = CachedIcon("optioncontainer-tab", system=True)
+    """The default icon used to decorate option container tabs."""
 
     def __init__(
         self,
