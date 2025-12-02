@@ -180,15 +180,11 @@ class App:
             reversed domain name, e.g. `org.beeware.myapp`. If not provided, the
             metadata key `App-ID` must be present.
         :param app_name: The name of the distribution used to load metadata with
-            [`importlib.metadata`][]. If not provided, the following will be tried in
-            order:
-
-            #. If the `__main__` module is contained in a package, that package's name
-               will be used.
-            #. If the `app_id` argument was provided, its last segment will be used.
-               For example, an `app_id` of `com.example.my-app` would yield a
-               distribution name of `my-app`.
-            #. As a last resort, the name `toga`.
+            [`importlib.metadata`][]. If `app_name` is not provided, the last segment of
+            the `app_id` argument will be used as a default value (e.g., `my-app` if an
+            app ID of `com.example.my-app` is provided). If `app_id` is not provided,
+            and the `__main__` module for the app is contained in a package, that
+            package's name will be used. As a last resort, the name `toga` will be used.
         :param icon: The [icon][toga.icons.IconContentT] for the app. Defaults to
             [`toga.Icon.APP_ICON`][].
         :param author: The person or organization to be credited as the author of the
@@ -214,8 +210,17 @@ class App:
         # Keep an accessible copy of the app singleton instance
         App.app = self
 
-        # We need a distribution name to load app metadata.
-        if app_name is None:
+        self._app_name = None
+        # Try deconstructing the distribution name from the app ID
+        if app_name:
+            # We have an explicitly provided app name
+            self._app_name = app_name
+        elif app_id:
+            # We can guess the app name from the provided app ID
+            app_name = app_id.split(".")[-1]
+        else:
+            # We need a distribution name to load app metadata.
+            #
             # If the code is contained in appname.py, and you start the app using
             # `python -m appname`, then __main__.__package__ will be an empty string.
             #
@@ -233,21 +238,26 @@ class App:
                 # If there's no __main__ module, we're probably in a test.
                 pass
 
-        # Try deconstructing the distribution name from the app ID
-        if (app_name is None) and app_id:
-            app_name = app_id.split(".")[-1]
-
-        # If we still don't have a distribution name, fall back to `toga` as a
-        # last resort.
-        if app_name is None:
-            app_name = "toga"
+            # If we still don't have a distribution name, fall back to `toga` as a
+            # last resort.
+            if app_name is None:
+                app_name = "toga"
 
         # Try to load the app metadata with our best guess of the distribution name.
-        self._app_name = app_name
         try:
             self.metadata = importlib.metadata.metadata(app_name)
-        except importlib.metadata.PackageNotFoundError:
+            # If the app name has been explicitly set, keep that name. Otherwise, if the
+            # app metadata provides an app name, use it. Fall back to whatever name
+            # has been derived from other sources (app_id, module name, or "toga")
+            if self._app_name is None:
+                self._app_name = self.metadata.get("Name", app_name)
+        except (importlib.metadata.PackageNotFoundError, ValueError):
             self.metadata = {}
+            # If the app name has been explicitly set, keep that name. Otherwise, fall
+            # back to whatever name has been derived from other sources (app_id, module
+            # name, or "toga")
+            if self._app_name is None:
+                self._app_name = app_name
 
         # If a formal name has been provided, use it; otherwise, look to
         # the metadata. However, a formal name *must* be provided.
