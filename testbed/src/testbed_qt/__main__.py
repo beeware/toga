@@ -1,4 +1,4 @@
 from testbed.app import main
 
 if __name__ == "__main__":
-    main(__package__).main_loop()
+    main("testbed-qt").main_loop()
