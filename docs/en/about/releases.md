@@ -1,6 +1,7 @@
 # Release History
 
 <!-- rumdl-disable MD024 -->
+<!-- towncrier release notes start -->
 
 ## 0.5.2 (2025-07-10)
 
