@@ -38,10 +38,11 @@ async def second_window_probe(app, app_probe, second_window):
     return probe
 
 
-async def test_title(main_window, main_window_probe):
+async def test_title(main_window, app_probe, main_window_probe):
     """The title of a window can be changed"""
+    formal_name = getattr(app_probe, "formal_name", "Toga Testbed")
     original_title = main_window.title
-    assert original_title == "Toga Testbed"
+    assert original_title == formal_name
     await main_window_probe.wait_for_window("Window title can be retrieved")
 
     try:
@@ -50,7 +51,7 @@ async def test_title(main_window, main_window_probe):
         await main_window_probe.wait_for_window("Window title can be changed")
     finally:
         main_window.title = original_title
-        assert main_window.title == "Toga Testbed"
+        assert main_window.title == formal_name
         await main_window_probe.wait_for_window("Window title can be reverted")
 
 
@@ -330,12 +331,13 @@ else:
         "second_window_class, second_window_kwargs",
         [(toga.Window, {})],
     )
-    async def test_secondary_window(app, second_window, second_window_probe):
+    async def test_secondary_window(app, app_probe, second_window, second_window_probe):
         """A secondary window can be created"""
+        formal_name = getattr(app_probe, "formal_name", "Toga Testbed")
         assert second_window.app == app
         assert second_window in app.windows
 
-        assert second_window.title == "Toga Testbed"
+        assert second_window.title == formal_name
         # Qt rendering results in a small change in window size
         assert second_window.size == approx((640, 480), abs=2)
         # Position should be cascaded; the exact position depends on the platform,

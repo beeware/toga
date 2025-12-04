@@ -47,6 +47,7 @@ dev
 dialogs
 Diataxis
 Django
+DLL
 DLLs
 DLNA
 DocumentWindow
@@ -55,6 +56,7 @@ dotfiles
 dp
 draggable
 elementaryOS
+Embedder
 Flatpak
 Flexbox
 FreeBSD
@@ -114,6 +116,7 @@ OTF
 Pango
 parameterization
 PasswordInput
+PDB
 PIL
 platformer
 PNG
