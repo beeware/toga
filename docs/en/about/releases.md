@@ -33,7 +33,7 @@
 * Toga's Winforms wheel is now correctly tagged to indicate that it is x86_64-specific (as it contains an x86-64 DLL for `WebView` support). ([#3179](https://github.com/beeware/toga/issues/3179))
 * Registering a font with a name that shadows a built-in font family name now raises an error instead of falling back to the system font silently. ([#3567](https://github.com/beeware/toga/issues/3567))
 * The minimum width hint of the iOS `DateInput` and `TimeInput` widgets will now fit to the actual displayed size of the picker. ([#3580](https://github.com/beeware/toga/issues/3580))
-* The `rgb` and `hsl` classes now have gain a `__str__` that uses modern CSS syntax. For `rgb` this is simply a nice update, but for `hsl` it corrects color rendering issues when using the web backend. ([#3611](https://github.com/beeware/toga/issues/3611))
+* The `rgb` and `hsl` classes now have a `__str__` that uses modern CSS syntax. For `rgb` this is simply a nice update, but for `hsl` it corrects color rendering issues when using the web backend. ([#3611](https://github.com/beeware/toga/issues/3611))
 * On GTK, the scroll position will now be correctly reflected if a `MultilineTextInput` is programmatically scrolled immediately after changing text content. ([#3658](https://github.com/beeware/toga/issues/3658))
 * On GTK, mouse drag events are now triggered when modifier keys (e.g. NumLock, Shift) are active. ([#3661](https://github.com/beeware/toga/issues/3661))
 * On macOS, the origin of non-primary screens is now correctly calculated when screens are not vertically aligned and the same size. ([#3667](https://github.com/beeware/toga/issues/3667))
