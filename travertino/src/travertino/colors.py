@@ -333,7 +333,7 @@ class hsl(Color):
 hsla = hsl
 
 
-def color(value: str) -> Color:
+def color(value: Color | str) -> Color:
     """Parse a color from a value.
 
     Accepts:

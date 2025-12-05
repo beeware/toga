@@ -706,7 +706,7 @@ class StrokeContext(ClosedPathContext):
         canvas: toga.Canvas,
         x: float | None = None,
         y: float | None = None,
-        color: str | None = BLACK,
+        color: Color | str | None = BLACK,
         line_width: float = 2.0,
         line_dash: list[float] | None = None,
     ):
