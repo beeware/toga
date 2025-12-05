@@ -61,12 +61,15 @@ class WebView(Widget):
         """Simulate a navigation"""
         allow = True
         if self.interface.on_navigation_starting:
-            if self.interface._url_allowed:
+            if (
+                self.interface._url_allowed == "about:blank"
+                or self.interface._url_allowed == url
+            ):
                 # URL is allowed by user code
                 allow = True
-                # allow the URL only this time
-                self.interface._url_allowed = False
             else:
+                # allow the URL only once
+                self.interface._url_allowed = False
                 result = self.interface.on_navigation_starting(url=url)
                 if isinstance(result, bool):
                     # on_navigation_starting handler is synchronous

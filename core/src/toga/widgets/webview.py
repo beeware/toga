@@ -76,9 +76,9 @@ class WebView(Widget):
 
         self.user_agent = user_agent
 
-        # If URL is allowed by user interaction or user on_navigation_starting
-        # handler, this attribute is True
-        self._url_allowed = True
+        # URL is allowed by user interaction or user on_navigation_starting
+        # handler
+        self._url_allowed = None
 
         # Set the load handler before loading the first URL.
         self.on_webview_load = on_webview_load
@@ -100,7 +100,7 @@ class WebView(Widget):
         # Utility method for validating and setting the URL with a future.
         if self.on_navigation_starting:
             # mark URL as being allowed
-            self._url_allowed = True
+            self._url_allowed = url
         if (url is not None) and not url.startswith(("https://", "http://")):
             raise ValueError("WebView can only display http:// and https:// URLs")
 
@@ -218,7 +218,7 @@ class WebView(Widget):
         """
         if self.on_navigation_starting:
             # mark URL as being allowed
-            self._url_allowed = True
+            self._url_allowed = "about:blank"
         self._impl.set_content(root_url, content)
 
     @property

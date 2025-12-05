@@ -382,3 +382,55 @@ async def test_retrieve_cookies(widget, probe, on_load):
     assert cookie.path == "/"
     assert cookie.secure is True
     assert cookie.expires is None
+
+
+async def test_on_navigation_starting_sync(widget, probe, on_load, app_probe):
+    def handler(widget, **kwargs):
+        url = kwargs.get("url", None)
+        allow = True
+        if not url.startswith("https://beeware.org/"):
+            allow = False
+        return allow
+
+    widget.on_navigation_starting = handler
+    # test url allowed by code
+    await wait_for(
+        widget.load_url("https://github.com/beeware"),
+        LOAD_TIMEOUT,
+    )
+    # DOM loads aren't instantaneous; wait for the URL to appear
+    await assert_content_change(
+        widget,
+        probe,
+        message="Page has been loaded",
+        url="https://github.com/beeware",
+        content=ANY,
+        on_load=on_load,
+    )
+    await asyncio.sleep(1)
+    old_content = await get_content(widget)
+    assert old_content is not None
+    # simulate browser navigation to denied url
+    widget._impl.set_url("https://github.com/beeware/toga")
+    await assert_content_change(
+        widget,
+        probe,
+        message="Page has been loaded",
+        url="https://github.com/beeware/toga",
+        content=ANY,
+        on_load=on_load,
+    )
+    await asyncio.sleep(1)
+    new_content = await get_content(widget)
+    assert new_content == old_content
+    # simulate browser navigation to allowed url
+    (widget._impl.set_url("https://beeware.org/docs"),)
+    # DOM loads aren't instantaneous; wait for the URL to appear
+    await assert_content_change(
+        widget,
+        probe,
+        message="Page has been loaded",
+        url="https://beeware.org/docs",
+        content=ANY,
+        on_load=on_load,
+    )
