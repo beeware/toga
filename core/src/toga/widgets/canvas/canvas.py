@@ -8,8 +8,6 @@ from typing import (
     Protocol,
 )
 
-from travertino.colors import Color
-
 import toga
 from toga.colors import BLACK
 from toga.constants import FillRule
@@ -24,6 +22,8 @@ from ..base import StyleT, Widget
 from .context import ClosedPathContext, Context, FillContext, StrokeContext
 
 if TYPE_CHECKING:
+    from travertino.colors import Color
+
     from toga.images import ImageT
 
 
