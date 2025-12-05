@@ -243,13 +243,16 @@ Resources:
       - web
 
   Command:
-    description: A representation of app functionality that the user can invoke from
-      menus or toolbars.
+    description: A representation of app functionality that the user can invoke from menus or toolbars.
     display: table
     unsupported:
       - iOS
       - web
       - textual
+
+  Color:
+    description: A representation of a color.
+    display: hide
 
   Dialogs:
     description: Short-lived windows asking the user for input.

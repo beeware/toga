@@ -5,8 +5,6 @@ from contextlib import contextmanager
 from math import pi
 from typing import TYPE_CHECKING, Any
 
-from travertino.colors import Color
-
 import toga
 from toga.colors import BLACK, color as parse_color
 from toga.constants import Baseline, FillRule
@@ -33,6 +31,8 @@ from .drawingobject import (
 )
 
 if TYPE_CHECKING:
+    from travertino.colors import Color
+
     from .canvas import Canvas
 
 
@@ -315,7 +315,7 @@ class Context(DrawingObject):
 
     def fill(
         self,
-        color: str = BLACK,
+        color: Color | str = BLACK,
         fill_rule: FillRule = FillRule.NONZERO,
     ) -> Fill:
         """Fill the current path.
@@ -337,7 +337,7 @@ class Context(DrawingObject):
 
     def stroke(
         self,
-        color: str = BLACK,
+        color: Color | str = BLACK,
         line_width: float = 2.0,
         line_dash: list[float] | None = None,
     ) -> Stroke:
@@ -481,7 +481,7 @@ class Context(DrawingObject):
         self,
         x: float | None = None,
         y: float | None = None,
-        color: str = BLACK,
+        color: Color | str = BLACK,
         fill_rule: FillRule = FillRule.NONZERO,
     ) -> Iterator[FillContext]:
         """Construct and yield a new `Fill` sub-context
@@ -521,7 +521,7 @@ class Context(DrawingObject):
         self,
         x: float | None = None,
         y: float | None = None,
-        color: str = BLACK,
+        color: Color | str = BLACK,
         line_width: float = 2.0,
         line_dash: list[float] | None = None,
     ) -> Iterator[StrokeContext]:
@@ -635,7 +635,7 @@ class FillContext(ClosedPathContext):
         canvas: toga.Canvas,
         x: float | None = None,
         y: float | None = None,
-        color: str = BLACK,
+        color: Color | str = BLACK,
         fill_rule: FillRule = FillRule.NONZERO,
     ):
         super().__init__(canvas=canvas, x=x, y=y)

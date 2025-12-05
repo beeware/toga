@@ -2,10 +2,8 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from math import pi
-from typing import Any
+from typing import TYPE_CHECKING, Any
 from warnings import filterwarnings, warn
-
-from travertino.colors import Color
 
 from toga.colors import BLACK, color as parse_color
 from toga.constants import Baseline, FillRule
@@ -14,6 +12,9 @@ from toga.fonts import (
     SYSTEM_DEFAULT_FONT_SIZE,
     Font,
 )
+
+if TYPE_CHECKING:
+    from travertino.colors import Color
 
 # Make sure deprecation warnings are shown by default
 filterwarnings("default", category=DeprecationWarning)
@@ -102,7 +103,7 @@ class ClosePath(DrawingObject):
 class Fill(DrawingObject):
     def __init__(
         self,
-        color: str = BLACK,
+        color: Color | str = BLACK,
         fill_rule: FillRule = FillRule.NONZERO,
     ):
         super().__init__()

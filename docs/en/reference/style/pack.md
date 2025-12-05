@@ -132,7 +132,7 @@ If 3 integers are provided, the first value will be used as the top margin, the 
 
 If 4 integers are provided, they will be used as the top, right, bottom and left margin, respectively.
 
-### `color`
+### `color` { #pack-color }
 
 **Value:** a color or `None`
 
