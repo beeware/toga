@@ -444,6 +444,7 @@ async def test_on_navigation_starting_sync(widget, probe, on_load):
         on_load=on_load,
     )
 
+
 async def test_on_navigation_starting_async(widget, probe, on_load):
     async def simulated_question_dialog(url):
         await asyncio.sleep(1)
@@ -496,6 +497,7 @@ async def test_on_navigation_starting_async(widget, probe, on_load):
         content=old_content,
         on_load=on_load,
     )
+    await asyncio.sleep(1.2)
     # simulate browser navigation to allowed url
     widget._impl.set_url("https://beeware.org/docs")
     # DOM loads aren't instantaneous; wait for the URL to appear
@@ -507,3 +509,4 @@ async def test_on_navigation_starting_async(widget, probe, on_load):
         content=ANY,
         on_load=on_load,
     )
+    await asyncio.sleep(1.2)  # make sure, there are no dangling tasks

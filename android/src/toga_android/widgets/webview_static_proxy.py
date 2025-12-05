@@ -15,14 +15,14 @@ class TogaWebClient(static_proxy(WebViewClient)):
             url = webresourcerequest.getUrl().toString()
             # check URL permission
             if (
-                self.interface._url_allowed == "about:blank"
-                or self.interface._url_allowed == url
+                self.webview_impl.interface._url_allowed == "about:blank"
+                or self.webview_impl.interface._url_allowed == url
             ):
                 # URL is allowed by user code
                 allow = True
             else:
                 # allow the URL only once
-                self.interface._url_allowed = None
+                self.webview_impl.interface._url_allowed = None
                 result = self.webview_impl.interface.on_navigation_starting(url=url)
                 if isinstance(result, bool):
                     # on_navigation_starting handler is synchronous
