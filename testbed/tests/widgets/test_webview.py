@@ -443,6 +443,9 @@ async def test_on_navigation_starting_sync(widget, probe, on_load):
         content=ANY,
         on_load=on_load,
     )
+    await asyncio.sleep(1)
+    new_content = await get_content(widget)
+    assert new_content != old_content
 
 
 async def test_on_navigation_starting_async(widget, probe, on_load):
@@ -510,3 +513,5 @@ async def test_on_navigation_starting_async(widget, probe, on_load):
         on_load=on_load,
     )
     await asyncio.sleep(1.2)  # make sure, there are no dangling tasks
+    new_content = await get_content(widget)
+    assert new_content != old_content
