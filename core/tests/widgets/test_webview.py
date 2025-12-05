@@ -34,12 +34,14 @@ def test_widget_created():
 def test_create_with_values():
     """A WebView can be created with initial values."""
     on_webview_load = Mock()
+    on_navigation_starting = Mock()
 
     widget = toga.WebView(
         id="foobar",
         url="https://beeware.org",
         user_agent="Custom agent",
         on_webview_load=on_webview_load,
+        on_navigation_starting=on_navigation_starting,
         # A style property
         width=256,
     )
@@ -50,6 +52,7 @@ def test_create_with_values():
     assert widget.url == "https://beeware.org"
     assert widget.user_agent == "Custom agent"
     assert widget.on_webview_load._raw == on_webview_load
+    assert widget.on_navigation_starting._raw == on_navigation_starting
     assert widget.style.width == 256
 
 
@@ -206,6 +209,21 @@ def test_set_content_with_property(widget):
     )
 
 
+def test_set_content_with_navigation_starting(widget):
+    """Static HTML content can be loaded into the page, using a setter."""
+    # Set up a navigation_starting handler
+    handler = Mock()
+    widget.on_navigation_starting = handler
+    # Set the content
+    widget.content = "<h1>Fancy page</h1>"
+    assert_action_performed_with(
+        widget,
+        "set content",
+        root_url="",
+        content="<h1>Fancy page</h1>",
+    )
+
+
 def test_get_content_property_error(widget):
     """Verify that using the getter on widget.content fails."""
     with pytest.raises(AttributeError):
@@ -330,3 +348,94 @@ async def test_retrieve_cookies(widget):
     assert cookie.path == "/"
     assert cookie.secure is True
     assert cookie.expires is None
+
+
+def test_webview_navigationstarting_disabled(monkeypatch):
+    """If the backend doesn't support on_navigation_starting,
+    a warning is raised."""
+    try:
+        # Temporarily set the feature attribute on the backend
+        DummyWebView.SUPPORTS_ON_NAVIGATION_STARTING = False
+
+        # Instantiate a new widget with a hobbled backend.
+        widget = toga.WebView()
+        handler = Mock()
+
+        # Setting the handler raises a warning
+        with pytest.warns(
+            toga.NotImplementedWarning,
+            match=r"\[Dummy\] Not implemented: WebView\.on_navigation_starting",
+        ):
+            widget.on_navigation_starting = handler
+
+        # The handler is not installed
+        assert widget.on_navigation_starting is None
+    finally:
+        # Clear the feature attribute.
+        del DummyWebView.SUPPORTS_ON_NAVIGATION_STARTING
+
+
+def test_navigation_starting_no_handler(widget):
+    """When no handler is set, navigation should be allowed"""
+
+    widget.url = None
+    widget._impl.simulate_navigation_starting("https://beeware.org")
+    assert widget.url == "https://beeware.org"
+
+
+def test_navigation_starting_sync(widget):
+    """Synchronous handler"""
+
+    def handler(widget, **kwargs):
+        url = kwargs.get("url", None)
+        if url == "https://beeware.org":
+            return True
+        else:
+            return False
+
+    widget.url = None
+    widget.on_navigation_starting = handler
+    # test None-URL
+    widget._impl.simulate_navigation_starting(None)
+    assert widget.url is None
+    # test allowed URL
+    widget._impl.simulate_navigation_starting("https://beeware.org")
+    assert widget.url == "https://beeware.org"
+    # test denied URL
+    widget._impl.simulate_navigation_starting("https://google.com")
+    assert widget.url == "https://beeware.org"
+
+
+async def test_navigation_starting_async(widget):
+    """Mocking user response"""
+
+    async def dialog_mock(url):
+        await asyncio.sleep(0.3)
+        if url == "https://beeware.org":
+            return True
+        else:
+            return False
+
+    """Asynchronous handler"""
+
+    async def handler(widget, **kwargs):
+        url = kwargs.get("url", None)
+        return await dialog_mock(url)
+
+    widget.url = None
+    widget._url_allowed = False
+    widget.on_navigation_starting = handler
+    # test allowed URL
+    widget._impl.simulate_navigation_starting("https://beeware.org")
+    # navigation is denied until user decides
+    assert widget.url is None
+    # wait for the user response
+    await asyncio.sleep(0.5)
+    assert widget.url == "https://beeware.org"
+    # test denied URL
+    widget._impl.simulate_navigation_starting("https://google.com")
+    # navigation is denied until user decides
+    assert widget.url == "https://beeware.org"
+    # wait for the user response
+    await asyncio.sleep(0.5)
+    assert widget.url == "https://beeware.org"

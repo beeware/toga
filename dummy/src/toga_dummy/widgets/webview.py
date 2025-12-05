@@ -1,3 +1,4 @@
+import asyncio
 from http.cookiejar import CookieJar
 
 from toga.widgets.webview import CookiesResult, JavaScriptResult
@@ -25,6 +26,8 @@ class WebView(Widget):
     def set_url(self, value, future=None):
         self._set_value("url", value)
         self._set_value("loaded_future", future)
+        # allow the URL only once
+        self.interface._url_allowed = False
 
     def get_cookies(self):
         self._action("cookies")
@@ -53,3 +56,31 @@ class WebView(Widget):
         for cookie in cookies:
             cookie_jar.set_cookie(cookie)
         self._cookie_result.set_result(cookie_jar)
+
+    def simulate_navigation_starting(self, url):
+        """Simulate a navigation"""
+        allow = True
+        if self.interface.on_navigation_starting:
+            if (
+                self.interface._url_allowed == "about:blank"
+                or self.interface._url_allowed == url
+            ):
+                # URL is allowed by user code
+                allow = True
+            else:
+                # allow the URL only once
+                self.interface._url_allowed = False
+                result = self.interface.on_navigation_starting(url=url)
+                if isinstance(result, bool):
+                    # on_navigation_starting handler is synchronous
+                    allow = result
+                elif isinstance(result, asyncio.Future):
+                    # on_navigation_starting handler is asynchronous
+                    if result.done():
+                        allow = result.result()
+                    else:
+                        # deny the navigation until the user himself or the user
+                        # defined on_navigation_starting handler has allowed it
+                        allow = False
+        if allow:
+            self.set_url(url)
