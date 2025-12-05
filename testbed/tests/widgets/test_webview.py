@@ -443,3 +443,67 @@ async def test_on_navigation_starting_sync(widget, probe, on_load):
         content=ANY,
         on_load=on_load,
     )
+
+async def test_on_navigation_starting_async(widget, probe, on_load):
+    async def simulated_question_dialog(url):
+        await asyncio.sleep(1)
+        allow = True
+        if not url.startswith("https://beeware.org/"):
+            allow = False
+        return allow
+
+    async def handler(widget, **kwargs):
+        url = kwargs.get("url", None)
+        return await simulated_question_dialog(url)
+
+    widget.on_navigation_starting = handler
+    # test static content can be set
+    widget.set_content("https://example.com/", "<h1>Nice page</h1>")
+    # DOM loads aren't instantaneous; wait for the URL to appear
+    await assert_content_change(
+        widget,
+        probe,
+        message="Webview has static content",
+        url="https://example.com/" if probe.content_supports_url else None,
+        content="<h1>Nice page</h1>",
+        on_load=on_load,
+    )
+    # test url allowed by code
+    await wait_for(
+        widget.load_url("https://github.com/beeware"),
+        LOAD_TIMEOUT,
+    )
+    # DOM loads aren't instantaneous; wait for the URL to appear
+    await assert_content_change(
+        widget,
+        probe,
+        message="Page has been loaded",
+        url="https://github.com/beeware",
+        content=ANY,
+        on_load=on_load,
+    )
+    await asyncio.sleep(1)
+    old_content = await get_content(widget)
+    assert old_content is not None
+    # simulate browser navigation to denied url
+    widget._impl.set_url("https://github.com/beeware/toga")
+    # we expect to url to change, but the content to stay
+    await assert_content_change(
+        widget,
+        probe,
+        message="Page has been loaded",
+        url="https://github.com/beeware/toga",
+        content=old_content,
+        on_load=on_load,
+    )
+    # simulate browser navigation to allowed url
+    widget._impl.set_url("https://beeware.org/docs")
+    # DOM loads aren't instantaneous; wait for the URL to appear
+    await assert_content_change(
+        widget,
+        probe,
+        message="Page has been loaded",
+        url="https://beeware.org/docs",
+        content=ANY,
+        on_load=on_load,
+    )
