@@ -28,7 +28,8 @@ class TogaContainerView(UIView):
         # Performing immediate layout here *helps*, but the label is somehow
         # not shown on the tabbar unless one explicitly clicks on it, if one
         # nests OptionContainers.
-        self.refreshContent()
+
+    #        self.refreshContent()
 
     @objc_method
     def refreshContent(self):
@@ -84,8 +85,9 @@ class BaseContainer:
     @additional_top_offset.setter
     def additional_top_offset(self, value):
         self._additional_top_offset = value
-        if self.native:
-            self.native.refreshContent()
+
+    #        if self.native:
+    #            self.native.refreshContent()
 
     @property
     def un_top_offset_able(self):
@@ -94,8 +96,10 @@ class BaseContainer:
     @un_top_offset_able.setter
     def un_top_offset_able(self, value):
         self._un_top_offset_able = value
-        if self.native:
-            self.native.refreshContent()
+
+
+#        if self.native:
+#            self.native.refreshContent()
 
 
 class Container(BaseContainer):
