@@ -80,10 +80,7 @@ class ScrollContainer(Widget):
             width = max(self.interface.content.layout.width, width)
 
         if self.interface.vertical:
-            height = max(
-                self.interface.content.layout.height,
-                height,
-            )
+            height = max(self.interface.content.layout.height, height)
 
         self.native.contentSize = NSMakeSize(width, height)
 
@@ -117,6 +114,7 @@ class ScrollContainer(Widget):
 
     def set_horizontal(self, value):
         self.native.alwaysBounceHorizontal = value
+        self._allow_horizontal = value
         # If the scroll container has content, we need to force a refresh
         # to let the scroll container know how large its content is.
         if self.interface.content:
@@ -138,6 +136,7 @@ class ScrollContainer(Widget):
         )
 
     def get_max_horizontal_position(self):
+        print(self.native.contentSize.width, self.document_container.width)
         return max(
             0,
             int(self.native.contentSize.width - self.document_container.width),
