@@ -473,7 +473,7 @@ async def test_readonly(widget, probe):
     assert not probe.readonly
 
 
-async def test_flex_widget_size(widget, probe, flex_test_reset_margin):
+async def test_flex_widget_size(widget, probe):
     "The widget can expand in either axis."
     # Container is initially a non-flex row widget of fixed size.
     # Paint the background so we can easily see it against the background.
