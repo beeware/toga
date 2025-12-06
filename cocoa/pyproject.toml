@@ -10,7 +10,7 @@ build-backend = "setuptools.build_meta"
 dynamic = ["version", "dependencies"]
 name = "toga-cocoa"
 description = "A Cocoa (macOS) backend for the Toga widget toolkit."
-readme = "README.rst"
+readme = "README.md"
 requires-python = ">= 3.10"
 license = "BSD-3-Clause"
 license-files = [
@@ -40,6 +40,7 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Programming Language :: Python :: 3 :: Only",
     "Topic :: Software Development",
     "Topic :: Software Development :: User Interfaces",
@@ -49,10 +50,10 @@ classifiers = [
 [project.urls]
 Homepage = "https://beeware.org/project/projects/libraries/toga/"
 Funding = "https://beeware.org/contributing/membership/"
-Documentation = "https://toga.readthedocs.io/"
+Documentation = "https://toga.beeware.org/"
 Tracker = "https://github.com/beeware/toga/issues"
 Source = "https://github.com/beeware/toga"
-Changelog = "https://toga.readthedocs.io/en/stable/background/project/releases"
+Changelog = "https://toga.beeware.org/en/stable/background/project/releases"
 
 [project.entry-points."toga.backends"]
 macOS = "toga_cocoa"

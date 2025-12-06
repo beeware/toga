@@ -362,22 +362,13 @@ def test_index(source):
 
     # look-alike rows are not equal, so index lookup should fail
     lookalike_row = Row(val1="second", val2=222)
-    with pytest.raises(
-        ValueError,
-        match=r"<Row .* val1='second' val2=222> is not in list",
-    ):
+    with pytest.raises(ValueError, match=r"not in list"):
         source.index(lookalike_row)
 
-    with pytest.raises(
-        ValueError,
-        match=r"None is not in list",
-    ):
+    with pytest.raises(ValueError, match=r"not in list"):
         source.index(None)
 
-    with pytest.raises(
-        ValueError,
-        match=r"<Row .* \(no attributes\)> is not in list",
-    ):
+    with pytest.raises(ValueError, match=r"not in list"):
         source.index(Row())
 
 

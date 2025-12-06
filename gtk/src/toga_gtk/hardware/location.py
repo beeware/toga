@@ -115,7 +115,7 @@ class Location(GObject.Object):
             raise RuntimeError(  # pragma: no cover
                 "Unable to import GeoClue. Ensure that the system package "
                 "providing GeoClue and its GTK bindings have been installed. See "
-                "https://toga.readthedocs.io/en/stable/reference/api/hardware/location#system-requirements "  # noqa: E501
+                "https://toga.beeware.org/en/stable/reference/api/hardware/location#system-requirements "  # noqa: E501
                 "for details."
             )
 

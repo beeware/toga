@@ -48,6 +48,7 @@ class PythonAppDelegate(UIResponder):
     ) -> None:
         """This callback is invoked when rotating the device from landscape to portrait
         and vice versa."""
+        App.app.interface.current_window.on_resize()
         App.app.interface.main_window.content.refresh()
 
 

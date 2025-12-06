@@ -86,6 +86,7 @@ instantiation
 iOS
 iterable
 KDE
+KWin
 linters
 ListSource
 macOS
@@ -130,8 +131,10 @@ PyInstaller
 PyPI
 pyPlayground
 PyScript
+PySide
 pytest
 pythonic
+Qt's
 QuickLook
 Quickstart
 radiusx

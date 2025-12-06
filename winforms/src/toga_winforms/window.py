@@ -10,11 +10,11 @@ from System.IO import MemoryStream
 from toga import App
 from toga.command import Separator
 from toga.constants import WindowState
+from toga.handlers import WeakrefCallable
 from toga.types import Position, Size
 
 from .container import Container
 from .fonts import DEFAULT_FONT
-from .libs.wrapper import WeakrefCallable
 from .screens import Screen as ScreenImpl
 from .widgets.base import Scalable
 
@@ -48,6 +48,12 @@ class Window(Container, Scalable):
         # Required to detect if the window has been un-minimized, and to prevent
         # double triggering of visibility events.
         self._previous_state = WindowState.NORMAL
+        # On minimization, winforms returns window size as 0 x 0, but this behavior
+        # is inconsistent with other platforms as minimization does not constitute a
+        # window resize operation. Therefore, it should return the same size as
+        # before minimization. So, cache the previous window size before performing
+        # minimization.
+        self._cached_window_size = None
 
         self.set_title(title)
         self.set_size(size)
@@ -91,7 +97,13 @@ class Window(Container, Scalable):
     ######################################################################
 
     def winforms_Resize(self, sender, event):
-        if self.native.WindowState != WinForms.FormWindowState.Minimized:
+        if (self.get_window_state() != WindowState.MINIMIZED) and (
+            {self._previous_state, self.get_window_state()}
+            != {WindowState.NORMAL, WindowState.MINIMIZED}
+        ):
+            # State change between NORMAL <-> MINIMIZED doesn't
+            # constitute a window resize operation.
+            self.interface.on_resize()
             self.resize_content()
 
         # See DisplaySettingsChanged in app.py.
@@ -225,6 +237,9 @@ class Window(Container, Scalable):
     # Window.size is scaled according to the DPI of the current screen, to be consistent
     # with the scaling of its content.
     def get_size(self) -> Size:
+        if self.interface.state == WindowState.MINIMIZED:
+            return self._cached_window_size
+
         size = self.native.Size
         return Size(
             self.scale_out(size.Width - self._decor_width()),
@@ -316,6 +331,8 @@ class Window(Container, Scalable):
                 WinForms.FormBorderStyle,
                 "Sizable" if self.interface.resizable else "FixedSingle",
             )
+            # Clear the cached window size.
+            self._cached_window_size = None
             self.native.WindowState = WinForms.FormWindowState.Normal
 
             self.set_window_state(state)
@@ -325,6 +342,10 @@ class Window(Container, Scalable):
                 self.native.WindowState = WinForms.FormWindowState.Maximized
 
             elif state == WindowState.MINIMIZED:
+                # On minimization, winforms reports window size as 0 x 0, hence
+                # cache the previous window size to make the API behavior
+                # uniform on all platforms.
+                self._cached_window_size = self.interface.size
                 self.native.WindowState = WinForms.FormWindowState.Minimized
 
             elif state == WindowState.FULLSCREEN:

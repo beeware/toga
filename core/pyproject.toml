@@ -10,7 +10,7 @@ build-backend = "setuptools.build_meta"
 dynamic = ["version", "dependencies"]
 name = "toga-core"
 description = "A Python native, OS native GUI toolkit."
-readme = "README.rst"
+readme = "README.md"
 requires-python = ">= 3.10"
 license = "BSD-3-Clause"
 license-files = [
@@ -51,6 +51,7 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Programming Language :: Python :: 3 :: Only",
     "Topic :: Software Development",
     "Topic :: Software Development :: User Interfaces",
@@ -60,24 +61,24 @@ classifiers = [
 [dependency-groups]
 # Extras used by developers *of* Toga are pinned to specific versions to
 # ensure environment consistency.
-dev = [
-    "coverage[toml] == 7.11.0",
+test = [
+    "coverage[toml] == 7.12.0",
     "coverage-conditional-plugin == 0.9.0",
     "Pillow == 12.0.0",
-    "pytest == 8.4.2",
-    "pytest-asyncio == 1.2.0",
+    "pytest == 9.0.1",
+    "pytest-asyncio == 1.3.0",
     "pytest-freezer == 0.4.9",
     "pytest-xdist == 3.8.0",
-    "setuptools-scm==9.2.1",
+    "setuptools-scm==9.2.2",
 ]
 
 [project.urls]
 Homepage = "https://beeware.org/project/projects/libraries/toga/"
 Funding = "https://beeware.org/contributing/membership/"
-Documentation = "https://toga.readthedocs.io/"
+Documentation = "https://toga.beeware.org/"
 Tracker = "https://github.com/beeware/toga/issues"
 Source = "https://github.com/beeware/toga"
-Changelog = "https://toga.readthedocs.io/en/stable/background/project/releases"
+Changelog = "https://toga.beeware.org/en/stable/background/project/releases"
 
 [project.entry-points."toga.image_formats"]
 pil = "toga.plugins.image_formats.PILConverter"

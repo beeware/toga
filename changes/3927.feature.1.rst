@@ -1,0 +1,1 @@
+GTK WebViews now support the use of SharedArrayBuffer.

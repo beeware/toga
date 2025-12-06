@@ -50,8 +50,8 @@ async def test_text(widget, probe):
         expected = str(text).split("\n")[0]
         assert widget.text == expected
         assert probe.text == expected
-        # GTK rendering can result in a very minor change in button height
-        assert probe.height == approx(initial_height, abs=1)
+        # GTK/Qt rendering can result in a very minor change in button height
+        assert probe.height == approx(initial_height, abs=2)
 
 
 async def test_icon(widget, probe):
