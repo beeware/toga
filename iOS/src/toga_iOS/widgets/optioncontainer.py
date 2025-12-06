@@ -204,6 +204,8 @@ class OptionContainer(Widget):
         self.native_controller.moreNavigationController.delegate = (
             self.native_controller
         )
+        # FIXME:  Bug with reordering causing crash
+        self.native_controller.customizableViewControllers = None
 
     def set_option_enabled(self, index, enabled):
         self.sub_containers[index].enabled = enabled
@@ -248,9 +250,9 @@ class OptionContainer(Widget):
                 # Setting the view controller doesn't trigger the didSelect event
                 # for regular (non-"more") tabs.
                 if self.native_controller.selectedIndex <= 4:
-                    self.native_controller.tabBar_didSelectItem_(
-                        self.native_controller.tabBar,
-                        current_tab_index,
+                    self.native_controller.tabBarController_didSelectViewController_(
+                        self.native_controller,
+                        self.native_controller.selectedViewController,
                     )
 
     def rehint(self):
