@@ -1,6 +1,6 @@
 import platform
 
-from rubicon.objc import SEL, objc_method, objc_property
+from rubicon.objc import objc_method, objc_property
 from travertino.size import at_least
 
 import toga
@@ -14,9 +14,9 @@ class TogaTabBarController(UITabBarController):
     impl = objc_property(object, weak=True)
 
     @objc_method
-    def tabBar_didSelectItem_(self, tabBar, item) -> None:
+    def tabBarController_didSelectViewController_(self, controller, item) -> None:
         # An item that actually on the tab bar has been selected
-        self.performSelector(SEL("refreshContent"), withObject=None, afterDelay=0)
+        self.refreshContent()
         # Notify of the change in selection.
         self.interface.on_select()
 
@@ -34,12 +34,14 @@ class TogaTabBarController(UITabBarController):
             # If a content view is being this is an actual content view, hide
             # the back button added by the navigation view, and notify of the
             # change in selection.
-            viewController.navigationItem.setHidesBackButton(True)
-            self.performSelector(SEL("refreshContent"), withObject=None, afterDelay=0)
+            #            viewController.navigationItem.setHidesBackButton(True)
+            self.refreshContent()
             self.interface.on_select()
 
     @objc_method
     def refreshContent(self) -> None:
+        self.view.setNeedsLayout()
+        self.view.layoutIfNeeded()
         # Find the currently visible container, and refresh layout of the content.
         for container in self.impl.sub_containers:
             if container.controller == self.selectedViewController:
@@ -56,6 +58,8 @@ class OptionContainer(Widget):
         self.native_controller.interface = self.interface
         self.native_controller.impl = self
         self.native_controller.delegate = self.native_controller
+        #        # FIXME:  Bug with reordering causing crash
+        #        self.native_controller.customizableViewControllers = None
 
         if int(platform.release().split(".")[0]) < 26:  # pragma: no branch
             # Make it translucent; without this call, there will not be
@@ -77,9 +81,7 @@ class OptionContainer(Widget):
         # Setting the bounds changes the constraints, but that doesn't mean
         # the constraints have been fully applied. Schedule a refresh to be done
         # as soon as possible in the future
-        self.native_controller.performSelector(
-            SEL("refreshContent"), withObject=None, afterDelay=0
-        )
+        self.native_controller.refreshContent()
 
     def top_offset_children(self):
         for container in self.sub_containers:

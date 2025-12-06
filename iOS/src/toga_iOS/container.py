@@ -1,4 +1,6 @@
-from rubicon.objc import SEL, objc_method, objc_property, send_super
+import platform
+
+from rubicon.objc import objc_method, objc_property, send_super
 
 from .libs import (
     UIApplication,
@@ -23,14 +25,13 @@ class TogaContainerView(UIView):
     @objc_method
     def safeAreaInsetsDidChange(self):
         send_super(__class__, self, "safeAreaInsetsDidChange")
-        self.performSelector(SEL("refreshContent"), withObject=None, afterDelay=0)
+        self.refreshContent()
 
     @objc_method
     def refreshContent(self):
         if self.container:
             if self.container.content and self.container._safe_bottom:
                 self.container.content.interface.refresh()
-                self.container.refreshed()
 
 
 class BaseContainer:
@@ -79,9 +80,7 @@ class BaseContainer:
     def additional_top_offset(self, value):
         self._additional_top_offset = value
         if self.native:
-            self.native.performSelector(
-                SEL("refreshContent"), withObject=None, afterDelay=0
-            )
+            self.native.refreshContent()
 
     @property
     def un_top_offset_able(self):
@@ -91,9 +90,7 @@ class BaseContainer:
     def un_top_offset_able(self, value):
         self._un_top_offset_able = value
         if self.native:
-            self.native.performSelector(
-                SEL("refreshContent"), withObject=None, afterDelay=0
-            )
+            self.native.refreshContent()
 
 
 class Container(BaseContainer):
@@ -120,6 +117,7 @@ class Container(BaseContainer):
         )
 
         self.layout_native = self.native if layout_native is None else layout_native
+        self.scroll_safe = False
 
         super().__init__(
             content=content, on_refresh=on_refresh, safe_bottom=safe_bottom
@@ -132,10 +130,22 @@ class Container(BaseContainer):
 
     @property
     def width(self):
+        if self.scroll_safe:
+            return (
+                self.layout_native.bounds.size.width
+                - self.layout_native.adjustedContentInset.left
+                - self.layout_native.adjustedContentInset.right
+            )
         return self.layout_native.bounds.size.width
 
     @property
     def height(self):
+        if self.scroll_safe:
+            return (
+                self.layout_native.bounds.size.height
+                - self.layout_native.adjustedContentInset.top
+                - self.layout_native.adjustedContentInset.bottom
+            )
         if self._safe_bottom:
             return (
                 self.layout_native.bounds.size.height
@@ -272,7 +282,8 @@ class NavigationContainer(Container):
         self.controller = UINavigationController.alloc().initWithRootViewController(
             self.content_controller
         )
-        self.un_top_offset_able = True
+        if tuple(map(int, platform.release().split("."))) >= (26, 0, 0):
+            self.un_top_offset_able = True
 
         # Set the controller's view to be the root content widget
         self.content_controller.view = self.native

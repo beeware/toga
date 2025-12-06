@@ -1,10 +1,10 @@
 from rubicon.objc import (
-    SEL,
     CGRectMake,
     NSMakePoint,
     NSMakeSize,
     objc_method,
     objc_property,
+    send_super,
 )
 from travertino.size import at_least
 
@@ -23,12 +23,19 @@ class TogaScrollView(UIScrollView):
 
     @objc_method
     def refreshContent(self):
+        self.setNeedsLayout()
+        self.layoutIfNeeded()
         # Now that we have an updated size for the ScrollContainer, re-evaluate
         # the size of the document content (assuming there is a document).
         # We can't reliably trigger the "no content" case in testbed, because it's
         # dependent on specific event timing.
         if self.interface._content:  # pragma: no branch
             self.interface._content.refresh()
+
+    @objc_method
+    def adjustedContentInsetDidChange(self):
+        send_super(__class__, self, "adjustedContentInsetDidChange")
+        self.refreshContent()
 
 
 class ScrollContainer(Widget):
@@ -50,6 +57,7 @@ class ScrollContainer(Widget):
             layout_native=self.native,
             on_refresh=self.content_refreshed,
         )
+        self.document_container.scroll_safe = True
         self.native.addSubview(self.document_container.native)
         self.add_constraints()
 
@@ -62,13 +70,11 @@ class ScrollContainer(Widget):
         # Setting the bounds changes the constraints, but that doesn't mean
         # the constraints have been fully applied. Schedule a refresh to be done
         # as soon as possible in the future
-        self.native.performSelector(
-            SEL("refreshContent"), withObject=None, afterDelay=0
-        )
+        self.native.refreshContent()
 
     def content_refreshed(self, container):
-        width = self.native.frame.size.width
-        height = self.native.frame.size.height
+        width = self.document_container.width
+        height = self.document_container.height
 
         if self.interface.horizontal:
             width = max(self.interface.content.layout.width, width)
@@ -76,7 +82,7 @@ class ScrollContainer(Widget):
         if self.interface.vertical:
             height = max(
                 self.interface.content.layout.height,
-                height + 0.001 * self._allow_vertical,
+                height,
             )
 
         self.native.contentSize = NSMakeSize(width, height)
@@ -95,6 +101,7 @@ class ScrollContainer(Widget):
         return self._allow_vertical
 
     def set_vertical(self, value):
+        self.native.alwaysBounceVertical = value
         self._allow_vertical = value
         # If the scroll container has content, we need to force a refresh
         # to let the scroll container know how large its content is.
@@ -109,7 +116,7 @@ class ScrollContainer(Widget):
         return self._allow_horizontal
 
     def set_horizontal(self, value):
-        self._allow_horizontal = value
+        self.native.alwaysBounceHorizontal = value
         # If the scroll container has content, we need to force a refresh
         # to let the scroll container know how large its content is.
         if self.interface.content:
@@ -127,19 +134,13 @@ class ScrollContainer(Widget):
     def get_max_vertical_position(self):
         return max(
             0,
-            int(
-                self.native.contentSize.height
-                - self.native.safeAreaLayoutGuide.layoutFrame.size.height
-            ),
+            int(self.native.contentSize.height - self.document_container.height),
         )
 
     def get_max_horizontal_position(self):
         return max(
             0,
-            int(
-                self.native.contentSize.width
-                - self.native.safeAreaLayoutGuide.layoutFrame.size.width
-            ),
+            int(self.native.contentSize.width - self.document_container.height),
         )
 
     def get_vertical_position(self):
