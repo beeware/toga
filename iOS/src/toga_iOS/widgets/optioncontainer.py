@@ -5,7 +5,12 @@ from travertino.size import at_least
 
 import toga
 from toga_iOS.container import ControlledContainer
-from toga_iOS.libs import UITabBarController, UITabBarItem
+from toga_iOS.libs import (
+    UIDevice,
+    UITabBarController,
+    UITabBarItem,
+    UIUserInterfaceIdiom,
+)
 from toga_iOS.widgets.base import Widget
 
 
@@ -105,24 +110,30 @@ class OptionContainer(Widget):
     def top_offset_children(self):
         self._offset_containers = True
         for container in self.sub_containers:
-            if container.top_bar:
-                container.additional_top_offset = (
-                    self.container.top_offset
-                    + self.native_controller.moreNavigationController.navigationBar.frame.size.height  # noqa: E501
-                )
+            if UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiom.Phone:
+                if container.top_bar:
+                    container.additional_top_offset = (
+                        self.container.top_offset
+                        + self.native_controller.moreNavigationController.navigationBar.frame.size.height  # noqa: E501
+                    )
+                else:
+                    container.additional_top_offset = self.container.top_offset
             else:
-                container.additional_top_offset = self.container.top_offset
+                container.additional_top_offset = self.native.safeAreaInsets.top
             container.un_top_offset_able = self.container.un_top_offset_able
 
     def un_top_offset_children(self):
         self._offset_containers = False
         for container in self.sub_containers:
-            if container.top_bar:
-                container.additional_top_offset = (
-                    self.native_controller.moreNavigationController.navigationBar.frame.size.height  # noqa: E501
-                )
+            if UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiom.Phone:
+                if container.top_bar:
+                    container.additional_top_offset = (
+                        self.native_controller.moreNavigationController.navigationBar.frame.size.height  # noqa: E501
+                    )
+                else:
+                    container.additional_top_offset = 0
             else:
-                container.additional_top_offset = 0
+                container.additional_top_offset = self.native.safeAreaInsets.top
             container.un_top_offset_able = False
 
     def content_refreshed(self, container):
