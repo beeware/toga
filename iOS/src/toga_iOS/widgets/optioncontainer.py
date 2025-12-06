@@ -16,7 +16,7 @@ class TogaTabBarController(UITabBarController):
     @objc_method
     def tabBarController_didSelectViewController_(self, controller, item) -> None:
         # An item that actually on the tab bar has been selected
-        self.refreshContent()
+        self.refreshContent(self.selectedViewController)
         # Notify of the change in selection.
         self.interface.on_select()
 
@@ -35,16 +35,32 @@ class TogaTabBarController(UITabBarController):
             # the back button added by the navigation view, and notify of the
             # change in selection.
             #            viewController.navigationItem.setHidesBackButton(True)
-            self.refreshContent()
+            if viewController.navigationController == self.moreNavigationController:
+                for container in self.impl.sub_containers:
+                    if container.controller == viewController:
+                        container.top_bar = True
+                    else:
+                        container.top_bar = False
+            else:
+                for container in self.impl.sub_containers:
+                    container.top_bar = False
+            self.refreshContent(viewController)
             self.interface.on_select()
 
     @objc_method
-    def refreshContent(self) -> None:
+    def refreshContent_(self, controller) -> None:
         self.view.setNeedsLayout()
         self.view.layoutIfNeeded()
+        # Recalculate child container offsets, as the top bar status may
+        # have changed.
+        if self.impl._offset_containers:
+            self.impl.top_offset_children()
+        else:
+            self.impl.un_top_offset_children()
+
         # Find the currently visible container, and refresh layout of the content.
         for container in self.impl.sub_containers:
-            if container.controller == self.selectedViewController:
+            if container.controller == controller:
                 container.content.interface.refresh()
 
 
@@ -72,6 +88,7 @@ class OptionContainer(Widget):
         self.native = self.native_controller.view
 
         self.sub_containers = []
+        self._offset_containers = False
 
         # Add the layout constraints
         self.add_constraints()
@@ -81,16 +98,31 @@ class OptionContainer(Widget):
         # Setting the bounds changes the constraints, but that doesn't mean
         # the constraints have been fully applied. Schedule a refresh to be done
         # as soon as possible in the future
-        self.native_controller.refreshContent()
+        self.native_controller.refreshContent(
+            self.native_controller.selectedViewController
+        )
 
     def top_offset_children(self):
+        self._offset_containers = True
         for container in self.sub_containers:
-            container.additional_top_offset = self.container.top_offset
+            if container.top_bar:
+                container.additional_top_offset = (
+                    self.container.top_offset
+                    + self.native_controller.moreNavigationController.navigationBar.frame.size.height  # noqa: E501
+                )
+            else:
+                container.additional_top_offset = self.container.top_offset
             container.un_top_offset_able = self.container.un_top_offset_able
 
     def un_top_offset_children(self):
+        self._offset_containers = False
         for container in self.sub_containers:
-            container.additional_top_offset = 0
+            if container.top_bar:
+                container.additional_top_offset = (
+                    self.native_controller.moreNavigationController.navigationBar.frame.size.height  # noqa: E501
+                )
+            else:
+                container.additional_top_offset = 0
             container.un_top_offset_able = False
 
     def content_refreshed(self, container):
@@ -104,6 +136,7 @@ class OptionContainer(Widget):
         )
         sub_container.content = widget
         sub_container.enabled = True
+        sub_container.top_bar = False
         self.sub_containers.insert(index, sub_container)
 
         self.configure_tab_item(sub_container, text, icon)
