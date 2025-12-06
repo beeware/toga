@@ -287,7 +287,7 @@ class NavigationContainer(Container):
             self.content_controller
         )
         if tuple(map(int, platform.release().split("."))) >= (26, 0, 0):
-            self.un_top_offset_able = True
+            self.un_top_offset_able = self.top_offset
 
         # Set the controller's view to be the root content widget
         self.content_controller.view = self.native

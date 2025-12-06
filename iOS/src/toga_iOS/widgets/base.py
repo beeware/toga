@@ -89,8 +89,8 @@ class Widget:
         ):
             frame[3] += self.container.layout_native.safeAreaInsets.bottom
         if y == 0 and self.un_top_offset and self.container.un_top_offset_able:
-            frame[1] -= self.container.top_offset
-            frame[3] += self.container.top_offset
+            frame[1] -= self.container.un_top_offset_able
+            frame[3] += self.container.un_top_offset_able
             self.top_offset_children()
         else:
             self.un_top_offset_children()

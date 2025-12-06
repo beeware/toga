@@ -120,20 +120,24 @@ class OptionContainer(Widget):
     def top_offset_children(self):
         self._offset_containers = True
         for container in self.sub_containers:
+            container.un_top_offset_able = self.container.un_top_offset_able
             if UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiom.Phone:
                 if container.top_bar:
                     container.additional_top_offset = (
-                        self.container.top_offset
+                        self.container.un_top_offset_able
                         + self.native_controller.moreNavigationController.navigationBar.frame.size.height  # noqa: E501
                     )
+                    container.un_top_offset_able += self.native_controller.moreNavigationController.navigationBar.frame.size.height  # noqa: E501
                 else:
                     container.additional_top_offset = self.container.top_offset
             else:
                 container.additional_top_offset = (
-                    self.container.top_offset
+                    self.container.un_top_offset_able
                     + self.native_controller.tabBar.frame.size.height
                 )
-            container.un_top_offset_able = self.container.un_top_offset_able
+                container.un_top_offset_able += (
+                    self.native_controller.tabBar.frame.size.height
+                )
 
     def un_top_offset_children(self):
         self._offset_containers = False
@@ -149,7 +153,7 @@ class OptionContainer(Widget):
                 container.additional_top_offset = (
                     self.native_controller.tabBar.frame.size.height
                 )
-            container.un_top_offset_able = False
+            container.un_top_offset_able = container.additional_top_offset
 
     def content_refreshed(self, container):
         container.min_width = container.content.interface.layout.min_width
