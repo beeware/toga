@@ -129,7 +129,10 @@ class OptionContainer(Widget):
                 else:
                     container.additional_top_offset = self.container.top_offset
             else:
-                container.additional_top_offset = self.native.safeAreaInsets.top
+                container.additional_top_offset = (
+                    self.container.top_offset
+                    + self.native_controller.tabBar.frame.size.height
+                )
             container.un_top_offset_able = self.container.un_top_offset_able
 
     def un_top_offset_children(self):
@@ -143,7 +146,9 @@ class OptionContainer(Widget):
                 else:
                     container.additional_top_offset = 0
             else:
-                container.additional_top_offset = self.native.safeAreaInsets.top
+                container.additional_top_offset = (
+                    self.native_controller.tabBar.frame.size.height
+                )
             container.un_top_offset_able = False
 
     def content_refreshed(self, container):
@@ -153,7 +158,9 @@ class OptionContainer(Widget):
     def add_option(self, index, text, widget, icon=None):
         # Create the container for the widget
         sub_container = ControlledContainer(
-            on_refresh=self.content_refreshed, safe_bottom=True
+            on_refresh=self.content_refreshed,
+            safe_bottom=UIDevice.currentDevice.userInterfaceIdiom
+            == UIUserInterfaceIdiom.Phone,
         )
         sub_container.content = widget
         sub_container.enabled = True
