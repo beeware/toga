@@ -27,6 +27,8 @@ class TogaTabBarController(UITabBarController):
     @objc_method
     def tabBarController_didSelectViewController_(self, controller, item) -> None:
         # An item that actually on the tab bar has been selected
+        for container in self.impl.sub_containers:
+            container.top_bar = False
         self.performSelector(
             SEL("refreshContent:"), withObject=self.selectedViewController, afterDelay=0
         )
@@ -48,14 +50,10 @@ class TogaTabBarController(UITabBarController):
             # the back button added by the navigation view, and notify of the
             # change in selection.
             #            viewController.navigationItem.setHidesBackButton(True)
-            if viewController.navigationController == self.moreNavigationController:
-                for container in self.impl.sub_containers:
-                    if container.controller == viewController:
-                        container.top_bar = True
-                    else:
-                        container.top_bar = False
-            else:
-                for container in self.impl.sub_containers:
+            for container in self.impl.sub_containers:
+                if container.controller == viewController:
+                    container.top_bar = True
+                else:
                     container.top_bar = False
             self.performSelector(
                 SEL("refreshContent:"), withObject=viewController, afterDelay=0
@@ -66,9 +64,9 @@ class TogaTabBarController(UITabBarController):
     def refreshContent_(self, controller) -> None:
         # Recalculate child container offsets, as the top bar status may
         # have changed.
-        if self.impl._offset_containers:
+        if self.impl._offset_containers:  # pragma: no cover
             self.impl.top_offset_children()
-        else:
+        else:  # pragma: no cover
             self.impl.un_top_offset_children()
 
         # Find the currently visible container, and refresh layout of the content.
@@ -117,7 +115,7 @@ class OptionContainer(Widget):
             afterDelay=0,
         )
 
-    def top_offset_children(self):
+    def top_offset_children(self):  # pragma: no cover
         self._offset_containers = True
         for container in self.sub_containers:
             container.un_top_offset_able = self.container.un_top_offset_able
@@ -139,7 +137,7 @@ class OptionContainer(Widget):
                     self.native_controller.tabBar.frame.size.height
                 )
 
-    def un_top_offset_children(self):
+    def un_top_offset_children(self):  # pragma: no cover
         self._offset_containers = False
         for container in self.sub_containers:
             if UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiom.Phone:
@@ -149,7 +147,7 @@ class OptionContainer(Widget):
                     )
                 else:
                     container.additional_top_offset = 0
-            else:
+            else:  # pragma: no cover
                 container.additional_top_offset = (
                     self.native_controller.tabBar.frame.size.height
                 )

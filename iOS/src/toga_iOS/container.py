@@ -1,8 +1,7 @@
-import platform
-
 from rubicon.objc import SEL, objc_method, objc_property, send_super
 
 from .libs import (
+    IOS_VERSION,
     UIApplication,
     UINavigationController,
     UIView,
@@ -30,7 +29,8 @@ class TogaContainerView(UIView):
 
     @objc_method
     def refreshContent(self):
-        if self.container:
+        # Can't be reliably triggered else in testing cases
+        if self.container:  # pragma: no branch
             if self.container.content and self.container._safe_bottom:
                 self.container.content.interface.refresh()
 
@@ -286,7 +286,7 @@ class NavigationContainer(Container):
         self.controller = UINavigationController.alloc().initWithRootViewController(
             self.content_controller
         )
-        if tuple(map(int, platform.release().split("."))) >= (26, 0, 0):
+        if IOS_VERSION >= (26, 0, 0):  # pragma: no cover
             self.un_top_offset_able = self.top_offset
 
         # Set the controller's view to be the root content widget

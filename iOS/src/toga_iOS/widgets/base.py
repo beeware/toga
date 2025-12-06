@@ -96,10 +96,10 @@ class Widget:
             self.un_top_offset_children()
         self.constraints.update(*frame)
 
-    def un_top_offset_children(self):
+    def un_top_offset_children(self):  # pragma: no cover
         pass
 
-    def top_offset_children(self):
+    def top_offset_children(self):  # pragma: no cover
         pass
 
     def set_text_align(self, alignment):
