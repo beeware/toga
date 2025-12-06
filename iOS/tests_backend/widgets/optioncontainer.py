@@ -31,9 +31,9 @@ class OptionContainerProbe(SimpleProbe):
             if self.impl.native_controller.selectedIndex <= 4:
                 # Programmatically selecting a tab doesn't trigger the didSelectItem
                 # event.
-                self.impl.native_controller.tabBar_didSelectItem_(
-                    self.impl.native_controller.tabBar,
-                    index - n_disabled,
+                self.impl.native_controller.tabBarController_didSelectViewController_(
+                    self.impl.native_controller,
+                    self.impl.sub_containers[index].controller,
                 )
 
     def select_more(self):
