@@ -25,10 +25,15 @@ class TogaContainerView(UIView):
     @objc_method
     def safeAreaInsetsDidChange(self):
         send_super(__class__, self, "safeAreaInsetsDidChange")
+        # Performing immediate layout here *helps*, but the label is somehow
+        # not shown on the tabbar unless one explicitly clicks on it, if one
+        # nests OptionContainers.
         self.refreshContent()
 
     @objc_method
     def refreshContent(self):
+        self.setNeedsLayout()
+        self.layoutIfNeeded()
         if self.container:
             if self.container.content and self.container._safe_bottom:
                 self.container.content.interface.refresh()
