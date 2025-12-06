@@ -543,3 +543,19 @@ class UIDatePickerMode(IntEnum):
     DateAndTime = 2
     CountDownTimer = 3
     YearAndMonth = 4
+
+
+######################################################################
+# UIDevice.h
+
+UIDevice = ObjCClass("UIDevice")
+
+
+class UIUserInterfaceIdiom(IntEnum):
+    Unspecified = -1
+    Phone = 0
+    Pad = 1
+    TV = 2
+    CarPlay = 3
+    Mac = 5
+    Vision = 6

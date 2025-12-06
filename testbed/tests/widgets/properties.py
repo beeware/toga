@@ -480,6 +480,10 @@ async def test_flex_widget_size(widget, probe):
     "The widget can expand in either axis."
     # Container is initially a non-flex row widget of fixed size.
     # Paint the background so we can easily see it against the background.
+
+    # Margin is set to 1 to prevent Liquid Glass things applying on iOS,
+    # but still valid for other platforms.
+    widget.style.margin = 1
     widget.style.flex = 0
     widget.style.width = 300
     widget.style.height = 200

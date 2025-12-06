@@ -72,7 +72,8 @@ async def widget(content1, content2, content3, on_select_handler):
                 ),
                 ("Tab 3", content3),
             ],
-            style=Pack(flex=1),
+            # Use 1 margin to avoid Liquid Glass adaptations interfering
+            style=Pack(flex=1, margin=1),
             on_select=on_select_handler,
         )
 

@@ -69,7 +69,9 @@ async def on_scroll():
 @pytest.fixture
 async def widget(content, on_scroll):
     return toga.ScrollContainer(
-        content=content, style=Pack(flex=1), on_scroll=on_scroll
+        content=content,
+        style=Pack(flex=1, margin_top=25, margin_bottom=100),
+        on_scroll=on_scroll,
     )
 
 
@@ -83,6 +85,7 @@ test_cleanup = build_cleanup_test(
 
 async def test_clear_content(widget, probe, small_content):
     "Widget content can be cleared and reset"
+    old_margin = widget.style.margin
     assert probe.document_width == probe.width - probe.scrollbar_inset
     assert probe.document_height == approx(6000, abs=1)
 
@@ -100,6 +103,8 @@ async def test_clear_content(widget, probe, small_content):
     await probe.redraw("Widget has definitely been refreshed")
     assert not probe.has_content
 
+    # Restore the margin which would've been problematic with Appel
+    widget.style.margin = old_margin
     widget.content = small_content
     await probe.redraw("Widget content has been restored")
     assert probe.has_content
@@ -109,6 +114,7 @@ async def test_clear_content(widget, probe, small_content):
 
 async def test_margin(widget, probe, content):
     "Margin works correctly on the root widget"
+    await probe.redraw("Initial measurement")
     original_width = probe.width
     original_height = probe.height
     original_document_width = probe.document_width

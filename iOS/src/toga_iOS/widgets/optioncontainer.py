@@ -1,10 +1,23 @@
+import platform
+
 from rubicon.objc import SEL, objc_method, objc_property
 from travertino.size import at_least
 
 import toga
 from toga_iOS.container import ControlledContainer
-from toga_iOS.libs import UITabBarController, UITabBarItem
+from toga_iOS.libs import (
+    UIDevice,
+    UITabBarController,
+    UITabBarItem,
+    UIUserInterfaceIdiom,
+)
 from toga_iOS.widgets.base import Widget
+
+# Implementation note:  Delayed refresh is usually not preferred
+# but is nessacary to get nested tab bars in correct place for
+# some reasaon.
+
+# FIXME:  tabbar not showing text when nested.
 
 
 class TogaTabBarController(UITabBarController):
@@ -12,9 +25,13 @@ class TogaTabBarController(UITabBarController):
     impl = objc_property(object, weak=True)
 
     @objc_method
-    def tabBar_didSelectItem_(self, tabBar, item) -> None:
+    def tabBarController_didSelectViewController_(self, controller, item) -> None:
         # An item that actually on the tab bar has been selected
-        self.performSelector(SEL("refreshContent"), withObject=None, afterDelay=0)
+        for container in self.impl.sub_containers:
+            container.top_bar = False
+        self.performSelector(
+            SEL("refreshContent:"), withObject=self.selectedViewController, afterDelay=0
+        )
         # Notify of the change in selection.
         self.interface.on_select()
 
@@ -32,48 +49,109 @@ class TogaTabBarController(UITabBarController):
             # If a content view is being this is an actual content view, hide
             # the back button added by the navigation view, and notify of the
             # change in selection.
-            viewController.navigationItem.setHidesBackButton(True)
-            self.performSelector(SEL("refreshContent"), withObject=None, afterDelay=0)
+            #            viewController.navigationItem.setHidesBackButton(True)
+            for container in self.impl.sub_containers:
+                if container.controller == viewController:
+                    container.top_bar = True
+                else:
+                    container.top_bar = False
+            self.performSelector(
+                SEL("refreshContent:"), withObject=viewController, afterDelay=0
+            )
             self.interface.on_select()
 
     @objc_method
-    def refreshContent(self) -> None:
+    def refreshContent_(self, controller) -> None:
+        # Recalculate child container offsets, as the top bar status may
+        # have changed.
+        if self.impl._offset_containers:  # pragma: no cover
+            self.impl.top_offset_children()
+        else:  # pragma: no cover
+            self.impl.un_top_offset_children()
+
         # Find the currently visible container, and refresh layout of the content.
         for container in self.impl.sub_containers:
-            if container.controller == self.selectedViewController:
+            if container.controller == controller:
                 container.content.interface.refresh()
 
 
 class OptionContainer(Widget):
     uses_icons = True
+    unsafe_bottom = True
+    un_top_offset = True
 
     def create(self):
         self.native_controller = TogaTabBarController.alloc().init()
         self.native_controller.interface = self.interface
         self.native_controller.impl = self
         self.native_controller.delegate = self.native_controller
+        # FIXME:  Bug with reordering causing crash
+        self.native_controller.customizableViewControllers = None
 
-        # Make the tab bar non-translucent, so you can actually see it.
-        self.native_controller.tabBar.setTranslucent(False)
+        if int(platform.release().split(".")[0]) < 26:  # pragma: no branch
+            # Make it translucent; without this call, there will not be
+            # a bottom bar at all.
+            self.native_controller.tabBar.setTranslucent(True)
+            self.native_controller.extendedLayoutIncludesOpaqueBars = True
 
         # The native widget representing the container is the view of the native
         # controller. This doesn't change once it's created, so we can cache it.
         self.native = self.native_controller.view
 
         self.sub_containers = []
+        self._offset_containers = False
 
         # Add the layout constraints
         self.add_constraints()
 
     def set_bounds(self, x, y, width, height):
         super().set_bounds(x, y, width, height)
-
         # Setting the bounds changes the constraints, but that doesn't mean
         # the constraints have been fully applied. Schedule a refresh to be done
         # as soon as possible in the future
         self.native_controller.performSelector(
-            SEL("refreshContent"), withObject=None, afterDelay=0
+            SEL("refreshContent:"),
+            withObject=self.native_controller.selectedViewController,
+            afterDelay=0,
         )
+
+    def top_offset_children(self):  # pragma: no cover
+        self._offset_containers = True
+        for container in self.sub_containers:
+            container.un_top_offset_able = self.container.un_top_offset_able
+            if UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiom.Phone:
+                if container.top_bar:
+                    container.additional_top_offset = (
+                        self.container.un_top_offset_able
+                        + self.native_controller.moreNavigationController.navigationBar.frame.size.height  # noqa: E501
+                    )
+                    container.un_top_offset_able += self.native_controller.moreNavigationController.navigationBar.frame.size.height  # noqa: E501
+                else:
+                    container.additional_top_offset = self.container.top_offset
+            else:
+                container.additional_top_offset = (
+                    self.container.un_top_offset_able
+                    + self.native_controller.tabBar.frame.size.height
+                )
+                container.un_top_offset_able += (
+                    self.native_controller.tabBar.frame.size.height
+                )
+
+    def un_top_offset_children(self):  # pragma: no cover
+        self._offset_containers = False
+        for container in self.sub_containers:
+            if UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiom.Phone:
+                if container.top_bar:
+                    container.additional_top_offset = (
+                        self.native_controller.moreNavigationController.navigationBar.frame.size.height  # noqa: E501
+                    )
+                else:
+                    container.additional_top_offset = 0
+            else:  # pragma: no cover
+                container.additional_top_offset = (
+                    self.native_controller.tabBar.frame.size.height
+                )
+            container.un_top_offset_able = container.additional_top_offset
 
     def content_refreshed(self, container):
         container.min_width = container.content.interface.layout.min_width
@@ -81,9 +159,14 @@ class OptionContainer(Widget):
 
     def add_option(self, index, text, widget, icon=None):
         # Create the container for the widget
-        sub_container = ControlledContainer(on_refresh=self.content_refreshed)
+        sub_container = ControlledContainer(
+            on_refresh=self.content_refreshed,
+            safe_bottom=UIDevice.currentDevice.userInterfaceIdiom
+            == UIUserInterfaceIdiom.Phone,
+        )
         sub_container.content = widget
         sub_container.enabled = True
+        sub_container.top_bar = False
         self.sub_containers.insert(index, sub_container)
 
         self.configure_tab_item(sub_container, text, icon)
@@ -119,6 +202,8 @@ class OptionContainer(Widget):
         self.native_controller.moreNavigationController.delegate = (
             self.native_controller
         )
+        # FIXME:  Bug with reordering causing crash
+        self.native_controller.customizableViewControllers = None
 
     def set_option_enabled(self, index, enabled):
         self.sub_containers[index].enabled = enabled
@@ -163,9 +248,9 @@ class OptionContainer(Widget):
                 # Setting the view controller doesn't trigger the didSelect event
                 # for regular (non-"more") tabs.
                 if self.native_controller.selectedIndex <= 4:
-                    self.native_controller.tabBar_didSelectItem_(
-                        self.native_controller.tabBar,
-                        current_tab_index,
+                    self.native_controller.tabBarController_didSelectViewController_(
+                        self.native_controller,
+                        self.native_controller.selectedViewController,
                     )
 
     def rehint(self):
