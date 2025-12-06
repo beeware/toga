@@ -1,6 +1,6 @@
 import platform
 
-from rubicon.objc import objc_method, objc_property
+from rubicon.objc import SEL, objc_method, objc_property
 from travertino.size import at_least
 
 import toga
@@ -13,6 +13,12 @@ from toga_iOS.libs import (
 )
 from toga_iOS.widgets.base import Widget
 
+# Implementation note:  Delayed refresh is usually not preferred
+# but is nessacary to get nested tab bars in correct place for
+# some reasaon.
+
+# FIXME:  tabbar not showing text when nested.
+
 
 class TogaTabBarController(UITabBarController):
     interface = objc_property(object, weak=True)
@@ -21,7 +27,9 @@ class TogaTabBarController(UITabBarController):
     @objc_method
     def tabBarController_didSelectViewController_(self, controller, item) -> None:
         # An item that actually on the tab bar has been selected
-        self.refreshContent(self.selectedViewController)
+        self.performSelector(
+            SEL("refreshContent:"), withObject=self.selectedViewController, afterDelay=0
+        )
         # Notify of the change in selection.
         self.interface.on_select()
 
@@ -49,13 +57,13 @@ class TogaTabBarController(UITabBarController):
             else:
                 for container in self.impl.sub_containers:
                     container.top_bar = False
-            self.refreshContent(viewController)
+            self.performSelector(
+                SEL("refreshContent:"), withObject=viewController, afterDelay=0
+            )
             self.interface.on_select()
 
     @objc_method
     def refreshContent_(self, controller) -> None:
-        self.view.setNeedsLayout()
-        self.view.layoutIfNeeded()
         # Recalculate child container offsets, as the top bar status may
         # have changed.
         if self.impl._offset_containers:
@@ -103,8 +111,10 @@ class OptionContainer(Widget):
         # Setting the bounds changes the constraints, but that doesn't mean
         # the constraints have been fully applied. Schedule a refresh to be done
         # as soon as possible in the future
-        self.native_controller.refreshContent(
-            self.native_controller.selectedViewController
+        self.native_controller.performSelector(
+            SEL("refreshContent:"),
+            withObject=self.native_controller.selectedViewController,
+            afterDelay=0,
         )
 
     def top_offset_children(self):

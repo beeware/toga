@@ -1,6 +1,6 @@
 import platform
 
-from rubicon.objc import objc_method, objc_property, send_super
+from rubicon.objc import SEL, objc_method, objc_property, send_super
 
 from .libs import (
     UIApplication,
@@ -25,16 +25,11 @@ class TogaContainerView(UIView):
     @objc_method
     def safeAreaInsetsDidChange(self):
         send_super(__class__, self, "safeAreaInsetsDidChange")
-        # Performing immediate layout here *helps*, but the label is somehow
-        # not shown on the tabbar unless one explicitly clicks on it, if one
-        # nests OptionContainers.
-
-    #        self.refreshContent()
+        # Container width and height updated.
+        self.performSelector(SEL("refreshContent"), withObject=None, afterDelay=0)
 
     @objc_method
     def refreshContent(self):
-        self.setNeedsLayout()
-        self.layoutIfNeeded()
         if self.container:
             if self.container.content and self.container._safe_bottom:
                 self.container.content.interface.refresh()
