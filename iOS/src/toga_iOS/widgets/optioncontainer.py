@@ -87,8 +87,8 @@ class OptionContainer(Widget):
         self.native_controller.interface = self.interface
         self.native_controller.impl = self
         self.native_controller.delegate = self.native_controller
-        #        # FIXME:  Bug with reordering causing crash
-        #        self.native_controller.customizableViewControllers = None
+        # FIXME:  Bug with reordering causing crash
+        self.native_controller.customizableViewControllers = None
 
         if int(platform.release().split(".")[0]) < 26:  # pragma: no branch
             # Make it translucent; without this call, there will not be
