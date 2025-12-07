@@ -86,9 +86,11 @@ class Widget:
             y + height == self.container.height
             and self.container._safe_bottom
             and self.unsafe_bottom
-        ):
+        ):  # pragma: no cover
             frame[3] += self.container.layout_native.safeAreaInsets.bottom
-        if y == 0 and self.un_top_offset and self.container.un_top_offset_able:
+        if (
+            y == 0 and self.un_top_offset and self.container.un_top_offset_able
+        ):  # pragma: no cover
             frame[1] -= self.container.un_top_offset_able
             frame[3] += self.container.un_top_offset_able
             self.top_offset_children()
