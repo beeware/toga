@@ -422,18 +422,21 @@ async def test_on_navigation_starting_sync(widget, probe, on_load):
     old_content = await get_content(widget)
     assert old_content is not None
     # simulate browser navigation to denied url
-    widget._impl.set_url("https://github.com/beeware/toga")
-    # we expect to url to change, but the content to stay
+    await widget.evaluate_javascript(
+        'window.location.assign("https://github.com/beeware/toga")'
+    )
     await assert_content_change(
         widget,
         probe,
         message="Page has been loaded",
-        url="https://github.com/beeware/toga",
+        url="https://github.com/beeware",
         content=old_content,
         on_load=on_load,
     )
     # simulate browser navigation to allowed url
-    widget._impl.set_url("https://beeware.org/docs")
+    await widget.evaluate_javascript(
+        'window.location.assign("https://beeware.org/docs")'
+    )
     # DOM loads aren't instantaneous; wait for the URL to appear
     await assert_content_change(
         widget,
@@ -490,19 +493,22 @@ async def test_on_navigation_starting_async(widget, probe, on_load):
     old_content = await get_content(widget)
     assert old_content is not None
     # simulate browser navigation to denied url
-    widget._impl.set_url("https://github.com/beeware/toga")
-    # we expect to url to change, but the content to stay
+    await widget.evaluate_javascript(
+        'window.location.assign("https://github.com/beeware/toga")'
+    )
     await assert_content_change(
         widget,
         probe,
         message="Page has been loaded",
-        url="https://github.com/beeware/toga",
+        url="https://github.com/beeware",
         content=old_content,
         on_load=on_load,
     )
     await asyncio.sleep(1.2)
     # simulate browser navigation to allowed url
-    widget._impl.set_url("https://beeware.org/docs")
+    await widget.evaluate_javascript(
+        'window.location.assign("https://beeware.org/docs")'
+    )
     # DOM loads aren't instantaneous; wait for the URL to appear
     await assert_content_change(
         widget,
