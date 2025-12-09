@@ -1,7 +1,6 @@
 from rubicon.objc import SEL, objc_method, objc_property, send_super
 
 from .libs import (
-    IOS_VERSION,
     UIApplication,
     UINavigationController,
     UIView,
@@ -46,8 +45,9 @@ class BaseContainer:
         self._content = content
         self.on_refresh = on_refresh
         self._safe_bottom = safe_bottom
-        self.un_top_offset_able = False
+        self.un_top_offset_able = 0
         self.additional_top_offset = 0
+        self._automatic_un_top_offset_able = True
 
     @property
     def content(self):
@@ -86,11 +86,17 @@ class BaseContainer:
 
     @property
     def un_top_offset_able(self):
+        if self._automatic_un_top_offset_able:
+            return self.top_offset
         return self._un_top_offset_able
 
     @un_top_offset_able.setter
     def un_top_offset_able(self, value):
+        self._automatic_un_top_offset_able = False
         self._un_top_offset_able = value
+
+    def update_un_top_offset_able(self):
+        pass
 
 
 #        if self.native:
@@ -286,8 +292,6 @@ class NavigationContainer(Container):
         self.controller = UINavigationController.alloc().initWithRootViewController(
             self.content_controller
         )
-        if IOS_VERSION >= (26, 0, 0):  # pragma: no cover
-            self.un_top_offset_able = self.top_offset
 
         # Set the controller's view to be the root content widget
         self.content_controller.view = self.native

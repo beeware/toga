@@ -254,5 +254,9 @@ class OptionContainer(Widget):
                     )
 
     def rehint(self):
+        if self._offset_containers:  # pragma: no cover
+            self.top_offset_children()
+        else:  # pragma: no cover
+            self.un_top_offset_children()
         self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
         self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)
