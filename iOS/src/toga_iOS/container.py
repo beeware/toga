@@ -28,6 +28,10 @@ class TogaContainerView(UIView):
 
     @objc_method
     def refreshContent(self):
+        # Ensure correct container height/width at this level.
+        # Without this, nested tabbars when nested to 3 levels does not work.
+        self.setNeedsLayout()
+        self.layoutIfNeeded()
         # Can't be reliably triggered else in testing cases
         if self.container:  # pragma: no branch
             if self.container.content and self.container._safe_bottom:
