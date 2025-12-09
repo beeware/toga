@@ -201,12 +201,9 @@ class WebView(Widget):
                     allow = result
                 elif isinstance(result, asyncio.Future):
                     # on_navigation_starting handler is asynchronous
-                    if result.done():
-                        allow = result.result()
-                    else:
-                        # deny the navigation until the user himself or the user
-                        # defined on_navigation_starting handler has allowed it
-                        allow = False
+                    # deny the navigation until the user himself or the user
+                    # defined on_navigation_starting handler has allowed it
+                    allow = False
             if not allow:
                 # Deny navigation
                 event.Cancel = True

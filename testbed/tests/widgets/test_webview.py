@@ -10,6 +10,7 @@ import pytest
 import toga
 from toga.style import Pack
 
+from ..conftest import skip_on_platforms
 from .conftest import build_cleanup_test, safe_create
 from .properties import (  # noqa: F401
     test_flex_widget_size,
@@ -385,6 +386,8 @@ async def test_retrieve_cookies(widget, probe, on_load):
 
 
 async def test_on_navigation_starting_sync(widget, probe, on_load):
+    skip_on_platforms("iOS", "macOS", "linux")
+
     def handler(widget, **kwargs):
         url = kwargs.get("url", None)
         allow = True
@@ -452,6 +455,8 @@ async def test_on_navigation_starting_sync(widget, probe, on_load):
 
 
 async def test_on_navigation_starting_async(widget, probe, on_load):
+    skip_on_platforms("iOS", "macOS", "linux")
+
     async def simulated_question_dialog(url):
         await asyncio.sleep(1)
         allow = True
