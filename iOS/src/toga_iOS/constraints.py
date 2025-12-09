@@ -89,7 +89,7 @@ class Constraints:
                 toItem=self.widget.native,
                 attribute__2=NSLayoutAttributeLeft,
                 multiplier=1.0,
-                constant=50,  # Use a dummy, non-zero value for now
+                constant=1000,  # Use a dummy, non-zero value for now
             )
             self.container.native.addConstraint(self.width_constraint)
 
