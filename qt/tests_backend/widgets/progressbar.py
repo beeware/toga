@@ -21,7 +21,7 @@ class ProgressBarProbe(SimpleProbe):
 
     @property
     def position(self):
-        return self.native.value() / 100
+        return self.native.value() / self.native.maximum()
 
     async def wait_for_animation(self):
         # We need to enforce a short sleep here because Qt implements it's own
