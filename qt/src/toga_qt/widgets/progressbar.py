@@ -21,8 +21,7 @@ class ProgressBar(Widget):
         return self.native.value() / 100
 
     def set_value(self, value):
-        if not self._indeterminate:
-            self.native.setValue(int(float(value) * 100))
+        self.native.setValue(int(float(value) * 100))
 
     def get_max(self):
         if self._indeterminate:
@@ -32,14 +31,13 @@ class ProgressBar(Widget):
     def set_max(self, value):
         if value is None:
             self._indeterminate = True
+            self.native.setValue(0)
             if self._running:
                 self._start_indeterminate()
             else:
                 self._stop_indeterminate()
         else:
-            if self._indeterminate:
-                self._indeterminate = False
-                self.native.setValue(0)
+            self._indeterminate = False
             self.native.setRange(0, int(float(value) * 100))
 
     def rehint(self):
