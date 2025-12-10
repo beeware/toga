@@ -17,8 +17,6 @@ from toga_iOS.widgets.base import Widget
 # but is nessacary to get nested tab bars in correct place for
 # some reasaon.
 
-# FIXME:  tabbar not showing text when nested.
-
 
 class TogaTabBarController(UITabBarController):
     interface = objc_property(object, weak=True)
@@ -62,16 +60,15 @@ class TogaTabBarController(UITabBarController):
 
     @objc_method
     def refreshContent_(self, controller) -> None:
-        # Recalculate child container offsets, as the top bar status may
-        # have changed.
+        # Ensure the correct width/height in case of nested tab bars.
+        self.view.setNeedsLayout()
+        self.view.layoutIfNeeded()
+
+        # Recalculate child container offset.
         if self.impl._offset_containers:  # pragma: no cover
             self.impl.top_offset_children()
         else:  # pragma: no cover
             self.impl.un_top_offset_children()
-
-        # Ensure the correct width/height in case of nested tab bars.
-        self.view.setNeedsLayout()
-        self.view.layoutIfNeeded()
 
         # Find the currently visible container, and refresh layout of the content.
         for container in self.impl.sub_containers:
@@ -110,6 +107,12 @@ class OptionContainer(Widget):
 
     def set_bounds(self, x, y, width, height):
         super().set_bounds(x, y, width, height)
+        # Adding or removing a tab can cause the creation of a moreNavigationController;
+        # make sure we're also the delegate for that controller.
+        self.native_controller.moreNavigationController.delegate = (
+            self.native_controller
+        )
+
         # Setting the bounds changes the constraints, but that doesn't mean
         # the constraints have been fully applied. Schedule a refresh to be done
         # as soon as possible in the future
@@ -133,13 +136,8 @@ class OptionContainer(Widget):
                 else:
                     container.additional_top_offset = self.container.top_offset
             else:
-                container.additional_top_offset = (
-                    self.container.un_top_offset_able
-                    + self.native_controller.tabBar.frame.size.height
-                )
-                container.un_top_offset_able += (
-                    self.native_controller.tabBar.frame.size.height
-                )
+                container.additional_top_offset = self.native_controller.selectedViewController.view.safeAreaInsets.top  # noqa: E501
+                container.un_top_offset_able = container.additional_top_offset
 
     def un_top_offset_children(self):  # pragma: no cover
         self._offset_containers = False
@@ -161,13 +159,25 @@ class OptionContainer(Widget):
         container.min_width = container.content.interface.layout.min_width
         container.min_height = container.content.interface.layout.min_height
 
+    def content_inset_change(self):
+        if self._offset_containers:  # pragma: no cover
+            self.top_offset_children()
+        else:  # pragma: no cover
+            self.un_top_offset_children()
+
     def add_option(self, index, text, widget, icon=None):
         # Create the container for the widget
+        # Usually we'd only want safe_bottom on iOS not iPadOS, however iPadOS windows
+        # are allowed to shrink and we may end up having the tabbar go on the bottom.
+        # So... we'd have to do always True.
+        # TODO: Do false when we support visionOS.  Though visionOS still needs yet
+        # TODO: another hack -- creating a separate controller and adding it as a child
+        # TODO: Of the root.
         sub_container = ControlledContainer(
             on_refresh=self.content_refreshed,
-            safe_bottom=UIDevice.currentDevice.userInterfaceIdiom
-            == UIUserInterfaceIdiom.Phone,
+            safe_bottom=True,
         )
+        sub_container.on_inset_change = self.content_inset_change
         sub_container.content = widget
         sub_container.enabled = True
         sub_container.top_bar = False
@@ -200,11 +210,6 @@ class OptionContainer(Widget):
         self.native_controller.setViewControllers(
             [sub.controller for sub in self.sub_containers if sub.enabled],
             animated=False,
-        )
-        # Adding or removing a tab can cause the creation of a moreNavigationController;
-        # make sure we're also the delegate for that controller.
-        self.native_controller.moreNavigationController.delegate = (
-            self.native_controller
         )
         # FIXME:  Bug with reordering causing crash
         self.native_controller.customizableViewControllers = None
@@ -258,9 +263,5 @@ class OptionContainer(Widget):
                     )
 
     def rehint(self):
-        if self._offset_containers:  # pragma: no cover
-            self.top_offset_children()
-        else:  # pragma: no cover
-            self.un_top_offset_children()
         self.interface.intrinsic.width = at_least(self.interface._MIN_WIDTH)
         self.interface.intrinsic.height = at_least(self.interface._MIN_HEIGHT)

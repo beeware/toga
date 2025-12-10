@@ -24,7 +24,10 @@ class TogaContainerView(UIView):
     def safeAreaInsetsDidChange(self):
         send_super(__class__, self, "safeAreaInsetsDidChange")
         # Container width and height updated.
-        self.performSelector(SEL("refreshContent"), withObject=None, afterDelay=0)
+        if self.container.on_inset_change:
+            self.container.on_inset_change()
+        if self.container._safe_bottom:
+            self.performSelector(SEL("refreshContent"), withObject=None, afterDelay=0)
 
     @objc_method
     def refreshContent(self):
@@ -34,8 +37,21 @@ class TogaContainerView(UIView):
         self.layoutIfNeeded()
         # Can't be reliably triggered else in testing cases
         if self.container:  # pragma: no branch
-            if self.container.content and self.container._safe_bottom:
+            if self.container.content:
                 self.container.content.interface.refresh()
+
+    @objc_method
+    def layoutSubviews(self):
+        send_super(__class__, self, "layoutSubviews")
+        if (
+            self.bounds.size.width,
+            self.bounds.size.height,
+        ) != self.container.last_refreshed_size:
+            self.container.last_refreshed_size = (
+                self.bounds.size.width,
+                self.bounds.size.height,
+            )
+            self.performSelector(SEL("refreshContent"), withObject=None, afterDelay=0)
 
 
 class BaseContainer:
@@ -52,6 +68,9 @@ class BaseContainer:
         self.un_top_offset_able = 0
         self.additional_top_offset = 0
         self._automatic_un_top_offset_able = True
+        self.on_inset_change = None
+
+        self.last_refreshed_size = (0, 0)
 
     @property
     def content(self):
@@ -303,7 +322,8 @@ class NavigationContainer(Container):
     @property
     def top_offset(self):
         return (
-            UIApplication.sharedApplication.statusBarFrame.size.height
+            #            UIApplication.sharedApplication.statusBarFrame.size.height
+            +self.controller.navigationBar.frame.origin.y
             + self.controller.navigationBar.frame.size.height
             + self.additional_top_offset
         )
