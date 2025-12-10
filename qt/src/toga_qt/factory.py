@@ -17,6 +17,7 @@ try:
     from .widgets.imageview import ImageView
     from .widgets.label import Label
     from .widgets.passwordinput import PasswordInput
+    from .widgets.progressbar import ProgressBar
     from .widgets.switch import Switch
     from .widgets.textinput import TextInput
     from .window import MainWindow, Window
@@ -47,6 +48,7 @@ __all__ = [
     "Box",
     "Label",
     "PasswordInput",
+    "ProgressBar",
     "Switch",
     "TextInput",
     "ImageView",
