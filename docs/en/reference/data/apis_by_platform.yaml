@@ -57,7 +57,6 @@ General widgets:
       - web
     unsupported:
       - textual
-      - qt
 
   DetailedList:
     description: An ordered list of content where each item has an icon, a main heading, and a line of supplementary text.
@@ -169,7 +168,6 @@ General widgets:
       - web
     unsupported:
       - gtk
-      - qt
 
   Tree:
     description: A widget for displaying a hierarchical tree of tabular data.
