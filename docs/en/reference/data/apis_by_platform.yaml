@@ -123,7 +123,6 @@ General widgets:
       - web
     unsupported:
       - textual
-      - qt
 
   Selection:
     description: A widget to select a single option from a list of alternatives.
