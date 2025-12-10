@@ -14,9 +14,9 @@ from .base import Widget
 class NumberInput(Widget):
     def create(self):
         self.native = QDoubleSpinBox()
-        self.native.valueChanged.connect(self.qt_on_change)
+        self.native.textChanged.connect(self.qt_on_change)
 
-    def qt_on_change(self):
+    def qt_on_change(self, value):
         self.interface.on_change()
 
     def get_readonly(self):

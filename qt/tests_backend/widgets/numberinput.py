@@ -9,6 +9,7 @@ class NumberInputProbe(SimpleProbe):
     allows_invalid_value = False
     allows_empty_value = True
     allows_extra_digits = False
+    allows_unchanged_updates = False
 
     def clear_input(self):
         self.native.clear()
