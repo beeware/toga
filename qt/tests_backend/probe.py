@@ -17,6 +17,7 @@ SPECIAL_KEY_MAP = {
     "<esc>": Qt.Key_Escape,
     "'": Qt.Key_Apostrophe,
     '"': Qt.Key_QuoteDbl,
+    "<backspace>": Qt.Key_Backspace,
 }
 
 MODIFIER_MAP = {
