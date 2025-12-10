@@ -8,10 +8,8 @@ from typing import (
     Protocol,
 )
 
-from travertino.colors import Color
-
 import toga
-from toga.colors import BLACK
+from toga.colors import BLACK, Color
 from toga.constants import FillRule
 from toga.fonts import (
     SYSTEM,

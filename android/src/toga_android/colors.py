@@ -1,5 +1,6 @@
 from android.graphics import Color
-from travertino.colors import TRANSPARENT
+
+from toga.colors import TRANSPARENT
 
 CACHE = {TRANSPARENT: Color.TRANSPARENT}
 
