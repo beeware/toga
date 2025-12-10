@@ -107,7 +107,6 @@ General widgets:
     unsupported:
       - web
       - textual
-      - qt
 
   PasswordInput:
     description: A widget to allow the entry of a password. Any value typed by the user will be obscured, allowing the user to see the number of characters they have typed, but not the actual characters.
