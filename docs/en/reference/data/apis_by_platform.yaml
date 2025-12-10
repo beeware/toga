@@ -115,7 +115,6 @@ General widgets:
       - web
     unsupported:
       - textual
-      - qt
 
   ProgressBar:
     description: A horizontal bar to visualize task progress. The task being monitored can be of known or indeterminate length.
