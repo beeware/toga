@@ -398,41 +398,42 @@ class Window:
             self._pending_state_transition = None
             return
 
-        elif target_state == WindowState.MAXIMIZED:
-            self.native.maximize()
+        match current_state, target_state:
+            case _, WindowState.MAXIMIZED:
+                self.native.maximize()
 
-        elif target_state == WindowState.MINIMIZED:  # pragma: no-cover-if-linux-wayland
-            if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
-                self.native.iconify()
-            else:  # pragma: no-cover-if-gtk3
-                self.native.minimize()
+            case _, WindowState.MINIMIZED:  # pragma: no-cover-if-linux-wayland
+                if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+                    self.native.iconify()
+                else:  # pragma: no-cover-if-gtk3
+                    self.native.minimize()
 
-        elif target_state == WindowState.FULLSCREEN:
-            self.native.fullscreen()
+            case _, WindowState.FULLSCREEN:
+                self.native.fullscreen()
 
-        elif target_state == WindowState.PRESENTATION:
-            self._before_presentation_mode_screen = self.interface.screen
-            if isinstance(self.native, Gtk.ApplicationWindow):
-                self.native.set_show_menubar(False)
-            if getattr(self, "native_toolbar", None):
-                self.native_toolbar.set_visible(False)
-            self.native.fullscreen()
-            self._in_presentation = True
+            case WindowState.PRESENTATION:
+                self._before_presentation_mode_screen = self.interface.screen
+                if isinstance(self.native, Gtk.ApplicationWindow):
+                    self.native.set_show_menubar(False)
+                if getattr(self, "native_toolbar", None):
+                    self.native_toolbar.set_visible(False)
+                self.native.fullscreen()
+                self._in_presentation = True
 
-        else:  # target_state == WindowState.NORMAL:
-            if current_state == WindowState.MAXIMIZED:
+            case WindowState.MAXIMIZED, WindowState.NORMAL:
                 self.native.unmaximize()
 
-            elif (
-                current_state == WindowState.MINIMIZED
+            case (
+                WindowState.MINIMIZED,
+                WindowState.NORMAL,
             ):  # pragma: no-cover-if-linux-wayland
                 # deiconify() doesn't work
                 self.native.present()
 
-            elif current_state == WindowState.FULLSCREEN:
+            case WindowState.FULLSCREEN, WindowState.NORMAL:
                 self.native.unfullscreen()
 
-            else:  # current_state == WindowState.PRESENTATION:
+            case _:  # PRESENTATION -> NORMAL:
                 if isinstance(self.native, Gtk.ApplicationWindow):
                     self.native.set_show_menubar(True)
                 if getattr(self, "native_toolbar", None):
