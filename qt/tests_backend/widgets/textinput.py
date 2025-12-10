@@ -6,6 +6,7 @@ from .properties import toga_x_text_align, toga_y_text_align
 
 class TextInputProbe(SimpleProbe):
     native_class = QLineEdit
+    redo_available = True
 
     @property
     def value(self):

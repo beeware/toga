@@ -2,4 +2,4 @@ from .textinput import TextInputProbe
 
 
 class PasswordInputProbe(TextInputProbe):
-    pass
+    redo_available = False
