@@ -38,6 +38,7 @@ As is the case in CSS, `rgba` and `hsla` are available as aliases for `rgb` and 
 ::: toga.colors.Color
 	options:
 		members: [rgb, hsl]
+		show_signature_annotations: false
 
 ::: toga.colors.rgb
 	options:
