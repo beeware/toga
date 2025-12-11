@@ -1,4 +1,4 @@
-from toga.colors import TRANSPARENT, rgba
+from toga.colors import TRANSPARENT, rgb
 from toga.fonts import SYSTEM_DEFAULT_FONT_SIZE
 
 from ..libs import GTK_VERSION
@@ -34,21 +34,21 @@ def get_color_css(value):
         return None
     else:
         return {
-            "color": f"rgba({value.r}, {value.g}, {value.b}, {value.a})",
+            "color": f"rgb({value.r} {value.g} {value.b} / {value.a})",
         }
 
 
 def get_background_color_css(value):
     if value == TRANSPARENT:
         return {
-            "background-color": "rgba(0, 0, 0, 0)",
+            "background-color": "rgb(0, 0, 0, 0)",
             "background-image": "none",
         }
     elif value is None:
         return None
     else:
         return {
-            "background-color": f"rgba({value.r}, {value.g}, {value.b}, {value.a})",
+            "background-color": f"rgb({value.r} {value.g} {value.b} / {value.a})",
             "background-image": "none",
         }
 
@@ -69,12 +69,12 @@ def get_font_css(value):
 
 def parse_css_color(native_string):
     """Parse a color from a GTK4 native RGB(A) CSS string."""
-    if native_string[:4] == "rgba":
+    if native_string[:4] == "rgb":
         native_string = native_string[4:]
     if native_string[:3] == "rgb":
         native_string = native_string[3:]
     r, g, b, *a = map(float, native_string.strip("()").split(","))
     if a:
-        return rgba(r, g, b, a[0])
+        return rgb(r, g, b, a[0])
     else:
-        return rgba(r, g, b)
+        return rgb(r, g, b)

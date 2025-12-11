@@ -556,7 +556,6 @@ __all__ = [
     "rgb",
     "hsla",
     "hsl",
-    "color",
     "NAMED_COLOR",
     "TRANSPARENT",  # noqa: F405
 ] + [name.upper() for name in NAMED_COLOR]
