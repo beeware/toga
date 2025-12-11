@@ -10,6 +10,7 @@ from .base import Widget
 class DateInput(Widget):
     def create(self):
         self.native = QDateEdit()
+        self.native.setCalendarPopup(True)
         self.native.dateChanged.connect(self.qt_on_change)
 
     def qt_on_change(self, value):
