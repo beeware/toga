@@ -14,7 +14,7 @@ from toga.fonts import (
 )
 
 if TYPE_CHECKING:
-    from travertino.colors import Color
+    from travertino.colors import ColorT
 
 # Make sure deprecation warnings are shown by default
 filterwarnings("default", category=DeprecationWarning)
@@ -103,7 +103,7 @@ class ClosePath(DrawingObject):
 class Fill(DrawingObject):
     def __init__(
         self,
-        color: Color | str = BLACK,
+        color: ColorT = BLACK,
         fill_rule: FillRule = FillRule.NONZERO,
     ):
         super().__init__()
@@ -132,7 +132,7 @@ class Fill(DrawingObject):
         return self._color
 
     @color.setter
-    def color(self, value: Color | str | None) -> None:
+    def color(self, value: ColorT | None) -> None:
         if value is None:
             self._color = Color.parse(BLACK)
         else:
@@ -142,7 +142,7 @@ class Fill(DrawingObject):
 class Stroke(DrawingObject):
     def __init__(
         self,
-        color: Color | str | None = BLACK,
+        color: ColorT | None = BLACK,
         line_width: float = 2.0,
         line_dash: list[float] | None = None,
     ):
@@ -165,7 +165,7 @@ class Stroke(DrawingObject):
         return self._color
 
     @color.setter
-    def color(self, value: Color | str | None) -> None:
+    def color(self, value: ColorT | None) -> None:
         if value is None:
             self._color = Color.parse(BLACK)
         else:

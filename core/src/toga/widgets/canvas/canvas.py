@@ -9,7 +9,7 @@ from typing import (
 )
 
 import toga
-from toga.colors import BLACK, Color
+from toga.colors import BLACK
 from toga.constants import FillRule
 from toga.fonts import (
     SYSTEM,
@@ -22,7 +22,7 @@ from ..base import StyleT, Widget
 from .context import ClosedPathContext, Context, FillContext, StrokeContext
 
 if TYPE_CHECKING:
-    from travertino.colors import Color
+    from travertino.colors import ColorT
 
     from toga.images import ImageT
 
@@ -161,7 +161,7 @@ class Canvas(Widget):
         self,
         x: float | None = None,
         y: float | None = None,
-        color: Color | str | None = BLACK,
+        color: ColorT | None = BLACK,
         fill_rule: FillRule = FillRule.NONZERO,
     ) -> ContextManager[FillContext]:
         """Construct and yield a new [`FillContext`][toga.widgets.canvas.FillContext]
@@ -187,7 +187,7 @@ class Canvas(Widget):
         self,
         x: float | None = None,
         y: float | None = None,
-        color: Color | str | None = BLACK,
+        color: ColorT | None = BLACK,
         line_width: float = 2.0,
         line_dash: list[float] | None = None,
     ) -> ContextManager[StrokeContext]:
