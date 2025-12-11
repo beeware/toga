@@ -57,10 +57,10 @@ class Constraints:
 
     @container.setter
     def container(self, value):
-        # This will *always* remove constraints. It relies on the base
-        # widget to *not* invoke this setter unless the container is
-        # actually changing.  New constraints are added when a relayout
-        # is done and we have updated.
+        # This will invalidate our created constraints, as the container would've
+        # changed.  Constraints are not created until the actual first layout
+        # update, as we do not want the native layer performing any layout passes
+        # with wrong initial dummy constrained values.
         self._remove_constraints()
         self._container = value
 
