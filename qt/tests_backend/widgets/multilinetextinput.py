@@ -7,6 +7,7 @@ from .properties import toga_x_text_align, toga_y_text_align
 
 class MultilineTextInputProbe(SimpleProbe):
     native_class = QTextEdit
+    redo_available = True
 
     @property
     def value(self):
