@@ -8,7 +8,7 @@ When specifying colors for the [color][pack-color] or [background-color][backgro
 - The name of a [CSS named color](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/named-color). Strings of all available color names are available as constants. These constants are named the same as their value, except in all caps, as is the convention for Python constants. In other words, `toga.colors.ORANGE == "orange"`.
 - A string representing the color as [hexadecimal RGB](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/hex-color).
 
-That is, the following are all equivalent:
+The following color definitions would all be equivalent:
 
 ```python
 import toga
