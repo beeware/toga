@@ -42,16 +42,16 @@ class Window(Container, Scalable):
         self.native.MinimizeBox = self.interface.minimizable
         self.native.MaximizeBox = self.interface.resizable
 
-        # Use a shadow variable since a window without any app menu and toolbar
-        # in presentation mode would be indistinguishable from full screen mode.
+        # Use a shadow variable since a window without any app menu and toolbar in
+        # presentation mode would be indistinguishable from full screen mode.
         self._in_presentation_mode = False
-        # Required to detect if the window has been un-minimized, and to prevent
-        # double triggering of visibility events.
+        # Required to detect if the window has been un-minimized, and to prevent double
+        # triggering of visibility events.
         self._previous_state = WindowState.NORMAL
-        # On minimization, winforms returns window size as 0 x 0, but this behavior
-        # is inconsistent with other platforms as minimization does not constitute a
-        # window resize operation. Therefore, it should return the same size as
-        # before minimization. So, cache the previous window size before performing
+        # On minimization, winforms returns window size as 0 x 0, but this behavior is
+        # inconsistent with other platforms as minimization does not constitute a
+        # window resize operation. Therefore, it should return the same size as before
+        # minimization. So, cache the previous window size before performing
         # minimization.
         self._cached_window_size = None
 
@@ -111,18 +111,18 @@ class Window(Container, Scalable):
             self.update_dpi()
 
     def winforms_FormClosing(self, sender, event):
-        # If the app is exiting, do nothing; we've already approved the exit
-        # (and thus the window close). This branch can't be triggered in test
-        # conditions, so it's marked no-branch.
+        # If the app is exiting, do nothing; we've already approved the exit(and thus
+        # the window close). This branch can't be triggered in test conditions, so it's
+        # marked no-branch.
         #
-        # Otherwise, handle the close request by always cancelling the event,
-        # and invoking `on_close()` handling. This will evaluate whether a close
-        # is allowed, and if it is, programmatically invoke close on the window,
-        # removing this handler first so that the close will complete.
+        # Otherwise, handle the close request by always cancelling the event, and
+        # invoking `on_close()` handling. This will evaluate whether a close is
+        # allowed, and if it is, programmatically invoke close on the window, removing
+        # this handler first so that the close will complete.
         #
-        # Winforms doesn't provide a way to disable/hide the close button, so if
-        # the window is non-closable, don't trigger on_close handling - just
-        # cancel the close event.
+        # Winforms doesn't provide a way to disable/hide the close button, so if the
+        # window is non-closable, don't trigger on_close handling - just cancel the
+        # close event.
         if not self.interface.app._impl._is_exiting:  # pragma: no branch
             if self.interface.closable:
                 self.interface.on_close()
@@ -306,8 +306,8 @@ class Window(Container, Scalable):
                 return WindowState.NORMAL
 
     def set_window_state(self, state):
-        # If the app is in presentation mode, but this window isn't, then
-        # exit app presentation mode before setting the requested state.
+        # If the app is in presentation mode, but this window isn't, then exit app
+        # presentation mode before setting the requested state.
         if any(
             window.state == WindowState.PRESENTATION and window != self.interface
             for window in self.interface.app.windows
@@ -323,9 +323,9 @@ class Window(Container, Scalable):
                 self.native.WindowState = WinForms.FormWindowState.Maximized
 
             case WindowState.NORMAL, WindowState.MINIMIZED:
-                # On minimization, winforms reports window size as 0 x 0, hence
-                # cache the previous window size to make the API behavior
-                # uniform on all platforms.
+                # On minimization, winforms reports window size as 0 x 0, hence cache
+                # the previous window size to make the API behavior uniform on all
+                # platforms.
                 self._cached_window_size = self.interface.size
                 self.native.WindowState = WinForms.FormWindowState.Minimized
 
