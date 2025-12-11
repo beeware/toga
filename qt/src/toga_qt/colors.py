@@ -1,5 +1,6 @@
 from PySide6.QtGui import QColor
-from travertino.colors import rgb
+
+from toga.colors import rgb
 
 
 def native_color(c):

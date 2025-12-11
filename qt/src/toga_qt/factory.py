@@ -17,6 +17,7 @@ try:
     from .widgets.imageview import ImageView
     from .widgets.label import Label
     from .widgets.numberinput import NumberInput
+    from .widgets.passwordinput import PasswordInput
     from .widgets.progressbar import ProgressBar
     from .widgets.switch import Switch
     from .widgets.textinput import TextInput
@@ -48,6 +49,7 @@ __all__ = [
     "Box",
     "Label",
     "NumberInput",
+    "PasswordInput",
     "ProgressBar",
     "Switch",
     "TextInput",

@@ -8,6 +8,7 @@ from .properties import toga_color, toga_text_align_from_justification
 
 class MultilineTextInputProbe(SimpleProbe):
     native_class = Gtk.ScrolledWindow
+    redo_available = True
 
     if GTK_VERSION >= (4, 0, 0):
         pytest.skip("GTK4 doesn't support multiline text input yet")
