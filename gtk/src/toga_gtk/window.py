@@ -407,7 +407,7 @@ class Window:
             case _, WindowState.FULLSCREEN:
                 self.native.fullscreen()
 
-            case WindowState.PRESENTATION:
+            case _, WindowState.PRESENTATION:
                 self._before_presentation_mode_screen = self.interface.screen
                 if isinstance(self.native, Gtk.ApplicationWindow):
                     self.native.set_show_menubar(False)
