@@ -2,7 +2,7 @@
 
 ## Usage
 
-When specifying colors for the [color][pack-color] or [background-color][background_color] style properties, or any `color` arguments for the [`Canvas`](/reference/api/widgets/canvas.md) API, Toga understands the following formats:
+When specifying colors for style properties such as [color][pack-color] and [background-color][background_color], or on widget APIs that use colors explicitly (such as any `color` arguments for the [`Canvas`](/reference/api/widgets/canvas.md) API), Toga understands the following formats:
 
 - An instance of Toga's [`rgb`][toga.colors.rgb] or [`hsl`][toga.colors.hsl] class.
 - The name of a [CSS named color](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/named-color). Strings of all available color names are available as constants. These constants are named the same as their value, except in all caps, as is the convention for Python constants. In other words, `toga.colors.ORANGE == "orange"`.
