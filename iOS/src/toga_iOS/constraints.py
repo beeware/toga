@@ -38,11 +38,18 @@ class Constraints:
             # the native object of the window's container to be deleted on the ObjC
             # side before the constraints for the window have been removed. Protect
             # against this possibility.
-            if self.container.native:
+            # Also protect against the possibility that the constraints have
+            # already been cleared.
+            if self.container.native and self.width_constraint:
                 self.container.native.removeConstraint(self.width_constraint)
                 self.container.native.removeConstraint(self.height_constraint)
                 self.container.native.removeConstraint(self.left_constraint)
                 self.container.native.removeConstraint(self.top_constraint)
+
+                self.width_constraint = None
+                self.height_constraint = None
+                self.left_constraint = None
+                self.top_constraint = None
 
     @property
     def container(self):
@@ -64,50 +71,55 @@ class Constraints:
         # )
         y += self.container.top_offset
 
-        # Container setting already removes constraints -- but that's okay,
-        # double-removal has no effect according to docs.
-        self._remove_constraints()
+        if self.width_constraint:
+            # We already have constraints set up; reuse them.
+            self.left_constraint.constant = x
+            self.top_constraint.constant = y
 
-        self.left_constraint = NSLayoutConstraint.constraintWithItem(
-            self.widget.native,
-            attribute__1=NSLayoutAttributeLeft,
-            relatedBy=NSLayoutRelationEqual,
-            toItem=self.container.native,
-            attribute__2=NSLayoutAttributeLeft,
-            multiplier=1.0,
-            constant=x,  # Use a dummy, non-zero value for now
-        )
-        self.container.native.addConstraint(self.left_constraint)
+            self.width_constraint.constant = width
+            self.height_constraint.constant = height
 
-        self.top_constraint = NSLayoutConstraint.constraintWithItem(
-            self.widget.native,
-            attribute__1=NSLayoutAttributeTop,
-            relatedBy=NSLayoutRelationEqual,
-            toItem=self.container.native,
-            attribute__2=NSLayoutAttributeTop,
-            multiplier=1.0,
-            constant=y,  # Use a dummy, non-zero value for now
-        )
-        self.container.native.addConstraint(self.top_constraint)
+        else:
+            self.left_constraint = NSLayoutConstraint.constraintWithItem(
+                self.widget.native,
+                attribute__1=NSLayoutAttributeLeft,
+                relatedBy=NSLayoutRelationEqual,
+                toItem=self.container.native,
+                attribute__2=NSLayoutAttributeLeft,
+                multiplier=1.0,
+                constant=x,  # Use a dummy, non-zero value for now
+            )
+            self.container.native.addConstraint(self.left_constraint)
 
-        self.width_constraint = NSLayoutConstraint.constraintWithItem(
-            self.widget.native,
-            attribute__1=NSLayoutAttributeRight,
-            relatedBy=NSLayoutRelationEqual,
-            toItem=self.widget.native,
-            attribute__2=NSLayoutAttributeLeft,
-            multiplier=1.0,
-            constant=width,  # Use a dummy, non-zero value for now
-        )
-        self.container.native.addConstraint(self.width_constraint)
+            self.top_constraint = NSLayoutConstraint.constraintWithItem(
+                self.widget.native,
+                attribute__1=NSLayoutAttributeTop,
+                relatedBy=NSLayoutRelationEqual,
+                toItem=self.container.native,
+                attribute__2=NSLayoutAttributeTop,
+                multiplier=1.0,
+                constant=y,  # Use a dummy, non-zero value for now
+            )
+            self.container.native.addConstraint(self.top_constraint)
 
-        self.height_constraint = NSLayoutConstraint.constraintWithItem(
-            self.widget.native,
-            attribute__1=NSLayoutAttributeBottom,
-            relatedBy=NSLayoutRelationEqual,
-            toItem=self.widget.native,
-            attribute__2=NSLayoutAttributeTop,
-            multiplier=1.0,
-            constant=height,  # Use a dummy, non-zero value for now
-        )
-        self.container.native.addConstraint(self.height_constraint)
+            self.width_constraint = NSLayoutConstraint.constraintWithItem(
+                self.widget.native,
+                attribute__1=NSLayoutAttributeRight,
+                relatedBy=NSLayoutRelationEqual,
+                toItem=self.widget.native,
+                attribute__2=NSLayoutAttributeLeft,
+                multiplier=1.0,
+                constant=width,  # Use a dummy, non-zero value for now
+            )
+            self.container.native.addConstraint(self.width_constraint)
+
+            self.height_constraint = NSLayoutConstraint.constraintWithItem(
+                self.widget.native,
+                attribute__1=NSLayoutAttributeBottom,
+                relatedBy=NSLayoutRelationEqual,
+                toItem=self.widget.native,
+                attribute__2=NSLayoutAttributeTop,
+                multiplier=1.0,
+                constant=height,  # Use a dummy, non-zero value for now
+            )
+            self.container.native.addConstraint(self.height_constraint)
