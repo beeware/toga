@@ -31,6 +31,8 @@ from .drawingobject import (
 )
 
 if TYPE_CHECKING:
+    from toga.colors import ColorT
+
     from .canvas import Canvas
 
 
@@ -313,7 +315,7 @@ class Context(DrawingObject):
 
     def fill(
         self,
-        color: str = BLACK,
+        color: ColorT = BLACK,
         fill_rule: FillRule = FillRule.NONZERO,
     ) -> Fill:
         """Fill the current path.
@@ -335,7 +337,7 @@ class Context(DrawingObject):
 
     def stroke(
         self,
-        color: str = BLACK,
+        color: ColorT = BLACK,
         line_width: float = 2.0,
         line_dash: list[float] | None = None,
     ) -> Stroke:
@@ -479,7 +481,7 @@ class Context(DrawingObject):
         self,
         x: float | None = None,
         y: float | None = None,
-        color: str = BLACK,
+        color: ColorT = BLACK,
         fill_rule: FillRule = FillRule.NONZERO,
     ) -> Iterator[FillContext]:
         """Construct and yield a new `Fill` sub-context
@@ -519,7 +521,7 @@ class Context(DrawingObject):
         self,
         x: float | None = None,
         y: float | None = None,
-        color: str = BLACK,
+        color: ColorT = BLACK,
         line_width: float = 2.0,
         line_dash: list[float] | None = None,
     ) -> Iterator[StrokeContext]:
@@ -633,7 +635,7 @@ class FillContext(ClosedPathContext):
         canvas: toga.Canvas,
         x: float | None = None,
         y: float | None = None,
-        color: str = BLACK,
+        color: ColorT = BLACK,
         fill_rule: FillRule = FillRule.NONZERO,
     ):
         super().__init__(canvas=canvas, x=x, y=y)
@@ -673,7 +675,7 @@ class FillContext(ClosedPathContext):
         return self._color
 
     @color.setter
-    def color(self, value: Color | str | None) -> None:
+    def color(self, value: ColorT | None) -> None:
         if value is None:
             self._color = Color.parse(BLACK)
         else:
@@ -704,7 +706,7 @@ class StrokeContext(ClosedPathContext):
         canvas: toga.Canvas,
         x: float | None = None,
         y: float | None = None,
-        color: str | None = BLACK,
+        color: ColorT | None = BLACK,
         line_width: float = 2.0,
         line_dash: list[float] | None = None,
     ):

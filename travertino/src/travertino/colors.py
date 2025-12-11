@@ -14,7 +14,10 @@ def _clamp(value, lower, upper):
 
 
 class Color:
-    """A base class for all colorspace representations."""
+    """A base class for all colorspace representations.
+
+    Not meant to be used directly.
+    """
 
     @staticmethod
     def parse(value: Color | str) -> Color:
@@ -79,11 +82,28 @@ class Color:
 
     @property
     def a(self) -> float:
+        """The color's alpha, or transparency, as a float from 0 to 1."""
         return self._a
+
+    @property
+    def rgb(self) -> rgb:  # pragma: no cover
+        """This color in RGB format. If it's already RGB, returns the object itself.
+
+        Also accessible via the alias `rgba`.
+        """
+        raise NotImplementedError
 
     @property
     def rgba(self) -> rgb:
         return self.rgb
+
+    @property
+    def hsl(self) -> hsl:  # pragma: no cover
+        """This color in HSL format. If it's already HSL, returns the object itself.
+
+        Also accessible via the alias `rgba`.
+        """
+        raise NotImplementedError
 
     @property
     def hsla(self) -> hsl:
@@ -183,9 +203,20 @@ class Color:
 
 
 class rgb(Color):
-    """A representation of an RGB(A) color."""
+    def __init__(self, r: int, g: int, b: int, a: float = 1.0):
+        """A color specified via red, green, and blue channels, plus transparency.
 
-    def __init__(self, r, g, b, a=1.0):
+        Also accessible via the alias `rgba`.
+
+        :param r: The color's red value, as an integer from 0 to 255. Higher or lower
+            values will be clipped.
+        :param g: The color's green value, as an integer from 0 to 255. Higher or lower
+            values will be clipped.
+        :param b: The color's blue value, as an integer from 0 to 255. Higher or lower
+            values will be clipped.
+        :param a: The color's alpha, or transparency, as a float from 0 to 1. Higher or
+            lower values will be clipped. Defaults to fully opaque.
+        """
         self._r = self._validate_band("red", r)
         self._g = self._validate_band("green", g)
         self._b = self._validate_band("blue", b)
@@ -211,14 +242,17 @@ class rgb(Color):
 
     @property
     def r(self) -> int:
+        """The color's red value, as an integer from 0 to 255."""
         return self._r
 
     @property
     def g(self) -> int:
+        """The color's green value, as an integer from 0 to 255."""
         return self._g
 
     @property
     def b(self) -> int:
+        """The color's blue value, as an integer from 0 to 255."""
         return self._b
 
     @property
@@ -265,9 +299,20 @@ rgba = rgb
 
 
 class hsl(Color):
-    """A representation of an HSL(A) color."""
+    def __init__(self, h: int, s: float, l: float, a: float = 1.0):  # noqa: E741
+        """A color specified via hue, saturation, and lightness, plus transparency.
 
-    def __init__(self, h, s, l, a=1.0):  # noqa: E741
+        Also accessible via the alias `hsla`.
+
+        :param h: The color's hue, as an integer from 0 to 360. Higher or lower values
+            will wrap around.
+        :param s: The color's saturation, as a float from 0 to 1. Higher or lower values
+            will be clipped.
+        :param l: The color's lightness, as a float from 0 to 1. Higher or lower values
+            will be clipped.
+        :param a: The color's alpha, or transparency, as a float from 0 to 1. Higher or
+            lower values will be clipped. Defaults to fully opaque.
+        """
         try:
             self._h = round(h) % 360
         except TypeError as exc:
@@ -287,14 +332,17 @@ class hsl(Color):
 
     @property
     def h(self) -> int:
+        """The color's hue, as an integer from 0 to 360."""
         return self._h
 
     @property
     def s(self) -> float:
+        """The color's saturation, as a float from 0 to 1."""
         return self._s
 
     @property
     def l(self) -> float:  # noqa: E743
+        """The color's lightness, as a float from 0 to 1."""
         return self._l
 
     @property
