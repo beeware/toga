@@ -14,7 +14,7 @@ from toga.fonts import (
 )
 
 if TYPE_CHECKING:
-    from travertino.colors import ColorT
+    from toga.colors import ColorT
 
 # Make sure deprecation warnings are shown by default
 filterwarnings("default", category=DeprecationWarning)

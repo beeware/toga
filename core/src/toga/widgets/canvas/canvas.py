@@ -22,8 +22,7 @@ from ..base import StyleT, Widget
 from .context import ClosedPathContext, Context, FillContext, StrokeContext
 
 if TYPE_CHECKING:
-    from travertino.colors import ColorT
-
+    from toga.colors import ColorT
     from toga.images import ImageT
 
 

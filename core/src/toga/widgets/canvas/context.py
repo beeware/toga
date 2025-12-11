@@ -31,7 +31,7 @@ from .drawingobject import (
 )
 
 if TYPE_CHECKING:
-    from travertino.colors import ColorT
+    from toga.colors import ColorT
 
     from .canvas import Canvas
 
