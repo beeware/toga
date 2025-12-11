@@ -16,6 +16,7 @@ try:
     from .widgets.button import Button
     from .widgets.imageview import ImageView
     from .widgets.label import Label
+    from .widgets.optioncontainer import OptionContainer
     from .widgets.passwordinput import PasswordInput
     from .widgets.progressbar import ProgressBar
     from .widgets.scrollcontainer import ScrollContainer
@@ -48,6 +49,7 @@ __all__ = [
     "Container",
     "Box",
     "Label",
+    "OptionContainer",
     "PasswordInput",
     "ProgressBar",
     "ScrollContainer",

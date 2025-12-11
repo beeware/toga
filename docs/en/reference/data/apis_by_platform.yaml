@@ -225,7 +225,6 @@ Layout widgets:
     unsupported:
       - web
       - textual
-      - qt
 
 Resources:
   path: resources
