@@ -65,10 +65,7 @@ class TogaTabBarController(UITabBarController):
         self.view.layoutIfNeeded()
 
         # Recalculate child container offset.
-        if self.impl._offset_containers:  # pragma: no cover
-            self.impl.top_offset_children()
-        else:  # pragma: no cover
-            self.impl.un_top_offset_children()
+        self.impl.offset_containers()
 
         # Find the currently visible container, and refresh layout of the content.
         for container in self.impl.sub_containers:
@@ -100,14 +97,14 @@ class OptionContainer(Widget):
         self.native = self.native_controller.view
 
         self.sub_containers = []
-        self._offset_containers = False
+        self._top_un_offset = False
 
         # Add the layout constraints
         self.add_constraints()
 
     def set_bounds(self, x, y, width, height):
         super().set_bounds(x, y, width, height)
-        # Adding or removing a tab can cause the creation of a moreNavigationController;
+        # Setting bounds can cause the creation of a moreNavigationController;
         # make sure we're also the delegate for that controller.
         self.native_controller.moreNavigationController.delegate = (
             self.native_controller
@@ -122,48 +119,48 @@ class OptionContainer(Widget):
             afterDelay=0,
         )
 
-    def top_offset_children(self):  # pragma: no cover
-        self._offset_containers = True
-        for container in self.sub_containers:
-            container.un_top_offset_able = self.container.un_top_offset_able
-            if UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiom.Phone:
-                if container.top_bar:
-                    container.additional_top_offset = (
-                        self.container.un_top_offset_able
-                        + self.native_controller.moreNavigationController.navigationBar.frame.size.height  # noqa: E501
-                    )
-                    container.un_top_offset_able += self.native_controller.moreNavigationController.navigationBar.frame.size.height  # noqa: E501
-                else:
-                    container.additional_top_offset = self.container.top_offset
-            else:
-                container.additional_top_offset = self.native_controller.selectedViewController.view.safeAreaInsets.top  # noqa: E501
-                container.un_top_offset_able = container.additional_top_offset
+    def offset_containers(self):  # pragma: no cover
+        is_phone = (
+            UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiom.Phone
+        )
+        nav_bar_height = self.native_controller.moreNavigationController.navigationBar.frame.size.height  # noqa: E501
+        top_safe_inset = (
+            self.native_controller.selectedViewController.view.safeAreaInsets.top
+        )
 
-    def un_top_offset_children(self):  # pragma: no cover
-        self._offset_containers = False
         for container in self.sub_containers:
-            if UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiom.Phone:
-                if container.top_bar:
-                    container.additional_top_offset = (
-                        self.native_controller.moreNavigationController.navigationBar.frame.size.height  # noqa: E501
-                    )
+            if is_phone:
+                if self._top_un_offset:
+                    container.un_top_offset_able = self.container.un_top_offset_able
+                    if container.top_bar:
+                        container.additional_top_offset = (
+                            self.container.un_top_offset_able + nav_bar_height
+                        )
+                        container.un_top_offset_able += nav_bar_height
+                    else:
+                        container.additional_top_offset = self.container.top_offset
                 else:
-                    container.additional_top_offset = 0
-            else:  # pragma: no cover
-                container.additional_top_offset = (
-                    self.native_controller.tabBar.frame.size.height
+                    container.additional_top_offset = (
+                        nav_bar_height if container.top_bar else 0
+                    )
+                    container.un_top_offset_able = container.additional_top_offset
+            else:
+                # Cooked here... no way to know if tabbar is at the top, and it's
+                # inconsistent when I resize the window.  But the corners are small
+                # to be of any impact anyways.
+                container.additional_top_offset = top_safe_inset
+                container.un_top_offset_able = (
+                    top_safe_inset
+                    if self._top_un_offset
+                    else container.additional_top_offset
                 )
-            container.un_top_offset_able = container.additional_top_offset
 
     def content_refreshed(self, container):
         container.min_width = container.content.interface.layout.min_width
         container.min_height = container.content.interface.layout.min_height
 
     def content_inset_change(self):
-        if self._offset_containers:  # pragma: no cover
-            self.top_offset_children()
-        else:  # pragma: no cover
-            self.un_top_offset_children()
+        self.offset_containers()
 
     def add_option(self, index, text, widget, icon=None):
         # Create the container for the widget
