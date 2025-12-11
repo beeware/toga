@@ -19,6 +19,7 @@ try:
     from .widgets.label import Label
     from .widgets.multilinetextinput import MultilineTextInput
     from .widgets.numberinput import NumberInput
+    from .widgets.optioncontainer import OptionContainer
     from .widgets.passwordinput import PasswordInput
     from .widgets.progressbar import ProgressBar
     from .widgets.switch import Switch
@@ -54,6 +55,7 @@ __all__ = [
     "Label",
     "MultilineTextInput",
     "NumberInput",
+    "OptionContainer",
     "PasswordInput",
     "ProgressBar",
     "Switch",
