@@ -1,8 +1,12 @@
 from __future__ import annotations
 
 import string
+import warnings
 
 from .constants import *  # noqa: F403
+
+# Make sure deprecation warnings are shown by default
+warnings.filterwarnings("default", category=DeprecationWarning)
 
 
 def _clamp(value, lower, upper):
@@ -14,6 +18,49 @@ class Color:
 
     Not meant to be used directly.
     """
+
+    @staticmethod
+    def parse(value: Color | str) -> Color:
+        """Parse a color from a value.
+
+        Accepts:
+        * An rgb() or hsl() instance
+        * A named color
+        * '#rgb'
+        * '#rgba'
+        * '#rrggbb'
+        * '#rrggbbaa'
+        """
+
+        # Has to be explicitly Color, not cls; could be called from rgb or hsl
+        if isinstance(value, Color):
+            return value
+
+        elif isinstance(value, str):
+            if result := NAMED_COLOR.get(value.lower()):
+                return result
+
+            pound, *digits = value
+            if pound == "#" and all(d in string.hexdigits for d in digits):
+                if len(digits) in {3, 4}:
+                    r, g, b, *a = digits
+                    return rgb(
+                        r=int(f"{r}{r}", 16),
+                        g=int(f"{g}{g}", 16),
+                        b=int(f"{b}{b}", 16),
+                        a=(int(f"{a[0]}{a[0]}", 16) / 0xFF) if a else 1.0,
+                    )
+
+                elif len(digits) in {6, 8}:
+                    r1, r2, g1, g2, b1, b2, *a = digits
+                    return rgb(
+                        r=int(f"{r1}{r2}", 16),
+                        g=int(f"{g1}{g2}", 16),
+                        b=int(f"{b1}{b2}", 16),
+                        a=(int(f"{a[0]}{a[1]}", 16) / 0xFF) if a else 1.0,
+                    )
+
+        raise ValueError(f"Unknown color: {value!r}")
 
     def __eq__(self, other):
         try:
@@ -332,47 +379,23 @@ class hsl(Color):
 # As in CSS, hsla is simply a direct alias for hsl.
 hsla = hsl
 
+######################################################################
+# 12-2025: Backwards compatibility for Travertino/Toga < 0.5.4
+######################################################################
+
 
 def color(value: Color | str) -> Color:
-    """Parse a color from a value.
+    warnings.warn(
+        "The color() function is deprecated. Use Color.parse() instead.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+    return Color.parse(value)
 
-    Accepts:
-    * An rgb() or hsl() instance
-    * A named color
-    * '#rgb'
-    * '#rgba'
-    * '#rrggbb'
-    * '#rrggbbaa'
-    """
 
-    if isinstance(value, Color):
-        return value
-
-    elif isinstance(value, str):
-        if result := NAMED_COLOR.get(value.lower()):
-            return result
-
-        pound, *digits = value
-        if pound == "#" and all(d in string.hexdigits for d in digits):
-            if len(digits) in {3, 4}:
-                r, g, b, *a = digits
-                return rgb(
-                    r=int(f"{r}{r}", 16),
-                    g=int(f"{g}{g}", 16),
-                    b=int(f"{b}{b}", 16),
-                    a=(int(f"{a[0]}{a[0]}", 16) / 0xFF) if a else 1.0,
-                )
-
-            elif len(digits) in {6, 8}:
-                r1, r2, g1, g2, b1, b2, *a = digits
-                return rgb(
-                    r=int(f"{r1}{r2}", 16),
-                    g=int(f"{g1}{g2}", 16),
-                    b=int(f"{b1}{b2}", 16),
-                    a=(int(f"{a[0]}{a[1]}", 16) / 0xFF) if a else 1.0,
-                )
-
-    raise ValueError(f"Unknown color: {value!r}")
+######################################################################
+# End backwards compatibility
+######################################################################
 
 
 NAMED_COLOR = {

@@ -9,6 +9,7 @@ from .properties import toga_x_text_align
 
 class TextInputProbe(SimpleProbe):
     native_class = Gtk.Entry
+    redo_available = True
 
     @property
     def value(self):

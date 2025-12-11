@@ -5,7 +5,7 @@ from math import pi
 from typing import TYPE_CHECKING, Any
 from warnings import filterwarnings, warn
 
-from toga.colors import BLACK, color as parse_color
+from toga.colors import BLACK, Color
 from toga.constants import Baseline, FillRule
 from toga.fonts import (
     SYSTEM,
@@ -134,9 +134,9 @@ class Fill(DrawingObject):
     @color.setter
     def color(self, value: Color | str | None) -> None:
         if value is None:
-            self._color = parse_color(BLACK)
+            self._color = Color.parse(BLACK)
         else:
-            self._color = parse_color(value)
+            self._color = Color.parse(value)
 
 
 class Stroke(DrawingObject):
@@ -167,9 +167,9 @@ class Stroke(DrawingObject):
     @color.setter
     def color(self, value: Color | str | None) -> None:
         if value is None:
-            self._color = parse_color(BLACK)
+            self._color = Color.parse(BLACK)
         else:
-            self._color = parse_color(value)
+            self._color = Color.parse(value)
 
     @property
     def line_width(self) -> float:

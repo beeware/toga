@@ -6,7 +6,7 @@ from math import pi
 from typing import TYPE_CHECKING, Any
 
 import toga
-from toga.colors import BLACK, color as parse_color
+from toga.colors import BLACK, Color
 from toga.constants import Baseline, FillRule
 from toga.fonts import Font
 
@@ -677,9 +677,9 @@ class FillContext(ClosedPathContext):
     @color.setter
     def color(self, value: Color | str | None) -> None:
         if value is None:
-            self._color = parse_color(BLACK)
+            self._color = Color.parse(BLACK)
         else:
-            self._color = parse_color(value)
+            self._color = Color.parse(value)
 
 
 class StrokeContext(ClosedPathContext):
@@ -754,6 +754,6 @@ class StrokeContext(ClosedPathContext):
     @color.setter
     def color(self, value: object) -> None:
         if value is None:
-            self._color = parse_color(BLACK)
+            self._color = Color.parse(BLACK)
         else:
-            self._color = parse_color(value)
+            self._color = Color.parse(value)
