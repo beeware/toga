@@ -276,7 +276,6 @@ Resources:
     unsupported:
       - web
       - textual
-      - qt
 
   Icon:
     description: A small, square image used to provide easily identifiable visual context to a widget.
