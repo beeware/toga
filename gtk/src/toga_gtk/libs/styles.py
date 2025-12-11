@@ -34,7 +34,7 @@ def get_color_css(value):
         return None
     else:
         return {
-            "color": f"rgb({value.r} {value.g} {value.b} / {value.a})",
+            "color": f"rgb({value.r}, {value.g}, {value.b}, {value.a})",
         }
 
 
@@ -48,7 +48,7 @@ def get_background_color_css(value):
         return None
     else:
         return {
-            "background-color": f"rgb({value.r} {value.g} {value.b} / {value.a})",
+            "background-color": f"rgb({value.r}, {value.g}, {value.b}, {value.a})",
             "background-image": "none",
         }
 
