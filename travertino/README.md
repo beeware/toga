@@ -28,11 +28,11 @@ Then in your python code, import and use it:
 >>> red = rgb(0xff, 0x00, 0x00)
 
 # Parse a color from a string
->>> color('#dead00')
+>>> Color.parse('#dead00')
 rgb(0xde, 0xad, 0x00)
 
 # Reference a pre-defined color
->>> color('RebeccaPurple')
+>>> Color.parse('RebeccaPurple')
 rgb(102, 51, 153)
 ```
 
