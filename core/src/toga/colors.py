@@ -24,14 +24,14 @@ if TYPE_CHECKING:
 
     ```python
     import toga
-    from toga.colors import hsl, rgb, YELLOW
+    from toga.colors import hsl, rgb, REBECCAPURPLE
 
-    toga.Box(color=rgb(255, 255, 0))
-    toga.Box(color=hsl(60, 1, .5))
-    toga.Box(color="yellow")
-    toga.Box(color=YELLOW)
-    toga.Box(color="#FF0")
-    toga.Box(color="#FFFF00")
+    toga.Box(color=rgb(102, 51, 153))
+    toga.Box(color=hsl(270, 0.5, 0.4))
+    toga.Box(color="rebeccapurple")
+    toga.Box(color=REBECCAPURPLE)
+    toga.Box(color="#639")
+    toga.Box(color="#663399")
     ```
 
     None of these specify alpha (transparency), so the color defaults to fully opaque.
@@ -40,10 +40,10 @@ if TYPE_CHECKING:
     to opaque, are *also* equivalent:
 
     ```python
-    toga.Box(color=rgb(255, 255, 0, 1))
-    toga.Box(color=hsl(60, 1, .5, 1))
-    toga.Box(color="#FF0F")
-    toga.Box(color="#FFFF00FF")
+    toga.Box(color=rgb(102, 51, 153, 1.0))
+    toga.Box(color=hsl(270, 0.5, 0.4, 1.0))
+    toga.Box(color="#639")
+    toga.Box(color="#663399FF")
     ```
 
     As is the case in CSS, `rgba` and `hsla` are available as aliases for `rgb` and
