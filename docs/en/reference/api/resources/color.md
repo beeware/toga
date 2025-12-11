@@ -6,7 +6,7 @@ When specifying colors for the [color][pack-color] or [background-color][backgro
 
 - An instance of Toga's [`rgb`][toga.colors.rgb] or [`hsl`][toga.colors.hsl] class.
 - The name of a [CSS named color](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/named-color). Strings of all available color names are available as constants. These constants are named the same as their value, except in all caps, as is the convention for Python constants. In other words, `toga.colors.ORANGE == "orange"`.
-- A string representing the color as [hexadecimal RGB](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/hex-color).
+- A string representing the color as [hexadecimal RGB or RGBA](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/hex-color).
 
 The following color definitions would all be equivalent:
 
