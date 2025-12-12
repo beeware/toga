@@ -2,6 +2,24 @@
 
 {% extends "contribute/how/dev_environment.md" %}
 
+{% block prerequisites_macos %}
+
+View the [macOS prerequisites][macos-prerequisites].
+
+{% endblock %}
+
+{% block prerequisites_linux %}
+
+View the [GTK prerequisites][gtk-prerequisites] or the [Qt prerequisites][qt-prerequisites].
+
+{% endblock %}
+
+{% block prerequisites_windows %}
+
+View the [Windows prerequisites][windows-prerequisites].
+
+{% endblock %}
+
 {% block install_macos_tool %}
 
 ```console
