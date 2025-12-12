@@ -100,7 +100,6 @@ General widgets:
     unsupported:
       - web
       - textual
-      - qt
 
   NumberInput:
     description: A text input that is limited to numeric input.
