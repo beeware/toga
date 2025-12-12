@@ -106,8 +106,7 @@ class Widget:
         self.native.setPalette(palette)
 
     def set_font(self, font):
-        # Not implemented yet
-        pass
+        self.native.setFont(font._impl.native)
 
     ######################################################################
     # INTERFACE
