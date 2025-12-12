@@ -106,19 +106,24 @@ def test_get_current_platform_freebsd(monkeypatch, value):
 
 def _get_platform_factory():
     get_platform_factory.cache_clear()
+    get_backend_and_factory.cache_clear()
     factory = get_platform_factory()
     get_platform_factory.cache_clear()
+    get_backend_and_factory.cache_clear()
     return factory
 
 
 def _get_backend_and_factory():
+    get_platform_factory.cache_clear()
     get_backend_and_factory.cache_clear()
     backend, factory = get_backend_and_factory()
+    get_platform_factory.cache_clear()
     get_backend_and_factory.cache_clear()
     return backend, factory
 
 
 def _import_backend_and_factory():
+    get_platform_factory.cache_clear()
     get_backend_and_factory.cache_clear()
     if hasattr(toga.platform, "backend"):
         del toga.platform.backend
@@ -126,11 +131,12 @@ def _import_backend_and_factory():
         del toga.platform.factory
     from toga.platform import backend, factory
 
-    get_backend_and_factory.cache_clear()
     if hasattr(toga.platform, "backend"):
         del toga.platform.backend
     if hasattr(toga.platform, "factory"):
         del toga.platform.factory
+    get_platform_factory.cache_clear()
+    get_backend_and_factory.cache_clear()
     return backend, factory
 
 
