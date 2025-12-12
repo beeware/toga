@@ -14,6 +14,7 @@ try:
     from .widgets.activityindicator import ActivityIndicator
     from .widgets.box import Box
     from .widgets.button import Button
+    from .widgets.dateinput import DateInput
     from .widgets.imageview import ImageView
     from .widgets.label import Label
     from .widgets.multilinetextinput import MultilineTextInput
@@ -21,6 +22,7 @@ try:
     from .widgets.progressbar import ProgressBar
     from .widgets.switch import Switch
     from .widgets.textinput import TextInput
+    from .widgets.timeinput import TimeInput
     from .window import MainWindow, Window
 except ModuleNotFoundError as exc:  # pragma: no cover
     if exc.name == "PySide6":
@@ -44,6 +46,7 @@ __all__ = [
     "MainWindow",
     "Command",
     "Button",
+    "DateInput",
     "Font",
     "Container",
     "Box",
@@ -53,6 +56,7 @@ __all__ = [
     "ProgressBar",
     "Switch",
     "TextInput",
+    "TimeInput",
     "ImageView",
     "dialogs",
 ]

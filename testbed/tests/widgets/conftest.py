@@ -9,7 +9,7 @@ import pytest
 import toga
 from toga.style.pack import TOP
 
-from ..conftest import skip_on_platforms, xfail_on_platforms
+from ..conftest import skip_on_backends, skip_on_platforms, xfail_on_platforms
 from .probe import get_probe
 
 
@@ -120,10 +120,12 @@ def build_cleanup_test(
     kwargs=None,
     skip_platforms=(),
     xfail_platforms=(),
+    skip_backends=(),
 ):
     async def test_cleanup():
         skip_on_platforms(*skip_platforms)
         xfail_on_platforms(*xfail_platforms, reason="Leaks memory")
+        skip_on_backends(*skip_backends)
 
         local_args = () if args is None else args
         local_kwargs = {} if kwargs is None else kwargs
