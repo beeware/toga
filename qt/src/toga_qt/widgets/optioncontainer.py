@@ -21,10 +21,11 @@ class OptionContainer(Widget):
         sub_container.content = widget
 
         self.sub_containers.insert(index, sub_container)
-        if icon is not None:
-            self.native.insertTab(index, sub_container.native, icon._impl.native, text)
-        else:
+        if icon is None:
             self.native.insertTab(index, sub_container.native, text)
+        else:  # pragma: nocover
+            # This shouldn't ever be invoked, but it's included for completeness.
+            self.native.insertTab(index, sub_container.native, icon._impl.native, text)
 
     def remove_option(self, index):
         self.native.removeTab(index)
