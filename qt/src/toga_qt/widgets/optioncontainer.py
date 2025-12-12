@@ -11,13 +11,14 @@ class OptionContainer(Widget):
     def create(self):
         self.native = QTabWidget()
         self.native.currentChanged.connect(self.qt_current_changed)
+
         self.sub_containers = []
 
     def qt_current_changed(self, *args):
         self.interface.on_select()
 
     def add_option(self, index, text, widget, icon):
-        sub_container = Container()
+        sub_container = Container(on_refresh=self.content_refreshed)
         sub_container.content = widget
 
         self.sub_containers.insert(index, sub_container)
@@ -67,3 +68,22 @@ class OptionContainer(Widget):
         self.interface.intrinsic.height = at_least(
             max(size.height(), self.interface._MIN_HEIGHT)
         )
+
+    def set_bounds(self, x, y, width, height):
+        super().set_bounds(x, y, width, height)
+        for item in self.interface.content:
+            item.content.refresh()
+
+    def content_refreshed(self, container):
+        min_width = min(
+            sub_container.content.interface.layout.min_width
+            for sub_container in self.sub_containers
+        )
+        min_height = min(
+            sub_container.content.interface.layout.min_height
+            for sub_container in self.sub_containers
+        )
+        for sub_container in self.sub_containers:
+            sub_container.native.setMinimumSize(min_width, min_height)
+            sub_container.min_width = min_width
+            sub_container.min_height = min_height
