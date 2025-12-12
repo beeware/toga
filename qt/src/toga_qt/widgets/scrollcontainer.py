@@ -97,5 +97,3 @@ class ScrollContainer(Widget):
         min_width = self.interface.content.layout.min_width
         min_height = self.interface.content.layout.min_height
         self.document_container.native.setMinimumSize(min_width, min_height)
-        self.document_container.min_width = min_width
-        self.document_container.min_height = min_height
