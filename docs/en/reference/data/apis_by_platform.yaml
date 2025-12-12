@@ -57,7 +57,6 @@ General widgets:
       - web
     unsupported:
       - textual
-      - qt
 
   DetailedList:
     description: An ordered list of content where each item has an icon, a main heading, and a line of supplementary text.
@@ -100,14 +99,12 @@ General widgets:
     unsupported:
       - web
       - textual
-      - qt
 
   NumberInput:
     description: A text input that is limited to numeric input.
     unsupported:
       - web
       - textual
-      - qt
 
   PasswordInput:
     description: A widget to allow the entry of a password. Any value typed by the user will be obscured, allowing the user to see the number of characters they have typed, but not the actual characters.
@@ -115,7 +112,6 @@ General widgets:
       - web
     unsupported:
       - textual
-      - qt
 
   ProgressBar:
     description: A horizontal bar to visualize task progress. The task being monitored can be of known or indeterminate length.
@@ -123,7 +119,6 @@ General widgets:
       - web
     unsupported:
       - textual
-      - qt
 
   Selection:
     description: A widget to select a single option from a list of alternatives.
@@ -170,7 +165,6 @@ General widgets:
       - web
     unsupported:
       - gtk
-      - qt
 
   Tree:
     description: A widget for displaying a hierarchical tree of tabular data.
@@ -243,13 +237,16 @@ Resources:
       - web
 
   Command:
-    description: A representation of app functionality that the user can invoke from
-      menus or toolbars.
+    description: A representation of app functionality that the user can invoke from menus or toolbars.
     display: table
     unsupported:
       - iOS
       - web
       - textual
+
+  Color:
+    description: A representation of a color.
+    display: hide
 
   Dialogs:
     description: Short-lived windows asking the user for input.
@@ -275,7 +272,6 @@ Resources:
     unsupported:
       - web
       - textual
-      - qt
 
   Icon:
     description: A small, square image used to provide easily identifiable visual context to a widget.

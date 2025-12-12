@@ -94,7 +94,7 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v6.0.0
+      uses: actions/checkout@v6.0.1
       with:
         fetch-depth: 0
 
@@ -146,7 +146,7 @@ jobs:
             tox-suffix: "-trav"
     steps:
     - name: Checkout
-      uses: actions/checkout@v6.0.0
+      uses: actions/checkout@v6.0.1
       with:
         fetch-depth: 0
 
@@ -184,7 +184,7 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v6.0.0
+      uses: actions/checkout@v6.0.1
       with:
         fetch-depth: 0
 
@@ -498,7 +498,7 @@ jobs:
       uses: smorimoto/tune-github-hosted-runner-network@v1.0.0
 
     - name: Checkout
-      uses: actions/checkout@v6.0.0
+      uses: actions/checkout@v6.0.1
       with:
         fetch-depth: 0
 
@@ -583,7 +583,7 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v6.0.0
+      uses: actions/checkout@v6.0.1
       with:
         fetch-depth: 0
 
