@@ -1,4 +1,4 @@
-from toga.colors import rgba
+from toga.colors import rgb
 from toga.style.pack import CENTER, JUSTIFY, LEFT, RIGHT
 from toga_cocoa.libs.appkit import (
     NSCenterTextAlignment,
@@ -10,7 +10,7 @@ from toga_cocoa.libs.appkit import (
 
 def toga_color(color):
     if color:
-        return rgba(
+        return rgb(
             color.redComponent * 255,
             color.greenComponent * 255,
             color.blueComponent * 255,

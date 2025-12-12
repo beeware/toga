@@ -556,7 +556,7 @@ __all__ = [
     "rgb",
     "hsla",
     "hsl",
-    "color",
+    "color",  # Backwards compatibility for Toga < 0.5.0
     "NAMED_COLOR",
     "TRANSPARENT",  # noqa: F405
 ] + [name.upper() for name in NAMED_COLOR]
