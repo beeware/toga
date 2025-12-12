@@ -1,4 +1,3 @@
-import asyncio
 import json
 import webbrowser
 from http.cookiejar import Cookie, CookieJar
@@ -199,7 +198,7 @@ class WebView(Widget):
                 if isinstance(result, bool):
                     # on_navigation_starting handler is synchronous
                     allow = result
-                elif isinstance(result, asyncio.Future):
+                else:
                     # on_navigation_starting handler is asynchronous
                     # deny the navigation until the user himself or the user
                     # defined on_navigation_starting handler has allowed it

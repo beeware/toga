@@ -1,5 +1,3 @@
-import asyncio
-
 from android.webkit import WebResourceRequest, WebView as A_WebView, WebViewClient
 from java import Override, jboolean, static_proxy
 
@@ -27,7 +25,7 @@ class TogaWebClient(static_proxy(WebViewClient)):
                 if isinstance(result, bool):
                     # on_navigation_starting handler is synchronous
                     allow = result
-                elif isinstance(result, asyncio.Future):
+                else:
                     # on_navigation_starting handler is asynchronous
                     # deny the navigation until the user himself or the user
                     # defined on_navigation_starting handler has allowed it
