@@ -113,7 +113,7 @@ def _get_platform_factory():
 
 def _get_backend_and_factory():
     get_backend_and_factory.cache_clear()
-    backend, factory = get_platform_factory()
+    backend, factory = get_backend_and_factory()
     get_backend_and_factory.cache_clear()
     return backend, factory
 
@@ -124,7 +124,8 @@ def _import_backend_and_factory():
         del toga.platform.backend
     if hasattr(toga.platform, "factory"):
         del toga.platform.factory
-    backend, factory = get_platform_factory()
+    from toga.platform import backend, factory
+
     get_backend_and_factory.cache_clear()
     if hasattr(toga.platform, "backend"):
         del toga.platform.backend
