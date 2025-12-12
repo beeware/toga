@@ -20,5 +20,10 @@ class OptionContainerProbe(SimpleProbe):
         return
 
     def assert_tab_icon(self, index, expected):
-        # No tab icons, so if anything is returned, that's an error
-        assert self.widget.content[index].icon is None
+        actual = self.impl.get_option_icon(index)
+        if expected is None:
+            assert actual is None
+        else:
+            assert actual is not None
+            assert actual.path.name == expected
+            assert actual._impl.path.name == f"{expected}-linux.png"

@@ -15,6 +15,7 @@ class Icon:
     SIZES = None
 
     def __init__(self, interface, path):
+        print("---> icon", path)
         # A QApplication must exist before pixmaps can be manipulated
         create_qapplication()
         self.interface = interface
@@ -42,6 +43,6 @@ class Icon:
         if self.native.isNull():
             raise ValueError(f"Unable to load icon from {path}")
 
-        IMPL_DICT[self.native] = self
+        IMPL_DICT[self.native.cacheKey()] = self
 
         self.path = path

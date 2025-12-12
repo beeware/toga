@@ -2,11 +2,12 @@ from PySide6.QtWidgets import QTabWidget
 from travertino.size import at_least
 
 from ..container import Container
+from ..icons import IMPL_DICT
 from .base import Widget
 
 
 class OptionContainer(Widget):
-    uses_icons = False
+    uses_icons = True
 
     def create(self):
         self.native = QTabWidget()
@@ -17,15 +18,14 @@ class OptionContainer(Widget):
     def qt_current_changed(self, *args):
         self.interface.on_select()
 
-    def add_option(self, index, text, widget, icon):
+    def add_option(self, index, text, widget, icon=None):
         sub_container = Container(on_refresh=self.content_refreshed)
         sub_container.content = widget
 
         self.sub_containers.insert(index, sub_container)
         if icon is None:
             self.native.insertTab(index, sub_container.native, text)
-        else:  # pragma: nocover
-            # This shouldn't ever be invoked, but it's included for completeness.
+        else:
             self.native.insertTab(index, sub_container.native, icon._impl.native, text)
 
     def remove_option(self, index):
@@ -45,14 +45,15 @@ class OptionContainer(Widget):
     def get_option_text(self, index):
         return self.native.tabText(index)
 
-    def set_option_icon(self, index, value):  # pragma: nocover
-        # This shouldn't ever be invoked, but it's included for completeness.
+    def set_option_icon(self, index, value):
         self.native.setTabIcon(index, value._impl.native)
 
     def get_option_icon(self, index):
-        # Icons aren't supported right now
-        # return self.native.tabIcon(index)
-        return None
+        impl = IMPL_DICT.get(self.native.tabIcon(index).cacheKey(), None)
+        if impl is None:
+            return None
+        else:
+            return impl.interface
 
     def get_current_tab_index(self):
         return self.native.currentIndex()
