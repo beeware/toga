@@ -1,6 +1,6 @@
 import pytest
 
-from travertino.colors import Color, color, hsl, rgb, rgba
+from travertino.colors import Color, color, hsl, rgb
 
 from ..utils import assert_equal_color
 
@@ -11,7 +11,7 @@ def assert_parsed_equal_color(actual, expected):
 
 
 def test_noop():
-    assert_parsed_equal_color(rgba(1, 2, 3, 0.5), rgba(1, 2, 3, 0.5))
+    assert_parsed_equal_color(rgb(1, 2, 3, 0.5), rgb(1, 2, 3, 0.5))
     assert_parsed_equal_color(hsl(1, 0.2, 0.3), hsl(1, 0.2, 0.3))
 
 
