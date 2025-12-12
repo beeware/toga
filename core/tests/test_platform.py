@@ -6,7 +6,12 @@ import pytest
 
 import toga.platform
 import toga_dummy
-from toga.platform import current_platform, get_current_platform, get_platform_factory
+from toga.platform import (
+    current_platform,
+    get_backend_and_factory,
+    get_current_platform,
+    get_platform_factory,
+)
 
 
 @pytest.fixture
@@ -106,6 +111,28 @@ def _get_platform_factory():
     return factory
 
 
+def _get_backend_and_factory():
+    get_backend_and_factory.cache_clear()
+    backend, factory = get_platform_factory()
+    get_backend_and_factory.cache_clear()
+    return backend, factory
+
+
+def _import_backend_and_factory():
+    get_backend_and_factory.cache_clear()
+    if hasattr(toga.platform, "backend"):
+        del toga.platform.backend
+    if hasattr(toga.platform, "factory"):
+        del toga.platform.factory
+    backend, factory = get_platform_factory()
+    get_backend_and_factory.cache_clear()
+    if hasattr(toga.platform, "backend"):
+        del toga.platform.backend
+    if hasattr(toga.platform, "factory"):
+        del toga.platform.factory
+    return backend, factory
+
+
 def test_no_platforms(monkeypatch, clean_env):
     patch_platforms(monkeypatch, [])
     with pytest.raises(
@@ -114,12 +141,32 @@ def test_no_platforms(monkeypatch, clean_env):
     ):
         _get_platform_factory()
 
+    with pytest.raises(
+        RuntimeError,
+        match=r"No Toga backend could be loaded.",
+    ):
+        _get_backend_and_factory()
+
+    with pytest.raises(
+        RuntimeError,
+        match=r"No Toga backend could be loaded.",
+    ):
+        _import_backend_and_factory()
+
 
 def test_one_platform_installed(monkeypatch, clean_env):
     only_platform_factory = Mock()
     patch_platforms(monkeypatch, [("only_platform", only_platform_factory, False)])
 
     factory = _get_platform_factory()
+    assert factory == only_platform_factory
+
+    backend, factory = _get_backend_and_factory()
+    assert backend == "only_platform_module"
+    assert factory == only_platform_factory
+
+    backend, factory = _import_backend_and_factory()
+    assert backend == "only_platform_module"
     assert factory == only_platform_factory
 
 
@@ -135,6 +182,14 @@ def test_multiple_platforms_installed(monkeypatch, clean_env):
     )
 
     factory = _get_platform_factory()
+    assert factory == current_platform_factory
+
+    backend, factory = _get_backend_and_factory()
+    assert backend == "current_platform_module"
+    assert factory == current_platform_factory
+
+    backend, factory = _import_backend_and_factory()
+    assert backend == "current_platform_module"
     assert factory == current_platform_factory
 
 
@@ -159,6 +214,26 @@ def test_multiple_platforms_installed_fail_both_appropriate(monkeypatch, clean_e
     ):
         _get_platform_factory()
 
+    with pytest.raises(
+        RuntimeError,
+        match=(
+            r"Multiple candidate toga backends found: \('current_platform_1_module' "
+            r"\(.*\), 'current_platform_2_module' \(.*\)\). Uninstall the backends you "
+            r"don't require, or use TOGA_BACKEND to specify a backend."
+        ),
+    ):
+        _get_backend_and_factory()
+
+    with pytest.raises(
+        RuntimeError,
+        match=(
+            r"Multiple candidate toga backends found: \('current_platform_1_module' "
+            r"\(.*\), 'current_platform_2_module' \(.*\)\). Uninstall the backends you "
+            r"don't require, or use TOGA_BACKEND to specify a backend."
+        ),
+    ):
+        _import_backend_and_factory()
+
 
 def test_multiple_platforms_installed_fail_none_appropriate(monkeypatch, clean_env):
     other_platform_factory_1 = Mock()
@@ -182,10 +257,40 @@ def test_multiple_platforms_installed_fail_none_appropriate(monkeypatch, clean_e
     ):
         _get_platform_factory()
 
+    with pytest.raises(
+        RuntimeError,
+        match=(
+            r"Multiple Toga backends are installed \('other_platform_1_module' "
+            r"\(.*\), 'other_platform_2_module' \(.*\)\), but none of them match "
+            r"your current platform \('.*'\). Install a backend for your current "
+            r"platform, or use TOGA_BACKEND to specify a backend."
+        ),
+    ):
+        _get_backend_and_factory()
+
+    with pytest.raises(
+        RuntimeError,
+        match=(
+            r"Multiple Toga backends are installed \('other_platform_1_module' "
+            r"\(.*\), 'other_platform_2_module' \(.*\)\), but none of them match "
+            r"your current platform \('.*'\). Install a backend for your current "
+            r"platform, or use TOGA_BACKEND to specify a backend."
+        ),
+    ):
+        _import_backend_and_factory()
+
 
 def test_environment_variable(monkeypatch):
     monkeypatch.setenv("TOGA_BACKEND", "toga_dummy")
     assert toga_dummy.factory == _get_platform_factory()
+
+    backend, factory = _get_backend_and_factory()
+    assert backend == backend
+    assert factory == toga_dummy.factory
+
+    backend, factory = _import_backend_and_factory()
+    assert backend == backend
+    assert factory == toga_dummy.factory
 
 
 def test_environment_variable_fail(monkeypatch):
@@ -196,3 +301,17 @@ def test_environment_variable_fail(monkeypatch):
         r"\('fake_platform_module'\) could not be loaded.",
     ):
         _get_platform_factory()
+
+    with pytest.raises(
+        RuntimeError,
+        match=r"The backend specified by TOGA_BACKEND "
+        r"\('fake_platform_module'\) could not be loaded.",
+    ):
+        _get_backend_and_factory()
+
+    with pytest.raises(
+        RuntimeError,
+        match=r"The backend specified by TOGA_BACKEND "
+        r"\('fake_platform_module'\) could not be loaded.",
+    ):
+        _import_backend_and_factory()
