@@ -34,21 +34,21 @@ def get_color_css(value):
         return None
     else:
         return {
-            "color": f"rgb({value.r}, {value.g}, {value.b}, {value.a})",
+            "color": f"rgba({value.r}, {value.g}, {value.b}, {value.a})",
         }
 
 
 def get_background_color_css(value):
     if value == TRANSPARENT:
         return {
-            "background-color": "rgb(0, 0, 0, 0)",
+            "background-color": "rgba(0, 0, 0, 0)",
             "background-image": "none",
         }
     elif value is None:
         return None
     else:
         return {
-            "background-color": f"rgb({value.r}, {value.g}, {value.b}, {value.a})",
+            "background-color": f"rgba({value.r}, {value.g}, {value.b}, {value.a})",
             "background-image": "none",
         }
 
