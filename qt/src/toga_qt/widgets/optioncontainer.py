@@ -46,7 +46,10 @@ class OptionContainer(Widget):
         return self.native.tabText(index)
 
     def set_option_icon(self, index, value):
-        self.native.setTabIcon(index, value._impl.native)
+        if value is None:
+            self.native.setTabIcon(index, value)
+        else:
+            self.native.setTabIcon(index, value._impl.native)
 
     def get_option_icon(self, index):
         impl = IMPL_DICT.get(self.native.tabIcon(index).cacheKey(), None)
