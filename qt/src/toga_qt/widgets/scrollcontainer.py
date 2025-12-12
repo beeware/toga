@@ -95,7 +95,6 @@ class ScrollContainer(Widget):
             self.interface.content.refresh()
 
     def content_refreshed(self, container):
-        if self.interface.content is not None:
-            min_width = self.interface.content.layout.min_width
-            min_height = self.interface.content.layout.min_height
-            self.document_container.native.setMinimumSize(min_width, min_height)
+        min_width = self.interface.content.layout.min_width
+        min_height = self.interface.content.layout.min_height
+        self.document_container.native.setMinimumSize(min_width, min_height)
