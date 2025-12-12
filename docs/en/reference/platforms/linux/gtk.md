@@ -61,7 +61,7 @@ $ export TOGA_GTKLIB=Adw
 ```
 Most testing occurs with libadwaita 1.5, as this is the version that ships with Ubuntu 24.04.
 
-Integration with libhelium of tauOS and Granite of elementaryOS is planned.
+We have no immediate plans to integrate with tauOS's libhelium or elementaryOS's Granite, but we're open to contributions adding support for these libraries.
 
 ## Implementation details
 
