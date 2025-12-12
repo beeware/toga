@@ -76,4 +76,4 @@ If you have any concerns about this code of conduct, or you wish to report a vio
 
 ### Contributing
 
-If you experience problems with Toga, [log them on GitHub](https://github.com/beeware/toga/issues). If you want to contribute code, please follow the [Toga code contribution guide](how-to/contribute/code.md). For documentation contributions, follow the [Toga docs contribution guide](how-to/contribute/docs.md).
+If you experience problems with Toga, [log them on GitHub](https://github.com/beeware/toga/issues). If you want to contribute to Toga, you can read through the [Toga contribution guides](how-to/contribute/index.md).
