@@ -47,6 +47,8 @@ If you're not using one of these, you'll need to work out how to install the dev
 
 In addition to the dependencies above, if you would like to help add additional support for GTK4, you need to also install `gir1.2-gtk-4.0` on Ubuntu/Debian, or `gtk4` on Fedora or Arch. For other distributions, consult your distribution's platform documentation.
 
+If you would like to run the GTK4 backend with libadwaita on GNOME, install `gir1.2-adw-1` on Ubuntu/Debian or `libadwaita` on Fedora or Arch. For other distributions, consult your distribution's platform documentation.
+
 Some widgets (most notably, the [WebView][webview-system-requires] and [MapView][mapview-system-requires] widgets) have additional system requirements. Likewise, certain hardware features ([Location][location-system-requires]) have system requirements.
 
 See the documentation of those widgets and hardware features for details.
