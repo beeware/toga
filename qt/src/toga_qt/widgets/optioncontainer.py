@@ -1,3 +1,4 @@
+from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QTabWidget
 from travertino.size import at_least
 
@@ -47,7 +48,7 @@ class OptionContainer(Widget):
 
     def set_option_icon(self, index, value):
         if value is None:
-            self.native.setTabIcon(index, value)
+            self.native.setTabIcon(index, QIcon())
         else:
             self.native.setTabIcon(index, value._impl.native)
 
