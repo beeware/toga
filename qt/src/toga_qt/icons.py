@@ -15,7 +15,6 @@ class Icon:
     SIZES = None
 
     def __init__(self, interface, path):
-        print("---> icon", path)
         # A QApplication must exist before pixmaps can be manipulated
         create_qapplication()
         self.interface = interface
