@@ -62,6 +62,7 @@ dependencies = [
 [project.optional-dependencies]
 pyside6 = [
     "PySide6-Essentials == 6.10.1",
+    "PySide6-Addons == 6.10.1",
 ]
 
 [tool.coverage.run]

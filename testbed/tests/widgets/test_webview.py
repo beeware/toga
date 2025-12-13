@@ -194,12 +194,21 @@ async def test_static_content(widget, probe, on_load):
     """Static content can be loaded into the page."""
     widget.set_content("https://example.com/", "<h1>Nice page</h1>")
 
+    # What do we expect to get back as the reported URL?
+    if not probe.content_supports_url:
+        return None
+    elif probe.static_data_url:
+        # Qt sets url to a data url
+        url = "data:text/html;charset=UTF-8,%3Ch1%3ENice page%3C%2Fh1%3E"
+    else:
+        url = "https://example.com/"
+
     # DOM loads aren't instantaneous; wait for the URL to appear
     await assert_content_change(
         widget,
         probe,
         message="Webview has static content",
-        url="https://example.com/" if probe.content_supports_url else None,
+        url=url,
         content="<h1>Nice page</h1>",
         on_load=on_load,
     )
