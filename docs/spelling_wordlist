@@ -47,6 +47,7 @@ dev
 dialogs
 Diataxis
 Django
+DLL
 DLLs
 DLNA
 DocumentWindow
@@ -54,6 +55,7 @@ DOM
 dotfiles
 dp
 draggable
+Embedder
 Flatpak
 Flexbox
 FreeBSD
@@ -86,6 +88,7 @@ instantiation
 iOS
 iterable
 KDE
+KWin
 linters
 ListSource
 macOS
@@ -110,6 +113,7 @@ OTF
 Pango
 parameterization
 PasswordInput
+PDB
 PIL
 platformer
 PNG
@@ -130,8 +134,10 @@ PyInstaller
 PyPI
 pyPlayground
 PyScript
+PySide
 pytest
 pythonic
+Qt's
 QuickLook
 Quickstart
 radiusx
@@ -144,6 +150,7 @@ RemoteCommand
 Ren
 resizable
 reStructuredText
+RGB
 RGBA
 rumdl
 runtime

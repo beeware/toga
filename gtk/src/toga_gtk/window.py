@@ -10,6 +10,13 @@ from toga.window import _initial_position
 
 from .container import TogaContainer
 from .libs import GTK_VERSION, IS_WAYLAND, Gdk, GLib, Gtk
+
+if GTK_VERSION >= (4, 0, 0):  # pragma: no-cover-if-gtk3
+    from toga.handlers import WeakrefCallable
+
+    from .libs import hook_up_vfunc_implementation
+    from .libs.utils import create_toga_native
+
 from .screens import Screen as ScreenImpl
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -22,6 +29,9 @@ class Window:
         self.interface._impl = self
 
         self.layout = None
+
+        if GTK_VERSION >= (4, 0, 0):  # pragma: no-cover-if-gtk3
+            self._window_size = Size(0, 0)
 
         self.create()
         self.native._impl = self
@@ -42,10 +52,17 @@ class Window:
             self.native.connect("window-state-event", self.gtk_window_state_event)
             self.native.connect("focus-in-event", self.gtk_focus_in_event)
             self.native.connect("focus-out-event", self.gtk_focus_out_event)
+            self.native.connect("configure-event", self.gtk_configure_event)
         else:  # pragma: no-cover-if-gtk3
             self.native.connect("notify::fullscreened", self.gtk_window_state_event)
             self.native.connect("notify::maximized", self.gtk_window_state_event)
             self.native.connect("notify::minimized", self.gtk_window_state_event)
+            # do_size_allocate is a virtual function, used to track window resize.
+            hook_up_vfunc_implementation(
+                self.native.do_size_allocate.__func__,
+                self.native.__gtype__,
+                WeakrefCallable(self.gtk_do_size_allocate),
+            )
 
         self._window_state_flags = None
         self._in_presentation = False
@@ -60,17 +77,17 @@ class Window:
         # Set the window deletable/closable.
         self.native.set_deletable(self.interface.closable)
 
-        # Added to set Window Resizable - removes Window Maximize button from
-        # Window Decorator when resizable == False
+        # Added to set Window Resizable - removes Window Maximize button from Window
+        # Decorator when resizable == False
         self.native.set_resizable(self.interface.resizable)
 
-        # The GTK window's content is the layout; any user content is placed
-        # into the container, which is the bottom widget in the layout. The
-        # toolbar (if required) will be added at the top of the layout.
+        # The GTK window's content is the layout; any user content is placed into the
+        # container, which is the bottom widget in the layout. The toolbar(if required)
+        # will be added at the top of the layout.
         self.layout = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
 
-        # Because expand and fill are True, the container will fill the available
-        # space, and will get a size_allocate callback if the window is resized.
+        # Because expand and fill are True, the container will fill the available space,
+        # and will get a size_allocate callback if the window is resized.
         self.container = TogaContainer()
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             self.layout.pack_end(self.container, expand=True, fill=True, padding=0)
@@ -82,11 +99,34 @@ class Window:
             self.native.set_child(self.layout)
 
     def create(self):
-        self.native = Gtk.Window()
+        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            self.native = Gtk.Window()
+        else:  # pragma: no-cover-if-gtk3
+            self.native = create_toga_native(Gtk.Window)()
 
     ######################################################################
     # Native event handlers
     ######################################################################
+    if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+
+        def gtk_configure_event(self, widget, data):  # pragma: no-cover-if-gtk4
+            self.interface.on_resize()
+
+    else:  # pragma: no-cover-if-gtk3
+
+        def gtk_do_size_allocate(
+            self, native, width, height, baseline
+        ):  # pragma: no-cover-if-gtk3
+            if self._window_size != (width, height):
+                self._window_size = Size(width, height)
+                self.interface.on_resize()
+
+            # Note: Virtual methods can't use super() to access the original
+            # implementation, so they must use native.base_class instead.
+
+            # Call the parent class's size_allocate via native.base_class.
+            native.base_class.do_size_allocate(native, width, height, baseline)
+
     def gtk_show(self, widget):
         self.interface.on_show()
 
@@ -105,10 +145,9 @@ class Window:
             self._window_state_flags = None
         current_state = self.get_window_state()
 
-        # Window state flags are unreliable when window is hidden,
-        # so cache the previous window state flag on to the new
-        # window state flag, so that get_window_state() would work
-        # correctly.
+        # Window state flags are unreliable when window is hidden, so cache the previous
+        # window state flag on to the new window state flag, so that get_window_state
+        # () would work correctly.
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             if not self.get_visible():
                 restore_flags = {
@@ -123,10 +162,9 @@ class Window:
         else:  # pragma: no-cover-if-gtk3
             pass
 
-        # Trigger the appropriate visibility events
-        # Wayland doesn't allow for the detection of MINIMIZED, so the
-        # visibility events will not be triggered when the window will
-        # be minimized or un-minimized.
+        # Trigger the appropriate visibility events Wayland doesn't allow for the
+        # detection of MINIMIZED, so the visibility events will not be triggered when
+        # the window will be minimized or un-minimized.
         if previous_state != current_state:
             if (
                 previous_state == WindowState.MINIMIZED
@@ -141,15 +179,14 @@ class Window:
         if self._pending_state_transition:
             if current_state != WindowState.NORMAL:
                 if self._pending_state_transition != current_state:
-                    # Add a 10ms delay to wait for the native window state
-                    # operation to complete to prevent glitching on wayland
-                    # during rapid state switching.
+                    # Add a 10ms delay to wait for the native window state operation to
+                    # complete to prevent glitching on wayland during rapid state
+                    # switching.
                     #
-                    # Ideally, we should use a native operation-completion
-                    # callback event or a reliable native signal, but on
-                    # testing none of the currently available gtk APIs or
-                    # signals work reliably.
-                    # For a list of native gtk APIs that were tested but didn't work:
+                    # Ideally, we should use a native operation-completion callback
+                    # event or a reliable native signal, but on testing none of the
+                    # currently available gtk APIs or signals work reliably. For a list
+                    # of native gtk APIs that were tested but didn't work:
                     # https://github.com/beeware/toga/pull/2473#discussion_r1833741222
                     #
                     if IS_WAYLAND:  # pragma: no-cover-if-linux-x
@@ -228,12 +265,10 @@ class Window:
 
     def get_size(self) -> Size:
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
-            width, height = self.native.get_default_size()
             size = self.native.get_size()
             return Size(size.width, size.height)
         else:  # pragma: no-cover-if-gtk3
-            width, height = self.native.get_default_size()
-            return Size(width, height)
+            return self._window_size
 
     def set_size(self, size: SizeT):
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
@@ -258,16 +293,16 @@ class Window:
             pos = self.native.get_position()
             return Position(pos.root_x, pos.root_y)
         else:  # pragma: no-cover-if-gtk3
-            # GTK4 no longer has an API to get position
-            # since it isn't supported by Wayland
+            # GTK4 no longer has an API to get position since it isn't supported by
+            # Wayland
             return Position(0, 0)
 
     def set_position(self, position: PositionT):
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
             self.native.move(position[0], position[1])
         else:  # pragma: no-cover-if-gtk3
-            # GTK4 no longer has an API to set position
-            # since it isn't supported by Wayland
+            # GTK4 no longer has an API to set position since it isn't supported by
+            # Wayland
             pass
 
     ######################################################################
@@ -332,8 +367,8 @@ class Window:
             if self._pending_state_transition:
                 self._pending_state_transition = state
             else:
-                # If the app is in presentation mode, but this window isn't, then
-                # exit app presentation mode before setting the requested state.
+                # If the app is in presentation mode, but this window isn't, then exit
+                # app presentation mode before setting the requested state.
                 if any(
                     window.state == WindowState.PRESENTATION
                     and window != self.interface
@@ -349,10 +384,9 @@ class Window:
 
     def _apply_state(self, target_state):
         if target_state is None:  # pragma: no cover
-            # This is OS delay related and is only sometimes triggered
-            # when there is a delay in processing the states by the OS.
-            # Hence, this branch cannot be consistently reached by the
-            # testbed coverage.
+            # This is OS delay related and is only sometimes triggered when there is a
+            # delay in processing the states by the OS. Hence, this branch cannot be
+            # consistently reached by the testbed coverage.
             return
 
         current_state = self.get_window_state()
@@ -360,46 +394,48 @@ class Window:
             self._pending_state_transition = None
             return
 
-        elif target_state == WindowState.MAXIMIZED:
-            self.native.maximize()
+        match current_state, target_state:
+            case _, WindowState.MAXIMIZED:
+                self.native.maximize()
 
-        elif target_state == WindowState.MINIMIZED:  # pragma: no-cover-if-linux-wayland
-            if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
-                self.native.iconify()
-            else:  # pragma: no-cover-if-gtk3
-                self.native.minimize()
+            case _, WindowState.MINIMIZED:  # pragma: no-cover-if-linux-wayland
+                if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+                    self.native.iconify()
+                else:  # pragma: no-cover-if-gtk3
+                    self.native.minimize()
 
-        elif target_state == WindowState.FULLSCREEN:
-            self.native.fullscreen()
+            case _, WindowState.FULLSCREEN:
+                self.native.fullscreen()
 
-        elif target_state == WindowState.PRESENTATION:
-            self._before_presentation_mode_screen = self.interface.screen
-            if isinstance(self.native, Gtk.ApplicationWindow):
-                self.native.set_show_menubar(False)
-            if getattr(self, "native_toolbar", None):
-                self.native_toolbar.set_visible(False)
-            self.native.fullscreen()
-            self._in_presentation = True
+            case _, WindowState.PRESENTATION:
+                self._before_presentation_mode_screen = self.interface.screen
+                if isinstance(self.native, Gtk.ApplicationWindow):
+                    self.native.set_show_menubar(False)
+                if getattr(self, "native_toolbar", None):
+                    self.native_toolbar.set_visible(False)
+                self.native.fullscreen()
+                self._in_presentation = True
 
-        else:  # target_state == WindowState.NORMAL:
-            if current_state == WindowState.MAXIMIZED:
+            case WindowState.MAXIMIZED, WindowState.NORMAL:
                 self.native.unmaximize()
 
-            elif (
-                current_state == WindowState.MINIMIZED
+            case (
+                WindowState.MINIMIZED,
+                WindowState.NORMAL,
             ):  # pragma: no-cover-if-linux-wayland
                 # deiconify() doesn't work
                 self.native.present()
 
-            elif current_state == WindowState.FULLSCREEN:
+            case WindowState.FULLSCREEN, WindowState.NORMAL:
                 self.native.unfullscreen()
 
-            else:  # current_state == WindowState.PRESENTATION:
+            case _:  # PRESENTATION -> NORMAL:
                 if isinstance(self.native, Gtk.ApplicationWindow):
                     self.native.set_show_menubar(True)
                 if getattr(self, "native_toolbar", None):
                     self.native_toolbar.set_visible(True)
                 self.native.unfullscreen()
+                self._window_state_flags = None
                 self.interface.screen = self._before_presentation_mode_screen
                 del self._before_presentation_mode_screen
                 self._in_presentation = False
@@ -444,8 +480,8 @@ class Window:
 
 class MainWindow(Window):
     def create(self):
-        self.native = Gtk.ApplicationWindow()
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
+            self.native = Gtk.ApplicationWindow()
             self.native.set_role("MainWindow")
 
             self.native_toolbar = Gtk.Toolbar()
@@ -453,7 +489,7 @@ class MainWindow(Window):
             self.toolbar_items = {}
             self.toolbar_separators = set()
         else:  # pragma: no-cover-if-gtk3
-            pass
+            self.native = create_toga_native(Gtk.ApplicationWindow)()
 
     def create_menus(self):
         # GTK menus are handled at the app level

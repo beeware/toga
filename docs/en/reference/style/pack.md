@@ -132,9 +132,9 @@ If 3 integers are provided, the first value will be used as the top margin, the 
 
 If 4 integers are provided, they will be used as the top, right, bottom and left margin, respectively.
 
-### `color`
+### `color` { #pack-color }
 
-**Value:** a color or `None`
+**Value:** a [color][toga.colors.ColorT] or `None`
 
 **Initial value:** `None`; will use the system default
 
@@ -144,7 +144,7 @@ Some objects may not use the value.
 
 ### `background_color`
 
-**Value:** a color, `"transparent"`, or `None`
+**Value:** a [color][toga.colors.ColorT], `"transparent"`, or `None`
 
 **Initial value:** `None`; will use the system default
 

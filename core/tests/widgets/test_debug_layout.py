@@ -1,7 +1,7 @@
 import pytest
-from travertino.colors import color
 
 import toga
+from toga.colors import Color
 from toga.widgets.base import DEBUG_BACKGROUND_PALETTE
 
 
@@ -63,5 +63,5 @@ def test_box_debug_backgrounds(use_class_var, monkeypatch):
     # Add 3 for coverage of debug_background_palette array index rollover.
     for index in range(color_index, color_index + palette_length + 3):
         box = toga.Box()
-        background_color = color(DEBUG_BACKGROUND_PALETTE[index % palette_length])
+        background_color = Color.parse(DEBUG_BACKGROUND_PALETTE[index % palette_length])
         assert box.background_color == background_color

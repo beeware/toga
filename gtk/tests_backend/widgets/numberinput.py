@@ -12,6 +12,7 @@ class NumberInputProbe(SimpleProbe):
     allows_invalid_value = False
     allows_empty_value = False
     allows_extra_digits = False
+    allows_unchanged_updates = True
 
     if GTK_VERSION >= (4, 0, 0):
         pytest.skip("GTK4 doesn't support number input yet")

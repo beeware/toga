@@ -1,5 +1,6 @@
 from android.graphics import Color
-from travertino.colors import TRANSPARENT
+
+from toga.colors import TRANSPARENT
 
 CACHE = {TRANSPARENT: Color.TRANSPARENT}
 
@@ -8,9 +9,7 @@ def native_color(c):
     try:
         color = CACHE[c]
     except KeyError:
-        color = Color.argb(
-            int(c.rgba.a * 255), int(c.rgba.r), int(c.rgba.g), int(c.rgba.b)
-        )
+        color = Color.argb(int(c.rgb.a * 255), int(c.rgb.r), int(c.rgb.g), int(c.rgb.b))
         CACHE[c] = color
 
     return color

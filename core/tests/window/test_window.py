@@ -435,6 +435,40 @@ def test_window_state(window, initial_state, final_state):
     window.on_show = Mock()
     window.on_hide = Mock()
     assert window.state == WindowState.NORMAL
+    window_on_resize_handler = Mock()
+    window.on_resize = window_on_resize_handler
+
+    closure_exception = None
+
+    def check_initial_state_size(window):
+        nonlocal closure_exception
+        try:
+            assert window.size > previous_state_window_size
+        except Exception as e:
+            closure_exception = e
+
+    def check_final_state_size(window):
+        nonlocal closure_exception
+        try:
+            if initial_state == WindowState.NORMAL:
+                assert window.size > previous_state_window_size
+            elif initial_state == WindowState.MAXIMIZED:
+                if final_state == WindowState.NORMAL:
+                    assert window.size < previous_state_window_size
+                else:
+                    assert window.size > previous_state_window_size
+            elif initial_state == WindowState.FULLSCREEN:
+                if final_state in {WindowState.NORMAL, WindowState.MAXIMIZED}:
+                    assert window.size < previous_state_window_size
+                else:
+                    assert window.size > previous_state_window_size
+            elif initial_state == WindowState.PRESENTATION:
+                assert window.size < previous_state_window_size
+        except Exception as e:
+            closure_exception = e
+
+    previous_state_window_size = window.size
+    window_on_resize_handler.side_effect = check_initial_state_size
 
     window.state = initial_state
     assert window.state == initial_state
@@ -448,6 +482,9 @@ def test_window_state(window, initial_state, final_state):
             f"set window state to {initial_state}",
             state=initial_state,
         )
+    # Check and raise exceptions that may have occurred inside closures.
+    if closure_exception:
+        raise closure_exception
 
     # Check for visibility event notification
     if initial_state == WindowState.MINIMIZED:
@@ -460,6 +497,9 @@ def test_window_state(window, initial_state, final_state):
         # was set to a visible-to-user(not minimized) state.
         assert_window_on_show(window, trigger_expected=False)
 
+    previous_state_window_size = window.size
+    window_on_resize_handler.side_effect = check_final_state_size
+
     window.state = final_state
     assert window.state == final_state
     assert_action_performed_with(
@@ -467,6 +507,9 @@ def test_window_state(window, initial_state, final_state):
         f"set window state to {final_state}",
         state=final_state,
     )
+    # Check and raise exceptions that may have occurred inside closures.
+    if closure_exception:
+        raise closure_exception
 
     # Check for visibility event notification
     if initial_state == WindowState.MINIMIZED:
@@ -767,6 +810,34 @@ def test_visibility_events(window):
 
     window.show()
     assert_window_on_show(window)
+
+
+def test_resize_event(window):
+    """The on_resize() event handler is triggered when the window size is changed."""
+    window.show()
+    assert window.on_resize._raw is None
+    window_on_resize_handler = Mock()
+    window.on_resize = window_on_resize_handler
+    assert window.on_resize._raw == window_on_resize_handler
+    initial_size = window.size
+
+    # Resize the window, on_resize() will be triggered
+    window.size = (200, 150)
+    assert window.size == (200, 150)
+    window_on_resize_handler.assert_called_with(window)
+    window_on_resize_handler.reset_mock()
+
+    # Resize to initial size, on_resize() will be triggered
+    window.size = initial_size
+    assert window.size == initial_size
+    window_on_resize_handler.assert_called_with(window)
+    window_on_resize_handler.reset_mock()
+
+    # Again request for resizing to initial size, on_resize()
+    # will not be triggered
+    window.size = initial_size
+    assert window.size == initial_size
+    window_on_resize_handler.assert_not_called()
 
 
 def test_as_image(window):

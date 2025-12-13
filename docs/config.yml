@@ -4,7 +4,8 @@ not_in_nav: |
   /index.md
   reference/api/widgets/table-values.md
   reference/api/widgets/table-accessors.md
-  reference/platforms/unix-prerequisites.md
+  reference/platforms/linux/gtk-prerequisites.md
+  reference/platforms/linux/qt-prerequisites.md
 
 validation:
   omitted_files: warn
@@ -103,6 +104,9 @@ plugins:
             - https://docs.python.org/3/objects.inv
             - https://pillow.readthedocs.io/en/stable/objects.inv
           options:
+            preload_modules:
+              - travertino
+              - toga
             docstring_style: sphinx  # Parses docstrings from Sphinx formatting - the `:param` formatting, not parsing rST links
             allow_inspection: false  # True includes *more* dunder methods, can be enabled on individual class entries if you want them
             show_source: false  # Otherwise, source code is shown collapsed for all

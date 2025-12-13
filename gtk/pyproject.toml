@@ -10,7 +10,7 @@ build-backend = "setuptools.build_meta"
 dynamic = ["version", "dependencies"]
 name = "toga-gtk"
 description = "A GTK backend for the Toga widget toolkit."
-readme = "README.rst"
+readme = "README.md"
 requires-python = ">= 3.10"
 license = "BSD-3-Clause"
 license-files = [
@@ -51,10 +51,10 @@ classifiers = [
 [project.urls]
 Homepage = "https://beeware.org/project/projects/libraries/toga/"
 Funding = "https://beeware.org/contributing/membership/"
-Documentation = "https://toga.readthedocs.io/"
+Documentation = "https://toga.beeware.org/"
 Tracker = "https://github.com/beeware/toga/issues"
 Source = "https://github.com/beeware/toga"
-Changelog = "https://toga.readthedocs.io/en/stable/background/project/releases"
+Changelog = "https://toga.beeware.org/en/stable/background/project/releases"
 
 [project.entry-points."toga.backends"]
 linux = "toga_gtk"
@@ -65,10 +65,25 @@ root = ".."
 
 [tool.setuptools_dynamic_dependencies]
 dependencies = [
+    # Packaging is part of core Python infrastructure, so no version pin is needed.
+    # It is needed to moderate PyGObject version requirements.
+    "packaging",
     "pycairo >= 1.17.0",
     # PyGObject 3.50.0 is the first version with native GTK asyncio integration.
+    #
+    # A version < 3.52.1 is required to support Debian 12 and other distributions that
+    # don't provide libgirepository 2.0.
+    #
+    # However, GTK4 requires the use of a virtual function implementation that is only
+    # available on 3.52.1 and higher. The GTK4 requirement is satisfied with an optional
+    # dependency.
     "pygobject >= 3.50.0",
     "toga-core == {version}",
+]
+
+[project.optional-dependencies]
+gtk4 = [
+    "pygobject >= 3.52.1",
 ]
 
 [tool.coverage.run]

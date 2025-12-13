@@ -94,8 +94,11 @@ class Button(Widget):
             # after a line break (if provided)
             value = str(value).split("\n")[0]
 
-        self._impl.set_text(value)
+        # Set the icon first, so it is clear to implementations such as
+        # GTK4 that the text is explicitly set as nothing, instead of an
+        # artifact of clearing the icon.
         self._impl.set_icon(None)
+        self._impl.set_text(value)
         self.refresh()
 
     @property

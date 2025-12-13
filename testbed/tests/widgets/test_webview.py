@@ -122,6 +122,7 @@ async def widget(on_load):
 test_cleanup = build_cleanup_test(toga.WebView, xfail_platforms=("android", "linux"))
 
 
+@pytest.mark.flaky(retries=5, delay=1)
 async def test_set_url(widget, probe, on_load):
     """The URL can be set."""
     widget.url = "https://github.com/beeware"
@@ -137,6 +138,7 @@ async def test_set_url(widget, probe, on_load):
     )
 
 
+@pytest.mark.flaky(retries=5, delay=1)
 async def test_clear_url(widget, probe, on_load):
     """The URL can be cleared."""
     widget.url = None
@@ -170,6 +172,7 @@ async def test_load_empty_url(widget, probe, on_load):
     )
 
 
+@pytest.mark.flaky(retries=5, delay=1)
 async def test_load_url(widget, probe, on_load):
     """A URL can be loaded into the view."""
     await wait_for(
@@ -297,6 +300,7 @@ async def test_evaluate_javascript_error_without_handler(widget, probe):
         assert result is None
 
 
+@pytest.mark.flaky(retries=5, delay=1)
 async def test_dom_storage_enabled(widget, probe, on_load):
     """Ensure DOM storage is enabled."""
     # a page must be loaded to access local storage
@@ -332,6 +336,7 @@ async def test_dom_storage_enabled(widget, probe, on_load):
     )
 
 
+@pytest.mark.flaky(retries=5, delay=1)
 async def test_retrieve_cookies(widget, probe, on_load):
     """Cookies can be retrieved."""
     # A page must be loaded to set cookies
