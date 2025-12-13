@@ -1,11 +1,10 @@
-import platform
-
 from rubicon.objc import SEL, objc_method, objc_property
 from travertino.size import at_least
 
 import toga
 from toga_iOS.container import ControlledContainer
 from toga_iOS.libs import (
+    IOS_VERSION,
     UIDevice,
     UITabBarController,
     UITabBarItem,
@@ -86,10 +85,12 @@ class OptionContainer(Widget):
         # FIXME:  Bug with reordering causing crash
         self.native_controller.customizableViewControllers = None
 
-        if int(platform.release().split(".")[0]) < 26:  # pragma: no branch
-            # Make it translucent; without this call, there will not be
-            # a bottom bar at all.
-            self.native_controller.tabBar.setTranslucent(True)
+        if IOS_VERSION < (26, 0, 0):  # pragma: no branch
+            # Make it non-translucent.  It *should* be translucent,
+            # but some layout issues prevent that from happening
+            # and it shows transparently.  We can live with this, though,
+            # as the situation is mostly resolved for iOS 26+.
+            self.native_controller.tabBar.setTranslucent(False)
             self.native_controller.extendedLayoutIncludesOpaqueBars = True
 
         # The native widget representing the container is the view of the native

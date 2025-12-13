@@ -1,6 +1,7 @@
 from rubicon.objc import SEL, objc_method, objc_property, send_super
 
 from .libs import (
+    IOS_VERSION,
     UIApplication,
     UINavigationController,
     UIView,
@@ -46,7 +47,7 @@ class TogaContainerView(UIView):
         if (
             self.bounds.size.width,
             self.bounds.size.height,
-        ) != self.container.last_refreshed_size:
+        ) != self.container.last_refreshed_size and self.container.resize_refresh:
             self.container.last_refreshed_size = (
                 self.bounds.size.width,
                 self.bounds.size.height,
@@ -69,6 +70,7 @@ class BaseContainer:
         self.additional_top_offset = 0
         self._automatic_un_top_offset_able = True
         self.on_inset_change = None
+        self.resize_refresh = False
 
         self.last_refreshed_size = (0, 0)
 
@@ -110,7 +112,13 @@ class BaseContainer:
     @property
     def un_top_offset_able(self):
         if self._automatic_un_top_offset_able:
-            return self.top_offset
+            if IOS_VERSION < (26, 0, 0):
+                # Behavior for whether tab bar has blur
+                # is unresolved in the general case with Toga's
+                # usage.
+                return 0
+            else:
+                return self.top_offset
         return self._un_top_offset_able
 
     @un_top_offset_able.setter

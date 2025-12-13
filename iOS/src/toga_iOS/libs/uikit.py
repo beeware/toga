@@ -9,6 +9,9 @@ from rubicon.objc import ObjCClass, ObjCProtocol, objc_const
 from toga.constants import CENTER, JUSTIFY, LEFT, RIGHT
 from toga_iOS.libs.core_graphics import CGContextRef
 
+UINavigationBarAppearance = ObjCClass("UINavigationBarAppearance")
+UITabBarAppearance = ObjCClass("UITabBarAppearance")
+
 ######################################################################
 uikit = cdll.LoadLibrary(util.find_library("UIKit"))
 ######################################################################
