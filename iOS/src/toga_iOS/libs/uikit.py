@@ -9,6 +9,9 @@ from rubicon.objc import ObjCClass, ObjCProtocol, objc_const
 from toga.constants import CENTER, JUSTIFY, LEFT, RIGHT
 from toga_iOS.libs.core_graphics import CGContextRef
 
+UINavigationBarAppearance = ObjCClass("UINavigationBarAppearance")
+UITabBarAppearance = ObjCClass("UITabBarAppearance")
+
 ######################################################################
 uikit = cdll.LoadLibrary(util.find_library("UIKit"))
 ######################################################################
@@ -543,3 +546,19 @@ class UIDatePickerMode(IntEnum):
     DateAndTime = 2
     CountDownTimer = 3
     YearAndMonth = 4
+
+
+######################################################################
+# UIDevice.h
+
+UIDevice = ObjCClass("UIDevice")
+
+
+class UIUserInterfaceIdiom(IntEnum):
+    Unspecified = -1
+    Phone = 0
+    Pad = 1
+    TV = 2
+    CarPlay = 3
+    Mac = 5
+    Vision = 6

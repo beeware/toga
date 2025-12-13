@@ -53,6 +53,7 @@ class Window:
     def create_container(self):
         # RootContainer provides a titlebar for the window.
         self.container = RootContainer(on_refresh=self.content_refreshed)
+        self.container.resize_refresh = True
 
     ######################################################################
     # Window properties
@@ -235,6 +236,7 @@ class MainWindow(Window):
     def create_container(self):
         # NavigationContainer provides a titlebar for the window.
         self.container = NavigationContainer(on_refresh=self.content_refreshed)
+        self.container.resize_refresh = True
 
     def create_toolbar(self):
         # No toolbar handling at present

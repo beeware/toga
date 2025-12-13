@@ -38,11 +38,18 @@ class Constraints:
             # the native object of the window's container to be deleted on the ObjC
             # side before the constraints for the window have been removed. Protect
             # against this possibility.
-            if self.container.native:
+            # Also protect against the possibility that the constraints have
+            # already been cleared.
+            if self.container.native and self.width_constraint:
                 self.container.native.removeConstraint(self.width_constraint)
                 self.container.native.removeConstraint(self.height_constraint)
                 self.container.native.removeConstraint(self.left_constraint)
                 self.container.native.removeConstraint(self.top_constraint)
+
+                self.width_constraint = None
+                self.height_constraint = None
+                self.left_constraint = None
+                self.top_constraint = None
 
     @property
     def container(self):
@@ -50,16 +57,29 @@ class Constraints:
 
     @container.setter
     def container(self, value):
-        # This will *always* remove and then add constraints. It relies on the base
-        # widget to *not* invoke this setter unless the container is actually changing.
-
+        # This will *always* remove constraints. It relies on the base
+        # widget to *not* invoke this setter unless the container is
+        # actually changing.  New constraints are added when a relayout
+        # is done and we have updated.
         self._remove_constraints()
         self._container = value
-        if value is not None:
-            # print(
-            #     f"Add constraints for {self.widget} in {self.container}"
-            #     f"{self.widget.interface.layout}"
-            # )
+
+    def update(self, x, y, width, height):
+        # print(
+        #     f"UPDATE CONSTRAINTS {self.widget} in {self.container} "
+        #     f"{width}x{height}@{x},{y}"
+        # )
+        y += self.container.top_offset
+
+        if self.width_constraint:
+            # We already have constraints set up; reuse them.
+            self.left_constraint.constant = x
+            self.top_constraint.constant = y
+
+            self.width_constraint.constant = width
+            self.height_constraint.constant = height
+
+        else:
             self.left_constraint = NSLayoutConstraint.constraintWithItem(
                 self.widget.native,
                 attribute__1=NSLayoutAttributeLeft,
@@ -67,7 +87,7 @@ class Constraints:
                 toItem=self.container.native,
                 attribute__2=NSLayoutAttributeLeft,
                 multiplier=1.0,
-                constant=10,  # Use a dummy, non-zero value for now
+                constant=x,  # Use a dummy, non-zero value for now
             )
             self.container.native.addConstraint(self.left_constraint)
 
@@ -78,7 +98,7 @@ class Constraints:
                 toItem=self.container.native,
                 attribute__2=NSLayoutAttributeTop,
                 multiplier=1.0,
-                constant=5,  # Use a dummy, non-zero value for now
+                constant=y,  # Use a dummy, non-zero value for now
             )
             self.container.native.addConstraint(self.top_constraint)
 
@@ -89,7 +109,7 @@ class Constraints:
                 toItem=self.widget.native,
                 attribute__2=NSLayoutAttributeLeft,
                 multiplier=1.0,
-                constant=50,  # Use a dummy, non-zero value for now
+                constant=width,  # Use a dummy, non-zero value for now
             )
             self.container.native.addConstraint(self.width_constraint)
 
@@ -100,17 +120,6 @@ class Constraints:
                 toItem=self.widget.native,
                 attribute__2=NSLayoutAttributeTop,
                 multiplier=1.0,
-                constant=30,  # Use a dummy, non-zero value for now
+                constant=height,  # Use a dummy, non-zero value for now
             )
             self.container.native.addConstraint(self.height_constraint)
-
-    def update(self, x, y, width, height):
-        # print(
-        #     f"UPDATE CONSTRAINTS {self.widget} in {self.container} "
-        #     f"{width}x{height}@{x},{y}"
-        # )
-        self.left_constraint.constant = x
-        self.top_constraint.constant = y
-
-        self.width_constraint.constant = width
-        self.height_constraint.constant = height
