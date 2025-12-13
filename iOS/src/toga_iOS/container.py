@@ -2,7 +2,6 @@ from rubicon.objc import SEL, objc_method, objc_property, send_super
 
 from .libs import (
     IOS_VERSION,
-    UIApplication,
     UINavigationController,
     UIView,
     UIViewAutoresizing,
@@ -27,8 +26,8 @@ class TogaContainerView(UIView):
         # Container width and height updated.
         if self.container.on_inset_change:
             self.container.on_inset_change()
-        if self.container._safe_bottom:
-            self.performSelector(SEL("refreshContent"), withObject=None, afterDelay=0)
+        # if self.container._safe_bottom:
+        #    self.performSelector(SEL("refreshContent"), withObject=None, afterDelay=0)
 
     @objc_method
     def refreshContent(self):
@@ -112,13 +111,7 @@ class BaseContainer:
     @property
     def un_top_offset_able(self):
         if self._automatic_un_top_offset_able:
-            if IOS_VERSION < (26, 0, 0):
-                # Behavior for whether tab bar has blur
-                # is unresolved in the general case with Toga's
-                # usage.
-                return 0
-            else:
-                return self.top_offset
+            return 0
         return self._un_top_offset_able
 
     @un_top_offset_able.setter
@@ -276,10 +269,13 @@ class RootContainer(Container):
     # The testbed app won't instantiate a simple app, so we can't test these properties
     @property
     def top_offset(self):  # pragma: no cover
-        return (
-            UIApplication.sharedApplication.statusBarFrame.size.height
-            + self.additional_top_offset
-        )
+        if self.native.window():
+            return (
+                self.native.window().windowScene.statusBarManager.statusBarFrame.size.height
+                + self.additional_top_offset
+            )
+        else:
+            return self.additional_top_offset
 
     @property
     def title(self):  # pragma: no cover
@@ -343,3 +339,15 @@ class NavigationContainer(Container):
     @title.setter
     def title(self, value):
         self.controller.topViewController.title = value
+
+    @property
+    def un_top_offset_able(self):
+        if self._automatic_un_top_offset_able:
+            if IOS_VERSION < (26, 0, 0):
+                # Behavior for whether tab bar has blur
+                # is unresolved in the general case with Toga's
+                # usage.
+                return 0
+            else:
+                return self.top_offset
+        return self._un_top_offset_able

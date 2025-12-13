@@ -62,6 +62,8 @@ class TogaTabBarController(UITabBarController):
         # Ensure the correct width/height in case of nested tab bars.
         self.view.setNeedsLayout()
         self.view.layoutIfNeeded()
+        controller.view.setNeedsLayout()
+        controller.view.layoutIfNeeded()
 
         # Recalculate child container offset.
         self.impl.offset_containers()
@@ -124,7 +126,6 @@ class OptionContainer(Widget):
         is_phone = (
             UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiom.Phone
         )
-        nav_bar_height = self.native_controller.moreNavigationController.navigationBar.frame.size.height  # noqa: E501
         top_safe_inset = (
             self.native_controller.selectedViewController.view.safeAreaInsets.top
         )
@@ -134,15 +135,16 @@ class OptionContainer(Widget):
                 if self._top_un_offset:
                     container.un_top_offset_able = self.container.un_top_offset_able
                     if container.top_bar:
-                        container.additional_top_offset = (
-                            self.container.un_top_offset_able + nav_bar_height
-                        )
-                        container.un_top_offset_able += nav_bar_height
+                        # There's no good way to monitor for the navigation bar's frame
+                        # change; so we monitor it along with the safe area insets.
+
+                        container.additional_top_offset = top_safe_inset
+                        container.un_top_offset_able = top_safe_inset
                     else:
                         container.additional_top_offset = self.container.top_offset
                 else:
                     container.additional_top_offset = (
-                        nav_bar_height if container.top_bar else 0
+                        top_safe_inset if container.top_bar else 0
                     )
                     container.un_top_offset_able = container.additional_top_offset
             else:
@@ -150,18 +152,18 @@ class OptionContainer(Widget):
                 # inconsistent when I resize the window.  But the corners are small
                 # to be of any impact anyways.
                 container.additional_top_offset = top_safe_inset
-                container.un_top_offset_able = (
-                    top_safe_inset
-                    if self._top_un_offset
-                    else container.additional_top_offset
-                )
+                container.un_top_offset_able = top_safe_inset
 
     def content_refreshed(self, container):
         container.min_width = container.content.interface.layout.min_width
         container.min_height = container.content.interface.layout.min_height
 
     def content_inset_change(self):
-        self.offset_containers()
+        self.native_controller.performSelector(
+            SEL("refreshContent:"),
+            withObject=self.native_controller.selectedViewController,
+            afterDelay=0,
+        )
 
     def add_option(self, index, text, widget, icon=None):
         # Create the container for the widget
