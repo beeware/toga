@@ -1,3 +1,5 @@
+import weakref
+
 from android.webkit import WebResourceRequest, WebView as A_WebView, WebViewClient
 from java import Override, jboolean, static_proxy
 
@@ -5,7 +7,11 @@ from java import Override, jboolean, static_proxy
 class TogaWebClient(static_proxy(WebViewClient)):
     def __init__(self, impl):
         super().__init__()
-        self.webview_impl = impl
+        self._webview_impl_ref = weakref.ref(impl)
+
+    @property
+    def webview_impl(self):
+        return self._webview_impl_ref()
 
     @Override(jboolean, [A_WebView, WebResourceRequest])
     def shouldOverrideUrlLoading(self, webview, webresourcerequest):
