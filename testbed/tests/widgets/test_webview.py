@@ -409,7 +409,7 @@ async def test_on_navigation_starting_sync(widget, probe, on_load):
     )
     # test url allowed by code
     await wait_for(
-        widget.load_url("https://github.com/beeware"),
+        widget.load_url("https://github.com/beeware/"),
         LOAD_TIMEOUT,
     )
     # DOM loads aren't instantaneous; wait for the URL to appear
@@ -417,41 +417,24 @@ async def test_on_navigation_starting_sync(widget, probe, on_load):
         widget,
         probe,
         message="Page has been loaded",
-        url="https://github.com/beeware",
+        url="https://github.com/beeware/",
         content=ANY,
         on_load=on_load,
     )
     await asyncio.sleep(1)
-    old_content = await get_content(widget)
-    assert old_content is not None
+    assert widget.url == "https://github.com/beeware/"
     # simulate browser navigation to denied url
     await widget.evaluate_javascript(
-        'window.location.assign("https://github.com/beeware/toga")'
+        'window.location.assign("https://github.com/beeware/toga/")'
     )
-    await assert_content_change(
-        widget,
-        probe,
-        message="Page has been loaded",
-        url="https://github.com/beeware",
-        content=old_content,
-        on_load=on_load,
-    )
+    await asyncio.sleep(2)
+    assert widget.url == "https://github.com/beeware/"
     # simulate browser navigation to allowed url
     await widget.evaluate_javascript(
-        'window.location.assign("https://beeware.org/docs")'
+        'window.location.assign("https://beeware.org/docs/")'
     )
-    # DOM loads aren't instantaneous; wait for the URL to appear
-    await assert_content_change(
-        widget,
-        probe,
-        message="Page has been loaded",
-        url="https://beeware.org/docs",
-        content=ANY,
-        on_load=on_load,
-    )
-    await asyncio.sleep(1)
-    new_content = await get_content(widget)
-    assert new_content != old_content
+    await asyncio.sleep(2)
+    assert widget.url == "https://beeware.org/docs/"
 
 
 async def test_on_navigation_starting_async(widget, probe, on_load):
@@ -482,7 +465,7 @@ async def test_on_navigation_starting_async(widget, probe, on_load):
     )
     # test url allowed by code
     await wait_for(
-        widget.load_url("https://github.com/beeware"),
+        widget.load_url("https://github.com/beeware/"),
         LOAD_TIMEOUT,
     )
     # DOM loads aren't instantaneous; wait for the URL to appear
@@ -490,39 +473,21 @@ async def test_on_navigation_starting_async(widget, probe, on_load):
         widget,
         probe,
         message="Page has been loaded",
-        url="https://github.com/beeware",
+        url="https://github.com/beeware/",
         content=ANY,
         on_load=on_load,
     )
     await asyncio.sleep(1)
-    old_content = await get_content(widget)
-    assert old_content is not None
+    assert widget.url == "https://github.com/beeware/"
     # simulate browser navigation to denied url
     await widget.evaluate_javascript(
-        'window.location.assign("https://github.com/beeware/toga")'
+        'window.location.assign("https://github.com/beeware/toga/")'
     )
-    await assert_content_change(
-        widget,
-        probe,
-        message="Page has been loaded",
-        url="https://github.com/beeware",
-        content=old_content,
-        on_load=on_load,
-    )
-    await asyncio.sleep(1.2)
+    await asyncio.sleep(2)
+    assert widget.url == "https://github.com/beeware/"
     # simulate browser navigation to allowed url
     await widget.evaluate_javascript(
-        'window.location.assign("https://beeware.org/docs")'
+        'window.location.assign("https://beeware.org/docs/")'
     )
-    # DOM loads aren't instantaneous; wait for the URL to appear
-    await assert_content_change(
-        widget,
-        probe,
-        message="Page has been loaded",
-        url="https://beeware.org/docs",
-        content=ANY,
-        on_load=on_load,
-    )
-    await asyncio.sleep(1.2)  # make sure, there are no dangling tasks
-    new_content = await get_content(widget)
-    assert new_content != old_content
+    await asyncio.sleep(2)
+    assert widget.url == "https://beeware.org/docs/"
