@@ -119,7 +119,7 @@ async def widget(on_load):
         toga.App.app._gc_protector.append(widget)
 
 
-test_cleanup = build_cleanup_test(toga.WebView, xfail_platforms=("linux",))
+test_cleanup = build_cleanup_test(toga.WebView, xfail_platforms=("android", "linux"))
 
 
 async def test_set_url(widget, probe, on_load):

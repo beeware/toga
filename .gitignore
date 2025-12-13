@@ -48,3 +48,4 @@ mprofile_*.dat
 
 # Briefcase log files.
 briefcase.*.log
+~*
