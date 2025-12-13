@@ -17,25 +17,15 @@ class TogaWebClient(static_proxy(WebViewClient)):
     def shouldOverrideUrlLoading(self, webview, webresourcerequest):
         if self.webview_impl.interface.on_navigation_starting:
             url = webresourcerequest.getUrl().toString()
-            # check URL permission
-            if (
-                self.webview_impl.interface._url_allowed == "about:blank"
-                or self.webview_impl.interface._url_allowed == url
-            ):
-                # URL is allowed by user code
-                allow = True
+            result = self.webview_impl.interface.on_navigation_starting(url=url)
+            if isinstance(result, bool):
+                # on_navigation_starting handler is synchronous
+                allow = result
             else:
-                # allow the URL only once
-                self.webview_impl.interface._url_allowed = None
-                result = self.webview_impl.interface.on_navigation_starting(url=url)
-                if isinstance(result, bool):
-                    # on_navigation_starting handler is synchronous
-                    allow = result
-                else:
-                    # on_navigation_starting handler is asynchronous
-                    # deny the navigation until the user himself or the user
-                    # defined on_navigation_starting handler has allowed it
-                    allow = False
+                # on_navigation_starting handler is asynchronous
+                # deny the navigation until the user himself or the user
+                # defined on_navigation_starting handler has allowed it
+                allow = False
             if not allow:
                 return True
         return False
