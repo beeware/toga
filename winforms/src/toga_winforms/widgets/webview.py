@@ -135,6 +135,10 @@ class WebView(Widget):
             settings.IsSwipeNavigationEnabled = False
             settings.IsZoomControlEnabled = True
 
+            self.native.CoreWebView2.NavigationStarting += WeakrefCallable(
+                self.winforms_navigation_starting
+            )
+
             for task in self.pending_tasks:
                 task()
             self.pending_tasks = None
@@ -177,6 +181,31 @@ class WebView(Widget):
         if self.loaded_future:
             self.loaded_future.set_result(None)
             self.loaded_future = None
+
+    def winforms_navigation_starting(self, sender, event):
+        if self.interface.on_navigation_starting:
+            # check URL permission
+            if (
+                self.interface._url_allowed == "about:blank"
+                or self.interface._url_allowed == event.Uri
+            ):
+                # URL is allowed by user code
+                allow = True
+            else:
+                # allow the URL only once
+                self.interface._url_allowed = None
+                result = self.interface.on_navigation_starting(url=event.Uri)
+                if isinstance(result, bool):
+                    # on_navigation_starting handler is synchronous
+                    allow = result
+                else:
+                    # on_navigation_starting handler is asynchronous
+                    # deny the navigation until the user himself or the user
+                    # defined on_navigation_starting handler has allowed it
+                    allow = False
+            if not allow:
+                # Deny navigation
+                event.Cancel = True
 
     def get_url(self):
         source = self.native.Source
