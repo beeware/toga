@@ -13,7 +13,6 @@ class WebViewProbe(SimpleProbe):
     content_supports_url = True
     javascript_supports_exception = True
     supports_on_load = True
-    static_data_url = False
 
     if GTK_VERSION >= (4, 0, 0):
         pytest.skip("GTK4 doesn't support trees yet")
