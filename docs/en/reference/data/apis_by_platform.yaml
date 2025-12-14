@@ -181,7 +181,6 @@ General widgets:
     unsupported:
       - web
       - textual
-      - qt
 
   Widget:
     description: The abstract base class of all widgets. This class should not be be instantiated directly.

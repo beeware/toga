@@ -11,6 +11,7 @@ class WebViewProbe(SimpleProbe):
     content_supports_url = False
     javascript_supports_exception = False
     supports_on_load = False
+    static_data_url = False
 
     def extract_cookie(self, cookie_jar, name):
         assert isinstance(cookie_jar, CookieJar)

@@ -24,6 +24,7 @@ try:
     from .widgets.switch import Switch
     from .widgets.textinput import TextInput
     from .widgets.timeinput import TimeInput
+    from .widgets.webview import WebView
     from .window import MainWindow, Window
 except ModuleNotFoundError as exc:  # pragma: no cover
     if exc.name == "PySide6":
@@ -59,6 +60,7 @@ __all__ = [
     "Switch",
     "TextInput",
     "TimeInput",
+    "WebView",
     "ImageView",
     "dialogs",
 ]

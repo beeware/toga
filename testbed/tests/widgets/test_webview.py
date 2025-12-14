@@ -109,7 +109,7 @@ async def widget(on_load):
 
     yield widget
 
-    if toga.platform.current_platform == "linux":
+    if toga.platform.get_platform_factory().__package__ == "toga_gtk":
         # On Gtk, ensure that the MapView evades garbage collection by keeping a
         # reference to it in the app. The WebKit2 WebView will raise a SIGABRT if the
         # thread disposing of it is not the same thread running the event loop. Since
@@ -118,7 +118,7 @@ async def widget(on_load):
         toga.App.app._gc_protector.append(widget)
 
 
-test_cleanup = build_cleanup_test(toga.WebView, xfail_platforms=("linux",))
+test_cleanup = build_cleanup_test(toga.WebView, xfail_backends=("toga_gtk",))
 
 
 @pytest.mark.flaky(retries=5, delay=1)
@@ -194,12 +194,21 @@ async def test_static_content(widget, probe, on_load):
     """Static content can be loaded into the page."""
     widget.set_content("https://example.com/", "<h1>Nice page</h1>")
 
+    # What do we expect to get back as the reported URL?
+    if not probe.content_supports_url:
+        return None
+    elif probe.static_data_url:
+        # Qt sets url to a data url
+        url = "data:text/html;charset=UTF-8,%3Ch1%3ENice page%3C%2Fh1%3E"
+    else:
+        url = "https://example.com/"
+
     # DOM loads aren't instantaneous; wait for the URL to appear
     await assert_content_change(
         widget,
         probe,
         message="Webview has static content",
-        url="https://example.com/" if probe.content_supports_url else None,
+        url=url,
         content="<h1>Nice page</h1>",
         on_load=on_load,
     )
