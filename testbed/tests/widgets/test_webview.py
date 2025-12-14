@@ -109,7 +109,7 @@ async def widget(on_load):
 
     yield widget
 
-    if toga.platform.current_platform == "linux":
+    if toga.platform.get_platform_factory().__package__ == "toga_gtk":
         # On Gtk, ensure that the MapView evades garbage collection by keeping a
         # reference to it in the app. The WebKit2 WebView will raise a SIGABRT if the
         # thread disposing of it is not the same thread running the event loop. Since
@@ -118,7 +118,7 @@ async def widget(on_load):
         toga.App.app._gc_protector.append(widget)
 
 
-test_cleanup = build_cleanup_test(toga.WebView, xfail_platforms=("linux",))
+test_cleanup = build_cleanup_test(toga.WebView, xfail_backends=("toga_gtk",))
 
 
 @pytest.mark.flaky(retries=5, delay=1)
