@@ -58,8 +58,10 @@ class JavaScriptHandler:
         sourceID: str,
     ):
         """Signal handler for JavaScript console messages."""
-        # only record errors
-        if level == QWebEnginePage.JavaScriptConsoleMessageLevel.ErrorMessageLevel:
+        # only record errors, don't want tests which cover other cases
+        if (
+            level == QWebEnginePage.JavaScriptConsoleMessageLevel.ErrorMessageLevel
+        ):  # pragma: no branch
             self.error = (
                 f"JavaScriptError: message={message!r}, "
                 f"line={line}, source={sourceID!r}"
