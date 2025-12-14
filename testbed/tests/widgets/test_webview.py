@@ -385,6 +385,18 @@ async def test_retrieve_cookies(widget, probe, on_load):
     assert cookie.expires is None
 
 
+async def test_on_navigation_starting_sync_no_handler(widget, probe, on_load):
+    # This test is required for full coverage because on android, setting
+    # the URL does not trigger shouldOverrideUrlLoading()
+    await widget.evaluate_javascript('window.location.assign("https://beeware.org/")')
+    await asyncio.sleep(2)
+    await widget.evaluate_javascript(
+        'window.location.assign("https://beeware.org/docs/")'
+    )
+    await asyncio.sleep(2)
+    assert widget.url == "https://beeware.org/docs/"
+
+
 async def test_on_navigation_starting_sync(widget, probe, on_load):
     skip_on_platforms("iOS", "macOS", "linux")
 

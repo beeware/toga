@@ -1,4 +1,3 @@
-import asyncio
 from http.cookiejar import CookieJar
 
 from toga.widgets.webview import CookiesResult, JavaScriptResult
@@ -74,13 +73,10 @@ class WebView(Widget):
                 if isinstance(result, bool):
                     # on_navigation_starting handler is synchronous
                     allow = result
-                elif isinstance(result, asyncio.Future):
+                else:
                     # on_navigation_starting handler is asynchronous
-                    if result.done():
-                        allow = result.result()
-                    else:
-                        # deny the navigation until the user himself or the user
-                        # defined on_navigation_starting handler has allowed it
-                        allow = False
+                    # deny the navigation until the user himself or the user
+                    # defined on_navigation_starting handler has allowed it
+                    allow = False
         if allow:
             self.set_url(url)
