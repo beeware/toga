@@ -297,7 +297,6 @@ Resources:
       - android
       - web
       - textual
-      - qt
 
   Source:
     description: A base class for data source implementations.
