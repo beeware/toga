@@ -3,8 +3,6 @@ from PySide6.QtWidgets import QMenu, QSystemTrayIcon
 
 from toga.command import Group, Separator
 
-# Not implemented on Qt yet.
-
 
 class StatusIcon:
     def __init__(self, interface):
@@ -26,12 +24,7 @@ class StatusIcon:
         self.set_icon(self.interface.icon)
         self.native.show()
 
-    # Remove no-cover when this is implemented
     def remove(self):
-        if self.native:
-            self.native.hide()
-            self.native.deleteLater()
-
         self.native = None
 
 
@@ -58,7 +51,6 @@ class MenuStatusIcon(StatusIcon):
 class StatusIconSet:
     def __init__(self, interface):
         self.interface = interface
-        self._menu_items = {}
 
     def _submenu(self, group, group_cache):
         try:
@@ -97,7 +89,6 @@ class StatusIconSet:
         }
         # Map the COMMANDS group to the primary status icon's menu.
         group_cache[Group.COMMANDS] = primary_group._impl.native.contextMenu()
-        self._menu_items = {}
 
         for cmd in self.interface.commands:
             try:
