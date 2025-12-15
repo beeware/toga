@@ -141,4 +141,5 @@ test_sources = [
 requires = [
     "../qt",
     "PySide6-Essentials~=6.10.0",
+    "PySide6-Addons~=6.10.0",
 ]
