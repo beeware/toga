@@ -20,3 +20,4 @@ repos:
     - id: codespell
       # remove toml extra once Python 3.10 is no longer supported
       additional_dependencies: ['.[toml]']
+      args: ["--skip=CODE_OF_CONDUCT.md"]
