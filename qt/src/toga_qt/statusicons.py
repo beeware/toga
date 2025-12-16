@@ -40,7 +40,7 @@ class MenuStatusIcon(StatusIcon):
         self.create_menu()
 
     def create_menu(self):
-        self.submenu = QMenu(self.interface.text)
+        self.submenu = QMenu()
         self.native.setContextMenu(self.submenu)
 
 
