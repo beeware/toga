@@ -37,10 +37,6 @@
     font-size: 0.7rem;
 }
 
-.widgets_by_platform ~ .md-typeset__scrollwrap .md-typeset__table table:not([class]) thead tr th:first-of-type {
-    min-width: 11rem;
-}
-
 .widgets_by_platform ~ .md-typeset__scrollwrap .md-typeset__table table:not([class]) thead tr th,
 .widgets_by_platform ~ .md-typeset__scrollwrap .md-typeset__table table:not([class]) tbody tr td:first-of-type {
     padding: 0.4em 0.63em;
