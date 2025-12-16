@@ -46,30 +46,14 @@ def find_backends():
 
 @cache
 def get_platform_factory() -> ModuleType:
-    """Determine the current backend and import the backend factory.
+    """Determine the current host platform and import the platform factory.
 
     If the `TOGA_BACKEND` environment variable is set, the factory will be loaded
-    from that module. Otherwise it will be inferred from the platform and the
-    installed toga backends that match that platform.
-
-    Raises [`RuntimeError`][] if an appropriate backend cannot be identified.
-
-    :returns: The factory for the backend.
-    """
-    return get_backend_and_factory()[1]
-
-
-@cache
-def get_backend_and_factory() -> tuple[str, ModuleType]:
-    """Determine the current backend and import the backend factory.
-
-    If the `TOGA_BACKEND` environment variable is set, the factory will be loaded
-    from that module. Otherwise it will be inferred from the platform and the
-    installed toga backends that match that platform.
+    from that module.
 
     Raises [`RuntimeError`][] if an appropriate host platform cannot be identified.
 
-    :returns: A tuple of the backend name and the factory for the backend.
+    :returns: The factory for the host platform.
     """
     if backend_value := os.environ.get("TOGA_BACKEND"):
         try:
@@ -124,15 +108,13 @@ def get_backend_and_factory() -> tuple[str, ModuleType]:
                     f"TOGA_BACKEND to specify a backend."
                 )
             backend = matching_backends[0]
-        backend_value = backend.value
         factory = importlib.import_module(f"{backend.value}.factory")
-    return backend_value, factory
+    return factory
 
 
 def __getattr__(name):
-    if name in {"backend", "factory"}:
-        backend, factory = get_backend_and_factory()
-        globals().update(backend=backend, factory=factory)
-        return globals()[name]
+    if name == "backend":
+        globals()["backend"] = get_platform_factory().__package__
+        return globals()["backend"]
     else:
         raise AttributeError(f"module '{__name__}' has no attribute '{name}'") from None
