@@ -152,9 +152,11 @@ To run a Travertino test instead, add `-trav`:
 
 The above test suites exercise `toga-core` and `travertino` - but what about the backends? To verify the behavior of the backends, Toga has a testbed app. This app uses the core API to exercise all the behaviors that the backend APIs need to perform - but uses an actual platform backend to implement that behavior.
 
+Details on how the testbed works can be found in the [Testbed topic guide][testbed-probe].
+
 #### Running the testbed app
 
-To run the testbed app, install [Briefcase](https://briefcase.readthedocs.io/en/latest/), and run the app in developer test mode as described below.  Note that you should have only 1 backend -- the backend that you're planning to test -- installed in your virtual environment when running the test suite in developer mode.
+To run the testbed app, install [Briefcase](https://briefcase.readthedocs.io/en/latest/), and run the app in developer test mode as described below. Note that you should have only 1 backend -- the backend that you're planning to test -- installed in your virtual environment when running the test suite in developer mode.
 
 /// tab | macOS
 
@@ -176,6 +178,14 @@ For testing the GTK backend:
 (.venv) $ briefcase dev --app testbed --test
 ```
 
+For testing the GTK 4 backend:
+
+```console
+(.venv) $ python -m pip install briefcase
+(.venv) $ cd testbed
+(.venv) $ TOGA_GTK=4 briefcase dev --app testbed --test
+```
+
 For testing the Qt backend:
 
 ```console
@@ -183,6 +193,8 @@ For testing the Qt backend:
 (.venv) $ cd testbed
 (.venv) $ briefcase dev --app testbed-qt --test
 ```
+
+The GTK4 and Qt backends are experimental and only partially implemented, so a lot of tests will be skipped; filling in the gaps for the missing widgets would be an extremely helpful contribution.
 
 ///
 
@@ -197,6 +209,12 @@ For testing the Qt backend:
 ///
 
 This will display a Toga app window, which will flash as it performs all the GUI tests. You'll then see a coverage report for the code that has been executed.
+
+/// admonition | Step away from the keyboard!
+
+While the testbed is running, you can't touch the keyboard or mouse - *at all*. The testbed works by triggering mouse clicks, and it is checking for behaviors like changes in widget and window focus. As a result, it is important that the testbed retains control of the app during testing.
+
+///
 
 #### Running a subset of the testbed suite and slow mode
 
@@ -283,10 +301,5 @@ iOS tests can't be executed on Windows.
 ///
 
 You can also use slow mode or `pytest` specifiers with `briefcase run`, using the same `--` syntax as you used in developer mode.
-
-#### Running testbed against GTK4 on Linux
-
-Finally, if you would like to run the tests against GTK4 on Linux, set the environmental variable `TOGA_GTK=4`. This is experimental and only partially implemented, but we would greatly appreciate your help translating widgets from GTK3 to GTK4.
-
 
 {% endblock %}

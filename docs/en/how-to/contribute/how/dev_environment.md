@@ -4,19 +4,19 @@
 
 {% block prerequisites_macos %}
 
-View the [macOS prerequisites][macos-prerequisites].
+You should also ensure you have the [macOS prerequisites][macos-prerequisites] installed.
 
 {% endblock %}
 
 {% block prerequisites_linux %}
 
-View the [GTK prerequisites][gtk-prerequisites] or the [Qt prerequisites][qt-prerequisites].
+You should also ensure you have the prerequisites for [GTK development][gtk-prerequisites] or the [Qt development][qt-prerequisites] installed.
 
 {% endblock %}
 
 {% block prerequisites_windows %}
 
-View the [Windows prerequisites][windows-prerequisites].
+You should also ensure you have the [Windows prerequisites][windows-prerequisites] installed.
 
 {% endblock %}
 
