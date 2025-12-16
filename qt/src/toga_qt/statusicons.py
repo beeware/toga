@@ -1,6 +1,6 @@
-from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QMenu, QSystemTrayIcon
 
+import toga
 from toga.command import Group, Separator
 
 
@@ -10,13 +10,9 @@ class StatusIcon:
         self.native = None
 
     def set_icon(self, icon):
-        if self.native is None:
-            return
-        if icon is not None:
-            self.native.setIcon(icon._impl.native)
-        else:
-            self.native.setIcon(QIcon())
-            self.interface.factory.not_implemented("StatusIcon with only text")
+        if self.native:
+            native_icon = icon._impl.native if icon else toga.App.app.icon._impl.native
+            self.native.setIcon(native_icon)
 
     def create(self):
         self.native = QSystemTrayIcon()
