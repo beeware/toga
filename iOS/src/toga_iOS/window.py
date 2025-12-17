@@ -11,10 +11,14 @@ from toga.types import Position, Size
 from toga_iOS.container import NavigationContainer, RootContainer
 from toga_iOS.images import nsdata_to_bytes
 from toga_iOS.libs import (
+    IOS_VERSION,
     NSData,
+    UIBlurEffect,
+    UIBlurEffectStyle,
     UIColor,
     UIGraphicsImageRenderer,
     UIImage,
+    UINavigationBarAppearance,
     UIScreen,
     UIWindow,
     core_graphics,
@@ -237,6 +241,19 @@ class MainWindow(Window):
         # NavigationContainer provides a titlebar for the window.
         self.container = NavigationContainer(on_refresh=self.content_refreshed)
         self.container.resize_refresh = True
+        if IOS_VERSION < (26, 0):  # pragma: no branch
+            navAppearance = UINavigationBarAppearance.alloc().init()
+            navAppearance.configureWithTransparentBackground()
+            navAppearance.backgroundEffect = UIBlurEffect.effectWithStyle(
+                UIBlurEffectStyle.Regular
+            )
+            self.container.controller.navigationBar.standardAppearance = navAppearance
+            # Unfortunately, the elegant way is to have ScrollEdge be transparent (as
+            # that is when Scroll View is all the way at the top; however, detection is
+            # kinda messed up as shown in https://stackoverflow.com/questions/74681384/,
+            # and due to the way Toga performs layout, ScrollView as first element is
+            # not always the case.
+            self.container.controller.navigationBar.scrollEdgeAppearance = navAppearance
 
     def create_toolbar(self):
         # No toolbar handling at present

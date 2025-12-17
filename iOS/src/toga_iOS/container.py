@@ -1,7 +1,6 @@
 from rubicon.objc import SEL, objc_method, objc_property, send_super
 
 from .libs import (
-    IOS_VERSION,
     UINavigationController,
     UIView,
     UIViewAutoresizing,
@@ -343,11 +342,10 @@ class NavigationContainer(Container):
     @property
     def un_top_offset_able(self):
         if self._automatic_un_top_offset_able:
-            if IOS_VERSION < (26, 0, 0):
-                # Behavior for whether tab bar has blur
-                # is unresolved in the general case with Toga's
-                # usage.
-                return 0
-            else:
-                return self.top_offset
+            return self.top_offset
         return self._un_top_offset_able
+
+    @un_top_offset_able.setter
+    def un_top_offset_able(self, value):
+        self._automatic_un_top_offset_able = False
+        self._un_top_offset_able = value

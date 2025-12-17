@@ -1,14 +1,21 @@
-from rubicon.objc import SEL, objc_method, objc_property
+from rubicon.objc import SEL, CGRectMake, objc_method, objc_property
 from travertino.size import at_least
 
 import toga
 from toga_iOS.container import ControlledContainer
 from toga_iOS.libs import (
     IOS_VERSION,
+    UIBlurEffect,
+    UIBlurEffectStyle,
+    UIColor,
     UIDevice,
+    UIImage,
+    UINavigationBarAppearance,
     UITabBarController,
     UITabBarItem,
     UIUserInterfaceIdiom,
+    UIViewAutoresizing,
+    UIVisualEffectView,
 )
 from toga_iOS.widgets.base import Widget
 
@@ -60,10 +67,16 @@ class TogaTabBarController(UITabBarController):
     @objc_method
     def refreshContent_(self, controller) -> None:
         # Ensure the correct width/height in case of nested tab bars.
-        self.view.setNeedsLayout()
+        origFrame = self.view.frame
         self.view.layoutIfNeeded()
-        controller.view.setNeedsLayout()
-        controller.view.layoutIfNeeded()
+        self.view.frame = CGRectMake(
+            origFrame.origin.x + 1,
+            origFrame.origin.y + 1,
+            origFrame.size.width,
+            origFrame.size.height,
+        )
+        self.view.frame = origFrame
+        self.view.layoutIfNeeded()
 
         # Recalculate child container offset.
         self.impl.offset_containers()
@@ -87,12 +100,20 @@ class OptionContainer(Widget):
         # FIXME:  Bug with reordering causing crash
         self.native_controller.customizableViewControllers = None
 
-        if IOS_VERSION < (26, 0, 0):  # pragma: no branch
-            # Make it non-translucent.  It *should* be translucent,
-            # but some layout issues prevent that from happening
-            # and it shows transparently.  We can live with this, though,
-            # as the situation is mostly resolved for iOS 26+.
-            self.native_controller.tabBar.setTranslucent(False)
+        if IOS_VERSION < (26, 0):  # pragma: no branch
+            self.native_controller.tabBar.backgroundImage = UIImage.alloc().init()
+            self.native_controller.tabBar.shadowImage = UIImage.alloc().init()
+            self.native_controller.tabBar.backgroundColor = UIColor.clearColor
+            self.native_controller.tabBar.layer.backgroundColor = (
+                UIColor.clearColor.cgColor()
+            )
+            blur = UIBlurEffect.effectWithStyle(UIBlurEffectStyle.Regular)
+            self.blurview = UIVisualEffectView.alloc().initWithEffect(blur)
+            self.blurview.frame = self.native_controller.tabBar.bounds
+            self.blurview.autoresizingMask = (
+                UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleHeight
+            )
+            self.native_controller.tabBar.insertSubview(self.blurview, atIndex=0)
             self.native_controller.extendedLayoutIncludesOpaqueBars = True
 
         # The native widget representing the container is the view of the native
@@ -112,6 +133,20 @@ class OptionContainer(Widget):
         self.native_controller.moreNavigationController.delegate = (
             self.native_controller
         )
+
+        if IOS_VERSION < (26, 0):  # pragma: no branch
+            navAppearance = UINavigationBarAppearance.alloc().init()
+            navAppearance.configureWithTransparentBackground()
+            navAppearance.backgroundEffect = UIBlurEffect.effectWithStyle(
+                UIBlurEffectStyle.Regular
+            )
+            self.native_controller.moreNavigationController.navigationBar.standardAppearance = navAppearance  # noqa: E501
+            # Unfortunately, the elegant way is to have ScrollEdge be transparent (as
+            # that is when Scroll View is all the way at the top; however, detection is
+            # kinda messed up as shown in https://stackoverflow.com/questions/74681384/,
+            # and due to the way Toga performs layout, ScrollView as first element is
+            # not always the case.
+            self.native_controller.moreNavigationController.navigationBar.scrollEdgeAppearance = navAppearance  # noqa: E501
 
         # Setting the bounds changes the constraints, but that doesn't mean
         # the constraints have been fully applied. Schedule a refresh to be done

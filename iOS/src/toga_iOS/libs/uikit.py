@@ -9,8 +9,45 @@ from rubicon.objc import ObjCClass, ObjCProtocol, objc_const
 from toga.constants import CENTER, JUSTIFY, LEFT, RIGHT
 from toga_iOS.libs.core_graphics import CGContextRef
 
-UINavigationBarAppearance = ObjCClass("UINavigationBarAppearance")
 UITabBarAppearance = ObjCClass("UITabBarAppearance")
+UIBlurEffect = ObjCClass("UIBlurEffect")
+UINavigationBarAppearance = ObjCClass("UINavigationBarAppearance")
+UIVisualEffectView = ObjCClass("UIVisualEffectView")
+UINavigationBar = ObjCClass("UINavigationBar")
+
+
+class UIBlurEffectStyle(IntEnum):
+    # Traditional blur styles
+    ExtraLight = 0
+    Light = 1
+    Dark = 2
+    ExtraDark = 3
+
+    # Styles that adapt automatically to interface style
+    Regular = 4
+    Prominent = 5
+
+    # System material styles (adaptive)
+    SystemUltraThinMaterial = 6
+    SystemThinMaterial = 7
+    SystemMaterial = 8
+    SystemThickMaterial = 9
+    SystemChromeMaterial = 10
+
+    # Always-light system material styles
+    SystemUltraThinMaterialLight = 11
+    SystemThinMaterialLight = 12
+    SystemMaterialLight = 13
+    SystemThickMaterialLight = 14
+    SystemChromeMaterialLight = 15
+
+    # Always-dark system material styles
+    SystemUltraThinMaterialDark = 16
+    SystemThinMaterialDark = 17
+    SystemMaterialDark = 18
+    SystemThickMaterialDark = 19
+    SystemChromeMaterialDark = 20
+
 
 ######################################################################
 uikit = cdll.LoadLibrary(util.find_library("UIKit"))
