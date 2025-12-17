@@ -38,6 +38,11 @@ class MenuStatusIcon(StatusIcon):
     def create(self):
         super().create()
         self.create_menu()
+        self.native.activated.connect(self.qt_on_activated)
+
+    def qt_on_activated(self, reason):
+        if reason == QSystemTrayIcon.ActivationReason.Trigger:  # pragma: no branch
+            self.native.activated.emit(QSystemTrayIcon.ActivationReason.Context)
 
     def create_menu(self):
         self.submenu = QMenu()
