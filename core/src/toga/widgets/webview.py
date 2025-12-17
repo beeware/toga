@@ -146,9 +146,6 @@ class WebView(Widget):
         """Set the handler to invoke when the webview starts navigating"""
 
         def cleanup(widget, result, url=None, **kwargs):
-            if url is None:
-                # The user on_navigation_handler is synchronous - do nothing
-                return
             if result is True:
                 # navigate to the url
                 self.url = url
