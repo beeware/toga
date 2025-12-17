@@ -13,7 +13,7 @@ class WebView(Widget):
         self._allowed_url = None
 
     def set_content(self, root_url, content):
-        if self.on_navigation_starting:
+        if self.interface.on_navigation_starting:
             # mark URL as being allowed
             self._allowed_url = "about:blank"
         self._action("set content", root_url=root_url, content=content)
@@ -29,7 +29,7 @@ class WebView(Widget):
         return self._get_value("url", None)
 
     def set_url(self, value, future=None):
-        if self.on_navigation_starting:
+        if self.interface.on_navigation_starting:
             # mark URL as being allowed
             self._allowed_url = value
         self._set_value("url", value)
