@@ -67,15 +67,24 @@ class TogaTabBarController(UITabBarController):
     @objc_method
     def refreshContent_(self, controller) -> None:
         # Ensure the correct width/height in case of nested tab bars.
-        origFrame = self.view.frame
-        self.view.layoutIfNeeded()
-        self.view.frame = CGRectMake(
-            origFrame.origin.x + 1,
-            origFrame.origin.y + 1,
-            origFrame.size.width,
-            origFrame.size.height,
+        is_phone = (
+            UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiom.Phone
         )
-        self.view.frame = origFrame
+        if is_phone:
+            # iOS seems to require this hack for nested
+            # tabbars to work properly.  iPadOS does not;
+            # this gets *very* expensive and freezes iPadOS
+            # also.
+            origFrame = self.view.frame
+            self.view.frame = CGRectMake(
+                origFrame.origin.x + 1,
+                origFrame.origin.y + 1,
+                origFrame.size.width,
+                origFrame.size.height,
+            )
+            self.view.frame = origFrame
+        else:
+            self.view.setNeedsLayout()
         self.view.layoutIfNeeded()
 
         # Recalculate child container offset.
