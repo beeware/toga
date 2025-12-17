@@ -29,6 +29,9 @@ class WebViewApp(toga.App):
         self.label.text = "www loaded!"
 
     def on_navigation_starting_sync(self, widget, **kwargs):
+        # By default, on_navigation_starting_async is enabled
+        # To use this synchronous handler here, make a code edit below where
+        # self.webview is created.
         url = kwargs.get("url", None)
         print(f"on_navigation_starting_sync: {url}")
         allow = True

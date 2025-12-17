@@ -34,7 +34,7 @@ class WebView(Widget):
             from .webview_static_proxy import TogaWebClient
 
             client = TogaWebClient(self)
-        except NoClassDefFoundError:
+        except NoClassDefFoundError:  # pragma: no cover
             self.SUPPORTS_ON_NAVIGATION_STARTING = False
             client = WebViewClient()
             print(

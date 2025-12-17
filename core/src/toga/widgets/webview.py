@@ -49,6 +49,10 @@ class WebView(Widget):
     ):
         """Create a new WebView widget.
 
+        **Note:** On Android, this handler needs `chaquopy.defaultConfig.staticProxy(
+        "toga_android.widgets.webview_static_proxy")` in the build_gradle_extra_content
+        section of pyproject.toml
+
         :param id: The ID for the widget.
         :param style: A style object. If no style is provided, a default style
             will be applied to the widget.
@@ -65,9 +69,7 @@ class WebView(Widget):
             web view is requesting permission to navigate or redirect
             to a different URI. The handler can be synchronous or async and must
             return True for allowing the URL, False for denying the URL or an awaited
-            QuestionDialog. On Android, this handler needs
-            `chaquopy.defaultConfig.staticProxy("toga_android.widgets.webview_static_proxy")`
-            in the build_gradle_extra_content section of pyproject.toml
+            QuestionDialog.
         :param on_webview_load: A handler that will be invoked when the web view
             finishes loading.
         :param kwargs: Initial style properties.
@@ -75,10 +77,6 @@ class WebView(Widget):
         super().__init__(id, style, **kwargs)
 
         self.user_agent = user_agent
-
-        # URL is allowed by user interaction or user on_navigation_starting
-        # handler
-        self._url_allowed = None
 
         # Set the load handler before loading the first URL.
         self.on_webview_load = on_webview_load
@@ -98,9 +96,6 @@ class WebView(Widget):
 
     def _set_url(self, url: str | None, future: asyncio.Future | None) -> None:
         # Utility method for validating and setting the URL with a future.
-        if self.on_navigation_starting:
-            # mark URL as being allowed
-            self._url_allowed = url
         if (url is not None) and not url.startswith(("https://", "http://")):
             raise ValueError("WebView can only display http:// and https:// URLs")
 
@@ -150,14 +145,12 @@ class WebView(Widget):
     def on_navigation_starting(self, handler):
         """Set the handler to invoke when the webview starts navigating"""
 
-        def cleanup(widget, result, **kwargs):
-            url = kwargs.get("url", None)
+        def cleanup(widget, result, url=None, **kwargs):
             if url is None:
                 # The user on_navigation_handler is synchronous - do nothing
                 return
             if result is True:
-                # navigate to the url, the URL will automatically be marked
-                # as allowed
+                # navigate to the url
                 self.url = url
 
         self._on_navigation_starting = None
@@ -216,9 +209,6 @@ class WebView(Widget):
             and used to resolve any relative URLs in the content.
         :param content: The HTML content for the WebView
         """
-        if self.on_navigation_starting:
-            # mark URL as being allowed
-            self._url_allowed = "about:blank"
         self._impl.set_content(root_url, content)
 
     @property

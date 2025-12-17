@@ -377,7 +377,6 @@ def test_webview_navigationstarting_disabled(monkeypatch):
 
 def test_navigation_starting_no_handler(widget):
     """When no handler is set, navigation should be allowed"""
-
     widget.url = None
     widget._impl.simulate_navigation_starting("https://beeware.org")
     assert widget.url == "https://beeware.org"
@@ -423,7 +422,7 @@ async def test_navigation_starting_async(widget):
         return await dialog_mock(url)
 
     widget.url = None
-    widget._url_allowed = False
+    widget._impl._allowed_url = None
     widget.on_navigation_starting = handler
     # test allowed URL
     widget._impl.simulate_navigation_starting("https://beeware.org")

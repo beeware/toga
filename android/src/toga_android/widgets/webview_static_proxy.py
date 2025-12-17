@@ -23,8 +23,8 @@ class TogaWebClient(static_proxy(WebViewClient)):
                 allow = result
             else:
                 # on_navigation_starting handler is asynchronous
-                # deny the navigation until the user himself or the user
-                # defined on_navigation_starting handler has allowed it
+                # deny navigation until the user defined on_navigation_starting
+                # coroutine has completed.
                 allow = False
             if not allow:
                 return True
