@@ -6,12 +6,10 @@ from .base import SimpleProbe
 class OptionContainerProbe(SimpleProbe):
     native_class = QTabWidget
     max_tabs = None
-    disabled_tab_selectable = False
+    disabled_tab_selectable = True
 
     def select_tab(self, index):
-        # Can't select a tab that isn't visible.
-        if self.native.isTabEnabled(index):
-            self.native.setCurrentIndex(index)
+        self.native.setCurrentIndex(index)
 
     def tab_enabled(self, index):
         return self.native.isTabEnabled(index)
