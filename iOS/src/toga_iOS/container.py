@@ -1,4 +1,4 @@
-from rubicon.objc import SEL, objc_method, objc_property, send_super
+from rubicon.objc import objc_method, objc_property, send_super
 
 from .libs import (
     UINavigationController,
@@ -29,12 +29,7 @@ class TogaContainerView(UIView):
         #    self.performSelector(SEL("refreshContent"), withObject=None, afterDelay=0)
 
     @objc_method
-    def refreshContent(self):
-        # Ensure correct container height/width at this level.
-        # Without this, nested tabbars when nested to 3 levels does not work.
-        self.setNeedsLayout()
-        self.layoutIfNeeded()
-        # Can't be reliably triggered else in testing cases
+    def refreshContent(self):  # Can't be reliably triggered else in testing cases
         if self.container:  # pragma: no branch
             if self.container.content:
                 self.container.content.interface.refresh()
@@ -50,7 +45,7 @@ class TogaContainerView(UIView):
                 self.bounds.size.width,
                 self.bounds.size.height,
             )
-            self.performSelector(SEL("refreshContent"), withObject=None, afterDelay=0)
+            self.refreshContent()
 
 
 class BaseContainer:
