@@ -107,7 +107,10 @@ class ScrollContainer(Widget):
 
         # Disabling scrolling implies a position reset; that's a scroll event.
         if not value:
+            self.unsafe_bottom = False
+            self.un_top_offset = False
             self.interface.on_scroll()
+            self.native.refreshContent()
 
     def get_horizontal(self):
         return self._allow_horizontal

@@ -82,8 +82,10 @@ class Widget:
 
     def set_bounds(self, x, y, width, height):
         frame = [x, y, width, height]
+        if abs(y + height - self.container.height) < 1:
+            height = self.container.height - y
         if (
-            abs(y + height - self.container.height) < 1
+            y + height == self.container.height
             and self.container._safe_bottom
             and self.unsafe_bottom
         ):  # pragma: no cover
