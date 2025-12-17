@@ -42,6 +42,8 @@ class MenuStatusIcon(StatusIcon):
 
     def qt_on_activated(self, reason):
         if reason == QSystemTrayIcon.ActivationReason.Trigger:  # pragma: no branch
+            # on KDE desktop click normally displays a tool window,
+            # we don't have one, so show menu
             self.native.activated.emit(QSystemTrayIcon.ActivationReason.Context)
 
     def create_menu(self):
