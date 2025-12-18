@@ -37,12 +37,10 @@ class Image(LoggedObject):
         raw: BytesIO = None,
     ):
         super().__init__()
-        print(f"{data = }")
-        print(f"{raw = }")
         self.interface = interface
         if data:
             self._action("load image data", data=data)
-            if data == b"not an image":
+            if data == b"not an image\n":
                 raise ImageLoadError
             self.native = DummyImage(PIL.Image.open(BytesIO(data)))
         else:

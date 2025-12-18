@@ -123,7 +123,7 @@ def test_create_from_bytes(args, kwargs):
 def test_create_from_bad_bytes():
     """An image can be constructed from invalid data raises an error."""
     with pytest.raises(ValueError, match=r"Unable to load image from data"):
-        toga.Image(b"not an image")
+        toga.Image(b"not an image\n")
 
 
 def test_create_from_raw():
