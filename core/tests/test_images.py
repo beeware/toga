@@ -1,4 +1,5 @@
 from pathlib import Path
+from re import escape
 
 import PIL.Image
 import pytest
@@ -53,7 +54,10 @@ def test_create_from_file(app, args, kwargs):
 def test_create_from_bad_file(app):
     """Creating an image from an invalid file raises an error."""
     path = Path(__file__).parent / "resources/not_an_image.txt"
-    with pytest.raises(ValueError, match=rf"Unable to load image from {path}"):
+    with pytest.raises(
+        ValueError,
+        match=rf"Unable to load image from {escape(str(path))}",
+    ):
         toga.Image(path)
 
 
