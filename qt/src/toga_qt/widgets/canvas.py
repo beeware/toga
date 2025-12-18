@@ -1,11 +1,20 @@
 from math import ceil, cos, degrees, sin
 
-from PySide6.QtCore import QBuffer, QIODevice, Qt
-from PySide6.QtGui import QFontMetrics, QPainter, QPainterPath, QPaintEvent, QPen
+from PySide6.QtCore import QBuffer, QIODevice, QPointF, Qt
+from PySide6.QtGui import (
+    QFontMetrics,
+    QMouseEvent,
+    QPainter,
+    QPainterPath,
+    QPaintEvent,
+    QPen,
+    QTransform,
+)
 from PySide6.QtWidgets import QWidget
 from travertino.size import at_least
 
 from toga.constants import Baseline, FillRule
+from toga.widgets.canvas.geometry import arc_to_bezier, sweepangle
 
 from ..colors import native_color
 from .base import Widget
@@ -22,7 +31,50 @@ class TogaCanvas(QWidget):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
         self.impl.begin_path(painter)
-        self.interface.context._draw(self.impl, draw_context=painter)
+        try:
+            self.interface.context._draw(self.impl, draw_context=painter)
+        except Exception as exc:
+            print(exc)
+
+    def mousePressEvent(self, event: QMouseEvent) -> None:
+        button = event.button()
+        match button:
+            case Qt.MouseButton.LeftButton:
+                self.interface.on_press(
+                    int(event.position().x()), int(event.position().y())
+                )
+            case Qt.MouseButton.RightButton:
+                self.interface.on_alt_press(
+                    int(event.position().x()), int(event.position().y())
+                )
+
+    def mouseDoubleClickEvent(self, event: QMouseEvent) -> None:
+        self.interface.on_activate(int(event.position().x()), int(event.position().y()))
+
+    def mouseReleaseEvent(self, event: QMouseEvent) -> None:
+        button = event.button()
+        match button:
+            case Qt.MouseButton.LeftButton:
+                self.interface.on_release(
+                    int(event.position().x()), int(event.position().y())
+                )
+            case Qt.MouseButton.RightButton:
+                self.interface.on_alt_release(
+                    int(event.position().x()), int(event.position().y())
+                )
+
+    def mouseMoveEvent(self, event: QMouseEvent) -> None:
+        # These will only fire when a mouse button is down, ie. dragging
+        button = event.button()
+        match button:
+            case Qt.MouseButton.LeftButton:
+                self.interface.on_drag(
+                    int(event.position().x()), int(event.position().y())
+                )
+            case Qt.MouseButton.RightButton:
+                self.interface.on_alt_drag(
+                    int(event.position().x()), int(event.position().y())
+                )
 
 
 class Canvas(Widget):
@@ -38,11 +90,6 @@ class Canvas(Widget):
         super().set_bounds(x, y, width, height)
         self.interface.on_resize(width=width, height=height)
 
-    def set_background_color(self, color):
-        palette = self.native.palette()
-        palette.setColor(self.native.backgroundRole(), native_color(color))
-        self.native.setPalette(palette)
-
     # Context management
     def push_context(self, draw_context: QPainter, **kwargs):
         draw_context.save()
@@ -52,6 +99,7 @@ class Canvas(Widget):
 
     # Basic paths
     def begin_path(self, draw_context: QPainter, **kwargs):
+        # QPainter doesn't have the notion of a "current path" so we need to track it.
         self._path = QPainterPath()
 
     def close_path(self, draw_context: QPainter, **kwargs):
@@ -61,7 +109,10 @@ class Canvas(Widget):
         self._path.moveTo(x, y)
 
     def line_to(self, x, y, draw_context, **kwargs):
-        self._path.lineTo(x, y)
+        if self._path.elementCount() == 0:
+            self._path.moveTo(x, y)
+        else:
+            self._path.lineTo(x, y)
 
     # Basic shapes
 
@@ -92,24 +143,22 @@ class Canvas(Widget):
         draw_context,
         **kwargs,
     ):
-        # Qt measures angles counterclockwise from x-axis; Toga measures clockwise
-        sweep_angle_counterclockwise = (
-            endangle - startangle if counterclockwise else startangle - endangle
-        )
-        if self._path.isEmpty():
+        if self._path.elementCount() == 0:
             # if this is the first point of the path, don't draw a line
             # to the start point
             self._path.moveTo(
                 x + radius * cos(startangle),
                 y + radius * sin(startangle),
             )
+
+        # Qt measures angles counterclockwise from x-axis and in degrees
         self._path.arcTo(
             x - radius,
             y - radius,
             radius * 2,
             radius * 2,
             -degrees(startangle),
-            degrees(sweep_angle_counterclockwise),
+            -degrees(sweepangle(startangle, endangle, counterclockwise)),
         )
 
     def ellipse(
@@ -125,26 +174,33 @@ class Canvas(Widget):
         draw_context: QPainter,
         **kwargs,
     ):
-        # Qt measures angles counterclockwise from x-axis; Toga measures clockwise
-        sweep_angle_counterclockwise = (
-            endangle - startangle if counterclockwise else startangle - endangle
-        )
-        # handle rotation by translating center to origin and rotating
-        if self._path.isEmpty():
-            # if this is the first point of the path, don't draw a line
-            # to the start point
-            self._path.moveTo(
-                x + radiusx * cos(startangle),
-                y + radiusy * sin(startangle),
+        # Draw the ellipse unrotated and at origin
+        transform = QTransform()
+        transform.translate(x, y)
+        transform.rotate(degrees(rotation))
+        transform.scale(radiusx, radiusy)
+        transform.rotate(degrees(startangle))
+
+        # Note: we can *almost* do this using arcTo, but arcTo doesn't support rotation
+        # (it must be axis-aligned), and attempts at manually rotating the points after
+        # creation are awkward: easier just to use geometry routines.
+        points = [
+            transform.map(QPointF(x, y))
+            for (x, y) in arc_to_bezier(
+                sweepangle(startangle, endangle, counterclockwise)
             )
-        self._path.arcTo(
-            x - radiusx,
-            y - radiusy,
-            radiusx * 2,
-            radiusy * 2,
-            -degrees(startangle),
-            degrees(sweep_angle_counterclockwise),
-        )
+        ]
+
+        # draw a line to the start point unless this is the first point of the path
+        start = points.pop(0)
+        if self._path.elementCount() == 0:
+            self._path.moveTo(start)
+        else:
+            self._path.lineTo(start)
+
+        for i in range(0, len(points), 3):
+            cp1, cp2, end = points[i : i + 3]
+            self._path.cubicTo(cp1, cp2, end)
 
     def rect(self, x, y, width, height, draw_context, **kwargs):
         self._path.addRect(x, y, width, height)
@@ -157,19 +213,18 @@ class Canvas(Widget):
         else:
             self._path.setFillRule(Qt.FillRule.WindingFill)
         draw_context.fillPath(self._path, native_color(color))
-        self.begin_path(draw_context)
 
     def stroke(self, color, line_width, line_dash, draw_context, **kwargs):
         pen = QPen(native_color(color))
+        pen.setCapStyle(Qt.PenCapStyle.FlatCap)
         pen.setWidth(line_width)
         if line_dash is not None:
-            pen.setDashPattern(line_dash)
+            pen.setDashPattern([x / line_width for x in line_dash])
         draw_context.strokePath(self._path, pen)
-        self.begin_path(draw_context)
 
     # Transformations
     def rotate(self, radians, draw_context: QPainter, **kwargs):
-        draw_context.rotate(radians)
+        draw_context.rotate(degrees(radians))
 
     def scale(self, sx, sy, draw_context: QPainter, **kwargs):
         draw_context.scale(sx, sy)
@@ -215,10 +270,9 @@ class Canvas(Widget):
             # Default to Baseline.ALPHABETIC
             top = y
 
-        draw_context.setFont(font.native)
         for line_num, line in enumerate(lines):
             y = top + scaled_line_height * line_num
-            draw_context.drawText(x, y, line)
+            self._path.addText(x, y, font.native, line)
 
     def get_image_data(self):
         pixmap = self.native.grab()
