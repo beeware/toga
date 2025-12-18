@@ -10,7 +10,6 @@ from toga_iOS.libs import (
     UIColor,
     UIDevice,
     UIImage,
-    UINavigationBarAppearance,
     UITabBarController,
     UITabBarItem,
     UIUserInterfaceIdiom,
@@ -18,6 +17,8 @@ from toga_iOS.libs import (
     UIVisualEffectView,
 )
 from toga_iOS.widgets.base import Widget
+
+from ..window import navAppearance
 
 # Implementation note:  Delayed refresh is usually not preferred
 # but is nessacary to get nested tab bars in correct place for
@@ -66,7 +67,19 @@ class TogaTabBarController(UITabBarController):
 
     @objc_method
     def refreshContent_(self, controller) -> None:
-        # Ensure the correct width/height in case of nested tab bars.
+        self.view.setNeedsLayout()
+        self.view.layoutIfNeeded()
+
+        # Recalculate child container offset.
+        self.impl.offset_containers()
+
+        # Find the currently visible container, and refresh layout of the content.
+        for container in self.impl.sub_containers:
+            if container.controller == controller:
+                container.content.interface.refresh()
+
+    @objc_method
+    def updateSafeArea_(self, controller) -> None:
         is_phone = (
             UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiom.Phone
         )
@@ -85,15 +98,7 @@ class TogaTabBarController(UITabBarController):
             self.view.frame = origFrame
         else:
             self.view.setNeedsLayout()
-        self.view.layoutIfNeeded()
-
-        # Recalculate child container offset.
-        self.impl.offset_containers()
-
-        # Find the currently visible container, and refresh layout of the content.
-        for container in self.impl.sub_containers:
-            if container.controller == controller:
-                container.content.interface.refresh()
+        self.refreshContent(controller)
 
 
 class OptionContainer(Widget):
@@ -144,11 +149,6 @@ class OptionContainer(Widget):
         )
 
         if IOS_VERSION < (26, 0):  # pragma: no branch
-            navAppearance = UINavigationBarAppearance.alloc().init()
-            navAppearance.configureWithTransparentBackground()
-            navAppearance.backgroundEffect = UIBlurEffect.effectWithStyle(
-                UIBlurEffectStyle.Regular
-            )
             self.native_controller.moreNavigationController.navigationBar.standardAppearance = navAppearance  # noqa: E501
             # Unfortunately, the elegant way is to have ScrollEdge be transparent (as
             # that is when Scroll View is all the way at the top; however, detection is
@@ -161,10 +161,21 @@ class OptionContainer(Widget):
         # the constraints have been fully applied. Schedule a refresh to be done
         # as soon as possible in the future
         self.native_controller.performSelector(
-            SEL("refreshContent:"),
+            SEL("updateSafeArea:"),
             withObject=self.native_controller.selectedViewController,
             afterDelay=0,
         )
+
+    def top_un_offset_if_needed(self, frame):
+        if (
+            frame[1] == 0 and self.un_top_offset and self.container.top_offset
+        ):  # pragma: no cover
+            frame[1] -= self.container.top_offset
+            frame[3] += self.container.top_offset
+            self._top_un_offset = True
+        else:
+            self._top_un_offset = False
+        return frame
 
     def offset_containers(self):  # pragma: no cover
         is_phone = (

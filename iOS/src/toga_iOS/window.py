@@ -27,6 +27,10 @@ from toga_iOS.libs import (
 
 from .screens import Screen as ScreenImpl
 
+navAppearance = UINavigationBarAppearance.alloc().init()
+navAppearance.configureWithTransparentBackground()
+navAppearance.backgroundEffect = UIBlurEffect.effectWithStyle(UIBlurEffectStyle.Regular)
+
 
 class Window:
     def __init__(self, interface, title, position, size):
@@ -242,11 +246,6 @@ class MainWindow(Window):
         self.container = NavigationContainer(on_refresh=self.content_refreshed)
         self.container.resize_refresh = True
         if IOS_VERSION < (26, 0):  # pragma: no branch
-            navAppearance = UINavigationBarAppearance.alloc().init()
-            navAppearance.configureWithTransparentBackground()
-            navAppearance.backgroundEffect = UIBlurEffect.effectWithStyle(
-                UIBlurEffectStyle.Regular
-            )
             self.container.controller.navigationBar.standardAppearance = navAppearance
             # Unfortunately, the elegant way is to have ScrollEdge be transparent (as
             # that is when Scroll View is all the way at the top; however, detection is

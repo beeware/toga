@@ -82,23 +82,27 @@ class Widget:
 
     def set_bounds(self, x, y, width, height):
         frame = [x, y, width, height]
-        if abs(y + height - self.container.height) < 1:
-            height = self.container.height - y
+        if abs(frame[1] + frame[3] - self.container.height) < 1:
+            frame[3] = self.container.height - frame[1]
         if (
-            y + height == self.container.height
+            frame[1] + frame[3] == self.container.height
             and self.container._safe_bottom
             and self.unsafe_bottom
         ):  # pragma: no cover
             frame[3] += self.container.layout_native.safeAreaInsets.bottom
+        frame = self.top_un_offset_if_needed(frame)
+        self.constraints.update(*frame)
+
+    def top_un_offset_if_needed(self, frame):
         if (
-            y == 0 and self.un_top_offset and self.container.un_top_offset_able
+            frame[1] == 0 and self.un_top_offset and self.container.un_top_offset_able
         ):  # pragma: no cover
             frame[1] -= self.container.un_top_offset_able
             frame[3] += self.container.un_top_offset_able
             self._top_un_offset = True
         else:
             self._top_un_offset = False
-        self.constraints.update(*frame)
+        return frame
 
     def set_text_align(self, alignment):
         pass
