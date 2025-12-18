@@ -20,6 +20,7 @@ class AppProbe(BaseProbe):
     supports_current_window_assignment = True
     supports_dark_mode = True
     edit_menu_noop_enabled = True
+    supports_psutil = True
 
     def __init__(self, app):
         super().__init__()

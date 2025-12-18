@@ -5,7 +5,6 @@ import shutil
 from importlib import import_module
 from pathlib import Path
 
-import psutil
 import pytest
 from PIL import Image as PIL_Image, ImageDraw as PIL_ImageDraw
 
@@ -18,6 +17,13 @@ def image_probe(app, image):
 
 
 def is_open(path: Path):
+    """Test if any process currently has an open handle for a file.
+
+    psutil is cross-platform for desktop, but it's not available on iOS, and this method
+    of testing doesn't work on Android.
+    """
+    import psutil
+
     path = str(path)
 
     for proc in psutil.process_iter(["open_files"]):
@@ -41,8 +47,11 @@ async def test_local_image(app):
     assert image.height == 72
 
 
-async def test_open_file_detection(app):
-    """Checking that this works, at least on desktop platforms."""
+async def test_open_file_detection(app, app_probe):
+    """Confirm that this works (on desktop platforms)."""
+    if not app_probe.supports_psutil:
+        pytest.skip("Platform doesn't support psutil-based open file detection.")
+
     try:
         path = app.paths.data / "test.txt"
         path.write_text("This is a test.")
@@ -54,11 +63,14 @@ async def test_open_file_detection(app):
         path.unlink()
 
 
-# async def test_closed_file_handle(app):
-#     """The local image file isn't left open once the Image is created."""
-#     _ = toga.Image("resources/sample.png")
-#     # If the file still has an open handle, this should raise an IOError.
-#     _ = Path(app.paths.app / "resources/sample.png").read_bytes()
+async def test_closed_file_handle(app, app_probe):
+    """The local image file isn't left open once the Image is created."""
+    if not app_probe.supports_psutil:
+        pytest.skip("Platform doesn't support psutil-based open file detection.")
+
+    path = Path("resources/sample.png")
+    _ = toga.Image(path)
+    assert not is_open(app.paths.app / path)
 
 
 async def test_raw_image(app):
