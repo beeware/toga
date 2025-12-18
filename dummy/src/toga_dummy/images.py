@@ -40,7 +40,8 @@ class Image(LoggedObject):
         self.interface = interface
         if data:
             self._action("load image data", data=data)
-            if data == b"not an image\n":
+            # Test startswith to avoid Windows line-ending issues
+            if bytes(data).startswith(b"not an image"):
                 raise ImageLoadError
             self.native = DummyImage(PIL.Image.open(BytesIO(data)))
         else:
