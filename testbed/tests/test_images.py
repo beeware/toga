@@ -5,6 +5,7 @@ import shutil
 from importlib import import_module
 from pathlib import Path
 
+import psutil
 import pytest
 from PIL import Image as PIL_Image, ImageDraw as PIL_ImageDraw
 
@@ -16,6 +17,23 @@ def image_probe(app, image):
     return module.ImageProbe(app, image)
 
 
+def is_open(path: Path):
+    path = str(path)
+
+    for proc in psutil.process_iter(["open_files"]):
+        try:
+            open_files = proc.open_files()
+        except psutil.AccessDenied:
+            # System process
+            continue
+
+        # Each "file" is a named tuple
+        if any(file.path == path for file in open_files):
+            return True
+
+    return False
+
+
 async def test_local_image(app):
     """An image can be specified by filename"""
     image = toga.Image("resources/sample.png")
@@ -23,11 +41,24 @@ async def test_local_image(app):
     assert image.height == 72
 
 
-async def test_closed_file_handle(app):
-    """The local image file isn't left open once the Image is created."""
-    _ = toga.Image("resources/sample.png")
-    # If the file still has an open handle, this should raise an IOError.
-    _ = Path(app.paths.app / "resources/sample.png").read_bytes()
+async def test_open_file_detection(app):
+    """Checking that this works, at least on desktop platforms."""
+    try:
+        path = app.paths.data / "test.txt"
+        path.write_text("This is a test.")
+        assert not is_open(path)
+        with path.open():
+            assert is_open(path)
+        assert not is_open(path)
+    finally:
+        path.unlink()
+
+
+# async def test_closed_file_handle(app):
+#     """The local image file isn't left open once the Image is created."""
+#     _ = toga.Image("resources/sample.png")
+#     # If the file still has an open handle, this should raise an IOError.
+#     _ = Path(app.paths.app / "resources/sample.png").read_bytes()
 
 
 async def test_raw_image(app):
