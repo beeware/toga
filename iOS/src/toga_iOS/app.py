@@ -1,5 +1,3 @@
-import asyncio
-
 from rubicon.objc import objc_method
 from rubicon.objc.eventloop import RubiconEventLoop, iOSLifecycle
 
