@@ -32,6 +32,8 @@ The system packages that provide Qt must be installed manually:
 $ python -m pip install toga-qt[pyside6]
 ```
 
+This will install the full `PySide6` package, which includes both `PySide6-Essentials` and `PySide6-Addons`. The `PySide6-Addons` package is required to support the [WebView][] widget. If your app does not use [WebView][], you can specify a requirement of `toga-qt[pyside6-essentials]` to only install the `PySide6-Essentials` package.
+
 ## Implementation Details
 
 The `toga-qt` backend uses Qt 6.

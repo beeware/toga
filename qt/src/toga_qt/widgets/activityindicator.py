@@ -28,7 +28,6 @@ class ActivityIndicator(Widget):
         self.native.setClearColor(Qt.transparent)
 
     def _apply_hidden(self, hidden):
-        print(hidden)
         self.native.setVisible(self.running and not hidden)
         self.ai_hidden = hidden
 

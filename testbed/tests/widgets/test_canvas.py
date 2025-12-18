@@ -15,7 +15,7 @@ from toga.colors import (
     RED,
     TRANSPARENT,
     WHITE,
-    rgba,
+    rgb,
 )
 from toga.constants import Baseline, FillRule
 from toga.fonts import BOLD
@@ -297,7 +297,7 @@ async def test_transparency(canvas, probe):
 
     canvas.context.begin_path()
     canvas.context.rect(x=60, y=60, width=120, height=120)
-    canvas.context.fill(color=rgba(0x33, 0x66, 0x99, 0.5))
+    canvas.context.fill(color=rgb(0x33, 0x66, 0x99, 0.5))
 
     await probe.redraw("Image with transparent content and background")
     # 0.1 is a big threshold; it's equivalent to 400 pixels being 100% the wrong color.

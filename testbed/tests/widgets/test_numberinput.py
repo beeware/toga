@@ -65,7 +65,8 @@ async def test_on_change_handler(widget, probe):
     probe.clear_input()
     assert probe.value == ""
     await probe.redraw("Text value has been cleared")
-    assert handler.mock_calls == [call(widget)] * 2
+    event_count = 2 if probe.allows_unchanged_updates else 1
+    assert handler.mock_calls == [call(widget)] * event_count
     assert widget.value is None
     handler.reset_mock()
 
@@ -73,11 +74,12 @@ async def test_on_change_handler(widget, probe):
     event_count = 0
     allows_invalid = 1 if probe.allows_invalid_value else 0
     allows_extra = 1 if (allows_invalid or probe.allows_extra_digits) else 0
+    allows_unchanged_updates = 1 if probe.allows_unchanged_updates else 0
     for char, value, probe_value, events_delta in [
-        ("-", None, "-", 1),  # bare - isn't a valid number
+        ("-", None, "-", allows_unchanged_updates),  # bare - isn't a valid number
         ("1", "-1.00", "-1", 1),
         ("2", "-12.00", "-12", 1),
-        (".", "-12.00", "-12.", 1),
+        (".", "-12.00", "-12.", allows_unchanged_updates),
         ("x", "-12.00", "-12.", allows_invalid),  # Ignored
         ("3", "-12.30", "-12.3", 1),
         ("4", "-12.34", "-12.34", 1),
@@ -117,17 +119,22 @@ async def test_focus_value_clipping(widget, probe, other):
     widget.focus()
 
     # Clearing triggers the event handler
+    allows_unchanged_updates = 1 if probe.allows_unchanged_updates else 0
     probe.clear_input()
-    event_count = 1
+    event_count = allows_unchanged_updates
     await probe.redraw("Value has been cleared programmatically")
     assert handler.mock_calls == [call(widget)] * event_count
 
     for char, value, events_delta in [
-        ("1", Decimal("100"), 1),  # less than min
-        ("2", Decimal("100"), 1),  # less than min
+        ("1", Decimal("100"), allows_unchanged_updates),  # less than min
+        ("2", Decimal("100"), allows_unchanged_updates),  # less than min
         ("3", Decimal("123"), 1),
         ("4", Decimal("1234"), 1),
-        ("5", Decimal("2000"), 1),  # exceeds max
+        (
+            "5",
+            Decimal("2000") if allows_unchanged_updates else Decimal("1234"),
+            allows_unchanged_updates,
+        ),  # exceeds max
     ]:
         await probe.type_character(char)
         await probe.redraw(f"Typed {char!r}")
@@ -140,9 +147,11 @@ async def test_focus_value_clipping(widget, probe, other):
     # On loss of focus, the value will be clipped
     other.focus()
     await probe.redraw("Lost focus; value is clipped")
-    assert widget.value == Decimal("2000")
+    expected_value = Decimal("2000") if allows_unchanged_updates else Decimal("1234")
+    assert widget.value == expected_value
     # The raw value from the implementation matches the widget
-    assert probe.value == "2000"
+    expected_str = "2000" if allows_unchanged_updates else "1234"
+    assert probe.value == expected_str
 
 
 async def test_value(widget, probe):

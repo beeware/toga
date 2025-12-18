@@ -48,6 +48,11 @@ class SimpleProbe(BaseProbe, FontMixin):
         return toga_color(self.native.palette().color(self.native.backgroundRole()))
 
     @property
+    def font(self):
+        # This is checking what we ask for, not what we get
+        return self.native.font()
+
+    @property
     def hidden(self):
         return not self.native.isVisible()
 

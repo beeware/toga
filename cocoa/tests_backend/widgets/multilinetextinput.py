@@ -7,6 +7,7 @@ from .properties import toga_color, toga_text_align
 
 class MultilineTextInputProbe(SimpleProbe):
     native_class = NSScrollView
+    redo_available = True
 
     def __init__(self, widget):
         super().__init__(widget)
