@@ -12,48 +12,16 @@ from travertino.size import at_least
 
 from toga.widgets.webview import CookiesResult, JavaScriptResult
 from toga_iOS.libs import (
-    IOS_VERSION,
     NSURL,
     NSURLRequest,
     UIAlertAction,
     UIAlertActionStyle,
     UIAlertController,
     UIAlertControllerStyle,
-    UINavigationController,
     WKUIDelegate,
     WKWebView,
 )
 from toga_iOS.widgets.base import Widget
-
-
-def configure_parent_nav_bars(view, sync=True):
-    pass
-    nav_bars = []
-    current_responder = view
-    while current_responder is not None:
-        if isinstance(current_responder, UINavigationController):
-            nav_bar = current_responder.navigationBar
-            if not nav_bar.isHidden():
-                if nav_bars:
-                    last_nav_bar = nav_bars[-1]
-                    last_frame = last_nav_bar.superview().convertRect(
-                        last_nav_bar.frame, toView=None
-                    )
-                    current_frame = nav_bar.superview().convertRect(
-                        nav_bar.frame, toView=None
-                    )
-                    if (
-                        current_frame.size.height + current_frame.origin.y
-                        != last_frame.origin.y
-                    ):
-                        break
-                nav_bars.append(nav_bar)
-        current_responder = current_responder.nextResponder
-    for bar in nav_bars:
-        if sync:
-            bar.scrollEdgeAppearance = bar.standardAppearance
-        else:
-            bar.scrollEdgeAppearance = None
 
 
 def js_completion_handler(result):
@@ -157,17 +125,6 @@ class TogaWebView(WKWebView, protocols=[WKUIDelegate]):
         )
 
     @objc_method
-    def scrollViewDidScroll_(self, scrollView):
-        if IOS_VERSION < (26, 0):
-            configure_parent_nav_bars(
-                scrollView,
-                sync=(
-                    scrollView.contentOffset.y + scrollView.adjustedContentInset.top
-                    > 0.0001
-                ),
-            )
-
-    @objc_method
     def webView_runJavaScriptConfirmPanelWithMessage_initiatedByFrame_completionHandler_(  # noqa: E501
         self, webView, message, frame, completionHandler
     ) -> None:  # pragma: no cover
@@ -231,6 +188,15 @@ class WebView(Widget):
 
         # Add the layout constraints
         self.add_constraints()
+
+    def top_un_offset_if_needed(self, frame):
+        if (
+            hasattr(self.container, "no_webview_offset")
+            and self.container.no_webview_offset
+        ):
+            return frame
+        else:
+            return super().top_un_offset_if_needed(frame)
 
     def get_url(self):
         url = str(self.native.URL)

@@ -28,6 +28,9 @@ from .screens import Screen as ScreenImpl
 navAppearance = UINavigationBarAppearance.alloc().init()
 navAppearance.configureWithDefaultBackground()
 
+opaqueNavAppearance = UINavigationBarAppearance.alloc().init()
+opaqueNavAppearance.configureWithOpaqueBackground()
+
 
 class Window:
     def __init__(self, interface, title, position, size):
@@ -244,14 +247,6 @@ class MainWindow(Window):
         self.container.resize_refresh = True
         if IOS_VERSION < (26, 0):  # pragma: no branch
             self.container.controller.navigationBar.standardAppearance = navAppearance
-            # Unfortunately, the elegant way is to have ScrollEdge be transparent (as
-            # that is when Scroll View is all the way at the top; however, detection is
-            # kinda messed up as shown in https://stackoverflow.com/questions/74681384/,
-            # and due to the way Toga performs layout, ScrollView as first element is
-            # not always the case.
-            # self.container.controller.navigationBar.scrollEdgeAppearance = (
-            #     navAppearance
-            # )
 
     def create_toolbar(self):
         # No toolbar handling at present

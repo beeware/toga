@@ -132,12 +132,6 @@ class OptionContainer(Widget):
 
         if IOS_VERSION < (26, 0):  # pragma: no branch
             self.native_controller.moreNavigationController.navigationBar.standardAppearance = navAppearance  # noqa: E501
-            # Unfortunately, the elegant way is to have ScrollEdge be transparent (as
-            # that is when Scroll View is all the way at the top; however, detection is
-            # kinda messed up as shown in https://stackoverflow.com/questions/74681384/,
-            # and due to the way Toga performs layout, ScrollView as first element is
-            # not always the case.
-            # self.native_controller.moreNavigationController.navigationBar.scrollEdgeAppearance = navAppearance  # noqa: E501
 
         # Setting the bounds changes the constraints, but that doesn't mean
         # the constraints have been fully applied. Schedule a refresh to be done
@@ -218,6 +212,7 @@ class OptionContainer(Widget):
         sub_container.content = widget
         sub_container.enabled = True
         sub_container.top_bar = False
+        sub_container.no_webview_offset = True
         self.sub_containers.insert(index, sub_container)
 
         self.configure_tab_item(sub_container, text, icon)
