@@ -212,7 +212,8 @@ class OptionContainer(Widget):
         sub_container.content = widget
         sub_container.enabled = True
         sub_container.top_bar = False
-        sub_container.no_webview_offset = True
+        if IOS_VERSION < (26, 0):
+            sub_container.no_webview_offset = True
         self.sub_containers.insert(index, sub_container)
 
         self.configure_tab_item(sub_container, text, icon)
