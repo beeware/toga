@@ -5,16 +5,10 @@ import toga
 from toga_iOS.container import ControlledContainer
 from toga_iOS.libs import (
     IOS_VERSION,
-    UIBlurEffect,
-    UIBlurEffectStyle,
-    UIColor,
     UIDevice,
-    UIImage,
     UITabBarController,
     UITabBarItem,
     UIUserInterfaceIdiom,
-    UIViewAutoresizing,
-    UIVisualEffectView,
 )
 from toga_iOS.widgets.base import Widget
 
@@ -115,20 +109,8 @@ class OptionContainer(Widget):
         self.native_controller.customizableViewControllers = None
 
         if IOS_VERSION < (26, 0):  # pragma: no branch
-            self.native_controller.tabBar.backgroundImage = UIImage.alloc().init()
-            self.native_controller.tabBar.shadowImage = UIImage.alloc().init()
-            self.native_controller.tabBar.backgroundColor = UIColor.clearColor
-            self.native_controller.tabBar.layer.backgroundColor = (
-                UIColor.clearColor.cgColor()
-            )
-            blur = UIBlurEffect.effectWithStyle(UIBlurEffectStyle.Regular)
-            self.blurview = UIVisualEffectView.alloc().initWithEffect(blur)
-            self.blurview.frame = self.native_controller.tabBar.bounds
-            self.blurview.autoresizingMask = (
-                UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleHeight
-            )
-            self.native_controller.tabBar.insertSubview(self.blurview, atIndex=0)
-            self.native_controller.extendedLayoutIncludesOpaqueBars = True
+            self.native_controller.tabBar.setTranslucent(False)
+            self.native_controller.tabBar.setTranslucent(True)
 
         # The native widget representing the container is the view of the native
         # controller. This doesn't change once it's created, so we can cache it.
@@ -155,7 +137,7 @@ class OptionContainer(Widget):
             # kinda messed up as shown in https://stackoverflow.com/questions/74681384/,
             # and due to the way Toga performs layout, ScrollView as first element is
             # not always the case.
-            self.native_controller.moreNavigationController.navigationBar.scrollEdgeAppearance = navAppearance  # noqa: E501
+            # self.native_controller.moreNavigationController.navigationBar.scrollEdgeAppearance = navAppearance  # noqa: E501
 
         # Setting the bounds changes the constraints, but that doesn't mean
         # the constraints have been fully applied. Schedule a refresh to be done

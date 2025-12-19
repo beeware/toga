@@ -13,8 +13,6 @@ from toga_iOS.images import nsdata_to_bytes
 from toga_iOS.libs import (
     IOS_VERSION,
     NSData,
-    UIBlurEffect,
-    UIBlurEffectStyle,
     UIColor,
     UIGraphicsImageRenderer,
     UIImage,
@@ -28,8 +26,7 @@ from toga_iOS.libs import (
 from .screens import Screen as ScreenImpl
 
 navAppearance = UINavigationBarAppearance.alloc().init()
-navAppearance.configureWithTransparentBackground()
-navAppearance.backgroundEffect = UIBlurEffect.effectWithStyle(UIBlurEffectStyle.Regular)
+navAppearance.configureWithDefaultBackground()
 
 
 class Window:
@@ -252,7 +249,9 @@ class MainWindow(Window):
             # kinda messed up as shown in https://stackoverflow.com/questions/74681384/,
             # and due to the way Toga performs layout, ScrollView as first element is
             # not always the case.
-            self.container.controller.navigationBar.scrollEdgeAppearance = navAppearance
+            # self.container.controller.navigationBar.scrollEdgeAppearance = (
+            #     navAppearance
+            # )
 
     def create_toolbar(self):
         # No toolbar handling at present
