@@ -95,7 +95,7 @@ class Window:
         else:  # pragma: no-cover-if-gtk3
             self.container.set_valign(Gtk.Align.FILL)
             self.container.set_vexpand(True)
-            if Adw is not None:  # pragma: cover-if-libadwaita
+            if Adw is not None:  # pragma: no-cover-unless-libadwaita
                 # libadwaita requires the use of a "toolbar view" for adding top and
                 # bottom bars, including any top bars and toolbars.
                 self.toolbar_view = Adw.ToolbarView()
@@ -103,7 +103,7 @@ class Window:
                 self.toolbar_view.add_top_bar(self.headerbar)
                 self.toolbar_view.set_content(self.container)
                 self.native.set_content(self.toolbar_view)
-            else:  # pragma: cover-if-plain-gtk4
+            else:  # pragma: no-cover-unless-plain-gtk4
                 # The GTK window's content is the layout; any user content is placed
                 # into the container, which is the bottom widget in the layout. The
                 # toolbar (if required) will be added at the top of the layout.

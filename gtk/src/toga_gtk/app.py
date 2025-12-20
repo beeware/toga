@@ -35,9 +35,9 @@ class App:
         self.loop = self.policy.get_event_loop()
 
         # Stimulate the build of the app
-        if Adw is None:  # pragma: cover-if-plain-gtk
+        if Adw is None:  # pragma: no-cover-unless-plain-gtk
             Application = Gtk.Application
-        else:  # pragma: cover-if-libadwaita
+        else:  # pragma: no-cover-unless-libadwaita
             Application = Adw.Application
         # *Note* -- the coverage may be inaccurate on older
         # glib versions; it is safe to ignore when running

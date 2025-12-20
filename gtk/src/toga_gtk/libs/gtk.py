@@ -8,10 +8,10 @@ gi.require_version("Gtk", gtk_version)
 
 if (
     gtk_version == "4.0" and os.getenv("TOGA_GTKLIB") == "Adw"
-):  # pragma: cover-if-libadwaita
+):  # pragma: no-cover-unless-libadwaita
     gi.require_version("Adw", "1")
     from gi.repository import Adw  # noqa: E402, F401
-else:  # pragma: cover-if-plain-gtk
+else:  # pragma: no-cover-unless-plain-gtk
     Adw = None
 
 from gi.events import GLibEventLoopPolicy  # noqa: E402, F401
@@ -37,13 +37,13 @@ GLIB_VERSION: tuple[int, int, int] = (
     GLib.MICRO_VERSION,
 )
 
-if Adw:  # pragma: cover-if-libadwaita
+if Adw:  # pragma: no-cover-unless-libadwaita
     ADW_VERSION: tuple[int, int, int] = (
         Adw.get_major_version(),
         Adw.get_minor_version(),
         Adw.get_micro_version(),
     )
-else:  # pragma: cover-if-plain-gtk
+else:  # pragma: no-cover-unless-plain-gtk
     ADW_VERSION = None
 
 if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4

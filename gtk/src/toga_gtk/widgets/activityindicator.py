@@ -33,7 +33,7 @@ class ActivityIndicator(Widget):
             self.interface.intrinsic.width = 32
             self.interface.intrinsic.height = 32
 
-    else:  # pragma: cover-if-plain-gtk
+    else:  # pragma: no-cover-unless-plain-gtk
 
         def create(self):
             self.native = Gtk.Spinner()
