@@ -15,14 +15,14 @@ if gtk_version == "4.0":  # pragma: no cover
         gtklib = "Adw"
     elif os.getenv("TOGA_GTKLIB") == "None":
         gtklib = None
-    elif os.getenv("TOGA_GTKLIB") != "":
+    elif os.getenv("TOGA_GTKLIB") not in {None, ""}:
         print(
-            f"WARNING: Unsupported $TOGA_GTKLIB value {os.getenv('TOGA_GTKLIB')}."
+            f"WARNING: Unsupported $TOGA_GTKLIB value {os.getenv('TOGA_GTKLIB')}. "
             f"Supported values are: 'Adw', 'None'.  Falling back to None."
         )
         gtklib = None
     else:  # No TOGA_GTKLIB specified; autodetect from DE
-        if os.getenv("XDG_SESSION_DESKTOP") == "GNOME":
+        if "GNOME" in os.getenv("XDG_CURRENT_DESKTOP").split(":"):
             gtklib = "Adw"
         else:
             gtklib = None
