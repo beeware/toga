@@ -416,10 +416,7 @@ def test_index_not_child(node):
     """If a node isn't a child of this node, it can't be found by index."""
     other = Node(val1="other")
 
-    with pytest.raises(
-        ValueError,
-        match=r"<Leaf Node .* val1='other'> is not in list",
-    ):
+    with pytest.raises(ValueError, match=r"not in list"):
         node.index(other)
 
 

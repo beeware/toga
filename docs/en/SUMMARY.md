@@ -4,15 +4,41 @@
 
 - [Tutorials](tutorial/index.md)
     - ./tutorial/*
-- How-to Guides
-    - Contributing to Toga
-        - [Contributing code to Toga](how-to/contribute/code.md)
-        - [Contributing to Toga's documentation](how-to/contribute/docs.md)
+- [How-to Guides](how-to/index.md)
+    - [Contributing to Toga](how-to/contribute/index.md)
+        - [First-time contributors](how-to/contribute/first_time_contributors.md)
+        - What can I do?
+            - [Fix an issue](how-to/contribute/what/fix_issue.md)
+            - [Implement a new feature](how-to/contribute/what/implement_feature.md)
+            - [Write documentation](how-to/contribute/what/write_docs.md)
+            - [Triage an issue](how-to/contribute/what/triage.md)
+            - [Review a pull request](how-to/contribute/what/review_pr.md)
+            - [Propose a new feature](how-to/contribute/what/propose_feature.md)
+            - [Use the tools](how-to/contribute/what/use_tools.md)
+        - How do I contribute?
+            - [Setting up a development environment](how-to/contribute/how/dev_environment.md)
+            - [Reproducing an issue](how-to/contribute/how/reproduce_issue.md)
+            - [Working from a branch](how-to/contribute/how/branches.md)
+            - [Avoiding scope creep](how-to/contribute/how/scope_creep.md)
+            - [Writing, running, and testing code](how-to/contribute/how/write_code.md)
+            - [Building documentation](how-to/contribute/how/build_docs.md)
+            - [Writing documentation](how-to/contribute/how/write_docs.md)
+            - [Adding a change note](how-to/contribute/how/change_note.md)
+            - [Submitting a pull request](how-to/contribute/how/submit_pr.md)
+            - [Providing a review](how-to/contribute/how/review_pr.md)
+            - [Submitting a new issue](how-to/contribute/how/new_issue.md)
+            - [Proposing a new feature](how-to/contribute/how/propose_feature.md)
+        - What happens next?
+            - [Pull request review process](how-to/contribute/next/pr_review.md)
+            - [Release process](how-to/contribute/next/release.md)
+        - Style guides
+            - [Code style guide](how-to/contribute/style/code_style_guide.md)
+            - [Documentation style guide](how-to/contribute/style/docs_style_guide.md)
     - Internal How-to guides
         - [How to cut a Toga release](how-to/internal/release.md)
-- Topic guides
+- [Topic guides](topics/index.md)
     - ./topics/*
-- Reference
+- [Reference](reference/index.md)
     - [API Reference](reference/api/index.md)
         - [App](./reference/api/app.md)
         - [Window](./reference/api/window.md)
@@ -32,7 +58,7 @@
             - [DetailedList](./reference/api/widgets/detailedlist.md)
             - [Divider](./reference/api/widgets/divider.md)
             - [ImageView](./reference/api/widgets/imageview.md)
-            - [Image](./reference/api/widgets/label.md)
+            - [Label](./reference/api/widgets/label.md)
             - [MapView](./reference/api/widgets/mapview.md)
             - [MultilineTextInput](./reference/api/widgets/multilinetextinput.md)
             - [NumberInput](./reference/api/widgets/numberinput.md)
@@ -53,7 +79,9 @@
     - [Supported Platforms](reference/platforms/index.md)
         - [macOS](./reference/platforms/macOS.md)
         - [Windows](./reference/platforms/windows.md)
-        - [Linux/Unix](./reference/platforms/linux.md)
+        - [Linux](./reference/platforms/linux/index.md)
+            - [GTK](./reference/platforms/linux/gtk.md)
+            - [Qt](./reference/platforms/linux/qt.md)
         - [Android](./reference/platforms/android.md)
         - [iOS](./reference/platforms/iOS.md)
         - [Web](./reference/platforms/web.md)
@@ -66,10 +94,9 @@
         - [Image Format Plugins](reference/plugins/image_formats.md)
     - Toga's internals
         - [Architecture](reference/internals/architecture.md)
-- About Toga
+- [About Toga](about/index.md)
     - [Why Toga?](about/philosophy.md)
     - [FAQ](about/faq.md)
     - [Success Stories](about/success.md)
     - [Release History](about/releases.md)
     - [Toga's Road Map](about/roadmap.md)
-    - [Community](about/community.md)

@@ -4,7 +4,7 @@ from android.text import Layout
 from android.view import Gravity
 from java import jint
 
-from toga.colors import TRANSPARENT, rgba
+from toga.colors import TRANSPARENT, rgb
 from toga.constants import BOTTOM, CENTER, JUSTIFY, LEFT, RIGHT, TOP
 
 
@@ -14,7 +14,7 @@ def toga_color(color_int):
     if color_int == 0:
         return TRANSPARENT
     else:
-        return rgba(
+        return rgb(
             Color.red(color_int),
             Color.green(color_int),
             Color.blue(color_int),

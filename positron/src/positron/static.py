@@ -20,6 +20,16 @@ class HTTPHandler(SimpleHTTPRequestHandler):
     def translate_path(self, path):
         return str(self.server.base_path / path[1:])
 
+    def end_headers(self):
+        # Set headers to make the site cross-origin isolated.
+        #
+        # Only preserve the browsing context group if the page is on
+        # the same origin.
+        self.send_header("Cross-Origin-Opener-Policy", "same-origin")
+        # Require a CORP/CORS policy in order to load cross-site resources
+        self.send_header("Cross-Origin-Embedder-Policy", "require-corp")
+        super().end_headers()
+
 
 class LocalHTTPServer(ThreadingHTTPServer):
     def __init__(self, base_path, RequestHandlerClass=HTTPHandler):

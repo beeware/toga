@@ -13,12 +13,6 @@ class OptionContainerProbe(SimpleProbe):
     if GTK_VERSION >= (4, 0, 0):
         pytest.skip("GTK4 doesn't support option containers yet")
 
-    def repaint_needed(self):
-        return (
-            self.impl.sub_containers[self.native.get_current_page()].needs_redraw
-            or super().repaint_needed()
-        )
-
     def select_tab(self, index):
         # Can't select a tab that isn't visible.
         if self.tab_enabled(index):

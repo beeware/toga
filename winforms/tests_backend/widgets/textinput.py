@@ -11,6 +11,7 @@ from .properties import toga_x_text_align
 class TextInputProbe(SimpleProbe):
     native_class = TextBox
     fixed_height = 23
+    redo_available = True
 
     @property
     def value(self):

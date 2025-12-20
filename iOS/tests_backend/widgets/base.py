@@ -40,6 +40,7 @@ CATransaction = ObjCClass("CATransaction")
 
 class SimpleProbe(BaseProbe, FontMixin):
     native_attr = "native"
+    invalid_size_while_hidden = False
 
     def __init__(self, widget):
         super().__init__()

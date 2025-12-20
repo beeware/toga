@@ -1,11 +1,4 @@
-# App
-
-The top-level representation of an application.
-
-Availability ([Key][api-status-key])  <!-- rumdl-disable-line MD013 -->
-{: .availability-title }
-
-{{ pd_read_csv("../data/widgets_by_platform.csv", na_filter=False, usecols=[4,5,6,7,8,9,10])[pd_read_csv("../data/widgets_by_platform.csv")[["ComponentName"]].isin(["Application"]).all(axis=1)] | convert_to_md_table }}
+{{ component_header("App") }}
 
 ## Usage
 
@@ -51,6 +44,8 @@ if __name__ == '__main__':
 Every app must have a formal name (a human readable name), and an app ID (a machine-readable identifier - usually a reversed domain name). In the examples above, these are provided as constructor arguments. However, you can also provide these details, along with many of the other constructor arguments, as packaging metadata in a format compatible with [`importlib.metadata`][]. If you deploy your app with [Briefcase](https://briefcase.readthedocs.io/en/stable), this will be done automatically.
 
 A Toga app will install a number of default commands to reflect core application functionality (such as the Quit/Exit menu item, and the About menu item). The IDs for these commands are defined as constants on the [`Command`][toga.Command] class. These commands are automatically installed *before* [`startup()`][toga.App.startup] is invoked. If you wish to customize the menu items exposed by your app, you can add or remove commands in your [`startup()`][toga.App.startup] implementation.
+
+As part of application startup, apps will also ensure that the locale has been set to match the language settings of the operating system.
 
 ## Assigning a main window  { #assigning-main-window }
 

@@ -1,4 +1,4 @@
-from ..colors import color
+from ..colors import Color
 
 
 class Choices:
@@ -47,7 +47,7 @@ class Choices:
                 pass
         if self.color:
             try:
-                return color(value)
+                return Color.parse(value)
             except ValueError:
                 pass
         for const in self.constants:

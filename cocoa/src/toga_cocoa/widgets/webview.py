@@ -7,6 +7,9 @@ from toga.widgets.webview import CookiesResult, JavaScriptResult
 
 from ..libs import (
     NSURL,
+    NSAlert,
+    NSAlertFirstButtonReturn,
+    NSAlertStyle,
     NSModalResponseOK,
     NSOpenPanel,
     NSURLRequest,
@@ -85,12 +88,11 @@ class TogaWebView(WKWebView, protocols=[WKUIDelegate]):
     def acceptsFirstResponder(self) -> bool:
         return True
 
-    # WKUIDelegate protocol method required to utilize the open file dialog for
-    # uploading a file to a website. Difficult to automatically test because it
-    # uses :param: completionHandler, which is a method utilized by the under-
-    # lying WKWebView objective-C codebase. :param: completionHandler cannot be
-    # created manually for testing because it is difficult to pull it up from
-    # the native codebase.
+    # WKUIDelegate protocol methods required to display dialogs to the user.
+    # These are difficult to automatically test because they use
+    # completionHandler, which is a method utilized by the underlying WKWebView
+    # objective-C codebase. completionHandler cannot be created manually for
+    # testing because it is difficult to pull it up from the native codebase.
     @objc_method
     def webView_runOpenPanelWithParameters_initiatedByFrame_completionHandler_(
         self, webView, parameters, frame, completionHandler
@@ -126,6 +128,46 @@ class TogaWebView(WKWebView, protocols=[WKUIDelegate]):
                 ObjCBlock(completionHandler, None, objc_id)(None)
 
         open_panel.beginWithCompletionHandler(_completion_handler)
+
+    @objc_method
+    def webView_runJavaScriptAlertPanelWithMessage_initiatedByFrame_completionHandler_(
+        self, webView, message, frame, completionHandler
+    ) -> None:  # pragma: no cover
+        alert = NSAlert.alloc().init()
+        alert.icon = self.interface.app.icon._impl.native
+        alert.alertStyle = NSAlertStyle.Informational
+        alert.informativeText = message
+
+        def _completionHandler() -> None:
+            ObjCBlock(completionHandler, None)(None)
+
+        alert.beginSheetModalForWindow(
+            webView.window,
+            completionHandler=_completionHandler,
+        )
+
+    @objc_method
+    def webView_runJavaScriptConfirmPanelWithMessage_initiatedByFrame_completionHandler_(  # noqa: E501
+        self, webView, message, frame, completionHandler
+    ) -> None:  # pragma: no cover
+        alert = NSAlert.alloc().init()
+        alert.icon = self.interface.app.icon._impl.native
+        alert.alertStyle = NSAlertStyle.Informational
+        alert.messageText = "Confirm?"
+        alert.informativeText = message
+        alert.addButtonWithTitle("OK")
+        alert.addButtonWithTitle("Cancel")
+
+        def _completionHandler(result: int) -> None:
+            if result == NSAlertFirstButtonReturn:
+                ObjCBlock(completionHandler, None, int)(True)
+            else:
+                ObjCBlock(completionHandler, None, int)(False)
+
+        alert.beginSheetModalForWindow(
+            webView.window,
+            completionHandler=_completionHandler,
+        )
 
 
 class WebView(Widget):

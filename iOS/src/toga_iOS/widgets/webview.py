@@ -1,10 +1,26 @@
 from http.cookiejar import Cookie, CookieJar
 
-from rubicon.objc import objc_id, objc_method, objc_property, py_from_ns
+from rubicon.objc import (
+    Block,
+    ObjCBlock,
+    objc_id,
+    objc_method,
+    objc_property,
+    py_from_ns,
+)
 from travertino.size import at_least
 
 from toga.widgets.webview import CookiesResult, JavaScriptResult
-from toga_iOS.libs import NSURL, NSURLRequest, WKWebView
+from toga_iOS.libs import (
+    NSURL,
+    NSURLRequest,
+    UIAlertAction,
+    UIAlertActionStyle,
+    UIAlertController,
+    UIAlertControllerStyle,
+    WKUIDelegate,
+    WKWebView,
+)
 from toga_iOS.widgets.base import Widget
 
 
@@ -56,7 +72,7 @@ def cookies_completion_handler(result):
     return _completion_handler
 
 
-class TogaWebView(WKWebView):
+class TogaWebView(WKWebView, protocols=[WKUIDelegate]):
     interface = objc_property(object, weak=True)
     impl = objc_property(object, weak=True)
 
@@ -73,6 +89,83 @@ class TogaWebView(WKWebView):
             self.impl.loaded_future.set_result(None)
             self.impl.loaded_future = None
 
+    # WKUIDelegate protocol methods required to display dialogs to the user.
+    # These are difficult to automatically test because they use
+    # completionHandler, which is a method utilized by the underlying WKWebView
+    # objective-C codebase. completionHandler cannot be created manually for
+    # testing because it is difficult to pull it up from the native codebase.
+    @objc_method
+    def webView_runJavaScriptAlertPanelWithMessage_initiatedByFrame_completionHandler_(
+        self, webView, message, frame, completionHandler
+    ) -> None:  # pragma: no cover
+        alert = UIAlertController.alertControllerWithTitle(
+            "Alert!",
+            message=message,
+            preferredStyle=UIAlertControllerStyle.Alert,
+        )
+
+        # Add OK button
+        def _ok(action: objc_id) -> None:
+            ObjCBlock(completionHandler, None)()
+
+        alert.addAction(
+            UIAlertAction.actionWithTitle(
+                "OK",
+                style=UIAlertActionStyle.Default,
+                handler=Block(_ok, None, objc_id),
+            )
+        )
+
+        # Display dialog
+        view_controller = self.interface.window._impl.native.rootViewController
+        view_controller.presentViewController(
+            alert,
+            animated=False,
+            completion=None,
+        )
+
+    @objc_method
+    def webView_runJavaScriptConfirmPanelWithMessage_initiatedByFrame_completionHandler_(  # noqa: E501
+        self, webView, message, frame, completionHandler
+    ) -> None:  # pragma: no cover
+        alert = UIAlertController.alertControllerWithTitle(
+            "Confirm?",
+            message=message,
+            preferredStyle=UIAlertControllerStyle.Alert,
+        )
+
+        # Add OK button
+        def _ok(action: objc_id) -> None:
+            ObjCBlock(completionHandler, None, bool)(True)
+
+        alert.addAction(
+            UIAlertAction.actionWithTitle(
+                "OK",
+                style=UIAlertActionStyle.Default,
+                handler=Block(_ok, None, objc_id),
+            )
+        )
+
+        # Add cancel button
+        def _cancel(action: objc_id) -> None:
+            ObjCBlock(completionHandler, None, bool)(False)
+
+        alert.addAction(
+            UIAlertAction.actionWithTitle(
+                "Cancel",
+                style=UIAlertActionStyle.Default,
+                handler=Block(_cancel, None, objc_id),
+            )
+        )
+
+        # Display dialog
+        view_controller = self.interface.window._impl.native.rootViewController
+        view_controller.presentViewController(
+            alert,
+            animated=False,
+            completion=None,
+        )
+
 
 class WebView(Widget):
     def create(self):
@@ -84,6 +177,8 @@ class WebView(Widget):
         # It is a no-op on earlier versions.
         self.native.inspectable = True
         self.native.navigationDelegate = self.native
+        # Set UIDelegate to self for file dialog support
+        self.native.UIDelegate = self.native
 
         self.loaded_future = None
 

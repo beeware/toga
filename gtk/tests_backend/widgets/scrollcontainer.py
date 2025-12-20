@@ -32,9 +32,6 @@ class ScrollContainerProbe(SimpleProbe):
         self.native.get_vadjustment().set_value(200)
         self.native.get_vadjustment().emit("changed")
 
-    def repaint_needed(self):
-        return self.impl.document_container.needs_redraw or super().repaint_needed()
-
     async def wait_for_scroll_completion(self):
         # Scroll isn't animated, so this is a no-op.
         pass

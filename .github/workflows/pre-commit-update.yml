@@ -11,4 +11,5 @@ jobs:
     uses: beeware/.github/.github/workflows/pre-commit-update.yml@main
     secrets: inherit
     with:
-      pre-commit-source:  "--group pre-commit"
+      pre-commit-source: "--group pre-commit"
+      changenote-format: "md"

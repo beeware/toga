@@ -54,7 +54,7 @@ WINFORMS_KEYS.update(
     }
 )
 
-SHIFTED_KEYS = dict(zip("!@#$%^&*()", "1234567890"))
+SHIFTED_KEYS = dict(zip("!@#$%^&*()", "1234567890", strict=False))
 SHIFTED_KEYS.update(
     {lower.upper(): lower for lower in ascii_lowercase},
 )

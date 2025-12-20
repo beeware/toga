@@ -249,7 +249,7 @@ class TreeSource(Source):
         if isinstance(data, Mapping):
             node = Node(**data)
         elif hasattr(data, "__iter__") and not isinstance(data, str):
-            node = Node(**dict(zip(self._accessors, data)))
+            node = Node(**dict(zip(self._accessors, data, strict=False)))
         else:
             node = Node(**{self._accessors[0]: data})
 

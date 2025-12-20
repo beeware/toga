@@ -1,17 +1,17 @@
 import pytest
 
-from travertino.colors import color, hsl, rgb, rgba
+from travertino.colors import Color, color, hsl, rgb
 
 from ..utils import assert_equal_color
 
 
 def assert_parsed_equal_color(actual, expected):
-    actual = color(actual)
+    actual = Color.parse(actual)
     assert_equal_color(actual, expected, abs=0.001)
 
 
 def test_noop():
-    assert_parsed_equal_color(rgba(1, 2, 3, 0.5), rgba(1, 2, 3, 0.5))
+    assert_parsed_equal_color(rgb(1, 2, 3, 0.5), rgb(1, 2, 3, 0.5))
     assert_parsed_equal_color(hsl(1, 0.2, 0.3), hsl(1, 0.2, 0.3))
 
 
@@ -57,7 +57,7 @@ def test_named_color(value, expected):
 
 def test_named_color_invalid():
     with pytest.raises(ValueError):
-        color("not a color")
+        Color.parse("not a color")
 
 
 @pytest.mark.parametrize(
@@ -67,13 +67,13 @@ def test_named_color_invalid():
 def test_hash_mark_invalid_length(num_digits):
     """An invalid number of digts after # raises a ValueError."""
     with pytest.raises(ValueError):
-        color(f"#{'1' * num_digits}")
+        Color.parse(f"#{'1' * num_digits}")
 
 
 def test_invalid_hex_rgb():
     """Digits out of the hex range raise an error."""
     with pytest.raises(ValueError):
-        color("#aabbccddhh")
+        Color.parse("#aabbccddhh")
 
 
 @pytest.mark.parametrize(
@@ -83,4 +83,13 @@ def test_invalid_hex_rgb():
 def test_other_invalid_inputs(value):
     """Other random junk doesn't work either."""
     with pytest.raises(ValueError):
-        color(value)
+        Color.parse(value)
+
+
+def test_deprecated():
+    """The color() function is deprecated."""
+    with pytest.warns(
+        DeprecationWarning,
+        match=r"The color\(\) function is deprecated\. Use Color\.parse\(\) instead\.",
+    ):
+        color("#FFF")

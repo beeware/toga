@@ -14,6 +14,7 @@ from .properties import toga_color, toga_text_align
 
 class TextInputProbe(SimpleProbe):
     native_class = NSTextField
+    redo_available = True
 
     @property
     def value(self):

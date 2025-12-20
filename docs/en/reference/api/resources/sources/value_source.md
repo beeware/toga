@@ -1,6 +1,4 @@
-# ValueSource
-
-A data source describing a single value.
+{{ component_header("ValueSource") }}
 
 ## Usage
 

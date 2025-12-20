@@ -25,6 +25,7 @@ class AppProbe(BaseProbe, DialogsMixin):
     supports_key_mod3 = True
     supports_current_window_assignment = True
     supports_dark_mode = True
+    edit_menu_noop_enabled = False
 
     def __init__(self, app):
         super().__init__()
@@ -226,7 +227,7 @@ class AppProbe(BaseProbe, DialogsMixin):
         menu = self._menu_item(path).submenu
 
         assert menu.numberOfItems == len(expected)
-        for item, title in zip(menu.itemArray, expected):
+        for item, title in zip(menu.itemArray, expected, strict=False):
             if title == "---":
                 assert item.isSeparatorItem
             else:

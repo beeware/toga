@@ -2,7 +2,7 @@ from ctypes import byref
 
 from rubicon.objc import CGFloat
 
-from toga.colors import TRANSPARENT, rgba
+from toga.colors import TRANSPARENT, rgb
 from toga.style.pack import CENTER, JUSTIFY, LEFT, RIGHT
 from toga_iOS.libs import (
     NSCenterTextAlignment,
@@ -28,7 +28,7 @@ def toga_color(color):
         color.getRed(
             byref(red), green=byref(green), blue=byref(blue), alpha=byref(alpha)
         )
-        return rgba(red.value * 255, green.value * 255, blue.value * 255, alpha.value)
+        return rgb(red.value * 255, green.value * 255, blue.value * 255, alpha.value)
     else:
         return None
 

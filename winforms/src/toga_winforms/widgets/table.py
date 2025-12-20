@@ -3,8 +3,8 @@ from warnings import warn
 import System.Windows.Forms as WinForms
 
 import toga
+from toga.handlers import WeakrefCallable
 
-from ..libs.wrapper import WeakrefCallable
 from .base import Widget
 
 

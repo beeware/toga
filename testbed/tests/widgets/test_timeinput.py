@@ -5,7 +5,7 @@ from pytest import fixture
 
 import toga
 
-from ..conftest import skip_on_platforms
+from ..conftest import skip_on_backends
 from .conftest import build_cleanup_test
 from .properties import (  # noqa: F401
     test_background_color,
@@ -75,20 +75,20 @@ def normalize(probe):
 
 @fixture
 async def widget():
-    skip_on_platforms("linux")
+    skip_on_backends("toga_gtk")
     return toga.TimeInput()
 
 
 test_cleanup = build_cleanup_test(
     toga.TimeInput,
-    skip_platforms=("linux",),
     xfail_platforms=("android",),
+    skip_backends=("toga_gtk",),
 )
 
 
 async def test_init(normalize):
     "Properties can be set in the constructor"
-    skip_on_platforms("linux")
+    skip_on_backends("toga_gtk")
 
     value = time(10, 10, 30)
     min = time(2, 3, 4)

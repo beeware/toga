@@ -194,7 +194,7 @@ class Tree(Widget):
         self.columns = []
         if self.interface.headings:
             for index, (heading, accessor) in enumerate(
-                zip(self.interface.headings, self.interface.accessors)
+                zip(self.interface.headings, self.interface.accessors, strict=False)
             ):
                 self._insert_column(index, heading, accessor)
         else:

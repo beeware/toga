@@ -20,6 +20,7 @@ class AppProbe(BaseProbe, DialogsMixin):
     supports_key_mod3 = False
     supports_current_window_assignment = True
     supports_dark_mode = False
+    edit_menu_noop_enabled = False
 
     def __init__(self, app):
         super().__init__()
@@ -181,7 +182,7 @@ class AppProbe(BaseProbe, DialogsMixin):
         menu = self._menu_item(path)
 
         assert len(menu.DropDownItems) == len(expected)
-        for item, title in zip(menu.DropDownItems, expected):
+        for item, title in zip(menu.DropDownItems, expected, strict=False):
             if title == "---":
                 assert isinstance(item, ToolStripSeparator)
             else:

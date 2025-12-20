@@ -14,14 +14,26 @@ $ ./venv/bin/activate
 (venv) $ python -m pip install briefcase
 ```
 
-To run in development mode:
+To run in development mode for most backends:
 
 ```
-(venv) $ briefcase dev
+(venv) $ briefcase dev -a screenshot
 ```
 
-To run as a packaged app:
+To run as a packaged app for most backends:
 
 ```
-(venv) $ briefcase run
+(venv) $ briefcase run -a screenshot
+```
+
+To run in development mode for Qt:
+
+```
+(venv) $ briefcase dev -a screenshot-qt
+```
+
+To run as a packaged app for Qt:
+
+```
+(venv) $ briefcase run -a screenshot-qt
 ```

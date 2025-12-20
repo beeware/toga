@@ -17,6 +17,7 @@ from .properties import toga_color, toga_text_align
 class NumberInputProbe(SimpleProbe):
     native_class = NSView
     allows_invalid_value = True
+    allows_unchanged_updates = True
 
     def __init__(self, widget):
         super().__init__(widget)

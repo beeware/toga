@@ -218,7 +218,7 @@ def test_user_agent(widget):
     assert widget.user_agent == "New user agent"
 
 
-def test_evaluate_javascript(widget):
+async def test_evaluate_javascript(widget):
     """Javascript can be evaluated."""
     result = widget.evaluate_javascript("test(1);")
     assert_action_performed(widget, "evaluate_javascript")

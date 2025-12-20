@@ -16,8 +16,13 @@ class AppProbe(BaseProbe, DialogsMixin):
     supports_key = True
     supports_key_mod3 = True
     # Gtk 3.24.41 ships with Ubuntu 24.04 where present() works on Wayland
-    supports_current_window_assignment = not (IS_WAYLAND and GTK_VERSION < (3, 24, 41))
+    # Gtk versions before 4.7.0 has buggy present: https://gitlab.gnome.org/GNOME/gtk/-/commit/4dcacff31
+    supports_current_window_assignment = not (
+        IS_WAYLAND
+        and (GTK_VERSION < (3, 24, 41) or (4, 0, 0) < GTK_VERSION < (4, 7, 0))
+    )
     supports_dark_mode = True
+    edit_menu_noop_enabled = False
 
     def __init__(self, app):
         super().__init__()
@@ -238,7 +243,7 @@ class AppProbe(BaseProbe, DialogsMixin):
         event.is_modifier = state != 0
         event.state = state
 
-        return toga_key(event)
+        return toga_key(event.keyval, event.state)
 
     async def restore_standard_app(self):
         # No special handling needed to restore standard app.

@@ -225,12 +225,15 @@ async def test_menu_items(app, app_probe):
     )
 
 
-async def test_beep(app):
+async def test_beep(app, app_probe):
     """The machine can go Bing!"""
     # This isn't a very good test. It ensures coverage, which verifies that the method
     # can be invoked without raising an error, but there's no way to verify that the app
     # actually made a noise.
     app.beep()
+    # Qt's CI sometimes takes unnessacarily long to run the bell command.  Ensure there
+    # are no dangling tasks with a long delay.
+    await app_probe.redraw("Application has sounded bell", delay=5)
 
 
 async def test_screens(app, app_probe):

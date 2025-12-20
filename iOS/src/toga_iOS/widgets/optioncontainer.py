@@ -38,6 +38,10 @@ class TogaTabBarController(UITabBarController):
 
     @objc_method
     def refreshContent(self) -> None:
+        # Ensure the correct width/height in case of nested tab bars.
+        self.view.setNeedsLayout()
+        self.view.layoutIfNeeded()
+
         # Find the currently visible container, and refresh layout of the content.
         for container in self.impl.sub_containers:
             if container.controller == self.selectedViewController:

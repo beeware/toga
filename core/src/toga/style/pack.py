@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
-    from travertino.colors import hsl, rgb
+    from toga.colors import hsl, rgb
 
 from travertino.constants import (  # noqa: F401
     BOLD,

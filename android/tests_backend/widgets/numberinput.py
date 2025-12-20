@@ -7,6 +7,7 @@ class NumberInputProbe(TextInputProbe):
     allows_invalid_value = False
     allows_empty_value = True
     allows_extra_digits = True
+    allows_unchanged_updates = True
 
     @property
     def value(self):

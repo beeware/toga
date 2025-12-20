@@ -18,7 +18,14 @@ class App(LoggedObject):
         self.interface._impl = self
         self.dialog_responses = {}
 
-        self.loop = asyncio.get_event_loop()
+        # In pytest-asyncio conditions, there will be an existing event loop.
+        # However, when calling dummy as a backend, we need to create the loop.
+        try:
+            self.loop = asyncio.get_running_loop()
+        except RuntimeError:
+            self.loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(self.loop)
+
         self.create()
 
     def create(self):

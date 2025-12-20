@@ -1,4 +1,4 @@
-# Tutorials  { #tutorial }
+# Tutorials
 
 /// note | Note
 

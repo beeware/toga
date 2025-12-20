@@ -4,7 +4,8 @@ not_in_nav: |
   /index.md
   reference/api/widgets/table-values.md
   reference/api/widgets/table-accessors.md
-  reference/platforms/unix-prerequisites.md
+  reference/platforms/linux/gtk-prerequisites.md
+  reference/platforms/linux/qt-prerequisites.md
 
 validation:
   omitted_files: warn
@@ -15,6 +16,11 @@ validation:
 extra:
   project_name: toga
   package_name: toga-core
+  formal_name: Toga
+  min_python_version: "3.10"  # The oldest supported Python version
+  min_python_version_tag: "310"  # The tag version of the minimum python version
+  recent_python_version: "3.13"  # The newest Python version known to work on all platforms
+  docs_python_version: "3.13"  # The version of Python required to build the documentation
   social:
     - icon: fontawesome/brands/github
       link: https://github.com/beeware
@@ -36,8 +42,8 @@ extra_css:
 theme:
   name: material
   language: en
-  logo: assets/images/brutus-256.png
-  favicon: assets/images/brutus-256.png
+  logo: images/toga.png
+  favicon: images/toga.png
   features:
     - content.tabs.link
     - toc.follow
@@ -73,6 +79,7 @@ markdown_extensions:
   pymdownx.superfences: {}
   pymdownx.blocks.admonition: {}
   pymdownx.blocks.caption: {}
+  pymdownx.details: {}
   pymdownx.caret: {}
   pymdownx.blocks.tab:
     alternate_style: true
@@ -93,7 +100,6 @@ plugins:
   literate-nav:
        nav_file: SUMMARY.md
   macros: {}
-  table-reader: {}
   mkdocstrings:
       enable_inventory: true
       default_handler: python
@@ -104,6 +110,9 @@ plugins:
             - https://docs.python.org/3/objects.inv
             - https://pillow.readthedocs.io/en/stable/objects.inv
           options:
+            preload_modules:
+              - travertino
+              - toga
             docstring_style: sphinx  # Parses docstrings from Sphinx formatting - the `:param` formatting, not parsing rST links
             allow_inspection: false  # True includes *more* dunder methods, can be enabled on individual class entries if you want them
             show_source: false  # Otherwise, source code is shown collapsed for all
@@ -112,10 +121,12 @@ plugins:
             merge_init_into_class: true  # Otherwise, init is displayed separately
             separate_signature: true  # Shows the `function(args)` separately from name
             show_signature: true  # Displays () or (args) along with the function name in the signature
-            show_signature_annotations: false  # Removes annotations from initial line
+            show_signature_annotations: true  # Includes annotations in signature blocks
+            signature_crossrefs: true  # Enables cross-referencing on signature annotations
             show_root_heading: true  # Show heading of object at root, otherwise nothing
             docstring_section_style: spacy  # Better info layout than the other options
-            line_length: 80  # Requires ruff, forces longer signatures to be stacked, if signatures aren't used, can be removed
-            show_symbol_type_toc: true  # This is what they added on place of function() (parens) being displayed in the sidebar ToC
+            line_length: 80  # Requires ruff, forces longer signatures to be stacked
+            show_symbol_type_toc: true  # Enables type symbols next to objects in ToC
+            show_symbol_type_heading: true  # Enables type symbols next to object names in content
             show_attribute_values: false  # Suppresses the values of attributes in the signature
             heading_level: 3  # Heading level of 3 to nest under References heading
