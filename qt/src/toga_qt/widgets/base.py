@@ -13,12 +13,34 @@ class Widget:
         self.create()
         self.native.hide()
         self._hidden = True
+
+        # Color handling -- defaults for background role,
+        # foreground role, default background, and default foreground
+        # are provided; at appropriate points, call any subclassed
+        # methods to override anything if necessary for the specific
+        # widget.
+        self._background_color_role = self.native.backgroundRole()
+        self._foreground_color_role = self.native.foregroundRole()
+        self._override_color_roles()
         self._default_background_color = toga_color(
-            self.native.palette().color(self.native.backgroundRole())
+            self.native.palette().color(self._background_color_role)
         )
         self._default_foreground_color = toga_color(
-            self.native.palette().color(self.native.foregroundRole())
+            self.native.palette().color(self._foreground_color_role)
         )
+        self._override_color_settings()
+
+    def _override_color_roles(self):
+        # If needed, a subclass will implement this method
+        # to override color roles needed for background/foreground.
+        pass
+
+    def _override_color_settings(self):
+        # If needed, a subclass will implement this method
+        # to configure additional parameters of the native widget
+        # related to color and override the default background/
+        # foreground colors.
+        pass
 
     @property
     def container(self):
@@ -95,14 +117,14 @@ class Widget:
         if color is None:
             color = self._default_foreground_color
         palette = self.native.palette()
-        palette.setColor(self.native.foregroundRole(), native_color(color))
+        palette.setColor(self._foreground_color_role, native_color(color))
         self.native.setPalette(palette)
 
     def set_background_color(self, color):
         if color is None:
             color = self._default_background_color
         palette = self.native.palette()
-        palette.setColor(self.native.backgroundRole(), native_color(color))
+        palette.setColor(self._background_color_role, native_color(color))
         self.native.setPalette(palette)
 
     def set_font(self, font):

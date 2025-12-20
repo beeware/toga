@@ -8,10 +8,12 @@ from .base import Widget
 class Box(Widget):
     def create(self):
         self.native = QWidget()
+
+    def _override_color_settings(self):
         self.native.setAutoFillBackground(True)
         # Background is not autofilled by default; but since we're
         # enabling it here, let the default color be transparent
-        # so it autofills nothing by default.
+        # so it autofills nothing.
         self._default_background_color = TRANSPARENT
 
     def rehint(self):

@@ -13,10 +13,12 @@ class ImageView(Widget):
         self.native = QLabel()
         self.native.setAlignment(Qt.AlignCenter)
         self._aspect_ratio = None
+
+    def _override_color_settings(self):
         self.native.setAutoFillBackground(True)
         # Background is not autofilled by default; but since we're
         # enabling it here, let the default color be transparent
-        # so it autofills nothing by default.
+        # so it autofills nothing.
         self._default_background_color = TRANSPARENT
 
     def set_image(self, image):
