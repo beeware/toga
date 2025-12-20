@@ -9,12 +9,14 @@ import toga
 from toga.colors import BLACK, Color
 from toga.constants import Baseline, FillRule
 from toga.fonts import Font
+from toga.images import Image
 
 from .drawingobject import (
     Arc,
     BeginPath,
     BezierCurveTo,
     ClosePath,
+    DrawImage,
     DrawingObject,
     Ellipse,
     Fill,
@@ -386,6 +388,43 @@ class Context(DrawingObject):
         write_text = WriteText(text, x, y, font, baseline, line_height)
         self.append(write_text)
         return write_text
+
+    ###########################################################################
+    # Bitmap drawing
+    ###########################################################################
+
+    def draw_image(
+        self,
+        image: Image,
+        x: float = 0.0,
+        y: float = 0.0,
+        width: float | None = None,
+        height: float | None = None,
+    ):
+        """Draw a Toga Image in the canvas context.
+
+        The x, y coordinates specify the location of the bottom-left corner
+        of the image. If supplied, the width and height specify the size
+        of the image when it is rendered in the context, the image will be
+        scaled to fit.
+
+        :param image: a Toga Image
+        :param x: The x-coordinate of the bottom-left corner of the image when
+            it is drawn.
+        :param y: The y-coordinate of the bottom-left corner of the image when
+            it is drawn.
+        :param width: The width of the destination rectangle where the image
+            will be drawn. The image will be scaled to fit the width. If the
+            width is None, the natural width of the image will be used and
+            no scaling will be done.
+        :param height: The height of the destination rectangle where the image
+            will be drawn. The image will be scaled to fit the height. If the
+            height is None, the natural height of the image will be used and
+            no scaling will be done.
+        """
+        draw_image = DrawImage(image, x, y, width, height)
+        self.append(draw_image)
+        return draw_image
 
     ###########################################################################
     # Transformations
