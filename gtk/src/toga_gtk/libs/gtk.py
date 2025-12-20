@@ -22,7 +22,7 @@ if gtk_version == "4.0":  # pragma: no cover
         )
         gtklib = None
     else:  # No TOGA_GTKLIB specified; autodetect from DE
-        if "GNOME" in os.getenv("XDG_CURRENT_DESKTOP").split(":"):
+        if "GNOME" in (os.getenv("XDG_CURRENT_DESKTOP") or "").split(":"):
             gtklib = "Adw"
         else:
             gtklib = None
