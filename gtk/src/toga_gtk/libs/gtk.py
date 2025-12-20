@@ -6,12 +6,35 @@ gtk_version = "4.0" if os.getenv("TOGA_GTK") == "4" else "3.0"
 gi.require_version("Gdk", gtk_version)
 gi.require_version("Gtk", gtk_version)
 
-if (
-    gtk_version == "4.0" and os.getenv("TOGA_GTKLIB") == "Adw"
-):  # pragma: no-cover-unless-libadwaita
+# no-covering because we cannot test all DE and TOGA_GTKLIB variables in CI
+# Detect the GTK DE-specific library to be used.  The TOGA_GTKLIB value will
+# be prioritized, or, if no GTK4 library is specified, falls back to detecting
+# with desktop environment.
+if gtk_version == "4.0":  # pragma: no cover
+    if os.getenv("TOGA_GTKLIB") == "Adw":
+        gtklib = "Adw"
+    elif os.getenv("TOGA_GTKLIB") == "None":
+        gtklib = None
+    elif os.getenv("TOGA_GTKLIB") != "":
+        print(
+            f"WARNING: Unsupported $TOGA_GTKLIB value {os.getenv('TOGA_GTKLIB')}."
+            f"Supported values are: 'Adw', 'None'.  Falling back to None."
+        )
+        gtklib = None
+    else:  # No TOGA_GTKLIB specified; autodetect from DE
+        if os.getenv("XDG_SESSION_DESKTOP") == "GNOME":
+            gtklib = "Adw"
+        else:
+            gtklib = None
+else:  # pragma: no-cover-if-gtk4
+    gtklib = None
+
+if gtklib == "Adw":  # pragma: no-cover-unless-libadwaita
     gi.require_version("Adw", "1")
     from gi.repository import Adw  # noqa: E402, F401
-else:  # pragma: no-cover-unless-plain-gtk
+# elif is used here, because explicit is better than implicit as a defensive
+# practice.
+elif gtklib is None:  # pragma: no-cover-unless-plain-gtk  # pragma: no branch
     Adw = None
 
 from gi.events import GLibEventLoopPolicy  # noqa: E402, F401
