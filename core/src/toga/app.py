@@ -3,6 +3,7 @@ from __future__ import annotations
 import asyncio
 import importlib.metadata
 import locale
+import os
 import signal
 import sys
 import warnings
@@ -202,7 +203,14 @@ class App:
             app can manage.
         """
         # Sets Python's locale settings to the language settings of the system.
-        locale.setlocale(locale.LC_ALL, "")
+        # If the local is unknown (e.g. en-FR), catch the error, log and ignore,
+        # as there's not much else we can do.
+        try:
+            locale.setlocale(locale.LC_ALL, "")
+        except locale.Error:  # pragma: no cover
+            print(
+                f"Unable to set locale to match system value of {os.getenv('LANG')!r}"
+            )
 
         # Initialize empty widgets registry
         self._widgets = WidgetRegistry()
