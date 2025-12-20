@@ -55,10 +55,16 @@ and set the `TOGA_GTK` environment variable:
 $ export TOGA_GTK=4
 ```
 
-The experimental GTK 4 backend also aims to provides support for integrating with desktop environment-specific libraries.  At present, `libadwaita` is the only supported library of this kind.  This functionality requires libadwaita 1.5 or newer.  To enable libadwaita integration support, set:
+The experimental GTK 4 backend also aims to provides support for integrating with desktop environment-specific libraries.  At present, `libadwaita` is the only supported library of this kind.  This functionality requires libadwaita 1.5 or newer.  libadwaita integration is automatically enabled on GNOME desktops if GTK4 support is enabled, and automatically disabled on non-GNOME desktops when using GTK4.  To explicitly enable integration with libadwaita, set:
 ```console
 $ export TOGA_GTKLIB=Adw
 ```
+To explicitly disable integration with libadwaita, set:
+```console
+$ export TOGA_GTKLIB=None
+```
+An unset or empty ``$TOGA_GTKLIB`` will trigger automatic detection.
+
 Most testing occurs with libadwaita 1.5, as this is the version that ships with Ubuntu 24.04.
 
 We have no immediate plans to integrate with tauOS's libhelium or elementaryOS's Granite, but we're open to contributions adding support for these libraries.
