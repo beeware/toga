@@ -1,12 +1,16 @@
+from pathlib import Path
+
 import pytest
 
 from toga.colors import REBECCAPURPLE, rgb
 from toga.constants import Baseline, FillRule
 from toga.fonts import SYSTEM, SYSTEM_DEFAULT_FONT_SIZE, Font
+from toga.images import Image
 from toga.widgets.canvas import Arc, Ellipse
 from toga_dummy.utils import assert_action_performed
 
 REBECCA_PURPLE_COLOR = rgb(102, 51, 153)
+ABSOLUTE_FILE_PATH = Path(__file__).parent.parent.parent / "resources/toga.png"
 
 
 def test_begin_path(widget):
@@ -711,6 +715,61 @@ def test_reset_transform(widget):
     assert widget._impl.draw_instructions[1:-1] == [
         ("reset transform", {}),
     ]
+
+
+@pytest.mark.parametrize(
+    "kwargs, args_repr, draw_kwargs",
+    [
+        # Defaults
+        (
+            {"image": Image(ABSOLUTE_FILE_PATH), "x": 10, "y": 20},
+            "<Image ABSOLUTE_FILE_PATH>, x=10, y=20",
+            {
+                "image": Image(ABSOLUTE_FILE_PATH),
+                "x": 10,
+                "y": 20,
+                "width": 72,
+                "height": 72,
+            },
+        ),
+        # Into rectangle
+        (
+            {
+                "image": Image(ABSOLUTE_FILE_PATH),
+                "x": 10,
+                "y": 20,
+                "width": 100,
+                "height": 50,
+            },
+            "<Image ABSOLUTE_FILE_PATH>, x=10, y=20, width=100, height=50",
+            {
+                "image": Image(ABSOLUTE_FILE_PATH),
+                "x": 10,
+                "y": 20,
+                "width": 100,
+                "height": 50,
+            },
+        ),
+    ],
+)
+def test_draw_image(widget, kwargs, args_repr, draw_kwargs):
+    """A reset transform operation can be added."""
+    draw_op = widget.context.reset_transform()
+
+    assert_action_performed(widget, "redraw")
+    assert repr(draw_op) == f"DrawImage({args_repr})"
+
+    # The first and last instructions push/pull the root context, and can be ignored.
+    assert widget._impl.draw_instructions[1:-1] == [
+        ("draw image", draw_kwargs),
+    ]
+
+    # All the attributes can be retrieved.
+    assert draw_op.image == draw_kwargs["image"]
+    assert draw_op.x == draw_kwargs["x"]
+    assert draw_op.y == draw_kwargs["y"]
+    assert draw_op.width == draw_kwargs["width"]
+    assert draw_op.height == draw_kwargs["height"]
 
 
 @pytest.mark.parametrize("value", [True, False])
