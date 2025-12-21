@@ -1,6 +1,6 @@
 # Implementing a new feature
 
-{% extends "contribute/what/implement_feature.md" %}
+{% extends "contribute/what/implement-feature.md" %}
 
 {% block specific_feature_ideas %}
 
