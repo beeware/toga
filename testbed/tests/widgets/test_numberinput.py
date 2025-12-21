@@ -154,6 +154,23 @@ async def test_focus_value_clipping(widget, probe, other):
     assert probe.value == expected_str
 
 
+async def test_blur_dismisses_field_editor(widget, probe, other):
+    "Field editor is properly dismissed when widget loses focus."
+    skip_on_platforms("android", "iOS", "linux", "windows")
+
+    widget.focus()
+    await probe.redraw("Widget has focus")
+
+    # Blur by focusing another widget
+    other.focus()
+    await probe.redraw("Widget lost focus")
+
+    # The field editor should be properly dismissed
+    probe.assert_not_editing()
+    # The value should still be displayed correctly
+    assert probe.value == "1.23"
+
+
 async def test_value(widget, probe):
     "The numerical value displayed on a widget can be changed"
     # If the implementation allows empty values, the widget can return None.
