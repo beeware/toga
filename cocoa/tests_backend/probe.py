@@ -28,18 +28,10 @@ class BaseProbe:
     def __init__(self):
         self.event_listener = EventListener.alloc().init()
 
-    async def post_event(self, event, immediate=False, delay=None):
+    async def post_event(self, event, delay=None):
         self.window._impl.native.postEvent(event, atStart=False)
 
-        # Some event posting, such as posting mouse down events, requires
-        # posting a mouse up event immediately later without processing the
-        # mouse-down yet (which will take forever since the mouse is effectively
-        # held down in cases such as NumberInput).  Provide this mechanism
-        # through a boolean flag.
-        if immediate:
-            return
-
-        if delay:
+        if delay is not None:
             # Some widgets enter an internal runloop when processing certain events;
             # this lets the internal runloop finish properly, since the onEvent approach
             # of the *current* runloop will not work.

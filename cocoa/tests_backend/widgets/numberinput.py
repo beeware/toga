@@ -46,9 +46,9 @@ class NumberInputProbe(SimpleProbe):
         )
         # Send a mouse down and mouse up separately, as on macOS Tahoe, only
         # sending a mouse down implies a hold which will press there infinitely.
-        # Do not wait tohandle the first event, as handling that will wait forever
-        # as we keep pressing.
-        await self.mouse_event(NSEventType.LeftMouseDown, location, immediate=True)
+        # Do not wait to handle (but instead yield for) the first event, as
+        # handling that will wait forever as we keep pressing.
+        await self.mouse_event(NSEventType.LeftMouseDown, location, delay=0)
         await self.mouse_event(NSEventType.LeftMouseUp, location)
 
     async def decrement(self):
@@ -64,9 +64,9 @@ class NumberInputProbe(SimpleProbe):
         )
         # Send a mouse down and mouse up separately, as on macOS Tahoe, only
         # sending a mouse down implies a hold which will press there infinitely.
-        # Do not wait to handle the first event, as handling that will wait forever
-        # as we keep pressing.
-        await self.mouse_event(NSEventType.LeftMouseDown, location, immediate=True)
+        # Do not wait to handle (but instead yield for) the first event, as
+        # handling that will wait forever as we keep pressing.
+        await self.mouse_event(NSEventType.LeftMouseDown, location, delay=0)
         await self.mouse_event(NSEventType.LeftMouseUp, location)
 
     @property
