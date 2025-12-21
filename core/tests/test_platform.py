@@ -139,6 +139,7 @@ def test_no_platforms(monkeypatch, clean_env):
 
 def test_one_platform_installed(monkeypatch, clean_env):
     only_platform_factory = Mock()
+    only_platform_factory.__package__ = "only_platform_module"
     patch_platforms(monkeypatch, [("only_platform", only_platform_factory, False)])
 
     factory = _get_platform_factory()
@@ -150,7 +151,9 @@ def test_one_platform_installed(monkeypatch, clean_env):
 
 def test_multiple_platforms_installed(monkeypatch, clean_env):
     current_platform_factory = Mock()
+    current_platform_factory.__package__ = "current_platform_module"
     other_platform_factory = Mock()
+    other_platform_factory.__package__ = "only_platform_module"
     patch_platforms(
         monkeypatch,
         [
@@ -168,7 +171,9 @@ def test_multiple_platforms_installed(monkeypatch, clean_env):
 
 def test_multiple_platforms_installed_fail_both_appropriate(monkeypatch, clean_env):
     current_platform_factory_1 = Mock()
+    current_platform_factory_1.__package__ = "current_platform_module_1"
     current_platform_factory_2 = Mock()
+    current_platform_factory_2.__package__ = "current_platform_module_2"
     patch_platforms(
         monkeypatch,
         [
@@ -200,7 +205,9 @@ def test_multiple_platforms_installed_fail_both_appropriate(monkeypatch, clean_e
 
 def test_multiple_platforms_installed_fail_none_appropriate(monkeypatch, clean_env):
     other_platform_factory_1 = Mock()
+    other_platform_factory_1.__package__ = "other_platform_module_1"
     other_platform_factory_2 = Mock()
+    other_platform_factory_2.__package__ = "other_platform_module_2"
     patch_platforms(
         monkeypatch,
         [
