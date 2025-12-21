@@ -113,7 +113,7 @@ class SplitContainer(Widget):
                 case toga.Widget() | None as widget:
                     flex_value = 1
                 case toga.Widget() | None as widget, int() as flex_value:
-                    if flex_value <= 0:
+                    if flex_value <= 0:  # no-cover-if-lt-py311
                         raise ValueError(
                             "The flex value for an item in a SplitContainer must be >0"
                         )
