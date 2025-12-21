@@ -1,3 +1,5 @@
+import asyncio
+
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QTabWidget
 from travertino.size import at_least
@@ -66,7 +68,7 @@ class OptionContainer(Widget):
         return self.native.setCurrentIndex(current_tab_index)
 
     def rehint(self):
-        size = self.native.sizeHint()
+        size = self.native.minimumSizeHint()
         self.interface.intrinsic.width = at_least(
             max(size.width(), self.interface._MIN_WIDTH)
         )
@@ -80,11 +82,11 @@ class OptionContainer(Widget):
             item.content.refresh()
 
     def content_refreshed(self, container):
-        min_width = min(
+        min_width = max(
             sub_container.content.interface.layout.min_width
             for sub_container in self.sub_containers
         )
-        min_height = min(
+        min_height = max(
             sub_container.content.interface.layout.min_height
             for sub_container in self.sub_containers
         )
@@ -92,3 +94,16 @@ class OptionContainer(Widget):
             sub_container.native.setMinimumSize(min_width, min_height)
             sub_container.min_width = min_width
             sub_container.min_height = min_height
+
+        # re-layout and schedule a second refresh if intrinsic size has changed
+        prev_intrinsic_size = (
+            self.interface.intrinsic.width,
+            self.interface.intrinsic.height,
+        )
+        self.rehint()
+        intrinsic_size = (
+            self.interface.intrinsic.width,
+            self.interface.intrinsic.height,
+        )
+        if prev_intrinsic_size != intrinsic_size:
+            asyncio.get_running_loop().call_soon_threadsafe(self.interface.refresh)
