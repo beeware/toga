@@ -97,4 +97,4 @@ One of the aims of Toga is to provide a rich, feature-driven approach to app dev
 
 ## Platforms
 
-Toga currently has good support for Cocoa on macOS, GTK on Linux, Winforms on Windows, iOS and Android. Proof-of-concept support exists for single page web apps and consoles. Support for a more modern Windows API would be desirable, as would support for Qt.
+Toga currently has good support for Cocoa on macOS, GTK on Linux, Winforms on Windows, iOS and Android. Proof-of-concept support exists for single page web apps and consoles. Support for a more modern Windows API would be desirable as well.

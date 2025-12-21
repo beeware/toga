@@ -42,12 +42,18 @@ class Window(Container, Scalable):
         self.native.MinimizeBox = self.interface.minimizable
         self.native.MaximizeBox = self.interface.resizable
 
-        # Use a shadow variable since a window without any app menu and toolbar
-        # in presentation mode would be indistinguishable from full screen mode.
+        # Use a shadow variable since a window without any app menu and toolbar in
+        # presentation mode would be indistinguishable from full screen mode.
         self._in_presentation_mode = False
-        # Required to detect if the window has been un-minimized, and to prevent
-        # double triggering of visibility events.
+        # Required to detect if the window has been un-minimized, and to prevent double
+        # triggering of visibility events.
         self._previous_state = WindowState.NORMAL
+        # On minimization, winforms returns window size as 0 x 0, but this behavior is
+        # inconsistent with other platforms as minimization does not constitute a
+        # window resize operation. Therefore, it should return the same size as before
+        # minimization. So, cache the previous window size before performing
+        # minimization.
+        self._cached_window_size = None
 
         self.set_title(title)
         self.set_size(size)
@@ -91,7 +97,13 @@ class Window(Container, Scalable):
     ######################################################################
 
     def winforms_Resize(self, sender, event):
-        if self.native.WindowState != WinForms.FormWindowState.Minimized:
+        if (self.get_window_state() != WindowState.MINIMIZED) and (
+            {self._previous_state, self.get_window_state()}
+            != {WindowState.NORMAL, WindowState.MINIMIZED}
+        ):
+            # State change between NORMAL <-> MINIMIZED doesn't
+            # constitute a window resize operation.
+            self.interface.on_resize()
             self.resize_content()
 
         # See DisplaySettingsChanged in app.py.
@@ -99,18 +111,18 @@ class Window(Container, Scalable):
             self.update_dpi()
 
     def winforms_FormClosing(self, sender, event):
-        # If the app is exiting, do nothing; we've already approved the exit
-        # (and thus the window close). This branch can't be triggered in test
-        # conditions, so it's marked no-branch.
+        # If the app is exiting, do nothing; we've already approved the exit(and thus
+        # the window close). This branch can't be triggered in test conditions, so it's
+        # marked no-branch.
         #
-        # Otherwise, handle the close request by always cancelling the event,
-        # and invoking `on_close()` handling. This will evaluate whether a close
-        # is allowed, and if it is, programmatically invoke close on the window,
-        # removing this handler first so that the close will complete.
+        # Otherwise, handle the close request by always cancelling the event, and
+        # invoking `on_close()` handling. This will evaluate whether a close is
+        # allowed, and if it is, programmatically invoke close on the window, removing
+        # this handler first so that the close will complete.
         #
-        # Winforms doesn't provide a way to disable/hide the close button, so if
-        # the window is non-closable, don't trigger on_close handling - just
-        # cancel the close event.
+        # Winforms doesn't provide a way to disable/hide the close button, so if the
+        # window is non-closable, don't trigger on_close handling - just cancel the
+        # close event.
         if not self.interface.app._impl._is_exiting:  # pragma: no branch
             if self.interface.closable:
                 self.interface.on_close()
@@ -225,6 +237,9 @@ class Window(Container, Scalable):
     # Window.size is scaled according to the DPI of the current screen, to be consistent
     # with the scaling of its content.
     def get_size(self) -> Size:
+        if self.interface.state == WindowState.MINIMIZED:
+            return self._cached_window_size
+
         size = self.native.Size
         return Size(
             self.scale_out(size.Width - self._decor_width()),
@@ -274,23 +289,25 @@ class Window(Container, Scalable):
     ######################################################################
 
     def get_window_state(self, in_progress_state=False):
-        window_state = self.native.WindowState
-        if window_state == WinForms.FormWindowState.Maximized:
-            if self.native.FormBorderStyle == getattr(WinForms.FormBorderStyle, "None"):
-                if self._in_presentation_mode:
-                    return WindowState.PRESENTATION
+        match self.native.WindowState:
+            case WinForms.FormWindowState.Maximized:
+                if self.native.FormBorderStyle == getattr(
+                    WinForms.FormBorderStyle, "None"
+                ):
+                    if self._in_presentation_mode:
+                        return WindowState.PRESENTATION
+                    else:
+                        return WindowState.FULLSCREEN
                 else:
-                    return WindowState.FULLSCREEN
-            else:
-                return WindowState.MAXIMIZED
-        elif window_state == WinForms.FormWindowState.Minimized:
-            return WindowState.MINIMIZED
-        else:  # window_state == WinForms.FormWindowState.Normal:
-            return WindowState.NORMAL
+                    return WindowState.MAXIMIZED
+            case WinForms.FormWindowState.Minimized:
+                return WindowState.MINIMIZED
+            case _:  # WinForms.FormWindowState.Normal
+                return WindowState.NORMAL
 
     def set_window_state(self, state):
-        # If the app is in presentation mode, but this window isn't, then
-        # exit app presentation mode before setting the requested state.
+        # If the app is in presentation mode, but this window isn't, then exit app
+        # presentation mode before setting the requested state.
         if any(
             window.state == WindowState.PRESENTATION and window != self.interface
             for window in self.interface.app.windows
@@ -301,37 +318,22 @@ class Window(Container, Scalable):
         if current_state == state:
             return
 
-        elif current_state != WindowState.NORMAL:
-            if current_state == WindowState.PRESENTATION:
-                if self.native.MainMenuStrip:
-                    self.native.MainMenuStrip.Visible = True
-                if getattr(self, "toolbar_native", None):
-                    self.toolbar_native.Visible = True
-
-                self.interface.screen = self._before_presentation_mode_screen
-                del self._before_presentation_mode_screen
-                self._in_presentation_mode = False
-
-            self.native.FormBorderStyle = getattr(
-                WinForms.FormBorderStyle,
-                "Sizable" if self.interface.resizable else "FixedSingle",
-            )
-            self.native.WindowState = WinForms.FormWindowState.Normal
-
-            self.set_window_state(state)
-
-        else:  # current_state == WindowState.NORMAL:
-            if state == WindowState.MAXIMIZED:
+        match current_state, state:
+            case WindowState.NORMAL, WindowState.MAXIMIZED:
                 self.native.WindowState = WinForms.FormWindowState.Maximized
 
-            elif state == WindowState.MINIMIZED:
+            case WindowState.NORMAL, WindowState.MINIMIZED:
+                # On minimization, winforms reports window size as 0 x 0, hence cache
+                # the previous window size to make the API behavior uniform on all
+                # platforms.
+                self._cached_window_size = self.interface.size
                 self.native.WindowState = WinForms.FormWindowState.Minimized
 
-            elif state == WindowState.FULLSCREEN:
+            case WindowState.NORMAL, WindowState.FULLSCREEN:
                 self.native.FormBorderStyle = getattr(WinForms.FormBorderStyle, "None")
                 self.native.WindowState = WinForms.FormWindowState.Maximized
 
-            else:  # state == WindowState.PRESENTATION:
+            case WindowState.NORMAL, WindowState.PRESENTATION:
                 self._before_presentation_mode_screen = self.interface.screen
                 if self.native.MainMenuStrip:
                     self.native.MainMenuStrip.Visible = False
@@ -340,6 +342,29 @@ class Window(Container, Scalable):
                 self.native.FormBorderStyle = getattr(WinForms.FormBorderStyle, "None")
                 self.native.WindowState = WinForms.FormWindowState.Maximized
                 self._in_presentation_mode = True
+
+            case _:
+                # All transitions that *aren't* leaving normal, with an extra bit if
+                # we're leaving presentation.
+                if current_state == WindowState.PRESENTATION:
+                    if self.native.MainMenuStrip:
+                        self.native.MainMenuStrip.Visible = True
+                    if getattr(self, "toolbar_native", None):
+                        self.toolbar_native.Visible = True
+
+                    self.interface.screen = self._before_presentation_mode_screen
+                    del self._before_presentation_mode_screen
+                    self._in_presentation_mode = False
+
+                self.native.FormBorderStyle = getattr(
+                    WinForms.FormBorderStyle,
+                    "Sizable" if self.interface.resizable else "FixedSingle",
+                )
+                # Clear the cached window size.
+                self._cached_window_size = None
+                self.native.WindowState = WinForms.FormWindowState.Normal
+
+                self.set_window_state(state)
 
     ######################################################################
     # Window capabilities

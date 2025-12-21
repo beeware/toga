@@ -2,18 +2,19 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from math import pi
-from typing import Any
+from typing import TYPE_CHECKING, Any
 from warnings import filterwarnings, warn
 
-from travertino.colors import Color
-
-from toga.colors import BLACK, color as parse_color
+from toga.colors import BLACK, Color
 from toga.constants import Baseline, FillRule
 from toga.fonts import (
     SYSTEM,
     SYSTEM_DEFAULT_FONT_SIZE,
     Font,
 )
+
+if TYPE_CHECKING:
+    from toga.colors import ColorT
 
 # Make sure deprecation warnings are shown by default
 filterwarnings("default", category=DeprecationWarning)
@@ -102,7 +103,7 @@ class ClosePath(DrawingObject):
 class Fill(DrawingObject):
     def __init__(
         self,
-        color: str = BLACK,
+        color: ColorT = BLACK,
         fill_rule: FillRule = FillRule.NONZERO,
     ):
         super().__init__()
@@ -131,17 +132,17 @@ class Fill(DrawingObject):
         return self._color
 
     @color.setter
-    def color(self, value: Color | str | None) -> None:
+    def color(self, value: ColorT | None) -> None:
         if value is None:
-            self._color = parse_color(BLACK)
+            self._color = Color.parse(BLACK)
         else:
-            self._color = parse_color(value)
+            self._color = Color.parse(value)
 
 
 class Stroke(DrawingObject):
     def __init__(
         self,
-        color: Color | str | None = BLACK,
+        color: ColorT | None = BLACK,
         line_width: float = 2.0,
         line_dash: list[float] | None = None,
     ):
@@ -164,11 +165,11 @@ class Stroke(DrawingObject):
         return self._color
 
     @color.setter
-    def color(self, value: Color | str | None) -> None:
+    def color(self, value: ColorT | None) -> None:
         if value is None:
-            self._color = parse_color(BLACK)
+            self._color = Color.parse(BLACK)
         else:
-            self._color = parse_color(value)
+            self._color = Color.parse(value)
 
     @property
     def line_width(self) -> float:

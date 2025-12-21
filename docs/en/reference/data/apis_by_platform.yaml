@@ -49,6 +49,7 @@ General widgets:
     unsupported:
       - web
       - textual
+      - qt
 
   DateInput:
     description: A widget to select a calendar date.
@@ -64,6 +65,7 @@ General widgets:
     unsupported:
       - web
       - textual
+      - qt
 
   Divider:
     description: A separator used to visually distinguish two sections of content in a layout.
@@ -71,6 +73,7 @@ General widgets:
       - web
     unsupported:
       - textual
+      - qt
 
   ImageView:
     description: A widget that displays an image.
@@ -89,6 +92,7 @@ General widgets:
     unsupported:
       - web
       - textual
+      - qt
 
   MultilineTextInput:
     description: A scrollable panel that allows for the display and editing of multiple lines of text.
@@ -122,6 +126,7 @@ General widgets:
       - web
     unsupported:
       - textual
+      - qt
 
   Slider:
     description: A widget for selecting a value within a range. The range is shown as a horizontal line, and the selected value is shown as a draggable marker.
@@ -129,6 +134,7 @@ General widgets:
       - web
     unsupported:
       - textual
+      - qt
 
   Switch:
     description: 'A clickable button with two stable states: True (on, checked); and False (off, unchecked). The button has a text label.'
@@ -145,20 +151,20 @@ General widgets:
       - iOS
       - web
       - textual
+      - qt
 
   TextInput:
     description: A widget for the display and editing of a single line of text.
     beta:
       - web
       - textual
-    unsupported:
-      - gtk
-      - textual
 
   TimeInput:
     description: A widget to select a clock time.
     beta:
       - web
+    unsupported:
+      - gtk
 
   Tree:
     description: A widget for displaying a hierarchical tree of tabular data.
@@ -168,6 +174,7 @@ General widgets:
       - android
       - web
       - textual
+      - qt
 
   WebView:
     description: An embedded web browser.
@@ -198,6 +205,7 @@ Layout widgets:
       - web
     unsupported:
       - textual
+      - qt
 
   SplitContainer:
     description: A container that divides an area into two panels with a movable border.
@@ -206,12 +214,14 @@ Layout widgets:
       - android
       - web
       - textual
+      - qt
 
   OptionContainer:
     description: A container that can display multiple labeled tabs of content.
     unsupported:
       - web
       - textual
+      - qt
 
 Resources:
   path: resources
@@ -226,13 +236,16 @@ Resources:
       - web
 
   Command:
-    description: A representation of app functionality that the user can invoke from
-      menus or toolbars.
+    description: A representation of app functionality that the user can invoke from menus or toolbars.
     display: table
     unsupported:
       - iOS
       - web
       - textual
+
+  Color:
+    description: A representation of a color.
+    display: hide
 
   Dialogs:
     description: Short-lived windows asking the user for input.
@@ -240,6 +253,7 @@ Resources:
     beta:
       - web
       - textual
+      - qt
 
   Document:
     description: A representation of a file on disk that will be displayed in one or more windows.
@@ -283,6 +297,7 @@ Resources:
       - android
       - web
       - textual
+      - qt
 
   Source:
     description: A base class for data source implementations.
@@ -319,6 +334,7 @@ Hardware:
       - winforms
       - web
       - textual
+      - qt
 
   Location services:
     description: A sensor that can capture the geographical location of the device.
@@ -328,6 +344,7 @@ Hardware:
       - winforms
       - web
       - textual
+      - qt
 
   Screen:
     description: A representation of a screen attached to a device.

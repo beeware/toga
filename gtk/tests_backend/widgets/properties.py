@@ -1,37 +1,24 @@
 import pytest
 
-from toga.colors import TRANSPARENT, rgba
+from toga.colors import TRANSPARENT, rgb
 from toga.fonts import Font
 from toga.style.pack import BOTTOM, CENTER, JUSTIFY, LEFT, RIGHT, TOP
-from toga_gtk.libs import GTK_VERSION, Gtk
-
-
-def _parse_color(native_string):
-    """Parse a color from a GTK4 native RGB(A) string."""
-    if native_string[:4] == "rgba":
-        native_string = native_string[4:]
-    if native_string[:3] == "rgb":
-        native_string = native_string[3:]
-    r, g, b, *a = map(float, native_string.strip("()").split(","))
-    if a:
-        return rgba(r, g, b, a[0])
-    else:
-        return rgba(r, g, b)
+from toga_gtk.libs import GTK_VERSION, Gtk, parse_css_color
 
 
 def toga_color(color):
     if color:
         if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
-            c = rgba(
+            c = rgb(
                 int(color.red * 255),
                 int(color.green * 255),
                 int(color.blue * 255),
                 color.alpha,
             )
         else:  # pragma: no-cover-if-gtk3
-            c = _parse_color(color)
+            c = parse_css_color(color)
 
-        # Background color of rgba(0,0,0,0.0) is TRANSPARENT.
+        # Background color of rgb(0,0,0,0.0) is TRANSPARENT.
         if c.r == 0 and c.g == 0 and c.b == 0 and c.a == 0.0:
             return TRANSPARENT
         else:
@@ -102,7 +89,10 @@ def toga_font(font: str) -> Font:
     family_font_value = css_dict.get("font-family", "")
     size_font_value = css_dict.get("font-size", -1)
     style_font_value = css_dict.get("font-style", "normal")
-    variant_font_value = css_dict.get("font-variant", "normal")
+    # GTK4 stores small-caps information in font-variant-caps.
+    variant_font_value = css_dict.get("font-variant-caps", None) or css_dict.get(
+        "font-variant", "normal"
+    )
     weight_font_value = css_dict.get("font-weight", "normal")
 
     if variant_font_value == "initial":

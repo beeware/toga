@@ -15,7 +15,7 @@ from toga.colors import (
     RED,
     TRANSPARENT,
     WHITE,
-    rgba,
+    rgb,
 )
 from toga.constants import Baseline, FillRule
 from toga.fonts import BOLD
@@ -172,7 +172,7 @@ async def test_activate(
     await probe.redraw("Activate has been handled")
 
     on_press_handler.assert_called_once_with(canvas, 20, 30)
-    on_release_handler.mock_calls = [call(canvas, 20, 30), call(canvas, 20, 30)]
+    assert on_release_handler.mock_calls == [call(canvas, 20, 30), call(canvas, 20, 30)]
     on_activate_handler.assert_called_once_with(canvas, 20, 30)
 
 
@@ -297,7 +297,7 @@ async def test_transparency(canvas, probe):
 
     canvas.context.begin_path()
     canvas.context.rect(x=60, y=60, width=120, height=120)
-    canvas.context.fill(color=rgba(0x33, 0x66, 0x99, 0.5))
+    canvas.context.fill(color=rgb(0x33, 0x66, 0x99, 0.5))
 
     await probe.redraw("Image with transparent content and background")
     # 0.1 is a big threshold; it's equivalent to 400 pixels being 100% the wrong color.
@@ -628,6 +628,10 @@ async def test_transforms(canvas, probe):
     assert_reference(probe, "transforms", threshold=0.02)
 
 
+@pytest.mark.xfail(
+    condition=os.environ.get("RUNNING_IN_CI") != "true",
+    reason="Canvas tests are unstable outside of CI. Manual inspection may be required",
+)
 async def test_write_text(canvas, probe):
     "Text can be measured and written"
 

@@ -18,6 +18,8 @@ class WindowProbe(BaseProbe, DialogsMixin):
     supports_placement = True
     supports_as_image = True
     supports_focus = True
+    fullscreen_presentation_equal_size = False
+    maximize_fullscreen_presentation_equal_size = False
 
     def __init__(self, app, window):
         super().__init__()

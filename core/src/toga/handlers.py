@@ -269,19 +269,20 @@ class WeakrefCallable:
     """
     A wrapper for callable that holds a weak reference to it.
 
-    This can be useful in particular when setting winforms event handlers, to avoid
-    cyclical reference cycles between Python and the .NET CLR that are detected neither
-    by the Python garbage collector nor the C# garbage collector. It is also used
-    for some of the GTK4 event controllers.
+    This is particularly useful when setting event or virtual function handlers,
+    to avoid cyclical reference cycles between Python and external runtimes
+    (e.g., .NET CLR or GI). Such cyclical references may not be detected either
+    by the Python garbage collector nor the external runtime's garbage collector,
+    potentially leading to memory leaks.
     """
 
     def __init__(self, function):
         try:
             self.ref = weakref.WeakMethod(function)
-        except TypeError:  # pragma: no cover
+        except TypeError:
             self.ref = weakref.ref(function)
 
     def __call__(self, *args, **kwargs):
         function = self.ref()
-        if function:  # pragma: no branch
+        if function:
             return function(*args, **kwargs)

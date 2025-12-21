@@ -1,5 +1,6 @@
 from System.Drawing import Color
-from travertino.colors import TRANSPARENT, rgba
+
+from toga.colors import TRANSPARENT, rgb
 
 CACHE = {TRANSPARENT: Color.Transparent}
 
@@ -9,10 +10,10 @@ def native_color(c):
         color = CACHE[c]
     except KeyError:
         color = Color.FromArgb(
-            int(c.rgba.a * 255),
-            int(c.rgba.r),
-            int(c.rgba.g),
-            int(c.rgba.b),
+            int(c.rgb.a * 255),
+            int(c.rgb.r),
+            int(c.rgb.g),
+            int(c.rgb.b),
         )
         CACHE[c] = color
 
@@ -20,4 +21,4 @@ def native_color(c):
 
 
 def toga_color(c):
-    return rgba(c.R, c.G, c.B, c.A / 255)
+    return rgb(c.R, c.G, c.B, c.A / 255)

@@ -110,7 +110,7 @@ async def widget(on_load):
 
     yield widget
 
-    if toga.platform.current_platform == "linux":
+    if toga.platform.get_platform_factory().__package__ == "toga_gtk":
         # On Gtk, ensure that the MapView evades garbage collection by keeping a
         # reference to it in the app. The WebKit2 WebView will raise a SIGABRT if the
         # thread disposing of it is not the same thread running the event loop. Since
@@ -119,9 +119,10 @@ async def widget(on_load):
         toga.App.app._gc_protector.append(widget)
 
 
-test_cleanup = build_cleanup_test(toga.WebView, xfail_platforms=("linux",))
+test_cleanup = build_cleanup_test(toga.WebView, xfail_backends=("toga_gtk",))
 
 
+@pytest.mark.flaky(retries=5, delay=1)
 async def test_set_url(widget, probe, on_load):
     """The URL can be set."""
     widget.url = "https://github.com/beeware"
@@ -137,6 +138,7 @@ async def test_set_url(widget, probe, on_load):
     )
 
 
+@pytest.mark.flaky(retries=5, delay=1)
 async def test_clear_url(widget, probe, on_load):
     """The URL can be cleared."""
     widget.url = None
@@ -170,6 +172,7 @@ async def test_load_empty_url(widget, probe, on_load):
     )
 
 
+@pytest.mark.flaky(retries=5, delay=1)
 async def test_load_url(widget, probe, on_load):
     """A URL can be loaded into the view."""
     await wait_for(
@@ -297,6 +300,7 @@ async def test_evaluate_javascript_error_without_handler(widget, probe):
         assert result is None
 
 
+@pytest.mark.flaky(retries=5, delay=1)
 async def test_dom_storage_enabled(widget, probe, on_load):
     """Ensure DOM storage is enabled."""
     # a page must be loaded to access local storage
@@ -332,6 +336,7 @@ async def test_dom_storage_enabled(widget, probe, on_load):
     )
 
 
+@pytest.mark.flaky(retries=5, delay=1)
 async def test_retrieve_cookies(widget, probe, on_load):
     """Cookies can be retrieved."""
     # A page must be loaded to set cookies

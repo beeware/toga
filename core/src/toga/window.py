@@ -158,6 +158,25 @@ class OnHideHandler(Protocol):
         ...
 
 
+class OnResizeHandler(Protocol):
+    def __call__(self, window: Window, **kwargs: Any) -> None:
+        """A handler to invoke when a window resizes.
+
+        This event is also triggered when any change in available layout size occurs.
+        However, a change in visibility (e.g. when a window is hidden or minimized)
+        does not cause a change in layout size and therefore, the event will not be
+        triggered.
+
+        On mobile platforms, it is also triggered when the orientation of the
+        device is changed.
+
+        :param window: The window instance that resizes.
+        :param kwargs: Ensures compatibility with additional arguments introduced in
+            future versions.
+        """
+        ...
+
+
 _DialogResultT = TypeVar("_DialogResultT", contravariant=True)
 
 
@@ -197,6 +216,7 @@ class Window:
         on_lose_focus: OnLoseFocusHandler | None = None,
         on_show: OnShowHandler | None = None,
         on_hide: OnHideHandler | None = None,
+        on_resize: OnResizeHandler | None = None,
         content: Widget | None = None,
     ) -> None:
         """Create a new Window.
@@ -247,12 +267,13 @@ class Window:
         if content:
             self.content = content
 
+        # Set up the event handlers on the interface
         self.on_close = on_close
-
         self.on_gain_focus = on_gain_focus
         self.on_lose_focus = on_lose_focus
         self.on_show = on_show
         self.on_hide = on_hide
+        self.on_resize = on_resize
 
     def __lt__(self, other: Window) -> bool:
         return self.id < other.id
@@ -435,8 +456,8 @@ class Window:
         """Size of the window, in [CSS pixels][css-units].
 
         :raises RuntimeError: If resize is requested while in
-            [`WindowState.FULLSCREEN`][toga.window.WindowState.FULLSCREEN] or
-            [`WindowState.PRESENTATION`][toga.window.WindowState.PRESENTATION].
+            [`WindowState.FULLSCREEN`][toga.constants.WindowState.FULLSCREEN] or
+            [`WindowState.PRESENTATION`][toga.constants.WindowState.PRESENTATION].
         """
         return self._impl.get_size()
 
@@ -460,8 +481,8 @@ class Window:
         The origin is the top left corner of the primary screen.
 
         :raises RuntimeError: If position change is requested while in
-            [`WindowState.FULLSCREEN`][toga.window.WindowState.FULLSCREEN] or
-            [`WindowState.PRESENTATION`][toga.window.WindowState.PRESENTATION].
+            [`WindowState.FULLSCREEN`][toga.constants.WindowState.FULLSCREEN] or
+            [`WindowState.PRESENTATION`][toga.constants.WindowState.PRESENTATION].
         """
         absolute_origin = self._app.screens[0].origin
         absolute_window_position = self._impl.get_position()
@@ -496,8 +517,8 @@ class Window:
         [CSS pixels][css-units].
 
         :raises RuntimeError: If position change is requested while in
-            [`WindowState.FULLSCREEN`][toga.window.WindowState.FULLSCREEN] or
-            [`WindowState.PRESENTATION`][toga.window.WindowState.PRESENTATION].
+            [`WindowState.FULLSCREEN`][toga.constants.WindowState.FULLSCREEN] or
+            [`WindowState.PRESENTATION`][toga.constants.WindowState.PRESENTATION].
         """
         return self.position - self.screen.origin
 
@@ -556,8 +577,8 @@ class Window:
             hidden.
 
         :raises ValueError: If any state other than
-            [`WindowState.MINIMIZED`][toga.window.WindowState.MINIMIZED]
-            or [`WindowState.NORMAL`][toga.window.WindowState.NORMAL]
+            [`WindowState.MINIMIZED`][toga.constants.WindowState.MINIMIZED]
+            or [`WindowState.NORMAL`][toga.constants.WindowState.NORMAL]
             is requested on a non-resizable window.
         """
         # There are 2 types of window states that we can get from the backend:
@@ -660,6 +681,15 @@ class Window:
     @on_hide.setter
     def on_hide(self, handler):
         self._on_hide = wrapped_handler(self, handler)
+
+    @property
+    def on_resize(self) -> OnResizeHandler:
+        """The handler to invoke when the window resizes."""
+        return self._on_resize
+
+    @on_resize.setter
+    def on_resize(self, handler):
+        self._on_resize = wrapped_handler(self, handler)
 
     ######################################################################
     # 2024-06: Backwards compatibility for <= 0.4.5

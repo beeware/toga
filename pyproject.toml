@@ -92,7 +92,7 @@ known-first-party = [
 directory = "changes"
 package = "toga"
 package_dir = "core/src"
-filename = "docs/about/releases.md"
+filename = "docs/en/about/releases.md"
 title_format = "## {version} ({project_date})"
 issue_format = "[#{issue}](https://github.com/beeware/toga/issues/{issue})"
 template = "changes/template.md"
@@ -116,6 +116,10 @@ pre-commit = [
     "pre-commit == 4.3.0",
 ]
 
+setuptools-scm = [
+    "setuptools_scm == 9.2.2",
+]
+
 towncrier = [
     "towncrier==24.8.0",
 ]
@@ -127,13 +131,13 @@ tox-uv = [
 dev = [
     {include-group = "pre-commit"},
     {include-group = "tox-uv"},
+    {include-group = "setuptools-scm"}
 ]
 
 # Docs are always built on a specific Python version; see RTD and tox config files,
 # and the docs contribution guide.
 docs = [
     "beeware-docs-tools @ git+https://github.com/beeware/beeware-docs-tools",
-    "setuptools-scm==9.2.0",
     "tabulate==0.9.0",
     "PyYAML==6.0.3"
 ]
