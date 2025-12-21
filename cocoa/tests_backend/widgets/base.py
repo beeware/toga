@@ -200,6 +200,7 @@ class SimpleProbe(BaseProbe, FontMixin):
         event_type,
         location,
         delay=None,
+        immediate=False,
         modifierFlags=0,
         clickCount=1,
     ):
@@ -216,6 +217,7 @@ class SimpleProbe(BaseProbe, FontMixin):
                 pressure=1.0 if event_type == NSEventType.LeftMouseDown else 0.0,
             ),
             delay=delay,
+            immediate=immediate,
         )
 
     async def undo(self):
