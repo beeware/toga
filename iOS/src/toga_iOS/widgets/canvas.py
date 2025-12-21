@@ -316,6 +316,26 @@ class Canvas(Widget):
                 NSRect(origin, NSSize(2**31 - 1, 0)), options=0, context=None
             )
 
+    # Images
+    def draw_image(self, image, x, y, width, height, draw_context, **kwargs):
+        ui_image = image._impl.native
+
+        # Have an UIImage, need a CGImage
+        cg_image = ui_image.CGImage()
+
+        # Quartz is flipped relative to data, so we:
+        # - store the current state
+        # - translate to vertical middle of image
+        # - flip vertical axis
+        # - draw image with bottom edge at -height/2
+        # - restore state
+        core_graphics.CGContextSaveGState(draw_context)
+        core_graphics.CGContextTranslateCTM(draw_context, 0, y + height / 2)
+        core_graphics.CGContextScaleCTM(draw_context, 1.0, -1.0)
+        rectangle = CGRectMake(x, -height / 2, width, height)
+        core_graphics.CGContextDrawImage(draw_context, rectangle, cg_image)
+        core_graphics.CGContextRestoreGState(draw_context)
+
     def get_image_data(self):
         renderer = UIGraphicsImageRenderer.alloc().initWithSize(self.native.bounds.size)
 

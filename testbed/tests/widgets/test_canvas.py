@@ -882,9 +882,21 @@ async def test_write_text_and_path(canvas, probe):
 
 async def test_draw_image_at_point(canvas, probe):
     "Images can be drawn at a point."
+
     image = TogaImage("resources/sample.png")
     canvas.context.begin_path()
     canvas.context.draw_image(image, 10, 10)
 
     await probe.redraw("Image should be drawn")
-    assert_reference(probe, "draw_image_at_point", threshold=0.05)
+    assert_reference(probe, "draw_image", threshold=0.05)
+
+
+async def test_draw_image_in_rect(canvas, probe):
+    "Images can be drawn in a rectangle."
+
+    image = TogaImage("resources/sample.png")
+    canvas.context.begin_path()
+    canvas.context.draw_image(image, 10, 10, 144, 72)
+
+    await probe.redraw("Image should be drawn")
+    assert_reference(probe, "draw_image", threshold=0.05)
