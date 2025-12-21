@@ -76,6 +76,7 @@ class AppProbe(BaseProbe, DialogsMixin):
                 (205, 226, 243, 255),
                 (211, 226, 243, 255),
                 (211, 230, 245, 255),
+                (214, 229, 243, 255),
             }
             mid_color = img.getpixel((img.size[0] // 3, img.size[1] // 3))
             assert mid_color in {
@@ -83,6 +84,7 @@ class AppProbe(BaseProbe, DialogsMixin):
                 (6, 204, 8, 255),
                 (14, 197, 8, 255),
                 (105, 192, 32, 255),
+                (92, 201, 61, 255),
             }
         else:
             # The default icon is transparent background, and brown in the center.
@@ -94,6 +96,7 @@ class AppProbe(BaseProbe, DialogsMixin):
                 (138, 107, 64, 255),
                 (138, 108, 64, 255),
                 (149, 119, 73, 255),
+                (144, 120, 80, 255),
             }
 
     def _menu_item(self, path):
