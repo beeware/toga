@@ -82,18 +82,10 @@ class OptionContainer(Widget):
             item.content.refresh()
 
     def content_refreshed(self, container):
-        min_width = max(
-            sub_container.content.interface.layout.min_width
-            for sub_container in self.sub_containers
+        container.native.setMinimumSize(
+            container.content.interface.layout.min_width,
+            container.content.interface.layout.min_height,
         )
-        min_height = max(
-            sub_container.content.interface.layout.min_height
-            for sub_container in self.sub_containers
-        )
-        for sub_container in self.sub_containers:
-            sub_container.native.setMinimumSize(min_width, min_height)
-            sub_container.min_width = min_width
-            sub_container.min_height = min_height
 
         # re-layout and schedule a second refresh if intrinsic size has changed
         prev_intrinsic_size = (
@@ -106,4 +98,6 @@ class OptionContainer(Widget):
             self.interface.intrinsic.height,
         )
         if prev_intrinsic_size != intrinsic_size:
-            asyncio.get_running_loop().call_soon_threadsafe(self.interface.refresh)
+            asyncio.get_running_loop().call_soon_threadsafe(
+                self.interface.refresh
+            )  # pragma: no cover
