@@ -1,0 +1,19 @@
+# How the testbed works  { #testbed-probe }
+
+The testbed works by providing a generic collection of behavioral tests on a live app, and then providing an API to instrument the live app to verify that those behaviors have been implemented. That API is then implemented by each backend.
+
+The implementation of the generic behavioral tests is contained in the [tests folder of the testbed app](https://github.com/beeware/toga/tree/main/testbed/tests). These tests use the public API of a widget to exercise all the corner cases of each implementation. Some of the tests are generic (for example, setting the background color of a widget) and are shared between widgets, but each widget has its own set of specific tests. These tests are all declared `async` because they need to interact with the event loop of a running application.
+
+Each test will make a series of calls on a widget's public API. The public API is used to verify the behavior that an end user would experience when programming a Toga app. The test will *also* make calls on the *probe* for the widget.
+
+The widget probe provides a generic interface for interacting with the internals of widget, verifying that the implementation is in the correct state as a result of invoking a public API. The probes for each platform are implemented in the `tests_backend` folder of each backend. For example, the Cocoa tests backend and probe implementations can be found [here](https://github.com/beeware/toga/tree/main/cocoa/tests_backend).
+
+The probe for each widget provides a way to manipulate and inspect the internals of a widget in a way that may not be possible from a public API. For example, the Toga public API doesn't provide a way to determine the physical size of a widget, or interrogate the font being used to render a widget; the probe implementation does. This allows a testbed test case to verify that a widget has been laid out correctly inside the Toga window, is drawn using the right font, and has any other appropriate physical properties or internal state.
+
+The probe also provides a programmatic interface for interacting *with* a widget. For example, in order to test a button, you need to be able to press that button; the probe API provides an API to simulate that press. This allows the testbed to verify that the correct callbacks will be invoked when a button is pressed. These interactions are performed by generating events in the GUI framework being tested.
+
+The widget probe also provides a `redraw()` method. GUI libraries don't always immediately apply changes visually, as graphical changes will often be batched so that they can be applied in a single redraw. To ensure that any visual changes have been applied before a test asserts the properties of the app, a test case can call `await probe.redraw()`. This guarantees that any outstanding redraw events have been processed. These `redraw()` requests are also used to implement slow mode - each redraw is turned into a 1 second sleep.
+
+If a widget doesn't have a probe for a given widget, the testbed should call `pytest.skip()` for that platform when constructing the widget fixture (there is a `skip_on_platforms()` helper method in the testbed method to do this). If a widget hasn't implemented a specific probe method that the testbed required, it should call `pytest.skip()` so that the backend knows to skip the test.
+
+If a widget on a given backend doesn't support a given feature, it should use `pytest.xfail()` (expected failure) for the probe method testing that feature. For example, Cocoa doesn't support setting the text color of buttons; as a result, the Cocoa implementation of the `color` [property of the Button probe](https://github.com/beeware/toga/blob/main/cocoa/tests_backend/widgets/button.py#L17) performs an `xfail` describing that limitation.

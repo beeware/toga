@@ -16,6 +16,11 @@ validation:
 extra:
   project_name: toga
   package_name: toga-core
+  formal_name: Toga
+  min_python_version: "3.10"  # The oldest supported Python version
+  min_python_version_tag: "310"  # The tag version of the minimum python version
+  recent_python_version: "3.13"  # The newest Python version known to work on all platforms
+  docs_python_version: "3.13"  # The version of Python required to build the documentation
   social:
     - icon: fontawesome/brands/github
       link: https://github.com/beeware
@@ -74,6 +79,7 @@ markdown_extensions:
   pymdownx.superfences: {}
   pymdownx.blocks.admonition: {}
   pymdownx.blocks.caption: {}
+  pymdownx.details: {}
   pymdownx.caret: {}
   pymdownx.blocks.tab:
     alternate_style: true

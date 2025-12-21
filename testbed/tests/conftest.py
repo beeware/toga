@@ -48,6 +48,14 @@ def xfail_on_platforms(*platforms, reason=None):
         skip(reason or f"not applicable on {current_platform}")
 
 
+# Use this for widgets or tests which are not supported on some backends,
+# and will not be supported in the foreseeable future.
+def xfail_on_backends(*backends, reason=None):
+    current_backend = toga.platform.get_platform_factory().__package__
+    if current_backend in backends:
+        skip(reason or f"not applicable on {current_backend}")
+
+
 # Use this for widgets or tests which trip up macOS privacy controls, and requires
 # properties or entitlements defined in Info.plist
 def skip_if_unbundled_app(reason=None, allow_module_level=False):
