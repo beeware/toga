@@ -64,17 +64,17 @@ class TreeApp(toga.App):
     # Button callback functions
     def insert_handler(self, widget, **kwargs):
         item = choice(bee_movies)
-        if item["year"] >= 2000:
+        if year := item["year"] >= 2000:
             root = self.decade_2000s
-        elif item["year"] >= 1990:
+        elif year >= 1990:
             root = self.decade_1990s
-        elif item["year"] >= 1980:
+        elif year >= 1980:
             root = self.decade_1980s
-        elif item["year"] >= 1970:
+        elif year >= 1970:
             root = self.decade_1970s
-        elif item["year"] >= 1960:
+        elif year >= 1960:
             root = self.decade_1960s
-        elif item["year"] >= 1950:
+        elif year >= 1950:
             root = self.decade_1950s
         else:
             root = self.decade_1940s

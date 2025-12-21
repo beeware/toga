@@ -262,24 +262,19 @@ class BaseStyle:
                 self[name] = value
 
     def __getitem__(self, name):
-        name = name.replace("-", "_")
-        if name in self._ALL_PROPERTIES:
-            return getattr(self, name)
-        raise KeyError(name)
+        if (name := name.replace("-", "_")) not in self._ALL_PROPERTIES:
+            raise KeyError(name)
+        return getattr(self, name)
 
     def __setitem__(self, name, value):
-        name = name.replace("-", "_")
-        if name in self._ALL_PROPERTIES:
-            setattr(self, name, value)
-        else:
+        if (name := name.replace("-", "_")) not in self._ALL_PROPERTIES:
             raise KeyError(name)
+        setattr(self, name, value)
 
     def __delitem__(self, name):
-        name = name.replace("-", "_")
-        if name in self._ALL_PROPERTIES:
-            delattr(self, name)
-        else:
+        if (name := name.replace("-", "_")) not in self._ALL_PROPERTIES:
             raise KeyError(name)
+        delattr(self, name)
 
     def keys(self):
         return {*self}
@@ -291,8 +286,7 @@ class BaseStyle:
         return sum(1 for _ in self)
 
     def __contains__(self, name):
-        name = name.replace("-", "_")
-        return name in self._ALL_PROPERTIES and (
+        return (name := name.replace("-", "_")) in self._ALL_PROPERTIES and (
             getattr(self.__class__, name).is_set_on(self)
         )
 
