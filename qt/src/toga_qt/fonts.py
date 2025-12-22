@@ -120,7 +120,11 @@ class Font:
         if self.interface.variant == SMALL_CAPS:
             font.setCapitalization(QFont.Capitalization.SmallCaps)
         if self.interface.size != SYSTEM_DEFAULT_FONT_SIZE:
-            font.setPointSize(self.interface.size)
+            # A "point" in Qt APIs is a "PostScript point", but the Toga public
+            # API works in CSS points, which are slightly larger
+            # See https://toga.beeware.org/en/stable/topics/layout/#css-units
+            size = self.interface.size * 96 / 72
+            font.setPointSize(size)
 
         # Set the native font and remember it
         self.native = font
