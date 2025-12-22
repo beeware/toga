@@ -42,7 +42,7 @@ class FontMixin:
 
     def assert_font_size(self, expected):
         if expected != SYSTEM_DEFAULT_FONT_SIZE:
-            assert self.font.pointSizeF() * 72 / 96 == expected
+            assert self.font.pointSizeF() == expected
 
     def assert_font_options(self, weight=NORMAL, style=NORMAL, variant=NORMAL):
         assert (
