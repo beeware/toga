@@ -256,7 +256,7 @@ class Canvas(Widget):
 
     def measure_text(self, text, font, line_height):
         metrics = QFontMetrics(font.native)
-        line_height = self._line_height(metrics, font.pointSize(), line_height)
+        line_height = self._line_height(metrics, font.native.pointSize(), line_height)
         sizes = [metrics.boundingRect(line) for line in text.splitlines()]
         return (
             ceil(max(size.width() for size in sizes)),
@@ -267,7 +267,9 @@ class Canvas(Widget):
         self, text, x, y, font, baseline, line_height, draw_context: QPainter, **kwargs
     ):
         metrics = QFontMetrics(font.native)
-        scaled_line_height = self._line_height(metrics, font.pointSize(), line_height)
+        scaled_line_height = self._line_height(
+            metrics, font.native.pointSize(), line_height
+        )
 
         lines = text.splitlines()
         total_height = scaled_line_height * len(lines)
