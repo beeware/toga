@@ -62,7 +62,11 @@ class TogaNumberInput(NSTextField):
         # matches the clipped, normalized decimal value
         self.impl.set_value(self.interface.value)
         send_super(
-            __class__, self, "textDidEndEditing:", notification, argtypes=[c_void_p]
+            __class__,
+            self,
+            "textDidEndEditing:",
+            notification,
+            argtypes=[c_void_p],
         )
 
 
