@@ -121,7 +121,7 @@ android.defaultConfig.python {
     pyc.src = false
 }
 
-chaquopy.defaultConfig.staticProxy("toga_android.widgets.webview_static_proxy")
+chaquopy.defaultConfig.staticProxy("toga_android.widgets.internal.webview")
 """
 
 [tool.briefcase.app.testbed.web]

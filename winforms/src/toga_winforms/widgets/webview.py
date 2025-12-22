@@ -187,7 +187,7 @@ class WebView(Widget):
             self.loaded_future = None
 
     def winforms_navigation_starting(self, sender, event):
-        if self.interface.on_navigation_starting:
+        if self.interface.on_navigation_starting._raw:
             # check URL permission
             if self._allowed_url == "about:blank" or self._allowed_url == event.Uri:
                 # URL is allowed by user code
