@@ -14,33 +14,18 @@ class Widget:
         self.native.hide()
         self._hidden = True
 
-        # Color handling -- defaults for background role,
-        # foreground role, default background, and default foreground
-        # are provided; at appropriate points, call any subclassed
-        # methods to override anything if necessary for the specific
-        # widget.
-        self._background_color_role = self.native.backgroundRole()
-        self._foreground_color_role = self.native.foregroundRole()
-        self._override_color_roles()
-        self._default_background_color = toga_color(
-            self.native.palette().color(self._background_color_role)
-        )
-        self._default_foreground_color = toga_color(
-            self.native.palette().color(self._foreground_color_role)
-        )
-        self._override_color_settings()
-
-    def _override_color_roles(self):
-        # If needed, a subclass will implement this method
-        # to override color roles needed for background/foreground.
-        pass
-
-    def _override_color_settings(self):
-        # If needed, a subclass will implement this method
-        # to configure additional parameters of the native widget
-        # related to color and override the default background/
-        # foreground colors.
-        pass
+        if not hasattr(self, "_background_color_role"):
+            self._background_color_role = self.native.backgroundRole()
+        if not hasattr(self, "_foreground_color_role"):
+            self._foreground_color_role = self.native.foregroundRole()
+        if not hasattr(self, "_default_background_color"):
+            self._default_background_color = toga_color(
+                self.native.palette().color(self._background_color_role)
+            )
+        if not hasattr(self, "_default_foreground_color"):
+            self._default_foreground_color = toga_color(
+                self.native.palette().color(self._foreground_color_role)
+            )
 
     @property
     def container(self):

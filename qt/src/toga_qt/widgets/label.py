@@ -9,8 +9,6 @@ from .base import Widget
 class Label(Widget):
     def create(self):
         self.native = QLabel()
-
-    def _override_color_settings(self):
         self.native.setAutoFillBackground(True)
         # Background is not autofilled by default; but since we're
         # enabling it here, let the default color be transparent
