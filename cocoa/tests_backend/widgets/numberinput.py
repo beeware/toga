@@ -113,7 +113,3 @@ class NumberInputProbe(SimpleProbe):
 
     def set_cursor_at_end(self):
         self.native_input.currentEditor().selectedRange = NSRange(len(self.value), 0)
-
-    def assert_not_editing(self):
-        """Assert that the field editor has been properly dismissed."""
-        assert self.native_input.currentEditor() is None
