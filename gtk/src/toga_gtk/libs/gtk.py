@@ -15,17 +15,21 @@ if gtk_version == "4.0":  # pragma: no cover
         gtklib = "Adw"
     elif os.getenv("TOGA_GTKLIB") == "None":
         gtklib = None
-    elif os.getenv("TOGA_GTKLIB") not in {None, ""}:
+    elif os.getenv("TOGA_GTKLIB") in {None, ""}:
+        # No TOGA_GTKLIB specified; autodetect from DE
+        if "GNOME" in (os.getenv("XDG_CURRENT_DESKTOP") or "").split(":"):
+            gtklib = "Adw"
+        else:
+            gtklib = None
+    else:
+        # Fallback -- a specified TOGA_GTKLIB that is unsupported; use no GTK lib
+        # integration for now since libadwaita would look out of place on DEs with
+        # other libs (that we currently don't support).
         print(
             f"WARNING: Unsupported $TOGA_GTKLIB value {os.getenv('TOGA_GTKLIB')}. "
             f"Supported values are: 'Adw', 'None'.  Falling back to None."
         )
         gtklib = None
-    else:  # No TOGA_GTKLIB specified; autodetect from DE
-        if "GNOME" in (os.getenv("XDG_CURRENT_DESKTOP") or "").split(":"):
-            gtklib = "Adw"
-        else:
-            gtklib = None
 else:  # pragma: no-cover-if-gtk4
     gtklib = None
 
