@@ -152,8 +152,10 @@ def main(main_package_name, backend_override=None):
             ),
             "no-cover-if-gtk4": "os_environ.get('TOGA_GTK', '') == '4'",
             "no-cover-if-gtk3": "os_environ.get('TOGA_GTK', '3') == '3'",
-            "no-cover-unless-plain-gtk4": "os_environ.get('TOGA_GTK', '') != '4' or "
-            "os_environ.get('TOGA_GTKLIB', '') != ''",
+            "no-cover-unless-plain-gtk4": (
+                "os_environ.get('TOGA_GTK', '') != '4' "
+                "or os_environ.get('TOGA_GTKLIB', '') != ''"
+            ),
             "no-cover-unless-plain-gtk": "os_environ.get('TOGA_GTKLIB', '') != ''",
             "no-cover-unless-libadwaita": "os_environ.get('TOGA_GTK', '') != '4' or "
             "os_environ.get('TOGA_GTKLIB', '') != 'Adw'",
