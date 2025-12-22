@@ -262,17 +262,20 @@ class BaseStyle:
                 self[name] = value
 
     def __getitem__(self, name):
-        if (name := name.replace("-", "_")) not in self._ALL_PROPERTIES:
+        name = name.replace("-", "_")
+        if name not in self._ALL_PROPERTIES:
             raise KeyError(name)
         return getattr(self, name)
 
     def __setitem__(self, name, value):
-        if (name := name.replace("-", "_")) not in self._ALL_PROPERTIES:
+        name = name.replace("-", "_")
+        if name not in self._ALL_PROPERTIES:
             raise KeyError(name)
         setattr(self, name, value)
 
     def __delitem__(self, name):
-        if (name := name.replace("-", "_")) not in self._ALL_PROPERTIES:
+        name = name.replace("-", "_")
+        if name not in self._ALL_PROPERTIES:
             raise KeyError(name)
         delattr(self, name)
 
