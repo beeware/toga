@@ -1,3 +1,4 @@
+import asyncio
 import warnings
 
 from rubicon.objc import objc_method
@@ -66,6 +67,19 @@ class OptionContainer(Widget):
     def content_refreshed(self, container):
         container.min_width = container.content.interface.layout.min_width
         container.min_height = container.content.interface.layout.min_height
+
+        # Re-layout and schedule a second refresh if intrinsic size has changed
+        prev_intrinsic_size = (
+            self.interface.intrinsic.width,
+            self.interface.intrinsic.height,
+        )
+        self.rehint()
+        intrinsic_size = (
+            self.interface.intrinsic.width,
+            self.interface.intrinsic.height,
+        )
+        if prev_intrinsic_size != intrinsic_size:
+            asyncio.get_running_loop().call_soon_threadsafe(self.interface.refresh)
 
     def add_option(self, index, text, widget, icon):
         # Create the container for the widget
@@ -140,13 +154,37 @@ class OptionContainer(Widget):
         self.native.selectTabViewItemAtIndex(current_tab_index)
 
     def rehint(self):
-        # The optionContainer must be at least the size of it's largest content,
-        # with a hard minimum to prevent absurdly small optioncontainers.
-        min_width = self.interface._MIN_WIDTH
-        min_height = self.interface._MIN_HEIGHT
+        # The optionContainer must be at least the size of it's largest content
+        # plus the decors around the OptionContainer.
+        min_width = 0
+        min_height = 0
         for sub_container in self.sub_containers:
             min_width = max(min_width, sub_container.min_width)
             min_height = max(min_height, sub_container.min_height)
 
-        self.interface.intrinsic.width = at_least(min_width)
-        self.interface.intrinsic.height = at_least(min_height)
+        # The below logic to get the width and height of the tab bar and decorations
+        # uses the sizes of the widget itself, which might seem conunterintuitive as
+        # rehinting is done before the widget is refreshed.  However, refreshing a
+        # widget also refreshes content sub-containers, and a rehint/re-refesh if
+        # needed sequence is set up after the sub-containers finishes refreshing
+        # because the minimum size might've changed then.  By the time the second
+        # refresh request is queued up, the sizes would've already been fully
+        # applied.
+
+        # On macOS, in spite of specified constraints, the NSTabView seems to
+        # maintain a larger frame than the constraints would specify, having 6-7
+        # pixels of margin outside the widget area.  Use self.interface.layout
+        # in order to have the correct width which is the "proper" size of the widget.
+        decor_width = self.interface.layout.width - self.native.contentRect.size.width
+        decor_height = (
+            self.interface.layout.height - self.native.contentRect.size.height
+        )
+
+        # Be on the defensive side and prevent absurdly small OptionContainers by maxing
+        # in an artificially imposed minimum size.
+        self.interface.intrinsic.width = at_least(
+            max(min_width + decor_width, self.interface._MIN_WIDTH)
+        )
+        self.interface.intrinsic.height = at_least(
+            max(min_height + decor_height, self.interface._MIN_HEIGHT)
+        )
