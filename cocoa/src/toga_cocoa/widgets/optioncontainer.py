@@ -61,14 +61,16 @@ class OptionContainer(Widget):
         # Setting the bounds changes the constraints, but that doesn't mean
         # the constraints have been fully applied. Force realization of the
         # new layout, and then refresh the content.
-        self.interface.window._impl.native.layoutIfNeeded()
+        self.native.layoutSubtreeIfNeeded()
         self.native.refreshContent()
 
     def content_refreshed(self, container):
         container.min_width = container.content.interface.layout.min_width
         container.min_height = container.content.interface.layout.min_height
 
-        # Re-layout and schedule a second refresh if intrinsic size has changed
+        # Re-layout and schedule a second refresh if intrinsic size has changed,
+        # since if the subcontainers' minimum size changes, the widget itself's
+        # minimum size may change as well.
         prev_intrinsic_size = (
             self.interface.intrinsic.width,
             self.interface.intrinsic.height,
@@ -164,20 +166,18 @@ class OptionContainer(Widget):
 
         # The below logic to get the width and height of the tab bar and decorations
         # uses the sizes of the widget itself, which might seem conunterintuitive as
-        # rehinting is done before the widget is refreshed.  However, refreshing a
-        # widget also refreshes content sub-containers, and a rehint/re-refesh if
-        # needed sequence is set up after the sub-containers finishes refreshing
-        # because the minimum size might've changed then.  By the time the second
-        # refresh request is queued up, the sizes would've already been fully
-        # applied.
-
-        # On macOS, in spite of specified constraints, the NSTabView seems to
-        # maintain a larger frame than the constraints would specify, having 6-7
-        # pixels of margin outside the widget area.  Use self.interface.layout
-        # in order to have the correct width which is the "proper" size of the widget.
-        decor_width = self.interface.layout.width - self.native.contentRect.size.width
+        # rehinting is done before the widget is laid out.  However, the calculations
+        # here will not change regardless of layout if the widget has a non-zero
+        # frame, and rehint is always called at a certain point when the widget has
+        # a non-zero frame in Toga's sequence.
+        self.native.layoutSubtreeIfNeeded()
+        decor_width = (
+            self.native.alignmentRectForFrame(self.native.frame).size.width
+            - self.native.contentRect.size.width
+        )
         decor_height = (
-            self.interface.layout.height - self.native.contentRect.size.height
+            self.native.alignmentRectForFrame(self.native.frame).size.height
+            - self.native.contentRect.size.height
         )
 
         # Be on the defensive side and prevent absurdly small OptionContainers by maxing

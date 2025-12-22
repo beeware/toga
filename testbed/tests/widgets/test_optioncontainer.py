@@ -6,7 +6,7 @@ import toga
 from toga.colors import CORNFLOWERBLUE, GOLDENROD, REBECCAPURPLE, SEAGREEN
 from toga.style.pack import Pack
 
-from .conftest import build_cleanup_test, safe_create
+from .conftest import build_cleanup_test, safe_create, skip_on_platforms
 from .probe import get_probe
 from .properties import (  # noqa: F401
     test_enable_noop,
@@ -88,6 +88,43 @@ test_cleanup = build_cleanup_test(
 def assert_tab_text(tab, expected):
     assert tab.text == expected
     assert type(tab.text) is str
+
+
+async def test_content_size_rehint(
+    widget, probe, content1, content1_probe, content3, main_window, main_window_probe
+):
+    """The OptionContainer should rehint to minimum size of all widgets plus necessary
+    decors, and should automatically rehint upon the addition of new tabs."""
+    skip_on_platforms(
+        "iOS",
+        "android",
+        "windows",
+        reason="Accurate OptionContainer hinting is not yet"
+        "implemented on this platform",
+    )
+    old_main_window_size = main_window.size
+    main_window.size = (300, 300)
+    await main_window_probe.redraw("Main window size should be 300x300")
+
+    content3.width = 500
+    content3.height = 600
+    # 0.01 seconds to allow events to propagate properly, since the refreshment happens
+    # across multiple event loop iterations.
+    await probe.redraw("Tab 3's size should be explicitly set to 500x600", delay=0.01)
+
+    assert main_window.size.width > 500
+    assert main_window.size.height > 600
+    assert probe.width > 500
+    assert probe.height > 600
+    # Asserting content1 for content size because content3, by virtue of not being
+    # selected, has an invalid size.
+    assert content1_probe.width == 500
+    assert content1_probe.height == 600
+
+    del content3.width
+    del content3.height
+    main_window.size = old_main_window_size
+    await probe.redraw("Cleaning up widget and window")
 
 
 async def test_select_tab(
