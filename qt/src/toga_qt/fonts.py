@@ -124,7 +124,7 @@ class Font:
             # API works in CSS points, which are slightly larger
             # See https://toga.beeware.org/en/stable/topics/layout/#css-units
             size = self.interface.size * 96 / 72
-            font.setPointSize(size)
+            font.setPointSizeF(size)
 
         # Set the native font and remember it
         self.native = font
