@@ -28,11 +28,10 @@ class WebViewApp(toga.App):
     def on_webview_load(self, widget, **kwargs):
         self.label.text = "www loaded!"
 
-    def on_navigation_starting_sync(self, widget, **kwargs):
+    def on_navigation_starting_sync(self, widget, url, **kwargs):
         # By default, on_navigation_starting_async is enabled
         # To use this synchronous handler here, make a code edit below where
         # self.webview is created.
-        url = kwargs.get("url", None)
         print(f"on_navigation_starting_sync: {url}")
         allow = True
         if not url.startswith(self.allowed_base_url):
@@ -42,8 +41,7 @@ class WebViewApp(toga.App):
             asyncio.create_task(self.dialog(dialog))
         return allow
 
-    async def on_navigation_starting_async(self, widget, **kwargs):
-        url = kwargs.get("url", "No URL awailable")
+    async def on_navigation_starting_async(self, widget, url, **kwargs):
         print(f"on_navigation_starting_async: {url}")
         if not url.startswith(self.allowed_base_url):
             message = f"Do you want to allow navigation to: {url}"

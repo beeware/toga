@@ -26,12 +26,14 @@ class OnWebViewLoadHandler(Protocol):
 
 
 class OnNavigationStartingHandler(Protocol):
-    def __call__(self, widget: WebView, **kwargs: Any) -> object:
+    def __call__(self, widget: WebView, url: str, **kwargs: Any) -> True:
         """A handler to invoke when the WebView is requesting permission to navigate or
         redirect to a different URI.
 
-        :param widget: The WebView
+        :param widget: The WebView that has requested a new URI.
+        :param url: The URI that has been requested.
         :param kwargs: Ensures compatibility with arguments added in future versions.
+        :returns: True if navigation to the requested URL is allowed; False otherwise.
         """
 
 
@@ -49,10 +51,6 @@ class WebView(Widget):
     ):
         """Create a new WebView widget.
 
-        **Note:** On Android, this handler needs `chaquopy.defaultConfig.staticProxy(
-        "toga_android.widgets.webview_static_proxy")` in the build_gradle_extra_content
-        section of pyproject.toml
-
         :param id: The ID for the widget.
         :param style: A style object. If no style is provided, a default style
             will be applied to the widget.
@@ -67,9 +65,7 @@ class WebView(Widget):
             provided, the default user agent for the platform will be used.
         :param on_navigation_starting: A handler that will be invoked when the
             web view is requesting permission to navigate or redirect
-            to a different URI. The handler can be synchronous or async and must
-            return True for allowing the URL, False for denying the URL or an awaited
-            QuestionDialog.
+            to a different URI.
         :param on_webview_load: A handler that will be invoked when the web view
             finishes loading.
         :param kwargs: Initial style properties.
@@ -132,32 +128,41 @@ class WebView(Widget):
     @property
     def on_navigation_starting(self) -> OnNavigationStartingHandler:
         """A handler that will be invoked when the webview is requesting
-        permission to navigate or redirect to a different URI. This feature is
-        currently only supported on Windows and Android.
+        permission to navigate or redirect to a different URI.
 
-        The handler will receive the positional argument `widget` and the keyword
-        argument `url` and can be synchronous or async. It must return True for
-        allowing the URL, False for denying the URL or an awaited QuestionDialog
+        The handler will receive the requested URL as an argument. It should
+        return `True` if navigation to the given URL is permitted, or `False`
+        if navigation to the URL should be blocked.
+
+        **Note:** This is currently only supported on Android and Windows.
         """
         return self._on_navigation_starting
 
     @on_navigation_starting.setter
     def on_navigation_starting(self, handler):
-        """Set the handler to invoke when the webview starts navigating"""
-
-        def cleanup(widget, result, url=None, **kwargs):
-            if result is True:
-                # navigate to the url
-                self.url = url
-
-        self._on_navigation_starting = None
+        """Set the handler to invoke when the webview starts navigating."""
         if handler:
-            if not getattr(self._impl, "SUPPORTS_ON_NAVIGATION_STARTING", True):
-                self.factory.not_implemented("WebView.on_navigation_starting")
-                return
-            self._on_navigation_starting = wrapped_handler(
-                self, handler, cleanup=cleanup
-            )
+            if getattr(self._impl, "SUPPORTS_ON_NAVIGATION_STARTING", True):
+
+                def cleanup(widget, result, url=None, **kwargs):
+                    if result is True:
+                        # navigate to the url
+                        self.url = url
+
+            else:
+                cleanup = None
+                try:
+                    # Some backends (e.g., Android) will dynamically disable
+                    # SUPPORTS_ON_NAVIGATION_STARTING based on configuration.
+                    # If that happens, display an appropriate error; fall back
+                    # to a simple "non implemented" otherwise.
+                    print(self._impl.ON_NAVIGATION_CONFIG_MISSING_ERROR)
+                except AttributeError:
+                    self.factory.not_implemented("WebView.on_navigation_starting")
+        else:
+            cleanup = None
+
+        self._on_navigation_starting = wrapped_handler(self, handler, cleanup=cleanup)
 
     @property
     def on_webview_load(self) -> OnWebViewLoadHandler:

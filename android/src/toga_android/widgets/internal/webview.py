@@ -15,6 +15,7 @@ class TogaWebClient(static_proxy(WebViewClient)):
 
     @Override(jboolean, [A_WebView, WebResourceRequest])
     def shouldOverrideUrlLoading(self, webview, webresourcerequest):
+        allow = True
         if self.webview_impl.interface.on_navigation_starting:
             url = webresourcerequest.getUrl().toString()
             result = self.webview_impl.interface.on_navigation_starting(url=url)
@@ -22,10 +23,7 @@ class TogaWebClient(static_proxy(WebViewClient)):
                 # on_navigation_starting handler is synchronous
                 allow = result
             else:
-                # on_navigation_starting handler is asynchronous
-                # deny navigation until the user defined on_navigation_starting
-                # coroutine has completed.
+                # on_navigation_starting handler is asynchronous. Deny navigation until
+                # the user defined on_navigation_starting coroutine has completed.
                 allow = False
-            if not allow:
-                return True
-        return False
+        return not allow

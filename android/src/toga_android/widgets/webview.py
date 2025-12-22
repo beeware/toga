@@ -26,23 +26,24 @@ class ReceiveString(dynamic_proxy(ValueCallback)):
 
 class WebView(Widget):
     SUPPORTS_ON_WEBVIEW_LOAD = False
-    SUPPORTS_ON_NAVIGATION_STARTING = True
+    ON_NAVIGATION_CONFIG_MISSING_ERROR = (
+        "Can't add a WebView.on_navigation_starting handler; Have you added chaquopy."
+        'defaultConfig.staticProxy("toga_android.widgets.internal.webview") to the'
+        "`build_gradle_extra_content` section of pyproject.toml?"
+    )
 
     def create(self):
         self.native = A_WebView(self._native_activity)
         try:
-            from .webview_static_proxy import TogaWebClient
+            from .internal.webview import TogaWebClient
 
+            self.SUPPORTS_ON_NAVIGATION_STARTING = True
             client = TogaWebClient(self)
         except NoClassDefFoundError:  # pragma: no cover
+            # Briefcase configuration hasn't declared a static proxy
             self.SUPPORTS_ON_NAVIGATION_STARTING = False
             client = WebViewClient()
-            print(
-                'chaquopy.defaultConfig.staticProxy("toga_android.widgets'
-                '.webview_static_proxy") missing in pyproject.toml section '
-                '"build_gradle_extra_content". on_navigation_starting '
-                "handler is therefore not available"
-            )
+
         # Set a WebViewClient so that new links open in this activity,
         # rather than triggering the phone's web browser.
         self.native.setWebViewClient(client)
