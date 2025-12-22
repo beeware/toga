@@ -316,9 +316,9 @@ class Canvas(Box):
     def write_text(
         self, text, x, y, font, baseline, line_height, draw_context, **kwargs
     ):
+        self._text_path(text, x, y, font, baseline, line_height, draw_context)
         for op in ["fill", "stroke"]:
             if color := kwargs.pop(f"{op}_color", None):
-                self._text_path(text, x, y, font, baseline, line_height, draw_context)
                 getattr(self, op)(color, draw_context=draw_context, **kwargs)
 
     def _text_path(self, text, x, y, font, baseline, line_height, draw_context):
