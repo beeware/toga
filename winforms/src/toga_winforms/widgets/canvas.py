@@ -280,7 +280,6 @@ class Canvas(Box):
                 path.FillMode = FillMode.Winding
             path.Transform(draw_context.matrix)
             draw_context.graphics.FillPath(brush, path)
-        draw_context.clear_paths()
 
     def stroke(self, color, line_width, line_dash, draw_context, **kwargs):
         pen = Pen(native_color(color), self.scale_in(line_width, rounding=None))
@@ -290,7 +289,6 @@ class Canvas(Box):
         for path in draw_context.paths:
             path.Transform(draw_context.matrix)
             draw_context.graphics.DrawPath(pen, path)
-        draw_context.clear_paths()
 
     # Transformations
 
