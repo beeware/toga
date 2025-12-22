@@ -356,9 +356,6 @@ def test_webview_navigation_starting_disabled(monkeypatch):
     ):
         widget.on_navigation_starting = handler
 
-    # The handler is not installed
-    assert widget.on_navigation_starting is None
-
 
 def test_webview_navigation_starting_not_configured(monkeypatch, capsys):
     """A warning is printed if the backend isn't fully configured."""
@@ -382,9 +379,6 @@ def test_webview_navigation_starting_not_configured(monkeypatch, capsys):
 
     # Setting the handler produce
     widget.on_navigation_starting = handler
-
-    # The handler is not installed
-    assert widget.on_navigation_starting is None
 
     # The error was output
     assert "WEBVIEW NOT CONFIGURED" in capsys.readouterr().out

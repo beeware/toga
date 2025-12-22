@@ -68,7 +68,7 @@ class WebView(Widget):
     def simulate_navigation_starting(self, url):
         """Simulate a navigation"""
         allow = True
-        if self.interface.on_navigation_starting:
+        if self.interface.on_navigation_starting._raw:
             if self._allowed_url == "about:blank" or self._allowed_url == url:
                 # URL is allowed by user code
                 allow = True
