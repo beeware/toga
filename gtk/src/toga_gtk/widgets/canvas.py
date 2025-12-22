@@ -306,10 +306,17 @@ class Canvas(Widget):
     def write_text(
         self, text, x, y, font, baseline, line_height, cairo_context, **kwargs
     ):
+        # Writing text should not affect current path, so save current path
+        current_path = cairo_context.copy_path()
+        # New path for text
+        cairo_context.new_path()
         self._text_path(text, x, y, font, baseline, line_height, cairo_context)
         for op in ["fill", "stroke"]:
             if color := kwargs.pop(f"{op}_color", None):
                 getattr(self, op)(color, cairo_context=cairo_context, **kwargs)
+        # Restore previous path
+        cairo_context.new_path()
+        cairo_context.add_path(current_path)
 
     # No need to check whether Pango or PangoCairo are None, because if they were, the
     # user would already have received an exception when trying to create a Font.
