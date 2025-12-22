@@ -332,7 +332,7 @@ class Canvas(Widget):
                 NSRect(origin, NSSize(2**31 - 1, 0)), options=0, context=None
             )
 
-    # Bitmaps
+    # Images
     def draw_image(self, image, x, y, width, height, draw_context, **kwargs):
         ns_image = image._impl.native
 
