@@ -316,10 +316,16 @@ class Canvas(Box):
     def write_text(
         self, text, x, y, font, baseline, line_height, draw_context, **kwargs
     ):
+        # Writing text should not affect current path, so save current paths
+        current_paths = draw_context.paths
+        # new path for text
+        draw_context.clear_paths()
         self._text_path(text, x, y, font, baseline, line_height, draw_context)
         for op in ["fill", "stroke"]:
             if color := kwargs.pop(f"{op}_color", None):
                 getattr(self, op)(color, draw_context=draw_context, **kwargs)
+        # restore previous current paths - this is a bit hacky
+        draw_context.paths = current_paths
 
     def _text_path(self, text, x, y, font, baseline, line_height, draw_context):
         lines = text.splitlines()
