@@ -1,3 +1,4 @@
+import logging
 from math import ceil, cos, degrees, sin
 
 from PySide6.QtCore import QBuffer, QIODevice, QPointF, Qt
@@ -19,6 +20,8 @@ from toga.widgets.canvas.geometry import arc_to_bezier, sweepangle
 from ..colors import native_color
 from .base import Widget
 
+logger = logging.getLogger(__name__)
+
 
 class TogaCanvas(QWidget):
     def __init__(self, interface, impl):
@@ -33,8 +36,8 @@ class TogaCanvas(QWidget):
         self.impl.begin_path(painter)
         try:
             self.interface.context._draw(self.impl, draw_context=painter)
-        except Exception as exc:
-            print(exc)
+        except Exception as exc:  # pragma: no cover
+            logger.exception("Error rendering Canvas.", exc)
 
     def mousePressEvent(self, event: QMouseEvent) -> None:
         button = event.button()
@@ -47,6 +50,9 @@ class TogaCanvas(QWidget):
                 self.interface.on_alt_press(
                     int(event.position().x()), int(event.position().y())
                 )
+            case _:  # pragma: no cover
+                # Don't handle other button presses
+                pass
 
     def mouseDoubleClickEvent(self, event: QMouseEvent) -> None:
         self.interface.on_activate(int(event.position().x()), int(event.position().y()))
@@ -62,6 +68,9 @@ class TogaCanvas(QWidget):
                 self.interface.on_alt_release(
                     int(event.position().x()), int(event.position().y())
                 )
+            case _:  # pragma: no cover
+                # Don't handle other button releases
+                pass
 
     def mouseMoveEvent(self, event: QMouseEvent) -> None:
         # These will only fire when a mouse button is down, ie. dragging
@@ -75,6 +84,9 @@ class TogaCanvas(QWidget):
                 self.interface.on_alt_drag(
                     int(event.position().x()), int(event.position().y())
                 )
+            case _:  # pragma: no cover
+                # Don't handle other mouse move events
+                pass
 
 
 class Canvas(Widget):
@@ -236,12 +248,15 @@ class Canvas(Widget):
         draw_context.resetTransform()
 
     # Text
+    def _line_height(self, metrics, point_size, line_height=None):
+        if line_height is None:
+            return metrics.lineSpacing()
+        else:
+            return line_height * point_size
+
     def measure_text(self, text, font, line_height):
         metrics = QFontMetrics(font.native)
-        if line_height is None:
-            line_height = metrics.lineSpacing()
-        else:
-            line_height *= font.native.pointSize()
+        line_height = self._line_height(metrics, font.pointSize(), line_height)
         sizes = [metrics.boundingRect(line) for line in text.splitlines()]
         return (
             ceil(max(size.width() for size in sizes)),
@@ -252,10 +267,7 @@ class Canvas(Widget):
         self, text, x, y, font, baseline, line_height, draw_context: QPainter, **kwargs
     ):
         metrics = QFontMetrics(font.native)
-        if line_height is None:
-            scaled_line_height = metrics.lineSpacing()
-        else:
-            scaled_line_height = line_height * font.native.pointSize()
+        scaled_line_height = self._line_height(metrics, font.pointSize(), line_height)
 
         lines = text.splitlines()
         total_height = scaled_line_height * len(lines)
