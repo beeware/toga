@@ -77,7 +77,7 @@ class ScrollContainer(Widget):
         # Setting the bounds changes the constraints, but that doesn't mean
         # the constraints have been fully applied. Force realization of the
         # new layout, and then refresh the content.
-        self.interface.window._impl.native.layoutIfNeeded()
+        self.native.layoutSubtreeIfNeeded()
         self.native.refreshContent()
 
     def content_refreshed(self, container):
