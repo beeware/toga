@@ -41,22 +41,16 @@ class TogaTable(NSTableView):
         data_row = self.interface.data[row]
         col_identifier = str(column.identifier)
 
-        value = getattr(data_row, col_identifier, None)
-
-        # if the value is a widget itself, just draw the widget!
-        if isinstance(value, toga.Widget):
-            return value._impl.native
-
-        # Allow for an (icon, value) tuple as the simple case
-        # for encoding an icon in a table cell. Otherwise, look
-        # for an icon attribute.
-        elif isinstance(value, tuple):
-            icon, value = value
-        else:
-            try:
-                icon = value.icon
-            except AttributeError:
-                icon = None
+        match value := getattr(data_row, col_identifier, None):
+            case toga.Widget():
+                # If the value is a widget itself, just draw the widget!
+                return value._impl.native
+            case icon, value:
+                # Allow for an (icon, value) tuple as the simple case for encoding an
+                # icon in a table cell. Otherwise, look for an icon attribute.
+                pass
+            case _:
+                icon = getattr(value, "icon", None)
 
         if value is None:
             value = self.interface.missing_value
