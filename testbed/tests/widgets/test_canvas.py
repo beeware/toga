@@ -426,10 +426,12 @@ async def test_ellipse(canvas, probe):
     canvas.context.fill(color=RED)
 
     # Purple orbit
+    canvas.context.begin_path()
     canvas.context.ellipse(100, 100, 90, 20, rotation=pi * 3 / 4)
     canvas.context.stroke(color=REBECCAPURPLE)
 
     # Blue orbit (more than half a turn)
+    canvas.context.begin_path()
     canvas.context.ellipse(
         100,
         100,
@@ -443,6 +445,7 @@ async def test_ellipse(canvas, probe):
     canvas.context.stroke(color=CORNFLOWERBLUE)
 
     # Yellow orbit (more than half a turn)
+    canvas.context.begin_path()
     canvas.context.ellipse(
         100,
         100,
@@ -608,16 +611,19 @@ async def test_transforms(canvas, probe):
     canvas.context.fill(color=CORNFLOWERBLUE)
 
     canvas.context.reset_transform()
+    canvas.context.begin_path()
     canvas.context.rotate(pi / 4)
     canvas.context.rect(200, 0, 20, 60)
     canvas.context.fill(color=REBECCAPURPLE)
 
     canvas.context.reset_transform()
+    canvas.context.begin_path()
     canvas.context.scale(2, 5)
     canvas.context.rect(10, 10, 10, 10)
     canvas.context.fill(color=GOLDENROD)
 
     canvas.context.reset_transform()
+    canvas.context.begin_path()
     canvas.context.translate(100, 60)
     canvas.context.rotate(pi / 7 * 4)
     canvas.context.scale(5, 2)

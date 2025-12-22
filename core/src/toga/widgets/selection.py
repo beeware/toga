@@ -90,14 +90,15 @@ class Selection(Widget):
         else:
             accessors = [self._accessor]
 
-        if items is None:
-            self._items = ListSource(accessors=accessors, data=[])
-        elif isinstance(items, Source):
-            if self._accessor is None:
+        match items:
+            case None:
+                self._items = ListSource(accessors=accessors, data=[])
+            case Source() if self._accessor is None:
                 raise ValueError("Must specify an accessor to use a data source")
-            self._items = items
-        else:
-            self._items = ListSource(accessors=accessors, data=items)
+            case Source():
+                self._items = items
+            case _:
+                self._items = ListSource(accessors=accessors, data=items)
 
         self._items.add_listener(self._impl)
 

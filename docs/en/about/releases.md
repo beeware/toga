@@ -37,7 +37,7 @@
 * On GTK, the scroll position will now be correctly reflected if a `MultilineTextInput` is programmatically scrolled immediately after changing text content. ([#3658](https://github.com/beeware/toga/issues/3658))
 * On GTK, mouse drag events are now triggered when modifier keys (e.g. NumLock, Shift) are active. ([#3661](https://github.com/beeware/toga/issues/3661))
 * On macOS, the origin of non-primary screens is now correctly calculated when screens are not vertically aligned and the same size. ([#3667](https://github.com/beeware/toga/issues/3667))
-* App path attributes were unintentionally made writable in 0.5.2 (e.g. i.e., `app.paths.config = <something>` was permitted). This has been fixed. ([#3669](https://github.com/beeware/toga/issues/3669))
+* App path attributes were unintentionally made writable in 0.5.2 (e.g. `app.paths.config = <something>` was permitted). This has been fixed. ([#3669](https://github.com/beeware/toga/issues/3669))
 * The text of `OptionContainer` tab labels is now guaranteed to be `str` on macOS, instead of an Objective C String. ([#3672](https://github.com/beeware/toga/issues/3672))
 * On macOS, pressing Enter or Tab when a row is selected on a table no longer starts row editing mode. ([#3673](https://github.com/beeware/toga/issues/3673))
 * Backwards compatibility code in Travertino that allows it to function with pre-0.5 versions of Toga has been made more specific, to prevent it from masking other, unrelated errors. ([#3683](https://github.com/beeware/toga/issues/3683))

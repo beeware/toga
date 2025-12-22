@@ -9,7 +9,7 @@ repos:
       - id: end-of-file-fixer
       - id: trailing-whitespace
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.14.9
+    rev: v0.14.10
     hooks:
       - id: ruff-check
         args: [ --fix ]
@@ -20,3 +20,4 @@ repos:
     - id: codespell
       # remove toml extra once Python 3.10 is no longer supported
       additional_dependencies: ['.[toml]']
+      args: ["--skip=CODE_OF_CONDUCT.md"]
