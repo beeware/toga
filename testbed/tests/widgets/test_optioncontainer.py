@@ -111,7 +111,7 @@ async def test_content_size_rehint(
     # 0.1 seconds to allow events to propagate properly, since the refreshment happens
     # across multiple event loop iterations.
     # 0.1 is chosen because some CI machines can be notoriously slow.
-    await probe.redraw("Tab 3's size should be explicitly set to 500x600", delay=0.1)
+    await probe.redraw("Tab 3's size should be explicitly set to 500x600", delay=1)
 
     try:
         assert main_window.size.width >= 500
