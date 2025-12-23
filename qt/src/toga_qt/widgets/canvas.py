@@ -26,18 +26,22 @@ logger = logging.getLogger(__name__)
 class TogaCanvas(QWidget):
     def __init__(self, interface, impl):
         super().__init__()
-        self.setUpdatesEnabled(True)
         self.interface = interface
         self.impl = impl
 
     def paintEvent(self, event: QPaintEvent):
         painter = QPainter(self)
-        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
-        self.impl.begin_path(painter)
         try:
+            painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+            self.impl.begin_path(painter)
             self.interface.context._draw(self.impl, draw_context=painter)
-        except Exception as exc:  # pragma: no cover
-            logger.exception("Error rendering Canvas.", exc)
+        except Exception:  # pragma: no cover
+            logger.exception("Error rendering Canvas.")
+        finally:
+            # we may have saved states that need to be unwound
+            # shouldn't happen normally, but can if there is an exception
+            # or if there is a bug where number of saves != number of restores
+            painter.end()
 
     def mousePressEvent(self, event: QMouseEvent) -> None:
         button = event.button()
@@ -55,7 +59,13 @@ class TogaCanvas(QWidget):
                 pass
 
     def mouseDoubleClickEvent(self, event: QMouseEvent) -> None:
-        self.interface.on_activate(int(event.position().x()), int(event.position().y()))
+        if event.button() == Qt.MouseButton.LeftButton:
+            self.interface.on_activate(
+                int(event.position().x()), int(event.position().y())
+            )
+        else:  # pragma: no cover
+            # Don't handle other button double-clicks
+            pass
 
     def mouseReleaseEvent(self, event: QMouseEvent) -> None:
         button = event.button()
@@ -219,19 +229,27 @@ class Canvas(Widget):
 
     # Drawing Paths
 
+    def _get_brush(self, fill_color, **kwargs):
+        return native_color(fill_color)
+
+    def _get_pen(self, stroke_color, line_width, line_dash=None, **kwargs):
+        pen = QPen()
+        pen.setBrush(self._get_brush(stroke_color))
+        pen.setCapStyle(Qt.PenCapStyle.FlatCap)
+        pen.setWidth(line_width)
+        if line_dash is not None:
+            pen.setDashPattern([x / line_width for x in line_dash])
+        return pen
+
     def fill(self, color, fill_rule, draw_context: QPainter, **kwargs):
         if fill_rule == FillRule.EVENODD:
             self._path.setFillRule(Qt.FillRule.OddEvenFill)
         else:
             self._path.setFillRule(Qt.FillRule.WindingFill)
-        draw_context.fillPath(self._path, native_color(color))
+        draw_context.fillPath(self._path, self._get_brush(color))
 
     def stroke(self, color, line_width, line_dash, draw_context, **kwargs):
-        pen = QPen(native_color(color))
-        pen.setCapStyle(Qt.PenCapStyle.FlatCap)
-        pen.setWidth(line_width)
-        if line_dash is not None:
-            pen.setDashPattern([x / line_width for x in line_dash])
+        pen = self._get_pen(color, line_width, line_dash)
         draw_context.strokePath(self._path, pen)
 
     # Transformations
@@ -254,39 +272,69 @@ class Canvas(Widget):
         else:
             return line_height * point_size
 
-    def measure_text(self, text, font, line_height):
+    def _text_offsets(self, text, font, line_height):
         metrics = QFontMetrics(font.native)
-        line_height = self._line_height(metrics, font.native.pointSize(), line_height)
+        if line_height is None:
+            line_height = metrics.lineSpacing()
+        else:
+            line_height = line_height * font.native.pointSize()
+
         sizes = [metrics.boundingRect(line) for line in text.splitlines()]
+        if not sizes:
+            return (0, 0, 0, 0, line_height)
+        left_offset = ceil(min(size.x() for size in sizes))
+        right_offset = ceil(max((size.width() + size.x()) for size in sizes))
+        top_offset = sizes[0].y()
         return (
-            ceil(max(size.width() for size in sizes)),
-            line_height * len(sizes),
+            left_offset,
+            top_offset,
+            right_offset,
+            line_height * len(sizes) + top_offset,
+            line_height,
         )
+
+    def measure_text(self, text, font, line_height):
+        left, top, right, bottom, _ = self._text_offsets(text, font, line_height)
+        return (right - left, bottom - top)
 
     def write_text(
         self, text, x, y, font, baseline, line_height, draw_context: QPainter, **kwargs
     ):
-        metrics = QFontMetrics(font.native)
-        scaled_line_height = self._line_height(
-            metrics, font.native.pointSize(), line_height
+        left_offset, top_offset, _, bottom_offset, scaled_line_height = (
+            self._text_offsets(text, font, line_height)
         )
 
         lines = text.splitlines()
-        total_height = scaled_line_height * len(lines)
+        total_height = bottom_offset - top_offset
 
+        draw_context.save()
+        # translate to target base point
+        draw_context.translate(x, y)
+
+        # adjust for alignment
         if baseline == Baseline.TOP:
-            top = y + metrics.ascent()
+            draw_context.translate(-left_offset, -top_offset)
         elif baseline == Baseline.MIDDLE:
-            top = y + metrics.ascent() - (total_height / 2)
+            draw_context.translate(-left_offset, -top_offset - (total_height / 2))
         elif baseline == Baseline.BOTTOM:
-            top = y + metrics.ascent() - total_height
+            draw_context.translate(-left_offset, -bottom_offset)
         else:
             # Default to Baseline.ALPHABETIC
-            top = y
+            draw_context.translate(-left_offset, 0)
 
+        draw_context.setFont(font.native)
+        path = QPainterPath()
         for line_num, line in enumerate(lines):
-            y = top + scaled_line_height * line_num
-            self._path.addText(x, y, font.native, line)
+            y = scaled_line_height * line_num
+            path.addText(0, y, font.native, line)
+
+        if "fill_color" in kwargs:
+            draw_context.fillPath(path, self._get_brush(**kwargs))
+        if "stroke_color" in kwargs:
+            draw_context.strokePath(path, self._get_pen(**kwargs))
+
+        # reset state to how things were before translating
+        draw_context.restore()
 
     def get_image_data(self):
         pixmap = self.native.grab()
