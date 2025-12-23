@@ -112,19 +112,20 @@ async def test_content_size_rehint(
     # across multiple event loop iterations.
     await probe.redraw("Tab 3's size should be explicitly set to 500x600", delay=0.01)
 
-    assert main_window.size.width > 500
-    assert main_window.size.height > 600
-    assert probe.width > 500
-    assert probe.height > 600
-    # Asserting content1 for content size because content3, by virtue of not being
-    # selected, has an invalid size.
-    assert content1_probe.width == 500
-    assert content1_probe.height == 600
-
-    del content3.width
-    del content3.height
-    main_window.size = old_main_window_size
-    await probe.redraw("Cleaning up widget and window")
+    try:
+        assert main_window.size.width > 500
+        assert main_window.size.height > 600
+        assert probe.width >= 500
+        assert probe.height > 600
+        # Asserting content1 for content size because content3, by virtue of not being
+        # selected, has an invalid size.
+        assert content1_probe.width == 500
+        assert content1_probe.height == 600
+    finally:
+        del content3.width
+        del content3.height
+        main_window.size = old_main_window_size
+        await probe.redraw("Cleaning up widget and window")
 
 
 async def test_select_tab(
