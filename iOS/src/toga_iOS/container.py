@@ -38,12 +38,12 @@ class TogaContainerView(UIView):
     def layoutSubviews(self):
         send_super(__class__, self, "layoutSubviews")
         if (
-            self.bounds.size.width,
-            self.bounds.size.height,
+            self.container.width,
+            self.container.height,
         ) != self.container.last_refreshed_size and self.container.resize_refresh:
             self.container.last_refreshed_size = (
-                self.bounds.size.width,
-                self.bounds.size.height,
+                self.container.width,
+                self.container.height,
             )
             self.refreshContent()
 
@@ -263,7 +263,11 @@ class RootContainer(Container):
     # The testbed app won't instantiate a simple app, so we can't test these properties
     @property
     def top_offset(self):  # pragma: no cover
-        if self.native.window():
+        if (
+            self.native.window()
+            and self.native.safeAreaInsets.top
+            >= self.native.window().windowScene.statusBarManager.statusBarFrame.size.height  # noqa: E501
+        ):
             return (
                 self.native.window().windowScene.statusBarManager.statusBarFrame.size.height
                 + self.additional_top_offset

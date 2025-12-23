@@ -63,6 +63,7 @@ class TogaTabBarController(UITabBarController):
     def refreshContent_(self, controller) -> None:
         self.view.setNeedsLayout()
         self.view.layoutIfNeeded()
+        self.customizableViewControllers = None
 
         # Recalculate child container offset.
         self.impl.offset_containers()
@@ -78,10 +79,8 @@ class TogaTabBarController(UITabBarController):
             UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiom.Phone
         )
         if is_phone:
-            # iOS seems to require this hack for nested
-            # tabbars to work properly.  iPadOS does not;
-            # this gets *very* expensive and freezes iPadOS
-            # also.
+            # iOS requires this hack for the "More" tab's navigation
+            # bar to be placed correctly on a plain window.
             origFrame = self.view.frame
             self.view.frame = CGRectMake(
                 origFrame.origin.x + 1,
@@ -90,6 +89,7 @@ class TogaTabBarController(UITabBarController):
                 origFrame.size.height,
             )
             self.view.frame = origFrame
+            pass
         else:
             self.view.setNeedsLayout()
         self.refreshContent(controller)
@@ -162,7 +162,10 @@ class OptionContainer(Widget):
         )
 
         for container in self.sub_containers:
-            if is_phone:
+            # If OptionContainer's top safe area is smaller than that of its view
+            # controllers... that means we have a tab bar at the top on iPadOS, and
+            # it's not at the bottom.
+            if is_phone or (self.native.safeAreaInsets.top >= top_safe_inset):
                 if self._top_un_offset:
                     container.un_top_offset_able = self.container.un_top_offset_able
                     if container.top_bar:
@@ -178,12 +181,12 @@ class OptionContainer(Widget):
                         top_safe_inset if container.top_bar else 0
                     )
                     container.un_top_offset_able = container.additional_top_offset
+                container._safe_bottom = True
             else:
-                # Cooked here... no way to know if tabbar is at the top, and it's
-                # inconsistent when I resize the window.  But the corners are small
-                # to be of any impact anyways.
+                # Bar is at the top here!
                 container.additional_top_offset = top_safe_inset
                 container.un_top_offset_able = top_safe_inset
+                container._safe_bottom = False
 
     def content_refreshed(self, container):
         container.min_width = container.content.interface.layout.min_width
