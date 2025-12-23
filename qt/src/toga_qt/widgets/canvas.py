@@ -266,12 +266,6 @@ class Canvas(Widget):
         draw_context.resetTransform()
 
     # Text
-    def _line_height(self, metrics, point_size, line_height=None):
-        if line_height is None:
-            return metrics.lineSpacing()
-        else:
-            return line_height * point_size
-
     def _text_offsets(self, text, font, line_height):
         metrics = QFontMetrics(font.native)
         if line_height is None:
