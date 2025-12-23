@@ -73,7 +73,7 @@ class TogaCanvas(QWidget):
                 pass
 
     def mouseMoveEvent(self, event: QMouseEvent) -> None:
-        # These will only fire when a mouse button is down, ie. dragging
+        # These will only fire when a mouse button is down, i.e. dragging
         button = event.button()
         match button:
             case Qt.MouseButton.LeftButton:
