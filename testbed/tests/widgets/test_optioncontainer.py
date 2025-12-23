@@ -108,9 +108,10 @@ async def test_content_size_rehint(
 
     content3.width = 500
     content3.height = 600
-    # 0.1 seconds to allow events to propagate properly, since the refreshment happens
+    # 1 seconds to allow events to propagate properly, since the refreshment happens
     # across multiple event loop iterations.
-    # 0.1 is chosen because some CI machines can be notoriously slow.
+    # 1 second is chosen because some CI machines can be notoriously slow with our
+    # GTK implementation.
     await probe.redraw("Tab 3's size should be explicitly set to 500x600", delay=1)
 
     try:
@@ -125,7 +126,7 @@ async def test_content_size_rehint(
     finally:
         del content3.width
         del content3.height
-        await probe.redraw("Cleanup: Removing width and height requirements")
+        await probe.redraw("Cleanup: Removing width and height requirements", delay=1)
         main_window.size = old_main_window_size
         await probe.redraw("Cleanup: Resizing window")
 
