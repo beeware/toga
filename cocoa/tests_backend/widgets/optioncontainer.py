@@ -12,11 +12,11 @@ class OptionContainerProbe(SimpleProbe):
 
     @property
     def width(self):
-        return self.native.alignmentRectForFrame(self.native.frame).width
+        return self.native.alignmentRectForFrame(self.native.frame).size.width
 
     @property
     def height(self):
-        return self.native.alignmentRectForFrame(self.native.frame).height
+        return self.native.alignmentRectForFrame(self.native.frame).size.height
 
     def select_tab(self, index):
         self.native.selectTabViewItemAtIndex(index)
