@@ -837,3 +837,49 @@ async def test_multiline_text(canvas, probe):
     # RMSE, as they are 100% edges; and due to minor font rendering discrepancies
     # and antialiasing introduced by image scaling, edges are the source of error.
     assert_reference(probe, "multiline_text", threshold=0.09)
+
+
+async def test_write_text_and_path(canvas, probe):
+    "Text doesn't affect the current path."
+
+    # Use fonts which look different from the system fonts on all platforms.
+    Font.register("Droid Serif", "resources/fonts/DroidSerif-Regular.ttf")
+
+    hello_text = "Hello"
+    hello_font = Font("Droid Serif", 24)
+    hello_size = canvas.measure_text(hello_text, hello_font)
+
+    # start building a path
+    canvas.context.begin_path()
+    canvas.context.rect(
+        100 - (hello_size[0] // 2),
+        10,
+        hello_size[0],
+        hello_size[1],
+    )
+
+    # Draw some text independent of the path
+    # Uses default fill color of black.
+    canvas.context.write_text(
+        hello_text,
+        100 - (hello_size[0] // 2),
+        10,
+        font=hello_font,
+        baseline=Baseline.TOP,
+    )
+
+    # continue building the path
+    canvas.context.move_to(
+        100 - (hello_size[0] // 2),
+        10,
+    )
+    canvas.context.line_to(
+        100 + (hello_size[0] // 2),
+        10 + hello_size[1],
+    )
+
+    # now stroke the path, but *not* the text
+    canvas.context.stroke(CORNFLOWERBLUE)
+
+    await probe.redraw("Text and path should be drawn independently")
+    assert_reference(probe, "write_text_and_path", threshold=0.01)
