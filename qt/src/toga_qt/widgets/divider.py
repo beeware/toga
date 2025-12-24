@@ -18,7 +18,7 @@ class Divider(Widget):
                 return Direction.HORIZONTAL
             case QFrame.Shape.VLine:
                 return Direction.VERTICAL
-            case _:
+            case _:  # pragma: no cover
                 raise ValueError(f"Unsupported QFrame shape {self.native.frameShape()}")
 
     def set_direction(self, value):
