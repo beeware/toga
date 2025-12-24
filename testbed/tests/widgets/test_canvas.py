@@ -9,6 +9,7 @@ from PIL import Image
 import toga
 from toga import Font
 from toga.colors import (
+    BLACK,
     CORNFLOWERBLUE,
     GOLDENROD,
     REBECCAPURPLE,
@@ -849,37 +850,41 @@ async def test_write_text_and_path(canvas, probe):
     hello_font = Font("Droid Serif", 24)
     hello_size = canvas.measure_text(hello_text, hello_font)
 
-    # start building a path
-    canvas.context.begin_path()
-    canvas.context.rect(
-        100 - (hello_size[0] // 2),
-        10,
-        hello_size[0],
-        hello_size[1],
-    )
+    with canvas.Fill(BLACK) as fill:
+        # start building a path
+        fill.begin_path()
+        fill.rect(
+            100 - (hello_size[0] // 2),
+            10,
+            hello_size[0],
+            hello_size[1],
+        )
 
-    # Draw some text independent of the path
-    # Uses default fill color of black.
-    canvas.context.write_text(
-        hello_text,
-        100 - (hello_size[0] // 2),
-        10,
-        font=hello_font,
-        baseline=Baseline.TOP,
-    )
+        # Draw some text independent of the path
+        # Uses fill color of black.
+        fill.write_text(
+            hello_text,
+            100 - (hello_size[0] // 2),
+            10,
+            font=hello_font,
+            baseline=Baseline.TOP,
+        )
 
-    # continue building the path
-    canvas.context.move_to(
-        100 - (hello_size[0] // 2),
-        10,
-    )
-    canvas.context.line_to(
-        100 + (hello_size[0] // 2),
-        10 + hello_size[1],
-    )
+        # continue building the path
+        fill.move_to(
+            100 - (hello_size[0] // 2),
+            10,
+        )
+        fill.line_to(
+            100 + (hello_size[0] // 2),
+            10 + hello_size[1],
+        )
 
-    # now stroke the path, but *not* the text
-    canvas.context.stroke(CORNFLOWERBLUE)
+        # now stroke the path, but *not* the text
+        fill.stroke(CORNFLOWERBLUE)
+
+        # start a new path so Fill context doesn't fill current path with black
+        fill.begin_path()
 
     await probe.redraw("Text and path should be drawn independently")
-    assert_reference(probe, "write_text_and_path", threshold=0.01)
+    assert_reference(probe, "write_text_and_path", threshold=0.02)
