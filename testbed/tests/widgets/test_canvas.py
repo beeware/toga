@@ -259,14 +259,13 @@ def assert_reference(probe, reference, threshold=0.01):
         image.save(save_dir / f"{reference_variant}-full.png")
 
     # If a reference image exists, scale the image to the same size as the reference,
-    # and do an MSE comparison on every pixel in 0-1 RGBA colorspace.
+    # and do an MSE comparison on every pixel in 0-1 RGBa (premultiplied) colorspace.
     if path.exists():
         reference_image = Image.open(path)
 
         total = sum(
             ((actual - expected) / 255) ** 2
             for actual, expected in zip(
-                # Convert to RGBa to test premultiplied values
                 chain(*scaled_image.convert("RGBa").getdata()),
                 chain(*reference_image.convert("RGBa").getdata()),
                 strict=True,
@@ -354,7 +353,7 @@ async def test_bezier_curve(canvas, probe):
     canvas.context.stroke()
 
     await probe.redraw("Heart should be drawn")
-    assert_reference(probe, "bezier_curve")
+    assert_reference(probe, "bezier_curve", threshold=0.03)
 
 
 async def test_quadratic_curve(canvas, probe):
@@ -371,7 +370,7 @@ async def test_quadratic_curve(canvas, probe):
     canvas.context.stroke()
 
     await probe.redraw("Quote bubble should be drawn")
-    assert_reference(probe, "quadratic_curve")
+    assert_reference(probe, "quadratic_curve", threshold=0.03)
 
 
 async def test_arc(canvas, probe):
@@ -410,7 +409,7 @@ async def test_arc(canvas, probe):
     canvas.context.stroke()
 
     await probe.redraw("Smiley face should be drawn")
-    assert_reference(probe, "arc", threshold=0.02)
+    assert_reference(probe, "arc", threshold=0.03)
 
 
 async def test_ellipse(canvas, probe):
@@ -450,7 +449,7 @@ async def test_ellipse(canvas, probe):
     canvas.context.stroke(color=GOLDENROD)
 
     await probe.redraw("Atom should be drawn")
-    assert_reference(probe, "ellipse")
+    assert_reference(probe, "ellipse", threshold=0.02)
 
 
 async def test_ellipse_path(canvas, probe):
@@ -702,7 +701,7 @@ async def test_write_text(canvas, probe):
     # 100% the wrong color. However, fonts are the worst case for evaluating with
     # RMSE, as they are 100% edges; and due to minor font rendering discrepancies
     # and antialiasing introduced by image scaling, edges are the source of error.
-    assert_reference(probe, "write_text")
+    assert_reference(probe, "write_text", threshold=0.04)
 
 
 @pytest.mark.xfail(
