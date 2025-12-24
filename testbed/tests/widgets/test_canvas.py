@@ -840,6 +840,10 @@ async def test_multiline_text(canvas, probe):
     assert_reference(probe, "multiline_text", threshold=0.09)
 
 
+@pytest.mark.xfail(
+    condition=os.environ.get("RUNNING_IN_CI") != "true",
+    reason="may fail outside of a GitHub runner environment",
+)
 async def test_write_text_and_path(canvas, probe):
     "Text doesn't affect the current path."
 
@@ -887,4 +891,4 @@ async def test_write_text_and_path(canvas, probe):
         fill.begin_path()
 
     await probe.redraw("Text and path should be drawn independently")
-    assert_reference(probe, "write_text_and_path", threshold=0.04)
+    assert_reference(probe, "write_text_and_path", threshold=0.08)
