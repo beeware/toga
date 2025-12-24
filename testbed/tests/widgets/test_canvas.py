@@ -295,12 +295,6 @@ async def test_transparency(canvas, probe):
     canvas.context.fill(color=rgb(0x33, 0x66, 0x99, 0.5))
 
     await probe.redraw("Image with transparent content and background")
-    # 0.1 is a big threshold; it's equivalent to 400 pixels being 100% the wrong color.
-    # This occurs because pixel aliasing around the edge of the squares generates
-    # different colors due to image scaling and alpha blending differences on each
-    # platform. You could also generate 0.1 threshold error by moving the entire image 1
-    # px to the left. However, it's difficult to find a measure that passes the edge
-    # issue without also passing a translation error.
     assert_reference(probe, "transparency")
 
 
@@ -697,11 +691,13 @@ async def test_write_text(canvas, probe):
             )
 
     await probe.redraw("Text should be drawn")
-    # 0.07 is quite a high error threshold; it's equivalent to 196 pixels being
-    # 100% the wrong color. However, fonts are the worst case for evaluating with
-    # RMSE, as they are 100% edges; and due to minor font rendering discrepancies
-    # and antialiasing introduced by image scaling, edges are the source of error.
-    assert_reference(probe, "write_text", threshold=0.04)
+    # 0.035 is equivalent to 49 pixels out of 200 being 100% the wrong color
+    # (in premultiplied RGBa space). However, fonts are the worst case for evaluating
+    # with RMSE, as they are 100% edges; and due to minor font rendering discrepancies
+    # and antialiasing introduced by image scaling, edges are the source of error. Of
+    # note, though: Gtk on Wayland is the only backend that needs it set this high.
+    # Everything else falls below 0.02.
+    assert_reference(probe, "write_text", threshold=0.035)
 
 
 @pytest.mark.xfail(
@@ -769,8 +765,4 @@ async def test_multiline_text(canvas, probe):
             text_filler.write_text(text, left, y, font, baseline)
 
     await probe.redraw("Multiple text blocks should be drawn")
-    # 0.09 is quite a high error threshold; it's equivalent to 324 pixels being
-    # 100% the wrong color. However, fonts are the worst case for evaluating with
-    # RMSE, as they are 100% edges; and due to minor font rendering discrepancies
-    # and antialiasing introduced by image scaling, edges are the source of error.
     assert_reference(probe, "multiline_text")
