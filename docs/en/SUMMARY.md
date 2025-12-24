@@ -34,6 +34,7 @@
         - Style guides
             - [Code style guide](how-to/contribute/style/code-style-guide.md)
             - [Documentation style guide](how-to/contribute/style/docs-style-guide.md)
+    - [Implementing a new backend](how-to/implement-backend.md)
     - Internal How-to guides
         - [How to cut a Toga release](how-to/internal/release.md)
 - [Topic guides](topics/index.md)

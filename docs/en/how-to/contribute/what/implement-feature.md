@@ -24,17 +24,13 @@ GTK4 support can be enabled by setting the `TOGA_GTK=4` environment variable. To
 
 The code needs to support both GTK3 and GTK4; if there are significant differences in API, you can add conditional branches based on the GTK version. See one of the widgets that *has* been ported (e.g., Label) for examples of how this can be done.
 
-### Implement an entirely new platform backend
+### Implement an entirely new platform backend { #implement-backend }
 
-Toga currently has support for 8 backends - but there's room for more!
+In order to support multiple platforms natively, Toga uses [a 3-layered architecture](/reference/internals/architecture.md), in which the widgets that are instantiated by the user belongs to the *interface* layer, which does basic bookkeeping and normalizes quirks that exists across multiple platforms.  Each interface widget instantiates an internal *implementation* layer widget, a collection of which are provided by platform-specific backends.
 
-The first steps of any new platform backend are always the same:
+Toga currently has support for [8 backends](/reference/platforms/index.md) - but [there's room for more][roadmap-platforms]!  In particular, we would be interested in seeing a backend using a more modern Windows API.
 
-1. Implement enough of the Toga Application and Window classes to allow  you to create an empty application window, integrated with the  Python `asyncio` event loop.
-2. Work out how to use native platform APIs to position a widget at a  specific position on the window. Most widget frameworks will have  some sort of native layout scheme; we need to replace that scheme  with Toga's layout algorithm. If you can work out how to place a  button with a fixed size at a specific position on the screen,  that's usually sufficient.
-3. Get Tutorial 0 working. This is the simple case of a single box that  contains a single button. To get this tutorial working, you'll need  to implement the factory class for your new backend so that Toga can  instantiate widgets on your new backend, and connect the Toga style  applicator methods on the base widget that sets the position of  widgets on the screen.
-
-Once you have those core features in place, you can start implementing widgets and other Toga features (like fonts, images, and so on).
+Hints for setting up and writing code for a backend exists in the [Implementing a new backend](/how-to/implement-backend.md) How-To Guide.
 
 ### Improve the testing API for application writers
 
