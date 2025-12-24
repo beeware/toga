@@ -5,7 +5,7 @@ from math import pi, radians
 from unittest.mock import Mock, call
 
 import pytest
-from PIL import Image
+from PIL import Image, ImageChops
 
 import toga
 from toga import Font
@@ -264,11 +264,12 @@ def assert_reference(probe, reference, threshold=0.01):
         reference_image = Image.open(path)
 
         total = sum(
-            ((actual - expected) / 255) ** 2
-            for actual, expected in zip(
-                chain(*scaled_image.convert("RGBa").getdata()),
-                chain(*reference_image.convert("RGBa").getdata()),
-                strict=True,
+            (diff / 255) ** 2
+            for diff in chain.from_iterable(
+                ImageChops.difference(
+                    scaled_image.convert("RGBa"),
+                    reference_image.convert("RGBa"),
+                ).getdata()
             )
         )
         rmse = math.sqrt(total / (reference_image.width * reference_image.height * 4))
@@ -691,7 +692,7 @@ async def test_write_text(canvas, probe):
             )
 
     await probe.redraw("Text should be drawn")
-    # 0.035 is equivalent to 49 pixels out of 200 being 100% the wrong color
+    # 0.035 is equivalent to 49 pixels out of 4,000 being 100% the wrong color
     # (in premultiplied RGBa space). However, fonts are the worst case for evaluating
     # with RMSE, as they are 100% edges; and due to minor font rendering discrepancies
     # and antialiasing introduced by image scaling, edges are the source of error. Of
