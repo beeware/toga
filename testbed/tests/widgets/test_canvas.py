@@ -344,10 +344,10 @@ async def test_paths(canvas, probe):
     # A path is not cleared after being stroked or filled.
     canvas.context.move_to(20, 10)
     canvas.context.line_to(60, 10)
-    canvas.context.stroke(color="cyan")
+    canvas.context.stroke(color=CORNFLOWERBLUE, line_width=10)
     canvas.context.move_to(60, 10)
     canvas.context.line_to(100, 10)
-    canvas.context.fill(color="red")
+    canvas.context.fill(color=REBECCAPURPLE)
     canvas.context.line_to(140, 10)
     canvas.context.stroke()
 
