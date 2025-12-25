@@ -1,3 +1,4 @@
+import weakref
 from decimal import ROUND_UP
 
 from android.view import View
@@ -13,10 +14,10 @@ from .label import TextViewWidget
 class OnCheckedChangeListener(dynamic_proxy(CompoundButton.OnCheckedChangeListener)):
     def __init__(self, impl):
         super().__init__()
-        self._impl = impl
+        self._impl_ref = weakref.ref(impl)
 
     def onCheckedChanged(self, _button, _checked):
-        self._impl.interface.on_change()
+        self._impl_ref().interface.on_change()
 
 
 class Switch(TextViewWidget, ContainedWidget):
