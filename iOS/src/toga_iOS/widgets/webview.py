@@ -168,8 +168,12 @@ class TogaWebView(WKWebView, protocols=[WKUIDelegate]):
 
 
 class WebView(Widget):
+    unsafe_bottom = True
+    un_top_offset = True
+
     def create(self):
         self.native = TogaWebView.alloc().init()
+        self.native.scrollView.delegate = self.native
         self.native.interface = self.interface
         self.native.impl = self
 
@@ -184,6 +188,15 @@ class WebView(Widget):
 
         # Add the layout constraints
         self.add_constraints()
+
+    def top_un_offset_if_needed(self, frame):
+        if (
+            hasattr(self.container, "no_webview_offset")
+            and self.container.no_webview_offset
+        ):
+            return frame
+        else:
+            return super().top_un_offset_if_needed(frame)
 
     def get_url(self):
         url = str(self.native.URL)

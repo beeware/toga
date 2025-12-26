@@ -1,5 +1,3 @@
-import asyncio
-
 from rubicon.objc import objc_method
 from rubicon.objc.eventloop import RubiconEventLoop, iOSLifecycle
 
@@ -50,12 +48,7 @@ class PythonAppDelegate(UIResponder):
     ) -> None:
         """This callback is invoked when rotating the device from landscape to portrait
         and vice versa."""
-        asyncio.get_event_loop().call_soon_threadsafe(
-            App.app.interface.current_window.on_resize
-        )
-        asyncio.get_event_loop().call_soon_threadsafe(
-            App.app.interface.main_window.content.refresh
-        )
+        App.app.interface.current_window.on_resize()
 
 
 class App:

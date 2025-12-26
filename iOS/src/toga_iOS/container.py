@@ -1,5 +1,6 @@
+from rubicon.objc import objc_method, objc_property, send_super
+
 from .libs import (
-    UIApplication,
     UINavigationController,
     UIView,
     UIViewAutoresizing,
@@ -15,8 +16,40 @@ from .libs import (
 #######################################################################################
 
 
+class TogaContainerView(UIView):
+    container = objc_property(object, weak=True)
+
+    @objc_method
+    def safeAreaInsetsDidChange(self):
+        send_super(__class__, self, "safeAreaInsetsDidChange")
+        # Container width and height updated.
+        if self.container.on_inset_change:
+            self.container.on_inset_change()
+        # if self.container._safe_bottom:
+        #    self.performSelector(SEL("refreshContent"), withObject=None, afterDelay=0)
+
+    @objc_method
+    def refreshContent(self):  # Can't be reliably triggered else in testing cases
+        if self.container:  # pragma: no branch
+            if self.container.content:
+                self.container.content.interface.refresh()
+
+    @objc_method
+    def layoutSubviews(self):
+        send_super(__class__, self, "layoutSubviews")
+        if (
+            self.container.width,
+            self.container.height,
+        ) != self.container.last_refreshed_size and self.container.resize_refresh:
+            self.container.last_refreshed_size = (
+                self.container.width,
+                self.container.height,
+            )
+            self.refreshContent()
+
+
 class BaseContainer:
-    def __init__(self, content=None, on_refresh=None):
+    def __init__(self, content=None, on_refresh=None, safe_bottom=False):
         """A base class for iOS containers.
 
         :param content: The widget impl that is the container's initial content.
@@ -25,6 +58,14 @@ class BaseContainer:
         """
         self._content = content
         self.on_refresh = on_refresh
+        self._safe_bottom = safe_bottom
+        self.un_top_offset_able = 0
+        self.additional_top_offset = 0
+        self._automatic_un_top_offset_able = True
+        self.on_inset_change = None
+        self.resize_refresh = False
+
+        self.last_refreshed_size = (0, 0)
 
     @property
     def content(self):
@@ -50,9 +91,40 @@ class BaseContainer:
     def refreshed(self):
         self.on_refresh(self)
 
+    @property
+    def additional_top_offset(self):
+        return self._additional_top_offset
+
+    @additional_top_offset.setter
+    def additional_top_offset(self, value):
+        self._additional_top_offset = value
+
+    #        if self.native:
+    #            self.native.refreshContent()
+
+    @property
+    def un_top_offset_able(self):
+        if self._automatic_un_top_offset_able:
+            return 0
+        return self._un_top_offset_able
+
+    @un_top_offset_able.setter
+    def un_top_offset_able(self, value):
+        self._automatic_un_top_offset_able = False
+        self._un_top_offset_able = value
+
+    def update_un_top_offset_able(self):
+        pass
+
+
+#        if self.native:
+#            self.native.refreshContent()
+
 
 class Container(BaseContainer):
-    def __init__(self, content=None, layout_native=None, on_refresh=None):
+    def __init__(
+        self, content=None, layout_native=None, on_refresh=None, safe_bottom=False
+    ):
         """
         :param content: The widget impl that is the container's initial content.
         :param layout_native: The native widget that should be used to provide size
@@ -62,15 +134,22 @@ class Container(BaseContainer):
             the size can be different.
         :param on_refresh: The callback to be notified when this container's layout is
             refreshed.
+        :param safe_bottom: Whether the container should not extend into bottom
+            safe area insets.
         """
-        super().__init__(content=content, on_refresh=on_refresh)
-        self.native = UIView.alloc().init()
+        self.native = TogaContainerView.alloc().init()
+        self.native.container = self
         self.native.translatesAutoresizingMaskIntoConstraints = True
         self.native.autoresizingMask = (
             UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleHeight
         )
 
         self.layout_native = self.native if layout_native is None else layout_native
+        self.scroll_safe = False
+
+        super().__init__(
+            content=content, on_refresh=on_refresh, safe_bottom=safe_bottom
+        )
 
     def __del__(self):
         # Mark the contained native object as explicitly None so that the
@@ -79,15 +158,34 @@ class Container(BaseContainer):
 
     @property
     def width(self):
+        if self.scroll_safe:
+            return (
+                self.layout_native.bounds.size.width
+                - self.layout_native.adjustedContentInset.left
+                - self.layout_native.adjustedContentInset.right
+            )
         return self.layout_native.bounds.size.width
 
     @property
     def height(self):
-        return self.layout_native.bounds.size.height - self.top_offset
+        if self.scroll_safe:
+            return (
+                self.layout_native.bounds.size.height
+                - self.layout_native.adjustedContentInset.top
+                - self.layout_native.adjustedContentInset.bottom
+            )
+        if self._safe_bottom:
+            return (
+                self.layout_native.bounds.size.height
+                - self.top_offset
+                - self.layout_native.safeAreaInsets.bottom
+            )
+        else:
+            return self.layout_native.bounds.size.height - self.top_offset
 
     @property
     def top_offset(self):
-        return 0
+        return self.additional_top_offset
 
 
 class ControlledContainer(Container):
@@ -96,6 +194,7 @@ class ControlledContainer(Container):
         content=None,
         layout_native=None,
         on_refresh=None,
+        safe_bottom=False,
     ):
         """
         :param content: The widget impl that is the container's initial content.
@@ -106,11 +205,14 @@ class ControlledContainer(Container):
             rendered, the source of the size can be different.
         :param on_refresh: The callback to be notified when this container's layout is
             refreshed.
+        :param safe_bottom: Whether the container should not extend into bottom
+            safe area insets.
         """
         super().__init__(
             content=content,
             layout_native=layout_native,
             on_refresh=on_refresh,
+            safe_bottom=safe_bottom,
         )
 
         # Construct a ViewController that provides a navigation bar, and
@@ -128,6 +230,7 @@ class RootContainer(Container):
         content=None,
         layout_native=None,
         on_refresh=None,
+        safe_bottom=False,
     ):
         """A bare content container.
 
@@ -141,11 +244,14 @@ class RootContainer(Container):
             rendered, the source of the size can be different.
         :param on_refresh: The callback to be notified when this container's layout is
             refreshed.
+        :param safe_bottom: Whether the container should not extend into bottom
+            safe area insets.
         """
         super().__init__(
             content=content,
             layout_native=layout_native,
             on_refresh=on_refresh,
+            safe_bottom=safe_bottom,
         )
 
         # Construct a UIViewController to hold the root content
@@ -157,7 +263,17 @@ class RootContainer(Container):
     # The testbed app won't instantiate a simple app, so we can't test these properties
     @property
     def top_offset(self):  # pragma: no cover
-        return UIApplication.sharedApplication.statusBarFrame.size.height
+        if (
+            self.native.window()
+            and self.native.safeAreaInsets.top
+            >= self.native.window().windowScene.statusBarManager.statusBarFrame.size.height  # noqa: E501
+        ):
+            return (
+                self.native.window().windowScene.statusBarManager.statusBarFrame.size.height
+                + self.additional_top_offset
+            )
+        else:
+            return self.additional_top_offset
 
     @property
     def title(self):  # pragma: no cover
@@ -174,6 +290,7 @@ class NavigationContainer(Container):
         content=None,
         layout_native=None,
         on_refresh=None,
+        safe_bottom=False,
     ):
         """A top level container that provides a navigation/title bar.
 
@@ -190,6 +307,7 @@ class NavigationContainer(Container):
             content=content,
             layout_native=layout_native,
             on_refresh=on_refresh,
+            safe_bottom=safe_bottom,
         )
 
         # Construct a NavigationController that provides a navigation bar, and
@@ -206,8 +324,10 @@ class NavigationContainer(Container):
     @property
     def top_offset(self):
         return (
-            UIApplication.sharedApplication.statusBarFrame.size.height
+            #            UIApplication.sharedApplication.statusBarFrame.size.height
+            +self.controller.navigationBar.frame.origin.y
             + self.controller.navigationBar.frame.size.height
+            + self.additional_top_offset
         )
 
     @property
@@ -217,3 +337,14 @@ class NavigationContainer(Container):
     @title.setter
     def title(self, value):
         self.controller.topViewController.title = value
+
+    @property
+    def un_top_offset_able(self):
+        if self._automatic_un_top_offset_able:
+            return self.top_offset
+        return self._un_top_offset_able
+
+    @un_top_offset_able.setter
+    def un_top_offset_able(self, value):
+        self._automatic_un_top_offset_able = False
+        self._un_top_offset_able = value

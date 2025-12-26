@@ -11,10 +11,12 @@ from toga.types import Position, Size
 from toga_iOS.container import NavigationContainer, RootContainer
 from toga_iOS.images import nsdata_to_bytes
 from toga_iOS.libs import (
+    IOS_VERSION,
     NSData,
     UIColor,
     UIGraphicsImageRenderer,
     UIImage,
+    UINavigationBarAppearance,
     UIScreen,
     UIWindow,
     core_graphics,
@@ -22,6 +24,12 @@ from toga_iOS.libs import (
 )
 
 from .screens import Screen as ScreenImpl
+
+navAppearance = UINavigationBarAppearance.alloc().init()
+navAppearance.configureWithDefaultBackground()
+
+opaqueNavAppearance = UINavigationBarAppearance.alloc().init()
+opaqueNavAppearance.configureWithOpaqueBackground()
 
 
 class Window:
@@ -53,6 +61,7 @@ class Window:
     def create_container(self):
         # RootContainer provides a titlebar for the window.
         self.container = RootContainer(on_refresh=self.content_refreshed)
+        self.container.resize_refresh = True
 
     ######################################################################
     # Window properties
@@ -235,6 +244,9 @@ class MainWindow(Window):
     def create_container(self):
         # NavigationContainer provides a titlebar for the window.
         self.container = NavigationContainer(on_refresh=self.content_refreshed)
+        self.container.resize_refresh = True
+        if IOS_VERSION < (26, 0):  # pragma: no branch
+            self.container.controller.navigationBar.standardAppearance = navAppearance
 
     def create_toolbar(self):
         # No toolbar handling at present
