@@ -114,7 +114,8 @@ def get_platform_factory() -> ModuleType:
 
 def __getattr__(name):
     if name == "backend":
-        globals()["backend"] = get_platform_factory().__package__
-        return globals()["backend"]
+        global backend
+        backend = get_platform_factory().__package__
+        return backend
     else:
         raise AttributeError(f"module '{__name__}' has no attribute '{name}'") from None
