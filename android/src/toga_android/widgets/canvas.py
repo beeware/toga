@@ -1,4 +1,5 @@
 import itertools
+import weakref
 from math import degrees
 
 from android.graphics import (
@@ -24,31 +25,41 @@ from .base import Widget
 class DrawHandler(dynamic_proxy(IDrawHandler)):
     def __init__(self, impl):
         super().__init__()
-        self.impl = impl
-        self.interface = impl.interface
+        self.impl = weakref.proxy(impl)
+        self.interface = weakref.proxy(impl.interface)
 
     def handleDraw(self, canvas):
-        self.impl.reset_transform(canvas)
-        self.interface.context._draw(self.impl, path=Path(), canvas=canvas)
+        try:
+            self.impl.reset_transform(canvas)
+            self.interface.context._draw(self.impl, path=Path(), canvas=canvas)
+        # This is a defensive safety catch, just in case if the impl object
+        # has already been collected, but the native widget is still
+        # emitting an event to the listener.
+        except ReferenceError:
+            pass
 
 
 class TouchListener(dynamic_proxy(View.OnTouchListener)):
     def __init__(self, impl):
         super().__init__()
-        self.impl = impl
-        self.interface = impl.interface
+        self.impl = weakref.proxy(impl)
+        self.interface = weakref.proxy(impl.interface)
 
     def onTouch(self, canvas, event):
-        x, y = map(self.impl.scale_out, (event.getX(), event.getY()))
-        if (action := event.getAction()) == MotionEvent.ACTION_DOWN:
-            self.interface.on_press(x, y)
-        elif action == MotionEvent.ACTION_MOVE:
-            self.interface.on_drag(x, y)
-        elif action == MotionEvent.ACTION_UP:
-            self.interface.on_release(x, y)
-        else:  # pragma: no cover
-            return False
-        return True
+        try:
+            x, y = map(self.impl.scale_out, (event.getX(), event.getY()))
+            if (action := event.getAction()) == MotionEvent.ACTION_DOWN:
+                self.interface.on_press(x, y)
+            elif action == MotionEvent.ACTION_MOVE:
+                self.interface.on_drag(x, y)
+            elif action == MotionEvent.ACTION_UP:
+                self.interface.on_release(x, y)
+            else:  # pragma: no cover
+                return False
+            return True
+        # See above comment on ignoring ReferenceError.
+        except ReferenceError:
+            return True
 
 
 class Canvas(Widget):

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import warnings
+import weakref
 from dataclasses import dataclass
 
 from android.view import MenuItem
@@ -40,16 +41,22 @@ if NavigationBarView is not None:  # pragma: no branch
     ):
         def __init__(self, impl):
             super().__init__()
-            self.impl = impl
+            self.impl = weakref.proxy(impl)
 
         def onNavigationItemSelected(self, item):
-            for index, option in enumerate(self.impl.options):
-                if option.menu_item == item:
-                    self.impl.set_current_tab_index(index, programmatic=False)
-                    return True
+            try:
+                for index, option in enumerate(self.impl.options):
+                    if option.menu_item == item:
+                        self.impl.set_current_tab_index(index, programmatic=False)
+                        return True
 
-            # You shouldn't be able to select an item that isn't isn't selectable.
-            return False  # pragma: no cover
+                # You shouldn't be able to select an item that isn't isn't selectable.
+                return False  # pragma: no cover
+            # This is a defensive safety catch, just in case if the impl object
+            # has already been collected, but the native widget is still
+            # emitting an event to the listener.
+            except ReferenceError:  # pragma: no cover
+                return False
 
 
 class OptionContainer(Widget, Container):

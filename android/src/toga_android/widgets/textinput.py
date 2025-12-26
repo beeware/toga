@@ -50,9 +50,7 @@ class TogaKeyListener(dynamic_proxy(View.OnKeyListener)):
                 ):
                     self.impl._on_confirm()
             return False
-        # This is a defensive safety catch, just in case if the impl object
-        # has already been collected, but the native widget is still
-        # emitting an event to the listener.
+        # See above comment on ignoring ReferenceError.
         except ReferenceError:  # pragma: no cover
             return False
 
@@ -68,9 +66,7 @@ class TogaFocusListener(dynamic_proxy(View.OnFocusChangeListener)):
                 self.impl._on_gain_focus()
             else:
                 self.impl._on_lose_focus()
-        # This is a defensive safety catch, just in case if the impl object
-        # has already been collected, but the native widget is still
-        # emitting an event to the listener.
+        # See above comment on ignoring ReferenceError.
         except ReferenceError:  # pragma: no cover
             pass
 

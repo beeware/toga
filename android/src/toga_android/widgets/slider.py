@@ -1,3 +1,4 @@
+import weakref
 from decimal import ROUND_UP
 
 from android import R
@@ -18,16 +19,30 @@ from toga_android.widgets.base import ContainedWidget
 class TogaOnSeekBarChangeListener(dynamic_proxy(SeekBar.OnSeekBarChangeListener)):
     def __init__(self, impl):
         super().__init__()
-        self.impl = impl
+        self.impl = weakref.proxy(impl)
 
     def onProgressChanged(self, _view, _progress, _from_user):
-        self.impl.on_change()
+        try:
+            self.impl.on_change()
+        # This is a defensive safety catch, just in case if the impl object
+        # has already been collected, but the native widget is still
+        # emitting an event to the listener.
+        except ReferenceError:  # pragma: no cover
+            pass
 
     def onStartTrackingTouch(self, native_seekbar):
-        self.impl.interface.on_press()
+        try:
+            self.impl.interface.on_press()
+        # See above comment on catching ReferenceError.
+        except ReferenceError:
+            pass
 
     def onStopTrackingTouch(self, native_seekbar):
-        self.impl.interface.on_release()
+        try:
+            self.impl.interface.on_release()
+        # See above comment on catching ReferenceError.
+        except ReferenceError:
+            pass
 
 
 class Slider(ContainedWidget, IntSliderImpl):
