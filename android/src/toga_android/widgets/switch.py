@@ -14,10 +14,10 @@ from .label import TextViewWidget
 class OnCheckedChangeListener(dynamic_proxy(CompoundButton.OnCheckedChangeListener)):
     def __init__(self, impl):
         super().__init__()
-        self._impl_ref = weakref.ref(impl)
+        self._impl = weakref.proxy(impl)
 
     def onCheckedChanged(self, _button, _checked):
-        self._impl_ref().interface.on_change()
+        self._impl.interface.on_change()
 
 
 class Switch(TextViewWidget, ContainedWidget):

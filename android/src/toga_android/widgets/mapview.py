@@ -1,3 +1,4 @@
+import weakref
 from pathlib import Path
 
 from android.graphics import BitmapFactory
@@ -26,7 +27,7 @@ if OSMMapView is not None:  # pragma: no branch
     class TogaOnMarkerClickListener(dynamic_proxy(Marker.OnMarkerClickListener)):
         def __init__(self, map_impl):
             super().__init__()
-            self.map_impl = map_impl
+            self.map_impl = weakref.proxy(map_impl)
 
         def onMarkerClick(self, marker, map_view):
             result = marker.onMarkerClickDefault(marker, map_view)
