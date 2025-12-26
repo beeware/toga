@@ -34,12 +34,14 @@ def test_widget_created():
 def test_create_with_values():
     """A WebView can be created with initial values."""
     on_webview_load = Mock()
+    on_navigation_starting = Mock()
 
     widget = toga.WebView(
         id="foobar",
         url="https://beeware.org",
         user_agent="Custom agent",
         on_webview_load=on_webview_load,
+        on_navigation_starting=on_navigation_starting,
         # A style property
         width=256,
     )
@@ -50,6 +52,7 @@ def test_create_with_values():
     assert widget.url == "https://beeware.org"
     assert widget.user_agent == "Custom agent"
     assert widget.on_webview_load._raw == on_webview_load
+    assert widget.on_navigation_starting._raw == on_navigation_starting
     assert widget.style.width == 256
 
 
@@ -330,3 +333,113 @@ async def test_retrieve_cookies(widget):
     assert cookie.path == "/"
     assert cookie.secure is True
     assert cookie.expires is None
+
+
+def test_webview_navigation_starting_disabled(monkeypatch):
+    """If the backend doesn't support on_navigation_starting, a warning is raised."""
+    # Temporarily set the feature attribute on the backend
+    monkeypatch.setattr(
+        DummyWebView,
+        "SUPPORTS_ON_NAVIGATION_STARTING",
+        False,
+        raising=False,
+    )
+
+    # Instantiate a new widget with a hobbled backend.
+    widget = toga.WebView()
+    handler = Mock()
+
+    # Setting the handler raises a warning
+    with pytest.warns(
+        toga.NotImplementedWarning,
+        match=r"\[Dummy\] Not implemented: WebView\.on_navigation_starting",
+    ):
+        widget.on_navigation_starting = handler
+
+
+def test_webview_navigation_starting_not_configured(monkeypatch, capsys):
+    """A warning is printed if the backend isn't fully configured."""
+    # Temporarily set the feature attribute on the backend
+    monkeypatch.setattr(
+        DummyWebView,
+        "SUPPORTS_ON_NAVIGATION_STARTING",
+        False,
+        raising=False,
+    )
+    monkeypatch.setattr(
+        DummyWebView,
+        "ON_NAVIGATION_CONFIG_MISSING_ERROR",
+        "WEBVIEW NOT CONFIGURED",
+        raising=False,
+    )
+
+    # Instantiate a new widget with a hobbled backend.
+    widget = toga.WebView()
+    handler = Mock()
+
+    # Setting the handler produce
+    widget.on_navigation_starting = handler
+
+    # The error was output
+    assert "WEBVIEW NOT CONFIGURED" in capsys.readouterr().out
+
+
+def test_navigation_starting_no_handler(widget):
+    """When no handler is set, navigation should be allowed"""
+    widget.url = None
+    widget._impl.simulate_navigation_starting("https://beeware.org")
+    assert widget.url == "https://beeware.org"
+
+
+@pytest.mark.parametrize(
+    ("initial_url", "url", "final_url"),
+    [
+        (None, None, None),
+        (None, "https://beeware.org", "https://beeware.org"),
+        (None, "https://example.com", None),
+        ("https://beeware.org", "https://example.com", "https://beeware.org"),
+    ],
+)
+def test_navigation_starting_sync(widget, initial_url, url, final_url):
+    """Navigation can be controlled by a synchronous handler."""
+
+    def handler(widget, url, **kwargs):
+        if url == "https://beeware.org":
+            return True
+        else:
+            return False
+
+    widget.url = initial_url
+    widget.on_navigation_starting = handler
+
+    # test navigation to the URL
+    widget._impl.simulate_navigation_starting(url)
+    assert widget.url == final_url
+
+
+@pytest.mark.parametrize(
+    ("initial_url", "url", "final_url"),
+    [
+        (None, None, None),
+        (None, "https://beeware.org", "https://beeware.org"),
+        (None, "https://example.com", None),
+        ("https://beeware.org", "https://example.com", "https://beeware.org"),
+    ],
+)
+async def test_navigation_starting_async(widget, initial_url, url, final_url):
+    """Navigation can be controlled by an async handler."""
+
+    async def handler(widget, url, **kwargs):
+        if url == "https://beeware.org":
+            return True
+        else:
+            return False
+
+    widget.url = initial_url
+    widget.on_navigation_starting = handler
+
+    widget._impl.simulate_navigation_starting(url)
+    # A short sleep to ensure the async handler completes
+    await asyncio.sleep(0.01)
+
+    assert widget.url == final_url
