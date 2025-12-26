@@ -1,4 +1,4 @@
-# A slightly less toy example
+# Build a temperature converter
 
 Most applications require a little more than a button on a page. Lets build a slightly more complex example - a Fahrenheit to Celsius converter:
 

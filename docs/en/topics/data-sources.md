@@ -1,4 +1,4 @@
-# Data Sources { #data-sources }
+# Data sources { #data-sources }
 
 Most widgets in a user interface will need to interact with data - either displaying it, or providing a way to manipulate it.
 

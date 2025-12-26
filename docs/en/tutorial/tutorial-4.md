@@ -1,4 +1,4 @@
-# Let's draw on a canvas!
+# Draw on a canvas
 
 One of the main capabilities needed to create many types of GUI applications is the ability to draw and manipulate lines, shapes, text, and other graphics. To do this in Toga, we use the Canvas Widget.
 
